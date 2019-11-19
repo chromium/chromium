@@ -10,11 +10,13 @@ import posixpath
 import shutil
 import time
 
+from devil import base_error
 from devil.android import crash_handler
 from devil.android import device_errors
 from devil.android import device_temp_file
 from devil.android import logcat_monitor
 from devil.android import ports
+from devil.android.sdk import version_codes
 from devil.utils import reraiser_thread
 from incremental_install import installer
 from pylib import constants
@@ -35,6 +37,8 @@ _EXTRA_COMMAND_LINE_FILE = (
     'org.chromium.native_test.NativeTest.CommandLineFile')
 _EXTRA_COMMAND_LINE_FLAGS = (
     'org.chromium.native_test.NativeTest.CommandLineFlags')
+_EXTRA_COVERAGE_DEVICE_FILE = (
+    'org.chromium.native_test.NativeTest.CoverageDeviceFile')
 _EXTRA_STDOUT_FILE = (
     'org.chromium.native_test.NativeTestInstrumentationTestRunner'
         '.StdoutFile')
@@ -102,6 +106,24 @@ def _ExtractTestsFromFilter(gtest_filter):
   return patterns
 
 
+def _PullCoverageFile(device, coverage_device_file, output_dir):
+  """Pulls coverage file on device to host directory.
+
+  Args:
+    device: The working device.
+    coverage_device_file: The temporary coverage file on device.
+    output_dir: The output directory on host.
+  """
+  try:
+    if not os.path.exists(output_dir):
+      os.makedirs(output_dir)
+    device.PullFile(coverage_device_file.name, output_dir)
+  except (OSError, base_error.BaseError) as e:
+    logging.warning('Failed to handle coverage data after tests: %s', e)
+  finally:
+    coverage_device_file.close()
+
+
 class _ApkDelegate(object):
   def __init__(self, test_instance, tool):
     self._activity = test_instance.activity
@@ -116,6 +138,7 @@ class _ApkDelegate(object):
     self._extras = test_instance.extras
     self._wait_for_java_debugger = test_instance.wait_for_java_debugger
     self._tool = tool
+    self._coverage_dir = test_instance.coverage_dir
 
   def GetTestDataRoot(self, device):
     # pylint: disable=no-self-use
@@ -138,6 +161,15 @@ class _ApkDelegate(object):
 
   def Run(self, test, device, flags=None, **kwargs):
     extras = dict(self._extras)
+    device_api = device.build_version_sdk
+
+    if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
+      coverage_device_file = device_temp_file.DeviceTempFile(
+          device.adb,
+          suffix='.profraw',
+          prefix=self._suite,
+          dir=device.GetExternalStoragePath())
+      extras[_EXTRA_COVERAGE_DEVICE_FILE] = coverage_device_file.name
 
     if ('timeout' in kwargs
         and gtest_test_instance.EXTRA_SHARD_NANO_TIMEOUT not in extras):
@@ -193,11 +225,18 @@ class _ApkDelegate(object):
       except Exception:
         device.ForceStop(self._package)
         raise
+      finally:
+        if self._coverage_dir and device_api >= version_codes.LOLLIPOP:
+          _PullCoverageFile(device, coverage_device_file, self._coverage_dir)
+
       # TODO(jbudorick): Remove this after resolving crbug.com/726880
-      logging.info(
-          '%s size on device: %s',
-          stdout_file.name, device.StatPath(stdout_file.name).get('st_size', 0))
-      return device.ReadFile(stdout_file.name).splitlines()
+      if device.PathExists(stdout_file.name):
+        logging.info('%s size on device: %s', stdout_file.name,
+                     device.StatPath(stdout_file.name).get('st_size', 0))
+        return device.ReadFile(stdout_file.name).splitlines()
+      else:
+        logging.info('%s does not exist?', stdout_file.name)
+        return []
 
   def PullAppFiles(self, device, files, directory):
     device_dir = device.GetApplicationDataDirectory(self._package)
@@ -215,13 +254,18 @@ class _ApkDelegate(object):
 
 
 class _ExeDelegate(object):
-  def __init__(self, tr, dist_dir, tool):
-    self._host_dist_dir = dist_dir
-    self._exe_file_name = os.path.basename(dist_dir)[:-len('__dist')]
+
+  def __init__(self, tr, test_instance, tool):
+    self._host_dist_dir = test_instance.exe_dist_dir
+    self._exe_file_name = os.path.basename(
+        test_instance.exe_dist_dir)[:-len('__dist')]
     self._device_dist_dir = posixpath.join(
-        constants.TEST_EXECUTABLE_DIR, os.path.basename(dist_dir))
+        constants.TEST_EXECUTABLE_DIR,
+        os.path.basename(test_instance.exe_dist_dir))
     self._test_run = tr
     self._tool = tool
+    self._coverage_dir = test_instance.coverage_dir
+    self._suite = test_instance.suite
 
   def GetTestDataRoot(self, device):
     # pylint: disable=no-self-use
@@ -258,6 +302,14 @@ class _ExeDelegate(object):
       'LD_LIBRARY_PATH': self._device_dist_dir
     }
 
+    if self._coverage_dir:
+      coverage_device_file = device_temp_file.DeviceTempFile(
+          device.adb,
+          suffix='.profraw',
+          prefix=self._suite,
+          dir=device.GetExternalStoragePath())
+      env['LLVM_PROFILE_FILE'] = coverage_device_file.name
+
     if self._tool != 'asan':
       env['UBSAN_OPTIONS'] = constants.UBSAN_OPTIONS
 
@@ -273,6 +325,10 @@ class _ExeDelegate(object):
     # fine from the test runner's perspective; thus check_return=False.
     output = device.RunShellCommand(
         cmd, cwd=cwd, env=env, check_return=False, large_output=True, **kwargs)
+
+    if self._coverage_dir:
+      _PullCoverageFile(device, coverage_device_file, self._coverage_dir)
+
     return output
 
   def PullAppFiles(self, device, files, directory):
@@ -293,8 +349,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
     if self._test_instance.apk:
       self._delegate = _ApkDelegate(self._test_instance, env.tool)
     elif self._test_instance.exe_dist_dir:
-      self._delegate = _ExeDelegate(self, self._test_instance.exe_dist_dir,
-                                    self._env.tool)
+      self._delegate = _ExeDelegate(self, self._test_instance, self._env.tool)
     if self._test_instance.isolated_script_test_perf_output:
       self._test_perf_output_filenames = _GenerateSequentialFileNames(
           self._test_instance.isolated_script_test_perf_output)
@@ -324,6 +379,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         host_device_tuples_substituted = [
             (h, local_device_test_run.SubstituteDeviceRoot(d, device_root))
             for h, d in host_device_tuples]
+        local_device_environment.place_nomedia_on_device(dev, device_root)
         dev.PushChangedFiles(
             host_device_tuples_substituted,
             delete_device_stale=True,
@@ -526,7 +582,8 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
             with logcat_monitor.LogcatMonitor(
                 device.adb,
                 filter_specs=local_device_environment.LOGCAT_FILTERS,
-                output_file=logcat_file.name) as logmon:
+                output_file=logcat_file.name,
+                check_error=False) as logmon:
               with contextlib_ext.Optional(
                   trace_event.trace(str(test)),
                   self._env.trace_output):

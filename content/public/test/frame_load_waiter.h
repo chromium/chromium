@@ -28,7 +28,7 @@ class FrameLoadWaiter : public RenderFrameObserver {
   void DidFinishLoad() override;
   void OnDestruct() override;
 
-  base::RunLoop run_loop_;
+  base::RunLoop run_loop_{base::RunLoop::Type::kNestableTasksAllowed};
   bool did_load_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FrameLoadWaiter);

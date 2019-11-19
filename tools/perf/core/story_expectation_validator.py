@@ -4,15 +4,19 @@
 # found in the LICENSE file.
 """Script to check validity of StoryExpectations."""
 
-import argparse
-import json
+import logging
 import os
+
 
 from core import benchmark_utils
 from core import benchmark_finders
 from core import path_util
 path_util.AddTelemetryToPath()
 path_util.AddAndroidPylibToPath()
+
+from telemetry.story.typ_expectations import SYSTEM_CONDITION_TAGS
+
+from typ import expectations_parser as typ_expectations_parser
 
 
 CLUSTER_TELEMETRY_DIR = os.path.join(
@@ -22,60 +26,72 @@ CLUSTER_TELEMETRY_BENCHMARKS = [
     ct_benchmark.Name() for ct_benchmark in
     benchmark_finders.GetBenchmarksInSubDirectory(CLUSTER_TELEMETRY_DIR)
 ]
+MOBILE_PREFIXES = {'android', 'mobile'}
+DESKTOP_PREFIXES = {
+    'chromeos', 'desktop', 'linux', 'mac', 'win', 'sierra', 'highsierra'}
 
 
-def validate_story_names(benchmarks, raw_expectations_data):
+def is_desktop_tag(tag):
+    return any(tag.lower().startswith(t) for t in DESKTOP_PREFIXES)
+
+
+def is_mobile_tag(tag):
+    return any(tag.lower().startswith(t) for t in MOBILE_PREFIXES)
+
+
+def validate_story_names(benchmarks, test_expectations):
+  stories = []
   for benchmark in benchmarks:
     if benchmark.Name() in CLUSTER_TELEMETRY_BENCHMARKS:
       continue
-    b = benchmark()
-    b.AugmentExpectationsWithParser(raw_expectations_data)
-    story_set = benchmark_utils.GetBenchmarkStorySet(b)
-    failed_stories = b.GetBrokenExpectations(story_set)
-    assert not failed_stories, 'Incorrect story names: %s' % str(failed_stories)
+    story_set = benchmark_utils.GetBenchmarkStorySet(benchmark())
+    stories.extend([benchmark.Name() + '/' + s.name for s in story_set.stories])
+  broken_expectations = test_expectations.check_for_broken_expectations(stories)
+  unused_patterns = ''
+  for pattern in set([e.test for e in broken_expectations]):
+    unused_patterns += ("Expectations with pattern '%s'"
+                        " do not apply to any stories\n" % pattern)
+  assert not unused_patterns, unused_patterns
 
 
-def GetDisabledStories(benchmarks, raw_expectations_data):
-  # Creates a dictionary of the format:
-  # {
-  #   'benchmark_name1' : {
-  #     'story_1': [
-  #       {'conditions': conditions, 'reason': reason},
-  #       ...
-  #     ],
-  #     ...
-  #   },
-  #   ...
-  # }
-  disables = {}
-  for benchmark in benchmarks:
-    name = benchmark.Name()
-    disables[name] = {}
-    b = benchmark()
-    b.AugmentExpectationsWithParser(raw_expectations_data)
-    expectations = b.expectations.AsDict()['stories']
-    for story in expectations:
-      for conditions, reason in  expectations[story]:
-        if not disables[name].get(story):
-          disables[name][story] = []
-          conditions_str = [str(a) for a in conditions]
-        disables[name][story].append((conditions_str, reason))
-  return disables
+def validate_expectations_component_tags(test_expectations):
+  expectations = []
+  for exps in test_expectations.individual_exps.values():
+    expectations.extend(exps)
+  for exps in test_expectations.glob_exps.values():
+    expectations.extend(exps)
+  for e in expectations:
+    if len(e.tags) > 1:
+      has_mobile_tags = any(is_mobile_tag(t) for t in e.tags)
+      has_desktop_tags = any(is_desktop_tag(t) for t in e.tags)
+      assert not (has_mobile_tags and has_desktop_tags), (
+              ("Expectation on %d is mixing "
+               "mobile and desktop condition tags") % e.lineno)
 
 
-def main(args):
-  parser = argparse.ArgumentParser(
-      description=('Tests if disabled stories exist.'))
-  parser.add_argument(
-      '--list', action='store_true', default=False,
-      help=('Prints list of disabled stories.'))
-  options = parser.parse_args(args)
+def validate_tag_declaration_lists(tag_sets):
+  tags_set = set(reduce(lambda x, y: list(x) + list(y), tag_sets))
+  for tag in tags_set:
+    assert tag in SYSTEM_CONDITION_TAGS, (
+        "Tag %s is not in Telemetry's set of allowable condition tags, "
+        "either remove it from expectations.config or add it to Telemetry's "
+        "set of allowable tags." % tag)
+  for tag in SYSTEM_CONDITION_TAGS:
+    assert tag in tags_set, (
+        "Tag %s is not declared in expectations.config, "
+        "please declare it the top of the file" % tag)
+
+
+def main():
   benchmarks = benchmark_finders.GetAllBenchmarks()
   with open(path_util.GetExpectationsPath()) as fp:
     raw_expectations_data = fp.read()
-  if options.list:
-    stories = GetDisabledStories(benchmarks, raw_expectations_data)
-    print json.dumps(stories, sort_keys=True, indent=4, separators=(',', ': '))
-  else:
-    validate_story_names(benchmarks, raw_expectations_data)
+  test_expectations = typ_expectations_parser.TestExpectations()
+  ret, msg = test_expectations.parse_tagged_list(raw_expectations_data)
+  if ret:
+    logging.error(msg)
+    return ret
+  #validate_tag_declaration_lists(test_expectations.tag_sets)
+  validate_story_names(benchmarks, test_expectations)
+  validate_expectations_component_tags(test_expectations)
   return 0

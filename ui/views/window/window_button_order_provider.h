@@ -14,8 +14,8 @@
 namespace views {
 
 // Stores the ordering of window control buttons. Provides a default ordering
-// of |FRAME_BUTTON_MINIMZE|, |FRAME_BUTTON_MAXIMIZE|, |FRAME_BUTTON_CLOSE|,
-// where all controls are on the trailing end of a window.
+// of |kMinimize|, |FrameButton::kMaximize|, |FrameButton::kClose|, where all
+// controls are on the trailing end of a window.
 //
 // On Linux users can provide configuration files to control the ordering. This
 // configuration is checked and overrides the defaults.

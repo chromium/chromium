@@ -45,15 +45,10 @@ config("crc32c_config") {
     defines += [ "HAVE_ARM64_CRC32C=0" ]
   }
 
-  if (is_linux || is_chromeos) {
+  # Android added <sys/auxv.h> in API level 18.
+  if (is_linux || is_chromeos || is_android) {
     defines += [
       "HAVE_STRONG_GETAUXVAL=1",
-      "HAVE_WEAK_GETAUXVAL=1",
-    ]
-  } else if (is_android) {
-    # Android added <sys/auxv.h> in API level 20.
-    defines += [
-      "HAVE_STRONG_GETAUXVAL=0",
       "HAVE_WEAK_GETAUXVAL=1",
     ]
   } else {
@@ -129,6 +124,8 @@ source_set("crc32c_arm64") {
         "-Xclang",
         "+crypto",
       ]
+    } else {
+      cflags = [ "-march=armv8-a+crc+crypto" ]
     }
   }
 

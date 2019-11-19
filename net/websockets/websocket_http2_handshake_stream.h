@@ -177,7 +177,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // to avoid including extension-related header files here.
   std::unique_ptr<WebSocketExtensionParams> extension_params_;
 
-  base::WeakPtrFactory<WebSocketHttp2HandshakeStream> weak_ptr_factory_;
+  base::WeakPtrFactory<WebSocketHttp2HandshakeStream> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebSocketHttp2HandshakeStream);
 };

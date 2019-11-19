@@ -4,16 +4,20 @@
 
 #include "ui/ozone/platform/headless/ozone_platform_headless.h"
 
+#include <memory>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+#include "ui/base/ime/input_method_minimal.h"
+#include "ui/display/types/native_display_delegate.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/platform/platform_event_source.h"
-#include "ui/events/system_input_injector.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
-#include "ui/ozone/platform/headless/headless_native_display_delegate.h"
+#include "ui/ozone/platform/headless/headless_screen.h"
 #include "ui/ozone/platform/headless/headless_surface_factory.h"
 #include "ui/ozone/platform/headless/headless_window.h"
 #include "ui/ozone/platform/headless/headless_window_manager.h"
@@ -22,7 +26,12 @@
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
+#include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/platform_window_init_properties.h"
+
+#if defined(OS_FUCHSIA)
+#include "ui/base/ime/fuchsia/input_method_fuchsia.h"
+#endif
 
 namespace ui {
 
@@ -66,7 +75,7 @@ class OzonePlatformHeadless : public OzonePlatform {
   std::unique_ptr<SystemInputInjector> CreateSystemInputInjector() override {
     return nullptr;  // no input injection support.
   }
-  std::unique_ptr<PlatformWindow> CreatePlatformWindow(
+  std::unique_ptr<PlatformWindowBase> CreatePlatformWindow(
       PlatformWindowDelegate* delegate,
       PlatformWindowInitProperties properties) override {
     return std::make_unique<HeadlessWindow>(delegate, window_manager_.get(),
@@ -74,7 +83,18 @@ class OzonePlatformHeadless : public OzonePlatform {
   }
   std::unique_ptr<display::NativeDisplayDelegate> CreateNativeDisplayDelegate()
       override {
-    return std::make_unique<HeadlessNativeDisplayDelegate>();
+    return nullptr;
+  }
+  std::unique_ptr<PlatformScreen> CreateScreen() override {
+    return std::make_unique<HeadlessScreen>();
+  }
+  std::unique_ptr<InputMethod> CreateInputMethod(
+      internal::InputMethodDelegate* delegate) override {
+#if defined(OS_FUCHSIA)
+    return std::make_unique<InputMethodFuchsia>(delegate);
+#else
+    return std::make_unique<InputMethodMinimal>(delegate);
+#endif
   }
 
   void InitializeUI(const InitParams& params) override {

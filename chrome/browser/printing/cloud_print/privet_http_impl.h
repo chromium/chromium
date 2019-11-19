@@ -36,7 +36,7 @@ class PrivetInfoOperationImpl : public PrivetJSONOperation,
                                 public PrivetURLLoader::Delegate {
  public:
   PrivetInfoOperationImpl(PrivetHTTPClient* privet_client,
-                          const PrivetJSONOperation::ResultCallback& callback);
+                          PrivetJSONOperation::ResultCallback callback);
   ~PrivetInfoOperationImpl() override;
 
   // PrivetJSONOperation:
@@ -138,7 +138,7 @@ class PrivetJSONOperationImpl : public PrivetJSONOperation,
   PrivetJSONOperationImpl(PrivetHTTPClient* privet_client,
                           const std::string& path,
                           const std::string& query_params,
-                          const PrivetJSONOperation::ResultCallback& callback);
+                          PrivetJSONOperation::ResultCallback callback);
   ~PrivetJSONOperationImpl() override;
 
   // PrivetJSONOperation:
@@ -171,7 +171,7 @@ class PrivetLocalPrintOperationImpl : public PrivetLocalPrintOperation,
 
   // PrivetLocalPrintOperation:
   void Start() override;
-  void SetData(const scoped_refptr<base::RefCountedMemory>& data) override;
+  void SetData(scoped_refptr<base::RefCountedMemory> data) override;
   void SetTicket(base::Value ticket) override;
   void SetCapabilities(const std::string& capabilities) override;
   void SetUsername(const std::string& user) override;
@@ -241,7 +241,7 @@ class PrivetLocalPrintOperationImpl : public PrivetLocalPrintOperation,
   std::unique_ptr<PrivetJSONOperation> info_operation_;
   std::unique_ptr<printing::PwgRasterConverter> pwg_raster_converter_;
 
-  base::WeakPtrFactory<PrivetLocalPrintOperationImpl> weak_factory_;
+  base::WeakPtrFactory<PrivetLocalPrintOperationImpl> weak_factory_{this};
 
   static bool run_tasks_immediately_for_testing_;
 };
@@ -258,7 +258,7 @@ class PrivetHTTPClientImpl : public PrivetHTTPClient {
   // PrivetHTTPClient:
   const std::string& GetName() override;
   std::unique_ptr<PrivetJSONOperation> CreateInfoOperation(
-      const PrivetJSONOperation::ResultCallback& callback) override;
+      PrivetJSONOperation::ResultCallback callback) override;
   std::unique_ptr<PrivetURLLoader> CreateURLLoader(
       const GURL& url,
       const std::string& request_type,
@@ -290,12 +290,12 @@ class PrivetV1HTTPClientImpl : public PrivetV1HTTPClient {
   // PrivetV1HTTPClient:
   const std::string& GetName() override;
   std::unique_ptr<PrivetJSONOperation> CreateInfoOperation(
-      const PrivetJSONOperation::ResultCallback& callback) override;
+      PrivetJSONOperation::ResultCallback callback) override;
   std::unique_ptr<PrivetRegisterOperation> CreateRegisterOperation(
       const std::string& user,
       PrivetRegisterOperation::Delegate* delegate) override;
   std::unique_ptr<PrivetJSONOperation> CreateCapabilitiesOperation(
-      const PrivetJSONOperation::ResultCallback& callback) override;
+      PrivetJSONOperation::ResultCallback callback) override;
   std::unique_ptr<PrivetLocalPrintOperation> CreateLocalPrintOperation(
       PrivetLocalPrintOperation::Delegate* delegate) override;
 

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
 
 // Obj-C delegate to receive the success or failure result, when asking credit

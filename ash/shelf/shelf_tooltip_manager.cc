@@ -6,8 +6,8 @@
 
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_tooltip_bubble.h"
+#include "ash/shelf/shelf_tooltip_delegate.h"
 #include "ash/shelf/shelf_tooltip_preview_bubble.h"
-#include "ash/shelf/shelf_view.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "base/bind.h"
@@ -19,7 +19,6 @@
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_animations.h"
 
 namespace ash {
@@ -29,19 +28,15 @@ const int kTooltipAppearanceDelay = 250;  // msec
 
 }  // namespace
 
-ShelfTooltipManager::ShelfTooltipManager(ShelfView* shelf_view)
-    : timer_delay_(kTooltipAppearanceDelay),
-      shelf_view_(shelf_view),
-      weak_factory_(this) {
-  shelf_view_->shelf()->AddObserver(this);
+ShelfTooltipManager::ShelfTooltipManager(Shelf* shelf)
+    : timer_delay_(kTooltipAppearanceDelay), shelf_(shelf) {
+  shelf_->AddObserver(this);
   Shell::Get()->AddPreTargetHandler(this);
 }
 
 ShelfTooltipManager::~ShelfTooltipManager() {
   Shell::Get()->RemovePreTargetHandler(this);
-  shelf_view_->shelf()->RemoveObserver(this);
-  if (shelf_view_->GetWidget() && shelf_view_->GetWidget()->GetNativeWindow())
-    shelf_view_->GetWidget()->GetNativeWindow()->RemovePreTargetHandler(this);
+  shelf_->RemoveObserver(this);
 }
 
 void ShelfTooltipManager::Close(bool animate) {
@@ -74,20 +69,19 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
     return;
 
   const std::vector<aura::Window*> open_windows =
-      shelf_view_->GetOpenWindowsForShelfView(view);
+      shelf_tooltip_delegate_->GetOpenWindowsForView(view);
 
-  const ShelfAlignment alignment = shelf_view_->shelf()->alignment();
+  const ShelfAlignment alignment = shelf_->alignment();
   const SkColor shelf_background_color =
-      shelf_view_->shelf_widget()->GetShelfBackgroundColor();
+      shelf_->shelf_widget()->GetShelfBackgroundColor();
   if (chromeos::switches::ShouldShowShelfHoverPreviews() &&
       open_windows.size() > 0) {
     bubble_ = new ShelfTooltipPreviewBubble(view, open_windows, this, alignment,
                                             shelf_background_color);
   } else {
-    base::string16 title;
-    view->GetTooltipText(gfx::Point(), &title);
     bubble_ =
-        new ShelfTooltipBubble(view, alignment, shelf_background_color, title);
+        new ShelfTooltipBubble(view, alignment, shelf_background_color,
+                               shelf_tooltip_delegate_->GetTitleForView(view));
   }
 
   aura::Window* window = bubble_->GetWidget()->GetNativeWindow();
@@ -119,17 +113,23 @@ void ShelfTooltipManager::OnMouseEvent(ui::MouseEvent* event) {
     return;
   }
 
+  // Happens in tests where mouse events are picked up before
+  // |shelf_tooltip_delegate_| is set.
+  if (!shelf_tooltip_delegate_)
+    return;
+
+  views::View* delegate_view = shelf_tooltip_delegate_->GetViewForEvent(*event);
+
   // The code below handles mouse move events within the shelf window.
-  if (event->type() != ui::ET_MOUSE_MOVED ||
-      event->target() != shelf_view_->GetWidget()->GetNativeWindow()) {
+  if (event->type() != ui::ET_MOUSE_MOVED || !delegate_view) {
     // Don't show delayed tooltips if the mouse is being active elsewhere.
     timer_.Stop();
     return;
   }
 
   gfx::Point point = event->location();
-  views::View::ConvertPointFromWidget(shelf_view_, &point);
-  views::View* view = shelf_view_->GetTooltipHandlerForPoint(point);
+  views::View::ConvertPointFromWidget(delegate_view, &point);
+  views::View* view = delegate_view->GetTooltipHandlerForPoint(point);
   const bool should_show = ShouldShowTooltipForView(view);
 
   timer_.Stop();
@@ -137,13 +137,18 @@ void ShelfTooltipManager::OnMouseEvent(ui::MouseEvent* event) {
     ShowTooltip(view);
   else if (!IsVisible() && should_show)
     ShowTooltipWithDelay(view);
-  else if (IsVisible() && shelf_view_->ShouldHideTooltip(point))
+  else if (IsVisible() && shelf_tooltip_delegate_->ShouldHideTooltip(point))
     Close();
 }
 
 void ShelfTooltipManager::OnTouchEvent(ui::TouchEvent* event) {
   if (bubble_ && event->type() == ui::ET_TOUCH_PRESSED)
     ProcessPressedEvent(*event);
+}
+
+void ShelfTooltipManager::OnScrollEvent(ui::ScrollEvent* event) {
+  // Close any currently shown bubble.
+  Close();
 }
 
 void ShelfTooltipManager::OnKeyEvent(ui::KeyEvent* event) {
@@ -163,12 +168,14 @@ void ShelfTooltipManager::OnAutoHideStateChanged(ShelfAutoHideState new_state) {
 }
 
 bool ShelfTooltipManager::ShouldShowTooltipForView(views::View* view) {
-  Shelf* shelf = shelf_view_ ? shelf_view_->shelf() : nullptr;
-  return shelf && shelf_view_->visible() &&
-         shelf_view_->ShouldShowTooltipForView(view) &&
-         (shelf->GetVisibilityState() == SHELF_VISIBLE ||
-          (shelf->GetVisibilityState() == SHELF_AUTO_HIDE &&
-           shelf->GetAutoHideState() == SHELF_AUTO_HIDE_SHOWN));
+  const bool shelf_visibility =
+      shelf_ && (shelf_->GetVisibilityState() == SHELF_VISIBLE ||
+                 (shelf_->GetVisibilityState() == SHELF_AUTO_HIDE &&
+                  shelf_->GetAutoHideState() == SHELF_AUTO_HIDE_SHOWN));
+
+  if (!shelf_visibility)
+    return false;
+  return shelf_tooltip_delegate_->ShouldShowTooltipForView(view);
 }
 
 void ShelfTooltipManager::ProcessPressedEvent(const ui::LocatedEvent& event) {

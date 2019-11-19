@@ -17,8 +17,9 @@ cr.define('gcmInternals', function() {
    */
   function setIfExists(info, prop, elementId) {
     var element = $(elementId);
-    if (!element)
+    if (!element) {
       return;
+    }
 
     if (info[prop] !== undefined) {
       element.textContent = info[prop];
@@ -127,8 +128,9 @@ cr.define('gcmInternals', function() {
   function handleKeyPress(event) {
     var PHRASE = 'secret';
     if (PHRASE.charCodeAt(keyPressState) === event.keyCode) {
-      if (++keyPressState < PHRASE.length)
+      if (++keyPressState < PHRASE.length) {
         return;
+      }
 
       $('android-secret-container').classList.remove('invisible');
     }
@@ -144,12 +146,14 @@ cr.define('gcmInternals', function() {
    */
   function refreshLogTable(tableId, data) {
     var element = $(tableId);
-    if (!element)
+    if (!element) {
       return;
+    }
 
     removeAllChildNodes(element);
-    if (data !== undefined)
+    if (data !== undefined) {
       addRows(element, data);
+    }
   }
 
   /**
@@ -158,10 +162,11 @@ cr.define('gcmInternals', function() {
    */
   function setGcmInternalsInfo(infos) {
     isRecording = infos.isRecording;
-    if (isRecording)
+    if (isRecording) {
       $('recording').textContent = 'Stop Recording';
-    else
+    } else {
       $('recording').textContent = 'Start Recording';
+    }
     $('recording').disabled = false;
     if (infos.deviceInfo !== undefined) {
       displayDeviceInfo(infos.deviceInfo);

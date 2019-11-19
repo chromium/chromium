@@ -3,7 +3,6 @@
 <title>Canvas test: drawSystemFocusRing</title>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body style="padding: 0; margin: 0">
 <canvas id="canvas" class="output" width="300" height="350">
@@ -14,7 +13,7 @@
 </canvas>
 <div id="console"></div>
 <script>
-test_after_layout_and_paint((t) => {
+test((t) => {
     axButton1 = accessibilityController.accessibleElementById("button1");
     axContainer = accessibilityController.accessibleElementById("container");
     axButton2 = accessibilityController.accessibleElementById("button2");

@@ -7,12 +7,13 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <memory>
-#include <set>
 #include <tuple>
 #include <utility>
+#include <vector>
 
+#include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -28,17 +29,15 @@ namespace content {
 
 class IndexedDBBackingStore;
 struct IndexedDBPendingConnection;
-struct IndexedDBDataLossInfo;
 
-class CONTENT_EXPORT IndexedDBFactory
-    : public base::RefCountedThreadSafe<IndexedDBFactory> {
+// TODO(dmurph): Remove this interface.
+class CONTENT_EXPORT IndexedDBFactory {
  public:
-  typedef std::multimap<url::Origin, IndexedDBDatabase*> OriginDBMap;
-  typedef OriginDBMap::const_iterator OriginDBMapIterator;
-  typedef std::pair<OriginDBMapIterator, OriginDBMapIterator> OriginDBs;
+  virtual ~IndexedDBFactory() = default;
 
-  virtual void ReleaseDatabase(const IndexedDBDatabase::Identifier& identifier,
-                               bool forced_close) = 0;
+  using OriginDBMap =
+      base::flat_map<base::string16, std::unique_ptr<IndexedDBDatabase>>;
+
   virtual void GetDatabaseInfo(scoped_refptr<IndexedDBCallbacks> callbacks,
                                const url::Origin& origin,
                                const base::FilePath& data_directory) = 0;
@@ -70,7 +69,7 @@ class CONTENT_EXPORT IndexedDBFactory
       const url::Origin& origin,
       const IndexedDBDatabaseError& error) = 0;
 
-  virtual OriginDBs GetOpenDatabasesForOrigin(
+  virtual std::vector<IndexedDBDatabase*> GetOpenDatabasesForOrigin(
       const url::Origin& origin) const = 0;
 
   // Close all connections to all databases within the origin. If
@@ -79,6 +78,7 @@ class CONTENT_EXPORT IndexedDBFactory
   // the lifetime of the factory).
   virtual void ForceClose(const url::Origin& origin,
                           bool delete_in_memory_store = false) = 0;
+
   virtual void ForceSchemaDowngrade(const url::Origin& origin) = 0;
   virtual V2SchemaCorruptionStatus HasV2SchemaCorruption(
       const url::Origin& origin) = 0;
@@ -89,10 +89,6 @@ class CONTENT_EXPORT IndexedDBFactory
   // Called by the IndexedDBActiveBlobRegistry.
   virtual void ReportOutstandingBlobs(const url::Origin& origin,
                                       bool blobs_outstanding) = 0;
-
-  // Called by an IndexedDBDatabase when it is actually deleted.
-  virtual void DatabaseDeleted(
-      const IndexedDBDatabase::Identifier& identifier) = 0;
 
   // Called by IndexedDBBackingStore when blob files have been cleaned.
   virtual void BlobFilesCleaned(const url::Origin& origin) = 0;
@@ -109,17 +105,7 @@ class CONTENT_EXPORT IndexedDBFactory
       const base::string16& object_store_name) = 0;
 
  protected:
-  friend class base::RefCountedThreadSafe<IndexedDBFactory>;
-
   IndexedDBFactory() {}
-  virtual ~IndexedDBFactory() {}
-
-  virtual std::tuple<scoped_refptr<IndexedDBBackingStore>,
-                     leveldb::Status,
-                     IndexedDBDataLossInfo,
-                     bool /* disk_full */>
-  OpenBackingStore(const url::Origin& origin,
-                   const base::FilePath& data_directory) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(IndexedDBFactory);

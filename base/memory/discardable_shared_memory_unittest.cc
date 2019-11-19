@@ -150,6 +150,23 @@ TEST(DiscardableSharedMemoryTest, Purge) {
   ASSERT_FALSE(memory2.IsMemoryResident());
 }
 
+TEST(DiscardableSharedMemoryTest, PurgeAfterClose) {
+  const uint32_t kDataSize = 1024;
+
+  TestDiscardableSharedMemory memory;
+  bool rv = memory.CreateAndMap(kDataSize);
+  ASSERT_TRUE(rv);
+
+  // Unlock things so we can Purge().
+  memory.SetNow(Time::FromDoubleT(2));
+  memory.Unlock(0, 0);
+
+  // It should be safe to Purge() |memory| after Close()ing the handle.
+  memory.Close();
+  rv = memory.Purge(Time::FromDoubleT(4));
+  EXPECT_TRUE(rv);
+}
+
 TEST(DiscardableSharedMemoryTest, LastUsed) {
   const uint32_t kDataSize = 1024;
 

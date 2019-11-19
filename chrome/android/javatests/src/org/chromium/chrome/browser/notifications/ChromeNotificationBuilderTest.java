@@ -45,7 +45,7 @@ public class ChromeNotificationBuilderTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         // Let's leave things in a clean state.
         mNotificationManager.cancelAll();
     }

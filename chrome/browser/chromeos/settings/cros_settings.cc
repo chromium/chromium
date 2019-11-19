@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/settings/device_settings_provider.h"
 #include "chrome/browser/chromeos/settings/device_settings_service.h"
+#include "chrome/browser/chromeos/settings/supervised_user_cros_settings_provider.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/system_settings_provider.h"
@@ -97,6 +98,11 @@ CrosSettings::CrosSettings(DeviceSettingsService* device_settings_service,
                  // This is safe since |this| is never deleted.
                  base::Unretained(this)));
 
+  auto supervised_user_cros_provider =
+      std::make_unique<SupervisedUserCrosSettingsProvider>(notify_cb);
+  supervised_user_cros_settings_provider_ = supervised_user_cros_provider.get();
+
+  AddSettingsProvider(std::move(supervised_user_cros_provider));
   AddSettingsProvider(std::make_unique<DeviceSettingsProvider>(
       notify_cb, device_settings_service, local_state));
   AddSettingsProvider(std::make_unique<SystemSettingsProvider>(notify_cb));
@@ -109,14 +115,6 @@ CrosSettings::~CrosSettings() {
 bool CrosSettings::IsCrosSettings(const std::string& path) {
   return base::StartsWith(path, kCrosSettingsPrefix,
                           base::CompareCase::SENSITIVE);
-}
-
-void CrosSettings::Set(const std::string& path, const base::Value& in_value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CrosSettingsProvider* provider;
-  provider = GetProvider(path);
-  if (provider)
-    provider->Set(path, in_value);
 }
 
 const base::Value* CrosSettings::GetPref(const std::string& path) const {
@@ -138,52 +136,6 @@ CrosSettingsProvider::TrustedStatus CrosSettings::PrepareTrustedValues(
       return status;
   }
   return CrosSettingsProvider::TRUSTED;
-}
-
-void CrosSettings::SetBoolean(const std::string& path, bool in_value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value value(in_value);
-  Set(path, value);
-}
-
-void CrosSettings::SetInteger(const std::string& path, int in_value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value value(in_value);
-  Set(path, value);
-}
-
-void CrosSettings::SetDouble(const std::string& path, double in_value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value value(in_value);
-  Set(path, value);
-}
-
-void CrosSettings::SetString(const std::string& path,
-                             const std::string& in_value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::Value value(in_value);
-  Set(path, value);
-}
-
-void CrosSettings::AppendToList(const std::string& path,
-                                const base::Value* value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value* old_value = GetPref(path);
-  std::unique_ptr<base::Value> new_value(old_value ? old_value->DeepCopy()
-                                                   : new base::ListValue());
-  static_cast<base::ListValue*>(new_value.get())
-      ->Append(value->CreateDeepCopy());
-  Set(path, *new_value);
-}
-
-void CrosSettings::RemoveFromList(const std::string& path,
-                                  const base::Value* value) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const base::Value* old_value = GetPref(path);
-  std::unique_ptr<base::Value> new_value(old_value ? old_value->DeepCopy()
-                                                   : new base::ListValue());
-  static_cast<base::ListValue*>(new_value.get())->Remove(*value, nullptr);
-  Set(path, *new_value);
 }
 
 bool CrosSettings::GetBoolean(const std::string& path,

@@ -11,7 +11,7 @@
 #include "base/optional.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/fake_read_response.h"
 
 namespace bluetooth {
@@ -57,18 +57,18 @@ class FakeRemoteGattDescriptor : public device::BluetoothRemoteGattDescriptor {
   // device::BluetoothRemoteGattDescriptor overrides:
   const std::vector<uint8_t>& GetValue() const override;
   device::BluetoothRemoteGattCharacteristic* GetCharacteristic() const override;
-  void ReadRemoteDescriptor(const ValueCallback& callback,
-                            const ErrorCallback& error_callback) override;
+  void ReadRemoteDescriptor(ValueCallback callback,
+                            ErrorCallback error_callback) override;
   void WriteRemoteDescriptor(const std::vector<uint8_t>& value,
-                             const base::RepeatingClosure& callback,
-                             const ErrorCallback& error_callback) override;
+                             base::OnceClosure callback,
+                             ErrorCallback error_callback) override;
 
  private:
-  void DispatchReadResponse(const ValueCallback& callback,
-                            const ErrorCallback& error_callback);
+  void DispatchReadResponse(ValueCallback callback,
+                            ErrorCallback error_callback);
 
-  void DispatchWriteResponse(const base::RepeatingClosure& callback,
-                             const ErrorCallback& error_callback,
+  void DispatchWriteResponse(base::OnceClosure callback,
+                             ErrorCallback error_callback,
                              const std::vector<uint8_t>& value);
 
   const std::string descriptor_id_;
@@ -87,7 +87,7 @@ class FakeRemoteGattDescriptor : public device::BluetoothRemoteGattDescriptor {
   // is called.
   base::Optional<uint16_t> next_write_response_;
 
-  base::WeakPtrFactory<FakeRemoteGattDescriptor> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeRemoteGattDescriptor> weak_ptr_factory_{this};
 };
 
 }  // namespace bluetooth

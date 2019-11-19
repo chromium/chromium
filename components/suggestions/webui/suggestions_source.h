@@ -40,7 +40,7 @@ class SuggestionsSource {
   const std::string base_url_;
 
   // For callbacks may be run after destruction.
-  base::WeakPtrFactory<SuggestionsSource> weak_ptr_factory_;
+  base::WeakPtrFactory<SuggestionsSource> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SuggestionsSource);
 };

@@ -53,10 +53,9 @@ void MacCoordinateConversionTest::SetUp() {
   EXPECT_EQ(0, primary_screen_frame.origin.x);
   EXPECT_EQ(0, primary_screen_frame.origin.y);
 
-  swizzle_frame_.reset(new base::mac::ScopedObjCClassSwizzler(
-      [NSScreen class],
-      [MacCoordinateConversionTestScreenDonor class],
-      @selector(frame)));
+  swizzle_frame_ = std::make_unique<base::mac::ScopedObjCClassSwizzler>(
+      [NSScreen class], [MacCoordinateConversionTestScreenDonor class],
+      @selector(frame));
 
   primary_screen_frame = [[[NSScreen screens] firstObject] frame];
   EXPECT_EQ(kTestWidth, primary_screen_frame.size.width);

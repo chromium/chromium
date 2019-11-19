@@ -20,15 +20,9 @@ namespace features {
 extern const base::Feature kDoubleTapToZoomInTabletMode;
 #endif
 
-#if !defined(OS_ANDROID)
-extern const base::Feature kWebUIDarkMode;
-#endif
-
-extern const base::Feature kTabGroups;
-
-extern const base::Feature kTabHoverCards;
-
-extern const base::Feature kTabHoverCardImages;
+#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
+extern const base::Feature kSyncClipboardServiceFeature;
+#endif  // OS_WIN || OS_MACOSX || OS_LINUX
 
 }  // namespace features
 

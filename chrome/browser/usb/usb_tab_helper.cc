@@ -7,8 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/usb/web_usb_service_impl.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -19,6 +17,8 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/usb/web_usb_chooser_android.h"
 #else
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/usb/web_usb_chooser_desktop.h"
 #endif  // defined(OS_ANDROID)
 
@@ -55,7 +55,7 @@ UsbTabHelper::~UsbTabHelper() {}
 
 void UsbTabHelper::CreateWebUsbService(
     RenderFrameHost* render_frame_host,
-    mojo::InterfaceRequest<blink::mojom::WebUsbService> request) {
+    mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
   if (!AllowedByFeaturePolicy(render_frame_host)) {
     mojo::ReportBadMessage(kFeaturePolicyViolation);
     return;
@@ -66,7 +66,7 @@ void UsbTabHelper::CreateWebUsbService(
     frame_usb_services->web_usb_service.reset(new WebUsbServiceImpl(
         render_frame_host, GetUsbChooser(render_frame_host)));
   }
-  frame_usb_services->web_usb_service->BindRequest(std::move(request));
+  frame_usb_services->web_usb_service->BindReceiver(std::move(receiver));
 }
 
 void UsbTabHelper::IncrementConnectionCount(

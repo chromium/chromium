@@ -8,8 +8,10 @@
 
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/mojom/sensor.mojom-blink.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/platform_event_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_data.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_sensor_entry.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -56,6 +58,22 @@ DeviceOrientationEventPump::DeviceOrientationEventPump(
 
 DeviceOrientationEventPump::~DeviceOrientationEventPump() = default;
 
+void DeviceOrientationEventPump::SetController(
+    PlatformEventController* controller) {
+  DCHECK(controller);
+  DCHECK(!controller_);
+
+  controller_ = controller;
+  StartListening(controller_->GetDocument()
+                     ? controller_->GetDocument()->GetFrame()
+                     : nullptr);
+}
+
+void DeviceOrientationEventPump::RemoveController() {
+  controller_ = nullptr;
+  StopListening();
+}
+
 DeviceOrientationData*
 DeviceOrientationEventPump::LatestDeviceOrientationData() {
   return data_.Get();
@@ -65,7 +83,7 @@ void DeviceOrientationEventPump::Trace(blink::Visitor* visitor) {
   visitor->Trace(relative_orientation_sensor_);
   visitor->Trace(absolute_orientation_sensor_);
   visitor->Trace(data_);
-  PlatformEventDispatcher::Trace(visitor);
+  visitor->Trace(controller_);
 }
 
 void DeviceOrientationEventPump::StartListening(LocalFrame* frame) {
@@ -79,9 +97,9 @@ void DeviceOrientationEventPump::SendStartMessage(LocalFrame* frame) {
   if (!sensor_provider_) {
     DCHECK(frame);
 
-    frame->GetInterfaceProvider().GetInterface(
-        mojo::MakeRequest(&sensor_provider_));
-    sensor_provider_.set_connection_error_handler(
+    frame->GetBrowserInterfaceBroker().GetInterface(
+        sensor_provider_.BindNewPipeAndPassReceiver());
+    sensor_provider_.set_disconnect_handler(
         WTF::Bind(&DeviceSensorEventPump::HandleSensorProviderError,
                   WrapWeakPersistent(this)));
   }
@@ -130,12 +148,17 @@ void DeviceOrientationEventPump::SendStopMessage() {
   data_ = nullptr;
 }
 
+void DeviceOrientationEventPump::NotifyController() {
+  DCHECK(controller_);
+  controller_->DidUpdateData();
+}
+
 void DeviceOrientationEventPump::FireEvent(TimerBase*) {
   DeviceOrientationData* data = GetDataFromSharedMemory();
 
   if (ShouldFireEvent(data)) {
     data_ = data;
-    NotifyControllers();
+    NotifyController();
   }
 }
 

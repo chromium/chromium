@@ -4,7 +4,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "jni/RecordCastAction_jni.h"
+#include "chrome/android/chrome_jni_headers/RecordCastAction_jni.h"
 #include "media/base/container_names.h"
 
 using base::android::JavaParamRef;

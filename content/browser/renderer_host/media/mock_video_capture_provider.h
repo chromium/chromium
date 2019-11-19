@@ -35,7 +35,7 @@ class MockVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
 
   MOCK_METHOD7(DoLaunchDeviceAsync,
                void(const std::string& device_id,
-                    blink::MediaStreamType stream_type,
+                    blink::mojom::MediaStreamType stream_type,
                     const media::VideoCaptureParams& params,
                     base::WeakPtr<media::VideoFrameReceiver>* receiver,
                     base::OnceClosure* connection_lost_cb,
@@ -45,7 +45,7 @@ class MockVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
   MOCK_METHOD0(AbortLaunch, void());
 
   void LaunchDeviceAsync(const std::string& device_id,
-                         blink::MediaStreamType stream_type,
+                         blink::mojom::MediaStreamType stream_type,
                          const media::VideoCaptureParams& params,
                          base::WeakPtr<media::VideoFrameReceiver> receiver,
                          base::OnceClosure connection_lost_cb,
@@ -78,8 +78,8 @@ class MockLaunchedVideoCaptureDevice : public LaunchedVideoCaptureDevice {
   MOCK_METHOD2(OnUtilizationReport,
                void(int frame_feedback_id, double utilization));
 
-  void GetPhotoState(media::VideoCaptureDevice::GetPhotoStateCallback callback)
-      const override {
+  void GetPhotoState(
+      media::VideoCaptureDevice::GetPhotoStateCallback callback) override {
     DoGetPhotoState(&callback);
   }
 

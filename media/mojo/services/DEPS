@@ -1,6 +1,6 @@
 specific_include_rules = {
   "media_manifest\.cc": [
     "+chromecast/common/mojom",
-  ]
+  ],
 }
 

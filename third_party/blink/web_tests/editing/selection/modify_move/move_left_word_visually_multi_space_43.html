@@ -1,0 +1,158 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">|人一氧喝大    笑抬的     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">|人一氧喝大    笑抬的     abc def</div>',
+  '43-0 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人|一氧喝大    笑抬的     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">|人一氧喝大    笑抬的     abc def</div>',
+  '43-1 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一|氧喝大    笑抬的     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人|一氧喝大    笑抬的     abc def</div>',
+  '43-2 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧|喝大    笑抬的     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一|氧喝大    笑抬的     abc def</div>',
+  '43-3 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝|大    笑抬的     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧|喝大    笑抬的     abc def</div>',
+  '43-4 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大|    笑抬的     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝|大    笑抬的     abc def</div>',
+  '43-5 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大 |   笑抬的     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝|大    笑抬的     abc def</div>',
+  '43-6 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大  |  笑抬的     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝|大    笑抬的     abc def</div>',
+  '43-7 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大   | 笑抬的     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝|大    笑抬的     abc def</div>',
+  '43-8 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    |笑抬的     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝|大    笑抬的     abc def</div>',
+  '43-9 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑|抬的     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    |笑抬的     abc def</div>',
+  '43-10 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬|的     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑|抬的     abc def</div>',
+  '43-11 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的|     abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬|的     abc def</div>',
+  '43-12 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的 |    abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬|的     abc def</div>',
+  '43-13 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的  |   abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬|的     abc def</div>',
+  '43-14 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的   |  abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬|的     abc def</div>',
+  '43-15 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的    | abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬|的     abc def</div>',
+  '43-16 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     |abc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬|的     abc def</div>',
+  '43-17 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     a|bc def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     |abc def</div>',
+  '43-18 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     ab|c def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     |abc def</div>',
+  '43-19 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     abc| def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     |abc def</div>',
+  '43-20 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     abc |def</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     |abc def</div>',
+  '43-21 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     abc d|ef</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     abc |def</div>',
+  '43-22 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     abc de|f</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     abc |def</div>',
+  '43-23 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     abc def|</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">人一氧喝大    笑抬的     abc |def</div>',
+  '43-24 left word');
+</script>

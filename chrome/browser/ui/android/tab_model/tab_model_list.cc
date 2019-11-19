@@ -59,7 +59,9 @@ void TabModelList::HandlePopupNavigation(NavigateParams* params) {
 
   // NOTE: If this fails contact dtrainor@.
   DCHECK(tab);
-  tab->HandlePopupNavigation(params);
+  TabModel* model = FindTabModelWithId(tab->window_id());
+  if (model)
+    model->HandlePopupNavigation(tab, params);
 }
 
 TabModel* TabModelList::GetTabModelForWebContents(

@@ -10,9 +10,7 @@ namespace feature_engagement {
 
 InitAwareEventModel::InitAwareEventModel(
     std::unique_ptr<EventModel> event_model)
-    : event_model_(std::move(event_model)),
-      initialization_complete_(false),
-      weak_ptr_factory_(this) {
+    : event_model_(std::move(event_model)), initialization_complete_(false) {
   DCHECK(event_model_);
 }
 

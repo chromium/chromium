@@ -11,7 +11,7 @@ namespace blink {
 
 MediaControlButtonPanelElement::MediaControlButtonPanelElement(
     MediaControlsImpl& media_controls)
-    : MediaControlDivElement(media_controls, kMediaIgnore) {
+    : MediaControlDivElement(media_controls) {
   SetShadowPseudoId(AtomicString("-internal-media-controls-button-panel"));
 }
 

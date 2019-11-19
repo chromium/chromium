@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 3: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-property.pl?clutter=5xyzblah&q=%22%20onload=alert(1)-%22' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-

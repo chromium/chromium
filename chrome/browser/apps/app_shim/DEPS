@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "app_shim_listener_browsertest_mac.mm": [
+    "+chrome/app_shim/app_shim_controller.h",
+  ],
+  "mach_bootstrap_acceptor_unittest.mm": [
+    "+chrome/app_shim/app_shim_controller.h",
+  ],
+}

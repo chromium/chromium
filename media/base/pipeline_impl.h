@@ -13,6 +13,7 @@
 #include "base/threading/thread_checker.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline.h"
+#include "media/base/renderer.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -21,6 +22,11 @@ class SingleThreadTaskRunner;
 namespace media {
 
 class MediaLog;
+
+// Callbacks used for Renderer creation.
+using CreateRendererCB = base::RepeatingCallback<std::unique_ptr<Renderer>()>;
+using RendererCreatedCB = base::OnceCallback<void(std::unique_ptr<Renderer>)>;
+using AsyncCreateRendererCB = base::RepeatingCallback<void(RendererCreatedCB)>;
 
 // Pipeline runs the media pipeline.  Filters are created and called on the
 // task runner injected into this object. Pipeline works like a state
@@ -68,25 +74,23 @@ class MediaLog;
 // Some annoying differences between the two paths need to be removed first.
 class MEDIA_EXPORT PipelineImpl : public Pipeline {
  public:
-  // Constructs a media pipeline that will execute media tasks on
-  // |media_task_runner|.
+  // Constructs a pipeline that will execute media tasks on |media_task_runner|.
+  // |create_renderer_cb|: to create renderers when starting and resuming.
   PipelineImpl(scoped_refptr<base::SingleThreadTaskRunner> media_task_runner,
                scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+               CreateRendererCB create_renderer_cb,
                MediaLog* media_log);
   ~PipelineImpl() override;
 
   // Pipeline implementation.
   void Start(StartType start_type,
              Demuxer* demuxer,
-             std::unique_ptr<Renderer> renderer,
              Client* client,
              const PipelineStatusCB& seek_cb) override;
   void Stop() override;
   void Seek(base::TimeDelta time, const PipelineStatusCB& seek_cb) override;
   void Suspend(const PipelineStatusCB& suspend_cb) override;
-  void Resume(std::unique_ptr<Renderer> renderer,
-              base::TimeDelta time,
-              const PipelineStatusCB& seek_cb) override;
+  void Resume(base::TimeDelta time, const PipelineStatusCB& seek_cb) override;
   bool IsRunning() const override;
   bool IsSuspended() const override;
   double GetPlaybackRate() const override;
@@ -98,8 +102,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   base::TimeDelta GetMediaDuration() const override;
   bool DidLoadingProgress() override;
   PipelineStatistics GetStatistics() const override;
-  void SetCdm(CdmContext* cdm_context,
-              const CdmAttachedCB& cdm_attached_cb) override;
+  void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) override;
 
   // |enabled_track_ids| contains track ids of enabled audio tracks.
   void OnEnabledAudioTracksChanged(
@@ -132,11 +135,16 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   };
   static const char* GetStateString(State state);
 
+  // Create a Renderer asynchronously. Must be called on the main task runner
+  // and the callback will be called on the main task runner as well.
+  void AsyncCreateRenderer(RendererCreatedCB renderer_created_cb);
+
   // Notifications from RendererWrapper.
   void OnError(PipelineStatus error);
   void OnEnded();
-  void OnMetadata(PipelineMetadata metadata);
-  void OnBufferingStateChange(BufferingState state);
+  void OnMetadata(const PipelineMetadata& metadata);
+  void OnBufferingStateChange(BufferingState state,
+                              BufferingStateChangeReason reason);
   void OnDurationChange(base::TimeDelta duration);
   void OnWaiting(WaitingReason reason);
   void OnAudioConfigChange(const AudioDecoderConfig& config);
@@ -144,8 +152,8 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   void OnVideoNaturalSizeChange(const gfx::Size& size);
   void OnVideoOpacityChange(bool opaque);
   void OnVideoAverageKeyframeDistanceUpdate();
-  void OnAudioDecoderChange(const std::string& name);
-  void OnVideoDecoderChange(const std::string& name);
+  void OnAudioDecoderChange(const PipelineDecoderInfo& info);
+  void OnVideoDecoderChange(const PipelineDecoderInfo& info);
   void OnRemotePlayStateChange(MediaStatus::State state);
 
   // Task completion callbacks from RendererWrapper.
@@ -154,6 +162,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
 
   // Parameters passed in the constructor.
   const scoped_refptr<base::SingleThreadTaskRunner> media_task_runner_;
+  CreateRendererCB create_renderer_cb_;
   MediaLog* const media_log_;
 
   // Pipeline client. Valid only while the pipeline is running.
@@ -194,7 +203,7 @@ class MEDIA_EXPORT PipelineImpl : public Pipeline {
   bool is_suspended_;
 
   base::ThreadChecker thread_checker_;
-  base::WeakPtrFactory<PipelineImpl> weak_factory_;
+  base::WeakPtrFactory<PipelineImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PipelineImpl);
 };

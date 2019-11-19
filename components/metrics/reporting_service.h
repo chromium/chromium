@@ -139,7 +139,7 @@ class ReportingService {
   // Weak pointers factory used to post task on different threads. All weak
   // pointers managed by this factory have the same lifetime as
   // ReportingService.
-  base::WeakPtrFactory<ReportingService> self_ptr_factory_;
+  base::WeakPtrFactory<ReportingService> self_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ReportingService);
 };

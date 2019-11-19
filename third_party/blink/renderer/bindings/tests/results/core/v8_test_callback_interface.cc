@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_test_interface_empty.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
 
@@ -58,6 +59,11 @@ v8::Maybe<void> V8TestCallbackInterface::voidMethod(bindings::V8ValueOrScriptWra
   // step: Prepare to run a callback with stored settings.
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
+
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<void>();
+  }
 
   v8::Local<v8::Function> function;
   if (IsCallbackObjectCallable()) {
@@ -161,6 +167,11 @@ v8::Maybe<bool> V8TestCallbackInterface::booleanMethod(bindings::V8ValueOrScript
   // step: Prepare to run a callback with stored settings.
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
+
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<bool>();
+  }
 
   v8::Local<v8::Function> function;
   if (IsCallbackObjectCallable()) {
@@ -277,6 +288,11 @@ v8::Maybe<void> V8TestCallbackInterface::voidMethodBooleanArg(bindings::V8ValueO
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
 
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<void>();
+  }
+
   v8::Local<v8::Function> function;
   if (IsCallbackObjectCallable()) {
     // step 9.1. If value's interface is a single operation callback interface
@@ -384,6 +400,11 @@ v8::Maybe<void> V8TestCallbackInterface::voidMethodSequenceArg(bindings::V8Value
   // step: Prepare to run a callback with stored settings.
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
+
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<void>();
+  }
 
   v8::Local<v8::Function> function;
   if (IsCallbackObjectCallable()) {
@@ -493,6 +514,11 @@ v8::Maybe<void> V8TestCallbackInterface::voidMethodFloatArg(bindings::V8ValueOrS
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
 
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<void>();
+  }
+
   v8::Local<v8::Function> function;
   if (IsCallbackObjectCallable()) {
     // step 9.1. If value's interface is a single operation callback interface
@@ -601,6 +627,11 @@ v8::Maybe<void> V8TestCallbackInterface::voidMethodTestInterfaceEmptyArg(binding
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
 
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<void>();
+  }
+
   v8::Local<v8::Function> function;
   if (IsCallbackObjectCallable()) {
     // step 9.1. If value's interface is a single operation callback interface
@@ -708,6 +739,11 @@ v8::Maybe<void> V8TestCallbackInterface::voidMethodTestInterfaceEmptyStringArg(b
   // step: Prepare to run a callback with stored settings.
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
+
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<void>();
+  }
 
   v8::Local<v8::Function> function;
   if (IsCallbackObjectCallable()) {
@@ -818,6 +854,11 @@ v8::Maybe<void> V8TestCallbackInterface::callbackWithThisValueVoidMethodStringAr
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
 
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<void>();
+  }
+
   v8::Local<v8::Function> function;
   if (IsCallbackObjectCallable()) {
     // step 9.1. If value's interface is a single operation callback interface
@@ -926,6 +967,11 @@ v8::Maybe<void> V8TestCallbackInterface::customVoidMethodTestInterfaceEmptyArg(b
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
 
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<void>();
+  }
+
   v8::Local<v8::Function> function;
   if (IsCallbackObjectCallable()) {
     // step 9.1. If value's interface is a single operation callback interface
@@ -998,51 +1044,6 @@ v8::Maybe<void> V8TestCallbackInterface::customVoidMethodTestInterfaceEmptyArg(b
   // step: Set completion to the result of converting callResult.[[Value]] to
   //   an IDL value of the same type as the operation's return type.
   return v8::JustVoid();
-}
-
-v8::Maybe<void> V8PersistentCallbackInterface<V8TestCallbackInterface>::voidMethod(bindings::V8ValueOrScriptWrappableAdapter callback_this_value) {
-  return Proxy()->voidMethod(
-      callback_this_value);
-}
-
-v8::Maybe<bool> V8PersistentCallbackInterface<V8TestCallbackInterface>::booleanMethod(bindings::V8ValueOrScriptWrappableAdapter callback_this_value) {
-  return Proxy()->booleanMethod(
-      callback_this_value);
-}
-
-v8::Maybe<void> V8PersistentCallbackInterface<V8TestCallbackInterface>::voidMethodBooleanArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, bool boolArg) {
-  return Proxy()->voidMethodBooleanArg(
-      callback_this_value, boolArg);
-}
-
-v8::Maybe<void> V8PersistentCallbackInterface<V8TestCallbackInterface>::voidMethodSequenceArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, const HeapVector<Member<TestInterfaceEmpty>>& sequenceArg) {
-  return Proxy()->voidMethodSequenceArg(
-      callback_this_value, sequenceArg);
-}
-
-v8::Maybe<void> V8PersistentCallbackInterface<V8TestCallbackInterface>::voidMethodFloatArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, float floatArg) {
-  return Proxy()->voidMethodFloatArg(
-      callback_this_value, floatArg);
-}
-
-v8::Maybe<void> V8PersistentCallbackInterface<V8TestCallbackInterface>::voidMethodTestInterfaceEmptyArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, TestInterfaceEmpty* testInterfaceEmptyArg) {
-  return Proxy()->voidMethodTestInterfaceEmptyArg(
-      callback_this_value, testInterfaceEmptyArg);
-}
-
-v8::Maybe<void> V8PersistentCallbackInterface<V8TestCallbackInterface>::voidMethodTestInterfaceEmptyStringArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, TestInterfaceEmpty* testInterfaceEmptyArg, const String& stringArg) {
-  return Proxy()->voidMethodTestInterfaceEmptyStringArg(
-      callback_this_value, testInterfaceEmptyArg, stringArg);
-}
-
-v8::Maybe<void> V8PersistentCallbackInterface<V8TestCallbackInterface>::callbackWithThisValueVoidMethodStringArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, const String& stringArg) {
-  return Proxy()->callbackWithThisValueVoidMethodStringArg(
-      callback_this_value, stringArg);
-}
-
-v8::Maybe<void> V8PersistentCallbackInterface<V8TestCallbackInterface>::customVoidMethodTestInterfaceEmptyArg(bindings::V8ValueOrScriptWrappableAdapter callback_this_value, TestInterfaceEmpty* testInterfaceEmptyArg) {
-  return Proxy()->customVoidMethodTestInterfaceEmptyArg(
-      callback_this_value, testInterfaceEmptyArg);
 }
 
 }  // namespace blink

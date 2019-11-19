@@ -7,7 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "ios/web/public/url_data_source_ios.h"
+#include "ios/web/public/webui/url_data_source_ios.h"
 
 namespace web {
 
@@ -22,7 +22,6 @@ class SharedResourcesDataSourceIOS : public URLDataSourceIOS {
       const std::string& path,
       const URLDataSourceIOS::GotDataCallback& callback) override;
   std::string GetMimeType(const std::string& path) const override;
-  bool IsGzipped(const std::string& path) const override;
 
  private:
   ~SharedResourcesDataSourceIOS() override;

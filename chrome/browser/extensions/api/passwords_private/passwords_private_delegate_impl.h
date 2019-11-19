@@ -44,9 +44,7 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   ~PasswordsPrivateDelegateImpl() override;
 
   // PasswordsPrivateDelegate implementation.
-  void SendSavedPasswordsList() override;
   void GetSavedPasswordsList(UiEntriesCallback callback) override;
-  void SendPasswordExceptionsList() override;
   void GetPasswordExceptionsList(
       const ExceptionEntriesCallback& callback) override;
   void ChangeSavedPassword(
@@ -98,6 +96,9 @@ class PasswordsPrivateDelegateImpl : public PasswordsPrivateDelegate,
   // Executes a given callback by either invoking it immediately if the class
   // has been initialized or by deferring it until initialization has completed.
   void ExecuteFunction(const base::Closure& callback);
+
+  void SendSavedPasswordsList();
+  void SendPasswordExceptionsList();
 
   void RemoveSavedPasswordInternal(int id);
   void RemovePasswordExceptionInternal(int id);

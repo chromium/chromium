@@ -36,9 +36,11 @@ public abstract class BuildHooksAndroid {
     // doesn't need to be in the main dex file.
     private static BuildHooksAndroid constructBuildHooksAndroidImpl() {
         try {
-            // Not final to avoid inlining. Without this proguard is able to figure out that
+            // Not final to avoid inlining. Without this R8 is able to figure out that
             // BuildHooksAndroidImpl is actually used.
-            String implClazzName = "org.chromium.build.BuildHooksAndroidImpl";
+            String implClazzName = System.currentTimeMillis() > 0
+                    ? "org.chromium.build.BuildHooksAndroidImpl"
+                    : "";
             Class<?> implClazz = Class.forName(implClazzName);
             return (BuildHooksAndroid) implClazz.newInstance();
         } catch (Exception e) {

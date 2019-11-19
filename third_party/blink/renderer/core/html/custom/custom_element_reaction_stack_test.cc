@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_stack.h"
 
 #include <initializer_list>
-#include <vector>
 
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,7 +16,7 @@
 namespace blink {
 
 TEST(CustomElementReactionStackTest, one) {
-  std::vector<char> log;
+  Vector<char> log;
 
   CustomElementReactionStack* stack =
       MakeGarbageCollected<CustomElementReactionStack>();
@@ -29,12 +28,12 @@ TEST(CustomElementReactionStackTest, one) {
                                *MakeGarbageCollected<TestReaction>(commands));
   stack->PopInvokingReactions();
 
-  EXPECT_EQ(log, std::vector<char>({'a'}))
+  EXPECT_EQ(log, Vector<char>({'a'}))
       << "popping the reaction stack should run reactions";
 }
 
 TEST(CustomElementReactionStackTest, multipleElements) {
-  std::vector<char> log;
+  Vector<char> log;
 
   CustomElementReactionStack* stack =
       MakeGarbageCollected<CustomElementReactionStack>();
@@ -55,12 +54,12 @@ TEST(CustomElementReactionStackTest, multipleElements) {
   }
   stack->PopInvokingReactions();
 
-  EXPECT_EQ(log, std::vector<char>({'a', 'b'}))
+  EXPECT_EQ(log, Vector<char>({'a', 'b'}))
       << "reactions should run in the order the elements queued";
 }
 
 TEST(CustomElementReactionStackTest, popTopEmpty) {
-  std::vector<char> log;
+  Vector<char> log;
 
   CustomElementReactionStack* stack =
       MakeGarbageCollected<CustomElementReactionStack>();
@@ -73,12 +72,12 @@ TEST(CustomElementReactionStackTest, popTopEmpty) {
   stack->Push();
   stack->PopInvokingReactions();
 
-  EXPECT_EQ(log, std::vector<char>())
+  EXPECT_EQ(log, Vector<char>())
       << "popping the empty top-of-stack should not run any reactions";
 }
 
 TEST(CustomElementReactionStackTest, popTop) {
-  std::vector<char> log;
+  Vector<char> log;
 
   CustomElementReactionStack* stack =
       MakeGarbageCollected<CustomElementReactionStack>();
@@ -100,12 +99,12 @@ TEST(CustomElementReactionStackTest, popTop) {
   }
   stack->PopInvokingReactions();
 
-  EXPECT_EQ(log, std::vector<char>({'b'}))
+  EXPECT_EQ(log, Vector<char>({'b'}))
       << "popping the top-of-stack should only run top-of-stack reactions";
 }
 
 TEST(CustomElementReactionStackTest, requeueingDoesNotReorderElements) {
-  std::vector<char> log;
+  Vector<char> log;
 
   Element& element = *CreateElement("a");
 
@@ -135,12 +134,12 @@ TEST(CustomElementReactionStackTest, requeueingDoesNotReorderElements) {
   }
   stack->PopInvokingReactions();
 
-  EXPECT_EQ(log, std::vector<char>({'a', 'b', 'z'}))
+  EXPECT_EQ(log, Vector<char>({'a', 'b', 'z'}))
       << "reactions should run together in the order elements were queued";
 }
 
 TEST(CustomElementReactionStackTest, oneReactionQueuePerElement) {
-  std::vector<char> log;
+  Vector<char> log;
 
   Element& element = *CreateElement("a");
 
@@ -178,12 +177,12 @@ TEST(CustomElementReactionStackTest, oneReactionQueuePerElement) {
   }
   stack->PopInvokingReactions();
 
-  EXPECT_EQ(log, std::vector<char>({'y', 'a', 'b'}))
+  EXPECT_EQ(log, Vector<char>({'y', 'a', 'b'}))
       << "reactions should run together in the order elements were queued";
 
   log.clear();
   stack->PopInvokingReactions();
-  EXPECT_EQ(log, std::vector<char>({'z'})) << "reactions should be run once";
+  EXPECT_EQ(log, Vector<char>({'z'})) << "reactions should be run once";
 }
 
 class EnqueueToStack : public Command {
@@ -212,7 +211,7 @@ class EnqueueToStack : public Command {
 };
 
 TEST(CustomElementReactionStackTest, enqueueFromReaction) {
-  std::vector<char> log;
+  Vector<char> log;
 
   Element& element = *CreateElement("a");
 
@@ -232,9 +231,9 @@ TEST(CustomElementReactionStackTest, enqueueFromReaction) {
   }
   stack->PopInvokingReactions();
 
-  EXPECT_EQ(log, std::vector<char>({'a'})) << "enqueued reaction from another "
-                                              "reaction should run in the same "
-                                              "invoke";
+  EXPECT_EQ(log, Vector<char>({'a'})) << "enqueued reaction from another "
+                                         "reaction should run in the same "
+                                         "invoke";
 }
 
 }  // namespace blink

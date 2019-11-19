@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<div>
+    <a>Should not be red</a><br>
+    <a href="">Should not be red</a><br>
+    <a href="">Should not be red</a><br>
+    <span>Should be default font-size</span>
+</div>
+<script>
+    let div = document.querySelector('div');
+    document.body.append(div.cloneNode(true), div.cloneNode(true));
+</script>

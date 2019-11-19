@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<title>Test that the player pauses if single taped in the outer region.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<script src="overlay-play-button.js"></script>
+<body></body>
+<script>
+async_test(t => {
+  // This test is only valid when the overlay play button is enabled.
+  enableOverlayPlayButtonForTest(t);
+
+  const video = document.createElement('video');
+  video.controls = true;
+  video.width = 400;
+  video.src = '../content/60_sec_video.webm';
+  document.body.appendChild(video);
+
+  video.addEventListener('playing', t.step_func(() => {
+    // Single tap in the top right hand corner
+    const coordinates =
+      coordinatesOutsideElement(mediaControlsOverlayPlayButton(video));
+    singleTapAtCoordinates(coordinates[0] + 1, coordinates[1] + 1);
+  }), { once: true });
+
+  video.addEventListener('pause', t.done.bind(t));
+
+  video.addEventListener('webkitfullscreenchange', t.unreached_func());
+
+  video.play();
+});
+</script>
+</html>

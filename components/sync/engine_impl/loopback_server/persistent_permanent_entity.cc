@@ -4,8 +4,9 @@
 
 #include "components/sync/engine_impl/loopback_server/persistent_permanent_entity.h"
 
+#include <memory>
+
 #include "base/logging.h"
-#include "base/memory/ptr_util.h"
 
 using std::string;
 
@@ -57,8 +58,8 @@ std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateNew(
       LoopbackServerEntity::CreateId(model_type, parent_server_tag);
   sync_pb::EntitySpecifics entity_specifics;
   AddDefaultFieldValue(model_type, &entity_specifics);
-  return base::WrapUnique(new PersistentPermanentEntity(
-      id, 0, model_type, name, parent_id, server_tag, entity_specifics));
+  return std::make_unique<PersistentPermanentEntity>(
+      id, 0, model_type, name, parent_id, server_tag, entity_specifics);
 }
 
 // static
@@ -74,8 +75,8 @@ std::unique_ptr<LoopbackServerEntity> PersistentPermanentEntity::CreateTopLevel(
   string id = LoopbackServerEntity::GetTopLevelId(model_type);
   sync_pb::EntitySpecifics entity_specifics;
   AddDefaultFieldValue(model_type, &entity_specifics);
-  return base::WrapUnique(new PersistentPermanentEntity(
-      id, 0, model_type, name, kRootParentTag, server_tag, entity_specifics));
+  return std::make_unique<PersistentPermanentEntity>(
+      id, 0, model_type, name, kRootParentTag, server_tag, entity_specifics);
 }
 
 // static
@@ -89,11 +90,11 @@ PersistentPermanentEntity::CreateUpdatedNigoriEntity(
     return nullptr;
   }
 
-  return base::WrapUnique(new PersistentPermanentEntity(
+  return std::make_unique<PersistentPermanentEntity>(
       current_server_entity.GetId(), current_server_entity.GetVersion(),
       model_type, current_server_entity.GetName(),
       current_server_entity.GetParentId(),
-      syncer::ModelTypeToRootTag(model_type), client_entity.specifics()));
+      syncer::ModelTypeToRootTag(model_type), client_entity.specifics());
 }
 
 PersistentPermanentEntity::PersistentPermanentEntity(

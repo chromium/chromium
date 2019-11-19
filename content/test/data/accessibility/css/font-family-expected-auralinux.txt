@@ -1,0 +1,5 @@
+[document web] offset=0 family-name=Tinos
+++[landmark] offset=0 family-name=Cousine offset=1 family-name=Arimo
+++++[paragraph] offset=0 family-name=Cousine
+++++++[static] name='Monospace' offset=0 family-name=Cousine
+++++[static] name='Sans serif' offset=0 family-name=Arimo

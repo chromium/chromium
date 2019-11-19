@@ -87,7 +87,7 @@ class TokenValidatorBase
 
   base::Callback<void(const std::string& shared_secret)> on_token_validated_;
 
-  base::WeakPtrFactory<TokenValidatorBase> weak_factory_;
+  base::WeakPtrFactory<TokenValidatorBase> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TokenValidatorBase);
 };

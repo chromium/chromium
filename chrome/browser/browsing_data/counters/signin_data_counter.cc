@@ -4,6 +4,9 @@
 
 #include "chrome/browser/browsing_data/counters/signin_data_counter.h"
 
+#include <string>
+#include <utility>
+
 namespace browsing_data {
 
 SigninDataCounter::SigninDataCounter(
@@ -22,18 +25,23 @@ int SigninDataCounter::CountWebAuthnCredentials() {
                            : 0;
 }
 
-std::unique_ptr<BrowsingDataCounter::SyncResult>
+std::unique_ptr<PasswordsCounter::PasswordsResult>
 SigninDataCounter::MakeResult() {
   return std::make_unique<SigninDataResult>(
-      this, num_passwords(), CountWebAuthnCredentials(), is_sync_active());
+      this, num_passwords(), CountWebAuthnCredentials(), is_sync_active(),
+      domain_examples());
 }
 
 SigninDataCounter::SigninDataResult::SigninDataResult(
     const SigninDataCounter* source,
     ResultInt num_passwords,
     ResultInt num_webauthn_credentials,
-    bool sync_enabled)
-    : BrowsingDataCounter::SyncResult(source, num_passwords, sync_enabled),
+    bool sync_enabled,
+    std::vector<std::string> domain_examples)
+    : PasswordsCounter::PasswordsResult(source,
+                                        num_passwords,
+                                        sync_enabled,
+                                        std::move(domain_examples)),
       num_webauthn_credentials_(num_webauthn_credentials) {}
 
 SigninDataCounter::SigninDataResult::~SigninDataResult() {}

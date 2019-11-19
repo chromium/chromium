@@ -47,16 +47,21 @@ enum class StoreSeedResult {
   FAILED_PARSE,
   FAILED_SIGNATURE,
   FAILED_GZIP,
-  // DELTA_COUNT is not so much a result of the seed store, but rather counting
-  // the number of delta-compressed seeds the SeedStore() function saw. Kept in
-  // the same histogram for convenience of comparing against the other values.
-  DELTA_COUNT,
+  DELTA_COUNT_OBSOLETE,
   FAILED_DELTA_READ_SEED,
   FAILED_DELTA_APPLY,
   FAILED_DELTA_STORE,
   FAILED_UNGZIP,
   FAILED_EMPTY_GZIP_CONTENTS,
   FAILED_UNSUPPORTED_SEED_FORMAT,
+  // The following are not so much a result of the seed store, but rather
+  // counting the types of seeds the SeedStore() function saw. Kept in the same
+  // histogram for efficiency and convenience of comparing against the other
+  // values.
+  GZIP_DELTA_COUNT,
+  NON_GZIP_DELTA_COUNT,
+  GZIP_FULL_COUNT,
+  NON_GZIP_FULL_COUNT,
   ENUM_SIZE
 };
 

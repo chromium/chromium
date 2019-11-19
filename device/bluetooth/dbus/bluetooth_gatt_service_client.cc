@@ -31,8 +31,7 @@ BluetoothGattServiceClient::Properties::~Properties() = default;
 class BluetoothGattServiceClientImpl : public BluetoothGattServiceClient,
                                        public dbus::ObjectManager::Interface {
  public:
-  BluetoothGattServiceClientImpl()
-      : object_manager_(NULL), weak_ptr_factory_(this) {}
+  BluetoothGattServiceClientImpl() : object_manager_(nullptr) {}
 
   ~BluetoothGattServiceClientImpl() override {
     object_manager_->UnregisterInterface(
@@ -127,7 +126,7 @@ class BluetoothGattServiceClientImpl : public BluetoothGattServiceClient,
   // than we do.
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothGattServiceClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothGattServiceClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothGattServiceClientImpl);
 };

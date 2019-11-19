@@ -12,7 +12,7 @@
 namespace language {
 
 void BindContentTranslateDriver(
-    translate::mojom::ContentTranslateDriverRequest request,
+    mojo::PendingReceiver<translate::mojom::ContentTranslateDriver> receiver,
     content::RenderFrameHost* render_frame_host) {
   // Only valid for the main frame.
   if (render_frame_host->GetParent())
@@ -28,7 +28,7 @@ void BindContentTranslateDriver(
   if (!translate_client)
     return;
 
-  translate_client->translate_driver().AddBinding(std::move(request));
+  translate_client->translate_driver()->AddReceiver(std::move(receiver));
 }
 
 }  // namespace language

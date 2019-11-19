@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/macros.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
+#include "ui/gfx/native_pixmap_handle.h"
 
 namespace ui {
 
@@ -16,8 +19,9 @@ class StubClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
 
   // ClientNativePixmapFactory:
   std::unique_ptr<gfx::ClientNativePixmap> ImportFromHandle(
-      const gfx::NativePixmapHandle& handle,
+      gfx::NativePixmapHandle handle,
       const gfx::Size& size,
+      gfx::BufferFormat format,
       gfx::BufferUsage usage) override {
     NOTREACHED();
     return nullptr;

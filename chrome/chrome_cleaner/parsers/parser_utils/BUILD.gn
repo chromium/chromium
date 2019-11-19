@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 static_library("parse_tasks_remaining_counter") {
   sources = [
     "parse_tasks_remaining_counter.cc",
@@ -9,7 +12,7 @@ static_library("parse_tasks_remaining_counter") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
   ]
 }
 
@@ -20,9 +23,9 @@ static_library("command_line_arguments_sanitizer") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//chrome/chrome_cleaner/os:common_os",
-    "//url:url",
+    "//url",
   ]
 }
 
@@ -33,7 +36,7 @@ source_set("unittest_sources") {
   ]
   deps = [
     ":command_line_arguments_sanitizer",
-    "//base:base",
+    "//base",
     "//chrome/chrome_cleaner/os:common_os",
     "//testing/gmock",
     "//testing/gtest",

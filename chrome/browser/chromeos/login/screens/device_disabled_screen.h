@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/login/screens/device_disabled_screen_view.h"
 #include "chrome/browser/chromeos/system/device_disabling_manager.h"
 
 namespace chromeos {
@@ -16,36 +15,40 @@ namespace system {
 class DeviceDisablingManager;
 }
 
-class BaseScreenDelegate;
+class DeviceDisabledScreenView;
 
 // Screen informing the user that the device has been disabled by its owner.
 class DeviceDisabledScreen : public BaseScreen,
-                             public DeviceDisabledScreenView::Delegate,
                              public system::DeviceDisablingManager::Observer {
  public:
-  DeviceDisabledScreen(BaseScreenDelegate* base_screen_delegate,
-                       DeviceDisabledScreenView* view);
+  explicit DeviceDisabledScreen(DeviceDisabledScreenView* view);
   ~DeviceDisabledScreen() override;
+
+  // Called when the view is being destroyed. Note that if the Delegate is
+  // destroyed first, it must call SetDelegate(nullptr).
+  void OnViewDestroyed(DeviceDisabledScreenView* view);
+
+  // Returns the domain that owns the device.
+  const std::string& GetEnrollmentDomain() const;
+
+  // Returns the message that should be shown to the user.
+  const std::string& GetMessage() const;
+
+  // Returns the device serial number that should be shown to the user.
+  const std::string& GetSerialNumber() const;
 
   // BaseScreen:
   void Show() override;
   void Hide() override;
-
-  // DeviceDisabledScreenView::Delegate:
-  void OnViewDestroyed(DeviceDisabledScreenView* view) override;
-  const std::string& GetEnrollmentDomain() const override;
-  const std::string& GetMessage() const override;
-  const std::string& GetSerialNumber() const override;
 
   // system::DeviceDisablingManager::Observer:
   void OnDisabledMessageChanged(const std::string& disabled_message) override;
 
  private:
   DeviceDisabledScreenView* view_;
-  system::DeviceDisablingManager* device_disabling_manager_;
 
   // Whether the screen is currently showing.
-  bool showing_;
+  bool showing_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceDisabledScreen);
 };

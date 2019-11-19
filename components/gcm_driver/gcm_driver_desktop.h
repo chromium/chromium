@@ -22,6 +22,7 @@
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/gcm_connection_observer.h"
 #include "components/gcm_driver/gcm_driver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 
 class PrefService;
@@ -55,8 +56,8 @@ class GCMDriverDesktop : public GCMDriver,
       const std::string& user_agent,
       PrefService* prefs,
       const base::FilePath& store_path,
-      base::RepeatingCallback<
-          void(network::mojom::ProxyResolvingSocketFactoryRequest)>
+      base::RepeatingCallback<void(
+          mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
           get_socket_factory_callback,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_for_ui,
       network::NetworkConnectionTracker* network_connection_tracker,
@@ -91,7 +92,7 @@ class GCMDriverDesktop : public GCMDriver,
   void SetAccountTokens(
       const std::vector<GCMClient::AccountTokenInfo>& account_tokens) override;
   void UpdateAccountMapping(const AccountMapping& account_mapping) override;
-  void RemoveAccountMapping(const std::string& account_id) override;
+  void RemoveAccountMapping(const CoreAccountId& account_id) override;
   base::Time GetLastTokenFetchTime() override;
   void SetLastTokenFetchTime(const base::Time& time) override;
   void WakeFromSuspendForHeartbeat(bool wake) override;
@@ -122,7 +123,7 @@ class GCMDriverDesktop : public GCMDriver,
                 const std::string& authorized_entity,
                 const std::string& scope,
                 const std::map<std::string, std::string>& options,
-                const GetTokenCallback& callback) override;
+                GetTokenCallback callback) override;
   void ValidateToken(const std::string& app_id,
                      const std::string& authorized_entity,
                      const std::string& scope,
@@ -131,7 +132,7 @@ class GCMDriverDesktop : public GCMDriver,
   void DeleteToken(const std::string& app_id,
                    const std::string& authorized_entity,
                    const std::string& scope,
-                   const DeleteTokenCallback& callback) override;
+                   DeleteTokenCallback callback) override;
   void AddInstanceIDData(const std::string& app_id,
                          const std::string& instance_id,
                          const std::string& extra_data) override;
@@ -257,7 +258,7 @@ class GCMDriverDesktop : public GCMDriver,
       delete_token_callbacks_;
 
   // Used to pass a weak pointer to the IO worker.
-  base::WeakPtrFactory<GCMDriverDesktop> weak_ptr_factory_;
+  base::WeakPtrFactory<GCMDriverDesktop> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GCMDriverDesktop);
 };

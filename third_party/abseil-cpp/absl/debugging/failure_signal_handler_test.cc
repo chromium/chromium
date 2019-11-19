@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -133,7 +133,8 @@ constexpr int kFailureSignals[] = {
 };
 
 std::string SignalParamToString(const ::testing::TestParamInfo<int>& info) {
-  std::string result = absl::debugging_internal::FailureSignalToString(info.param);
+  std::string result =
+      absl::debugging_internal::FailureSignalToString(info.param);
   if (result.empty()) {
     result = absl::StrCat(info.param);
   }

@@ -17,8 +17,10 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
+#include "media/capture/video/gpu_memory_buffer_utils.h"
 #include "media/capture/video_capture_types.h"
-#include "media/filters/jpeg_parser.h"
+#include "media/parsers/jpeg_parser.h"
+#include "third_party/libyuv/include/libyuv.h"
 
 namespace media {
 
@@ -300,8 +302,14 @@ std::unique_ptr<VideoFileParser> FileVideoCaptureDevice::GetVideoFileParser(
   return file_parser;
 }
 
-FileVideoCaptureDevice::FileVideoCaptureDevice(const base::FilePath& file_path)
-    : capture_thread_("CaptureThread"), file_path_(file_path) {}
+FileVideoCaptureDevice::FileVideoCaptureDevice(
+    const base::FilePath& file_path,
+    std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support)
+    : capture_thread_("CaptureThread"),
+      file_path_(file_path),
+      gmb_support_(gmb_support
+                       ? std::move(gmb_support)
+                       : std::make_unique<gpu::GpuMemoryBufferSupport>()) {}
 
 FileVideoCaptureDevice::~FileVideoCaptureDevice() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -370,8 +378,8 @@ void FileVideoCaptureDevice::SetPhotoOptions(mojom::PhotoSettingsPtr settings,
       settings->has_color_temperature || settings->has_iso ||
       settings->has_brightness || settings->has_contrast ||
       settings->has_saturation || settings->has_sharpness ||
-      settings->has_focus_distance || settings->has_zoom ||
-      settings->has_fill_light_mode) {
+      settings->has_focus_distance || settings->has_pan || settings->has_tilt ||
+      settings->has_zoom || settings->has_fill_light_mode) {
     return;
   }
 
@@ -391,6 +399,9 @@ void FileVideoCaptureDevice::OnAllocateAndStart(
   DCHECK(capture_thread_.task_runner()->BelongsToCurrentThread());
 
   client_ = std::move(client);
+
+  if (params.buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer)
+    video_capture_use_gmb_ = true;
 
   DCHECK(!file_parser_);
   file_parser_ = GetVideoFileParser(file_path_, &capture_format_);
@@ -431,8 +442,50 @@ void FileVideoCaptureDevice::OnCaptureTask() {
   const base::TimeTicks current_time = base::TimeTicks::Now();
   if (first_ref_time_.is_null())
     first_ref_time_ = current_time;
-  client_->OnIncomingCapturedData(frame_ptr, frame_size, capture_format_, 0,
-                                  current_time, current_time - first_ref_time_);
+
+  if (video_capture_use_gmb_) {
+    const gfx::Size& buffer_size = capture_format_.frame_size;
+    std::unique_ptr<gfx::GpuMemoryBuffer> gmb;
+    VideoCaptureDevice::Client::Buffer capture_buffer;
+    auto reserve_result = AllocateNV12GpuMemoryBuffer(
+        client_.get(), buffer_size, gmb_support_.get(), &gmb, &capture_buffer);
+    if (reserve_result !=
+        VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
+      client_->OnFrameDropped(
+          ConvertReservationFailureToFrameDropReason(reserve_result));
+      return;
+    }
+    ScopedNV12GpuMemoryBufferMapping scoped_mapping(std::move(gmb));
+    const uint8_t* src_y_plane = frame_ptr;
+    const uint8_t* src_u_plane =
+        frame_ptr +
+        VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, buffer_size).GetArea();
+    const uint8_t* src_v_plane =
+        frame_ptr +
+        VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 0, buffer_size).GetArea() +
+        VideoFrame::PlaneSize(PIXEL_FORMAT_I420, 1, buffer_size).GetArea();
+    libyuv::I420ToNV12(
+        src_y_plane, buffer_size.width(), src_u_plane, buffer_size.width() / 2,
+        src_v_plane, buffer_size.width() / 2, scoped_mapping.y_plane(),
+        scoped_mapping.y_stride(), scoped_mapping.uv_plane(),
+        scoped_mapping.uv_stride(), buffer_size.width(), buffer_size.height());
+
+    VideoCaptureFormat modified_format = capture_format_;
+    // When GpuMemoryBuffer is used, the frame data is opaque to the CPU for
+    // most of the time.  Currently the only supported underlying format is
+    // NV12.
+    modified_format.pixel_format = PIXEL_FORMAT_NV12;
+    client_->OnIncomingCapturedBuffer(std::move(capture_buffer),
+                                      modified_format, current_time,
+                                      current_time - first_ref_time_);
+  } else {
+    // Leave the color space unset for compatibility purposes but this
+    // information should be retrieved from the container when possible.
+    client_->OnIncomingCapturedData(
+        frame_ptr, frame_size, capture_format_, gfx::ColorSpace(),
+        0 /* clockwise_rotation */, false /* flip_y */, current_time,
+        current_time - first_ref_time_);
+  }
 
   // Process waiting photo callbacks
   while (!take_photo_callbacks_.empty()) {

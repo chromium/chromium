@@ -42,7 +42,7 @@ class SerialExtensionHostQueue : public ExtensionHostQueue {
   // The list of DeferredStartRenderHosts waiting to be started.
   std::list<DeferredStartRenderHost*> queue_;
 
-  base::WeakPtrFactory<SerialExtensionHostQueue> ptr_factory_;
+  base::WeakPtrFactory<SerialExtensionHostQueue> ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SerialExtensionHostQueue);
 };

@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -69,6 +70,8 @@ class CanMakePaymentQuery : public KeyedService {
   // A mapping of frame origin, top level origin, and payment method identifier
   // to the last query in the form of JSON-stringified payment method data.
   std::map<std::string, std::set<std::string>> per_method_queries_;
+
+  base::WeakPtrFactory<CanMakePaymentQuery> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CanMakePaymentQuery);
 };

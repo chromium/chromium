@@ -27,18 +27,18 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_DTMF_SENDER_H_
 
 #include <memory>
-#include "third_party/blink/public/platform/web_rtc_dtmf_sender_handler_client.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_dtmf_sender_handler.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
 
 class ExceptionState;
-class WebRTCDTMFSenderHandler;
+class RtcDtmfSenderHandler;
 
 class RTCDTMFSender final : public EventTargetWithInlineData,
-                            public WebRTCDTMFSenderHandlerClient,
+                            public RtcDtmfSenderHandler::Client,
                             public ContextLifecycleObserver {
   USING_GARBAGE_COLLECTED_MIXIN(RTCDTMFSender);
   DEFINE_WRAPPERTYPEINFO();
@@ -46,9 +46,9 @@ class RTCDTMFSender final : public EventTargetWithInlineData,
 
  public:
   static RTCDTMFSender* Create(ExecutionContext*,
-                               std::unique_ptr<WebRTCDTMFSenderHandler>);
+                               std::unique_ptr<RtcDtmfSenderHandler>);
 
-  RTCDTMFSender(ExecutionContext*, std::unique_ptr<WebRTCDTMFSenderHandler>);
+  RTCDTMFSender(ExecutionContext*, std::unique_ptr<RtcDtmfSenderHandler>);
   ~RTCDTMFSender() override;
 
   bool canInsertDTMF() const;
@@ -75,11 +75,11 @@ class RTCDTMFSender final : public EventTargetWithInlineData,
  private:
   void Dispose();
 
-  // WebRTCDTMFSenderHandlerClient
+  // RtcDtmfSenderHandler::Client
   void PlayoutTask();
-  void DidPlayTone(const WebString&) override;
+  void DidPlayTone(const String&) override;
 
-  std::unique_ptr<WebRTCDTMFSenderHandler> handler_;
+  std::unique_ptr<RtcDtmfSenderHandler> handler_;
 
   bool stopped_;
   String tone_buffer_;

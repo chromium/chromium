@@ -27,15 +27,20 @@
         if (window.accessibilityController) {
             document.getElementById("body").focus();
 
-            var body = accessibilityController.focusedElement;
-            shouldBe("body.childAtIndex(0).role", "'AXRole: AXLink'");
-            shouldBe("body.childAtIndex(0).name", "'Link1'");
+            var body = accessibilityController.accessibleElementById('body');
+            var container = body.childAtIndex(0);
 
-            shouldBe("body.childAtIndex(1).role", "'AXRole: AXLink'");
-            shouldBe("body.childAtIndex(1).name", "'Link2'");
+            shouldBe("container.role", "'AXRole: AXImageMap'");
 
-            shouldBe("body.childAtIndex(2).role", "'AXRole: AXLink'");
-            shouldBe("body.childAtIndex(2).name", "'Link3'");
+
+            shouldBe("container.childAtIndex(0).role", "'AXRole: AXLink'");
+            shouldBe("container.childAtIndex(0).name", "'Link1'");
+
+            shouldBe("container.childAtIndex(1).role", "'AXRole: AXLink'");
+            shouldBe("container.childAtIndex(1).name", "'Link2'");
+
+            shouldBe("container.childAtIndex(2).role", "'AXRole: AXLink'");
+            shouldBe("container.childAtIndex(2).name", "'Link3'");
         }
 </script>
 

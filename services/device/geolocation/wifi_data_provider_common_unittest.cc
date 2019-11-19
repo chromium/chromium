@@ -11,7 +11,7 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "services/device/geolocation/wifi_data_provider_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -87,8 +87,8 @@ class WifiDataProviderCommonWithMock : public WifiDataProviderCommon {
 class GeolocationWifiDataProviderCommonTest : public testing::Test {
  public:
   GeolocationWifiDataProviderCommonTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI),
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
         wifi_data_callback_(base::DoNothing()) {}
 
   void TearDownProvider() {
@@ -128,7 +128,7 @@ class GeolocationWifiDataProviderCommonTest : public testing::Test {
   }
 
  protected:
-  const base::test::ScopedTaskEnvironment scoped_task_environment_;
+  const base::test::SingleThreadTaskEnvironment task_environment_;
   WifiDataProviderManager::WifiDataUpdateCallback wifi_data_callback_;
   scoped_refptr<WifiDataProviderCommonWithMock> provider_;
 

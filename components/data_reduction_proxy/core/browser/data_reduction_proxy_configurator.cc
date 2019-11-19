@@ -30,6 +30,8 @@ void DataReductionProxyConfigurator::Enable(
     const NetworkPropertiesManager& network_properties_manager,
     const std::vector<DataReductionProxyServer>& proxies_for_http) {
   DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(!params::IsIncludedInHoldbackFieldTrial() || proxies_for_http.empty());
+
   net::ProxyConfig config =
       CreateProxyConfig(false /* probe_url_config */,
                         network_properties_manager, proxies_for_http);
@@ -43,6 +45,7 @@ net::ProxyConfig DataReductionProxyConfigurator::CreateProxyConfig(
     const NetworkPropertiesManager& network_properties_manager,
     const std::vector<DataReductionProxyServer>& proxies_for_http) const {
   DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK(!params::IsIncludedInHoldbackFieldTrial() || proxies_for_http.empty());
 
   net::ProxyConfig config;
   DCHECK(config.proxy_rules().proxies_for_http.IsEmpty());
@@ -59,30 +62,13 @@ net::ProxyConfig DataReductionProxyConfigurator::CreateProxyConfig(
     // usable for non-proble traffic.
     if (!probe_url_config &&
         !network_properties_manager.IsSecureProxyAllowed(true) &&
-        http_proxy.IsSecureProxy() && http_proxy.IsCoreProxy()) {
+        http_proxy.IsSecureProxy()) {
       continue;
     }
 
     if (!probe_url_config &&
         !network_properties_manager.IsInsecureProxyAllowed(true) &&
-        !http_proxy.IsSecureProxy() && http_proxy.IsCoreProxy()) {
-      continue;
-    }
-
-    if (!probe_url_config &&
-        !network_properties_manager.IsSecureProxyAllowed(false) &&
-        http_proxy.IsSecureProxy() && !http_proxy.IsCoreProxy()) {
-      continue;
-    }
-
-    if (!probe_url_config &&
-        !network_properties_manager.IsInsecureProxyAllowed(false) &&
-        !http_proxy.IsSecureProxy() && !http_proxy.IsCoreProxy()) {
-      continue;
-    }
-
-    if (!probe_url_config && http_proxy.IsSecureProxy() &&
-        params::IsIncludedInSecureProxyHoldbackFieldTrial()) {
+        !http_proxy.IsSecureProxy()) {
       continue;
     }
 

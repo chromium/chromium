@@ -28,7 +28,9 @@
 
 // https://drafts.csswg.org/css-animations/#interface-csskeyframerule
 
-interface CSSKeyframeRule : CSSRule {
+[
+    Exposed=Window
+] interface CSSKeyframeRule : CSSRule {
     [RaisesException=Setter] attribute DOMString keyText;
     [SameObject, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
 };

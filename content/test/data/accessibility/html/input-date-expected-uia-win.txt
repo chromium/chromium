@@ -1,0 +1,26 @@
+document
+++group
+++++textbox LocalizedControlType='date picker'
+++++++group
+++++++++group
+++++++++++spinbutton Name='Month' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=9.00 Value.Value='09'
+++++++++++++description Name='09'
+++++++++++description Name='/'
+++++++++++spinbutton Name='Day' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=31.00 RangeValue.Minimum=1.00 RangeValue.Value=1.00 Value.Value='01'
+++++++++++++description Name='01'
+++++++++++description Name='/'
+++++++++++spinbutton Name='Year' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=275760.00 RangeValue.Minimum=1.00 RangeValue.Value=2008.00 Value.Value='2008'
+++++++++++++description Name='2008'
+++++++menu Name='Show date picker' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++textbox LocalizedControlType='date picker' Name='When'
+++++++group
+++++++++group
+++++++++++spinbutton Name='Month When' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=9.00 Value.Value='09'
+++++++++++++description Name='09'
+++++++++++description Name='/'
+++++++++++spinbutton Name='Day When' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=31.00 RangeValue.Minimum=1.00 RangeValue.Value=1.00 Value.Value='01'
+++++++++++++description Name='01'
+++++++++++description Name='/'
+++++++++++spinbutton Name='Year When' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=275760.00 RangeValue.Minimum=1.00 RangeValue.Value=2008.00 Value.Value='2008'
+++++++++++++description Name='2008'
+++++++menu Name='Show date picker' ExpandCollapse.ExpandCollapseState='Collapsed'

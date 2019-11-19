@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+ -->
+
+<org.chromium.chrome.browser.gesturenav.NavigationBubble
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:minHeight="@dimen/navigation_bubble_size"
+    android:layout_width="wrap_content"
+    android:gravity="center_vertical"
+    android:background="@drawable/navigation_bubble_shadow"
+    android:animateLayoutChanges="true"
+    android:orientation="horizontal">
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/navigation_bubble_arrow"
+        android:layout_width="@dimen/navigation_bubble_arrow_size"
+        android:layout_height="@dimen/navigation_bubble_arrow_size"
+        app:srcCompat="@drawable/ic_arrow_back_24dp"
+        android:visibility="gone"
+        android:paddingStart="@dimen/navigation_bubble_start_padding"
+        android:paddingTop="@dimen/navigation_bubble_top_padding"
+        android:paddingBottom="@dimen/navigation_bubble_bottom_padding"
+        android:importantForAccessibility="no" />
+    <TextView
+        android:id="@+id/navigation_bubble_text"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.BlueTitle2"
+        android:paddingTop="@dimen/navigation_bubble_text_top_padding"
+        android:paddingStart="@dimen/navigation_bubble_text_start_padding"
+        android:paddingEnd="@dimen/navigation_bubble_text_end_padding"
+        android:paddingBottom="@dimen/navigation_bubble_text_bottom_padding"
+        android:visibility="gone"
+        android:maxLines="1" />
+</org.chromium.chrome.browser.gesturenav.NavigationBubble>

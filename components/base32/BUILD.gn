@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/libfuzzer/fuzzer_test.gni")
+
 static_library("base32") {
   sources = [
     "base32.cc",
@@ -9,6 +11,18 @@ static_library("base32") {
   ]
 
   deps = [
+    "//base",
+  ]
+}
+
+static_library("base32_test_util") {
+  sources = [
+    "base32_test_util.cc",
+    "base32_test_util.h",
+  ]
+
+  deps = [
+    ":base32",
     "//base",
   ]
 }
@@ -21,7 +35,20 @@ source_set("unit_tests") {
 
   deps = [
     ":base32",
+    ":base32_test_util",
     "//base",
     "//testing/gtest",
+  ]
+}
+
+fuzzer_test("base32_fuzzer") {
+  sources = [
+    "base32_fuzzer.cc",
+  ]
+
+  deps = [
+    ":base32",
+    ":base32_test_util",
+    "//base",
   ]
 }

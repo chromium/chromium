@@ -14,6 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/message_loop/message_pump.h"
+#include "base/optional.h"
 #include "base/time/time.h"
 
 struct ALooper;
@@ -79,8 +80,10 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   Delegate* delegate_ = nullptr;
 
   // The time at which we are currently scheduled to wake up and perform a
-  // delayed task.
-  base::TimeTicks delayed_scheduled_time_;
+  // delayed task. This avoids redundantly scheduling |delayed_fd_| with the
+  // same timeout when subsequent work phases all go idle on the same pending
+  // delayed task; nullopt if no wakeup is currently scheduled.
+  Optional<TimeTicks> delayed_scheduled_time_;
 
   // If set, a callback to fire when the message pump is quit.
   base::OnceClosure on_quit_callback_;

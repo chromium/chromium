@@ -60,7 +60,7 @@ int main(int argc, const char* argv[]) {
   log_filename = log_filename.AppendASCII("tld_cleanup.log");
   logging::LoggingSettings settings;
   settings.logging_dest = destination;
-  settings.log_file = log_filename.value().c_str();
+  settings.log_file_path = log_filename.value().c_str();
   settings.delete_old = logging::DELETE_OLD_LOG_FILE;
   logging::InitLogging(settings);
 

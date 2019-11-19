@@ -87,7 +87,7 @@ class MEDIA_GPU_EXPORT D3D11Decryptor : public Decryptor {
   // to.
   ComPtr<ID3D11Buffer> cpu_accessible_buffer_;
 
-  base::WeakPtrFactory<D3D11Decryptor> weak_factory_;
+  base::WeakPtrFactory<D3D11Decryptor> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(D3D11Decryptor);
 };

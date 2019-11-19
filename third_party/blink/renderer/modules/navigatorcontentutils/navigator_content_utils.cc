@@ -29,24 +29,27 @@
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/modules/navigatorcontentutils/navigator_content_utils_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-static HashSet<String>* g_scheme_whitelist;
+const char NavigatorContentUtils::kSupplementName[] = "NavigatorContentUtils";
 
-static void InitCustomSchemeHandlerWhitelist() {
-  g_scheme_whitelist = new HashSet<String>;
-  static const char* const kSchemes[] = {
-      "bitcoin", "geo",  "im",   "irc",         "ircs", "magnet", "mailto",
-      "mms",     "news", "nntp", "openpgp4fpr", "sip",  "sms",    "smsto",
-      "ssh",     "tel",  "urn",  "webcal",      "wtai", "xmpp",
-  };
-  for (size_t i = 0; i < base::size(kSchemes); ++i)
-    g_scheme_whitelist->insert(kSchemes[i]);
+static const HashSet<String>& SupportedSchemes() {
+  DEFINE_STATIC_LOCAL(
+      HashSet<String>, supported_schemes,
+      ({
+          "bitcoin", "geo",  "im",   "irc",         "ircs", "magnet", "mailto",
+          "mms",     "news", "nntp", "openpgp4fpr", "sip",  "sms",    "smsto",
+          "ssh",     "tel",  "urn",  "webcal",      "wtai", "xmpp",
+      }));
+  return supported_schemes;
 }
 
 static bool VerifyCustomHandlerURL(const Document& document,
@@ -77,6 +80,16 @@ static bool VerifyCustomHandlerURL(const Document& document,
     return false;
   }
 
+  // Although not enforced in the spec the spec gives freedom to do additional
+  // security checks. Bugs have arisen from allowing non-http/https URLs, e.g.
+  // https://crbug.com/971917 and it doesn't make a lot of sense to support
+  // them. We also need to allow extensions to continue using the API.
+  if (!kurl.ProtocolIsInHTTPFamily() && !kurl.ProtocolIs("chrome-extension")) {
+    exception_state.ThrowSecurityError(
+        "The scheme of the url provided must be the 'http' or 'https'.");
+    return false;
+  }
+
   // The specification says that the API throws SecurityError exception if the
   // URL's origin differs from the document's origin.
   if (!document.GetSecurityOrigin()->CanRequest(kurl)) {
@@ -86,16 +99,6 @@ static bool VerifyCustomHandlerURL(const Document& document,
   }
 
   return true;
-}
-
-static bool IsSchemeWhitelisted(const String& scheme) {
-  if (!g_scheme_whitelist)
-    InitCustomSchemeHandlerWhitelist();
-
-  StringBuilder builder;
-  builder.Append(scheme.LowerASCII());
-
-  return g_scheme_whitelist->Contains(builder.ToString());
 }
 
 static bool VerifyCustomHandlerScheme(const String& scheme,
@@ -117,7 +120,7 @@ static bool VerifyCustomHandlerScheme(const String& scheme,
     return false;
   }
 
-  if (IsSchemeWhitelisted(scheme))
+  if (SupportedSchemes().Contains(scheme.LowerASCII()))
     return true;
 
   exception_state.ThrowSecurityError(
@@ -128,8 +131,16 @@ static bool VerifyCustomHandlerScheme(const String& scheme,
   return false;
 }
 
-NavigatorContentUtils* NavigatorContentUtils::From(Navigator& navigator) {
-  return Supplement<Navigator>::From<NavigatorContentUtils>(navigator);
+NavigatorContentUtils& NavigatorContentUtils::From(Navigator& navigator,
+                                                   LocalFrame& frame) {
+  NavigatorContentUtils* navigator_content_utils =
+      Supplement<Navigator>::From<NavigatorContentUtils>(navigator);
+  if (!navigator_content_utils) {
+    navigator_content_utils = MakeGarbageCollected<NavigatorContentUtils>(
+        navigator, MakeGarbageCollected<NavigatorContentUtilsClient>(&frame));
+    ProvideTo(navigator, navigator_content_utils);
+  }
+  return *navigator_content_utils;
 }
 
 NavigatorContentUtils::~NavigatorContentUtils() = default;
@@ -140,10 +151,10 @@ void NavigatorContentUtils::registerProtocolHandler(
     const String& url,
     const String& title,
     ExceptionState& exception_state) {
-  if (!navigator.GetFrame())
+  LocalFrame* frame = navigator.GetFrame();
+  if (!frame)
     return;
-
-  Document* document = navigator.GetFrame()->GetDocument();
+  Document* document = frame->GetDocument();
   DCHECK(document);
 
   if (!VerifyCustomHandlerURL(*document, url, exception_state))
@@ -158,8 +169,9 @@ void NavigatorContentUtils::registerProtocolHandler(
                         ? WebFeature::kRegisterProtocolHandlerSecureOrigin
                         : WebFeature::kRegisterProtocolHandlerInsecureOrigin);
 
-  NavigatorContentUtils::From(navigator)->Client()->RegisterProtocolHandler(
-      scheme, document->CompleteURL(url), title);
+  NavigatorContentUtils::From(navigator, *frame)
+      .Client()
+      ->RegisterProtocolHandler(scheme, document->CompleteURL(url), title);
 }
 
 void NavigatorContentUtils::unregisterProtocolHandler(
@@ -167,10 +179,10 @@ void NavigatorContentUtils::unregisterProtocolHandler(
     const String& scheme,
     const String& url,
     ExceptionState& exception_state) {
-  if (!navigator.GetFrame())
+  LocalFrame* frame = navigator.GetFrame();
+  if (!frame)
     return;
-
-  Document* document = navigator.GetFrame()->GetDocument();
+  Document* document = frame->GetDocument();
   DCHECK(document);
 
   if (!VerifyCustomHandlerURL(*document, url, exception_state))
@@ -179,22 +191,14 @@ void NavigatorContentUtils::unregisterProtocolHandler(
   if (!VerifyCustomHandlerScheme(scheme, exception_state))
     return;
 
-  NavigatorContentUtils::From(navigator)->Client()->UnregisterProtocolHandler(
-      scheme, document->CompleteURL(url));
+  NavigatorContentUtils::From(navigator, *frame)
+      .Client()
+      ->UnregisterProtocolHandler(scheme, document->CompleteURL(url));
 }
 
 void NavigatorContentUtils::Trace(blink::Visitor* visitor) {
   visitor->Trace(client_);
   Supplement<Navigator>::Trace(visitor);
-}
-
-const char NavigatorContentUtils::kSupplementName[] = "NavigatorContentUtils";
-
-void NavigatorContentUtils::ProvideTo(Navigator& navigator,
-                                      NavigatorContentUtilsClient* client) {
-  Supplement<Navigator>::ProvideTo(
-      navigator,
-      MakeGarbageCollected<NavigatorContentUtils>(navigator, client));
 }
 
 }  // namespace blink

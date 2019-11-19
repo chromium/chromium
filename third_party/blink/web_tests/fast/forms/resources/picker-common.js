@@ -11,8 +11,8 @@ function popupOpenCallbackWrapper() {
     setTimeout(popupOpenCallback, 20);
 }
 
-function waitUntilClosing(callback) {
-    setTimeout(callback, 1);
+function waitUntilClosing(callback, customDelay) {
+    setTimeout(callback, (customDelay !== undefined) ? customDelay : 1);
 }
 
 function rootWindow() {

@@ -2,6 +2,8 @@
 This line is to unflake the test, but may not be necessary (crbug.com/c/791268):
 @WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
 @WIN-DENY:EVENT_OBJECT_SHOW*
+@UIA-WIN-DENY:StructureChanged/*
+@UIA-WIN-DENY:Text_TextSelectionChanged*
 -->
 <!DOCTYPE html>
 <html>

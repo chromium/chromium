@@ -7,7 +7,8 @@
 
 #include "base/macros.h"
 #include "components/contextual_search/content/browser/contextual_search_js_api_handler.h"
-#include "components/contextual_search/content/common/contextual_search_js_api_service.mojom.h"
+#include "components/contextual_search/content/common/mojom/contextual_search_js_api_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace contextual_search {
 
@@ -48,7 +49,7 @@ class ContextualSearchJsApiServiceImpl
 // static
 void CreateContextualSearchJsApiService(
     ContextualSearchJsApiHandler* contextual_search_js_api_handler,
-    mojom::ContextualSearchJsApiServiceRequest request);
+    mojo::PendingReceiver<mojom::ContextualSearchJsApiService> receiver);
 
 }  // namespace contextual_search
 

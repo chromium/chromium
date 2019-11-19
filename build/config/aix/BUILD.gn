@@ -35,7 +35,6 @@ config("compiler") {
   ]
 
   cflags_cc = [
-    "-std=gnu++11",
     "-fno-rtti",
     "-fno-exceptions",
     "-Wno-narrowing",

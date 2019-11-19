@@ -5,7 +5,6 @@
 #ifndef CC_TEST_MOCK_OCCLUSION_TRACKER_H_
 #define CC_TEST_MOCK_OCCLUSION_TRACKER_H_
 
-#include "base/macros.h"
 #include "cc/trees/occlusion_tracker.h"
 
 namespace cc {
@@ -28,6 +27,9 @@ class MockOcclusionTracker : public OcclusionTracker {
     OcclusionTracker::stack_.push_back(stack_obj);
     OcclusionTracker::stack_.push_back(stack_obj);
   }
+  MockOcclusionTracker(const MockOcclusionTracker&) = delete;
+
+  MockOcclusionTracker& operator=(const MockOcclusionTracker&) = delete;
 
   void set_occluded_target_rect(const gfx::Rect& occluded) {
     OcclusionTracker::stack_.back().occlusion_from_inside_target = occluded;
@@ -38,9 +40,6 @@ class MockOcclusionTracker : public OcclusionTracker {
     OcclusionTracker::stack_[OcclusionTracker::stack_.size() - 2]
         .occlusion_from_inside_target = occluded;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockOcclusionTracker);
 };
 
 }  // namespace cc

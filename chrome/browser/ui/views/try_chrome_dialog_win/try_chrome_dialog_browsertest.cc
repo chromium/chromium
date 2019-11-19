@@ -281,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(TryChromeDialogBrowserTestBase, EarlyRendezvous) {
   EXPECT_THAT(result(), Eq(TryChromeDialog::OPEN_CHROME_DEFER));
 }
 
-// Test harness to display the TryChromeDialog for testing. Template parameter 0
+// Test harness to display the TryChromeDialog for testing. The test parameter
 // is the group number to be evaluated.
 class TryChromeDialogTest
     : public SupportsTestDialog<TryChromeDialogBrowserTestBase>,
@@ -290,7 +290,12 @@ class TryChromeDialogTest
   TryChromeDialogTest()
       : SupportsTestDialog<TryChromeDialogBrowserTestBase>(GetParam()) {}
 
+  // TestBrowserDialog:
   void ShowUi(const std::string& name) override { ShowDialogSync(); }
+  std::string GetNonDialogName() override {
+    // This class tests a non-dialog widget with the following name.
+    return "TryChromeDialog";
+  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(TryChromeDialogTest);

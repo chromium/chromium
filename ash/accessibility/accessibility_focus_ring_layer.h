@@ -8,6 +8,7 @@
 #include "ash/accessibility/accessibility_focus_ring.h"
 #include "ash/accessibility/focus_ring_layer.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/accessibility_focus_ring_info.h"
 #include "base/macros.h"
 #include "ui/compositor/paint_recorder.h"
 
@@ -24,20 +25,26 @@ class ASH_EXPORT AccessibilityFocusRingLayer : public FocusRingLayer {
   // Create the layer and update its bounds and position in the hierarchy.
   void Set(const AccessibilityFocusRing& ring);
 
-  void EnableDoubleFocusRing(SkColor secondary_color);
-  void DisableDoubleFocusRing();
+  void SetAppearance(FocusRingType type,
+                     SkColor color,
+                     SkColor secondary_color);
+
+  SkColor color_for_testing() { return custom_color(); }
 
  private:
   // ui::LayerDelegate overrides:
   void OnPaintLayer(const ui::PaintContext& context) override;
 
-  void DrawFocusRing(ui::PaintRecorder& recorder, cc::PaintFlags& flags);
-  void DrawDoubleFocusRing(ui::PaintRecorder& recorder, cc::PaintFlags& flags);
+  void DrawGlowFocusRing(ui::PaintRecorder& recorder, cc::PaintFlags& flags);
+  void DrawSolidFocusRing(ui::PaintRecorder& recorder, cc::PaintFlags& flags);
+  void DrawDashedFocusRing(ui::PaintRecorder& recorder, cc::PaintFlags& flags);
 
   // The outline of the current focus ring.
   AccessibilityFocusRing ring_;
-  // The secondary color, if there is a double focus ring.
-  base::Optional<SkColor> secondary_color_;
+  // The type of focus ring.
+  FocusRingType type_;
+  // The secondary color.
+  SkColor secondary_color_;
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityFocusRingLayer);
 };

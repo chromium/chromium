@@ -8,6 +8,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -113,7 +114,8 @@ Manifest::Location Manifest::GetHigherPriorityLocation(
 
 // static
 Manifest::Type Manifest::GetTypeFromManifestValue(
-    const base::DictionaryValue& value) {
+    const base::DictionaryValue& value,
+    bool for_login_screen) {
   Type type = TYPE_UNKNOWN;
   if (value.HasKey(keys::kTheme)) {
     type = TYPE_THEME;
@@ -128,6 +130,8 @@ Manifest::Type Manifest::GetTypeFromManifestValue(
     } else {
       type = TYPE_LEGACY_PACKAGED_APP;
     }
+  } else if (for_login_screen) {
+    type = TYPE_LOGIN_SCREEN_EXTENSION;
   } else {
     type = TYPE_EXTENSION;
   }
@@ -152,11 +156,25 @@ bool Manifest::ShouldAlwaysLoadExtension(Manifest::Location location,
   return false;
 }
 
+// static
+std::unique_ptr<Manifest> Manifest::CreateManifestForLoginScreen(
+    Location location,
+    std::unique_ptr<base::DictionaryValue> value) {
+  CHECK(IsPolicyLocation(location));
+  // Use base::WrapUnique + new because the constructor is private.
+  return base::WrapUnique(new Manifest(location, std::move(value), true));
+}
+
 Manifest::Manifest(Location location,
                    std::unique_ptr<base::DictionaryValue> value)
+    : Manifest(location, std::move(value), false) {}
+
+Manifest::Manifest(Location location,
+                   std::unique_ptr<base::DictionaryValue> value,
+                   bool for_login_screen)
     : location_(location),
       value_(std::move(value)),
-      type_(GetTypeFromManifestValue(*value_)) {}
+      type_(GetTypeFromManifestValue(*value_, for_login_screen)) {}
 
 Manifest::~Manifest() {
 }
@@ -199,6 +217,13 @@ bool Manifest::ValidateManifest(
               manifest_errors::kUnrecognizedManifestKey, it.key()),
           it.key()));
     }
+  }
+
+  if (IsUnpackedLocation(location_) &&
+      value_->FindPath(manifest_keys::kDifferentialFingerprint)) {
+    warnings->push_back(
+        InstallWarning(manifest_errors::kHasDifferentialFingerprint,
+                       manifest_keys::kDifferentialFingerprint));
   }
   return true;
 }

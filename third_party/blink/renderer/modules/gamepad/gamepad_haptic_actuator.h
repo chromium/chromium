@@ -5,19 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_HAPTIC_ACTUATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_HAPTIC_ACTUATOR_H_
 
-#include "device/gamepad/public/cpp/gamepad.h"
-#include "device/gamepad/public/mojom/gamepad.mojom-blink.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/modules/gamepad/gamepad_effect_parameters.h"
+#include "device/gamepad/public/mojom/gamepad.mojom-blink-forward.h"
+#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class GamepadDispatcher;
+class GamepadEffectParameters;
+enum class GamepadHapticActuatorType;
+class ScriptState;
+class ScriptPromise;
+class ScriptPromiseResolver;
 
 class GamepadHapticActuator final : public ScriptWrappable,
                                     public ContextClient {

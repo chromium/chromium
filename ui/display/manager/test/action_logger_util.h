@@ -43,8 +43,7 @@ std::string GetCrtcAction(const DisplaySnapshot& output,
                           const gfx::Point& origin);
 
 // Returns a string describing a TestNativeDisplayDelegate::SetHDCPState() call.
-std::string GetSetHDCPStateAction(const DisplaySnapshot& output,
-                                  HDCPState state);
+std::string GetSetHDCPStateAction(int64_t display_id, HDCPState state);
 
 // Returns a string describing a TestNativeDisplayDelegate::SetColorMatrix()
 // call.

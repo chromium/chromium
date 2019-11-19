@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/region_data_loader.h"
+#include "components/autofill/core/browser/geo/region_data_loader.h"
 #include "ui/base/models/combobox_model.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

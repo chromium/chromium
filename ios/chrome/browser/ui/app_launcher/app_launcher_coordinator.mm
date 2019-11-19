@@ -6,12 +6,18 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/app_launcher/app_launcher_flags.h"
+#import "ios/chrome/browser/app_launcher/app_launcher_tab_helper.h"
+#import "ios/chrome/browser/overlays/public/overlay_request.h"
+#import "ios/chrome/browser/overlays/public/overlay_request_queue.h"
+#import "ios/chrome/browser/overlays/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/public/web_content_area/app_launcher_alert_overlay.h"
 #include "ios/chrome/browser/procedural_block_types.h"
 #import "ios/chrome/browser/ui/app_launcher/app_launcher_util.h"
+#import "ios/chrome/browser/ui/dialogs/dialog_features.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/mailto/mailto_handler_provider.h"
@@ -31,6 +37,21 @@ namespace {
 // reduce macro code expansion.
 void RecordUserAcceptedAppLaunchMetric(BOOL user_accepted) {
   UMA_HISTOGRAM_BOOLEAN("Tab.ExternalApplicationOpened", user_accepted);
+}
+
+// Callback for the app launcher alert overlay.
+void AppLauncherOverlayCallback(ProceduralBlockWithBool app_launch_completion,
+                                OverlayResponse* response) {
+  DCHECK(app_launch_completion);
+  if (!response) {
+    app_launch_completion(NO);
+    return;
+  }
+
+  AppLauncherAlertOverlayResponseInfo* info =
+      response->GetInfo<AppLauncherAlertOverlayResponseInfo>();
+  bool allow_navigation = info ? info->allow_navigation() : false;
+  app_launch_completion(allow_navigation);
 }
 
 }  // namespace
@@ -60,6 +81,7 @@ void RecordUserAcceptedAppLaunchMetric(BOOL user_accepted) {
            acceptActionTitle:(NSString*)acceptActionTitle
            rejectActionTitle:(NSString*)rejectActionTitle
            completionHandler:(ProceduralBlockWithBool)completionHandler {
+  DCHECK(!base::FeatureList::IsEnabled(dialogs::kNonModalDialogs));
   UIAlertController* alertController =
       [UIAlertController alertControllerWithTitle:nil
                                           message:message
@@ -86,23 +108,37 @@ void RecordUserAcceptedAppLaunchMetric(BOOL user_accepted) {
 
 // Shows an alert that the app will open in another application. If the user
 // accepts, the |URL| is launched.
-- (void)showAlertAndLaunchAppURL:(const GURL&)URL {
+- (void)showAlertAndLaunchAppURL:(const GURL&)URL
+                        webState:(web::WebState*)webState {
   NSString* prompt = l10n_util::GetNSString(IDS_IOS_OPEN_IN_ANOTHER_APP);
   NSString* openLabel =
       l10n_util::GetNSString(IDS_IOS_APP_LAUNCHER_OPEN_APP_BUTTON_LABEL);
   NSString* cancelLabel = l10n_util::GetNSString(IDS_CANCEL);
   NSURL* copiedURL = net::NSURLWithGURL(URL);
-  [self showAlertWithMessage:prompt
-           acceptActionTitle:openLabel
-           rejectActionTitle:cancelLabel
-           completionHandler:^(BOOL userAccepted) {
-             RecordUserAcceptedAppLaunchMetric(userAccepted);
-             if (userAccepted) {
-               [[UIApplication sharedApplication] openURL:copiedURL
-                                                  options:@{}
-                                        completionHandler:nil];
-             }
-           }];
+  ProceduralBlockWithBool completion = ^(BOOL userAccepted) {
+    RecordUserAcceptedAppLaunchMetric(userAccepted);
+    if (userAccepted) {
+      [[UIApplication sharedApplication] openURL:copiedURL
+                                         options:@{}
+                               completionHandler:nil];
+    }
+  };
+
+  if (base::FeatureList::IsEnabled(dialogs::kNonModalDialogs)) {
+    std::unique_ptr<OverlayRequest> request =
+        OverlayRequest::CreateWithConfig<AppLauncherAlertOverlayRequestConfig>(
+            /* is_repeated_request= */ false);
+    request->set_callback(
+        base::BindOnce(&AppLauncherOverlayCallback, completion));
+    OverlayRequestQueue::FromWebState(webState,
+                                      OverlayModality::kWebContentArea)
+        ->AddRequest(std::move(request));
+  } else {
+    [self showAlertWithMessage:prompt
+             acceptActionTitle:openLabel
+             rejectActionTitle:cancelLabel
+             completionHandler:completion];
+  }
 }
 
 #pragma mark - AppLauncherTabHelperDelegate
@@ -115,8 +151,9 @@ void RecordUserAcceptedAppLaunchMetric(BOOL user_accepted) {
       UIApplicationStateActive) {
     return NO;
   }
+  web::WebState* webState = tabHelper->web_state();
   if (UrlHasAppStoreScheme(URL)) {
-    [self showAlertAndLaunchAppURL:URL];
+    [self showAlertAndLaunchAppURL:URL webState:webState];
     return YES;
   }
 
@@ -128,28 +165,16 @@ void RecordUserAcceptedAppLaunchMetric(BOOL user_accepted) {
     return YES;
   }
 
-  if (base::FeatureList::IsEnabled(kAppLauncherRefresh)) {
-    // For all other apps other than AppStore, show a prompt if there was no
-    // link transition.
-    if (linkTransition) {
-      [[UIApplication sharedApplication] openURL:net::NSURLWithGURL(URL)
-                                         options:@{}
-                               completionHandler:nil];
-    } else {
-      [self showAlertAndLaunchAppURL:URL];
-    }
-    return YES;
+  // For all other apps other than AppStore, show a prompt if there was no
+  // link transition.
+  if (linkTransition) {
+    [[UIApplication sharedApplication] openURL:net::NSURLWithGURL(URL)
+                                       options:@{}
+                             completionHandler:nil];
+  } else {
+    [self showAlertAndLaunchAppURL:URL webState:webState];
   }
-
-// If the following call returns YES, an application is about to be
-// launched and Chrome will go into the background now.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-  // TODO(crbug.com/774736): This method needs to be converted to an
-  // asynchronous call so that the call below can be replaced with
-  // |openURL:options:completionHandler:|.
-  return [[UIApplication sharedApplication] openURL:net::NSURLWithGURL(URL)];
-#pragma clang diagnostic pop
+  return YES;
 }
 
 - (void)appLauncherTabHelper:(AppLauncherTabHelper*)tabHelper
@@ -161,14 +186,26 @@ void RecordUserAcceptedAppLaunchMetric(BOOL user_accepted) {
       l10n_util::GetNSString(IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP_ALLOW);
   NSString* blockLaunchTitle =
       l10n_util::GetNSString(IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP_BLOCK);
-  [self showAlertWithMessage:message
-           acceptActionTitle:allowLaunchTitle
-           rejectActionTitle:blockLaunchTitle
-           completionHandler:^(BOOL userAllowed) {
-             UMA_HISTOGRAM_BOOLEAN("IOS.RepeatedExternalAppPromptResponse",
-                                   userAllowed);
-             completionHandler(userAllowed);
-           }];
+  ProceduralBlockWithBool completion = ^(BOOL userAllowed) {
+    UMA_HISTOGRAM_BOOLEAN("IOS.RepeatedExternalAppPromptResponse", userAllowed);
+    completionHandler(userAllowed);
+  };
+
+  if (base::FeatureList::IsEnabled(dialogs::kNonModalDialogs)) {
+    std::unique_ptr<OverlayRequest> request =
+        OverlayRequest::CreateWithConfig<AppLauncherAlertOverlayRequestConfig>(
+            /* is_repeated_request= */ true);
+    request->set_callback(
+        base::BindOnce(&AppLauncherOverlayCallback, completion));
+    OverlayRequestQueue::FromWebState(tabHelper->web_state(),
+                                      OverlayModality::kWebContentArea)
+        ->AddRequest(std::move(request));
+  } else {
+    [self showAlertWithMessage:message
+             acceptActionTitle:allowLaunchTitle
+             rejectActionTitle:blockLaunchTitle
+             completionHandler:completion];
+  }
 }
 
 @end

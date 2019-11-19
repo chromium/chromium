@@ -1,7 +1,7 @@
 Tests that console does not log deprecated warning messages while dir-dumping objects.
 
 console-dir-deprecated.js:17 Window
-console-dir-deprecated.js:18 [Deprecation] Element.createShadowRoot is deprecated and will be removed in M73, around March 2019. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 for more details.
+console-dir-deprecated.js:18 [Deprecation] Element.createShadowRoot is deprecated and will be removed in M80, around February 2020. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
 logObjects @ console-dir-deprecated.js:18
 (anonymous) @ console-dir-deprecated.js:22
 console-dir-deprecated.js:18 #document-fragment

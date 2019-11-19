@@ -6,7 +6,6 @@ component("memory_instrumentation") {
   sources = [
     "client_process_impl.cc",
     "client_process_impl.h",
-    "coordinator.h",
     "global_memory_dump.cc",
     "global_memory_dump.h",
     "memory_instrumentation.cc",
@@ -42,6 +41,16 @@ component("memory_instrumentation") {
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/resource_coordinator/public/mojom",
-    "//services/service_manager/public/cpp",
+  ]
+}
+
+source_set("browser") {
+  sources = [
+    "browser_metrics.cc",
+    "browser_metrics.h",
+  ]
+
+  deps = [
+    "//base",
   ]
 }

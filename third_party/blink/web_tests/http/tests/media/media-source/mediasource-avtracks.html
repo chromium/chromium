@@ -104,21 +104,14 @@
                 {
                     verifyTrackRemoval(test, mediaElement, mediaSource, sourceBuffer, test.step_func(function ()
                     {
-                        mediaElement.src = "";
+                        // Change src to a valid, different, URL to ensure
+                        // there is no unintended error produced which might
+                        // race an otherwise-successful test's completion.
+                        var secondMediaSource = new MediaSource();
+                        mediaElement.src = URL.createObjectURL(secondMediaSource);
                     }), test.step_func_done());
                 }));
             }, "Media tracks must be removed when the HTMLMediaElement.src is changed");
-
-            mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
-            {
-                loadMediaAndVerifyAddedTracks(test, mediaElement, segmentInfo, sourceBuffer, mediaData, test.step_func(function ()
-                {
-                    verifyTrackRemoval(test, mediaElement, mediaSource, sourceBuffer, test.step_func(function ()
-                    {
-                        mediaElement.load();
-                    }), test.step_func_done());
-                }));
-            }, "Media tracks must be removed when the HTMLMediaElement.load() is called");
 
             mediasource_testafterdataloaded(function(test, mediaElement, mediaSource, segmentInfo, sourceBuffer, mediaData)
             {

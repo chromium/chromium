@@ -28,6 +28,12 @@
 - (void)unifiedConsentCoordinatorDidTapOnAddAccount:
     (UnifiedConsentCoordinator*)coordinator;
 
+// Called when the primary button needs to update its title (for example if the
+// last identity disappears, the button needs to change from "YES, I'M IN" to
+// "ADD ACCOUNT").
+- (void)unifiedConsentCoordinatorNeedPrimaryButtonUpdate:
+    (UnifiedConsentCoordinator*)coordinator;
+
 @end
 
 // UnifiedConsentCoordinator coordinates UnifiedConsentViewController, which is
@@ -40,10 +46,12 @@
 
 @property(nonatomic, weak) id<UnifiedConsentCoordinatorDelegate> delegate;
 // Identity selected by the user to sign-in. By default, the first identity from
-// GetAllIdentitiesSortedForDisplay() is used. If there is no identity in the
-// list, the identity picker will be hidden. Nil is not accepted if at least one
-// identity exists.
+// GetAllIdentitiesSortedForDisplay() is used.
+// Must be non-nil if at least one identity exists.
 @property(nonatomic, strong) ChromeIdentity* selectedIdentity;
+// Informs the coordinator whether the identity picker should automatically be
+// open when the UnifiedConsent view appears.
+@property(nonatomic) BOOL autoOpenIdentityPicker;
 // String id for text to open the settings (related to record the user consent).
 @property(nonatomic, readonly) int openSettingsStringId;
 // View controller used to display the view.
@@ -52,6 +60,11 @@
 @property(nonatomic, readonly) BOOL isScrolledToBottom;
 // Returns YES if the user tapped on the setting link.
 @property(nonatomic, readonly) BOOL settingsLinkWasTapped;
+// If YES, the UI elements are disabled.
+// TODO(crbug.com/1003737): This should be implemented with
+// ActivityOverlayCoordinator when all the cleanup will be done in
+// ChromeSigninViewController.
+@property(nonatomic, assign, getter=isUIDisabled) BOOL uiDisabled;
 
 // Starts this coordinator.
 - (void)start;
@@ -62,6 +75,9 @@
 
 // Scrolls the consent view to the bottom.
 - (void)scrollToBottom;
+
+// Resets settingsLinkWasTapped flag.
+- (void)resetSettingLinkTapped;
 
 @end
 

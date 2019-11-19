@@ -20,6 +20,8 @@ class SubmenuView;
 // the preferred height of the SubmenuView is bigger than our bounds.
 class MenuScrollViewContainer : public View {
  public:
+  METADATA_HEADER(MenuScrollViewContainer);
+
   explicit MenuScrollViewContainer(SubmenuView* content_view);
 
   // Returns the buttons for scrolling up/down.
@@ -29,17 +31,13 @@ class MenuScrollViewContainer : public View {
   // External function to check if the bubble border is used.
   bool HasBubbleBorder() const;
 
-  // Offsets the Arrow from the default location.
-  void SetBubbleArrowOffset(int offset);
-
   void SetFootnoteView(View* view);
 
   // View overrides.
   gfx::Size CalculatePreferredSize() const override;
-  void Layout() override;
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void OnNativeThemeChanged(const ui::NativeTheme* theme) override;
+  void OnThemeChanged() override;
 
  protected:
   // View override.

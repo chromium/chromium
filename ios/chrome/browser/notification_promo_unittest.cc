@@ -13,7 +13,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/mock_entropy_provider.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/testing_pref_service.h"
@@ -51,8 +50,6 @@ class NotificationPromoTest : public PlatformTest {
  public:
   NotificationPromoTest()
       : notification_promo_(&local_state_),
-        field_trial_list_(std::make_unique<base::FieldTrialList>(
-            std::make_unique<base::MockEntropyProvider>())),
         received_notification_(false),
         start_(0.0),
         end_(0.0),
@@ -293,7 +290,6 @@ class NotificationPromoTest : public PlatformTest {
 
  private:
   NotificationPromo notification_promo_;
-  std::unique_ptr<base::FieldTrialList> field_trial_list_;
   bool received_notification_;
   base::Value test_json_;
 

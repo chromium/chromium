@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "chromeos/dbus/audio_node.h"
+#include "chromeos/dbus/audio/audio_node.h"
 
 namespace chromeos {
 
@@ -22,6 +22,7 @@ enum AudioDeviceType {
   AUDIO_TYPE_MIC,
   AUDIO_TYPE_USB,
   AUDIO_TYPE_BLUETOOTH,
+  AUDIO_TYPE_BLUETOOTH_NB_MIC,
   AUDIO_TYPE_HDMI,
   AUDIO_TYPE_INTERNAL_SPEAKER,
   AUDIO_TYPE_INTERNAL_MIC,
@@ -58,12 +59,15 @@ struct COMPONENT_EXPORT(CHROMEOS_AUDIO) AudioDevice {
             type == AUDIO_TYPE_MIC ||
             type == AUDIO_TYPE_USB ||
             type == AUDIO_TYPE_BLUETOOTH ||
+            type == AUDIO_TYPE_BLUETOOTH_NB_MIC ||
             type == AUDIO_TYPE_HDMI ||
             type == AUDIO_TYPE_INTERNAL_SPEAKER ||
             type == AUDIO_TYPE_LINEOUT);
   }
 
   bool IsExternalDevice() const;
+
+  bool IsInternalMic() const;
 
   bool is_input = false;
 

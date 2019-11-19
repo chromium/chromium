@@ -11,21 +11,21 @@
 namespace video_capture {
 
 PushVideoStreamSubscriptionImpl::PushVideoStreamSubscriptionImpl(
-    mojom::PushVideoStreamSubscriptionRequest subscription_request,
-    mojom::ReceiverPtr subscriber,
+    mojo::PendingReceiver<mojom::PushVideoStreamSubscription>
+        subscription_receiver,
+    mojo::PendingRemote<mojom::VideoFrameHandler> subscriber,
     const media::VideoCaptureParams& requested_settings,
     mojom::VideoSource::CreatePushSubscriptionCallback creation_callback,
     BroadcastingReceiver* broadcaster,
-    mojom::DevicePtr* device)
-    : binding_(this, std::move(subscription_request)),
+    mojo::Remote<mojom::Device>* device)
+    : receiver_(this, std::move(subscription_receiver)),
       subscriber_(std::move(subscriber)),
       requested_settings_(requested_settings),
       creation_callback_(std::move(creation_callback)),
       broadcaster_(broadcaster),
       device_(device),
       status_(Status::kCreationCallbackNotYetRun),
-      broadcaster_client_id_(0),
-      weak_factory_(this) {
+      broadcaster_client_id_(0) {
   DCHECK(broadcaster_);
   DCHECK(device_);
 }
@@ -35,7 +35,7 @@ PushVideoStreamSubscriptionImpl::~PushVideoStreamSubscriptionImpl() = default;
 void PushVideoStreamSubscriptionImpl::SetOnClosedHandler(
     base::OnceCallback<void(base::OnceClosure done_cb)> handler) {
   on_closed_handler_ = std::move(handler);
-  binding_.set_connection_error_handler(
+  receiver_.set_disconnect_handler(
       base::BindOnce(&PushVideoStreamSubscriptionImpl::OnConnectionLost,
                      weak_factory_.GetWeakPtr()));
 }
@@ -70,7 +70,8 @@ void PushVideoStreamSubscriptionImpl::OnDeviceStartFailed() {
 void PushVideoStreamSubscriptionImpl::Activate() {
   if (status_ != Status::kNotYetActivated)
     return;
-  broadcaster_client_id_ = broadcaster_->AddClient(std::move(subscriber_));
+  broadcaster_client_id_ = broadcaster_->AddClient(
+      std::move(subscriber_), requested_settings_.buffer_type);
   status_ = Status::kActive;
 }
 

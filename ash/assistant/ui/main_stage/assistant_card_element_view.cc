@@ -17,6 +17,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -91,6 +92,8 @@ void AssistantCardElementView::ChildPreferredSizeChanged(views::View* child) {
 
 void AssistantCardElementView::AboutToRequestFocusFromTabTraversal(
     bool reverse) {
+  // Focus in the web contents will be reset in FocusThroughTabTraversal().
+  focused_node_rect_ = gfx::Rect();
   contents_->FocusThroughTabTraversal(reverse);
 }
 
@@ -141,6 +144,24 @@ void AssistantCardElementView::OnGestureEvent(ui::GestureEvent* event) {
   cursor_manager->UnlockCursor();
 }
 
+void AssistantCardElementView::ScrollRectToVisible(const gfx::Rect& rect) {
+  // We expect this method is called outside this class to show its local
+  // bounds. Inside this class, should call views::View::ScrollRectToVisible()
+  // to show the focused node in the web contents.
+  DCHECK(rect == GetLocalBounds());
+
+  // When this view is focused, View::Focus() calls ScrollViewToVisible(), which
+  // calls ScrollRectToVisible().  But we don't want that call to do anything,
+  // since the true focused item is not this view but a node in the contained
+  // web contents.  That will be scrolled into view by FocusedNodeChanged()
+  // below, so just no-op here.
+  if (focused_node_rect_.IsEmpty())
+    return;
+
+  // Make the focused node visible.
+  views::View::ScrollRectToVisible(focused_node_rect_);
+}
+
 void AssistantCardElementView::DidAutoResizeView(const gfx::Size& new_size) {
   contents_->GetView()->view()->SetPreferredSize(new_size);
 }
@@ -153,6 +174,19 @@ void AssistantCardElementView::DidSuppressNavigation(
   // special handling to deep links.
   if (from_user_gesture)
     delegate_->OpenUrlFromView(url);
+}
+
+void AssistantCardElementView::FocusedNodeChanged(
+    bool is_editable_node,
+    const gfx::Rect& node_bounds_in_screen) {
+  // TODO(b/143985066): Card has element with empty bounds, e.g. the line break.
+  if (node_bounds_in_screen.IsEmpty())
+    return;
+
+  gfx::Point origin = node_bounds_in_screen.origin();
+  ConvertPointFromScreen(this, &origin);
+  focused_node_rect_ = gfx::Rect(origin, node_bounds_in_screen.size());
+  views::View::ScrollRectToVisible(focused_node_rect_);
 }
 
 void AssistantCardElementView::InitLayout(

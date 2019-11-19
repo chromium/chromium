@@ -82,12 +82,21 @@ IN_PROC_BROWSER_TEST_F(AudioPlayerBrowserTest, ChangeTracksPlayListIcon) {
   StartTest();
 }
 
-IN_PROC_BROWSER_TEST_F(AudioPlayerBrowserTest, NativeMediaKey) {
-  // The HardwareMediaKeyHandling feature makes key handling flaky.
-  // See https://crbug.com/902519.
-  base::test::ScopedFeatureList disable_media_key_handling;
-  disable_media_key_handling.InitAndDisableFeature(
-      media::kHardwareMediaKeyHandling);
+class AudioPlayerBrowserTestWithoutHardwareMediaKeyHandling
+    : public AudioPlayerBrowserTest {
+ public:
+  AudioPlayerBrowserTestWithoutHardwareMediaKeyHandling() {
+    // The HardwareMediaKeyHandling feature makes key handling flaky.
+    // See https://crbug.com/902519.
+    feature_list_.InitAndDisableFeature(media::kHardwareMediaKeyHandling);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(AudioPlayerBrowserTestWithoutHardwareMediaKeyHandling,
+                       NativeMediaKey) {
   set_test_case_name("mediaKeyNative");
   StartTest();
 }

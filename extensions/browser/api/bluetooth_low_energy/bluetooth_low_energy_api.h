@@ -90,7 +90,7 @@ namespace api {
 // Base class for bluetoothLowEnergy API functions. This class handles some of
 // the common logic involved in all API functions, such as checking for
 // platform support and returning the correct error.
-class BluetoothLowEnergyExtensionFunction : public UIThreadExtensionFunction {
+class BluetoothLowEnergyExtensionFunction : public ExtensionFunction {
  public:
   BluetoothLowEnergyExtensionFunction();
 

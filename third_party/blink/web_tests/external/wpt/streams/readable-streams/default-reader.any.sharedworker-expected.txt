@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+PASS Can get the ReadableStreamDefaultReader constructor indirectly
+PASS ReadableStreamDefaultReader constructor should get a ReadableStream object as argument
+FAIL ReadableStreamDefaultReader instances should have the correct list of properties assert_equals: cancel has 1 parameter expected 1 but got 0
+PASS ReadableStreamDefaultReader closed should always return the same promise object
+PASS Constructing a ReadableStreamDefaultReader directly should fail if the stream is already locked (via direct construction)
+PASS Getting a ReadableStreamDefaultReader via getReader should fail if the stream is already locked (via direct construction)
+PASS Constructing a ReadableStreamDefaultReader directly should fail if the stream is already locked (via getReader)
+PASS Getting a ReadableStreamDefaultReader via getReader should fail if the stream is already locked (via getReader)
+PASS Constructing a ReadableStreamDefaultReader directly should be OK if the stream is closed
+PASS Constructing a ReadableStreamDefaultReader directly should be OK if the stream is errored
+PASS Reading from a reader for an empty stream will wait until a chunk is available
+PASS cancel() on a reader does not release the reader
+PASS closed should be fulfilled after stream is closed (.closed access before acquiring)
+PASS closed should be rejected after reader releases its lock (multiple stream locks)
+PASS Multiple readers can access the stream in sequence
+PASS Cannot use an already-released reader to unlock a stream again
+PASS cancel() on a released reader is a no-op and does not pass through
+PASS Getting a second reader after erroring the stream and releasing the reader should succeed
+PASS ReadableStreamDefaultReader closed promise should be rejected with undefined if that is the error
+PASS ReadableStreamDefaultReader: if start rejects with no parameter, it should error the stream with an undefined error
+PASS Erroring a ReadableStream after checking closed should reject ReadableStreamDefaultReader closed promise
+PASS Erroring a ReadableStream before checking closed should reject ReadableStreamDefaultReader closed promise
+PASS Reading twice on a stream that gets closed
+PASS Reading twice on a closed stream
+PASS Reading twice on an errored stream
+PASS Reading twice on a stream that gets errored
+PASS getReader() should call ToString() on mode
+PASS controller.close() should clear the list of pending read requests
+Harness: the test ran to completion.
+

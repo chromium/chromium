@@ -15,7 +15,7 @@
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -23,12 +23,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/task_scheduler/task_scheduler.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -287,7 +287,7 @@ class SyncConfigGetter : public ProxyConfigService::Observer {
             base::WaitableEvent::InitialState::NOT_SIGNALED) {
     // Start the main IO thread.
     base::Thread::Options options;
-    options.message_loop_type = base::MessageLoop::TYPE_IO;
+    options.message_pump_type = base::MessagePumpType::IO;
     main_thread_.StartWithOptions(options);
 
     // Make sure the thread started.
@@ -411,7 +411,7 @@ class SyncConfigGetter : public ProxyConfigService::Observer {
 // but all the test cases with the same prefix ("ProxyConfigServiceLinuxTest")
 // must use the same test fixture class (also "ProxyConfigServiceLinuxTest").
 class ProxyConfigServiceLinuxTest : public PlatformTest,
-                                    public WithScopedTaskEnvironment {
+                                    public WithTaskEnvironment {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
@@ -1885,7 +1885,7 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEFileChanged) {
   // Initialization posts a task to start watching kioslaverc file. Ensure that
   // registration has happened before modifying it or the file change won't be
   // observed.
-  base::TaskScheduler::GetInstance()->FlushForTesting();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
 
   WriteFile(kioslaverc_,
             "[Proxy Settings]\nProxyType=2\n"

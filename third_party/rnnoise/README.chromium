@@ -26,3 +26,4 @@ Local Modifications:
 * removing unwanted extern from constants in rnn_vad_weights.h and using
   constants to declare array sizes
 * Add braces around arrays in unit test.
+* KissFFT removed

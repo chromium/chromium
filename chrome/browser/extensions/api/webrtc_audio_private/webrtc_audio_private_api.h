@@ -71,13 +71,6 @@ class WebrtcAudioPrivateFunction : public ChromeAsyncExtensionFunction {
 
   media::AudioSystem* GetAudioSystem();
 
-  // Returns the RenderProcessHost associated with the given |request|
-  // authorized by the |security_origin|. Returns null if unauthorized or
-  // the RPH does not exist.
-  content::RenderProcessHost* GetRenderProcessHostFromRequest(
-      const api::webrtc_audio_private::RequestInfo& request,
-      const std::string& security_origin);
-
  private:
   std::string device_id_salt_;
   std::unique_ptr<media::AudioSystem> audio_system_;
@@ -130,24 +123,6 @@ class WebrtcAudioPrivateGetAssociatedSinkFunction
   void Reply(const std::string& hmac);
 
   std::unique_ptr<api::webrtc_audio_private::GetAssociatedSink::Params> params_;
-};
-
-class WebrtcAudioPrivateSetAudioExperimentsFunction
-    : public WebrtcAudioPrivateFunction {
- public:
-  WebrtcAudioPrivateSetAudioExperimentsFunction();
-
- protected:
-  ~WebrtcAudioPrivateSetAudioExperimentsFunction() override;
-
- private:
-  DECLARE_EXTENSION_FUNCTION("webrtcAudioPrivate.setAudioExperiments",
-                             WEBRTC_AUDIO_PRIVATE_SET_AUDIO_EXPERIMENTS)
-
-  bool RunAsync() override;
-
-  // Must be called on the UI thread.
-  void FireCallback(bool success, const std::string& error_message);
 };
 
 }  // namespace extensions

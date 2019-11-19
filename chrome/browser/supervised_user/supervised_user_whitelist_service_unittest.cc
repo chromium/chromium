@@ -27,12 +27,9 @@
 #include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/sync_error_factory.h"
 #include "components/sync/protocol/sync.pb.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if !defined(OS_ANDROID)
-#include "services/data_decoder/public/cpp/testing_json_parser.h"
-#endif
 
 namespace {
 
@@ -158,12 +155,9 @@ class SupervisedUserWhitelistServiceTest : public testing::Test {
       site_lists_changed_callback_.Run();
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-
-#if !defined(OS_ANDROID)
-  data_decoder::TestingJsonParser::ScopedFactoryOverride factory_override_;
-#endif
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   std::unique_ptr<MockSupervisedUserWhitelistInstaller> installer_;
   std::unique_ptr<SupervisedUserWhitelistService> service_;

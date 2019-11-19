@@ -24,8 +24,7 @@ OmniboxController::OmniboxController(OmniboxEditModel* omnibox_edit_model,
       autocomplete_controller_(new AutocompleteController(
           client_->CreateAutocompleteProviderClient(),
           this,
-          AutocompleteClassifier::DefaultOmniboxProviders())),
-      weak_ptr_factory_(this) {}
+          AutocompleteClassifier::DefaultOmniboxProviders())) {}
 
 OmniboxController::~OmniboxController() {
 }
@@ -34,9 +33,10 @@ void OmniboxController::StartAutocomplete(
     const AutocompleteInput& input) const {
   ClearPopupKeywordMode();
 
-  if (client_->GetOmniboxControllerEmitter())
+  if (client_->GetOmniboxControllerEmitter()) {
     client_->GetOmniboxControllerEmitter()->NotifyOmniboxQuery(
-        autocomplete_controller_.get());
+        autocomplete_controller_.get(), input);
+  }
 
   // We don't explicitly clear OmniboxPopupModel::manually_selected_match, as
   // Start ends up invoking OmniboxPopupModel::OnResultChanged which clears it.
@@ -60,7 +60,8 @@ void OmniboxController::OnResultChanged(bool default_match_changed) {
       InvalidateCurrentMatch();
       if (popup_)
         popup_->OnResultChanged();
-      omnibox_edit_model_->OnPopupDataChanged(base::string16(), nullptr,
+      omnibox_edit_model_->OnPopupDataChanged(base::string16(),
+                                              /*is_temporary_text=*/false,
                                               base::string16(), false);
     }
   } else if (popup_) {
@@ -77,8 +78,8 @@ void OmniboxController::OnResultChanged(bool default_match_changed) {
   // passed in to eliminate the potential for crashes on shutdown.
   client_->OnResultChanged(
       result(), default_match_changed,
-      base::Bind(&OmniboxController::SetRichSuggestionBitmap,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(&OmniboxController::SetRichSuggestionBitmap,
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void OmniboxController::InvalidateCurrentMatch() {

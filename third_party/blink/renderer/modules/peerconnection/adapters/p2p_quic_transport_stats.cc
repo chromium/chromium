@@ -10,16 +10,12 @@ P2PQuicTransportStats::P2PQuicTransportStats()
     : timestamp(base::TimeTicks::Now()) {}
 
 P2PQuicTransportStats::P2PQuicTransportStats(
-    const quic::QuicConnectionStats& quic_stats,
-    uint32_t num_outgoing_streams_created,
-    uint32_t num_incoming_streams_created)
+    const quic::QuicConnectionStats& quic_stats)
     : timestamp(base::TimeTicks::Now()),
       bytes_sent(quic_stats.bytes_sent),
       packets_sent(quic_stats.packets_sent),
       stream_bytes_sent(quic_stats.stream_bytes_sent),
       stream_bytes_received(quic_stats.stream_bytes_received),
-      num_outgoing_streams_created(num_outgoing_streams_created),
-      num_incoming_streams_created(num_incoming_streams_created),
       bytes_received(quic_stats.bytes_received),
       packets_received(quic_stats.packets_received),
       packets_processed(quic_stats.packets_processed),

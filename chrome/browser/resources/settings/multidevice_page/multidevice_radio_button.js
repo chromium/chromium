@@ -9,6 +9,34 @@ Polymer({
     CrRadioButtonBehavior,
   ],
 
+  hostAttributes: {'role': 'radio'},
+
+  properties: {
+    ariaChecked: {
+      type: String,
+      notify: true,
+      reflectToAttribute: true,
+      computed: 'getAriaChecked_(checked)'
+    },
+    ariaDisabled: {
+      type: String,
+      notify: true,
+      reflectToAttribute: true,
+      computed: 'getAriaDisabled_(disabled)'
+
+    },
+    ariaLabel: {
+      type: String,
+      notify: true,
+      reflectToAttribute: true,
+      computed: 'getLabel_(label)'
+    }
+  },
+
+  getLabel_: function(label) {
+    return label;
+  },
+
   /**
    * Prevents on-click handles on the control from being activated when the
    * indicator is clicked.

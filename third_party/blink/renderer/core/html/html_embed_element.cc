@@ -40,20 +40,13 @@
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLEmbedElement::HTMLEmbedElement(Document& document,
-                                          const CreateElementFlags flags)
-    : HTMLPlugInElement(kEmbedTag,
+HTMLEmbedElement::HTMLEmbedElement(Document& document,
+                                   const CreateElementFlags flags)
+    : HTMLPlugInElement(html_names::kEmbedTag,
                         document,
                         flags,
-                        kShouldPreferPlugInsForImages) {}
-
-HTMLEmbedElement* HTMLEmbedElement::Create(Document& document,
-                                           const CreateElementFlags flags) {
-  auto* element = MakeGarbageCollected<HTMLEmbedElement>(document, flags);
-  element->EnsureUserAgentShadowRoot();
-  return element;
+                        kShouldPreferPlugInsForImages) {
+  EnsureUserAgentShadowRoot();
 }
 
 const AttrNameToTrustedType& HTMLEmbedElement::GetCheckedAttributeTypes()
@@ -80,7 +73,7 @@ LayoutEmbeddedContent* HTMLEmbedElement::ExistingLayoutEmbeddedContent() const {
 
 bool HTMLEmbedElement::IsPresentationAttribute(
     const QualifiedName& name) const {
-  if (name == kHiddenAttr)
+  if (name == html_names::kHiddenAttr)
     return true;
   return HTMLPlugInElement::IsPresentationAttribute(name);
 }
@@ -89,13 +82,15 @@ void HTMLEmbedElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
-  if (name == kHiddenAttr) {
+  if (name == html_names::kHiddenAttr) {
     if (DeprecatedEqualIgnoringCase(value, "yes") ||
         DeprecatedEqualIgnoringCase(value, "true")) {
       AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyWidth, 0, CSSPrimitiveValue::UnitType::kPixels);
+          style, CSSPropertyID::kWidth, 0,
+          CSSPrimitiveValue::UnitType::kPixels);
       AddPropertyToPresentationAttributeStyle(
-          style, CSSPropertyHeight, 0, CSSPrimitiveValue::UnitType::kPixels);
+          style, CSSPropertyID::kHeight, 0,
+          CSSPrimitiveValue::UnitType::kPixels);
     }
   } else {
     HTMLPlugInElement::CollectStyleForPresentationAttribute(name, value, style);
@@ -104,31 +99,34 @@ void HTMLEmbedElement::CollectStyleForPresentationAttribute(
 
 void HTMLEmbedElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == kTypeAttr) {
+  if (params.name == html_names::kTypeAttr) {
     SetServiceType(params.new_value.LowerASCII());
     wtf_size_t pos = service_type_.Find(";");
     if (pos != kNotFound)
       SetServiceType(service_type_.Left(pos));
     if (GetLayoutObject()) {
       SetNeedsPluginUpdate(true);
+      SetDisposeView();
       GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
           "Embed type changed");
     }
-  } else if (params.name == kCodeAttr) {
+  } else if (params.name == html_names::kCodeAttr) {
     // TODO(schenney): Remove this branch? It's not in the spec and we're not in
     // the HTMLAppletElement hierarchy.
     SetUrl(StripLeadingAndTrailingHTMLSpaces(params.new_value));
-  } else if (params.name == kSrcAttr) {
+    SetDisposeView();
+  } else if (params.name == html_names::kSrcAttr) {
     SetUrl(StripLeadingAndTrailingHTMLSpaces(params.new_value));
     if (GetLayoutObject() && IsImageType()) {
+      SetDisposeView();
       if (!image_loader_)
-        image_loader_ = HTMLImageLoader::Create(this);
+        image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
       image_loader_->UpdateFromElement(ImageLoader::kUpdateIgnorePreviousError);
     } else if (GetLayoutObject()) {
       // Check if this Embed can transition from potentially-active to active
-      if (FastHasAttribute(kTypeAttr)) {
+      if (FastHasAttribute(html_names::kTypeAttr)) {
         SetNeedsPluginUpdate(true);
-        LazyReattachIfNeeded();
+        ReattachOnPluginChangeIfNeeded();
       }
     }
   } else {
@@ -187,7 +185,8 @@ bool HTMLEmbedElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
   // represents nothing:
 
   // * The element has neither a src attribute nor a type attribute.
-  if (!FastHasAttribute(kSrcAttr) && !FastHasAttribute(kTypeAttr))
+  if (!FastHasAttribute(html_names::kSrcAttr) &&
+      !FastHasAttribute(html_names::kTypeAttr))
     return false;
 
   // * The element has a media element ancestor.
@@ -206,12 +205,12 @@ bool HTMLEmbedElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
 }
 
 bool HTMLEmbedElement::IsURLAttribute(const Attribute& attribute) const {
-  return attribute.GetName() == kSrcAttr ||
+  return attribute.GetName() == html_names::kSrcAttr ||
          HTMLPlugInElement::IsURLAttribute(attribute);
 }
 
 const QualifiedName& HTMLEmbedElement::SubResourceAttributeName() const {
-  return kSrcAttr;
+  return html_names::kSrcAttr;
 }
 
 bool HTMLEmbedElement::IsInteractiveContent() const {

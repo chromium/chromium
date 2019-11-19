@@ -147,8 +147,6 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
                                  WebSocketExtensionParams* params);
 
   void RecordHandshakeResult(HandshakeResult result);
-  void RecordDeflateMode(
-      WebSocketDeflateParameters::ContextTakeOverMode deflate_mode);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebSocketHandshakeStreamBase);

@@ -133,7 +133,7 @@ class PepperFlashSettingsManager {
 
   uint32_t next_request_id_;
 
-  base::WeakPtrFactory<PepperFlashSettingsManager> weak_ptr_factory_;
+  base::WeakPtrFactory<PepperFlashSettingsManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperFlashSettingsManager);
 };

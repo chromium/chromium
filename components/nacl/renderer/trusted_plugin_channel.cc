@@ -16,12 +16,12 @@ namespace nacl {
 
 TrustedPluginChannel::TrustedPluginChannel(
     NexeLoadManager* nexe_load_manager,
-    mojom::NaClRendererHostRequest request,
+    mojo::PendingReceiver<mojom::NaClRendererHost> receiver,
     bool is_helper_nexe)
     : nexe_load_manager_(nexe_load_manager),
-      binding_(this, std::move(request)),
+      receiver_(this, std::move(receiver)),
       is_helper_nexe_(is_helper_nexe) {
-  binding_.set_connection_error_handler(base::BindOnce(
+  receiver_.set_disconnect_handler(base::BindOnce(
       &TrustedPluginChannel::OnChannelError, base::Unretained(this)));
 }
 
@@ -64,8 +64,8 @@ void TrustedPluginChannel::ReportLoadStatus(NaClErrorCode load_status,
 }
 
 void TrustedPluginChannel::ProvideExitControl(
-    mojom::NaClExitControlPtr exit_control) {
-  exit_control_ = std::move(exit_control);
+    mojo::PendingRemote<mojom::NaClExitControl> exit_control) {
+  exit_control_.Bind(std::move(exit_control));
 }
 
 }  // namespace nacl

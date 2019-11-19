@@ -23,7 +23,7 @@ class DummyDriveService : public DriveServiceInterface {
   ~DummyDriveService() override;
 
   // DriveServiceInterface Overrides
-  void Initialize(const std::string& account_id) override;
+  void Initialize(const CoreAccountId& account_id) override;
   void AddObserver(DriveServiceObserver* observer) override;
   void RemoveObserver(DriveServiceObserver* observer) override;
   bool CanSendRequest() const override;

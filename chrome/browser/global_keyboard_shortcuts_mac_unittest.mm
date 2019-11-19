@@ -32,6 +32,19 @@ int CommandForKeys(bool command_key,
   if (opt_key)
     modifierFlags |= NSAlternateKeyMask;
 
+  switch (vkey_code) {
+    case kVK_UpArrow:
+    case kVK_DownArrow:
+    case kVK_LeftArrow:
+    case kVK_RightArrow:
+      // Docs say this is set whenever a key came from the numpad *or* the arrow
+      // keys.
+      modifierFlags |= NSEventModifierFlagNumericPad;
+      break;
+    default:
+      break;
+  }
+
   unichar shifted_character;
   unichar character;
   int result = ui::MacKeyCodeForWindowsKeyCode(

@@ -53,11 +53,6 @@ CSSStyleSheet* InlineCSSStyleDeclaration::ParentStyleSheet() const {
                          : nullptr;
 }
 
-PropertyRegistry* InlineCSSStyleDeclaration::GetPropertyRegistry() const {
-  return parent_element_ ? parent_element_->GetDocument().GetPropertyRegistry()
-                         : nullptr;
-}
-
 void InlineCSSStyleDeclaration::Trace(blink::Visitor* visitor) {
   visitor->Trace(parent_element_);
   AbstractPropertySetCSSStyleDeclaration::Trace(visitor);

@@ -11,7 +11,8 @@
 
 #include "base/macros.h"
 #include "base/token.h"
-#include "mojo/public/cpp/bindings/associated_binding_set.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/mojom/connector.mojom.h"
 #include "services/service_manager/public/mojom/service_control.mojom.h"
@@ -26,7 +27,7 @@ class Service;
 // Service Manager machinery. Typical usage should look something like:
 //
 //     TEST(MyTest, Foo) {
-//       base::test::ScopedTaskEnvironment task_environment;
+//       base::test::TaskEnvironment task_environment;
 //       TestConnectorFactory connector_factory;
 //       my_service::MyServiceImpl service(connector_factory.RegisterInstance(
 //           my_service::mojom::kServiceName));
@@ -88,8 +89,8 @@ class TestConnectorFactory : public mojom::ServiceControl {
  private:
   void OnStartResponseHandler(
       const std::string& service_name,
-      mojom::ConnectorRequest connector_request,
-      mojom::ServiceControlAssociatedRequest control_request);
+      mojo::PendingReceiver<mojom::Connector> connector_receiver,
+      mojo::PendingAssociatedReceiver<mojom::ServiceControl> control_receiver);
 
   // mojom::ServiceControl:
   void RequestQuit() override;
@@ -106,8 +107,8 @@ class TestConnectorFactory : public mojom::ServiceControl {
   // ServiceControl bindings which receive and process RequestQuit requests from
   // connected service instances. The associated service name is used as
   // context.
-  mojo::AssociatedBindingSet<mojom::ServiceControl, std::string>
-      service_control_bindings_;
+  mojo::AssociatedReceiverSet<mojom::ServiceControl, std::string>
+      service_control_receivers_;
 
   bool ignore_unknown_service_requests_ = false;
   bool ignore_quit_requests_ = false;

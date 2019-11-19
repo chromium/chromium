@@ -26,7 +26,7 @@
 #include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/bluetooth_socket_win.h"
 #include "device/bluetooth/bluetooth_task_manager_win.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace device {
 
@@ -59,7 +59,7 @@ base::WeakPtr<BluetoothAdapter> BluetoothAdapterWin::CreateClassicAdapter(
 // static
 bool BluetoothAdapterWin::UseNewBLEWinImplementation() {
   return base::FeatureList::IsEnabled(kNewBLEWinImplementation) &&
-         base::win::GetVersion() >= base::win::VERSION_WIN10;
+         base::win::GetVersion() >= base::win::Version::WIN10;
 }
 
 BluetoothAdapterWin::BluetoothAdapterWin(InitCallback init_callback)
@@ -68,9 +68,7 @@ BluetoothAdapterWin::BluetoothAdapterWin(InitCallback init_callback)
       initialized_(false),
       powered_(false),
       discovery_status_(NOT_DISCOVERING),
-      num_discovery_listeners_(0),
-      force_update_device_for_test_(false),
-      weak_ptr_factory_(this) {}
+      force_update_device_for_test_(false) {}
 
 BluetoothAdapterWin::~BluetoothAdapterWin() {
   if (task_manager_.get())
@@ -129,38 +127,14 @@ bool BluetoothAdapterWin::IsDiscovering() const {
       discovery_status_ == DISCOVERY_STOPPING;
 }
 
-static void RunDiscoverySessionErrorCallback(
-    base::OnceCallback<void(UMABluetoothDiscoverySessionOutcome)>
-        error_callback,
-    UMABluetoothDiscoverySessionOutcome outcome) {
-  std::move(error_callback).Run(outcome);
-}
-
 void BluetoothAdapterWin::DiscoveryStarted(bool success) {
   discovery_status_ = success ? DISCOVERING : NOT_DISCOVERING;
-  for (auto& callbacks : on_start_discovery_callbacks_) {
-    if (success)
-      ui_task_runner_->PostTask(FROM_HERE, callbacks.first);
-    else
-      ui_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&RunDiscoverySessionErrorCallback,
-                         std::move(callbacks.second),
-                         UMABluetoothDiscoverySessionOutcome::UNKNOWN));
-  }
-  num_discovery_listeners_ = on_start_discovery_callbacks_.size();
-  on_start_discovery_callbacks_.clear();
+  std::move(discovery_changed_callback_)
+      .Run(/*is_error=*/!success, UMABluetoothDiscoverySessionOutcome::UNKNOWN);
 
   if (success) {
     for (auto& observer : observers_)
       observer.AdapterDiscoveringChanged(this, true);
-
-    // If there are stop discovery requests, post the stop discovery again.
-    MaybePostStopDiscoveryTask();
-  } else if (!on_stop_discovery_callbacks_.empty()) {
-    // If there are stop discovery requests but start discovery has failed,
-    // notify that stop discovery has been complete.
-    DiscoveryStopped();
   }
 }
 
@@ -168,20 +142,11 @@ void BluetoothAdapterWin::DiscoveryStopped() {
   discovered_devices_.clear();
   bool was_discovering = IsDiscovering();
   discovery_status_ = NOT_DISCOVERING;
-  for (std::vector<base::Closure>::const_iterator iter =
-           on_stop_discovery_callbacks_.begin();
-       iter != on_stop_discovery_callbacks_.end();
-       ++iter) {
-    ui_task_runner_->PostTask(FROM_HERE, *iter);
-  }
-  num_discovery_listeners_ = 0;
-  on_stop_discovery_callbacks_.clear();
+  std::move(discovery_changed_callback_)
+      .Run(/*is_error=*/false, UMABluetoothDiscoverySessionOutcome::SUCCESS);
   if (was_discovering)
     for (auto& observer : observers_)
       observer.AdapterDiscoveringChanged(this, false);
-
-  // If there are start discovery requests, post the start discovery again.
-  MaybePostStartDiscoveryTask();
 }
 
 BluetoothAdapter::UUIDList BluetoothAdapterWin::GetUUIDs() const {
@@ -314,48 +279,43 @@ void BluetoothAdapterWin::DevicesPolled(
   }
 }
 
+base::WeakPtr<BluetoothAdapter> BluetoothAdapterWin::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 // BluetoothAdapterWin should override SetPowered() instead.
 bool BluetoothAdapterWin::SetPoweredImpl(bool powered) {
   NOTREACHED();
   return false;
 }
 
-// If the method is called when |discovery_status_| is DISCOVERY_STOPPING,
-// starting again is handled by BluetoothAdapterWin::DiscoveryStopped().
-void BluetoothAdapterWin::AddDiscoverySession(
-    BluetoothDiscoveryFilter* discovery_filter,
-    const base::Closure& callback,
-    DiscoverySessionErrorCallback error_callback) {
+void BluetoothAdapterWin::UpdateFilter(
+    std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
+    DiscoverySessionResultCallback callback) {
+  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  DCHECK(discovery_status_ == DISCOVERING ||
+         discovery_status_ == DISCOVERY_STARTING);
   if (discovery_status_ == DISCOVERING) {
-    num_discovery_listeners_++;
-    callback.Run();
+    copyable_callback.Run(false, UMABluetoothDiscoverySessionOutcome::SUCCESS);
     return;
   }
-  on_start_discovery_callbacks_.push_back(
-      std::make_pair(callback, std::move(error_callback)));
+}
+
+void BluetoothAdapterWin::StartScanWithFilter(
+    std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
+    DiscoverySessionResultCallback callback) {
+  discovery_changed_callback_ = std::move(callback);
   MaybePostStartDiscoveryTask();
 }
 
-void BluetoothAdapterWin::RemoveDiscoverySession(
-    BluetoothDiscoveryFilter* discovery_filter,
-    const base::Closure& callback,
-    DiscoverySessionErrorCallback error_callback) {
+void BluetoothAdapterWin::StopScan(DiscoverySessionResultCallback callback) {
   if (discovery_status_ == NOT_DISCOVERING) {
-    std::move(error_callback)
-        .Run(UMABluetoothDiscoverySessionOutcome::NOT_ACTIVE);
+    std::move(callback).Run(/*is_error=*/true,
+                            UMABluetoothDiscoverySessionOutcome::NOT_ACTIVE);
     return;
   }
-  on_stop_discovery_callbacks_.push_back(callback);
+  discovery_changed_callback_ = std::move(callback);
   MaybePostStopDiscoveryTask();
-}
-
-void BluetoothAdapterWin::SetDiscoveryFilter(
-    std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
-    const base::Closure& callback,
-    DiscoverySessionErrorCallback error_callback) {
-  NOTIMPLEMENTED();
-  std::move(error_callback)
-      .Run(UMABluetoothDiscoverySessionOutcome::NOT_IMPLEMENTED);
 }
 
 void BluetoothAdapterWin::Init() {
@@ -382,8 +342,7 @@ void BluetoothAdapterWin::InitForTest(
 }
 
 void BluetoothAdapterWin::MaybePostStartDiscoveryTask() {
-  if (discovery_status_ == NOT_DISCOVERING &&
-      !on_start_discovery_callbacks_.empty()) {
+  if (discovery_status_ == NOT_DISCOVERING) {
     discovery_status_ = DISCOVERY_STARTING;
     task_manager_->PostStartDiscoveryTask();
   }
@@ -392,18 +351,6 @@ void BluetoothAdapterWin::MaybePostStartDiscoveryTask() {
 void BluetoothAdapterWin::MaybePostStopDiscoveryTask() {
   if (discovery_status_ != DISCOVERING)
     return;
-
-  if (on_stop_discovery_callbacks_.size() < num_discovery_listeners_) {
-    for (std::vector<base::Closure>::const_iterator iter =
-             on_stop_discovery_callbacks_.begin();
-         iter != on_stop_discovery_callbacks_.end();
-         ++iter) {
-      ui_task_runner_->PostTask(FROM_HERE, *iter);
-    }
-    num_discovery_listeners_ -= on_stop_discovery_callbacks_.size();
-    on_stop_discovery_callbacks_.clear();
-    return;
-  }
 
   discovery_status_ = DISCOVERY_STOPPING;
   task_manager_->PostStopDiscoveryTask();

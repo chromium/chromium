@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
@@ -25,7 +24,10 @@ class LayerTreeFrameSink::ContextLostForwarder
   ContextLostForwarder(base::WeakPtr<LayerTreeFrameSink> frame_sink,
                        scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : frame_sink_(frame_sink), task_runner_(std::move(task_runner)) {}
+  ContextLostForwarder(const ContextLostForwarder&) = delete;
   ~ContextLostForwarder() override = default;
+
+  ContextLostForwarder& operator=(const ContextLostForwarder&) = delete;
 
   void OnContextLost() override {
     task_runner_->PostTask(
@@ -36,7 +38,6 @@ class LayerTreeFrameSink::ContextLostForwarder
  private:
   base::WeakPtr<LayerTreeFrameSink> frame_sink_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  DISALLOW_COPY_AND_ASSIGN(ContextLostForwarder);
 };
 
 LayerTreeFrameSink::LayerTreeFrameSink(
@@ -47,8 +48,7 @@ LayerTreeFrameSink::LayerTreeFrameSink(
     : context_provider_(std::move(context_provider)),
       worker_context_provider_(std::move(worker_context_provider)),
       compositor_task_runner_(std::move(compositor_task_runner)),
-      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
-      weak_ptr_factory_(this) {
+      gpu_memory_buffer_manager_(gpu_memory_buffer_manager) {
   DETACH_FROM_THREAD(thread_checker_);
 }
 

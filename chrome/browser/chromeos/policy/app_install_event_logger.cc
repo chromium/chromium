@@ -20,7 +20,6 @@
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/disk_mount_manager.h"
@@ -108,7 +107,7 @@ std::unique_ptr<em::AppInstallReportLogEvent> CreateEvent(
 
 AppInstallEventLogger::AppInstallEventLogger(Delegate* delegate,
                                              Profile* profile)
-    : delegate_(delegate), profile_(profile), weak_factory_(this) {
+    : delegate_(delegate), profile_(profile) {
   if (!arc::IsArcAllowedForProfile(profile_)) {
     AddForSetOfPackages(
         GetPackagesFromPref(arc::prefs::kArcPushInstallAppsPending),
@@ -118,8 +117,7 @@ AppInstallEventLogger::AppInstallEventLogger(Delegate* delegate,
   }
 
   policy::PolicyService* const policy_service =
-      policy::ProfilePolicyConnectorFactory::GetForBrowserContext(profile_)
-          ->policy_service();
+      profile_->GetProfilePolicyConnector()->policy_service();
   EvaluatePolicy(policy_service->GetPolicies(policy::PolicyNamespace(
                      policy::POLICY_DOMAIN_CHROME, std::string())),
                  true /* initial */);
@@ -137,9 +135,8 @@ AppInstallEventLogger::~AppInstallEventLogger() {
   }
   if (observing_) {
     arc::ArcPolicyBridge::GetForBrowserContext(profile_)->RemoveObserver(this);
-    policy::ProfilePolicyConnectorFactory::GetForBrowserContext(profile_)
-        ->policy_service()
-        ->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+    profile_->GetProfilePolicyConnector()->policy_service()->RemoveObserver(
+        policy::POLICY_DOMAIN_CHROME, this);
   }
 }
 
@@ -248,9 +245,8 @@ std::set<std::string> AppInstallEventLogger::GetPackagesFromPref(
 void AppInstallEventLogger::SetPref(const std::string& pref_name,
                                     const std::set<std::string>& packages) {
   base::Value value(base::Value::Type::LIST);
-  auto& list = value.GetList();
   for (const std::string& package : packages) {
-    list.push_back(base::Value(package));
+    value.Append(package);
   }
   profile_->GetPrefs()->Set(pref_name, value);
 }
@@ -306,8 +302,8 @@ void AppInstallEventLogger::EvaluatePolicy(const policy::PolicyMap& policy,
 void AppInstallEventLogger::AddForSetOfPackagesWithDiskSpaceInfo(
     const std::set<std::string>& packages,
     std::unique_ptr<em::AppInstallReportLogEvent> event) {
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
       base::BindOnce(&AddDiskSpaceInfoToEvent, std::move(event)),
       base::BindOnce(&AppInstallEventLogger::AddForSetOfPackages,
                      weak_factory_.GetWeakPtr(), packages));

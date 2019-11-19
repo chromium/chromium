@@ -5,13 +5,15 @@
 #ifndef UI_BASE_IME_LINUX_FAKE_INPUT_METHOD_CONTEXT_H_
 #define UI_BASE_IME_LINUX_FAKE_INPUT_METHOD_CONTEXT_H_
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
 
 namespace ui {
 
 // A fake implementation of LinuxInputMethodContext, which does nothing.
-class FakeInputMethodContext : public LinuxInputMethodContext {
+class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContext
+    : public LinuxInputMethodContext {
  public:
   FakeInputMethodContext();
 

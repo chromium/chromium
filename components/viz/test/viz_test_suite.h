@@ -8,13 +8,9 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_suite.h"
-
-namespace base {
-class MessageLoop;
-}
 
 namespace viz {
 
@@ -29,7 +25,7 @@ class VizTestSuite : public base::TestSuite {
   void Shutdown() override;
 
  private:
-  std::unique_ptr<base::MessageLoop> message_loop_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 
   DISALLOW_COPY_AND_ASSIGN(VizTestSuite);

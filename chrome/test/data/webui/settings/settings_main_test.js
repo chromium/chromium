@@ -111,7 +111,8 @@ cr.define('settings_main_page', function() {
 
     function showManagedHeader() {
       return settingsMain.showManagedHeader_(
-          settingsMain.inSearchMode_, settingsMain.showingSubpage_);
+          settingsMain.inSearchMode_, settingsMain.showingSubpage_,
+          settingsMain.showPages_.about);
     }
 
     test('managed header hides when searching', function() {
@@ -139,6 +140,15 @@ cr.define('settings_main_page', function() {
 
       const basicPage = settingsMain.$$('settings-basic-page');
       basicPage.fire('subpage-expand', {});
+
+      assertFalse(showManagedHeader());
+    });
+
+    test('managed header hides when showing about page', function() {
+      Polymer.dom.flush();
+
+      assertTrue(showManagedHeader());
+      settings.navigateTo(settings.routes.ABOUT);
 
       assertFalse(showManagedHeader());
     });

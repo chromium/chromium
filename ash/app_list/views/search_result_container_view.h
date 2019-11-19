@@ -11,15 +11,14 @@
 #include "ash/app_list/app_list_view_delegate.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/model/search/search_model.h"
+#include "ash/app_list/views/search_result_base_view.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
-namespace app_list {
-
-class SearchResultBaseView;
+namespace ash {
 
 // SearchResultContainerView is a base class for views that contain multiple
 // search results. SearchPageView holds these in a list and manages which one is
@@ -32,7 +31,12 @@ class APP_LIST_EXPORT SearchResultContainerView : public views::View,
  public:
   class Delegate {
    public:
-    // Called whenever results in the container change, i.e. during |Update()|
+    // Called whenever results in the container start changing, i.e. during
+    // ScheduleUpdate(). It will be followed up with
+    // OnSearchResultContainerResultsChanged() when the update completes.
+    virtual void OnSearchResultContainerResultsChanging() = 0;
+
+    // Called whenever results in the container change, i.e. during |Update()|.
     virtual void OnSearchResultContainerResultsChanged() = 0;
 
     // Called whenever a result within the container gains focus.
@@ -49,6 +53,15 @@ class APP_LIST_EXPORT SearchResultContainerView : public views::View,
   SearchModel::SearchResults* results() { return results_; }
 
   int num_results() const { return num_results_; }
+
+  virtual SearchResultBaseView* GetResultViewAt(size_t index) = 0;
+
+  bool horizontally_traversable() const { return horizontally_traversable_; }
+
+  // Allows a container to define its traversal behavior
+  void set_horizontally_traversable(bool horizontally_traversable) {
+    horizontally_traversable_ = horizontally_traversable;
+  }
 
   void set_container_score(double score) { container_score_ = score; }
   double container_score() const { return container_score_; }
@@ -84,8 +97,8 @@ class APP_LIST_EXPORT SearchResultContainerView : public views::View,
   void ListItemMoved(size_t index, size_t target_index) override;
   void ListItemsChanged(size_t start, size_t count) override;
 
-  // Returns the first result in the container view. Returns NULL if it does not
-  // exist.
+  // Returns the first result in the container view. Returns nullptr if it does
+  // not exist.
   virtual SearchResultBaseView* GetFirstResultView();
 
   // Called from SearchResultPageView OnShown/OnHidden
@@ -108,7 +121,10 @@ class APP_LIST_EXPORT SearchResultContainerView : public views::View,
 
   int num_results_ = 0;
 
-  double container_score_;
+  // If true, left/right key events will traverse this container
+  bool horizontally_traversable_ = false;
+
+  double container_score_ = 0.0;
 
   SearchModel::SearchResults* results_ = nullptr;  // Owned by SearchModel.
 
@@ -116,8 +132,7 @@ class APP_LIST_EXPORT SearchResultContainerView : public views::View,
   bool shown_ = false;
   AppListViewDelegate* const view_delegate_;
 
-  ScopedObserver<SearchResultBaseView, ViewObserver> result_view_observer_{
-      this};
+  ScopedObserver<views::View, views::ViewObserver> result_view_observer_{this};
 
   // The factory that consolidates multiple Update calls into one.
   base::WeakPtrFactory<SearchResultContainerView> update_factory_{this};
@@ -125,6 +140,6 @@ class APP_LIST_EXPORT SearchResultContainerView : public views::View,
   DISALLOW_COPY_AND_ASSIGN(SearchResultContainerView);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_SEARCH_RESULT_CONTAINER_VIEW_H_

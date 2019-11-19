@@ -22,6 +22,7 @@
 #include "gpu/command_buffer/common/raster_cmd_format.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/context_group.h"
+#include "gpu/command_buffer/service/context_state_test_helpers.h"
 #include "gpu/command_buffer/service/copy_texture_chromium_mock.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/logger.h"
@@ -113,38 +114,6 @@ void RasterDecoderTestBase::AddExpectationsForRestoreAttribState(
   }
 }
 
-void RasterDecoderTestBase::SetupInitStateManualExpectations(bool es3_capable) {
-  if (es3_capable) {
-    EXPECT_CALL(*gl_, PixelStorei(GL_PACK_ROW_LENGTH, 0))
-        .Times(1)
-        .RetiresOnSaturation();
-    EXPECT_CALL(*gl_, PixelStorei(GL_UNPACK_ROW_LENGTH, 0))
-        .Times(1)
-        .RetiresOnSaturation();
-    EXPECT_CALL(*gl_, PixelStorei(GL_UNPACK_IMAGE_HEIGHT, 0))
-        .Times(1)
-        .RetiresOnSaturation();
-    if (feature_info()->feature_flags().ext_window_rectangles) {
-      EXPECT_CALL(*gl_, WindowRectanglesEXT(GL_EXCLUSIVE_EXT, 0, nullptr))
-          .Times(1)
-          .RetiresOnSaturation();
-    }
-  }
-}
-
-void RasterDecoderTestBase::SetupInitStateManualExpectationsForDoLineWidth(
-    GLfloat width) {
-  EXPECT_CALL(*gl_, LineWidth(width)).Times(1).RetiresOnSaturation();
-}
-
-void RasterDecoderTestBase::ExpectEnableDisable(GLenum cap, bool enable) {
-  if (enable) {
-    EXPECT_CALL(*gl_, Enable(cap)).Times(1).RetiresOnSaturation();
-  } else {
-    EXPECT_CALL(*gl_, Disable(cap)).Times(1).RetiresOnSaturation();
-  }
-}
-
 gpu::Mailbox RasterDecoderTestBase::CreateFakeTexture(
     GLuint service_id,
     viz::ResourceFormat resource_format,
@@ -203,13 +172,18 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
   EXPECT_CALL(*gl_, GetIntegerv(GL_MAX_VERTEX_ATTRIBS, _))
       .WillOnce(SetArgPointee<1>(8u))
       .RetiresOnSaturation();
-  SetupInitCapabilitiesExpectations(feature_info()->IsES3Capable());
-  SetupInitStateExpectations(feature_info()->IsES3Capable());
+  ContextStateTestHelpers::SetupInitState(gl_.get(), feature_info(),
+                                          gfx::Size(1, 1));
+
+  if (context_->HasRobustness()) {
+    EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
+        .WillOnce(Return(GL_NO_ERROR));
+  }
 
   shared_context_state_ = base::MakeRefCounted<SharedContextState>(
       new gl::GLShareGroup(), surface_, context_,
       feature_info()->workarounds().use_virtualized_gl_contexts,
-      base::DoNothing());
+      base::DoNothing(), GpuPreferences().gr_context_type);
 
   shared_context_state_->InitializeGL(GpuPreferences(), feature_info_);
 
@@ -236,7 +210,7 @@ void RasterDecoderTestBase::InitDecoder(const InitState& init) {
             gpu::ContextResult::kSuccess);
 
   EXPECT_CALL(*context_, MakeCurrent(surface_.get())).WillOnce(Return(true));
-  if (context_->WasAllocatedUsingRobustnessExtension()) {
+  if (context_->HasRobustness()) {
     EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
         .WillOnce(Return(GL_NO_ERROR));
   }
@@ -278,6 +252,8 @@ void RasterDecoderTestBase::ResetDecoder() {
   for (auto& image : shared_images_)
     image->OnContextLost();
   shared_images_.clear();
+  context_->GLContextStub::MakeCurrent(surface_.get());
+  shared_context_state_.reset();
   ::gl::MockGLInterface::SetGLInterface(nullptr);
   gl_.reset();
   gl::init::ShutdownGL(false);
@@ -398,20 +374,10 @@ void RasterDecoderTestBase::SetupClearTextureExpectations(
 #endif
 }
 
-// Include the auto-generated part of this file. We split this because it means
-// we can easily edit the non-auto generated parts right here in this file
-// instead of having to edit some template or the code generator.
-#include "gpu/command_buffer/service/raster_decoder_unittest_0_autogen.h"
-
 // GCC requires these declarations, but MSVC requires they not be present
 #ifndef COMPILER_MSVC
 const GLint RasterDecoderTestBase::kMaxTextureSize;
 const GLint RasterDecoderTestBase::kNumTextureUnits;
-
-const GLint RasterDecoderTestBase::kViewportX;
-const GLint RasterDecoderTestBase::kViewportY;
-const GLint RasterDecoderTestBase::kViewportWidth;
-const GLint RasterDecoderTestBase::kViewportHeight;
 
 const GLuint RasterDecoderTestBase::kServiceBufferId;
 const GLuint RasterDecoderTestBase::kServiceTextureId;

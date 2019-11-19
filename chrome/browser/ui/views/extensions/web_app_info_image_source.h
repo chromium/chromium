@@ -14,7 +14,7 @@
 class WebAppInfoImageSource : public gfx::ImageSkiaSource {
  public:
   WebAppInfoImageSource(int dip_size,
-                        const std::vector<WebApplicationInfo::IconInfo>& icons);
+                        const std::vector<WebApplicationIconInfo>& icons);
   ~WebAppInfoImageSource() override;
 
  private:
@@ -22,7 +22,7 @@ class WebAppInfoImageSource : public gfx::ImageSkiaSource {
   gfx::ImageSkiaRep GetImageForScale(float scale) override;
 
   int dip_size_;
-  std::vector<WebApplicationInfo::IconInfo> icons_;
+  std::vector<WebApplicationIconInfo> icons_;
 
   DISALLOW_COPY_AND_ASSIGN(WebAppInfoImageSource);
 };

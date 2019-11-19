@@ -12,7 +12,8 @@ interface WakeLockProvider {
   // Gets a WakeLockContext that is associated with |context_id|. |context_id|
   // is used to obtain the NativeView associated with the relevant context on
   // Android (see WakeLockContextCallback). |context_id| must be >= 0.
-  GetWakeLockContextForID(int32 context_id, WakeLockContext& context);
+  GetWakeLockContextForID(int32 context_id,
+                          pending_receiver<WakeLockContext> context);
 
   // Gets a WakeLock outside of any context. This method can be used
   // if the client does not have any context available (e.g., is not
@@ -21,12 +22,13 @@ interface WakeLockProvider {
   GetWakeLockWithoutContext(WakeLockType type,
                             WakeLockReason reason,
                             string description,
-                            WakeLock& wake_lock);
+                            pending_receiver<WakeLock> wake_lock);
 
   // Notifies the caller if no wake lock of type |type| is currently activated.
   // If it is activated then the caller is notified on each deactivation event
   // after this call.
-  NotifyOnWakeLockDeactivation(WakeLockType type, WakeLockObserver observer);
+  NotifyOnWakeLockDeactivation(WakeLockType type,
+                               pending_remote<WakeLockObserver> observer);
 
   // Test-only method that returns the number of activated wake locks of type
   // |type|.

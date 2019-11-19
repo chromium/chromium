@@ -3,12 +3,19 @@
 <link rel="import" href="chrome://resources/html/cr.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_shared_css.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="post_oobe_delegate.html">
 
 <dom-module id="multidevice-setup-post-oobe">
   <template>
     <style include="multidevice-setup-shared">
+      multidevice-setup {
+        --multidevice-setup-height: 640px;
+        --multidevice-setup-width: 768px;
+        --iron-pages-overflow: visible;
+      }
+
       #backward-button,
       #cancel-button,
       #forward-button {
@@ -22,23 +29,23 @@
         on-setup-exited="onExitRequested_"
         on-forward-button-focus-requested="onForwardButtonFocusRequested_"
         on-visible-page-name-changed="onVisiblePageNameChanged_"
-        forward-button-text="{{forwardButtonText_}}"
+        forward-button-text-id="{{forwardButtonTextId_}}"
         forward-button-disabled="{{forwardButtonDisabled_}}"
-        cancel-button-text="{{cancelButtonText_}}"
-        backward-button-text="{{backwardButtonText_}}">
-      <paper-button id="backward-button"
+        cancel-button-text-id="{{cancelButtonTextId_}}"
+        backward-button-text-id="{{backwardButtonTextId_}}">
+      <cr-button id="backward-button"
           slot="backward-button" class="cancel-button">
-        [[backwardButtonText_]]
-      </paper-button>
-      <paper-button id="cancel-button"
+        [[i18n(backwardButtonTextId_)]]
+      </cr-button>
+      <cr-button id="cancel-button"
           slot="cancel-button" class="cancel-button">
-        [[cancelButtonText_]]
-      </paper-button>
-      <paper-button id="forward-button"
+        [[i18n(cancelButtonTextId_)]]
+      </cr-button>
+      <cr-button id="forward-button"
           slot="forward-button" class="action-button"
           disabled$="[[forwardButtonDisabled_]]">
-        [[forwardButtonText_]]
-      </paper-button>
+        [[i18n(forwardButtonTextId_)]]
+      </cr-button>
     </multidevice-setup>
   </template>
   <script src="multidevice_setup_post_oobe.js">

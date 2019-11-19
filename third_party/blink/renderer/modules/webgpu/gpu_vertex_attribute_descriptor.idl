@@ -1,0 +1,63 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+dictionary GPUVertexAttributeDescriptor {
+    required GPUVertexFormat format;
+    required GPUBufferSize offset;
+    required unsigned long shaderLocation;
+};
+
+enum GPUVertexFormat {
+    "uchar",
+    "uchar2",
+    "uchar3",
+    "uchar4",
+    "char",
+    "char2",
+    "char3",
+    "char4",
+    "ucharnorm",
+    "uchar2norm",
+    "uchar3norm",
+    "uchar4norm",
+    "uchar4norm-bgra",
+    "charnorm",
+    "char2norm",
+    "char3norm",
+    "char4norm",
+    "ushort",
+    "ushort2",
+    "ushort3",
+    "ushort4",
+    "short",
+    "short2",
+    "short3",
+    "short4",
+    "ushortnorm",
+    "ushort2norm",
+    "ushort3norm",
+    "ushort4norm",
+    "shortnorm",
+    "short2norm",
+    "short3norm",
+    "short4norm",
+    "half",
+    "half2",
+    "half3",
+    "half4",
+    "float",
+    "float2",
+    "float3",
+    "float4",
+    "uint",
+    "uint2",
+    "uint3",
+    "uint4",
+    "int",
+    "int2",
+    "int3",
+    "int4"
+};

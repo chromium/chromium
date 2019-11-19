@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "media/audio/audio_system_impl.h"
-#include "base/message_loop/message_loop.h"
+
+#include "base/test/task_environment.h"
 #include "media/audio/audio_system_test_util.h"
 #include "media/audio/audio_thread_impl.h"
 #include "media/audio/mock_audio_manager.h"
@@ -35,7 +36,7 @@ class AudioSystemImplTestBase : public testing::Test {
   MockAudioManager* audio_manager() { return audio_manager_.get(); }
   AudioSystem* audio_system() { return audio_system_.get(); }
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<MockAudioManager> audio_manager_;
   std::unique_ptr<AudioSystem> audio_system_;
   // AudioSystemTester tester_;

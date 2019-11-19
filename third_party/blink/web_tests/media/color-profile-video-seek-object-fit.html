@@ -45,9 +45,7 @@ function seek(video, time) {
   video.currentTime = time;
 }
 
-if (window.testRunner) {
-  testRunner.dumpAsTextWithPixelResults();
+if (window.testRunner)
   testRunner.waitUntilDone();
-}
 </script>
 </html>

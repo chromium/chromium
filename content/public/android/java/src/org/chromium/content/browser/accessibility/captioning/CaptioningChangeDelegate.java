@@ -8,12 +8,12 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.accessibility.CaptioningManager.CaptionStyle;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.content.browser.accessibility.captioning.SystemCaptioningBridge.SystemCaptioningBridgeListener;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.EnumSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -77,15 +77,11 @@ public class CaptioningChangeDelegate {
         mTextTrackTextColor = androidColorToCssColor(userStyle.getForegroundColor());
         mTextTrackBackgroundColor = androidColorToCssColor(userStyle.getBackgroundColor());
 
-        final ClosedCaptionEdgeAttribute edge = ClosedCaptionEdgeAttribute.fromSystemEdgeAttribute(
-                userStyle.getEdgeType(),
-                androidColorToCssColor(userStyle.getEdgeColor()));
-
-        mTextTrackTextShadow = edge.getTextShadow();
+        mTextTrackTextShadow = getShadowFromColorAndSystemEdge(
+                androidColorToCssColor(userStyle.getEdgeColor()), userStyle.getEdgeType());
 
         final Typeface typeFace = userStyle.getTypeface();
-        final ClosedCaptionFont font = ClosedCaptionFont.fromSystemFont(typeFace);
-        mTextTrackFontFamily = font.getFontFamily();
+        mTextTrackFontFamily = getFontFromSystemFont(typeFace);
         if (typeFace != null && typeFace.isItalic()) {
             mTextTrackFontStyle = FONT_STYLE_ITALIC;
         } else {
@@ -104,167 +100,65 @@ public class CaptioningChangeDelegate {
     }
 
     /**
-     * Describes a character edge attribute for closed captioning
+     * Get the formatted Text Shadow CSS property from the edge and color attribute.
+     *
+     * @return the CSS-friendly String representation of the
+     *         edge attribute.
      */
-    public static enum ClosedCaptionEdgeAttribute {
-        NONE (""),
-        OUTLINE ("%2$s %2$s 0 %1$s, -%2$s -%2$s 0 %1$s, %2$s -%2$s 0 %1$s, -%2$s %2$s 0 %1$s"),
-        DROP_SHADOW ("%1$s %2$s %2$s 0.1em"),
-        RAISED ("-%2$s -%2$s 0 %1$s"),
-        DEPRESSED ("%2$s %2$s 0 %1$s");
-
-        private static String sDefaultEdgeColor = "silver";
-        private static String sShadowOffset = "0.05em";
-        private static String sEdgeColor;
-        private final String mTextShadow;
-
-        private ClosedCaptionEdgeAttribute(String textShadow) {
-            mTextShadow = textShadow;
-        }
-
-        /**
-         * Create a {@link ClosedCaptionEdgeAttribute} object based on the type number.
-         *
-         * @param type The edge type value specified by the user
-         * @param color The color of the edge (e.g. "red")
-         * @return The enum object
-         */
-        public static ClosedCaptionEdgeAttribute fromSystemEdgeAttribute(Integer type,
-                String color) {
-            if (type == null) {
-                return NONE;
-            }
-            if (color == null || color.isEmpty()) {
-                sEdgeColor = sDefaultEdgeColor;
-            } else {
-                sEdgeColor = color;
-            }
+    public static String getShadowFromColorAndSystemEdge(String color, Integer type) {
+        String edgeShadow = "";
+        if (type != null) {
             // Lollipop adds support for EDGE_TYPE_DEPRESSED and EDGE_TYPE_RAISED.
             switch (type) {
                 case CaptionStyle.EDGE_TYPE_OUTLINE:
-                    return OUTLINE;
+                    edgeShadow =
+                            "%2$s %2$s 0 %1$s, -%2$s -%2$s 0 %1$s, %2$s -%2$s 0 %1$s, -%2$s %2$s 0 %1$s";
+                    break;
                 case CaptionStyle.EDGE_TYPE_DROP_SHADOW:
-                    return DROP_SHADOW;
+                    edgeShadow = "%1$s %2$s %2$s 0.1em";
+                    break;
                 case CaptionStyle.EDGE_TYPE_RAISED:
-                    return RAISED;
+                    edgeShadow = "-%2$s -%2$s 0 %1$s";
+                    break;
                 case CaptionStyle.EDGE_TYPE_DEPRESSED:
-                    return DEPRESSED;
+                    edgeShadow = "%2$s %2$s 0 %1$s";
+                    break;
                 default:
                     // CaptionStyle.EDGE_TYPE_NONE
                     // CaptionStyle.EDGE_TYPE_UNSPECIFIED
-                    return NONE;
+                    break;
             }
         }
 
-        /**
-         * Specify a new shadow offset for the edge attribute. This
-         * will be used as both the horizontal and vertical
-         * offset.
-         *
-         * @param shadowOffset the offset to be applied
-         */
-        public static void setShadowOffset(String shadowOffset) {
-            sShadowOffset = shadowOffset;
-        }
+        String edgeColor = color;
+        if (edgeColor == null || edgeColor.isEmpty()) edgeColor = "silver";
 
-        /**
-         * Default color to use if no color is specified when
-         * using this enumeration. "silver" is the initial default.
-         *
-         * @param color The Color to use if none is specified
-         *        when calling fromSystemEdgeAttribute
-         */
-        public static void setDefaultEdgeColor(String color) {
-            sDefaultEdgeColor = color;
-        }
-
-        /**
-         * Get the Text Shadow CSS property from the edge attribute.
-         *
-         * @return the CSS-friendly String representation of the
-         *         edge attribute.
-         */
-        public String getTextShadow() {
-            return String.format(mTextShadow, sEdgeColor, sShadowOffset);
-        }
+        return String.format(edgeShadow, edgeColor, "0.05em");
     }
 
     /**
-     * Describes a font available for Closed Captioning
+     * Create a font family name based on provided Typeface.
+     *
+     * @param typeFace a Typeface object.
+     * @return a string representation of the font family name.
      */
-    public static enum ClosedCaptionFont {
+    public static String getFontFromSystemFont(Typeface typeFace) {
+        if (typeFace == null) return "";
+
         // The list of fonts are obtained from apps/Settings/res/values/arrays.xml
         // in Android settings app.
-        // Fonts in Lollipop and above
-        DEFAULT ("", EnumSet.noneOf(Flags.class)),
-        SANS_SERIF ("sans-serif", EnumSet.of(Flags.SANS_SERIF)),
-        SANS_SERIF_CONDENSED ("sans-serif-condensed", EnumSet.of(Flags.SANS_SERIF)),
-        SANS_SERIF_MONOSPACE ("sans-serif-monospace",
-                EnumSet.of(Flags.SANS_SERIF, Flags.MONOSPACE)),
-        SERIF ("serif", EnumSet.of(Flags.SERIF)),
-        SERIF_MONOSPACE ("serif-monospace", EnumSet.of(Flags.SERIF, Flags.MONOSPACE)),
-        CASUAL ("casual", EnumSet.noneOf(Flags.class)),
-        CURSIVE ("cursive", EnumSet.noneOf(Flags.class)),
-        SANS_SERIF_SMALLCAPS ("sans-serif-smallcaps", EnumSet.of(Flags.SANS_SERIF)),
-        // Fonts in KitKat
-        MONOSPACE("monospace", EnumSet.of(Flags.MONOSPACE));
-
-        /**
-         * Describes certain properties of a font, used to verify that captioning fonts
-         * with the correct properties are mapped to system typefaces.
-         */
-        @VisibleForTesting
-        /* package */ enum Flags {
-            SANS_SERIF, SERIF, MONOSPACE
+        String fonts[] = {// Fonts in Lollipop and above
+                "", "sans-serif", "sans-serif-condensed", "sans-serif-monospace", "serif",
+                "serif-monospace", "casual", "cursive", "sans-serif-smallcaps",
+                // Fonts in KitKat
+                "monospace"};
+        for (String font : fonts) {
+            if (Typeface.create(font, typeFace.getStyle()).equals(typeFace)) return font;
         }
 
-        private final String mFontFamily;
-        @VisibleForTesting
-        /* package */ final EnumSet<Flags> mFlags;
-
-        private ClosedCaptionFont(String fontFamily, EnumSet<Flags> flags) {
-            mFontFamily = fontFamily;
-            mFlags = flags;
-        }
-
-        /**
-         * Create a {@link ClosedCaptionFont} object based on provided Typeface.
-         *
-         * @param typeFace a Typeface object
-         * @return a string representation of the typeface
-         */
-        public static ClosedCaptionFont fromSystemFont(Typeface typeFace) {
-            if (typeFace == null) return DEFAULT;
-            for (ClosedCaptionFont font : ClosedCaptionFont.values()) {
-                if (belongsToFontFamily(typeFace, font)) {
-                    return font;
-                }
-            }
-            // This includes Typeface.DEFAULT_BOLD since font-weight
-            // is not yet supported as a WebKit setting for a VTTCue.
-            return DEFAULT;
-        }
-
-        /**
-         * Check if the a Typeface belongs to the given font family.
-         *
-         * @param typeFace a Typeface object
-         * @param font Font family to be matched
-         * @return true if the Typeface belongs to the font family, or false otherwise.
-         */
-        private static boolean belongsToFontFamily(Typeface typeFace, ClosedCaptionFont font) {
-            return Typeface.create(font.getFontFamily(), typeFace.getStyle()).equals(typeFace);
-        }
-
-        /**
-         * Get the font family CSS property from the edge attribute.
-         *
-         * @return the CSS-friendly String representation of the
-         *         typeFace.
-         */
-        public String getFontFamily() {
-            return mFontFamily;
-        }
+        // This includes Typeface.DEFAULT_BOLD since font-weight
+        // is not yet supported as a WebKit setting for a VTTCue.
+        return "";
     }
 
     /**

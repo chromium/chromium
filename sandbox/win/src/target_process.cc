@@ -155,7 +155,7 @@ ResultCode TargetProcess::Create(
   if (startup_info.has_extended_startup_info())
     flags |= EXTENDED_STARTUPINFO_PRESENT;
 
-  if (job_ && base::win::GetVersion() < base::win::VERSION_WIN8) {
+  if (job_ && base::win::GetVersion() < base::win::Version::WIN8) {
     // Windows 8 implements nested jobs, but for older systems we need to
     // break out of any job we're in to enforce our restrictions.
     flags |= CREATE_BREAKAWAY_FROM_JOB;
@@ -234,13 +234,13 @@ ResultCode TargetProcess::TransferVariable(const char* name,
 #if SANDBOX_EXPORTS
   HMODULE module = ::LoadLibrary(exe_name_.get());
   if (!module)
-    return SBOX_ERROR_GENERIC;
+    return SBOX_ERROR_CANNOT_LOADLIBRARY_EXECUTABLE;
 
   child_var = ::GetProcAddress(module, name);
   ::FreeLibrary(module);
 
   if (!child_var)
-    return SBOX_ERROR_GENERIC;
+    return SBOX_ERROR_CANNOT_FIND_VARIABLE_ADDRESS;
 
   size_t offset =
       reinterpret_cast<char*>(child_var) - reinterpret_cast<char*>(module);
@@ -250,10 +250,10 @@ ResultCode TargetProcess::TransferVariable(const char* name,
   SIZE_T written;
   if (!::WriteProcessMemory(sandbox_process_info_.process_handle(), child_var,
                             address, size, &written))
-    return SBOX_ERROR_GENERIC;
+    return SBOX_ERROR_CANNOT_WRITE_VARIABLE_VALUE;
 
   if (written != size)
-    return SBOX_ERROR_GENERIC;
+    return SBOX_ERROR_INVALID_WRITE_VARIABLE_SIZE;
 
   return SBOX_ALL_OK;
 }

@@ -9,18 +9,20 @@ This doc outlines some tricks / gotchas / features of how we ship native code in
  * Android L & M (ChromeModernPublic.apk):
    * `libchrome.so` is stored uncompressed within the apk (with the name `crazy.libchrome.so` to avoid extraction).
    * It is loaded directly from the apk (without extracting) by `mmap()`'ing it.
- * Android N+ (MonochromePublic.apk):
+ * Android N, O & P (MonochromePublic.apk):
    * `libmonochrome.so` is stored uncompressed (AndroidManifest.xml attribute disables extraction) and loaded directly from the apk (functionality now supported by the system linker).
+ * Android Q (TrichromeChrome.aab+TrichromeLibrary.apk):
+   * `libmonochrome.so` is stored in the shared library apk (TrichromeLibrary.apk) instead of in the Chrome apk, so that it can be shared with TrichromeWebView. It's stored uncompressed and loaded directly from the apk the same way as on N-P. Trichrome uses the same native library as Monochrome, so it's still called `libmonochrome.so`.
 
 ## Crashpad Packaging
  * Crashpad is a native library providing out-of-process crash dumping. When a
    dump is requested (e.g. after a crash), a Crashpad handler process is started
    to produce a dump.
  * Chrome and ChromeModern (Android J through M):
-   * libcrashpad_handler.so is a standalone executable containing all of the
-     crash dumping code. It is stored compressed and extracted automatically by
-     the system, allowing it to be directly executed to produce a crash dump.
- * Monochrome (N through P), Trichrome (P), and SystemWebView (P-):
+   * libchrome_crashpad_handler.so is a standalone executable containing all of
+     the crash dumping code. It is stored compressed and extracted automatically
+     by the system, allowing it to be directly executed to produce a crash dump.
+ * Monochrome (N through P) and SystemWebView (L through P):
     * All of the Crashpad code is linked into the package's main native library
       (e.g. libmonochrome.so). When a dump is requested, /system/bin/app_process
       is executed, loading CrashpadMain.java which in turn uses JNI to call into
@@ -72,7 +74,7 @@ This doc outlines some tricks / gotchas / features of how we ship native code in
    * `JNI_OnLoad()` is the only exported symbol (enforced by a linker script).
    * Native methods registered explicitly during start-up by generated code.
      * Explicit generation is required because the Android runtime uses the system's `dlsym()`, which doesn't know about Crazy-Linker-opened libraries.
- * For MonochromePublic.apk:
+ * For MonochromePublic.apk and TrichromeChrome.aab:
    * `JNI_OnLoad()` and `Java_*` symbols are exported by linker script.
    * No manual JNI registration is done. Symbols are resolved lazily by the runtime.
 
@@ -107,17 +109,75 @@ This doc outlines some tricks / gotchas / features of how we ship native code in
       * Linker puts `GNU_RELRO` into private memory and applies relocations as per normal.
       * Afterwards, memory pages are compared against the shared memory and all identical pages are swapped out for ashmem ones (using `munmap()` & `mmap()`).
  * For a more detailed description, refer to comments in [Linker.java](https://cs.chromium.org/chromium/src/base/android/java/src/org/chromium/base/library_loader/Linker.java).
- * For Android N+:
+ * For Android N-P:
    * The OS maintains a RELRO file on disk with the contents of the GNU_RELRO segment.
    * All Android apps that contain a WebView load `libmonochrome.so` at the same virtual address and apply RELRO sharing against the memory-mapped RELRO file.
    * Chrome uses `MonochromeLibraryPreloader` to call into the same WebView library loading code.
      * When Monochrome is the WebView provider, `libmonochrome.so` is loaded with the system's cached RELRO's applied.
    * `System.loadLibrary()` is called afterwards.
      * When Monochrome is the WebView provider, this only calls JNI_OnLoad, since the library is already loaded. Otherwise, this loads the library and no RELRO sharing occurs.
- * For non-low-end Android O+ (where there's a WebView zygote):
+ * For non-low-end Android O-P (where there's a WebView zygote):
    * For non-renderer processes, the above Android N+ logic applies.
    * For renderer processes, the OS starts all Monochrome renderer processes by `fork()`ing the WebView zygote rather than the normal application zygote.
      * In this case, RELRO sharing would be redundant since the entire process' memory is shared with the zygote with copy-on-write semantics.
+ * For Android Q+ (Trichrome):
+   * For non-renderer processes, TrichromeChrome no longer shares its RELRO data with WebView and no RELRO sharing occurs. TrichromeWebView works the same way as on Android N-P.
+   * For renderer processes, TrichromeChrome `fork()`s from a chrome-specific app zygote. `libmonochrome.so` is loaded in the zygote before `fork()`.
+     * Similar to O-P, app zygote provides copy-on-write memory semantics so RELRO sharing is redundant.
+   * For renderer processes, TrichromeWebView works the same way as on Android N-P.
+
+## Partitioned libraries
+Some Chrome code is placed in feature-specific libraries and delivered via
+[Dynamic Feature Modules](android_dynamic_feature_modules.md).
+
+A linker-assisted partitioning system automates the placement of code into
+either the main Chrome library or feature-specific .so libraries. Feature code
+may continue to make use of core Chrome code (eg. base::) without modification,
+but Chrome must call feature code through a virtual interface.
+
+**How partitioning works**
+
+The lld linker is now capable of producing a [partitioned
+library](https://lld.llvm.org/Partitions.html), which is effectively an
+intermediate single file containing multiple libraries. A separate tool
+*(llvm-objcopy)* then splits the file into standalone .so files, invoked through
+a [partitioned shared library](https://cs.chromium.org/chromium/src/build/partitioned_shared_library.gni)
+GN template.
+
+The primary partition is Chrome's main library (eg. libchrome.so), and other
+partitions may contain feature code (eg. libvr.so). By specifying a list of
+C/C++ symbols to use as entrypoints, the linker can collect all code used only
+through these entrypoints, and place it in a particular partition.
+
+To facilitate partitioning, all references from Chrome to the feature
+entrypoints must be indirect. That is, Chrome must obtain a symbol from the
+feature library through dlsym(), cast the pointer to its actual type, and call
+through the resulting pointer.
+
+Feature code retains the ability to freely call back into Chrome's core code.
+When loading the library, the feature module system uses the feature name to
+look up a partition name *(libfoo.so)* in an address offset table built into the
+main library. The resulting offset is supplied to android_dlopen_ext(), which
+instructs Android to load the library in a particular reserved address region.
+This allows the feature library's relative references back to the main library
+to work, as if the feature code had been linked into the main library
+originally. No dynamic symbol resolution is required here.
+
+**Implications on code placement**
+
+* Any symbol referenced by multiple partitions ends up in the main library (even
+  if all calling libraries are feature partitions).
+* Symbols that aren't feature code (eg. base::) will be pulled into the
+  feature's library if only that feature uses the code. This is a benefit, but
+  can be unexpected.
+
+**Builds that support partitioned libraries**
+
+Partitioned libraries are usable when all of the following are true:
+* Component build is disabled (component build splits code across GN component
+  target boundaries instead).
+* The compiler is Clang.
+* The linker is lld.
 
 ## Library Prefetching
  * During start-up, we `fork()` a process that reads a byte from each page of the library's memory (or just the ordered range of the library).

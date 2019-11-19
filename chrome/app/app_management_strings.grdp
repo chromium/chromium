@@ -1,32 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <grit-part>
-  <message name="IDS_APP_MANAGEMENT_ANDROID_SETTINGS" desc="Label for the open Android settings button on the ARC app permissions page.">
-    Open Android settings
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_LIST_PREVIEW" desc="A label that summarizes a list of apps by naming up to 3 apps, finishing with 'X more apps' for the rest.">
-    {COUNT, plural,
-     =0 {None}
-     =1 {<ph name="APP_1">$1<ex>Gmail</ex></ph>}
-     =2 {<ph name="APP_1">$1<ex>Gmail</ex></ph> and <ph name="APP_2">$2<ex>Youtube</ex></ph>}
-     =3 {<ph name="APP_1">$1<ex>Gmail</ex></ph>, <ph name="APP_2">$2<ex>Youtube</ex></ph>, and <ph name="APP_3">$3<ex>Calendar</ex></ph>}
-     =4 {<ph name="APP_1">$1<ex>Gmail</ex></ph>, <ph name="APP_2">$2<ex>Youtube</ex></ph>, <ph name="APP_3">$3<ex>Calendar</ex></ph>, and 1 other app}
-     other {<ph name="APP_1">$1<ex>Gmail</ex></ph>, <ph name="APP_2">$2<ex>Youtube</ex></ph>, <ph name="APP_3">$3<ex>Calendar</ex></ph>, and <ph name="EXTRA_APPS">$4<ex>4</ex></ph> other apps}}
-  </message>
-  <message name="IDS_APP_MANAGEMENT_APP_LIST_TITLE" desc="Title of app list card on main app management page.">
-    Recently opened apps
-  </message>
-  <message name="IDS_APP_MANAGEMENT_BACK" desc="Label for button for going back to the previous page.">
-    Back
-  </message>
   <message name="IDS_APP_MANAGEMENT_CAMERA" desc="Label for the camera permission toggle.">
     Camera
-  </message>
-  <message name="IDS_APP_MANAGEMENT_EXTENSIONS_SETTINGS" desc="Label for the open Extensions settings button on the Chrome app permissions page.">
-    Open Extensions settings
-  </message>
-  <message name="IDS_APP_MANAGEMENT_LESS_APPS" desc="Label for showing less apps.">
-    Show less
   </message>
   <message name="IDS_APP_MANAGEMENT_LOCATION" desc="Label for the location permission toggle.">
     Location
@@ -34,20 +10,17 @@
   <message name="IDS_APP_MANAGEMENT_MICROPHONE" desc="Label for the microphone permission toggle.">
     Microphone
   </message>
-  <message name="IDS_APP_MANAGEMENT_MORE_APPS" desc="Label for more apps button at bottom of app list card.">
-    Show <ph name="NUMBER_OF_MORE_APPS">$1<ex>4</ex></ph> more apps
-  </message>
-  <message name="IDS_APP_MANAGEMENT_NO_RESULTS" desc="Text description of a search that has no results.">
-    No search results found
+  <message name="IDS_APP_MANAGEMENT_NO_APPS_FOUND" desc="Text shown when a search of apps yeilds no results.">
+    No apps found
   </message>
   <message name="IDS_APP_MANAGEMENT_NOTIFICATIONS" desc="Label for notifications section in the app settings page.">
     Notifications
   </message>
-  <message name="IDS_APP_MANAGEMENT_NOTIFICATIONS_SUBLABEL" desc="Sublabel for the Notifications item in the main App Management view">
-    <ph name="NUMBER_OF_MORE_APPS">$1<ex>4</ex></ph> apps
-  </message>
   <message name="IDS_APP_MANAGEMENT_PERMISSIONS" desc="Label for permissions section in the app settings page.">
     Permissions
+  </message>
+  <message name="IDS_APP_MANAGEMENT_MORE_SETTINGS" desc="Label for a link to more settings and permissions for an app.">
+    More settings and permissions
   </message>
   <message name="IDS_APP_MANAGEMENT_PIN_TO_SHELF" desc="Label for the pin to shelf button in the app settings page.">
     Pin to shelf
@@ -55,19 +28,16 @@
   <message name="IDS_APP_MANAGEMENT_SEARCH_PROMPT" desc="Prompt in search bar of main app management page.">
     Search apps
   </message>
-  <message name="IDS_APP_MANAGEMENT_SITE_SETTING" desc="Label for the open site settings for PWA app settings page.">
-    Open site settings
-  </message>
-  <message name="IDS_APP_MANAGEMENT_TITLE" desc="Title of the app management page.">
-    Apps
-  </message>
-  <message name="IDS_APP_MANAGEMENT_SIZE" desc="Label for the size of an app in the app settings page.">
-    Size: <ph name="APP_SIZE">$1<ex>8.0MB</ex></ph>
-  </message>
-  <message name="IDS_APP_MANAGEMENT_UNINSTALL" desc="Label for the uninstall button in the app settings page.">
+  <message name="IDS_APP_MANAGEMENT_UNINSTALL_APP" desc="Label for the uninstall button in the app settings page.">
     Uninstall
   </message>
-  <message name="IDS_APP_MANAGEMENT_VERSION" desc="Label for version of an app in the app settings page.">
-    Version: <ph name="VERSION">$1<ex>4.0</ex></ph>
+  <message name="IDS_APP_MANAGEMENT_CONTACTS" desc="Label for the Android contacts (address book) permission toggle.">
+    Contacts
+  </message>
+  <message name="IDS_APP_MANAGEMENT_STORAGE" desc="Label for the Android storage permission toggle.">
+    Storage
+  </message>
+  <message name="IDS_APP_MANAGEMENT_POLICY_APP_POLICY_STRING" desc="Tooltip label explaining that an app cannot be uninstalled as it has been installed by an adminstrator.">
+    This app has been installed by your administrator.
   </message>
 </grit-part>

@@ -7,10 +7,12 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-#import "ios/chrome/browser/ui/ntp/new_tab_page_owning.h"
 #import "ios/public/provider/chrome/browser/voice/logo_animation_controller.h"
 
-class WebStateList;
+namespace web {
+class WebState;
+}
+
 @protocol ApplicationCommands;
 @protocol BrowserCommands;
 @protocol OmniboxFocuser;
@@ -20,7 +22,7 @@ class WebStateList;
 
 // Coordinator handling the NTP.
 @interface NewTabPageCoordinator
-    : ChromeCoordinator<NewTabPageOwning, LogoAnimationControllerOwnerOwner>
+    : ChromeCoordinator <LogoAnimationControllerOwnerOwner>
 
 // Initializes this Coordinator with its |browserState|.
 - (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
@@ -38,7 +40,7 @@ class WebStateList;
 @property(nonatomic, strong, readonly) UIViewController* viewController;
 
 // The web state list to pass to ContentSuggestionsCoordinator.
-@property(nonatomic, assign) WebStateList* webStateList;
+@property(nonatomic, assign) web::WebState* webState;
 // The toolbar delegate to pass to ContentSuggestionsCoordinator.
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 // The dispatcher to pass to ContentSuggestionsCoordinator.
@@ -54,6 +56,23 @@ class WebStateList;
 
 // Dismisses all modals owned by the NTP.
 - (void)dismissModals;
+
+// Exposes content inset of contentSuggestions collectionView to ensure all of
+// content is visible under the bottom toolbar.
+@property(nonatomic) UIEdgeInsets contentInset;
+
+// Animates the NTP fakebox to the focused position and focuses the real
+// omnibox.
+- (void)focusFakebox;
+
+// Called when a snapshot of the content will be taken.
+- (void)willUpdateSnapshot;
+
+// The content offset of the scroll view.
+- (CGPoint)contentOffset;
+
+// Reloads the content of the NewTabPage.
+- (void)reload;
 
 @end
 

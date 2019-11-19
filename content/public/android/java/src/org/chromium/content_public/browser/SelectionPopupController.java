@@ -131,15 +131,4 @@ public interface SelectionPopupController {
      * @param focused If the WebContents currently has focus.
      */
     void updateTextSelectionUI(boolean focused);
-
-    /**
-     * Create and initialize a new instance for testing.
-     *
-     * @param webContents {@link WebContents} object.
-     * @return {@link SelectionPopupController} object used for the give WebContents.
-     *         Creates one if not present.
-     */
-    static SelectionPopupController createForTesting(WebContents webContents) {
-        return SelectionPopupControllerImpl.createForTesting(webContents);
-    }
 }

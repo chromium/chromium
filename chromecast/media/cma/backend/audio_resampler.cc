@@ -15,16 +15,18 @@
 namespace chromecast {
 
 namespace {
-
-typedef float Sample;  // Must match the audio sample format.
-const int kNumChannels = 2;
-const int kFrameSizeBytes = kNumChannels * sizeof(Sample);
+constexpr size_t kMaxChannels = 8;
 }  // namespace
+
+AudioResampler::AudioResampler(size_t channel_count)
+    : channel_count_(channel_count) {
+  DCHECK_LE(channel_count_, kMaxChannels);
+}
 
 scoped_refptr<media::DecoderBufferBase> AudioResampler::ResampleBuffer(
     scoped_refptr<media::DecoderBufferBase> buffer) {
   DCHECK(buffer);
-  const int num_frames = buffer->data_size() / kFrameSizeBytes;
+  const int num_frames = buffer->data_size() / (channel_count_ * sizeof(float));
   input_frames_for_clock_rate_ += num_frames;
   int64_t expected_output_frames = output_frames_for_clock_rate_ + num_frames;
   int64_t desired_output_frames =
@@ -59,25 +61,25 @@ double AudioResampler::SetMediaClockRate(double rate) {
 
 scoped_refptr<media::DecoderBufferBase> AudioResampler::LengthenBuffer(
     scoped_refptr<media::DecoderBufferBase> buffer) {
-  const int num_frames = buffer->data_size() / kFrameSizeBytes;
+  const int num_frames = buffer->data_size() / (channel_count_ * sizeof(float));
   const int new_num_frames = num_frames + 1;
   auto delayed_buffer = base::MakeRefCounted<::media::DecoderBuffer>(
-      new_num_frames * kFrameSizeBytes);
+      new_num_frames * (channel_count_ * sizeof(float)));
 
   delayed_buffer->set_timestamp(
       base::TimeDelta::FromMicroseconds(buffer->timestamp()));
 
-  const Sample* old_channels[kNumChannels];
-  Sample* new_channels[kNumChannels];
-  for (int c = 0; c < kNumChannels; ++c) {
+  const float* old_channels[kMaxChannels];
+  float* new_channels[kMaxChannels];
+  for (size_t c = 0; c < channel_count_; ++c) {
     old_channels[c] =
-        reinterpret_cast<const Sample*>(buffer->data()) + c * num_frames;
+        reinterpret_cast<const float*>(buffer->data()) + c * num_frames;
     new_channels[c] =
-        reinterpret_cast<Sample*>(delayed_buffer->writable_data()) +
+        reinterpret_cast<float*>(delayed_buffer->writable_data()) +
         c * new_num_frames;
   }
 
-  for (int c = 0; c < kNumChannels; ++c) {
+  for (size_t c = 0; c < channel_count_; ++c) {
     new_channels[c][0] = old_channels[c][0];
     // Linearly interpolate between all n input samples to produce (n - 1)
     // samples, plus the first and last sample = (n + 1) output samples.
@@ -94,26 +96,26 @@ scoped_refptr<media::DecoderBufferBase> AudioResampler::LengthenBuffer(
 
 scoped_refptr<media::DecoderBufferBase> AudioResampler::ShortenBuffer(
     scoped_refptr<media::DecoderBufferBase> buffer) {
-  const int num_frames = buffer->data_size() / kFrameSizeBytes;
+  const int num_frames = buffer->data_size() / (channel_count_ * sizeof(float));
 
   const int new_num_frames = num_frames - 1;
   auto cut_buffer = base::MakeRefCounted<::media::DecoderBuffer>(
-      new_num_frames * kFrameSizeBytes);
+      new_num_frames * (channel_count_ * sizeof(float)));
 
   cut_buffer->set_timestamp(
       base::TimeDelta::FromMicroseconds(buffer->timestamp()));
 
-  const Sample* old_channels[kNumChannels];
-  Sample* new_channels[kNumChannels];
-  for (int c = 0; c < kNumChannels; ++c) {
+  const float* old_channels[kMaxChannels];
+  float* new_channels[kMaxChannels];
+  for (size_t c = 0; c < channel_count_; ++c) {
     old_channels[c] =
-        reinterpret_cast<const Sample*>(buffer->data()) + c * num_frames;
-    new_channels[c] = reinterpret_cast<Sample*>(cut_buffer->writable_data()) +
+        reinterpret_cast<const float*>(buffer->data()) + c * num_frames;
+    new_channels[c] = reinterpret_cast<float*>(cut_buffer->writable_data()) +
                       c * new_num_frames;
   }
 
   DCHECK_GE(num_frames, 2);
-  for (int c = 0; c < kNumChannels; ++c) {
+  for (size_t c = 0; c < channel_count_; ++c) {
     // Linearly interpolate between all n input samples to produce (n - 1)
     // output samples.
     for (int s = 0; s < new_num_frames; ++s) {

@@ -7,7 +7,7 @@
 #include "base/guid.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/sync/base/hash_util.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine_impl/loopback_server/persistent_permanent_entity.h"
 #include "components/sync/protocol/sync.pb.h"
 
@@ -65,7 +65,8 @@ PersistentUniqueClientEntity::CreateFromSpecificsForTesting(
     int64_t creation_time,
     int64_t last_modified_time) {
   ModelType model_type = GetModelTypeFromSpecifics(entity_specifics);
-  std::string client_tag_hash = GenerateSyncableHash(model_type, client_tag);
+  std::string client_tag_hash =
+      ClientTagHash::FromUnhashed(model_type, client_tag).value();
   std::string id = LoopbackServerEntity::CreateId(model_type, client_tag_hash);
   return std::make_unique<PersistentUniqueClientEntity>(
       id, model_type, 0, non_unique_name, client_tag_hash, entity_specifics,

@@ -6,9 +6,8 @@
 
 #include <memory>
 
-#include "ios/web/public/app/web_main.h"
+#include "ios/web/public/init/web_main.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/public/web_state/web_state.h"
 #include "ios/web/shell/shell_browser_state.h"
 #include "ios/web/shell/shell_main_delegate.h"
 #import "ios/web/shell/shell_web_client.h"

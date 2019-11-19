@@ -1,7 +1,6 @@
 #ifndef _RAR_CRYPT_
 #define _RAR_CRYPT_
 
-namespace third_party_unrar {
 
 enum CRYPT_METHOD {
   CRYPT_NONE,CRYPT_RAR13,CRYPT_RAR15,CRYPT_RAR20,CRYPT_RAR30,CRYPT_RAR50
@@ -98,7 +97,5 @@ void pbkdf2(const byte *pass, size_t pass_len, const byte *salt,
             uint rounds);
 
 void ConvertHashToMAC(HashValue *Value,byte *Key);
-
-}  // namespace third_party_unrar
 
 #endif

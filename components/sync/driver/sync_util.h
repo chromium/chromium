@@ -37,7 +37,7 @@ GURL GetSyncServiceURL(const base::CommandLine& command_line,
 // Helper to construct a user agent string (ASCII) suitable for use by
 // the syncapi for any HTTP communication. This string is used by the sync
 // backend for classifying client types when calculating statistics.
-std::string MakeUserAgentForSync(version_info::Channel channel, bool is_tablet);
+std::string MakeUserAgentForSync(version_info::Channel channel);
 
 }  // namespace syncer
 

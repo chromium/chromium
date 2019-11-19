@@ -7,13 +7,12 @@
 #include <cmath>
 #include <memory>
 
-#include "ash/accelerators/accelerator_controller.h"
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/display/mouse_cursor_event_filter.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screenshot_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
-#include "services/ws/window_service.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window_targeter.h"
@@ -75,8 +74,6 @@ bool IsTopLevelWindow(aura::Window* window) {
       !window->delegate()) {
     return false;
   }
-  if (ws::WindowService::IsProxyWindow(window))
-    return ws::WindowService::IsTopLevelWindow(window);
   return true;
 }
 
@@ -286,7 +283,7 @@ void ScreenshotController::StartWindowScreenshotSession() {
         Shell::GetContainer(root, kShellWindowId_OverlayContainer)->layer(),
         true);
   }
-  SetSelectedWindow(wm::GetActiveWindow());
+  SetSelectedWindow(window_util::GetActiveWindow());
 
   cursor_setter_ = std::make_unique<ScopedCursorSetter>(ui::CursorType::kCross);
 

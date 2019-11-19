@@ -30,7 +30,7 @@ class ImportCleanupTask : public Task {
   PrefetchStore* prefetch_store_;        // Outlives this class.
   PrefetchImporter* prefetch_importer_;  // Outlives this class.
 
-  base::WeakPtrFactory<ImportCleanupTask> weak_ptr_factory_;
+  base::WeakPtrFactory<ImportCleanupTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImportCleanupTask);
 };

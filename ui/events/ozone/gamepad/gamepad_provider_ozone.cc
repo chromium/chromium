@@ -22,7 +22,7 @@ GamepadProviderOzone* GamepadProviderOzone::GetInstance() {
 }
 
 void GamepadProviderOzone::DispatchGamepadDevicesUpdated(
-    std::vector<InputDevice> gamepad_devices) {
+    std::vector<GamepadDevice> gamepad_devices) {
   gamepad_devices_.swap(gamepad_devices);
   for (auto& observer : observers_) {
     observer.OnGamepadDevicesUpdated();
@@ -43,7 +43,7 @@ void GamepadProviderOzone::RemoveGamepadObserver(GamepadObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-std::vector<InputDevice> GamepadProviderOzone::GetGamepadDevices() {
+std::vector<GamepadDevice> GamepadProviderOzone::GetGamepadDevices() {
   return gamepad_devices_;
 }
 }  // namespace ui

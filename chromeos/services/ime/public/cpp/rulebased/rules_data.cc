@@ -69,113 +69,83 @@ struct RawDataEntry {
         history_prune(prune) {}
 };
 
-static const std::map<std::string, RawDataEntry> kRawData = {
-    {ar::kId, RawDataEntry(ar::kKeyMap, ar::kIs102)},
-    {bn_phone::kId, RawDataEntry(bn_phone::kKeyMap,
-                                 bn_phone::kIs102,
-                                 bn_phone::kTransforms,
-                                 bn_phone::kTransformsLen,
-                                 bn_phone::kHistoryPrune)},
-    {ckb_ar::kId, RawDataEntry(ckb_ar::kKeyMap, ckb_ar::kIs102)},
-    {ckb_en::kId, RawDataEntry(ckb_en::kKeyMap, ckb_en::kIs102)},
-    {deva_phone::kId, RawDataEntry(us::kKeyMap,
-                                   us::kIs102,
-                                   deva_phone::kTransforms,
-                                   deva_phone::kTransformsLen,
-                                   deva_phone::kHistoryPrune)},
-    {ethi::kId, RawDataEntry(ethi::kKeyMap,
-                             ethi::kIs102,
-                             ethi::kTransforms,
-                             ethi::kTransformsLen,
-                             ethi::kHistoryPrune)},
-    {fa::kId, RawDataEntry(fa::kKeyMap, fa::kIs102)},
-    {gu_phone::kId, RawDataEntry(gu_phone::kKeyMap,
-                                 gu_phone::kIs102,
-                                 gu_phone::kTransforms,
-                                 gu_phone::kTransformsLen,
-                                 gu_phone::kHistoryPrune)},
-    {km::kId, RawDataEntry(km::kKeyMap, km::kIs102)},
-    {kn_phone::kId, RawDataEntry(us::kKeyMap,
-                                 us::kIs102,
-                                 kn_phone::kTransforms,
-                                 kn_phone::kTransformsLen,
-                                 kn_phone::kHistoryPrune)},
-    {lo::kId, RawDataEntry(lo::kKeyMap, lo::kIs102)},
-    {ml_phone::kId, RawDataEntry(us::kKeyMap,
-                                 us::kIs102,
-                                 ml_phone::kTransforms,
-                                 ml_phone::kTransformsLen,
-                                 ml_phone::kHistoryPrune)},
-    {my::kId, RawDataEntry(my::kKeyMap,
-                           my::kIs102,
-                           my::kTransforms,
-                           my::kTransformsLen,
-                           my::kHistoryPrune)},
-    {my_myansan::kId, RawDataEntry(my_myansan::kKeyMap,
-                                   my_myansan::kIs102,
-                                   my_myansan::kTransforms,
-                                   my_myansan::kTransformsLen,
-                                   my_myansan::kHistoryPrune)},
-    {ne_inscript::kId, RawDataEntry(ne_inscript::kKeyMap, ne_inscript::kIs102)},
-    {ne_phone::kId, RawDataEntry(ne_phone::kKeyMap, ne_phone::kIs102)},
-    {ru_phone_aatseel::kId,
-     RawDataEntry(ru_phone_aatseel::kKeyMap, ru_phone_aatseel::kIs102)},
-    {ru_phone_yazhert::kId,
-     RawDataEntry(ru_phone_yazhert::kKeyMap, ru_phone_yazhert::kIs102)},
-    {si::kId, RawDataEntry(si::kKeyMap,
-                           si::kIs102,
-                           si::kTransforms,
-                           si::kTransformsLen,
-                           si::kHistoryPrune)},
-    {ta_inscript::kId, RawDataEntry(ta_inscript::kKeyMap, ta_inscript::kIs102)},
-    {ta_itrans::kId, RawDataEntry(us::kKeyMap,
-                                  us::kIs102,
-                                  ta_itrans::kTransforms,
-                                  ta_itrans::kTransformsLen,
-                                  ta_itrans::kHistoryPrune)},
-    {ta_phone::kId, RawDataEntry(ta_phone::kKeyMap,
-                                 ta_phone::kIs102,
-                                 ta_phone::kTransforms,
-                                 ta_phone::kTransformsLen,
-                                 ta_phone::kHistoryPrune)},
-    {ta_tamil99::kId, RawDataEntry(ta_tamil99::kKeyMap,
-                                   ta_tamil99::kIs102,
-                                   ta_tamil99::kTransforms,
-                                   ta_tamil99::kTransformsLen,
-                                   ta_tamil99::kHistoryPrune)},
-    {ta_typewriter::kId,
-     RawDataEntry(ta_typewriter::kKeyMap, ta_typewriter::kIs102)},
-    {te_phone::kId, RawDataEntry(us::kKeyMap,
-                                 us::kIs102,
-                                 te_phone::kTransforms,
-                                 te_phone::kTransformsLen,
-                                 te_phone::kHistoryPrune)},
-    {th::kId, RawDataEntry(th::kKeyMap, th::kIs102)},
-    {th_pattajoti::kId,
-     RawDataEntry(th_pattajoti::kKeyMap, th_pattajoti::kIs102)},
-    {th_tis::kId, RawDataEntry(th_tis::kKeyMap, th_tis::kIs102)},
-    {vi_tcvn::kId, RawDataEntry(us::kKeyMap,
-                                us::kIs102,
-                                vi_tcvn::kTransforms,
-                                vi_tcvn::kTransformsLen,
-                                vi_tcvn::kHistoryPrune)},
-    {vi_telex::kId, RawDataEntry(us::kKeyMap,
-                                 us::kIs102,
-                                 vi_telex::kTransforms,
-                                 vi_telex::kTransformsLen,
-                                 vi_telex::kHistoryPrune)},
-    {vi_viqr::kId, RawDataEntry(us::kKeyMap,
-                                us::kIs102,
-                                vi_viqr::kTransforms,
-                                vi_viqr::kTransformsLen,
-                                vi_viqr::kHistoryPrune)},
-    {vi_vni::kId, RawDataEntry(us::kKeyMap,
-                               us::kIs102,
-                               vi_vni::kTransforms,
-                               vi_vni::kTransformsLen,
-                               vi_vni::kHistoryPrune)}};
+const std::map<std::string, RawDataEntry>& GetRawData() {
+  static const std::map<std::string, RawDataEntry> kRawData = {
+      {ar::kId, RawDataEntry(ar::kKeyMap, ar::kIs102)},
+      {bn_phone::kId,
+       RawDataEntry(bn_phone::kKeyMap, bn_phone::kIs102, bn_phone::kTransforms,
+                    bn_phone::kTransformsLen, bn_phone::kHistoryPrune)},
+      {ckb_ar::kId, RawDataEntry(ckb_ar::kKeyMap, ckb_ar::kIs102)},
+      {ckb_en::kId, RawDataEntry(ckb_en::kKeyMap, ckb_en::kIs102)},
+      {deva_phone::kId,
+       RawDataEntry(us::kKeyMap, us::kIs102, deva_phone::kTransforms,
+                    deva_phone::kTransformsLen, deva_phone::kHistoryPrune)},
+      {ethi::kId, RawDataEntry(ethi::kKeyMap, ethi::kIs102, ethi::kTransforms,
+                               ethi::kTransformsLen, ethi::kHistoryPrune)},
+      {fa::kId, RawDataEntry(fa::kKeyMap, fa::kIs102)},
+      {gu_phone::kId,
+       RawDataEntry(gu_phone::kKeyMap, gu_phone::kIs102, gu_phone::kTransforms,
+                    gu_phone::kTransformsLen, gu_phone::kHistoryPrune)},
+      {km::kId, RawDataEntry(km::kKeyMap, km::kIs102)},
+      {kn_phone::kId,
+       RawDataEntry(us::kKeyMap, us::kIs102, kn_phone::kTransforms,
+                    kn_phone::kTransformsLen, kn_phone::kHistoryPrune)},
+      {lo::kId, RawDataEntry(lo::kKeyMap, lo::kIs102)},
+      {ml_phone::kId,
+       RawDataEntry(us::kKeyMap, us::kIs102, ml_phone::kTransforms,
+                    ml_phone::kTransformsLen, ml_phone::kHistoryPrune)},
+      {my::kId, RawDataEntry(my::kKeyMap, my::kIs102, my::kTransforms,
+                             my::kTransformsLen, my::kHistoryPrune)},
+      {my_myansan::kId,
+       RawDataEntry(my_myansan::kKeyMap, my_myansan::kIs102,
+                    my_myansan::kTransforms, my_myansan::kTransformsLen,
+                    my_myansan::kHistoryPrune)},
+      {ne_inscript::kId,
+       RawDataEntry(ne_inscript::kKeyMap, ne_inscript::kIs102)},
+      {ne_phone::kId, RawDataEntry(ne_phone::kKeyMap, ne_phone::kIs102)},
+      {ru_phone_aatseel::kId,
+       RawDataEntry(ru_phone_aatseel::kKeyMap, ru_phone_aatseel::kIs102)},
+      {ru_phone_yazhert::kId,
+       RawDataEntry(ru_phone_yazhert::kKeyMap, ru_phone_yazhert::kIs102)},
+      {si::kId, RawDataEntry(si::kKeyMap, si::kIs102, si::kTransforms,
+                             si::kTransformsLen, si::kHistoryPrune)},
+      {ta_inscript::kId,
+       RawDataEntry(ta_inscript::kKeyMap, ta_inscript::kIs102)},
+      {ta_itrans::kId,
+       RawDataEntry(us::kKeyMap, us::kIs102, ta_itrans::kTransforms,
+                    ta_itrans::kTransformsLen, ta_itrans::kHistoryPrune)},
+      {ta_phone::kId,
+       RawDataEntry(ta_phone::kKeyMap, ta_phone::kIs102, ta_phone::kTransforms,
+                    ta_phone::kTransformsLen, ta_phone::kHistoryPrune)},
+      {ta_tamil99::kId,
+       RawDataEntry(ta_tamil99::kKeyMap, ta_tamil99::kIs102,
+                    ta_tamil99::kTransforms, ta_tamil99::kTransformsLen,
+                    ta_tamil99::kHistoryPrune)},
+      {ta_typewriter::kId,
+       RawDataEntry(ta_typewriter::kKeyMap, ta_typewriter::kIs102)},
+      {te_phone::kId,
+       RawDataEntry(us::kKeyMap, us::kIs102, te_phone::kTransforms,
+                    te_phone::kTransformsLen, te_phone::kHistoryPrune)},
+      {th::kId, RawDataEntry(th::kKeyMap, th::kIs102)},
+      {th_pattajoti::kId,
+       RawDataEntry(th_pattajoti::kKeyMap, th_pattajoti::kIs102)},
+      {th_tis::kId, RawDataEntry(th_tis::kKeyMap, th_tis::kIs102)},
+      {vi_tcvn::kId,
+       RawDataEntry(us::kKeyMap, us::kIs102, vi_tcvn::kTransforms,
+                    vi_tcvn::kTransformsLen, vi_tcvn::kHistoryPrune)},
+      {vi_telex::kId,
+       RawDataEntry(us::kKeyMap, us::kIs102, vi_telex::kTransforms,
+                    vi_telex::kTransformsLen, vi_telex::kHistoryPrune)},
+      {vi_viqr::kId,
+       RawDataEntry(us::kKeyMap, us::kIs102, vi_viqr::kTransforms,
+                    vi_viqr::kTransformsLen, vi_viqr::kHistoryPrune)},
+      {vi_vni::kId,
+       RawDataEntry(us::kKeyMap, us::kIs102, vi_vni::kTransforms,
+                    vi_vni::kTransformsLen, vi_vni::kHistoryPrune)}};
+  return kRawData;
+}
 
-static const char* k101Keys[] = {
+const char* const k101Keys[] = {
     // Row #1
     "Backquote", "Digit1", "Digit2", "Digit3", "Digit4", "Digit5", "Digit6",
     "Digit7", "Digit8", "Digit9", "Digit0", "Minus", "Equal",
@@ -191,7 +161,7 @@ static const char* k101Keys[] = {
     // Row #5
     "Space"};
 
-static const char* k102Keys[] = {
+const char* const k102Keys[] = {
     // Row #1
     "Backquote", "Digit1", "Digit2", "Digit3", "Digit4", "Digit5", "Digit6",
     "Digit7", "Digit8", "Digit9", "Digit0", "Minus", "Equal",
@@ -207,11 +177,9 @@ static const char* k102Keys[] = {
     // Row #5
     "Space"};
 
-const static size_t kKeyMapCount = 8;
-
 // Parses the raw key mappings and generate a KeyMap instance.
 KeyMap ParseKeyMap(const char** raw_key_map, bool is_102) {
-  const char** std_keys = is_102 ? k102Keys : k101Keys;
+  const char* const* std_keys = is_102 ? k102Keys : k101Keys;
   size_t nkeys = is_102 ? base::size(k102Keys) : base::size(k101Keys);
   KeyMap key_map;
   for (size_t i = 0; i < nkeys; ++i)
@@ -286,7 +254,7 @@ std::string Prefixalize(const std::string& re_str) {
 std::pair<std::unique_ptr<re2::RE2>, std::unique_ptr<re2::RE2>> ParseTransforms(
     const char** raw_transforms,
     uint16_t trans_count,
-    std::map<uint16_t, TransformRule>& re_map) {
+    std::map<uint16_t, TransformRule>* re_map) {
   if (!trans_count)
     return std::make_pair(nullptr, nullptr);
 
@@ -304,7 +272,7 @@ std::pair<std::unique_ptr<re2::RE2>, std::unique_ptr<re2::RE2>> ParseTransforms(
     all_trans += "(" + from + "$)|";
     all_prefixes += Prefixalize(from) + "|";
 
-    re_map[sum_of_groups] = std::make_pair(std::move(from_re), to);
+    (*re_map)[sum_of_groups] = std::make_pair(std::move(from_re), to);
     sum_of_groups += group_count + 1;
   }
   return std::make_pair(
@@ -342,7 +310,7 @@ std::unique_ptr<RulesData> RulesData::Create(const char*** key_map,
     data->key_maps_[i] = ParseKeyMap(key_map[i], is_102_keyboard);
   }
   auto regexes =
-      ParseTransforms(transforms, transforms_count, data->transform_rules_);
+      ParseTransforms(transforms, transforms_count, &data->transform_rules_);
   data->transform_re_merged_ = std::move(regexes.first);
   data->prefix_re_ = std::move(regexes.second);
   data->history_prune_re_ = ParseHistoryPrune(history_prune);
@@ -351,8 +319,9 @@ std::unique_ptr<RulesData> RulesData::Create(const char*** key_map,
 
 // static
 std::unique_ptr<RulesData> RulesData::GetById(const std::string& id) {
-  auto it = kRawData.find(id);
-  if (it == kRawData.end())
+  const std::map<std::string, RawDataEntry>& raw_data = GetRawData();
+  auto it = raw_data.find(id);
+  if (it == raw_data.end())
     return nullptr;
 
   const RawDataEntry& entry = it->second;
@@ -362,11 +331,11 @@ std::unique_ptr<RulesData> RulesData::GetById(const std::string& id) {
 
 // static
 bool RulesData::IsIdSupported(const std::string& id) {
-  return kRawData.find(id) != kRawData.end();
+  return base::Contains(GetRawData(), id);
 }
 
 const KeyMap* RulesData::GetKeyMapByModifiers(uint8_t modifiers) const {
-  return modifiers < 8 ? &key_maps_[modifiers] : nullptr;
+  return modifiers < kKeyMapCount ? &key_maps_[modifiers] : nullptr;
 }
 
 bool RulesData::Transform(const std::string& context,
@@ -420,9 +389,7 @@ bool RulesData::Transform(const std::string& context,
 }
 
 bool RulesData::MatchHistoryPrune(const std::string& str) const {
-  if (!history_prune_re_)
-    return false;
-  return re2::RE2::FullMatch(str, *history_prune_re_);
+  return history_prune_re_ && re2::RE2::FullMatch(str, *history_prune_re_);
 }
 
 bool RulesData::PredictTransform(const std::string& str, int transat) const {

@@ -14,12 +14,9 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "build/build_config.h"
-#include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/channel_info.h"
+#include "chrome/browser/ui/webui/flags_ui_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/flags_ui/flags_ui_constants.h"
@@ -61,9 +58,6 @@ content::WebUIDataSource* CreateFlagsUIHTMLSource() {
       content::WebUIDataSource::Create(chrome::kChromeUIFlagsHost);
   source->OverrideContentSecurityPolicyScriptSrc(
       "script-src chrome://resources 'self' 'unsafe-eval';");
-
-  source->AddLocalizedString(flags_ui::kFlagsRestartNotice,
-                             IDS_FLAGS_UI_RELAUNCH_NOTICE);
   source->AddString(flags_ui::kVersion, version_info::GetVersionNumber());
 
 #if defined(OS_CHROMEOS)
@@ -72,217 +66,29 @@ content::WebUIDataSource* CreateFlagsUIHTMLSource() {
     // Set the string to show which user can actually change the flags.
     std::string owner;
     chromeos::CrosSettings::Get()->GetString(chromeos::kDeviceOwner, &owner);
-    source->AddString(flags_ui::kOwnerEmail, base::UTF8ToUTF16(owner));
+    source->AddString("owner-warning",
+                      l10n_util::GetStringFUTF16(IDS_FLAGS_UI_OWNER_WARNING,
+                                                 base::UTF8ToUTF16(owner)));
   } else {
-    // The warning will be only shown on ChromeOS, when the current user is not
-    // the owner.
-    source->AddString(flags_ui::kOwnerEmail, base::string16());
+    source->AddString("owner-warning", base::string16());
   }
 #endif
 
   source->AddResourcePath(flags_ui::kFlagsJS, IDR_FLAGS_UI_FLAGS_JS);
   source->SetDefaultResource(IDR_FLAGS_UI_FLAGS_HTML);
-  source->UseGzip();
+  source->UseStringsJs();
   return source;
 }
-
-////////////////////////////////////////////////////////////////////////////////
-//
-// FlagsDOMHandler
-//
-////////////////////////////////////////////////////////////////////////////////
-
-// The handler for Javascript messages for the about:flags page.
-class FlagsDOMHandler : public WebUIMessageHandler {
- public:
-  FlagsDOMHandler() : access_(flags_ui::kGeneralAccessFlagsOnly),
-                      experimental_features_requested_(false) {
-  }
-  ~FlagsDOMHandler() override {}
-
-  // Initializes the DOM handler with the provided flags storage and flags
-  // access. If there were flags experiments requested from javascript before
-  // this was called, it calls |HandleRequestExperimentalFeatures| again.
-  void Init(flags_ui::FlagsStorage* flags_storage,
-            flags_ui::FlagAccess access);
-
-  // WebUIMessageHandler implementation.
-  void RegisterMessages() override;
-
-  // Callback for the "requestExperimentFeatures" message.
-  void HandleRequestExperimentalFeatures(const base::ListValue* args);
-
-  // Callback for the "enableExperimentalFeature" message.
-  void HandleEnableExperimentalFeatureMessage(const base::ListValue* args);
-
-  // Callback for the "setOriginListFlag" message.
-  void HandleSetOriginListFlagMessage(const base::ListValue* args);
-
-  // Callback for the "restartBrowser" message. Restores all tabs on restart.
-  void HandleRestartBrowser(const base::ListValue* args);
-
-  // Callback for the "resetAllFlags" message.
-  void HandleResetAllFlags(const base::ListValue* args);
-
- private:
-  std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
-  flags_ui::FlagAccess access_;
-  bool experimental_features_requested_;
-
-  DISALLOW_COPY_AND_ASSIGN(FlagsDOMHandler);
-};
-
-void FlagsDOMHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
-      flags_ui::kRequestExperimentalFeatures,
-      base::BindRepeating(&FlagsDOMHandler::HandleRequestExperimentalFeatures,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      flags_ui::kEnableExperimentalFeature,
-      base::BindRepeating(
-          &FlagsDOMHandler::HandleEnableExperimentalFeatureMessage,
-          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      flags_ui::kSetOriginListFlag,
-      base::BindRepeating(&FlagsDOMHandler::HandleSetOriginListFlagMessage,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      flags_ui::kRestartBrowser,
-      base::BindRepeating(&FlagsDOMHandler::HandleRestartBrowser,
-                          base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      flags_ui::kResetAllFlags,
-      base::BindRepeating(&FlagsDOMHandler::HandleResetAllFlags,
-                          base::Unretained(this)));
-}
-
-void FlagsDOMHandler::Init(flags_ui::FlagsStorage* flags_storage,
-                           flags_ui::FlagAccess access) {
-  flags_storage_.reset(flags_storage);
-  access_ = access;
-
-  if (experimental_features_requested_)
-    HandleRequestExperimentalFeatures(nullptr);
-}
-
-void FlagsDOMHandler::HandleRequestExperimentalFeatures(
-    const base::ListValue* args) {
-  experimental_features_requested_ = true;
-  // Bail out if the handler hasn't been initialized yet. The request will be
-  // handled after the initialization.
-  if (!flags_storage_)
-    return;
-
-  base::DictionaryValue results;
-
-  std::unique_ptr<base::ListValue> supported_features(new base::ListValue);
-  std::unique_ptr<base::ListValue> unsupported_features(new base::ListValue);
-  about_flags::GetFlagFeatureEntries(flags_storage_.get(),
-                                     access_,
-                                     supported_features.get(),
-                                     unsupported_features.get());
-  results.Set(flags_ui::kSupportedFeatures, std::move(supported_features));
-  results.Set(flags_ui::kUnsupportedFeatures, std::move(unsupported_features));
-  results.SetBoolean(flags_ui::kNeedsRestart,
-                     about_flags::IsRestartNeededToCommitChanges());
-  results.SetBoolean(flags_ui::kShowOwnerWarning,
-                     access_ == flags_ui::kGeneralAccessFlagsOnly);
-
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_CHROMEOS)
-  version_info::Channel channel = chrome::GetChannel();
-  results.SetBoolean(flags_ui::kShowBetaChannelPromotion,
-                     channel == version_info::Channel::STABLE);
-  results.SetBoolean(flags_ui::kShowDevChannelPromotion,
-                     channel == version_info::Channel::BETA);
-#else
-  results.SetBoolean(flags_ui::kShowBetaChannelPromotion, false);
-  results.SetBoolean(flags_ui::kShowDevChannelPromotion, false);
-#endif
-  web_ui()->CallJavascriptFunctionUnsafe(flags_ui::kReturnExperimentalFeatures,
-                                         results);
-}
-
-void FlagsDOMHandler::HandleEnableExperimentalFeatureMessage(
-    const base::ListValue* args) {
-  DCHECK(flags_storage_);
-  DCHECK_EQ(2u, args->GetSize());
-  if (args->GetSize() != 2)
-    return;
-
-  std::string entry_internal_name;
-  std::string enable_str;
-  if (!args->GetString(0, &entry_internal_name) ||
-      !args->GetString(1, &enable_str))
-    return;
-
-  about_flags::SetFeatureEntryEnabled(flags_storage_.get(), entry_internal_name,
-                                      enable_str == "true");
-}
-
-void FlagsDOMHandler::HandleSetOriginListFlagMessage(
-    const base::ListValue* args) {
-  DCHECK(flags_storage_);
-  if (args->GetSize() != 2) {
-    NOTREACHED();
-    return;
-  }
-
-  std::string entry_internal_name;
-  std::string value_str;
-  if (!args->GetString(0, &entry_internal_name) ||
-      !args->GetString(1, &value_str) || entry_internal_name.empty()) {
-    NOTREACHED();
-    return;
-  }
-
-  about_flags::SetOriginListFlag(entry_internal_name, value_str,
-                                 flags_storage_.get());
-}
-
-void FlagsDOMHandler::HandleRestartBrowser(const base::ListValue* args) {
-  DCHECK(flags_storage_);
-#if defined(OS_CHROMEOS)
-  // On ChromeOS be less intrusive and restart inside the user session after
-  // we apply the newly selected flags.
-  base::CommandLine user_flags(base::CommandLine::NO_PROGRAM);
-  about_flags::ConvertFlagsToSwitches(flags_storage_.get(),
-                                      &user_flags,
-                                      flags_ui::kAddSentinels);
-
-  // Apply additional switches from policy that should not be dropped when
-  // applying flags..
-  chromeos::UserSessionManager::MaybeAppendPolicySwitches(
-      Profile::FromWebUI(web_ui())->GetPrefs(), &user_flags);
-
-  base::CommandLine::StringVector flags;
-  // argv[0] is the program name |base::CommandLine::NO_PROGRAM|.
-  flags.assign(user_flags.argv().begin() + 1, user_flags.argv().end());
-  VLOG(1) << "Restarting to apply per-session flags...";
-  AccountId account_id =
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId();
-  chromeos::UserSessionManager::GetInstance()->SetSwitchesForUser(
-      account_id,
-      chromeos::UserSessionManager::CommandLineSwitchesType::
-          kPolicyAndFlagsAndKioskControl,
-      flags);
-#endif
-  chrome::AttemptRestart();
-}
-
-void FlagsDOMHandler::HandleResetAllFlags(const base::ListValue* args) {
-  DCHECK(flags_storage_);
-  about_flags::ResetAllFlags(flags_storage_.get());
-}
-
 
 #if defined(OS_CHROMEOS)
 // On ChromeOS verifying if the owner is signed in is async operation and only
 // after finishing it the UI can be properly populated. This function is the
 // callback for whether the owner is signed in. It will respectively pick the
 // proper PrefService for the flags interface.
-void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
+template <class T>
+void FinishInitialization(base::WeakPtr<T> flags_ui,
                           Profile* profile,
-                          FlagsDOMHandler* dom_handler,
+                          FlagsUIHandler* dom_handler,
                           bool current_user_is_owner) {
   DCHECK(!profile->IsOffTheRecord());
   // If the flags_ui has gone away, there's nothing to do.
@@ -310,19 +116,80 @@ void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
 
 }  // namespace
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// FlagsUI
-//
-///////////////////////////////////////////////////////////////////////////////
+// static
+void FlagsUI::AddStrings(content::WebUIDataSource* source) {
+  // Strings added here are all marked a non-translatable, so they are not
+  // actually localized.
+  source->AddLocalizedString(flags_ui::kFlagsRestartNotice,
+                             IDS_FLAGS_UI_RELAUNCH_NOTICE);
+  source->AddLocalizedString("available", IDS_FLAGS_UI_AVAILABLE_FEATURE);
+  source->AddLocalizedString("clear-search", IDS_FLAGS_UI_CLEAR_SEARCH);
+  source->AddLocalizedString("disabled", IDS_FLAGS_UI_DISABLED_FEATURE);
+  source->AddLocalizedString("enabled", IDS_FLAGS_UI_ENABLED_FEATURE);
+  source->AddLocalizedString("experiment-enabled",
+                             IDS_FLAGS_UI_EXPERIMENT_ENABLED);
+  source->AddLocalizedString("heading", IDS_FLAGS_UI_TITLE);
+  source->AddLocalizedString("no-results", IDS_FLAGS_UI_NO_RESULTS);
+  source->AddLocalizedString("not-available-platform",
+                             IDS_FLAGS_UI_NOT_AVAILABLE_ON_PLATFORM);
+  source->AddLocalizedString("page-warning", IDS_FLAGS_UI_PAGE_WARNING);
+  source->AddLocalizedString("page-warning-explanation",
+                             IDS_FLAGS_UI_PAGE_WARNING_EXPLANATION);
+  source->AddLocalizedString("relaunch", IDS_FLAGS_UI_RELAUNCH);
+  source->AddLocalizedString("reset", IDS_FLAGS_UI_PAGE_RESET);
+  source->AddLocalizedString("reset-acknowledged",
+                             IDS_FLAGS_UI_RESET_ACKNOWLEDGED);
+  source->AddLocalizedString("search-placeholder",
+                             IDS_FLAGS_UI_SEARCH_PLACEHOLDER);
+  source->AddLocalizedString("title", IDS_FLAGS_UI_TITLE);
+  source->AddLocalizedString("unavailable", IDS_FLAGS_UI_UNAVAILABLE_FEATURE);
+  source->AddLocalizedString("searchResultsSingular",
+                             IDS_FLAGS_UI_SEARCH_RESULTS_SINGULAR);
+  source->AddLocalizedString("searchResultsPlural",
+                             IDS_FLAGS_UI_SEARCH_RESULTS_PLURAL);
+}
 
-FlagsUI::FlagsUI(content::WebUI* web_ui)
-    : WebUIController(web_ui),
-      weak_factory_(this) {
-  Profile* profile = Profile::FromWebUI(web_ui);
+// static
+void FlagsDeprecatedUI::AddStrings(content::WebUIDataSource* source) {
+  source->AddLocalizedString(flags_ui::kFlagsRestartNotice,
+                             IDS_DEPRECATED_FEATURES_RELAUNCH_NOTICE);
+  source->AddLocalizedString("available",
+                             IDS_DEPRECATED_FEATURES_AVAILABLE_FEATURE);
+  source->AddLocalizedString("clear-search", IDS_DEPRECATED_UI_CLEAR_SEARCH);
+  source->AddLocalizedString("disabled",
+                             IDS_DEPRECATED_FEATURES_DISABLED_FEATURE);
+  source->AddLocalizedString("enabled",
+                             IDS_DEPRECATED_FEATURES_ENABLED_FEATURE);
+  source->AddLocalizedString("experiment-enabled",
+                             IDS_DEPRECATED_UI_EXPERIMENT_ENABLED);
+  source->AddLocalizedString("heading", IDS_DEPRECATED_FEATURES_HEADING);
+  source->AddLocalizedString("no-results", IDS_DEPRECATED_FEATURES_NO_RESULTS);
+  source->AddLocalizedString("not-available-platform",
+                             IDS_DEPRECATED_FEATURES_NOT_AVAILABLE_ON_PLATFORM);
+  source->AddString("page-warning", std::string());
+  source->AddLocalizedString("page-warning-explanation",
+                             IDS_DEPRECATED_FEATURES_PAGE_WARNING_EXPLANATION);
+  source->AddLocalizedString("relaunch", IDS_DEPRECATED_FEATURES_RELAUNCH);
+  source->AddLocalizedString("reset", IDS_DEPRECATED_FEATURES_PAGE_RESET);
+  source->AddLocalizedString("reset-acknowledged",
+                             IDS_DEPRECATED_UI_RESET_ACKNOWLEDGED);
+  source->AddLocalizedString("search-placeholder",
+                             IDS_DEPRECATED_FEATURES_SEARCH_PLACEHOLDER);
+  source->AddLocalizedString("title", IDS_DEPRECATED_FEATURES_TITLE);
+  source->AddLocalizedString("unavailable",
+                             IDS_DEPRECATED_FEATURES_UNAVAILABLE_FEATURE);
+  source->AddLocalizedString("searchResultsSingular",
+                             IDS_ENTERPRISE_UI_SEARCH_RESULTS_SINGULAR);
+  source->AddLocalizedString("searchResultsPlural",
+                             IDS_ENTERPRISE_UI_SEARCH_RESULTS_PLURAL);
+}
 
-  auto handler_owner = std::make_unique<FlagsDOMHandler>();
-  FlagsDOMHandler* handler = handler_owner.get();
+template <class T>
+FlagsUIHandler* InitializeHandler(content::WebUI* web_ui,
+                                  Profile* profile,
+                                  base::WeakPtrFactory<T>& weak_factory) {
+  auto handler_owner = std::make_unique<FlagsUIHandler>();
+  FlagsUIHandler* handler = handler_owner.get();
   web_ui->AddMessageHandler(std::move(handler_owner));
 
 #if defined(OS_CHROMEOS)
@@ -334,11 +201,11 @@ FlagsUI::FlagsUI(content::WebUI* web_ui)
     chromeos::OwnerSettingsServiceChromeOS* service =
         chromeos::OwnerSettingsServiceChromeOSFactory::GetForBrowserContext(
             original_profile);
-    service->IsOwnerAsync(base::Bind(&FinishInitialization,
-                                     weak_factory_.GetWeakPtr(),
+    service->IsOwnerAsync(base::Bind(&FinishInitialization<T>,
+                                     weak_factory.GetWeakPtr(),
                                      original_profile, handler));
   } else {
-    FinishInitialization(weak_factory_.GetWeakPtr(), original_profile, handler,
+    FinishInitialization(weak_factory.GetWeakPtr(), original_profile, handler,
                          false /* current_user_is_owner */);
   }
 #else
@@ -346,9 +213,20 @@ FlagsUI::FlagsUI(content::WebUI* web_ui)
       new flags_ui::PrefServiceFlagsStorage(g_browser_process->local_state()),
       flags_ui::kOwnerAccessToFlags);
 #endif
+  return handler;
+}
+
+FlagsUI::FlagsUI(content::WebUI* web_ui)
+    : WebUIController(web_ui), weak_factory_(this) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  auto* handler = InitializeHandler(web_ui, profile, weak_factory_);
+  DCHECK(handler);
+  handler->set_deprecated_features_only(false);
 
   // Set up the about:flags source.
-  content::WebUIDataSource::Add(profile, CreateFlagsUIHTMLSource());
+  auto* source = CreateFlagsUIHTMLSource();
+  AddStrings(source);
+  content::WebUIDataSource::Add(profile, source);
 }
 
 FlagsUI::~FlagsUI() {
@@ -359,4 +237,24 @@ base::RefCountedMemory* FlagsUI::GetFaviconResourceBytes(
       ui::ScaleFactor scale_factor) {
   return ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytesForScale(
       IDR_FLAGS_FAVICON, scale_factor);
+}
+
+FlagsDeprecatedUI::FlagsDeprecatedUI(content::WebUI* web_ui)
+    : WebUIController(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  auto* handler = InitializeHandler(web_ui, profile, weak_factory_);
+  DCHECK(handler);
+  handler->set_deprecated_features_only(true);
+
+  // Set up the about:flags/deprecated source.
+  auto* source = CreateFlagsUIHTMLSource();
+  AddStrings(source);
+  content::WebUIDataSource::Add(profile, source);
+}
+
+FlagsDeprecatedUI::~FlagsDeprecatedUI() {}
+
+// static
+bool FlagsDeprecatedUI::IsDeprecatedUrl(const GURL& url) {
+  return url.path() == "/deprecated" || url.path() == "/deprecated/";
 }

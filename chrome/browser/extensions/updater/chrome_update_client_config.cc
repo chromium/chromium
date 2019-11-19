@@ -16,16 +16,20 @@
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
 #include "chrome/common/channel_info.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/patch/content/patch_service.h"
+#include "components/services/unzip/content/unzip_service.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/net/network_chromium.h"
+#include "components/update_client/patch/patch_impl.h"
+#include "components/update_client/patcher.h"
 #include "components/update_client/protocol_handler.h"
+#include "components/update_client/unzip/unzip_impl.h"
+#include "components/update_client/unzipper.h"
 #include "components/update_client/update_query_params.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/service_manager_connection.h"
 #include "extensions/browser/extension_prefs.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace extensions {
 
@@ -177,12 +181,24 @@ ChromeUpdateClientConfig::GetNetworkFetcherFactory() {
   return network_fetcher_factory_;
 }
 
-std::unique_ptr<service_manager::Connector>
-ChromeUpdateClientConfig::CreateServiceManagerConnector() const {
+scoped_refptr<update_client::UnzipperFactory>
+ChromeUpdateClientConfig::GetUnzipperFactory() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->Clone();
+  if (!unzip_factory_) {
+    unzip_factory_ = base::MakeRefCounted<update_client::UnzipChromiumFactory>(
+        base::BindRepeating(&unzip::LaunchUnzipper));
+  }
+  return unzip_factory_;
+}
+
+scoped_refptr<update_client::PatcherFactory>
+ChromeUpdateClientConfig::GetPatcherFactory() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!patch_factory_) {
+    patch_factory_ = base::MakeRefCounted<update_client::PatchChromiumFactory>(
+        base::BindRepeating(&patch::LaunchFilePatcher));
+  }
+  return patch_factory_;
 }
 
 bool ChromeUpdateClientConfig::EnabledDeltas() const {

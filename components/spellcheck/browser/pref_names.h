@@ -11,6 +11,7 @@ namespace prefs {
 extern const char kSpellCheckEnable[];
 extern const char kSpellCheckDictionaries[];
 extern const char kSpellCheckForcedDictionaries[];
+extern const char kSpellCheckBlacklistedDictionaries[];
 extern const char kSpellCheckDictionary[];
 extern const char kSpellCheckUseSpellingService[];
 

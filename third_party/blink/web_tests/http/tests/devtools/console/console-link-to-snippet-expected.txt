@@ -6,8 +6,8 @@ name1:1 239
 name1:1 42
 
 Running: testSnippetSyntaxError
-Line Message was added: snippet:///name2 Error 'Uncaught SyntaxError: Unexpected token }':1:1
-name2:2 Uncaught SyntaxError: Unexpected token }
+Line Message was added: snippet:///name2 Error 'Uncaught SyntaxError: Unexpected token '}'':1:1
+name2:2 Uncaught SyntaxError: Unexpected token '}'
 
 Running: testConsoleErrorHighlight
 Line Message was added: snippet:///name3 Error '42':1:8

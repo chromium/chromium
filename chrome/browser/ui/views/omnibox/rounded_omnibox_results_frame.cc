@@ -5,19 +5,20 @@
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 
 #include "build/build_config.h"
+#include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "ui/base/material_design/material_design_controller.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/painter.h"
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
-#include "ui/base/ui_base_features.h"
 #endif
 
 #if defined(OS_WIN)
@@ -121,7 +122,7 @@ gfx::Insets GetContentInsets() {
 
 RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
     views::View* contents,
-    const LocationBarView* location_bar)
+    LocationBarView* location_bar)
     : contents_(contents) {
   // Host the contents in its own View to simplify layout and clipping.
   contents_host_ = new views::View();
@@ -129,9 +130,9 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   contents_host_->layer()->SetFillsBoundsOpaquely(false);
 
   // Use a solid background. Note this is clipped to get rounded corners.
-  const OmniboxTint tint = location_bar->tint();
-  const SkColor background_color =
-      GetOmniboxColor(OmniboxPart::RESULTS_BACKGROUND, tint);
+  const SkColor background_color = GetOmniboxColor(
+      &ThemeService::GetThemeProviderForProfile(location_bar->profile()),
+      OmniboxPart::RESULTS_BACKGROUND);
   contents_host_->SetBackground(views::CreateSolidBackground(background_color));
 
   // Use a textured mask to clip contents. This doesn't work on Windows
@@ -139,7 +140,8 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   // selection highlights.
   // TODO(tapted): Remove this and have the contents paint a half-rounded rect
   // for the background, and when selecting the bottom row.
-  int corner_radius = GetLayoutConstant(LOCATION_BAR_BUBBLE_CORNER_RADIUS);
+  int corner_radius =
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_HIGH);
   contents_mask_ = views::Painter::CreatePaintedLayer(
       views::Painter::CreateSolidRoundRectPainter(SK_ColorBLACK,
                                                   corner_radius));
@@ -157,8 +159,9 @@ RoundedOmniboxResultsFrame::RoundedOmniboxResultsFrame(
   border->SetCornerRadius(corner_radius);
   border->set_md_shadow_elevation(kElevation);
   // Use a darker shadow that's more visible on darker tints.
-  border->set_md_shadow_color(tint == OmniboxTint::DARK ? SK_ColorBLACK
-                                                        : gfx::kGoogleGrey800);
+  border->set_md_shadow_color(color_utils::IsDark(background_color)
+                                  ? SK_ColorBLACK
+                                  : gfx::kGoogleGrey800);
 
   SetBorder(std::move(border));
 
@@ -185,7 +188,7 @@ void RoundedOmniboxResultsFrame::OnBeforeWidgetInit(
 
   // Since we are drawing the shadow in Views via the BubbleBorder, we never
   // want our widget to have its own window-manager drawn shadow.
-  params->shadow_type = views::Widget::InitParams::ShadowType::SHADOW_TYPE_NONE;
+  params->shadow_type = views::Widget::InitParams::ShadowType::kNone;
 }
 
 // static
@@ -234,13 +237,7 @@ void RoundedOmniboxResultsFrame::AddedToWidget() {
   // portion of the Widget to pass through to the omnibox beneath it.
   auto results_targeter = std::make_unique<aura::WindowTargeter>();
   results_targeter->SetInsets(GetInsets() + GetContentInsets());
-  aura::Window* window = GetWidget()->GetNativeWindow();
-  if (features::IsUsingWindowService()) {
-    // The WindowService ends up creating an additional window (by way of
-    // DesktopNativeWidgetAura). The targeter needs to be installed on it.
-    window = window->GetRootWindow();
-  }
-  window->SetEventTargeter(std::move(results_targeter));
+  GetWidget()->GetNativeWindow()->SetEventTargeter(std::move(results_targeter));
 #endif  // USE_AURA
 }
 

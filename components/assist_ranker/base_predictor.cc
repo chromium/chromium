@@ -58,7 +58,7 @@ void BasePredictor::LogFeatureToUkm(const std::string& feature_name,
                                     ukm::UkmEntryBuilder* ukm_builder) {
   DCHECK(ukm_builder);
 
-  if (!base::ContainsKey(*config_.feature_whitelist, feature_name)) {
+  if (!base::Contains(*config_.feature_whitelist, feature_name)) {
     DVLOG(1) << "Feature not whitelisted: " << feature_name;
     return;
   }

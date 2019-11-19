@@ -50,13 +50,13 @@ size_t CalculateIDBKeyArraySize(const IDBKey::KeyArray& keys) {
 // static
 std::unique_ptr<IDBKey> IDBKey::Clone(const IDBKey* rkey) {
   if (!rkey)
-    return IDBKey::CreateNull();
+    return IDBKey::CreateNone();
 
   switch (rkey->GetType()) {
     case mojom::IDBKeyType::Invalid:
       return IDBKey::CreateInvalid();
-    case mojom::IDBKeyType::Null:
-      return IDBKey::CreateNull();
+    case mojom::IDBKeyType::None:
+      return IDBKey::CreateNone();
     case mojom::IDBKeyType::Array: {
       IDBKey::KeyArray lkey_array;
       const auto& rkey_array = rkey->Array();
@@ -83,11 +83,11 @@ std::unique_ptr<IDBKey> IDBKey::Clone(const IDBKey* rkey) {
 IDBKey::IDBKey()
     : type_(mojom::IDBKeyType::Invalid), size_estimate_(kIDBKeyOverheadSize) {}
 
-// Must be Invalid or Null.
+// Must be Invalid or None.
 IDBKey::IDBKey(mojom::IDBKeyType type)
     : type_(type), size_estimate_(kIDBKeyOverheadSize) {
   DCHECK(type_ == mojom::IDBKeyType::Invalid ||
-         type_ == mojom::IDBKeyType::Null);
+         type_ == mojom::IDBKeyType::None);
 }
 
 // Must be Number or Date.
@@ -161,14 +161,14 @@ int IDBKey::Compare(const IDBKey* other) const {
         return result < 0 ? -1 : 1;
       return CompareNumbers(binary_->size(), other->binary_->size());
     case mojom::IDBKeyType::String:
-      return CodePointCompare(string_, other->string_);
+      return CodeUnitCompare(string_, other->string_);
     case mojom::IDBKeyType::Date:
     case mojom::IDBKeyType::Number:
       return CompareNumbers(number_, other->number_);
 
     // These values cannot be compared to each other.
     case mojom::IDBKeyType::Invalid:
-    case mojom::IDBKeyType::Null:
+    case mojom::IDBKeyType::None:
     case mojom::IDBKeyType::Min:
       NOTREACHED();
       return 0;

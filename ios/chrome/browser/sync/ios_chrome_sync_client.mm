@@ -14,11 +14,8 @@
 #include "base/task/post_task.h"
 #include "components/autofill/core/browser/webdata/autocomplete_sync_bridge.h"
 #include "components/autofill/core/browser/webdata/autofill_profile_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/autofill_profile_syncable_service.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_metadata_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/autofill_wallet_metadata_syncable_service.h"
 #include "components/autofill/core/browser/webdata/autofill_wallet_sync_bridge.h"
-#include "components/autofill/core/browser/webdata/autofill_wallet_syncable_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/browser_sync/browser_sync_switches.h"
@@ -26,7 +23,6 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/dom_distiller/core/dom_distiller_service.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/history/core/browser/sync/history_model_worker.h"
 #include "components/history/core/browser/sync/typed_url_sync_bridge.h"
 #include "components/invalidation/impl/invalidation_switches.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
@@ -34,26 +30,25 @@
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/sync/password_model_worker.h"
 #include "components/reading_list/core/reading_list_model.h"
-#include "components/search_engines/search_engine_data_type_controller.h"
 #include "components/sync/base/report_unrecoverable_error.h"
+#include "components/sync/base/sync_base_switches.h"
+#include "components/sync/driver/file_based_trusted_vault_client.h"
 #include "components/sync/driver/sync_api_component_factory.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_util.h"
 #include "components/sync/engine/passive_model_worker.h"
 #include "components/sync/engine/sequenced_model_worker.h"
 #include "components/sync/engine/ui_model_worker.h"
-#include "components/sync/user_events/user_event_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/sync_sessions/favicon_cache.h"
 #include "components/sync_sessions/session_sync_service.h"
-#include "ios/chrome/browser/autofill/personal_data_manager_factory.h"
+#include "components/sync_user_events/user_event_service.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/bookmark_sync_service_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
-#include "ios/chrome/browser/invalidation/ios_chrome_deprecated_profile_invalidation_provider_factory.h"
 #include "ios/chrome/browser/invalidation/ios_chrome_profile_invalidation_provider_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #include "ios/chrome/browser/pref_names.h"
@@ -62,18 +57,22 @@
 #include "ios/chrome/browser/sync/device_info_sync_service_factory.h"
 #include "ios/chrome/browser/sync/ios_user_event_service_factory.h"
 #include "ios/chrome/browser/sync/model_type_store_service_factory.h"
+#include "ios/chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
 #include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
-#include "ios/chrome/browser/web_data_service_factory.h"
+#include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace {
+
+const base::FilePath::CharType kTrustedVaultFilename[] =
+    FILE_PATH_LITERAL("Trusted Vault");
 
 syncer::ModelTypeSet GetDisabledTypesFromCommandLine() {
   std::string disabled_types_str =
@@ -108,12 +107,17 @@ IOSChromeSyncClient::IOSChromeSyncClient(ios::ChromeBrowserState* browser_state)
   password_store_ = IOSChromePasswordStoreFactory::GetForBrowserState(
       browser_state_, ServiceAccessType::IMPLICIT_ACCESS);
 
-  component_factory_.reset(new browser_sync::ProfileSyncComponentsFactoryImpl(
-      this, ::GetChannel(), prefs::kSavingBrowserHistoryDisabled,
-      base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::UI}),
-      db_thread_, profile_web_data_service_, account_web_data_service_,
-      password_store_,
-      ios::BookmarkSyncServiceFactory::GetForBrowserState(browser_state_)));
+  component_factory_ =
+      std::make_unique<browser_sync::ProfileSyncComponentsFactoryImpl>(
+          this, ::GetChannel(), prefs::kSavingBrowserHistoryDisabled,
+          base::CreateSingleThreadTaskRunner({web::WebThread::UI}), db_thread_,
+          profile_web_data_service_, account_web_data_service_, password_store_,
+          /*account_password_store=*/nullptr,
+          ios::BookmarkSyncServiceFactory::GetForBrowserState(browser_state_));
+
+  // TODO(crbug.com/1012660): Instantiate a specific client for ios.
+  trusted_vault_client_ = std::make_unique<syncer::FileBasedTrustedVaultClient>(
+      browser_state_->GetStatePath().Append(kTrustedVaultFilename));
 }
 
 IOSChromeSyncClient::~IOSChromeSyncClient() {}
@@ -135,6 +139,12 @@ syncer::ModelTypeStoreService* IOSChromeSyncClient::GetModelTypeStoreService() {
 syncer::DeviceInfoSyncService* IOSChromeSyncClient::GetDeviceInfoSyncService() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   return DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state_);
+}
+
+send_tab_to_self::SendTabToSelfSyncService*
+IOSChromeSyncClient::GetSendTabToSelfSyncService() {
+  DCHECK_CURRENTLY_ON(web::WebThread::UI);
+  return SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state_);
 }
 
 bookmarks::BookmarkModel* IOSChromeSyncClient::GetBookmarkModel() {
@@ -160,12 +170,6 @@ IOSChromeSyncClient::GetSessionSyncService() {
   return SessionSyncServiceFactory::GetForBrowserState(browser_state_);
 }
 
-autofill::PersonalDataManager* IOSChromeSyncClient::GetPersonalDataManager() {
-  DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  return autofill::PersonalDataManagerFactory::GetForBrowserState(
-      browser_state_);
-}
-
 base::Closure IOSChromeSyncClient::GetPasswordStateChangedCallback() {
   return base::Bind(
       &IOSChromePasswordStoreFactory::OnPasswordsSyncedStatePotentiallyChanged,
@@ -186,18 +190,16 @@ BookmarkUndoService* IOSChromeSyncClient::GetBookmarkUndoService() {
 
 invalidation::InvalidationService*
 IOSChromeSyncClient::GetInvalidationService() {
-  invalidation::ProfileInvalidationProvider* provider;
-
-  if (base::FeatureList::IsEnabled(invalidation::switches::kFCMInvalidations)) {
-    provider = IOSChromeProfileInvalidationProviderFactory::GetForBrowserState(
-        browser_state_);
-  } else {
-    provider = IOSChromeDeprecatedProfileInvalidationProviderFactory::
-        GetForBrowserState(browser_state_);
-  }
+  invalidation::ProfileInvalidationProvider* provider =
+      IOSChromeProfileInvalidationProviderFactory::GetForBrowserState(
+          browser_state_);
   if (provider)
     return provider->GetInvalidationService();
   return nullptr;
+}
+
+syncer::TrustedVaultClient* IOSChromeSyncClient::GetTrustedVaultClient() {
+  return trusted_vault_client_.get();
 }
 
 scoped_refptr<syncer::ExtensionsActivity>
@@ -216,45 +218,24 @@ IOSChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
       return browser_state_->GetSyncablePrefs()
           ->GetSyncableService(syncer::PRIORITY_PREFERENCES)
           ->AsWeakPtr();
-    case syncer::AUTOFILL_PROFILE:
-    case syncer::AUTOFILL_WALLET_DATA:
-    case syncer::AUTOFILL_WALLET_METADATA: {
-      if (!profile_web_data_service_)
-        return base::WeakPtr<syncer::SyncableService>();
-      if (type == syncer::AUTOFILL_PROFILE) {
-        return autofill::AutofillProfileSyncableService::FromWebDataService(
-                   profile_web_data_service_.get())
-            ->AsWeakPtr();
-      } else if (type == syncer::AUTOFILL_WALLET_METADATA) {
-        return autofill::AutofillWalletMetadataSyncableService::
-            FromWebDataService(profile_web_data_service_.get())
-                ->AsWeakPtr();
-      }
-      return autofill::AutofillWalletSyncableService::FromWebDataService(
-                 profile_web_data_service_.get())
-          ->AsWeakPtr();
-    }
     case syncer::HISTORY_DELETE_DIRECTIVES: {
       history::HistoryService* history =
           ios::HistoryServiceFactory::GetForBrowserState(
               browser_state_, ServiceAccessType::EXPLICIT_ACCESS);
-      return history ? history->AsWeakPtr()
-                     : base::WeakPtr<history::HistoryService>();
+      return history ? history->GetDeleteDirectivesSyncableService()
+                     : base::WeakPtr<syncer::SyncableService>();
     }
     case syncer::FAVICON_IMAGES:
     case syncer::FAVICON_TRACKING: {
-      sync_sessions::FaviconCache* favicons =
-          SessionSyncServiceFactory::GetForBrowserState(browser_state_)
-              ->GetFaviconCache();
-      return favicons ? favicons->AsWeakPtr()
-                      : base::WeakPtr<syncer::SyncableService>();
-    }
-    case syncer::DEPRECATED_ARTICLES: {
-      // DomDistillerService is used in iOS ReadingList. The distilled articles
-      // are saved separately and must not be synced.
-      // Add a not reached to avoid having ARTICLES sync be enabled silently.
+      if (!base::FeatureList::IsEnabled(switches::kDoNotSyncFaviconDataTypes)) {
+        sync_sessions::FaviconCache* favicons =
+            SessionSyncServiceFactory::GetForBrowserState(browser_state_)
+                ->GetFaviconCache();
+        return favicons ? favicons->AsWeakPtr()
+                        : base::WeakPtr<syncer::SyncableService>();
+      }
       NOTREACHED();
-      return base::WeakPtr<syncer::SyncableService>();
+      return nullptr;
     }
     case syncer::PASSWORDS: {
       return password_store_ ? password_store_->GetPasswordSyncableService()
@@ -308,24 +289,11 @@ scoped_refptr<syncer::ModelSafeWorker>
 IOSChromeSyncClient::CreateModelWorkerForGroup(syncer::ModelSafeGroup group) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   switch (group) {
-    case syncer::GROUP_DB:
-      return new syncer::SequencedModelWorker(db_thread_, syncer::GROUP_DB);
-    case syncer::GROUP_FILE:
-      // Not supported on iOS.
-      return nullptr;
     case syncer::GROUP_UI:
       return new syncer::UIModelWorker(
-          base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::UI}));
+          base::CreateSingleThreadTaskRunner({web::WebThread::UI}));
     case syncer::GROUP_PASSIVE:
       return new syncer::PassiveModelWorker();
-    case syncer::GROUP_HISTORY: {
-      history::HistoryService* history_service = GetHistoryService();
-      if (!history_service)
-        return nullptr;
-      return new browser_sync::HistoryModelWorker(
-          history_service->AsWeakPtr(),
-          base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::UI}));
-    }
     case syncer::GROUP_PASSWORD: {
       if (!password_store_)
         return nullptr;
@@ -339,4 +307,9 @@ IOSChromeSyncClient::CreateModelWorkerForGroup(syncer::ModelSafeGroup group) {
 syncer::SyncApiComponentFactory*
 IOSChromeSyncClient::GetSyncApiComponentFactory() {
   return component_factory_.get();
+}
+
+syncer::SyncTypePreferenceProvider*
+IOSChromeSyncClient::GetPreferenceProvider() {
+  return nullptr;
 }

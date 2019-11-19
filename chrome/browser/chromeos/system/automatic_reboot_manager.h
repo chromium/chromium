@@ -11,13 +11,16 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observer.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/system/automatic_reboot_manager_observer.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/update_engine_client.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "ui/base/user_activity/user_activity_observer.h"
@@ -30,6 +33,10 @@ class TickClock;
 
 namespace chromeos {
 namespace system {
+
+namespace internal {
+struct SystemEventTimes;
+}
 
 // Schedules and executes automatic reboots.
 //
@@ -74,23 +81,9 @@ namespace system {
 class AutomaticRebootManager : public PowerManagerClient::Observer,
                                public UpdateEngineClient::Observer,
                                public ui::UserActivityObserver,
+                               public session_manager::SessionManagerObserver,
                                public content::NotificationObserver {
  public:
-  // The current uptime and the uptime at which an update was applied and a
-  // reboot became necessary (if any). Used to pass this information from the
-  // blocking thread pool to the UI thread.
-  struct SystemEventTimes {
-    SystemEventTimes();
-    SystemEventTimes(const base::TimeDelta& uptime,
-                     const base::TimeDelta& update_reboot_needed_uptime);
-
-    bool has_boot_time;
-    base::TimeTicks boot_time;
-
-    bool has_update_reboot_needed_time;
-    base::TimeTicks update_reboot_needed_time;
-  };
-
   explicit AutomaticRebootManager(const base::TickClock* clock);
   ~AutomaticRebootManager() override;
 
@@ -110,10 +103,13 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
   void SuspendDone(const base::TimeDelta& sleep_duration) override;
 
   // UpdateEngineClient::Observer:
-  void UpdateStatusChanged(const UpdateEngineClient::Status& status) override;
+  void UpdateStatusChanged(const update_engine::StatusResult& status) override;
 
   // ui::UserActivityObserver:
   void OnUserActivity(const ui::Event* event) override;
+
+  // session_manager::SessionManagerObserver:
+  void OnUserSessionStarted(bool is_primary_user) override;
 
   // content::NotificationObserver:
   void Observe(int type,
@@ -127,7 +123,7 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
 
   // Finishes initialization. Called after the |system_event_times| have been
   // loaded in the blocking thread pool.
-  void Init(const SystemEventTimes& system_event_times);
+  void Init(const internal::SystemEventTimes& system_event_times);
 
   // Reschedules the reboot request, start and end of the grace period. Reboots
   // immediately if the end of the grace period has already passed.
@@ -146,7 +142,9 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
   void Reboot();
 
   // Event that is signaled when Init() runs.
-  base::WaitableEvent initialized_;
+  base::WaitableEvent initialized_{
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED};
 
   // A clock that can be mocked in tests to fast-forward time.
   const base::TickClock* const clock_;
@@ -160,19 +158,18 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
   std::unique_ptr<base::OneShotTimer> login_screen_idle_timer_;
 
   // The time at which the device was booted, in |clock_| ticks.
-  bool have_boot_time_;
-  base::TimeTicks boot_time_;
+  base::Optional<base::TimeTicks> boot_time_;
 
   // The time at which an update was applied and a reboot became necessary to
   // complete the update process, in |clock_| ticks.
-  bool have_update_reboot_needed_time_;
-  base::TimeTicks update_reboot_needed_time_;
+  base::Optional<base::TimeTicks> update_reboot_needed_time_;
 
   // The reason for the reboot request. Updated whenever a reboot is scheduled.
-  AutomaticRebootManagerObserver::Reason reboot_reason_;
+  AutomaticRebootManagerObserver::Reason reboot_reason_ =
+      AutomaticRebootManagerObserver::REBOOT_REASON_UNKNOWN;
 
   // Whether a reboot has been requested.
-  bool reboot_requested_;
+  bool reboot_requested_ = false;
 
   // Timers that start and end the grace period.
   std::unique_ptr<base::OneShotTimer> grace_start_timer_;
@@ -181,7 +178,11 @@ class AutomaticRebootManager : public PowerManagerClient::Observer,
   base::ObserverList<AutomaticRebootManagerObserver, true>::Unchecked
       observers_;
 
-  base::WeakPtrFactory<AutomaticRebootManager> weak_ptr_factory_;
+  ScopedObserver<session_manager::SessionManager,
+                 session_manager::SessionManagerObserver>
+      session_manager_observer_{this};
+
+  base::WeakPtrFactory<AutomaticRebootManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutomaticRebootManager);
 };

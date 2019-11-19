@@ -24,7 +24,7 @@
             // these should be the tables. in this order
             // the last table should not show up as a table.
             for (var k = 0; k < 5; k++) {
-                var table = accessibilityController.focusedElement.childAtIndex(k);
+                var table = accessibilityController.focusedElement.childAtIndex(0).childAtIndex(k);
                 result.innerText += table.allAttributes() + "\n\n";
             }
         }

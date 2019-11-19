@@ -1,0 +1,115 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromecast/chromecast.gni")
+
+cast_source_set("post_processor_wrapper") {
+  sources = [
+    "post_processor_wrapper.cc",
+    "post_processor_wrapper.h",
+  ]
+  deps = [
+    "//base",
+    "//chromecast/public",
+    "//chromecast/public/media",
+  ]
+}
+
+cast_shared_library("libcast_governor_2.0") {
+  sources = [
+    "post_processor_name.cc",
+  ]
+  defines = [
+    "DEFINED_POSTPROCESSOR_NAME=chromecast::media::Governor",
+    "DEFINED_POSTPROCESSOR_HEADER=chromecast/media/cma/backend/mixer/post_processors/governor.h",
+  ]
+  deps = [
+    ":governor",
+    "//chromecast/public",
+    "//chromecast/public/media",
+  ]
+  if (is_fuchsia) {
+    ldflags = [ "-Wl,-Bsymbolic" ]
+  }
+}
+
+cast_source_set("governor") {
+  sources = [
+    "governor.cc",
+    "governor.h",
+  ]
+  deps = [
+    "//base",
+    "//chromecast/base",
+    "//chromecast/media/base",
+    "//chromecast/public/media",
+  ]
+  public_configs = [ "//chromecast/public:public_config" ]
+}
+
+cast_shared_library("libcast_saturated_gain_2.0") {
+  sources = [
+    "post_processor_name.cc",
+  ]
+  defines = [
+    "DEFINED_POSTPROCESSOR_NAME=chromecast::media::SaturatedGain",
+    "DEFINED_POSTPROCESSOR_HEADER=chromecast/media/cma/backend/mixer/post_processors/saturated_gain.h",
+  ]
+  deps = [
+    ":saturated_gain",
+    "//chromecast/public",
+    "//chromecast/public/media",
+  ]
+  if (is_fuchsia) {
+    ldflags = [ "-Wl,-Bsymbolic" ]
+  }
+}
+
+cast_source_set("saturated_gain") {
+  sources = [
+    "saturated_gain.cc",
+    "saturated_gain.h",
+  ]
+  deps = [
+    "//base",
+    "//chromecast/base",
+    "//chromecast/media/base",
+    "//chromecast/public/media",
+  ]
+  public_configs = [ "//chromecast/public:public_config" ]
+}
+
+cast_source_set("test_support") {
+  testonly = true
+  sources = [
+    "post_processor_unittest.cc",
+    "post_processor_unittest.h",
+  ]
+  deps = [
+    ":post_processor_wrapper",
+    "//base",
+    "//chromecast/media/base",
+    "//chromecast/public/media",
+    "//testing/gtest",
+  ]
+}
+
+cast_source_set("unittests") {
+  testonly = true
+  sources = [
+    "governor_unittest.cc",
+    "saturated_gain_unittest.cc",
+  ]
+  deps = [
+    ":governor",
+    ":post_processor_wrapper",
+    ":saturated_gain",
+    ":test_support",
+    "//base",
+    "//chromecast/media/base",
+    "//chromecast/public",
+    "//chromecast/public/media",
+    "//testing/gtest:gtest",
+  ]
+}

@@ -1,0 +1,13 @@
+[document web]
+++[section] label-for
+++++[static] name='State'
+++[combo box] name='State' expandable expanded labelled-by haspopup:listbox
+++++[entry] selectable-text controller-for
+++[list box] controlled-by
+++++[list item] name='Alabama' selectable
+++++[list item] name='Alaska' selectable selected
+++[combo box] name='State' expandable expanded labelled-by haspopup:listbox
+++++[entry] selectable-text controller-for
+++[list box] controlled-by
+++++[list item] name='Alabama' selectable
+++++[list item] name='Alaska' selectable

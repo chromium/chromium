@@ -1,0 +1,51 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.ozone.mojom;
+
+// Represents the value or values of a gesture property.
+union GesturePropValue {
+  array<int32> ints;
+  array<int16> shorts;
+  array<bool> bools;
+  string str;
+  array<double> reals;
+};
+
+// Error codes that may be returned from GesturePropertiesService.SetProperty.
+enum SetGesturePropErrorCode {
+  SUCCESS = 0,
+  UNKNOWN_ERROR = 1,
+  // There is no property with the given name, or no device with the given ID.
+  NOT_FOUND = 2,
+  // The property is read-only.
+  READ_ONLY = 3,
+  // The value provided is not of the right type for the property.
+  TYPE_MISMATCH = 4,
+  // The length of the array provided does not match the length of the property.
+  SIZE_MISMATCH = 5,
+};
+
+// Allows gesture properties to be read and modified for debugging purposes.
+// Runs in the browser process, and is called by the corresponding D-Bus service
+// wrapper (GesturePropertiesServiceProvider).
+interface GesturePropertiesService {
+  // Returns all input devices with gesture properties that are currently
+  // connected, as a map from their numeric ID to their evdev device name.
+  ListDevices() => (map<int32, string> result);
+
+  // Returns a array of the names of properties that a device has, or an empty
+  // array if no device with the given ID exists.
+  ListProperties(int32 device_id) => (array<string> properties);
+
+  // Returns the value of a property, and whether it is read-only. If there is
+  // no device with the given ID, or no property with the given name, value is
+  // null.
+  GetProperty(int32 device_id, string name)
+      => (bool is_read_only, GesturePropValue? value);
+
+  // Sets the value of a property.
+  SetProperty(int32 device_id, string name, GesturePropValue value)
+      => (SetGesturePropErrorCode error);
+};

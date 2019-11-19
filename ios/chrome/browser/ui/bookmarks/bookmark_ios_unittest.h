@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 #include <memory>
 
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 
 namespace bookmarks {
@@ -35,7 +35,7 @@ class BookmarkIOSUnitTest : public PlatformTest {
       NSString* title);
   void ChangeTitle(NSString* title, const bookmarks::BookmarkNode* node);
 
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   bookmarks::BookmarkModel* _bookmarkModel;
   bookmarks::ManagedBookmarkService* _managedBookmarkService;

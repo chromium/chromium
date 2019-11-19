@@ -6,9 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_CONNECTION_CALLBACKS_H_
 
 #include "base/macros.h"
-#include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/presentation/presentation.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -35,10 +37,11 @@ class PresentationConnectionCallbacks final {
                                   mojom::blink::PresentationErrorPtr);
 
  private:
-  void OnSuccess(
-      const mojom::blink::PresentationInfo&,
-      mojom::blink::PresentationConnectionPtr connection_ptr,
-      mojom::blink::PresentationConnectionRequest connection_request);
+  void OnSuccess(const mojom::blink::PresentationInfo&,
+                 mojo::PendingRemote<mojom::blink::PresentationConnection>
+                     connection_remote,
+                 mojo::PendingReceiver<mojom::blink::PresentationConnection>
+                     connection_receiver);
   void OnError(const mojom::blink::PresentationError&);
 
   Persistent<ScriptPromiseResolver> resolver_;

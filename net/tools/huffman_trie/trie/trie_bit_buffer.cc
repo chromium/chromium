@@ -83,6 +83,30 @@ void TrieBitBuffer::WriteChar(uint8_t byte,
   WriteBits(item->second.bits, item->second.number_of_bits);
 }
 
+void TrieBitBuffer::WriteSize(size_t size) {
+  switch (size) {
+    case 0:
+      WriteBits(0b00, 2);
+      break;
+    case 1:
+      WriteBits(0b100, 3);
+      break;
+    case 2:
+      WriteBits(0b101, 3);
+      break;
+    case 3:
+      WriteBits(0b110, 3);
+      break;
+    default: {
+      WriteBit(size % 2);
+      for (size_t len = (size + 1) / 2; len > 0; --len) {
+        WriteBit(1);
+      }
+      WriteBit(0);
+    }
+  }
+}
+
 void TrieBitBuffer::AppendBitsElement(uint8_t bits, uint8_t number_of_bits) {
   BitsOrPosition element;
   element.bits = current_byte_;

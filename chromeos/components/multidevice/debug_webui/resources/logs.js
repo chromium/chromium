@@ -3,7 +3,18 @@
  * found in the LICENSE file.
  */
 
-Logs = {
+/**
+ * @typedef {{
+ *   text: string,
+ *   time: string,
+ *   file: string,
+ *   line: number,
+ *   severity: number,
+ *}}
+ */
+let Log;
+
+const Logs = {
   controller_: null,
 
   /**
@@ -19,7 +30,7 @@ Logs = {
 
     var saveLogsButton = document.getElementById('save-logs-button');
     saveLogsButton.onclick = () => {
-      this.saveLogs();
+      Logs.saveLogs();
     };
 
     WebUI.getLogMessages();
@@ -49,9 +60,10 @@ Logs = {
  * contained in this object will be invoked by the browser for each operation
  * performed on the native LogBuffer.
  */
-LogBufferInterface = {
+const LogBufferInterface = {
   /**
    * Called when a new log message is added.
+   * @param {!Log} log
    */
   onLogMessageAdded: function(log) {
     if (Logs.controller_) {
@@ -71,6 +83,7 @@ LogBufferInterface = {
   /**
    * Called in response to chrome.send('getLogMessages') with the log messages
    * currently in the buffer.
+   * @param {!Array<Log>} messages
    */
   onGotLogMessages: function(messages) {
     if (Logs.controller_) {
@@ -115,6 +128,7 @@ class LogsListController {
 
   /**
    * Adds a log to the logs list.
+   * @param {!Log} log
    */
   add(log) {
     var directories = log.file.split('/');
@@ -135,6 +149,7 @@ class LogsListController {
 
   /**
    * Initializes the log list from an array of logs.
+   * @param {!Array<!Log>} logs
    */
   set(logs) {
     this.clear();

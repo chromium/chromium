@@ -223,7 +223,7 @@ bool URLMatcherCondition::IsMatch(
     const std::set<StringPattern::ID>& matching_patterns,
     const GURL& url) const {
   DCHECK(string_pattern_);
-  if (!base::ContainsKey(matching_patterns, string_pattern_->id()))
+  if (!base::Contains(matching_patterns, string_pattern_->id()))
     return false;
   // The criteria HOST_CONTAINS, PATH_CONTAINS, QUERY_CONTAINS are based on
   // a substring match on the raw URL. In case of a match, we need to verify
@@ -463,7 +463,7 @@ void URLMatcherConditionFactory::ForgetUnusedPatterns(
       const std::set<StringPattern::ID>& used_patterns) {
   auto i = substring_pattern_singletons_.begin();
   while (i != substring_pattern_singletons_.end()) {
-    if (base::ContainsKey(used_patterns, i->first->id()))
+    if (base::Contains(used_patterns, i->first->id()))
       ++i;
     else
       substring_pattern_singletons_.erase(i++);
@@ -471,7 +471,7 @@ void URLMatcherConditionFactory::ForgetUnusedPatterns(
 
   i = regex_pattern_singletons_.begin();
   while (i != regex_pattern_singletons_.end()) {
-    if (base::ContainsKey(used_patterns, i->first->id()))
+    if (base::Contains(used_patterns, i->first->id()))
       ++i;
     else
       regex_pattern_singletons_.erase(i++);
@@ -479,7 +479,7 @@ void URLMatcherConditionFactory::ForgetUnusedPatterns(
 
   i = origin_and_path_regex_pattern_singletons_.begin();
   while (i != origin_and_path_regex_pattern_singletons_.end()) {
-    if (base::ContainsKey(used_patterns, i->first->id()))
+    if (base::Contains(used_patterns, i->first->id()))
       ++i;
     else
       origin_and_path_regex_pattern_singletons_.erase(i++);
@@ -682,7 +682,7 @@ URLMatcherSchemeFilter::URLMatcherSchemeFilter(
 URLMatcherSchemeFilter::~URLMatcherSchemeFilter() {}
 
 bool URLMatcherSchemeFilter::IsMatch(const GURL& url) const {
-  return base::ContainsValue(filters_, url.scheme());
+  return base::Contains(filters_, url.scheme());
 }
 
 //
@@ -773,7 +773,7 @@ bool URLMatcherConditionSet::IsMatch(
   // elements are found, no need to verify match that is expected to take more
   // cycles.
   for (auto i = query_conditions_.begin(); i != query_conditions_.end(); ++i) {
-    if (!base::ContainsKey(matching_patterns, i->string_pattern()->id()))
+    if (!base::Contains(matching_patterns, i->string_pattern()->id()))
       return false;
   }
   for (auto i = query_conditions_.begin(); i != query_conditions_.end(); ++i) {

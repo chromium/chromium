@@ -25,7 +25,8 @@ function validTouchResult(event) {
     if (event.type == 'touchstart')
       touchStartCount++;
     else if (event.type == 'touchmove')
-      touchMoveCount++;
+      // TouchMoves may be coalesced so count each touch.
+      touchMoveCount += event.changedTouches.length;
     else if (event.type == 'touchend')
       touchendCount++;
 

@@ -25,35 +25,34 @@
 
 #include "third_party/blink/renderer/core/html/forms/external_date_time_chooser.h"
 
-#include "third_party/blink/public/web/web_date_time_chooser_completion.h"
-#include "third_party/blink/public/web/web_date_time_chooser_params.h"
-#include "third_party/blink/public/web/web_view_client.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser_client.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "ui/base/ime/mojom/ime_types.mojom-blink.h"
 
 namespace blink {
 
-class WebDateTimeChooserCompletionImpl : public WebDateTimeChooserCompletion {
- public:
-  WebDateTimeChooserCompletionImpl(ExternalDateTimeChooser* chooser)
-      : chooser_(chooser) {}
-
- private:
-  void DidChooseValue(double value) override {
-    chooser_->DidChooseValue(value);
-    delete this;
-  }
-
-  void DidCancelChooser() override {
-    chooser_->DidCancelChooser();
-    delete this;
-  }
-
-  Persistent<ExternalDateTimeChooser> chooser_;
-};
+static ui::mojom::TextInputType ToTextInputType(const AtomicString& source) {
+  if (source == input_type_names::kDate)
+    return ui::mojom::TextInputType::DATE;
+  if (source == input_type_names::kDatetime)
+    return ui::mojom::TextInputType::TIME;
+  if (source == input_type_names::kDatetimeLocal)
+    return ui::mojom::TextInputType::DATE_TIME_LOCAL;
+  if (source == input_type_names::kMonth)
+    return ui::mojom::TextInputType::MONTH;
+  if (source == input_type_names::kTime)
+    return ui::mojom::TextInputType::TIME;
+  if (source == input_type_names::kWeek)
+    return ui::mojom::TextInputType::WEEK;
+  return ui::mojom::TextInputType::NONE;
+}
 
 ExternalDateTimeChooser::~ExternalDateTimeChooser() = default;
 
@@ -69,78 +68,70 @@ ExternalDateTimeChooser::ExternalDateTimeChooser(DateTimeChooserClient* client)
 }
 
 ExternalDateTimeChooser* ExternalDateTimeChooser::Create(
-    ChromeClient* chrome_client,
-    WebViewClient* web_view_client,
-    DateTimeChooserClient* client,
-    const DateTimeChooserParameters& parameters) {
-  DCHECK(chrome_client);
+    DateTimeChooserClient* client) {
   ExternalDateTimeChooser* chooser =
       MakeGarbageCollected<ExternalDateTimeChooser>(client);
-  if (!chooser->OpenDateTimeChooser(chrome_client, web_view_client, parameters))
-    chooser = nullptr;
   return chooser;
 }
 
-static WebDateTimeInputType ToWebDateTimeInputType(const AtomicString& source) {
-  if (source == input_type_names::kDate)
-    return kWebDateTimeInputTypeDate;
-  if (source == input_type_names::kDatetime)
-    return kWebDateTimeInputTypeDateTime;
-  if (source == input_type_names::kDatetimeLocal)
-    return kWebDateTimeInputTypeDateTimeLocal;
-  if (source == input_type_names::kMonth)
-    return kWebDateTimeInputTypeMonth;
-  if (source == input_type_names::kTime)
-    return kWebDateTimeInputTypeTime;
-  if (source == input_type_names::kWeek)
-    return kWebDateTimeInputTypeWeek;
-  return kWebDateTimeInputTypeNone;
-}
-
-bool ExternalDateTimeChooser::OpenDateTimeChooser(
-    ChromeClient* chrome_client,
-    WebViewClient* web_view_client,
+void ExternalDateTimeChooser::OpenDateTimeChooser(
+    LocalFrame* frame,
     const DateTimeChooserParameters& parameters) {
-  if (!web_view_client)
-    return false;
+  auto date_time_dialog_value = mojom::blink::DateTimeDialogValue::New();
+  date_time_dialog_value->dialog_type = ToTextInputType(parameters.type);
+  date_time_dialog_value->dialog_value = parameters.double_value;
+  date_time_dialog_value->minimum = parameters.minimum;
+  date_time_dialog_value->maximum = parameters.maximum;
+  date_time_dialog_value->step = parameters.step;
+  for (const auto& suggestion : parameters.suggestions) {
+    date_time_dialog_value->suggestions.push_back(suggestion->Clone());
+  }
 
-  WebDateTimeChooserParams web_params;
-  web_params.type = ToWebDateTimeInputType(parameters.type);
-  web_params.anchor_rect_in_screen = parameters.anchor_rect_in_screen;
-  web_params.double_value = parameters.double_value;
-  web_params.suggestions = parameters.suggestions;
-  web_params.minimum = parameters.minimum;
-  web_params.maximum = parameters.maximum;
-  web_params.step = parameters.step;
-  web_params.step_base = parameters.step_base;
-  web_params.is_required = parameters.required;
-  web_params.is_anchor_element_rtl = parameters.is_anchor_element_rtl;
-
-  WebDateTimeChooserCompletion* completion =
-      new WebDateTimeChooserCompletionImpl(this);
-  if (web_view_client->OpenDateTimeChooser(web_params, completion))
-    return true;
-  // We can't open a chooser. Calling
-  // WebDateTimeChooserCompletionImpl::didCancelChooser to delete the
-  // WebDateTimeChooserCompletionImpl object and deref this.
-  completion->DidCancelChooser();
-  return false;
+  auto response_callback = WTF::Bind(&ExternalDateTimeChooser::ResponseHandler,
+                                     WrapPersistent(this));
+  GetDateTimeChooser(frame).OpenDateTimeDialog(
+      std::move(date_time_dialog_value), std::move(response_callback));
 }
 
-void ExternalDateTimeChooser::DidChooseValue(const WebString& value) {
-  if (client_)
-    client_->DidChooseValue(value);
-  // didChooseValue might run JavaScript code, and endChooser() might be
-  // called. However DateTimeChooserCompletionImpl still has one reference to
-  // this object.
-  if (client_)
-    client_->DidEndChooser();
+void ExternalDateTimeChooser::ResponseHandler(bool success,
+                                              double dialog_value) {
+  if (success)
+    DidChooseValue(dialog_value);
+  else
+    DidCancelChooser();
+  client_ = nullptr;
+}
+
+bool ExternalDateTimeChooser::IsShowingDateTimeChooserUI() const {
+  return client_;
+}
+
+mojom::blink::DateTimeChooser& ExternalDateTimeChooser::GetDateTimeChooser(
+    LocalFrame* frame) {
+  if (!date_time_chooser_) {
+    frame->GetBrowserInterfaceBroker().GetInterface(
+        date_time_chooser_.BindNewPipeAndPassReceiver());
+  }
+
+  DCHECK(date_time_chooser_);
+  return *date_time_chooser_.get();
 }
 
 void ExternalDateTimeChooser::DidChooseValue(double value) {
+  // Cache the owner element first, because DidChooseValue might run
+  // JavaScript code and destroy |client|.
+  Element* element = client_ ? &client_->OwnerElement() : nullptr;
   if (client_)
     client_->DidChooseValue(value);
-  // didChooseValue might run JavaScript code, and endChooser() might be
+
+  // Post an accessibility event on the owner element to indicate the
+  // value changed.
+  if (element) {
+    if (AXObjectCache* cache = element->GetDocument().ExistingAXObjectCache())
+      cache->HandleValueChanged(element);
+  }
+
+  // DidChooseValue might run JavaScript code, and endChooser() might be
   // called. However DateTimeChooserCompletionImpl still has one reference to
   // this object.
   if (client_)
@@ -153,6 +144,7 @@ void ExternalDateTimeChooser::DidCancelChooser() {
 }
 
 void ExternalDateTimeChooser::EndChooser() {
+  DCHECK(client_);
   DateTimeChooserClient* client = client_;
   client_ = nullptr;
   client->DidEndChooser();

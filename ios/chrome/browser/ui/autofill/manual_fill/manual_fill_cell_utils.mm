@@ -6,8 +6,8 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_button.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/uicolor_manualfill.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/chip_button.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -16,22 +16,18 @@
 #error "This file requires ARC support."
 #endif
 
-UIButton* CreateButtonWithSelectorAndTarget(SEL action, id target) {
-  UIButton* button = [ManualFillCellButton buttonWithType:UIButtonTypeCustom];
-  [button setTitleColor:UIColor.cr_manualFillTintColor
-               forState:UIControlStateNormal];
+namespace {
+// Horizontal spacing between views in |AppendHorizontalConstraintsForViews|.
+constexpr CGFloat kHorizontalSpacing = 16;
+}  // namespace
+
+UIButton* CreateChipWithSelectorAndTarget(SEL action, id target) {
+  UIButton* button = [ChipButton buttonWithType:UIButtonTypeCustom];
   button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.titleLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   button.titleLabel.adjustsFontForContentSizeCategory = YES;
-  button.contentHorizontalAlignment =
-      UIControlContentHorizontalAlignmentLeading;
   [button addTarget:target
                 action:action
       forControlEvents:UIControlEventTouchUpInside];
-  button.contentEdgeInsets =
-      UIEdgeInsetsMake(ButtonVerticalMargin, ButtonHorizontalMargin,
-                       ButtonVerticalMargin, ButtonHorizontalMargin);
   return button;
 }
 
@@ -39,9 +35,9 @@ void AppendVerticalConstraintsSpacingForViews(
     NSMutableArray<NSLayoutConstraint*>* constraints,
     NSArray<UIView*>* views,
     UIView* container) {
-  AppendVerticalConstraintsSpacingForViews(
-      constraints, views, container, TopSystemSpacingMultiplier,
-      MiddleSystemSpacingMultiplier, BottomSystemSpacingMultiplier);
+  AppendVerticalConstraintsSpacingForViews(constraints, views, container,
+                                           TopSystemSpacingMultiplier,
+                                           BottomSystemSpacingMultiplier);
 }
 
 void AppendVerticalConstraintsSpacingForViews(
@@ -49,7 +45,6 @@ void AppendVerticalConstraintsSpacingForViews(
     NSArray<UIView*>* views,
     UIView* container,
     CGFloat topSystemSpacingMultiplier,
-    CGFloat middleSystemSpacingMultiplier,
     CGFloat bottomSystemSpacingMultiplier) {
   // Multipliers of these constraints are calculated based on a 24 base
   // system spacing.
@@ -57,11 +52,11 @@ void AppendVerticalConstraintsSpacingForViews(
   CGFloat multiplier = topSystemSpacingMultiplier;
   for (UIView* view in views) {
     [constraints
-        addObject:[view.firstBaselineAnchor
+        addObject:[view.topAnchor
                       constraintEqualToSystemSpacingBelowAnchor:previousAnchor
                                                      multiplier:multiplier]];
-    multiplier = middleSystemSpacingMultiplier;
-    previousAnchor = view.lastBaselineAnchor;
+    multiplier = 1.0;
+    previousAnchor = view.bottomAnchor;
   }
   multiplier = bottomSystemSpacingMultiplier;
   [constraints
@@ -95,39 +90,41 @@ void AppendHorizontalConstraintsForViews(
     return;
 
   NSLayoutXAxisAnchor* previousAnchor = guide.leadingAnchor;
-  UILayoutPriority firstPriority =
-      options & AppendConstraintsHorizontalExtraSpaceLeft
-          ? UILayoutPriorityDefaultHigh
-          : UILayoutPriorityDefaultLow;
-  UILayoutPriority lastPriority =
-      options & AppendConstraintsHorizontalExtraSpaceLeft
-          ? UILayoutPriorityDefaultLow
-          : UILayoutPriorityDefaultHigh;
 
-  CGFloat shift = margin;
+  BOOL isFirstView = YES;
   for (UIView* view in views) {
+    CGFloat constant = isFirstView ? margin : kHorizontalSpacing;
     [constraints
         addObject:[view.leadingAnchor constraintEqualToAnchor:previousAnchor
-                                                     constant:shift]];
-    [view setContentCompressionResistancePriority:firstPriority
+                                                     constant:constant]];
+    [view setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                           forAxis:
                                               UILayoutConstraintAxisHorizontal];
-    [view setContentHuggingPriority:lastPriority
+    [view setContentHuggingPriority:UILayoutPriorityDefaultHigh
                             forAxis:UILayoutConstraintAxisHorizontal];
     previousAnchor = view.trailingAnchor;
-    shift = 0;
+    isFirstView = NO;
   }
 
-  [constraints addObject:[views.lastObject.trailingAnchor
-                             constraintEqualToAnchor:guide.trailingAnchor
-                                            constant:-margin]];
-  // Give all remaining space to the last button, minus margin, as per UX.
-  [views.lastObject
-      setContentCompressionResistancePriority:lastPriority
-                                      forAxis:UILayoutConstraintAxisHorizontal];
-  [views.lastObject setContentHuggingPriority:firstPriority
-                                      forAxis:UILayoutConstraintAxisHorizontal];
+  if (options & AppendConstraintsHorizontalEqualOrSmallerThanGuide) {
+    [constraints
+        addObject:[views.lastObject.trailingAnchor
+                      constraintLessThanOrEqualToAnchor:guide.trailingAnchor
+                                               constant:-margin]];
 
+  } else {
+    [constraints addObject:[views.lastObject.trailingAnchor
+                               constraintEqualToAnchor:guide.trailingAnchor
+                                              constant:-margin]];
+    // Give all remaining space to the last button, minus margin, as per UX.
+    [views.lastObject
+        setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    [views.lastObject
+        setContentHuggingPriority:UILayoutPriorityDefaultLow
+                          forAxis:UILayoutConstraintAxisHorizontal];
+  }
   if (options & AppendConstraintsHorizontalSyncBaselines) {
     AppendEqualBaselinesConstraints(constraints, views);
   }
@@ -158,7 +155,7 @@ UILabel* CreateLabel() {
 
 UIView* CreateGraySeparatorForContainer(UIView* container) {
   UIView* grayLine = [[UIView alloc] init];
-  grayLine.backgroundColor = UIColor.cr_manualFillGrayLineColor;
+  grayLine.backgroundColor = [UIColor colorNamed:kSeparatorColor];
   grayLine.translatesAutoresizingMaskIntoConstraints = NO;
   [container addSubview:grayLine];
 
@@ -169,9 +166,9 @@ UIView* CreateGraySeparatorForContainer(UIView* container) {
     [grayLine.heightAnchor constraintEqualToConstant:1],
     // Horizontal constraints.
     [grayLine.leadingAnchor constraintEqualToAnchor:safeArea.leadingAnchor
-                                           constant:ButtonHorizontalMargin],
+                                           constant:kButtonHorizontalMargin],
     [safeArea.trailingAnchor constraintEqualToAnchor:grayLine.trailingAnchor
-                                            constant:ButtonHorizontalMargin],
+                                            constant:kButtonHorizontalMargin],
   ]];
 
   return grayLine;

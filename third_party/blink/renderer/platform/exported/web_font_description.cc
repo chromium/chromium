@@ -43,7 +43,6 @@ WebFontDescription::WebFontDescription(const FontDescription& desc) {
   DCHECK(desc.Weight() >= 100 && desc.Weight() <= 900 &&
          static_cast<int>(desc.Weight()) % 100 == 0);
   weight = static_cast<Weight>(static_cast<int>(desc.Weight()) / 100 - 1);
-  smoothing = static_cast<Smoothing>(desc.FontSmoothing());
   letter_spacing = desc.LetterSpacing();
   word_spacing = desc.WordSpacing();
 }
@@ -66,7 +65,6 @@ WebFontDescription::operator FontDescription() const {
   static_assert(static_cast<int>(WebFontDescription::kWeight900) == 8,
                 "kWeight900 conversion");
   desc.SetWeight(FontSelectionValue((weight + 1) * 100));
-  desc.SetFontSmoothing(static_cast<FontSmoothingMode>(smoothing));
   desc.SetLetterSpacing(letter_spacing);
   desc.SetWordSpacing(word_spacing);
   return desc;

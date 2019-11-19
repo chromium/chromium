@@ -6,6 +6,7 @@
 #define IOS_WEB_VIEW_PUBLIC_CWV_WEB_VIEW_H_
 
 #import <UIKit/UIKit.h>
+#import <WebKit/WebKit.h>
 
 #import "cwv_export.h"
 
@@ -70,6 +71,21 @@ CWV_EXPORT
 //   page URL.
 @property(nonatomic, readonly) NSURL* visibleURL;
 
+// A human-friendly string which represents the location of the document
+// currently being loaded. KVO compliant.
+//
+// You can display this string instead of |visibleURL| in the URL bar. This is
+// usually the scheme followed by the host name, without the path e.g.,
+// @"https://example.com". Precisely speaking:
+//
+// - Internationalized domain names (IDN) are presented in Unicode if they're
+//   regarded safe. See
+//   https://dev.chromium.org/developers/design-documents/idn-in-google-chrome
+//   for details.
+// - Omits the path for standard schemes, excepting file and filesystem.
+// - Omits the port if it is the default for the scheme.
+@property(nonatomic, readonly) NSString* visibleLocationString;
+
 // The URL of the current document. KVO Compliant.
 //
 // See the comment of |visibleURL| above for the difference between |visibleURL|
@@ -122,7 +138,22 @@ CWV_EXPORT
            clientSecret:(NSString*)clientSecret;
 
 - (instancetype)initWithFrame:(CGRect)frame
+                configuration:(CWVWebViewConfiguration*)configuration;
+
+// If |wkConfiguration| is provided, the underlying WKWebView is
+// initialized with |wkConfiguration|, and assigned to
+// |*createdWKWebView| if |createdWKWebView| is not nil.
+// |*createdWKWebView| will be provided only if |wkConfiguration| is provided,
+// otherwise it will always be reset to nil.
+//
+// IMPORTANT: Use |*createdWKWebView| just as a return value of
+// -[WKNavigationDelegate
+// webView:createWebViewWithConfiguration:...], but for nothing
+// else. e.g., You must not access its properties/methods.
+- (instancetype)initWithFrame:(CGRect)frame
                 configuration:(CWVWebViewConfiguration*)configuration
+              WKConfiguration:(nullable WKWebViewConfiguration*)wkConfiguration
+             createdWKWebView:(WKWebView* _Nullable* _Nullable)createdWebView
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;

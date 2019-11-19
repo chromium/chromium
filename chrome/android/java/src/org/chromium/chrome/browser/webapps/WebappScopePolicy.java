@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.webapps;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import org.chromium.chrome.browser.util.UrlUtilities;
 
@@ -40,9 +40,9 @@ public class WebappScopePolicy {
     public static boolean isUrlInScope(@Type int type, WebappInfo info, String url) {
         switch (type) {
             case Type.LEGACY:
-                return UrlUtilities.sameDomainOrHost(info.uri().toString(), url, true);
+                return UrlUtilities.sameDomainOrHost(info.url(), url, true);
             case Type.STRICT:
-                return UrlUtilities.isUrlWithinScope(url, info.scopeUri().toString());
+                return UrlUtilities.isUrlWithinScope(url, info.scopeUrl());
             default:
                 assert false;
                 return false;

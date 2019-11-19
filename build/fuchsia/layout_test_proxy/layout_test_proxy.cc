@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/task/single_thread_task_executor.h"
 #include "net/base/ip_endpoint.h"
 #include "net/test/tcp_socket_proxy.h"
 
@@ -55,13 +57,13 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  base::MessageLoopForIO message_loop;
+  base::SingleThreadTaskExecutor io_task_executor(base::MessagePumpType::IO);
 
   std::vector<std::unique_ptr<net::TcpSocketProxy>> proxies;
 
   for (int port : ports) {
     auto test_server_proxy =
-        std::make_unique<net::TcpSocketProxy>(message_loop.task_runner());
+        std::make_unique<net::TcpSocketProxy>(io_task_executor.task_runner());
     if (!test_server_proxy->Initialize(port)) {
       LOG(ERROR) << "Can't bind proxy to port " << port;
       return 1;
@@ -71,7 +73,7 @@ int main(int argc, char** argv) {
     proxies.push_back(std::move(test_server_proxy));
   }
 
-  // Run the message loop indefinitely.
+  // Run the task executor indefinitely.
   base::RunLoop().Run();
 
   return 0;

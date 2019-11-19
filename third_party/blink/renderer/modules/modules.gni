@@ -8,9 +8,7 @@
 # to the huge and slow lists of sources. If sharing is necessary, make a
 # separate .gni.
 import("//build/config/jumbo.gni")
-import("//build/split_static_library.gni")
 import("//third_party/blink/renderer/config.gni")
-
 blink_modules_output_dir = "$root_gen_dir/third_party/blink/renderer/modules"
 
 # Defines a part of blink modules. This is either a source set or a static
@@ -25,11 +23,7 @@ template("blink_modules_sources") {
   if (is_component_build) {
     target_type = "source_set"
   } else {
-    if (!defined(invoker.split_count)) {
-      target_type = "static_library"
-    } else {
-      target_type = "split_static_library"
-    }
+    target_type = "static_library"
   }
 
   target("jumbo_" + target_type, target_name) {
@@ -45,17 +39,9 @@ template("blink_modules_sources") {
     if (defined(invoker.deps)) {
       deps += invoker.deps
     }
-    if (target_type == "split_static_library") {
-      split_count = invoker.split_count
-    }
 
     # Take everything else not handled above from the invoker.
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "deps",
-                             "split_count",
-                           ])
+    forward_variables_from(invoker, "*", [ "deps" ])
   }
 }
 set_defaults("blink_modules_sources") {

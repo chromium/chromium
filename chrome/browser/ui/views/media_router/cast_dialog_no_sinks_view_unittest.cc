@@ -8,7 +8,9 @@
 
 #include "base/run_loop.h"
 #include "base/time/time.h"
+#include "chrome/test/views/chrome_test_views_delegate.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_router {
@@ -39,16 +41,13 @@ class CastDialogNoSinksViewTest : public ChromeViewsTestBase {
 
 TEST_F(CastDialogNoSinksViewTest, SwitchViews) {
   // Initially, only the throbber view should be shown.
-  EXPECT_TRUE(looking_for_sinks_view()->visible());
+  EXPECT_TRUE(looking_for_sinks_view()->GetVisible());
   EXPECT_FALSE(help_icon_view());
 
-  base::RunLoop run_loop;
-  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(3));
-  run_loop.Run();
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(3));
   // After three seconds, only the help icon view should be shown.
   EXPECT_FALSE(looking_for_sinks_view());
-  EXPECT_TRUE(help_icon_view()->visible());
+  EXPECT_TRUE(help_icon_view()->GetVisible());
 }
 
 }  // namespace media_router

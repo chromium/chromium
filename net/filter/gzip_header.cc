@@ -123,7 +123,7 @@ GZipHeader::Status GZipHeader::ReadMore(const char* inbuf, int inbuf_len,
         }
         // See if we can find the end of the \0-terminated FNAME field.
         pos = reinterpret_cast<const uint8_t*>(memchr(pos, '\0', (end - pos)));
-        if ( pos != NULL ) {
+        if (pos != nullptr) {
           pos++;  // advance past the '\0'
           flags_ &= ~FLAG_FNAME;   // we're done with the FNAME stuff
           state_ = IN_FCOMMENT;
@@ -139,7 +139,7 @@ GZipHeader::Status GZipHeader::ReadMore(const char* inbuf, int inbuf_len,
         }
         // See if we can find the end of the \0-terminated FCOMMENT field.
         pos = reinterpret_cast<const uint8_t*>(memchr(pos, '\0', (end - pos)));
-        if ( pos != NULL ) {
+        if (pos != nullptr) {
           pos++;  // advance past the '\0'
           flags_ &= ~FLAG_FCOMMENT;   // we're done with the FCOMMENT stuff
           state_ = IN_FHCRC_BYTE_0;

@@ -6,17 +6,20 @@ package org.chromium.chrome.browser.omaha;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.StatFs;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import com.google.android.gms.common.GooglePlayServicesUtil;
 
@@ -31,11 +34,16 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.AsyncTask.Status;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.omaha.inline.InlineUpdateController;
 import org.chromium.chrome.browser.omaha.inline.InlineUpdateControllerFactory;
-import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
+import org.chromium.chrome.browser.omaha.metrics.UpdateSuccessMetrics;
+import org.chromium.chrome.browser.omaha.metrics.UpdateSuccessMetrics.UpdateType;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.util.ConversionUtils;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.File;
 import java.lang.annotation.Retention;
@@ -48,19 +56,39 @@ import java.lang.annotation.RetentionPolicy;
  * For manually testing this functionality, see {@link UpdateConfigs}.
  */
 public class UpdateStatusProvider implements ActivityStateListener {
-    /** Possible update states. */
+    /**
+     * Possible sources of user interaction regarding updates.
+     * Treat this as append only as it is used by UMA.
+     */
+    @IntDef({UpdateInteractionSource.FROM_MENU, UpdateInteractionSource.FROM_INFOBAR,
+            UpdateInteractionSource.FROM_NOTIFICATION})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface UpdateInteractionSource {
+        int FROM_MENU = 0;
+        int FROM_INFOBAR = 1;
+        int FROM_NOTIFICATION = 2;
+
+        int NUM_ENTRIES = 3;
+    }
+
+    /**
+     * Possible update states.
+     * Treat this as append only as it is used by UMA.
+     */
     @IntDef({UpdateState.NONE, UpdateState.UPDATE_AVAILABLE, UpdateState.UNSUPPORTED_OS_VERSION,
             UpdateState.INLINE_UPDATE_AVAILABLE, UpdateState.INLINE_UPDATE_DOWNLOADING,
             UpdateState.INLINE_UPDATE_READY, UpdateState.INLINE_UPDATE_FAILED})
     @Retention(RetentionPolicy.SOURCE)
     public @interface UpdateState {
-        int NONE = 1;
-        int UPDATE_AVAILABLE = 2;
-        int UNSUPPORTED_OS_VERSION = 3;
-        int INLINE_UPDATE_AVAILABLE = 4;
-        int INLINE_UPDATE_DOWNLOADING = 5;
-        int INLINE_UPDATE_READY = 6;
-        int INLINE_UPDATE_FAILED = 7;
+        int NONE = 0;
+        int UPDATE_AVAILABLE = 1;
+        int UNSUPPORTED_OS_VERSION = 2;
+        int INLINE_UPDATE_AVAILABLE = 3;
+        int INLINE_UPDATE_DOWNLOADING = 4;
+        int INLINE_UPDATE_READY = 5;
+        int INLINE_UPDATE_FAILED = 6;
+
+        int NUM_ENTRIES = 7;
     }
 
     /** A set of properties that represent the current update state for Chrome. */
@@ -100,7 +128,7 @@ public class UpdateStatusProvider implements ActivityStateListener {
          */
         private boolean mIsInlineSimulated;
 
-        UpdateStatus() {}
+        public UpdateStatus() {}
 
         UpdateStatus(UpdateStatus other) {
             updateState = other.updateState;
@@ -112,12 +140,15 @@ public class UpdateStatusProvider implements ActivityStateListener {
         }
     }
 
-    private final Handler mHandler = new Handler(Looper.getMainLooper());
     private final ObserverList<Callback<UpdateStatus>> mObservers = new ObserverList<>();
 
     private final InlineUpdateController mInlineController;
     private final UpdateQuery mOmahaQuery;
+    private final UpdateSuccessMetrics mMetrics;
     private @Nullable UpdateStatus mStatus;
+
+    /** Whether or not we've recorded the initial update status yet. */
+    private boolean mRecordedInitialStatus;
 
     /** @return Returns a singleton of {@link UpdateStatusProvider}. */
     public static UpdateStatusProvider getInstance() {
@@ -138,7 +169,7 @@ public class UpdateStatusProvider implements ActivityStateListener {
         mObservers.addObserver(observer);
 
         if (mStatus != null) {
-            mHandler.post(() -> observer.onResult(mStatus));
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, () -> observer.onResult(mStatus));
         } else {
             if (mOmahaQuery.getStatus() == Status.PENDING) {
                 mOmahaQuery.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -173,25 +204,68 @@ public class UpdateStatusProvider implements ActivityStateListener {
             return;
         }
 
-        ChromePreferenceManager.getInstance().writeString(
-                ChromePreferenceManager.LATEST_UNSUPPORTED_VERSION, currentlyUsedVersion);
+        SharedPreferencesManager.getInstance().writeString(
+                ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, currentlyUsedVersion);
         mStatus.latestUnsupportedVersion = currentlyUsedVersion;
         pingObservers();
     }
 
     /**
      * Starts the inline update process, if possible.
+     * @source         The source of the action (the UI that caused it).
      * @param activity An {@link Activity} that will be used to interact with Play.
      */
-    public void startInlineUpdate(Activity activity) {
+    public void startInlineUpdate(@UpdateInteractionSource int source, Activity activity) {
         if (mStatus == null || mStatus.updateState != UpdateState.INLINE_UPDATE_AVAILABLE) return;
+        RecordHistogram.recordEnumeratedHistogram(
+                "GoogleUpdate.Inline.UI.Start.Source", source, UpdateInteractionSource.NUM_ENTRIES);
+        mMetrics.startUpdate(UpdateType.INLINE, source);
+        mInlineController.startUpdate(activity);
+    }
+
+    /**
+     * Retries the inline update process, if possible.
+     * @param activity An {@link Activity} that will be used to interact with Play.
+     */
+    public void retryInlineUpdate(@UpdateInteractionSource int source, Activity activity) {
+        if (mStatus == null || mStatus.updateState != UpdateState.INLINE_UPDATE_AVAILABLE) return;
+        RecordHistogram.recordEnumeratedHistogram(
+                "GoogleUpdate.Inline.UI.Retry.Source", source, UpdateInteractionSource.NUM_ENTRIES);
+        mMetrics.startUpdate(UpdateType.INLINE, source);
         mInlineController.startUpdate(activity);
     }
 
     /** Finishes the inline update process, which may involve restarting the app. */
-    public void finishInlineUpdate() {
+    public void finishInlineUpdate(@UpdateInteractionSource int source) {
         if (mStatus == null || mStatus.updateState != UpdateState.INLINE_UPDATE_READY) return;
+        RecordHistogram.recordEnumeratedHistogram("GoogleUpdate.Inline.UI.Install.Source", source,
+                UpdateInteractionSource.NUM_ENTRIES);
         mInlineController.completeUpdate();
+    }
+
+    /**
+     * Starts the intent update process, if possible
+     * @param context An {@link Context} that will be used to fire off the update intent.
+     * @param source  The source of the action (the UI that caused it).
+     * @param newTask Whether or not to make the intent a new task.
+     * @return        Whether or not the update intent was sent and had a valid handler.
+     */
+    public boolean startIntentUpdate(
+            Context context, @UpdateInteractionSource int source, boolean newTask) {
+        if (mStatus == null || mStatus.updateState != UpdateState.UPDATE_AVAILABLE) return false;
+        if (TextUtils.isEmpty(mStatus.updateUrl)) return false;
+
+        try {
+            mMetrics.startUpdate(UpdateType.INTENT, source);
+
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mStatus.updateUrl));
+            if (newTask) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            return false;
+        }
+
+        return true;
     }
 
     // ApplicationStateListener implementation.
@@ -213,6 +287,7 @@ public class UpdateStatusProvider implements ActivityStateListener {
     private UpdateStatusProvider() {
         mInlineController = InlineUpdateControllerFactory.create(this::resolveStatus);
         mOmahaQuery = new UpdateQuery(this::resolveStatus);
+        mMetrics = new UpdateSuccessMetrics();
 
         // Note that as a singleton this class never unregisters.
         ApplicationStatus.registerStateListenerForAllActivities(this);
@@ -243,13 +318,43 @@ public class UpdateStatusProvider implements ActivityStateListener {
             }
         } else {
             @UpdateState
+            int omahaState = mOmahaQuery.getResult().updateState;
+            @UpdateState
             int inlineState = mInlineController.getStatus();
-            if (inlineState != UpdateState.NONE) {
-                mStatus.updateState = inlineState;
-            }
+            mStatus.updateState = resolveOmahaAndInlineStatus(
+                    UpdateConfigs.getConfiguration(), omahaState, inlineState);
+        }
+
+        if (!mRecordedInitialStatus) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "GoogleUpdate.StartUp.State", mStatus.updateState, UpdateState.NUM_ENTRIES);
+            mMetrics.analyzeFirstStatus(mStatus);
+            mRecordedInitialStatus = true;
         }
 
         pingObservers();
+    }
+
+    @VisibleForTesting
+    static @UpdateState int resolveOmahaAndInlineStatus(
+            @UpdateConfigs.UpdateFlowConfiguration int configuration, @UpdateState int omahaState,
+            @UpdateState int inlineState) {
+        switch (configuration) {
+            case UpdateConfigs.UpdateFlowConfiguration.NEVER_SHOW:
+                return UpdateState.NONE;
+            case UpdateConfigs.UpdateFlowConfiguration.INLINE_ONLY:
+                if (omahaState != UpdateState.UPDATE_AVAILABLE) return omahaState;
+                if (inlineState == UpdateState.NONE) return UpdateState.NONE;
+                return inlineState;
+            case UpdateConfigs.UpdateFlowConfiguration.BEST_EFFORT:
+                if (omahaState != UpdateState.UPDATE_AVAILABLE) return omahaState;
+                if (inlineState == UpdateState.NONE) return omahaState;
+                return inlineState;
+            case UpdateConfigs.UpdateFlowConfiguration.INTENT_ONLY: // Intentional fall through.
+            default:
+                // Fall back to use Omaha only and use the old flow.
+                return omahaState;
+        }
     }
 
     private static final class LazyHolder {
@@ -257,7 +362,6 @@ public class UpdateStatusProvider implements ActivityStateListener {
     }
 
     private static final class UpdateQuery extends AsyncTask<UpdateStatus> {
-        private final Handler mHandler = new Handler(Looper.getMainLooper());
         private final Context mContext = ContextUtils.getApplicationContext();
         private final Runnable mCallback;
 
@@ -281,7 +385,7 @@ public class UpdateStatusProvider implements ActivityStateListener {
         @Override
         protected void onPostExecute(UpdateStatus result) {
             mStatus = result;
-            mHandler.post(mCallback);
+            PostTask.postTask(UiThreadTaskTraits.DEFAULT, mCallback);
         }
 
         private UpdateStatus getTestStatus() {
@@ -304,8 +408,8 @@ public class UpdateStatusProvider implements ActivityStateListener {
                     break;
                 case UpdateState.UNSUPPORTED_OS_VERSION:
                     status.latestUnsupportedVersion =
-                            ChromePreferenceManager.getInstance().readString(
-                                    ChromePreferenceManager.LATEST_UNSUPPORTED_VERSION, null);
+                            SharedPreferencesManager.getInstance().readString(
+                                    ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, null);
                     break;
             }
 
@@ -316,7 +420,7 @@ public class UpdateStatusProvider implements ActivityStateListener {
             UpdateStatus status = new UpdateStatus();
 
             if (VersionNumberGetter.isNewerVersionAvailable(context)) {
-                status.updateUrl = MarketURLGetter.getMarketUrl(context);
+                status.updateUrl = MarketURLGetter.getMarketUrl();
                 status.latestVersion =
                         VersionNumberGetter.getInstance().getLatestKnownVersion(context);
 
@@ -325,12 +429,12 @@ public class UpdateStatusProvider implements ActivityStateListener {
                 status.updateState =
                         allowedToUpdate ? UpdateState.UPDATE_AVAILABLE : UpdateState.NONE;
 
-                ChromePreferenceManager.getInstance().removeKey(
-                        ChromePreferenceManager.LATEST_UNSUPPORTED_VERSION);
+                SharedPreferencesManager.getInstance().removeKey(
+                        ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION);
             } else if (!VersionNumberGetter.isCurrentOsVersionSupported()) {
                 status.updateState = UpdateState.UNSUPPORTED_OS_VERSION;
-                status.latestUnsupportedVersion = ChromePreferenceManager.getInstance().readString(
-                        ChromePreferenceManager.LATEST_UNSUPPORTED_VERSION, null);
+                status.latestUnsupportedVersion = SharedPreferencesManager.getInstance().readString(
+                        ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION, null);
             } else {
                 status.updateState = UpdateState.NONE;
             }

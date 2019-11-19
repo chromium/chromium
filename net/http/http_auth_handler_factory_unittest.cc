@@ -134,7 +134,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
         "Basic realm=\"FooBar\"", HttpAuth::AUTH_SERVER, null_ssl_info,
         server_origin, NetLogWithSource(), host_resolver.get(), &handler);
     EXPECT_THAT(rv, IsOk());
-    ASSERT_FALSE(handler.get() == NULL);
+    ASSERT_FALSE(handler.get() == nullptr);
     EXPECT_EQ(HttpAuth::AUTH_SCHEME_BASIC, handler->auth_scheme());
     EXPECT_STREQ("FooBar", handler->realm().c_str());
     EXPECT_EQ(HttpAuth::AUTH_SERVER, handler->target());
@@ -147,7 +147,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
         "UNSUPPORTED realm=\"FooBar\"", HttpAuth::AUTH_SERVER, null_ssl_info,
         server_origin, NetLogWithSource(), host_resolver.get(), &handler);
     EXPECT_THAT(rv, IsError(ERR_UNSUPPORTED_AUTH_SCHEME));
-    EXPECT_TRUE(handler.get() == NULL);
+    EXPECT_TRUE(handler.get() == nullptr);
   }
   {
     std::unique_ptr<HttpAuthHandler> handler;
@@ -156,7 +156,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
         null_ssl_info, proxy_origin, NetLogWithSource(), host_resolver.get(),
         &handler);
     EXPECT_THAT(rv, IsOk());
-    ASSERT_FALSE(handler.get() == NULL);
+    ASSERT_FALSE(handler.get() == nullptr);
     EXPECT_EQ(HttpAuth::AUTH_SCHEME_DIGEST, handler->auth_scheme());
     EXPECT_STREQ("FooBar", handler->realm().c_str());
     EXPECT_EQ(HttpAuth::AUTH_PROXY, handler->target());
@@ -169,7 +169,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
         "NTLM", HttpAuth::AUTH_SERVER, null_ssl_info, server_origin,
         NetLogWithSource(), host_resolver.get(), &handler);
     EXPECT_THAT(rv, IsOk());
-    ASSERT_FALSE(handler.get() == NULL);
+    ASSERT_FALSE(handler.get() == nullptr);
     EXPECT_EQ(HttpAuth::AUTH_SCHEME_NTLM, handler->auth_scheme());
     EXPECT_STREQ("", handler->realm().c_str());
     EXPECT_EQ(HttpAuth::AUTH_SERVER, handler->target());
@@ -184,7 +184,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
 // Note the default factory doesn't support Kerberos on Android
 #if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
     EXPECT_THAT(rv, IsOk());
-    ASSERT_FALSE(handler.get() == NULL);
+    ASSERT_FALSE(handler.get() == nullptr);
     EXPECT_EQ(HttpAuth::AUTH_SCHEME_NEGOTIATE, handler->auth_scheme());
     EXPECT_STREQ("", handler->realm().c_str());
     EXPECT_EQ(HttpAuth::AUTH_SERVER, handler->target());
@@ -192,7 +192,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
     EXPECT_TRUE(handler->is_connection_based());
 #else
     EXPECT_THAT(rv, IsError(ERR_UNSUPPORTED_AUTH_SCHEME));
-    EXPECT_TRUE(handler.get() == NULL);
+    EXPECT_TRUE(handler.get() == nullptr);
 #endif  // BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
   }
 }

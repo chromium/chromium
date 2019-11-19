@@ -15,10 +15,19 @@
             'POST', '/devtools/network/resources/echo-payload.php', false, data,
             resolve));
   }
+
+  async function doTypedArrayPost(data) {
+    await new Promise(
+        resolve => NetworkTestRunner.makeXHRWithTypedArrayPayload(
+          'POST', '/devtools/network/resources/echo-payload.php', false, data,
+          resolve));
+  }
+
   await doPost('1 byte utf-8 char: a');
   await doPost('2 byte utf-8 char: ž');
   await doPost('3 byte utf-8 char: ツ');
   await doPost('4 byte utf-8 char: 🔥');
+  await doTypedArrayPost(new Uint8Array([67, 114]));
 
   const harString = await new Promise(async resolve => {
     const stream = new TestRunner.StringOutputStream(resolve);

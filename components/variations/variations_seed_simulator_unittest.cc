@@ -71,7 +71,7 @@ Study_Experiment_Param* AddExperimentParam(const std::string& param_name,
 
 class VariationsSeedSimulatorTest : public ::testing::Test {
  public:
-  VariationsSeedSimulatorTest() : field_trial_list_(nullptr) {}
+  VariationsSeedSimulatorTest() {}
 
   ~VariationsSeedSimulatorTest() override {
     // Ensure that the maps are cleared between tests, since they are stored as
@@ -128,8 +128,6 @@ class VariationsSeedSimulatorTest : public ::testing::Test {
   }
 
  private:
-  base::FieldTrialList field_trial_list_;
-
   DISALLOW_COPY_AND_ASSIGN(VariationsSeedSimulatorTest);
 };
 

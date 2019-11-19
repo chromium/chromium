@@ -41,6 +41,7 @@ test("mojo_unittests") {
     "//mojo/public/cpp/bindings/tests",
     "//mojo/public/cpp/platform/tests",
     "//mojo/public/cpp/system/tests",
+    "//mojo/public/js/ts/bindings/tests",
   ]
 }
 

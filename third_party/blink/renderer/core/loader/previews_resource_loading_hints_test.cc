@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/loader/previews_resource_loading_hints.h"
 
 #include <memory>
-#include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -32,7 +31,7 @@ namespace {
 class PreviewsResourceLoadingHintsTest : public PageTestBase {
  public:
   PreviewsResourceLoadingHintsTest() {
-    dummy_page_holder_ = DummyPageHolder::Create(IntSize(1, 1));
+    dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(1, 1));
   }
 
  protected:
@@ -40,7 +39,7 @@ class PreviewsResourceLoadingHintsTest : public PageTestBase {
 };
 
 TEST_F(PreviewsResourceLoadingHintsTest, NoPatterns) {
-  std::vector<WTF::String> subresources_to_block;
+  Vector<WTF::String> subresources_to_block;
 
   PreviewsResourceLoadingHints* hints = PreviewsResourceLoadingHints::Create(
       dummy_page_holder_->GetDocument(), ukm::UkmRecorder::GetNewSourceID(),
@@ -51,7 +50,7 @@ TEST_F(PreviewsResourceLoadingHintsTest, NoPatterns) {
 }
 
 TEST_F(PreviewsResourceLoadingHintsTest, OnePattern) {
-  std::vector<WTF::String> subresources_to_block;
+  Vector<WTF::String> subresources_to_block;
   subresources_to_block.push_back("foo.jpg");
 
   PreviewsResourceLoadingHints* hints = PreviewsResourceLoadingHints::Create(
@@ -112,7 +111,7 @@ TEST_F(PreviewsResourceLoadingHintsTest, OnePattern) {
 }
 
 TEST_F(PreviewsResourceLoadingHintsTest, MultiplePatterns) {
-  std::vector<WTF::String> subresources_to_block;
+  Vector<WTF::String> subresources_to_block;
   subresources_to_block.push_back(".example1.com/foo.jpg");
   subresources_to_block.push_back(".example1.com/bar.jpg");
   subresources_to_block.push_back(".example2.com/baz.jpg");
@@ -146,7 +145,7 @@ TEST_F(PreviewsResourceLoadingHintsTest, MultiplePatterns) {
 }
 
 TEST_F(PreviewsResourceLoadingHintsTest, OnePatternHistogramChecker) {
-  std::vector<WTF::String> subresources_to_block;
+  Vector<WTF::String> subresources_to_block;
   subresources_to_block.push_back("foo.jpg");
 
   PreviewsResourceLoadingHints* hints = PreviewsResourceLoadingHints::Create(
@@ -199,7 +198,7 @@ TEST_F(PreviewsResourceLoadingHintsTest, OnePatternHistogramChecker) {
 }
 
 TEST_F(PreviewsResourceLoadingHintsTest, MultiplePatternUKMChecker) {
-  std::vector<WTF::String> subresources_to_block;
+  Vector<WTF::String> subresources_to_block;
   subresources_to_block.push_back(".example1.com/low_1.jpg");
   subresources_to_block.push_back(".example1.com/very_low_1.jpg");
   subresources_to_block.push_back(".example1.com/very_high_1.jpg");
@@ -298,7 +297,7 @@ class PreviewsResourceLoadingHintsTestBlockImages
 
 TEST_F(PreviewsResourceLoadingHintsTestBlockImages,
        OnePatternWithResourceSubtype) {
-  std::vector<WTF::String> subresources_to_block;
+  Vector<WTF::String> subresources_to_block;
   subresources_to_block.push_back("foo.jpg");
 
   PreviewsResourceLoadingHints* hints = PreviewsResourceLoadingHints::Create(
@@ -354,7 +353,7 @@ class PreviewsResourceLoadingHintsTestAllowCSS
 
 TEST_F(PreviewsResourceLoadingHintsTestAllowCSS,
        OnePatternWithResourceSubtype) {
-  std::vector<WTF::String> subresources_to_block;
+  Vector<WTF::String> subresources_to_block;
   subresources_to_block.push_back("foo.jpg");
 
   PreviewsResourceLoadingHints* hints = PreviewsResourceLoadingHints::Create(

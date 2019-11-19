@@ -33,8 +33,6 @@ class HTMLLIElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLLIElement);
-
   explicit HTMLLIElement(Document&);
 
  private:

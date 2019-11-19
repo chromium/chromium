@@ -19,7 +19,7 @@
 #include "components/storage_monitor/storage_info_utils.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -106,7 +106,7 @@ class FakeMtpManagerClientChromeOS : public MtpManagerClientChromeOS {
 class MtpManagerClientChromeOSTest : public testing::Test {
  public:
   MtpManagerClientChromeOSTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   ~MtpManagerClientChromeOSTest() override {}
 
@@ -134,7 +134,7 @@ class MtpManagerClientChromeOSTest : public testing::Test {
   }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<FakeMtpManagerClientChromeOS> mtp_device_observer_;
   std::unique_ptr<MockRemovableStorageObserver> mock_storage_observer_;

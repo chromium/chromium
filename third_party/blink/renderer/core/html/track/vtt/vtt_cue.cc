@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue_list.h"
@@ -48,6 +48,8 @@
 #include "third_party/blink/renderer/core/layout/layout_vtt_cue.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/bidi_resolver.h"
 #include "third_party/blink/renderer/platform/text/text_run_iterator.h"
@@ -56,15 +58,17 @@
 
 namespace blink {
 
-static const CSSValueID kDisplayWritingModeMap[] = {
-    CSSValueHorizontalTb, CSSValueVerticalRl, CSSValueVerticalLr};
+static const CSSValueID kDisplayWritingModeMap[] = {CSSValueID::kHorizontalTb,
+                                                    CSSValueID::kVerticalRl,
+                                                    CSSValueID::kVerticalLr};
 static_assert(base::size(kDisplayWritingModeMap) ==
                   VTTCue::kNumberOfWritingDirections,
               "displayWritingModeMap should have the same number of elements "
               "as VTTCue::NumberOfWritingDirections");
 
 static const CSSValueID kDisplayAlignmentMap[] = {
-    CSSValueStart, CSSValueCenter, CSSValueEnd, CSSValueLeft, CSSValueRight};
+    CSSValueID::kStart, CSSValueID::kCenter, CSSValueID::kEnd,
+    CSSValueID::kLeft, CSSValueID::kRight};
 static_assert(base::size(kDisplayAlignmentMap) == VTTCue::kNumberOfAlignments,
               "displayAlignmentMap should have the same number of elements as "
               "VTTCue::NumberOfAlignments");
@@ -130,19 +134,24 @@ static bool IsInvalidPercentage(double value, ExceptionState& exception_state) {
   return false;
 }
 
-// Sets inline CSS properties on passed in element if value is not an empty
-// string.
-static void SetInlineStylePropertyIfNotEmpty(Element& element,
-                                             CSSPropertyID property_id,
-                                             const String& value) {
-  if (!value.IsEmpty())
-    element.SetInlineStyleProperty(property_id, value);
-}
-
 VTTCueBox::VTTCueBox(Document& document)
     : HTMLDivElement(document),
       snap_to_lines_position_(std::numeric_limits<float>::quiet_NaN()) {
   SetShadowPseudoId(AtomicString("-webkit-media-text-track-display"));
+}
+
+VTTCueBackgroundBox::VTTCueBackgroundBox(Document& document)
+    : HTMLDivElement(document) {
+  SetShadowPseudoId(TextTrackCue::CueShadowPseudoId());
+}
+
+void VTTCueBackgroundBox::Trace(blink::Visitor* visitor) {
+  visitor->Trace(track_);
+  HTMLDivElement::Trace(visitor);
+}
+
+void VTTCueBackgroundBox::SetTrack(TextTrack* track) {
+  track_ = track;
 }
 
 void VTTCueBox::ApplyCSSProperties(
@@ -153,37 +162,39 @@ void VTTCueBox::ApplyCSSProperties(
   // settings:
 
   // the 'position' property must be set to 'absolute'
-  SetInlineStyleProperty(CSSPropertyPosition, CSSValueAbsolute);
+  SetInlineStyleProperty(CSSPropertyID::kPosition, CSSValueID::kAbsolute);
 
   //  the 'unicode-bidi' property must be set to 'plaintext'
-  SetInlineStyleProperty(CSSPropertyUnicodeBidi, CSSValueWebkitPlaintext);
+  SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
+                         CSSValueID::kWebkitPlaintext);
 
   // the 'direction' property must be set to direction
-  SetInlineStyleProperty(CSSPropertyDirection, display_parameters.direction);
+  SetInlineStyleProperty(CSSPropertyID::kDirection,
+                         display_parameters.direction);
 
   // the 'writing-mode' property must be set to writing-mode
-  SetInlineStyleProperty(CSSPropertyWebkitWritingMode,
+  SetInlineStyleProperty(CSSPropertyID::kWebkitWritingMode,
                          display_parameters.writing_mode);
 
   const FloatPoint& position = display_parameters.position;
 
   // the 'top' property must be set to top,
-  SetInlineStyleProperty(CSSPropertyTop, position.Y(),
+  SetInlineStyleProperty(CSSPropertyID::kTop, position.Y(),
                          CSSPrimitiveValue::UnitType::kPercentage);
 
   // the 'left' property must be set to left
-  SetInlineStyleProperty(CSSPropertyLeft, position.X(),
+  SetInlineStyleProperty(CSSPropertyID::kLeft, position.X(),
                          CSSPrimitiveValue::UnitType::kPercentage);
 
   // the 'width' property must be set to width, and the 'height' property  must
   // be set to height
-  if (display_parameters.writing_mode == CSSValueHorizontalTb) {
-    SetInlineStyleProperty(CSSPropertyWidth, display_parameters.size,
+  if (display_parameters.writing_mode == CSSValueID::kHorizontalTb) {
+    SetInlineStyleProperty(CSSPropertyID::kWidth, display_parameters.size,
                            CSSPrimitiveValue::UnitType::kPercentage);
-    SetInlineStyleProperty(CSSPropertyHeight, CSSValueAuto);
+    SetInlineStyleProperty(CSSPropertyID::kHeight, CSSValueID::kAuto);
   } else {
-    SetInlineStyleProperty(CSSPropertyWidth, CSSValueAuto);
-    SetInlineStyleProperty(CSSPropertyHeight, display_parameters.size,
+    SetInlineStyleProperty(CSSPropertyID::kWidth, CSSValueID::kAuto);
+    SetInlineStyleProperty(CSSPropertyID::kHeight, display_parameters.size,
                            CSSPrimitiveValue::UnitType::kPercentage);
   }
 
@@ -191,7 +202,8 @@ void VTTCueBox::ApplyCSSProperties(
   // be set to the value in the second cell of the row of the table below
   // whose first cell is the value of the corresponding cue's WebVTT cue
   // text alignment:
-  SetInlineStyleProperty(CSSPropertyTextAlign, display_parameters.text_align);
+  SetInlineStyleProperty(CSSPropertyID::kTextAlign,
+                         display_parameters.text_align);
 
   // TODO(foolip): The position adjustment for non-snap-to-lines cues has
   // been removed from the spec:
@@ -206,23 +218,24 @@ void VTTCueBox::ApplyCSSProperties(
     // of the way across the height of the video's rendering area, while
     // maintaining the relative positions of the boxes in boxes to each
     // other.
-    SetInlineStyleProperty(CSSPropertyTransform,
+    SetInlineStyleProperty(CSSPropertyID::kTransform,
                            String::Format("translate(-%.2f%%, -%.2f%%)",
                                           position.X(), position.Y()));
-    SetInlineStyleProperty(CSSPropertyWhiteSpace, CSSValuePre);
+    SetInlineStyleProperty(CSSPropertyID::kWhiteSpace, CSSValueID::kPre);
   }
 
   // The snap-to-lines position is propagated to LayoutVTTCue.
   snap_to_lines_position_ = display_parameters.snap_to_lines_position;
 }
 
-LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style) {
+LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style,
+                                            LegacyLayout legacy) {
   // If WebVTT Regions are used, the regular WebVTT layout algorithm is no
   // longer necessary, since cues having the region parameter set do not have
   // any positioning parameters. Also, in this case, the regions themselves
   // have positioning information.
   if (style.GetPosition() == EPosition::kRelative)
-    return HTMLDivElement::CreateLayoutObject(style);
+    return HTMLDivElement::CreateLayoutObject(style, legacy);
 
   return new LayoutVTTCue(this, snap_to_lines_position_);
 }
@@ -239,11 +252,10 @@ VTTCue::VTTCue(Document& document,
       writing_direction_(kHorizontal),
       cue_alignment_(kCenter),
       vtt_node_tree_(nullptr),
-      cue_background_box_(HTMLDivElement::Create(document)),
+      cue_background_box_(MakeGarbageCollected<VTTCueBackgroundBox>(document)),
       snap_to_lines_(true),
       display_tree_should_change_(true) {
   UseCounter::Count(document, WebFeature::kVTTCue);
-  cue_background_box_->SetShadowPseudoId(CueShadowPseudoId());
 }
 
 VTTCue::~VTTCue() = default;
@@ -251,8 +263,8 @@ VTTCue::~VTTCue() = default;
 #ifndef NDEBUG
 String VTTCue::ToString() const {
   return String::Format("%p id=%s interval=%f-->%f cue=%s)", this,
-                        id().Utf8().data(), startTime(), endTime(),
-                        text().Utf8().data());
+                        id().Utf8().c_str(), startTime(), endTime(),
+                        text().Utf8().c_str());
 }
 #endif
 
@@ -442,23 +454,25 @@ void VTTCue::setText(const String& text) {
 }
 
 void VTTCue::CreateVTTNodeTree() {
-  if (!vtt_node_tree_)
-    vtt_node_tree_ =
-        VTTParser::CreateDocumentFragmentFromCueText(GetDocument(), text_);
+  if (!vtt_node_tree_) {
+    vtt_node_tree_ = VTTParser::CreateDocumentFragmentFromCueText(
+        GetDocument(), text_, this->track());
+    cue_background_box_->SetTrack(this->track());
+  }
 }
 
 void VTTCue::CopyVTTNodeToDOMTree(ContainerNode* vtt_node,
                                   ContainerNode* parent) {
   for (Node* node = vtt_node->firstChild(); node; node = node->nextSibling()) {
     Node* cloned_node;
-    if (node->IsVTTElement())
-      cloned_node =
-          ToVTTElement(node)->CreateEquivalentHTMLElement(GetDocument());
+    if (auto* vtt_element = DynamicTo<VTTElement>(node))
+      cloned_node = vtt_element->CreateEquivalentHTMLElement(GetDocument());
     else
       cloned_node = node->cloneNode(false);
     parent->AppendChild(cloned_node);
-    if (node->IsContainerNode())
-      CopyVTTNodeToDOMTree(ToContainerNode(node), ToContainerNode(cloned_node));
+    auto* container_node = DynamicTo<ContainerNode>(node);
+    if (container_node)
+      CopyVTTNodeToDOMTree(container_node, To<ContainerNode>(cloned_node));
   }
 }
 
@@ -565,8 +579,8 @@ static CSSValueID DetermineTextDirection(DocumentFragment* vtt_root) {
           DetermineDirectionality(node->nodeValue(), has_strong_directionality);
       if (has_strong_directionality)
         break;
-    } else if (node->IsVTTElement()) {
-      if (ToVTTElement(node)->WebVTTNodeType() == kVTTNodeTypeRubyText) {
+    } else if (auto* vtt_element = DynamicTo<VTTElement>(node)) {
+      if (vtt_element->WebVTTNodeType() == kVTTNodeTypeRubyText) {
         node = NodeTraversal::NextSkippingChildren(*node);
         continue;
       }
@@ -574,7 +588,7 @@ static CSSValueID DetermineTextDirection(DocumentFragment* vtt_root) {
 
     node = NodeTraversal::Next(*node);
   }
-  return IsLtr(text_direction) ? CSSValueLtr : CSSValueRtl;
+  return IsLtr(text_direction) ? CSSValueID::kLtr : CSSValueID::kRtl;
 }
 
 double VTTCue::CalculateComputedTextPosition() const {
@@ -618,9 +632,9 @@ VTTCue::CueAlignment VTTCue::CalculateComputedCueAlignment() const {
 
 VTTDisplayParameters::VTTDisplayParameters()
     : size(std::numeric_limits<float>::quiet_NaN()),
-      direction(CSSValueNone),
-      text_align(CSSValueNone),
-      writing_mode(CSSValueNone),
+      direction(CSSValueID::kNone),
+      text_align(CSSValueID::kNone),
+      writing_mode(CSSValueID::kNone),
       snap_to_lines_position(std::numeric_limits<float>::quiet_NaN()) {}
 
 VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
@@ -631,7 +645,7 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
   // Steps 1 and 2.
   display_parameters.direction = DetermineTextDirection(vtt_node_tree_.Get());
 
-  if (display_parameters.direction == CSSValueRtl)
+  if (display_parameters.direction == CSSValueID::kRtl)
     UseCounter::Count(GetDocument(), WebFeature::kVTTCueRenderRtl);
 
   // Note: The 'text-align' property is also determined here so that
@@ -738,8 +752,8 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
                      : std::numeric_limits<float>::quiet_NaN();
 
   DCHECK(std::isfinite(display_parameters.size));
-  DCHECK_NE(display_parameters.direction, CSSValueNone);
-  DCHECK_NE(display_parameters.writing_mode, CSSValueNone);
+  DCHECK_NE(display_parameters.direction, CSSValueID::kNone);
+  DCHECK_NE(display_parameters.writing_mode, CSSValueID::kNone);
   return display_parameters;
 }
 
@@ -775,11 +789,11 @@ void VTTCue::UpdatePastAndFutureNodes(double movie_time) {
         is_past_node = false;
     }
 
-    if (child.IsVTTElement()) {
-      ToVTTElement(child).SetIsPastNode(is_past_node);
+    if (auto* child_vtt_element = DynamicTo<VTTElement>(child)) {
+      child_vtt_element->SetIsPastNode(is_past_node);
       // Make an elemenet id match a cue id for style matching purposes.
       if (!id().IsEmpty())
-        ToElement(child).SetIdAttribute(id());
+        To<Element>(child).SetIdAttribute(id());
     }
   }
 }
@@ -788,20 +802,14 @@ VTTCueBox* VTTCue::GetDisplayTree() {
   DCHECK(track() && track()->IsRendered() && IsActive());
 
   if (!display_tree_) {
-    display_tree_ = VTTCueBox::Create(GetDocument());
+    display_tree_ = MakeGarbageCollected<VTTCueBox>(GetDocument());
     display_tree_->AppendChild(cue_background_box_);
   }
 
   DCHECK_EQ(display_tree_->firstChild(), cue_background_box_);
 
-  if (!display_tree_should_change_) {
-    // Apply updated user style overrides for text tracks when display tree
-    // doesn't change.  This ensures that the track settings are refreshed when
-    // the video is replayed or when the user slides back to an already rendered
-    // track.
-    ApplyUserOverrideCSSProperties();
+  if (!display_tree_should_change_)
     return display_tree_;
-  }
 
   CreateVTTNodeTree();
 
@@ -812,12 +820,9 @@ VTTCueBox* VTTCue::GetDisplayTree() {
     VTTDisplayParameters display_parameters = CalculateDisplayParameters();
     display_tree_->ApplyCSSProperties(display_parameters);
   } else {
-    display_tree_->SetInlineStyleProperty(CSSPropertyPosition,
-                                          CSSValueRelative);
+    display_tree_->SetInlineStyleProperty(CSSPropertyID::kPosition,
+                                          CSSValueID::kRelative);
   }
-
-  // Apply user override settings for text tracks
-  ApplyUserOverrideCSSProperties();
 
   display_tree_should_change_ = false;
 
@@ -1095,28 +1100,6 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
     // Make sure the entire run is consumed.
     input.SkipRun(value_run);
   }
-}
-
-void VTTCue::ApplyUserOverrideCSSProperties() {
-  Settings* settings = GetDocument().GetSettings();
-  if (!settings)
-    return;
-
-  SetInlineStylePropertyIfNotEmpty(*cue_background_box_,
-                                   CSSPropertyBackgroundColor,
-                                   settings->GetTextTrackBackgroundColor());
-  SetInlineStylePropertyIfNotEmpty(*cue_background_box_, CSSPropertyFontFamily,
-                                   settings->GetTextTrackFontFamily());
-  SetInlineStylePropertyIfNotEmpty(*cue_background_box_, CSSPropertyFontStyle,
-                                   settings->GetTextTrackFontStyle());
-  SetInlineStylePropertyIfNotEmpty(*cue_background_box_, CSSPropertyFontVariant,
-                                   settings->GetTextTrackFontVariant());
-  SetInlineStylePropertyIfNotEmpty(*cue_background_box_, CSSPropertyColor,
-                                   settings->GetTextTrackTextColor());
-  SetInlineStylePropertyIfNotEmpty(*cue_background_box_, CSSPropertyTextShadow,
-                                   settings->GetTextTrackTextShadow());
-  SetInlineStylePropertyIfNotEmpty(*cue_background_box_, CSSPropertyFontSize,
-                                   settings->GetTextTrackTextSize());
 }
 
 ExecutionContext* VTTCue::GetExecutionContext() const {

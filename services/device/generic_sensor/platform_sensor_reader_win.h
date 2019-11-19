@@ -8,7 +8,12 @@
 #include <SensorsApi.h>
 #include <wrl/client.h>
 
+#include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
 #include "services/device/public/mojom/sensor.mojom.h"
+
+namespace base {
+class TimeDelta;
+}
 
 namespace device {
 
@@ -19,44 +24,35 @@ union SensorReading;
 // Generic class that uses ISensor interface to fetch sensor data. Used
 // by PlatformSensorWin and delivers notifications via Client interface.
 // Instances of this class must be created and destructed on the same thread.
-class PlatformSensorReaderWin {
+class PlatformSensorReaderWin32 final : public PlatformSensorReaderWinBase {
  public:
-  // Client interface that can be used to receive notifications about sensor
-  // error or data change events.
-  class Client {
-   public:
-    virtual void OnReadingUpdated(const SensorReading& reading) = 0;
-    virtual void OnSensorError() = 0;
-
-   protected:
-    virtual ~Client() {}
-  };
-
-  static std::unique_ptr<PlatformSensorReaderWin> Create(
+  static std::unique_ptr<PlatformSensorReaderWinBase> Create(
       mojom::SensorType type,
       Microsoft::WRL::ComPtr<ISensorManager> sensor_manager);
 
   // Following methods are thread safe.
-  void SetClient(Client* client);
-  unsigned long GetMinimalReportingIntervalMs() const;
-  bool StartSensor(const PlatformSensorConfiguration& configuration);
-  void StopSensor();
+  void SetClient(Client* client) override;
+  base::TimeDelta GetMinimalReportingInterval() const override;
+  bool StartSensor(const PlatformSensorConfiguration& configuration) override
+      WARN_UNUSED_RESULT;
+  void StopSensor() override;
 
   // Must be destructed on the same thread that was used during construction.
-  ~PlatformSensorReaderWin();
+  ~PlatformSensorReaderWin32() override;
 
  private:
-  PlatformSensorReaderWin(Microsoft::WRL::ComPtr<ISensor> sensor,
-                          std::unique_ptr<ReaderInitParams> params);
+  PlatformSensorReaderWin32(Microsoft::WRL::ComPtr<ISensor> sensor,
+                            std::unique_ptr<ReaderInitParams> params);
 
   static Microsoft::WRL::ComPtr<ISensor> GetSensorForType(
       REFSENSOR_TYPE_ID sensor_type,
       Microsoft::WRL::ComPtr<ISensorManager> sensor_manager);
 
-  bool SetReportingInterval(const PlatformSensorConfiguration& configuration);
+  bool SetReportingInterval(const PlatformSensorConfiguration& configuration)
+      WARN_UNUSED_RESULT;
   void ListenSensorEvent();
   HRESULT SensorReadingChanged(ISensorDataReport* report,
-                               SensorReading* reading) const;
+                               SensorReading* reading) const WARN_UNUSED_RESULT;
   void SensorError();
 
  private:
@@ -71,10 +67,10 @@ class PlatformSensorReaderWin {
   bool sensor_active_;
   Client* client_;
   Microsoft::WRL::ComPtr<ISensor> sensor_;
-  scoped_refptr<EventListener> event_listener_;
-  base::WeakPtrFactory<PlatformSensorReaderWin> weak_factory_;
+  Microsoft::WRL::ComPtr<ISensorEvents> event_listener_;
+  base::WeakPtrFactory<PlatformSensorReaderWin32> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorReaderWin);
+  DISALLOW_COPY_AND_ASSIGN(PlatformSensorReaderWin32);
 };
 
 }  // namespace device

@@ -9,15 +9,15 @@
 #include <cmath>
 
 #include "base/bind.h"
+#include "base/numerics/math_constants.h"
 #include "device/base/synchronization/shared_memory_seqlock_buffer.h"
-#include "services/device/generic_sensor/generic_sensor_consts.h"
 #include "services/device/generic_sensor/platform_sensor_provider_mac.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 #include "third_party/sudden_motion_sensor/sudden_motion_sensor_mac.h"
 
 namespace {
 
-constexpr double kGravityThreshold = device::kMeanGravity * 0.01;
+constexpr double kGravityThreshold = base::kMeanGravityDouble * 0.01;
 
 bool IsSignificantlyDifferent(const device::SensorReading& reading1,
                               const device::SensorReading& reading2) {
@@ -90,9 +90,9 @@ void PlatformSensorAccelerometerMac::PollForData() {
   SensorReading reading;
   reading.accel.timestamp =
       (base::TimeTicks::Now() - base::TimeTicks()).InSecondsF();
-  reading.accel.x = axis_value[0] * kMeanGravity;
-  reading.accel.y = axis_value[1] * kMeanGravity;
-  reading.accel.z = axis_value[2] * kMeanGravity;
+  reading.accel.x = axis_value[0] * base::kMeanGravityDouble;
+  reading.accel.y = axis_value[1] * base::kMeanGravityDouble;
+  reading.accel.z = axis_value[2] * base::kMeanGravityDouble;
 
   if (IsSignificantlyDifferent(reading_, reading)) {
     reading_ = reading;

@@ -40,6 +40,8 @@
 
     <!-- Collapsible headers for sorting preferences. -->
     <org.chromium.chrome.browser.preferences.ExpandablePreferenceGroup
+        android:key="managed_group" />
+    <org.chromium.chrome.browser.preferences.ExpandablePreferenceGroup
         android:key="blocked_group" />
     <org.chromium.chrome.browser.preferences.ExpandablePreferenceGroup
         android:key="allowed_group" />

@@ -1,3 +1,5 @@
+'use strict';
+
 const mouseMoveToCenter = element => {
   const clientRect = element.getBoundingClientRect();
   const centerX = (clientRect.left + clientRect.right) / 2;

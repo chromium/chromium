@@ -5,10 +5,12 @@ include_rules = [
   # cc::MathUtil. Remove it once cc/base/math_util* are moved to viz.
   "+cc/base",
   "+gpu/command_buffer/common",
+  "+gpu/ipc/common",
   "+gpu/vulkan/buildflags.h",
   "+gpu/GLES2",
   "+mojo/public/cpp/system/buffer.h",
   "+mojo/public/cpp/system/platform_handle.h",
+  "+skia/buildflags.h",
   "+third_party/khronos/GLES2",
   "+third_party/skia",
   "+third_party/vulkan",

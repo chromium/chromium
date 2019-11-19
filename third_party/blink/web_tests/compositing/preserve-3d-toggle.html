@@ -34,22 +34,17 @@ Passing criteria: green box shown without any visible red.
 
     .test {
       position: absolute;
-      transform: translateZ(0);
+      will-change: transform;
       background: green;
     }
   </style>
 
+  <script src="../resources/run-after-layout-and-paint.js"></script>
   <script type="text/javascript">
     function doTest() {
-      if (window.testRunner) {
-          testRunner.dumpAsTextWithPixelResults();
-          testRunner.waitUntilDone();
-      }
-      window.setTimeout(function() {
+      runAfterLayoutAndPaint(function() {
           document.getElementById('container').style.webkitTransformStyle = 'flat';
-          if (window.testRunner)
-              testRunner.notifyDone();
-      }, 0);
+      }, true);
     }
     window.addEventListener('load', doTest);
   </script>

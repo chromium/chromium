@@ -83,8 +83,12 @@ Channel::MessagePtr WaitForBrokerMessage(HANDLE pipe_handle,
 
 }  // namespace
 
-Broker::Broker(PlatformHandle handle) : sync_channel_(std::move(handle)) {
+Broker::Broker(PlatformHandle handle, bool wait_for_channel_handle)
+    : sync_channel_(std::move(handle)) {
   CHECK(sync_channel_.is_valid());
+  if (!wait_for_channel_handle)
+    return;
+
   Channel::MessagePtr message = WaitForBrokerMessage(
       sync_channel_.GetHandle().Get(), BrokerMessageType::INIT);
 

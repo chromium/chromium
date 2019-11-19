@@ -1,13 +1,12 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="../prefs/prefs_behavior.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
 <link rel="import" href="../settings_shared_css.html">
 
 <dom-module id="settings-crostini-shared-usb-devices">
   <template>
-    <style include="settings-shared"></style>
-    <style>
+    <style include="settings-shared">
       .toggle-container {
         display: flex;
         flex-direction: row;
@@ -16,20 +15,28 @@
       }
     </style>
     <div class="settings-box first">
-      <div>$i18n{crostiniSharedUsbDevicesDescription}</div>
-    </div>
-    <div class="settings-box continuation">
-      <h2 class="start">$i18n{crostiniSharedUsbDevicesListHeading}</h2>
-    </div>
-    <div class="list-frame vertical-list">
-      <template is="dom-repeat"
-        items="{{prefs.crostini.shared_usb_devices.value}}" as="device">
-        <div class="toggle-container settings-box">
-          <div class="label">[[device.name]]</div>
-          <cr-toggle class="toggle" checked="{{device.shared}}"></cr-toggle>
+      <div class="settings-box-text">
+        $i18n{crostiniSharedUsbDevicesDescription}
+        <div class="secondary" id="secondaryText">
+          $i18n{crostiniSharedUsbDevicesExtraDescription}
         </div>
-      </template>
+      </div>
     </div>
+    <div class="settings-box secondary continuation"
+        hidden="[[sharedUsbDevices_.length]]" >
+       $i18n{crostiniSharedUsbDevicesListEmptyMessage}
+    </div>
+    <div class="list-frame vertical-list"
+        hidden="[[!sharedUsbDevices_.length]]">
+      <template is="dom-repeat" items="[[sharedUsbDevices_]]">
+        <div class="list-item toggle-container">
+          <div class="label">[[item.label]]</div>
+          <cr-toggle class="toggle" checked="[[item.shared]]"
+            on-change="onDeviceSharedChange_"
+            aria-label$="[[item.label]]"></cr-toggle>
+        </div>
+      </div>
+    </template>
   </template>
   <script src="crostini_shared_usb_devices.js"></script>
 </dom-module>

@@ -1,3 +1,5 @@
 include_rules = [
   "+components/dom_distiller/core",
+  "+components/profile_metrics",
+  "+components/url_formatter",
 ]

@@ -18,17 +18,17 @@
 #include "chrome/browser/printing/cloud_print/gcd_constants.h"
 #include "chrome/common/cloud_print/cloud_print_constants.h"
 #include "components/cloud_devices/common/cloud_devices_urls.h"
-#include "components/data_use_measurement/core/data_use_user_data.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/url_request_status.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/primary_account_access_token_fetcher.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 using net::DefineNetworkTrafficAnnotation;
 
@@ -92,10 +92,9 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
 
 GCDApiFlowImpl::GCDApiFlowImpl(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    identity::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager)
     : url_loader_factory_(url_loader_factory),
-      identity_manager_(identity_manager),
-      weak_factory_(this) {}
+      identity_manager_(identity_manager) {}
 
 GCDApiFlowImpl::~GCDApiFlowImpl() {}
 
@@ -104,16 +103,16 @@ void GCDApiFlowImpl::Start(std::unique_ptr<Request> request) {
   identity::ScopeSet oauth_scopes;
   oauth_scopes.insert(request_->GetOAuthScope());
   DCHECK(identity_manager_);
-  token_fetcher_ = std::make_unique<identity::PrimaryAccountAccessTokenFetcher>(
+  token_fetcher_ = std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
       "cloud_print", identity_manager_, oauth_scopes,
       base::BindOnce(&GCDApiFlowImpl::OnAccessTokenFetchComplete,
                      base::Unretained(this)),
-      identity::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+      signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
 }
 
 void GCDApiFlowImpl::OnAccessTokenFetchComplete(
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo access_token_info) {
+    signin::AccessTokenInfo access_token_info) {
   token_fetcher_.reset();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -124,8 +123,7 @@ void GCDApiFlowImpl::OnAccessTokenFetchComplete(
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = request_->GetURL();
 
-  request->load_flags =
-      net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_DO_NOT_SEND_COOKIES;
+  request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   request->headers.SetHeader(kCloudPrintOAuthHeaderKey,
                              GetOAuthHeaderValue(access_token_info.token));
@@ -133,10 +131,6 @@ void GCDApiFlowImpl::OnAccessTokenFetchComplete(
   std::vector<std::string> extra_headers = request_->GetExtraRequestHeaders();
   for (const std::string& header : extra_headers)
     request->headers.AddHeaderFromString(header);
-
-  // TODO(https://crbug.com/808498): Re-add data use measurement once
-  // SimpleURLLoader supports it.
-  // ID=data_use_measurement::DataUseUserData::CLOUD_PRINT
 
   url_loader_ = network::SimpleURLLoader::Create(
       std::move(request),
@@ -153,7 +147,7 @@ void GCDApiFlowImpl::OnAccessTokenFetchComplete(
 
 void GCDApiFlowImpl::OnDownloadedToString(
     std::unique_ptr<std::string> response_body) {
-  const network::ResourceResponseHead* response_info =
+  const network::mojom::URLResponseHead* response_info =
       url_loader_->ResponseInfo();
 
   if (url_loader_->NetError() != net::OK || !response_info) {

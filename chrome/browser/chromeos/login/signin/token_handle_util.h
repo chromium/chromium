@@ -90,7 +90,7 @@ class TokenHandleUtil {
   // Instance of GAIA Client.
   std::unique_ptr<gaia::GaiaOAuthClient> gaia_client_;
 
-  base::WeakPtrFactory<TokenHandleUtil> weak_factory_;
+  base::WeakPtrFactory<TokenHandleUtil> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TokenHandleUtil);
 };

@@ -69,7 +69,9 @@ body {
   display: -webkit-box;
   height: 31px;
   margin-top: 8px;
+  overflow: hidden;
   pointer-events: auto;
+  position: relative;
   transition: border-top 130ms ease;
   user-select: none;
 }
@@ -93,6 +95,19 @@ body {
   font-weight: 500;
   line-height: 34px;
   padding: 0 30px;
+  position: relative;
+  transition: all 500ms ease;
+}
+
+.ink {
+  background: rgb(232, 240, 254);
+  border-radius: 100%;
+  position: absolute;
+  transform: scale(0);
+}
+
+.ripple-category-list-item-animation {
+  animation: ripple-category-list-item 500ms linear;
 }
 
 #categories-list > li[selected] > div {
@@ -375,21 +390,27 @@ body:not([surprise-me-disabled]) [visibleif~='surprise-me-disabled'] {
 
 #dialog-header > div {
   -webkit-app-region: no-drag;
+  border-radius: 50%;
   display: block;
   height: 24px;
   position: absolute;
   top: 4px;
+  transition: background-color 100ms;
   width: 24px;
 }
 
+#dialog-header div:hover {
+  background-color: rgb(241, 243, 244);
+}
+
 #minimize-button {
-  background-image: url(../images/ui/button_minimize.png);
-  right: 52px;
+  background-image: url(../images/ui/ic_minimize_grey-1x.svg);
+  right: 32px;
 }
 
 #close-button {
-  background-image: url(../images/ui/button_close.png);
-  right: 12px;
+  background-image: url(../images/ui/ic_close_grey-1x.svg);
+  right: 4px;
 }
 
 #top-header {
@@ -397,16 +418,22 @@ body:not([surprise-me-disabled]) [visibleif~='surprise-me-disabled'] {
   background-color: #fff;
   border-radius: 0 0 24px 24px;
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.24), 0 0 24px rgba(0, 0, 0, 0.12);
-  display: flex;
+  display: inline-block;
   height: 48px;
-  position: absolute;
+  margin: 0 auto;
+  max-width: 100%;
   top: 0;
-  visibility: hidden;  /* Need this for correct positioning. */
-  width: 698px;
 }
 
-.preview-mode:not(.wallpaper-set-successfully) #top-header {
-  visibility: visible;
+#top-header-container {
+  display: none;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}
+
+.preview-mode:not(.wallpaper-set-successfully) #top-header-container {
+  display: inline-block;
 }
 
 .top-header-contents {
@@ -440,7 +467,7 @@ body:not([surprise-me-disabled]) [visibleif~='surprise-me-disabled'] {
 
 .top-header-contents #image-title {
   color: rgb(32, 33, 36);
-  max-width: 148px;
+  max-width: 786px;
   overflow: hidden;
   padding-inline-end: 8px;
   text-overflow: ellipsis;
@@ -456,8 +483,11 @@ body:not([surprise-me-disabled]) [visibleif~='surprise-me-disabled'] {
 .top-header-contents #wallpaper-description {
   color: rgb(128, 134, 139);
   max-width: 312px;
+  min-width: 132px;
   overflow: hidden;
+  padding-inline-end: 16px;
   padding-inline-start: 8px;
+  text-align: initial;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -476,8 +506,7 @@ body:not([surprise-me-disabled]) [visibleif~='surprise-me-disabled'] {
 
 .top-header-contents .more-options {
   display: flex;
-  position: absolute;
-  right: 8px;
+  margin-inline-end: 8px;
 }
 
 html[dir='rtl'] .top-header-contents .more-options {
@@ -502,7 +531,7 @@ html[dir='rtl'] .top-header-contents .more-options {
   background-color: #fff;
   color: rgb(26, 115, 232);
   display: none;
-  margin-top: -8px;
+  margin: -8px 0 8px 0;
   padding: 8px 24px;
 }
 
@@ -512,60 +541,65 @@ html[dir='rtl'] .top-header-contents .more-options {
   width: 16px;
 }
 
-.top-header-contents .more-options .center-button,
-.top-header-contents .more-options .center-cropped-button {
+#centering-options {
+  padding: 0;
+}
+
+.top-header-contents .more-options #center-button,
+.top-header-contents .more-options #center-cropped-button {
   background-color: #fff;
+  border: none;
+  border-radius: 16px;
   color: rgb(128, 134, 139);
-  padding-inline-start: 28px;
+  overflow: hidden;
+  padding: 8px 28px;
+  position: relative;
   z-index: 0;
 }
 
-.top-header-contents .more-options .center-button.disabled,
-.top-header-contents .more-options .center-cropped-button.disabled {
+.top-header-contents .more-options #center-button.disabled,
+.top-header-contents .more-options #center-cropped-button.disabled {
   background-color: rgb(232, 240, 254);
   color: rgb(26, 115, 232);
   pointer-events: none;
   z-index: 1;
 }
 
-.top-header-contents .more-options .center-button {
+.top-header-contents .more-options #center-button {
   padding-inline-end: 36px;
 }
 
-.top-header-contents .more-options .center-cropped-button {
+.top-header-contents .more-options #center-cropped-button {
   margin-inline-start: -24px;
 }
 
-.top-header-contents .center-button .icon,
+.top-header-contents #center-button .icon,
 #current-wallpaper-more-options #center .icon {
   background-image: url(../images/ui/center_layout.svg);
 }
 
-.top-header-contents .center-button.disabled .icon,
+.top-header-contents #center-button.disabled .icon,
 #current-wallpaper-more-options #center.disabled .icon {
   background-image: url(../images/ui/center_layout_disabled.svg);
 }
 
-.top-header-contents .center-cropped-button .icon,
+.top-header-contents #center-cropped-button .icon,
 #current-wallpaper-more-options #center-cropped .icon {
   background-image: url(../images/ui/center_cropped_layout.svg);
 }
 
-.top-header-contents .center-cropped-button.disabled .icon,
+.top-header-contents #center-cropped-button.disabled .icon,
 #current-wallpaper-more-options #center-cropped.disabled .icon {
   background-image: url(../images/ui/center_cropped_layout_disabled.svg);
 }
 
-.top-header-contents #confirm-preview-wallpaper {
-  margin-inline-start: 96px;
+.top-header-contents #confirm-preview-wallpaper,
+.top-header-contents #refresh-wallpaper {
+  margin-inline-start: 16px;
 }
 
 .daily-wallpaper .top-header-contents #confirm-preview-wallpaper {
   margin-inline-start: 8px;
-}
-
-.top-header-contents #refresh-wallpaper {
-  margin-inline-start: 16px;
 }
 
 .preview-mode.custom-wallpaper .more-options .custom-option,
@@ -729,6 +763,10 @@ html[dir='rtl'] .top-header-contents .more-options {
   visibility: hidden;  /* Need this for correct positioning. */
 }
 
+#current-wallpaper-info-bar .spacer {
+  flex: 1;
+}
+
 :not(.preview-mode) #current-wallpaper-info-bar.show-info-bar {
   visibility: visible;
 }
@@ -779,12 +817,6 @@ html[dir='rtl'] .top-header-contents .more-options {
   display: flex;
   flex-direction: column;
   font-size: 12px;
-  position: absolute;
-  right: 0;
-}
-
-html[dir='rtl'] #current-wallpaper-more-options {
-  right: 420px;
 }
 
 #current-wallpaper-more-options > div {
@@ -794,7 +826,7 @@ html[dir='rtl'] #current-wallpaper-more-options {
 
 #current-wallpaper-more-options #center,
 #current-wallpaper-more-options #center-cropped {
-  color: rgb(128, 134, 139);
+  color: rgb(95, 99, 104);
 }
 
 #current-wallpaper-more-options #center.disabled,
@@ -804,7 +836,12 @@ html[dir='rtl'] #current-wallpaper-more-options {
 }
 
 #current-wallpaper-more-options .text {
-  padding-top: 1px;
+  height: 16px;
+  line-height: 16px;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 #current-wallpaper-more-options .icon {
@@ -823,15 +860,23 @@ html[dir='rtl'] #current-wallpaper-more-options {
 }
 
 #message-container {
+  bottom: 12px;
+  display: none;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+  z-index: 4;
+}
+
+#message-content {
   background-color: rgba(0, 0, 0, 0.7);
   border-radius: 16px;
-  bottom: 12px;
   color: #fff;
-  display: block;
+  display: inline-block;
+  margin: 0 auto;
+  max-width: 90%;
   padding: 8px 28px;
-  position: absolute;
-  visibility: hidden;  /* Need this for correct positioning. */
-  z-index: 4;
+  text-align: center;
 }
 
 #preview-spinner,
@@ -847,7 +892,7 @@ html[dir='rtl'] #current-wallpaper-more-options {
 
 #current-wallpaper-spinner {
   height: 24px;
-  left: 38px;
+  margin-inline-start: 38px;
   top: 38px;
   width: 24px;
 }
@@ -867,4 +912,10 @@ html[dir='rtl'] #current-wallpaper-more-options {
   90% { opacity: 0.06;
         transform: scale(1);
       }
+}
+
+@keyframes ripple-category-list-item {
+  100% { opacity: 0;
+         transform: scale(2.5);
+       }
 }

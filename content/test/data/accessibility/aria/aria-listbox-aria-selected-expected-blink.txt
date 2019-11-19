@@ -1,7 +1,8 @@
 rootWebArea
-++listBox multiselectable activedescendantId=listBoxOption
-++++listBoxOption name='Item 1' selected=false
-++++listBoxOption name='Item 2' selected=false
-++++listBoxOption name='Item 3' selected=false
-++++listBoxOption name='Item 4' selected=true
-++++listBoxOption name='Item 5' selected=true
+++genericContainer ignored
+++++listBox multiselectable activedescendantId=listBoxOption
+++++++listBoxOption name='Item 1' selected=false
+++++++listBoxOption name='Item 2' selected=false
+++++++listBoxOption name='Item 3' selected=false
+++++++listBoxOption name='Item 4' selected=true
+++++++listBoxOption name='Item 5' selected=true

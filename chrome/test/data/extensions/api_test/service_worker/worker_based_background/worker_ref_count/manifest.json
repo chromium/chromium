@@ -1,0 +1,7 @@
+{
+  "name": "Tests that worker is kept alive during extension API call.",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "Test service worker ref counts.",
+  "background": {"service_worker": "service_worker_background.js"}
+}

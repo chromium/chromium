@@ -53,8 +53,6 @@ class CORE_EXPORT FocusController final
  public:
   using OwnerMap = HeapHashMap<Member<ContainerNode>, Member<Element>>;
 
-  static FocusController* Create(Page*);
-
   explicit FocusController(Page*);
 
   void SetFocusedFrame(Frame*, bool notify_embedder = true);

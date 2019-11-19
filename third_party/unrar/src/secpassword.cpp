@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 #if defined(_WIN_ALL)
 typedef BOOL (WINAPI *CRYPTPROTECTMEMORY)(LPVOID pData,DWORD cbData,DWORD dwFlags);
 typedef BOOL (WINAPI *CRYPTUNPROTECTMEMORY)(LPVOID pData,DWORD cbData,DWORD dwFlags);
@@ -216,5 +214,3 @@ void SecHideData(void *Data,size_t DataSize,bool Encode,bool CrossProcess)
   for (size_t I=0;I<DataSize;I++)
     *((byte *)Data+I)^=Key+I+75;
 }
-
-}  // namespace third_party_unrar

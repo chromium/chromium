@@ -9,10 +9,13 @@
 
 namespace content {
 
-FrameTokenMessageQueue::FrameTokenMessageQueue(Client* client)
-    : client_(client) {}
+FrameTokenMessageQueue::FrameTokenMessageQueue() = default;
 
-FrameTokenMessageQueue::~FrameTokenMessageQueue() {}
+FrameTokenMessageQueue::~FrameTokenMessageQueue() = default;
+
+void FrameTokenMessageQueue::Init(Client* client) {
+  client_ = client;
+}
 
 void FrameTokenMessageQueue::DidProcessFrame(uint32_t frame_token) {
   // Frame tokens always increase.

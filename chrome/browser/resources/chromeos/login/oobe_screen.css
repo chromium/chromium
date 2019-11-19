@@ -4,7 +4,7 @@
  *
  * This contains common styling for all the OOBE screens. */
 
-:root {
+:host {
   --oobe-text-button-focused-border-color:
       rgba(66, 133, 244, 0.4); /* #4284f4 */
 }
@@ -53,14 +53,9 @@
   height: 28px;
   justify-content: flex-end;
   min-height: 0;
-  padding-right: 34px;  /* Double the padding of .step */
+  padding-inline-end: 34px;  /* Double the padding of .step */
   position: absolute;
   width: 100%;
-}
-
-html[dir=rtl] .step-controls {
-  /* Hack as padding-inline-end doesn't catch direction. crbug.com/363836 */
-  padding-left: 34px;
 }
 
 .animation .step-controls button {
@@ -80,18 +75,6 @@ html[dir=rtl] .step-controls {
 
 .step:not(.loading) #eula-busy {
   visibility: hidden;
-}
-
-.step-loading {
-  align-items: center;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  left: 0;
-  min-height: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
 }
 
 /* Fixes performance problem caused by http://crbug.com/229405 . */

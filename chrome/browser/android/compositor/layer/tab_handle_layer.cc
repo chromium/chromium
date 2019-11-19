@@ -10,7 +10,6 @@
 #include "cc/resources/scoped_ui_resource.h"
 #include "chrome/browser/android/compositor/decoration_title.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
-#include "content/public/browser/android/compositor.h"
 #include "ui/android/resources/nine_patch_resource.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/base/l10n/l10n_util_android.h"
@@ -23,21 +22,23 @@ scoped_refptr<TabHandleLayer> TabHandleLayer::Create(
   return base::WrapRefCounted(new TabHandleLayer(layer_title_cache));
 }
 
-void TabHandleLayer::SetProperties(int id,
-                                   ui::Resource* close_button_resource,
-                                   ui::NinePatchResource* tab_handle_resource,
-                                   bool foreground,
-                                   bool close_pressed,
-                                   float toolbar_width,
-                                   float x,
-                                   float y,
-                                   float width,
-                                   float height,
-                                   float content_offset_x,
-                                   float close_button_alpha,
-                                   bool is_loading,
-                                   float spinner_rotation,
-                                   float brightness) {
+void TabHandleLayer::SetProperties(
+    int id,
+    ui::Resource* close_button_resource,
+    ui::NinePatchResource* tab_handle_resource,
+    ui::NinePatchResource* tab_handle_outline_resource,
+    bool foreground,
+    bool close_pressed,
+    float toolbar_width,
+    float x,
+    float y,
+    float width,
+    float height,
+    float content_offset_x,
+    float close_button_alpha,
+    bool is_loading,
+    float spinner_rotation,
+    float brightness) {
   if (brightness != brightness_ || foreground != foreground_) {
     brightness_ = brightness;
     foreground_ = foreground;
@@ -84,7 +85,7 @@ void TabHandleLayer::SetProperties(int id,
 
   if (title_layer) {
     title_layer->setOpacity(1.0f);
-    unsigned expected_children = 3;
+    unsigned expected_children = 4;
     title_layer_ = title_layer->layer();
     if (layer_->children().size() < expected_children) {
       layer_->AddChild(title_layer_);
@@ -106,10 +107,21 @@ void TabHandleLayer::SetProperties(int id,
   decoration_tab_->SetBorder(
       tab_handle_resource->Border(decoration_tab_->bounds()));
 
-  if (foreground_)
+  tab_outline_->SetUIResourceId(
+      tab_handle_outline_resource->ui_resource()->id());
+  tab_outline_->SetAperture(tab_handle_outline_resource->aperture());
+  tab_outline_->SetFillCenter(true);
+  tab_outline_->SetBounds(tab_bounds);
+  tab_outline_->SetBorder(
+      tab_handle_outline_resource->Border(tab_outline_->bounds()));
+
+  if (foreground_) {
     decoration_tab_->SetPosition(gfx::PointF(original_x, original_y));
-  else
+    tab_outline_->SetPosition(gfx::PointF(original_x, original_y));
+  } else {
     decoration_tab_->SetPosition(gfx::PointF(0, 0));
+    tab_outline_->SetPosition(gfx::PointF(0, 0));
+  }
 
   close_button_->SetUIResourceId(close_button_resource->ui_resource()->id());
   close_button_->SetBounds(close_button_resource->size());
@@ -166,10 +178,13 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
       layer_(cc::Layer::Create()),
       close_button_(cc::UIResourceLayer::Create()),
       decoration_tab_(cc::NinePatchLayer::Create()),
+      tab_outline_(cc::NinePatchLayer::Create()),
       brightness_(1.0f),
       foreground_(false) {
   decoration_tab_->SetIsDrawable(true);
+  tab_outline_->SetIsDrawable(true);
   layer_->AddChild(decoration_tab_);
+  layer_->AddChild(tab_outline_);
   layer_->AddChild(close_button_);
 }
 

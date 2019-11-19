@@ -1,7 +1,8 @@
 This is a testharness.js-based test.
-Found 1154 tests; 1137 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1270 tests; 1223 PASS, 47 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS Partial interface Document: original interface defined
+PASS Partial interface mixin DocumentOrShadowRoot: original interface mixin defined
 PASS Partial interface mixin NavigatorID: original interface mixin defined
 PASS Partial interface HTMLAnchorElement: original interface defined
 PASS Partial interface HTMLAreaElement: original interface defined
@@ -53,6 +54,13 @@ PASS DOMStringList interface: existence and properties of interface prototype ob
 PASS DOMStringList interface: attribute length
 PASS DOMStringList interface: operation item(unsigned long)
 PASS DOMStringList interface: operation contains(DOMString)
+PASS DOMStringList must be primary interface of location.ancestorOrigins
+PASS Stringification of location.ancestorOrigins
+PASS DOMStringList interface: location.ancestorOrigins must inherit property "length" with the proper type
+PASS DOMStringList interface: location.ancestorOrigins must inherit property "item(unsigned long)" with the proper type
+PASS DOMStringList interface: calling item(unsigned long) on location.ancestorOrigins with too few arguments must throw TypeError
+PASS DOMStringList interface: location.ancestorOrigins must inherit property "contains(DOMString)" with the proper type
+PASS DOMStringList interface: calling contains(DOMString) on location.ancestorOrigins with too few arguments must throw TypeError
 PASS DOMStringMap interface: existence and properties of interface object
 PASS DOMStringMap interface object length
 PASS DOMStringMap interface object name
@@ -649,6 +657,15 @@ PASS ElementInternals interface object name
 PASS ElementInternals interface: existence and properties of interface prototype object
 PASS ElementInternals interface: existence and properties of interface prototype object's "constructor" property
 PASS ElementInternals interface: existence and properties of interface prototype object's @@unscopables property
+PASS ElementInternals interface: operation setFormValue([object Object],[object Object],[object Object], [object Object],[object Object],[object Object])
+PASS ElementInternals interface: attribute form
+PASS ElementInternals interface: operation setValidity(ValidityStateFlags, DOMString, HTMLElement)
+PASS ElementInternals interface: attribute willValidate
+PASS ElementInternals interface: attribute validity
+PASS ElementInternals interface: attribute validationMessage
+PASS ElementInternals interface: operation checkValidity()
+PASS ElementInternals interface: operation reportValidity()
+PASS ElementInternals interface: attribute labels
 PASS DataTransfer interface: existence and properties of interface object
 PASS DataTransfer interface object length
 PASS DataTransfer interface object name
@@ -1022,32 +1039,32 @@ PASS WebSocket interface: operation send(USVString)
 PASS WebSocket interface: operation send(Blob)
 PASS WebSocket interface: operation send(ArrayBuffer)
 PASS WebSocket interface: operation send(ArrayBufferView)
-PASS WebSocket must be primary interface of new WebSocket("wss://foo")
-PASS Stringification of new WebSocket("wss://foo")
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "url" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "CONNECTING" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "OPEN" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "CLOSING" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "CLOSED" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "readyState" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "bufferedAmount" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "onopen" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "onerror" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "onclose" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "extensions" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "protocol" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "close(unsigned short, USVString)" with the proper type
-PASS WebSocket interface: calling close(unsigned short, USVString) on new WebSocket("wss://foo") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "onmessage" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "binaryType" with the proper type
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "send(USVString)" with the proper type
-PASS WebSocket interface: calling send(USVString) on new WebSocket("wss://foo") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "send(Blob)" with the proper type
-PASS WebSocket interface: calling send(Blob) on new WebSocket("wss://foo") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "send(ArrayBuffer)" with the proper type
-PASS WebSocket interface: calling send(ArrayBuffer) on new WebSocket("wss://foo") with too few arguments must throw TypeError
-PASS WebSocket interface: new WebSocket("wss://foo") must inherit property "send(ArrayBufferView)" with the proper type
-PASS WebSocket interface: calling send(ArrayBufferView) on new WebSocket("wss://foo") with too few arguments must throw TypeError
+PASS WebSocket must be primary interface of new WebSocket("wss://nonexistent.web-platform.test")
+PASS Stringification of new WebSocket("wss://nonexistent.web-platform.test")
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "url" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "CONNECTING" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "OPEN" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "CLOSING" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "CLOSED" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "readyState" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "bufferedAmount" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "onopen" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "onerror" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "onclose" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "extensions" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "protocol" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "close(unsigned short, USVString)" with the proper type
+PASS WebSocket interface: calling close(unsigned short, USVString) on new WebSocket("wss://nonexistent.web-platform.test") with too few arguments must throw TypeError
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "onmessage" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "binaryType" with the proper type
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "send(USVString)" with the proper type
+PASS WebSocket interface: calling send(USVString) on new WebSocket("wss://nonexistent.web-platform.test") with too few arguments must throw TypeError
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "send(Blob)" with the proper type
+PASS WebSocket interface: calling send(Blob) on new WebSocket("wss://nonexistent.web-platform.test") with too few arguments must throw TypeError
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "send(ArrayBuffer)" with the proper type
+PASS WebSocket interface: calling send(ArrayBuffer) on new WebSocket("wss://nonexistent.web-platform.test") with too few arguments must throw TypeError
+PASS WebSocket interface: new WebSocket("wss://nonexistent.web-platform.test") must inherit property "send(ArrayBufferView)" with the proper type
+PASS WebSocket interface: calling send(ArrayBufferView) on new WebSocket("wss://nonexistent.web-platform.test") with too few arguments must throw TypeError
 PASS CloseEvent interface: existence and properties of interface object
 PASS CloseEvent interface object length
 PASS CloseEvent interface object name
@@ -1154,5 +1171,104 @@ PASS External must be primary interface of window.external
 PASS Stringification of window.external
 PASS External interface: window.external must inherit property "AddSearchProvider()" with the proper type
 PASS External interface: window.external must inherit property "IsSearchProviderInstalled()" with the proper type
+PASS SVGElement interface: attribute onabort
+PASS SVGElement interface: attribute onauxclick
+PASS SVGElement interface: attribute onblur
+PASS SVGElement interface: attribute oncancel
+PASS SVGElement interface: attribute oncanplay
+PASS SVGElement interface: attribute oncanplaythrough
+PASS SVGElement interface: attribute onchange
+PASS SVGElement interface: attribute onclick
+PASS SVGElement interface: attribute onclose
+PASS SVGElement interface: attribute oncontextmenu
+PASS SVGElement interface: attribute oncuechange
+PASS SVGElement interface: attribute ondblclick
+PASS SVGElement interface: attribute ondrag
+PASS SVGElement interface: attribute ondragend
+PASS SVGElement interface: attribute ondragenter
+FAIL SVGElement interface: attribute ondragexit assert_true: The prototype object must have a property "ondragexit" expected true got false
+PASS SVGElement interface: attribute ondragleave
+PASS SVGElement interface: attribute ondragover
+PASS SVGElement interface: attribute ondragstart
+PASS SVGElement interface: attribute ondrop
+PASS SVGElement interface: attribute ondurationchange
+PASS SVGElement interface: attribute onemptied
+PASS SVGElement interface: attribute onended
+PASS SVGElement interface: attribute onerror
+PASS SVGElement interface: attribute onfocus
+PASS SVGElement interface: attribute onformdata
+PASS SVGElement interface: attribute oninput
+PASS SVGElement interface: attribute oninvalid
+PASS SVGElement interface: attribute onkeydown
+PASS SVGElement interface: attribute onkeypress
+PASS SVGElement interface: attribute onkeyup
+PASS SVGElement interface: attribute onload
+PASS SVGElement interface: attribute onloadeddata
+PASS SVGElement interface: attribute onloadedmetadata
+PASS SVGElement interface: attribute onloadstart
+PASS SVGElement interface: attribute onmousedown
+PASS SVGElement interface: attribute onmouseenter
+PASS SVGElement interface: attribute onmouseleave
+PASS SVGElement interface: attribute onmousemove
+PASS SVGElement interface: attribute onmouseout
+PASS SVGElement interface: attribute onmouseover
+PASS SVGElement interface: attribute onmouseup
+PASS SVGElement interface: attribute onwheel
+PASS SVGElement interface: attribute onpause
+PASS SVGElement interface: attribute onplay
+PASS SVGElement interface: attribute onplaying
+PASS SVGElement interface: attribute onprogress
+PASS SVGElement interface: attribute onratechange
+PASS SVGElement interface: attribute onreset
+PASS SVGElement interface: attribute onresize
+PASS SVGElement interface: attribute onscroll
+FAIL SVGElement interface: attribute onsecuritypolicyviolation assert_true: The prototype object must have a property "onsecuritypolicyviolation" expected true got false
+PASS SVGElement interface: attribute onseeked
+PASS SVGElement interface: attribute onseeking
+PASS SVGElement interface: attribute onselect
+PASS SVGElement interface: attribute onstalled
+PASS SVGElement interface: attribute onsubmit
+PASS SVGElement interface: attribute onsuspend
+PASS SVGElement interface: attribute ontimeupdate
+PASS SVGElement interface: attribute ontoggle
+PASS SVGElement interface: attribute onvolumechange
+PASS SVGElement interface: attribute onwaiting
+PASS SVGElement interface: attribute oncopy
+PASS SVGElement interface: attribute oncut
+PASS SVGElement interface: attribute onpaste
+PASS SVGElement interface: attribute dataset
+PASS SVGElement interface: attribute nonce
+PASS SVGElement interface: attribute tabIndex
+PASS SVGElement interface: operation focus(FocusOptions)
+PASS SVGElement interface: operation blur()
+FAIL SVGSVGElement interface: attribute onafterprint assert_true: The prototype object must have a property "onafterprint" expected true got false
+FAIL SVGSVGElement interface: attribute onbeforeprint assert_true: The prototype object must have a property "onbeforeprint" expected true got false
+FAIL SVGSVGElement interface: attribute onbeforeunload assert_true: The prototype object must have a property "onbeforeunload" expected true got false
+FAIL SVGSVGElement interface: attribute onhashchange assert_true: The prototype object must have a property "onhashchange" expected true got false
+FAIL SVGSVGElement interface: attribute onlanguagechange assert_true: The prototype object must have a property "onlanguagechange" expected true got false
+FAIL SVGSVGElement interface: attribute onmessage assert_true: The prototype object must have a property "onmessage" expected true got false
+FAIL SVGSVGElement interface: attribute onmessageerror assert_true: The prototype object must have a property "onmessageerror" expected true got false
+FAIL SVGSVGElement interface: attribute onoffline assert_true: The prototype object must have a property "onoffline" expected true got false
+FAIL SVGSVGElement interface: attribute ononline assert_true: The prototype object must have a property "ononline" expected true got false
+FAIL SVGSVGElement interface: attribute onpagehide assert_true: The prototype object must have a property "onpagehide" expected true got false
+FAIL SVGSVGElement interface: attribute onpageshow assert_true: The prototype object must have a property "onpageshow" expected true got false
+FAIL SVGSVGElement interface: attribute onpopstate assert_true: The prototype object must have a property "onpopstate" expected true got false
+FAIL SVGSVGElement interface: attribute onrejectionhandled assert_true: The prototype object must have a property "onrejectionhandled" expected true got false
+FAIL SVGSVGElement interface: attribute onstorage assert_true: The prototype object must have a property "onstorage" expected true got false
+FAIL SVGSVGElement interface: attribute onunhandledrejection assert_true: The prototype object must have a property "onunhandledrejection" expected true got false
+FAIL SVGSVGElement interface: attribute onunload assert_true: The prototype object must have a property "onunload" expected true got false
+FAIL SVGAElement interface: attribute href assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+FAIL SVGAElement interface: stringifier assert_own_property: interface prototype object missing non-static operation expected property "toString" missing
+FAIL SVGAElement interface: attribute origin assert_true: The prototype object must have a property "origin" expected true got false
+FAIL SVGAElement interface: attribute protocol assert_true: The prototype object must have a property "protocol" expected true got false
+FAIL SVGAElement interface: attribute username assert_true: The prototype object must have a property "username" expected true got false
+FAIL SVGAElement interface: attribute password assert_true: The prototype object must have a property "password" expected true got false
+FAIL SVGAElement interface: attribute host assert_true: The prototype object must have a property "host" expected true got false
+FAIL SVGAElement interface: attribute hostname assert_true: The prototype object must have a property "hostname" expected true got false
+FAIL SVGAElement interface: attribute port assert_true: The prototype object must have a property "port" expected true got false
+FAIL SVGAElement interface: attribute pathname assert_true: The prototype object must have a property "pathname" expected true got false
+FAIL SVGAElement interface: attribute search assert_true: The prototype object must have a property "search" expected true got false
+FAIL SVGAElement interface: attribute hash assert_true: The prototype object must have a property "hash" expected true got false
+PASS ShadowRoot interface: attribute activeElement
 Harness: the test ran to completion.
 

@@ -43,15 +43,28 @@ def cpp_name(entry):
     return entry['ImplementedAs'] or entry['name'].original
 
 
-def enum_for_css_keyword(keyword):
-    converter = NameStyleConverter(keyword) if type(keyword) is str else keyword
-    return 'CSSValue' + converter.to_upper_camel_case()
+def enum_key_for_css_keyword(keyword):
+    return 'k' + _upper_camel_case(keyword)
 
 
-def enum_for_css_property(property_name):
-    converter = NameStyleConverter(property_name) if type(property_name) is str else property_name
-    return 'CSSProperty' + converter.to_upper_camel_case()
+def enum_key_for_css_property(property_name):
+    return 'k' + _upper_camel_case(property_name)
 
 
-def enum_for_css_property_alias(property_name):
+def enum_key_for_css_property_alias(property_name):
+    return 'kAlias' + property_name.to_upper_camel_case()
+
+
+# This id is used to build function names returning CSS properties (e.g.
+# GetCSSPropertyX(), GetCSSPropertyXInternal(), etc.)
+def id_for_css_property(property_name):
+    return 'CSSProperty' + _upper_camel_case(property_name)
+
+
+def id_for_css_property_alias(property_name):
     return 'CSSPropertyAlias' + property_name.to_upper_camel_case()
+
+
+def _upper_camel_case(property_name):
+    converter = NameStyleConverter(property_name) if isinstance(property_name, str) else property_name
+    return converter.to_upper_camel_case()

@@ -37,16 +37,6 @@
 
 namespace blink {
 
-VideoPlaybackQuality* VideoPlaybackQuality::Create(
-    const Document& document,
-    unsigned total_video_frames,
-    unsigned dropped_video_frames,
-    unsigned corrupted_video_frames) {
-  return MakeGarbageCollected<VideoPlaybackQuality>(
-      document, total_video_frames, dropped_video_frames,
-      corrupted_video_frames);
-}
-
 VideoPlaybackQuality::VideoPlaybackQuality(const Document& document,
                                            unsigned total_video_frames,
                                            unsigned dropped_video_frames,

@@ -11,8 +11,9 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
-#include "chromecast/media/audio/mixer_service/mixer_service_connection_factory.h"
+#include "build/build_config.h"
 #include "media/audio/audio_manager_base.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/service_manager/public/cpp/connector.h"
 
 // NOTE: CastAudioManager receives a |device_id| from the audio service, and
@@ -108,12 +109,20 @@ class CastAudioManager : public ::media::AudioManagerBase {
   virtual ::media::AudioOutputStream* MakeMixerOutputStream(
       const ::media::AudioParameters& params);
 
+#if defined(OS_ANDROID)
+  ::media::AudioOutputStream* MakeAudioOutputStreamProxy(
+      const ::media::AudioParameters& params,
+      const std::string& device_id) override;
+#endif
+
  private:
+  FRIEND_TEST_ALL_PREFIXES(CastAudioManagerTest, CanMakeStreamProxy);
   friend class CastAudioMixer;
   friend class CastAudioManagerTest;
   friend class CastAudioOutputStreamTest;
   service_manager::Connector* GetConnector();
-  void BindConnectorRequest(service_manager::mojom::ConnectorRequest request);
+  void BindConnectorReceiver(
+      mojo::PendingReceiver<service_manager::mojom::Connector> receiver);
 
   CastAudioManager(
       std::unique_ptr<::media::AudioThread> audio_thread,
@@ -126,11 +135,9 @@ class CastAudioManager : public ::media::AudioManagerBase {
       bool use_mixer,
       bool force_use_cma_backend_for_output);
 
-  // Return nullptr if it is not appropriate to use MixerServiceConnection
-  // for output stream audio playback.
-  MixerServiceConnectionFactory*
-  GetMixerServiceConnectionFactoryForOutputStream(
-      const ::media::AudioParameters& params);
+  // Returns false if it is not appropriate to use the mixer service for output
+  // stream audio playback.
+  bool UseMixerOutputStream(const ::media::AudioParameters& params);
 
   base::RepeatingCallback<CmaBackendFactory*()> backend_factory_getter_;
   GetSessionIdCallback get_session_id_callback_;
@@ -144,12 +151,11 @@ class CastAudioManager : public ::media::AudioManagerBase {
 
   // Let unit test force the CastOutputStream to uses
   // CmaBackend implementation.
-  // TODO(b/117980762):: After refactoring CastOutputStream, so
+  // TODO(b/117980762): After refactoring CastOutputStream, so
   // that the CastOutputStream has a unified output API, regardless
   // of the platform condition, then the unit test would be able to test
   // CastOutputStream properly.
   bool force_use_cma_backend_for_output_;
-  MixerServiceConnectionFactory mixer_service_connection_factory_;
 
   // Weak pointers must be dereferenced on the |browser_task_runner|.
   base::WeakPtr<CastAudioManager> weak_this_;

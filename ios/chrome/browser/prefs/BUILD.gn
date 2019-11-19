@@ -52,12 +52,13 @@ source_set("browser_prefs") {
     "//components/rappor",
     "//components/search_engines",
     "//components/sessions",
-    "//components/signin/core/browser",
+    "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/sync",
     "//components/sync_sessions",
     "//components/translate/core/browser",
     "//components/translate/core/common",
+    "//components/ukm/ios:features",
     "//components/unified_consent",
     "//components/update_client",
     "//components/variations/service",
@@ -74,7 +75,6 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/ui/bookmarks",
     "//ios/chrome/browser/voice:prefs",
     "//ios/public/provider/chrome/browser",
-    "//services/identity/public/cpp:cpp",
     "//ui/base",
   ]
 }

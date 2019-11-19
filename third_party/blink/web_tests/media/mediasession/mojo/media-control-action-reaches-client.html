@@ -4,7 +4,7 @@
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/services/media_session/public/mojom/media_session.mojom.js"></script>
-<script src="file:///gen/third_party/blink/public/platform/modules/mediasession/media_session.mojom.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/mediasession/media_session.mojom.js"></script>
 <script src="resources/mediasessionservice-mock.js"></script>
 <script src="resources/utils.js"></script>
 <script>
@@ -22,7 +22,9 @@ var expectations = [
 
 var nextExpectation = 0;
 
-function checkExpectation(t, action) {
+function checkExpectation(t, action, e) {
+  assert_equals(e.action, action);
+
   var expectedEvent = expectations[nextExpectation];
   assert_equals(expectedEvent, action);
   if (++nextExpectation >= expectations.length)

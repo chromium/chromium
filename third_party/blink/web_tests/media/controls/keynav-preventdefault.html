@@ -1,0 +1,51 @@
+<DOCTYPE html>
+  <title>Test media controls video keyboard navigation with preventDefault()</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+  <script src="../media-controls.js"></script>
+  <script>
+  test(_ => {
+    assert_true('eventSender' in window);
+  }, 'eventSender required');
+
+  async_test(function(t) {
+      var video = document.createElement('video');
+      video.src = "../content/test.ogv";
+      video.controls = true;
+      assert_equals(video.volume, 1);
+      assert_equals(video.currentTime, 0);
+
+      video.addEventListener('keydown', e => { e.preventDefault() });
+      video.addEventListener('keypress', e => { e.preventDefault() });
+      video.addEventListener('keyup', e => { e.preventDefault() });
+
+      video.oncanplaythrough = t.step_func_done(function() {
+        // Focus the video.
+        video.focus();
+
+        // 'Enter' does not play the video.
+        eventSender.keyDown("Enter");
+        assert_true(video.paused);
+
+        // 'Down' does not reduce volume.
+        eventSender.keyDown("ArrowDown");
+        assert_equals(video.volume, 1);
+
+        // 'Space' also does not pauses/plays the video.
+        eventSender.keyDown(" ");
+        assert_true(video.paused);
+
+        var cur = video.currentTime;
+
+        // 'Right' does not scrub the timeline forward.
+        eventSender.keyDown("ArrowRight");
+        assert_equals(video.currentTime, cur);
+
+        // 'End' does not set the timeline to end.
+        eventSender.keyDown("End");
+        assert_equals(video.currentTime, cur);
+      });
+
+      document.body.appendChild(video);
+  });
+  </script>

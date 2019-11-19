@@ -10,8 +10,6 @@ import("//testing/test.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-
-  # Use ZUCCHINI since ZUCCHINI_ENABLED is too long a name for setup.rc.
   flags = [ "ZUCCHINI=$use_zucchini" ]
 }
 
@@ -19,7 +17,6 @@ if (is_win) {
   executable("setup") {
     sources = [
       "setup.rc",
-      "setup_exe_version.rc.version",
       "setup_main.cc",
       "setup_main.h",
       "setup_resource.h",
@@ -35,11 +32,12 @@ if (is_win) {
       ":lib",
       ":setup_exe_version",
       "//base",
+      "//build:branding_buildflags",
       "//build/win:default_exe_manifest",
+      "//chrome/chrome_elf:constants",
       "//chrome/common:constants",
       "//chrome/install_static:install_static_util",
       "//chrome/installer/util:with_rc_strings",
-      "//chrome_elf:constants",
       "//components/crash/content/app:app",
       "//components/crash/content/app:crash_export_thunks",
       "//components/crash/content/app:run_as_crashpad_handler",
@@ -99,6 +97,7 @@ if (is_win) {
     ]
 
     deps = [
+      "//build:branding_buildflags",
       "//chrome/common:constants",
       "//chrome/common:version_header",
       "//chrome/install_static:install_static_util",
@@ -148,6 +147,7 @@ if (is_win) {
       "//base:i18n",
       "//base/allocator:buildflags",
       "//base/test:test_support",
+      "//build:branding_buildflags",
       "//chrome/common:constants",
       "//chrome/common:version_header",
       "//chrome/install_static:install_static_util",

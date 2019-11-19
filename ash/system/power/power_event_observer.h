@@ -9,10 +9,10 @@
 
 #include "ash/ash_export.h"
 #include "ash/session/session_observer.h"
-#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "base/unguessable_token.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace ui {
 class CompositorObserver;
@@ -78,11 +78,11 @@ class ASH_EXPORT PowerEventObserver
   void StartRootWindowCompositors();
 
   // Sets all root window compositors' visibility to false, and then suspends
-  // displays. It will run |display_suspended_callback_| once displays are
-  // suspended.
-  // This should only be called when it's safe to stop compositing -
-  // either if the screen is not expected to get locked, or all compositors
-  // have gone through compositing cycle after the screen was locked.
+  // displays. It will run unblock suspend via |block_suspend_token_| once
+  // displays are suspended. This should only be called when it's safe to stop
+  // compositing - either if the screen is not expected to get locked, or all
+  // compositors have gone through compositing cycle after the screen was
+  // locked.
   void StopCompositingAndSuspendDisplays();
 
   // If any of the root windows have pending wallpaper animations, it stops
@@ -106,13 +106,13 @@ class ASH_EXPORT PowerEventObserver
   // compositors are in state in which it's safe to proceed with suspend.
   std::unique_ptr<ui::CompositorObserver> compositor_watcher_;
 
-  // Callback set when device suspend is delayed due to a screen lock - suspend
+  // Token set when device suspend is delayed due to a screen lock - suspend
   // should be continued when the screen lock finishes showing and display
   // compositors pick up screen lock changes. All compositors should be stopped
-  // prior to calling this - call StopCompositingAndSuspendDisplays() instead of
-  // runnig this callback directly.
-  // This will only be set while the device is suspending.
-  base::OnceClosure displays_suspended_callback_;
+  // prior to unblocking and clearing this - call
+  // StopCompositingAndSuspendDisplays(). This will only be set while the device
+  // is suspending.
+  base::UnguessableToken block_suspend_token_;
 
   DISALLOW_COPY_AND_ASSIGN(PowerEventObserver);
 };

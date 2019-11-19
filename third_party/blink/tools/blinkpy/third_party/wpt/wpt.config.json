@@ -20,6 +20,10 @@
   },
   "aliases": [
     {
+      "url-path": "/wpt_internal/",
+      "local-dir": "../../../../../web_tests/wpt_internal"
+    },
+    {
       "url-path": "/wpt_automation/",
       "local-dir": "../../../../../web_tests/external/wpt_automation"
     },

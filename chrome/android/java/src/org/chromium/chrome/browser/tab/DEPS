@@ -1,11 +1,19 @@
-include_rules = {
+include_rules = [
+  "-chrome",
+  "+chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/ChromeFeatureList.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/webapps/WebDisplayMode.java",
+  "+chrome/browser/ui/android/styles",
+  "+chrome/browser/ui/android/widget",
   "+content/public/android/java/src/org/chromium/content_public",
-}
+]
 
 specific_include_rules = {
   'Tab\.java': [
-    "-chrome",
+    "+chrome/android/java/src/org/chromium/chrome/browser/night_mode",
     "+chrome/android/java/src/org/chromium/chrome/browser/tab",
+    "-components",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/view",
     "+components/navigation_interception/android/java/src/org/chromium/components/navigation_interception",
     "+ui/android/java/src/org/chromium/ui/base",

@@ -32,4 +32,11 @@
   return nil;
 }
 
+- (NSString*)description {
+  return [NSString stringWithFormat:@"<%@: %p, GaiaID: \"%@\", name: \"%@\", "
+                                    @"email: \"%@\">",
+                                    self.class.description, self, self.gaiaID,
+                                    self.userFullName, self.userEmail];
+}
+
 @end

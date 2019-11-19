@@ -20,22 +20,29 @@
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
+#include "net/base/features.h"
+#include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/log/test_net_log.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/nqe/network_quality_estimator_params.h"
 #include "net/nqe/network_quality_estimator_test_util.h"
 #include "net/nqe/network_quality_estimator_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -79,16 +86,23 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
   // Uses a mock resolver to force example.com to resolve to a public IP
   // address.
   void AddIPAddressResolution(TestURLRequestContext* context) {
-    scoped_refptr<net::RuleBasedHostResolverProc> rules(
-        new net::RuleBasedHostResolverProc(nullptr));
-    // example1.com resolves to a public IP address.
+    scoped_refptr<net::RuleBasedHostResolverProc> rules =
+        base::MakeRefCounted<RuleBasedHostResolverProc>(nullptr);
+    // example.com resolves to a public IP address.
     rules->AddRule("example.com", "27.0.0.3");
+    // local.com resolves to a private IP address.
+    rules->AddRule("local.com", "127.0.0.1");
     mock_host_resolver_.set_rules(rules.get());
+    mock_host_resolver_.LoadIntoCache(HostPortPair("example.com", 80),
+                                      NetworkIsolationKey(), base::nullopt);
+    mock_host_resolver_.LoadIntoCache(HostPortPair("local.com", 80),
+                                      NetworkIsolationKey(), base::nullopt);
     context->set_host_resolver(&mock_host_resolver_);
   }
 
-  using internal::ThroughputAnalyzer::disable_throughput_measurements;
-  using internal::ThroughputAnalyzer::CountInFlightRequests;
+  using internal::ThroughputAnalyzer::CountActiveInFlightRequests;
+  using internal::ThroughputAnalyzer::
+      disable_throughput_measurements_for_testing;
   using internal::ThroughputAnalyzer::EraseHangingRequests;
   using internal::ThroughputAnalyzer::IsHangingWindow;
 
@@ -102,19 +116,19 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
   DISALLOW_COPY_AND_ASSIGN(TestThroughputAnalyzer);
 };
 
-using ThroughputAnalyzerTest = TestWithScopedTaskEnvironment;
+using ThroughputAnalyzerTest = TestWithTaskEnvironment;
 
 TEST_F(ThroughputAnalyzerTest, MaximumRequests) {
-  const struct {
-    bool use_local_requests;
-  } tests[] = {{
-                   false,
-               },
-               {
-                   true,
-               }};
+  const struct TestCase {
+    GURL url;
+    bool is_local;
+  } kTestCases[] = {
+      {GURL("http://127.0.0.1/test.html"), true /* is_local */},
+      {GURL("http://example.com/test.html"), false /* is_local */},
+      {GURL("http://local.com/test.html"), true /* is_local */},
+  };
 
-  for (const auto& test : tests) {
+  for (const auto& test_case : kTestCases) {
     const base::TickClock* tick_clock = base::DefaultTickClock::GetInstance();
     TestNetworkQualityEstimator network_quality_estimator;
     std::map<std::string, std::string> variation_params;
@@ -126,30 +140,94 @@ TEST_F(ThroughputAnalyzerTest, MaximumRequests) {
     TestURLRequestContext context;
     throughput_analyzer.AddIPAddressResolution(&context);
 
-    ASSERT_FALSE(throughput_analyzer.disable_throughput_measurements());
+    ASSERT_FALSE(
+        throughput_analyzer.disable_throughput_measurements_for_testing());
     base::circular_deque<std::unique_ptr<URLRequest>> requests;
 
     // Start more requests than the maximum number of requests that can be held
     // in the memory.
-    const std::string url = test.use_local_requests
-                                ? "http://127.0.0.1/test.html"
-                                : "http://example.com/test.html";
-
-    EXPECT_EQ(
-        test.use_local_requests,
-        nqe::internal::IsPrivateHost(
-            context.host_resolver(),
-            HostPortPair(GURL(url).host(), GURL(url).EffectiveIntPort())));
+    EXPECT_EQ(test_case.is_local,
+              nqe::internal::IsPrivateHostForTesting(
+                  context.host_resolver(), HostPortPair::FromURL(test_case.url),
+                  NetworkIsolationKey()));
     for (size_t i = 0; i < 1000; ++i) {
       std::unique_ptr<URLRequest> request(
-          context.CreateRequest(GURL(url), DEFAULT_PRIORITY, &test_delegate,
+          context.CreateRequest(test_case.url, DEFAULT_PRIORITY, &test_delegate,
                                 TRAFFIC_ANNOTATION_FOR_TESTS));
       throughput_analyzer.NotifyStartTransaction(*(request.get()));
       requests.push_back(std::move(request));
     }
     // Too many local requests should cause the |throughput_analyzer| to disable
     // throughput measurements.
-    EXPECT_NE(test.use_local_requests,
+    EXPECT_NE(test_case.is_local,
+              throughput_analyzer.IsCurrentlyTrackingThroughput());
+  }
+}
+
+// Make sure that the NetworkIsolationKey is respected when resolving a host
+// from the cache.
+TEST_F(ThroughputAnalyzerTest, MaximumRequestsWithNetworkIsolationKey) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://foo.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+  const GURL kUrl = GURL("http://foo.test/test.html");
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kSplitHostCacheByNetworkIsolationKey);
+
+  for (bool use_network_isolation_key : {false, true}) {
+    const base::TickClock* tick_clock = base::DefaultTickClock::GetInstance();
+    TestNetworkQualityEstimator network_quality_estimator;
+    std::map<std::string, std::string> variation_params;
+    NetworkQualityEstimatorParams params(variation_params);
+    TestThroughputAnalyzer throughput_analyzer(&network_quality_estimator,
+                                               &params, tick_clock);
+
+    TestDelegate test_delegate;
+    TestURLRequestContext context;
+    MockCachingHostResolver mock_host_resolver;
+    context.set_host_resolver(&mock_host_resolver);
+
+    // Add an entry to the host cache mapping kUrl to non-local IP when using an
+    // empty NetworkIsolationKey.
+    scoped_refptr<net::RuleBasedHostResolverProc> rules =
+        base::MakeRefCounted<RuleBasedHostResolverProc>(nullptr);
+    rules->AddRule(kUrl.host(), "1.2.3.4");
+    mock_host_resolver.set_rules(rules.get());
+    mock_host_resolver.LoadIntoCache(HostPortPair::FromURL(kUrl),
+                                     NetworkIsolationKey(), base::nullopt);
+
+    // Add an entry to the host cache mapping kUrl to local IP when using
+    // kNetworkIsolationKey.
+    rules = base::MakeRefCounted<RuleBasedHostResolverProc>(nullptr);
+    rules->AddRule(kUrl.host(), "127.0.0.1");
+    mock_host_resolver.set_rules(rules.get());
+    mock_host_resolver.LoadIntoCache(HostPortPair::FromURL(kUrl),
+                                     kNetworkIsolationKey, base::nullopt);
+
+    ASSERT_FALSE(
+        throughput_analyzer.disable_throughput_measurements_for_testing());
+    base::circular_deque<std::unique_ptr<URLRequest>> requests;
+
+    // Start more requests than the maximum number of requests that can be held
+    // in the memory.
+    EXPECT_EQ(use_network_isolation_key,
+              nqe::internal::IsPrivateHostForTesting(
+                  context.host_resolver(), HostPortPair::FromURL(kUrl),
+                  use_network_isolation_key ? kNetworkIsolationKey
+                                            : NetworkIsolationKey()));
+    for (size_t i = 0; i < 1000; ++i) {
+      std::unique_ptr<URLRequest> request(
+          context.CreateRequest(kUrl, DEFAULT_PRIORITY, &test_delegate,
+                                TRAFFIC_ANNOTATION_FOR_TESTS));
+      if (use_network_isolation_key)
+        request->set_network_isolation_key(kNetworkIsolationKey);
+      throughput_analyzer.NotifyStartTransaction(*(request.get()));
+      requests.push_back(std::move(request));
+    }
+    // Too many local requests should cause the |throughput_analyzer| to disable
+    // throughput measurements.
+    EXPECT_NE(use_network_isolation_key,
               throughput_analyzer.IsCurrentlyTrackingThroughput());
   }
 }
@@ -313,18 +391,18 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
     if (test.requests_hang_duration >= base::TimeDelta())
       base::PlatformThread::Sleep(test.requests_hang_duration);
 
-    EXPECT_EQ(num_requests, throughput_analyzer.CountInFlightRequests());
+    EXPECT_EQ(num_requests, throughput_analyzer.CountActiveInFlightRequests());
 
     for (size_t i = 0; i < num_requests; ++i) {
       throughput_analyzer.NotifyRequestCompleted(*requests_not_local.at(i));
       if (!test.expect_throughput_observation) {
         // All in-flight requests should be marked as hanging, and thus should
         // be deleted from the set of in-flight requests.
-        EXPECT_EQ(0u, throughput_analyzer.CountInFlightRequests());
+        EXPECT_EQ(0u, throughput_analyzer.CountActiveInFlightRequests());
       } else {
         // One request should be deleted at one time.
         EXPECT_EQ(requests_not_local.size() - i - 1,
-                  throughput_analyzer.CountInFlightRequests());
+                  throughput_analyzer.CountActiveInFlightRequests());
       }
     }
 
@@ -332,37 +410,6 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequests) {
 
     EXPECT_EQ(test.expect_throughput_observation,
               throughput_analyzer.throughput_observations_received() > 0);
-
-    // Verify metrics recording.
-    if (test.hanging_request_duration_http_rtt_multiplier < 0) {
-      histogram_tester.ExpectTotalCount(
-          "NQE.ThroughputAnalyzer.HangingRequests.Erased", 0);
-      histogram_tester.ExpectTotalCount(
-          "NQE.ThroughputAnalyzer.HangingRequests.NotErased", 0);
-    } else {
-      if (!test.expect_throughput_observation) {
-        histogram_tester.ExpectBucketCount(
-            "NQE.ThroughputAnalyzer.HangingRequests.Erased", num_requests, 1);
-        // A sample is recorded everytime a request starts.
-        histogram_tester.ExpectBucketCount(
-            "NQE.ThroughputAnalyzer.HangingRequests.Erased", 0, num_requests);
-        histogram_tester.ExpectTotalCount(
-            "NQE.ThroughputAnalyzer.HangingRequests.Erased", num_requests + 1);
-
-        histogram_tester.ExpectTotalCount(
-            "NQE.ThroughputAnalyzer.HangingRequests.NotErased",
-            num_requests + 1);
-      } else {
-        // One sample is recorded when request starts, and another when the
-        // request completes.
-        histogram_tester.ExpectUniqueSample(
-            "NQE.ThroughputAnalyzer.HangingRequests.Erased", 0,
-            num_requests * 2);
-        histogram_tester.ExpectTotalCount(
-            "NQE.ThroughputAnalyzer.HangingRequests.NotErased",
-            num_requests * 2);
-      }
-    }
   }
 }
 
@@ -408,35 +455,35 @@ TEST_F(ThroughputAnalyzerTest, TestHangingRequestsCheckedOnlyPeriodically) {
     throughput_analyzer.NotifyStartTransaction(*requests_not_local.at(i));
   }
 
-  EXPECT_EQ(2u, throughput_analyzer.CountInFlightRequests());
+  EXPECT_EQ(2u, throughput_analyzer.CountActiveInFlightRequests());
   tick_clock.Advance(base::TimeDelta::FromMilliseconds(3500));
   // Current time is t = 5.5 seconds.
   throughput_analyzer.EraseHangingRequests(*some_other_request);
-  EXPECT_EQ(2u, throughput_analyzer.CountInFlightRequests());
+  EXPECT_EQ(2u, throughput_analyzer.CountActiveInFlightRequests());
 
   tick_clock.Advance(base::TimeDelta::FromMilliseconds(1000));
   // Current time is t = 6.5 seconds.  One request should be marked as hanging.
   throughput_analyzer.EraseHangingRequests(*some_other_request);
-  EXPECT_EQ(1u, throughput_analyzer.CountInFlightRequests());
+  EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
   // Current time is t = 6.5 seconds. Calling NotifyBytesRead again should not
   // run the hanging request checker since the last check was at t=6.5 seconds.
   throughput_analyzer.EraseHangingRequests(*some_other_request);
-  EXPECT_EQ(1u, throughput_analyzer.CountInFlightRequests());
+  EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
   tick_clock.Advance(base::TimeDelta::FromMilliseconds(600));
   // Current time is t = 7.1 seconds. Calling NotifyBytesRead again should not
   // run the hanging request checker since the last check was at t=6.5 seconds
   // (less than 1 second ago).
   throughput_analyzer.EraseHangingRequests(*some_other_request);
-  EXPECT_EQ(1u, throughput_analyzer.CountInFlightRequests());
+  EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
   tick_clock.Advance(base::TimeDelta::FromMilliseconds(400));
   // Current time is t = 7.5 seconds. Calling NotifyBytesRead again should run
   // the hanging request checker since the last check was at t=6.5 seconds (at
   // least 1 second ago).
   throughput_analyzer.EraseHangingRequests(*some_other_request);
-  EXPECT_EQ(0u, throughput_analyzer.CountInFlightRequests());
+  EXPECT_EQ(0u, throughput_analyzer.CountActiveInFlightRequests());
 }
 
 // Tests that the last received time for a request is updated when data is
@@ -478,19 +525,19 @@ TEST_F(ThroughputAnalyzerTest, TestLastReceivedTimeIsUpdated) {
   // Current time is t=4.0 seconds.
 
   throughput_analyzer.EraseHangingRequests(*some_other_request);
-  EXPECT_EQ(1u, throughput_analyzer.CountInFlightRequests());
+  EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
   //  The request will be marked as hanging at t=9 seconds.
   throughput_analyzer.NotifyBytesRead(*request_not_local);
   tick_clock.Advance(base::TimeDelta::FromMilliseconds(4000));
   // Current time is t=8 seconds.
   throughput_analyzer.EraseHangingRequests(*some_other_request);
-  EXPECT_EQ(1u, throughput_analyzer.CountInFlightRequests());
+  EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
   tick_clock.Advance(base::TimeDelta::FromMilliseconds(2000));
   // Current time is t=10 seconds.
   throughput_analyzer.EraseHangingRequests(*some_other_request);
-  EXPECT_EQ(0u, throughput_analyzer.CountInFlightRequests());
+  EXPECT_EQ(0u, throughput_analyzer.CountActiveInFlightRequests());
 }
 
 // Test that a request that has been hanging for a long time is deleted
@@ -523,19 +570,19 @@ TEST_F(ThroughputAnalyzerTest, TestRequestDeletedImmediately) {
   // Start time for the request is t=0 second. The request will be marked as
   // hanging at t=2 seconds.
   throughput_analyzer.NotifyStartTransaction(*request_not_local);
-  EXPECT_EQ(1u, throughput_analyzer.CountInFlightRequests());
+  EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
   tick_clock.Advance(base::TimeDelta::FromMilliseconds(2900));
   // Current time is t=2.9 seconds.
 
   throughput_analyzer.EraseHangingRequests(*request_not_local);
-  EXPECT_EQ(1u, throughput_analyzer.CountInFlightRequests());
+  EXPECT_EQ(1u, throughput_analyzer.CountActiveInFlightRequests());
 
   // |request_not_local| should be deleted since it has been idle for 2.4
   // seconds.
   tick_clock.Advance(base::TimeDelta::FromMilliseconds(500));
   throughput_analyzer.NotifyBytesRead(*request_not_local);
-  EXPECT_EQ(0u, throughput_analyzer.CountInFlightRequests());
+  EXPECT_EQ(0u, throughput_analyzer.CountActiveInFlightRequests());
 }
 
 // Tests if the throughput observation is taken correctly when local and network
@@ -733,6 +780,10 @@ TEST_F(ThroughputAnalyzerTest, TestThroughputWithNetworkRequestsOverlap) {
 // of network requests overlap, and the minimum number of in flight requests
 // when taking an observation is more than 1.
 TEST_F(ThroughputAnalyzerTest, TestThroughputWithMultipleNetworkRequests) {
+  const base::RunLoop::ScopedRunTimeoutForTest increased_run_timeout(
+      TestTimeouts::action_max_timeout(),
+      base::MakeExpectedNotRunClosure(FROM_HERE, "RunLoop::Run() timed out."));
+
   const base::TickClock* tick_clock = base::DefaultTickClock::GetInstance();
   TestNetworkQualityEstimator network_quality_estimator;
   std::map<std::string, std::string> variation_params;

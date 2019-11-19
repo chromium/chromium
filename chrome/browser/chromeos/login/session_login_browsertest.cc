@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(BrowserLoginTest, BrowserActive) {
 
   const views::View* focused_view = focus_manager->GetFocusedView();
   EXPECT_TRUE(focused_view != NULL);
-  EXPECT_EQ(VIEW_ID_OMNIBOX, focused_view->id());
+  EXPECT_EQ(VIEW_ID_OMNIBOX, focused_view->GetID());
 }
 
 }  // namespace chromeos

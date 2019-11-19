@@ -10,7 +10,7 @@
 
 [
   Exposed=Window,
-  OriginTrialEnabled=CookieStore,
+  RuntimeEnabled=CookieStore,
   SecureContext,
   Constructor(DOMString type, optional CookieChangeEventInit eventInitDict)
 ] interface CookieChangeEvent : Event {

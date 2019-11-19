@@ -26,7 +26,7 @@ class VideoCaptureFactory {
     // Internal class to encapsulate camera device id manipulations.
     static class ChromiumCameraInfo {
         private static int sNumberOfSystemCameras = -1;
-        private static final String TAG = "cr.media";
+        private static final String TAG = "media";
 
         private static int getNumberOfCameras() {
             if (sNumberOfSystemCameras == -1) {

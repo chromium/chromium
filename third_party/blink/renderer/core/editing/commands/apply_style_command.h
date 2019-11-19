@@ -46,35 +46,10 @@ class CORE_EXPORT ApplyStyleCommand final : public CompositeEditCommand {
   enum AddStyledElement { kAddStyledElement, kDoNotAddStyledElement };
   typedef bool (*IsInlineElementToRemoveFunction)(const Element*);
 
-  static ApplyStyleCommand* Create(Document& document,
-                                   const EditingStyle* style,
-                                   InputEvent::InputType input_type,
-                                   PropertyLevel level = kPropertyDefault) {
-    return MakeGarbageCollected<ApplyStyleCommand>(document, style, input_type,
-                                                   level);
-  }
-  static ApplyStyleCommand* Create(Document& document,
-                                   const EditingStyle* style,
-                                   const Position& start,
-                                   const Position& end) {
-    return MakeGarbageCollected<ApplyStyleCommand>(document, style, start, end);
-  }
-  static ApplyStyleCommand* Create(Element* element, bool remove_only) {
-    return MakeGarbageCollected<ApplyStyleCommand>(element, remove_only);
-  }
-  static ApplyStyleCommand* Create(
-      Document& document,
-      const EditingStyle* style,
-      IsInlineElementToRemoveFunction is_inline_element_to_remove_function,
-      InputEvent::InputType input_type) {
-    return MakeGarbageCollected<ApplyStyleCommand>(
-        document, style, is_inline_element_to_remove_function, input_type);
-  }
-
   ApplyStyleCommand(Document&,
                     const EditingStyle*,
                     InputEvent::InputType,
-                    PropertyLevel);
+                    PropertyLevel = kPropertyDefault);
   ApplyStyleCommand(Document&,
                     const EditingStyle*,
                     const Position& start,

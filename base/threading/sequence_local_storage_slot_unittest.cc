@@ -31,69 +31,75 @@ class SequenceLocalStorageSlotTest : public testing::Test {
 }  // namespace
 
 // Verify that a value stored with Set() can be retrieved with Get().
-TEST_F(SequenceLocalStorageSlotTest, GetSet) {
+TEST_F(SequenceLocalStorageSlotTest, GetEmplace) {
   SequenceLocalStorageSlot<int> slot;
-  slot.Set(5);
-  EXPECT_EQ(slot.Get(), 5);
+  slot.emplace(5);
+  EXPECT_EQ(*slot, 5);
 }
 
-// Verify that setting an object in a SequenceLocalStorageSlot creates a copy
+// Verify that inserting an object in a SequenceLocalStorageSlot creates a copy
 // of that object independent of the original one.
-TEST_F(SequenceLocalStorageSlotTest, SetObjectIsIndependent) {
+TEST_F(SequenceLocalStorageSlotTest, EmplaceObjectIsIndependent) {
   bool should_be_false = false;
 
   SequenceLocalStorageSlot<bool> slot;
 
-  slot.Set(should_be_false);
+  slot.emplace(should_be_false);
 
-  EXPECT_FALSE(slot.Get());
-  slot.Get() = true;
-  EXPECT_TRUE(slot.Get());
+  EXPECT_FALSE(*slot);
+  *slot = true;
+  EXPECT_TRUE(*slot);
 
-  EXPECT_NE(should_be_false, slot.Get());
+  EXPECT_NE(should_be_false, *slot);
 }
 
 // Verify that multiple slots work and that calling Get after overwriting
 // a value in a slot yields the new value.
-TEST_F(SequenceLocalStorageSlotTest, GetSetMultipleSlots) {
+TEST_F(SequenceLocalStorageSlotTest, GetEmplaceMultipleSlots) {
   SequenceLocalStorageSlot<int> slot1;
   SequenceLocalStorageSlot<int> slot2;
   SequenceLocalStorageSlot<int> slot3;
+  EXPECT_FALSE(slot1);
+  EXPECT_FALSE(slot2);
+  EXPECT_FALSE(slot3);
 
-  slot1.Set(1);
-  slot2.Set(2);
-  slot3.Set(3);
+  slot1.emplace(1);
+  slot2.emplace(2);
+  slot3.emplace(3);
 
-  EXPECT_EQ(slot1.Get(), 1);
-  EXPECT_EQ(slot2.Get(), 2);
-  EXPECT_EQ(slot3.Get(), 3);
+  EXPECT_TRUE(slot1);
+  EXPECT_TRUE(slot2);
+  EXPECT_TRUE(slot3);
+  EXPECT_EQ(*slot1, 1);
+  EXPECT_EQ(*slot2, 2);
+  EXPECT_EQ(*slot3, 3);
 
-  slot3.Set(4);
-  slot2.Set(5);
-  slot1.Set(6);
+  slot3.emplace(4);
+  slot2.emplace(5);
+  slot1.emplace(6);
 
-  EXPECT_EQ(slot3.Get(), 4);
-  EXPECT_EQ(slot2.Get(), 5);
-  EXPECT_EQ(slot1.Get(), 6);
+  EXPECT_EQ(*slot3, 4);
+  EXPECT_EQ(*slot2, 5);
+  EXPECT_EQ(*slot1, 6);
 }
 
 // Verify that changing the the value returned by Get() changes the value
 // in sequence local storage.
 TEST_F(SequenceLocalStorageSlotTest, GetReferenceModifiable) {
   SequenceLocalStorageSlot<bool> slot;
-  slot.Set(false);
-  slot.Get() = true;
-  EXPECT_TRUE(slot.Get());
+  slot.emplace(false);
+  *slot = true;
+  EXPECT_TRUE(*slot);
 }
 
 // Verify that a move-only type can be stored in sequence local storage.
-TEST_F(SequenceLocalStorageSlotTest, SetGetWithMoveOnlyType) {
+TEST_F(SequenceLocalStorageSlotTest, EmplaceGetWithMoveOnlyType) {
   std::unique_ptr<int> int_unique_ptr = std::make_unique<int>(5);
 
   SequenceLocalStorageSlot<std::unique_ptr<int>> slot;
-  slot.Set(std::move(int_unique_ptr));
+  slot.emplace(std::move(int_unique_ptr));
 
-  EXPECT_EQ(*slot.Get(), 5);
+  EXPECT_EQ(*slot->get(), 5);
 }
 
 // Verify that a Get() without a previous Set() on a slot returns a
@@ -105,21 +111,21 @@ TEST_F(SequenceLocalStorageSlotTest, GetWithoutSetDefaultConstructs) {
 
   SequenceLocalStorageSlot<DefaultConstructable> slot;
 
-  EXPECT_EQ(slot.Get().x, 0x12345678);
+  EXPECT_EQ(slot.GetOrCreateValue().x, 0x12345678);
 }
 
-// Verify that a Get() without a previous Set() on a slot with a POD-type
-// returns a default-constructed value.
+// Verify that a GetOrCreateValue() without a previous emplace() on a slot with
+// a POD-type returns a default-constructed value.
 // Note: this test could be flaky and give a false pass. If it's flaky, the test
 // might've "passed" because the memory for the slot happened to be zeroed.
 TEST_F(SequenceLocalStorageSlotTest, GetWithoutSetDefaultConstructsPOD) {
   SequenceLocalStorageSlot<void*> slot;
 
-  EXPECT_EQ(slot.Get(), nullptr);
+  EXPECT_EQ(slot.GetOrCreateValue(), nullptr);
 }
 
 // Verify that the value of a slot is specific to a SequenceLocalStorageMap
-TEST(SequenceLocalStorageSlotMultipleMapTest, SetGetMultipleMapsOneSlot) {
+TEST(SequenceLocalStorageSlotMultipleMapTest, EmplaceGetMultipleMapsOneSlot) {
   SequenceLocalStorageSlot<unsigned int> slot;
   internal::SequenceLocalStorageMap sequence_local_storage_maps[5];
 
@@ -129,14 +135,14 @@ TEST(SequenceLocalStorageSlotMultipleMapTest, SetGetMultipleMapsOneSlot) {
     internal::ScopedSetSequenceLocalStorageMapForCurrentThread
         scoped_sequence_local_storage(&sequence_local_storage_maps[i]);
 
-    slot.Set(i);
+    slot.emplace(i);
   }
 
   for (unsigned int i = 0; i < base::size(sequence_local_storage_maps); ++i) {
     internal::ScopedSetSequenceLocalStorageMapForCurrentThread
         scoped_sequence_local_storage(&sequence_local_storage_maps[i]);
 
-    EXPECT_EQ(slot.Get(), i);
+    EXPECT_EQ(*slot, i);
   }
 }
 

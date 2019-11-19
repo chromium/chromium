@@ -47,34 +47,62 @@ BOOL CALLBACK EnumMonitorForProfilePathCallback(HMONITOR monitor,
 
 }  // namespace
 
-ColorProfileReader::ColorProfileReader(Client* client)
-    : client_(client), weak_factory_(this) {}
+ColorProfileReader::ColorProfileReader(Client* client) : client_(client) {}
 
 ColorProfileReader::~ColorProfileReader() {}
 
 void ColorProfileReader::UpdateIfNeeded() {
+  // There is a potential race condition wherein the result from
+  // EnumDisplayMonitors is already stale by the time that we get
+  // back to BuildDeviceToPathMapCompleted.  To fix this we would
+  // need to record the fact that we early-out-ed because of
+  // update_in_flight_ was true, and then re-issue
+  // BuildDeviceToPathMapOnBackgroundThread when the update
+  // returned.
   if (update_in_flight_)
     return;
 
-  DeviceToPathMap new_device_to_path_map = BuildDeviceToPathMap();
-  if (device_to_path_map_ == new_device_to_path_map)
-    return;
-
   update_in_flight_ = true;
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::Bind(&ColorProfileReader::ReadProfilesOnBackgroundThread,
-                 new_device_to_path_map),
-      base::Bind(&ColorProfileReader::ReadProfilesCompleted,
+
+  // Enumerate device profile paths on a background thread.  When this
+  // completes it will run another task on a background thread to read
+  // the profiles.
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::Bind(&ColorProfileReader::BuildDeviceToPathMapOnBackgroundThread),
+      base::Bind(&ColorProfileReader::BuildDeviceToPathMapCompleted,
                  weak_factory_.GetWeakPtr()));
 }
 
 // static
-ColorProfileReader::DeviceToPathMap ColorProfileReader::BuildDeviceToPathMap() {
+ColorProfileReader::DeviceToPathMap
+ColorProfileReader::BuildDeviceToPathMapOnBackgroundThread() {
   DeviceToPathMap device_to_path_map;
   EnumDisplayMonitors(nullptr, nullptr, EnumMonitorForProfilePathCallback,
                       reinterpret_cast<LPARAM>(&device_to_path_map));
   return device_to_path_map;
+}
+
+void ColorProfileReader::BuildDeviceToPathMapCompleted(
+    DeviceToPathMap new_device_to_path_map) {
+  DCHECK(update_in_flight_);
+
+  // Are there any changes from previous results
+  if (device_to_path_map_ == new_device_to_path_map) {
+    update_in_flight_ = false;
+    return;
+  }
+
+  device_to_path_map_ = new_device_to_path_map;
+
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::Bind(&ColorProfileReader::ReadProfilesOnBackgroundThread,
+                 new_device_to_path_map),
+      base::Bind(&ColorProfileReader::ReadProfilesCompleted,
+                 weak_factory_.GetWeakPtr()));
 }
 
 // static
@@ -121,7 +149,7 @@ gfx::ColorSpace ColorProfileReader::GetDisplayColorSpace(
     icc_profile = found->second;
   if (has_read_profiles_)
     icc_profile.HistogramDisplay(display_id);
-  return icc_profile.IsValid() ? icc_profile.GetColorSpace()
+  return icc_profile.IsValid() ? icc_profile.GetPrimariesOnlyColorSpace()
                                : gfx::ColorSpace::CreateSRGB();
 }
 

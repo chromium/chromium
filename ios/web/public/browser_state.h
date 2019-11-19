@@ -8,16 +8,15 @@
 #include <memory>
 
 #include "base/supports_user_data.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/mojom/service.mojom.h"
 
 namespace base {
 class FilePath;
-class Token;
 }
 
 namespace net {
@@ -29,14 +28,13 @@ class SharedURLLoaderFactory;
 class WeakWrapperSharedURLLoaderFactory;
 }  // namespace network
 
-namespace service_manager {
-class Connector;
-}
+namespace leveldb_proto {
+class ProtoDatabaseProvider;
+}  // namespace leveldb_proto
 
 namespace web {
 class CertificatePolicyCache;
 class NetworkContextOwner;
-class ServiceManagerConnection;
 class URLDataManagerIOS;
 class URLDataManagerIOSBackend;
 class URLRequestChromeJob;
@@ -70,9 +68,13 @@ class BrowserState : public base::SupportsUserData {
   // Returns a CookieManager that is backed by GetRequestContext.
   network::mojom::CookieManager* GetCookieManager();
 
-  // Binds a ProxyResolvingSocketFactory request to NetworkContext.
+  // Returns an provider to create ProtoDatabase tied to the profile directory.
+  leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider();
+
+  // Binds a ProxyResolvingSocketFactory receiver to NetworkContext.
   void GetProxyResolvingSocketFactory(
-      network::mojom::ProxyResolvingSocketFactoryRequest request);
+      mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>
+          receiver);
 
   // Like URLLoaderFactory, but wrapped inside SharedURLLoaderFactory
   virtual scoped_refptr<network::SharedURLLoaderFactory>
@@ -83,36 +85,14 @@ class BrowserState : public base::SupportsUserData {
   static BrowserState* FromSupportsUserData(
       base::SupportsUserData* supports_user_data);
 
-  // Returns a service instance group associated with this BrowserState. This ID
-  // is not persistent across runs. See
-  // services/service_manager/public/mojom/connector.mojom. By default,
-  // this instance group ID is randomly generated when Initialize() is called.
-  static const base::Token& GetServiceInstanceGroupFor(
-      BrowserState* browser_state);
-
-  // Returns a Connector associated with this BrowserState, which can be used
-  // to connect to service instances bound as this user.
-  static service_manager::Connector* GetConnectorFor(
-      BrowserState* browser_state);
-
-  // Returns a ServiceManagerConnection associated with this BrowserState,
-  // which can be used to connect to service instances bound as this user.
-  static ServiceManagerConnection* GetServiceManagerConnectionFor(
-      BrowserState* browser_state);
-
-  // Handles an incoming request for a per-browser-state service.
-  virtual std::unique_ptr<service_manager::Service> HandleServiceRequest(
-      const std::string& service_name,
-      service_manager::mojom::ServiceRequest request);
+  // Updates |cors_exempt_header_list| field of the given |param| to register
+  // headers that are used in content for special purpose and should not be
+  // blocked by CORS checks.
+  virtual void UpdateCorsExemptHeader(
+      network::mojom::NetworkContextParams* params) {}
 
  protected:
   BrowserState();
-
-  // Makes the Service Manager aware of this BrowserState, and assigns an
-  // instance group ID to it. Must be called for each BrowserState created.
-  // |path| should be the same path that would be returned by GetStatePath().
-  static void Initialize(BrowserState* browser_state,
-                         const base::FilePath& path);
 
  private:
   friend class URLDataManagerIOS;
@@ -126,11 +106,13 @@ class BrowserState : public base::SupportsUserData {
 
   void CreateNetworkContextIfNecessary();
 
-  network::mojom::URLLoaderFactoryPtr url_loader_factory_;
-  network::mojom::CookieManagerPtr cookie_manager_;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
+  mojo::Remote<network::mojom::CookieManager> cookie_manager_;
+  std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>
+      proto_database_provider_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       shared_url_loader_factory_;
-  network::mojom::NetworkContextPtr network_context_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_;
 
   // Owns the network::NetworkContext that backs |url_loader_factory_|. Created
   // on the UI thread, destroyed on the IO thread.

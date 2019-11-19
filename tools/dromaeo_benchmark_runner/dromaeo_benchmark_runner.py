@@ -34,6 +34,8 @@ dromaeo_benchmark_runner.py -b "E:\chromium\src\chrome\Release\chrome.exe"
 
 """
 
+from __future__ import print_function
+
 import getpass
 import json
 import os
@@ -239,7 +241,7 @@ def main():
     spreadsheet_writer.WriteBrowserBenchmarkTitle(browser_name)
     benchmark_results = BenchmarkResults()
     for run_number in xrange(options.run_count):
-      print '%s run %i' % (browser_name, run_number + 1)
+      print('%s run %i' % (browser_name, run_number + 1))
       # Run browser.
       test_page = 'http://localhost:%i/index.html?%s&automated&post_json' % (
         options.port, options.filter)

@@ -6,150 +6,78 @@
 
 #include "base/logging.h"
 #include "chrome/browser/ui/color_chooser.h"
+#include "components/remote_cocoa/app_shim/color_panel_bridge.h"
+#include "components/remote_cocoa/browser/application_host.h"
+#include "components/remote_cocoa/browser/window.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "skia/ext/skia_utils_mac.h"
 
-ColorChooserMac* ColorChooserMac::current_color_chooser_ = NULL;
+namespace {
+// The currently active color chooser.
+ColorChooserMac* g_current_color_chooser = nullptr;
+}  // namespace
 
 // static
 ColorChooserMac* ColorChooserMac::Open(content::WebContents* web_contents,
                                        SkColor initial_color) {
-  if (current_color_chooser_)
-    current_color_chooser_->End();
-  DCHECK(!current_color_chooser_);
-  current_color_chooser_ =
-      new ColorChooserMac(web_contents, initial_color);
-  return current_color_chooser_;
+  if (g_current_color_chooser)
+    g_current_color_chooser->End();
+  DCHECK(!g_current_color_chooser);
+  // Note that WebContentsImpl::ColorChooser ultimately takes ownership (and
+  // deletes) the returned pointer.
+  g_current_color_chooser = new ColorChooserMac(web_contents, initial_color);
+  return g_current_color_chooser;
 }
 
 ColorChooserMac::ColorChooserMac(content::WebContents* web_contents,
                                  SkColor initial_color)
     : web_contents_(web_contents) {
-  panel_.reset([[ColorPanelCocoa alloc] initWithChooser:this]);
-  [panel_ setColor:skia::SkColorToDeviceNSColor(initial_color)];
-  [[NSColorPanel sharedColorPanel] makeKeyAndOrderFront:nil];
+  auto* application_host = remote_cocoa::ApplicationHost::GetForNativeView(
+      web_contents ? web_contents->GetNativeView() : gfx::NativeView());
+  if (application_host) {
+    application_host->GetApplication()->ShowColorPanel(
+        mojo_panel_remote_.BindNewPipeAndPassReceiver(),
+        mojo_host_receiver_.BindNewPipeAndPassRemote());
+  } else {
+    mojo::MakeSelfOwnedReceiver(
+        std::make_unique<remote_cocoa::ColorPanelBridge>(
+            mojo_host_receiver_.BindNewPipeAndPassRemote()),
+        mojo_panel_remote_.BindNewPipeAndPassReceiver());
+  }
+  mojo_panel_remote_->Show(initial_color);
 }
 
 ColorChooserMac::~ColorChooserMac() {
   // Always call End() before destroying.
-  DCHECK(!panel_);
+  DCHECK_NE(g_current_color_chooser, this);
 }
 
 void ColorChooserMac::DidChooseColorInColorPanel(SkColor color) {
+  DCHECK_EQ(g_current_color_chooser, this);
   if (web_contents_)
     web_contents_->DidChooseColorInColorChooser(color);
 }
 
 void ColorChooserMac::DidCloseColorPanel() {
+  DCHECK_EQ(g_current_color_chooser, this);
   End();
 }
 
 void ColorChooserMac::End() {
-  if (panel_) {
-    panel_.reset();
-    DCHECK(current_color_chooser_ == this);
-    current_color_chooser_ = NULL;
+  if (g_current_color_chooser == this) {
+    g_current_color_chooser = nullptr;
     if (web_contents_)
       web_contents_->DidEndColorChooser();
   }
 }
 
 void ColorChooserMac::SetSelectedColor(SkColor color) {
-  [panel_ setColor:skia::SkColorToDeviceNSColor(color)];
-}
-
-@interface NSColorPanel (Private)
-// Private method returning the NSColorPanel's target.
-- (id)__target;
-@end
-
-@implementation ColorPanelCocoa
-
-- (id)initWithChooser:(ColorChooserMac*)chooser {
-  if ((self = [super init])) {
-    chooser_ = chooser;
-    NSColorPanel* panel = [NSColorPanel sharedColorPanel];
-    [panel setShowsAlpha:NO];
-    [panel setTarget:self];
-    [panel setAction:@selector(didChooseColor:)];
-
-    [[NSNotificationCenter defaultCenter]
-        addObserver:self
-           selector:@selector(windowWillClose:)
-               name:NSWindowWillCloseNotification
-             object:panel];
-  }
-  return self;
-}
-
-- (void)dealloc {
-  NSColorPanel* panel = [NSColorPanel sharedColorPanel];
-
-  // On macOS 10.13 the NSColorPanel delegate can apparently get reset to nil
-  // with the target left unchanged. Use the private __target method to see if
-  // the ColorPanelCocoa is still the target.
-  BOOL respondsToPrivateTargetMethod =
-      [panel respondsToSelector:@selector(__target)];
-  if (respondsToPrivateTargetMethod && [panel __target] == self) {
-    [panel setTarget:nil];
-    [panel setAction:nullptr];
-  }
-
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:NSWindowWillCloseNotification
-              object:panel];
-
-  [super dealloc];
-}
-
-- (void)windowWillClose:(NSNotification*)notification {
-  chooser_->DidCloseColorPanel();
-  nonUserChange_ = NO;
-}
-
-- (void)didChooseColor:(NSColorPanel*)panel {
-  if (nonUserChange_) {
-    nonUserChange_ = NO;
-    return;
-  }
-  nonUserChange_ = NO;
-  NSColor* color = [panel color];
-  if ([[color colorSpaceName] isEqualToString:NSNamedColorSpace]) {
-    color = [color colorUsingColorSpace:[NSColorSpace genericRGBColorSpace]];
-    // Some colors in "Developer" palette in "Color Palettes" tab can't be
-    // converted to RGB. We just ignore such colors.
-    // TODO(tkent): We should notice the rejection to users.
-    if (!color)
-      return;
-  }
-  if ([color colorSpace] == [NSColorSpace genericRGBColorSpace]) {
-    // genericRGB -> deviceRGB conversion isn't ignorable.  We'd like to use RGB
-    // values shown in NSColorPanel UI.
-    CGFloat red, green, blue, alpha;
-    [color getRed:&red green:&green blue:&blue alpha:&alpha];
-    SkColor skColor = SkColorSetARGB(SkScalarRoundToInt(255.0 * alpha),
-                                     SkScalarRoundToInt(255.0 * red),
-                                     SkScalarRoundToInt(255.0 * green),
-                                     SkScalarRoundToInt(255.0 * blue));
-    chooser_->DidChooseColorInColorPanel(skColor);
-  } else {
-    chooser_->DidChooseColorInColorPanel(skia::NSDeviceColorToSkColor(
-        [[panel color] colorUsingColorSpaceName:NSDeviceRGBColorSpace]));
-  }
-}
-
-- (void)setColor:(NSColor*)color {
-  nonUserChange_ = YES;
-  [[NSColorPanel sharedColorPanel] setColor:color];
+  mojo_panel_remote_->SetSelectedColor(color);
 }
 
 namespace chrome {
-
 content::ColorChooser* ShowColorChooser(content::WebContents* web_contents,
                                         SkColor initial_color) {
   return ColorChooserMac::Open(web_contents, initial_color);
 }
-
 }  // namepace chrome
-
-@end

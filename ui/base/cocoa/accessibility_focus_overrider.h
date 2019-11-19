@@ -9,13 +9,25 @@
 
 namespace ui {
 
-// This object will swizzle -[NSApplication accessibilityFocusedUIElement] to
-// return the value of its client's GetAccessibilityFocusedUIElement method
-// whenever both |window_is_key_| is true and |view_is_first_responder_| is
-// true. If two instances both claim that their window is key and their view
-// is first responder at the same time, then the more recent instance to have
-// made that claim will "win". This mechanism is used for accessibility in
-// RemoteMacViews.
+// This object is used to enable cross-process accessibility focus querying.
+//
+// The following bullet points describe the need for this class:
+// * The NSViews in out-of-process NSViews (e.g, for PWAs) will return a
+//   NSRemoteAccessibilityElement from -[NSView accessibilityFocusedUIElement].
+// * The focus query is then continued in the browser process by a call to
+//   -[NSApplication accessibilityFocusedUIElement].
+// * The default implementation -[NSApplication accessibilityFocusedUIElement]
+//   in turn queries -[NSApplication keyWindow]'s accessibilityFocusedUIElement
+//   method.
+// * This is not what the PWA process wants. The PWA process wants its focus,
+//   not the browser's focus.
+// * To make this happen, when the PWA process' NSViews are focused, they
+//   force the browser's  -[NSApplication accessibilityFocusedUIElement] to
+//   return their accessibility focus.
+//
+// The above-required overriding of focus is done by instantiating an
+// AccessibilityFocusOverrider and updating its state when the NSView in the
+// PWA process is focused.
 class UI_BASE_EXPORT AccessibilityFocusOverrider {
  public:
   class Client {
@@ -25,6 +37,10 @@ class UI_BASE_EXPORT AccessibilityFocusOverrider {
 
   AccessibilityFocusOverrider(Client* client);
   ~AccessibilityFocusOverrider();
+
+  // Indicate if the NSApplication that is viewing this element is not this
+  // process. Focus overriding is only needed for cross-process focus.
+  void SetAppIsRemote(bool app_is_remote);
 
   // Indicate whether or not the view's window is currently key. This object
   // will override the application's focused accessibility element only if its
@@ -36,8 +52,12 @@ class UI_BASE_EXPORT AccessibilityFocusOverrider {
   // if the view is the window's first responder (and its window is key).
   void SetViewIsFirstResponder(bool view_is_first_responder);
 
+  // Return the overridden focus, or nil if there is no overridden focus.
+  static id GetFocusedUIElement();
+
  private:
   void UpdateOverriddenKeyElement();
+  bool app_is_remote_ = false;
   bool window_is_key_ = false;
   bool view_is_first_responder_ = false;
   Client* const client_;

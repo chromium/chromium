@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/flat_map.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "printing/backend/printing_restrictions.h"
 
@@ -16,57 +17,90 @@ namespace policy {
 
 class PolicyMap;
 
+template <class Mode>
+class PrintingEnumPolicyHandler : public TypeCheckingPolicyHandler {
+  static_assert(std::is_enum<Mode>::value,
+                "PrintingEnumPolicyHandler can only be used with enums");
+
+ public:
+  PrintingEnumPolicyHandler(
+      const char* policy_name,
+      const char* pref_name,
+      const base::flat_map<std::string, Mode>& policy_value_to_mode);
+  ~PrintingEnumPolicyHandler() override;
+
+  // ConfigurationPolicyHandler:
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+
+ private:
+  bool GetValue(const PolicyMap& policies,
+                PolicyErrorMap* errors,
+                Mode* result);
+
+  const char* const policy_name_;
+  const char* const pref_name_;
+  base::flat_map<std::string, Mode> policy_value_to_mode_;
+};
+
 class PrintingAllowedColorModesPolicyHandler
-    : public TypeCheckingPolicyHandler {
+    : public PrintingEnumPolicyHandler<printing::ColorModeRestriction> {
  public:
   PrintingAllowedColorModesPolicyHandler();
   ~PrintingAllowedColorModesPolicyHandler() override;
-
-  // ConfigurationPolicyHandler implementation:
-  bool CheckPolicySettings(const PolicyMap& policies,
-                           PolicyErrorMap* errors) override;
-  void ApplyPolicySettings(const PolicyMap& policies,
-                           PrefValueMap* prefs) override;
-
- private:
-  bool GetValue(const PolicyMap& policies,
-                PolicyErrorMap* errors,
-                printing::ColorModeRestriction* result);
 };
 
 class PrintingAllowedDuplexModesPolicyHandler
-    : public TypeCheckingPolicyHandler {
+    : public PrintingEnumPolicyHandler<printing::DuplexModeRestriction> {
  public:
   PrintingAllowedDuplexModesPolicyHandler();
   ~PrintingAllowedDuplexModesPolicyHandler() override;
-
-  // ConfigurationPolicyHandler implementation:
-  bool CheckPolicySettings(const PolicyMap& policies,
-                           PolicyErrorMap* errors) override;
-  void ApplyPolicySettings(const PolicyMap& policies,
-                           PrefValueMap* prefs) override;
-
- private:
-  bool GetValue(const PolicyMap& policies,
-                PolicyErrorMap* errors,
-                printing::DuplexModeRestriction* result);
 };
 
-class PrintingAllowedPinModesPolicyHandler : public TypeCheckingPolicyHandler {
+class PrintingAllowedPinModesPolicyHandler
+    : public PrintingEnumPolicyHandler<printing::PinModeRestriction> {
  public:
   PrintingAllowedPinModesPolicyHandler();
   ~PrintingAllowedPinModesPolicyHandler() override;
+};
 
-  // ConfigurationPolicyHandler implementation:
-  bool CheckPolicySettings(const PolicyMap& policies,
-                           PolicyErrorMap* errors) override;
-  void ApplyPolicySettings(const PolicyMap& policies,
-                           PrefValueMap* prefs) override;
+class PrintingAllowedBackgroundGraphicsModesPolicyHandler
+    : public PrintingEnumPolicyHandler<
+          printing::BackgroundGraphicsModeRestriction> {
+ public:
+  PrintingAllowedBackgroundGraphicsModesPolicyHandler();
+  ~PrintingAllowedBackgroundGraphicsModesPolicyHandler() override;
+};
 
- private:
-  bool GetValue(const PolicyMap& policies,
-                PolicyErrorMap* errors,
-                printing::PinModeRestriction* result);
+class PrintingColorDefaultPolicyHandler
+    : public PrintingEnumPolicyHandler<printing::ColorModeRestriction> {
+ public:
+  PrintingColorDefaultPolicyHandler();
+  ~PrintingColorDefaultPolicyHandler() override;
+};
+
+class PrintingDuplexDefaultPolicyHandler
+    : public PrintingEnumPolicyHandler<printing::DuplexModeRestriction> {
+ public:
+  PrintingDuplexDefaultPolicyHandler();
+  ~PrintingDuplexDefaultPolicyHandler() override;
+};
+
+class PrintingPinDefaultPolicyHandler
+    : public PrintingEnumPolicyHandler<printing::PinModeRestriction> {
+ public:
+  PrintingPinDefaultPolicyHandler();
+  ~PrintingPinDefaultPolicyHandler() override;
+};
+
+class PrintingBackgroundGraphicsDefaultPolicyHandler
+    : public PrintingEnumPolicyHandler<
+          printing::BackgroundGraphicsModeRestriction> {
+ public:
+  PrintingBackgroundGraphicsDefaultPolicyHandler();
+  ~PrintingBackgroundGraphicsDefaultPolicyHandler() override;
 };
 
 class PrintingAllowedPageSizesPolicyHandler : public ListPolicyHandler {
@@ -78,57 +112,6 @@ class PrintingAllowedPageSizesPolicyHandler : public ListPolicyHandler {
   bool CheckListEntry(const base::Value& value) override;
   void ApplyList(std::unique_ptr<base::ListValue> filtered_list,
                  PrefValueMap* prefs) override;
-};
-
-class PrintingColorDefaultPolicyHandler : public TypeCheckingPolicyHandler {
- public:
-  PrintingColorDefaultPolicyHandler();
-  ~PrintingColorDefaultPolicyHandler() override;
-
-  // ConfigurationPolicyHandler implementation:
-  bool CheckPolicySettings(const PolicyMap& policies,
-                           PolicyErrorMap* errors) override;
-  void ApplyPolicySettings(const PolicyMap& policies,
-                           PrefValueMap* prefs) override;
-
- private:
-  bool GetValue(const PolicyMap& policies,
-                PolicyErrorMap* errors,
-                printing::ColorModeRestriction* result);
-};
-
-class PrintingDuplexDefaultPolicyHandler : public TypeCheckingPolicyHandler {
- public:
-  PrintingDuplexDefaultPolicyHandler();
-  ~PrintingDuplexDefaultPolicyHandler() override;
-
-  // ConfigurationPolicyHandler implementation:
-  bool CheckPolicySettings(const PolicyMap& policies,
-                           PolicyErrorMap* errors) override;
-  void ApplyPolicySettings(const PolicyMap& policies,
-                           PrefValueMap* prefs) override;
-
- private:
-  bool GetValue(const PolicyMap& policies,
-                PolicyErrorMap* errors,
-                printing::DuplexModeRestriction* result);
-};
-
-class PrintingPinDefaultPolicyHandler : public TypeCheckingPolicyHandler {
- public:
-  PrintingPinDefaultPolicyHandler();
-  ~PrintingPinDefaultPolicyHandler() override;
-
-  // ConfigurationPolicyHandler implementation:
-  bool CheckPolicySettings(const PolicyMap& policies,
-                           PolicyErrorMap* errors) override;
-  void ApplyPolicySettings(const PolicyMap& policies,
-                           PrefValueMap* prefs) override;
-
- private:
-  bool GetValue(const PolicyMap& policies,
-                PolicyErrorMap* errors,
-                printing::PinModeRestriction* result);
 };
 
 class PrintingSizeDefaultPolicyHandler : public TypeCheckingPolicyHandler {

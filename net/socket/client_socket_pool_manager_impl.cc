@@ -16,52 +16,26 @@
 #include "net/socket/transport_client_socket_pool.h"
 #include "net/socket/transport_connect_job.h"
 #include "net/socket/websocket_transport_client_socket_pool.h"
-#include "net/ssl/ssl_config_service.h"
 
 namespace net {
 
 class SocketPerformanceWatcherFactory;
 
 ClientSocketPoolManagerImpl::ClientSocketPoolManagerImpl(
-    NetLog* net_log,
-    ClientSocketFactory* socket_factory,
-    SocketPerformanceWatcherFactory* socket_performance_watcher_factory,
-    NetworkQualityEstimator* network_quality_estimator,
-    HostResolver* host_resolver,
-    CertVerifier* cert_verifier,
-    ChannelIDService* channel_id_service,
-    TransportSecurityState* transport_security_state,
-    CTVerifier* cert_transparency_verifier,
-    CTPolicyEnforcer* ct_policy_enforcer,
-    SSLClientSessionCache* ssl_client_session_cache,
-    SSLClientSessionCache* ssl_client_session_cache_privacy_mode,
-    SSLConfigService* ssl_config_service,
-    WebSocketEndpointLockManager* websocket_endpoint_lock_manager,
-    ProxyDelegate* proxy_delegate,
+    const CommonConnectJobParams& common_connect_job_params,
+    const CommonConnectJobParams& websocket_common_connect_job_params,
     HttpNetworkSession::SocketPoolType pool_type)
-    : net_log_(net_log),
-      socket_factory_(socket_factory),
-      socket_performance_watcher_factory_(socket_performance_watcher_factory),
-      network_quality_estimator_(network_quality_estimator),
-      host_resolver_(host_resolver),
-      cert_verifier_(cert_verifier),
-      channel_id_service_(channel_id_service),
-      transport_security_state_(transport_security_state),
-      cert_transparency_verifier_(cert_transparency_verifier),
-      ct_policy_enforcer_(ct_policy_enforcer),
-      ssl_client_session_cache_(ssl_client_session_cache),
-      ssl_client_session_cache_privacy_mode_(
-          ssl_client_session_cache_privacy_mode),
-      ssl_config_service_(ssl_config_service),
-      websocket_endpoint_lock_manager_(websocket_endpoint_lock_manager),
-      proxy_delegate_(proxy_delegate),
+    : common_connect_job_params_(common_connect_job_params),
+      websocket_common_connect_job_params_(websocket_common_connect_job_params),
       pool_type_(pool_type) {
-  CertDatabase::GetInstance()->AddObserver(this);
+  // |websocket_endpoint_lock_manager| must only be set for websocket
+  // connections.
+  DCHECK(!common_connect_job_params_.websocket_endpoint_lock_manager);
+  DCHECK(websocket_common_connect_job_params.websocket_endpoint_lock_manager);
 }
 
 ClientSocketPoolManagerImpl::~ClientSocketPoolManagerImpl() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  CertDatabase::GetInstance()->RemoveObserver(this);
 }
 
 void ClientSocketPoolManagerImpl::FlushSocketPoolsWithError(int error) {
@@ -76,9 +50,9 @@ void ClientSocketPoolManagerImpl::CloseIdleSockets() {
   }
 }
 
-TransportClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
+ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
     const ProxyServer& proxy_server) {
-  TransportSocketPoolMap::const_iterator it = socket_pools_.find(proxy_server);
+  SocketPoolMap::const_iterator it = socket_pools_.find(proxy_server);
   if (it != socket_pools_.end())
     return it->second.get();
 
@@ -93,33 +67,23 @@ TransportClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
         std::min(sockets_per_proxy_server, max_sockets_per_group(pool_type_));
   }
 
-  std::unique_ptr<TransportClientSocketPool> new_pool;
+  std::unique_ptr<ClientSocketPool> new_pool;
 
   // Use specialized WebSockets pool for WebSockets when no proxy is in use.
   if (pool_type_ == HttpNetworkSession::WEBSOCKET_SOCKET_POOL &&
       proxy_server.is_direct()) {
     new_pool = std::make_unique<WebSocketTransportClientSocketPool>(
-        sockets_per_proxy_server, sockets_per_group,
-        unused_idle_socket_timeout(pool_type_), socket_factory_, host_resolver_,
-        proxy_delegate_, cert_verifier_, channel_id_service_,
-        transport_security_state_, cert_transparency_verifier_,
-        ct_policy_enforcer_, ssl_client_session_cache_,
-        ssl_client_session_cache_privacy_mode_, ssl_config_service_,
-        network_quality_estimator_, websocket_endpoint_lock_manager_, net_log_);
+        sockets_per_proxy_server, sockets_per_group, proxy_server,
+        &websocket_common_connect_job_params_);
   } else {
-    // TODO(mmenke): Can the SOCKS check be removed?
     new_pool = std::make_unique<TransportClientSocketPool>(
         sockets_per_proxy_server, sockets_per_group,
-        unused_idle_socket_timeout(pool_type_), socket_factory_, host_resolver_,
-        proxy_delegate_, cert_verifier_, channel_id_service_,
-        transport_security_state_, cert_transparency_verifier_,
-        ct_policy_enforcer_, ssl_client_session_cache_,
-        ssl_client_session_cache_privacy_mode_, ssl_config_service_,
-        proxy_server.is_socks() ? nullptr : socket_performance_watcher_factory_,
-        network_quality_estimator_, net_log_);
+        unused_idle_socket_timeout(pool_type_), proxy_server,
+        pool_type_ == HttpNetworkSession::WEBSOCKET_SOCKET_POOL,
+        &common_connect_job_params_);
   }
 
-  std::pair<TransportSocketPoolMap::iterator, bool> ret =
+  std::pair<SocketPoolMap::iterator, bool> ret =
       socket_pools_.insert(std::make_pair(proxy_server, std::move(new_pool)));
   return ret.first->second.get();
 }
@@ -144,14 +108,10 @@ ClientSocketPoolManagerImpl::SocketPoolInfoToValue() const {
   return std::move(list);
 }
 
-void ClientSocketPoolManagerImpl::OnCertDBChanged() {
-  FlushSocketPoolsWithError(ERR_NETWORK_CHANGED);
-}
-
 void ClientSocketPoolManagerImpl::DumpMemoryStats(
     base::trace_event::ProcessMemoryDump* pmd,
     const std::string& parent_dump_absolute_name) const {
-  TransportSocketPoolMap::const_iterator socket_pool =
+  SocketPoolMap::const_iterator socket_pool =
       socket_pools_.find(ProxyServer::Direct());
   if (socket_pool == socket_pools_.end())
     return;

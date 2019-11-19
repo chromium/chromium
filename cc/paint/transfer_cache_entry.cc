@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "cc/paint/color_space_transfer_cache_entry.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/raw_memory_transfer_cache_entry.h"
 #include "cc/paint/shader_transfer_cache_entry.h"
@@ -21,8 +20,6 @@ std::unique_ptr<ServiceTransferCacheEntry> ServiceTransferCacheEntry::Create(
       return std::make_unique<ServiceRawMemoryTransferCacheEntry>();
     case TransferCacheEntryType::kImage:
       return std::make_unique<ServiceImageTransferCacheEntry>();
-    case TransferCacheEntryType::kColorSpace:
-      return std::make_unique<ServiceColorSpaceTransferCacheEntry>();
     case TransferCacheEntryType::kShader:
       // ServiceShader/TextBlobTransferCache is only created via
       // CreateLocalEntry and is never serialized/deserialized.
@@ -46,7 +43,6 @@ bool ServiceTransferCacheEntry::SafeConvertToType(
 bool ServiceTransferCacheEntry::UsesGrContext(TransferCacheEntryType type) {
   switch (type) {
     case TransferCacheEntryType::kRawMemory:
-    case TransferCacheEntryType::kColorSpace:
     case TransferCacheEntryType::kShader:
       return false;
     case TransferCacheEntryType::kImage:

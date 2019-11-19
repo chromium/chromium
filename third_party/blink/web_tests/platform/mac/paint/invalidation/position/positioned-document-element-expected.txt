@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#008000"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -23,14 +12,14 @@
           "reason": "background"
         },
         {
-          "object": "InlineTextBox 'Tests that the entire viewport is painted with a floated html element.'",
+          "object": "NGPhysicalTextFragment 'Tests that the entire viewport is painted with a floated html element.'",
           "rect": [108, 116, 435, 18],
-          "reason": "appeared"
+          "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'Tests that the entire viewport is painted with a floated html element.'",
+          "object": "NGPhysicalTextFragment 'Tests that the entire viewport is painted with a floated html element.'",
           "rect": [8, 16, 435, 18],
-          "reason": "disappeared"
+          "reason": "geometry"
         }
       ]
     }

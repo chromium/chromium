@@ -271,12 +271,12 @@ SafeBrowsingReporter::SafeBrowsingReporter(
       done_callback_runner_(done_callback_runner),
       done_callback_(done_callback) {
   DCHECK(done_callback_runner);
-  base::PostTaskWithTraits(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindRepeating(&SafeBrowsingReporter::UploadWithRetry,
-                          base::Owned(this), serialized_report,
-                          traffic_annotation));
+  base::PostTask(FROM_HERE,
+                 {base::ThreadPool(), base::MayBlock(),
+                  base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+                 base::BindRepeating(&SafeBrowsingReporter::UploadWithRetry,
+                                     base::Owned(this), serialized_report,
+                                     traffic_annotation));
 }
 
 void SafeBrowsingReporter::UploadWithRetry(

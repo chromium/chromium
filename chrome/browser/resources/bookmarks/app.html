@@ -1,26 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_components/managed_footnote/managed_footnote.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/cr/ui/splitter.html">
-<link rel="import" href="chrome://resources/html/find_shortcut_behavior.html">
-<link rel="import" href="api_listener.html">
-<link rel="import" href="command_manager.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="dnd_manager.html">
-<link rel="import" href="folder_node.html">
-<link rel="import" href="list.html">
-<link rel="import" href="mouse_focus_behavior.html">
-<link rel="import" href="router.html">
-<link rel="import" href="shared_vars.html">
-<link rel="import" href="store.html">
-<link rel="import" href="strings.html">
-<link rel="import" href="toast_manager.html">
-<link rel="import" href="toolbar.html">
-<link rel="import" href="util.html">
-
-<dom-module id="bookmarks-app">
-  <template>
     <style>
       :host {
         color: var(--cr-primary-text-color);
@@ -55,9 +33,11 @@
         transition: opacity 100ms ease-out;
       }
 
-      :host-context([dark]) #splitter:hover,
-      :host-context([dark]) #splitter.splitter-active {
-        border-inline-start-color: var(--cr-separator-color);
+      @media (prefers-color-scheme: dark) {
+        #splitter:hover,
+        #splitter.splitter-active {
+          border-inline-start-color: var(--cr-separator-color);
+        }
       }
 
       #sidebar {
@@ -71,7 +51,7 @@
       bookmarks-folder-node {
         flex: 1;
         overflow-y: auto;
-        padding: 8px 3px 0 3px;
+        padding: 8px 3px 0 18px;
         user-select: none;
       }
 
@@ -94,12 +74,11 @@
         <bookmarks-folder-node item-id="0" depth="-1"></bookmarks-folder-node>
         <managed-footnote></managed-footnote>
       </div>
-      <div id="splitter"></div>
+      <cr-splitter id="splitter"></cr-splitter>
       <bookmarks-list></bookmarks-list>
     </div>
     <bookmarks-router></bookmarks-router>
     <bookmarks-command-manager></bookmarks-command-manager>
-    <bookmarks-toast-manager duration="10000"></bookmarks-toast-manager>
-  </template>
-  <script src="app.js"></script>
-</dom-module>
+    <cr-toast-manager duration="10000" on-undo-click="onUndoClick_"
+        undo-label="$i18n{undo}" undo-description="$i18n{undoDescription}">
+    </cr-toast-manager>

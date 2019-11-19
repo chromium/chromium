@@ -5,12 +5,12 @@
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/list_property_update_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_search_field/cr_search_field.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="../global_scroll_target_behavior.html">
 <link rel="import" href="../settings_shared_css.html">
@@ -38,11 +38,15 @@
     </style>
     <div class="settings-box continuation">
       <paper-spinner-lite active="[[isLoading_]]"></paper-spinner-lite>
-      <paper-button class="secondary-button"
-          disabled$="[[isLoading_]]" id="removeShowingSites"
+      <cr-button disabled$="[[isLoading_]]" id="removeShowingSites"
           on-click="onRemoveShowingSitesTap_" hidden$="[[!sites.length]]">
         [[computeRemoveLabel_(filter)]]
-      </paper-button>
+      </cr-button>
+      <cr-button disabled$="[[isLoading_]]" id="removeThirdPartyCookies"
+          on-click="onRemoveThirdPartyCookiesTap_"
+          hidden$="[[!showRemoveThirdPartyCookies_(sites.length, filter)]]">
+          $i18n{siteSettingsCookieRemoveAllThirdParty}
+      </cr-button>
     </div>
     <iron-list id="list" items="[[sites]]" preserve-focus
         scroll-target="[[subpageScrollTarget]]" class="cr-separators">
@@ -51,7 +55,7 @@
             model="[[item]]" first$="[[!index]]" tabindex$="[[tabIndex]]"
             iron-list-tab-index="[[tabIndex]]" last-focused="{{lastFocused_}}"
             list-blurred="{{listBlurred_}}" on-click="onSiteClick_"
-            on-remove-site="onRemoveSite_">
+            on-remove-site="onRemoveSite_" focus-row-index="[[index]]">
         </site-data-entry>
       </template>
     </iron-list>
@@ -64,14 +68,34 @@
       </div>
       <div slot="body">$i18n{siteSettingsCookieRemoveMultipleConfirmation}</div>
       <div slot="button-container">
-        <paper-button class="cancel-button" on-click="onCloseDialog_">
+        <cr-button class="cancel-button" on-click="onCloseDialog_">
           $i18n{cancel}
-        </paper-button>
-        <paper-button class="action-button" on-click="onConfirmDelete_">
+        </cr-button>
+        <cr-button class="action-button" on-click="onConfirmDelete_">
           $i18n{siteSettingsCookiesClearAll}
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
+
+    <!-- Confirm Delete Third Party Cookies dialog -->
+    <cr-dialog id="confirmDeleteThirdPartyDialog" close-text="$i18n{close}"
+        on-close="onConfirmDeleteThirdPartyDialogClosed_">
+      <div slot="title">
+        $i18n{siteSettingsCookieRemoveThirdPartyDialogTitle}
+      </div>
+      <div slot="body">
+        $i18n{siteSettingsCookieRemoveThirdPartyConfirmation}
+      </div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCloseThirdPartyDialog_">
+          $i18n{cancel}
+        </cr-button>
+        <cr-button class="action-button" on-click="onConfirmThirdPartyDelete_">
+          $i18n{siteSettingsCookiesClearThirdParty}
+        </cr-button>
+      </div>
+    </cr-dialog>
+
   </template>
   <script src="site_data.js"></script>
 </dom-module>

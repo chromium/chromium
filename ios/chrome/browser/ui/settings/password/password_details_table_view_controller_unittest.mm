@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/test/app/password_test_util.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "third_party/ocmock/OCMock/OCMock.h"
@@ -72,7 +72,7 @@ class PasswordDetailsTableViewControllerTest
         reauthenticationModule:reauthentication_module_];
   }
 
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   MockReauthenticationModule* reauthentication_module_;
   NSString* origin_;
   autofill::PasswordForm form_;

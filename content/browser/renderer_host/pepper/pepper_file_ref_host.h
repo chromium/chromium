@@ -18,7 +18,7 @@
 #include "ppapi/c/pp_time.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/resource_host.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace content {
 class PepperFileRefHost;

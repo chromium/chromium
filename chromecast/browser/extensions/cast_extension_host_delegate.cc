@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "chromecast/browser/extensions/cast_extension_web_contents_observer.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "extensions/browser/media_capture_util.h"
 #include "extensions/browser/serial_extension_host_queue.h"
 
@@ -52,7 +53,7 @@ void CastExtensionHostDelegate::ProcessMediaAccessRequest(
 bool CastExtensionHostDelegate::CheckMediaAccessPermission(
     content::RenderFrameHost* render_frame_host,
     const GURL& security_origin,
-    blink::MediaStreamType type,
+    blink::mojom::MediaStreamType type,
     const Extension* extension) {
   return media_capture_util::CheckMediaAccessPermission(type, extension);
 }
@@ -62,12 +63,13 @@ ExtensionHostQueue* CastExtensionHostDelegate::GetExtensionHostQueue() const {
   return queue.get();
 }
 
-gfx::Size CastExtensionHostDelegate::EnterPictureInPicture(
+content::PictureInPictureResult
+CastExtensionHostDelegate::EnterPictureInPicture(
     content::WebContents* web_contents,
     const viz::SurfaceId& surface_id,
     const gfx::Size& natural_size) {
   NOTREACHED();
-  return gfx::Size();
+  return content::PictureInPictureResult::kNotSupported;
 }
 
 void CastExtensionHostDelegate::ExitPictureInPicture() {

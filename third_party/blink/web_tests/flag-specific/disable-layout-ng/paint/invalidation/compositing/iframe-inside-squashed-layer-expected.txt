@@ -1,0 +1,67 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "drawsContent": false,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling Layer",
+      "bounds": [785, 600],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [785, 1016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Squashing Containment Layer",
+      "drawsContent": false
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='foo'",
+      "bounds": [200, 1000],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "transform": 1
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV)",
+      "position": [8, 0],
+      "bounds": [300, 654],
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'test1'",
+          "rect": [8, 508, 29, 19],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'test1'",
+          "rect": [8, 508, 29, 19],
+          "reason": "disappeared"
+        },
+        {
+          "object": "LayoutView #document",
+          "rect": [285, 500, 15, 150],
+          "reason": "chunk appeared"
+        }
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ],
+      "flattenInheritedTransform": false
+    }
+  ]
+}
+

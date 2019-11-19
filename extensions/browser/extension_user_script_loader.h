@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSION_USER_SCRIPT_LOADER_H_
 
 #include "base/macros.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/common/extension.h"
@@ -17,7 +18,6 @@ class BrowserContext;
 namespace extensions {
 
 class ContentVerifier;
-class ExtensionRegistry;
 
 // UserScriptLoader for extensions.
 class ExtensionUserScriptLoader : public UserScriptLoader,
@@ -65,9 +65,9 @@ class ExtensionUserScriptLoader : public UserScriptLoader,
   scoped_refptr<ContentVerifier> content_verifier_;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
-  base::WeakPtrFactory<ExtensionUserScriptLoader> weak_factory_;
+  base::WeakPtrFactory<ExtensionUserScriptLoader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionUserScriptLoader);
 };

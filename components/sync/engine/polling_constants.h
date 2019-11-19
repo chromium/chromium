@@ -10,8 +10,7 @@
 namespace syncer {
 
 // Constants used by SyncScheduler when polling servers for updates.
-extern const int64_t kDefaultShortPollIntervalSeconds;
-extern const int64_t kDefaultLongPollIntervalSeconds;
+extern const int64_t kDefaultPollIntervalSeconds;
 extern const int64_t kMaxBackoffSeconds;
 extern const int kBackoffRandomizationFactor;
 extern const int kInitialBackoffRetrySeconds;

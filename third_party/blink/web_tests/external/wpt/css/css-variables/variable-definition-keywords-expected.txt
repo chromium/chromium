@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS computed style inherit
+PASS computed style initial
+PASS computed style unset
+FAIL computed style revert assert_equals: expected "revert" but got "20px"
+PASS specified style inherit
+PASS specified style initial
+PASS specified style unset
+FAIL specified style revert assert_equals: expected " revert" but got "revert"
+Harness: the test ran to completion.
+

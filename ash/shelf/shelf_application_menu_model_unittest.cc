@@ -48,27 +48,24 @@ class ShelfApplicationMenuModelTestAPI {
 // Verifies the menu contents given an empty item list.
 TEST(ShelfApplicationMenuModelTest, VerifyContentsWithNoMenuItems) {
   base::string16 title = base::ASCIIToUTF16("title");
-  ShelfApplicationMenuModel menu(title, std::vector<mojom::MenuItemPtr>(),
-                                 nullptr);
-  // Expect the title.
-  ASSERT_EQ(static_cast<int>(1), menu.GetItemCount());
-  EXPECT_EQ(ui::MenuModel::TYPE_COMMAND, menu.GetTypeAt(0));
+  ShelfApplicationMenuModel menu(title, {}, nullptr);
+  // Expect the title and a separator.
+  ASSERT_EQ(2, menu.GetItemCount());
+  EXPECT_EQ(ui::MenuModel::TYPE_TITLE, menu.GetTypeAt(0));
   EXPECT_EQ(title, menu.GetLabelAt(0));
   EXPECT_FALSE(menu.IsEnabledAt(0));
+  EXPECT_EQ(ui::MenuModel::TYPE_SEPARATOR, menu.GetTypeAt(1));
 }
 
 // Verifies the menu contents given a non-empty item list.
 TEST(ShelfApplicationMenuModelTest, VerifyContentsWithMenuItems) {
-  std::vector<mojom::MenuItemPtr> items;
+  ShelfApplicationMenuModel::Items items;
   base::string16 title1 = base::ASCIIToUTF16("title1");
   base::string16 title2 = base::ASCIIToUTF16("title2");
   base::string16 title3 = base::ASCIIToUTF16("title3");
-  items.push_back(ash::mojom::MenuItem::New());
-  items[0]->label = title1;
-  items.push_back(ash::mojom::MenuItem::New());
-  items[1]->label = title2;
-  items.push_back(ash::mojom::MenuItem::New());
-  items[2]->label = title3;
+  items.push_back({title1, gfx::ImageSkia()});
+  items.push_back({title2, gfx::ImageSkia()});
+  items.push_back({title3, gfx::ImageSkia()});
 
   base::string16 title = base::ASCIIToUTF16("title");
   ShelfApplicationMenuModel menu(title, std::move(items), nullptr);
@@ -78,7 +75,7 @@ TEST(ShelfApplicationMenuModelTest, VerifyContentsWithMenuItems) {
   ASSERT_EQ(static_cast<int>(5), menu.GetItemCount());
 
   // The label title should not be enabled.
-  EXPECT_EQ(ui::MenuModel::TYPE_COMMAND, menu.GetTypeAt(0));
+  EXPECT_EQ(ui::MenuModel::TYPE_TITLE, menu.GetTypeAt(0));
   EXPECT_EQ(title, menu.GetLabelAt(0));
   EXPECT_FALSE(menu.IsEnabledAt(0));
 
@@ -99,10 +96,7 @@ TEST(ShelfApplicationMenuModelTest, VerifyHistogramBuckets) {
   const int kNumMenuItemsEnabled = 7;
 
   base::HistogramTester histogram_tester;
-
-  std::vector<mojom::MenuItemPtr> items;
-  ShelfApplicationMenuModel menu(base::ASCIIToUTF16("title"), std::move(items),
-                                 nullptr);
+  ShelfApplicationMenuModel menu(base::ASCIIToUTF16("title"), {}, nullptr);
   ShelfApplicationMenuModelTestAPI menu_test_api(&menu);
   menu_test_api.RecordMenuItemSelectedMetrics(kCommandId, kNumMenuItemsEnabled);
 
@@ -119,8 +113,7 @@ TEST(ShelfApplicationMenuModelTest, VerifyHistogramBuckets) {
 TEST(ShelfApplicationMenuModelTest, VerifyHistogramOnExecute) {
   base::HistogramTester histogram_tester;
 
-  std::vector<mojom::MenuItemPtr> items;
-  items.push_back(ash::mojom::MenuItem::New());
+  ShelfApplicationMenuModel::Items items(1);
   base::string16 title = base::ASCIIToUTF16("title");
   ShelfApplicationMenuModel menu(title, std::move(items), nullptr);
   menu.ExecuteCommand(0, 0);

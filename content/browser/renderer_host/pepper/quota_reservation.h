@@ -12,7 +12,7 @@
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_stdint.h"  // For int64_t on Windows.
 #include "ppapi/shared_impl/file_growth.h"
-#include "storage/browser/fileapi/file_system_context.h"
+#include "storage/browser/file_system/file_system_context.h"
 #include "url/gurl.h"
 
 namespace storage {

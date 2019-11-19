@@ -13,6 +13,6 @@ traits_headers = [
 ]
 
 type_mappings = [
-  "mojo.test.TypemappedRect=mojo::test::RectChromium[hashable]",
-  "mojo.test.SharedTypemappedRect=mojo::test::SharedRect",
+  "mojo.test.TypemappedRect=::mojo::test::RectChromium[hashable]",
+  "mojo.test.SharedTypemappedRect=::mojo::test::SharedRect",
 ]

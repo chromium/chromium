@@ -71,46 +71,49 @@ ExtensionFunction::ResponseAction SystemPrivateGetUpdateStatusFunction::Run() {
 #if defined(OS_CHROMEOS)
   // With UpdateEngineClient, we can provide more detailed information about
   // system updates on ChromeOS.
-  const chromeos::UpdateEngineClient::Status status =
-      chromeos::DBusThreadManager::Get()->GetUpdateEngineClient()->
-      GetLastStatus();
+  const update_engine::StatusResult status = chromeos::DBusThreadManager::Get()
+                                                 ->GetUpdateEngineClient()
+                                                 ->GetLastStatus();
   // |download_progress| is set to 1 after download finishes
   // (i.e. verify, finalize and need-reboot phase) to indicate the progress
   // even though |status.download_progress| is 0 in these phases.
-  switch (status.status) {
-    case chromeos::UpdateEngineClient::UPDATE_STATUS_ERROR:
+  switch (status.current_operation()) {
+    case update_engine::Operation::ERROR:
+    case update_engine::Operation::DISABLED:
       state = kNotAvailableState;
       break;
-    case chromeos::UpdateEngineClient::UPDATE_STATUS_IDLE:
+    case update_engine::Operation::IDLE:
       state = kNotAvailableState;
       break;
-    case chromeos::UpdateEngineClient::UPDATE_STATUS_CHECKING_FOR_UPDATE:
+    case update_engine::Operation::CHECKING_FOR_UPDATE:
       state = kNotAvailableState;
       break;
-    case chromeos::UpdateEngineClient::UPDATE_STATUS_UPDATE_AVAILABLE:
+    case update_engine::Operation::UPDATE_AVAILABLE:
       state = kUpdatingState;
       break;
-    case chromeos::UpdateEngineClient::UPDATE_STATUS_DOWNLOADING:
+    case update_engine::Operation::DOWNLOADING:
       state = kUpdatingState;
-      download_progress = status.download_progress;
+      download_progress = status.progress();
       break;
-    case chromeos::UpdateEngineClient::UPDATE_STATUS_VERIFYING:
+    case update_engine::Operation::VERIFYING:
       state = kUpdatingState;
       download_progress = 1;
       break;
-    case chromeos::UpdateEngineClient::UPDATE_STATUS_FINALIZING:
+    case update_engine::Operation::FINALIZING:
       state = kUpdatingState;
       download_progress = 1;
       break;
-    case chromeos::UpdateEngineClient::UPDATE_STATUS_UPDATED_NEED_REBOOT:
+    case update_engine::Operation::UPDATED_NEED_REBOOT:
       state = kNeedRestartState;
       download_progress = 1;
       break;
-    case chromeos::UpdateEngineClient::UPDATE_STATUS_REPORTING_ERROR_EVENT:
-    case chromeos::UpdateEngineClient::UPDATE_STATUS_ATTEMPTING_ROLLBACK:
-    case chromeos::UpdateEngineClient::UPDATE_STATUS_NEED_PERMISSION_TO_UPDATE:
+    case update_engine::Operation::REPORTING_ERROR_EVENT:
+    case update_engine::Operation::ATTEMPTING_ROLLBACK:
+    case update_engine::Operation::NEED_PERMISSION_TO_UPDATE:
       state = kNotAvailableState;
       break;
+    default:
+      NOTREACHED();
   }
 #else
   if (UpgradeDetector::GetInstance()->notify_upgrade()) {

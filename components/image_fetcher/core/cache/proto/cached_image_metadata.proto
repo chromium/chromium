@@ -23,4 +23,7 @@ message CachedImageMetadataProto {
   // certain amount of space has been freed. Is not used to decide the order in
   // which images are evicted.
   optional int64 data_size = 4;
+
+  // True if the image data needs transcoding before it can be trusted.
+  optional bool needs_transcoding = 5;
 }

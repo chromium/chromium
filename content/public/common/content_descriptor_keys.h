@@ -10,7 +10,6 @@ namespace content {
 // This is a list of global descriptor keys to be used with the
 // base::FileDescriptorStore object (see base/file_descriptor_store.h)
 
-extern const char kV8NativesDataDescriptor[];
 extern const char kV8SnapshotDataDescriptor[];
 extern const char kV8Snapshot32DataDescriptor[];
 extern const char kV8Snapshot64DataDescriptor[];

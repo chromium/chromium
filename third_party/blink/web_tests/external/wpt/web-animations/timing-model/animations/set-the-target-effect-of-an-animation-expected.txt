@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-FAIL If new effect is null and old effect is not null, we reset the pending tasks and ready promise is rejected assert_true: expected true got undefined
-FAIL If animation has a pending pause task, reschedule that task to run as soon as animation is ready. assert_true: expected true got undefined
-FAIL If animation has a pending play task, reschedule that task to run as soon as animation is ready to play new effect. assert_true: expected true got undefined
-FAIL When setting the effect of an animation to the effect of an existing animation, the existing animation's target effect should be set to null. assert_equals: expected "finished" but got "idle"
-PASS After setting the target effect of animation to the target effect of an existing animation, the target effect's timing is updated to reflect the current time of the new animation.
-Harness: the test ran to completion.
-

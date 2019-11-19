@@ -1,0 +1,4 @@
+document
+++group
+++++description Name='Web Browser'
+++++description Name=' A computer program with a graphical user interface for displaying HTML files, used to navigate the World Wide Web.'

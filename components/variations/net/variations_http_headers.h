@@ -11,16 +11,15 @@
 #include <vector>
 
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace net {
 struct NetworkTrafficAnnotationTag;
 struct RedirectInfo;
-class URLRequest;
 }
 
 namespace network {
 struct ResourceRequest;
-struct ResourceResponseHead;
 class SimpleURLLoader;
 }  // namespace network
 
@@ -45,16 +44,8 @@ bool AppendVariationsHeader(const GURL& url,
                             SignedIn signed_in,
                             network::ResourceRequest* request);
 
-// TODO(toyoshim): Remove this deprecated API that takes net::URLRequest* once
-// all callers are removed after NetworkService being fully enabled, or migrated
-// to use SimpleURLLoader. See, crbug.com/773295.
-bool AppendVariationsHeader(const GURL& url,
-                            InIncognito incognito,
-                            SignedIn signed_in,
-                            net::URLRequest* request);
-
-// Similar to functions above, but uses specified |variations_header| as the
-// custom header value. You should not generally need to use this.
+// Similar to AppendVariationsHeader, but uses specified |variations_header| as
+// the custom header value. You should not generally need to use this.
 bool AppendVariationsHeaderWithCustomValue(const GURL& url,
                                            InIncognito incognito,
                                            const std::string& variations_header,
@@ -66,25 +57,12 @@ bool AppendVariationsHeaderUnknownSignedIn(const GURL& url,
                                            InIncognito incognito,
                                            network::ResourceRequest* request);
 
-// TODO(toyoshim): Remove this deprecated API that takes net::URLRequest* once
-// all callers are removed after NetworkService being fully enabled, or migrated
-// to use SimpleURLLoader. See, crbug.com/773295.
-bool AppendVariationsHeaderUnknownSignedIn(const GURL& url,
-                                           InIncognito incognito,
-                                           net::URLRequest* request);
-
 // Removes the variations header for requests when a redirect to a non-Google
 // URL occurs.
 void RemoveVariationsHeaderIfNeeded(
     const net::RedirectInfo& redirect_info,
-    const network::ResourceResponseHead& response_head,
+    const network::mojom::URLResponseHead& response_head,
     std::vector<std::string>* to_be_removed_headers);
-
-// Strips the variations header if |new_location| does not point to a location
-// that should receive it. This is being called by the ChromeNetworkDelegate.
-// Components calling AppendVariationsHeader() don't need to take care of this.
-void StripVariationsHeaderIfNeeded(const GURL& new_location,
-                                   net::URLRequest* request);
 
 // Creates a SimpleURLLoader that will include the variations header for
 // requests to Google and ensures they're removed if a redirect to a non-Google

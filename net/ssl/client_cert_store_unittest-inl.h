@@ -17,7 +17,7 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -58,7 +58,7 @@ const unsigned char kAuthorityRootDN[] = {
 //                        const SSLCertRequestInfo& cert_request_info,
 //                        ClientCertIdentityList* selected_identities);
 template <typename T>
-class ClientCertStoreTest : public TestWithScopedTaskEnvironment {
+class ClientCertStoreTest : public TestWithTaskEnvironment {
  public:
   T delegate_;
 };
@@ -67,7 +67,7 @@ TYPED_TEST_SUITE_P(ClientCertStoreTest);
 
 TYPED_TEST_P(ClientCertStoreTest, EmptyQuery) {
   CertificateList certs;
-  scoped_refptr<SSLCertRequestInfo> request(new SSLCertRequestInfo());
+  auto request = base::MakeRefCounted<SSLCertRequestInfo>();
 
   ClientCertIdentityList selected_identities;
   bool rv = this->delegate_.SelectClientCerts(certs, *request.get(),
@@ -85,7 +85,7 @@ TYPED_TEST_P(ClientCertStoreTest, AllIssuersAllowed) {
 
   std::vector<scoped_refptr<X509Certificate> > certs;
   certs.push_back(cert);
-  scoped_refptr<SSLCertRequestInfo> request(new SSLCertRequestInfo());
+  auto request = base::MakeRefCounted<SSLCertRequestInfo>();
 
   ClientCertIdentityList selected_identities;
   bool rv = this->delegate_.SelectClientCerts(certs, *request.get(),
@@ -120,7 +120,7 @@ TYPED_TEST_P(ClientCertStoreTest, CertAuthorityFiltering) {
   std::vector<scoped_refptr<X509Certificate> > certs;
   certs.push_back(cert_1);
   certs.push_back(cert_2);
-  scoped_refptr<SSLCertRequestInfo> request(new SSLCertRequestInfo());
+  auto request = base::MakeRefCounted<SSLCertRequestInfo>();
   request->cert_authorities = authority_1;
 
   ClientCertIdentityList selected_identities;
@@ -158,7 +158,7 @@ TYPED_TEST_P(ClientCertStoreTest, PrintableStringContainingUTF8) {
                                                      options);
   ASSERT_TRUE(cert);
 
-  scoped_refptr<SSLCertRequestInfo> request(new SSLCertRequestInfo());
+  auto request = base::MakeRefCounted<SSLCertRequestInfo>();
 
   ClientCertIdentityList selected_identities;
   bool rv = this->delegate_.SelectClientCerts({cert}, *request.get(),

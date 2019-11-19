@@ -109,7 +109,7 @@ class DemoResources {
   // List of pending callbacks passed to EnsureLoaded().
   std::list<base::OnceClosure> load_callbacks_;
 
-  base::WeakPtrFactory<DemoResources> weak_ptr_factory_;
+  base::WeakPtrFactory<DemoResources> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DemoResources);
 };

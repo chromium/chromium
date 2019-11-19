@@ -9,6 +9,8 @@
 If the file was pretty-printed, the updated version is pretty-printed too.
 """
 
+from __future__ import print_function
+
 import os.path
 import re
 import sys
@@ -40,7 +42,7 @@ def ReadGpuDriverBugEntries(filename):
 
 def main():
   if len(sys.argv) > 1:
-    print >>sys.stderr, 'No arguments expected!'
+    print('No arguments expected!', file=sys.stderr)
     sys.stderr.write(__doc__)
     sys.exit(1)
 

@@ -34,6 +34,7 @@ class GESTURE_DETECTION_EXPORT GestureListener {
                        float velocity_x,
                        float velocity_y) = 0;
   virtual bool OnTwoFingerTap(const MotionEvent& e1, const MotionEvent& e2) = 0;
+  virtual void OnTapCancel(const MotionEvent& e) = 0;
 };
 
 // Client through which |GestureDetector| signals double-tap detection.
@@ -72,6 +73,7 @@ class GESTURE_DETECTION_EXPORT SimpleGestureListener
                float velocity_x,
                float velocity_y) override;
   bool OnTwoFingerTap(const MotionEvent& e1, const MotionEvent& e2) override;
+  void OnTapCancel(const MotionEvent& e) override {}
 
   // DoubleTapListener implementation.
   bool OnSingleTapConfirmed(const MotionEvent& e) override;

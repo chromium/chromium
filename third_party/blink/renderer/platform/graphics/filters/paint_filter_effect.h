@@ -12,8 +12,6 @@ namespace blink {
 
 class PLATFORM_EXPORT PaintFilterEffect : public FilterEffect {
  public:
-  static PaintFilterEffect* Create(Filter*, const PaintFlags&);
-
   PaintFilterEffect(Filter*, const PaintFlags&);
   ~PaintFilterEffect() override;
 

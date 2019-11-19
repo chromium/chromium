@@ -11,6 +11,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_socket_factory.h"
+#include "content/public/common/content_client.h"
 
 namespace content {
 

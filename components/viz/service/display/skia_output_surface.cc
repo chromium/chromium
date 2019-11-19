@@ -6,8 +6,13 @@
 
 namespace viz {
 
-SkiaOutputSurface::SkiaOutputSurface() = default;
+SkiaOutputSurface::SkiaOutputSurface(OutputSurface::Type type)
+    : OutputSurface(type) {}
 
 SkiaOutputSurface::~SkiaOutputSurface() = default;
+
+SkiaOutputSurface* SkiaOutputSurface::AsSkiaOutputSurface() {
+  return this;
+}
 
 }  // namespace viz

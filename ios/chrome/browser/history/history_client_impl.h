@@ -44,7 +44,7 @@ class HistoryClientImpl : public history::HistoryClient,
   void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
   void BookmarkNodeRemoved(bookmarks::BookmarkModel* model,
                            const bookmarks::BookmarkNode* parent,
-                           int old_index,
+                           size_t old_index,
                            const bookmarks::BookmarkNode* node,
                            const std::set<GURL>& no_longer_bookmarked) override;
   void BookmarkAllUserNodesRemoved(bookmarks::BookmarkModel* model,

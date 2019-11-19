@@ -21,7 +21,7 @@
         if (window.accessibilityController) {
             var body = document.getElementById("body");
             body.focus();
-            result.innerText += accessibilityController.focusedElement.attributesOfChildren();
+            result.innerText += accessibilityController.focusedElement.childAtIndex(0).attributesOfChildren();
         }
     </script>
 </body>

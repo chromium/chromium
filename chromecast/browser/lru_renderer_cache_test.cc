@@ -10,8 +10,8 @@
 #include "base/memory/ptr_util.h"
 #include "chromecast/browser/renderer_prelauncher.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -70,7 +70,7 @@ class LRURendererCacheTest : public testing::Test {
     lru_cache_->SetFactoryForTesting(&factory_);
   }
 
-  content::TestBrowserThreadBundle threads_;
+  content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
   MockFactory factory_;
   std::unique_ptr<LRURendererCache> lru_cache_;
@@ -92,7 +92,7 @@ TEST_F(LRURendererCacheTest, SimpleTakeAndRelease) {
   // Releasing the prelauncher will cache it and prelaunch for later use.
   EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl1);
   lru_cache_->ReleaseRendererPrelauncher(kUrl1);
-  threads_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // Cache: [ 1 ]
   // In-use: []
 
@@ -106,7 +106,7 @@ TEST_F(LRURendererCacheTest, SimpleTakeAndRelease) {
   // Return the prelauncher again, it should be cached the same as before.
   EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl1);
   lru_cache_->ReleaseRendererPrelauncher(kUrl1);
-  threads_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // Cache: [ 1 ]
   // In-use: []
 }
@@ -123,7 +123,7 @@ TEST_F(LRURendererCacheTest, SimpleCacheEviction) {
   ASSERT_FALSE(taken);
   EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl1);
   lru_cache_->ReleaseRendererPrelauncher(kUrl1);
-  threads_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // Cache: [ 1 ]
   // In-use: []
 
@@ -153,7 +153,7 @@ TEST_F(LRURendererCacheTest, CapacityOne) {
   // Releasing the prelauncher will cache it and prelaunch for later use.
   EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl1);
   lru_cache_->ReleaseRendererPrelauncher(kUrl1);
-  threads_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // Cache: [ 1 ]
   // In-use: []
 
@@ -167,7 +167,7 @@ TEST_F(LRURendererCacheTest, CapacityOne) {
   // Return the prelauncher again, it should be cached the same as before.
   EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl1);
   lru_cache_->ReleaseRendererPrelauncher(kUrl1);
-  threads_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // Cache: [ 1 ]
   // In-use: []
 
@@ -183,7 +183,7 @@ TEST_F(LRURendererCacheTest, CapacityOne) {
   // Return prelauncher 2, it should be cached.
   EXPECT_CREATE_AND_PRELAUNCH(p2, kUrl2);
   lru_cache_->ReleaseRendererPrelauncher(kUrl2);
-  threads_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // Cache: [ 2 ]
   // In-use: [ ]
   taken = lru_cache_->TakeRendererPrelauncher(kUrl2);
@@ -195,7 +195,7 @@ TEST_F(LRURendererCacheTest, CapacityOne) {
   // Return prelauncher 2 once more, it will be cached.
   EXPECT_CREATE_AND_PRELAUNCH(p2, kUrl2);
   lru_cache_->ReleaseRendererPrelauncher(kUrl2);
-  threads_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // Cache: [ 2 ]
   // In-use: [ ]
 
@@ -218,7 +218,7 @@ TEST_F(LRURendererCacheTest, CapacityOne) {
   // since there's still exactly 1 renderer in-use.
   EXPECT_CALL(factory_, Create(_, _)).Times(0);
   lru_cache_->ReleaseRendererPrelauncher(kUrl2);
-  threads_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // Cache: [ ]
   // In-use: [ 1 ]
 }
@@ -246,16 +246,16 @@ TEST_F(LRURendererCacheTest, CapacityTwo) {
   // Don't cache renderer 3 since there are still 2 in use.
   EXPECT_CALL(factory_, Create(_, _)).Times(0);
   lru_cache_->ReleaseRendererPrelauncher(kUrl3);
-  threads_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // In-use: [ 1, 2 ]
 
   // Fill the cache with remaining 2 renderers.
   EXPECT_CREATE_AND_PRELAUNCH(p2, kUrl2);
   lru_cache_->ReleaseRendererPrelauncher(kUrl2);
-  threads_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl1);
   lru_cache_->ReleaseRendererPrelauncher(kUrl1);
-  threads_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // Cache: [ 1, 2 ]
   // In-use: [ ]
 
@@ -269,7 +269,7 @@ TEST_F(LRURendererCacheTest, CapacityTwo) {
   // Return renderer 1.
   EXPECT_CREATE_AND_PRELAUNCH(p1, kUrl1);
   lru_cache_->ReleaseRendererPrelauncher(kUrl1);
-  threads_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   // Cache: [ 1, 2 ]
   // In-use: [ ]
 

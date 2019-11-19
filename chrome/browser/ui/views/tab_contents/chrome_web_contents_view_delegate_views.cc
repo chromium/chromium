@@ -12,7 +12,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
-#include "chrome/browser/ui/tab_contents/chrome_web_contents_view_delegate.h"
+#include "chrome/browser/ui/tab_contents/chrome_web_contents_view_handle_drop.h"
 #include "chrome/browser/ui/views/renderer_context_menu/render_view_context_menu_views.h"
 #include "chrome/browser/ui/views/sad_tab_view.h"
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
@@ -37,7 +37,7 @@ content::WebDragDestDelegate*
     ChromeWebContentsViewDelegateViews::GetDragDestDelegate() {
   // We install a chrome specific handler to intercept bookmark drags for the
   // bookmark manager/extension API.
-  bookmark_handler_.reset(new WebDragBookmarkHandlerAura);
+  bookmark_handler_ = std::make_unique<WebDragBookmarkHandlerAura>();
   return bookmark_handler_.get();
 }
 
@@ -101,6 +101,12 @@ void ChromeWebContentsViewDelegateViews::ShowContextMenu(
   ShowMenu(
       BuildMenu(content::WebContents::FromRenderFrameHost(render_frame_host),
                 params));
+}
+
+void ChromeWebContentsViewDelegateViews::OnPerformDrop(
+    const content::DropData& drop_data,
+    DropCompletionCallback callback) {
+  HandleOnPerformDrop(web_contents_, drop_data, std::move(callback));
 }
 
 content::WebContentsViewDelegate* CreateWebContentsViewDelegate(

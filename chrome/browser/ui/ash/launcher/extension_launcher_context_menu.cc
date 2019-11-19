@@ -13,17 +13,20 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/extension_app_utils.h"
 #include "chrome/browser/ui/ash/launcher/browser_shortcut_launcher_item_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/web_applications/system_web_app_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/context_menu_params.h"
 #include "extensions/browser/extension_prefs.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/views/controls/menu/menu_config.h"
 
 namespace {
 
@@ -89,6 +92,8 @@ bool ExtensionLauncherContextMenu::IsCommandIdChecked(int command_id) const {
 
 bool ExtensionLauncherContextMenu::IsCommandIdEnabled(int command_id) const {
   switch (command_id) {
+    case ash::UNINSTALL:
+      return controller()->UninstallAllowed(item().id.app_id);
     case ash::MENU_NEW_WINDOW:
       // "Normal" windows are not allowed when incognito is enforced.
       return IncognitoModePrefs::GetAvailability(
@@ -116,6 +121,10 @@ void ExtensionLauncherContextMenu::ExecuteCommand(int command_id,
   ScopedDisplayIdForNewWindows scoped_display(display_id());
 
   switch (static_cast<ash::CommandId>(command_id)) {
+    case ash::SHOW_APP_INFO:
+      controller()->DoShowAppInfoFlow(controller()->profile(),
+                                      item().id.app_id);
+      break;
     case ash::LAUNCH_TYPE_PINNED_TAB:
       SetLaunchType(extensions::LAUNCH_TYPE_PINNED);
       break;
@@ -123,14 +132,11 @@ void ExtensionLauncherContextMenu::ExecuteCommand(int command_id,
       SetLaunchType(extensions::LAUNCH_TYPE_REGULAR);
       break;
     case ash::LAUNCH_TYPE_WINDOW: {
-      extensions::LaunchType launch_type = extensions::LAUNCH_TYPE_WINDOW;
-      // With bookmark apps enabled, hosted apps can only toggle between
-      // LAUNCH_WINDOW and LAUNCH_REGULAR.
-      if (extensions::util::IsNewBookmarkAppsEnabled()) {
-        launch_type = GetLaunchType() == extensions::LAUNCH_TYPE_WINDOW
-                          ? extensions::LAUNCH_TYPE_REGULAR
-                          : extensions::LAUNCH_TYPE_WINDOW;
-      }
+      // Hosted apps can only toggle between LAUNCH_WINDOW and LAUNCH_REGULAR.
+      extensions::LaunchType launch_type =
+          GetLaunchType() == extensions::LAUNCH_TYPE_WINDOW
+              ? extensions::LAUNCH_TYPE_REGULAR
+              : extensions::LAUNCH_TYPE_WINDOW;
       SetLaunchType(launch_type);
       break;
     }
@@ -155,9 +161,6 @@ void ExtensionLauncherContextMenu::CreateOpenNewSubmenu(
     ui::SimpleMenuModel* menu_model) {
   // Touchable extension context menus use an actionable submenu for
   // MENU_OPEN_NEW.
-  const gfx::VectorIcon& icon =
-      GetCommandIdVectorIcon(ash::MENU_OPEN_NEW, GetLaunchTypeStringId());
-  const views::MenuConfig& menu_config = views::MenuConfig::instance();
   const int kGroupId = 1;
   open_new_submenu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
   open_new_submenu_model_->AddRadioItemWithStringId(
@@ -168,17 +171,25 @@ void ExtensionLauncherContextMenu::CreateOpenNewSubmenu(
   menu_model->AddActionableSubmenuWithStringIdAndIcon(
       ash::MENU_OPEN_NEW, GetLaunchTypeStringId(),
       open_new_submenu_model_.get(),
-      gfx::CreateVectorIcon(icon, menu_config.touchable_icon_size,
-                            menu_config.touchable_icon_color));
+      GetCommandIdVectorIcon(ash::MENU_OPEN_NEW, GetLaunchTypeStringId()));
 }
 
 void ExtensionLauncherContextMenu::BuildMenu(ui::SimpleMenuModel* menu_model) {
-  extension_items_.reset(new extensions::ContextMenuMatcher(
-      controller()->profile(), this, menu_model,
-      base::Bind(MenuItemHasLauncherContext)));
+  Profile* profile = controller()->profile();
+  const std::string app_id = item().id.app_id;
+
+  extension_items_ = std::make_unique<extensions::ContextMenuMatcher>(
+      profile, this, menu_model,
+      base::BindRepeating(MenuItemHasLauncherContext));
+  // V1 apps can be started from the menu - but V2 apps and system web apps
+  // should not.
+  bool is_system_web_app = web_app::WebAppProvider::Get(profile)
+                               ->system_web_app_manager()
+                               .IsSystemWebApp(app_id);
+  const bool is_platform_app = controller()->IsPlatformApp(item().id);
+
   if (item().type == ash::TYPE_PINNED_APP || item().type == ash::TYPE_APP) {
-    // V1 apps can be started from the menu - but V2 apps should not.
-    if (!controller()->IsPlatformApp(item().id))
+    if (!is_platform_app && !is_system_web_app)
       CreateOpenNewSubmenu(menu_model);
     AddPinMenu(menu_model);
 
@@ -189,27 +200,35 @@ void ExtensionLauncherContextMenu::BuildMenu(ui::SimpleMenuModel* menu_model) {
   } else if (item().type == ash::TYPE_BROWSER_SHORTCUT) {
     AddContextMenuOption(menu_model, ash::MENU_NEW_WINDOW,
                          IDS_APP_LIST_NEW_WINDOW);
-    if (!controller()->profile()->IsGuestSession()) {
+    if (!profile->IsGuestSession()) {
       AddContextMenuOption(menu_model, ash::MENU_NEW_INCOGNITO_WINDOW,
                            IDS_APP_LIST_NEW_INCOGNITO_WINDOW);
     }
-    if (!BrowserShortcutLauncherItemController::IsListOfActiveBrowserEmpty()) {
+    if (!BrowserShortcutLauncherItemController::IsListOfActiveBrowserEmpty() ||
+        item().type == ash::TYPE_DIALOG || controller()->IsOpen(item().id)) {
       AddContextMenuOption(menu_model, ash::MENU_CLOSE,
                            IDS_LAUNCHER_CONTEXT_MENU_CLOSE);
     }
-  } else if (item().type == ash::TYPE_DIALOG) {
-    AddContextMenuOption(menu_model, ash::MENU_CLOSE,
-                         IDS_LAUNCHER_CONTEXT_MENU_CLOSE);
-  } else if (controller()->IsOpen(item().id)) {
-    AddContextMenuOption(menu_model, ash::MENU_CLOSE,
-                         IDS_LAUNCHER_CONTEXT_MENU_CLOSE);
   }
+  if (app_id != extension_misc::kChromeAppId) {
+    AddContextMenuOption(menu_model, ash::UNINSTALL,
+                         is_platform_app ? IDS_APP_LIST_UNINSTALL_ITEM
+                                         : IDS_APP_LIST_EXTENSIONS_UNINSTALL);
+  }
+
+  if (controller()->CanDoShowAppInfoFlow() && !is_system_web_app) {
+    AddContextMenuOption(menu_model, ash::SHOW_APP_INFO,
+                         IDS_APP_CONTEXT_MENU_SHOW_INFO);
+  }
+
   if (item().type == ash::TYPE_PINNED_APP || item().type == ash::TYPE_APP) {
-    const extensions::MenuItem::ExtensionKey app_key(item().id.app_id);
+    const extensions::MenuItem::ExtensionKey app_key(app_id);
     if (!app_key.empty()) {
       int index = 0;
       extension_items_->AppendExtensionItems(app_key, base::string16(), &index,
                                              false);  // is_action_menu
+      app_list::AddMenuItemIconsForSystemApps(
+          app_id, menu_model, menu_model->GetItemCount() - index, index);
     }
   }
 }

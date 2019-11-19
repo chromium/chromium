@@ -1,0 +1,72 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("common_mojom") {
+  sources = [
+    "js_java_interaction/interfaces.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//services/network/public/mojom:mojom",
+  ]
+}
+
+source_set("common") {
+  sources = [
+    "android_webview_message_generator.cc",
+    "android_webview_message_generator.h",
+    "aw_content_client.cc",
+    "aw_content_client.h",
+    "aw_descriptors.h",
+    "aw_features.cc",
+    "aw_features.h",
+    "aw_hit_test_data.cc",
+    "aw_hit_test_data.h",
+    "aw_media_drm_bridge_client.cc",
+    "aw_media_drm_bridge_client.h",
+    "aw_paths.cc",
+    "aw_paths.h",
+    "aw_resource.cc",
+    "aw_resource.h",
+    "aw_resource_bundle.cc",
+    "aw_resource_bundle.h",
+    "aw_switches.cc",
+    "aw_switches.h",
+    "crash_reporter/aw_crash_reporter_client.cc",
+    "crash_reporter/aw_crash_reporter_client.h",
+    "crash_reporter/crash_keys.cc",
+    "crash_reporter/crash_keys.h",
+    "devtools_instrumentation.h",
+    "render_view_messages.cc",
+    "render_view_messages.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+  deps = [
+    "//android_webview:common_jni_headers",
+    "//base",
+    "//components/cdm/common",
+    "//components/crash/content/app",
+    "//components/crash/core/common:crash_key",
+    "//components/gwp_asan/common",
+    "//components/services/heap_profiling/public/cpp",
+    "//components/version_info",
+    "//components/version_info:generate_version_info",
+    "//components/version_info/android:channel_getter",
+    "//content/public/common",
+    "//gpu/config",
+    "//ipc",
+    "//mojo/public/cpp/bindings",
+    "//skia",
+    "//ui/base",
+    "//ui/gfx/geometry",
+    "//ui/gfx/ipc/geometry",
+    "//ui/gfx/ipc/skia",
+    "//url",
+  ]
+}

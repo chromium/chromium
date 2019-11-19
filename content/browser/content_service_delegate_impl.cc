@@ -6,6 +6,7 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "content/public/browser/focused_node_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -51,7 +52,7 @@ class NavigableContentsDelegateImpl : public content::NavigableContentsDelegate,
     renderer_prefs->can_accept_load_drops = false;
     renderer_prefs->browser_handles_all_top_level_requests =
         params.suppress_navigations;
-    web_contents_->GetRenderViewHost()->SyncRendererPrefs();
+    web_contents_->SyncRendererPrefs();
   }
 
   ~NavigableContentsDelegateImpl() override {
@@ -104,25 +105,18 @@ class NavigableContentsDelegateImpl : public content::NavigableContentsDelegate,
   }
 
   // WebContentsDelegate:
-  bool ShouldCreateWebContents(
-      content::WebContents* web_contents,
-      content::RenderFrameHost* opener,
+  bool IsWebContentsCreationOverridden(
       content::SiteInstance* source_site_instance,
-      int32_t route_id,
-      int32_t main_frame_route_id,
-      int32_t main_frame_widget_route_id,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,
       const std::string& frame_name,
-      const GURL& target_url,
-      const std::string& partition_id,
-      content::SessionStorageNamespace* session_storage_namespace) override {
+      const GURL& target_url) override {
     // This method is invoked when attempting to open links in a new tab, e.g.:
     // <a href="https://www.google.com/" target="_blank">Link</a>
     client_->DidSuppressNavigation(target_url,
                                    WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                    /*from_user_gesture=*/true);
-    return false;
+    return true;
   }
 
   WebContents* OpenURLFromTab(WebContents* source,
@@ -136,6 +130,11 @@ class NavigableContentsDelegateImpl : public content::NavigableContentsDelegate,
                              const gfx::Size& new_size) override {
     DCHECK_EQ(web_contents, web_contents_.get());
     client_->DidAutoResizeView(new_size);
+  }
+
+  void NavigationStateChanged(WebContents* source,
+                              InvalidateTypes changed_flags) override {
+    MaybeNotifyCanGoBack();
   }
 
   // WebContentsObserver:
@@ -182,6 +181,28 @@ class NavigableContentsDelegateImpl : public content::NavigableContentsDelegate,
 
   void DidStopLoading() override { client_->DidStopLoading(); }
 
+  void NavigationEntriesDeleted() override { MaybeNotifyCanGoBack(); }
+
+  void DidAttachInterstitialPage() override { MaybeNotifyCanGoBack(); }
+
+  void DidDetachInterstitialPage() override { MaybeNotifyCanGoBack(); }
+
+  // Notifies the client whether the web contents can navigate back in its
+  // history stack.
+  void MaybeNotifyCanGoBack() {
+    const bool can_go_back = web_contents_->GetController().CanGoBack();
+    if (can_go_back_ == can_go_back)
+      return;
+
+    can_go_back_ = can_go_back;
+    client_->UpdateCanGoBack(can_go_back);
+  }
+
+  void OnFocusChangedInPage(FocusedNodeDetails* details) override {
+    client_->FocusedNodeChanged(details->is_editable_node,
+                                details->node_bounds_in_screen);
+  }
+
   std::unique_ptr<WebContents> web_contents_;
   mojom::NavigableContentsClient* const client_;
 
@@ -189,6 +210,8 @@ class NavigableContentsDelegateImpl : public content::NavigableContentsDelegate,
   const gfx::Size auto_resize_min_size_;
   const gfx::Size auto_resize_max_size_;
   const base::Optional<SkColor> background_color_;
+
+  bool can_go_back_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(NavigableContentsDelegateImpl);
 };

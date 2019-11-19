@@ -24,10 +24,8 @@ template <> const char* interface_name<PPB_Var_Deprecated>() {
 
 }  // namespace
 
-using namespace deprecated;
-
 VarPrivate::VarPrivate(const InstanceHandle& instance,
-                       ScriptableObject* object) {
+                       deprecated::ScriptableObject* object) {
   if (has_interface<PPB_Var_Deprecated>()) {
     var_ = get_interface<PPB_Var_Deprecated>()->CreateObject(
         instance.pp_instance(), object->GetClass(), object);
@@ -38,14 +36,14 @@ VarPrivate::VarPrivate(const InstanceHandle& instance,
   is_managed_ = true;
 }
 
-ScriptableObject* VarPrivate::AsScriptableObject() const {
+deprecated::ScriptableObject* VarPrivate::AsScriptableObject() const {
   if (!is_object()) {
     PP_NOTREACHED();
   } else if (has_interface<PPB_Var_Deprecated>()) {
     void* object = NULL;
     if (get_interface<PPB_Var_Deprecated>()->IsInstanceOf(
-        var_, ScriptableObject::GetClass(), &object)) {
-      return reinterpret_cast<ScriptableObject*>(object);
+            var_, deprecated::ScriptableObject::GetClass(), &object)) {
+      return reinterpret_cast<deprecated::ScriptableObject*>(object);
     }
   }
   return NULL;

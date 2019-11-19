@@ -49,6 +49,7 @@ component("os_crypt") {
 
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//components/prefs",
     "//crypto",
 
@@ -167,6 +168,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//components/prefs:test_support",
     "//crypto",
     "//testing/gmock",

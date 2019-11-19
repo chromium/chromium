@@ -1,0 +1,18 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("scheduler") {
+  sources = [
+    "dom_scheduler.cc",
+    "dom_scheduler.h",
+    "dom_task.cc",
+    "dom_task.h",
+    "dom_task_queue.cc",
+    "dom_task_queue.h",
+    "window_scheduler.cc",
+    "window_scheduler.h",
+  ]
+}

@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.preferences.autofill;
 
-import android.support.annotation.IntDef;
 import android.util.Pair;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -78,7 +80,7 @@ public class AutofillProfileBridge {
      * @return The CLDR region code for the default locale.
      */
     public static String getDefaultCountryCode() {
-        return nativeGetDefaultCountryCode();
+        return AutofillProfileBridgeJni.get().getDefaultCountryCode();
     }
 
     /** @return The list of supported countries sorted by their localized display names. */
@@ -87,7 +89,7 @@ public class AutofillProfileBridge {
         List<String> countryNames = new ArrayList<>();
         List<DropdownKeyValue> countries = new ArrayList<>();
 
-        nativeGetSupportedCountries(countryCodes, countryNames);
+        AutofillProfileBridgeJni.get().getSupportedCountries(countryCodes, countryNames);
 
         for (int i = 0; i < countryCodes.size(); i++) {
             countries.add(new DropdownKeyValue(countryCodes.get(i), countryNames.get(i)));
@@ -131,7 +133,7 @@ public class AutofillProfileBridge {
     /** @return The list of required fields. COUNTRY is always included. RECIPIENT often omitted. */
     public static List<Integer> getRequiredAddressFields(String countryCode) {
         List<Integer> requiredFields = new ArrayList<>();
-        nativeGetRequiredFields(countryCode, requiredFields);
+        AutofillProfileBridgeJni.get().getRequiredFields(countryCode, requiredFields);
         return requiredFields;
     }
 
@@ -188,8 +190,9 @@ public class AutofillProfileBridge {
         List<Integer> componentLengths = new ArrayList<>();
         List<AddressUiComponent> uiComponents = new ArrayList<>();
 
-        mCurrentBestLanguageCode = nativeGetAddressUiComponents(countryCode, languageCode,
-                componentIds, componentNames, componentRequired, componentLengths);
+        mCurrentBestLanguageCode =
+                AutofillProfileBridgeJni.get().getAddressUiComponents(countryCode, languageCode,
+                        componentIds, componentNames, componentRequired, componentLengths);
 
         for (int i = 0; i < componentIds.size(); i++) {
             uiComponents.add(new AddressUiComponent(componentIds.get(i), componentNames.get(i),
@@ -221,12 +224,13 @@ public class AutofillProfileBridge {
         }
     }
 
-    private static native String nativeGetDefaultCountryCode();
-    private static native void nativeGetSupportedCountries(List<String> countryCodes,
-            List<String> countryNames);
-    private static native void nativeGetRequiredFields(
-            String countryCode, List<Integer> requiredFields);
-    private static native String nativeGetAddressUiComponents(String countryCode,
-            String languageCode, List<Integer> componentIds, List<String> componentNames,
-            List<Integer> componentRequired, List<Integer> componentLengths);
+    @NativeMethods
+    interface Natives {
+        String getDefaultCountryCode();
+        void getSupportedCountries(List<String> countryCodes, List<String> countryNames);
+        void getRequiredFields(String countryCode, List<Integer> requiredFields);
+        String getAddressUiComponents(String countryCode, String languageCode,
+                List<Integer> componentIds, List<String> componentNames,
+                List<Integer> componentRequired, List<Integer> componentLengths);
+    }
 }

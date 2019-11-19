@@ -15,23 +15,23 @@ class PartObject {
     HeapHashSet<PartObject>::const_iterator m_iterator3;
     ^
 ./fields_illegal_tracing.h:45:1: warning: [blink-gc] Class 'HeapObject' contains invalid fields.
-class HeapObject : public GarbageCollectedFinalized<HeapObject> {
+class HeapObject : public GarbageCollected<HeapObject> {
 ^
-./fields_illegal_tracing.h:50:5: note: [blink-gc] RefPtr field 'm_obj2' to a GC managed class declared here:
-    RefPtr<HeapObject> m_obj2;
-    ^
-./fields_illegal_tracing.h:52:5: note: [blink-gc] std::unique_ptr field 'm_obj4' to a GC managed class declared here:
-    std::unique_ptr<HeapObject> m_obj4;
-    ^
-./fields_illegal_tracing.h:53:5: warning: [blink-gc] Iterator field 'm_iterator3' to a GC managed collection declared here:
-    HeapHashMap<int, Member<HeapObject>>::reverse_iterator m_iterator3;
-    ^
-./fields_illegal_tracing.h:54:5: warning: [blink-gc] Iterator field 'm_iterator4' to a GC managed collection declared here:
-    HeapDeque<Member<HeapObject>>::const_reverse_iterator m_iterator4;
-    ^
-./fields_illegal_tracing.h:56:5: warning: [blink-gc] Iterator field 'm_iterator6' to a GC managed collection declared here:
-    HeapLinkedHashSet<Member<HeapObject>>::const_iterator m_iterator6;
-    ^
+./fields_illegal_tracing.h:51:3: note: [blink-gc] RefPtr field 'm_obj2' to a GC managed class declared here:
+  RefPtr<HeapObject> m_obj2;
+  ^
+./fields_illegal_tracing.h:53:3: note: [blink-gc] std::unique_ptr field 'm_obj4' to a GC managed class declared here:
+  std::unique_ptr<HeapObject> m_obj4;
+  ^
+./fields_illegal_tracing.h:54:3: warning: [blink-gc] Iterator field 'm_iterator3' to a GC managed collection declared here:
+  HeapHashMap<int, Member<HeapObject>>::reverse_iterator m_iterator3;
+  ^
+./fields_illegal_tracing.h:55:3: warning: [blink-gc] Iterator field 'm_iterator4' to a GC managed collection declared here:
+  HeapDeque<Member<HeapObject>>::const_reverse_iterator m_iterator4;
+  ^
+./fields_illegal_tracing.h:57:3: warning: [blink-gc] Iterator field 'm_iterator6' to a GC managed collection declared here:
+  HeapLinkedHashSet<Member<HeapObject>>::const_iterator m_iterator6;
+  ^
 fields_illegal_tracing.cpp:9:1: warning: [blink-gc] Class 'PartObject' has untraced or not traceable fields.
 void PartObject::Trace(Visitor* visitor) {
 ^
@@ -44,13 +44,13 @@ void PartObject::Trace(Visitor* visitor) {
 fields_illegal_tracing.cpp:15:1: warning: [blink-gc] Class 'HeapObject' has untraced or not traceable fields.
 void HeapObject::Trace(Visitor* visitor) {
 ^
-./fields_illegal_tracing.h:50:5: note: [blink-gc] Untraceable field 'm_obj2' declared here:
-    RefPtr<HeapObject> m_obj2;
-    ^
-./fields_illegal_tracing.h:52:5: note: [blink-gc] Untraceable field 'm_obj4' declared here:
-    std::unique_ptr<HeapObject> m_obj4;
-    ^
-./fields_illegal_tracing.h:55:5: note: [blink-gc] Untraced field 'm_iterator5' declared here:
-    HeapListHashSet<Member<HeapObject>>::const_iterator m_iterator5;
-    ^
+./fields_illegal_tracing.h:51:3: note: [blink-gc] Untraceable field 'm_obj2' declared here:
+  RefPtr<HeapObject> m_obj2;
+  ^
+./fields_illegal_tracing.h:53:3: note: [blink-gc] Untraceable field 'm_obj4' declared here:
+  std::unique_ptr<HeapObject> m_obj4;
+  ^
+./fields_illegal_tracing.h:56:3: note: [blink-gc] Untraced field 'm_iterator5' declared here:
+  HeapListHashSet<Member<HeapObject>>::const_iterator m_iterator5;
+  ^
 9 warnings generated.

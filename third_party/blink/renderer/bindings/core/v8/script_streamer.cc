@@ -8,6 +8,10 @@
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_restrictions.h"
+#include "mojo/public/cpp/system/wait.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -16,96 +20,19 @@
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/resource/script_resource.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/loader/fetch/response_body_loader.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
 namespace blink {
-
-// For passing data between the main thread (producer) and the streamer thread
-// (consumer). The main thread prepares the data (copies it from Resource) and
-// the streamer thread feeds it to V8.
-class SourceStreamDataQueue {
- public:
-  SourceStreamDataQueue() : finished_(false), have_data_(mutex_) {}
-  ~SourceStreamDataQueue() { DiscardQueuedData(); }
-
-  void Clear() {
-    MutexLocker locker(mutex_);
-    finished_ = false;
-    DiscardQueuedData();
-  }
-
-  void Produce(const uint8_t* data, size_t length) {
-    TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-                           "v8.streamingCompile.sendData", this,
-                           TRACE_EVENT_FLAG_FLOW_OUT, "length", length);
-    MutexLocker locker(mutex_);
-    DCHECK(!finished_);
-    data_.push_back(std::make_pair(data, length));
-    have_data_.Signal();
-  }
-
-  void Finish() {
-    TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-                           "v8.streamingCompile.finishData", this,
-                           TRACE_EVENT_FLAG_FLOW_OUT);
-    MutexLocker locker(mutex_);
-    finished_ = true;
-    have_data_.Signal();
-  }
-
-  void Consume(const uint8_t** data, size_t* length) {
-    MutexLocker locker(mutex_);
-    while (!TryGetData(data, length)) {
-      TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-                   "v8.streamingCompile.waitForData");
-      have_data_.Wait();
-      TRACE_EVENT_WITH_FLOW1(TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-                             "v8.streamingCompile.receivedData", this,
-                             TRACE_EVENT_FLAG_FLOW_IN, "length", *length);
-    }
-  }
-
- private:
-  bool TryGetData(const uint8_t** data, size_t* length)
-      EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
-    mutex_.AssertAcquired();
-    if (!data_.IsEmpty()) {
-      std::pair<const uint8_t*, size_t> next_data = data_.TakeFirst();
-      *data = next_data.first;
-      *length = next_data.second;
-      return true;
-    }
-    if (finished_) {
-      *length = 0;
-      return true;
-    }
-    return false;
-  }
-
-  void DiscardQueuedData() EXCLUSIVE_LOCKS_REQUIRED(mutex_) {
-    while (!data_.IsEmpty()) {
-      std::pair<const uint8_t*, size_t> next_data = data_.TakeFirst();
-      delete[] next_data.first;
-    }
-  }
-
-  Deque<std::pair<const uint8_t*, size_t>> data_ GUARDED_BY(mutex_);
-  bool finished_ GUARDED_BY(mutex_);
-  Mutex mutex_;
-  ThreadCondition have_data_ GUARDED_BY(mutex_);
-
-  DISALLOW_COPY_AND_ASSIGN(SourceStreamDataQueue);
-};
 
 // SourceStream implements the streaming interface towards V8. The main
 // functionality is preparing the data to give to V8 on main thread, and
@@ -113,50 +40,143 @@ class SourceStreamDataQueue {
 // thread).
 class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
  public:
-  SourceStream()
-      : v8::ScriptCompiler::ExternalSourceStream(),
-        cancelled_(false),
-#if DCHECK_IS_ON()
-        finished_(false),
-#endif  // DCHECK_IS_ON()
-        queue_lead_position_(0),
-        queue_tail_position_(0) {
-  }
-
+  SourceStream() = default;
   ~SourceStream() override = default;
 
   // Called by V8 on a background thread. Should block until we can return
-  // some data.
+  // some data. Ownership of the |src| data buffer is passed to the caller,
+  // unless |src| is null.
   size_t GetMoreData(const uint8_t** src) override {
     DCHECK(!IsMainThread());
-    {
-      MutexLocker locker(mutex_);
-      if (cancelled_)
-        return 0;
+    CHECK(ready_to_run_.IsSet());
+
+    if (finished_) {
+      return 0;
     }
-    size_t length = 0;
-    // This will wait until there is data.
-    data_queue_.Consume(src, &length);
-    {
-      MutexLocker locker(mutex_);
-      if (cancelled_)
-        return 0;
+
+    if (cancelled_.IsSet()) {
+      SendLoadingFinishedCallback(
+          &ResponseBodyLoaderClient::DidCancelLoadingBody);
+      return 0;
     }
-    queue_lead_position_ += length;
-    return length;
+
+    if (initial_data_) {
+      CHECK_GT(initial_data_len_, 0u);
+      if (src) {
+        *src = initial_data_.release();
+      } else {
+        initial_data_.reset();
+      }
+      size_t len = initial_data_len_;
+      initial_data_len_ = 0;
+      return len;
+    }
+
+    CHECK(!initial_data_);
+    CHECK_EQ(initial_data_len_, 0u);
+    CHECK(data_pipe_.is_valid());
+
+    // Start a new two-phase read, blocking until data is available.
+    while (true) {
+      const void* buffer;
+      uint32_t num_bytes;
+      MojoResult result = data_pipe_->BeginReadData(&buffer, &num_bytes,
+                                                    MOJO_READ_DATA_FLAG_NONE);
+
+      switch (result) {
+        case MOJO_RESULT_OK: {
+          // num_bytes could only be 0 if the handle was being read elsewhere.
+          CHECK_GT(num_bytes, 0u);
+
+          if (src) {
+            auto copy_for_script_stream =
+                std::make_unique<uint8_t[]>(num_bytes);
+            memcpy(copy_for_script_stream.get(), buffer, num_bytes);
+            *src = copy_for_script_stream.release();
+          }
+
+          // TODO(leszeks): It would be nice to get rid of this second copy, and
+          // either share ownership of the chunks, or only give chunks back to
+          // the client once the streaming completes.
+          auto copy_for_resource = std::make_unique<char[]>(num_bytes);
+          memcpy(copy_for_resource.get(), buffer, num_bytes);
+          PostCrossThreadTask(
+              *loading_task_runner_, FROM_HERE,
+              CrossThreadBindOnce(
+                  NotifyClientDidReceiveData, response_body_loader_client_,
+                  WTF::Passed(std::move(copy_for_resource)), num_bytes));
+
+          result = data_pipe_->EndReadData(num_bytes);
+          CHECK_EQ(result, MOJO_RESULT_OK);
+
+          return num_bytes;
+        }
+
+        case MOJO_RESULT_SHOULD_WAIT: {
+          {
+            TRACE_EVENT_END0(
+                "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+                "v8.parseOnBackgroundParsing");
+            TRACE_EVENT_BEGIN0(
+                "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+                "v8.parseOnBackgroundWaiting");
+            base::ScopedAllowBaseSyncPrimitives
+                scoped_allow_base_sync_primitives;
+            base::ScopedBlockingCall scoped_blocking_call(
+                FROM_HERE, base::BlockingType::WILL_BLOCK);
+
+            result = mojo::Wait(data_pipe_.get(), MOJO_HANDLE_SIGNAL_READABLE);
+            TRACE_EVENT_END0(
+                "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+                "v8.parseOnBackgroundWaiting");
+            TRACE_EVENT_BEGIN0(
+                "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+                "v8.parseOnBackgroundParsing");
+          }
+
+          if (result != MOJO_RESULT_OK) {
+            // If the producer handle was closed, then treat as EOF.
+            CHECK_EQ(result, MOJO_RESULT_FAILED_PRECONDITION);
+            SendLoadingFinishedCallback(
+                &ResponseBodyLoaderClient::DidFinishLoadingBody);
+            return 0;
+          }
+
+          // We were blocked, so check for cancelation again.
+          if (cancelled_.IsSet()) {
+            SendLoadingFinishedCallback(
+                &ResponseBodyLoaderClient::DidCancelLoadingBody);
+            return 0;
+          }
+
+          // Loop to read the data.
+          continue;
+        }
+
+        case MOJO_RESULT_FAILED_PRECONDITION:
+          // If the producer handle was closed, then treat as EOF.
+          SendLoadingFinishedCallback(
+              &ResponseBodyLoaderClient::DidFinishLoadingBody);
+          return 0;
+
+        default:
+          // Some other error occurred.
+          SendLoadingFinishedCallback(
+              &ResponseBodyLoaderClient::DidFailLoadingBody);
+          return 0;
+      }
+    }
   }
 
-  void DidFinishLoading() {
-    DCHECK(IsMainThread());
-#if DCHECK_IS_ON()
-    finished_ = true;
-#endif  // DCHECK_IS_ON()
-    data_queue_.Finish();
-  }
-
-  void DidReceiveData(ScriptResource* resource, ScriptStreamer* streamer) {
-    DCHECK(IsMainThread());
-    PrepareDataOnMainThread(resource, streamer);
+  void DrainRemainingDataWithoutStreaming() {
+    DCHECK(!IsMainThread());
+    if (!finished_) {
+      // Keep reading data until we finish (returning 0). It won't be streaming
+      // compiled any more, but it will continue being forwarded to the client.
+      while (GetMoreData(nullptr) != 0) {
+      }
+    }
+    CHECK(finished_);
   }
 
   void Cancel() {
@@ -164,101 +184,88 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
     // The script is no longer needed by the upper layers. Stop streaming
     // it. The next time GetMoreData is called (or woken up), it will return
     // 0, which will be interpreted as EOS by V8 and the parsing will
-    // fail. ScriptStreamer::streamingComplete will be called, and at that
+    // fail. ScriptStreamer::StreamingComplete will be called, and at that
     // point we will release the references to SourceStream.
-    {
-      MutexLocker locker(mutex_);
-      cancelled_ = true;
-    }
-    data_queue_.Finish();
+    cancelled_.Set();
   }
 
- private:
-  void PrepareDataOnMainThread(ScriptResource* resource,
-                               ScriptStreamer* streamer) {
+  void TakeDataAndPipeOnMainThread(
+      ScriptResource* resource,
+      ScriptStreamer* streamer,
+      mojo::ScopedDataPipeConsumerHandle data_pipe,
+      ResponseBodyLoaderClient* response_body_loader_client,
+      scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner) {
     DCHECK(IsMainThread());
-
-    bool was_canceled;
-    {
-      MutexLocker locker(mutex_);
-      was_canceled = cancelled_;
-    }
-    if (was_canceled) {
-      data_queue_.Finish();
-      return;
-    }
+    CHECK(data_pipe);
+    CHECK(!ready_to_run_.IsSet());
+    CHECK(!cancelled_.IsSet());
 
     // The Resource must still be alive; otherwise we should've cancelled
     // the streaming (if we have cancelled, the background thread is not
     // waiting).
     DCHECK(resource);
 
-    if (V8CodeCache::HasCodeCache(resource->CacheHandler())) {
-      // The resource has a code cache entry, so it's unnecessary to stream
-      // and parse the code. Cancel the streaming and resume the non-streaming
-      // code path which will consume the code cache.
-      streamer->SuppressStreaming(ScriptStreamer::kHasCodeCache);
-      Cancel();
-      return;
+    const SharedBuffer* resource_buffer = resource->ResourceBuffer().get();
+
+    CHECK(!initial_data_);
+    CHECK_EQ(initial_data_len_, 0u);
+
+    // Get the data that is already in the ResourceBuffer.
+    const size_t length = resource_buffer->size();
+
+    if (length > 0) {
+      initial_data_.reset(new uint8_t[length]);
+
+      bool success = resource_buffer->GetBytes(
+          reinterpret_cast<void*>(initial_data_.get()), length);
+      CHECK(success);
+
+      initial_data_len_ = length;
     }
 
-    if (!resource_buffer_) {
-      // We don't have a buffer yet. Try to get it from the resource.
-      resource_buffer_ = resource->ResourceBuffer();
-    }
+    data_pipe_ = std::move(data_pipe);
+    response_body_loader_client_ = response_body_loader_client;
+    loading_task_runner_ = loading_task_runner;
 
-    FetchDataFromResourceBuffer();
+    CHECK(data_pipe_);
+    ready_to_run_.Set();
   }
 
-  void FetchDataFromResourceBuffer() {
-    DCHECK(IsMainThread());
-    MutexLocker locker(mutex_);
-
-#if DCHECK_IS_ON()
-    DCHECK(!finished_);
-#endif  // DCHECK_IS_ON()
-
-    if (cancelled_) {
-      data_queue_.Finish();
-      return;
-    }
-
-    // Get as much data from the ResourceBuffer as we can in one chunk.
-    const size_t length = resource_buffer_->size() - queue_tail_position_;
-
-    uint8_t* const copied_data = new uint8_t[length];
-    size_t pos = 0;
-
-    for (auto it = resource_buffer_->GetIteratorAt(queue_tail_position_);
-         it != resource_buffer_->end(); ++it) {
-      memcpy(copied_data + pos, it->data(), it->size());
-      pos += it->size();
-    }
-    DCHECK_EQ(pos, length);
-    queue_tail_position_ = resource_buffer_->size();
-    data_queue_.Produce(copied_data, length);
+ private:
+  static void NotifyClientDidReceiveData(
+      ResponseBodyLoaderClient* response_body_loader_client,
+      std::unique_ptr<char[]> data,
+      uint32_t data_size) {
+    response_body_loader_client->DidReceiveData(
+        base::make_span(data.get(), data_size));
   }
 
-  // For coordinating between the main thread and background thread tasks.
-  Mutex mutex_;
+  void SendLoadingFinishedCallback(
+      void (ResponseBodyLoaderClient::*callback)()) {
+    DCHECK(!IsMainThread());
+    CHECK(!finished_);
+    PostCrossThreadTask(
+        *loading_task_runner_, FROM_HERE,
+        CrossThreadBindOnce(callback, response_body_loader_client_));
+    finished_ = true;
+  }
 
-  bool cancelled_ GUARDED_BY(mutex_);  // Used by both threads.
+  // TODO(leszeks): Make this a DCHECK-only flag.
+  base::AtomicFlag ready_to_run_;
+  base::AtomicFlag cancelled_;
 
-#if DCHECK_IS_ON()
-  bool finished_;  // Only used by the main thread.
-#endif             // DCHECK_IS_ON()
+  // Only used by background thread
+  bool finished_ = false;
 
-  // The shared buffer containing the resource data + state variables.
-  scoped_refptr<const SharedBuffer>
-      resource_buffer_;  // Only used by the main thread.
+  // The initial data that was already on the Resource, rather than being read
+  // directly from the data pipe.
+  std::unique_ptr<uint8_t[]> initial_data_;
+  size_t initial_data_len_ = 0;
 
-  // The queue contains the data to be passed to the V8 thread.
-  //   queueLeadPosition: data we have handed off to the V8 thread.
-  //   queueTailPosition: end of data we have enqued in the queue.
-  //   bookmarkPosition: position of the bookmark.
-  SourceStreamDataQueue data_queue_;  // Thread safe.
-  size_t queue_lead_position_;        // Only used by v8 thread.
-  size_t queue_tail_position_ GUARDED_BY(mutex_);  // Used by both threads.
+  mojo::ScopedDataPipeConsumerHandle data_pipe_;
+  CrossThreadWeakPersistent<ResponseBodyLoaderClient>
+      response_body_loader_client_;
+  scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(SourceStream);
 };
@@ -303,13 +310,12 @@ void ScriptStreamer::StreamingCompleteOnBackgroundThread() {
   // notifyFinished might already be called, or it might be called in the
   // future (if the parsing finishes earlier because of a parse error).
   PostCrossThreadTask(*loading_task_runner_, FROM_HERE,
-                      CrossThreadBind(&ScriptStreamer::StreamingComplete,
-                                      WrapCrossThreadPersistent(this)));
+                      CrossThreadBindOnce(&ScriptStreamer::StreamingComplete,
+                                          WrapCrossThreadPersistent(this)));
 
-  // The task might delete ScriptStreamer, so it's not safe to do anything
-  // after posting it. Note that there's no way to guarantee that this
-  // function has returned before the task is ran - however, we should not
-  // access the "this" object after posting the task.
+  // The task might be the only remaining reference to the ScriptStreamer, and
+  // there's no way to guarantee that this function has returned before the task
+  // is ran, so we should not access the "this" object after posting the task.
 }
 
 void ScriptStreamer::Cancel() {
@@ -338,110 +344,176 @@ namespace {
 
 void RunScriptStreamingTask(
     std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask> task,
-    ScriptStreamer* streamer) {
-  TRACE_EVENT_WITH_FLOW1(
+    ScriptStreamer* streamer,
+    SourceStream* stream) {
+  // TODO(leszeks): Add flow event data again
+  TRACE_EVENT_BEGIN1(
       "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
-      "v8.parseOnBackground", streamer,
-      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT, "data",
+      "v8.parseOnBackground", "data",
       inspector_parse_script_event::Data(streamer->ScriptResourceIdentifier(),
                                          streamer->ScriptURLString()));
+
+  TRACE_EVENT_BEGIN0(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+      "v8.parseOnBackgroundParsing");
   // Running the task can and will block: SourceStream::GetSomeData will get
   // called and it will block and wait for data from the network.
   task->Run();
+
+  // V8 may have exited early due to a parsing error, so make sure we finish
+  // draining the datapipe to the client.
+  // TODO(leszeks): This could be done asynchronously, using a mojo watcher.
+  stream->DrainRemainingDataWithoutStreaming();
+
+  TRACE_EVENT_END0(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+      "v8.parseOnBackgroundParsing");
+
   streamer->StreamingCompleteOnBackgroundThread();
+
+  TRACE_EVENT_END0(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+      "v8.parseOnBackground");
+
+  // TODO(crbug.com/1021571); Remove this once the last event stops being
+  // dropped.
+  TRACE_EVENT_END0(
+      "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"),
+      "v8.parseOnBackground2");
 }
 
 }  // namespace
 
 bool ScriptStreamer::HasEnoughDataForStreaming(size_t resource_buffer_size) {
-  // Only stream larger scripts.
-  return resource_buffer_size >= small_script_threshold_;
+  if (base::FeatureList::IsEnabled(features::kSmallScriptStreaming)) {
+    return resource_buffer_size >= kMaximumLengthOfBOM;
+  } else {
+    // Only stream larger scripts.
+    return resource_buffer_size >= small_script_threshold_;
+  }
 }
 
-void ScriptStreamer::NotifyAppendData() {
+// Try to start streaming the script from the given datapipe, taking ownership
+// of the datapipe and weak ownership of the client. Returns true if streaming
+// succeeded and false otherwise.
+//
+// Streaming may fail to start because:
+//
+//   * The encoding is invalid (not UTF-8 or one-byte data)
+//   * The script is too small (see HasEnoughDataForStreaming)
+//   * There is a code cache for this script already
+//   * V8 failed to create a script streamer
+//
+// If this method returns true, the datapipe handle will be cleared and the
+// streamer becomes responsible for draining the datapipe and forwarding data
+// to the client. Otherwise, the caller should continue as if this were a no-op.
+bool ScriptStreamer::TryStartStreaming(
+    mojo::ScopedDataPipeConsumerHandle* data_pipe,
+    ResponseBodyLoaderClient* response_body_loader_client) {
   DCHECK(IsMainThread());
   if (streaming_suppressed_)
-    return;
-  if (!have_enough_data_for_streaming_) {
-    // Even if the first data chunk is small, the script can still be big
-    // enough - wait until the next data chunk comes before deciding whether
-    // to start the streaming.
-    DCHECK(script_resource_->ResourceBuffer());
-    if (!HasEnoughDataForStreaming(script_resource_->ResourceBuffer()->size()))
-      return;
-    have_enough_data_for_streaming_ = true;
-
-    {
-      // Check for BOM (byte order marks), because that might change our
-      // understanding of the data encoding.
-      char maybe_bom[kMaximumLengthOfBOM] = {};
-      if (!script_resource_->ResourceBuffer()->GetBytes(maybe_bom,
-                                                        kMaximumLengthOfBOM)) {
-        NOTREACHED();
-        return;
-      }
-
-      std::unique_ptr<TextResourceDecoder> decoder(
-          TextResourceDecoder::Create(TextResourceDecoderOptions(
-              TextResourceDecoderOptions::kPlainTextContent,
-              WTF::TextEncoding(script_resource_->Encoding()))));
-      decoder->CheckForBOM(maybe_bom, kMaximumLengthOfBOM);
-
-      // The encoding may change when we see the BOM. Check for BOM now
-      // and update the encoding from the decoder when necessary. Supress
-      // streaming if the encoding is unsupported.
-      //
-      // Also note that have at least s_smallScriptThreshold worth of
-      // data, which is more than enough for detecting a BOM.
-      if (!ConvertEncoding(decoder->Encoding().GetName(), &encoding_)) {
-        SuppressStreaming(kEncodingNotSupported);
-        return;
-      }
-    }
-
-    DCHECK(!stream_);
-    DCHECK(!source_);
-    stream_ = new SourceStream;
-    // |source_| takes ownership of |stream_|.
-    source_ = std::make_unique<v8::ScriptCompiler::StreamedSource>(stream_,
-                                                                   encoding_);
-
-    std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
-        script_streaming_task(
-            base::WrapUnique(v8::ScriptCompiler::StartStreamingScript(
-                V8PerIsolateData::MainThreadIsolate(), source_.get(),
-                compile_options_)));
-    if (!script_streaming_task) {
-      // V8 cannot stream the script.
-      SuppressStreaming(kV8CannotStream);
-      stream_ = nullptr;
-      source_.reset();
-      return;
-    }
-
-    TRACE_EVENT_WITH_FLOW1(
-        TRACE_DISABLED_BY_DEFAULT("v8.compile"), "v8.streamingCompile.start",
-        this, TRACE_EVENT_FLAG_FLOW_OUT, "data",
-        inspector_parse_script_event::Data(this->ScriptResourceIdentifier(),
-                                           this->ScriptURLString()));
-
-    // Script streaming tasks are high priority, as they can block the parser,
-    // and they can (and probably will) block during their own execution as
-    // they wait for more input.
-    //
-    // TODO(leszeks): Decrease the priority of these tasks where possible.
-    worker_pool::PostTaskWithTraits(
-        FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
-        CrossThreadBind(RunScriptStreamingTask,
-                        WTF::Passed(std::move(script_streaming_task)),
-                        WrapCrossThreadPersistent(this)));
-  }
+    return false;
   if (stream_)
-    stream_->DidReceiveData(script_resource_, this);
+    return false;
+
+  DCHECK(!have_enough_data_for_streaming_);
+
+  // Even if the first data chunk is small, the script can still be big
+  // enough - wait until the next data chunk comes before deciding whether
+  // to start the streaming.
+  DCHECK(script_resource_->ResourceBuffer());
+  if (!HasEnoughDataForStreaming(script_resource_->ResourceBuffer()->size()))
+    return false;
+  have_enough_data_for_streaming_ = true;
+
+  {
+    // Check for BOM (byte order marks), because that might change our
+    // understanding of the data encoding.
+    char maybe_bom[kMaximumLengthOfBOM] = {};
+    if (!script_resource_->ResourceBuffer()->GetBytes(maybe_bom,
+                                                      kMaximumLengthOfBOM)) {
+      NOTREACHED();
+      return false;
+    }
+
+    std::unique_ptr<TextResourceDecoder> decoder(
+        std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
+            TextResourceDecoderOptions::kPlainTextContent,
+            WTF::TextEncoding(script_resource_->Encoding()))));
+    decoder->CheckForBOM(maybe_bom, kMaximumLengthOfBOM);
+
+    // The encoding may change when we see the BOM. Check for BOM now
+    // and update the encoding from the decoder when necessary. Suppress
+    // streaming if the encoding is unsupported.
+    //
+    // Also note that have at least s_smallScriptThreshold worth of
+    // data, which is more than enough for detecting a BOM.
+    if (!ConvertEncoding(decoder->Encoding().GetName(), &encoding_)) {
+      SuppressStreaming(kEncodingNotSupported);
+      return false;
+    }
+  }
+
+  if (V8CodeCache::HasCodeCache(script_resource_->CacheHandler())) {
+    // The resource has a code cache entry, so it's unnecessary to stream
+    // and parse the code.
+    // TODO(leszeks): Can we even reach this code path with data pipes?
+    SuppressStreaming(ScriptStreamer::kHasCodeCache);
+    stream_ = nullptr;
+    source_.reset();
+    return false;
+  }
+
+  DCHECK(!stream_);
+  DCHECK(!source_);
+  auto stream_ptr = std::make_unique<SourceStream>();
+  stream_ = stream_ptr.get();
+  // |source_| takes ownership of |stream_|, and will keep |stream_| alive until
+  // |source_| is destructed.
+  source_ = std::make_unique<v8::ScriptCompiler::StreamedSource>(
+      std::move(stream_ptr), encoding_);
+
+  std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask>
+      script_streaming_task(
+          base::WrapUnique(v8::ScriptCompiler::StartStreamingScript(
+              V8PerIsolateData::MainThreadIsolate(), source_.get(),
+              compile_options_)));
+  if (!script_streaming_task) {
+    // V8 cannot stream the script.
+    SuppressStreaming(kV8CannotStream);
+    stream_ = nullptr;
+    source_.reset();
+    return false;
+  }
+
+  TRACE_EVENT_WITH_FLOW1(
+      TRACE_DISABLED_BY_DEFAULT("v8.compile"), "v8.streamingCompile.start",
+      this, TRACE_EVENT_FLAG_FLOW_OUT, "data",
+      inspector_parse_script_event::Data(this->ScriptResourceIdentifier(),
+                                         this->ScriptURLString()));
+
+  stream_->TakeDataAndPipeOnMainThread(
+      script_resource_, this, std::move(*data_pipe),
+      response_body_loader_client, loading_task_runner_);
+
+  // Script streaming tasks are high priority, as they can block the parser,
+  // and they can (and probably will) block during their own execution as
+  // they wait for more input.
+  // TODO(leszeks): Decrease the priority of these tasks where possible.
+  worker_pool::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::USER_BLOCKING, base::MayBlock()},
+      CrossThreadBindOnce(RunScriptStreamingTask,
+                          WTF::Passed(std::move(script_streaming_task)),
+                          WrapCrossThreadPersistent(this),
+                          WTF::CrossThreadUnretained(stream_)));
+
+  return true;
 }
 
 void ScriptStreamer::NotifyFinished() {
   DCHECK(IsMainThread());
+
   // A special case: empty and small scripts. We didn't receive enough data to
   // start the streaming before this notification. In that case, there won't
   // be a "parsing complete" notification either, and we should not wait for
@@ -450,9 +522,6 @@ void ScriptStreamer::NotifyFinished() {
     SuppressStreaming(kScriptTooSmall);
   }
 
-  if (stream_) {
-    stream_->DidFinishLoading();
-  }
   loading_finished_ = true;
 
   NotifyFinishedToClient();
@@ -472,7 +541,7 @@ ScriptStreamer::ScriptStreamer(
       suppressed_reason_(kInvalid),
       compile_options_(compile_options),
       script_url_string_(script_resource->Url().Copy().GetString()),
-      script_resource_identifier_(script_resource->Identifier()),
+      script_resource_identifier_(script_resource->InspectorId()),
       // Unfortunately there's no dummy encoding value in the enum; let's use
       // one we don't stream.
       encoding_(v8::ScriptCompiler::StreamedSource::TWO_BYTE),

@@ -83,8 +83,7 @@ Me2MeNativeMessagingHost::Me2MeNativeMessagingHost(
       host_context_(std::move(host_context)),
       daemon_controller_(daemon_controller),
       pairing_registry_(pairing_registry),
-      oauth_client_(std::move(oauth_client)),
-      weak_factory_(this) {
+      oauth_client_(std::move(oauth_client)) {
   weak_ptr_ = weak_factory_.GetWeakPtr();
 }
 
@@ -154,6 +153,8 @@ void Me2MeNativeMessagingHost::OnMessage(const std::string& message) {
   } else if (type == "getRefreshTokenFromAuthCode") {
     ProcessGetCredentialsFromAuthCode(
         std::move(message_dict), std::move(response), false);
+  } else if (type == "it2mePermissionCheck") {
+    ProcessIt2mePermissionCheck(std::move(message_dict), std::move(response));
   } else {
     OnError("Unsupported request type: " + type);
   }
@@ -472,6 +473,16 @@ void Me2MeNativeMessagingHost::ProcessGetCredentialsFromAuthCode(
       oauth_client_info, auth_code, need_user_email, base::Bind(
           &Me2MeNativeMessagingHost::SendCredentialsResponse, weak_ptr_,
           base::Passed(&response)));
+}
+
+void Me2MeNativeMessagingHost::ProcessIt2mePermissionCheck(
+    std::unique_ptr<base::DictionaryValue> message,
+    std::unique_ptr<base::DictionaryValue> response) {
+  DCHECK(task_runner()->BelongsToCurrentThread());
+
+  daemon_controller_->CheckPermission(
+      /* it2me */ true, base::Bind(&Me2MeNativeMessagingHost::SendBooleanResult,
+                                   weak_ptr_, base::Passed(&response)));
 }
 
 void Me2MeNativeMessagingHost::SendConfigResponse(

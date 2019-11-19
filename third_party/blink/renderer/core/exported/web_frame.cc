@@ -34,14 +34,22 @@ bool WebFrame::Swap(WebFrame* frame) {
   Frame* old_frame = ToCoreFrame(*this);
   if (!old_frame->IsAttached())
     return false;
+  FrameOwner* owner = old_frame->Owner();
+  FrameSwapScope frame_swap_scope(owner);
 
   // Unload the current Document in this frame: this calls unload handlers,
   // detaches child frames, etc. Since this runs script, make sure this frame
   // wasn't detached before continuing with the swap.
   // FIXME: There is no unit test for this condition, so one needs to be
   // written.
-  if (!old_frame->PrepareForCommit())
+  if (!old_frame->DetachDocument()) {
+    // If the Swap() fails, it should be because the frame has been detached
+    // already. Otherwise the caller will not detach the frame when we return
+    // false, and the browser and renderer will disagree about the destruction
+    // of |old_frame|.
+    CHECK(!old_frame->IsAttached());
     return false;
+  }
 
   // If there is a local parent, it might incorrectly declare itself complete
   // during the detach phase of this swap. Suppress its completion until swap is
@@ -50,7 +58,7 @@ bool WebFrame::Swap(WebFrame* frame) {
   auto* parent_web_local_frame = DynamicTo<WebLocalFrameImpl>(parent_);
   std::unique_ptr<IncrementLoadEventDelayCount> delay_parent_load =
       parent_web_local_frame
-          ? IncrementLoadEventDelayCount::Create(
+          ? std::make_unique<IncrementLoadEventDelayCount>(
                 *parent_web_local_frame->GetFrame()->GetDocument())
           : nullptr;
 
@@ -83,7 +91,6 @@ bool WebFrame::Swap(WebFrame* frame) {
 
   Page* page = old_frame->GetPage();
   AtomicString name = old_frame->Tree().GetName();
-  FrameOwner* owner = old_frame->Owner();
 
   v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
   WindowProxyManager::GlobalProxyVector global_proxies;
@@ -115,8 +122,6 @@ bool WebFrame::Swap(WebFrame* frame) {
     } else {
       Page* other_page = local_frame.GetPage();
       other_page->SetMainFrame(&local_frame);
-      if (PageScheduler* page_scheduler = other_page->GetPageScheduler())
-        page_scheduler->SetIsMainFrameLocal(true);
       // This trace event is needed to detect the main frame of the
       // renderer in telemetry metrics. See crbug.com/692112#c11.
       TRACE_EVENT_INSTANT1("loading", "markAsMainFrame",
@@ -124,7 +129,8 @@ bool WebFrame::Swap(WebFrame* frame) {
                            ToTraceValue(&local_frame));
     }
   } else {
-    ToWebRemoteFrameImpl(frame)->InitializeCoreFrame(*page, owner, name);
+    ToWebRemoteFrameImpl(frame)->InitializeCoreFrame(
+        *page, owner, name, &old_frame->window_agent_factory());
   }
 
   Frame* new_frame = ToCoreFrame(*frame);
@@ -153,24 +159,21 @@ WebSecurityOrigin WebFrame::GetSecurityOrigin() const {
       ToCoreFrame(*this)->GetSecurityContext()->GetSecurityOrigin());
 }
 
-void WebFrame::SetFrameOwnerPolicy(
-    WebSandboxFlags flags,
-    const blink::ParsedFeaturePolicy& container_policy) {
+void WebFrame::SetFrameOwnerPolicy(const FramePolicy& frame_policy) {
   // At the moment, this is only used to replicate sandbox flags and container
   // policy for frames with a remote owner.
-  auto* owner = To<RemoteFrameOwner>(ToCoreFrame(*this)->Owner());
-  owner->SetSandboxFlags(static_cast<SandboxFlags>(flags));
-  owner->SetContainerPolicy(container_policy);
+  To<RemoteFrameOwner>(ToCoreFrame(*this)->Owner())
+      ->SetFramePolicy(frame_policy);
 }
 
 WebInsecureRequestPolicy WebFrame::GetInsecureRequestPolicy() const {
   return ToCoreFrame(*this)->GetSecurityContext()->GetInsecureRequestPolicy();
 }
 
-std::vector<unsigned> WebFrame::GetInsecureRequestToUpgrade() const {
-  SecurityContext::InsecureNavigationsSet* set =
+WebVector<unsigned> WebFrame::GetInsecureRequestToUpgrade() const {
+  const SecurityContext::InsecureNavigationsSet& set =
       ToCoreFrame(*this)->GetSecurityContext()->InsecureNavigationsToUpgrade();
-  return SecurityContext::SerializeInsecureNavigationSet(*set);
+  return SecurityContext::SerializeInsecureNavigationSet(set);
 }
 
 void WebFrame::SetFrameOwnerProperties(
@@ -382,10 +385,10 @@ Frame* WebFrame::ToCoreFrame(const WebFrame& frame) {
 }
 
 STATIC_ASSERT_ENUM(WebFrameOwnerProperties::ScrollingMode::kAuto,
-                   kScrollbarAuto);
+                   ScrollbarMode::kAuto);
 STATIC_ASSERT_ENUM(WebFrameOwnerProperties::ScrollingMode::kAlwaysOff,
-                   kScrollbarAlwaysOff);
+                   ScrollbarMode::kAlwaysOff);
 STATIC_ASSERT_ENUM(WebFrameOwnerProperties::ScrollingMode::kAlwaysOn,
-                   kScrollbarAlwaysOn);
+                   ScrollbarMode::kAlwaysOn);
 
 }  // namespace blink

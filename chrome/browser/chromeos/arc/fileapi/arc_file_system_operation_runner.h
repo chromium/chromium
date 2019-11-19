@@ -16,12 +16,12 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_file_system_bridge.h"
-#include "components/arc/common/file_system.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "components/arc/mojom/file_system.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "storage/browser/fileapi/watcher_manager.h"
+#include "storage/browser/file_system/watcher_manager.h"
 
 class BrowserContextKeyedServiceFactory;
 
@@ -71,12 +71,22 @@ class ArcFileSystemOperationRunner
   using GetMimeTypeCallback = mojom::FileSystemInstance::GetMimeTypeCallback;
   using OpenFileToReadCallback =
       mojom::FileSystemInstance::OpenFileToReadCallback;
+  using OpenFileToWriteCallback =
+      mojom::FileSystemInstance::OpenFileToWriteCallback;
   using GetDocumentCallback = mojom::FileSystemInstance::GetDocumentCallback;
   using GetChildDocumentsCallback =
       mojom::FileSystemInstance::GetChildDocumentsCallback;
   using GetRecentDocumentsCallback =
       mojom::FileSystemInstance::GetRecentDocumentsCallback;
   using GetRootsCallback = mojom::FileSystemInstance::GetRootsCallback;
+  using DeleteDocumentCallback =
+      mojom::FileSystemInstance::DeleteDocumentCallback;
+  using RenameDocumentCallback =
+      mojom::FileSystemInstance::RenameDocumentCallback;
+  using CreateDocumentCallback =
+      mojom::FileSystemInstance::CreateDocumentCallback;
+  using CopyDocumentCallback = mojom::FileSystemInstance::CopyDocumentCallback;
+  using MoveDocumentCallback = mojom::FileSystemInstance::MoveDocumentCallback;
   using AddWatcherCallback = base::OnceCallback<void(int64_t watcher_id)>;
   using RemoveWatcherCallback = base::OnceCallback<void(bool success)>;
   using ChangeType = storage::WatcherManager::ChangeType;
@@ -122,6 +132,7 @@ class ArcFileSystemOperationRunner
   void GetFileSize(const GURL& url, GetFileSizeCallback callback);
   void GetMimeType(const GURL& url, GetMimeTypeCallback callback);
   void OpenFileToRead(const GURL& url, OpenFileToReadCallback callback);
+  void OpenFileToWrite(const GURL& url, OpenFileToWriteCallback callback);
   void GetDocument(const std::string& authority,
                    const std::string& document_id,
                    GetDocumentCallback callback);
@@ -132,6 +143,27 @@ class ArcFileSystemOperationRunner
                           const std::string& root_id,
                           GetRecentDocumentsCallback callback);
   void GetRoots(GetRootsCallback callback);
+  void DeleteDocument(const std::string& authority,
+                      const std::string& document_id,
+                      DeleteDocumentCallback callback);
+  void RenameDocument(const std::string& authority,
+                      const std::string& document_id,
+                      const std::string& display_name,
+                      RenameDocumentCallback callback);
+  void CreateDocument(const std::string& authority,
+                      const std::string& parent_document_id,
+                      const std::string& mime_type,
+                      const std::string& display_name,
+                      CreateDocumentCallback callback);
+  void CopyDocument(const std::string& authority,
+                    const std::string& source_document_id,
+                    const std::string& target_parent_document_id,
+                    CopyDocumentCallback callback);
+  void MoveDocument(const std::string& authority,
+                    const std::string& source_document_id,
+                    const std::string& source_parent_document_id,
+                    const std::string& target_parent_document_id,
+                    MoveDocumentCallback callback);
   void AddWatcher(const std::string& authority,
                   const std::string& document_id,
                   const WatcherCallback& watcher_callback,
@@ -195,7 +227,7 @@ class ArcFileSystemOperationRunner
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 
-  base::WeakPtrFactory<ArcFileSystemOperationRunner> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcFileSystemOperationRunner> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcFileSystemOperationRunner);
 };

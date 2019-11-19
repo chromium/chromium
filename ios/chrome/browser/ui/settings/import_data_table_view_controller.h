@@ -16,6 +16,9 @@ extern NSString* const kImportDataImportCellId;
 // The accessibility identifier of the Keep Data Separate cell.
 extern NSString* const kImportDataKeepSeparateCellId;
 
+// The accessiblity identifier of the Continue navigation button.
+extern NSString* const kImportDataContinueButtonId;
+
 // Notifies of the user action on the corresponding
 // ImportDataTableViewController.
 @protocol ImportDataControllerDelegate

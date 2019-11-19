@@ -17,8 +17,7 @@ SingleThreadIdleTaskRunner::SingleThreadIdleTaskRunner(
     Delegate* delegate)
     : idle_priority_task_runner_(idle_priority_task_runner),
       delegate_(delegate),
-      blame_context_(nullptr),
-      weak_factory_(this) {
+      blame_context_(nullptr) {
   DCHECK(!idle_priority_task_runner_ ||
          idle_priority_task_runner_->RunsTasksInCurrentSequence());
   weak_scheduler_ptr_ = weak_factory_.GetWeakPtr();
@@ -47,12 +46,12 @@ void SingleThreadIdleTaskRunner::PostDelayedIdleTask(
     const base::TimeDelta delay,
     IdleTask idle_task) {
   base::TimeTicks first_run_time = delegate_->NowTicks() + delay;
-  delayed_idle_tasks_.insert(std::make_pair(
+  delayed_idle_tasks_.emplace(
       first_run_time,
       std::make_pair(
           from_here,
           base::BindOnce(&SingleThreadIdleTaskRunner::RunTask,
-                         weak_scheduler_ptr_, std::move(idle_task)))));
+                         weak_scheduler_ptr_, std::move(idle_task))));
 }
 
 void SingleThreadIdleTaskRunner::PostNonNestableIdleTask(

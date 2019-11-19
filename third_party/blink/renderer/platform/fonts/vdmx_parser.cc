@@ -32,7 +32,7 @@
 
 #include "base/macros.h"
 #include "base/sys_byteorder.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -131,7 +131,7 @@ bool ParseVDMX(int* y_max,
   // of this second table.
   //
   // Range 6 <= x <= 262146
-  unsigned long offset_table_offset =
+  size_t offset_table_offset =
       buf.Offset() + 4 /* sizeof struct ratio */ * num_ratios;
 
   unsigned desired_ratio = 0xffffffff;

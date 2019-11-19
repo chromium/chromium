@@ -94,7 +94,8 @@ class UserImageManagerImpl : public UserImageManager,
   // ProfileDownloaderDelegate:
   bool NeedsProfilePicture() const override;
   int GetDesiredImageSideLength() const override;
-  Profile* GetBrowserProfile() override;
+  signin::IdentityManager* GetIdentityManager() override;
+  network::mojom::URLLoaderFactory* GetURLLoaderFactory() override;
   std::string GetCachedPictureURL() const override;
   bool IsPreSignin() const override;
   void OnProfileDownloadSuccess(ProfileDownloader* downloader) override;
@@ -212,7 +213,7 @@ class UserImageManagerImpl : public UserImageManager,
 
   bool has_managed_image_;
 
-  base::WeakPtrFactory<UserImageManagerImpl> weak_factory_;
+  base::WeakPtrFactory<UserImageManagerImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UserImageManagerImpl);
 };

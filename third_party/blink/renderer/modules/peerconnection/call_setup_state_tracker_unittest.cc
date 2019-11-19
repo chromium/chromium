@@ -5,42 +5,43 @@
 #include "third_party/blink/renderer/modules/peerconnection/call_setup_state_tracker.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 namespace {
 
 template <typename StateType>
-std::vector<StateType> GetAllCallSetupStates();
+Vector<StateType> GetAllCallSetupStates();
 
 template <>
-std::vector<OffererState> GetAllCallSetupStates() {
-  std::vector<OffererState> states = {OffererState::kNotStarted,
-                                      OffererState::kCreateOfferPending,
-                                      OffererState::kCreateOfferRejected,
-                                      OffererState::kCreateOfferResolved,
-                                      OffererState::kSetLocalOfferPending,
-                                      OffererState::kSetLocalOfferRejected,
-                                      OffererState::kSetLocalOfferResolved,
-                                      OffererState::kSetRemoteAnswerPending,
-                                      OffererState::kSetRemoteAnswerRejected,
-                                      OffererState::kSetRemoteAnswerResolved};
+Vector<OffererState> GetAllCallSetupStates() {
+  Vector<OffererState> states = {OffererState::kNotStarted,
+                                 OffererState::kCreateOfferPending,
+                                 OffererState::kCreateOfferRejected,
+                                 OffererState::kCreateOfferResolved,
+                                 OffererState::kSetLocalOfferPending,
+                                 OffererState::kSetLocalOfferRejected,
+                                 OffererState::kSetLocalOfferResolved,
+                                 OffererState::kSetRemoteAnswerPending,
+                                 OffererState::kSetRemoteAnswerRejected,
+                                 OffererState::kSetRemoteAnswerResolved};
   EXPECT_EQ(static_cast<size_t>(OffererState::kMaxValue) + 1u, states.size());
   return states;
 }
 
 template <>
-std::vector<AnswererState> GetAllCallSetupStates() {
-  std::vector<AnswererState> states = {AnswererState::kNotStarted,
-                                       AnswererState::kSetRemoteOfferPending,
-                                       AnswererState::kSetRemoteOfferRejected,
-                                       AnswererState::kSetRemoteOfferResolved,
-                                       AnswererState::kCreateAnswerPending,
-                                       AnswererState::kCreateAnswerRejected,
-                                       AnswererState::kCreateAnswerResolved,
-                                       AnswererState::kSetLocalAnswerPending,
-                                       AnswererState::kSetLocalAnswerRejected,
-                                       AnswererState::kSetLocalAnswerResolved};
+Vector<AnswererState> GetAllCallSetupStates() {
+  Vector<AnswererState> states = {AnswererState::kNotStarted,
+                                  AnswererState::kSetRemoteOfferPending,
+                                  AnswererState::kSetRemoteOfferRejected,
+                                  AnswererState::kSetRemoteOfferResolved,
+                                  AnswererState::kCreateAnswerPending,
+                                  AnswererState::kCreateAnswerRejected,
+                                  AnswererState::kCreateAnswerResolved,
+                                  AnswererState::kSetLocalAnswerPending,
+                                  AnswererState::kSetLocalAnswerRejected,
+                                  AnswererState::kSetLocalAnswerResolved};
   EXPECT_EQ(static_cast<size_t>(AnswererState::kMaxValue) + 1u, states.size());
   return states;
 }
@@ -69,7 +70,7 @@ class CallSetupStateTrackerTest : public testing::Test {
 
   template <typename StateType>
   bool VerifyReachability(Reachability reachability,
-                          std::vector<StateType> states) const {
+                          Vector<StateType> states) const {
     bool expected_state_reached = (reachability == Reachability::kReachable);
     for (const auto& state : states) {
       bool did_reach_state;
@@ -88,12 +89,11 @@ class CallSetupStateTrackerTest : public testing::Test {
   }
 
   template <typename StateType>
-  bool VerifyOnlyReachableStates(std::vector<StateType> reachable_states,
+  bool VerifyOnlyReachableStates(Vector<StateType> reachable_states,
                                  bool include_current = true) const {
     if (include_current)
       reachable_states.push_back(current_state<StateType>());
-    std::vector<StateType> unreachable_states =
-        GetAllCallSetupStates<StateType>();
+    Vector<StateType> unreachable_states = GetAllCallSetupStates<StateType>();
     for (const auto& reachable_state : reachable_states) {
       unreachable_states.erase(std::find(unreachable_states.begin(),
                                          unreachable_states.end(),

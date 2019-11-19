@@ -138,9 +138,9 @@ document.getElementById("preId").innerHTML = "ممرحبًامرحبًامرحب
 
 e.dir="rtl";
 
-debug("Scrolling to 50, 150");
+debug("Scrolling to -50, 150");
 e.scrollTop = 150;
-e.scrollLeft = 50;
+e.scrollLeft = -50;
 debug("Div's display is none now");
 e.style.display = 'none';
 shouldBe('e.scrollTop', '0');
@@ -148,7 +148,7 @@ shouldBe('e.scrollLeft', '0');
 debug("Div's display is block again");
 e.style.display = 'block';
 shouldBe('e.scrollTop', '150');
-shouldBe('e.scrollLeft', '50');
+shouldBe('e.scrollLeft', '-50');
 
 debug("");
 debug("Test iframe scrolling");

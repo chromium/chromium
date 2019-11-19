@@ -1,0 +1,8 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Including this is an android_apk's processor_args_javac list will result in
+# the JNI processor not writing a dummy GEN_JNI class. This is required when
+# using proxy natives in android_apk targets.
+skip_gen_jni_arg = "org.chromium.chrome.skipGenJni"

@@ -313,6 +313,7 @@ bool SyscallSets::IsAllowedSignalHandling(int sysno) {
     case __NR_rt_sigaction:
     case __NR_rt_sigprocmask:
     case __NR_rt_sigreturn:
+    case __NR_rt_sigtimedwait:
 #if defined(__i386__) || defined(__arm__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
     case __NR_sigaction:
@@ -323,7 +324,6 @@ bool SyscallSets::IsAllowedSignalHandling(int sysno) {
     case __NR_rt_sigpending:
     case __NR_rt_sigqueueinfo:
     case __NR_rt_sigsuspend:
-    case __NR_rt_sigtimedwait:
     case __NR_rt_tgsigqueueinfo:
     case __NR_sigaltstack:
 #if !defined(__aarch64__)
@@ -845,7 +845,8 @@ bool SyscallSets::IsSystemVSemaphores(int sysno) {
 }
 #endif
 
-#if defined(__x86_64__) || defined(__arm__) || defined(__aarch64__) || \
+#if defined(__i386__) || defined(__x86_64__) || defined(__arm__) || \
+    defined(__aarch64__) ||                                         \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_64_BITS))
 // These give a lot of ambient authority and bypass the setuid sandbox.
 bool SyscallSets::IsSystemVSharedMemory(int sysno) {

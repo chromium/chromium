@@ -21,6 +21,10 @@ AppListClientImpl* GetAppListClient();
 // Creates a second profile in a nested run loop for testing the app list.
 Profile* CreateSecondProfileAsync();
 
+// Creates |n| app items with dummy data and adds to the current app-list
+// client.
+void PopulateDummyAppListItems(int n);
+
 }  // namespace test
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_TEST_CHROME_APP_LIST_TEST_SUPPORT_H_

@@ -16,7 +16,6 @@
 #include "components/offline_pages/core/prefetch/store/prefetch_store_utils.h"
 #include "components/offline_pages/core/prefetch/tasks/prefetch_task_test_base.h"
 #include "components/offline_pages/core/prefetch/test_prefetch_dispatcher.h"
-#include "components/offline_pages/core/prefetch/test_prefetch_gcm_handler.h"
 #include "components/offline_pages/core/test_scoped_offline_clock.h"
 #include "components/offline_pages/task/task.h"
 #include "services/network/test/test_utils.h"
@@ -37,12 +36,11 @@ class GeneratePageBundleTaskTest : public PrefetchTaskTestBase {
   GeneratePageBundleTaskTest() = default;
   ~GeneratePageBundleTaskTest() override = default;
 
-  TestPrefetchGCMHandler* gcm_handler() { return &gcm_handler_; }
+  std::string gcm_token() { return "dummy_gcm_token"; }
 
   TestPrefetchDispatcher* dispatcher() { return &dispatcher_; }
 
  private:
-  TestPrefetchGCMHandler gcm_handler_;
   TestPrefetchDispatcher dispatcher_;
 };
 
@@ -51,7 +49,7 @@ TEST_F(GeneratePageBundleTaskTest, StoreFailure) {
 
   base::MockCallback<PrefetchRequestFinishedCallback> callback;
   RunTask(std::make_unique<GeneratePageBundleTask>(
-      dispatcher(), store(), gcm_handler(), prefetch_request_factory(),
+      dispatcher(), store(), gcm_token(), prefetch_request_factory(),
       callback.Get()));
   EXPECT_EQ(0, dispatcher()->generate_page_bundle_requested);
 }
@@ -59,7 +57,7 @@ TEST_F(GeneratePageBundleTaskTest, StoreFailure) {
 TEST_F(GeneratePageBundleTaskTest, EmptyTask) {
   base::MockCallback<PrefetchRequestFinishedCallback> callback;
   RunTask(std::make_unique<GeneratePageBundleTask>(
-      dispatcher(), store(), gcm_handler(), prefetch_request_factory(),
+      dispatcher(), store(), gcm_token(), prefetch_request_factory(),
       callback.Get()));
 
   EXPECT_FALSE(prefetch_request_factory()->HasOutstandingRequests());
@@ -103,7 +101,7 @@ TEST_F(GeneratePageBundleTaskTest, TaskMakesNetworkRequest) {
 
   clock.Advance(base::TimeDelta::FromHours(1));
 
-  GeneratePageBundleTask task(dispatcher(), store(), gcm_handler(),
+  GeneratePageBundleTask task(dispatcher(), store(), gcm_token(),
                               prefetch_request_factory(),
                               request_callback.Get());
   RunTask(&task);

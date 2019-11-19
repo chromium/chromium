@@ -6,18 +6,13 @@
 
 #include <memory>
 
-#include "base/ios/ios_util.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/browser_view_controller_dependency_factory.h"
-#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/third_party/material_components_ios/src/components/Snackbar/src/MaterialSnackbar.h"
-#import "ios/web/public/test/earl_grey/web_view_matchers.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/web/public/test/http_server/error_page_response_provider.h"
 #import "ios/web/public/test/http_server/http_server.h"
 #include "ios/web/public/test/http_server/http_server_util.h"
@@ -76,14 +71,11 @@ id<GREYMatcher> ShareMenuCollectionView() {
 
 @implementation ActivityServiceControllerTestCase
 
-- (void)testActivityServiceControllerCantPrintUnprintablePages {
-  // TODO(crbug.com/747622): re-enable this test on once earl grey can interact
-  // with the share menu.
-  EARL_GREY_TEST_DISABLED(@"Disabled until EG can use share menu.");
-
-  // TODO(crbug.com/864597): Reenable this test.
-  EARL_GREY_TEST_DISABLED(@"Test should be rewritten to use Offline Version.");
-
+// TODO(crbug.com/747622): re-enable this test on once earl grey can interact
+// with the share menu.
+// TODO(crbug.com/864597): Reenable this test. This test should be rewritten
+// to use Offline Version.
+- (void)DISABLED_testActivityServiceControllerCantPrintUnprintablePages {
   std::unique_ptr<web::DataResponseProvider> provider(
       new ErrorPageResponseProvider());
   web::test::SetUpHttpServer(std::move(provider));
@@ -111,24 +103,24 @@ id<GREYMatcher> ShareMenuCollectionView() {
 }
 
 - (void)testActivityServiceControllerIsDisabled {
+  // TODO(crbug.com/996541) Starting in Xcode 11 beta 6, the share button does
+  // not appear (even with a delay) flakily.
+  if (@available(iOS 13, *))
+    EARL_GREY_TEST_DISABLED(@"Test disabled on iOS13.");
+
   // Open an un-shareable page.
   GURL kURL("chrome://version");
   [ChromeEarlGrey loadURL:kURL];
   // Verify that the share button is disabled.
-  if (IsCompactWidth() && !IsUIRefreshPhase1Enabled()) {
-    [ChromeEarlGreyUI openToolsMenu];
-  }
   id<GREYMatcher> share_button = chrome_test_util::ShareButton();
   [[EarlGrey selectElementWithMatcher:share_button]
       assertWithMatcher:grey_accessibilityTrait(
                             UIAccessibilityTraitNotEnabled)];
 }
 
-- (void)testOpenActivityServiceControllerAndCopy {
-  // TODO(crbug.com/747622): re-enable this test once earl grey can interact
-  // with the share menu.
-  EARL_GREY_TEST_DISABLED(@"Disabled until EG can use share menu.");
-
+// TODO(crbug.com/747622): re-enable this test once earl grey can interact
+// with the share menu.
+- (void)DISABLED_testOpenActivityServiceControllerAndCopy {
   // Set up mock http server.
   std::map<GURL, std::string> responses;
   GURL url = web::test::HttpServer::MakeUrl("http://potato");

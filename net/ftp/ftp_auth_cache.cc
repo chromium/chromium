@@ -29,7 +29,7 @@ FtpAuthCache::Entry* FtpAuthCache::Lookup(const GURL& origin) {
     if (it->origin == origin)
       return &(*it);
   }
-  return NULL;
+  return nullptr;
 }
 
 void FtpAuthCache::Add(const GURL& origin, const AuthCredentials& credentials) {

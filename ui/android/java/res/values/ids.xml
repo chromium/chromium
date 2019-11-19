@@ -6,4 +6,5 @@
     <!-- Model Utils -->
     <item type="id" name="view_model" />
     <item type="id" name="view_type" />
+    <item type="id" name="view_mcp" />
 </resources>

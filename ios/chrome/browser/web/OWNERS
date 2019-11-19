@@ -3,8 +3,3 @@ eugenebut@chromium.org
 
 # TEAM: ios-directory-owners@chromium.org
 # OS: iOS
-
-per-file chrome_overlay_manifests.cc=set noparent
-per-file chrome_overlay_manifests.cc=file://ipc/SECURITY_OWNERS
-per-file chrome_overlay_manifests.h=set noparent
-per-file chrome_overlay_manifests.h=file://ipc/SECURITY_OWNERS

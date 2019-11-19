@@ -4,7 +4,8 @@
 
 #include "base/allocator/malloc_zone_functions_mac.h"
 
-#include "base/atomicops.h"
+#include <atomic>
+
 #include "base/synchronization/lock.h"
 
 namespace base {
@@ -84,7 +85,7 @@ bool StoreMallocZone(ChromeMallocZone* zone) {
   // No other thread can possibly see these stores at this point. The code that
   // reads these values is triggered after this function returns. so we want to
   // guarantee that they are committed at this stage"
-  base::subtle::MemoryBarrier();
+  std::atomic_thread_fence(std::memory_order_seq_cst);
   return true;
 }
 

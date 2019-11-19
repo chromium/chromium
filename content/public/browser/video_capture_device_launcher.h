@@ -45,7 +45,7 @@ class CONTENT_EXPORT VideoCaptureDeviceLauncher {
   // during the asynchronous processing stays alive.
   virtual void LaunchDeviceAsync(
       const std::string& device_id,
-      blink::MediaStreamType stream_type,
+      blink::mojom::MediaStreamType stream_type,
       const media::VideoCaptureParams& params,
       base::WeakPtr<media::VideoFrameReceiver> receiver,
       base::OnceClosure connection_lost_cb,
@@ -60,7 +60,7 @@ class CONTENT_EXPORT LaunchedVideoCaptureDevice
  public:
   // Device operation methods.
   virtual void GetPhotoState(
-      media::VideoCaptureDevice::GetPhotoStateCallback callback) const = 0;
+      media::VideoCaptureDevice::GetPhotoStateCallback callback) = 0;
   virtual void SetPhotoOptions(
       media::mojom::PhotoSettingsPtr settings,
       media::VideoCaptureDevice::SetPhotoOptionsCallback callback) = 0;

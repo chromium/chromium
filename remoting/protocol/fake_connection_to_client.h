@@ -41,7 +41,7 @@ class FakeVideoStream : public protocol::VideoStream {
  private:
   Observer* observer_ = nullptr;
 
-  base::WeakPtrFactory<FakeVideoStream> weak_factory_;
+  base::WeakPtrFactory<FakeVideoStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeVideoStream);
 };

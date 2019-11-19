@@ -9,7 +9,7 @@
 
 namespace extensions {
 
-class I18nGetAcceptLanguagesFunction : public UIThreadExtensionFunction {
+class I18nGetAcceptLanguagesFunction : public ExtensionFunction {
   ~I18nGetAcceptLanguagesFunction() override {}
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("i18n.getAcceptLanguages", I18N_GETACCEPTLANGUAGES)

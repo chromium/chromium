@@ -12,6 +12,7 @@ import android.util.MalformedJsonException;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -115,10 +116,10 @@ public class JsonSanitizer {
         try {
             result = sanitize(unsafeJson);
         } catch (IOException | IllegalStateException e) {
-            nativeOnError(nativePtr, e.getMessage());
+            JsonSanitizerJni.get().onError(nativePtr, e.getMessage());
             return;
         }
-        nativeOnSuccess(nativePtr, result);
+        JsonSanitizerJni.get().onSuccess(nativePtr, result);
     }
 
     /**
@@ -189,7 +190,9 @@ public class JsonSanitizer {
                 || (codePoint > 0xFDEF && codePoint <= 0x10FFFF && (codePoint & 0xFFFE) != 0xFFFE);
     }
 
-    private static native void nativeOnSuccess(long id, String json);
-
-    private static native void nativeOnError(long id, String error);
+    @NativeMethods
+    interface Natives {
+        void onSuccess(long id, String json);
+        void onError(long id, String error);
+    }
 }

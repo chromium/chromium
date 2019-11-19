@@ -1,5 +1,6 @@
-# This is gdbinit for source level debugging with -fdebug-compilation-dir
-# compile option or when building with libc++.
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 python
 
@@ -7,9 +8,14 @@ import os
 import subprocess
 import sys
 
+compile_dirs = set()
+src_dir = None
+
 def get_current_debug_file_directories():
   dir = gdb.execute("show debug-file-directory", to_string=True)
-  dir = dir[len('The directory where separate debug symbols are searched for is "'):-len('".')-1]
+  dir = dir[
+      len('The directory where separate debug symbols are searched for is "'
+         ):-len('".') - 1]
   return set(dir.split(":"))
 
 
@@ -18,15 +24,31 @@ def add_debug_file_directory(dir):
   # `show debug-file-directory` and `set debug-file-directory <directories>`.
   current_dirs = get_current_debug_file_directories()
   current_dirs.add(dir)
-  gdb.execute("set debug-file-directory %s" % ":".join(current_dirs),
-              to_string=True)
+  gdb.execute(
+      "set debug-file-directory %s" % ":".join(current_dirs), to_string=True)
 
 
-libcxx_pretty_printers_loaded = False
-def load_libcxx_pretty_printers(compile_dir):
-  global libcxx_pretty_printers_loaded
-  if libcxx_pretty_printers_loaded:
+def load_libcxx_pretty_printers(src_dir):
+  libcxx_pretty_printers = os.path.join(src_dir, 'third_party',
+                                        'libcxx-pretty-printers')
+  if not os.path.isdir(libcxx_pretty_printers):
     return
+  sys.path.insert(1, libcxx_pretty_printers)
+  from printers import register_libcxx_printers
+  register_libcxx_printers(None)
+
+
+def load_gdb_chrome(src_dir):
+  tools_gdb = os.path.join(src_dir, 'tools', 'gdb')
+
+  sys.path.insert(1, tools_gdb)
+  import gdb_chrome
+
+  gdb.execute('source %s' % os.path.join(tools_gdb, 'viewg.gdb'))
+
+
+def set_src_dir(compile_dir):
+  global src_dir
   git = subprocess.Popen(
       ['git', '-C', compile_dir, 'rev-parse', '--show-toplevel'],
       stdout=subprocess.PIPE,
@@ -34,20 +56,24 @@ def load_libcxx_pretty_printers(compile_dir):
   src_dir, _ = git.communicate()
   if git.returncode:
     return
-  libcxx_pretty_printers = os.path.join(str(src_dir).rstrip(), 'third_party',
-                                        'libcxx-pretty-printers', 'src')
-  if not os.path.isdir(libcxx_pretty_printers):
-    return
-  sys.path.insert(1, libcxx_pretty_printers)
-  from libcxx.v1.printers import register_libcxx_printers
-  register_libcxx_printers(None)
-  libcxx_pretty_printers_loaded = True
+  if isinstance(src_dir, str):
+    src_dir = src_dir.rstrip()
+  else:
+    src_dir = src_dir.decode('utf-8').rstrip()
+
+  load_libcxx_pretty_printers(src_dir)
+
+  load_gdb_chrome(src_dir)
 
 
 def newobj_handler(event):
+  global compile_dirs
   compile_dir = os.path.dirname(event.new_objfile.filename)
   if not compile_dir:
     return
+  if compile_dir in compile_dirs:
+    return
+  compile_dirs.add(compile_dir)
 
   # Add source path
   gdb.execute("dir %s" % compile_dir)
@@ -57,11 +83,15 @@ def newobj_handler(event):
   # https://crbug.com/603286#c35
   add_debug_file_directory(compile_dir)
 
-  load_libcxx_pretty_printers(compile_dir)
+  global src_dir
+  if not src_dir:
+    set_src_dir(compile_dir)
 
 
 # Event hook for newly loaded objfiles.
 # https://sourceware.org/gdb/onlinedocs/gdb/Events-In-Python.html
 gdb.events.new_objfile.connect(newobj_handler)
+
+gdb.execute("set environment CHROMIUM_GDBINIT_SOURCED=1")
 
 end

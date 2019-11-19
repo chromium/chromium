@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_resource/web_resource_pref_names.h"
@@ -32,8 +33,8 @@ bool EulaAcceptedNotifier::IsEulaAccepted() {
   if (registrar_.IsEmpty()) {
     registrar_.Init(local_state_);
     registrar_.Add(prefs::kEulaAccepted,
-                   base::Bind(&EulaAcceptedNotifier::OnPrefChanged,
-                              base::Unretained(this)));
+                   base::BindRepeating(&EulaAcceptedNotifier::OnPrefChanged,
+                                       base::Unretained(this)));
   }
   return false;
 }
@@ -42,7 +43,7 @@ bool EulaAcceptedNotifier::IsEulaAccepted() {
 EulaAcceptedNotifier* EulaAcceptedNotifier::Create(PrefService* local_state) {
 // First run EULA only exists on ChromeOS, Android and iOS. On ChromeOS, it is
 // only shown in official builds.
-#if (defined(OS_CHROMEOS) && defined(GOOGLE_CHROME_BUILD)) || \
+#if (defined(OS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)) || \
     defined(OS_ANDROID) || defined(OS_IOS)
   // Tests that use higher-level classes that use EulaAcceptNotifier may not
   // have local state or may not register this pref. Return null to indicate not

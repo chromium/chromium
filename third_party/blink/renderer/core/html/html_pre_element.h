@@ -31,11 +31,10 @@ class HTMLPreElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_ELEMENT_FACTORY_WITH_TAGNAME(HTMLPreElement);
 
- private:
   HTMLPreElement(const QualifiedName&, Document&);
 
+ private:
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,

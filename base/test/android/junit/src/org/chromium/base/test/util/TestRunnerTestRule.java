@@ -43,7 +43,7 @@ class TestRunnerTestRule extends ExternalResource {
     }
 
     @Override
-    protected void before() throws Throwable {
+    protected void before() {
         // Register a fake Instrumentation so that class runners for instrumentation tests
         // can be run even in Robolectric tests.
         Instrumentation instrumentation = new Instrumentation() {
@@ -82,17 +82,17 @@ class TestRunnerTestRule extends ExternalResource {
         // TODO(bauerb): Using Mockito mock() or spy() throws a ClassCastException.
         RunListener runListener = new RunListener() {
             @Override
-            public void testStarted(Description description) throws Exception {
+            public void testStarted(Description description) {
                 testLog.runTests.add(description);
             }
 
             @Override
-            public void testFinished(Description description) throws Exception {
+            public void testFinished(Description description) {
                 Assert.assertThat(description, isIn(testLog.runTests));
             }
 
             @Override
-            public void testFailure(Failure failure) throws Exception {
+            public void testFailure(Failure failure) {
                 fail(failure.toString());
             }
 
@@ -102,7 +102,7 @@ class TestRunnerTestRule extends ExternalResource {
             }
 
             @Override
-            public void testIgnored(Description description) throws Exception {
+            public void testIgnored(Description description) {
                 testLog.skippedTests.add(description);
             }
         };

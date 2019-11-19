@@ -94,7 +94,7 @@ class RemoteDeviceLoader {
   // The collection of RemoteDevices to return.
   multidevice::RemoteDeviceList remote_devices_;
 
-  base::WeakPtrFactory<RemoteDeviceLoader> weak_ptr_factory_;
+  base::WeakPtrFactory<RemoteDeviceLoader> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RemoteDeviceLoader);
 };

@@ -2,13 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+// #import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+//
+// #import {eventToPromise} from '../test_util.m.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+// clang-format on
+
 suite('cr-radio-group', () => {
   let radioGroup;
 
   /** @override */
   suiteSetup(() => {
-    return PolymerTest.importHtml(
-        'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html');
+    /* #ignore */ return PolymerTest.importHtml(
+        /* #ignore */ 'chrome://resources/cr_elements/cr_radio_button/' +
+        /* #ignore */ 'cr_radio_button.html');
   });
 
   setup(() => {
@@ -96,11 +106,15 @@ suite('cr-radio-group', () => {
     // Check for decrement.
     checkPressed(['Home', 'PageUp', 'ArrowUp', 'ArrowLeft'], 2, 1);
     // No change when reached first selected.
-    checkPressed(['Home', 'PageUp', 'ArrowUp', 'ArrowLeft'], 1, 1);
+    checkPressed(['Home'], 1, 1);
+    // Wraps when decrementing when first selected.
+    checkPressed(['PageUp', 'ArrowUp', 'ArrowLeft'], 1, 3);
     // Check for increment.
     checkPressed(['End', 'ArrowRight', 'PageDown', 'ArrowDown'], 2, 3);
     // No change when reached last selected.
-    checkPressed(['End', 'ArrowRight', 'PageDown', 'ArrowDown'], 3, 3);
+    checkPressed(['End'], 3, 3);
+    // Wraps when incrementing when last selected.
+    checkPressed(['ArrowRight', 'PageDown', 'ArrowDown'], 3, 1);
   });
 
   test('mouse event', () => {

@@ -26,12 +26,16 @@
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 
 #include <memory>
+
 #include "third_party/blink/renderer/core/css/css_keyframe_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -96,7 +100,7 @@ void CSSKeyframesRule::appendRule(const ExecutionContext* execution_context,
             keyframes_rule_->Keyframes().size());
 
   CSSStyleSheet* style_sheet = parentStyleSheet();
-  CSSParserContext* context = CSSParserContext::CreateWithStyleSheet(
+  auto* context = MakeGarbageCollected<CSSParserContext>(
       ParserContext(execution_context->GetSecureContextMode()), style_sheet);
   StyleRuleKeyframe* keyframe =
       CSSParser::ParseKeyframeRule(context, rule_text);
@@ -176,16 +180,18 @@ CSSKeyframeRule* CSSKeyframesRule::AnonymousIndexedGetter(
   const Document* parent_document =
       CSSStyleSheet::SingleOwnerDocument(parentStyleSheet());
   if (parent_document) {
-    UseCounter::Count(*parent_document,
-                      WebFeature::kCSSKeyframesRuleAnonymousIndexedGetter);
+    parent_document->CountUse(
+        WebFeature::kCSSKeyframesRuleAnonymousIndexedGetter);
   }
   return Item(index);
 }
 
 CSSRuleList* CSSKeyframesRule::cssRules() const {
-  if (!rule_list_cssom_wrapper_)
-    rule_list_cssom_wrapper_ = LiveCSSRuleList<CSSKeyframesRule>::Create(
-        const_cast<CSSKeyframesRule*>(this));
+  if (!rule_list_cssom_wrapper_) {
+    rule_list_cssom_wrapper_ =
+        MakeGarbageCollected<LiveCSSRuleList<CSSKeyframesRule>>(
+            const_cast<CSSKeyframesRule*>(this));
+  }
   return rule_list_cssom_wrapper_.Get();
 }
 

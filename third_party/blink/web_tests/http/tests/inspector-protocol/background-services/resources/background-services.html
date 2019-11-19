@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Service Worker for a background service test</title>
+<script>
+
+let sw = null;
+
+async function installSW() {
+  sw = await navigator.serviceWorker.register('service-worker.js');
+  await navigator.serviceWorker.ready;
+  sw.active.postMessage('Posting message!');
+}
+
+async function waitForMessageFromSW() {
+  return await new Promise(
+      resolve => navigator.serviceWorker.onmessage = e => resolve(e.data));
+}
+
+</script>
+</head>
+<body></body>
+</html>

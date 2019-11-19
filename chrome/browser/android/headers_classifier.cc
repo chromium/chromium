@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
-#include "jni/IntentHeadersRecorder_jni.h"
+#include "chrome/android/chrome_jni_headers/IntentHeadersRecorder_jni.h"
 #include "services/network/public/cpp/cors/cors.h"
 
 using base::android::JavaParamRef;

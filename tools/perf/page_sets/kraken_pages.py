@@ -6,9 +6,6 @@ import json
 from page_sets import press_story
 from telemetry import story
 
-from telemetry.value import list_of_scalar_values
-from telemetry.value import scalar
-
 
 DESCRIPTIONS = {
     'ai-astar':
@@ -78,18 +75,16 @@ class KrakenStory(press_story.PressStory):
     for key in result_dict:
       if key == 'v':
         continue
-      self.AddJavascriptMetricValue(list_of_scalar_values.ListOfScalarValues(
-          self, key, 'ms', result_dict[key], important=False,
-          description=DESCRIPTIONS.get(key)))
+      self.AddMeasurement(key, 'ms', result_dict[key],
+                          description=DESCRIPTIONS.get(key))
       total += _Mean(result_dict[key])
 
     # TODO(tonyg/nednguyen): This measurement shouldn't calculate Total. The
     # results system should do that for us.
-    self.AddJavascriptMetricValue(scalar.ScalarValue(
-        self, 'Total', 'ms', total,
-        description='Total of the means of the results for each type '
-                    'of benchmark in [Mozilla\'s Kraken JavaScript benchmark]'
-                    '(http://krakenbenchmark.mozilla.org/)'))
+    self.AddMeasurement(
+        'Total', 'ms', total,
+        description='Sum of the mean runtime for each type of benchmark in '
+                    "Mozilla's Kraken JavaScript benchmark")
 
 
 class KrakenStorySet(story.StorySet):

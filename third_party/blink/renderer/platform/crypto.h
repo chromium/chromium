@@ -2,29 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(jww) The original Blink-style header guard for this file conflicts with
-// the header guard in Source/modules/crypto/Crypto.h, so this is a
-// Chromium-style header guard instead. There is now a bug
-// (https://crbug.com/360121) to track a proposal to change all header guards
-// to a similar style. Thus, whenever that is resolved, this header guard
-// should be changed to whatever style is agreed upon.
-#ifndef SOURCE_PLATFORM_CRYPTO_H_
-#define SOURCE_PLATFORM_CRYPTO_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_CRYPTO_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_CRYPTO_H_
 
-#include <memory>
-#include "third_party/blink/public/platform/web_crypto.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
-#include "third_party/blink/renderer/platform/wtf/string_hasher.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/boringssl/src/include/openssl/digest.h"
 
 namespace blink {
 
 static const size_t kMaxDigestSize = 64;
 typedef Vector<uint8_t, kMaxDigestSize> DigestValue;
 
-const size_t kSha1HashSize = 20;
 enum HashAlgorithm {
   kHashAlgorithmSha1,
   kHashAlgorithmSha256,
@@ -36,11 +30,25 @@ PLATFORM_EXPORT bool ComputeDigest(HashAlgorithm,
                                    const char* digestable,
                                    size_t length,
                                    DigestValue& digest_result);
-// Note: this will never return null.
-PLATFORM_EXPORT std::unique_ptr<WebCryptoDigestor> CreateDigestor(
-    HashAlgorithm);
-PLATFORM_EXPORT void FinishDigestor(WebCryptoDigestor*,
-                                    DigestValue& digest_result);
+
+class PLATFORM_EXPORT Digestor {
+ public:
+  explicit Digestor(HashAlgorithm);
+  ~Digestor();
+
+  bool has_failed() const { return has_failed_; }
+
+  // Return false on failure. These do nothing once the |has_failed_| flag is
+  // set. This object cannot be reused; do not update it after Finish.
+  bool Update(base::span<const uint8_t>);
+  bool UpdateUtf8(const String&,
+                  WTF::UTF8ConversionMode = WTF::kLenientUTF8Conversion);
+  bool Finish(DigestValue&);
+
+ private:
+  bssl::ScopedEVP_MD_CTX digest_context_;
+  bool has_failed_ = false;
+};
 
 }  // namespace blink
 
@@ -74,4 +82,5 @@ struct HashTraits<blink::HashAlgorithm>
 };
 
 }  // namespace WTF
-#endif  // SOURCE_PLATFORM_CRYPTO_H_
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_CRYPTO_H_

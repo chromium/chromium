@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 
@@ -27,7 +28,8 @@ InstallGate::Action UpdateInstallGate::ShouldDelay(const Extension* extension,
   if (install_immediately || !service_->is_ready())
     return INSTALL;
 
-  const Extension* old = service_->GetInstalledExtension(extension->id());
+  const Extension* old = ExtensionRegistry::Get(service_->profile())
+                             ->GetInstalledExtension(extension->id());
   // If there is no old extension, this is not an update, so don't delay.
   if (!old)
     return INSTALL;

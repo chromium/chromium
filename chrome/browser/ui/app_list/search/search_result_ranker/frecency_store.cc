@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/app_list/search/search_result_ranker/frecency_store.h"
 
+#include <algorithm>
 #include <cmath>
+#include <limits>
+#include <utility>
 
 #include "base/logging.h"
 #include "base/stl_util.h"
@@ -32,19 +35,26 @@ FrecencyStore::FrecencyStore(int value_limit, float decay_coeff)
 
 FrecencyStore::~FrecencyStore() {}
 
-void FrecencyStore::Update(const std::string& value) {
-  if (!values_.contains(value)) {
-    values_[value] = {next_id_, 0.0f, 0u};
-    ++next_id_;
+unsigned int FrecencyStore::Update(const std::string& value) {
+  if (static_cast<unsigned int>(values_.size()) >= 2 * value_limit_)
+    Cleanup();
+
+  ValueData* data;
+  auto it = values_.find(value);
+  if (it != values_.end()) {
+    data = &it->second;
+  } else {
+    auto ret = values_.insert(std::pair<std::string, FrecencyStore::ValueData>(
+        value, {next_id_++, 0.0f, 0u}));
+    DCHECK(ret.second);
+    data = &ret.first->second;
   }
 
   ++num_updates_;
-  ValueData& data = values_[value];
-  DecayScore(&data);
-  data.last_score += 1.0f - decay_coeff_;
+  DecayScore(data);
+  data->last_score += 1.0f - decay_coeff_;
 
-  if (static_cast<unsigned int>(values_.size()) >= 2 * value_limit_)
-    Cleanup();
+  return data->id;
 }
 
 void FrecencyStore::Rename(const std::string& value,
@@ -76,8 +86,7 @@ base::Optional<unsigned int> FrecencyStore::GetId(const std::string& value) {
   return it->second.id;
 }
 
-const base::flat_map<std::string, FrecencyStore::ValueData>&
-FrecencyStore::GetAll() {
+const FrecencyStore::ScoreTable& FrecencyStore::GetAll() {
   DecayAllScores();
   return values_;
 }
@@ -104,7 +113,7 @@ void FrecencyStore::FromProto(const FrecencyStoreProto& proto) {
   num_updates_ = proto.num_updates();
   next_id_ = proto.next_id();
 
-  base::flat_map<std::string, ValueData> values;
+  ScoreTable values;
   for (const auto& pair : proto.values()) {
     values[pair.first] = {pair.second.id(), pair.second.last_score(),
                           pair.second.last_num_updates()};
@@ -114,12 +123,6 @@ void FrecencyStore::FromProto(const FrecencyStoreProto& proto) {
 
 void FrecencyStore::DecayScore(ValueData* data) {
   int time_since_update = num_updates_ - data->last_num_updates;
-  if (time_since_update < 0) {
-    // |num_updates_| has overflowed. Fix our calculation of
-    // |time_since_update|.
-    time_since_update = num_updates_ + (std::numeric_limits<int>::max() -
-                                        data->last_num_updates);
-  }
 
   if (time_since_update > 0) {
     data->last_score *= std::pow(decay_coeff_, time_since_update);
@@ -158,7 +161,7 @@ void FrecencyStore::Cleanup() {
               return a.second.last_score > b.second.last_score;
             });
 
-  base::flat_map<std::string, ValueData> values;
+  ScoreTable values;
   for (unsigned int i = 0;
        i < value_limit_ && i < static_cast<unsigned int>(value_pairs.size());
        ++i) {

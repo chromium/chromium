@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/tether/connect_tethering_operation.h"
@@ -313,7 +313,7 @@ class TetherConnectorImplTest : public testing::Test {
   }
 
   const multidevice::RemoteDeviceRefList test_devices_;
-  const base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   NetworkStateTestHelper helper_{true /* use_default_devices_and_services */};
 
   std::unique_ptr<FakeConnectTetheringOperationFactory> fake_operation_factory_;

@@ -14,15 +14,17 @@
 #include "chrome/browser/ui/cocoa/fullscreen/fullscreen_menubar_tracker.h"
 #include "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_controller_views.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/extensions/hosted_app_browser_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_frame.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_view_layout.h"
-#include "chrome/browser/ui/views/frame/hosted_app_button_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -36,14 +38,12 @@ constexpr int kHostedAppMenuMargin = 7;
 constexpr int kFramePaddingLeft = 75;
 constexpr double kTitlePaddingWidthFraction = 0.1;
 
-FullscreenToolbarStyle GetUserPreferredToolbarStyle(
-    const PrefService* pref_service) {
+FullscreenToolbarStyle GetUserPreferredToolbarStyle(bool always_show) {
   // In Kiosk mode, we don't show top Chrome UI.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode))
     return FullscreenToolbarStyle::TOOLBAR_NONE;
-  return pref_service->GetBoolean(prefs::kShowFullscreenToolbar)
-             ? FullscreenToolbarStyle::TOOLBAR_PRESENT
-             : FullscreenToolbarStyle::TOOLBAR_HIDDEN;
+  return always_show ? FullscreenToolbarStyle::TOOLBAR_PRESENT
+                     : FullscreenToolbarStyle::TOOLBAR_HIDDEN;
 }
 
 }  // namespace
@@ -55,31 +55,33 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
     BrowserFrame* frame,
     BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view) {
-  fullscreen_toolbar_controller_.reset([[FullscreenToolbarControllerViews alloc]
-      initWithBrowserView:browser_view]);
-  PrefService* pref_service = browser_view->GetProfile()->GetPrefs();
-  [fullscreen_toolbar_controller_
-      setToolbarStyle:GetUserPreferredToolbarStyle(pref_service)];
-
-  pref_registrar_.Init(pref_service);
-  pref_registrar_.Add(
-      prefs::kShowFullscreenToolbar,
+  show_fullscreen_toolbar_.Init(
+      prefs::kShowFullscreenToolbar, browser_view->GetProfile()->GetPrefs(),
       base::BindRepeating(&BrowserNonClientFrameViewMac::UpdateFullscreenTopUI,
                           base::Unretained(this), true));
+  if (!base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
+    fullscreen_toolbar_controller_.reset(
+        [[FullscreenToolbarControllerViews alloc]
+            initWithBrowserView:browser_view]);
+    [fullscreen_toolbar_controller_
+        setToolbarStyle:GetUserPreferredToolbarStyle(
+                            *show_fullscreen_toolbar_)];
+  }
 
-  if (browser_view->IsBrowserTypeHostedApp()) {
-    if (browser_view->browser()
-            ->hosted_app_controller()
-            ->ShouldShowHostedAppButtonContainer()) {
-      set_hosted_app_button_container(new HostedAppButtonContainer(
-          frame, browser_view, GetCaptionColor(kActive),
-          GetCaptionColor(kInactive), kHostedAppMenuMargin));
-      AddChildView(hosted_app_button_container());
+  if (browser_view->IsBrowserTypeWebApp()) {
+    if (browser_view->browser()->app_controller()->HasTitlebarToolbar()) {
+      set_web_app_frame_toolbar(
+          AddChildView(std::make_unique<WebAppFrameToolbarView>(
+              frame, browser_view,
+              GetCaptionColor(BrowserFrameActiveState::kActive),
+              GetCaptionColor(BrowserFrameActiveState::kInactive),
+              kHostedAppMenuMargin, kHostedAppMenuMargin)));
     }
 
     DCHECK(browser_view->ShouldShowWindowTitle());
-    window_title_ = new views::Label(browser_view->GetWindowTitle());
-    AddChildView(window_title_);
+    window_title_ = AddChildView(
+        std::make_unique<views::Label>(browser_view->GetWindowTitle()));
+    window_title_->SetID(VIEW_ID_WINDOW_TITLE);
   }
 }
 
@@ -92,6 +94,11 @@ BrowserNonClientFrameViewMac::~BrowserNonClientFrameViewMac() {
 // BrowserNonClientFrameViewMac, BrowserNonClientFrameView implementation:
 
 void BrowserNonClientFrameViewMac::OnFullscreenStateChanged() {
+  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
+    browser_view()->immersive_mode_controller()->SetEnabled(
+        browser_view()->IsFullscreen());
+    return;
+  }
   if (browser_view()->IsFullscreen()) {
     [fullscreen_toolbar_controller_ enterFullscreenMode];
   } else {
@@ -108,7 +115,7 @@ bool BrowserNonClientFrameViewMac::CaptionButtonsOnLeadingEdge() const {
   return true;
 }
 
-gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStrip(
+gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStripRegion(
     const views::View* tabstrip) const {
   // TODO(weili): In the future, we should hide the title bar, and show the
   // tab strip directly under the menu bar. For now, just lay our content
@@ -125,11 +132,11 @@ gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForTabStrip(
 }
 
 int BrowserNonClientFrameViewMac::GetTopInset(bool restored) const {
-  if (hosted_app_button_container()) {
-    DCHECK(browser_view()->IsBrowserTypeHostedApp());
+  if (web_app_frame_toolbar()) {
+    DCHECK(browser_view()->IsBrowserTypeWebApp());
     if (ShouldHideTopUIForFullscreen())
       return 0;
-    return hosted_app_button_container()->GetPreferredSize().height() +
+    return web_app_frame_toolbar()->GetPreferredSize().height() +
            kHostedAppMenuMargin * 2;
   }
 
@@ -171,6 +178,9 @@ int BrowserNonClientFrameViewMac::GetThemeBackgroundXInset() const {
 
 void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI(
     bool needs_check_tab_fullscreen) {
+  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen))
+    return;
+
   FullscreenToolbarStyle old_style =
       [fullscreen_toolbar_controller_ toolbarStyle];
 
@@ -183,8 +193,7 @@ void BrowserNonClientFrameViewMac::UpdateFullscreenTopUI(
       needs_check_tab_fullscreen) {
     new_style = FullscreenToolbarStyle::TOOLBAR_NONE;
   } else {
-    new_style =
-        GetUserPreferredToolbarStyle(browser_view()->GetProfile()->GetPrefs());
+    new_style = GetUserPreferredToolbarStyle(*show_fullscreen_toolbar_);
   }
   [fullscreen_toolbar_controller_ setToolbarStyle:new_style];
 
@@ -221,7 +230,19 @@ gfx::Rect BrowserNonClientFrameViewMac::GetBoundsForClientView() const {
 
 gfx::Rect BrowserNonClientFrameViewMac::GetWindowBoundsForClientBounds(
     const gfx::Rect& client_bounds) const {
-  return client_bounds;
+  int top_inset = GetTopInset(false);
+
+  // If the operating system is handling drawing the window titlebar then the
+  // titlebar height will not be included in |GetTopInset|, so we have to
+  // explicitly add it. If a custom titlebar is being drawn, this calculation
+  // will be zero.
+  NSWindow* window = GetWidget()->GetNativeWindow().GetNativeNSWindow();
+  DCHECK(window);
+  top_inset += window.frame.size.height -
+               [window contentRectForFrameRect:window.frame].size.height;
+
+  return gfx::Rect(client_bounds.x(), client_bounds.y() - top_inset,
+                   client_bounds.width(), client_bounds.height() + top_inset);
 }
 
 int BrowserNonClientFrameViewMac::NonClientHitTest(const gfx::Point& point) {
@@ -262,7 +283,7 @@ void BrowserNonClientFrameViewMac::UpdateMinimumSize() {
 
 gfx::Size BrowserNonClientFrameViewMac::GetMinimumSize() const {
   gfx::Size client_size = frame()->client_view()->GetMinimumSize();
-  if (browser_view()->browser()->is_type_tabbed())
+  if (browser_view()->browser()->is_type_normal())
     client_size.SetToMax(browser_view()->tabstrip()->GetMinimumSize());
 
   // macOS apps generally don't allow their windows to get shorter than a
@@ -281,7 +302,7 @@ gfx::Size BrowserNonClientFrameViewMac::GetMinimumSize() const {
 
 void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
   if (!browser_view()->IsBrowserTypeNormal() &&
-      !browser_view()->IsBrowserTypeHostedApp()) {
+      !browser_view()->IsBrowserTypeWebApp()) {
     return;
   }
 
@@ -290,7 +311,8 @@ void BrowserNonClientFrameViewMac::OnPaint(gfx::Canvas* canvas) {
 
   if (window_title_) {
     window_title_->SetBackgroundColor(frame_color);
-    window_title_->SetEnabledColor(GetCaptionColor(kUseCurrent));
+    window_title_->SetEnabledColor(
+        GetCaptionColor(BrowserFrameActiveState::kUseCurrent));
   }
 
   auto* theme_service =
@@ -304,9 +326,12 @@ void BrowserNonClientFrameViewMac::Layout() {
   int leading_x = kFramePaddingLeft;
   int trailing_x = width();
 
-  if (hosted_app_button_container()) {
-    trailing_x = hosted_app_button_container()->LayoutInContainer(
-        leading_x, trailing_x, 0, available_height);
+  if (web_app_frame_toolbar()) {
+    std::pair<int, int> remaining_bounds =
+        web_app_frame_toolbar()->LayoutInContainer(leading_x, trailing_x, 0,
+                                                   available_height);
+    leading_x = remaining_bounds.first;
+    trailing_x = remaining_bounds.second;
 
     const int title_padding = base::checked_cast<int>(
         std::round(width() * kTitlePaddingWidthFraction));
@@ -360,13 +385,6 @@ CGFloat BrowserNonClientFrameViewMac::FullscreenBackingBarHeight() const {
   if (browser_view->IsToolbarVisible())
     total_height += browser_view->toolbar()->bounds().height();
 
-  if (browser_view->IsBookmarkBarVisible() &&
-      browser_view->GetBookmarkBarView()->IsDetached()) {
-    // Only when the bookmark bar is shown and not in 'detached' mode, it will
-    // show up along with slide down panel.
-    total_height += browser_view->GetBookmarkBarView()->height();
-  }
-
   return total_height;
 }
 
@@ -379,6 +397,8 @@ int BrowserNonClientFrameViewMac::TopUIFullscreenYOffset() const {
   CGFloat title_bar_height =
       NSHeight([NSWindow frameRectForContentRect:NSZeroRect
                                        styleMask:NSWindowStyleMaskTitled]);
+  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen))
+    return menu_bar_height == 0 ? 0 : menu_bar_height + title_bar_height;
   return [[fullscreen_toolbar_controller_ menubarTracker] menubarFraction] *
          (menu_bar_height + title_bar_height);
 }

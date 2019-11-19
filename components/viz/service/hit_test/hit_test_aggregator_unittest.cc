@@ -27,8 +27,6 @@ namespace {
 constexpr uint32_t kDisplayClientId = 2;
 constexpr FrameSinkId kDisplayFrameSink(kDisplayClientId, 0);
 
-// TODO(riajiang): TestHostFrameSinkManager should be based on
-// mojom::FrameSinkManagerClient instead.
 class TestHostFrameSinkManager : public HostFrameSinkManager {
  public:
   TestHostFrameSinkManager() = default;

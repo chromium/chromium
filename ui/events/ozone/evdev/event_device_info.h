@@ -70,6 +70,7 @@ class EVENTS_OZONE_EVDEV_EXPORT EventDeviceInfo {
   void SetAbsMtSlot(unsigned int code, unsigned int slot, uint32_t value);
   void SetDeviceType(InputDeviceType type);
   void SetId(input_id id);
+  void SetName(const std::string& name);
 
   // Check events this device can generate.
   bool HasEventType(unsigned int type) const;
@@ -83,6 +84,7 @@ class EVENTS_OZONE_EVDEV_EXPORT EventDeviceInfo {
   // Properties of absolute axes.
   int32_t GetAbsMinimum(unsigned int code) const;
   int32_t GetAbsMaximum(unsigned int code) const;
+  int32_t GetAbsResolution(unsigned int code) const;
   int32_t GetAbsValue(unsigned int code) const;
   input_absinfo GetAbsInfoByCode(unsigned int code) const;
   uint32_t GetAbsMtSlotCount() const;
@@ -97,6 +99,7 @@ class EVENTS_OZONE_EVDEV_EXPORT EventDeviceInfo {
   uint16_t bustype() const { return input_id_.bustype; }
   uint16_t vendor_id() const { return input_id_.vendor; }
   uint16_t product_id() const { return input_id_.product; }
+  uint16_t version() const { return input_id_.version; }
 
   // Check input device properties.
   bool HasProp(unsigned int code) const;

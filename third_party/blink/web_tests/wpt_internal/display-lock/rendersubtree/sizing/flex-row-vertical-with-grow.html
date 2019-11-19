@@ -1,0 +1,51 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: flex row with grow, vertical-rl</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="flex-row-vertical-with-grow-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+#flexer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 200px;
+  height: 200px;
+  background: lightgreen;
+  writing-mode: vertical-rl;
+}
+#container {
+  intrinsic-size: 12px 34px;
+  flex-grow: 3;
+}
+.item {
+  width: 50px;
+  height: 60px;
+  background: blue;
+  flex-grow: 1;
+}
+div:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+
+<div id="flexer">
+  <div class="item"></div>
+  <div id="container"></div>
+  <div class="item"></div>
+</div>
+
+<script>
+async function runTest() {
+  const container = document.getElementById("container");
+  await setInvisible(container);
+  takeScreenshot();
+}
+
+window.onload = runTest;
+</script>
+</html>

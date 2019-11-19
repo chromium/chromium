@@ -32,23 +32,6 @@
     }, failedCallback);
   }
 
-  function getDepthStreamAndCameraCalibration() {
-    console.log('Calling getDepthStreamAndCameraCalibration');
-    getFake16bitStream().then(function(stream) {
-      var depth_track = stream.getVideoTracks()[0];
-      if (!depth_track)
-        return failTest("No depth_track");
-      var settings = depth_track.getSettings();
-      if (settings && settings.depthNear == 0 && settings.depthFar == 65.535 &&
-          settings.focalLengthX == 135.0 &&  settings.focalLengthY == 135.6) {
-        reportTestSuccess();
-      } else {
-        failTest("Unexpected depth_track settings:" + JSON.stringify(settings));
-      }
-    },
-    failedCallback);
-  }
-
   function getBothStreamsAndCheckForFeaturesPresence() {
     console.log('Calling getBothStreamsAndCheckForFeaturesPresence');
     getConstraintsForDevice("fake_device_0")
@@ -92,19 +75,6 @@
           }
         }
 
-        var depth_fields = ["depthNear", "depthFar", "focalLengthX",
-                            "focalLengthY"];
-        for (var field in depth_fields) {
-          var depth_field = depth_fields[field];
-          if (video_track.getSettings()[depth_field] !== undefined) {
-            return failTest(depth_field +
-                            " present in video track getSettings().");
-          }
-          if (depth_track.getSettings()[depth_field] === undefined) {
-            return failTest(depth_field +
-                            " missing from depth track getSettings().");
-          }
-        }
         reportTestSuccess();
       },
       failedCallback);

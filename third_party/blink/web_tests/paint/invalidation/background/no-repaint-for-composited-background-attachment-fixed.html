@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<style>
+::-webkit-scrollbar { display: none; }
+body {
+  background-image: linear-gradient(red, blue);
+  background-attachment: fixed;
+}
+</style>
+<script src="../resources/text-based-repaint.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setPreferCompositingToLCDTextEnabled(true);
+function repaintTest() {
+  window.scrollTo(0, 1000);
+}
+onload = runRepaintAndPixelTest;
+</script>
+<div style="height: 5000px">
+Tests that scrolling a frame with background-attachment: fixed doesn't invalidate when preferCompositingToLCDText is enabled.
+</div>

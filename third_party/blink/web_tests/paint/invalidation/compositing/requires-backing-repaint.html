@@ -33,11 +33,6 @@
         
     </style>
     <script>
-        if (window.testRunner) {
-            testRunner.dumpAsTextWithPixelResults();
-            testRunner.waitUntilDone();
-        }
-
         function doTest()
         {
             var overflow = document.getElementById('overflow');
@@ -45,9 +40,7 @@
 
             runAfterLayoutAndPaint(function() {
                 overflow.scrollTop = 75;
-                if (window.testRunner)
-                    testRunner.notifyDone();
-            });
+            }, true);
         }
         window.addEventListener('load', doTest, false);
     </script>

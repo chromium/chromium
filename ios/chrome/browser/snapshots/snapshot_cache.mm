@@ -23,8 +23,8 @@
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "base/threading/scoped_blocking_call.h"
-#import "ios/chrome/browser/snapshots/lru_cache.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache_observer.h"
+#import "ios/chrome/browser/snapshots/snapshot_lru_cache.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 
@@ -229,7 +229,7 @@ void ConvertAndSaveGreyImage(NSString* session_id,
 @implementation SnapshotCache {
   // Cache to hold color snapshots in memory. n.b. Color snapshots are not
   // kept in memory on tablets.
-  LRUCache* lruCache_;
+  SnapshotLRUCache* lruCache_;
 
   // Temporary dictionary to hold grey snapshots for tablet side swipe. This
   // will be nil before -createGreyCache is called and after -removeGreyCache
@@ -279,12 +279,14 @@ void ConvertAndSaveGreyImage(NSString* session_id,
                         snapshotsScale:(ImageScale)snapshotsScale {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequenceChecker_);
   if ((self = [super init])) {
-    lruCache_ = [[LRUCache alloc] initWithCacheSize:kLRUCacheMaxCapacity];
+    lruCache_ =
+        [[SnapshotLRUCache alloc] initWithCacheSize:kLRUCacheMaxCapacity];
     cacheDirectory_ = cacheDirectory;
     snapshotsScale_ = snapshotsScale;
 
-    taskRunner_ = base::CreateSequencedTaskRunnerWithTraits(
-        {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+    taskRunner_ =
+        base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                         base::TaskPriority::USER_VISIBLE});
 
     _observers = [SnapshotCacheObservers observers];
     _markedIDs = [[NSMutableSet alloc] init];
@@ -349,7 +351,7 @@ void ConvertAndSaveGreyImage(NSString* session_id,
   const base::FilePath cacheDirectory = cacheDirectory_;
   const ImageScale snapshotsScale = snapshotsScale_;
 
-  __weak LRUCache* weakLRUCache = lruCache_;
+  __weak SnapshotLRUCache* weakLRUCache = lruCache_;
   base::PostTaskAndReplyWithResult(
       taskRunner_.get(), FROM_HERE,
       base::BindOnce(^base::scoped_nsobject<UIImage>() {

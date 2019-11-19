@@ -5,13 +5,16 @@
 #include "chromecast/browser/cast_content_window.h"
 
 namespace chromecast {
-namespace shell {
 
-CastContentWindow::CastContentWindow() = default;
+CastContentWindow::CastContentWindow(const CreateParams& params)
+    : delegate_(params.delegate) {}
 
 CastContentWindow::~CastContentWindow() = default;
 
 CastContentWindow::CreateParams::CreateParams() = default;
+CastContentWindow::CreateParams::CreateParams(const CreateParams& other) =
+    default;
+CastContentWindow::CreateParams::~CreateParams() = default;
 
 void CastContentWindow::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
@@ -21,5 +24,8 @@ void CastContentWindow::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-}  // namespace shell
+mojom::MediaControlUi* CastContentWindow::media_controls() {
+  return nullptr;
+}
+
 }  // namespace chromecast

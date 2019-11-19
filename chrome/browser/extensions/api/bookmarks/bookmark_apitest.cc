@@ -42,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, Bookmarks) {
   node->Set("children", std::make_unique<base::ListValue>());
   list.Append(std::move(node));
   profile->GetPrefs()->Set(bookmarks::prefs::kManagedBookmarks, list);
-  ASSERT_EQ(2, managed->managed_node()->child_count());
+  ASSERT_EQ(2u, managed->managed_node()->children().size());
 
   ASSERT_TRUE(RunExtensionTest("bookmarks")) << message_;
 }

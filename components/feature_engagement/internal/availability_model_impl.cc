@@ -16,9 +16,7 @@ namespace feature_engagement {
 
 AvailabilityModelImpl::AvailabilityModelImpl(
     StoreLoadCallback store_load_callback)
-    : ready_(false),
-      store_load_callback_(std::move(store_load_callback)),
-      weak_ptr_factory_(this) {}
+    : ready_(false), store_load_callback_(std::move(store_load_callback)) {}
 
 AvailabilityModelImpl::~AvailabilityModelImpl() = default;
 

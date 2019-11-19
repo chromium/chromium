@@ -1,0 +1,44 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 2016],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGTableCell TD id='moveMe'",
+          "rect": [0, 100, 100, 100],
+          "reason": "disappeared"
+        }
+      ],
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) TD id='moveMe' class='fixed'",
+      "position": [100, 0],
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "paintInvalidations": [
+        {
+          "object": "LayoutNGBlockFlow (positioned) TD id='moveMe' class='fixed'",
+          "rect": [0, 0, 100, 100],
+          "reason": "full layer"
+        }
+      ]
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -100, 0, 1]
+      ]
+    }
+  ]
+}
+

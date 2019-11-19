@@ -5,10 +5,13 @@
 #ifndef IOS_WEB_PUBLIC_TEST_NAVIGATION_TEST_UTIL_H_
 #define IOS_WEB_PUBLIC_TEST_NAVIGATION_TEST_UTIL_H_
 
-#import "ios/web/public/web_state/web_state.h"
+#include "base/compiler_specific.h"
 #include "url/gurl.h"
 
 namespace web {
+
+class WebState;
+
 namespace test {
 
 // Loads |url| in |web_state| with transition of type ui::PAGE_TRANSITION_TYPED.

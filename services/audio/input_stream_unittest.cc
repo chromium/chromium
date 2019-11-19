@@ -9,12 +9,15 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
 #include "mojo/core/embedder/embedder.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/stream_factory.h"
 #include "services/audio/test/mock_log.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,50 +44,50 @@ const char* kDefaultDeviceId = "default";
 
 class MockStreamClient : public media::mojom::AudioInputStreamClient {
  public:
-  MockStreamClient() : binding_(this) {}
+  MockStreamClient() = default;
 
-  media::mojom::AudioInputStreamClientPtr MakePtr() {
-    DCHECK(!binding_.is_bound());
-    media::mojom::AudioInputStreamClientPtr ptr;
-    binding_.Bind(mojo::MakeRequest(&ptr));
-    binding_.set_connection_error_handler(base::BindOnce(
+  mojo::PendingRemote<media::mojom::AudioInputStreamClient> MakeRemote() {
+    DCHECK(!receiver_.is_bound());
+    mojo::PendingRemote<media::mojom::AudioInputStreamClient> remote;
+    receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+    receiver_.set_disconnect_handler(base::BindOnce(
         &MockStreamClient::BindingConnectionError, base::Unretained(this)));
-    return ptr;
+    return remote;
   }
 
-  void CloseBinding() { binding_.Close(); }
+  void CloseBinding() { receiver_.reset(); }
 
   MOCK_METHOD0(OnError, void());
   MOCK_METHOD1(OnMutedStateChanged, void(bool));
   MOCK_METHOD0(BindingConnectionError, void());
 
  private:
-  mojo::Binding<media::mojom::AudioInputStreamClient> binding_;
+  mojo::Receiver<media::mojom::AudioInputStreamClient> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockStreamClient);
 };
 
 class MockStreamObserver : public media::mojom::AudioInputStreamObserver {
  public:
-  MockStreamObserver() : binding_(this) {}
+  MockStreamObserver() = default;
 
-  media::mojom::AudioInputStreamObserverPtr MakePtr() {
-    DCHECK(!binding_.is_bound());
-    media::mojom::AudioInputStreamObserverPtr ptr;
-    binding_.Bind(mojo::MakeRequest(&ptr));
-    binding_.set_connection_error_handler(base::BindOnce(
+  mojo::PendingRemote<media::mojom::AudioInputStreamObserver> MakeRemote() {
+    DCHECK(!receiver_.is_bound());
+    mojo::PendingRemote<media::mojom::AudioInputStreamObserver> remote;
+    receiver_.Bind(remote.InitWithNewPipeAndPassReceiver());
+    receiver_.set_disconnect_handler(base::BindOnce(
         &MockStreamObserver::BindingConnectionError, base::Unretained(this)));
-    return ptr;
+    return remote;
   }
 
-  void CloseBinding() { binding_.Close(); }
+  void CloseBinding() { receiver_.reset(); }
 
   MOCK_METHOD0(DidStartRecording, void());
 
   MOCK_METHOD0(BindingConnectionError, void());
 
  private:
-  mojo::Binding<media::mojom::AudioInputStreamObserver> binding_;
+  mojo::Receiver<media::mojom::AudioInputStreamObserver> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockStreamObserver);
 };
@@ -117,8 +120,9 @@ class AudioServiceInputStreamTest : public testing::Test {
   AudioServiceInputStreamTest()
       : audio_manager_(std::make_unique<media::TestAudioThread>(false)),
         stream_factory_(&audio_manager_),
-        stream_factory_binding_(&stream_factory_,
-                                mojo::MakeRequest(&stream_factory_ptr_)) {}
+        stream_factory_receiver_(
+            &stream_factory_,
+            remote_stream_factory_.BindNewPipeAndPassReceiver()) {}
 
   ~AudioServiceInputStreamTest() override { audio_manager_.Shutdown(); }
 
@@ -133,43 +137,46 @@ class AudioServiceInputStreamTest : public testing::Test {
         mojo::core::ProcessErrorCallback());
   }
 
-  media::mojom::AudioInputStreamPtr CreateStream(bool enable_agc) {
-    media::mojom::AudioInputStreamPtr stream_ptr;
-    stream_factory_ptr_->CreateInputStream(
-        mojo::MakeRequest(&stream_ptr), client_.MakePtr(), observer_.MakePtr(),
-        log_.MakePtr(), kDefaultDeviceId,
+  mojo::PendingRemote<media::mojom::AudioInputStream> CreateStream(
+      bool enable_agc) {
+    mojo::PendingRemote<media::mojom::AudioInputStream> remote_stream;
+    remote_stream_factory_->CreateInputStream(
+        remote_stream.InitWithNewPipeAndPassReceiver(), client_.MakeRemote(),
+        observer_.MakeRemote(), log_.MakeRemote(), kDefaultDeviceId,
         media::AudioParameters::UnavailableDeviceParams(),
         kDefaultSharedMemoryCount, enable_agc, mojo::ScopedSharedBufferHandle(),
         nullptr,
         base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
                        base::Unretained(this)));
-    return stream_ptr;
+    return remote_stream;
   }
 
-  media::mojom::AudioInputStreamPtr CreateStreamWithNullptrLog() {
-    media::mojom::AudioInputStreamPtr stream_ptr;
-    stream_factory_ptr_->CreateInputStream(
-        mojo::MakeRequest(&stream_ptr), client_.MakePtr(), observer_.MakePtr(),
-        nullptr, kDefaultDeviceId,
+  mojo::PendingRemote<media::mojom::AudioInputStream>
+  CreateStreamWithNullptrLog() {
+    mojo::PendingRemote<media::mojom::AudioInputStream> remote_stream;
+    remote_stream_factory_->CreateInputStream(
+        remote_stream.InitWithNewPipeAndPassReceiver(), client_.MakeRemote(),
+        observer_.MakeRemote(), mojo::NullRemote(), kDefaultDeviceId,
         media::AudioParameters::UnavailableDeviceParams(),
         kDefaultSharedMemoryCount, false, mojo::ScopedSharedBufferHandle(),
         nullptr,
         base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
                        base::Unretained(this)));
-    return stream_ptr;
+    return remote_stream;
   }
 
-  media::mojom::AudioInputStreamPtr CreateStreamWithNullptrObserver() {
-    media::mojom::AudioInputStreamPtr stream_ptr;
-    stream_factory_ptr_->CreateInputStream(
-        mojo::MakeRequest(&stream_ptr), client_.MakePtr(), nullptr,
-        log_.MakePtr(), kDefaultDeviceId,
+  mojo::PendingRemote<media::mojom::AudioInputStream>
+  CreateStreamWithNullptrObserver() {
+    mojo::PendingRemote<media::mojom::AudioInputStream> remote_stream;
+    remote_stream_factory_->CreateInputStream(
+        remote_stream.InitWithNewPipeAndPassReceiver(), client_.MakeRemote(),
+        mojo::NullRemote(), log_.MakeRemote(), kDefaultDeviceId,
         media::AudioParameters::UnavailableDeviceParams(),
         kDefaultSharedMemoryCount, false, mojo::ScopedSharedBufferHandle(),
         nullptr,
         base::BindOnce(&AudioServiceInputStreamTest::OnCreated,
                        base::Unretained(this)));
-    return stream_ptr;
+    return remote_stream;
   }
 
   media::MockAudioManager& audio_manager() { return audio_manager_; }
@@ -191,11 +198,11 @@ class AudioServiceInputStreamTest : public testing::Test {
   MOCK_METHOD1(BadMessageCallback, void(const std::string&));
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_env_;
+  base::test::TaskEnvironment scoped_task_env_;
   media::MockAudioManager audio_manager_;
   StreamFactory stream_factory_;
-  mojom::StreamFactoryPtr stream_factory_ptr_;
-  mojo::Binding<mojom::StreamFactory> stream_factory_binding_;
+  mojo::Remote<mojom::StreamFactory> remote_stream_factory_;
+  mojo::Receiver<mojom::StreamFactory> stream_factory_receiver_;
   StrictMock<MockStreamClient> client_;
   StrictMock<MockStreamObserver> observer_;
   NiceMock<MockLog> log_;
@@ -214,14 +221,15 @@ TEST_F(AudioServiceInputStreamTest, ConstructDestruct) {
   EXPECT_CALL(mock_stream, IsMuted()).WillOnce(Return(kNotMuted));
   EXPECT_CALL(log(), OnCreated(_, _));
   EXPECT_CALL(*this, CreatedCallback(kValidStream, kNotMuted));
-  media::mojom::AudioInputStreamPtr stream_ptr = CreateStream(kDoNotEnableAGC);
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStream(kDoNotEnableAGC));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_stream, Close());
   EXPECT_CALL(log(), OnClosed());
   EXPECT_CALL(client(), BindingConnectionError());
   EXPECT_CALL(observer(), BindingConnectionError());
-  stream_ptr.reset();
+  remote_stream.reset();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -235,13 +243,14 @@ TEST_F(AudioServiceInputStreamTest, ConstructDestructNullptrLog) {
   EXPECT_CALL(mock_stream, Open()).WillOnce(Return(true));
   EXPECT_CALL(mock_stream, IsMuted()).WillOnce(Return(kNotMuted));
   EXPECT_CALL(*this, CreatedCallback(kValidStream, kNotMuted));
-  media::mojom::AudioInputStreamPtr stream_ptr = CreateStreamWithNullptrLog();
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStreamWithNullptrLog());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_stream, Close());
   EXPECT_CALL(client(), BindingConnectionError());
   EXPECT_CALL(observer(), BindingConnectionError());
-  stream_ptr.reset();
+  remote_stream.reset();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -256,14 +265,14 @@ TEST_F(AudioServiceInputStreamTest, ConstructDestructNullptrObserver) {
   EXPECT_CALL(mock_stream, IsMuted()).WillOnce(Return(kNotMuted));
   EXPECT_CALL(log(), OnCreated(_, _));
   EXPECT_CALL(*this, CreatedCallback(kValidStream, kNotMuted));
-  media::mojom::AudioInputStreamPtr stream_ptr =
-      CreateStreamWithNullptrObserver();
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStreamWithNullptrObserver());
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_stream, Close());
   EXPECT_CALL(log(), OnClosed());
   EXPECT_CALL(client(), BindingConnectionError());
-  stream_ptr.reset();
+  remote_stream.reset();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -279,7 +288,8 @@ TEST_F(AudioServiceInputStreamTest,
   EXPECT_CALL(mock_stream, IsMuted()).WillOnce(Return(kNotMuted));
   EXPECT_CALL(log(), OnCreated(_, _));
   EXPECT_CALL(*this, CreatedCallback(kValidStream, kNotMuted));
-  media::mojom::AudioInputStreamPtr stream_ptr = CreateStream(kDoNotEnableAGC);
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStream(kDoNotEnableAGC));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_stream, Close());
@@ -301,7 +311,8 @@ TEST_F(AudioServiceInputStreamTest,
   EXPECT_CALL(mock_stream, IsMuted()).WillOnce(Return(kNotMuted));
   EXPECT_CALL(log(), OnCreated(_, _));
   EXPECT_CALL(*this, CreatedCallback(kValidStream, kNotMuted));
-  media::mojom::AudioInputStreamPtr stream_ptr = CreateStream(kDoNotEnableAGC);
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStream(kDoNotEnableAGC));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_stream, Close());
@@ -324,14 +335,15 @@ TEST_F(AudioServiceInputStreamTest,
   EXPECT_CALL(log(), OnCreated(_, _));
   EXPECT_CALL(*this, CreatedCallback(kValidStream, kNotMuted));
 
-  media::mojom::AudioInputStreamPtr stream_ptr = CreateStream(kDoNotEnableAGC);
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStream(kDoNotEnableAGC));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_stream, Close());
   EXPECT_CALL(log(), OnClosed());
   EXPECT_CALL(client(), BindingConnectionError());
   EXPECT_CALL(observer(), BindingConnectionError());
-  stream_ptr.reset();
+  remote_stream.reset();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -346,13 +358,14 @@ TEST_F(AudioServiceInputStreamTest, Record) {
   EXPECT_CALL(mock_stream, IsMuted()).WillOnce(Return(kNotMuted));
   EXPECT_CALL(log(), OnCreated(_, _));
   EXPECT_CALL(*this, CreatedCallback(kValidStream, kNotMuted));
-  media::mojom::AudioInputStreamPtr stream_ptr = CreateStream(kDoNotEnableAGC);
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStream(kDoNotEnableAGC));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_stream, Start(NotNull()));
   EXPECT_CALL(log(), OnStarted());
   EXPECT_CALL(observer(), DidStartRecording());
-  stream_ptr->Record();
+  remote_stream->Record();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_stream, Stop());
@@ -360,7 +373,7 @@ TEST_F(AudioServiceInputStreamTest, Record) {
   EXPECT_CALL(log(), OnClosed());
   EXPECT_CALL(client(), BindingConnectionError());
   EXPECT_CALL(observer(), BindingConnectionError());
-  stream_ptr.reset();
+  remote_stream.reset();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -375,20 +388,21 @@ TEST_F(AudioServiceInputStreamTest, SetVolume) {
   EXPECT_CALL(mock_stream, IsMuted()).WillOnce(Return(kNotMuted));
   EXPECT_CALL(log(), OnCreated(_, _));
   EXPECT_CALL(*this, CreatedCallback(kValidStream, kNotMuted));
-  media::mojom::AudioInputStreamPtr stream_ptr = CreateStream(kDoNotEnableAGC);
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStream(kDoNotEnableAGC));
   base::RunLoop().RunUntilIdle();
 
   const double new_volume = 0.618;
   EXPECT_CALL(mock_stream, SetVolume(new_volume));
   EXPECT_CALL(log(), OnSetVolume(new_volume));
-  stream_ptr->SetVolume(new_volume);
+  remote_stream->SetVolume(new_volume);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_stream, Close());
   EXPECT_CALL(log(), OnClosed());
   EXPECT_CALL(client(), BindingConnectionError());
   EXPECT_CALL(observer(), BindingConnectionError());
-  stream_ptr.reset();
+  remote_stream.reset();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -403,7 +417,8 @@ TEST_F(AudioServiceInputStreamTest, SetNegativeVolume_BadMessage) {
   EXPECT_CALL(mock_stream, IsMuted()).WillOnce(Return(kNotMuted));
   EXPECT_CALL(log(), OnCreated(_, _));
   EXPECT_CALL(*this, CreatedCallback(kValidStream, kNotMuted));
-  media::mojom::AudioInputStreamPtr stream_ptr = CreateStream(kDoNotEnableAGC);
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStream(kDoNotEnableAGC));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(*this, BadMessageCallback(_));
@@ -411,7 +426,7 @@ TEST_F(AudioServiceInputStreamTest, SetNegativeVolume_BadMessage) {
   EXPECT_CALL(log(), OnClosed());
   EXPECT_CALL(client(), BindingConnectionError());
   EXPECT_CALL(observer(), BindingConnectionError());
-  stream_ptr->SetVolume(-0.618);
+  remote_stream->SetVolume(-0.618);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -426,7 +441,8 @@ TEST_F(AudioServiceInputStreamTest, SetVolumeGreaterThanOne_BadMessage) {
   EXPECT_CALL(mock_stream, IsMuted()).WillOnce(Return(kNotMuted));
   EXPECT_CALL(log(), OnCreated(_, _));
   EXPECT_CALL(*this, CreatedCallback(kValidStream, kNotMuted));
-  media::mojom::AudioInputStreamPtr stream_ptr = CreateStream(kDoNotEnableAGC);
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStream(kDoNotEnableAGC));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(*this, BadMessageCallback(_));
@@ -434,7 +450,7 @@ TEST_F(AudioServiceInputStreamTest, SetVolumeGreaterThanOne_BadMessage) {
   EXPECT_CALL(log(), OnClosed());
   EXPECT_CALL(client(), BindingConnectionError());
   EXPECT_CALL(observer(), BindingConnectionError());
-  stream_ptr->SetVolume(1.618);
+  remote_stream->SetVolume(1.618);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -450,14 +466,15 @@ TEST_F(AudioServiceInputStreamTest, CreateStreamWithAGCEnable_PropagateAGC) {
   EXPECT_CALL(mock_stream, SetAutomaticGainControl(kDoEnableAGC));
   EXPECT_CALL(log(), OnCreated(_, _));
   EXPECT_CALL(*this, CreatedCallback(kValidStream, kNotMuted));
-  media::mojom::AudioInputStreamPtr stream_ptr = CreateStream(kDoEnableAGC);
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStream(kDoEnableAGC));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(log(), OnClosed());
   EXPECT_CALL(mock_stream, Close());
   EXPECT_CALL(client(), BindingConnectionError());
   EXPECT_CALL(observer(), BindingConnectionError());
-  stream_ptr.reset();
+  remote_stream.reset();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -473,14 +490,15 @@ TEST_F(AudioServiceInputStreamTest,
   EXPECT_CALL(mock_stream, IsMuted()).WillOnce(Return(kMuted));
   EXPECT_CALL(log(), OnCreated(_, _));
   EXPECT_CALL(*this, CreatedCallback(kValidStream, kMuted));
-  media::mojom::AudioInputStreamPtr stream_ptr = CreateStream(kDoEnableAGC);
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStream(kDoEnableAGC));
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(log(), OnClosed());
   EXPECT_CALL(mock_stream, Close());
   EXPECT_CALL(client(), BindingConnectionError());
   EXPECT_CALL(observer(), BindingConnectionError());
-  stream_ptr.reset();
+  remote_stream.reset();
   base::RunLoop().RunUntilIdle();
 }
 
@@ -488,7 +506,8 @@ TEST_F(AudioServiceInputStreamTest,
        ConstructWithStreamCreationFailure_SignalsError) {
   // By default, MockAudioManager fails to create a stream.
 
-  media::mojom::AudioInputStreamPtr stream_ptr = CreateStream(kDoNotEnableAGC);
+  mojo::Remote<media::mojom::AudioInputStream> remote_stream(
+      CreateStream(kDoNotEnableAGC));
 
   EXPECT_CALL(*this, CreatedCallback(kInvalidStream, kNotMuted));
   EXPECT_CALL(log(), OnError());

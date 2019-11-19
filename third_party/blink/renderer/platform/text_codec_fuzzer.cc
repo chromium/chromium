@@ -6,11 +6,8 @@
 
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
 #include "third_party/blink/renderer/platform/testing/fuzzed_data_provider.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
-
-using namespace blink;
 
 // TODO(jsbell): This fuzzes code in wtf/ but has dependencies on platform/,
 // so it must live in the latter directory. Once wtf/ moves into platform/wtf
@@ -28,7 +25,7 @@ class TextCodecFuzzHarness {};
 
 // Fuzzer for WTF::TextCodec.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
+  static blink::BlinkFuzzerTestSupport test_support;
   // The fuzzer picks 3 bytes off the end of the data to initialize metadata, so
   // abort if the input is smaller than that.
   if (size < 3)
@@ -46,36 +43,38 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 #endif
       "");
 
-  FuzzedDataProvider fuzzedData(data, size);
+  // Use the fully qualified name to avoid ambiguity with the standard class.
+  blink::FuzzedDataProvider fuzzed_data(data, size);
 
   // Initialize metadata using the fuzzed data.
-  bool stopOnError = fuzzedData.ConsumeBool();
-  WTF::UnencodableHandling unencodableHandling =
-      fuzzedData.PickValueInArray(kUnencodableHandlingOptions);
-  WTF::FlushBehavior flushBehavior =
-      fuzzedData.PickValueInArray(kFlushBehavior);
+  bool stop_on_error = fuzzed_data.ConsumeBool();
+  WTF::UnencodableHandling unencodable_handling =
+      fuzzed_data.PickValueInArray(kUnencodableHandlingOptions);
+  WTF::FlushBehavior flush_behavior =
+      fuzzed_data.PickValueInArray(kFlushBehavior);
 
   // Now, use the rest of the fuzzy data to stress test decoding and encoding.
-  const CString byteString = fuzzedData.ConsumeRemainingBytes();
+  const std::string byte_string = fuzzed_data.ConsumeRemainingBytes();
   std::unique_ptr<TextCodec> codec = NewTextCodec(encoding);
 
   // Treat as bytes-off-the-wire.
-  bool sawError;
-  const String decoded = codec->Decode(byteString.data(), byteString.length(),
-                                       flushBehavior, stopOnError, sawError);
+  bool saw_error;
+  const String decoded =
+      codec->Decode(byte_string.data(), byte_string.length(), flush_behavior,
+                    stop_on_error, saw_error);
 
   // Treat as blink 8-bit string (latin1).
   if (size % sizeof(LChar) == 0) {
     std::unique_ptr<TextCodec> codec = NewTextCodec(encoding);
-    codec->Encode(reinterpret_cast<const LChar*>(byteString.data()),
-                  byteString.length() / sizeof(LChar), unencodableHandling);
+    codec->Encode(reinterpret_cast<const LChar*>(byte_string.data()),
+                  byte_string.length() / sizeof(LChar), unencodable_handling);
   }
 
   // Treat as blink 16-bit string (utf-16) if there are an even number of bytes.
   if (size % sizeof(UChar) == 0) {
     std::unique_ptr<TextCodec> codec = NewTextCodec(encoding);
-    codec->Encode(reinterpret_cast<const UChar*>(byteString.data()),
-                  byteString.length() / sizeof(UChar), unencodableHandling);
+    codec->Encode(reinterpret_cast<const UChar*>(byte_string.data()),
+                  byte_string.length() / sizeof(UChar), unencodable_handling);
   }
 
   if (decoded.IsNull())
@@ -83,10 +82,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Round trip the bytes (aka encode the decoded bytes).
   if (decoded.Is8Bit()) {
-    codec->Encode(decoded.Characters8(), decoded.length(), unencodableHandling);
+    codec->Encode(decoded.Characters8(), decoded.length(),
+                  unencodable_handling);
   } else {
     codec->Encode(decoded.Characters16(), decoded.length(),
-                  unencodableHandling);
+                  unencodable_handling);
   }
   return 0;
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -23,7 +24,7 @@ public class OmniboxPrerender {
      * Constructor for creating a OmniboxPrerender instanace.
      */
     public OmniboxPrerender() {
-        mNativeOmniboxPrerender = nativeInit();
+        mNativeOmniboxPrerender = OmniboxPrerenderJni.get().init(OmniboxPrerender.this);
     }
 
     /**
@@ -33,7 +34,7 @@ public class OmniboxPrerender {
      * @param profile profile instance corresponding to the active profile.
      */
     public void clear(Profile profile) {
-        nativeClear(mNativeOmniboxPrerender, profile);
+        OmniboxPrerenderJni.get().clear(mNativeOmniboxPrerender, OmniboxPrerender.this, profile);
     }
 
     /**
@@ -44,7 +45,8 @@ public class OmniboxPrerender {
      * @param profile profile instance corresponding to active profile.
      */
     public void initializeForProfile(Profile profile) {
-        nativeInitializeForProfile(mNativeOmniboxPrerender, profile);
+        OmniboxPrerenderJni.get().initializeForProfile(
+                mNativeOmniboxPrerender, OmniboxPrerender.this, profile);
     }
 
     /**
@@ -60,16 +62,17 @@ public class OmniboxPrerender {
      */
     public void prerenderMaybe(String url, String currentUrl, long nativeAutocompleteResult,
             Profile profile, Tab tab) {
-        nativePrerenderMaybe(mNativeOmniboxPrerender, url, currentUrl, nativeAutocompleteResult,
-                profile, tab);
+        OmniboxPrerenderJni.get().prerenderMaybe(mNativeOmniboxPrerender, OmniboxPrerender.this,
+                url, currentUrl, nativeAutocompleteResult, profile, tab);
     }
 
-    private native long nativeInit();
-    private native void nativeClear(long nativeOmniboxPrerender, Profile profile);
-    private native void nativeInitializeForProfile(
-            long nativeOmniboxPrerender,
-            Profile profile);
-    private native void nativePrerenderMaybe(long nativeOmniboxPrerender, String url,
-            String currentUrl, long nativeAutocompleteResult, Profile profile,
-            Tab tab);
+    @NativeMethods
+    interface Natives {
+        long init(OmniboxPrerender caller);
+        void clear(long nativeOmniboxPrerender, OmniboxPrerender caller, Profile profile);
+        void initializeForProfile(
+                long nativeOmniboxPrerender, OmniboxPrerender caller, Profile profile);
+        void prerenderMaybe(long nativeOmniboxPrerender, OmniboxPrerender caller, String url,
+                String currentUrl, long nativeAutocompleteResult, Profile profile, Tab tab);
+    }
 }

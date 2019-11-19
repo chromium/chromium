@@ -44,6 +44,7 @@ class ShortcutsDatabase : public base::RefCountedThreadSafe<ShortcutsDatabase> {
     struct MatchCore {
       MatchCore(const base::string16& fill_into_edit,
                 const GURL& destination_url,
+                int document_type,
                 const base::string16& contents,
                 const std::string& contents_class,
                 const base::string16& description,
@@ -56,6 +57,7 @@ class ShortcutsDatabase : public base::RefCountedThreadSafe<ShortcutsDatabase> {
 
       base::string16 fill_into_edit;
       GURL destination_url;
+      int document_type;
       base::string16 contents;
       // For both contents_class and description_class, we strip MATCH
       // classifications; the ShortcutsProvider will re-mark MATCH regions based
@@ -123,6 +125,11 @@ class ShortcutsDatabase : public base::RefCountedThreadSafe<ShortcutsDatabase> {
 
   // Ensures that the table is present.
   bool EnsureTable();
+
+  // Migrates table from version |version| - 1 to |version|. |version| = -1
+  // indicates there is no preexisting table; |DoMigration| will migrate to the
+  // latest version, skipping iterative migrations.
+  bool DoMigration(int version);
 
   // The sql database. Not valid until Init is called.
   sql::Database db_;

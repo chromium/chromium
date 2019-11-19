@@ -1,0 +1,16 @@
+# https://crbug.com/1001075: Fix this failing tests for Ozone/X11.
+-DesktopWidgetObserverTest.OnWidgetMovedWhenOriginChangesNative
+-DesktopWidgetTest.GetWindowPlacement
+-DesktopWidgetTest.ValidDuringOnNativeWidgetDestroyingFromCloseNow
+-DesktopWidgetTestTest.GetAllWidgets
+-DesktopWindowTreeHostPlatformTest.CallOnNativeWidgetDestroying
+-DesktopAuraWidgetTest.CloseWidgetDuringMousePress
+-DesktopNativeWidgetAuraTest.DesktopAuraWindowShowFrameless
+-DesktopWidgetTest.CloseAllSecondaryWidgets
+-DesktopWidgetTest.CloseRequested_AllowsClose
+-DesktopWidgetTest.CloseRequested_DisallowClose
+-DesktopWidgetTest.CloseRequested_SecondCloseIgnored
+-DesktopWidgetTest.MinimumSizeConstraints
+-DesktopWidgetTest.SingleWindowClosing
+-DesktopWidgetTest.WidgetDestroyedItselfDoesNotCrash
+-TooltipControllerCaptureTest.Capture

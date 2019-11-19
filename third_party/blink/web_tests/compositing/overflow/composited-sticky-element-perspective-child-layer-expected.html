@@ -2,6 +2,10 @@
 <title>Reference for a composited child of a perspective sticky element should work correctly</title>
 
 <style>
+.composited {
+  backface-visibility: hidden;
+}
+
 .scroller {
   overflow-y: scroll;
   height: 100px;
@@ -26,7 +30,7 @@ window.addEventListener('load', function() {
 });
 </script>
 
-<div class="scroller">
+<div class="composited scroller">
   <div class="marker"></div>
   <div class="padding"></div>
 </div>

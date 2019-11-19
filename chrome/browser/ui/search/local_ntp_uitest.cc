@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/search/ntp_features.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -12,37 +9,29 @@
 #include "chrome/browser/ui/search/instant_test_utils.h"
 #include "chrome/browser/ui/search/local_ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 
-class LocalNTPUITest : public InProcessBrowserTest {
+class LocalNtpUiTest : public InProcessBrowserTest {
  public:
-  LocalNTPUITest() {}
+  LocalNtpUiTest() {}
 
   OmniboxView* omnibox() {
     return browser()->window()->GetLocationBar()->GetOmniboxView();
   }
-
- private:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(features::kUseGoogleLocalNtp);
-    InProcessBrowserTest::SetUp();
-  }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(LocalNTPUITest, FakeboxRedirectsToOmnibox) {
+IN_PROC_BROWSER_TEST_F(LocalNtpUiTest, FakeboxRedirectsToOmnibox) {
   content::WebContents* active_tab =
       local_ntp_test_utils::OpenNewTab(browser(), GURL("about:blank"));
   local_ntp_test_utils::NavigateToNTPAndWaitUntilLoaded(browser(), 1000);
@@ -87,14 +76,11 @@ IN_PROC_BROWSER_TEST_F(LocalNTPUITest, FakeboxRedirectsToOmnibox) {
                                                gfx::Vector2d(1, 1)));
 
   // Click on the fakebox, and wait for the omnibox to receive invisible focus.
-  content::WindowedNotificationObserver focus_observer(
-      chrome::NOTIFICATION_OMNIBOX_FOCUS_CHANGED,
-      content::NotificationService::AllSources());
   ASSERT_TRUE(
       ui_test_utils::SendMouseEventsSync(ui_controls::LEFT, ui_controls::DOWN));
   ASSERT_TRUE(
       ui_test_utils::SendMouseEventsSync(ui_controls::LEFT, ui_controls::UP));
-  focus_observer.Wait();
+  ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
   EXPECT_EQ(OMNIBOX_FOCUS_INVISIBLE, omnibox()->model()->focus_state());
 
   // The fakebox should now also have focus.
@@ -104,13 +90,10 @@ IN_PROC_BROWSER_TEST_F(LocalNTPUITest, FakeboxRedirectsToOmnibox) {
   EXPECT_TRUE(result);
 
   // Type "a" and wait for the omnibox to receive visible focus.
-  content::WindowedNotificationObserver focus_observer2(
-      chrome::NOTIFICATION_OMNIBOX_FOCUS_CHANGED,
-      content::NotificationService::AllSources());
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::KeyboardCode::VKEY_A,
       /*control=*/false, /*shift=*/false, /*alt=*/false, /*command=*/false));
-  focus_observer2.Wait();
+  ui_test_utils::WaitForViewFocus(browser(), VIEW_ID_OMNIBOX, true);
   EXPECT_EQ(OMNIBOX_FOCUS_VISIBLE, omnibox()->model()->focus_state());
 
   // The typed text should have arrived in the omnibox.

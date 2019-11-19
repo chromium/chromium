@@ -12,10 +12,10 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_export.h"
 
 namespace enterprise_management {
@@ -57,9 +57,14 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   // kChromeExtensionPolicyType, kChromeMachineLevelExtensionCloudPolicyType.
   // Please update component_cloud_policy_store.cc in case there is new policy
   // type added.
+  // |policy_source| specifies where the policy originates from, and can be used
+  // to configure precedence when the same components are configured by policies
+  // from different sources. It only accepts POLICY_SOURCE_CLOUD and
+  // POLICY_SOURCE_PRIORITY_CLOUD now.
   ComponentCloudPolicyStore(Delegate* delegate,
                             ResourceCache* cache,
-                            const std::string& policy_type);
+                            const std::string& policy_type,
+                            PolicySource policy_source);
   ~ComponentCloudPolicyStore();
 
   // Helper that returns true for PolicyDomains that can be managed by this
@@ -82,7 +87,8 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   // The passed credentials are used to validate the cached data, and data
   // stored later.
   // All ValidatePolicy() requests without credentials fail.
-  void SetCredentials(const AccountId& account_id,
+  void SetCredentials(const std::string& username,
+                      const std::string& gaia_id,
                       const std::string& dm_token,
                       const std::string& device_id,
                       const std::string& public_key,
@@ -145,7 +151,8 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   ResourceCache* const cache_;
 
   // The following fields contain credentials used for validating the policy.
-  AccountId account_id_;
+  std::string username_;
+  std::string gaia_id_;
   std::string dm_token_;
   std::string device_id_;
   std::string public_key_;
@@ -161,6 +168,8 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   std::map<PolicyNamespace, base::Time> stored_policy_times_;
 
   const DomainConstants* domain_constants_;
+
+  const PolicySource policy_source_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -1,5 +1,3 @@
-namespace third_party_unrar {
-
 ArcMemory::ArcMemory()
 {
   Loaded=false;
@@ -67,5 +65,3 @@ bool ArcMemory::Tell(int64 *Pos)
   *Pos=SeekPos;
   return true;
 }
-
-}  // namespace third_party_unrar

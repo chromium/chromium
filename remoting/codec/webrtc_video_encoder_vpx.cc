@@ -524,12 +524,12 @@ void WebrtcVideoEncoderVpx::UpdateConfig(const FrameParams& params) {
 void WebrtcVideoEncoderVpx::PrepareImage(
     const webrtc::DesktopFrame* frame,
     webrtc::DesktopRegion* updated_region) {
-  if (!frame || frame->updated_region().is_empty()) {
-    updated_region->Clear();
+  updated_region->Clear();
+
+  if (!frame) {
     return;
   }
 
-  updated_region->Clear();
   if (image_) {
     // Pad each rectangle to avoid the block-artifact filters in libvpx from
     // introducing artifacts; VP9 includes up to 8px either side, and VP8 up to
@@ -547,7 +547,6 @@ void WebrtcVideoEncoderVpx::PrepareImage(
           rect.left() - padding, rect.top() - padding, rect.right() + padding,
           rect.bottom() + padding)));
     }
-    DCHECK(!updated_region->is_empty());
 
     // Clip back to the screen dimensions, in case they're not macroblock
     // aligned. The conversion routines don't require even width & height,

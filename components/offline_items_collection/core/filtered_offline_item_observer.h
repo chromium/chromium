@@ -23,7 +23,9 @@ class FilteredOfflineItemObserver : public OfflineContentProvider::Observer {
   class Observer {
    public:
     virtual void OnItemRemoved(const ContentId& id) = 0;
-    virtual void OnItemUpdated(const OfflineItem& item) = 0;
+    virtual void OnItemUpdated(
+        const OfflineItem& item,
+        const base::Optional<UpdateDelta>& update_delta) = 0;
 
    protected:
     virtual ~Observer() = default;
@@ -43,7 +45,8 @@ class FilteredOfflineItemObserver : public OfflineContentProvider::Observer {
   void OnItemsAdded(
       const OfflineContentProvider::OfflineItemList& items) override;
   void OnItemRemoved(const ContentId& id) override;
-  void OnItemUpdated(const OfflineItem& item) override;
+  void OnItemUpdated(const OfflineItem& item,
+                     const base::Optional<UpdateDelta>& update_delta) override;
 
   OfflineContentProvider* provider_;
   ObserversMap observers_;

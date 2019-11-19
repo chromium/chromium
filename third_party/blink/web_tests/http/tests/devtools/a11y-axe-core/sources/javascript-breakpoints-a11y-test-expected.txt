@@ -1,0 +1,6 @@
+Testing accessibility in the javascript breakpoints pane.
+Setting a breakpoint.
+Running axe on the javascript breakpoints pane.
+aXe violations: []
+
+

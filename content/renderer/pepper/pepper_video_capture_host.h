@@ -64,7 +64,7 @@ class PepperVideoCaptureHost : public ppapi::host::ResourceHost {
   void OnError();
 
   // Called when a video frame is ready.
-  void OnFrameReady(const scoped_refptr<media::VideoFrame>& frame);
+  void OnFrameReady(const media::VideoFrame& frame);
 
  private:
   int32_t OnOpen(ppapi::host::HostMessageContext* context,

@@ -19,10 +19,6 @@ bool NavigatorDelegate::ShouldTransferNavigation(
   return true;
 }
 
-bool NavigatorDelegate::ShouldPreserveAbortedURLs() {
-  return false;
-}
-
 std::vector<std::unique_ptr<NavigationThrottle>>
 NavigatorDelegate::CreateThrottlesForNavigation(
     NavigationHandle* navigation_handle) {

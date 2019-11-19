@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_text_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestion_identifier.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -57,7 +58,7 @@
 // Configures the |textLabel|.
 - (void)configureTextLabel:(UILabel*)textLabel {
   textLabel.text = self.text;
-  textLabel.textColor = [UIColor colorWithWhite:0.13 alpha:1];
+  textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
   textLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   textLabel.adjustsFontForContentSizeCategory = YES;
@@ -67,7 +68,7 @@
 // Configures the |detailTextLabel|.
 - (void)configureDetailTextLabel:(UILabel*)detailTextLabel {
   detailTextLabel.text = self.detailText;
-  detailTextLabel.textColor = [UIColor colorWithWhite:0.62 alpha:1];
+  detailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   detailTextLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   detailTextLabel.adjustsFontForContentSizeCategory = YES;

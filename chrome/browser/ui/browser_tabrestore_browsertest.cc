@@ -12,11 +12,13 @@
 #include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 
 typedef InProcessBrowserTest BrowserTabRestoreTest;
 
@@ -32,7 +34,8 @@ void CheckVisbility(TabStripModel* tab_strip_model, int visible_index) {
   for (int i = 0; i < tab_strip_model->count(); ++i) {
     content::WebContents* contents = tab_strip_model->GetWebContentsAt(i);
     std::string document_visibility_state;
-    const char kGetStateJS[] = "window.domAutomationController.send("
+    const char kGetStateJS[] =
+        "window.domAutomationController.send("
         "window.document.visibilityState);";
     EXPECT_TRUE(content::ExecuteScriptAndExtractString(
         contents, kGetStateJS, &document_visibility_state));
@@ -45,7 +48,8 @@ void CheckVisbility(TabStripModel* tab_strip_model, int visible_index) {
 }
 
 void CreateTestTabs(Browser* browser) {
-  GURL test_page(ui_test_utils::GetTestUrl(base::FilePath(),
+  GURL test_page(ui_test_utils::GetTestUrl(
+      base::FilePath(),
       base::FilePath(FILE_PATH_LITERAL("tab-restore-visibility.html"))));
   ui_test_utils::NavigateToURLWithDisposition(
       browser, test_page, WindowOpenDisposition::NEW_FOREGROUND_TAB,
@@ -75,8 +79,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTabRestoreTest, RecentTabsMenuTabDisposition) {
   content::DOMMessageQueue queue;
   Browser* browser = active_browser_list->get(0);
   RecentTabsSubMenuModel menu(nullptr, browser);
-  menu.ExecuteCommand(
-      RecentTabsSubMenuModel::GetFirstRecentTabsCommandId(), 0);
+  menu.ExecuteCommand(RecentTabsSubMenuModel::GetFirstRecentTabsCommandId(), 0);
   AwaitTabsReady(&queue, 2);
 
   // There should be 3 restored tabs in the new browser.

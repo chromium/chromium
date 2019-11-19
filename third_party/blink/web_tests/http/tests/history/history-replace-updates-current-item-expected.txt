@@ -1,0 +1,6 @@
+PASS
+
+============== Back Forward List ==============
+curr->  http://127.0.0.1:8000/history/resources/history-replace-updates-current-item-done.html
+        http://127.0.0.1:8000/history/resources/history-replace-updates-current-item-goback.html
+===============================================

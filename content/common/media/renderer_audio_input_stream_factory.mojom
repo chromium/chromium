@@ -4,10 +4,10 @@
 
 module content.mojom;
 
-import "media/mojo/interfaces/audio_data_pipe.mojom";
-import "media/mojo/interfaces/audio_input_stream.mojom";
-import "media/mojo/interfaces/audio_parameters.mojom";
-import "media/mojo/interfaces/media_types.mojom";
+import "media/mojo/mojom/audio_data_pipe.mojom";
+import "media/mojo/mojom/audio_input_stream.mojom";
+import "media/mojo/mojom/audio_parameters.mojom";
+import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/audio/public/mojom/audio_processing.mojom";
 
@@ -17,8 +17,8 @@ import "services/audio/public/mojom/audio_processing.mojom";
 // by the lifetime of the client.
 interface RendererAudioInputStreamFactory {
   CreateStream(
-      RendererAudioInputStreamFactoryClient client,
-      int32 session_id,
+      pending_remote<RendererAudioInputStreamFactoryClient> client,
+      mojo_base.mojom.UnguessableToken session_id,
       media.mojom.AudioParameters params,
       bool automatic_gain_control,
       uint32 shared_memory_count,
@@ -44,8 +44,8 @@ interface RendererAudioInputStreamFactoryClient {
   // process hosting it crashing, this function should be called again with a
   // fresh stream.
   StreamCreated(
-      media.mojom.AudioInputStream stream,
-      media.mojom.AudioInputStreamClient& client_request,
+      pending_remote<media.mojom.AudioInputStream> stream,
+      pending_receiver<media.mojom.AudioInputStreamClient> client_request,
       media.mojom.ReadOnlyAudioDataPipe data_pipe,
       bool initially_muted,
       mojo_base.mojom.UnguessableToken? stream_id);

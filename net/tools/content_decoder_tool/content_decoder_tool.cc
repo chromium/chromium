@@ -49,6 +49,8 @@ class StdinSourceStream : public SourceStream {
 
   std::string Description() const override { return ""; }
 
+  bool MayHaveMoreBytes() const override { return true; }
+
  private:
   std::istream* input_stream_;
 

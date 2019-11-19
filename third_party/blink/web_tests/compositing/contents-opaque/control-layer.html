@@ -2,7 +2,7 @@
     <head>
         <style type="text/css">
             .composited {
-                transform: translateZ(0);
+                will-change: transform;
             }
         </style>
         <script type="text/javascript">
@@ -11,9 +11,7 @@
 
             function doTest() {
                 if (window.testRunner && window.internals) {
-                    var layerTree = internals.elementLayerTreeAsText(document.getElementById('control'));
-                    document.getElementById('result').innerText =
-                        layerTree.indexOf('contentsOpaque 1') == -1 ? 'PASS' : 'FAIL:\n' + layerTree;
+                    testRunner.setCustomTextOutput(internals.layerTreeAsText(document));
                 }
             }
             window.addEventListener('load', doTest, false);

@@ -8,21 +8,32 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.Surface;
 
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 
 /**
  * A wrapper for marshalling a Surface without self-destruction.
  */
+@JNINamespace("content")
 @MainDex
 public class SurfaceWrapper implements Parcelable {
     private final Surface mSurface;
+    private final boolean mCanBeUsedWithSurfaceControl;
 
-    public SurfaceWrapper(Surface surface) {
+    public SurfaceWrapper(Surface surface, boolean canBeUsedWithSurfaceControl) {
         mSurface = surface;
+        mCanBeUsedWithSurfaceControl = canBeUsedWithSurfaceControl;
     }
 
+    @CalledByNative
     public Surface getSurface() {
         return mSurface;
+    }
+
+    @CalledByNative
+    public boolean canBeUsedWithSurfaceControl() {
+        return mCanBeUsedWithSurfaceControl;
     }
 
     @Override
@@ -34,6 +45,12 @@ public class SurfaceWrapper implements Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         // Ignore flags so that the Surface won't call release()
         mSurface.writeToParcel(out, 0);
+        out.writeInt(mCanBeUsedWithSurfaceControl ? 1 : 0);
+    }
+
+    @CalledByNative
+    private static SurfaceWrapper create(Surface surface, boolean canBeUsedWithSurfaceControl) {
+        return new SurfaceWrapper(surface, canBeUsedWithSurfaceControl);
     }
 
     public static final Parcelable.Creator<SurfaceWrapper> CREATOR =
@@ -41,7 +58,8 @@ public class SurfaceWrapper implements Parcelable {
                 @Override
                 public SurfaceWrapper createFromParcel(Parcel in) {
                     Surface surface = Surface.CREATOR.createFromParcel(in);
-                    return new SurfaceWrapper(surface);
+                    boolean canBeUsedWithSurfaceControl = (in.readInt() == 1);
+                    return new SurfaceWrapper(surface, canBeUsedWithSurfaceControl);
                 }
 
                 @Override

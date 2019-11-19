@@ -23,12 +23,17 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-class CSSInheritedValue : public CSSValue {
+class CORE_EXPORT CSSInheritedValue : public CSSValue {
  public:
   static CSSInheritedValue* Create();
+
+  // Only construct through MakeGarbageCollected for the initial value. Use
+  // Create() to get the pooled value.
+  CSSInheritedValue() : CSSValue(kInheritedClass) {}
 
   String CustomCSSText() const;
 
@@ -40,11 +45,14 @@ class CSSInheritedValue : public CSSValue {
 
  private:
   friend class CSSValuePool;
-
-  CSSInheritedValue() : CSSValue(kInheritedClass) {}
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSInheritedValue, IsInheritedValue());
+template <>
+struct DowncastTraits<CSSInheritedValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsInheritedValue();
+  }
+};
 
 }  // namespace blink
 

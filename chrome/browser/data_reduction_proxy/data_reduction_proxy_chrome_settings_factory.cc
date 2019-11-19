@@ -9,6 +9,7 @@
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "content/public/browser/browser_context.h"
 
 // static
 DataReductionProxyChromeSettings*
@@ -41,5 +42,6 @@ DataReductionProxyChromeSettingsFactory::
 
 KeyedService* DataReductionProxyChromeSettingsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  return new DataReductionProxyChromeSettings();
+  DCHECK(!context->IsOffTheRecord());
+  return new DataReductionProxyChromeSettings(context->IsOffTheRecord());
 }

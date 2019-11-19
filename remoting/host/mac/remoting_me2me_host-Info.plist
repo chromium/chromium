@@ -7,7 +7,7 @@
   <key>CFBundleExecutable</key>
   <string>${EXECUTABLE_NAME}</string>
   <key>CFBundleIconFile</key>
-  <string>remoting_me2me_host</string>
+  <string>remoting_host</string>
   <key>CFBundleIdentifier</key>
   <string>${BUNDLE_ID}</string>
   <key>CFBundleInfoDictionaryVersion</key>

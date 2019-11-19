@@ -12,8 +12,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -39,10 +37,9 @@ namespace {
 const char kDefaultDeviceManagementServerUrl[] =
     "https://m.google.com/devicemanagement/data/api";
 
-
-void ReportRegexSuccessMetric(bool success) {
-  UMA_HISTOGRAM_BOOLEAN("Enterprise.DomainWhitelistRegexSuccess", success);
-}
+// The URL for the realtime reporting server.
+const char kDefaultRealtimeReportingServerUrl[] =
+    "https://chromereporting-pa.googleapis.com/v1/events";
 
 // Regexes that match many of the larger public email providers as we know
 // these users are not from hosted enterprise domains.
@@ -83,14 +80,8 @@ bool MatchDomain(const base::string16& domain, const base::string16& pattern,
     // optimization than crash.
     DLOG(ERROR) << "Possible invalid domain pattern: " << pattern
                 << " - Error: " << status;
-    ReportRegexSuccessMetric(false);
-    UMA_HISTOGRAM_ENUMERATION("Enterprise.DomainWhitelistRegexFailure", index,
-                              base::size(kNonManagedDomainPatterns));
-    base::UmaHistogramSparse("Enterprise.DomainWhitelistRegexFailureStatus",
-                             status);
     return false;
   }
-  ReportRegexSuccessMetric(true);
   icu::UnicodeString icu_input(domain.data(), domain.length());
   matcher.reset(icu_input);
   status = U_ZERO_ERROR;
@@ -173,6 +164,15 @@ std::string BrowserPolicyConnector::GetDeviceManagementUrl() {
 }
 
 // static
+std::string BrowserPolicyConnector::GetRealtimeReportingUrl() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kRealtimeReportingUrl))
+    return command_line->GetSwitchValueASCII(switches::kRealtimeReportingUrl);
+  else
+    return kDefaultRealtimeReportingServerUrl;
+}
+
+// static
 void BrowserPolicyConnector::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       policy_prefs::kUserPolicyRefreshRate,
@@ -182,7 +182,7 @@ void BrowserPolicyConnector::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       policy_prefs::kCloudManagementEnrollmentMandatory, false);
   registry->RegisterBooleanPref(
-      policy_prefs::kCloudPolicyOverridesMachinePolicy, false);
+      policy_prefs::kCloudPolicyOverridesPlatformPolicy, false);
 }
 
 }  // namespace policy

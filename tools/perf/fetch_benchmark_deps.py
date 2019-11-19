@@ -12,16 +12,10 @@ import os
 import sys
 import logging
 
+from chrome_telemetry_build import chromium_config
 from core import benchmark_finders
 from core import path_util
-
-path_util.AddPyUtilsToPath()
 from py_utils import cloud_storage
-
-path_util.AddTelemetryToPath()
-from telemetry import benchmark_runner
-
-from chrome_telemetry_build import chromium_config
 
 
 def _FetchDependenciesIfNeeded(story_set):
@@ -118,8 +112,7 @@ def main(args):
                     os.path.join(perf_dir, 'contrib')]
     config = chromium_config.ChromiumConfig(
         top_level_dir=path_util.GetPerfDir(), benchmark_dirs=benchmark_dirs)
-    benchmark = benchmark_runner.GetBenchmarkByName(
-        options.benchmark_name, config)
+    benchmark = config.GetBenchmarkByName(options.benchmark_name)
     if not benchmark:
       raise ValueError('No such benchmark: %s' % options.benchmark_name)
     deps[benchmark.Name()] = _FetchDepsForBenchmark(benchmark)
@@ -128,7 +121,7 @@ def main(args):
       raw_input(
           'No benchmark name is specified. Fetching all benchmark deps. '
           'Press enter to continue...')
-    for b in benchmark_finders.GetAllPerfBenchmarks():
+    for b in benchmark_finders.GetOfficialBenchmarks():
       deps[b.Name()] = _FetchDepsForBenchmark(b)
 
   if options.output_deps:

@@ -118,7 +118,7 @@ class SyncProcessRunner {
   base::TimeTicks throttle_until_;
 
   int64_t pending_changes_;
-  base::WeakPtrFactory<SyncProcessRunner> factory_;
+  base::WeakPtrFactory<SyncProcessRunner> factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncProcessRunner);
 };

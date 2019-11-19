@@ -3,7 +3,7 @@
   "manifest_version": 2,
   "name": "__MSG_name__",
   "description": "__MSG_description__",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "default_locale": "en",
   "minimum_chrome_version": "60.0.0.0",
   "icons": {
@@ -21,11 +21,20 @@
     "fileManagerPrivate",
     "fileSystem.requestDownloads",
     {"fileSystem": ["write", "directory"]},
-    "https://www.google-analytics.com/"
+    "https://www.google-analytics.com/",
+    "chrome://resources/"
   ],
   "app": {
     "background": {
-      "scripts": ["js/background.js"]
-    }
+      "scripts": [
+        "js/mojo/mojo_bindings_lite.js",
+        "js/mojo/camera_intent.mojom-lite.js",
+        "js/mojo/camera_app_helper.mojom-lite.js",
+        "js/mojo/chrome_helper.js",
+        "js/intent.js",
+        "js/background.js"
+      ]
+    },
+    "content_security_policy": "script-src 'self' chrome://resources;"
   }
 }

@@ -89,6 +89,25 @@ promise_test(function(t) {
         function() {});
   }, 'fetch invalid data: URL');
 
+promise_test(function(t) {
+    return fetch('data:,Foobar',
+                 {
+                   method: 'HEAD'
+                 })
+      .then(function(response) {
+          assert_equals(response.status, 200);
+          assert_equals(response.statusText, 'OK');
+          assert_equals(response.headers.get('Content-Type'),
+                        'text/plain;charset=US-ASCII');
+          assert_equals(size(response.headers), 1);
+          assert_equals(response.type, 'basic', 'type must match.');
+          return response.text();
+        })
+      .then(function(text) {
+          assert_equals(text, '');
+        });
+  }, 'fetch data: URL with the HEAD method');
+
 // Only [Exposed=(Window,DedicatedWorker,SharedWorker)].
 if ('createObjectURL' in URL) {
   // Tests for blob: scheme.

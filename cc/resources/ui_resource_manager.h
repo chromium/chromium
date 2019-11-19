@@ -8,7 +8,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
 #include "cc/cc_export.h"
 #include "cc/resources/ui_resource_request.h"
 
@@ -18,7 +17,10 @@ class ScopedUIResource;
 class CC_EXPORT UIResourceManager {
  public:
   UIResourceManager();
+  UIResourceManager(const UIResourceManager&) = delete;
   virtual ~UIResourceManager();
+
+  UIResourceManager& operator=(const UIResourceManager&) = delete;
 
   // CreateUIResource creates a resource given a bitmap.  The bitmap is
   // generated via an interface function, which is called when initializing the
@@ -65,8 +67,6 @@ class CC_EXPORT UIResourceManager {
   // DeleteUIResource).
   std::unordered_map<SkPixelRef*, std::unique_ptr<ScopedUIResource>>
       owned_shared_resources_;
-
-  DISALLOW_COPY_AND_ASSIGN(UIResourceManager);
 };
 
 }  // namespace cc

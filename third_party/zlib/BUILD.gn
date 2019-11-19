@@ -2,12 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/compiler/compiler.gni")
+
 if (current_cpu == "arm" || current_cpu == "arm64") {
   import("//build/config/arm.gni")
 }
 
 config("zlib_config") {
   include_dirs = [ "." ]
+}
+
+config("zlib_internal_config") {
+  defines = [ "ZLIB_IMPLEMENTATION" ]
 }
 
 use_arm_neon_optimizations = false
@@ -56,23 +62,28 @@ source_set("zlib_adler32_simd") {
     }
   }
 
+  configs += [ ":zlib_internal_config" ]
+
   public_configs = [ ":zlib_adler32_simd_config" ]
 }
 
 if (use_arm_neon_optimizations) {
   config("zlib_arm_crc32_config") {
-    # Restrictions:
-    #  - Disabled for iPhones, as described in DDI0487C_a_armv8_arm:
-    #     "All implementations of the ARMv8.1 architecture are required to
-    #      implement the CRC32* instructions. These are optional in ARMv8.0."
-    #  - Fuchsia just added a syscall for feature detection.
-    # TODO(cavalcantii): crbug.com/810125.
-    if (!is_ios && !is_fuchsia) {
+    # Disabled for iPhone, as described in DDI0487C_a_armv8_arm:
+    #  "All implementations of the ARMv8.1 architecture are required to
+    #   implement the CRC32* instructions. These are optional in ARMv8.0."
+    if (!is_ios) {
       defines = [ "CRC32_ARMV8_CRC32" ]
       if (is_android) {
         defines += [ "ARMV8_OS_ANDROID" ]
       } else if (is_linux || is_chromeos) {
         defines += [ "ARMV8_OS_LINUX" ]
+      } else if (is_fuchsia) {
+        defines += [ "ARMV8_OS_FUCHSIA" ]
+      } else if (is_win) {
+        defines += [ "ARMV8_OS_WINDOWS" ]
+      } else {
+        assert(false, "Unsupported ARM OS")
       }
     }
   }
@@ -80,16 +91,22 @@ if (use_arm_neon_optimizations) {
   source_set("zlib_arm_crc32") {
     visibility = [ ":*" ]
 
-    if (is_clang && (!is_ios && !is_fuchsia)) {
+    if (!is_ios) {
       include_dirs = [ "." ]
 
       if (is_android) {
         import("//build/config/android/config.gni")
         if (defined(android_ndk_root) && android_ndk_root != "") {
           deps = [
-            "//third_party/android_tools:cpu_features",
+            "//third_party/android_ndk:cpu_features",
           ]
+        } else {
+          assert(false, "CPU detection requires the Android NDK")
         }
+      } else if (!is_win && !is_clang) {
+        assert(!use_thin_lto,
+               "ThinLTO fails mixing different module-level targets")
+        cflags_c = [ "-march=armv8-a+crc" ]
       }
 
       sources = [
@@ -104,6 +121,8 @@ if (use_arm_neon_optimizations) {
         configs += [ "//build/config/compiler:optimize_speed" ]
       }
     }
+
+    configs += [ ":zlib_internal_config" ]
 
     public_configs = [ ":zlib_arm_crc32_config" ]
   }
@@ -141,15 +160,17 @@ source_set("zlib_inflate_chunk_simd") {
 
     if (use_arm_neon_optimizations && !is_debug) {
       # Here we trade better performance on newer/bigger ARMv8 cores
-      # for less perf on ARMv7. For details, check:
-      # https://bugs.chromium.org/p/chromium/issues/detail?id=772870#c40
+      # for less perf on ARMv7, per crbug.com/772870#c40
       configs -= [ "//build/config/compiler:default_optimization" ]
       configs += [ "//build/config/compiler:optimize_speed" ]
     }
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [
+    ":zlib_internal_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
 
   public_configs = [ ":zlib_inflate_chunk_simd_config" ]
 }
@@ -177,10 +198,12 @@ source_set("zlib_crc32_simd") {
     }
   }
 
+  configs += [ ":zlib_internal_config" ]
+
   public_configs = [ ":zlib_crc32_simd_config" ]
 }
 
-static_library("zlib_x86_simd") {
+source_set("zlib_x86_simd") {
   visibility = [ ":*" ]
 
   if (use_x86_x64_optimizations) {
@@ -202,7 +225,10 @@ static_library("zlib_x86_simd") {
   }
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
+  configs += [
+    ":zlib_internal_config",
+    "//build/config/compiler:no_chromium_code",
+  ]
 }
 
 config("zlib_warnings") {
@@ -211,7 +237,7 @@ config("zlib_warnings") {
   }
 }
 
-static_library("zlib") {
+component("zlib") {
   if (!is_win) {
     # Don't stomp on "libzlib" on other platforms.
     output_name = "chrome_zlib"
@@ -219,6 +245,7 @@ static_library("zlib") {
 
   sources = [
     "adler32.c",
+    "chromeconf.h",
     "compress.c",
     "crc32.c",
     "crc32.h",
@@ -236,7 +263,6 @@ static_library("zlib") {
     "inflate.h",
     "inftrees.c",
     "inftrees.h",
-    "names.h",
     "trees.c",
     "trees.h",
     "uncompr.c",
@@ -269,6 +295,7 @@ static_library("zlib") {
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
+    ":zlib_internal_config",
     "//build/config/compiler:no_chromium_code",
 
     # Must be after no_chromium_code for warning flags to be ordered correctly.

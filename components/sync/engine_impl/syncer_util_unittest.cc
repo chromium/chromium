@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/rand_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine_impl/test_entry_factory.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -66,7 +66,7 @@ class GetUpdatePositionTest : public ::testing::Test {
 
   sync_pb::SyncEntity update;
   UniquePosition test_position;
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   TestDirectorySetterUpper dir_maker_;
   std::unique_ptr<TestEntryFactory> entry_factory_;
 };

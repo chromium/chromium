@@ -1,0 +1,44 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1250, 585],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutImage IMG",
+          "rect": [704, 0, 214, 232],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutImage IMG",
+          "rect": [454, 0, 214, 232],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutImage IMG",
+          "rect": [0, 0, 214, 232],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment ' '",
+          "rect": [700, 217, 4, 19],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment ' '",
+          "rect": [450, 217, 4, 19],
+          "reason": "geometry"
+        }
+      ]
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 585],
+      "bounds": [800, 15],
+      "contentsOpaque": true
+    }
+  ]
+}
+

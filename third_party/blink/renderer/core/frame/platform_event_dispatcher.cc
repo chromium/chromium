@@ -13,8 +13,8 @@ namespace blink {
 PlatformEventDispatcher::PlatformEventDispatcher()
     : is_dispatching_(false), is_listening_(false) {}
 
-void PlatformEventDispatcher::AddController(
-    PlatformEventController* controller) {
+void PlatformEventDispatcher::AddController(PlatformEventController* controller,
+                                            LocalFrame* frame) {
   DCHECK(controller);
   // TODO: If we can avoid to register a same controller twice, we can change
   // this 'if' to ASSERT.
@@ -24,9 +24,7 @@ void PlatformEventDispatcher::AddController(
   controllers_.insert(controller);
 
   if (!is_listening_) {
-    StartListening(controller->GetDocument()
-                       ? controller->GetDocument()->GetFrame()
-                       : nullptr);
+    StartListening(frame);
     is_listening_ = true;
   }
 }
@@ -48,7 +46,7 @@ void PlatformEventDispatcher::NotifyControllers() {
 
   {
     base::AutoReset<bool> change_is_dispatching(&is_dispatching_, true);
-    // HashSet m_controllers can be updated during an iteration, and it stops
+    // HashSet |controllers_| can be updated during an iteration, and it stops
     // the iteration.  Thus we store it into a Vector to access all elements.
     HeapVector<Member<PlatformEventController>> snapshot_vector;
     CopyToVector(controllers_, snapshot_vector);

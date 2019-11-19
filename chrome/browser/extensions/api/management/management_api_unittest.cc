@@ -62,7 +62,7 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
 
   // A wrapper around extension_function_test_utils::RunFunction that runs with
   // the associated browser, no flags, and can take stack-allocated arguments.
-  bool RunFunction(const scoped_refptr<UIThreadExtensionFunction>& function,
+  bool RunFunction(const scoped_refptr<ExtensionFunction>& function,
                    const base::ListValue& args);
 
   Browser* browser() { return browser_.get(); }
@@ -80,7 +80,7 @@ class ManagementApiUnitTest : public ExtensionServiceTestWithInstall {
 };
 
 bool ManagementApiUnitTest::RunFunction(
-    const scoped_refptr<UIThreadExtensionFunction>& function,
+    const scoped_refptr<ExtensionFunction>& function,
     const base::ListValue& args) {
   return extension_function_test_utils::RunFunction(
       function.get(), base::WrapUnique(args.DeepCopy()), browser(),
@@ -98,7 +98,7 @@ void ManagementApiUnitTest::SetUp() {
 
   browser_window_.reset(new TestBrowserWindow());
   Browser::CreateParams params(profile(), true);
-  params.type = Browser::TYPE_TABBED;
+  params.type = Browser::TYPE_NORMAL;
   params.window = browser_window_.get();
   browser_.reset(new Browser(params));
 }
@@ -271,7 +271,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
         ScopedTestDialogAutoConfirm::ACCEPT);
 
     // Uninstall requires a user gesture, so this should fail.
-    scoped_refptr<UIThreadExtensionFunction> function(
+    scoped_refptr<ExtensionFunction> function(
         new ManagementUninstallFunction());
     EXPECT_FALSE(RunFunction(function, uninstall_args));
     EXPECT_EQ(std::string(constants::kGestureNeededForUninstallError),
@@ -295,7 +295,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstall) {
     ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
 
     service()->AddExtension(extension.get());
-    scoped_refptr<UIThreadExtensionFunction> function =
+    scoped_refptr<ExtensionFunction> function =
         new ManagementUninstallFunction();
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
     EXPECT_FALSE(RunFunction(function, uninstall_args));
@@ -347,7 +347,7 @@ TEST_F(ManagementApiUnitTest, ManagementWebStoreUninstall) {
         ScopedTestDialogAutoConfirm::CANCEL);
     ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
 
-    scoped_refptr<UIThreadExtensionFunction> function(
+    scoped_refptr<ExtensionFunction> function(
         new ManagementUninstallFunction());
     function->set_extension(triggering_extension);
     EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
@@ -360,7 +360,7 @@ TEST_F(ManagementApiUnitTest, ManagementWebStoreUninstall) {
   }
 
   {
-    scoped_refptr<UIThreadExtensionFunction> function(
+    scoped_refptr<ExtensionFunction> function(
         new ManagementUninstallFunction());
     function->set_extension(triggering_extension);
 
@@ -397,7 +397,7 @@ TEST_F(ManagementApiUnitTest, ManagementProgrammaticUninstall) {
   base::ListValue uninstall_args;
   uninstall_args.AppendString(extension->id());
   {
-    scoped_refptr<UIThreadExtensionFunction> function(
+    scoped_refptr<ExtensionFunction> function(
         new ManagementUninstallFunction());
     function->set_extension(triggering_extension);
 
@@ -435,8 +435,7 @@ TEST_F(ManagementApiUnitTest, ManagementUninstallBlacklisted) {
 
   ScopedTestDialogAutoConfirm auto_confirm(ScopedTestDialogAutoConfirm::ACCEPT);
   ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
-  scoped_refptr<UIThreadExtensionFunction> function(
-      new ManagementUninstallFunction());
+  scoped_refptr<ExtensionFunction> function(new ManagementUninstallFunction());
   base::ListValue uninstall_args;
   uninstall_args.AppendString(id);
   EXPECT_TRUE(RunFunction(function, uninstall_args)) << function->GetError();
@@ -452,7 +451,7 @@ TEST_F(ManagementApiUnitTest, ManagementEnableOrDisableBlacklisted) {
   service()->BlacklistExtensionForTest(id);
   EXPECT_NE(nullptr, registry()->GetInstalledExtension(id));
 
-  scoped_refptr<UIThreadExtensionFunction> function;
+  scoped_refptr<ExtensionFunction> function;
 
   // Test enabling it.
   {
@@ -486,7 +485,7 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
 
   const std::string args =
       base::StringPrintf("[\"%s\"]", extension->id().c_str());
-  scoped_refptr<UIThreadExtensionFunction> function;
+  scoped_refptr<ExtensionFunction> function;
 
   // Initially the extension should show as enabled.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
@@ -547,6 +546,53 @@ TEST_F(ManagementApiUnitTest, ExtensionInfo_MayEnable) {
     EXPECT_FALSE(info->enabled);
     ASSERT_TRUE(info->may_enable.get());
     EXPECT_TRUE(*(info->may_enable));
+  }
+}
+
+TEST_F(ManagementApiUnitTest, ExtensionInfo_MayDisable) {
+  using ExtensionInfo = api::management::ExtensionInfo;
+
+  scoped_refptr<const Extension> extension = ExtensionBuilder("Test").Build();
+  service()->AddExtension(extension.get());
+
+  const std::string args =
+      base::StringPrintf("[\"%s\"]", extension->id().c_str());
+
+  // Initially the extension should show as enabled, so it may be disabled
+  // freely.
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
+  {
+    scoped_refptr<ExtensionFunction> function = new ManagementGetFunction();
+    std::unique_ptr<base::Value> value(
+        extension_function_test_utils::RunFunctionAndReturnSingleResult(
+            function.get(), args, browser()));
+    ASSERT_TRUE(value);
+    std::unique_ptr<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
+    ASSERT_TRUE(info);
+    EXPECT_TRUE(info->enabled);
+    EXPECT_TRUE(info->may_disable);
+  }
+
+  // Simulate forcing the extension and verify that the extension shows with
+  // a false value of |may_disable|.
+  ManagementPolicy* policy =
+      ExtensionSystem::Get(profile())->management_policy();
+  policy->UnregisterAllProviders();
+  TestManagementPolicyProvider provider(
+      TestManagementPolicyProvider::MUST_REMAIN_ENABLED);
+  policy->RegisterProvider(&provider);
+  service()->CheckManagementPolicy();
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
+  {
+    scoped_refptr<ExtensionFunction> function = new ManagementGetFunction();
+    std::unique_ptr<base::Value> value(
+        extension_function_test_utils::RunFunctionAndReturnSingleResult(
+            function.get(), args, browser()));
+    ASSERT_TRUE(value);
+    std::unique_ptr<ExtensionInfo> info = ExtensionInfo::FromValue(*value);
+    ASSERT_TRUE(info);
+    EXPECT_TRUE(info->enabled);
+    EXPECT_FALSE(info->may_disable);
   }
 }
 

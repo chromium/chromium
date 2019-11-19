@@ -68,7 +68,9 @@ testing::Matcher<const base::ListValue&> MatchFileWatchEvent(
 
 class TestDriveFsEventRouter : public DriveFsEventRouter {
  public:
-  TestDriveFsEventRouter() = default;
+  TestDriveFsEventRouter() {
+    ON_CALL(*this, IsPathWatched).WillByDefault(testing::Return(true));
+  }
 
   void DispatchEventToExtension(
       const std::string& extension_id,
@@ -82,6 +84,7 @@ class TestDriveFsEventRouter : public DriveFsEventRouter {
                void(const std::string& extension_id,
                     const std::string& name,
                     const base::ListValue& event));
+  MOCK_METHOD1(IsPathWatched, bool(const base::FilePath&));
 
   GURL ConvertDrivePathToFileSystemUrl(
       const base::FilePath& file_path,
@@ -529,6 +532,10 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
         file_manager_private::CHANGE_TYPE_ADD_OR_UPDATE);
   }
 
+  EXPECT_CALL(mock(), IsPathWatched(base::FilePath("/root")))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock(), IsPathWatched(base::FilePath("/other")))
+      .WillOnce(testing::Return(false));
   EXPECT_CALL(mock(),
               DispatchEventToExtensionImpl(
                   "ext", file_manager_private::OnDirectoryChanged::kEventName,
@@ -540,6 +547,8 @@ TEST_F(DriveFsEventRouterTest, OnFilesChanged_Basic) {
   changes.emplace_back(base::FilePath("/root/b"),
                        drivefs::mojom::FileChange::Type::kCreate);
   changes.emplace_back(base::FilePath("/root/c"),
+                       drivefs::mojom::FileChange::Type::kModify);
+  changes.emplace_back(base::FilePath("/other/a"),
                        drivefs::mojom::FileChange::Type::kModify);
   observer().OnFilesChanged(changes);
 }

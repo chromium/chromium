@@ -41,7 +41,7 @@ NGInlineBreakToken::NGInlineBreakToken(NGLayoutInputNode node)
 
 NGInlineBreakToken::~NGInlineBreakToken() = default;
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
 
 String NGInlineBreakToken::ToString() const {
   StringBuilder string_builder;
@@ -55,6 +55,6 @@ String NGInlineBreakToken::ToString() const {
   return string_builder.ToString();
 }
 
-#endif  // NDEBUG
+#endif  // DCHECK_IS_ON()
 
 }  // namespace blink

@@ -30,6 +30,11 @@
 #include "services/tracing/public/cpp/trace_event_agent.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 
+#if defined(OS_CHROMEOS)
+#include "chromeos/system/fake_statistics_provider.h"
+#include "chromeos/system/statistics_provider.h"
+#endif
+
 using base::trace_event::RECORD_CONTINUOUSLY;
 using base::trace_event::RECORD_UNTIL_FULL;
 using base::trace_event::TraceConfig;
@@ -37,33 +42,6 @@ using base::trace_event::TraceConfig;
 namespace content {
 
 namespace {
-
-const char* kMetadataWhitelist[] = {
-  "cpu-brand",
-  "network-type",
-  "os-name",
-  "user-agent"
-};
-
-bool IsMetadataWhitelisted(const std::string& metadata_name) {
-  for (auto* key : kMetadataWhitelist) {
-    if (base::MatchPattern(metadata_name, key)) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool IsTraceEventArgsWhitelisted(
-    const char* category_group_name,
-    const char* event_name,
-    base::trace_event::ArgumentNameFilterPredicate* arg_filter) {
-  if (base::MatchPattern(category_group_name, "benchmark") &&
-      base::MatchPattern(event_name, "whitelisted")) {
-    return true;
-  }
-  return false;
-}
 
 bool KeyEquals(const base::Value* value,
                const char* key_name,
@@ -91,32 +69,26 @@ class TracingControllerTestEndpoint
     : public TracingController::TraceDataEndpoint {
  public:
   TracingControllerTestEndpoint(
-      base::Callback<void(std::unique_ptr<const base::DictionaryValue>,
-                          base::RefCountedString*)> done_callback)
-      : done_callback_(done_callback) {}
+      TracingController::CompletionCallback done_callback)
+      : done_callback_(std::move(done_callback)) {}
 
   void ReceiveTraceChunk(std::unique_ptr<std::string> chunk) override {
     EXPECT_FALSE(chunk->empty());
     trace_ += *chunk;
   }
 
-  void ReceiveTraceFinalContents(
-      std::unique_ptr<const base::DictionaryValue> metadata) override {
-    scoped_refptr<base::RefCountedString> chunk_ptr =
-        base::RefCountedString::TakeString(&trace_);
-
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             base::BindOnce(done_callback_, std::move(metadata),
-                                            base::RetainedRef(chunk_ptr)));
+  void ReceivedTraceFinalContents() override {
+    base::PostTask(
+        FROM_HERE, {BrowserThread::UI},
+        base::BindOnce(std::move(done_callback_),
+                       std::make_unique<std::string>(std::move(trace_))));
   }
 
  protected:
-  ~TracingControllerTestEndpoint() override {}
+  ~TracingControllerTestEndpoint() override = default;
 
   std::string trace_;
-  base::Callback<void(std::unique_ptr<const base::DictionaryValue>,
-                      base::RefCountedString*)>
-      done_callback_;
+  TracingController::CompletionCallback done_callback_;
 };
 
 class TestTracingDelegate : public TracingDelegate {
@@ -124,9 +96,6 @@ class TestTracingDelegate : public TracingDelegate {
   std::unique_ptr<TraceUploader> GetTraceUploader(
       scoped_refptr<network::SharedURLLoaderFactory>) override {
     return nullptr;
-  }
-  MetadataFilterPredicate GetMetadataFilterPredicate() override {
-    return base::BindRepeating(IsMetadataWhitelisted);
   }
 };
 
@@ -138,11 +107,19 @@ class TracingControllerTest : public ContentBrowserTest {
     get_categories_done_callback_count_ = 0;
     enable_recording_done_callback_count_ = 0;
     disable_recording_done_callback_count_ = 0;
+
+#if defined(OS_CHROMEOS)
+    // Set statistic provider for hardware class tests.
+    chromeos::system::StatisticsProvider::SetTestProvider(
+        &fake_statistics_provider_);
+    fake_statistics_provider_.SetMachineStatistic(
+        chromeos::system::kHardwareClassKey, "test-hardware-class");
+#endif
     ContentBrowserTest::SetUp();
   }
 
   void Navigate(Shell* shell) {
-    NavigateToURL(shell, GetTestUrl("", "title.html"));
+    EXPECT_TRUE(NavigateToURL(shell, GetTestUrl("", "title1.html")));
   }
 
   std::unique_ptr<base::DictionaryValue> GenerateMetadataDict() {
@@ -161,19 +138,16 @@ class TracingControllerTest : public ContentBrowserTest {
     std::move(quit_callback).Run();
   }
 
-  void StopTracingStringDoneCallbackTest(
-      base::Closure quit_callback,
-      std::unique_ptr<const base::DictionaryValue> metadata,
-      base::RefCountedString* data) {
+  void StopTracingStringDoneCallbackTest(base::OnceClosure quit_callback,
+                                         std::unique_ptr<std::string> data) {
     disable_recording_done_callback_count_++;
-    last_metadata_ = std::move(metadata);
-    last_data_ = data->data();
-    EXPECT_FALSE(data->data().empty());
+    last_data_ = std::move(data);
+    EXPECT_FALSE(last_data_->empty());
     std::move(quit_callback).Run();
   }
 
   void StopTracingFileDoneCallbackTest(base::Closure quit_callback,
-                                            const base::FilePath& file_path) {
+                                       const base::FilePath& file_path) {
     disable_recording_done_callback_count_++;
     {
       base::ScopedAllowBlockingForTesting allow_blocking;
@@ -186,7 +160,7 @@ class TracingControllerTest : public ContentBrowserTest {
     last_actual_recording_file_path_ = file_path;
   }
 
-    int get_categories_done_callback_count() const {
+  int get_categories_done_callback_count() const {
     return get_categories_done_callback_count_;
   }
 
@@ -202,13 +176,7 @@ class TracingControllerTest : public ContentBrowserTest {
     return last_actual_recording_file_path_;
   }
 
-  const base::DictionaryValue* last_metadata() const {
-    return last_metadata_.get();
-  }
-
-  const std::string& last_data() const {
-    return last_data_;
-  }
+  const std::string& last_data() const { return *last_data_; }
 
   void TestStartAndStopTracingString(bool enable_systrace = false) {
     Navigate(shell());
@@ -231,11 +199,9 @@ class TracingControllerTest : public ContentBrowserTest {
 
     {
       base::RunLoop run_loop;
-      base::Callback<void(std::unique_ptr<const base::DictionaryValue>,
-                          base::RefCountedString*)>
-          callback = base::Bind(
-              &TracingControllerTest::StopTracingStringDoneCallbackTest,
-              base::Unretained(this), run_loop.QuitClosure());
+      TracingController::CompletionCallback callback = base::BindRepeating(
+          &TracingControllerTest::StopTracingStringDoneCallbackTest,
+          base::Unretained(this), run_loop.QuitClosure());
       bool result = controller->StopTracing(
           TracingController::CreateStringEndpoint(std::move(callback)));
       ASSERT_TRUE(result);
@@ -250,13 +216,7 @@ class TracingControllerTest : public ContentBrowserTest {
 
     Navigate(shell());
 
-    base::trace_event::TraceLog::GetInstance()->SetArgumentFilterPredicate(
-        base::Bind(&IsTraceEventArgsWhitelisted));
-
     TracingControllerImpl* controller = TracingControllerImpl::GetInstance();
-    tracing::TraceEventAgent::GetInstance()->AddMetadataGeneratorFunction(
-        base::Bind(&TracingControllerTest::GenerateMetadataDict,
-                   base::Unretained(this)));
 
     {
       base::RunLoop run_loop;
@@ -264,10 +224,8 @@ class TracingControllerTest : public ContentBrowserTest {
           base::BindOnce(&TracingControllerTest::StartTracingDoneCallbackTest,
                          base::Unretained(this), run_loop.QuitClosure());
 
-      TraceConfig config = TraceConfig();
-      config.EnableArgumentFilter();
-
-      bool result = controller->StartTracing(config, std::move(callback));
+      bool result =
+          controller->StartTracing(TraceConfig(), std::move(callback));
       ASSERT_TRUE(result);
       run_loop.Run();
       EXPECT_EQ(enable_recording_done_callback_count(), 1);
@@ -275,19 +233,22 @@ class TracingControllerTest : public ContentBrowserTest {
 
     {
       base::RunLoop run_loop;
-      base::Callback<void(std::unique_ptr<const base::DictionaryValue>,
-                          base::RefCountedString*)>
-          callback = base::Bind(
-              &TracingControllerTest::StopTracingStringDoneCallbackTest,
-              base::Unretained(this), run_loop.QuitClosure());
+      TracingController::CompletionCallback callback = base::BindRepeating(
+          &TracingControllerTest::StopTracingStringDoneCallbackTest,
+          base::Unretained(this), run_loop.QuitClosure());
 
       scoped_refptr<TracingController::TraceDataEndpoint> trace_data_endpoint =
           TracingController::CreateStringEndpoint(std::move(callback));
 
       metadata_ = std::make_unique<base::DictionaryValue>();
       metadata_->SetString("not-whitelisted", "this_not_found");
+      tracing::TraceEventAgent::GetInstance()->AddMetadataGeneratorFunction(
+          base::Bind(&TracingControllerTest::GenerateMetadataDict,
+                     base::Unretained(this)));
 
-      bool result = controller->StopTracing(trace_data_endpoint);
+      bool result =
+          controller->StopTracing(trace_data_endpoint, /*agent_label=*/"",
+                                  /*privacy_filtering_enabled=*/true);
       ASSERT_TRUE(result);
       run_loop.Run();
       EXPECT_EQ(disable_recording_done_callback_count(), 1);
@@ -315,11 +276,9 @@ class TracingControllerTest : public ContentBrowserTest {
 
     {
       base::RunLoop run_loop;
-      base::Callback<void(std::unique_ptr<const base::DictionaryValue>,
-                          base::RefCountedString*)>
-          callback = base::Bind(
-              &TracingControllerTest::StopTracingStringDoneCallbackTest,
-              base::Unretained(this), run_loop.QuitClosure());
+      TracingController::CompletionCallback callback = base::BindOnce(
+          &TracingControllerTest::StopTracingStringDoneCallbackTest,
+          base::Unretained(this), run_loop.QuitClosure());
       bool result = controller->StopTracing(
           TracingControllerImpl::CreateCompressedStringEndpoint(
               new TracingControllerTestEndpoint(std::move(callback)),
@@ -350,11 +309,9 @@ class TracingControllerTest : public ContentBrowserTest {
 
     {
       base::RunLoop run_loop;
-      base::Closure callback = base::Bind(
+      base::RepeatingClosure callback = base::BindRepeating(
           &TracingControllerTest::StopTracingFileDoneCallbackTest,
-          base::Unretained(this),
-          run_loop.QuitClosure(),
-          result_file_path);
+          base::Unretained(this), run_loop.QuitClosure(), result_file_path);
       bool result =
           controller->StopTracing(TracingController::CreateFileEndpoint(
               result_file_path, std::move(callback)));
@@ -364,14 +321,18 @@ class TracingControllerTest : public ContentBrowserTest {
     }
   }
 
+#if defined(OS_CHROMEOS)
+ protected:
+  chromeos::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+#endif
+
  private:
   int get_categories_done_callback_count_;
   int enable_recording_done_callback_count_;
   int disable_recording_done_callback_count_;
   base::FilePath last_actual_recording_file_path_;
   std::unique_ptr<base::DictionaryValue> metadata_;
-  std::unique_ptr<const base::DictionaryValue> last_metadata_;
-  std::string last_data_;
+  std::unique_ptr<std::string> last_data_;
 };
 
 IN_PROC_BROWSER_TEST_F(TracingControllerTest, GetCategories) {
@@ -397,50 +358,38 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
   TestStartAndStopTracingString();
   // Check that a number of important keys exist in the metadata dictionary. The
   // values are not checked to ensure the test is robust.
-  ASSERT_NE(last_metadata(), nullptr);
+  base::Optional<base::Value> trace_json = base::JSONReader::Read(last_data());
+  ASSERT_TRUE(trace_json);
+  auto* metadata_json = static_cast<base::DictionaryValue*>(
+      trace_json->FindKeyOfType("metadata", base::Value::Type::DICTIONARY));
+  ASSERT_TRUE(metadata_json);
+
   std::string network_type;
-  last_metadata()->GetString("network-type", &network_type);
+  metadata_json->GetString("network-type", &network_type);
   EXPECT_FALSE(network_type.empty());
   std::string user_agent;
-  last_metadata()->GetString("user-agent", &user_agent);
+  metadata_json->GetString("user-agent", &user_agent);
   EXPECT_FALSE(user_agent.empty());
   std::string os_name;
-  last_metadata()->GetString("os-name", &os_name);
+  metadata_json->GetString("os-name", &os_name);
   EXPECT_FALSE(os_name.empty());
   std::string command_line;
-  last_metadata()->GetString("command_line", &command_line);
+  metadata_json->GetString("command_line", &command_line);
   EXPECT_FALSE(command_line.empty());
   std::string trace_config;
-  last_metadata()->GetString("trace-config", &trace_config);
+  metadata_json->GetString("trace-config", &trace_config);
   EXPECT_EQ(TraceConfig().ToString(), trace_config);
+#if defined(OS_CHROMEOS)
+  std::string hardware_class;
+  metadata_json->GetString("hardware-class", &hardware_class);
+  EXPECT_EQ(hardware_class, "test-hardware-class");
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(TracingControllerTest, NotWhitelistedMetadataStripped) {
   TestStartAndStopTracingStringWithFilter();
   // Check that a number of important keys exist in the metadata dictionary.
-  ASSERT_NE(last_metadata(), nullptr);
-  std::string network_type;
-  last_metadata()->GetString("network-type", &network_type);
-  EXPECT_FALSE(network_type.empty());
-  EXPECT_TRUE(network_type != "__stripped__");
-  std::string os_name;
-  last_metadata()->GetString("os-name", &os_name);
-  EXPECT_FALSE(os_name.empty());
-  EXPECT_TRUE(os_name != "__stripped__");
-  std::string user_agent;
-  last_metadata()->GetString("user-agent", &user_agent);
-  EXPECT_FALSE(user_agent.empty());
-  EXPECT_TRUE(user_agent != "__stripped__");
-
-  // Check that the not whitelisted metadata is stripped.
-  std::string not_whitelisted;
-  last_metadata()->GetString("not-whitelisted", &not_whitelisted);
-  EXPECT_FALSE(not_whitelisted.empty());
-  EXPECT_TRUE(not_whitelisted == "__stripped__");
-
-  // Also check the trace content.
-  std::unique_ptr<base::Value> trace_json =
-      base::JSONReader::ReadDeprecated(last_data());
+  base::Optional<base::Value> trace_json = base::JSONReader::Read(last_data());
   ASSERT_TRUE(trace_json);
   const base::Value* metadata_json =
       trace_json->FindKeyOfType("metadata", base::Value::Type::DICTIONARY);
@@ -450,14 +399,12 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest, NotWhitelistedMetadataStripped) {
   EXPECT_TRUE(KeyNotEquals(metadata_json, "network-type", "__stripped__"));
   EXPECT_TRUE(KeyNotEquals(metadata_json, "os-name", "__stripped__"));
   EXPECT_TRUE(KeyNotEquals(metadata_json, "user-agent", "__stripped__"));
+#if defined(OS_CHROMEOS)
+  EXPECT_TRUE(KeyNotEquals(metadata_json, "hardware-class", "__stripped__"));
+#endif
 
   // The following field is not whitelisted and is supposed to be stripped.
-  EXPECT_TRUE(KeyEquals(metadata_json, "chrome-bitness", "__stripped__"));
-
-  // TODO(770017): This test is currently broken since metadata filtering is
-  // only done in |TracingControllerImpl::GenerateMetadataDict()|. Metadata
-  // set by other providers are not filtered correctly.
-  // EXPECT_TRUE(KeyEquals(metadata_json, "not-whitelisted", "__stripped__"));
+  EXPECT_TRUE(KeyEquals(metadata_json, "v8-version", "__stripped__"));
 }
 
 IN_PROC_BROWSER_TEST_F(TracingControllerTest,
@@ -487,9 +434,8 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest,
       TracingController::StartTracingDoneCallback()));
   EXPECT_TRUE(controller->StopTracing(
       TracingControllerImpl::CreateCallbackEndpoint(base::BindRepeating(
-          [](base::Closure quit_closure,
-             std::unique_ptr<const base::DictionaryValue> metadata,
-             base::RefCountedString* trace_str) {
+          [](base::OnceClosure quit_closure,
+             std::unique_ptr<std::string> trace_str) {
             std::move(quit_closure).Run();
           },
           run_loop.QuitClosure()))));
@@ -504,10 +450,9 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest, DoubleStopTracing) {
   EXPECT_TRUE(controller->StartTracing(
       TraceConfig(), TracingController::StartTracingDoneCallback()));
   EXPECT_TRUE(controller->StopTracing(
-      TracingControllerImpl::CreateCallbackEndpoint(base::BindRepeating(
-          [](base::Closure quit_closure,
-             std::unique_ptr<const base::DictionaryValue> metadata,
-             base::RefCountedString* trace_str) {
+      TracingControllerImpl::CreateCallbackEndpoint(base::BindOnce(
+          [](base::OnceClosure quit_closure,
+             std::unique_ptr<std::string> trace_str) {
             std::move(quit_closure).Run();
           },
           run_loop.QuitClosure()))));
@@ -524,6 +469,12 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest, DoubleStopTracing) {
 IN_PROC_BROWSER_TEST_F(TracingControllerTest, MAYBE_SystemTraceEvents) {
   TestStartAndStopTracingString(true /* enable_systrace */);
   EXPECT_TRUE(last_data().find("systemTraceEvents") != std::string::npos);
+}
+
+IN_PROC_BROWSER_TEST_F(TracingControllerTest, ProcessesPresentInTrace) {
+  TestStartAndStopTracingString();
+  EXPECT_TRUE(last_data().find("CrBrowserMain") != std::string::npos);
+  EXPECT_TRUE(last_data().find("CrRendererMain") != std::string::npos);
 }
 
 }  // namespace content

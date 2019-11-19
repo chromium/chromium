@@ -87,7 +87,7 @@ def _BinaryDirTargetOS(binary_dir):
   if os.path.exists(build_ninja_path):
     with open(build_ninja_path) as build_ninja_file:
       build_ninja_content = build_ninja_file.read()
-      match = re.search('^ar = .+-linux-android(eabi)?-ar$',
+      match = re.search('-linux-android(eabi)?-ar$',
                         build_ninja_content,
                         re.MULTILINE)
       if match:
@@ -237,7 +237,7 @@ def _RunOnAndroidTarget(binary_dir, test, android_device, extra_command_line):
     # determined automatically in a GN build, following the example used for
     # Fuchsia. Since nothing like that exists for GYP, hard-code it for
     # supported tests.
-    test_build_artifacts = [test]
+    test_build_artifacts = [test, 'crashpad_handler']
     test_data = ['test/test_paths_test_data_root.txt']
 
     if test == 'crashpad_test_test':

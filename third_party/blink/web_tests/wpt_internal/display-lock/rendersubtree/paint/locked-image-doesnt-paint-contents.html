@@ -1,0 +1,43 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: image locking</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="locked-image-doesnt-paint-contents-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+div {
+  background: blue;
+}
+img {
+  width: 400px;
+  height: 200px;
+  background: lightblue;
+  border: 1px solid black;
+}
+</style>
+
+<div>lorem ipsum</div>
+<img id="img1" src="resources/dice.png"></img>
+<img id="img2" src="resources/circles.svg"></img>
+<div>consectetur adipiscing elit</div>
+
+<script>
+async function runTest() {
+  const promises = [];
+  promises.push(setInvisible(document.getElementById("img1")));
+  promises.push(setInvisible(document.getElementById("img2")));
+  await Promise.all(promises);
+  takeScreenshot();
+}
+
+window.onload = () => {
+  requestAnimationFrame(() => {
+    requestAnimationFrame(runTest);
+  });
+};
+</script>
+</html>

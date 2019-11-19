@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/login/screens/mock_device_disabled_screen_view.h"
 
+#include "chrome/browser/chromeos/login/screens/device_disabled_screen.h"
+
 using ::testing::AtLeast;
 using ::testing::AtMost;
 using ::testing::NotNull;
@@ -21,7 +23,7 @@ MockDeviceDisabledScreenView::~MockDeviceDisabledScreenView() {
     delegate_->OnViewDestroyed(this);
 }
 
-void MockDeviceDisabledScreenView::SetDelegate(Delegate* delegate) {
+void MockDeviceDisabledScreenView::SetDelegate(DeviceDisabledScreen* delegate) {
   delegate_ = delegate;
   MockSetDelegate(delegate);
 }

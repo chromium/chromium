@@ -33,7 +33,7 @@ class AppLoadObserver : public ExtensionRegistryObserver {
  public:
   AppLoadObserver(content::BrowserContext* browser_context,
                   base::Callback<void(const Extension*)> callback)
-      : callback_(callback), extension_registry_observer_(this) {
+      : callback_(callback) {
     extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context));
   }
 
@@ -45,7 +45,7 @@ class AppLoadObserver : public ExtensionRegistryObserver {
  private:
   base::Callback<void(const Extension*)> callback_;
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
   DISALLOW_COPY_AND_ASSIGN(AppLoadObserver);
 };
 

@@ -35,8 +35,6 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLFieldSetElement* Create(Document&);
-
   explicit HTMLFieldSetElement(Document&);
 
   HTMLLegendElement* Legend() const;
@@ -48,11 +46,10 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
  private:
   bool IsEnumeratable() const override { return true; }
   bool SupportsFocus() const override;
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
-  bool ShouldForceLegacyLayout() const final;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
+  bool TypeShouldForceLegacyLayout() const final;
   const AtomicString& FormControlType() const override;
   bool RecalcWillValidate() const override { return false; }
-  int tabIndex() const final;
   bool MatchesValidityPseudoClasses() const final;
   bool IsValidElement() final;
   void ChildrenChanged(const ChildrenChange&) override;

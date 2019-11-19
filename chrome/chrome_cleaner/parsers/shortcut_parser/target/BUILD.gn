@@ -1,6 +1,10 @@
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//testing/libfuzzer/fuzzer_test.gni")
+
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
 
 static_library("lnk_parser") {
   sources = [
@@ -9,9 +13,23 @@ static_library("lnk_parser") {
   ]
 
   deps = [
-    "//base:base",
-    "//chrome/chrome_cleaner/interfaces:parser_interface",
+    "//base",
+    "//chrome/chrome_cleaner/mojom:parser_interface",
   ]
+}
+
+fuzzer_test("lnk_parser_fuzzer") {
+  sources = [
+    "lnk_parser_fuzzer.cc",
+  ]
+
+  deps = [
+    ":lnk_parser",
+    "//base:base",
+    "//base/test:test_support",
+  ]
+
+  seed_corpus = "data/lnk_parser_fuzzer"
 }
 
 source_set("unittest_sources") {
@@ -23,7 +41,7 @@ source_set("unittest_sources") {
 
   deps = [
     ":lnk_parser",
-    "//base:base",
+    "//base",
     "//chrome/chrome_cleaner/os:common_os",
     "//chrome/chrome_cleaner/test:test_util",
     "//testing/gtest",

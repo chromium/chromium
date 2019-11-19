@@ -60,7 +60,7 @@ class TetherDisconnectorImpl : public TetherDisconnector {
   DeviceIdTetherNetworkGuidMap* device_id_tether_network_guid_map_;
   TetherSessionCompletionLogger* tether_session_completion_logger_;
 
-  base::WeakPtrFactory<TetherDisconnectorImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<TetherDisconnectorImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TetherDisconnectorImpl);
 };

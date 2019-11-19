@@ -93,7 +93,7 @@ class LanguageSettingsPrivateDelegateTest
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-#if !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 
 TEST_F(LanguageSettingsPrivateDelegateTest,
        RetryDownloadHunspellDictionaryTest) {
@@ -116,6 +116,6 @@ TEST_F(LanguageSettingsPrivateDelegateTest,
   EXPECT_FALSE(afterStatuses.front().download_failed);
 }
 
-#endif  // !BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(USE_RENDERER_SPELLCHECKER)
 
 }  // namespace extensions

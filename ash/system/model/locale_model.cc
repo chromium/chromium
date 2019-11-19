@@ -20,7 +20,7 @@ void LocaleModel::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void LocaleModel::SetLocaleList(std::vector<mojom::LocaleInfoPtr> locale_list,
+void LocaleModel::SetLocaleList(std::vector<LocaleInfo> locale_list,
                                 const std::string& current_locale_iso_code) {
   locale_list_ = std::move(locale_list);
   current_locale_iso_code_ = current_locale_iso_code;

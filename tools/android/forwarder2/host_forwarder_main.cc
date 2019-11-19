@@ -69,7 +69,7 @@ class ServerDelegate : public Daemon::ServerDelegate {
   explicit ServerDelegate(const std::string& adb_path)
       : adb_path_(adb_path),
         has_failed_(false),
-        controllers_manager_(base::Bind(&GetExitNotifierFD)) {}
+        controllers_manager_(base::BindRepeating(&GetExitNotifierFD)) {}
 
   bool has_failed() const {
     return has_failed_ || controllers_manager_.has_failed();

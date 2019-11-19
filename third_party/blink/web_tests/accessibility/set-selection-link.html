@@ -1,29 +1,26 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
-<div id="main" role="main">
-
-    <p id="para">This<br> is a<a href="#g">test</a>of selection</p>
-
-</div>
+<p id="para">This<br> is a<a href="#g">test</a>of selection</p>
 
 <script>
-    test_after_layout_and_paint(function()
-    {
-        assert_not_equals(window.accessibilityController, undefined, 'This test requires accessibilityController');
+  test(() => {
+    const lastText = document.getElementById('para').lastChild;
+    assert_class_string(lastText, 'Text');
 
-        var axPara = accessibilityController.accessibleElementById("para");
-        var axLastText = axPara.childAtIndex(4);
-        assert_equals(axLastText.role, "AXRole: AXStaticText");
-        assert_equals(axLastText.name, "of selection");
+    const axPara = accessibilityController.accessibleElementById('para');
+    const axLastText = axPara.childAtIndex(4);
+    assert_equals(axLastText.role, 'AXRole: AXStaticText');
+    assert_equals(axLastText.name, 'of selection');
 
-        axLastText.setSelectedTextRange(0, 2);
+    axLastText.setSelection(axLastText, 0, axLastText, 2);
 
-        var selection = window.getSelection();
-        var range = selection.getRangeAt(0);
-
-        assert_equals(range.toString(), "of");
-    }, "Select text after a link.");
+    const selection = getSelection();
+    assert_equals(selection.anchorNode, lastText, 'anchorNode');
+    assert_equals(selection.anchorOffset, 0, 'anchorOffset');
+    assert_equals(selection.focusNode, lastText, 'focusNode');
+    assert_equals(selection.focusOffset, 2, 'focusOffset');
+    assert_equals(selection.toString(), 'of', 'getSelection().toString()');
+  }, 'Select text after a link.');
 </script>

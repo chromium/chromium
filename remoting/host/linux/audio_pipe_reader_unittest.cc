@@ -13,8 +13,9 @@
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,7 +34,7 @@ class AudioPipeReaderTest : public testing::Test,
     pipe_path_ = test_dir_.GetPath().AppendASCII("test_pipe");
     audio_thread_.reset(new base::Thread("TestAudioThread"));
     audio_thread_->StartWithOptions(
-        base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+        base::Thread::Options(base::MessagePumpType::IO, 0));
     reader_ = AudioPipeReader::Create(audio_thread_->task_runner(),
                                       pipe_path_);
     reader_->AddObserver(this);
@@ -74,7 +75,7 @@ class AudioPipeReaderTest : public testing::Test,
   }
 
  protected:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<base::Thread> audio_thread_;
   base::ScopedTempDir test_dir_;

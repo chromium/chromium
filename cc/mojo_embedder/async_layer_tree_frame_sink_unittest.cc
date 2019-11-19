@@ -14,7 +14,6 @@
 #include "base/threading/thread.h"
 #include "cc/test/fake_layer_tree_frame_sink_client.h"
 #include "components/viz/client/hit_test_data_provider_draw_quad.h"
-#include "components/viz/client/local_surface_id_provider.h"
 #include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
@@ -22,8 +21,9 @@
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gpu_memory_buffer_manager.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
-#include "services/viz/public/interfaces/compositing/compositor_frame_sink.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -39,7 +39,12 @@ class ThreadTrackingLayerTreeFrameSinkClient
       base::PlatformThreadId* called_thread_id,
       base::RunLoop* run_loop)
       : called_thread_id_(called_thread_id), run_loop_(run_loop) {}
+  ThreadTrackingLayerTreeFrameSinkClient(
+      const ThreadTrackingLayerTreeFrameSinkClient&) = delete;
   ~ThreadTrackingLayerTreeFrameSinkClient() override = default;
+
+  ThreadTrackingLayerTreeFrameSinkClient& operator=(
+      const ThreadTrackingLayerTreeFrameSinkClient&) = delete;
 
   // FakeLayerTreeFrameSinkClient:
   void DidLoseLayerTreeFrameSink() override {
@@ -52,8 +57,6 @@ class ThreadTrackingLayerTreeFrameSinkClient
  private:
   base::PlatformThreadId* called_thread_id_;
   base::RunLoop* run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadTrackingLayerTreeFrameSinkClient);
 };
 
 TEST(AsyncLayerTreeFrameSinkTest,
@@ -65,19 +68,16 @@ TEST(AsyncLayerTreeFrameSinkTest,
       viz::TestContextProvider::Create();
   viz::TestGpuMemoryBufferManager test_gpu_memory_buffer_manager;
 
-  viz::mojom::CompositorFrameSinkPtrInfo sink_info;
-  viz::mojom::CompositorFrameSinkRequest sink_request =
-      mojo::MakeRequest(&sink_info);
-  viz::mojom::CompositorFrameSinkClientPtr client;
-  viz::mojom::CompositorFrameSinkClientRequest client_request =
-      mojo::MakeRequest(&client);
+  mojo::PendingRemote<viz::mojom::CompositorFrameSink> sink_remote;
+  mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink_receiver =
+      sink_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client;
 
   AsyncLayerTreeFrameSink::InitParams init_params;
   init_params.compositor_task_runner = bg_thread.task_runner();
   init_params.gpu_memory_buffer_manager = &test_gpu_memory_buffer_manager;
-  init_params.pipes.compositor_frame_sink_info = std::move(sink_info);
-  init_params.pipes.client_request = std::move(client_request);
-  init_params.enable_surface_synchronization = true;
+  init_params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
+  init_params.pipes.client_receiver = client.InitWithNewPipeAndPassReceiver();
   auto layer_tree_frame_sink = std::make_unique<AsyncLayerTreeFrameSink>(
       std::move(provider), nullptr, &init_params);
 
@@ -98,7 +98,7 @@ TEST(AsyncLayerTreeFrameSinkTest,
   // Closes the pipe, which should trigger calling DidLoseLayerTreeFrameSink()
   // (and quitting the RunLoop). There is no need to wait for BindToClient()
   // to complete as mojo::Binding error callbacks are processed asynchronously.
-  sink_request = viz::mojom::CompositorFrameSinkRequest();
+  sink_receiver.reset();
   close_run_loop.Run();
 
   EXPECT_NE(base::kInvalidThreadId, called_thread_id);
@@ -131,18 +131,16 @@ class AsyncLayerTreeFrameSinkSimpleTest : public testing::Test {
         display_rect_(1, 1) {
     auto context_provider = viz::TestContextProvider::Create();
 
-    viz::mojom::CompositorFrameSinkPtrInfo sink_info;
-    viz::mojom::CompositorFrameSinkRequest sink_request =
-        mojo::MakeRequest(&sink_info);
-    viz::mojom::CompositorFrameSinkClientPtr client;
-    viz::mojom::CompositorFrameSinkClientRequest client_request =
-        mojo::MakeRequest(&client);
+    mojo::PendingRemote<viz::mojom::CompositorFrameSink> sink_remote;
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSink> sink_receiver =
+        sink_remote.InitWithNewPipeAndPassReceiver();
+    mojo::PendingRemote<viz::mojom::CompositorFrameSinkClient> client;
 
     init_params_.compositor_task_runner = task_runner_;
     init_params_.gpu_memory_buffer_manager = &test_gpu_memory_buffer_manager_;
-    init_params_.pipes.compositor_frame_sink_info = std::move(sink_info);
-    init_params_.pipes.client_request = std::move(client_request);
-    init_params_.enable_surface_synchronization = true;
+    init_params_.pipes.compositor_frame_sink_remote = std::move(sink_remote);
+    init_params_.pipes.client_receiver =
+        client.InitWithNewPipeAndPassReceiver();
     init_params_.hit_test_data_provider =
         std::make_unique<viz::HitTestDataProviderDrawQuad>(
             /*should_ask_for_child_region=*/true, /*root_accepts_events=*/true);
@@ -190,7 +188,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListDuplicate) {
   gfx::Rect rect1(display_rect_);
   shared_quad_state1->SetAll(
       gfx::Transform(), /*quad_layer_rect=*/rect1,
-      /*visible_quad_layer_rect=*/rect1, /*clip_rect=*/rect1,
+      /*visible_quad_layer_rect=*/rect1,
+      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/rect1,
       /*is_clipped=*/false, /*are_contents_opaque=*/false,
       /*opacity=*/0.5f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
   auto* quad1 =
@@ -211,7 +210,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListDuplicate) {
   gfx::Rect rect2(display_rect_);
   shared_quad_state2->SetAll(
       gfx::Transform(), /*quad_layer_rect=*/rect2,
-      /*visible_quad_layer_rect=*/rect2, /*clip_rect=*/rect2,
+      /*visible_quad_layer_rect=*/rect2,
+      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/rect2,
       /*is_clipped=*/false, /*are_contents_opaque=*/false,
       /*opacity=*/0.5f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
   auto* quad2 =
@@ -239,7 +239,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListDuplicate) {
   transform3_0.Translate(-200, -100);
   shared_quad_state3_0->SetAll(
       transform3_0, /*quad_layer_rect=*/rect3_0,
-      /*visible_quad_layer_rect=*/rect3_0, /*clip_rect=*/rect3_0,
+      /*visible_quad_layer_rect=*/rect3_0,
+      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/rect3_0,
       /*is_clipped=*/false, /*are_contents_opaque=*/false,
       /*opacity=*/0.5f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
   auto* quad3_0 =
@@ -259,7 +260,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListDuplicate) {
   gfx::Rect rect3_1(display_rect_);
   shared_quad_state3_1->SetAll(
       gfx::Transform(), /*quad_layer_rect=*/rect3_1,
-      /*visible_quad_layer_rect=*/rect3_1, /*clip_rect=*/rect3_1,
+      /*visible_quad_layer_rect=*/rect3_1,
+      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/rect3_1,
       /*is_clipped=*/false, /*are_contents_opaque=*/false,
       /*opacity=*/0.5f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
   auto* quad3_1 =
@@ -276,7 +278,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest, HitTestRegionListDuplicate) {
   gfx::Rect rect3_root(display_rect_);
   shared_quad_state3_root->SetAll(
       gfx::Transform(), /*quad_layer_rect=*/rect3_root,
-      /*visible_quad_layer_rect=*/rect3_root, /*clip_rect=*/rect3_root,
+      /*visible_quad_layer_rect=*/rect3_root,
+      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/rect3_root,
       /*is_clipped=*/false, /*are_contents_opaque=*/false,
       /*opacity=*/0.5f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
   auto* quad3_root_1 =
@@ -313,7 +316,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest,
   gfx::Rect rect1(display_rect_);
   shared_quad_state1->SetAll(
       gfx::Transform(), /*quad_layer_rect=*/rect1,
-      /*visible_quad_layer_rect=*/rect1, /*clip_rect=*/rect1,
+      /*visible_quad_layer_rect=*/rect1,
+      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/rect1,
       /*is_clipped=*/false, /*are_contents_opaque=*/false,
       /*opacity=*/0.5f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
   auto* quad1 =
@@ -339,7 +343,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest,
   transform2_0.Translate(-200, -100);
   shared_quad_state2_0->SetAll(
       transform2_0, /*quad_layer_rect=*/rect2_0,
-      /*visible_quad_layer_rect=*/rect2_0, /*clip_rect=*/rect2_0,
+      /*visible_quad_layer_rect=*/rect2_0,
+      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/rect2_0,
       /*is_clipped=*/false, /*are_contents_opaque=*/false,
       /*opacity=*/0.5f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
   auto* quad2_0 =
@@ -359,7 +364,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest,
   gfx::Rect rect2_1(display_rect_);
   shared_quad_state2_1->SetAll(
       gfx::Transform(), /*quad_layer_rect=*/rect2_1,
-      /*visible_quad_layer_rect=*/rect2_1, /*clip_rect=*/rect2_1,
+      /*visible_quad_layer_rect=*/rect2_1,
+      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/rect2_1,
       /*is_clipped=*/false, /*are_contents_opaque=*/false,
       /*opacity=*/0.5f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
   auto* quad2_1 =
@@ -376,7 +382,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest,
   gfx::Rect rect2_root(display_rect_);
   shared_quad_state2_root->SetAll(
       gfx::Transform(), /*quad_layer_rect=*/rect2_root,
-      /*visible_quad_layer_rect=*/rect2_root, /*clip_rect=*/rect2_root,
+      /*visible_quad_layer_rect=*/rect2_root,
+      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/rect2_root,
       /*is_clipped=*/false, /*are_contents_opaque=*/false,
       /*opacity=*/0.5f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
   auto* quad2_root_1 =
@@ -411,7 +418,8 @@ TEST_F(AsyncLayerTreeFrameSinkSimpleTest,
   gfx::Rect rect3(display_rect_);
   shared_quad_state3->SetAll(
       gfx::Transform(), /*quad_layer_rect=*/rect3,
-      /*visible_quad_layer_rect=*/rect3, /*clip_rect=*/rect3,
+      /*visible_quad_layer_rect=*/rect3,
+      /*rounded_corner_bounds=*/gfx::RRectF(), /*clip_rect=*/rect3,
       /*is_clipped=*/false, /*are_contents_opaque=*/false,
       /*opacity=*/0.5f, SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
   auto* quad3 =

@@ -28,6 +28,7 @@
 enum ScrollSetting { "" /* none */, "up" };
 
 [
+    Exposed=Window,
     Constructor,
     RuntimeEnabled=WebVTTRegions
 ] interface VTTRegion {

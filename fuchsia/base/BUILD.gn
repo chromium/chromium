@@ -5,16 +5,20 @@
 assert(is_fuchsia)
 
 import("//build/config/fuchsia/fidl_library.gni")
-import("//build/config/fuchsia/rules.gni")
+import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//testing/test.gni")
 
 # Integration helpers for commonly used fuchsia.* APIs.
 source_set("base") {
   sources = [
+    "init_logging.cc",
     "mem_buffer_util.cc",
+    "string_util.cc",
   ]
   public = [
+    "init_logging.h",
     "mem_buffer_util.h",
+    "string_util.h",
   ]
   deps = [
     "//base",
@@ -27,12 +31,34 @@ source_set("modular") {
   sources = [
     "agent_impl.cc",
     "agent_impl.h",
+    "agent_manager.cc",
+    "agent_manager.h",
+    "lifecycle_impl.cc",
+    "lifecycle_impl.h",
   ]
   deps = [
     "//base",
   ]
   public_deps = [
     "//third_party/fuchsia-sdk/sdk:modular",
+    "//third_party/fuchsia-sdk/sdk:sys_cpp",
+  ]
+}
+
+# FIDL/Mojo adapters for MessagePorts.
+source_set("message_port") {
+  sources = [
+    "message_port.cc",
+  ]
+  public = [
+    "message_port.h",
+  ]
+  deps = [
+    ":base",
+    "//base",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/common",
+    "//third_party/fuchsia-sdk/sdk:web",
   ]
 }
 
@@ -42,12 +68,25 @@ source_set("test_support") {
     "fake_component_context.cc",
     "fake_component_context.h",
     "fit_adapter.h",
+    "frame_test_util.cc",
+    "frame_test_util.h",
     "result_receiver.h",
+    "test_devtools_list_fetcher.cc",
+    "test_devtools_list_fetcher.h",
+    "test_navigation_listener.cc",
+    "test_navigation_listener.h",
+    "url_request_rewrite_test_util.cc",
+    "url_request_rewrite_test_util.h",
   ]
   public_deps = [
+    ":base",
     ":modular",
     "//base",
+    "//net",
+    "//net:test_support",
     "//third_party/fuchsia-sdk/sdk:modular",
+    "//third_party/fuchsia-sdk/sdk:web",
+    "//url",
   ]
 }
 
@@ -62,6 +101,7 @@ test("cr_fuchsia_base_unittests") {
     "//base",
     "//base:testfidl",
     "//base/test:run_all_unittests",
+    "//base/test:test_support",
     "//testing/gtest",
   ]
 }

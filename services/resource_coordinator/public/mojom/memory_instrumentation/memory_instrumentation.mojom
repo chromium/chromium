@@ -4,6 +4,7 @@
 
 module memory_instrumentation.mojom;
 
+import "mojo/public/mojom/base/big_string.mojom";
 import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
@@ -19,6 +20,13 @@ enum LevelOfDetail {
   BACKGROUND,
   LIGHT,
   DETAILED
+};
+
+// Tells the MemoryDumpProvider(s) if they should try to make the result
+// more deterministic by forcing garbage collection.
+enum Determinism {
+  NONE,
+  FORCE_GC
 };
 
 enum ProcessType {
@@ -52,6 +60,7 @@ struct RequestArgs {
   uint64 dump_guid;
   DumpType dump_type;
   LevelOfDetail level_of_detail;
+  Determinism determinism;
 };
 
 struct RawAllocatorDumpEdge {
@@ -138,6 +147,10 @@ struct PlatformPrivateFootprint {
 
 struct RawOSMemDump {
   uint32 resident_set_kb = 0;
+  // peak_resident_set_kb is an experimental field. Please do not use it until
+  // crbug.com/957978 reaches to a conclusion.
+  uint32 peak_resident_set_kb = 0;
+  bool is_peak_rss_resettable = false;
   PlatformPrivateFootprint platform_private_footprint;
   array<VmRegion> memory_maps;
 
@@ -150,6 +163,15 @@ struct RawOSMemDump {
 
 struct OSMemDump {
   uint32 resident_set_kb = 0;
+
+  // The peak resident set size as observed by the kernel. This is currently
+  // reported on Linux and Android only. Also, this is an experimental field.
+  // Please do not use it until crbug.com/957978 reaches to a conclusion.
+  uint32 peak_resident_set_kb = 0;
+
+  // Indicates whether the above peak_resident_set_kb is the peak from the start
+  // of the process or from the previous memory dump.
+  bool is_peak_rss_resettable = false;
 
   // This is roughly private, anonymous, non-discardable, resident or swapped
   // memory in kilobytes. For more details, see https://goo.gl/3kPb9S.
@@ -189,11 +211,17 @@ struct ProcessMemoryDump {
   // less in flux, they will probably be merged into a single service, and this
   // parameter can be removed.
   mojo_base.mojom.ProcessId pid;
+
+  // The name of the primary service running in the process, if any.
+  string? service_name;
 };
 
 // Metrics aggregated across all processes.
 struct AggregatedMetrics {
-  uint32 native_library_resident_kb = 0;
+  // These values are not always available, -1 when invalid.
+  int32 native_library_resident_kb = 0;
+  int32 native_library_resident_not_ordered_kb = 0;
+  int32 native_library_not_resident_ordered_kb = 0;
 };
 
 // This struct is returned by the public-facing API
@@ -235,10 +263,9 @@ interface ClientProcess {
       (bool success, map<mojo_base.mojom.ProcessId, RawOSMemDump> dumps);
 };
 
-struct SharedBufferWithSize {
-  handle<shared_buffer> buffer;
-  uint32 size;
+struct HeapProfileResult {
   mojo_base.mojom.ProcessId pid;
+  mojo_base.mojom.BigString json;
 };
 
 // HeapProfilers expose a single interface to memory_instrumentation, allowing
@@ -249,17 +276,17 @@ struct SharedBufferWithSize {
 // with the Coordinator (see RegisterHeapProfiler) and is invoked when a memory
 // dump is requested (via Coordinator::RequestGlobalMemoryDump).
 interface HeapProfiler {
-  // Dumps the memory log of all profiled processes into shared buffers. The
-  // contents of each shared buffer is a JSON string compatible with
+  // Dumps the memory log of all profiled processes into BigString's.
+  // The contents of each BigString is a JSON string compatible with
   // TRACE_EVENT* macros. Processes that fail to dump will be omitted from
-  // |buffers|. When |strip_path_from_mapped_files| is true, only the base name
+  // |result|. When |strip_path_from_mapped_files| is true, only the base name
   // of mapped files is emitted. This prevents usernames from sneaking into the
   // trace.
   // |strip_path_from_mapped_files| should only be true for traces that will be
   // uploaded to the crash servers - this strips potential PII, but prevents
   // symbolization of local builds.
   DumpProcessesForTracing(bool strip_path_from_mapped_files) =>
-      (array<SharedBufferWithSize> buffers);
+      (array<HeapProfileResult> results);
 };
 
 // Implemented by resource_coordinator to provide additional information needed
@@ -275,9 +302,6 @@ interface HeapProfilerHelper {
 // the whole system. The coordinator maintains a list of registered client
 // processes and polls them whenever a global dump is required.
 interface Coordinator {
-  // Registers a client process.
-  RegisterClientProcess(ClientProcess client_process, ProcessType process_type);
-
   // Broadcasts a dump request to all registered client processes and returns a
   // global dump which includes allocator dumps specified in |allocator_dump_names|.
   // For example, given an allocator dump name such as "malloc" or "cc/resource_memory",
@@ -285,6 +309,7 @@ interface Coordinator {
   // entries which contain fields such as "size" and "effective_size".
   RequestGlobalMemoryDump(DumpType dump_type,
                           LevelOfDetail level_of_detail,
+                          Determinism determinsm,
                           array<string> allocator_dump_names) =>
       (bool success, GlobalMemoryDump? global_memory_dump);
 
@@ -303,13 +328,33 @@ interface Coordinator {
   // Broadcasts a dump request to all registered client processes and injects the
   // dump in the trace buffer (if tracing is enabled).
   RequestGlobalMemoryDumpAndAppendToTrace(DumpType dump_type,
-                                          LevelOfDetail level_of_detail) =>
+                                          LevelOfDetail level_of_detail,
+                                          Determinism determinism) =>
       (bool success, uint64 dump_id);
+};
 
-  // When a heap profiler is registered, heap dumps will be added to the trace
-  // any time RequestGlobalMemoryDumpAndAppendToTrace is called.
-  // This is cleaner than having the memory_instrumentation service talk
-  // directly to the HeapProfiler, since that will spawn the HeapProfiler in a
-  // new process if it isn't already running.
-  RegisterHeapProfiler(HeapProfiler heap_profiler);
+// An interface which can be used by client processes to register themselves
+// with a CoordinatorController client (like the browser), who can then pass the
+// registration along to the service with authoritative information about the
+// process's identity.
+interface CoordinatorConnector {
+  // Registers the calling process. The implementation of this API must already
+  // know who the calling process is and should forward these arguments along to
+  // the CoordinatorController along with information about the process.
+  RegisterCoordinatorClient(pending_receiver<Coordinator> receiver,
+                            pending_remote<ClientProcess> client_process);
+};
+
+// Main interface to the memory instrumentation coordinator. This is considered
+// privileged and the browser should effectively be the only client.
+interface CoordinatorController {
+  // Binds a new Coordinator interface endpoint for a unique client process.
+  // Should be called once for each process, including the browser itself.
+  // |client_process| is an endpoint the service can use to push client events
+  // to the process.
+  RegisterClientProcess(pending_receiver<Coordinator> receiver,
+                        pending_remote<ClientProcess> client_process,
+                        ProcessType process_type,
+                        mojo_base.mojom.ProcessId process_id,
+                        string? service_name);
 };

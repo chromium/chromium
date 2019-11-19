@@ -4,7 +4,8 @@
 package org.chromium.net;
 
 import android.content.Context;
-import android.support.annotation.VisibleForTesting;
+
+import androidx.annotation.VisibleForTesting;
 
 import java.io.IOException;
 import java.net.Proxy;

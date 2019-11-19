@@ -1,0 +1,28 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+import "services/network/public/mojom/referrer_policy.mojom";
+
+// https://w3c.github.io/webappsec-upgrade-insecure-requests/#insecure-requests-policy
+enum InsecureRequestsPolicy {
+  kDoNotUpgrade,
+  kUpgrade,
+};
+
+// This is equivalent to blink::FetchClientSettingsObject. This struct is always
+// created by the renderer process, and forwarded to the worker's renderer
+// process or used in the browser process.
+//
+// See comments on blink::FetchClientSettingsObject for details of this struct
+// and each member.
+//
+// Also keep this struct consistent with blink::WebFetchClientSettingsObject.
+struct FetchClientSettingsObject {
+  network.mojom.ReferrerPolicy referrer_policy;
+  url.mojom.Url outgoing_referrer;
+  InsecureRequestsPolicy insecure_requests_policy;
+};

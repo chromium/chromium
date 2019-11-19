@@ -11,7 +11,9 @@
 #else
 #include "base/files/file_path.h"
 #include "base/path_service.h"
+#include "chrome/browser/crash_upload_list/crash_upload_list_crashpad.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/crash/content/app/crashpad.h"
 #include "components/upload_list/crash_upload_list.h"
 #include "components/upload_list/text_log_upload_list.h"
 #endif
@@ -32,6 +34,16 @@ scoped_refptr<UploadList> CreateCrashUploadList() {
           .AppendASCII(CrashUploadList::kReporterLogFilename);
   return new CrashUploadListAndroid(upload_log_path);
 #else
+
+// ChromeOS uses crash_sender as its uploader even when Crashpad is enabled,
+// which isn't compatible with CrashUploadListCrashpad. crash_sender continues
+// to log uploads in CrashUploadList::kReporterLogFilename.
+#if !defined(OS_CHROMEOS)
+  if (crash_reporter::IsCrashpadEnabled()) {
+    return new CrashUploadListCrashpad();
+  }
+#endif
+
   base::FilePath crash_dir_path;
   base::PathService::Get(chrome::DIR_CRASH_DUMPS, &crash_dir_path);
   base::FilePath upload_log_path =

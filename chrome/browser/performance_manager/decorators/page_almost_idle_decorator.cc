@@ -6,9 +6,50 @@
 
 #include <algorithm>
 
-#include "chrome/browser/performance_manager/resource_coordinator_clock.h"
+#include "components/performance_manager/graph/frame_node_impl.h"
+#include "components/performance_manager/graph/graph_impl.h"
+#include "components/performance_manager/graph/node_attached_data_impl.h"
+#include "components/performance_manager/graph/page_node_impl.h"
+#include "components/performance_manager/graph/process_node_impl.h"
 
 namespace performance_manager {
+
+// Provides PageAlmostIdle machinery access to some internals of a PageNodeImpl.
+class PageAlmostIdleAccess {
+ public:
+  static std::unique_ptr<NodeAttachedData>* GetUniquePtrStorage(
+      PageNodeImpl* page_node) {
+    return &page_node->page_almost_idle_data_;
+  }
+
+  static void SetPageAlmostIdle(PageNodeImpl* page_node,
+                                bool page_almost_idle) {
+    page_node->SetPageAlmostIdle(page_almost_idle);
+  }
+};
+
+namespace {
+
+using LoadIdleState = PageAlmostIdleDecorator::Data::LoadIdleState;
+
+class DataImpl : public PageAlmostIdleDecorator::Data,
+                 public NodeAttachedDataImpl<DataImpl> {
+ public:
+  struct Traits : public NodeAttachedDataOwnedByNodeType<PageNodeImpl> {};
+
+  explicit DataImpl(const PageNodeImpl* page_node) {}
+  ~DataImpl() override = default;
+
+  static std::unique_ptr<NodeAttachedData>* GetUniquePtrStorage(
+      PageNodeImpl* page_node) {
+    return PageAlmostIdleAccess::GetUniquePtrStorage(page_node);
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(DataImpl);
+};
+
+}  // namespace
 
 // static
 constexpr base::TimeDelta PageAlmostIdleDecorator::kLoadedAndIdlingTimeout;
@@ -23,57 +64,54 @@ PageAlmostIdleDecorator::PageAlmostIdleDecorator() {
 
 PageAlmostIdleDecorator::~PageAlmostIdleDecorator() = default;
 
-bool PageAlmostIdleDecorator::ShouldObserve(const NodeBase* node) {
-  switch (node->id().type) {
-    case resource_coordinator::CoordinationUnitType::kFrame:
-    case resource_coordinator::CoordinationUnitType::kPage:
-    case resource_coordinator::CoordinationUnitType::kProcess:
-      return true;
-
-    default:
-      return false;
-  }
-  NOTREACHED();
+void PageAlmostIdleDecorator::OnNetworkAlmostIdleChanged(
+    const FrameNode* frame_node) {
+  UpdateLoadIdleStateFrame(FrameNodeImpl::FromNode(frame_node));
 }
 
-void PageAlmostIdleDecorator::OnFramePropertyChanged(
-    FrameNodeImpl* frame_node,
-    resource_coordinator::mojom::PropertyType property_type,
-    int64_t value) {
-  // Only the network idle state of a frame is of interest.
-  if (property_type ==
-      resource_coordinator::mojom::PropertyType::kNetworkAlmostIdle) {
-    UpdateLoadIdleStateFrame(frame_node);
-  }
+void PageAlmostIdleDecorator::OnPassedToGraph(Graph* graph) {
+  RegisterObservers(graph);
 }
 
-void PageAlmostIdleDecorator::OnProcessPropertyChanged(
-    ProcessNodeImpl* process_node,
-    resource_coordinator::mojom::PropertyType property_type,
-    int64_t value) {
-  if (property_type ==
-      resource_coordinator::mojom::PropertyType::kMainThreadTaskLoadIsLow) {
-    UpdateLoadIdleStateProcess(process_node);
-  }
+void PageAlmostIdleDecorator::OnTakenFromGraph(Graph* graph) {
+  UnregisterObservers(graph);
 }
 
-void PageAlmostIdleDecorator::OnPageEventReceived(
-    PageNodeImpl* page_node,
-    resource_coordinator::mojom::Event event) {
-  // Only the navigation committed event is of interest.
-  if (event != resource_coordinator::mojom::Event::kNavigationCommitted)
-    return;
+void PageAlmostIdleDecorator::OnIsLoadingChanged(const PageNode* page_node) {
+  UpdateLoadIdleStatePage(PageNodeImpl::FromNode(page_node));
+}
 
+void PageAlmostIdleDecorator::OnMainFrameDocumentChanged(
+    const PageNode* page_node) {
+  DCHECK_NE(0, page_node->GetNavigationID());
   // Reset the load-idle state associated with this page as a new navigation has
   // started.
-  auto* data = GetOrCreateData(page_node);
+  auto* page_impl = PageNodeImpl::FromNode(page_node);
+  auto* data = DataImpl::GetOrCreate(page_impl);
   data->load_idle_state_ = LoadIdleState::kLoadingNotStarted;
-  PageNodeImpl::PageAlmostIdleHelper::set_page_almost_idle(page_node, false);
-  UpdateLoadIdleStatePage(page_node);
+  PageAlmostIdleAccess::SetPageAlmostIdle(page_impl, false);
+  UpdateLoadIdleStatePage(page_impl);
 }
 
-void PageAlmostIdleDecorator::OnIsLoadingChanged(PageNodeImpl* page_node) {
-  UpdateLoadIdleStatePage(page_node);
+void PageAlmostIdleDecorator::OnMainThreadTaskLoadIsLow(
+    const ProcessNode* process_node) {
+  UpdateLoadIdleStateProcess(ProcessNodeImpl::FromNode(process_node));
+}
+
+void PageAlmostIdleDecorator::RegisterObservers(Graph* graph) {
+  // This observer presumes that it's been added before any nodes exist in the
+  // graph.
+  // TODO(chrisha): Add graph introspection functions to Graph.
+  DCHECK(GraphImpl::FromGraph(graph)->nodes().empty());
+  graph->AddFrameNodeObserver(this);
+  graph->AddPageNodeObserver(this);
+  graph->AddProcessNodeObserver(this);
+}
+
+void PageAlmostIdleDecorator::UnregisterObservers(Graph* graph) {
+  graph->RemoveFrameNodeObserver(this);
+  graph->RemovePageNodeObserver(this);
+  graph->RemoveProcessNodeObserver(this);
 }
 
 void PageAlmostIdleDecorator::UpdateLoadIdleStateFrame(
@@ -83,7 +121,7 @@ void PageAlmostIdleDecorator::UpdateLoadIdleStateFrame(
     return;
 
   // Update the load idle state of the page associated with this frame.
-  auto* page_node = frame_node->GetPageNode();
+  auto* page_node = frame_node->page_node();
   if (!page_node)
     return;
   UpdateLoadIdleStatePage(page_node);
@@ -92,7 +130,7 @@ void PageAlmostIdleDecorator::UpdateLoadIdleStateFrame(
 void PageAlmostIdleDecorator::UpdateLoadIdleStatePage(PageNodeImpl* page_node) {
   // Once the cycle is complete state transitions are no longer tracked for this
   // page. When this occurs the backing data store is deleted.
-  auto* data = GetData(page_node);
+  auto* data = DataImpl::Get(page_node);
   if (data == nullptr)
     return;
 
@@ -101,7 +139,7 @@ void PageAlmostIdleDecorator::UpdateLoadIdleStatePage(PageNodeImpl* page_node) {
 
   // Cancel any ongoing timers. A new timer will be set if necessary.
   data->idling_timer_.Stop();
-  const base::TimeTicks now = ResourceCoordinatorClock::NowTicks();
+  const base::TimeTicks now = base::TimeTicks::Now();
 
   // Determine if the overall timeout has fired.
   if ((data->load_idle_state_ == LoadIdleState::kLoadedNotIdling ||
@@ -183,41 +221,30 @@ void PageAlmostIdleDecorator::UpdateLoadIdleStatePage(PageNodeImpl* page_node) {
 
 void PageAlmostIdleDecorator::UpdateLoadIdleStateProcess(
     ProcessNodeImpl* process_node) {
-  for (auto* frame_node : process_node->GetFrameNodes())
+  for (auto* frame_node : process_node->frame_nodes())
     UpdateLoadIdleStateFrame(frame_node);
 }
 
 void PageAlmostIdleDecorator::TransitionToLoadedAndIdle(
     PageNodeImpl* page_node) {
-  auto* data = GetData(page_node);
+  auto* data = DataImpl::Get(page_node);
   data->load_idle_state_ = LoadIdleState::kLoadedAndIdle;
-  PageNodeImpl::PageAlmostIdleHelper::set_page_almost_idle(page_node, true);
+  PageAlmostIdleAccess::SetPageAlmostIdle(page_node, true);
 
   // Destroy the metadata as there are no more transitions possible. The
   // machinery will start up again if a navigation occurs.
-  PageNodeImpl::PageAlmostIdleHelper::DestroyData(page_node);
-}
-
-// static
-PageAlmostIdleData* PageAlmostIdleDecorator::GetOrCreateData(
-    PageNodeImpl* page_node) {
-  return PageNodeImpl::PageAlmostIdleHelper::GetOrCreateData(page_node);
-}
-
-// static
-PageAlmostIdleData* PageAlmostIdleDecorator::GetData(PageNodeImpl* page_node) {
-  return PageNodeImpl::PageAlmostIdleHelper::GetData(page_node);
+  DataImpl::Destroy(page_node);
 }
 
 // static
 bool PageAlmostIdleDecorator::IsIdling(const PageNodeImpl* page_node) {
-  // Get the Frame CU for the main frame associated with this page.
-  const FrameNodeImpl* main_frame_node = page_node->GetMainFrameNode();
+  // Get the frame node for the main frame associated with this page.
+  const FrameNodeImpl* main_frame_node = page_node->GetMainFrameNodeImpl();
   if (!main_frame_node)
     return false;
 
-  // Get the process CU associated with this main frame.
-  const auto* process_node = main_frame_node->GetProcessNode();
+  // Get the process node associated with this main frame.
+  const auto* process_node = main_frame_node->process_node();
   if (!process_node)
     return false;
 
@@ -227,13 +254,25 @@ bool PageAlmostIdleDecorator::IsIdling(const PageNodeImpl* page_node) {
   // associated with this page's main frame actually being low. In the case
   // of session restore this is mitigated by having a timeout while waiting for
   // this signal.
-  return main_frame_node->GetPropertyOrDefault(
-             resource_coordinator::mojom::PropertyType::kNetworkAlmostIdle,
-             0u) &&
-         process_node->GetPropertyOrDefault(
-             resource_coordinator::mojom::PropertyType::
-                 kMainThreadTaskLoadIsLow,
-             0u);
+  return main_frame_node->network_almost_idle() &&
+         process_node->main_thread_task_load_is_low();
+}
+
+// static
+PageAlmostIdleDecorator::Data*
+PageAlmostIdleDecorator::Data::GetOrCreateForTesting(PageNodeImpl* page_node) {
+  return DataImpl::GetOrCreate(page_node);
+}
+
+// static
+PageAlmostIdleDecorator::Data* PageAlmostIdleDecorator::Data::GetForTesting(
+    PageNodeImpl* page_node) {
+  return DataImpl::Get(page_node);
+}
+
+// static
+bool PageAlmostIdleDecorator::Data::DestroyForTesting(PageNodeImpl* page_node) {
+  return DataImpl::Destroy(page_node);
 }
 
 }  // namespace performance_manager

@@ -4,7 +4,7 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/md_select_css.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -48,12 +48,13 @@
   <template>
     <style include="md-select iron-flex iron-flex-alignment iron-positioning">
     </style>
+    <link rel="stylesheet" href="oobe_dialog_host.css">
     <link rel="stylesheet" href="oobe_iron_flex_layout_fix.css">
     <link rel="stylesheet" href="offline_ad_login.css">
     <oobe-dialog id="unlockStep" hidden="[[!unlockPasswordStep]]"
         aria-label$="[[adWelcomeMessage]]" has-buttons>
-      <hd-iron-icon slot="oobe-icon" icon1x="oobe-enrollment-32:briefcase"
-          icon2x="oobe-enrollment-64:briefcase">
+      <hd-iron-icon slot="oobe-icon"
+          icon1x="oobe-32:briefcase" icon2x="oobe-64:briefcase">
       </hd-iron-icon>
       <h1 slot="title" class="welcome-message">
         [[i18nDynamic(locale, 'adUnlockTitle')]]
@@ -71,17 +72,17 @@
         </cr-input>
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
-        <oobe-text-button id="skipButton" on-click="onSkipClicked_">
+        <oobe-text-button id="skipButton" on-tap="onSkipClicked_">
           <div>[[i18nDynamic(locale, 'adUnlockPasswordSkip')]]</div>
         </oobe-text-button>
         <oobe-next-button id="unlockButton"
-            on-click="onUnlockPasswordEntered_"></oobe-next-button>
+            on-tap="onUnlockPasswordEntered_"></oobe-next-button>
       </div>
     </oobe-dialog>
     <oobe-dialog id="credsStep" hidden="[[unlockPasswordStep]]"
         aria-label$="[[adWelcomeMessage]]" has-buttons>
-      <hd-iron-icon slot="oobe-icon" icon1x="oobe-enrollment-32:briefcase"
-          icon2x="oobe-enrollment-64:briefcase">
+      <hd-iron-icon slot="oobe-icon" hidden="[[!isDomainJoin]]"
+          icon1x="oobe-32:briefcase" icon2x="oobe-64:briefcase">
       </hd-iron-icon>
       <h1 slot="title" id="welcomeMsg"
           class="welcome-message">[[adWelcomeMessage]]</h1>
@@ -104,7 +105,7 @@
         </div>
         <div class="vertical layout">
           <cr-input slot="inputs" id="machineNameInput" required
-              hidden="[[!isDomainJoin]]" value="[[machineName]]"
+              hidden="[[!isDomainJoin]]" value="{{machineName}}"
               disabled="[[disabled]]" invalid="[[machineNameInvalid]]"
               pattern="[[machineNameInputPattern_]]"
               label="[[i18nDynamic(locale, 'oauthEnrollAdMachineNameInput')]]"
@@ -135,9 +136,8 @@
               error-message="[[i18nDynamic(locale, 'adLoginInvalidPassword')]]">
           </cr-input>
           <div class="flex layout horizontal start-justified">
-            <gaia-button id="moreOptionsBtn" type="link"
-                on-click="onMoreOptionsClicked_" hidden="[[!isDomainJoin]]"
-                disabled="[[disabled]]">
+            <gaia-button id="moreOptionsBtn" on-click="onMoreOptionsClicked_"
+                hidden="[[!isDomainJoin]]" disabled="[[disabled]]" link>
               [[i18nDynamic(locale, 'adJoinMoreOptions')]]
             </gaia-button>
           </div>
@@ -149,7 +149,7 @@
         <oobe-back-button id="backButton" on-click="onBackButton_"
             hidden="[[isDomainJoin]]"></oobe-back-button>
         <div class="flex"></div>
-        <oobe-next-button id="nextButton" on-click="onSubmit_"
+        <oobe-next-button id="nextButton" on-tap="onSubmit_"
             disabled="[[disabled]]"></oobe-next-button>
       </div>
     </oobe-dialog>
@@ -192,11 +192,11 @@
         </div>
       </div>
       <div slot="button-container">
-        <oobe-text-button on-click="onMoreOptionsCancelTap_" autofocus>
+        <oobe-text-button on-tap="onMoreOptionsCancelTap_" autofocus>
           <div>[[i18nDynamic(locale, 'adJoinCancel')]]</div>
         </oobe-text-button>
         <oobe-text-button id="moreOptionsSave"
-            on-click="onMoreOptionsConfirmTap_" inverse>
+            on-tap="onMoreOptionsConfirmTap_" inverse>
           <div>[[i18nDynamic(locale, 'adJoinSave')]]</div>
         </oobe-text-button>
       </div>

@@ -190,17 +190,19 @@ void QueryNodeList::AddChild(std::unique_ptr<QueryNode> node) {
 }
 
 void QueryNodeList::RemoveEmptySubnodes() {
+  QueryNodeVector kept_children;
   for (size_t i = 0; i < children_.size(); ++i) {
-    if (children_[i]->IsWord())
+    if (children_[i]->IsWord()) {
+      kept_children.push_back(std::move(children_[i]));
       continue;
+    }
 
     QueryNodeList* list_node = static_cast<QueryNodeList*>(children_[i].get());
     list_node->RemoveEmptySubnodes();
-    if (list_node->children()->empty()) {
-      children_.erase(children_.begin() + i);
-      --i;
-    }
+    if (!list_node->children()->empty())
+      kept_children.push_back(std::move(children_[i]));
   }
+  children_.swap(kept_children);
 }
 
 int QueryNodeList::AppendToSQLiteQuery(base::string16* query) const {

@@ -8,6 +8,7 @@
 #include <windows.h>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
@@ -72,9 +73,32 @@ class Settings {
   // Returns true if Safe Browsing extended reporting is enabled for the user.
   virtual bool sber_enabled() const;
 
+  // Returns an empty string if prompt_using_mojo() is false.
   virtual const std::string& chrome_mojo_pipe_token() const;
 
+  // Returns false if prompt_using_mojo() is false.
   virtual bool has_parent_pipe_handle() const;
+
+  virtual bool prompt_using_mojo() const;
+
+  // Returns the handle value passed on the command line, even if the handle
+  // has been closed. Returns INVALID_HANDLE_VALUE if prompt_using_mojo() is
+  // true.
+  virtual HANDLE prompt_response_read_handle() const;
+
+  // Returns the handle value passed on the command line, even if the handle
+  // has been closed. Returns INVALID_HANDLE_VALUE if prompt_using_mojo() is
+  // true.
+  virtual HANDLE prompt_request_write_handle() const;
+
+  // Returns true if the command-line switches specify a valid IPC setup.
+  // Since IPC is only used in scanning mode, all combinations of switches in
+  // other modes are considered valid.
+  virtual bool switches_valid_for_ipc() const;
+
+  // Returns true if any IPC related switch is included on the command-line.
+  // switches_valid_for_ipc() may return false even if this returns true.
+  virtual bool has_any_ipc_switch() const;
 
   // Returns the execution mode sent by Chrome if valid, or kNone if
   // kExecutionModeSwitch is not present or the corresponding value is invalid.
@@ -125,6 +149,14 @@ class Settings {
   // false, but other settings properties will be set to known safe defaults.
   virtual bool scan_switches_correct() const;
 
+  // If this returns greater than zero value, should disallow scanning of files
+  // bigger than the returned limit.
+  virtual int64_t open_file_size_limit() const;
+
+  // If this returns true, engines can be loaded outside the sandbox. This can
+  // only return true in developer builds.
+  virtual bool run_without_sandbox_for_testing() const;
+
  protected:
   Settings();
   virtual ~Settings();
@@ -164,13 +196,22 @@ class Settings {
   base::TimeDelta user_response_timeout_;
   std::vector<UwS::TraceLocation> locations_to_scan_;
   bool scan_switches_correct_ = false;
+  int64_t open_file_size_limit_ = 0;
 
   // Mojo related settings.
   std::string chrome_mojo_pipe_token_;
   bool has_parent_pipe_handle_ = false;
+  bool prompt_using_mojo_ = false;
+
+  // Proto related settings.
+  bool prompt_using_proto_ = false;
+  HANDLE prompt_response_read_handle_ = INVALID_HANDLE_VALUE;
+  HANDLE prompt_request_write_handle_ = INVALID_HANDLE_VALUE;
 
   // Engine selection settings.
-  Engine::Name engine_ = Engine::URZA;
+  Engine::Name engine_ = Engine::UNKNOWN;
+
+  bool run_without_sandbox_for_testing_ = false;
 
   static Settings* instance_for_testing_;
 };

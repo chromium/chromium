@@ -1,3 +1,0 @@
-This tests an animation with zero duration and a very large start delay. See http:://crbug.com/324323.
-
-This test passes if it doesn't crash.

@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="container" aria-hidden="true">
+  <div>
+    <table border="1" id="table">
+       <tbody>
+          <tr id="row">
+             <td id="cell">1</td>
+             <td>2</td>
+          </tr>
+       </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+function axElementById(id) {
+    return accessibilityController.accessibleElementById(id);
+}
+
+test(function(t) {
+    axElementById("cell"); // No test assertion, just ensure it's created.
+    document.getElementById('container').setAttribute('aria-hidden', 'false');
+    assert_equals(axElementById("table").role, 'AXRole: AXTable');
+    assert_equals(axElementById("row").role, 'AXRole: AXRow');
+    assert_equals(axElementById("cell").role, 'AXRole: AXCell');
+}, "Table, row and cell roles should be correct after setting aria-hidden to false on the ancestor.");
+
+</script>
+  

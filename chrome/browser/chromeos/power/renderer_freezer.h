@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/kill.h"
 #include "base/time/time.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -97,7 +97,7 @@ class RendererFreezer : public PowerManagerClient::RenderProcessManagerDelegate,
   // Manages notification registrations.
   content::NotificationRegistrar registrar_;
 
-  base::WeakPtrFactory<RendererFreezer> weak_factory_;
+  base::WeakPtrFactory<RendererFreezer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RendererFreezer);
 };

@@ -21,7 +21,7 @@
 namespace {
 
 password_manager::PasswordFormData kFormData = {
-    autofill::PasswordForm::SCHEME_HTML,
+    autofill::PasswordForm::Scheme::kHtml,
     "http://example.com/",
     "http://example.com/origin",
     "http://example.com/action",

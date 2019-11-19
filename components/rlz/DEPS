@@ -1,6 +1,7 @@
 include_rules = [
   "+chromeos/system",
   "+components/google",
+  "+mojo/public/cpp/bindings",
   "+net",
   "+rlz",
   "+ui/base",

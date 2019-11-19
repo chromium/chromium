@@ -62,6 +62,11 @@ class SurfaceTreeHost : public SurfaceDelegate,
   }
 
   using PresentationCallbacks = std::list<Surface::PresentationCallback>;
+
+  const PresentationCallbacks& presentation_callbacks() const {
+    return presentation_callbacks_;
+  }
+
   base::flat_map<uint32_t, PresentationCallbacks>&
   GetActivePresentationCallbacksForTesting() {
     return active_presentation_callbacks_;
@@ -80,14 +85,22 @@ class SurfaceTreeHost : public SurfaceDelegate,
 
   // Overridden from ui::ContextFactoryObserver:
   void OnLostSharedContext() override;
-  void OnLostVizProcess() override;
 
  protected:
   // Call this to submit a compositor frame.
   void SubmitCompositorFrame();
 
+  // Call this to submit an empty compositor frame. This may be useful if
+  // the surface tree is becoming invisible but the resources (e.g. buffers)
+  // need to be released back to the client.
+  void SubmitEmptyCompositorFrame();
+
+  // Update the host window's size to cover sufaces that must be visible and
+  // not clipped.
+  virtual void UpdateHostWindowBounds();
+
  private:
-  void UpdateHostWindowBounds();
+  viz::CompositorFrame PrepareToSubmitCompositorFrame();
 
   Surface* root_surface_ = nullptr;
 

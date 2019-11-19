@@ -21,15 +21,13 @@ async_test(t => {
   var ctx = canvas.getContext("2d");
 
     var video = document.getElementById("video");
-    video.addEventListener("playing", drawFirstFrame, true);
-    video.play();
+    video.addEventListener("canplaythrough", drawFirstFrame, true);
 
     function drawFirstFrame() {
-      video.removeEventListener("playing", drawFirstFrame, true);
+      video.removeEventListener("canplaythrough", drawFirstFrame, true);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      requestAnimationFrame(function() {
-        video.addEventListener("timeupdate", updateVideo, true);
-      });
+      video.addEventListener("timeupdate", updateVideo, true);
+      video.play();
     }
 
     var referenceImageData;
@@ -37,25 +35,28 @@ async_test(t => {
     var imagesAreTheSame;
 
     function updateVideo() {
-      t.step(function(){
+      t.step(function() {
           if (!processedFirstFrame) {
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          referenceImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          processedFirstFrame = true;
-        } else {
-          video.removeEventListener("timeupdate", updateVideo, true);
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          imagesAreTheSame = true;
-          for(var i = 0; i < imageData.data.length; ++i) {
-            if (imageData.data[i] != referenceImageData.data[i]) {
-              imagesAreTheSame = false;
-              break;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            referenceImageData = ctx.getImageData(
+                0, 0, canvas.width, canvas.height);
+            processedFirstFrame = true;
+          } else {
+            if (video.currentTime == 0)
+              return;
+            video.removeEventListener("timeupdate", updateVideo, true);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            imagesAreTheSame = true;
+            for(var i = 0; i < imageData.data.length; ++i) {
+              if (imageData.data[i] != referenceImageData.data[i]) {
+                imagesAreTheSame = false;
+                break;
+              }
             }
+            assert_false(imagesAreTheSame);
+            t.done();
           }
-          assert_false(imagesAreTheSame);
-          t.done();
-        }
       });
     }
 }, 'Verify that consecutive drawImage from a live video correctly propagates frame updates.');

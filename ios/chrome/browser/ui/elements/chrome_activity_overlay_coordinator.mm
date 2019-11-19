@@ -20,7 +20,7 @@
 @implementation ChromeActivityOverlayCoordinator
 
 - (void)start {
-  if (self.chromeActivityOverlayViewController)
+  if (self.chromeActivityOverlayViewController || self.started)
     return;
 
   self.chromeActivityOverlayViewController =
@@ -40,15 +40,17 @@
       addSubview:self.chromeActivityOverlayViewController.view];
   [self.chromeActivityOverlayViewController
       didMoveToParentViewController:self.baseViewController];
+  self.started = YES;
 }
 
 - (void)stop {
-  if (!self.chromeActivityOverlayViewController)
+  if (!self.chromeActivityOverlayViewController || !self.started)
     return;
   [self.chromeActivityOverlayViewController willMoveToParentViewController:nil];
   [self.chromeActivityOverlayViewController.view removeFromSuperview];
   [self.chromeActivityOverlayViewController removeFromParentViewController];
   self.chromeActivityOverlayViewController = nil;
+  self.started = NO;
 }
 
 @end

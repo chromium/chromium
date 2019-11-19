@@ -185,7 +185,7 @@ bool RendererPpapiHostImpl::HasUserGesture(PP_Instance instance) {
   if (instance_object->module()->permissions().HasPermission(
           ppapi::PERMISSION_BYPASS_USER_GESTURE))
     return true;
-  return instance_object->IsProcessingUserGesture();
+  return instance_object->HasTransientUserActivation();
 }
 
 int RendererPpapiHostImpl::GetRoutingIDForWidget(PP_Instance instance) {
@@ -225,16 +225,6 @@ IPC::PlatformFileForTransit RendererPpapiHostImpl::ShareHandleWithRemote(
     return IPC::GetPlatformFileForTransit(handle, should_close_source);
   }
   return dispatcher_->ShareHandleWithRemote(handle, should_close_source);
-}
-
-base::SharedMemoryHandle
-RendererPpapiHostImpl::ShareSharedMemoryHandleWithRemote(
-    const base::SharedMemoryHandle& handle) {
-  if (!dispatcher_) {
-    DCHECK(is_running_in_process_);
-    return base::SharedMemory::DuplicateHandle(handle);
-  }
-  return dispatcher_->ShareSharedMemoryHandleWithRemote(handle);
 }
 
 base::UnsafeSharedMemoryRegion

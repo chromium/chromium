@@ -20,7 +20,7 @@ class ASH_EXPORT DefaultWindowResizer : public WindowResizer {
 
   // Creates a new DefaultWindowResizer. The caller takes ownership of the
   // returned object.
-  static DefaultWindowResizer* Create(wm::WindowState* window_state);
+  static DefaultWindowResizer* Create(WindowState* window_state);
 
   // Returns true if the drag will result in changing the window in anyway.
   bool is_resizable() const { return details().is_resizable; }
@@ -36,7 +36,7 @@ class ASH_EXPORT DefaultWindowResizer : public WindowResizer {
   void FlingOrSwipe(ui::GestureEvent* event) override;
 
  private:
-  explicit DefaultWindowResizer(wm::WindowState* window_state);
+  explicit DefaultWindowResizer(WindowState* window_state);
 
   // Set to true once Drag() is invoked and the bounds of the window change.
   bool did_move_or_resize_;

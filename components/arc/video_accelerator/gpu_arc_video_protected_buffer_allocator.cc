@@ -13,12 +13,11 @@
 #include "components/arc/video_accelerator/arc_video_accelerator_util.h"
 #include "components/arc/video_accelerator/protected_buffer_allocator.h"
 #include "components/arc/video_accelerator/protected_buffer_manager.h"
-#include "media/gpu/format_utils.h"
+#include "media/base/format_utils.h"
+#include "media/gpu/macros.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/size.h"
-
-#define VLOGF(level) VLOG(level) << __func__ << "(): "
 
 namespace arc {
 // static
@@ -93,10 +92,15 @@ void GpuArcVideoProtectedBufferAllocator::AllocateProtectedNativePixmap(
   }
   VLOGF(2) << "format=" << media::VideoPixelFormatToString(pixel_format)
            << ", picture_size=" << picture_size.ToString();
+
+  auto buffer_format = VideoPixelFormatToGfxBufferFormat(pixel_format);
+  if (!buffer_format) {
+    std::move(callback).Run(false);
+    return;
+  }
   std::move(callback).Run(
       protected_buffer_allocator_->AllocateProtectedNativePixmap(
-          std::move(fd), media::VideoPixelFormatToGfxBufferFormat(pixel_format),
-          picture_size));
+          std::move(fd), *buffer_format, picture_size));
   return;
 }
 

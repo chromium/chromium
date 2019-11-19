@@ -104,7 +104,7 @@ Modifications:
 - Added tc_malloc_skip_new_handler.
 - Added TCMALLOC_DONT_REPLACE_SYSTEM_ALLOC which bypasses the libc_override logic.
 - Backported 7df7f14 "issue-693: enable futex usage on arm" from upstream.
-- Don't use the tls model 'initial-exec' in chromeos on arm with gcc.
+- Don't use the tls model 'initial-exec' on arm with gcc.
 - Update addr2line-pdb.c to fix format string errors and use relative addresses
   matching linux's behavior more closely.
 - Changed kint64min to not depend on undefined behavior.
@@ -117,3 +117,6 @@ Modifications:
 - Fixed line endings in vendor/README_windows.txt to Unix (LF)
 - Removed have_futex from spinlock_linux-inl.h; assume it's always there
 - Add thread-safe support to query and update the heap sampling period
+- Remove use of LINKER_INITIALIZED in page_heap_allocator.h, to enable the
+  compiler to optimize away a static constructor
+- Include <atomic> in malloc_extension.h due to std::atomic usage

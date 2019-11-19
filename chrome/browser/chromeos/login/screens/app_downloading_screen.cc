@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/login/screens/app_downloading_screen.h"
 
+#include "chrome/browser/ui/webui/chromeos/login/app_downloading_screen_handler.h"
+
 namespace chromeos {
 namespace {
 
@@ -15,10 +17,11 @@ constexpr const char kUserActionButtonContinueSetup[] =
 }  // namespace
 
 AppDownloadingScreen::AppDownloadingScreen(
-    BaseScreenDelegate* base_screen_delegate,
-    AppDownloadingScreenView* view)
-    : BaseScreen(base_screen_delegate, OobeScreen::SCREEN_APP_DOWNLOADING),
-      view_(view) {
+    AppDownloadingScreenView* view,
+    const base::RepeatingClosure& exit_callback)
+    : BaseScreen(AppDownloadingScreenView::kScreenId),
+      view_(view),
+      exit_callback_(exit_callback) {
   DCHECK(view_);
   view_->Bind(this);
 }
@@ -38,7 +41,7 @@ void AppDownloadingScreen::Hide() {
 
 void AppDownloadingScreen::OnUserAction(const std::string& action_id) {
   if (action_id == kUserActionButtonContinueSetup) {
-    Finish(ScreenExitCode::APP_DOWNLOADING_FINISHED);
+    exit_callback_.Run();
     return;
   }
   BaseScreen::OnUserAction(action_id);

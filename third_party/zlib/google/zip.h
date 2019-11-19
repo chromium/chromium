@@ -71,7 +71,7 @@ class ZipParams {
   }
   const std::vector<base::FilePath>& files_to_zip() const { return src_files_; }
 
-  using FilterCallback = base::Callback<bool(const base::FilePath&)>;
+  using FilterCallback = base::RepeatingCallback<bool(const base::FilePath&)>;
   void set_filter_callback(FilterCallback filter_callback) {
     filter_callback_ = filter_callback;
   }
@@ -125,7 +125,7 @@ bool Zip(const ZipParams& params);
 // of src_dir will be at the root level of the created zip. For each file in
 // src_dir, include it only if the callback |filter_cb| returns true. Otherwise
 // omit it.
-typedef base::Callback<bool(const base::FilePath&)> FilterCallback;
+using FilterCallback = base::RepeatingCallback<bool(const base::FilePath&)>;
 bool ZipWithFilterCallback(const base::FilePath& src_dir,
                            const base::FilePath& dest_file,
                            const FilterCallback& filter_cb);
@@ -152,7 +152,7 @@ bool ZipFiles(const base::FilePath& src_dir,
 // returns true. Otherwise omit it.
 // If |log_skipped_files| is true, files skipped during extraction are printed
 // to debug log.
-typedef base::Callback<bool(const base::FilePath&)> FilterCallback;
+using FilterCallback = base::RepeatingCallback<bool(const base::FilePath&)>;
 bool UnzipWithFilterCallback(const base::FilePath& zip_file,
                              const base::FilePath& dest_dir,
                              const FilterCallback& filter_cb,

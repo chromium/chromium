@@ -55,6 +55,9 @@ class SystemVolumeControl {
   // Sets the system power save state to |power_save_on|.
   virtual void SetPowerSave(bool power_save_on) = 0;
 
+  // Sets the volume limit to be applied to the system volume.
+  virtual void SetLimit(float limit) = 0;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(SystemVolumeControl);
 };

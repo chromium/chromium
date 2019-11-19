@@ -38,7 +38,7 @@ class ExtensionsTest : public testing::Test {
   template <typename... Args>
   constexpr ExtensionsTest(Args... args)
       : ExtensionsTest(
-            std::make_unique<content::TestBrowserThreadBundle>(args...)) {}
+            std::make_unique<content::BrowserTaskEnvironment>(args...)) {}
 
   ~ExtensionsTest() override;
 
@@ -72,7 +72,7 @@ class ExtensionsTest : public testing::Test {
   // The template constructor has to be in the header but it delegates to this
   // constructor to initialize all other members out-of-line.
   explicit ExtensionsTest(
-      std::unique_ptr<content::TestBrowserThreadBundle> thread_bundle);
+      std::unique_ptr<content::BrowserTaskEnvironment> task_environment);
 
   content::TestContentClientInitializer content_client_initializer_;
   std::unique_ptr<content::ContentUtilityClient> content_utility_client_;
@@ -84,7 +84,7 @@ class ExtensionsTest : public testing::Test {
 
   MockExtensionSystemFactory<MockExtensionSystem> extension_system_factory_;
 
-  std::unique_ptr<content::TestBrowserThreadBundle> thread_bundle_;
+  std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
   // The existence of this object enables tests via
   // RenderViewHostTester.

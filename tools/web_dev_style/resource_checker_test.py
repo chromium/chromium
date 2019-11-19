@@ -11,20 +11,17 @@ import test_util
 import unittest
 
 _HERE = os_path.dirname(os_path.abspath(__file__))
-sys_path.append(os_path.join(_HERE, '..', '..', 'build'))
+sys_path.append(os_path.join(_HERE, '..', '..'))
 
-import find_depot_tools  # pylint: disable=W0611
-from testing_support.super_mox import SuperMoxTestBase
+from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi
 
 
-class ResourceCheckerTest(SuperMoxTestBase):
+class ResourceCheckerTest(unittest.TestCase):
   def setUp(self):
-    SuperMoxTestBase.setUp(self)
+    super(ResourceCheckerTest, self).setUp()
 
-    input_api = self.mox.CreateMockAnything()
-    input_api.re = re
-    output_api = self.mox.CreateMockAnything()
-    self.checker = resource_checker.ResourceChecker(input_api, output_api)
+    self.checker = resource_checker.ResourceChecker(MockInputApi(),
+                                                    MockOutputApi())
 
   def ShouldPassDeprecatedMojoBindingCheck(self, line):
     error = self.checker.DeprecatedMojoBindingsCheck(1, line)

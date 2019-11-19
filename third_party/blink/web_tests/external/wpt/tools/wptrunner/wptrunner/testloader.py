@@ -1,14 +1,14 @@
 import hashlib
 import os
-import urlparse
+from six.moves.urllib.parse import urlsplit
 from abc import ABCMeta, abstractmethod
-from Queue import Empty
+from six.moves.queue import Empty
 from collections import defaultdict, deque
 from multiprocessing import Queue
 
-import manifestinclude
-import manifestexpected
-import wpttest
+from . import manifestinclude
+from . import manifestexpected
+from . import wpttest
 from mozlog import structured
 
 manifest = None
@@ -69,6 +69,8 @@ class DirectoryHashChunker(TestChunker):
 
 
 class TestFilter(object):
+    """Callable that restricts the set of tests in a given manifest according
+    to initial criteria"""
     def __init__(self, test_manifests, include=None, exclude=None, manifest_path=None, explicit=False):
         if manifest_path is None or include or explicit:
             self.manifest = manifestinclude.IncludeManifest.create()
@@ -110,14 +112,13 @@ class TagFilter(object):
 
 class ManifestLoader(object):
     def __init__(self, test_paths, force_manifest_update=False, manifest_download=False,
-                 types=None, meta_filters=None):
+                 types=None):
         do_delayed_imports()
         self.test_paths = test_paths
         self.force_manifest_update = force_manifest_update
         self.manifest_download = manifest_download
         self.types = types
         self.logger = structured.get_default_logger()
-        self.meta_filters = meta_filters
         if self.logger is None:
             self.logger = structured.structuredlog.StructuredLogger("ManifestLoader")
 
@@ -137,7 +138,7 @@ class ManifestLoader(object):
             download_from_github(manifest_path, tests_path)
         return manifest.load_and_update(tests_path, manifest_path, url_base,
                                         cache_root=cache_root, update=self.force_manifest_update,
-                                        meta_filters=self.meta_filters, types=self.types)
+                                        types=self.types)
 
 
 def iterfilter(filters, iter):
@@ -148,6 +149,7 @@ def iterfilter(filters, iter):
 
 
 class TestLoader(object):
+    """Loads tests according to a WPT manifest and any associated expectation files"""
     def __init__(self,
                  test_manifests,
                  test_types,
@@ -278,9 +280,8 @@ class TestSource(object):
         self.current_metadata = None
 
     @abstractmethod
-    # noqa: N805
-    #@classmethod (doesn't compose with @abstractmethod)
-    def make_queue(cls, tests, **kwargs):
+    #@classmethod (doesn't compose with @abstractmethod in < 3.3)
+    def make_queue(cls, tests, **kwargs):  # noqa: N805
         pass
 
     @classmethod
@@ -348,7 +349,7 @@ class PathGroupedSource(GroupedSource):
         depth = kwargs.get("depth")
         if depth is True or depth == 0:
             depth = None
-        path = urlparse.urlsplit(test.url).path.split("/")[1:-1][:depth]
+        path = urlsplit(test.url).path.split("/")[1:-1][:depth]
         rv = path != state.get("prev_path")
         state["prev_path"] = path
         return rv

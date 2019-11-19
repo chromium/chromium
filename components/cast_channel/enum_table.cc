@@ -35,7 +35,7 @@ base::Optional<base::StringPiece> GenericEnumTableEntry::FindByValue(
     std::size_t size,
     int value) {
   for (std::size_t i = 0; i < size; i++) {
-    if (data[i].value == value)
+    if (data[i].value == value && data[i].has_str())
       return data[i].str();
   }
   return base::nullopt;

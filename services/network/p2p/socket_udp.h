@@ -18,6 +18,8 @@
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_endpoint.h"
 #include "net/socket/diff_serv_code_point.h"
 #include "net/socket/udp_server_socket.h"
@@ -40,14 +42,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
       net::NetLog* net_log)>
       DatagramServerSocketFactory;
   P2PSocketUdp(Delegate* delegate,
-               mojom::P2PSocketClientPtr client,
-               mojom::P2PSocketRequest socket,
+               mojo::PendingRemote<mojom::P2PSocketClient> client,
+               mojo::PendingReceiver<mojom::P2PSocket> socket,
                P2PMessageThrottler* throttler,
                net::NetLog* net_log,
                const DatagramServerSocketFactory& socket_factory);
   P2PSocketUdp(Delegate* delegate,
-               mojom::P2PSocketClientPtr client,
-               mojom::P2PSocketRequest socket,
+               mojo::PendingRemote<mojom::P2PSocketClient> client,
+               mojo::PendingReceiver<mojom::P2PSocket> socket,
                P2PMessageThrottler* throttler,
                net::NetLog* net_log);
   ~P2PSocketUdp() override;
@@ -94,13 +96,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
   WARN_UNUSED_RESULT bool HandleReadResult(int result);
   WARN_UNUSED_RESULT bool HandleSendResult(uint64_t packet_id,
                                            int32_t transport_sequence_number,
-                                           base::TimeTicks send_time,
+                                           int64_t send_time_ms,
                                            int result);
   WARN_UNUSED_RESULT bool DoSend(const PendingPacket& packet);
 
   void OnSend(uint64_t packet_id,
               int32_t transport_sequence_number,
-              base::TimeTicks send_time,
+              int64_t send_time_ms,
               int result);
 
   int SetSocketDiffServCodePointInternal(net::DiffServCodePoint dscp);

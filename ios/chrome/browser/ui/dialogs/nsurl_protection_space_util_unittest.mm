@@ -16,7 +16,8 @@
 #error "This file requires ARC support."
 #endif
 
-using namespace nsurlprotectionspace_util;
+using nsurlprotectionspace_util::CanShow;
+using nsurlprotectionspace_util::MessageForHTTPAuth;
 
 namespace {
 

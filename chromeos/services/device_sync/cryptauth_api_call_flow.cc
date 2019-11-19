@@ -4,11 +4,12 @@
 
 #include "chromeos/services/device_sync/cryptauth_api_call_flow.h"
 
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/components/multidevice/logging/logging.h"
+#include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace chromeos {
 
@@ -17,6 +18,10 @@ namespace device_sync {
 namespace {
 
 const char kPost[] = "POST";
+const char kGet[] = "GET";
+const char kProtobufContentType[] = "application/x-protobuf";
+const char kQueryParameterAlternateOutputKey[] = "alt";
+const char kQueryParameterAlternateOutputProto[] = "proto";
 
 NetworkRequestError GetErrorForHttpResponseCode(int response_code) {
   if (response_code == 400)
@@ -40,11 +45,11 @@ CryptAuthApiCallFlow::CryptAuthApiCallFlow() {}
 
 CryptAuthApiCallFlow::~CryptAuthApiCallFlow() {}
 
-void CryptAuthApiCallFlow::Start(
+void CryptAuthApiCallFlow::StartPostRequest(
     const GURL& request_url,
+    const std::string& serialized_request,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& access_token,
-    const std::string& serialized_request,
     const ResultCallback& result_callback,
     const ErrorCallback& error_callback) {
   request_url_ = request_url;
@@ -54,25 +59,64 @@ void CryptAuthApiCallFlow::Start(
   OAuth2ApiCallFlow::Start(std::move(url_loader_factory), access_token);
 }
 
+void CryptAuthApiCallFlow::StartGetRequest(
+    const GURL& request_url,
+    const std::vector<std::pair<std::string, std::string>>&
+        request_as_query_parameters,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const std::string& access_token,
+    const ResultCallback& result_callback,
+    const ErrorCallback& error_callback) {
+  request_url_ = request_url;
+  request_as_query_parameters_ = request_as_query_parameters;
+  result_callback_ = result_callback;
+  error_callback_ = error_callback;
+  OAuth2ApiCallFlow::Start(std::move(url_loader_factory), access_token);
+}
+
 GURL CryptAuthApiCallFlow::CreateApiCallUrl() {
+  // Specifies that the server's response body should be formatted as a
+  // serialized proto.
+  request_url_ =
+      net::AppendQueryParameter(request_url_, kQueryParameterAlternateOutputKey,
+                                kQueryParameterAlternateOutputProto);
+
+  // GET requests encode the request proto as query parameters.
+  if (request_as_query_parameters_) {
+    for (const auto& key_value_pair : *request_as_query_parameters_) {
+      request_url_ = net::AppendQueryParameter(
+          request_url_, key_value_pair.first, key_value_pair.second);
+    }
+  }
+
   return request_url_;
 }
 
 std::string CryptAuthApiCallFlow::CreateApiCallBody() {
-  return serialized_request_;
+  return serialized_request_.value_or(std::string());
 }
 
 std::string CryptAuthApiCallFlow::CreateApiCallBodyContentType() {
-  return "application/x-protobuf";
+  return serialized_request_ ? kProtobufContentType : std::string();
 }
 
+// Note: Unlike OAuth2ApiCallFlow, we do *not* determine the request type
+// based on whether or not the body is empty. It is possible to send a POST
+// request with an empty body because a proto with default parameters is
+// encoded as an empty string.
 std::string CryptAuthApiCallFlow::GetRequestTypeForBody(
     const std::string& body) {
-  return kPost;
+  if (serialized_request_) {
+    DCHECK(!request_as_query_parameters_);
+    return kPost;
+  }
+
+  DCHECK(request_as_query_parameters_);
+  return kGet;
 }
 
 void CryptAuthApiCallFlow::ProcessApiCallSuccess(
-    const network::ResourceResponseHead* head,
+    const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   if (!body) {
     error_callback_.Run(NetworkRequestError::kResponseMalformed);
@@ -83,7 +127,7 @@ void CryptAuthApiCallFlow::ProcessApiCallSuccess(
 
 void CryptAuthApiCallFlow::ProcessApiCallFailure(
     int net_error,
-    const network::ResourceResponseHead* head,
+    const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   base::Optional<NetworkRequestError> error;
   std::string error_message;

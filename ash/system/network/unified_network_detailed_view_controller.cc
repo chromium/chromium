@@ -4,9 +4,9 @@
 
 #include "ash/system/network/unified_network_detailed_view_controller.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/system/network/network_list.h"
+#include "ash/system/network/network_list_view.h"
 #include "ash/system/tray/detailed_view_delegate.h"
 
 namespace ash {
@@ -14,9 +14,8 @@ namespace ash {
 UnifiedNetworkDetailedViewController::UnifiedNetworkDetailedViewController(
     UnifiedSystemTrayController* tray_controller)
     : detailed_view_delegate_(
-          std::make_unique<DetailedViewDelegate>(tray_controller)),
-      network_state_observer_(
-          std::make_unique<TrayNetworkStateObserver>(this)) {}
+          std::make_unique<DetailedViewDelegate>(tray_controller)) {
+}
 
 UnifiedNetworkDetailedViewController::~UnifiedNetworkDetailedViewController() =
     default;
@@ -28,12 +27,6 @@ views::View* UnifiedNetworkDetailedViewController::CreateView() {
       Shell::Get()->session_controller()->login_status());
   view_->Init();
   return view_;
-}
-
-void UnifiedNetworkDetailedViewController::NetworkStateChanged(
-    bool notify_a11y) {
-  if (view_)
-    view_->Update();
 }
 
 }  // namespace ash

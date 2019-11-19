@@ -16,10 +16,6 @@
 class MediaFileValidatorFactory;
 class SafeAudioVideoChecker;
 
-namespace service_manager {
-class Connector;
-}
-
 // Uses SafeAudioVideoChecker to validate supported audio and video files in
 // the utility process and then uses AVScanningFileValidator to ask the OS to
 // virus scan them. The entire file is not decoded so a positive result from
@@ -37,20 +33,12 @@ class SupportedAudioVideoChecker : public AVScanningFileValidator {
 
   explicit SupportedAudioVideoChecker(const base::FilePath& file);
 
-  static void RetrieveConnectorOnUIThread(
-      base::WeakPtr<SupportedAudioVideoChecker> this_ptr);
-
-  static void OnConnectorRetrieved(
-      base::WeakPtr<SupportedAudioVideoChecker> this_ptr,
-      std::unique_ptr<service_manager::Connector> connector);
-
-  void OnFileOpen(std::unique_ptr<service_manager::Connector> connector,
-                  base::File file);
+  void OnFileOpen(base::File file);
 
   base::FilePath path_;
   storage::CopyOrMoveFileValidator::ResultCallback callback_;
   std::unique_ptr<SafeAudioVideoChecker> safe_checker_;
-  base::WeakPtrFactory<SupportedAudioVideoChecker> weak_factory_;
+  base::WeakPtrFactory<SupportedAudioVideoChecker> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SupportedAudioVideoChecker);
 };

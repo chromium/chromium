@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
+#include "base/test/bind_test_util.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/ble_constants.h"
 #include "chromeos/services/secure_channel/connection_role.h"
@@ -20,7 +21,6 @@
 #include "chromeos/services/secure_channel/fake_ble_synchronizer.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
-#include "device/bluetooth/test/mock_bluetooth_discovery_session.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,30 +54,6 @@ class FakeBluetoothDevice : public device::MockBluetoothDevice {
   std::vector<uint8_t> service_data_vector_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeBluetoothDevice);
-};
-
-// Extends device::MockBluetoothDiscoverySession, adding the ability to provide
-// a closure invoked in the destructor.
-class FakeDiscoverySession
-    : public testing::NiceMock<device::MockBluetoothDiscoverySession> {
- public:
-  explicit FakeDiscoverySession(base::OnceClosure destructor_callback)
-      : destructor_callback_(std::move(destructor_callback)) {
-    ON_CALL(*this, IsActive())
-        .WillByDefault(testing::Invoke(this, &FakeDiscoverySession::is_active));
-  }
-
-  ~FakeDiscoverySession() { std::move(destructor_callback_).Run(); }
-
-  void set_is_active(bool is_active) { is_active_ = is_active; }
-
- private:
-  bool is_active() { return is_active_; }
-
-  base::OnceClosure destructor_callback_;
-  bool is_active_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDiscoverySession);
 };
 
 // const size_t kMinNumBytesInServiceData = 2;
@@ -126,12 +102,43 @@ class SecureChannelBleScannerImplTest : public testing::Test {
         static_cast<BleScannerImpl*>(ble_scanner_.get());
     ble_scanner_derived->SetServiceDataProviderForTesting(
         std::move(fake_service_data_provider));
+
+    ON_CALL(*mock_adapter_, StartScanWithFilter_(testing::_, testing::_))
+        .WillByDefault(testing::Invoke(
+            [](const device::BluetoothDiscoveryFilter* discovery_filter,
+               device::BluetoothAdapter::DiscoverySessionResultCallback&
+                   callback) {
+              std::move(callback).Run(
+                  /*is_error=*/false,
+                  device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
+            }));
+    ON_CALL(*mock_adapter_, StopScan(testing::_))
+        .WillByDefault(testing::Invoke(
+            [](device::BluetoothAdapter::DiscoverySessionResultCallback
+                   callback) {
+              std::move(callback).Run(
+                  /*is_error=*/false,
+                  device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
+            }));
   }
 
   void AddScanFilter(const BleScanner::ScanFilter& scan_filter) {
     EXPECT_FALSE(ble_scanner_->HasScanFilter(scan_filter));
     ble_scanner_->AddScanFilter(scan_filter);
     EXPECT_TRUE(ble_scanner_->HasScanFilter(scan_filter));
+  }
+
+  // StartDiscoverySession in the mock adapter mostly for the purpose of
+  // creating a DiscoverySession.
+  void StartDiscoverySession() {
+    mock_adapter_->StartDiscoverySession(
+        base::BindLambdaForTesting(
+            [&](std::unique_ptr<device::BluetoothDiscoverySession>
+                    discovery_session) {
+              discovery_session_ = std::move(discovery_session);
+              discovery_session_weak_ptr_ = discovery_session_->GetWeakPtr();
+            }),
+        base::RepeatingClosure());
   }
 
   void RemoveScanFilter(const BleScanner::ScanFilter& scan_filter) {
@@ -161,12 +168,12 @@ class SecureChannelBleScannerImplTest : public testing::Test {
         service_data, expected_remote_device, is_background_advertisement);
 
     size_t num_results_before_call = results.size();
-    FakeBluetoothDevice* fake_bluetooth_device =
+    std::unique_ptr<FakeBluetoothDevice> fake_bluetooth_device =
         SimulateScanResult(service_data);
     EXPECT_EQ(num_results_before_call + 1u, results.size());
 
     EXPECT_EQ(expected_remote_device, std::get<0>(results.back()));
-    EXPECT_EQ(fake_bluetooth_device, std::get<1>(results.back()));
+    EXPECT_EQ(fake_bluetooth_device.get(), std::get<1>(results.back()));
     EXPECT_EQ(is_background_advertisement ? ConnectionRole::kListenerRole
                                           : ConnectionRole::kInitiatorRole,
               std::get<2>(results.back()));
@@ -179,13 +186,9 @@ class SecureChannelBleScannerImplTest : public testing::Test {
       return;
     }
 
-    auto fake_discovery_session =
-        std::make_unique<FakeDiscoverySession>(base::BindOnce(
-            &SecureChannelBleScannerImplTest::OnDiscoverySessionDeleted,
-            base::Unretained(this)));
-    fake_discovery_session_ = fake_discovery_session.get();
+    StartDiscoverySession();
     fake_ble_synchronizer_->GetStartDiscoveryCallback(command_index)
-        .Run(std::move(fake_discovery_session));
+        .Run(std::move(discovery_session_));
   }
 
   void InvokeStopDiscoveryCallback(bool success, size_t command_index) {
@@ -201,8 +204,8 @@ class SecureChannelBleScannerImplTest : public testing::Test {
     return fake_ble_synchronizer_->GetNumCommands();
   }
 
-  FakeDiscoverySession* fake_discovery_session() {
-    return fake_discovery_session_;
+  bool discovery_session_is_active() {
+    return discovery_session_weak_ptr_.get();
   }
 
   FakeBleServiceDataHelper* fake_ble_service_data_helper() {
@@ -214,13 +217,14 @@ class SecureChannelBleScannerImplTest : public testing::Test {
   }
 
  private:
-  FakeBluetoothDevice* SimulateScanResult(const std::string& service_data) {
+  std::unique_ptr<FakeBluetoothDevice> SimulateScanResult(
+      const std::string& service_data) {
     static const int16_t kFakeRssi = -70;
     static const std::vector<uint8_t> kFakeEir;
 
     // Scan result should not be received if there is no active discovery
     // session.
-    EXPECT_TRUE(fake_discovery_session_);
+    EXPECT_TRUE(discovery_session_is_active());
 
     auto fake_bluetooth_device = std::make_unique<FakeBluetoothDevice>(
         service_data, mock_adapter_.get());
@@ -233,10 +237,8 @@ class SecureChannelBleScannerImplTest : public testing::Test {
                                            kFakeRssi, kFakeEir);
     }
 
-    return fake_bluetooth_device.get();
+    return fake_bluetooth_device;
   }
-
-  void OnDiscoverySessionDeleted() { fake_discovery_session_ = nullptr; }
 
   const multidevice::RemoteDeviceRefList test_devices_;
 
@@ -245,8 +247,9 @@ class SecureChannelBleScannerImplTest : public testing::Test {
   std::unique_ptr<FakeBleSynchronizer> fake_ble_synchronizer_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 
-  FakeDiscoverySession* fake_discovery_session_ = nullptr;
+  std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;
   FakeServiceDataProvider* fake_service_data_provider_ = nullptr;
+  base::WeakPtr<device::BluetoothDiscoverySession> discovery_session_weak_ptr_;
 
   std::unique_ptr<BleScanner> ble_scanner_;
 
@@ -261,13 +264,13 @@ TEST_F(SecureChannelBleScannerImplTest, UnrelatedScanResults) {
 
   AddScanFilter(filter);
   InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
-  EXPECT_TRUE(fake_discovery_session());
+  EXPECT_TRUE(discovery_session_is_active());
 
   ProcessScanResultAndVerifyNoDeviceIdentified("unrelatedServiceData");
 
   RemoveScanFilter(filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
-  EXPECT_FALSE(fake_discovery_session());
+  EXPECT_FALSE(discovery_session_is_active());
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IncorrectRole) {
@@ -277,7 +280,7 @@ TEST_F(SecureChannelBleScannerImplTest, IncorrectRole) {
 
   AddScanFilter(filter);
   InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
-  EXPECT_TRUE(fake_discovery_session());
+  EXPECT_TRUE(discovery_session_is_active());
 
   // Set the device to be a foreground advertisement, even though the registered
   // role is listener.
@@ -289,7 +292,7 @@ TEST_F(SecureChannelBleScannerImplTest, IncorrectRole) {
 
   RemoveScanFilter(filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
-  EXPECT_FALSE(fake_discovery_session());
+  EXPECT_FALSE(discovery_session_is_active());
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_Background) {
@@ -299,14 +302,14 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_Background) {
 
   AddScanFilter(filter);
   InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
-  EXPECT_TRUE(fake_discovery_session());
+  EXPECT_TRUE(discovery_session_is_active());
 
   ProcessScanResultAndVerifyDevice("device0ServiceData", test_devices()[0],
                                    true /* is_background_advertisement */);
 
   RemoveScanFilter(filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
-  EXPECT_FALSE(fake_discovery_session());
+  EXPECT_FALSE(discovery_session_is_active());
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_Foreground) {
@@ -316,14 +319,14 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_Foreground) {
 
   AddScanFilter(filter);
   InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
-  EXPECT_TRUE(fake_discovery_session());
+  EXPECT_TRUE(discovery_session_is_active());
 
   ProcessScanResultAndVerifyDevice("device0ServiceData", test_devices()[0],
                                    false /* is_background_advertisement */);
 
   RemoveScanFilter(filter);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
-  EXPECT_FALSE(fake_discovery_session());
+  EXPECT_FALSE(discovery_session_is_active());
 }
 
 TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_MultipleScans) {
@@ -337,7 +340,7 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_MultipleScans) {
   AddScanFilter(filter_1);
   AddScanFilter(filter_2);
   InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
-  EXPECT_TRUE(fake_discovery_session());
+  EXPECT_TRUE(discovery_session_is_active());
 
   // Identify device 0.
   ProcessScanResultAndVerifyDevice("device0ServiceData", test_devices()[0],
@@ -349,18 +352,18 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_MultipleScans) {
   // No additional BLE command should have been posted, since the existing scan
   // should not have been stopped.
   EXPECT_EQ(1u, GetNumBleCommands());
-  EXPECT_TRUE(fake_discovery_session());
+  EXPECT_TRUE(discovery_session_is_active());
 
   // Remove the scan filter, and verify that the scan stopped.
   RemoveScanFilter(filter_2);
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
-  EXPECT_FALSE(fake_discovery_session());
+  EXPECT_FALSE(discovery_session_is_active());
 
   // Add the scan filter back again; this should start the discovery session
   // back up again.
   AddScanFilter(filter_2);
   InvokeStartDiscoveryCallback(true /* success */, 2u /* command_index */);
-  EXPECT_TRUE(fake_discovery_session());
+  EXPECT_TRUE(discovery_session_is_active());
 
   // Identify device 2.
   ProcessScanResultAndVerifyDevice("device2ServiceData", test_devices()[2],
@@ -369,7 +372,7 @@ TEST_F(SecureChannelBleScannerImplTest, IdentifyDevice_MultipleScans) {
   // Remove the scan filter, and verify that the scan stopped.
   RemoveScanFilter(filter_2);
   InvokeStopDiscoveryCallback(true /* success */, 3u /* command_index */);
-  EXPECT_FALSE(fake_discovery_session());
+  EXPECT_FALSE(discovery_session_is_active());
 }
 
 TEST_F(SecureChannelBleScannerImplTest, StartAndStopFailures) {
@@ -380,15 +383,15 @@ TEST_F(SecureChannelBleScannerImplTest, StartAndStopFailures) {
 
   // A request was made to start discovery; simulate this request failing.
   InvokeStartDiscoveryCallback(false /* success */, 0u /* command_index */);
-  EXPECT_FALSE(fake_discovery_session());
+  EXPECT_FALSE(discovery_session_is_active());
 
   // BleScanner should have retried this attempt; simulate another failure.
   InvokeStartDiscoveryCallback(false /* success */, 1u /* command_index */);
-  EXPECT_FALSE(fake_discovery_session());
+  EXPECT_FALSE(discovery_session_is_active());
 
   // Succeed this time.
   InvokeStartDiscoveryCallback(true /* success */, 2u /* command_index */);
-  EXPECT_TRUE(fake_discovery_session());
+  EXPECT_TRUE(discovery_session_is_active());
 
   // Remove scan filters, which should trigger BleScanner to stop the
   // discovery session.
@@ -396,15 +399,15 @@ TEST_F(SecureChannelBleScannerImplTest, StartAndStopFailures) {
 
   // Simulate a failure to stop.
   InvokeStopDiscoveryCallback(false /* success */, 3u /* command_index */);
-  EXPECT_TRUE(fake_discovery_session());
+  EXPECT_TRUE(discovery_session_is_active());
 
   // Simulate another failure.
   InvokeStopDiscoveryCallback(false /* success */, 4u /* command_index */);
-  EXPECT_TRUE(fake_discovery_session());
+  EXPECT_TRUE(discovery_session_is_active());
 
   // Succeed this time.
   InvokeStopDiscoveryCallback(true /* success */, 5u /* command_index */);
-  EXPECT_FALSE(fake_discovery_session());
+  EXPECT_FALSE(discovery_session_is_active());
 }
 
 TEST_F(SecureChannelBleScannerImplTest, StartAndStop_EdgeCases) {
@@ -418,12 +421,12 @@ TEST_F(SecureChannelBleScannerImplTest, StartAndStop_EdgeCases) {
 
   // Complete starting the discovery session.
   InvokeStartDiscoveryCallback(true /* success */, 0u /* command_index */);
-  EXPECT_TRUE(fake_discovery_session());
+  EXPECT_TRUE(discovery_session_is_active());
 
   // BleScanner should have realized that it should now stop the discovery
   // session. Invoke the pending stop discovery callback.
   InvokeStopDiscoveryCallback(true /* success */, 1u /* command_index */);
-  EXPECT_FALSE(fake_discovery_session());
+  EXPECT_FALSE(discovery_session_is_active());
 }
 
 TEST_F(SecureChannelBleScannerImplTest, StartAndStopFailures_EdgeCases) {
@@ -437,7 +440,7 @@ TEST_F(SecureChannelBleScannerImplTest, StartAndStopFailures_EdgeCases) {
 
   // Fail the pending call to start a discovery session.
   InvokeStartDiscoveryCallback(false /* success */, 0u /* command_index */);
-  EXPECT_FALSE(fake_discovery_session());
+  EXPECT_FALSE(discovery_session_is_active());
 
   // No additional BLE command should have been posted.
   EXPECT_EQ(1u, GetNumBleCommands());

@@ -1,0 +1,22 @@
+[document web]
+++[tree] setsize:2
+++++[tree item] name='Animals' selectable indeterminate checkable:true level:1 posinset:1 setsize:2
+++++++[link] name='Animals'
+++++++++[static] name='Animals'
+++++++[panel] setsize:2
+++++++++[tree item] name='Domesticated' selectable level:2 posinset:1 setsize:2
+++++++++++[link] name='Domesticated'
+++++++++++++[static] name='Domesticated'
+++++++++++[panel] setsize:2
+++++++++++++[tree item] name='Dog' checked selectable checkable:true level:3 posinset:1 setsize:2
+++++++++++++++[link] name='Dog'
+++++++++++++++++[static] name='Dog'
+++++++++++++[tree item] name='Cat' selectable checkable:true level:3 posinset:2 setsize:2
+++++++++++++++[link] name='Cat'
+++++++++++++++++[static] name='Cat'
+++++++++[tree item] name='Wild' selectable level:2 posinset:2 setsize:2
+++++++++++[link] name='Wild'
+++++++++++++[static] name='Wild'
+++++[tree item] name='Plants' selectable level:1 posinset:2 setsize:2
+++++++[link] name='Plants'
+++++++++[static] name='Plants'

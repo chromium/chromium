@@ -98,7 +98,7 @@ v8::Local<v8::Value> CreateFromFunctionAndGetResult(
     v8::Local<v8::Value> argv[] = nullptr) {
   String js = String("({start: ") + function_definition + "})" + '\0';
   ScriptValue underlying_value =
-      EvalWithPrintingError(scope, WTF::StringUTF8Adaptor(js).Data());
+      EvalWithPrintingError(scope, js.Utf8().c_str());
   auto underlying_object = underlying_value.V8Value().As<v8::Object>();
   auto* algo = CreateAlgorithmFromUnderlyingMethod(
       scope->GetScriptState(), underlying_object, "start",

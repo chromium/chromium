@@ -8,6 +8,9 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "storage/browser/blob/blob_registry_impl.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
 
@@ -22,29 +25,26 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
                    BlobRegistryImpl::Delegate* delegate);
   ~BlobURLStoreImpl() override;
 
-  void Register(blink::mojom::BlobPtr blob,
+  void Register(mojo::PendingRemote<blink::mojom::Blob> blob,
                 const GURL& url,
                 RegisterCallback callback) override;
   void Revoke(const GURL& url) override;
   void Resolve(const GURL& url, ResolveCallback callback) override;
   void ResolveAsURLLoaderFactory(
       const GURL& url,
-      network::mojom::URLLoaderFactoryRequest request) override;
-  void ResolveForNavigation(const GURL& url,
-                            blink::mojom::BlobURLTokenRequest token) override;
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+      override;
+  void ResolveForNavigation(
+      const GURL& url,
+      mojo::PendingReceiver<blink::mojom::BlobURLToken> token) override;
 
  private:
-  void RegisterWithUUID(blink::mojom::BlobPtr blob,
-                        const GURL& url,
-                        RegisterCallback callback,
-                        const std::string& uuid);
-
   base::WeakPtr<BlobStorageContext> context_;
   BlobRegistryImpl::Delegate* delegate_;
 
   std::set<GURL> urls_;
 
-  base::WeakPtrFactory<BlobURLStoreImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<BlobURLStoreImpl> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(BlobURLStoreImpl);
 };
 

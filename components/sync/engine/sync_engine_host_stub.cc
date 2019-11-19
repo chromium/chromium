@@ -14,13 +14,14 @@ void SyncEngineHostStub::OnEngineInitialized(
     const WeakHandle<JsBackend>& js_backend,
     const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
     const std::string& cache_guid,
-    const std::string& session_name,
     const std::string& birthday,
     const std::string& bag_of_chips,
+    const std::string& last_keystore_key,
     bool success) {}
 
 void SyncEngineHostStub::OnSyncCycleCompleted(
-    const SyncCycleSnapshot& snapshot) {}
+    const SyncCycleSnapshot& snapshot,
+    const std::string& last_keystore_key) {}
 
 void SyncEngineHostStub::OnProtocolEvent(const ProtocolEvent& event) {}
 
@@ -39,8 +40,6 @@ void SyncEngineHostStub::OnDatatypeStatusCounterUpdated(
 void SyncEngineHostStub::OnConnectionStatusChange(ConnectionStatus status) {}
 
 void SyncEngineHostStub::OnMigrationNeededForTypes(ModelTypeSet types) {}
-
-void SyncEngineHostStub::OnExperimentsChanged(const Experiments& experiments) {}
 
 void SyncEngineHostStub::OnActionableError(const SyncProtocolError& error) {}
 

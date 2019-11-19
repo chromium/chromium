@@ -378,7 +378,7 @@ function handleStatistics(event) {
   for (const key in data) {
     let entry = statistics[key];
     if (!entry) {
-      entry = cr.doc.createElement('tr');
+      entry = document.createElement('tr');
       $('stat-entries').appendChild(entry);
       statistics[key] = entry;
     }
@@ -417,7 +417,7 @@ function updateDescription() {
 
       const normalize = keyAndLabel[i][2] || stringToText_;
 
-      const row = cr.doc.createElement('tr');
+      const row = document.createElement('tr');
       row.innerHTML = '<td>' + label + '</td>' +
           '<td>' + normalize(entry) + '</td>';
       tbody.appendChild(row);
@@ -493,5 +493,5 @@ function onLoad() {
   $('dump-button').addEventListener('click', dump, false);
 }
 
-cr.doc.addEventListener('DOMContentLoaded', onLoad, false);
+document.addEventListener('DOMContentLoaded', onLoad, false);
 })();

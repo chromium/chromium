@@ -40,8 +40,7 @@ FileTransferMessageHandler::FileTransferMessageHandler(
     std::unique_ptr<protocol::MessagePipe> pipe,
     std::unique_ptr<FileOperations> file_operations)
     : protocol::NamedMessagePipeHandler(name, std::move(pipe)),
-      file_operations_(std::move(file_operations)),
-      weak_ptr_factory_(this) {
+      file_operations_(std::move(file_operations)) {
   DCHECK(file_operations_);
 }
 

@@ -707,6 +707,55 @@
     });
   }
 
+  // TODO(crbug.com/988432): This test is a temporary replacement for:
+  // external/wpt/webrtc/RTCRtpReceiver-getSynchronizationSources.https.html
+  async function testEstablishVideoOnlyCallAndVerifyGetSynchronizationSourcesWorks() {
+    const startTime = performance.timeOrigin + performance.now();
+
+    createConnections(null);
+    const stream = await navigator.mediaDevices.getUserMedia({video: true});
+    addStreamToBothConnectionsAndNegotiate(stream);
+    await detectVideoPlaying('remote-view-2');
+
+    const peerConnection = gSecondConnection;
+
+    const receivers = peerConnection.getReceivers();
+    assertEquals(receivers.length, 1);
+    const receiver = receivers[0];
+    assertEquals(receiver.track.kind, 'video');
+
+    const results = receiver.getSynchronizationSources();
+    assertEquals(results.length, 1);
+    const result = results[0];
+
+    const endTime = performance.timeOrigin + performance.now();
+
+    console.log('getSynchronizationSources() = ' + JSON.stringify(result));
+
+    // timestamp
+    assertEquals(typeof result.timestamp, 'number');
+    assertTrue(result.timestamp >= startTime);
+    assertTrue(result.timestamp <= endTime);
+
+    // source
+    assertEquals(typeof result.source, 'number');
+    assertTrue(result.source >= 0);
+    assertTrue(result.source <= 0xffffffff);
+
+    // rtpTimestamp
+    assertEquals(typeof result.rtpTimestamp, 'number');
+    assertTrue(result.rtpTimestamp >= 0);
+    assertTrue(result.rtpTimestamp <= 0xffffffff);
+
+    // audioLevel
+    assertEquals(result.audioLevel, undefined);
+
+    // voiceActivityFlag
+    assertEquals(result.voiceActivityFlag, undefined);
+
+    reportTestSuccess();
+  }
+
   function CanSetupH264VideoCallOnSupportedDevice() {
     createConnections(null);
     setOfferSdpTransform(maybePreferH264SendCodec);

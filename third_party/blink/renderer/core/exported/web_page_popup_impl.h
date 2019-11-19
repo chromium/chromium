@@ -44,10 +44,10 @@ class Layer;
 }
 
 namespace blink {
+class Element;
 class Page;
 class PagePopupChromeClient;
 class PagePopupClient;
-class WebLayerTreeView;
 class WebViewImpl;
 class LocalDOMWindow;
 
@@ -88,17 +88,17 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
     return other && popup_client_ == other->popup_client_;
   }
 
-  WebWidgetClient* WidgetClient() const { return widget_client_; }
+  WebWidgetClient* WidgetClient() const { return web_page_popup_client_; }
 
   LocalDOMWindow* Window();
 
   // WebWidget implementation.
-  void CompositeAndReadbackAsync(
-      base::OnceCallback<void(const SkBitmap&)> callback) override;
   WebInputEventResult DispatchBufferedTouchEvents() override;
 
   // WebPagePopup implementation.
   WebPoint PositionRelativeToOwner() override;
+  WebDocument GetDocument() override;
+  WebPagePopupClient* GetClientForTesting() const override;
 
   // PagePopup implementation.
   void PostMessageToPopup(const String& message) override;
@@ -108,14 +108,17 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
  private:
   // WebWidget implementation.
-  void SetLayerTreeView(WebLayerTreeView*, cc::AnimationHost*) override;
+  // NOTE: The WebWidget may still be used after requesting the popup to be
+  // closed and destroyed. But the Page and the MainFrame are destroyed
+  // immediately. So all methods (outside of initialization) that are part
+  // of the WebWidget need to check if close has already been initiated (they
+  // can do so by checking |page_|) and not crash! https://crbug.com/906340
+  void SetAnimationHost(cc::AnimationHost*) override;
   void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) final;
   void BeginFrame(base::TimeTicks last_frame_time,
                   bool record_main_frame_metrics) override;
   void UpdateLifecycle(LifecycleUpdate requested_update,
                        LifecycleUpdateReason reason) override;
-  void UpdateAllLifecyclePhasesAndCompositeForTesting(bool do_raster) override;
-  void PaintContent(cc::PaintCanvas*, const WebRect&) override;
   void Resize(const WebSize&) override;
   void Close() override;
   WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) override;
@@ -136,19 +139,21 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   // This may only be called if page_ is non-null.
   LocalFrame& MainFrame() const;
 
+  Element* FocusedElement() const;
+
   bool IsViewportPointInWindow(int x, int y);
 
   // PagePopup function
   AXObject* RootAXObject() override;
   void SetWindowRect(const IntRect&) override;
 
-  explicit WebPagePopupImpl(WebWidgetClient*);
+  explicit WebPagePopupImpl(WebPagePopupClient*);
   void DestroyPage();
   void SetRootLayer(scoped_refptr<cc::Layer>);
 
   WebRect WindowRectInScreen() const;
 
-  WebWidgetClient* widget_client_;
+  WebPagePopupClient* web_page_popup_client_;
   WebViewImpl* web_view_;
   // WebPagePopupImpl wraps its own Page that renders the content in the popup.
   // This member is non-null between the call to Initialize() and the call to
@@ -160,11 +165,12 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   PagePopupClient* popup_client_;
   bool closing_ = false;
 
-  WebLayerTreeView* layer_tree_view_ = nullptr;
   cc::AnimationHost* animation_host_ = nullptr;
   scoped_refptr<cc::Layer> root_layer_;
   base::TimeTicks raf_aligned_input_start_time_;
   bool is_accelerated_compositing_active_ = false;
+
+  bool suppress_next_keypress_event_ = false;
 
   friend class WebPagePopup;
   friend class PagePopupChromeClient;

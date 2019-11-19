@@ -412,7 +412,7 @@ void PersistentSystemProfile::MergeUpdateRecords(
         if (iter.ReadStringPiece(&trial) && iter.ReadStringPiece(&group)) {
           variations::ActiveGroupId field_ids =
               variations::MakeActiveGroupId(trial, group);
-          if (!base::ContainsKey(known_field_trial_ids, field_ids.name)) {
+          if (!base::Contains(known_field_trial_ids, field_ids.name)) {
             SystemProfileProto::FieldTrial* field_trial =
                 system_profile->add_field_trial();
             field_trial->set_name_id(field_ids.name);

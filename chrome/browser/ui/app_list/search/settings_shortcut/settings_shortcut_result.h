@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 
@@ -27,6 +28,7 @@ class SettingsShortcutResult : public ChromeSearchResult {
   // SearchResult overrides:
   void Open(int event_flags) override;
   void GetContextMenuModel(GetMenuModelCallback callback) override;
+  ash::SearchResultType GetSearchResultType() const override;
 
  private:
   Profile* const profile_;

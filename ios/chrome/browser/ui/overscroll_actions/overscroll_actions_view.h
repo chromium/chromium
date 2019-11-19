@@ -23,6 +23,15 @@ enum class OverscrollStyle {
   REGULAR_PAGE_INCOGNITO       // UI to fit regular pages in incognito.
 };
 
+// Minimum delay for the view to perform the transition to the ready state.
+extern const CFTimeInterval kMinimumPullDurationToTransitionToReadyInSeconds;
+
+// The brightness of the actions view background color for non incognito mode.
+extern const CGFloat kActionViewBackgroundColorBrightnessNonIncognito;
+
+// The brightness of the actions view background color for incognito mode.
+extern const CGFloat kActionViewBackgroundColorBrightnessIncognito;
+
 @class OverscrollActionsView;
 
 @protocol OverscrollActionsViewDelegate
@@ -49,6 +58,8 @@ enum class OverscrollStyle {
 @property(nonatomic, strong, readonly) UIView* backgroundView;
 // Whether cropping is set on the selection circle (true by default).
 @property(nonatomic, assign) BOOL selectionCroppingEnabled;
+// The current style of the overscroll actions UI.
+@property(nonatomic, assign) OverscrollStyle style;
 
 @property(nonatomic, assign) id<OverscrollActionsViewDelegate> delegate;
 
@@ -72,9 +83,6 @@ enum class OverscrollStyle {
 // This starts an "ink response" like animation typically triggered when an
 // action has been selected.
 - (void)displayActionAnimation;
-
-// Sets the style of the overscroll action UI.
-- (void)setStyle:(OverscrollStyle)style;
 
 @end
 

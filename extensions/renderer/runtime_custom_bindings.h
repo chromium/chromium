@@ -21,7 +21,6 @@ class RuntimeCustomBindings : public ObjectBackedNativeHandler {
   void AddRoutes() override;
 
  private:
-  void GetManifest(const v8::FunctionCallbackInfo<v8::Value>& args);
   void GetExtensionViews(const v8::FunctionCallbackInfo<v8::Value>& args);
 };
 

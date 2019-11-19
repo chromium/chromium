@@ -97,39 +97,57 @@ test(() => {
 
   style.animationTimingFunction = "step-start";
   assert_equals(style.animationTimingFunction, 'step-start');
-  assert_equals(computedStyle.animationTimingFunction, 'step-start');
+  assert_equals(computedStyle.animationTimingFunction, 'steps(1, start)');
   assert_equals(style.webkitAnimationTimingFunction, 'step-start');
-  assert_equals(computedStyle.webkitAnimationTimingFunction, 'step-start');
+  assert_equals(computedStyle.webkitAnimationTimingFunction, 'steps(1, start)');
 
   style.animationTimingFunction = "step-end";
   assert_equals(style.animationTimingFunction, 'step-end');
-  assert_equals(computedStyle.animationTimingFunction, 'step-end');
+  assert_equals(computedStyle.animationTimingFunction, 'steps(1)');
   assert_equals(style.webkitAnimationTimingFunction, 'step-end');
-  assert_equals(computedStyle.webkitAnimationTimingFunction, 'step-end');
+  assert_equals(computedStyle.webkitAnimationTimingFunction, 'steps(1)');
 
   style.animationTimingFunction = "steps(3)";
-  assert_equals(style.animationTimingFunction, 'steps(3, end)');
-  assert_equals(computedStyle.animationTimingFunction, 'steps(3, end)');
-  assert_equals(style.webkitAnimationTimingFunction, 'steps(3, end)');
-  assert_equals(computedStyle.webkitAnimationTimingFunction, 'steps(3, end)');
+  assert_equals(style.animationTimingFunction, 'steps(3)');
+  assert_equals(computedStyle.animationTimingFunction, 'steps(3)');
+  assert_equals(style.webkitAnimationTimingFunction, 'steps(3)');
+  assert_equals(computedStyle.webkitAnimationTimingFunction, 'steps(3)');
 
   style.animationTimingFunction = "steps(4, end)";
-  assert_equals(style.animationTimingFunction, 'steps(4, end)');
-  assert_equals(computedStyle.animationTimingFunction, 'steps(4, end)');
-  assert_equals(style.webkitAnimationTimingFunction, 'steps(4, end)');
-  assert_equals(computedStyle.webkitAnimationTimingFunction, 'steps(4, end)');
+  assert_equals(style.animationTimingFunction, 'steps(4)');
+  assert_equals(computedStyle.animationTimingFunction, 'steps(4)');
+  assert_equals(style.webkitAnimationTimingFunction, 'steps(4)');
+  assert_equals(computedStyle.webkitAnimationTimingFunction, 'steps(4)');
 
-  style.animationTimingFunction = "steps(5, start)";
-  assert_equals(style.animationTimingFunction, 'steps(5, start)');
-  assert_equals(computedStyle.animationTimingFunction, 'steps(5, start)');
-  assert_equals(style.webkitAnimationTimingFunction, 'steps(5, start)');
-  assert_equals(computedStyle.webkitAnimationTimingFunction, 'steps(5, start)');
+  style.animationTimingFunction = "steps(5, jump-end)";
+  assert_equals(style.animationTimingFunction, 'steps(5)');
+  assert_equals(computedStyle.animationTimingFunction, 'steps(5)');
+  assert_equals(style.webkitAnimationTimingFunction, 'steps(5)');
+  assert_equals(computedStyle.webkitAnimationTimingFunction, 'steps(5)');
 
-  style.animationTimingFunction = "frames(5)";
-  assert_equals(style.animationTimingFunction, 'frames(5)');
-  assert_equals(computedStyle.animationTimingFunction, 'frames(5)');
-  assert_equals(style.webkitAnimationTimingFunction, 'frames(5)');
-  assert_equals(computedStyle.webkitAnimationTimingFunction, 'frames(5)');
+  style.animationTimingFunction = "steps(6, jump-none)";
+  assert_equals(style.animationTimingFunction, 'steps(6, jump-none)');
+  assert_equals(computedStyle.animationTimingFunction, 'steps(6, jump-none)');
+  assert_equals(style.webkitAnimationTimingFunction, 'steps(6, jump-none)');
+  assert_equals(computedStyle.webkitAnimationTimingFunction, 'steps(6, jump-none)');
+
+  style.animationTimingFunction = "steps(7, jump-both)";
+  assert_equals(style.animationTimingFunction, 'steps(7, jump-both)');
+  assert_equals(computedStyle.animationTimingFunction, 'steps(7, jump-both)');
+  assert_equals(style.webkitAnimationTimingFunction, 'steps(7, jump-both)');
+  assert_equals(computedStyle.webkitAnimationTimingFunction, 'steps(7, jump-both)');
+
+  style.animationTimingFunction = "steps(8, jump-start)";
+  assert_equals(style.animationTimingFunction, 'steps(8, jump-start)');
+  assert_equals(computedStyle.animationTimingFunction, 'steps(8, jump-start)');
+  assert_equals(style.webkitAnimationTimingFunction, 'steps(8, jump-start)');
+  assert_equals(computedStyle.webkitAnimationTimingFunction, 'steps(8, jump-start)');
+
+  style.animationTimingFunction = "steps(9, start)";
+  assert_equals(style.animationTimingFunction, 'steps(9, start)');
+  assert_equals(computedStyle.animationTimingFunction, 'steps(9, start)');
+  assert_equals(style.webkitAnimationTimingFunction, 'steps(9, start)');
+  assert_equals(computedStyle.webkitAnimationTimingFunction, 'steps(9, start)');
 
   style.animationName = "anim1, anim2";
 

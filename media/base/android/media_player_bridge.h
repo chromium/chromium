@@ -21,8 +21,10 @@
 #include "base/timer/timer.h"
 #include "media/base/android/media_player_listener.h"
 #include "media/base/media_export.h"
+#include "media/base/simple_watch_timer.h"
 #include "ui/gl/android/scoped_java_surface.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace media {
 
@@ -77,10 +79,12 @@ class MEDIA_EXPORT MediaPlayerBridge {
   // the |manager| when needed.
   MediaPlayerBridge(const GURL& url,
                     const GURL& site_for_cookies,
+                    const url::Origin& top_frame_origin,
                     const std::string& user_agent,
                     bool hide_url_log,
                     Client* client,
-                    bool allow_credentials);
+                    bool allow_credentials,
+                    bool is_hls);
   virtual ~MediaPlayerBridge();
 
   // Initialize this object and extract the metadata from the media.
@@ -188,6 +192,8 @@ class MEDIA_EXPORT MediaPlayerBridge {
   // Sets the underlying MediaPlayer's volume.
   void UpdateVolumeInternal();
 
+  void OnWatchTimerTick();
+
   base::WeakPtr<MediaPlayerBridge> WeakPtrForUIThread();
 
   // Whether the player is prepared for playback.
@@ -205,8 +211,11 @@ class MEDIA_EXPORT MediaPlayerBridge {
   // Url for playback.
   GURL url_;
 
-  // First party url for cookies.
+  // Used to determine if cookies are accessed in a third-party context.
   GURL site_for_cookies_;
+
+  // Used to check for cookie content settings.
+  url::Origin top_frame_origin_;
 
   // User agent string to be used for media player.
   const std::string user_agent_;
@@ -248,6 +257,10 @@ class MEDIA_EXPORT MediaPlayerBridge {
   // The flag is set if Start() has been called at least once.
   bool has_ever_started_;
 
+  // State for watch time reporting.
+  bool is_hls_;
+  SimpleWatchTimer watch_timer_;
+
   // A reference to the owner of |this|.
   Client* client_;
 
@@ -256,7 +269,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
 
   // Weak pointer passed to |listener_| for callbacks.
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<MediaPlayerBridge> weak_factory_;
+  base::WeakPtrFactory<MediaPlayerBridge> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaPlayerBridge);
 };

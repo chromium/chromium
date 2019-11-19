@@ -16,7 +16,7 @@ source_set("ui") {
 
   public_deps = [
     "//remoting/proto",
-    "//third_party/webrtc/rtc_base:rtc_base_approved",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 
   if (!is_chromeos) {
@@ -36,7 +36,7 @@ source_set("ui_manipulation") {
 
   public_deps = [
     "//remoting/proto",
-    "//third_party/webrtc/rtc_base:rtc_base_approved",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }
 

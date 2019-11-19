@@ -92,6 +92,7 @@ _blink_tool_flag() {
 
 complete -F _chrome_flag google-chrome
 complete -F _chrome_flag chrome
+complete -F _chrome_flag content_shell
 if [ $(uname) = "Darwin" ]
 then
   complete -F _chrome_flag Chromium

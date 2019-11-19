@@ -15,13 +15,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_cryptohome_client.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/policy_builder.h"
@@ -51,12 +51,9 @@ class PreSigninPolicyFetcherTestBase : public testing::Test {
   PreSigninPolicyFetcherTestBase() = default;
 
   void SetUp() override {
-
     // Unmount calls will succeed (currently, PreSigninPolicyFetcher only logs
     // if they fail, so there is no point in testing that).
-    cryptohome_client_ = new chromeos::FakeCryptohomeClient();
-    chromeos::DBusThreadManager::GetSetterForTesting()->SetCryptohomeClient(
-        base::WrapUnique<chromeos::CryptohomeClient>(cryptohome_client_));
+    cryptohome_client_ = std::make_unique<chromeos::FakeCryptohomeClient>();
     cryptohome_client_->set_unmount_result(true);
 
     // Create a temporary directory where the user policy keys will live (these
@@ -69,7 +66,7 @@ class PreSigninPolicyFetcherTestBase : public testing::Test {
     auto cloud_policy_client = std::make_unique<MockCloudPolicyClient>();
     cloud_policy_client_ = cloud_policy_client.get();
     pre_signin_policy_fetcher_ = std::make_unique<PreSigninPolicyFetcher>(
-        cryptohome_client_, &session_manager_client_,
+        cryptohome_client_.get(), &session_manager_client_,
         std::move(cloud_policy_client), IsActiveDirectoryManaged(),
         GetAccountId(), cryptohome_key_);
     cached_policy_.payload().mutable_homepagelocation()->set_value(
@@ -82,7 +79,7 @@ class PreSigninPolicyFetcherTestBase : public testing::Test {
   }
 
   void TearDown() override {
-    chromeos::DBusThreadManager::Shutdown();
+    cryptohome_client_.reset();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -163,12 +160,12 @@ class PreSigninPolicyFetcherTestBase : public testing::Test {
     pre_signin_policy_fetcher_->FetchPolicy(
         base::Bind(&PreSigninPolicyFetcherTestBase::OnPolicyRetrieved,
                    base::Unretained(this)));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_ = {
-      base::test::ScopedTaskEnvironment::MainThreadType::UI};
-  chromeos::FakeCryptohomeClient* cryptohome_client_ = nullptr;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
+  std::unique_ptr<chromeos::FakeCryptohomeClient> cryptohome_client_;
   chromeos::FakeSessionManagerClient session_manager_client_;
   UserPolicyBuilder cached_policy_;
   UserPolicyBuilder fresh_policy_;
@@ -381,7 +378,7 @@ TEST_F(PreSigninPolicyFetcherTest, FreshPolicyFetchFailsToValidate) {
                                   std::string() /* settings_entity_id */,
                                   fresh_policy_.policy());
   cloud_policy_client_->NotifyPolicyFetched();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Expect that we still get a PolicyFetchResult::SUCCESS with cached policy.
   EXPECT_TRUE(policy_retrieved_called_);
@@ -417,7 +414,7 @@ TEST_F(PreSigninPolicyFetcherTest, FreshPolicyFetchSuccess) {
                                   std::string() /* settings_entity_id */,
                                   fresh_policy_.policy());
   cloud_policy_client_->NotifyPolicyFetched();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   // Expect that we get PolicyFetchResult::SUCCESS with fresh policy.
   EXPECT_TRUE(policy_retrieved_called_);

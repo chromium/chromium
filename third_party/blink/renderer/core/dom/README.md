@@ -730,7 +730,7 @@ DCHECK. :(
 Since `Node::UpdateDistributionForFlatTreeTraversal` can take O(N) in the worst
 case (_even if the distribution flag is clean!_), you should be careful not to
 call it in hot code paths. If you are not sure, please contact
-dom-dev@chromium.org, or add hayato@chromium.org to reviewers.
+dom-dev@chromium.org, or add masonfreed@chromium.org to reviewers.
 
 Once Blink removes Shadow DOM v0 in the future, you don't need to call
 `Node::UpdateDistributionForFlatTreeTraversal` before using `FlatTreeTraversal`
@@ -785,7 +785,7 @@ Slot Assignments:
 | ------ | --------------------- |
 | slot-G | [H]                   |
 | slot-O | [slot-P]              |
-| slot-P | [O]                   |
+| slot-P | [Q]                   |
 | slot-R | [slot-S]              |
 | slot-S | [T]                   |
 

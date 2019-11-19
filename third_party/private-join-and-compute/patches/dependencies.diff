@@ -1,0 +1,492 @@
+Only in /tmp/private-join-and-compute.original: BUILD
+Only in third_party/private-join-and-compute/src: BUILD.gn
+Only in third_party/private-join-and-compute/src: chromium_patch.h
+Only in /tmp/private-join-and-compute.original: client.cc
+Only in /tmp/private-join-and-compute.original: client_impl.cc
+Only in /tmp/private-join-and-compute.original: client_impl.h
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/big_num.cc third_party/private-join-and-compute/src/crypto/big_num.cc
+--- /tmp/private-join-and-compute.original/crypto/big_num.cc	2019-08-07 14:34:50.936156293 +0200
++++ third_party/private-join-and-compute/src/crypto/big_num.cc	2019-08-08 19:07:01.405866572 +0200
+@@ -13,16 +13,15 @@
+  * limitations under the License.
+  */
+ 
+-#include "crypto/big_num.h"
++#include "third_party/private-join-and-compute/src/crypto/big_num.h"
+ 
+ #include <cmath>
+ #include <vector>
+ 
+-#include "gflags/gflags.h"
+-#include "glog/logging.h"
+-#include "crypto/context.h"
+-#include "crypto/openssl.inc"
+-#include "util/status.inc"
++#include "third_party/private-join-and-compute/src/chromium_patch.h"
++#include "third_party/private-join-and-compute/src/crypto/context.h"
++#include "third_party/private-join-and-compute/src/crypto/openssl.inc"
++#include "third_party/private-join-and-compute/src/util/status.inc"
+ 
+ namespace private_join_and_compute {
+ 
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/big_num.h third_party/private-join-and-compute/src/crypto/big_num.h
+--- /tmp/private-join-and-compute.original/crypto/big_num.h	2019-08-07 14:34:50.936156293 +0200
++++ third_party/private-join-and-compute/src/crypto/big_num.h	2019-08-08 19:07:13.709859666 +0200
+@@ -21,9 +21,8 @@
+ #include <memory>
+ #include <string>
+ 
+-#include "gflags/gflags_declare.h"
+-#include "crypto/openssl.inc"
+-#include "util/status.inc"
++#include "third_party/private-join-and-compute/src/crypto/openssl.inc"
++#include "third_party/private-join-and-compute/src/util/status.inc"
+ 
+ namespace private_join_and_compute {
+ 
+Only in /tmp/private-join-and-compute.original/crypto: BUILD
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/context.cc third_party/private-join-and-compute/src/crypto/context.cc
+--- /tmp/private-join-and-compute.original/crypto/context.cc	2019-08-07 14:34:50.936156293 +0200
++++ third_party/private-join-and-compute/src/crypto/context.cc	2019-08-08 19:07:22.945854482 +0200
+@@ -13,18 +13,14 @@
+  * limitations under the License.
+  */
+ 
+-#include "crypto/context.h"
++#include "third_party/private-join-and-compute/src/crypto/context.h"
+ 
+ #include <math.h>
+ 
+ #include <algorithm>
+ #include <cmath>
+ 
+-#include "glog/logging.h"
+-#include "crypto/openssl_init.h"
+-#if defined(OS_NACL)
+-#include "privacy/blinders/cpp/nacl_context.h"
+-#endif
++#include "third_party/private-join-and-compute/src/chromium_patch.h"
+ 
+ namespace private_join_and_compute {
+ 
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/context.h third_party/private-join-and-compute/src/crypto/context.h
+--- /tmp/private-join-and-compute.original/crypto/context.h	2019-08-07 14:34:50.936156293 +0200
++++ third_party/private-join-and-compute/src/crypto/context.h	2019-08-08 19:08:23.005820766 +0200
+@@ -21,9 +21,9 @@
+ #include <memory>
+ #include <string>
+ 
+-#include "glog/logging.h"
+-#include "crypto/big_num.h"
+-#include "crypto/openssl.inc"
++#include "third_party/private-join-and-compute/src/chromium_patch.h"
++#include "third_party/private-join-and-compute/src/crypto/big_num.h"
++#include "third_party/private-join-and-compute/src/crypto/openssl.inc"
+ 
+ #define CRYPTO_CHECK(expr) CHECK(expr) << OpenSSLErrorString();
+ 
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/ec_commutative_cipher.cc third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.cc
+--- /tmp/private-join-and-compute.original/crypto/ec_commutative_cipher.cc	2019-08-07 14:34:50.936156293 +0200
++++ third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.cc	2019-08-08 19:05:21.197922804 +0200
+@@ -13,12 +13,11 @@
+  * limitations under the License.
+  */
+ 
+-#include "crypto/ec_commutative_cipher.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
+ 
+ #include <utility>
+ 
+-#include "crypto/elgamal.h"
+-#include "util/status.inc"
++#include "third_party/private-join-and-compute/src/util/status.inc"
+ 
+ namespace private_join_and_compute {
+ 
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/ec_commutative_cipher.h third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h
+--- /tmp/private-join-and-compute.original/crypto/ec_commutative_cipher.h	2019-08-07 14:34:50.936156293 +0200
++++ third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h	2019-08-08 19:09:01.177798754 +0200
+@@ -19,12 +19,11 @@
+ #include <memory>
+ #include <string>
+ 
+-#include "absl/base/port.h"
+-#include "crypto/big_num.h"
+-#include "crypto/context.h"
+-#include "crypto/ec_group.h"
+-#include "crypto/ec_point.h"
+-#include "util/status.inc"
++#include "third_party/private-join-and-compute/src/crypto/big_num.h"
++#include "third_party/private-join-and-compute/src/crypto/context.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_group.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_point.h"
++#include "third_party/private-join-and-compute/src/util/status.inc"
+ 
+ namespace private_join_and_compute {
+ 
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/ec_group.cc third_party/private-join-and-compute/src/crypto/ec_group.cc
+--- /tmp/private-join-and-compute.original/crypto/ec_group.cc	2019-08-07 14:34:50.936156293 +0200
++++ third_party/private-join-and-compute/src/crypto/ec_group.cc	2019-08-08 19:09:34.065779733 +0200
+@@ -13,16 +13,14 @@
+  * limitations under the License.
+  */
+ 
+-#include "crypto/ec_group.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_group.h"
+ 
+ #include <algorithm>
+ #include <utility>
+ 
+-#include "glog/logging.h"
+-#include "crypto/ec_point.h"
+-#include "crypto/openssl.inc"
+-#include "util/status.inc"
+-#include "absl/strings/str_cat.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_point.h"
++#include "third_party/private-join-and-compute/src/crypto/openssl.inc"
++#include "third_party/private-join-and-compute/src/util/status.inc"
+ 
+ namespace private_join_and_compute {
+ 
+@@ -35,8 +33,8 @@
+   // If this fails, this is usually due to an invalid curve id.
+   if (ec_group_ptr == nullptr) {
+     return InvalidArgumentError(
+-        absl::StrCat("ECGroup::CreateGroup() - Could not create group. ",
+-                     OpenSSLErrorString()));
++        "ECGroup::CreateGroup() - Could not create group. " +
++                     OpenSSLErrorString());
+   }
+   return ECGroup::ECGroupPtr(ec_group_ptr);
+ }
+@@ -47,13 +45,13 @@
+   BIGNUM* bn = BN_new();
+   if (bn == nullptr) {
+     return InternalError(
+-        absl::StrCat("ECGroup::CreateOrder - Could not create BIGNUM. ",
+-                     OpenSSLErrorString()));
++        "ECGroup::CreateOrder - Could not create BIGNUM. " +
++                     OpenSSLErrorString());
+   }
+   BigNum::BignumPtr order = BigNum::BignumPtr(bn);
+   if (EC_GROUP_get_order(group, order.get(), context->GetBnCtx()) != 1) {
+-    return InternalError(absl::StrCat(
+-        "ECGroup::CreateOrder - Could not get order. ", OpenSSLErrorString()));
++    return InternalError(
++        "ECGroup::CreateOrder - Could not get order. " + OpenSSLErrorString());
+   }
+   return context->CreateBigNum(std::move(order));
+ }
+@@ -63,14 +61,14 @@
+   BIGNUM* bn = BN_new();
+   if (bn == nullptr) {
+     return InternalError(
+-        absl::StrCat("ECGroup::CreateCofactor - Could not create BIGNUM. ",
+-                     OpenSSLErrorString()));
++        "ECGroup::CreateCofactor - Could not create BIGNUM. " +
++                     OpenSSLErrorString());
+   }
+   BigNum::BignumPtr cofactor = BigNum::BignumPtr(bn);
+   if (EC_GROUP_get_cofactor(group, cofactor.get(), context->GetBnCtx()) != 1) {
+     return InternalError(
+-        absl::StrCat("ECGroup::CreateCofactor - Could not get cofactor. ",
+-                     OpenSSLErrorString()));
++        "ECGroup::CreateCofactor - Could not get cofactor. " +
++                     OpenSSLErrorString());
+   }
+   return context->CreateBigNum(std::move(cofactor));
+ }
+@@ -84,8 +82,8 @@
+   BIGNUM* bn3 = BN_new();
+   if (bn1 == nullptr || bn2 == nullptr || bn3 == nullptr) {
+     return InternalError(
+-        absl::StrCat("ECGroup::CreateCurveParams - Could not create BIGNUM. ",
+-                     OpenSSLErrorString()));
++        "ECGroup::CreateCurveParams - Could not create BIGNUM. " +
++                     OpenSSLErrorString());
+   }
+   BigNum::BignumPtr p = BigNum::BignumPtr(bn1);
+   BigNum::BignumPtr a = BigNum::BignumPtr(bn2);
+@@ -93,13 +91,13 @@
+   if (EC_GROUP_get_curve_GFp(group, p.get(), a.get(), b.get(),
+                              context->GetBnCtx()) != 1) {
+     return InternalError(
+-        absl::StrCat("ECGroup::CreateCurveParams - Could not get params. ",
+-                     OpenSSLErrorString()));
++        "ECGroup::CreateCurveParams - Could not get params. " +
++                     OpenSSLErrorString());
+   }
+   BigNum p_bn = context->CreateBigNum(std::move(p));
+   if (!p_bn.IsPrime()) {
+-    return InternalError(absl::StrCat(
+-        "ECGroup::CreateCurveParams - p is not prime. ", OpenSSLErrorString()));
++    return InternalError(
++        "ECGroup::CreateCurveParams - p is not prime. " + OpenSSLErrorString());
+   }
+   return ECGroup::CurveParams{std::move(p_bn),
+                               context->CreateBigNum(std::move(a)),
+@@ -244,8 +242,7 @@
+                          reinterpret_cast<const unsigned char*>(bytes.data()),
+                          bytes.size(), context_->GetBnCtx()) != 1) {
+     return InvalidArgumentError(
+-        absl::StrCat("ECGroup::CreateECPoint(string) - Could not decode point.",
+-                     "\n", OpenSSLErrorString()));
++        "ECGroup::CreateECPoint(string) - Could not decode point.\n" + OpenSSLErrorString());
+   }
+ 
+   ECPoint ec_point(group_.get(), context_->GetBnCtx(), std::move(point));
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/ec_group.h third_party/private-join-and-compute/src/crypto/ec_group.h
+--- /tmp/private-join-and-compute.original/crypto/ec_group.h	2019-08-06 16:15:39.918264597 +0200
++++ third_party/private-join-and-compute/src/crypto/ec_group.h	2019-08-08 19:09:43.601774218 +0200
+@@ -19,10 +19,10 @@
+ #include <memory>
+ #include <string>
+ 
+-#include "crypto/big_num.h"
+-#include "crypto/context.h"
+-#include "crypto/openssl.inc"
+-#include "util/status.inc"
++#include "third_party/private-join-and-compute/src/crypto/big_num.h"
++#include "third_party/private-join-and-compute/src/crypto/context.h"
++#include "third_party/private-join-and-compute/src/crypto/openssl.inc"
++#include "third_party/private-join-and-compute/src/util/status.inc"
+ 
+ namespace private_join_and_compute {
+ 
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/ec_point.cc third_party/private-join-and-compute/src/crypto/ec_point.cc
+--- /tmp/private-join-and-compute.original/crypto/ec_point.cc	2019-08-07 14:34:50.940156290 +0200
++++ third_party/private-join-and-compute/src/crypto/ec_point.cc	2019-08-08 19:10:00.545764419 +0200
+@@ -13,16 +13,15 @@
+  * limitations under the License.
+  */
+ 
+-#include "crypto/ec_point.h"
++#include "third_party/private-join-and-compute/src/crypto/ec_point.h"
+ 
+ #include <vector>
+ 
+-#include "glog/logging.h"
+-#include "crypto/big_num.h"
+-#include "crypto/context.h"
+-#include "crypto/openssl.inc"
+-#include "util/status.inc"
+-#include "absl/strings/str_cat.h"
++#include "third_party/private-join-and-compute/src/chromium_patch.h"
++#include "third_party/private-join-and-compute/src/crypto/big_num.h"
++#include "third_party/private-join-and-compute/src/crypto/context.h"
++#include "third_party/private-join-and-compute/src/crypto/openssl.inc"
++#include "third_party/private-join-and-compute/src/util/status.inc"
+ 
+ namespace private_join_and_compute {
+ 
+@@ -51,7 +50,7 @@
+   if (0 == EC_POINT_point2oct(group_, point_.get(), POINT_CONVERSION_COMPRESSED,
+                               bytes.data(), length, bn_ctx_)) {
+     return InternalError(
+-        absl::StrCat("EC_POINT_point2oct failed:", OpenSSLErrorString()));
++        "EC_POINT_point2oct failed:" + OpenSSLErrorString());
+   }
+   return std::string(reinterpret_cast<char*>(bytes.data()), bytes.size());
+ }
+@@ -64,7 +63,7 @@
+                               POINT_CONVERSION_UNCOMPRESSED, bytes.data(),
+                               length, bn_ctx_)) {
+     return InternalError(
+-        absl::StrCat("EC_POINT_point2oct failed:", OpenSSLErrorString()));
++        "EC_POINT_point2oct failed:" + OpenSSLErrorString());
+   }
+   return std::string(reinterpret_cast<char*>(bytes.data()), bytes.size());
+ }
+@@ -74,7 +73,7 @@
+   if (1 != EC_POINT_mul(group_, r.point_.get(), nullptr, point_.get(),
+                         scalar.GetConstBignumPtr(), bn_ctx_)) {
+     return InternalError(
+-        absl::StrCat("EC_POINT_mul failed:", OpenSSLErrorString()));
++        "EC_POINT_mul failed:" + OpenSSLErrorString());
+   }
+   return std::move(r);
+ }
+@@ -84,7 +83,7 @@
+   if (1 != EC_POINT_add(group_, r.point_.get(), point_.get(),
+                         point.point_.get(), bn_ctx_)) {
+     return InternalError(
+-        absl::StrCat("EC_POINT_add failed:", OpenSSLErrorString()));
++        "EC_POINT_add failed:" + OpenSSLErrorString());
+   }
+   return std::move(r);
+ }
+@@ -93,7 +92,7 @@
+   ECPoint r = ECPoint(group_, bn_ctx_);
+   if (1 != EC_POINT_copy(r.point_.get(), point_.get())) {
+     return InternalError(
+-        absl::StrCat("EC_POINT_copy failed:", OpenSSLErrorString()));
++        "EC_POINT_copy failed:" + OpenSSLErrorString());
+   }
+   return std::move(r);
+ }
+@@ -104,7 +103,7 @@
+   // Invert the copy in-place.
+   if (1 != EC_POINT_invert(group_, inv.point_.get(), bn_ctx_)) {
+     return InternalError(
+-        absl::StrCat("EC_POINT_invert failed:", OpenSSLErrorString()));
++        "EC_POINT_invert failed:" + OpenSSLErrorString());
+   }
+   return std::move(inv);
+ }
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/crypto/ec_point.h third_party/private-join-and-compute/src/crypto/ec_point.h
+--- /tmp/private-join-and-compute.original/crypto/ec_point.h	2019-08-06 16:15:39.918264597 +0200
++++ third_party/private-join-and-compute/src/crypto/ec_point.h	2019-08-08 19:10:12.805757330 +0200
+@@ -19,8 +19,8 @@
+ #include <memory>
+ #include <string>
+ 
+-#include "crypto/openssl.inc"
+-#include "util/status.inc"
++#include "third_party/private-join-and-compute/src/crypto/openssl.inc"
++#include "third_party/private-join-and-compute/src/util/status.inc"
+ 
+ namespace private_join_and_compute {
+ 
+Only in /tmp/private-join-and-compute.original/crypto: elgamal.cc
+Only in /tmp/private-join-and-compute.original/crypto: elgamal.h
+Only in /tmp/private-join-and-compute.original/crypto: fixed_base_exp.cc
+Only in /tmp/private-join-and-compute.original/crypto: fixed_base_exp.h
+Only in /tmp/private-join-and-compute.original/crypto: mont_mul.cc
+Only in /tmp/private-join-and-compute.original/crypto: mont_mul.h
+Only in /tmp/private-join-and-compute.original/crypto: openssl_init.cc
+Only in /tmp/private-join-and-compute.original/crypto: openssl_init.h
+Only in /tmp/private-join-and-compute.original/crypto: paillier.cc
+Only in /tmp/private-join-and-compute.original/crypto: paillier.h
+Only in /tmp/private-join-and-compute.original/crypto: two_modulus_crt.cc
+Only in /tmp/private-join-and-compute.original/crypto: two_modulus_crt.h
+Only in /tmp/private-join-and-compute.original: data_util.cc
+Only in /tmp/private-join-and-compute.original: data_util.h
+Only in third_party/private-join-and-compute/src: DEPS
+Only in /tmp/private-join-and-compute.original: generate_dummy_data.cc
+Only in /tmp/private-join-and-compute.original: .git
+Only in /tmp/private-join-and-compute.original: glog_files
+Only in /tmp/private-join-and-compute.original: match.proto
+Only in /tmp/private-join-and-compute.original: message_sink.h
+Only in third_party/private-join-and-compute/src: OWNERS
+Only in /tmp/private-join-and-compute.original: private_intersection_sum.proto
+Only in /tmp/private-join-and-compute.original: private_join_and_compute.proto
+Only in /tmp/private-join-and-compute.original: private_join_and_compute_rpc_impl.cc
+Only in /tmp/private-join-and-compute.original: private_join_and_compute_rpc_impl.h
+Only in /tmp/private-join-and-compute.original: protocol_client.h
+Only in /tmp/private-join-and-compute.original: protocol_server.h
+Only in /tmp/private-join-and-compute.original: README.md
+Only in /tmp/private-join-and-compute.original: server.cc
+Only in /tmp/private-join-and-compute.original: server_impl.cc
+Only in /tmp/private-join-and-compute.original: server_impl.h
+Only in /tmp/private-join-and-compute.original/util: BUILD
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/util/canonical_errors.cc third_party/private-join-and-compute/src/util/canonical_errors.cc
+--- /tmp/private-join-and-compute.original/util/canonical_errors.cc	2019-08-06 16:15:39.922264595 +0200
++++ third_party/private-join-and-compute/src/util/canonical_errors.cc	2019-08-08 19:20:26.173402991 +0200
+@@ -13,11 +13,11 @@
+  * limitations under the License.
+  */
+ 
+-#include "util/canonical_errors.h"
++#include "third_party/private-join-and-compute/src/util/canonical_errors.h"
+ 
+ #include <string>
+ 
+-#include "util/status.h"
++#include "third_party/private-join-and-compute/src/util/status.h"
+ 
+ namespace private_join_and_compute {
+ 
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/util/canonical_errors.h third_party/private-join-and-compute/src/util/canonical_errors.h
+--- /tmp/private-join-and-compute.original/util/canonical_errors.h	2019-08-06 16:15:39.922264595 +0200
++++ third_party/private-join-and-compute/src/util/canonical_errors.h	2019-08-08 19:20:19.329406941 +0200
+@@ -18,7 +18,7 @@
+ 
+ #include <string>
+ 
+-#include "util/status.h"
++#include "third_party/private-join-and-compute/src/util/status.h"
+ 
+ namespace private_join_and_compute {
+ 
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/util/status.cc third_party/private-join-and-compute/src/util/status.cc
+--- /tmp/private-join-and-compute.original/util/status.cc	2019-08-07 14:34:50.940156290 +0200
++++ third_party/private-join-and-compute/src/util/status.cc	2019-08-08 19:20:32.405399394 +0200
+@@ -13,7 +13,7 @@
+  * limitations under the License.
+  */
+ 
+-#include "util/status.h"
++#include "third_party/private-join-and-compute/src/util/status.h"
+ 
+ #include <sstream>
+ #include <utility>
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/util/status.inc third_party/private-join-and-compute/src/util/status.inc
+--- /tmp/private-join-and-compute.original/util/status.inc	2019-08-06 16:15:39.922264595 +0200
++++ third_party/private-join-and-compute/src/util/status.inc	2019-08-08 19:21:07.805378963 +0200
+@@ -13,7 +13,7 @@
+  * limitations under the License.
+  */
+ 
+-#include "util/canonical_errors.h"
+-#include "util/status.h"
+-#include "util/statusor.h"
+-#include "util/status_macros.h"
++#include "third_party/private-join-and-compute/src/util/canonical_errors.h"
++#include "third_party/private-join-and-compute/src/util/status.h"
++#include "third_party/private-join-and-compute/src/util/statusor.h"
++#include "third_party/private-join-and-compute/src/util/status_macros.h"
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/util/status_macros.h third_party/private-join-and-compute/src/util/status_macros.h
+--- /tmp/private-join-and-compute.original/util/status_macros.h	2019-08-07 14:34:50.940156290 +0200
++++ third_party/private-join-and-compute/src/util/status_macros.h	2019-08-08 19:25:03.901242758 +0200
+@@ -16,9 +16,9 @@
+ #ifndef UTIL_STATUS_MACROS_H_
+ #define UTIL_STATUS_MACROS_H_
+ 
+-#include "absl/base/port.h"
+-#include "util/status.h"
+-#include "util/statusor.h"
++#include "third_party/private-join-and-compute/src/chromium_patch.h"
++#include "third_party/private-join-and-compute/src/util/status.h"
++#include "third_party/private-join-and-compute/src/util/statusor.h"
+ 
+ // Helper macro that checks if the right hand side (rexpression) evaluates to a
+ // StatusOr with Status OK, and if so assigns the value to the value on the left
+@@ -32,7 +32,7 @@
+ // Internal helper.
+ #define PRIVACY_BLINDERS_ASSIGN_OR_RETURN_IMPL_(statusor, lhs, rexpr) \
+   auto statusor = (rexpr);                                            \
+-  if (ABSL_PREDICT_FALSE(!statusor.ok())) {                           \
++  if (UNLIKELY(!statusor.ok())) {                           \
+     return std::move(statusor).status();                              \
+   }                                                                   \
+   lhs = std::move(statusor).ValueOrDie()
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/util/statusor.cc third_party/private-join-and-compute/src/util/statusor.cc
+--- /tmp/private-join-and-compute.original/util/statusor.cc	2019-08-07 14:34:50.940156290 +0200
++++ third_party/private-join-and-compute/src/util/statusor.cc	2019-08-08 19:25:59.309210530 +0200
+@@ -13,10 +13,10 @@
+  * limitations under the License.
+  */
+ 
+-#include "util/statusor.h"
++#include "third_party/private-join-and-compute/src/util/statusor.h"
+ 
+-#include "glog/logging.h"
+-#include "util/status.h"
++#include "third_party/private-join-and-compute/src/chromium_patch.h"
++#include "third_party/private-join-and-compute/src/util/status.h"
+ 
+ namespace private_join_and_compute {
+ namespace internal {
+diff -ur --strip-trailing-cr /tmp/private-join-and-compute.original/util/statusor.h third_party/private-join-and-compute/src/util/statusor.h
+--- /tmp/private-join-and-compute.original/util/statusor.h	2019-08-07 14:34:50.940156290 +0200
++++ third_party/private-join-and-compute/src/util/statusor.h	2019-08-08 19:20:59.625383684 +0200
+@@ -73,7 +73,7 @@
+ #include <new>
+ #include <utility>
+ 
+-#include "util/status.h"  // IWYU pragma: export  // for Status
++#include "third_party/private-join-and-compute/src/util/status.h"  // IWYU pragma: export  // for Status
+ 
+ namespace private_join_and_compute {
+ 
+Only in /tmp/private-join-and-compute.original: WORKSPACE

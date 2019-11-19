@@ -4,6 +4,8 @@
 
 #include "android_webview/browser/gfx/aw_gl_surface.h"
 
+#include <utility>
+
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
 
 namespace android_webview {
@@ -24,7 +26,8 @@ unsigned int AwGLSurface::GetBackingFramebufferObject() {
 }
 
 gfx::SwapResult AwGLSurface::SwapBuffers(PresentationCallback callback) {
-  // TODO(penghuang): Provide presentation feedback. https://crbug.com/776877
+  DCHECK(pending_presentation_callback_.is_null());
+  pending_presentation_callback_ = std::move(callback);
   return gfx::SwapResult::SWAP_ACK;
 }
 
@@ -50,6 +53,16 @@ bool AwGLSurface::Resize(const gfx::Size& size,
                          bool has_alpha) {
   size_ = size;
   return true;
+}
+
+void AwGLSurface::SetSize(const gfx::Size& size) {
+  size_ = size;
+}
+
+void AwGLSurface::MaybeDidPresent(gfx::PresentationFeedback feedback) {
+  if (pending_presentation_callback_.is_null())
+    return;
+  std::move(pending_presentation_callback_).Run(std::move(feedback));
 }
 
 }  // namespace android_webview

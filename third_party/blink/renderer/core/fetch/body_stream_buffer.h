@@ -97,10 +97,10 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
       ExceptionState& exception_state);
 
   Member<ScriptState> script_state_;
-  TraceWrapperMember<ReadableStream> stream_;
-  TraceWrapperMember<BytesConsumer> consumer_;
+  Member<ReadableStream> stream_;
+  Member<BytesConsumer> consumer_;
   // We need this member to keep it alive while loading.
-  TraceWrapperMember<FetchDataLoader> loader_;
+  Member<FetchDataLoader> loader_;
   // We need this to ensure that we detect that abort has been signalled
   // correctly.
   Member<AbortSignal> signal_;

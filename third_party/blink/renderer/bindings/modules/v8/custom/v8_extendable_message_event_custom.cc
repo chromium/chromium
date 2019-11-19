@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_extendable_message_event.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_extendable_message_event_init.h"
+#include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
-#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 
 namespace blink {
 
@@ -49,7 +49,9 @@ void V8ExtendableMessageEvent::ConstructorCustom(
   // |data| as a private value to avoid cyclic references.
   if (event_init_dict->hasData()) {
     v8::Local<v8::Value> v8_data = event_init_dict->data().V8Value();
-    V8PrivateProperty::GetMessageEventCachedData(isolate).Set(wrapper, v8_data);
+    V8PrivateProperty::GetSymbol(isolate,
+                                 kPrivatePropertyMessageEventCachedData)
+        .Set(wrapper, v8_data);
     if (DOMWrapperWorld::Current(isolate).IsIsolatedWorld()) {
       impl->SetSerializedData(
           SerializedScriptValue::SerializeAndSwallowExceptions(isolate,
@@ -64,8 +66,8 @@ void V8ExtendableMessageEvent::DataAttributeGetterCustom(
   ExtendableMessageEvent* event =
       V8ExtendableMessageEvent::ToImpl(info.Holder());
   v8::Isolate* isolate = info.GetIsolate();
-  auto private_cached_data =
-      V8PrivateProperty::GetMessageEventCachedData(isolate);
+  auto private_cached_data = V8PrivateProperty::GetSymbol(
+      isolate, kPrivatePropertyMessageEventCachedData);
   v8::Local<v8::Value> result;
   if (private_cached_data.GetOrUndefined(info.Holder()).ToLocal(&result) &&
       !result->IsUndefined()) {

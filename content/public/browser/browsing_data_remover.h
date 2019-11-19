@@ -12,10 +12,12 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-class GURL;
-
 namespace storage {
 class SpecialStoragePolicy;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace content {
@@ -87,7 +89,6 @@ class BrowsingDataRemover {
 
     // Other datatypes.
     DATA_TYPE_COOKIES = 1 << 8,
-    DATA_TYPE_CHANNEL_IDS = 1 << 9,
     DATA_TYPE_CACHE = 1 << 10,
     DATA_TYPE_DOWNLOADS = 1 << 11,
     DATA_TYPE_MEDIA_LICENSES = 1 << 12,
@@ -97,7 +98,7 @@ class BrowsingDataRemover {
     DATA_TYPE_NO_CHECKS = 1 << 13,
 
     // AVOID_CLOSING_CONNECTIONS is a pseudo-datatype indicating that when
-    // deleting COOKIES and CHANNEL IDs, BrowsingDataRemover should skip
+    // deleting COOKIES, BrowsingDataRemover should skip
     // storage backends whose deletion would cause closing network connections.
     // TODO(crbug.com/798760): Remove when fixed.
     DATA_TYPE_AVOID_CLOSING_CONNECTIONS = 1 << 15,
@@ -151,8 +152,8 @@ class BrowsingDataRemover {
   // the |special_storage_policy|.
   virtual bool DoesOriginMatchMask(
       int origin_type_mask,
-      const GURL& origin,
-      storage::SpecialStoragePolicy* special_storage_policy) const = 0;
+      const url::Origin& origin,
+      storage::SpecialStoragePolicy* special_storage_policy) = 0;
 
   // Removes browsing data within the given |time_range|, with datatypes being
   // specified by |remove_mask| and origin types by |origin_type_mask|.
@@ -198,8 +199,8 @@ class BrowsingDataRemover {
   // |continue_to_completion| to finish the task. Used in tests to artificially
   // prolong execution.
   virtual void SetWouldCompleteCallbackForTesting(
-      const base::Callback<void(const base::Closure& continue_to_completion)>&
-          callback) = 0;
+      const base::RepeatingCallback<
+          void(base::OnceClosure continue_to_completion)>& callback) = 0;
 
   // Parameters of the last call are exposed to be used by tests. Removal and
   // origin type masks equal to -1 mean that no removal has ever been executed.

@@ -15,6 +15,8 @@ Information on symbolication was gleaned from:
   <http://developer.apple.com/tools/xcode/symbolizingcrashdumps.html>
 """
 
+from __future__ import print_function
+
 import optparse
 import os.path
 import re
@@ -88,7 +90,7 @@ class CrashReport(object):
       # list of |addresses|.
       symbol_names = self._RunAtos(binary_base, dsym_file, address_list)
       if not symbol_names:
-        print 'Error loading symbols for ' + image_name
+        print('Error loading symbols for ' + image_name)
         continue
 
       # Attaches a list of symbol names to stack frames. This assumes that the
@@ -351,7 +353,7 @@ class CrashReport(object):
     a smart-zip with the data returned by atos in |symbols|. Note that the
     indices must match for this to succeed."""
     if len(symbols) != len(address_tuples):
-      print 'symbols do not match'
+      print('symbols do not match')
 
     # Each line of output from atos is in this format:
     # |<symbol> (in <image>) (<file>:<line>)|.
@@ -427,31 +429,31 @@ class StackFrame(object):
 
 def PrettyPrintReport(report):
   """Takes a crash report and prints it like the crash server would."""
-  print 'Process    : ' + report.report_info['Process']
-  print 'Version    : ' + report.report_info['Version']
-  print 'Date       : ' + report.report_info['Date/Time']
-  print 'OS Version : ' + report.report_info['OS Version']
-  print
+  print('Process    : ' + report.report_info['Process'])
+  print('Version    : ' + report.report_info['Version'])
+  print('Date       : ' + report.report_info['Date/Time'])
+  print('OS Version : ' + report.report_info['OS Version'])
+  print()
   if 'Crashed Thread' in report.report_info:
-    print 'Crashed Thread : ' + report.report_info['Crashed Thread']
-    print
+    print('Crashed Thread : ' + report.report_info['Crashed Thread'])
+    print()
   if 'Event' in report.report_info:
-    print 'Event      : ' + report.report_info['Event']
-    print
+    print('Event      : ' + report.report_info['Event'])
+    print()
 
   for thread in report.threads:
-    print
+    print()
     if thread.did_crash:
       exc_type = report.report_info['Exception Type'].split(' ')[0]
       exc_code = report.report_info['Exception Codes'].replace('at', '@')
-      print '*CRASHED* ( ' + exc_type + ' / ' + exc_code + ' )'
+      print('*CRASHED* ( ' + exc_type + ' / ' + exc_code + ' )')
     # Version 7 reports have spindump-style output (with a stepped stack trace),
     # so remove the first tab to get better alignment.
     if report.report_version == 7:
       for line in repr(thread).split('\n'):
-        print line.replace('\t', '  ', 1)
+        print(line.replace('\t', '  ', 1))
     else:
-      print thread
+      print(thread)
 
 
 def Main(args):
@@ -489,11 +491,11 @@ def Main(args):
 
   # Check that the symbols exist.
   if not os.path.isdir(symbol_path):
-    print >>sys.stderr, 'Symbol path %s is not a directory' % symbol_path
+    print('Symbol path %s is not a directory' % symbol_path, file=sys.stderr)
     return 2
 
-  print >>sys.stderr, 'Using symbols from ' + symbol_path
-  print >>sys.stderr, '=' * 80
+  print('Using symbols from ' + symbol_path, file=sys.stderr)
+  print('=' * 80, file=sys.stderr)
 
   report.Symbolicate(symbol_path)
   PrettyPrintReport(report)

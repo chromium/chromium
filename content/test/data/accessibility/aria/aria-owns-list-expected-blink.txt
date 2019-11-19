@@ -1,8 +1,9 @@
 rootWebArea
-++list pageSize=(400, 400)
-++++listItem pageSize=(400, 200)
-++++++staticText name='One'
-++++++++inlineTextBox name='One'
-++++listItem pageSize=(400, 200)
-++++++staticText name='Two'
-++++++++inlineTextBox name='Two'
+++genericContainer ignored
+++++list pageSize=(400, 400)
+++++++listItem pageSize=(400, 200)
+++++++++staticText name='One'
+++++++++++inlineTextBox name='One'
+++++++listItem pageSize=(400, 200)
+++++++++staticText name='Two'
+++++++++++inlineTextBox name='Two'

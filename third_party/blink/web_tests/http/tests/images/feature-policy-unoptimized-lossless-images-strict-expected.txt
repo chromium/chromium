@@ -1,0 +1,2 @@
+CONSOLE ERROR: Feature policy violation: unoptimized-lossless-images-strict is not allowed in this document.
+CONSOLE ERROR: Feature policy violation: unoptimized-lossless-images-strict is not allowed in this document.

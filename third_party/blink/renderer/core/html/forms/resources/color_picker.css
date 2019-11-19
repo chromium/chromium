@@ -1,0 +1,214 @@
+/* Copyright (C) 2019 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+  font-family: sans-serif;
+}
+
+.color-picker-main {
+  border: 0;
+  padding: 0;
+}
+
+color-picker {
+  background: #FFFFFF;
+  display: flex;
+  flex-direction: column;
+  height: 304px;
+  width: 232px;
+}
+
+visual-color-picker {
+  height: 59%;
+  min-height: 0;
+}
+
+color-well {
+  border-radius: 2px 2px 0px 0px;
+  display: block;
+  height: 77%;
+  position: relative;
+  overflow: hidden;
+}
+
+hue-slider {
+  height: 100%;
+  margin-left: 6%;
+  position: relative;
+  width: 130px;
+}
+
+#visual-color-picker-strip {
+  display: flex;
+  height: 18%;
+  margin-top: 3%;
+  position: relative;
+}
+
+eye-dropper {
+  height: 32px;
+  margin-left: 2%;
+  position: relative;
+  width: 32px;
+}
+
+color-viewer {
+  border: 1px solid rgba(0, 0, 0, 0.19);
+  border-radius: 50%;
+  box-sizing: border-box;
+  height: 32px;
+  margin-left: 2%;
+  width: 32px;
+}
+
+color-well > canvas {
+  height: 100%;
+  width: 100%;
+}
+
+hue-slider > canvas {
+  border-radius: 2px;
+  height: 11px;
+  margin-top: 7%;
+  width: 100%;
+}
+
+color-selection-ring {
+  border: 2px solid #FFFFFF;
+  border-radius: 50%;
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+  position: absolute;
+}
+
+color-well > color-selection-ring {
+  height: 12px;
+  width: 12px;
+}
+
+hue-slider > color-selection-ring {
+  height: 16px;
+  margin-top: 7%;
+  width: 16px;
+}
+
+manual-color-picker {
+  height: 28%;
+  min-height: 0;
+}
+
+color-value-container:not(.hidden-color-value-container) {
+  display: flex;
+  flex-direction: row;
+  height: 32px;
+  margin-left: 10%;
+  margin-top: 2%;
+  width: 171px;
+}
+
+.hidden-color-value-container,
+.hidden-format-label {
+  display: none;
+}
+
+input {
+  background: #FFFFFF;
+  border: 1px solid #CECECE;
+  border-radius: 2px;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 14px;
+  min-width: 0;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+color-value-container > input:not(:first-child) {
+  margin-left: 1%;
+}
+
+format-toggler {
+  border-radius: 2px;
+  display: flex;
+  flex-direction: row;
+  height: 24px;
+  margin-left: 10%;
+  margin-top: 2%;
+  width: 200px;
+}
+
+format-toggler:hover {
+  background-color: #F7F7F7;
+}
+
+#up-down-icon {
+  display: flex;
+  align-items: center;
+}
+
+format-label:not(.hidden-format-label) {
+  border-radius: 2px;
+  display: flex;
+  flex-direction: row;
+  font-family: inherit;
+  font-size: 12px;
+  height: 24px;
+  width: 172px;
+}
+
+channel-label {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  height: 24px;
+  justify-content: center;
+  width: 172px;
+}
+
+submission-controls {
+  align-items: center;
+  border-top: 1px solid #CECECE;
+  display: flex;
+  flex-direction: row;
+  height: 13%;
+  min-height: 0;
+}
+
+#submission-controls-padding {
+  height: 100%;
+  width: 84%;
+}
+
+submission-button {
+  padding: 3%;
+  text-align: center;
+  width: 8%;
+}
+
+submission-button:hover {
+  background-color: #F3F3F3;
+  border-radius: 2px;
+}
+
+@media (forced-colors: active) {
+  color-viewer {
+    forced-color-adjust: none;
+    border-color: WindowText;
+  }
+  color-well {
+    border-bottom: 1px solid WindowText;
+    border-radius: 0;
+  }
+  color-selection-ring {
+    forced-color-adjust: none;
+  }
+  color-picker {
+    border: 1px solid WindowText;
+    border-radius: 2px;
+  }
+  format-toggler {
+    border: 1px solid WindowText;
+  }
+}

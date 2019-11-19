@@ -1,5 +1,6 @@
 rootWebArea
-++switch name='Switch1' checkedState=false
-++switch name='Switch2' checkedState=false
-++switch name='Switch3' checkedState=true
-++switch name='Switch4' checkedState=true
+++genericContainer ignored
+++++switch name='Switch1' checkedState=false
+++++switch name='Switch2' checkedState=false
+++++switch name='Switch3' checkedState=true
+++++switch name='Switch4' checkedState=true

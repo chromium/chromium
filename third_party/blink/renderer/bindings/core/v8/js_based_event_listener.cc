@@ -11,10 +11,12 @@
 #include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
-#include "third_party/blink/renderer/platform/instance_counters.h"
+#include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 
 namespace blink {
+
+// extern
+const V8PrivateProperty::SymbolKey kPrivatePropertyGlobalEvent;
 
 JSBasedEventListener::JSBasedEventListener() {
   if (IsMainThread()) {
@@ -128,7 +130,7 @@ void JSBasedEventListener::Invoke(
   // If tuple’s item-in-shadow-tree is false, then set global’s current event to
   // event.
   V8PrivateProperty::Symbol event_symbol =
-      V8PrivateProperty::GetGlobalEvent(isolate);
+      V8PrivateProperty::GetSymbol(isolate, kPrivatePropertyGlobalEvent);
   ExecutionContext* execution_context_of_listener =
       ExecutionContext::From(script_state_of_listener);
   v8::Local<v8::Value> current_event;

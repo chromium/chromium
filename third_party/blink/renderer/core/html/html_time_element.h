@@ -13,8 +13,6 @@ class CORE_EXPORT HTMLTimeElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLTimeElement* Create(Document&);
-
   HTMLTimeElement(Document&);
 };
 

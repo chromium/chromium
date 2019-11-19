@@ -1,0 +1,11 @@
+<iframe src="resources/grandchild-navigates-child-in-beforeunload-child.html"></iframe>
+<script>
+if (window.testRunner) {
+  testRunner.dumpAsText();
+  testRunner.dumpChildFrames();
+}
+
+window.onload = () => {
+  frames[0][0].location = "resources/pass-and-notify-done.html";
+}
+</script>

@@ -1,0 +1,10 @@
+{
+  "name": "unit_tests --gtest_filter=NativelyConnectableManifestTest.Basic",
+  "version": "1",
+  "manifest_version": 2,
+  "natively_connectable": [
+    "com.google.chrome.test.echo",
+    "com.google.chrome.test.echo",
+    "com.google.chrome.test.host_binary_missing"
+  ]
+}

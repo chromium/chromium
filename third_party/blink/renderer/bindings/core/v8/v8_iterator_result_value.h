@@ -27,7 +27,7 @@ V8UnpackIteratorResult(ScriptState*, v8::Local<v8::Object> result, bool* done);
 template <typename T>
 inline ScriptValue V8IteratorResult(ScriptState* script_state, const T& value) {
   return ScriptValue(
-      script_state,
+      script_state->GetIsolate(),
       V8IteratorResultValue(script_state, false,
                             ToV8(value, script_state->GetContext()->Global(),
                                  script_state->GetIsolate())));
@@ -35,7 +35,7 @@ inline ScriptValue V8IteratorResult(ScriptState* script_state, const T& value) {
 
 inline ScriptValue V8IteratorResultDone(ScriptState* script_state) {
   return ScriptValue(
-      script_state,
+      script_state->GetIsolate(),
       V8IteratorResultValue(script_state, true,
                             v8::Undefined(script_state->GetIsolate())));
 }

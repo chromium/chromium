@@ -10,6 +10,7 @@
 #include "chrome/browser/safe_browsing/telemetry/android/android_telemetry_service.h"
 #include "chrome/browser/safe_browsing/telemetry/telemetry_service.h"
 #include "components/safe_browsing/android/remote_database_manager.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
@@ -34,7 +35,7 @@ std::unique_ptr<ServicesDelegate> ServicesDelegate::CreateForTest(
 
 ServicesDelegateAndroid::ServicesDelegateAndroid(
     SafeBrowsingService* safe_browsing_service)
-    : safe_browsing_service_(safe_browsing_service) {
+    : ServicesDelegate(safe_browsing_service, /*services_creator=*/nullptr) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -56,13 +57,16 @@ void ServicesDelegateAndroid::Initialize() {
         base::WrapRefCounted(new RemoteSafeBrowsingDatabaseManager());
   }
 }
+
 void ServicesDelegateAndroid::SetDatabaseManagerForTest(
     SafeBrowsingDatabaseManager* database_manager) {
   database_manager_set_for_tests_ = true;
   database_manager_ = database_manager;
 }
 
-void ServicesDelegateAndroid::ShutdownServices() {}
+void ServicesDelegateAndroid::ShutdownServices() {
+  telemetry_service_.reset();
+}
 
 void ServicesDelegateAndroid::RefreshState(bool enable) {}
 
@@ -98,36 +102,30 @@ void ServicesDelegateAndroid::StopOnIOThread(bool shutdown) {
   database_manager_->StopOnIOThread(shutdown);
 }
 
-void ServicesDelegateAndroid::CreatePasswordProtectionService(
-    Profile* profile) {}
-void ServicesDelegateAndroid::RemovePasswordProtectionService(
-    Profile* profile) {}
-PasswordProtectionService*
-ServicesDelegateAndroid::GetPasswordProtectionService(Profile* profile) const {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
 void ServicesDelegateAndroid::CreateTelemetryService(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile);
 
-  if (profile->IsOffTheRecord()) {
+  if (profile->IsOffTheRecord())
     return;
-  }
 
+  DCHECK(!telemetry_service_);
   telemetry_service_ = std::make_unique<AndroidTelemetryService>(
       safe_browsing_service_, profile);
 }
 
-void ServicesDelegateAndroid::RemoveTelemetryService() {
+void ServicesDelegateAndroid::RemoveTelemetryService(Profile* profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  telemetry_service_.release();
+  if (telemetry_service_ && telemetry_service_->profile() == profile)
+    telemetry_service_.reset();
 }
 
-TelemetryService* ServicesDelegateAndroid::GetTelemetryService() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return telemetry_service_.get();
+void ServicesDelegateAndroid::CreateBinaryUploadService(Profile* profile) {}
+void ServicesDelegateAndroid::RemoveBinaryUploadService(Profile* profile) {}
+BinaryUploadService* ServicesDelegateAndroid::GetBinaryUploadService(
+    Profile* profile) const {
+  NOTIMPLEMENTED();
+  return nullptr;
 }
 
 std::string ServicesDelegateAndroid::GetSafetyNetId() const {

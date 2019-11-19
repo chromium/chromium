@@ -33,12 +33,10 @@
 #include "third_party/blink/renderer/core/html/parser/markup_tokenizer_inlines.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/html_tokenizer_names.h"
-#include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
-
-using namespace html_names;
 
 static inline UChar ToLowerCase(UChar cc) {
   DCHECK(IsASCIIAlpha(cc));
@@ -603,7 +601,7 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     HTML_BEGIN_STATE(kScriptDataDoubleEscapeStartState) {
       if (IsTokenizerWhitespace(cc) || cc == '/' || cc == '>') {
         BufferCharacter(cc);
-        if (TemporaryBufferIs(kScriptTag.LocalName()))
+        if (TemporaryBufferIs(html_names::kScriptTag.LocalName()))
           HTML_ADVANCE_TO(kScriptDataDoubleEscapedState);
         else
           HTML_ADVANCE_TO(kScriptDataEscapedState);
@@ -683,7 +681,7 @@ bool HTMLTokenizer::NextToken(SegmentedString& source, HTMLToken& token) {
     HTML_BEGIN_STATE(kScriptDataDoubleEscapeEndState) {
       if (IsTokenizerWhitespace(cc) || cc == '/' || cc == '>') {
         BufferCharacter(cc);
-        if (TemporaryBufferIs(kScriptTag.LocalName()))
+        if (TemporaryBufferIs(html_names::kScriptTag.LocalName()))
           HTML_ADVANCE_TO(kScriptDataEscapedState);
         else
           HTML_ADVANCE_TO(kScriptDataDoubleEscapedState);
@@ -1454,19 +1452,20 @@ String HTMLTokenizer::BufferedCharacters() const {
 }
 
 void HTMLTokenizer::UpdateStateFor(const String& tag_name) {
-  if (ThreadSafeMatch(tag_name, kTextareaTag) ||
-      ThreadSafeMatch(tag_name, kTitleTag))
+  if (ThreadSafeMatch(tag_name, html_names::kTextareaTag) ||
+      ThreadSafeMatch(tag_name, html_names::kTitleTag))
     SetState(HTMLTokenizer::kRCDATAState);
-  else if (ThreadSafeMatch(tag_name, kPlaintextTag))
+  else if (ThreadSafeMatch(tag_name, html_names::kPlaintextTag))
     SetState(HTMLTokenizer::kPLAINTEXTState);
-  else if (ThreadSafeMatch(tag_name, kScriptTag))
+  else if (ThreadSafeMatch(tag_name, html_names::kScriptTag))
     SetState(HTMLTokenizer::kScriptDataState);
-  else if (ThreadSafeMatch(tag_name, kStyleTag) ||
-           ThreadSafeMatch(tag_name, kIFrameTag) ||
-           ThreadSafeMatch(tag_name, kXmpTag) ||
-           ThreadSafeMatch(tag_name, kNoembedTag) ||
-           ThreadSafeMatch(tag_name, kNoframesTag) ||
-           (ThreadSafeMatch(tag_name, kNoscriptTag) && options_.script_enabled))
+  else if (ThreadSafeMatch(tag_name, html_names::kStyleTag) ||
+           ThreadSafeMatch(tag_name, html_names::kIFrameTag) ||
+           ThreadSafeMatch(tag_name, html_names::kXmpTag) ||
+           ThreadSafeMatch(tag_name, html_names::kNoembedTag) ||
+           ThreadSafeMatch(tag_name, html_names::kNoframesTag) ||
+           (ThreadSafeMatch(tag_name, html_names::kNoscriptTag) &&
+            options_.script_enabled))
     SetState(HTMLTokenizer::kRAWTEXTState);
 }
 

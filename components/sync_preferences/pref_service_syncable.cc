@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/value_conversions.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -17,13 +16,14 @@
 #include "components/prefs/overlay_user_pref_store.h"
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_registry.h"
+#include "components/prefs/pref_value_store.h"
 #include "components/sync_preferences/pref_model_associator.h"
 #include "components/sync_preferences/pref_service_syncable_observer.h"
-#include "services/preferences/public/cpp/in_process_service_factory.h"
-#include "services/preferences/public/cpp/persistent_pref_store_client.h"
-#include "services/preferences/public/cpp/pref_registry_serializer.h"
-#include "services/preferences/public/mojom/preferences.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "components/sync_preferences/synced_pref_observer.h"
+
+#if defined(OS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
 
 namespace sync_preferences {
 
@@ -42,21 +42,32 @@ PrefServiceSyncable::PrefServiceSyncable(
     bool async)
     : PrefService(std::move(pref_notifier),
                   std::move(pref_value_store),
-                  std::move(user_prefs),
+                  user_prefs,
                   pref_registry,
                   std::move(read_error_callback),
                   async),
       pref_service_forked_(false),
-      unknown_pref_accessor_(this, pref_registry.get(), user_pref_store_.get()),
       pref_sync_associator_(pref_model_associator_client,
                             syncer::PREFERENCES,
-                            &unknown_pref_accessor_),
+                            user_prefs.get()),
       priority_pref_sync_associator_(pref_model_associator_client,
                                      syncer::PRIORITY_PREFERENCES,
-                                     &unknown_pref_accessor_),
+                                     user_prefs.get()),
+#if defined(OS_CHROMEOS)
+      os_pref_sync_associator_(pref_model_associator_client,
+                               syncer::OS_PREFERENCES,
+                               user_prefs.get()),
+      os_priority_pref_sync_associator_(pref_model_associator_client,
+                                        syncer::OS_PRIORITY_PREFERENCES,
+                                        user_prefs.get()),
+#endif
       pref_registry_(std::move(pref_registry)) {
   pref_sync_associator_.SetPrefService(this);
   priority_pref_sync_associator_.SetPrefService(this);
+#if defined(OS_CHROMEOS)
+  os_pref_sync_associator_.SetPrefService(this);
+  os_priority_pref_sync_associator_.SetPrefService(this);
+#endif
 
   // Let PrefModelAssociators know about changes to preference values.
   pref_value_store_->set_callback(base::Bind(
@@ -121,16 +132,23 @@ PrefServiceSyncable::CreateIncognitoPrefService(
 }
 
 bool PrefServiceSyncable::IsSyncing() {
-  return pref_sync_associator_.models_associated();
+  if (pref_sync_associator_.models_associated())
+    return true;
+#if defined(OS_CHROMEOS)
+  if (os_pref_sync_associator_.models_associated())
+    return true;
+#endif
+  return false;
 }
 
 bool PrefServiceSyncable::IsPrioritySyncing() {
-  return priority_pref_sync_associator_.models_associated();
-}
-
-bool PrefServiceSyncable::IsPrefSynced(const std::string& name) const {
-  return pref_sync_associator_.IsPrefSynced(name) ||
-         priority_pref_sync_associator_.IsPrefSynced(name);
+  if (priority_pref_sync_associator_.models_associated())
+    return true;
+#if defined(OS_CHROMEOS)
+  if (os_priority_pref_sync_associator_.models_associated())
+    return true;
+#endif
+  return false;
 }
 
 void PrefServiceSyncable::AddObserver(PrefServiceSyncableObserver* observer) {
@@ -144,13 +162,20 @@ void PrefServiceSyncable::RemoveObserver(
 
 syncer::SyncableService* PrefServiceSyncable::GetSyncableService(
     const syncer::ModelType& type) {
-  if (type == syncer::PREFERENCES) {
-    return &pref_sync_associator_;
-  } else if (type == syncer::PRIORITY_PREFERENCES) {
-    return &priority_pref_sync_associator_;
-  } else {
-    NOTREACHED() << "invalid model type: " << type;
-    return nullptr;
+  switch (type) {
+    case syncer::PREFERENCES:
+      return &pref_sync_associator_;
+    case syncer::PRIORITY_PREFERENCES:
+      return &priority_pref_sync_associator_;
+#if defined(OS_CHROMEOS)
+    case syncer::OS_PREFERENCES:
+      return &os_pref_sync_associator_;
+    case syncer::OS_PRIORITY_PREFERENCES:
+      return &os_priority_pref_sync_associator_;
+#endif
+    default:
+      NOTREACHED() << "invalid model type: " << type;
+      return nullptr;
   }
 }
 
@@ -166,6 +191,10 @@ void PrefServiceSyncable::AddSyncedPrefObserver(const std::string& name,
                                                 SyncedPrefObserver* observer) {
   pref_sync_associator_.AddSyncedPrefObserver(name, observer);
   priority_pref_sync_associator_.AddSyncedPrefObserver(name, observer);
+#if defined(OS_CHROMEOS)
+  os_pref_sync_associator_.AddSyncedPrefObserver(name, observer);
+  os_priority_pref_sync_associator_.AddSyncedPrefObserver(name, observer);
+#endif
 }
 
 void PrefServiceSyncable::RemoveSyncedPrefObserver(
@@ -173,11 +202,10 @@ void PrefServiceSyncable::RemoveSyncedPrefObserver(
     SyncedPrefObserver* observer) {
   pref_sync_associator_.RemoveSyncedPrefObserver(name, observer);
   priority_pref_sync_associator_.RemoveSyncedPrefObserver(name, observer);
-}
-
-void PrefServiceSyncable::RegisterMergeDataFinishedCallback(
-    const base::Closure& callback) {
-  pref_sync_associator_.RegisterMergeDataFinishedCallback(callback);
+#if defined(OS_CHROMEOS)
+  os_pref_sync_associator_.RemoveSyncedPrefObserver(name, observer);
+  os_priority_pref_sync_associator_.RemoveSyncedPrefObserver(name, observer);
+#endif
 }
 
 void PrefServiceSyncable::AddRegisteredSyncablePreference(
@@ -185,14 +213,40 @@ void PrefServiceSyncable::AddRegisteredSyncablePreference(
     uint32_t flags) {
   DCHECK(FindPreference(path));
   if (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_PREF) {
-    DCHECK(!pref_sync_associator_.models_associated() ||
-           pref_registry_->IsWhitelistedLateRegistrationPref(path));
     pref_sync_associator_.RegisterPref(path);
-  } else if (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF) {
-    DCHECK(!priority_pref_sync_associator_.models_associated() ||
-           pref_registry_->IsWhitelistedLateRegistrationPref(path));
-    priority_pref_sync_associator_.RegisterPref(path);
+    return;
   }
+  if (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF) {
+    priority_pref_sync_associator_.RegisterPref(path);
+    return;
+  }
+#if defined(OS_CHROMEOS)
+  if (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF) {
+    if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+      // Register the pref under the new ModelType::OS_PREFERENCES.
+      os_pref_sync_associator_.RegisterPref(path);
+      // Also register under the old ModelType::PREFERENCES. This ensures that
+      // local changes to OS prefs are also synced to old clients that have the
+      // pref registered as a browser SYNCABLE_PREF.
+      pref_sync_associator_.RegisterPrefWithLegacyModelType(path);
+    } else {
+      // Behave like an old client and treat this pref like it was registered
+      // as a SYNCABLE_PREF under ModelType::PREFERENCES.
+      pref_sync_associator_.RegisterPref(path);
+    }
+    return;
+  }
+  if (flags & user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF) {
+    // See comments for SYNCABLE_OS_PREF above.
+    if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+      os_priority_pref_sync_associator_.RegisterPref(path);
+      priority_pref_sync_associator_.RegisterPrefWithLegacyModelType(path);
+    } else {
+      priority_pref_sync_associator_.RegisterPref(path);
+    }
+    return;
+  }
+#endif
 }
 
 void PrefServiceSyncable::OnIsSyncingChanged() {
@@ -203,6 +257,10 @@ void PrefServiceSyncable::OnIsSyncingChanged() {
 void PrefServiceSyncable::ProcessPrefChange(const std::string& name) {
   pref_sync_associator_.ProcessPrefChange(name);
   priority_pref_sync_associator_.ProcessPrefChange(name);
+#if defined(OS_CHROMEOS)
+  os_pref_sync_associator_.ProcessPrefChange(name);
+  os_priority_pref_sync_associator_.ProcessPrefChange(name);
+#endif
 }
 
 }  // namespace sync_preferences

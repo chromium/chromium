@@ -25,6 +25,7 @@
 
 // http://w3c.github.io/webrtc-pc/#rtcdtmfsender
 
+[Exposed=Window]
 interface RTCDTMFSender : EventTarget {
     [RaisesException] void insertDTMF(DOMString tones, optional long duration, optional long interToneGap);
     attribute EventHandler ontonechange;

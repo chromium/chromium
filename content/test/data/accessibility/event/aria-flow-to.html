@@ -1,0 +1,58 @@
+<!--
+@UIA-WIN-DENY:*
+@UIA-WIN-ALLOW:FlowsTo*
+@UIA-WIN-ALLOW:FlowsFrom*
+-->
+<!DOCTYPE html>
+<html>
+
+<body>
+  <!-- No flow-to(b1), will add one in script -->
+  <div id='a1' aria-label='a1'>a1</div>
+  <div id='b1' aria-label='b1'>b1</div>
+
+  <!-- Existing flow-to(b2), will add a second one in script -->
+  <div id='a2' aria-label='a2' aria-flowto="b2">a2</div>
+  <div id='b2' aria-label='b2'>b2</div>
+  <div id='c2' aria-label='c2'>c2</div>
+
+  <!-- Multiple existing flow-to(b3), will remove one in script -->
+  <div id='a3' aria-label='a3' aria-flowto="b3">a3</div>
+  <div id='b3' aria-label='b3'>b3</div>
+  <div id='c3' aria-label='c3' aria-flowto="b3">c3</div>
+
+  <!-- Flow-to multiple(b4,c4), will remove one in script -->
+  <div id='a4' aria-label='a4' aria-flowto="b4 c4">a4</div>
+  <div id='b4' aria-label='b4'>b4</div>
+  <div id='c4' aria-label='c4'>c4</div>
+
+  <!-- Flow-to multiple(b5,c5), will remove both in script -->
+  <div id='a5' aria-label='a5' aria-flowto="b5 c5">a5</div>
+  <div id='b5' aria-label='b5'>b5</div>
+  <div id='c5' aria-label='c5'>c5</div>
+
+  <!-- Flow-to multiple(b6,c6), will change one in script -->
+  <div id='a6' aria-label='a6' aria-flowto="b6 c6">a6</div>
+  <div id='b6' aria-label='b6'>b6</div>
+  <div id='c6' aria-label='c6'>c6</div>
+  <div id='d6' aria-label='d6'>d6</div>
+
+  <script>
+    var go_passes = [
+      () => document.getElementById('a1').setAttribute('aria-flowto', 'b1'),
+      () => document.getElementById('c2').setAttribute('aria-flowto', 'b2'),
+      () => document.getElementById('c3').removeAttribute('aria-flowto'),
+      () => document.getElementById('a4').setAttribute('aria-flowto', 'b4'),
+      () => document.getElementById('a5').removeAttribute('aria-flowto'),
+      () => document.getElementById('a6').setAttribute('aria-flowto', 'b6 d6'),
+    ];
+
+    var current_pass = 0;
+    function go() {
+      go_passes[current_pass++].call();
+      return current_pass < go_passes.length;
+    }
+  </script>
+</body>
+
+</html>

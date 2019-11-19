@@ -25,8 +25,9 @@ class SendMouseMoveUITest : public InProcessBrowserTest {
 // This test positions the mouse at every point on the screen. It is not meant
 // to be run on the bots, as it takes too long. Run it manually as needed to
 // verify ui_controls::SendMouseMoveNotifyWhenDone with:
-//   interactive_ui_tests.exe --single_process --gtest_also_run_disabled_tests \
-//       --gtest_filter=SendMouseMoveUITest.DISABLED_Fullscreen
+//   interactive_ui_tests.exe --single-process-tests \
+// --gtest_also_run_disabled_tests \
+// --gtest_filter=SendMouseMoveUITest.DISABLED_Fullscreen
 IN_PROC_BROWSER_TEST_F(SendMouseMoveUITest, DISABLED_Fullscreen) {
   // Make the browser fullscreen so that we can position the mouse anywhere on
   // the display, as ui_controls::SendMouseMoveNotifyWhenDone can only provide

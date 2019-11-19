@@ -56,8 +56,17 @@ remoting.GnubbyAuthHandler.prototype.isGnubbyExtensionInstalled = function() {
     var message_callback = function(response) {
       if (response) {
         this.gnubbyExtensionId_ = extensionId;
+        console.log('Found gnubby extension: ' + extensionId);
         resolve(true);
       } else {
+        if (chrome.runtime.lastError) {
+          console.log('Error occurred communicating with gnubby extension: ' +
+                      extensionId + ', error: ' +
+                      chrome.runtime.lastError.message);
+        } else {
+          console.log('Gnubby extension "' + extensionId + '" not found');
+        }
+
         if (i + 1 < exts.length) {
           findGnubbyExtension.call(this, exts, i+1, resolve, reject);
         } else {

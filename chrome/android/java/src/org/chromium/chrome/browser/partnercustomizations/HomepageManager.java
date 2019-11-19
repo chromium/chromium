@@ -10,9 +10,8 @@ import android.text.TextUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.ntp.NewTabPage;
-import org.chromium.chrome.browser.util.FeatureUtilities;
+import org.chromium.chrome.browser.util.UrlConstants;
 
 /**
  * Provides information regarding homepage enabled states and URI.
@@ -83,11 +82,7 @@ public class HomepageManager {
      * @return Whether or not homepage is enabled.
      */
     public static boolean isHomepageEnabled() {
-        if (PartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled()
-                || FeatureUtilities.isHomePageButtonForceEnabled()) {
-            return getInstance().getPrefHomepageEnabled();
-        }
-        return false;
+        return getInstance().getPrefHomepageEnabled();
     }
 
     /**
@@ -96,14 +91,6 @@ public class HomepageManager {
     public static boolean shouldCloseAppWithZeroTabs() {
         return HomepageManager.isHomepageEnabled()
                 && !NewTabPage.isNTPUrl(HomepageManager.getHomepageUri());
-    }
-
-    /**
-     * @return Whether or not homepage setting should be shown.
-     */
-    public static boolean shouldShowHomepageSetting() {
-        return PartnerBrowserCustomizations.isHomepageProviderAvailableAndEnabled()
-                || FeatureUtilities.isHomePageButtonForceEnabled();
     }
 
     /**

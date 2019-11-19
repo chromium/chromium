@@ -15,22 +15,21 @@ namespace autofill_assistant {
 
 class UploadDomAction : public Action {
  public:
-  explicit UploadDomAction(const ActionProto& proto);
+  explicit UploadDomAction(ActionDelegate* delegate, const ActionProto& proto);
   ~UploadDomAction() override;
 
  private:
   // Overrides Action:
-  void InternalProcessAction(ActionDelegate* delegate,
-                             ProcessActionCallback callback) override;
+  void InternalProcessAction(ProcessActionCallback callback) override;
 
-  void OnWaitForElement(ActionDelegate* delegate,
-                        ProcessActionCallback callback,
-                        bool element_found);
+  void OnWaitForElement(ProcessActionCallback callback,
+                        const Selector& selector,
+                        const ClientStatus& element_status);
   void OnGetOuterHtml(ProcessActionCallback callback,
-                      bool successful,
+                      const ClientStatus& status,
                       const std::string& outer_html);
 
-  base::WeakPtrFactory<UploadDomAction> weak_ptr_factory_;
+  base::WeakPtrFactory<UploadDomAction> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UploadDomAction);
 };

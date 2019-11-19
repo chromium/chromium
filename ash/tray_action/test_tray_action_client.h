@@ -7,9 +7,10 @@
 
 #include <vector>
 
-#include "ash/public/interfaces/tray_action.mojom.h"
+#include "ash/public/mojom/tray_action.mojom.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash {
 
@@ -19,7 +20,7 @@ class TestTrayActionClient : public mojom::TrayActionClient {
 
   ~TestTrayActionClient() override;
 
-  mojom::TrayActionClientPtr CreateInterfacePtrAndBind();
+  mojo::PendingRemote<mojom::TrayActionClient> CreateRemoteAndBind();
 
   void ClearRecordedRequests();
 
@@ -37,7 +38,7 @@ class TestTrayActionClient : public mojom::TrayActionClient {
   void CloseLockScreenNote(mojom::CloseLockScreenNoteReason reason) override;
 
  private:
-  mojo::Binding<mojom::TrayActionClient> binding_;
+  mojo::Receiver<mojom::TrayActionClient> receiver_{this};
 
   std::vector<mojom::LockScreenNoteOrigin> note_origins_;
   std::vector<mojom::CloseLockScreenNoteReason> close_note_reasons_;

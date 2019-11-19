@@ -65,37 +65,37 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc ghi<div><img src=../../resources/abe.png>|</div><div></div><div></div>opq rst</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="ltr">abc ghi<div>|<img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-9 ltr left word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc ghi<div><img src=../../resources/abe.png></div>|<div></div><div></div>opq rst</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="ltr">abc ghi<div>|<img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-10 ltr left word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc ghi<div><img src=../../resources/abe.png></div><div>|</div><div></div>opq rst</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="ltr">abc ghi<div>|<img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-11 ltr left word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc ghi<div><img src=../../resources/abe.png></div><div></div>|<div></div>opq rst</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="ltr">abc ghi<div>|<img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-12 ltr left word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc ghi<div><img src=../../resources/abe.png></div><div></div><div>|</div>opq rst</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="ltr">abc ghi<div>|<img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-13 ltr left word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc ghi<div><img src=../../resources/abe.png></div><div></div><div></div>|opq rst</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="ltr">abc |ghi<div><img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
+  '<div contenteditable dir="ltr">abc ghi<div>|<img src="../../resources/abe.png"></div><div></div><div></div>opq rst</div>',
   '9-14 ltr left word');
 
 selection_test(

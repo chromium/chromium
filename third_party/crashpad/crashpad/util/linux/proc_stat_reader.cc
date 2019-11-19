@@ -85,7 +85,8 @@ bool ProcStatReader::SystemCPUTime(timeval* system_time) const {
   return ReadTimeAtIndex(14, system_time);
 }
 
-bool ProcStatReader::StartTime(timeval* start_time) const {
+bool ProcStatReader::StartTime(const timeval& boot_time,
+                               timeval* start_time) const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
 
   timeval time_after_boot;
@@ -93,24 +94,7 @@ bool ProcStatReader::StartTime(timeval* start_time) const {
     return false;
   }
 
-  timespec uptime;
-  if (clock_gettime(CLOCK_BOOTTIME, &uptime) != 0) {
-    PLOG(ERROR) << "clock_gettime";
-    return false;
-  }
-
-  timespec current_time;
-  if (clock_gettime(CLOCK_REALTIME, &current_time) != 0) {
-    PLOG(ERROR) << "clock_gettime";
-    return false;
-  }
-
-  timespec boot_time_ts;
-  SubtractTimespec(current_time, uptime, &boot_time_ts);
-  timeval boot_time_tv;
-  TimespecToTimeval(boot_time_ts, &boot_time_tv);
-  timeradd(&boot_time_tv, &time_after_boot, start_time);
-
+  timeradd(&boot_time, &time_after_boot, start_time);
   return true;
 }
 

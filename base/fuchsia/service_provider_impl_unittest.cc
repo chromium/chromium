@@ -4,16 +4,16 @@
 
 #include "base/fuchsia/service_provider_impl.h"
 
-#include <lib/fdio/util.h>
+#include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/zx/channel.h>
+
 #include <utility>
 
 #include "base/fuchsia/scoped_service_binding.h"
-#include "base/fuchsia/service_directory.h"
 #include "base/fuchsia/test_interface_impl.h"
 #include "base/fuchsia/testfidl/cpp/fidl.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -21,7 +21,12 @@ namespace fuchsia {
 
 class ServiceProviderImplTest : public testing::Test {
  public:
-  ServiceProviderImplTest() = default;
+  ServiceProviderImplTest() {
+    provider_impl_ =
+        ServiceProviderImpl::CreateForOutgoingDirectory(&service_directory_);
+    provider_impl_->AddBinding(provider_client_.NewRequest());
+  }
+
   ~ServiceProviderImplTest() override = default;
 
   void VerifyTestInterface(fidl::InterfacePtr<testfidl::TestInterface>* stub,
@@ -50,30 +55,29 @@ class ServiceProviderImplTest : public testing::Test {
   }
 
  protected:
-  MessageLoopForIO message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   TestInterfaceImpl test_service_;
+
+  sys::OutgoingDirectory service_directory_;
+  std::unique_ptr<ServiceProviderImpl> provider_impl_;
+  ::fuchsia::sys::ServiceProviderPtr provider_client_;
 
   DISALLOW_COPY_AND_ASSIGN(ServiceProviderImplTest);
 };
 
-// Verifies that we can connect to the service service more than once.
+// Verifies that we can connect to the service more than once.
 TEST_F(ServiceProviderImplTest, ConnectMulti) {
-  fidl::InterfaceHandle<::fuchsia::io::Directory> directory_channel;
-  ServiceDirectory service_directory(directory_channel.NewRequest());
-  ServiceProviderImpl provider_impl(std::move(directory_channel));
   ScopedServiceBinding<testfidl::TestInterface> service_binding(
-      &service_directory, &test_service_);
-
-  ::fuchsia::sys::ServiceProviderPtr provider_client;
-  provider_impl.AddBinding(provider_client.NewRequest());
+      &service_directory_, &test_service_);
 
   testfidl::TestInterfacePtr stub;
-  provider_client->ConnectToService(testfidl::TestInterface::Name_,
-                                    stub.NewRequest().TakeChannel());
+  provider_client_->ConnectToService(testfidl::TestInterface::Name_,
+                                     stub.NewRequest().TakeChannel());
 
   testfidl::TestInterfacePtr stub2;
-  provider_client->ConnectToService(testfidl::TestInterface::Name_,
-                                    stub2.NewRequest().TakeChannel());
+  provider_client_->ConnectToService(testfidl::TestInterface::Name_,
+                                     stub2.NewRequest().TakeChannel());
 
   VerifyTestInterface(&stub, ZX_OK);
   VerifyTestInterface(&stub2, ZX_OK);
@@ -81,16 +85,9 @@ TEST_F(ServiceProviderImplTest, ConnectMulti) {
 
 // Verify that the case when the service doesn't exist is handled properly.
 TEST_F(ServiceProviderImplTest, NoService) {
-  fidl::InterfaceHandle<::fuchsia::io::Directory> directory_channel;
-  ServiceDirectory service_directory(directory_channel.NewRequest());
-  ServiceProviderImpl provider_impl(std::move(directory_channel));
-
-  ::fuchsia::sys::ServiceProviderPtr provider_client;
-  provider_impl.AddBinding(provider_client.NewRequest());
-
   testfidl::TestInterfacePtr stub;
-  provider_client->ConnectToService(testfidl::TestInterface::Name_,
-                                    stub.NewRequest().TakeChannel());
+  provider_client_->ConnectToService(testfidl::TestInterface::Name_,
+                                     stub.NewRequest().TakeChannel());
 
   VerifyTestInterface(&stub, ZX_ERR_PEER_CLOSED);
 }

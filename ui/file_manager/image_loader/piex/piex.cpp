@@ -6,6 +6,7 @@
 
 #include <assert.h>
 #include <emscripten.h>
+#include <emscripten/bind.h>
 #include <emscripten/val.h>
 #include <stdint.h>
 #include <string.h>
@@ -35,16 +36,10 @@ class PiexStreamReader : public piex::StreamInterface {
 
 class PiexReader {
  public:
-  static void ReadImage(const char* data, size_t size, int callback) {
-    assert(callback);
+  static emscripten::val ReadImage(const char* data, size_t size) {
+    assert(data);
 
     auto result = emscripten::val::object();
-    if (!data || !size) {
-      result.set("error", emscripten::val("failed to fetch image source"));
-      CallbackResult(callback, result);
-      return;
-    }
-
     PiexStreamReader reader(data, size);
     piex::PreviewImageData image;
 
@@ -63,33 +58,45 @@ class PiexReader {
         break;
     }
 
-    CallbackResult(callback, result);
+    return result;
   }
 
  private:
-  static void CallbackResult(int callback, const emscripten::val& result) {
-    const int index = callback - 1;
-
-    auto callbacks = emscripten::val::global("functionPointers");
-    assert(callbacks.as<bool>());
-
-    auto context = emscripten::val::undefined();
-    callbacks[index].call<emscripten::val>("call", context, result);
-  }
-
   static emscripten::val GetProperties(const piex::PreviewImageData& image) {
     auto result = emscripten::val::object();
 
-    result.set("maker", emscripten::val(image.maker));
-    result.set("model", emscripten::val(image.model));
+    result.set("details", GetDetails(image));
     result.set("preview", GetPreview(image));
     result.set("thumbnail", GetThumbnail(image));
 
     return result;
   }
 
+  static emscripten::val GetDetails(const piex::PreviewImageData& image) {
+    auto object = emscripten::val::object();
+
+    object.set("cameraMaker", emscripten::val(image.maker));
+    object.set("cameraModel", emscripten::val(image.model));
+
+    object.set("aperture", GetRational(image.fnumber));
+    object.set("focalLength", GetRational(image.focal_length));
+    object.set("exposureTime", GetRational(image.exposure_time));
+    object.set("isoSpeed", GetNonZeroValue(image.iso));
+
+    object.set("width", emscripten::val(image.full_width));
+    object.set("height", emscripten::val(image.full_height));
+    object.set("orientation", emscripten::val(image.exif_orientation));
+    object.set("colorSpace", emscripten::val("sRGB"));
+    const auto space = static_cast<uint32_t>(image.color_space);
+    if (space == piex::PreviewImageData::kAdobeRgb)
+      object.set("colorSpace", emscripten::val("AdobeRGB1998"));
+    object.set("date", emscripten::val(image.date_time));
+
+    return object;
+  }
+
   static emscripten::val GetPreview(const piex::PreviewImageData& image) {
-    auto undefined = emscripten::val::undefined();
+    const auto undefined = emscripten::val::undefined();
 
     const auto format = static_cast<uint32_t>(image.preview.format);
     if (format != piex::Image::Format::kJpegCompressed)
@@ -110,9 +117,11 @@ class PiexReader {
   }
 
   static emscripten::val GetThumbnail(const piex::PreviewImageData& image) {
-    auto undefined = emscripten::val::undefined();
+    const auto undefined = emscripten::val::undefined();
 
     const auto format = static_cast<uint32_t>(image.thumbnail.format);
+    if (format > piex::Image::Format::kUncompressedRgb)
+      return undefined;
     if (!image.thumbnail.offset || !image.thumbnail.length)
       return undefined;
 
@@ -130,18 +139,26 @@ class PiexReader {
 
   static emscripten::val GetColorSpace(const piex::PreviewImageData& image) {
     const auto space = static_cast<uint32_t>(image.color_space);
-    if (space == ::piex::PreviewImageData::kSrgb)
-      return emscripten::val("sRgb");
-    if (space == ::piex::PreviewImageData::kAdobeRgb)
+    if (space == piex::PreviewImageData::kAdobeRgb)
       return emscripten::val("adobeRgb");
-    return emscripten::val::undefined();
+    return emscripten::val("sRgb");
+  }
+
+  static emscripten::val GetNonZeroValue(const uint32_t value) {
+    return value > 0 ? emscripten::val(value) : emscripten::val::undefined();
+  }
+
+  static float GetRational(const piex::PreviewImageData::Rational& number) {
+    if (number.denominator != 0)
+      return float(number.numerator) / number.denominator;
+    return 0.0f;
   }
 };
 
-extern "C" {
-
-void EMSCRIPTEN_KEEPALIVE image(const char* data, size_t size, int callback) {
-  PiexReader::ReadImage(data, size, callback);
+emscripten::val image(int data, size_t size) {
+  return PiexReader::ReadImage(reinterpret_cast<char*>(data), size);
 }
 
-}  // extern "C"
+EMSCRIPTEN_BINDINGS(PiexWasmModule) {
+  emscripten::function("image", &image);
+}

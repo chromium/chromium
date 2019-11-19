@@ -24,10 +24,13 @@ class MojoSystemInfoDispatcher : public VersionInfoUpdater::Delegate {
   void OnEnterpriseInfoUpdated(const std::string& enterprise_info,
                                const std::string& asset_id) override;
   void OnDeviceInfoUpdated(const std::string& bluetooth_name) override;
+  void OnAdbSideloadStatusUpdated(bool enabled) override;
 
  private:
   // Sends a new mojo call based on the currently stored system information.
   void OnSystemInfoUpdated();
+
+  void OnQueryAdbSideload(bool success, bool enabled);
 
   // Used to fetch the system/version information.
   VersionInfoUpdater version_info_updater_{this};
@@ -35,6 +38,7 @@ class MojoSystemInfoDispatcher : public VersionInfoUpdater::Delegate {
   std::string os_version_label_text_;
   std::string enterprise_info_;
   std::string bluetooth_name_;
+  bool adb_sideloading_enabled_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(MojoSystemInfoDispatcher);
 };

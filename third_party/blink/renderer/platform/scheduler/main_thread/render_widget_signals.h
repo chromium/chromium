@@ -10,6 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 namespace scheduler {
@@ -17,6 +18,8 @@ namespace scheduler {
 class WebRenderWidgetSchedulingState;
 
 class PLATFORM_EXPORT RenderWidgetSignals {
+  USING_FAST_MALLOC(RenderWidgetSignals);
+
  public:
   class PLATFORM_EXPORT Observer {
    public:

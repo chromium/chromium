@@ -4,9 +4,9 @@
 
 module blink.mojom;
 
-import "device/usb/public/mojom/device.mojom";
-import "device/usb/public/mojom/device_enumeration_options.mojom";
-import "device/usb/public/mojom/device_manager_client.mojom";
+import "services/device/public/mojom/usb_device.mojom";
+import "services/device/public/mojom/usb_enumeration_options.mojom";
+import "services/device/public/mojom/usb_manager_client.mojom";
 
 // This is a parallel interface with UsbDeviceManager aimed to handle extra work
 // such as permission checking, chooser showing, etc. in browser.
@@ -17,7 +17,8 @@ interface WebUsbService {
   GetDevices() => (array<device.mojom.UsbDeviceInfo> results);
 
   // Requests a device by guid.
-  GetDevice(string guid, device.mojom.UsbDevice& device_requestd);
+  GetDevice(string guid,
+            pending_receiver<device.mojom.UsbDevice> device_receiver);
 
   // Get permission from user to use a device.
   //
@@ -29,5 +30,6 @@ interface WebUsbService {
       => (device.mojom.UsbDeviceInfo? result);
 
   // Sets the client for this WebUsbService.
-  SetClient(associated device.mojom.UsbDeviceManagerClient client);
+  SetClient(
+      pending_associated_remote<device.mojom.UsbDeviceManagerClient> client);
 };

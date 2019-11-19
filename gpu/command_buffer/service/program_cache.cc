@@ -33,6 +33,19 @@ ProgramCache::~ProgramCache() = default;
 void ProgramCache::Clear() {
   ClearBackend();
   link_status_.clear();
+  compiled_shaders_.clear();
+}
+
+bool ProgramCache::HasSuccessfullyCompiledShader(
+    const std::string& shader_signature) const {
+  char sha[kHashLength];
+  ComputeShaderHash(shader_signature, sha);
+  const std::string sha_string(sha, kHashLength);
+
+  if (compiled_shaders_.find(sha_string) != compiled_shaders_.end()) {
+    return true;
+  }
+  return false;
 }
 
 ProgramCache::LinkedProgramStatus ProgramCache::GetLinkedProgramStatus(
@@ -80,13 +93,21 @@ void ProgramCache::LinkedProgramCacheSuccess(
                      transform_feedback_varyings,
                      transform_feedback_buffer_mode,
                      sha);
+  const std::string a_sha_string(a_sha, kHashLength);
+  const std::string b_sha_string(b_sha, kHashLength);
   const std::string sha_string(sha, kHashLength);
 
+  CompiledShaderCacheSuccess(a_sha_string);
+  CompiledShaderCacheSuccess(b_sha_string);
   LinkedProgramCacheSuccess(sha_string);
 }
 
 void ProgramCache::LinkedProgramCacheSuccess(const std::string& program_hash) {
   link_status_[program_hash] = LINK_SUCCEEDED;
+}
+
+void ProgramCache::CompiledShaderCacheSuccess(const std::string& shader_hash) {
+  compiled_shaders_.insert(shader_hash);
 }
 
 void ProgramCache::ComputeShaderHash(
@@ -96,8 +117,12 @@ void ProgramCache::ComputeShaderHash(
                       str.length(), reinterpret_cast<unsigned char*>(result));
 }
 
-void ProgramCache::Evict(const std::string& program_hash) {
+void ProgramCache::Evict(const std::string& program_hash,
+                         const std::string& shader_0_hash,
+                         const std::string& shader_1_hash) {
   link_status_.erase(program_hash);
+  compiled_shaders_.erase(shader_0_hash);
+  compiled_shaders_.erase(shader_1_hash);
 }
 
 namespace {

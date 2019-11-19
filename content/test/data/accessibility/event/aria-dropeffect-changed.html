@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h4 id="d1" aria-dropeffect="">Item1</h4>
+  <h4 id="d2" aria-dropeffect="move">Item2</h4>
+  <h4 id="d3" aria-dropeffect="move">Item3</h4>
+  <h4 id="d4" aria-dropeffect="copy">Item4</h4>
+  <script>
+    function go() {
+      // The dropeffect from default->none; should not fire an event.
+      document.getElementById('d1').setAttribute('aria-dropeffect', 'none');
+
+      // Set dropeffect from move->none; should fire an event.
+      document.getElementById('d2').setAttribute('aria-dropeffect', 'none');
+
+      // Set dropeffect from move->[removed]; should fire an event.
+      document.getElementById('d3').removeAttribute('aria-dropeffect');
+
+      // Set dropeffect from copy->|copy move|; should fire an event.
+      document.getElementById('d4').setAttribute('aria-dropeffect', 'copy move');
+    }
+  </script>
+</body>
+</html>

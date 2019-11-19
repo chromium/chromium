@@ -13,7 +13,7 @@ namespace base {
 namespace trace_event {
 class MemoryAllocatorDump;
 class ProcessMemoryDump;
-}
+}  // namespace trace_event
 
 // Discardable memory is used to cache large objects without worrying about
 // blowing out memory, both on mobile devices where there is no swap, and
@@ -48,7 +48,7 @@ class BASE_EXPORT DiscardableMemory {
 
   // Locks the memory so that it will not be purged by the system. Returns
   // true on success. If the return value is false then this object should be
-  // discarded and a new one should be created.
+  // destroyed and a new one should be created.
   virtual bool Lock() WARN_UNUSED_RESULT = 0;
 
   // Unlocks the memory so that it can be purged by the system. Must be called
@@ -58,6 +58,10 @@ class BASE_EXPORT DiscardableMemory {
   // Returns the memory address held by this object. The object must be locked
   // before calling this.
   virtual void* data() const = 0;
+
+  // Forces the memory to be purged, such that any following Lock() will fail.
+  // The object must be unlocked before calling this.
+  virtual void DiscardForTesting() = 0;
 
   // Handy method to simplify calling data() with a reinterpret_cast.
   template<typename T> T* data_as() const {

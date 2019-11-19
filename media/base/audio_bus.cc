@@ -346,31 +346,6 @@ void AudioBus::ToInterleaved(int frames,
   }
 }
 
-// Forwards to non-deprecated version.
-void AudioBus::ToInterleavedPartial(int start_frame,
-                                    int frames,
-                                    int bytes_per_sample,
-                                    void* dest) const {
-  DCHECK(!is_bitstream_format_);
-  switch (bytes_per_sample) {
-    case 1:
-      ToInterleavedPartial<UnsignedInt8SampleTypeTraits>(
-          start_frame, frames, reinterpret_cast<uint8_t*>(dest));
-      break;
-    case 2:
-      ToInterleavedPartial<SignedInt16SampleTypeTraits>(
-          start_frame, frames, reinterpret_cast<int16_t*>(dest));
-      break;
-    case 4:
-      ToInterleavedPartial<SignedInt32SampleTypeTraits>(
-          start_frame, frames, reinterpret_cast<int32_t*>(dest));
-      break;
-    default:
-      NOTREACHED() << "Unsupported bytes per sample encountered: "
-                   << bytes_per_sample;
-  }
-}
-
 void AudioBus::CopyTo(AudioBus* dest) const {
   dest->set_is_bitstream_format(is_bitstream_format());
   if (is_bitstream_format()) {
@@ -381,6 +356,18 @@ void AudioBus::CopyTo(AudioBus* dest) const {
   }
 
   CopyPartialFramesTo(0, frames(), 0, dest);
+}
+
+void AudioBus::CopyAndClipTo(AudioBus* dest) const {
+  DCHECK(!is_bitstream_format_);
+  CHECK_EQ(channels(), dest->channels());
+  CHECK_LE(frames(), dest->frames());
+  for (int i = 0; i < channels(); ++i) {
+    float* dest_ptr = dest->channel(i);
+    const float* source_ptr = channel(i);
+    for (int j = 0; j < frames(); ++j)
+      dest_ptr[j] = Float32SampleTypeTraits::FromFloat(source_ptr[j]);
+  }
 }
 
 void AudioBus::CopyPartialFramesTo(int source_start_frame,

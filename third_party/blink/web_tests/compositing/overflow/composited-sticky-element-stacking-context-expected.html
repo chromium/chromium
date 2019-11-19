@@ -4,6 +4,11 @@ onload = function() {
 }
 </script>
 <style>
+.composited {
+  /* Triggers promotion and creates a stacking context */
+  will-change: transform;
+}
+
 #scroller {
   background: white;
   height: 200px;
@@ -20,7 +25,7 @@ onload = function() {
   height: 2000px;
 }
 </style>
-<div id="scroller">
+<div id="scroller" class="composited">
   <div class="sticky"></div>
   <div class="spacer"></div>
 </div>

@@ -1,0 +1,82 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Most third_party/foobar dependencies are libraries that do one thing: e.g. a
+# particular codec, regular expressions, a SQL database, etc. Wuffs is unusual
+# in two respects:
+#
+# - The Wuffs project is both a programming language, and a standard library
+#   written in that programming language (and then transpiled to C). As of
+#   November 2019, Chromium uses only Wuffs-the-library.
+#
+# - That standard library speaks many codecs. As of November 2019, compression
+#   and images, but in the future, this may grow in scope.
+#
+# Third_party/foobar dependencies need to be reviewed before they are added:
+# https://chromium.googlesource.com/chromium/src.git/+/master/docs/adding_to_third_party.md#Get-a-review
+#
+# Normally, this review is a one-off process: once third_party/foobar is
+# accepted, it doesn't need additional review for e.g. version upgrades.
+# Because Wuffs is many things, substantial changes (newer versions or newer
+# configurations) deserve additional review just as if they were a new
+# third_party dependency. This is especially so for Wuffs-the-language, as
+# adding a new programming language to Chromium has a very high bar.
+#
+# In summary, non-trivial changes to how Chromium uses third_party/wuffs (i.e.
+# this BUILD.gn file), both adding new build targets or changing existing build
+# targets' configuration or visibility, require consulting ENG_REVIEW_OWNERS,
+# as per the "adding_to_third_party.md" link above.
+
+static_library("wuffs") {
+  defines = [
+    # Copy/pasting from "src/release/c/wuffs-*.c":
+    #
+    # ----
+    #
+    # Wuffs ships as a "single file C library" or "header file library" as per
+    # https://github.com/nothings/stb/blob/master/docs/stb_howto.txt
+    #
+    # To use that single file as a "foo.c"-like implementation, instead of a
+    # "foo.h"-like header, #define WUFFS_IMPLEMENTATION before #include'ing or
+    # compiling it.
+    #
+    # ----
+    "WUFFS_IMPLEMENTATION",
+
+    # Continuing to copy/paste:
+    #
+    # ----
+    #
+    # Defining the WUFFS_CONFIG__MODULE* macros are optional, but it lets users
+    # of Wuffs' .c file whitelist which parts of Wuffs to build. That file
+    # contains the entire Wuffs standard library, implementing a variety of
+    # codecs and file formats. Without this macro definition, an optimizing
+    # compiler or linker may very well discard Wuffs code for unused codecs,
+    # but listing the Wuffs modules we use makes that process explicit.
+    # Preprocessing means that such code simply isn't compiled.
+    #
+    # ----
+    #
+    # For Chromium, we're only interested in particular image codes (e.g. GIF)
+    # and their dependencies (e.g. BASE, LZW).
+    #
+    # Do not modify this list without considering the "consult
+    # ENG_REVIEW_OWNERS" comment at the top of this file.
+    "WUFFS_CONFIG__MODULES",
+    "WUFFS_CONFIG__MODULE__BASE",
+    "WUFFS_CONFIG__MODULE__GIF",
+    "WUFFS_CONFIG__MODULE__LZW",
+  ]
+
+  # Do not modify this list without considering the "consult ENG_REVIEW_OWNERS"
+  # comment at the top of this file.
+  visibility = [ "//skia" ]
+
+  sources = [
+    "src/release/c/wuffs-v0.2.c",
+  ]
+}
+# Do not add build targets, or change their configuration or visibility,
+# without considering the "consult ENG_REVIEW_OWNERS" comment at the top of
+# this file.

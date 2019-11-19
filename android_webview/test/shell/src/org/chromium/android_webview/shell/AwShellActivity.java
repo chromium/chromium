@@ -36,7 +36,6 @@ import org.chromium.android_webview.JsResultReceiver;
 import org.chromium.android_webview.test.AwTestContainerView;
 import org.chromium.android_webview.test.NullContentsClient;
 import org.chromium.base.CommandLine;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.content_public.browser.NavigationController;
@@ -52,7 +51,7 @@ import java.net.URL;
  * This is a lightweight activity for tests that only require WebView functionality.
  */
 public class AwShellActivity extends Activity {
-    private static final String TAG = "cr.AwShellActivity";
+    private static final String TAG = "AwShellActivity";
     private static final String PREFERENCES_NAME = "AwShellPrefs";
     private static final String INITIAL_URL = ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL;
     private AwBrowserContext mBrowserContext;
@@ -70,9 +69,6 @@ public class AwShellActivity extends Activity {
 
         AwShellResourceProvider.registerResources(this);
 
-        ((AwShellApplication) getApplication()).initCommandLine();
-
-        ContextUtils.initApplicationContext(getApplicationContext());
         AwBrowserProcess.loadLibrary(null);
 
         if (CommandLine.getInstance().hasSwitch(AwShellSwitches.ENABLE_ATRACE)) {
@@ -201,7 +197,8 @@ public class AwShellActivity extends Activity {
         SharedPreferences sharedPreferences =
                 getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE);
         if (mBrowserContext == null) {
-            mBrowserContext = new AwBrowserContext(sharedPreferences, getApplicationContext());
+            mBrowserContext = new AwBrowserContext(
+                    sharedPreferences, AwBrowserContext.getDefault().getNativePointer(), true);
         }
         final AwSettings awSettings =
                 new AwSettings(this /* context */, false /* isAccessFromFileURLsGrantedByDefault */,

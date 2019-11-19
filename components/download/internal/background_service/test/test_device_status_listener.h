@@ -32,7 +32,7 @@ class TestDeviceStatusListener : public DeviceStatusListener {
  private:
   void StartAfterDelay();
 
-  base::WeakPtrFactory<TestDeviceStatusListener> weak_ptr_factory_;
+  base::WeakPtrFactory<TestDeviceStatusListener> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestDeviceStatusListener);
 };

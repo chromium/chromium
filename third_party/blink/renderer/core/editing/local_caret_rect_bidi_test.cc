@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -45,7 +46,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=ltr><bdo dir=rtl>ABC</bdo>|def</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -59,7 +60,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest, InLtrBlockLtrBaseRunAfterRtlRun) {
       "<div dir=ltr><bdo dir=ltr>ghi<bdo dir=rtl>ABC</bdo>|def</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(60, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(60, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -74,7 +75,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=ltr><bdo dir=rtl>ABC|</bdo>def</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -89,7 +90,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=ltr>ghi<bdo dir=rtl>ABC|</bdo>def</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(60, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(60, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -105,7 +106,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc</bdo></bdo>|ghi</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(60, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(60, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -121,7 +122,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc|</bdo></bdo>ghi</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(60, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(60, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -138,9 +139,9 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
   // TODO(xiaochengh): Decide if the behavior difference is worth to fix.
-  EXPECT_EQ(
-      LayoutNGEnabled() ? LayoutRect(60, 0, 1, 10) : LayoutRect(90, 0, 1, 10),
-      LocalCaretRectOfPosition(position_with_affinity).rect);
+  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(60, 0, 1, 10)
+                              : PhysicalRect(90, 0, 1, 10),
+            LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
 TEST_P(ParameterizedLocalCaretRectBidiTest,
@@ -156,9 +157,9 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
   // TODO(xiaochengh): Decide if the behavior difference is worth to fix.
-  EXPECT_EQ(
-      LayoutNGEnabled() ? LayoutRect(60, 0, 1, 10) : LayoutRect(90, 0, 1, 10),
-      LocalCaretRectOfPosition(position_with_affinity).rect);
+  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(60, 0, 1, 10)
+                              : PhysicalRect(90, 0, 1, 10),
+            LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
 TEST_P(ParameterizedLocalCaretRectBidiTest,
@@ -174,9 +175,9 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
   // TODO(xiaochengh): Decide if the behavior difference is worth to fix.
-  EXPECT_EQ(
-      LayoutNGEnabled() ? LayoutRect(90, 0, 1, 10) : LayoutRect(120, 0, 1, 10),
-      LocalCaretRectOfPosition(position_with_affinity).rect);
+  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(90, 0, 1, 10)
+                              : PhysicalRect(120, 0, 1, 10),
+            LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
 TEST_P(ParameterizedLocalCaretRectBidiTest,
@@ -192,9 +193,9 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
   // TODO(xiaochengh): Decide if the behavior difference is worth to fix.
-  EXPECT_EQ(
-      LayoutNGEnabled() ? LayoutRect(90, 0, 1, 10) : LayoutRect(120, 0, 1, 10),
-      LocalCaretRectOfPosition(position_with_affinity).rect);
+  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(90, 0, 1, 10)
+                              : PhysicalRect(120, 0, 1, 10),
+            LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
 TEST_P(ParameterizedLocalCaretRectBidiTest,
@@ -208,7 +209,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=ltr>def|<bdo dir=rtl>ABC</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -222,7 +223,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest, InLtrBlockLtrBaseRunBeforeRtlRun) {
       "<div dir=ltr><bdo dir=ltr>def|<bdo dir=rtl>ABC</bdo>ghi</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -237,7 +238,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=ltr>def<bdo dir=rtl>|ABC</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -252,7 +253,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=ltr>def<bdo dir=rtl>|ABC</bdo>ghi</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -268,7 +269,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc</bdo>DEF</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -284,7 +285,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>|abc</bdo>DEF</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -301,9 +302,9 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
   // TODO(xiaochengh): Decide if the behavior difference is worth to fix.
-  EXPECT_EQ(
-      LayoutNGEnabled() ? LayoutRect(30, 0, 1, 10) : LayoutRect(60, 0, 1, 10),
-      LocalCaretRectOfPosition(position_with_affinity).rect);
+  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(30, 0, 1, 10)
+                              : PhysicalRect(60, 0, 1, 10),
+            LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
 TEST_P(ParameterizedLocalCaretRectBidiTest,
@@ -319,9 +320,9 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
   // TODO(xiaochengh): Decide if the behavior difference is worth to fix.
-  EXPECT_EQ(
-      LayoutNGEnabled() ? LayoutRect(30, 0, 1, 10) : LayoutRect(60, 0, 1, 10),
-      LocalCaretRectOfPosition(position_with_affinity).rect);
+  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(30, 0, 1, 10)
+                              : PhysicalRect(60, 0, 1, 10),
+            LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
 TEST_P(ParameterizedLocalCaretRectBidiTest,
@@ -337,9 +338,9 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
   // TODO(xiaochengh): Decide if the behavior difference is worth to fix.
-  EXPECT_EQ(
-      LayoutNGEnabled() ? LayoutRect(30, 0, 1, 10) : LayoutRect(60, 0, 1, 10),
-      LocalCaretRectOfPosition(position_with_affinity).rect);
+  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(30, 0, 1, 10)
+                              : PhysicalRect(60, 0, 1, 10),
+            LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
 TEST_P(ParameterizedLocalCaretRectBidiTest,
@@ -355,9 +356,9 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
   // TODO(xiaochengh): Decide if the behavior difference is worth to fix.
-  EXPECT_EQ(
-      LayoutNGEnabled() ? LayoutRect(30, 0, 1, 10) : LayoutRect(60, 0, 1, 10),
-      LocalCaretRectOfPosition(position_with_affinity).rect);
+  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(30, 0, 1, 10)
+                              : PhysicalRect(60, 0, 1, 10),
+            LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
 TEST_P(ParameterizedLocalCaretRectBidiTest,
@@ -371,7 +372,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=rtl><bdo dir=ltr>abc</bdo>|DEF</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(60, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(60, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -385,7 +386,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest, InLtrBlockRtlBaseRunAfterLtrRun) {
       "<div dir=ltr><bdo dir=rtl>GHI<bdo dir=ltr>abc</bdo>|DEF</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(60, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(60, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -400,7 +401,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=rtl><bdo dir=ltr>abc|</bdo>DEF</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(60, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(60, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -415,7 +416,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=rtl>GHI<bdo dir=ltr>abc|</bdo>DEF</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(60, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(60, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -431,7 +432,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC</bdo></bdo>|GHI</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(90, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(90, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -447,7 +448,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC|</bdo></bdo>GHI</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(90, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(90, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -463,7 +464,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc</bdo></bdo></bdo>|JKL</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(120, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(120, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -479,7 +480,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc|</bdo></bdo></bdo>JKL</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(120, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(120, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -495,7 +496,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo></bdo></bdo>|MNO</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(150, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(150, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -511,7 +512,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>def<bdo dir=rtl>ABC|</bdo></bdo></bdo></bdo>MNO</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(150, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(150, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -526,7 +527,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=rtl>DEF|<bdo dir=ltr>abc</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(0, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -540,7 +541,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest, InLtrBlockRtlBaseRunBeforeLtrRun) {
       "<div dir=ltr><bdo dir=rtl>DEF|<bdo dir=ltr>abc</bdo>GHI</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -555,7 +556,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=rtl>DEF<bdo dir=ltr>|abc</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(0, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -570,7 +571,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=rtl>DEF<bdo dir=ltr>|abc</bdo>GHI</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -586,7 +587,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC</bdo>def</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(0, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -602,7 +603,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>|ABC</bdo>def</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(0, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -618,7 +619,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc</bdo>DEF</bdo>ghi</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(0, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -634,7 +635,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>|abc</bdo>DEF</bdo>ghi</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(0, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -650,7 +651,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo>GHI</bdo>jkl</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -666,7 +667,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr><bdo dir=rtl>|ABC</bdo>def</bdo>GHI</bdo>jkl</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -681,7 +682,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=ltr><bdo dir=rtl>ABC</bdo>|def</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -695,7 +696,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest, InRtlBlockLtrBaseRunAfterRtlRun) {
       "<div dir=rtl><bdo dir=ltr>ghi<bdo dir=rtl>ABC</bdo>|def</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -710,7 +711,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=ltr><bdo dir=rtl>ABC|</bdo>def</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -725,7 +726,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=ltr>ghi<bdo dir=rtl>ABC|</bdo>def</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -741,7 +742,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc</bdo></bdo>|ghi</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(210, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(210, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -757,7 +758,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc|</bdo></bdo>ghi</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(210, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(210, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -773,7 +774,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC</bdo></bdo></bdo>|jkl</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(180, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(180, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -789,7 +790,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC|</bdo></bdo></bdo>jkl</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(180, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(180, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -806,9 +807,9 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
   // TODO(xiaochengh): Decide if the behavior difference is worth to fix.
-  EXPECT_EQ(
-      LayoutNGEnabled() ? LayoutRect(180, 0, 1, 10) : LayoutRect(150, 0, 1, 10),
-      LocalCaretRectOfPosition(position_with_affinity).rect);
+  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(180, 0, 1, 10)
+                              : PhysicalRect(150, 0, 1, 10),
+            LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
 TEST_P(ParameterizedLocalCaretRectBidiTest,
@@ -824,9 +825,9 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
   // TODO(xiaochengh): Decide if the behavior difference is worth to fix.
-  EXPECT_EQ(
-      LayoutNGEnabled() ? LayoutRect(180, 0, 1, 10) : LayoutRect(150, 0, 1, 10),
-      LocalCaretRectOfPosition(position_with_affinity).rect);
+  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(180, 0, 1, 10)
+                              : PhysicalRect(150, 0, 1, 10),
+            LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
 TEST_P(ParameterizedLocalCaretRectBidiTest,
@@ -840,7 +841,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=ltr>def|<bdo dir=rtl>ABC</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(299, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(299, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -854,7 +855,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest, InRtlBlockLtrBaseRunBeforeRtlRun) {
       "<div dir=rtl><bdo dir=ltr>def|<bdo dir=rtl>ABC</bdo>ghi</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -869,7 +870,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=ltr>def<bdo dir=rtl>|ABC</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(299, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(299, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -884,7 +885,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=ltr>def<bdo dir=rtl>|ABC</bdo>ghi</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -900,7 +901,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc</bdo>DEF</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(299, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(299, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -916,7 +917,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>|abc</bdo>DEF</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(299, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(299, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -932,7 +933,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC</bdo>def</bdo>GHI</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(299, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(299, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -948,7 +949,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>|ABC</bdo>def</bdo>GHI</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(299, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(299, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -965,9 +966,9 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
   // TODO(xiaochengh): Decide if the behavior difference is worth to fix.
-  EXPECT_EQ(
-      LayoutNGEnabled() ? LayoutRect(299, 0, 1, 10) : LayoutRect(270, 0, 1, 10),
-      LocalCaretRectOfPosition(position_with_affinity).rect);
+  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(299, 0, 1, 10)
+                              : PhysicalRect(270, 0, 1, 10),
+            LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
 TEST_P(ParameterizedLocalCaretRectBidiTest,
@@ -983,9 +984,9 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
   // TODO(xiaochengh): Decide if the behavior difference is worth to fix.
-  EXPECT_EQ(
-      LayoutNGEnabled() ? LayoutRect(299, 0, 1, 10) : LayoutRect(270, 0, 1, 10),
-      LocalCaretRectOfPosition(position_with_affinity).rect);
+  EXPECT_EQ(LayoutNGEnabled() ? PhysicalRect(299, 0, 1, 10)
+                              : PhysicalRect(270, 0, 1, 10),
+            LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
 TEST_P(ParameterizedLocalCaretRectBidiTest,
@@ -999,7 +1000,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>abc</bdo>|DEF</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1013,7 +1014,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest, InRtlBlockRtlBaseRunAfterLtrRun) {
       "<div dir=rtl><bdo dir=rtl>GHI<bdo dir=ltr>abc</bdo>|DEF</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1028,7 +1029,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>abc|</bdo>DEF</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1043,7 +1044,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=rtl>GHI<bdo dir=ltr>abc|</bdo>DEF</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1059,7 +1060,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC</bdo></bdo>|GHI</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1075,7 +1076,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC|</bdo></bdo>GHI</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1091,7 +1092,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc</bdo></bdo></bdo>|JKL</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(210, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(210, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1107,7 +1108,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc|</bdo></bdo></bdo>JKL</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(210, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(210, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1123,7 +1124,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>def<bdo dir=rtl>ABC</bdo></bdo></bdo></bdo>|MNO</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(180, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(180, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1139,7 +1140,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>def<bdo dir=rtl>ABC|</bdo></bdo></bdo></bdo>MNO</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(180, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(180, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1154,7 +1155,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=rtl>DEF|<bdo dir=ltr>abc</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1168,7 +1169,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest, InRtlBlockRtlBaseRunBeforeLtrRun) {
       "<div dir=rtl><bdo dir=rtl>DEF|<bdo dir=ltr>abc</bdo>GHI</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1183,7 +1184,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=rtl>DEF<bdo dir=ltr>|abc</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1198,7 +1199,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=rtl>DEF<bdo dir=ltr>|abc</bdo>GHI</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1214,7 +1215,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC</bdo>def</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1230,7 +1231,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>|ABC</bdo>def</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1246,7 +1247,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc</bdo>DEF</bdo>ghi</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1262,7 +1263,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>|abc</bdo>DEF</bdo>ghi</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1278,7 +1279,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr><bdo dir=rtl>ABC</bdo>def</bdo>GHI</bdo>jkl</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1294,7 +1295,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr><bdo dir=rtl>|ABC</bdo>def</bdo>GHI</bdo>jkl</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1309,7 +1310,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=ltr><bdo dir=rtl>|ABC</bdo>def</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(0, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1325,7 +1326,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>|abc</bdo>DEF</bdo>ghi</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(0, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1341,7 +1342,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>|ABC</bdo>def</bdo>GHI</bdo>jkl</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1356,7 +1357,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=ltr>def<bdo dir=rtl>ABC|</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(60, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(60, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1372,7 +1373,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc|</bdo></bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(90, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(90, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1388,7 +1389,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC|</bdo></bdo></bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(90, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(90, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1402,7 +1403,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest, InLtrBlockLineBeginWithRtlRunOnly) {
       SetCaretTextToBody("<div dir=ltr><bdo dir=rtl>|ABC</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(0, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1417,7 +1418,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=rtl><bdo dir=ltr>|abc</bdo>DEF</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(0, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(0, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1433,7 +1434,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>|ABC</bdo>def</bdo>GHI</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1449,7 +1450,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>|abc</bdo>DEF</bdo>ghi</bdo>JKL</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1463,7 +1464,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest, InLtrBlockLineEndWithRtlRunOnly) {
       SetCaretTextToBody("<div dir=ltr><bdo dir=rtl>ABC|</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(30, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(30, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1478,7 +1479,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=ltr><bdo dir=rtl>DEF<bdo dir=ltr>abc|</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(60, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(60, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1494,7 +1495,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC|</bdo></bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(60, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(60, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1510,7 +1511,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc|</bdo></bdo></bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(90, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(90, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1524,7 +1525,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest, InRtlBlockLineBeginWithLtrRunOnly) {
       SetCaretTextToBody("<div dir=rtl><bdo dir=ltr>|abc</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(299, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(299, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1539,7 +1540,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=ltr><bdo dir=rtl>|ABC</bdo>def</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(299, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(299, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1555,7 +1556,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>|abc</bdo>DEF</bdo>ghi</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1571,7 +1572,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>|ABC</bdo>def</bdo>GHI</bdo>jkl</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1585,7 +1586,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest, InRtlBlockLineEndWithLtrRunOnly) {
       SetCaretTextToBody("<div dir=rtl><bdo dir=ltr>abc|</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1600,7 +1601,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=ltr>def<bdo dir=rtl>ABC|</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1616,7 +1617,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc|</bdo></bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1632,7 +1633,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC|</bdo></bdo></bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(210, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(210, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1647,7 +1648,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=rtl><bdo dir=ltr>|abc</bdo>DEF</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(299, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(299, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1663,7 +1664,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>|ABC</bdo>def</bdo>GHI</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(299, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(299, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1679,7 +1680,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>|abc</bdo>DEF</bdo>ghi</bdo>JKL</bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(270, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(270, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1694,7 +1695,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "<div dir=rtl><bdo dir=rtl>DEF<bdo dir=ltr>abc|</bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(240, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(240, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1710,7 +1711,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=rtl>ABC|</bdo></bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(210, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(210, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 
@@ -1726,7 +1727,7 @@ TEST_P(ParameterizedLocalCaretRectBidiTest,
       "dir=ltr>abc|</bdo></bdo></bdo></bdo></div>");
   const PositionWithAffinity position_with_affinity(position,
                                                     TextAffinity::kDownstream);
-  EXPECT_EQ(LayoutRect(210, 0, 1, 10),
+  EXPECT_EQ(PhysicalRect(210, 0, 1, 10),
             LocalCaretRectOfPosition(position_with_affinity).rect);
 }
 

@@ -18,6 +18,6 @@ using content::BrowserThread;
 void ServiceProcessControl::Launcher::DoRun() {
   launched_ = mac::services::SubmitJob(
       GetServiceProcessJobOptions(cmd_line_.get(), false));
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(&Launcher::Notify, this));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&Launcher::Notify, this));
 }

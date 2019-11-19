@@ -48,18 +48,22 @@ TEST_F(SilentMainDialogTest, Close) {
 }
 
 enum class FileTypeToTest {
-  kActive,
-  kInactive,
+  kNone,
+  kExecutable,
+  kText,
 };
 
 std::ostream& operator<<(std::ostream& stream,
                          FileTypeToTest file_type_to_test) {
   switch (file_type_to_test) {
-    case FileTypeToTest::kActive:
-      stream << "ActiveFile";
+    case FileTypeToTest::kExecutable:
+      stream << "ExecutableFile";
       break;
-    case FileTypeToTest::kInactive:
-      stream << "InactiveFile";
+    case FileTypeToTest::kText:
+      stream << "TextFile";
+      break;
+    case FileTypeToTest::kNone:
+      stream << "NoFile";
       break;
   }
   return stream;
@@ -91,27 +95,32 @@ TEST_P(ConfirmCleanupSilentMainDialogTest, ConfirmCleanup) {
                        PUPData::kMaxFilesToRemoveSmallUwS);
   PUPData::PUP* pup = PUPData::GetPUP(kFakePupId);
   switch (file_type_to_test) {
-    case FileTypeToTest::kActive:
+    case FileTypeToTest::kExecutable:
       ASSERT_TRUE(pup->AddDiskFootprint(
           base::FilePath(FILE_PATH_LITERAL("c:\\file.exe"))));
       EXPECT_CALL(delegate_, AcceptedCleanup(true)).Times(1);
       break;
-    case FileTypeToTest::kInactive:
+    case FileTypeToTest::kText:
       ASSERT_TRUE(pup->AddDiskFootprint(
           base::FilePath(FILE_PATH_LITERAL("c:\\file.txt"))));
-      // If only an inactive file is found, the user should not be prompted.
+      // Even if only a non-executable file is found, the user should be
+      // prompted.
+      EXPECT_CALL(delegate_, AcceptedCleanup(true)).Times(1);
+      break;
+    case FileTypeToTest::kNone:
       EXPECT_CALL(delegate_, OnClose()).Times(1);
       break;
   }
 
   std::vector<UwSId> found_pups{kFakePupId};
-  dialog_->ConfirmCleanupIfNeeded(found_pups);
+  dialog_->ConfirmCleanupIfNeeded(found_pups, nullptr);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ConfirmCleanupSilentMainDialogTest,
-                         ::testing::Values(FileTypeToTest::kActive,
-                                           FileTypeToTest::kInactive),
+                         ::testing::Values(FileTypeToTest::kNone,
+                                           FileTypeToTest::kExecutable,
+                                           FileTypeToTest::kText),
                          GetParamNameForTest());
 
 }  // namespace

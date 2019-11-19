@@ -11,6 +11,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "chrome/android/chrome_jni_headers/TabModelJniBridge_jni.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,8 +20,10 @@
 #include "chrome/browser/tab_contents/tab_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer_jni_bridge.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/TabModelJniBridge_jni.h"
+#include "content/public/common/resource_request_body_android.h"
+#include "ui/base/window_open_disposition.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -31,11 +34,6 @@ using content::WebContents;
 namespace {
 
 static Profile* FindProfile(jboolean is_incognito) {
-  if (g_browser_process == NULL ||
-      g_browser_process->profile_manager() == NULL) {
-    LOG(ERROR) << "Browser process or profile manager not initialized";
-    return NULL;
-  }
   Profile* profile = ProfileManager::GetActiveUserProfile();
   if (is_incognito)
     return profile->GetOffTheRecordProfile();
@@ -74,6 +72,9 @@ void TabModelJniBridge::TabAddedToModel(JNIEnv* env,
   TabAndroid* tab = TabAndroid::GetNativeTab(env, jtab);
   if (tab)
     tab->SetWindowSessionID(GetSessionId());
+
+  if (IsOffTheRecord())
+    UMA_HISTOGRAM_COUNTS_100("Tab.Count.Incognito", GetTabCount());
 }
 
 int TabModelJniBridge::GetTabCount() const {
@@ -87,13 +88,48 @@ int TabModelJniBridge::GetActiveIndex() const {
 }
 
 void TabModelJniBridge::CreateTab(TabAndroid* parent,
-                                  WebContents* web_contents,
-                                  int parent_tab_id) {
+                                  WebContents* web_contents) {
   JNIEnv* env = AttachCurrentThread();
   Java_TabModelJniBridge_createTabWithWebContents(
       env, java_object_.get(env), (parent ? parent->GetJavaObject() : nullptr),
       web_contents->GetBrowserContext()->IsOffTheRecord(),
-      web_contents->GetJavaWebContents(), parent_tab_id);
+      web_contents->GetJavaWebContents());
+}
+
+void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
+                                              NavigateParams* params) {
+  DCHECK_EQ(params->source_contents, parent->web_contents());
+  DCHECK(!params->contents_to_insert);
+  DCHECK(!params->switch_to_singleton_tab);
+
+  WindowOpenDisposition disposition = params->disposition;
+  bool supported = disposition == WindowOpenDisposition::NEW_POPUP ||
+                   disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB ||
+                   disposition == WindowOpenDisposition::NEW_BACKGROUND_TAB ||
+                   disposition == WindowOpenDisposition::NEW_WINDOW ||
+                   disposition == WindowOpenDisposition::OFF_THE_RECORD;
+  if (!supported) {
+    NOTIMPLEMENTED();
+    return;
+  }
+
+  const GURL& url = params->url;
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
+  ScopedJavaLocalRef<jstring> jurl(ConvertUTF8ToJavaString(env, url.spec()));
+  ScopedJavaLocalRef<jstring> jheaders(
+      ConvertUTF8ToJavaString(env, params->extra_headers));
+  ScopedJavaLocalRef<jstring> jinitiator_origin;
+  if (params->initiator_origin) {
+    jinitiator_origin =
+        ConvertUTF8ToJavaString(env, params->initiator_origin->Serialize());
+  }
+  ScopedJavaLocalRef<jobject> jpost_data =
+      content::ConvertResourceRequestBodyToJavaObject(env, params->post_data);
+  Java_TabModelJniBridge_openNewTab(
+      env, jobj, parent->GetJavaObject(), jurl, jinitiator_origin, jheaders,
+      jpost_data, static_cast<int>(disposition), params->created_with_opener,
+      params->is_renderer_initiated);
 }
 
 WebContents* TabModelJniBridge::GetWebContentsAt(int index) const {

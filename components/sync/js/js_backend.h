@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_SYNC_JS_JS_BACKEND_H_
 #define COMPONENTS_SYNC_JS_JS_BACKEND_H_
 
-// See README.js for design comments.
+// See README for design comments.
 
 #include <string>
 

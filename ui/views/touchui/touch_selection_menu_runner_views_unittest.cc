@@ -25,9 +25,8 @@ const int kMenuCommandCount = 3;
 class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
                                           public ui::TouchSelectionMenuClient {
  public:
-  TouchSelectionMenuRunnerViewsTest()
-      : no_command_available_(false), last_executed_command_id_(0) {}
-  ~TouchSelectionMenuRunnerViewsTest() override {}
+  TouchSelectionMenuRunnerViewsTest() = default;
+  ~TouchSelectionMenuRunnerViewsTest() override = default;
 
  protected:
   void SetUp() override {
@@ -60,9 +59,9 @@ class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
 
   // When set to true, no command would be available and menu should not be
   // shown.
-  bool no_command_available_;
+  bool no_command_available_ = false;
 
-  int last_executed_command_id_;
+  int last_executed_command_id_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TouchSelectionMenuRunnerViewsTest);
 };

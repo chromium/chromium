@@ -15,6 +15,7 @@
 #ifndef CRASHPAD_HANDLER_FUCHSIA_CRASH_REPORT_EXCEPTION_HANDLER_H_
 #define CRASHPAD_HANDLER_FUCHSIA_CRASH_REPORT_EXCEPTION_HANDLER_H_
 
+#include <fuchsia/mem/cpp/fidl.h>
 #include <lib/zx/port.h>
 #include <lib/zx/process.h>
 #include <lib/zx/thread.h>
@@ -52,10 +53,10 @@ class CrashReportExceptionHandler {
   //!     To interoperate with Breakpad servers, the recommended practice is to
   //!     specify values for the `"prod"` and `"ver"` keys as process
   //!     annotations.
-  //! \param[in] process_attachments A map of file name keys to file paths to be
-  //!     included in the report. Each time a report is written, the file paths
-  //!     will be read in their entirety and included in the report using the
-  //!     file name key as the name in the http upload.
+  //! \param[in] process_attachments A map of keys to VMOs to be included in the
+  //!     report. Each time a report is written, the VMOs will be read in their
+  //!     entirety and included in the report using the key as the name in the
+  //!     http upload.
   //! \param[in] user_stream_data_sources Data sources to be used to extend
   //!     crash reports. For each crash report that is written, the data sources
   //!     are called in turn. These data sources may contribute additional
@@ -64,7 +65,7 @@ class CrashReportExceptionHandler {
       CrashReportDatabase* database,
       CrashReportUploadThread* upload_thread,
       const std::map<std::string, std::string>* process_annotations,
-      const std::map<std::string, base::FilePath>* process_attachments,
+      const std::map<std::string, fuchsia::mem::Buffer>* process_attachments,
       const UserStreamDataSources* user_stream_data_sources);
 
   ~CrashReportExceptionHandler();
@@ -72,47 +73,23 @@ class CrashReportExceptionHandler {
   //! \brief Called when the exception handler server has caught an exception
   //!     and wants a crash dump to be taken.
   //!
-  //! This function is expected to call `zx_task_resume_from_exception()` in
-  //! order to complete handling of the exception.
-  //!
-  //! \param[in] process_id The koid of the process which sustained the
-  //!     exception.
-  //! \param[in] thread_id The koid of the thread which sustained the exception.
-  //! \param[in] exception_port The exception port on which the exception was
-  //!     serviced. This can be used to resume the excepting thread.
-  //! \param[out] local_report_id The unique identifier for the report created
-  //!     in the local report database. Optional.
-  //! \return `true` on success, or `false` with an error logged.
-  bool HandleException(uint64_t process_id,
-                       uint64_t thread_id,
-                       const zx::unowned_port& exception_port,
-                       UUID* local_report_id = nullptr);
-
-  //! \brief Called when the exception handler server has caught an exception
-  //!     and wants a crash dump to be taken.
-  //!
-  //! This function is expected to call `zx_task_resume_from_exception()` in
-  //! order to complete handling of the exception.
-  //!
   //! \param[in] process The handle to the process which sustained the
   //!     exception.
   //! \param[in] thread The handle to the thread of \a process which sustained
   //!     the exception.
-  //! \param[in] exception_port The exception port on which the exception was
-  //!     serviced. This can be used to resume the excepting thread.
   //! \param[out] local_report_id The unique identifier for the report created
   //!     in the local report database. Optional.
   //! \return `true` on success, or `false` with an error logged.
-  bool HandleExceptionHandles(const zx::process& process,
-                              const zx::thread& thread,
-                              const zx::unowned_port& exception_port,
-                              UUID* local_report_id = nullptr);
+  bool HandleException(const zx::process& process,
+                       const zx::thread& thread,
+                       UUID* local_report_id = nullptr);
 
  private:
   CrashReportDatabase* database_;  // weak
   CrashReportUploadThread* upload_thread_;  // weak
   const std::map<std::string, std::string>* process_annotations_;  // weak
-  const std::map<std::string, base::FilePath>* process_attachments_;  // weak
+  const std::map<std::string, fuchsia::mem::Buffer>*
+      process_attachments_;  // weak
   const UserStreamDataSources* user_stream_data_sources_;  // weak
 
   DISALLOW_COPY_AND_ASSIGN(CrashReportExceptionHandler);

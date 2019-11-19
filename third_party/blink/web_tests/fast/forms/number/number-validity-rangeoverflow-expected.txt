@@ -15,6 +15,7 @@ PASS The value "0.999999999999999999999999999999999999999999" doesn't overflow t
 PASS The value "101" overflows the maximum value "100".
 PASS The value "-99" overflows the maximum value "-100".
 PASS The value "101" overflows the maximum value "1E+2".
+PASS The value "-.8" overflows the maximum value "-1".
 PASS The value "101" overflows the maximum value "100".
 PASS The value "101" doesn't overflow the maximum value "1E+2" when disabled.
 PASS successfullyParsed is true

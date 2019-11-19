@@ -24,8 +24,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://w3c.github.io/webcomponents/spec/shadow/#the-shadowroot-interface
+// https://dom.spec.whatwg.org/#interface-shadowroot
 
+[Exposed=Window]
 interface ShadowRoot : DocumentFragment {
     readonly attribute ShadowRootMode mode;
     readonly attribute Element host;
@@ -33,4 +34,4 @@ interface ShadowRoot : DocumentFragment {
     readonly attribute boolean delegatesFocus;
 };
 
-ShadowRoot implements DocumentOrShadowRoot;
+ShadowRoot includes DocumentOrShadowRoot;

@@ -34,12 +34,15 @@
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
+#include "net/extras/preload_data/decoder.h"
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/net_buildflags.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "net/tools/huffman_trie/bit_writer.h"
+#include "net/tools/huffman_trie/trie/trie_bit_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -218,15 +221,15 @@ class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {
 
 void CompareCertificateChainWithList(
     const scoped_refptr<X509Certificate>& cert_chain,
-    const base::ListValue* cert_list) {
+    const base::Value* cert_list) {
   ASSERT_TRUE(cert_chain);
+  ASSERT_TRUE(cert_list->is_list());
   std::vector<std::string> pem_encoded_chain;
   cert_chain->GetPEMEncodedChain(&pem_encoded_chain);
-  EXPECT_EQ(pem_encoded_chain.size(), cert_list->GetSize());
+  ASSERT_EQ(pem_encoded_chain.size(), cert_list->GetList().size());
 
   for (size_t i = 0; i < pem_encoded_chain.size(); i++) {
-    std::string list_cert;
-    ASSERT_TRUE(cert_list->GetString(i, &list_cert));
+    const std::string& list_cert = cert_list->GetList()[i].GetString();
     EXPECT_EQ(pem_encoded_chain[i], list_cert);
   }
 }
@@ -239,50 +242,49 @@ void CheckHPKPReport(
     const scoped_refptr<X509Certificate>& served_certificate_chain,
     const scoped_refptr<X509Certificate>& validated_certificate_chain,
     const HashValueVector& known_pins) {
-  std::unique_ptr<base::Value> value(base::JSONReader::ReadDeprecated(report));
-  ASSERT_TRUE(value);
-  ASSERT_TRUE(value->is_dict());
+  base::Optional<base::Value> value = base::JSONReader::Read(report);
+  ASSERT_TRUE(value.has_value());
+  const base::Value& report_dict = value.value();
+  ASSERT_TRUE(report_dict.is_dict());
 
-  base::DictionaryValue* report_dict;
-  ASSERT_TRUE(value->GetAsDictionary(&report_dict));
+  const std::string* report_hostname = report_dict.FindStringKey("hostname");
+  ASSERT_TRUE(report_hostname);
+  EXPECT_EQ(host_port_pair.host(), *report_hostname);
 
-  std::string report_hostname;
-  EXPECT_TRUE(report_dict->GetString("hostname", &report_hostname));
-  EXPECT_EQ(host_port_pair.host(), report_hostname);
+  base::Optional<int> report_port = report_dict.FindIntKey("port");
+  ASSERT_TRUE(report_port.has_value());
+  EXPECT_EQ(host_port_pair.port(), report_port.value());
 
-  int report_port;
-  EXPECT_TRUE(report_dict->GetInteger("port", &report_port));
-  EXPECT_EQ(host_port_pair.port(), report_port);
+  base::Optional<bool> report_include_subdomains =
+      report_dict.FindBoolKey("include-subdomains");
+  ASSERT_TRUE(report_include_subdomains.has_value());
+  EXPECT_EQ(include_subdomains, report_include_subdomains.value());
 
-  bool report_include_subdomains;
-  EXPECT_TRUE(report_dict->GetBoolean("include-subdomains",
-                                      &report_include_subdomains));
-  EXPECT_EQ(include_subdomains, report_include_subdomains);
-
-  std::string report_noted_hostname;
-  EXPECT_TRUE(report_dict->GetString("noted-hostname", &report_noted_hostname));
-  EXPECT_EQ(noted_hostname, report_noted_hostname);
+  const std::string* report_noted_hostname =
+      report_dict.FindStringKey("noted-hostname");
+  ASSERT_TRUE(report_noted_hostname);
+  EXPECT_EQ(noted_hostname, *report_noted_hostname);
 
   // TODO(estark): check times in RFC3339 format.
 
-  std::string report_expiration;
-  EXPECT_TRUE(
-      report_dict->GetString("effective-expiration-date", &report_expiration));
-  EXPECT_FALSE(report_expiration.empty());
+  const std::string* report_expiration =
+      report_dict.FindStringKey("effective-expiration-date");
+  ASSERT_TRUE(report_expiration);
+  EXPECT_FALSE(report_expiration->empty());
 
-  std::string report_date;
-  EXPECT_TRUE(report_dict->GetString("date-time", &report_date));
-  EXPECT_FALSE(report_date.empty());
+  const std::string* report_date = report_dict.FindStringKey("date-time");
+  ASSERT_TRUE(report_date);
+  EXPECT_FALSE(report_date->empty());
 
-  base::ListValue* report_served_certificate_chain;
-  EXPECT_TRUE(report_dict->GetList("served-certificate-chain",
-                                   &report_served_certificate_chain));
+  const base::Value* report_served_certificate_chain =
+      report_dict.FindKey("served-certificate-chain");
+  ASSERT_TRUE(report_served_certificate_chain);
   ASSERT_NO_FATAL_FAILURE(CompareCertificateChainWithList(
       served_certificate_chain, report_served_certificate_chain));
 
-  base::ListValue* report_validated_certificate_chain;
-  EXPECT_TRUE(report_dict->GetList("validated-certificate-chain",
-                                   &report_validated_certificate_chain));
+  const base::Value* report_validated_certificate_chain =
+      report_dict.FindKey("validated-certificate-chain");
+  ASSERT_TRUE(report_validated_certificate_chain);
   ASSERT_NO_FATAL_FAILURE(CompareCertificateChainWithList(
       validated_certificate_chain, report_validated_certificate_chain));
 }
@@ -1430,6 +1432,31 @@ TEST_F(TransportSecurityStateTest, DecodePreloadedMultipleMix) {
   EXPECT_FALSE(GetExpectCTState(&state, "simple-entry.example.com", &ct_state));
 }
 
+TEST_F(TransportSecurityStateTest, HstsHostBypassList) {
+  SetTransportSecurityStateSourceForTesting(&test_default::kHSTSSource);
+
+  TransportSecurityState::STSState sts_state;
+  TransportSecurityState::PKPState pkp_state;
+
+  std::string preloaded_tld = "example";
+  std::string subdomain = "sub.example";
+
+  {
+    TransportSecurityState state;
+    // Check that "example" is preloaded with subdomains.
+    EXPECT_TRUE(state.ShouldUpgradeToSSL(preloaded_tld));
+    EXPECT_TRUE(state.ShouldUpgradeToSSL(subdomain));
+  }
+
+  {
+    // Add "example" to the bypass list.
+    TransportSecurityState state({preloaded_tld});
+    EXPECT_FALSE(state.ShouldUpgradeToSSL(preloaded_tld));
+    // The preloaded entry should still apply to the subdomain.
+    EXPECT_TRUE(state.ShouldUpgradeToSSL(subdomain));
+  }
+}
+
 // Tests that TransportSecurityState always consults the RequireCTDelegate,
 // if supplied.
 TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
@@ -1578,7 +1605,7 @@ TEST_F(TransportSecurityStateTest, RequireCTConsultsDelegate) {
 
 // Tests that Certificate Transparency is required for Symantec-issued
 // certificates, unless the certificate was issued prior to 1 June 2016
-// or the issuing CA is whitelisted as independently operated.
+// or the issuing CA is permitted as independently operated.
 TEST_F(TransportSecurityStateTest, RequireCTForSymantec) {
   // Test certificates before and after the 1 June 2016 deadline.
   scoped_refptr<X509Certificate> before_cert =
@@ -1709,26 +1736,14 @@ TEST_F(TransportSecurityStateTest, RequireCTViaFieldTrial) {
   // However, simulating a Field Trial in which CT is required for certificates
   // after 2017-12-01 should cause CT to be required for this certificate, as
   // it was issued 2017-12-20.
-  const char kTrialName[] = "EnforceCTForNewCertsTrial";
-  const char kGroupName[] = "Unused";  // Value not used.
-  const char kFeatureName[] = "EnforceCTForNewCerts";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialList field_trial_list(
-      std::make_unique<base::MockEntropyProvider>());
-  scoped_refptr<base::FieldTrial> trial =
-      base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
-  std::map<std::string, std::string> params;
+  base::FieldTrialParams params;
   // Set the enforcement date to 2017-12-01 00:00:00;
   params["date"] = "1512086400";
-  base::FieldTrialParamAssociator::GetInstance()->AssociateFieldTrialParams(
-      kTrialName, kGroupName, params);
 
-  std::unique_ptr<base::FeatureList> feature_list(
-      std::make_unique<base::FeatureList>());
-  feature_list->RegisterFieldTrialOverride(
-      kFeatureName, base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
-  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(kEnforceCTForNewCerts,
+                                                         params);
 
   // It should fail if it doesn't comply with policy.
   EXPECT_EQ(TransportSecurityState::CT_REQUIREMENTS_NOT_MET,
@@ -2620,7 +2635,6 @@ TEST_F(TransportSecurityStateStaticTest, Preloaded) {
   EXPECT_TRUE(StaticShouldRedirect("plus.google.com"));
   EXPECT_TRUE(StaticShouldRedirect("groups.google.com"));
   EXPECT_TRUE(StaticShouldRedirect("apis.google.com"));
-  EXPECT_FALSE(StaticShouldRedirect("chart.apis.google.com"));
   EXPECT_TRUE(StaticShouldRedirect("ssl.google-analytics.com"));
   EXPECT_TRUE(StaticShouldRedirect("google"));
   EXPECT_TRUE(StaticShouldRedirect("foo.google"));
@@ -2644,6 +2658,10 @@ TEST_F(TransportSecurityStateStaticTest, Preloaded) {
       state.GetStaticDomainState("googlemail.com", &sts_state, &pkp_state));
   EXPECT_TRUE(
       state.GetStaticDomainState("www.googlemail.com", &sts_state, &pkp_state));
+
+  // fi.g.co should not force HTTPS because there are still HTTP-only services
+  // on it.
+  EXPECT_FALSE(StaticShouldRedirect("fi.g.co"));
 
   // Other hosts:
 
@@ -3159,6 +3177,44 @@ TEST_F(TransportSecurityStateStaticTest, UMAOnHPKPReportingFailure) {
   histograms.ExpectTotalCount(histogram_name, 1);
   histograms.ExpectBucketCount(histogram_name, -mock_report_sender.net_error(),
                                1);
+}
+
+TEST_F(TransportSecurityStateTest, WriteSizeDecodeSize) {
+  for (size_t i = 0; i < 300; ++i) {
+    SCOPED_TRACE(i);
+    huffman_trie::TrieBitBuffer buffer;
+    buffer.WriteSize(i);
+    huffman_trie::BitWriter writer;
+    buffer.WriteToBitWriter(&writer);
+    size_t position = writer.position();
+    writer.Flush();
+    ASSERT_NE(writer.bytes().data(), nullptr);
+    extras::PreloadDecoder::BitReader reader(writer.bytes().data(), position);
+    size_t decoded_size;
+    EXPECT_TRUE(reader.DecodeSize(&decoded_size));
+    EXPECT_EQ(i, decoded_size);
+  }
+}
+
+TEST_F(TransportSecurityStateTest, DecodeSizeFour) {
+  // Test that BitReader::DecodeSize properly handles the number 4, including
+  // not over-reading input bytes. BitReader::Next only fails if there's not
+  // another byte to read from; if it reads past the number of bits in the
+  // buffer but is still in the last byte it will still succeed. For this
+  // reason, this test puts the encoding of 4 at the end of the byte to check
+  // that DecodeSize doesn't over-read.
+  //
+  // 4 is encoded as 0b010. Shifted right to fill one byte, it is 0x02, with 5
+  // bits of padding.
+  uint8_t encoded = 0x02;
+  extras::PreloadDecoder::BitReader reader(&encoded, 8);
+  for (size_t i = 0; i < 5; ++i) {
+    bool unused;
+    ASSERT_TRUE(reader.Next(&unused));
+  }
+  size_t decoded_size;
+  EXPECT_TRUE(reader.DecodeSize(&decoded_size));
+  EXPECT_EQ(4u, decoded_size);
 }
 
 #endif  // BUILDFLAG(INCLUDE_TRANSPORT_SECURITY_STATE_PRELOAD_LIST)

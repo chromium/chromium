@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/build/config.gni")
 import("//build/config/ios/rules.gni")
+import("//ios/build/config.gni")
 import("//testing/test.gni")
 
 source_set("inttests") {
@@ -13,6 +13,7 @@ source_set("inttests") {
     "scroll_view_kvo_inttest.mm",
     "ui_delegate_inttest.mm",
     "web_view_autofill_inttest.mm",
+    "web_view_from_wk_web_view_configuration_inttest.mm",
     "web_view_inttest.mm",
     "web_view_inttest_base.h",
     "web_view_inttest_base.mm",
@@ -26,6 +27,7 @@ source_set("inttests") {
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//components/url_formatter",
     "//ios/web_view:web_view+link",
     "//net",
     "//net:test_support",
@@ -42,10 +44,14 @@ source_set("test_support") {
     # Explicitly reference imported headers from web_view library to avoid
     # depending on the framework (as it is statically linked).
     "//ios/web_view/public/cwv_export.h",
+    "//ios/web_view/public/cwv_navigation_delegate.h",
+    "//ios/web_view/public/cwv_navigation_type.h",
     "//ios/web_view/public/cwv_web_view.h",
     "//ios/web_view/public/cwv_web_view_configuration.h",
     "observer.h",
     "observer.mm",
+    "test_with_locale_and_resources.cc",
+    "test_with_locale_and_resources.h",
     "web_view_test_util.h",
     "web_view_test_util.mm",
   ]
@@ -53,6 +59,8 @@ source_set("test_support") {
   deps = [
     "//base:base",
     "//base/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

@@ -8,9 +8,10 @@
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/android/java/jni_reflect.h"
 
-#include "jni/Object_jni.h"
+#include "content/browser/reflection_jni_headers/Object_jni.h"
 
 using base::android::AttachCurrentThread;
+using base::android::JavaObjectArrayReader;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
@@ -134,16 +135,11 @@ void GinJavaBoundObject::EnsureMethodsAreSetUp() {
     return;
   }
 
-  ScopedJavaLocalRef<jobjectArray> methods(GetClassMethods(env, clazz));
-  size_t num_methods = env->GetArrayLength(methods.obj());
+  JavaObjectArrayReader<jobject> methods(GetClassMethods(env, clazz));
   // Java objects always have public methods.
-  DCHECK(num_methods);
+  DCHECK_GT(methods.size(), 0);
 
-  for (size_t i = 0; i < num_methods; ++i) {
-    ScopedJavaLocalRef<jobject> java_method(
-        env,
-        env->GetObjectArrayElement(methods.obj(), i));
-
+  for (auto java_method : methods) {
     if (!safe_annotation_clazz_.is_null()) {
       if (!IsAnnotationPresent(env, java_method, safe_annotation_clazz_))
         continue;

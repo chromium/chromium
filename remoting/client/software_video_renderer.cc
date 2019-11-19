@@ -46,7 +46,7 @@ std::unique_ptr<webrtc::DesktopFrame> DoDecodeFrame(
 }  // namespace
 
 SoftwareVideoRenderer::SoftwareVideoRenderer(protocol::FrameConsumer* consumer)
-    : consumer_(consumer), weak_factory_(this) {
+    : consumer_(consumer) {
   thread_checker_.DetachFromThread();
 }
 

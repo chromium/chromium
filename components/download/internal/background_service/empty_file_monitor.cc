@@ -9,7 +9,7 @@
 
 namespace download {
 
-EmptyFileMonitor::EmptyFileMonitor() : weak_ptr_factory_(this) {}
+EmptyFileMonitor::EmptyFileMonitor() {}
 
 EmptyFileMonitor::~EmptyFileMonitor() = default;
 

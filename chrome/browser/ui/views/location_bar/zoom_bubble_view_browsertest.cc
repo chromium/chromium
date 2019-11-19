@@ -22,7 +22,6 @@
 #if defined(OS_CHROMEOS)
 #include "ash/public/cpp/immersive/immersive_fullscreen_controller_test_api.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_ash.h"
-#include "ui/aura/test/env_test_helper.h"
 #endif
 
 #if defined(OS_MACOSX)
@@ -36,8 +35,7 @@ namespace {
 void ShowInActiveTab(Browser* browser) {
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
-  ZoomBubbleView::ShowBubble(web_contents, gfx::Point(),
-                             ZoomBubbleView::USER_GESTURE);
+  ZoomBubbleView::ShowBubble(web_contents, ZoomBubbleView::USER_GESTURE);
   EXPECT_TRUE(ZoomBubbleView::GetZoomBubble());
 }
 
@@ -54,8 +52,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NonImmersiveFullscreen) {
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
 
   // The zoom bubble should be anchored when not in fullscreen.
-  ZoomBubbleView::ShowBubble(web_contents, gfx::Point(),
-                             ZoomBubbleView::AUTOMATIC);
+  ZoomBubbleView::ShowBubble(web_contents, ZoomBubbleView::AUTOMATIC);
   ASSERT_TRUE(ZoomBubbleView::GetZoomBubble());
   const ZoomBubbleView* zoom_bubble = ZoomBubbleView::GetZoomBubble();
   EXPECT_TRUE(zoom_bubble->GetAnchorView());
@@ -63,33 +60,30 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NonImmersiveFullscreen) {
   // Entering fullscreen should close the bubble. (We enter into tab fullscreen
   // here because tab fullscreen is non-immersive even on Chrome OS.)
   {
-    // NOTIFICATION_FULLSCREEN_CHANGED is sent asynchronously. Wait for the
+    // The fullscreen change notification is sent asynchronously. Wait for the
     // notification before testing the zoom bubble visibility.
-    std::unique_ptr<FullscreenNotificationObserver> waiter(
-        new FullscreenNotificationObserver());
+    FullscreenNotificationObserver waiter(browser());
     browser()
         ->exclusive_access_manager()
         ->fullscreen_controller()
         ->EnterFullscreenModeForTab(web_contents, GURL());
-    waiter->Wait();
+    waiter.Wait();
   }
   ASSERT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
   EXPECT_FALSE(ZoomBubbleView::GetZoomBubble());
 
   // The bubble should not be anchored when it is shown in non-immersive
   // fullscreen.
-  ZoomBubbleView::ShowBubble(web_contents, gfx::Point(),
-                             ZoomBubbleView::AUTOMATIC);
+  ZoomBubbleView::ShowBubble(web_contents, ZoomBubbleView::AUTOMATIC);
   ASSERT_TRUE(ZoomBubbleView::GetZoomBubble());
   zoom_bubble = ZoomBubbleView::GetZoomBubble();
   EXPECT_FALSE(zoom_bubble->GetAnchorView());
 
   // Exit fullscreen before ending the test for the sake of sanity.
   {
-    std::unique_ptr<FullscreenNotificationObserver> waiter(
-        new FullscreenNotificationObserver());
+    FullscreenNotificationObserver waiter(browser());
     chrome::ToggleFullscreenMode(browser());
-    waiter->Wait();
+    waiter.Wait();
   }
 }
 
@@ -97,13 +91,11 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NonImmersiveFullscreen) {
 // Test whether the zoom bubble is anchored and whether it is visible when in
 // immersive fullscreen.
 IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ImmersiveFullscreen) {
-  aura::test::EnvTestHelper().SetAlwaysUseLastMouseLocation(true);
   BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
 
   ImmersiveModeController* immersive_controller =
       browser_view->immersive_mode_controller();
-  ASSERT_EQ(ImmersiveModeController::Type::ASH, immersive_controller->type());
   ash::ImmersiveFullscreenControllerTestApi(
       static_cast<ImmersiveModeControllerAsh*>(immersive_controller)
           ->controller())
@@ -111,18 +103,16 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ImmersiveFullscreen) {
 
   // Enter immersive fullscreen.
   {
-    std::unique_ptr<FullscreenNotificationObserver> waiter(
-        new FullscreenNotificationObserver());
+    FullscreenNotificationObserver waiter(browser());
     chrome::ToggleFullscreenMode(browser());
-    waiter->Wait();
+    waiter.Wait();
   }
   ASSERT_TRUE(immersive_controller->IsEnabled());
   ASSERT_FALSE(immersive_controller->IsRevealed());
 
   // The zoom bubble should not be anchored when it is shown in immersive
   // fullscreen and the top-of-window views are not revealed.
-  ZoomBubbleView::ShowBubble(web_contents, gfx::Point(),
-                             ZoomBubbleView::AUTOMATIC);
+  ZoomBubbleView::ShowBubble(web_contents, ZoomBubbleView::AUTOMATIC);
   ASSERT_TRUE(ZoomBubbleView::GetZoomBubble());
   const ZoomBubbleView* zoom_bubble = ZoomBubbleView::GetZoomBubble();
   EXPECT_FALSE(zoom_bubble->GetAnchorView());
@@ -136,8 +126,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ImmersiveFullscreen) {
 
   // The zoom bubble should be anchored when it is shown in immersive fullscreen
   // and the top-of-window views are revealed.
-  ZoomBubbleView::ShowBubble(web_contents, gfx::Point(),
-                             ZoomBubbleView::AUTOMATIC);
+  ZoomBubbleView::ShowBubble(web_contents, ZoomBubbleView::AUTOMATIC);
   zoom_bubble = ZoomBubbleView::GetZoomBubble();
   ASSERT_TRUE(zoom_bubble);
   EXPECT_TRUE(zoom_bubble->GetAnchorView());
@@ -154,10 +143,9 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, ImmersiveFullscreen) {
 
   // Exit fullscreen before ending the test for the sake of sanity.
   {
-    std::unique_ptr<FullscreenNotificationObserver> waiter(
-        new FullscreenNotificationObserver());
+    FullscreenNotificationObserver waiter(browser());
     chrome::ToggleFullscreenMode(browser());
-    waiter->Wait();
+    waiter.Wait();
   }
 }
 #endif  // OS_CHROMEOS
@@ -167,13 +155,11 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, NoWebContentsIsSafe) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  ZoomBubbleView::ShowBubble(web_contents, gfx::Point(),
-                             ZoomBubbleView::AUTOMATIC);
+  ZoomBubbleView::ShowBubble(web_contents, ZoomBubbleView::AUTOMATIC);
   // Close the current tab and try opening the zoom bubble with stale
   // |web_contents|.
   chrome::CloseTab(browser());
-  ZoomBubbleView::ShowBubble(web_contents, gfx::Point(),
-                             ZoomBubbleView::AUTOMATIC);
+  ZoomBubbleView::ShowBubble(web_contents, ZoomBubbleView::AUTOMATIC);
 }
 
 // Ensure a tab switch closes the bubble.
@@ -247,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
   ASSERT_TRUE(bubble);
 
   const double old_zoom_level = zoom_controller->GetZoomLevel();
-  const base::string16 old_label = bubble->label_->text();
+  const base::string16 old_label = bubble->label_->GetText();
 
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("Test").Build();
@@ -257,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
   zoom_controller->SetZoomLevelByClient(new_zoom_level, client);
 
   ASSERT_EQ(ZoomBubbleView::GetZoomBubble(), bubble);
-  const base::string16 new_label = bubble->label_->text();
+  const base::string16 new_label = bubble->label_->GetText();
 
   EXPECT_NE(new_label, old_label);
 }
@@ -349,8 +335,7 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleDialogTest, InvokeUi_default) {
 IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, FocusPreventsClose) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  ZoomBubbleView::ShowBubble(web_contents, gfx::Point(),
-                             ZoomBubbleView::AUTOMATIC);
+  ZoomBubbleView::ShowBubble(web_contents, ZoomBubbleView::AUTOMATIC);
   ZoomBubbleView* bubble = ZoomBubbleView::GetZoomBubble();
   ASSERT_TRUE(bubble);
   // |auto_close_timer_| is running so that the bubble is closed at the end.

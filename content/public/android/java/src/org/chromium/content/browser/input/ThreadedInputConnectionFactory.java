@@ -10,8 +10,9 @@ import android.os.HandlerThread;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 
 /**
@@ -21,7 +22,7 @@ import org.chromium.content_public.browser.InputMethodManagerWrapper;
 // TODO(changwan): add unit tests once Robolectric supports Android API level >= 21.
 // See crbug.com/588547 for details.
 public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnection.Factory {
-    private static final String TAG = "cr_Ime";
+    private static final String TAG = "Ime";
     private static final boolean DEBUG_LOGS = false;
 
     // Most of the time we do not need to retry. But if we have lost window focus while triggering
@@ -109,14 +110,14 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
 
     @Override
     public ThreadedInputConnection initializeAndGet(View view, ImeAdapterImpl imeAdapter,
-            int inputType, int inputFlags, int inputMode, int selectionStart, int selectionEnd,
-            EditorInfo outAttrs) {
+            int inputType, int inputFlags, int inputMode, int inputAction, int selectionStart,
+            int selectionEnd, EditorInfo outAttrs) {
         ImeUtils.checkOnUiThread();
 
         // Compute outAttrs early in case we early out to prevent reentrancy. (crbug.com/636197)
         // TODO(changwan): move this up to ImeAdapter once ReplicaInputConnection is deprecated.
-        ImeUtils.computeEditorInfo(
-                inputType, inputFlags, inputMode, selectionStart, selectionEnd, outAttrs);
+        ImeUtils.computeEditorInfo(inputType, inputFlags, inputMode, inputAction, selectionStart,
+                selectionEnd, outAttrs);
         if (DEBUG_LOGS) {
             Log.i(TAG, "initializeAndGet. outAttr: " + ImeUtils.getEditorInfoDebugString(outAttrs));
         }

@@ -1,0 +1,56 @@
+python_version: "2.7"
+
+wheel: <
+  name: "infra/python/wheels/google_api_python_client-py2_py3"
+  version: "version:1.6.2"
+>
+
+wheel: <
+  name: "infra/python/wheels/oauth2client-py2_py3"
+  version: "version:4.0.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/uritemplate-py2_py3"
+  version: "version:3.0.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/httplib2-py2_py3"
+  version: "version:0.12.1"
+>
+
+wheel: <
+  name: "infra/python/wheels/rsa-py2_py3"
+  version: "version:3.4.2"
+>
+
+wheel: <
+  name: "infra/python/wheels/pyasn1-py2_py3"
+  version: "version:0.2.3"
+>
+
+wheel: <
+  name: "infra/python/wheels/pyasn1_modules-py2_py3"
+  version: "version:0.0.8"
+>
+
+wheel: <
+  name: "infra/python/wheels/six-py2_py3"
+  version: "version:1.10.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/infra_libs-py2"
+  version: "version:2.0.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/protobuf-py2_py3"
+  version: "version:3.2.0"
+>
+
+wheel: <
+  name: "infra/python/wheels/requests-py2_py3"
+  version: "version:2.13.0"
+>

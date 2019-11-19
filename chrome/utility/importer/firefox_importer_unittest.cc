@@ -156,8 +156,8 @@ TEST(FirefoxImporterTest, MAYBE_NSS(FirefoxNSSDecryptorDeduceAuthScheme)) {
       decryptor_proxy.ParseSignons(signons_path);
 
   ASSERT_EQ(2u, forms.size());
-  EXPECT_EQ(autofill::PasswordForm::SCHEME_BASIC, forms[0].scheme);
-  EXPECT_EQ(autofill::PasswordForm::SCHEME_HTML, forms[1].scheme);
+  EXPECT_EQ(autofill::PasswordForm::Scheme::kBasic, forms[0].scheme);
+  EXPECT_EQ(autofill::PasswordForm::Scheme::kHtml, forms[1].scheme);
 }
 
 TEST(FirefoxImporterTest, ImportBookmarks_Firefox48) {

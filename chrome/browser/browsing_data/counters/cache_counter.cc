@@ -24,9 +24,7 @@ CacheCounter::CacheResult::CacheResult(const CacheCounter* source,
 
 CacheCounter::CacheResult::~CacheResult() {}
 
-CacheCounter::CacheCounter(Profile* profile)
-    : profile_(profile),
-      weak_ptr_factory_(this) {}
+CacheCounter::CacheCounter(Profile* profile) : profile_(profile) {}
 
 CacheCounter::~CacheCounter() {
 }

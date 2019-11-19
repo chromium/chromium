@@ -16,6 +16,7 @@ cr.define('safe_browsing', function() {
     cr.sendWithPromise('getExperiments', [])
         .then((experiments) => addExperiments(experiments));
     cr.sendWithPromise('getPrefs', []).then((prefs) => addPrefs(prefs));
+    cr.sendWithPromise('getCookie', []).then((cookie) => addCookie(cookie));
     cr.sendWithPromise('getSavedPasswords', []).then((passwords) =>
         addSavedPasswords(passwords));
     cr.sendWithPromise('getDatabaseManagerInfo', []).then(
@@ -26,73 +27,106 @@ cr.define('safe_browsing', function() {
     });
 
     cr.sendWithPromise('getSentClientDownloadRequests', [])
-        .then(
-            (sentClientDownloadRequests) => {
-                sentClientDownloadRequests.forEach(function(cdr) {
-                  addSentClientDownloadRequestsInfo(cdr);
-                })});
+        .then((sentClientDownloadRequests) => {
+          sentClientDownloadRequests.forEach(function(cdr) {
+            addSentClientDownloadRequestsInfo(cdr);
+          });
+        });
     cr.addWebUIListener(
         'sent-client-download-requests-update', function(result) {
           addSentClientDownloadRequestsInfo(result);
         });
 
     cr.sendWithPromise('getReceivedClientDownloadResponses', [])
-        .then(
-            (receivedClientDownloadResponses) => {
-                receivedClientDownloadResponses.forEach(function(cdr) {
-                  addReceivedClientDownloadResponseInfo(cdr);
-                })});
+        .then((receivedClientDownloadResponses) => {
+          receivedClientDownloadResponses.forEach(function(cdr) {
+            addReceivedClientDownloadResponseInfo(cdr);
+          });
+        });
     cr.addWebUIListener(
         'received-client-download-responses-update', function(result) {
           addReceivedClientDownloadResponseInfo(result);
         });
 
-    cr.sendWithPromise('getSentCSBRRs', [])
-        .then((sentCSBRRs) => {sentCSBRRs.forEach(function(csbrr) {
-                addSentCSBRRsInfo(csbrr);
-              })});
+    cr.sendWithPromise('getSentCSBRRs', []).then((sentCSBRRs) => {
+      sentCSBRRs.forEach(function(csbrr) {
+        addSentCSBRRsInfo(csbrr);
+      });
+    });
     cr.addWebUIListener('sent-csbrr-update', function(result) {
       addSentCSBRRsInfo(result);
     });
 
-    cr.sendWithPromise('getPGEvents', [])
-        .then((pgEvents) => {pgEvents.forEach(function(pgEvent) {
-                addPGEvent(pgEvent);
-              })});
+    cr.sendWithPromise('getPGEvents', []).then((pgEvents) => {
+      pgEvents.forEach(function(pgEvent) {
+        addPGEvent(pgEvent);
+      });
+    });
     cr.addWebUIListener('sent-pg-event', function(result) {
       addPGEvent(result);
     });
 
-    cr.sendWithPromise('getPGPings', [])
-        .then((pgPings) => { pgPings.forEach(function (pgPing) {
-          addPGPing(pgPing);
-        })});
+    cr.sendWithPromise('getSecurityEvents', []).then((securityEvents) => {
+      securityEvents.forEach(function(securityEvent) {
+        addSecurityEvent(securityEvent);
+      });
+    });
+    cr.addWebUIListener('sent-security-event', function(result) {
+      addSecurityEvent(result);
+    });
+
+    cr.sendWithPromise('getPGPings', []).then((pgPings) => {
+      pgPings.forEach(function(pgPing) {
+        addPGPing(pgPing);
+      });
+    });
     cr.addWebUIListener('pg-pings-update', function(result) {
       addPGPing(result);
     });
 
-    cr.sendWithPromise('getPGResponses', [])
-        .then((pgResponses) => { pgResponses.forEach(function (pgResponse) {
-          addPGResponse(pgResponse);
-        })});
+    cr.sendWithPromise('getPGResponses', []).then((pgResponses) => {
+      pgResponses.forEach(function(pgResponse) {
+        addPGResponse(pgResponse);
+      });
+    });
     cr.addWebUIListener('pg-responses-update', function(result) {
       addPGResponse(result);
     });
 
-    cr.sendWithPromise('getLogMessages', [])
-        .then((logMessages) => { logMessages.forEach(function (message) {
-          addLogMessage(message);
-        })});
+    cr.sendWithPromise('getRTLookupPings', []).then((rtLookupPings) => {
+      rtLookupPings.forEach(function(rtLookupPing) {
+        addRTLookupPing(rtLookupPing);
+      });
+    });
+    cr.addWebUIListener('rt-lookup-pings-update', function(result) {
+      addRTLookupPing(result);
+    });
+
+    cr.sendWithPromise('getRTLookupResponses', []).then((rtLookupResponses) => {
+      rtLookupResponses.forEach(function(rtLookupResponse) {
+        addRTLookupResponse(rtLookupResponse);
+      });
+    });
+    cr.addWebUIListener('rt-lookup-responses-update', function(result) {
+      addRTLookupResponse(result);
+    });
+
+    cr.sendWithPromise('getLogMessages', []).then((logMessages) => {
+      logMessages.forEach(function(message) {
+        addLogMessage(message);
+      });
+    });
     cr.addWebUIListener('log-messages-update', function(message) {
       addLogMessage(message);
     });
 
     $('get-referrer-chain-form').addEventListener('submit', addReferrerChain);
 
-    // Allow tabs to be navigated to by anchor.
-    showTab(window.location.hash.substr(1));
+    // Allow tabs to be navigated to by fragment. The fragment with be of the
+    // format "#tab-<tab id>"
+    showTab(window.location.hash.substr(5));
     window.onhashchange = function () {
-      showTab(window.location.hash.substr(1));
+      showTab(window.location.hash.substr(5));
     };
 
     // When the tab updates, update the anchor
@@ -100,7 +134,7 @@ cr.define('safe_browsing', function() {
       var tabbox = $('tabbox');
       var tabs = tabbox.querySelector('tabs').children;
       var selectedTab = tabs[tabbox.selectedIndex];
-      window.location.hash = selectedTab.id;
+      window.location.hash = 'tab-' + selectedTab.id;
     }, true);
   }
 
@@ -124,6 +158,12 @@ cr.define('safe_browsing', function() {
           result[i] + "</div>";
     }
     $('preferences-list').innerHTML = preferencesListFormatted;
+  }
+
+  function addCookie(result) {
+    var cookieFormatted = '<b>Value:</b> ' + result[0] + '\n' +
+        '<b>Created:</b> ' + (new Date(result[1])).toLocaleString();
+    $('cookie-panel').innerHTML = cookieFormatted;
   }
 
   function addSavedPasswords(result) {
@@ -180,36 +220,47 @@ cr.define('safe_browsing', function() {
     appendChildWithInnerText(logDiv, eventFormatted);
   }
 
-  function addPGPingRow(token) {
-    var row = $('pg-ping-list').insertRow();
-    row.className = 'content';
-    row.id = 'pg-ping-list-' + token;
-    row.insertCell();
-    row.insertCell();
+  function addSecurityEvent(result) {
+    var logDiv = $('security-event-log');
+    var eventFormatted = "[" + (new Date(result["time"])).toLocaleString() +
+        "] " + result['message'];
+    appendChildWithInnerText(logDiv, eventFormatted);
   }
 
-  function addPGPing(result) {
+  function insertTokenToTable(tableId, token) {
+    var row = $(tableId).insertRow();
+    row.className = 'content';
+    row.id = tableId + '-' + token;
+    row.insertCell().className = 'content';
+    row.insertCell().className = 'content';
+  }
+
+  function addResultToTable(tableId, result, position) {
     var token = result[0];
     var request = result[1];
 
-    if ($('pg-ping-list-'+token) == undefined) {
-      addPGPingRow(token);
+    if ($(tableId + '-' + token) == undefined) {
+      insertTokenToTable(tableId, token);
     }
 
-    var cell = $('pg-ping-list-'+token).cells[0];
+    var cell = $(tableId + '-' + token).cells[position];
     appendChildWithInnerText(cell, request);
   }
 
+  function addPGPing(result) {
+    addResultToTable('pg-ping-list', result, 0);
+  }
+
   function addPGResponse(result) {
-    var token = result[0];
-    var response = result[1];
+    addResultToTable('pg-ping-list', result, 1);
+  }
 
-    if ($('pg-ping-list-'+token) == undefined) {
-      addPGPingRow(token);
-    }
+  function addRTLookupPing(result) {
+    addResultToTable('rt-lookup-ping-list', result, 0);
+  }
 
-    var cell = $('pg-ping-list-'+token).cells[1];
-    appendChildWithInnerText(cell, response);
+  function addRTLookupResponse(result) {
+    addResultToTable('rt-lookup-ping-list', result, 1);
   }
 
   function addLogMessage(result) {
@@ -220,8 +271,9 @@ cr.define('safe_browsing', function() {
   }
 
   function appendChildWithInnerText(logDiv, text) {
-    if (!logDiv)
+    if (!logDiv) {
       return;
+    }
     var textDiv = document.createElement('div');
     textDiv.innerText = text;
     logDiv.appendChild(textDiv);
@@ -233,7 +285,7 @@ cr.define('safe_browsing', function() {
 
     cr.sendWithPromise('getReferrerChain', $('referrer-chain-url').value)
         .then((response) => {
-          $('referrer-chain').innerHTML = response;
+          $('referrer-chain-content').innerHTML = response;
         });
   }
 
@@ -249,6 +301,7 @@ cr.define('safe_browsing', function() {
     addReceivedClientDownloadResponseInfo:
         addReceivedClientDownloadResponseInfo,
     addPGEvent: addPGEvent,
+    addSecurityEvent: addSecurityEvent,
     addPGPing: addPGPing,
     addPGResponse: addPGResponse,
     initialize: initialize,

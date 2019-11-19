@@ -4,6 +4,8 @@
 
 #include "ash/accessibility/layer_animation_info.h"
 
+#include "base/numerics/ranges.h"
+
 namespace ash {
 
 void ComputeOpacity(LayerAnimationInfo* animation_info,
@@ -33,7 +35,7 @@ void ComputeOpacity(LayerAnimationInfo* animation_info,
   }
 
   // Layer::SetOpacity will throw an error if we're not within 0...1.
-  opacity = std::min(std::max(opacity, 0.0f), 1.0f);
+  opacity = base::ClampToRange(opacity, 0.0f, 1.0f);
 
   animation_info->opacity = opacity;
 }

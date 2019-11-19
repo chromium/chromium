@@ -47,11 +47,8 @@ void main() {
 
 var ctxs = []
 
-if (window.testRunner) {
-    testRunner.dumpAsTextWithPixelResults();
-    document.getElementById("description").style.position = "absolute";
-    document.getElementById("description").style.top = "-5000px";
-}
+document.getElementById("description").style.position = "absolute";
+document.getElementById("description").style.top = "-5000px";
 
 for (var i=0; i<8; ++i) {
     var attrs = {

@@ -1,0 +1,13 @@
+Name: AutoService
+Short Name: auto-service-annotations
+URL: https://github.com/google/auto/tree/master/service
+Version: 1.0-rc6
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Provider-configuration files for ServiceLoader.
+
+Local Modifications:
+No modifications.

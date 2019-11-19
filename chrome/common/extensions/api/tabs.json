@@ -54,7 +54,8 @@
           "discarded": {"type": "boolean", "description": "Whether the tab is discarded. A discarded tab is one whose content has been unloaded from memory, but is still visible in the tab strip. Its content is reloaded the next time it is activated."},
           "autoDiscardable":  {"type": "boolean", "description": "Whether the tab can be discarded automatically by the browser when resources are low."},
           "mutedInfo": {"$ref": "MutedInfo", "optional": true, "description": "The tab's muted state and the reason for the last state change."},
-          "url": {"type": "string", "optional": true, "description": "The URL the tab is displaying. This property is only present if the extension's manifest includes the <code>\"tabs\"</code> permission."},
+          "url": {"type": "string", "optional": true, "description": "The last committed URL of the main frame of the tab. This property is only present if the extension's manifest includes the <code>\"tabs\"</code> permission and may be an empty string if the tab has not yet committed. See also $(ref:Tab.pendingUrl)."},
+          "pendingUrl": {"type": "string", "optional": true, "description": "The URL the tab is navigating to, before it has committed. This property is only present if the extension's manifest includes the <code>\"tabs\"</code> permission and there is a pending navigation."},
           "title": {"type": "string", "optional": true, "description": "The title of the tab. This property is only present if the extension's manifest includes the <code>\"tabs\"</code> permission."},
           "favIconUrl": {"type": "string", "optional": true, "description": "The URL of the tab's favicon. This property is only present if the extension's manifest includes the <code>\"tabs\"</code> permission. It may also be an empty string if the tab is loading."},
           "status": {"type": "string", "optional": true, "description": "Either <em>loading</em> or <em>complete</em>."},
@@ -408,7 +409,7 @@
               {
                 "name": "tab",
                 "optional": true,
-                "description": "Details about the duplicated tab. The $(ref:tabs.Tab) object does not contain <code>url</code>, <code>title</code>, and <code>favIconUrl</code> if the <code>\"tabs\"</code> permission has not been requested.",
+                "description": "Details about the duplicated tab. The $(ref:tabs.Tab) object does not contain <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> if the <code>\"tabs\"</code> permission has not been requested.",
                 "$ref": "Tab"
               }
             ]
@@ -628,7 +629,7 @@
                 "name": "tab",
                 "$ref": "Tab",
                 "optional": true,
-                "description": "Details about the updated tab. The $(ref:tabs.Tab) object does not contain <code>url</code>, <code>title</code>, and <code>favIconUrl</code> if the <code>\"tabs\"</code> permission has not been requested."
+                "description": "Details about the updated tab. The $(ref:tabs.Tab) object does not contain <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> if the <code>\"tabs\"</code> permission has not been requested."
               }
             ]
           }

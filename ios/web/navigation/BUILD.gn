@@ -2,28 +2,60 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//ios/build/config.gni")
+import("//ios/features.gni")
+
+buildflag_header("block_universal_links_buildflags") {
+  header = "block_universal_links_buildflags.h"
+  flags = [ "BLOCK_UNIVERSAL_LINKS_IN_OFF_THE_RECORD_MODE=$block_universal_links_in_off_the_record_mode" ]
+}
 
 source_set("navigation") {
   deps = [
+    ":block_universal_links_buildflags",
     ":core",
+    ":navigation_manager_util",
     "//base",
+    "//ios/net",
     "//ios/web:core",
+    "//ios/web/common",
+    "//ios/web/js_messaging",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
-    "//ios/web/web_state:session_certificate_policy_cache",
+    "//ios/web/public/deprecated:deprecated_navigation_util",
+    "//ios/web/public/download",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/security",
+    "//ios/web/public/session",
+    "//ios/web/security",
+    "//ios/web/session",
+    "//ios/web/web_state:user_interaction",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
+    "//ios/web/web_state/ui/controller",
+    "//ios/web/web_view:util",
     "//ui/base",
     "//url",
   ]
 
   sources = [
+    "crw_js_navigation_handler.h",
+    "crw_js_navigation_handler.mm",
     "crw_navigation_item_holder.h",
     "crw_navigation_item_holder.mm",
+    "crw_pending_navigation_info.h",
+    "crw_pending_navigation_info.mm",
     "crw_session_controller+private_constructors.h",
     "crw_session_controller.h",
     "crw_session_controller.mm",
+    "crw_web_view_navigation_observer.h",
+    "crw_web_view_navigation_observer.mm",
+    "crw_web_view_navigation_observer_delegate.h",
+    "crw_wk_navigation_handler.h",
+    "crw_wk_navigation_handler.mm",
+    "crw_wk_navigation_states.h",
+    "crw_wk_navigation_states.mm",
     "legacy_navigation_manager_impl.h",
     "legacy_navigation_manager_impl.mm",
     "navigation_item_impl_list.h",
@@ -38,8 +70,17 @@ source_set("navigation") {
     "session_storage_builder.mm",
     "time_smoother.cc",
     "time_smoother.h",
+    "url_schemes.mm",
+    "web_kit_constants.cc",
+    "web_kit_constants.h",
+    "wk_back_forward_list_item_holder.h",
+    "wk_back_forward_list_item_holder.mm",
     "wk_based_navigation_manager_impl.h",
     "wk_based_navigation_manager_impl.mm",
+    "wk_navigation_action_policy_util.h",
+    "wk_navigation_action_policy_util.mm",
+    "wk_navigation_action_util.h",
+    "wk_navigation_action_util.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -51,12 +92,16 @@ source_set("core") {
     "//components/url_formatter:url_formatter",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
+    "//ios/web/public/deprecated:deprecated_navigation_util",
+    "//ios/web/public/security",
     "//ui/base",
   ]
 
   sources = [
     "error_retry_state_machine.h",
     "error_retry_state_machine.mm",
+    "navigation_context_impl.h",
+    "navigation_context_impl.mm",
     "navigation_item_impl.h",
     "navigation_item_impl.mm",
     "navigation_manager_delegate.h",
@@ -70,6 +115,7 @@ source_set("core") {
 source_set("wk_navigation_util") {
   deps = [
     "//base",
+    "//ios/web/common",
     "//ios/web/public",
     "//url",
   ]
@@ -87,7 +133,6 @@ source_set("navigation_manager_util") {
     "//base",
     "//ios/web/navigation:core",
     "//ios/web/public",
-    "//ios/web/web_state:navigation_context",
   ]
 
   sources = [

@@ -30,24 +30,24 @@ element.style { ()
 
 ======== Pseudo ::before element ========
 [expanded] 
-[$#inspected:before, $].some-other-selector { (<style>…</style>)
+[$#inspected:before, $].some-other-selector { (<style>)
     content: "BEFORE";
 
 ======== Pseudo ::after element ========
 [expanded] 
-[$#inspected:after$] { (<style>…</style>)
+[$#inspected:after$] { (<style>)
     content: "AFTER";
 
 
 Running: dumpBeforeStyles
 [expanded] 
-[$#inspected:before, $].some-other-selector { (<style>…</style>)
+[$#inspected:before, $].some-other-selector { (<style>)
     content: "BEFORE";
 
 
 Running: dumpAfterStyles
 [expanded] 
-[$#inspected:after$] { (<style>…</style>)
+[$#inspected:after$] { (<style>)
     content: "AFTER";
 
 

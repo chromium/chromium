@@ -26,6 +26,9 @@ def main():
                     dest='no_error_if_absent', default=False,
                     help='No error if the registry key for uninstalling Chrome '
                          'is absent.')
+  parser.add_option('--log-file', dest='log_file',
+                    help='File into which the installer is to write its logs',
+                    metavar='FILE')
   options, _ = parser.parse_args()
 
   # TODO(sukolsak): Add support for uninstalling MSI-based Chrome installs when
@@ -55,8 +58,10 @@ def main():
       print >> sys.stderr, 'User aborted'
       return 1
   uninstall_string, _ = _winreg.QueryValueEx(key, 'UninstallString')
-  exit_status = subprocess.call(uninstall_string + ' --force-uninstall',
-                                shell=True)
+  uninstall_string += ' --force-uninstall'
+  if options.log_file:
+    uninstall_string += ' --verbose-logging --log-file="%s"' % options.log_file
+  exit_status = subprocess.call(uninstall_string, shell=True)
   # The exit status for successful uninstallation of Chrome is 19 (see
   # chrome/installer/util/util_constants.h).
   if exit_status != 19:

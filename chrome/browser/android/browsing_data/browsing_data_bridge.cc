@@ -20,14 +20,17 @@
 #include "base/scoped_observer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "chrome/android/chrome_jni_headers/BrowsingDataBridge_jni.h"
 #include "chrome/browser/browsing_data/browsing_data_important_sites_util.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
 #include "chrome/browser/engagement/important_sites_util.h"
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile_android.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
+#include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/history_notice_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -35,7 +38,6 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "jni/BrowsingDataBridge_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -54,6 +56,21 @@ void OnBrowsingDataRemoverDone(
     return;
 
   Java_BrowsingDataBridge_browsingDataCleared(env, java_obj);
+}
+
+PrefService* GetPrefService() {
+  return ProfileManager::GetActiveUserProfile()
+      ->GetOriginalProfile()
+      ->GetPrefs();
+}
+
+browsing_data::ClearBrowsingDataTab ToTabEnum(jint clear_browsing_data_tab) {
+  DCHECK_GE(clear_browsing_data_tab, 0);
+  DCHECK_LT(clear_browsing_data_tab,
+            static_cast<int>(browsing_data::ClearBrowsingDataTab::NUM_TYPES));
+
+  return static_cast<browsing_data::ClearBrowsingDataTab>(
+      clear_browsing_data_tab);
 }
 
 }  // namespace
@@ -222,4 +239,91 @@ static void JNI_BrowsingDataBridge_MarkOriginAsImportantForTesting(
   CHECK(origin.is_valid());
   ImportantSitesUtil::MarkOriginAsImportantForTesting(
       ProfileAndroid::FromProfileAndroid(jprofile), origin);
+}
+
+static jboolean JNI_BrowsingDataBridge_GetBrowsingDataDeletionPreference(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint data_type,
+    jint clear_browsing_data_tab) {
+  DCHECK_GE(data_type, 0);
+  DCHECK_LT(data_type,
+            static_cast<int>(browsing_data::BrowsingDataType::NUM_TYPES));
+
+  // If there is no corresponding preference for this |data_type|, pretend
+  // that it's set to false.
+  // TODO(msramek): Consider defining native-side preferences for all Java UI
+  // data types for consistency.
+  std::string pref;
+  if (!browsing_data::GetDeletionPreferenceFromDataType(
+          static_cast<browsing_data::BrowsingDataType>(data_type),
+          ToTabEnum(clear_browsing_data_tab), &pref)) {
+    return false;
+  }
+
+  return GetPrefService()->GetBoolean(pref);
+}
+
+static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionPreference(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint data_type,
+    jint clear_browsing_data_tab,
+    jboolean value) {
+  DCHECK_GE(data_type, 0);
+  DCHECK_LT(data_type,
+            static_cast<int>(browsing_data::BrowsingDataType::NUM_TYPES));
+
+  std::string pref;
+  if (!browsing_data::GetDeletionPreferenceFromDataType(
+          static_cast<browsing_data::BrowsingDataType>(data_type),
+          ToTabEnum(clear_browsing_data_tab), &pref)) {
+    return;
+  }
+
+  GetPrefService()->SetBoolean(pref, value);
+}
+
+static jint JNI_BrowsingDataBridge_GetBrowsingDataDeletionTimePeriod(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint clear_browsing_data_tab) {
+  return GetPrefService()->GetInteger(
+      browsing_data::GetTimePeriodPreferenceName(
+          ToTabEnum(clear_browsing_data_tab)));
+}
+
+static void JNI_BrowsingDataBridge_SetBrowsingDataDeletionTimePeriod(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint clear_browsing_data_tab,
+    jint time_period) {
+  DCHECK_GE(time_period, 0);
+  DCHECK_LE(time_period,
+            static_cast<int>(browsing_data::TimePeriod::TIME_PERIOD_LAST));
+  const char* pref_name = browsing_data::GetTimePeriodPreferenceName(
+      ToTabEnum(clear_browsing_data_tab));
+  int previous_value = GetPrefService()->GetInteger(pref_name);
+  if (time_period != previous_value) {
+    browsing_data::RecordTimePeriodChange(
+        static_cast<browsing_data::TimePeriod>(time_period));
+    GetPrefService()->SetInteger(pref_name, time_period);
+  }
+}
+
+static jint JNI_BrowsingDataBridge_GetLastClearBrowsingDataTab(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  return GetPrefService()->GetInteger(
+      browsing_data::prefs::kLastClearBrowsingDataTab);
+}
+
+static void JNI_BrowsingDataBridge_SetLastClearBrowsingDataTab(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    jint tab_index) {
+  DCHECK_GE(tab_index, 0);
+  DCHECK_LT(tab_index, 2);
+  GetPrefService()->SetInteger(browsing_data::prefs::kLastClearBrowsingDataTab,
+                               tab_index);
 }

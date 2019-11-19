@@ -45,7 +45,7 @@ class CameraPresenceNotifier {
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  base::WeakPtrFactory<CameraPresenceNotifier> weak_factory_;
+  base::WeakPtrFactory<CameraPresenceNotifier> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CameraPresenceNotifier);
 };

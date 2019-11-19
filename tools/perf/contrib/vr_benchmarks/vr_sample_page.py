@@ -5,8 +5,7 @@
 import os
 import re
 from telemetry import page
-from contrib.vr_benchmarks import (shared_android_vr_page_state as
-                                   vr_state)
+from contrib.vr_benchmarks import shared_vr_page_state as vr_state
 
 WEBVR_SAMPLE_DIR = os.path.join(
     os.path.dirname(__file__), '..', '..', '..', '..', 'chrome', 'test',
@@ -40,7 +39,7 @@ class _VrXrSamplePage(page.Page):
         page_set=page_set,
         name=name,
         extra_browser_args=extra_browser_args,
-        shared_page_state_class=vr_state.SharedAndroidVrPageState)
+        shared_page_state_class=vr_state.SharedVrPageStateFactory)
     self._shared_page_state = None
 
   def Run(self, shared_state):

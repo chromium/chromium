@@ -9,12 +9,15 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/vr/orientation/orientation_device.h"
+#include "device/vr/orientation/orientation_session.h"
 #include "device/vr/test/fake_orientation_provider.h"
 #include "device/vr/test/fake_sensor_provider.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/cpp/generic_sensor/sensor_reading_shared_buffer_reader.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
@@ -78,10 +81,10 @@ class VROrientationDeviceTest : public testing::Test {
   ~VROrientationDeviceTest() override = default;
   void SetUp() override {
     fake_sensor_provider_ = std::make_unique<FakeSensorProvider>(
-        mojo::MakeRequest(&sensor_provider_ptr_));
+        sensor_provider_.BindNewPipeAndPassReceiver());
 
     fake_sensor_ = std::make_unique<FakeOrientationSensor>(
-        mojo::MakeRequest(&sensor_ptr_));
+        sensor_.InitWithNewPipeAndPassReceiver());
 
     shared_buffer_handle_ = mojo::SharedBufferHandle::Create(
         sizeof(SensorReadingSharedBuffer) *
@@ -95,7 +98,7 @@ class VROrientationDeviceTest : public testing::Test {
     scoped_screen_override_ =
         std::make_unique<ScopedScreenOverride>(fake_screen_.get());
 
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   void TearDown() override { shared_buffer_handle_.reset(); }
@@ -107,20 +110,15 @@ class VROrientationDeviceTest : public testing::Test {
   void InitializeDevice(mojom::SensorInitParamsPtr params) {
     base::RunLoop loop;
 
-    device_ = std::make_unique<VROrientationDevice>(
-        &sensor_provider_ptr_, base::BindOnce(
-                                   [](base::OnceClosure quit_closure) {
-                                     // The callback was called.
-                                     std::move(quit_closure).Run();
-                                   },
-                                   loop.QuitClosure()));
+    device_ = std::make_unique<VROrientationDevice>(sensor_provider_.get(),
+                                                    loop.QuitClosure());
 
     // Complete the creation of device_ by letting the GetSensor function go
     // through.
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     fake_sensor_provider_->CallCallback(std::move(params));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     // Ensure that the callback is called.
     loop.Run();
@@ -135,7 +133,7 @@ class VROrientationDeviceTest : public testing::Test {
 
     base::RunLoop loop;
 
-    device_->OnGetInlineFrameData(base::BindOnce(
+    device_->GetInlineFrameData(base::BindOnce(
         [](base::OnceClosure quit_closure,
            base::OnceCallback<void(mojom::VRPosePtr)> callback,
            mojom::XRFrameDataPtr ptr) {
@@ -144,19 +142,56 @@ class VROrientationDeviceTest : public testing::Test {
         },
         loop.QuitClosure(), std::move(callback)));
 
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     // Ensure the pose request callback runs.
     loop.Run();
   }
 
+  void AssertInlineFrameDataAvailable(bool expect_available) {
+    if (expect_available) {
+      device_->GetInlineFrameData(base::BindOnce(
+          [](device::mojom::XRFrameDataPtr data) { EXPECT_TRUE(data); }));
+    } else {
+      device_->GetInlineFrameData(base::BindOnce(
+          [](device::mojom::XRFrameDataPtr data) { EXPECT_FALSE(data); }));
+    }
+  }
+
+  void SetInlinePosesEnabled(bool enabled) {
+    device_->SetInlinePosesEnabled(enabled);
+  }
+
+  std::unique_ptr<VROrientationSession> MakeDisplay() {
+    mojo::PendingRemote<mojom::XRFrameDataProvider> data_provider;
+    mojo::PendingRemote<mojom::XRSessionController> controller;
+    return std::make_unique<VROrientationSession>(
+        device_.get(), data_provider.InitWithNewPipeAndPassReceiver(),
+        controller.InitWithNewPipeAndPassReceiver());
+  }
+
+  void TryGetFrameData(VROrientationSession* display, bool expect_null) {
+    bool was_called = false;
+    auto callback = [](bool expect_null, bool* was_called,
+                       mojom::XRFrameDataPtr data) {
+      *was_called = true;
+      EXPECT_EQ(expect_null, !data);
+    };
+
+    static_cast<mojom::XRFrameDataProvider*>(display)->GetFrameData(
+        nullptr, base::BindOnce(callback, expect_null, &was_called));
+
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(was_called);
+  }
+
   mojom::SensorInitParamsPtr FakeInitParams() {
     auto init_params = mojom::SensorInitParams::New();
-    init_params->sensor = std::move(sensor_ptr_);
+    init_params->sensor = std::move(sensor_);
     init_params->default_configuration = PlatformSensorConfiguration(
         SensorTraits<kOrientationSensorType>::kDefaultFrequency);
 
-    init_params->client_request = mojo::MakeRequest(&sensor_client_ptr_);
+    init_params->client_receiver = sensor_client_.BindNewPipeAndPassReceiver();
 
     init_params->memory = shared_buffer_handle_->Clone(
         mojo::SharedBufferHandle::AccessMode::READ_ONLY);
@@ -187,18 +222,18 @@ class VROrientationDeviceTest : public testing::Test {
   }
 
   // Needed for MakeRequest to work.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<VROrientationDevice> device_;
   std::unique_ptr<FakeSensorProvider> fake_sensor_provider_;
-  mojom::SensorProviderPtr sensor_provider_ptr_;
+  mojo::Remote<mojom::SensorProvider> sensor_provider_;
 
   // Fake Sensor Init params objects
   std::unique_ptr<FakeOrientationSensor> fake_sensor_;
-  mojom::SensorPtrInfo sensor_ptr_;
+  mojo::PendingRemote<mojom::Sensor> sensor_;
   mojo::ScopedSharedBufferHandle shared_buffer_handle_;
   mojo::ScopedSharedBufferMapping shared_buffer_mapping_;
-  mojom::SensorClientPtr sensor_client_ptr_;
+  mojo::Remote<mojom::SensorClient> sensor_client_;
 
   std::unique_ptr<FakeScreen> fake_screen_;
   std::unique_ptr<ScopedScreenOverride> scoped_screen_override_;
@@ -210,9 +245,9 @@ TEST_F(VROrientationDeviceTest, InitializationTest) {
   // Check that without running anything, the device will return not available,
   // without crashing.
 
-  device_ = std::make_unique<VROrientationDevice>(&sensor_provider_ptr_,
-                                                  base::BindOnce([]() {}));
-  scoped_task_environment_.RunUntilIdle();
+  device_ = std::make_unique<VROrientationDevice>(sensor_provider_.get(),
+                                                  base::DoNothing());
+  task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(device_->IsAvailable());
 }
@@ -249,20 +284,20 @@ TEST_F(VROrientationDeviceTest, OrientationDefaultForwardTest) {
   // Set forward to 0 degrees
   DeviceReadPose(gfx::Quaternion(0, 0, 0, 1),
                  base::BindOnce([](mojom::VRPosePtr ptr) {
-                   EXPECT_NEAR(ptr->orientation->at(0), -0.707, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(1), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(2), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(3), 0.707, 0.001);
+                   EXPECT_NEAR(ptr->orientation->x(), -0.707, 0.001);
+                   EXPECT_NEAR(ptr->orientation->y(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->z(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->w(), 0.707, 0.001);
                  }));
 
   // Now a 90 degree rotation around x in device space should be default pose in
   // vr space.
   DeviceReadPose(gfx::Quaternion(0.707, 0, 0, 0.707),
                  base::BindOnce([](mojom::VRPosePtr ptr) {
-                   EXPECT_NEAR(ptr->orientation->at(0), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(1), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(2), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(3), 1, 0.001);
+                   EXPECT_NEAR(ptr->orientation->x(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->y(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->z(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->w(), 1, 0.001);
                  }));
 }
 
@@ -274,19 +309,19 @@ TEST_F(VROrientationDeviceTest, OrientationSetForwardTest) {
   // to be the default pose.
   DeviceReadPose(gfx::Quaternion(0.653, 0.271, 0.271, 0.653),
                  base::BindOnce([](mojom::VRPosePtr ptr) {
-                   EXPECT_NEAR(ptr->orientation->at(0), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(1), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(2), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(3), 1, 0.001);
+                   EXPECT_NEAR(ptr->orientation->x(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->y(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->z(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->w(), 1, 0.001);
                  }));
 
   // Now hold upright and straigt produces a 45 degree rotation to the right
   DeviceReadPose(gfx::Quaternion(0.707, 0, 0, 0.707),
                  base::BindOnce([](mojom::VRPosePtr ptr) {
-                   EXPECT_NEAR(ptr->orientation->at(0), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(1), -0.383, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(2), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(3), 0.924, 0.001);
+                   EXPECT_NEAR(ptr->orientation->x(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->y(), -0.383, 0.001);
+                   EXPECT_NEAR(ptr->orientation->z(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->w(), 0.924, 0.001);
                  }));
 }
 
@@ -299,20 +334,20 @@ TEST_F(VROrientationDeviceTest, OrientationLandscape90Test) {
   // landscape mode.
   DeviceReadPose(gfx::Quaternion(0.5, -0.5, 0.5, 0.5),
                  base::BindOnce([](mojom::VRPosePtr ptr) {
-                   EXPECT_NEAR(ptr->orientation->at(0), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(1), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(2), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(3), 1, 0.001);
+                   EXPECT_NEAR(ptr->orientation->x(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->y(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->z(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->w(), 1, 0.001);
                  }));
 
   // Rotating the device 45 left from base pose should cause 45 degree left
   // rotation around y in VR space.
   DeviceReadPose(gfx::Quaternion(0.653, -0.271, 0.653, 0.271),
                  base::BindOnce([](mojom::VRPosePtr ptr) {
-                   EXPECT_NEAR(ptr->orientation->at(0), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(1), 0.382, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(2), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(3), 0.924, 0.001);
+                   EXPECT_NEAR(ptr->orientation->x(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->y(), 0.382, 0.001);
+                   EXPECT_NEAR(ptr->orientation->z(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->w(), 0.924, 0.001);
                  }));
 }
 
@@ -325,21 +360,43 @@ TEST_F(VROrientationDeviceTest, OrientationLandscape270Test) {
   // landscape mode (twist the other way from what we'd need for ROTATE_90).
   DeviceReadPose(gfx::Quaternion(0.5, 0.5, -0.5, 0.5),
                  base::BindOnce([](mojom::VRPosePtr ptr) {
-                   EXPECT_NEAR(ptr->orientation->at(0), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(1), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(2), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(3), 1, 0.001);
+                   EXPECT_NEAR(ptr->orientation->x(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->y(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->z(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->w(), 1, 0.001);
                  }));
 
   // Rotating the device 45 left from base pose should cause 45 degree left
   // rotation around y in VR space
   DeviceReadPose(gfx::Quaternion(0.271, 0.653, -0.271, 0.653),
                  base::BindOnce([](mojom::VRPosePtr ptr) {
-                   EXPECT_NEAR(ptr->orientation->at(0), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(1), 0.382, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(2), 0, 0.001);
-                   EXPECT_NEAR(ptr->orientation->at(3), 0.924, 0.001);
+                   EXPECT_NEAR(ptr->orientation->x(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->y(), 0.382, 0.001);
+                   EXPECT_NEAR(ptr->orientation->z(), 0, 0.001);
+                   EXPECT_NEAR(ptr->orientation->w(), 0.924, 0.001);
                  }));
+}
+
+TEST_F(VROrientationDeviceTest, NoMagicWindowPosesWhileBrowsing) {
+  InitializeDevice(FakeInitParams());
+
+  AssertInlineFrameDataAvailable(true);
+  SetInlinePosesEnabled(false);
+  AssertInlineFrameDataAvailable(false);
+}
+
+TEST_F(VROrientationDeviceTest, GetFrameDataHelper) {
+  InitializeDevice(FakeInitParams());
+
+  // 1) create display impl with restricted frame data
+  // 2) call GetFrameData and check behavior
+  // 3) unrestrict frame data
+  // 4) call GetFrameData and check behavior
+  std::unique_ptr<VROrientationSession> display = MakeDisplay();
+  TryGetFrameData(display.get(), true);
+  static_cast<mojom::XRSessionController*>(display.get())
+      ->SetFrameDataRestricted(false);
+  TryGetFrameData(display.get(), false);
 }
 
 }  // namespace device

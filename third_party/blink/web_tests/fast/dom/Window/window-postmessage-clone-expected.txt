@@ -1,9 +1,8 @@
 Tests that we clone object hierarchies
 PASS: 'postMessage((function(){}))' threw DataCloneError: Failed to execute 'postMessage' on 'Window': function(){} could not be cloned.
-PASS: 'postMessage(var x = 0; try { eval("badref"); } catch(e) { x = e; } x)' threw DataCloneError: Failed to execute 'postMessage' on 'Window': ReferenceError: badref is not defined could not be cloned.
-PASS: 'postMessage(arrayBuffer)' threw DataCloneError: Failed to execute 'postMessage' on 'Window': An ArrayBuffer is neutered and could not be cloned.
+PASS: 'postMessage(arrayBuffer)' threw DataCloneError: Failed to execute 'postMessage' on 'Window': An ArrayBuffer is detached and could not be cloned.
 PASS: 'postMessage("data")' threw DataCloneError: Failed to execute 'postMessage' on 'Window': ArrayBuffer at index 1 is a duplicate of an earlier ArrayBuffer.
-PASS: 'postMessage(uint8Array)' threw DataCloneError: Failed to execute 'postMessage' on 'Window': An ArrayBuffer is neutered and could not be cloned.
+PASS: 'postMessage(uint8Array)' threw DataCloneError: Failed to execute 'postMessage' on 'Window': An ArrayBuffer is detached and could not be cloned.
 PASS: 'postMessage(window)' threw DataCloneError: Failed to execute 'postMessage' on 'Window': #<Window> could not be cloned.
 PASS: 'postMessage(({get a() { throw "x" }}))' threw x
 PASS: 'postMessage((function() {return {get a() { throw "accessor-exn"; }};})())' threw accessor-exn
@@ -29,6 +28,7 @@ PASS: eventData is a,a,b,a,b of type object
 PASS: eventData is a,a,b,[object Object] of type object
 PASS: eventData is 1,2,3 of type object
 PASS: eventData is ,,1 of type object
+PASS: eventData is ReferenceError: badref is not defined of type object
 PASS: eventData is data of type string
 PASS: eventData is data of type string
 PASS: eventData is 2009-02-13T23:31:30.000Z of type object

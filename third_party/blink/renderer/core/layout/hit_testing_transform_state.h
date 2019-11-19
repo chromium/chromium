@@ -26,12 +26,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_HIT_TESTING_TRANSFORM_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_HIT_TESTING_TRANSFORM_STATE_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -68,7 +68,8 @@ class HitTestingTransformState {
   FloatPoint MappedPoint() const;
   FloatQuad MappedQuad() const;
   FloatQuad MappedArea() const;
-  LayoutRect BoundsOfMappedArea() const;
+  PhysicalRect BoundsOfMappedQuad() const;
+  PhysicalRect BoundsOfMappedArea() const;
   void Flatten();
 
   FloatPoint last_planar_point_;

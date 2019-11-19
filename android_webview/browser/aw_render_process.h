@@ -42,7 +42,7 @@ class AwRenderProcess : public content::RenderProcessHostObserver,
 
   content::RenderProcessHost* render_process_host_;
 
-  base::WeakPtrFactory<AwRenderProcess> weak_factory_;
+  base::WeakPtrFactory<AwRenderProcess> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AwRenderProcess);
 };
 

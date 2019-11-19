@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -101,7 +102,7 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
       for (auto it = browser_list->begin_last_active();
            it != browser_list->end_last_active(); ++it) {
         Browser* last_active = *it;
-        if (last_active && last_active->is_type_tabbed()) {
+        if (last_active && last_active->is_type_normal()) {
           window = last_active->window();
           DCHECK(window);
           break;
@@ -307,12 +308,10 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
       !work_area.Contains(*bounds)) {
     bounds->set_width(std::min(bounds->width(), work_area.width()));
     bounds->set_height(std::min(bounds->height(), work_area.height()));
-    bounds->set_x(
-        std::max(work_area.x(),
-                 std::min(bounds->x(), work_area.right() - bounds->width())));
-    bounds->set_y(
-        std::max(work_area.y(),
-                 std::min(bounds->y(), work_area.bottom() - bounds->height())));
+    bounds->set_x(base::ClampToRange(bounds->x(), work_area.x(),
+                                     work_area.right() - bounds->width()));
+    bounds->set_y(base::ClampToRange(bounds->y(), work_area.y(),
+                                     work_area.bottom() - bounds->height()));
   }
 
 #if defined(OS_MACOSX)
@@ -340,8 +339,8 @@ void WindowSizer::AdjustBoundsToBeVisibleOnDisplay(
   const int min_x = work_area.x() + kMinVisibleWidth - bounds->width();
   const int max_y = work_area.bottom() - kMinVisibleHeight;
   const int max_x = work_area.right() - kMinVisibleWidth;
-  bounds->set_y(std::max(min_y, std::min(max_y, bounds->y())));
-  bounds->set_x(std::max(min_x, std::min(max_x, bounds->x())));
+  bounds->set_y(base::ClampToRange(bounds->y(), min_y, max_y));
+  bounds->set_x(base::ClampToRange(bounds->x(), min_x, max_x));
 #endif  // defined(OS_MACOSX)
 }
 
@@ -350,11 +349,12 @@ ui::WindowShowState WindowSizer::GetWindowDefaultShowState() const {
     return ui::SHOW_STATE_DEFAULT;
 
   // Only tabbed browsers and dev tools use the command line.
-  bool use_command_line = browser_->is_type_tabbed() || browser_->is_devtools();
+  bool use_command_line =
+      browser_->is_type_normal() || browser_->is_type_devtools();
 
 #if defined(USE_AURA)
   // We use the apps save state as well on aura.
-  use_command_line = use_command_line || browser_->is_app();
+  use_command_line = use_command_line || browser_->deprecated_is_app();
 #endif
 
   if (use_command_line && base::CommandLine::ForCurrentProcess()->HasSwitch(

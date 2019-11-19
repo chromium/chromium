@@ -167,7 +167,7 @@ TEST_F('SelectToSpeakParagraphUnitTest', 'BuildNodeGroupStopsAtNewParagraph',
       root: root};
   let text3 = {role: 'staticText', parent: paragraph2, name: 'text3',
       root: root};
-  let result = ParagraphUtils.buildNodeGroup([text1, text2, text3], 0);
+  let result = ParagraphUtils.buildNodeGroup([text1, text2, text3], 0, false /* do not split on language */);
   assertEquals('text1 text2 ', result.text);
   assertEquals(1, result.endIndex);
   assertEquals(2, result.nodes.length);
@@ -176,6 +176,144 @@ TEST_F('SelectToSpeakParagraphUnitTest', 'BuildNodeGroupStopsAtNewParagraph',
   assertEquals(6, result.nodes[1].startChar);
   assertEquals(text2, result.nodes[1].node);
   assertEquals(paragraph1, result.blockParent);
+});
+
+TEST_F('SelectToSpeakParagraphUnitTest',
+       'BuildNodeGroupStopsAtLanguageBoundary', function() {
+  let splitOnLanguage = true;
+
+  // When the detectedLanguage changes from en-US to fr-FR we expect to break
+  // the NodeGroup.
+  let root = {role: 'rootWebArea'};
+  let text1 = {role: 'staticText', parent: root, name: 'text1',
+      root: root, detectedLanguage: "en-US"};
+  let text2 = {role: 'staticText', parent: root, name: 'text2',
+      root: root, detectedLanguage: "en-US"};
+  let text3 = {role: 'staticText', parent: root, name: 'text3',
+      root: root, detectedLanguage: "fr-FR"};
+
+  let result1 = ParagraphUtils.buildNodeGroup([text1, text2, text3], 0, splitOnLanguage);
+  assertEquals('text1 text2 ', result1.text);
+  assertEquals(1, result1.endIndex);
+  assertEquals(2, result1.nodes.length);
+  assertEquals(0, result1.nodes[0].startChar);
+  assertEquals(text1, result1.nodes[0].node);
+  assertEquals(6, result1.nodes[1].startChar);
+  assertEquals(text2, result1.nodes[1].node);
+  assertEquals("en-US", result1.detectedLanguage);
+
+  let result2 = ParagraphUtils.buildNodeGroup([text1, text2, text3], 2, splitOnLanguage);
+  assertEquals('text3 ', result2.text);
+  assertEquals(2, result2.endIndex);
+  assertEquals(1, result2.nodes.length);
+  assertEquals(0, result2.nodes[0].startChar);
+  assertEquals(text3, result2.nodes[0].node);
+  assertEquals("fr-FR", result2.detectedLanguage);
+});
+
+TEST_F('SelectToSpeakParagraphUnitTest',
+       'BuildNodeGroupStopsAtLanguageBoundaryAllUndefined', function() {
+  let splitOnLanguage = true;
+
+  // If no detectedLanguage is defined then we should not split at all....
+  let root = {role: 'rootWebArea'};
+  let text1 = {role: 'staticText', parent: root, name: 'text1',
+      root: root};
+  let text2 = {role: 'staticText', parent: root, name: 'text2',
+      root: root};
+  let text3 = {role: 'staticText', parent: root, name: 'text3',
+      root: root};
+  let result = ParagraphUtils.buildNodeGroup([text1, text2, text3], 0, splitOnLanguage);
+  assertEquals('text1 text2 text3 ', result.text);
+  assertEquals(2, result.endIndex);
+  assertEquals(3, result.nodes.length);
+  assertEquals(0, result.nodes[0].startChar);
+  assertEquals(text1, result.nodes[0].node);
+  assertEquals(6, result.nodes[1].startChar);
+  assertEquals(text2, result.nodes[1].node);
+  assertEquals(12, result.nodes[2].startChar);
+  assertEquals(text3, result.nodes[2].node);
+  assertEquals(undefined, result.detectedLanguage);
+});
+
+TEST_F('SelectToSpeakParagraphUnitTest',
+       'BuildNodeGroupStopsAtLanguageBoundaryLastNode', function() {
+  let splitOnLanguage = true;
+
+  // our NodeGroup should get the first defined detectedLanguage
+  let root = {role: 'rootWebArea'};
+  let text1 = {role: 'staticText', parent: root, name: 'text1',
+      root: root};
+  let text2 = {role: 'staticText', parent: root, name: 'text2',
+      root: root};
+  let text3 = {role: 'staticText', parent: root, name: 'text3',
+      root: root, detectedLanguage: 'fr-FR'};
+  let result = ParagraphUtils.buildNodeGroup([text1, text2, text3], 0, splitOnLanguage);
+  assertEquals('text1 text2 text3 ', result.text);
+  assertEquals(2, result.endIndex);
+  assertEquals(3, result.nodes.length);
+  assertEquals(0, result.nodes[0].startChar);
+  assertEquals(text1, result.nodes[0].node);
+  assertEquals(6, result.nodes[1].startChar);
+  assertEquals(text2, result.nodes[1].node);
+  assertEquals(12, result.nodes[2].startChar);
+  assertEquals(text3, result.nodes[2].node);
+  assertEquals("fr-FR", result.detectedLanguage);
+});
+
+TEST_F('SelectToSpeakParagraphUnitTest',
+       'BuildNodeGroupSplitOnLanguageDisabled', function() {
+  // Test behaviour with splitOnLanguage disabled. This is to show that we
+  // haven't introduced an obvious regression.
+  let splitOnLanguage = false;
+
+  let root = {role: 'rootWebArea'};
+  let text1 = {role: 'staticText', parent: root, name: 'text1',
+      root: root};
+  let text2 = {role: 'staticText', parent: root, name: 'text2',
+      root: root, detectedLanguage: "en-US"};
+  let text3 = {role: 'staticText', parent: root, name: 'text3',
+      root: root};
+  let text4 = {role: 'staticText', parent: root, name: 'text4',
+      root: root, detectedLanguage: "fr-FR"};
+  let result = ParagraphUtils.buildNodeGroup([text1, text2, text3, text4], 0, splitOnLanguage);
+  assertEquals('text1 text2 text3 text4 ', result.text);
+  assertEquals(3, result.endIndex);
+  assertEquals(4, result.nodes.length);
+  assertEquals(text1, result.nodes[0].node);
+  assertEquals(text4, result.nodes[3].node);
+  assertEquals(undefined, result.detectedLanguage);
+});
+
+TEST_F('SelectToSpeakParagraphUnitTest',
+       'BuildNodeGroupStopsAtLanguageBoundarySomeUndefined', function() {
+  let splitOnLanguage = true;
+
+  // We never want to break up a NodeGroup based on an undefined
+  // detectedLanguage, instead we allow an undefined detectedLanguage to match
+  // any other language.
+  // The language for the NodeGroup will be determined by the first defined
+  // detectedLanguage.
+  let root = {role: 'rootWebArea'};
+  let text1 = {role: 'staticText', parent: root, name: 'text1',
+      root: root};
+  let text2 = {role: 'staticText', parent: root, name: 'text2',
+      root: root, detectedLanguage: "en-US"};
+  let text3 = {role: 'staticText', parent: root, name: 'text3',
+      root: root};
+  let text4 = {role: 'staticText', parent: root, name: 'text4',
+      root: root, detectedLanguage: "fr-FR"};
+  let result = ParagraphUtils.buildNodeGroup([text1, text2, text3, text4], 0, splitOnLanguage);
+  assertEquals('text1 text2 text3 ', result.text);
+  assertEquals(2, result.endIndex);
+  assertEquals(3, result.nodes.length);
+  assertEquals(0, result.nodes[0].startChar);
+  assertEquals(text1, result.nodes[0].node);
+  assertEquals(6, result.nodes[1].startChar);
+  assertEquals(text2, result.nodes[1].node);
+  assertEquals(12, result.nodes[2].startChar);
+  assertEquals(text3, result.nodes[2].node);
+  assertEquals("en-US", result.detectedLanguage);
 });
 
 TEST_F('SelectToSpeakParagraphUnitTest', 'BuildNodeGroupIncludesLinks',
@@ -191,7 +329,7 @@ TEST_F('SelectToSpeakParagraphUnitTest', 'BuildNodeGroupIncludesLinks',
   let link = {role: 'link', parent: paragraph1, root: root};
   let linkText = {role: 'staticText', parent: link, name: 'linkText',
       root: root};
-  let result = ParagraphUtils.buildNodeGroup([text1, text2, linkText], 0);
+  let result = ParagraphUtils.buildNodeGroup([text1, text2, linkText], 0, false /* do not split on language */);
   assertEquals('text1 linkText ', result.text);
   assertEquals(2, result.endIndex);
   assertEquals(2, result.nodes.length);
@@ -213,7 +351,7 @@ TEST_F('SelectToSpeakParagraphUnitTest', 'BuildNodeGroupNativeTextBox',
 
   // If there is no value, it should use the name.
   searchBar.value = '';
-  result = ParagraphUtils.buildNodeGroup([searchBar], 0);
+  result = ParagraphUtils.buildNodeGroup([searchBar], 0, false /* do not split on language */);
   assertEquals('Address and search bar ', result.text);
 });
 
@@ -227,6 +365,6 @@ TEST_F('SelectToSpeakParagraphUnitTest', 'BuildNodeGroupWithSvg', function() {
   let inline2 = {role: 'inlineTextBox', parent: text2, root: root,
       name: 'world!'};
 
-  let result = ParagraphUtils.buildNodeGroup([inline1, inline2], 0);
+  let result = ParagraphUtils.buildNodeGroup([inline1, inline2], 0, false /* do not split on language */);
   assertEquals('Hello, world! ', result.text);
 });

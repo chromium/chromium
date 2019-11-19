@@ -1,0 +1,106 @@
+%PDF-1.7
+% ò¤ô
+%@BLINK-ALLOW:textDirection=*
+1 0 obj <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+2 0 obj <<
+  /Type /Pages
+  /MediaBox [0 0 200 200]
+  /Count 1
+  /Kids [3 0 R]
+>>
+endobj
+3 0 obj <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Contents 8 0 R
+>>
+endobj
+4 0 obj <<
+  /Type /Font
+  /Subtype /Type0
+  /BaseFont /Arial
+  /Encoding /Identity-H
+  /DescendantFonts [6 0 R]
+  /ToUnicode 7 0 R
+>>
+endobj
+5 0 obj <<
+  /Type /FontDescriptor
+  /FontName /Arial
+>>
+endobj
+6 0 obj <<
+  /Type /Font
+  /FontDescriptor 5 0 R
+  /BaseFont /Arial
+  /Subtype /CIDFontType2
+  /W [0 [778] 68 [444 500 444 500 444 333] 910 [229] 951 952 531 996 [394]]
+>>
+endobj
+7 0 obj <<
+  /Length 297
+>>
+stream
+/CIDInit /ProcSet findresource begin
+12 dict begin
+begincmap
+1 begincodespacerange
+<0000> <FFFF>
+endcodespacerange
+2 beginbfchar
+<038E> <FE8E>
+<03E4> <FEE4>
+endbfchar
+2 beginbfrange
+<0044> <0049> <0061>
+<03B7> <03B8> <FEB7>
+endbfrange
+endcmap
+CMapName currentdict /CMap defineresource pop
+end
+end
+endstream
+endobj
+8 0 obj <<
+  /Length 107
+>>
+stream
+BT
+/F1 16 Tf
+30 100 Td
+<004400450046004700480049> Tj
+ET
+BT
+/F1 16 Tf
+30 50 Td
+<038E03B803E403E403B7> Tj
+ET
+endstream
+endobj
+xref
+0 9
+0000000000 65535 f 
+0000000045 00000 n 
+0000000098 00000 n 
+0000000187 00000 n 
+0000000313 00000 n 
+0000000455 00000 n 
+0000000519 00000 n 
+0000000698 00000 n 
+0000001047 00000 n 
+trailer <<
+  /Root 1 0 R
+  /Size 9
+>>
+startxref
+1206
+%%EOF

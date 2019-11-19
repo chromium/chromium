@@ -5,7 +5,8 @@
 #ifndef SERVICES_USER_ID_USER_ID_SERVICE_H_
 #define SERVICES_USER_ID_USER_ID_SERVICE_H_
 
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_binding.h"
@@ -28,11 +29,11 @@ class UserIdService : public service_manager::Service, public mojom::UserId {
   // mojom::UserId:
   void GetInstanceGroup(GetInstanceGroupCallback callback) override;
 
-  void BindUserIdRequest(mojom::UserIdRequest request);
+  void BindUserIdReceiver(mojo::PendingReceiver<mojom::UserId> receiver);
 
   service_manager::ServiceBinding service_binding_;
   service_manager::BinderRegistry registry_;
-  mojo::BindingSet<mojom::UserId> bindings_;
+  mojo::ReceiverSet<mojom::UserId> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(UserIdService);
 };

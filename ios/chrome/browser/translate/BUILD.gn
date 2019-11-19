@@ -2,40 +2,44 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("public") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "translate_constants.h",
+    "translate_infobar_delegate_observer_bridge.h",
+    "translate_infobar_delegate_observer_bridge.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/translate/core/browser",
+  ]
+}
+
 source_set("translate") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "after_translate_infobar_controller.h",
-    "after_translate_infobar_controller.mm",
-    "before_translate_infobar_controller.h",
-    "before_translate_infobar_controller.mm",
     "chrome_ios_translate_client.h",
     "chrome_ios_translate_client.mm",
     "language_selection_context.h",
     "language_selection_context.mm",
     "language_selection_delegate.h",
     "language_selection_handler.h",
-    "never_translate_infobar_controller.h",
-    "never_translate_infobar_controller.mm",
     "translate_accept_languages_factory.cc",
     "translate_accept_languages_factory.h",
     "translate_infobar_controller.h",
     "translate_infobar_controller.mm",
-    "translate_infobar_delegate_observer_bridge.h",
-    "translate_infobar_delegate_observer_bridge.mm",
     "translate_infobar_tags.h",
-    "translate_message_infobar_controller.h",
-    "translate_message_infobar_controller.mm",
     "translate_option_selection_delegate.h",
     "translate_option_selection_handler.h",
     "translate_ranker_factory.cc",
     "translate_ranker_factory.h",
     "translate_ranker_metrics_provider.cc",
     "translate_ranker_metrics_provider.h",
-    "translate_service_ios.cc",
     "translate_service_ios.h",
+    "translate_service_ios.mm",
   ]
   deps = [
+    ":public",
     "//base",
     "//components/infobars/core",
     "//components/keyed_service/core",
@@ -55,10 +59,12 @@ source_set("translate") {
     "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/language",
+    "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars:infobars_ui",
+    "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/translate:translate_ui",
     "//ios/chrome/browser/ui/util",
-    "//ios/web",
+    "//ios/web/public/deprecated",
     "//third_party/metrics_proto",
     "//ui/base",
     "//ui/gfx",
@@ -77,9 +83,11 @@ source_set("unit_tests") {
     "translate_service_ios_unittest.cc",
   ]
   deps = [
+    ":public",
     ":translate",
     "//base",
     "//base/test:test_support",
+    "//components/language/core/browser",
     "//components/translate/core/browser:test_support",
     "//components/translate/ios/browser",
     "//ios/chrome/browser",
@@ -87,6 +95,7 @@ source_set("unit_tests") {
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser:test_support",
     "//ios/web/public",
+    "//ios/web/public/deprecated",
     "//ios/web/public/test:util",
     "//skia",
     "//testing/gmock",
@@ -95,12 +104,7 @@ source_set("unit_tests") {
   ]
 }
 
-# Those tests do not use external URLs but fail if the network is unavailable
-# as they explicitly check whether the network is up or not; it is not possible
-# to safely instantiate a net::NetworkChangeNotifier::DisableForTest to disable
-# those checks as this in not thread-safe. See http://crbug.com/709131 for more
-# details.
-source_set("external_url_eg_tests") {
+source_set("eg_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
@@ -115,10 +119,16 @@ source_set("external_url_eg_tests") {
     "//components/translate/core/browser",
     "//components/translate/core/common",
     "//components/translate/ios/browser",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/ui/popup_menu:constants",
+    "//ios/chrome/browser/ui/translate:legacy_translate",
     "//ios/chrome/browser/ui/translate:translate_ui",
+    "//ios/chrome/browser/ui/util:util",
     "//ios/chrome/test/app:test_support",
     "//ios/chrome/test/earl_grey:test_support",
+    "//ios/chrome/test/fakes",
     "//ios/third_party/earl_grey:earl_grey+link",
     "//ios/web:earl_grey_test_support",
     "//ios/web/public/test",

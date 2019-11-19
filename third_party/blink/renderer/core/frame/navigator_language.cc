@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/language.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -34,12 +35,21 @@ NavigatorLanguage::NavigatorLanguage(ExecutionContext* context)
     : context_(context) {}
 
 AtomicString NavigatorLanguage::language() {
-  return AtomicString(languages().front());
+  if (RuntimeEnabledFeatures::NavigatorLanguageInInsecureContextEnabled() ||
+      context_->IsSecureContext()) {
+    return AtomicString(languages().front());
+  }
+  return AtomicString();
 }
 
 const Vector<String>& NavigatorLanguage::languages() {
-  EnsureUpdatedLanguage();
-  return languages_;
+  if (RuntimeEnabledFeatures::NavigatorLanguageInInsecureContextEnabled() ||
+      context_->IsSecureContext()) {
+    EnsureUpdatedLanguage();
+    return languages_;
+  }
+  DEFINE_STATIC_LOCAL(const Vector<String>, empty_vector, {});
+  return empty_vector;
 }
 
 AtomicString NavigatorLanguage::SerializeLanguagesForClientHintHeader() {

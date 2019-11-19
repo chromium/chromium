@@ -10,15 +10,13 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-namespace base {
-namespace trace_event {
-class TracedValue;
+namespace cc {
+struct LayerDebugInfo;
 }
-}  // namespace base
 
 namespace blink {
 
@@ -76,6 +74,8 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
   // "disabled-by-default-blink.invalidation" category.
   static bool ShouldAlwaysTrack();
 
+  static bool IsTracingRasterInvalidations();
+
   void AddInvalidation(const DisplayItemClient*,
                        const String& debug_name,
                        const IntRect&,
@@ -95,8 +95,9 @@ class PLATFORM_EXPORT RasterInvalidationTracking {
                                sk_sp<PaintRecord> new_record,
                                const IntRect& new_interest_rect);
 
-  void AsJSON(JSONObject*);
-  void AddToTracedValue(base::trace_event::TracedValue&);
+  void AsJSON(JSONObject*) const;
+
+  void AddToLayerDebugInfo(cc::LayerDebugInfo&) const;
 
   // The record containing under-invalidated pixels in dark red.
   sk_sp<const PaintRecord> UnderInvalidationRecord() const {

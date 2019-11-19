@@ -22,8 +22,8 @@ bool ComponentUnpacker::Unpack(const base::FilePath& ouput_folder) {
 }
 
 bool ComponentUnpacker::Verify() {
-  return crx_file::Verify(path_, crx_file::VerifierFormat::CRX2_OR_CRX3,
-                          {pk_hash_}, std::vector<uint8_t>(), nullptr,
+  return crx_file::Verify(path_, crx_file::VerifierFormat::CRX3, {pk_hash_},
+                          std::vector<uint8_t>(), nullptr,
                           nullptr) == crx_file::VerifierResult::OK_FULL;
 }
 

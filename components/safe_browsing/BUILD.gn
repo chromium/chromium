@@ -2,89 +2,188 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-proto_library("csd_proto") {
-  sources = [
-    "proto/csd.proto",
-  ]
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = []
+  if (safe_browsing_mode == 0) {
+    flags += [ "FULL_SAFE_BROWSING=0" ]
+    flags += [ "SAFE_BROWSING_CSD=0" ]
+    flags += [ "SAFE_BROWSING_DB_LOCAL=0" ]
+    flags += [ "SAFE_BROWSING_DB_REMOTE=0" ]
+  } else if (safe_browsing_mode == 1) {
+    flags += [ "FULL_SAFE_BROWSING=1" ]
+    flags += [ "SAFE_BROWSING_CSD=1" ]
+    flags += [ "SAFE_BROWSING_DB_LOCAL=1" ]
+    flags += [ "SAFE_BROWSING_DB_REMOTE=0" ]
+  } else if (safe_browsing_mode == 2) {
+    flags += [ "FULL_SAFE_BROWSING=0" ]
+    flags += [ "SAFE_BROWSING_CSD=0" ]
+    flags += [ "SAFE_BROWSING_DB_LOCAL=0" ]
+    flags += [ "SAFE_BROWSING_DB_REMOTE=1" ]
+  }
 }
 
-proto_library("webui_proto") {
-  sources = [
-    "proto/webui.proto",
-  ]
-}
+# safe_browsing/ pulls in content/, which doesn't work on iOS.
+# TODO(thakis): This should be `safe_browsing_mode != 0`, but chromecast builds
+# set safe_browsing_mode to 0 and build chrome/, and chrome/ currently
+# unconditionally depends on things in this build file. Make these dependencies
+# conditional on safe_browsing_mode != 0 and then change the conditional here.
+if (!is_ios) {
+  assert(!is_ios, "safe_browsing/ pulls in content/ which doesn't work on iOS")
 
-source_set("safe_browsing") {
-  sources = [
-    "base_blocking_page.cc",
-    "base_blocking_page.h",
-    "base_ui_manager.cc",
-    "base_ui_manager.h",
-  ]
-  public_deps = [
-    "//components/security_interstitials/content:security_interstitial_page",
-  ]
-  deps = [
-    ":features",
-    ":ping_manager",
-    "//base:base",
-    "//base:i18n",
-    "//components/safe_browsing/common:common",
-    "//components/safe_browsing/common:safe_browsing_prefs",
-    "//components/safe_browsing/db:database_manager",
-    "//components/safe_browsing/web_ui:constants",
-    "//components/security_interstitials/core:core",
-    "//content/public/browser:browser",
-    "//content/public/common:common",
-    "//net:net",
-  ]
-}
+  proto_library("csd_proto") {
+    sources = [
+      "proto/csd.proto",
+    ]
+  }
 
-static_library("ping_manager") {
-  sources = [
-    "ping_manager.cc",
-    "ping_manager.h",
-  ]
+  proto_library("webui_proto") {
+    sources = [
+      "proto/webui.proto",
+    ]
+  }
 
-  public_deps = [
-    "//google_apis:google_apis",
-  ]
+  proto_library("realtimeapi_proto") {
+    sources = [
+      "proto/realtimeapi.proto",
+    ]
 
-  deps = [
-    "//base:base",
-    "//components/data_use_measurement/core:core",
-    "//components/safe_browsing/db:hit_report",
-    "//components/safe_browsing/db:util",
-    "//content/public/browser:browser",
-    "//net:net",
-  ]
-}
+    deps = [
+      ":csd_proto",
+    ]
+  }
 
-source_set("ping_manager_unittest") {
-  testonly = true
-  sources = [
-    "ping_manager_unittest.cc",
-  ]
+  proto_library("webprotect_proto") {
+    sources = [
+      "proto/webprotect.proto",
+    ]
+  }
 
-  deps = [
-    ":ping_manager",
-    "//base:base",
-    "//components/safe_browsing/db:v4_test_util",
-    "//net:net",
-    "//net:test_support",
-    "//testing/gtest",
-  ]
-}
+  source_set("safe_browsing") {
+    sources = [
+      "base_blocking_page.cc",
+      "base_blocking_page.h",
+      "base_ui_manager.cc",
+      "base_ui_manager.h",
+      "safe_browsing_controller_client.cc",
+      "safe_browsing_controller_client.h",
+    ]
+    public_deps = [
+      "//components/security_interstitials/content:security_interstitial_page",
+    ]
+    deps = [
+      ":features",
+      ":ping_manager",
+      ":verdict_cache_manager",
+      "//base:base",
+      "//base:i18n",
+      "//components/safe_browsing/common:common",
+      "//components/safe_browsing/common:safe_browsing_prefs",
+      "//components/safe_browsing/db:database_manager",
+      "//components/safe_browsing/web_ui:constants",
+      "//components/security_interstitials/core:core",
+      "//content/public/browser:browser",
+      "//content/public/common:common",
+      "//net:net",
+    ]
+  }
 
-static_library("features") {
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
+  static_library("ping_manager") {
+    sources = [
+      "ping_manager.cc",
+      "ping_manager.h",
+    ]
 
-  deps = [
-    "//base:base",
-  ]
+    public_deps = [
+      "//google_apis:google_apis",
+    ]
+
+    deps = [
+      "//base:base",
+      "//components/safe_browsing/db:hit_report",
+      "//components/safe_browsing/db:util",
+      "//content/public/browser:browser",
+      "//net:net",
+    ]
+  }
+
+  source_set("ping_manager_unittest") {
+    testonly = true
+    sources = [
+      "ping_manager_unittest.cc",
+    ]
+
+    deps = [
+      ":ping_manager",
+      "//base:base",
+      "//components/safe_browsing/db:v4_test_util",
+      "//net:net",
+      "//net:test_support",
+      "//testing/gtest",
+    ]
+  }
+
+  static_library("features") {
+    sources = [
+      "features.cc",
+      "features.h",
+    ]
+
+    deps = [
+      "//base:base",
+      "//components/safe_browsing:buildflags",
+    ]
+  }
+
+  source_set("public") {
+    sources = [
+      "safe_browsing_service_interface.cc",
+      "safe_browsing_service_interface.h",
+    ]
+
+    deps = [
+      "//base:base",
+      "//content/public/browser",
+    ]
+  }
+
+  source_set("verdict_cache_manager") {
+    sources = [
+      "verdict_cache_manager.cc",
+      "verdict_cache_manager.h",
+    ]
+
+    deps = [
+      ":csd_proto",
+      "//base",
+      "//components/content_settings/core/browser",
+      "//components/history/core/browser",
+      "//components/password_manager/core/browser:browser",
+      "//components/safe_browsing/db:v4_protocol_manager_util",
+      "//content/public/browser",
+      "//url",
+    ]
+  }
+
+  source_set("verdict_cache_manager_unittest") {
+    testonly = true
+    sources = [
+      "verdict_cache_manager_unittest.cc",
+    ]
+
+    deps = [
+      ":csd_proto",
+      ":verdict_cache_manager",
+      "//base",
+      "//components/content_settings/core/browser",
+      "//components/sync_preferences:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }

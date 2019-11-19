@@ -15,6 +15,9 @@
 #include "util/fuchsia/scoped_task_suspend.h"
 
 #include <lib/zx/time.h>
+#include <zircon/errors.h>
+#include <zircon/status.h>
+#include <zircon/syscalls/object.h>
 
 #include <vector>
 
@@ -27,16 +30,30 @@ namespace crashpad {
 ScopedTaskSuspend::ScopedTaskSuspend(const zx::process& process) {
   DCHECK_NE(process.get(), zx::process::self()->get());
 
-  zx_status_t status = process.suspend(&suspend_token_);
-  if (status != ZX_OK) {
-    ZX_LOG(ERROR, status) << "zx_task_suspend";
-  } else {
-    for (const auto& thread : GetThreadHandles(process)) {
-      zx_signals_t observed = 0u;
-      status = thread.wait_one(
-          ZX_THREAD_SUSPENDED, zx::deadline_after(zx::msec(50)), &observed);
-      ZX_LOG_IF(ERROR, status != ZX_OK, status) << "thread failed to suspend";
+  const zx_status_t suspend_status = process.suspend(&suspend_token_);
+  if (suspend_status != ZX_OK) {
+    ZX_LOG(ERROR, suspend_status) << "zx_task_suspend";
+    return;
+  }
+
+  // suspend() is asynchronous so we now check that each thread is indeed
+  // suspended, up to some deadline.
+  for (const auto& thread : GetThreadHandles(process)) {
+    // We omit the crashed thread (blocked in an exception) as it is technically
+    // not suspended, cf. ZX-3772.
+    zx_info_thread info;
+    if (thread.get_info(
+            ZX_INFO_THREAD, &info, sizeof(info), nullptr, nullptr) == ZX_OK) {
+      if (info.state == ZX_THREAD_STATE_BLOCKED_EXCEPTION) {
+        continue;
+      }
     }
+
+    zx_signals_t observed = 0u;
+    const zx_status_t wait_status = thread.wait_one(
+        ZX_THREAD_SUSPENDED, zx::deadline_after(zx::msec(50)), &observed);
+    ZX_LOG_IF(ERROR, wait_status != ZX_OK, wait_status)
+        << "thread failed to suspend";
   }
 }
 

@@ -15,8 +15,8 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -37,8 +37,7 @@ OmniboxPopupModel::OmniboxPopupModel(OmniboxPopupView* popup_view,
       edit_model_(edit_model),
       selected_line_(kNoMatch),
       selected_line_state_(NORMAL),
-      has_selected_match_(false),
-      weak_factory_(this) {
+      has_selected_match_(false) {
   edit_model->set_popup_model(this);
 }
 
@@ -119,8 +118,8 @@ void OmniboxPopupModel::SetSelectedLine(size_t line,
   // Cancel the query so the matches don't change on the user.
   autocomplete_controller()->Stop(false);
 
-  line = std::min(line, result.size() - 1);
-  const AutocompleteMatch& match = result.match_at(line);
+  if (line != kNoMatch)
+    line = std::min(line, result.size() - 1);
   has_selected_match_ = !reset_to_default;
 
   if (line == selected_line_ && !force)
@@ -131,19 +130,19 @@ void OmniboxPopupModel::SetSelectedLine(size_t line,
   // draw.  We also need to update |selected_line_| before calling
   // OnPopupDataChanged(), so that when the edit notifies its controller that
   // something has changed, the controller can get the correct updated data.
-  //
-  // NOTE: We should never reach here with no selected line; the same code that
-  // opened the popup and made it possible to get here should have also set a
-  // selected line.
-  CHECK(selected_line_ != kNoMatch);
-  GURL current_destination(result.match_at(selected_line_).destination_url);
   const size_t prev_selected_line = selected_line_;
   selected_line_state_ = NORMAL;
   selected_line_ = line;
-  view_->InvalidateLine(prev_selected_line);
-  view_->InvalidateLine(selected_line_);
+  if (prev_selected_line != kNoMatch) {
+    view_->InvalidateLine(prev_selected_line);
+  }
+  if (selected_line_ != kNoMatch) {
+    view_->InvalidateLine(selected_line_);
+    view_->OnLineSelected(selected_line_);
+  }
 
-  view_->OnLineSelected(selected_line_);
+  if (line == kNoMatch)
+    return;
 
   // Update the edit with the new data for this match.
   // TODO(pkasting): If |selected_line_| moves to the controller, this can be
@@ -151,49 +150,43 @@ void OmniboxPopupModel::SetSelectedLine(size_t line,
   base::string16 keyword;
   bool is_keyword_hint;
   TemplateURLService* service = edit_model_->client()->GetTemplateURLService();
+  const AutocompleteMatch& match = result.match_at(line);
   match.GetKeywordUIState(service, &keyword, &is_keyword_hint);
 
   if (reset_to_default) {
-    edit_model_->OnPopupDataChanged(match.inline_autocompletion, nullptr,
-                                    keyword, is_keyword_hint);
+    edit_model_->OnPopupDataChanged(match.inline_autocompletion,
+                                    /*is_temporary_text=*/false, keyword,
+                                    is_keyword_hint);
   } else {
-    edit_model_->OnPopupDataChanged(match.fill_into_edit, &current_destination,
-                                    keyword, is_keyword_hint);
+    edit_model_->OnPopupDataChanged(match.fill_into_edit,
+                                    /*is_temporary_text=*/true, keyword,
+                                    is_keyword_hint);
   }
 }
 
-void OmniboxPopupModel::ResetToDefaultMatch() {
+void OmniboxPopupModel::ResetToInitialState() {
   const AutocompleteResult& result = this->result();
-  CHECK(!result.empty());
-  SetSelectedLine(result.default_match() - result.begin(), true, false);
+  size_t new_line = kNoMatch;
+  if (result.default_match() != result.end())
+    new_line = result.default_match() - result.begin();
+  SetSelectedLine(new_line, true, false);
   view_->OnDragCanceled();
 }
 
-void OmniboxPopupModel::Move(int count) {
-  const AutocompleteResult& result = this->result();
-  if (result.empty())
+void OmniboxPopupModel::MoveTo(size_t new_line) {
+  if (result().empty())
     return;
 
-  // Clamp the new line to [0, result_.count() - 1].
-  const size_t new_line = selected_line_ + count;
-  SetSelectedLine(((count < 0) && (new_line >= selected_line_)) ? 0 : new_line,
-                  false, false);
+  SetSelectedLine(new_line, false, false);
 }
 
 void OmniboxPopupModel::SetSelectedLineState(LineState state) {
   DCHECK(!result().empty());
   DCHECK_NE(kNoMatch, selected_line_);
 
-  const AutocompleteResult& result = this->result();
-  if (result.empty())
-    return;
-
-  const AutocompleteMatch& match = result.match_at(selected_line_);
+  const AutocompleteMatch& match = result().match_at(selected_line_);
   GURL current_destination(match.destination_url);
-
-  if (state == KEYWORD) {
-    DCHECK(match.associated_keyword.get());
-  }
+  DCHECK((state != KEYWORD) || match.associated_keyword.get());
 
   if (state == BUTTON_FOCUSED) {
     // TODO(orinj): If in-suggestion Pedals are kept, refactor a bit
@@ -205,26 +198,26 @@ void OmniboxPopupModel::SetSelectedLineState(LineState state) {
   selected_line_state_ = state;
   view_->InvalidateLine(selected_line_);
 
-  // Ensures update of accessibility data for button text.
   if (state == BUTTON_FOCUSED) {
-    edit_model_->view()->OnTemporaryTextMaybeChanged(
-        edit_model_->view()->GetText(), match, false, false);
+    edit_model_->SetAccessibilityLabel(match);
+    view_->ProvideButtonFocusHint(selected_line_);
   }
 }
 
-void OmniboxPopupModel::TryDeletingCurrentItem() {
-  // We could use GetInfoForCurrentText() here, but it seems better to try
-  // and shift-delete the actual selection, rather than any "in progress, not
-  // yet visible" one.
-  if (selected_line_ == kNoMatch)
+void OmniboxPopupModel::TryDeletingLine(size_t line) {
+  // When called with line == selected_line(), we could use
+  // GetInfoForCurrentText() here, but it seems better to try and delete the
+  // actual selection, rather than any "in progress, not yet visible" one.
+  if (line == kNoMatch)
     return;
 
   // Cancel the query so the matches don't change on the user.
   autocomplete_controller()->Stop(false);
 
-  const AutocompleteMatch& match = result().match_at(selected_line_);
+  const AutocompleteMatch& match = result().match_at(line);
   if (match.SupportsDeletion()) {
-    const size_t selected_line = selected_line_;
+    // Try to preserve the selection even after match deletion.
+    const size_t old_selected_line = selected_line_;
     const bool was_temporary_text = has_selected_match_;
 
     // This will synchronously notify both the edit and us that the results
@@ -232,14 +225,14 @@ void OmniboxPopupModel::TryDeletingCurrentItem() {
     autocomplete_controller()->DeleteMatch(match);
     const AutocompleteResult& result = this->result();
     if (!result.empty() &&
-        (was_temporary_text || selected_line != selected_line_)) {
+        (was_temporary_text || old_selected_line != selected_line_)) {
       // Move the selection to the next choice after the deleted one.
       // SetSelectedLine() will clamp to take care of the case where we deleted
       // the last item.
       // TODO(pkasting): Eventually the controller should take care of this
       // before notifying us, reducing flicker.  At that point the check for
       // deletability can move there too.
-      SetSelectedLine(selected_line, false, true);
+      SetSelectedLine(old_selected_line, false, true);
     }
   }
 }
@@ -253,14 +246,19 @@ void OmniboxPopupModel::OnResultChanged() {
   rich_suggestion_bitmaps_.clear();
   const AutocompleteResult& result = this->result();
   size_t old_selected_line = selected_line_;
-  selected_line_ = result.default_match() == result.end() ?
-      kNoMatch : static_cast<size_t>(result.default_match() - result.begin());
-  // There had better not be a nonempty result set with no default match.
-  CHECK((selected_line_ != kNoMatch) || result.empty());
   has_selected_match_ = false;
-  // If selected line state was |BUTTON_FOCUSED| and nothing has changed, leave
-  // it.
-  if (selected_line_ != kNoMatch) {
+
+  if (result.default_match() == result.end()) {
+    selected_line_ = kNoMatch;
+    selected_line_state_ = NORMAL;
+  } else {
+    // TODO(tommycli): The default match is always in the first position. After
+    // we cement these semantics, we should just set selected_line_ to 0.
+    selected_line_ =
+        static_cast<size_t>(result.default_match() - result.begin());
+
+    // If selected line state was |BUTTON_FOCUSED| and nothing has changed,
+    // leave it.
     const bool has_focused_match =
         selected_line_state_ == BUTTON_FOCUSED &&
         result.match_at(selected_line_).has_tab_match;
@@ -269,8 +267,6 @@ void OmniboxPopupModel::OnResultChanged() {
         result.match_at(selected_line_).destination_url != old_focused_url_;
     if (!has_focused_match || has_changed)
       selected_line_state_ = NORMAL;
-  } else {
-    selected_line_state_ = NORMAL;
   }
 
   bool popup_was_open = view_->IsOpen();
@@ -308,7 +304,8 @@ gfx::Image OmniboxPopupModel::GetMatchIcon(const AutocompleteMatch& match,
   // Get the favicon for navigational suggestions.
   if (base::FeatureList::IsEnabled(
           omnibox::kUIExperimentShowSuggestionFavicons) &&
-      !AutocompleteMatch::IsSearchType(match.type)) {
+      !AutocompleteMatch::IsSearchType(match.type) &&
+      match.type != AutocompleteMatchType::DOCUMENT_SUGGESTION) {
     // Because the Views UI code calls GetMatchIcon in both the layout and
     // painting code, we may generate multiple OnFaviconFetched callbacks,
     // all run one after another. This seems to be harmless as the callback
@@ -334,17 +331,17 @@ gfx::Image OmniboxPopupModel::GetMatchIcon(const AutocompleteMatch& match,
 
 bool OmniboxPopupModel::SelectedLineHasTabMatch() {
   return selected_line_ != kNoMatch &&
-         result().match_at(selected_line_).ShouldShowTabMatch();
+         result().match_at(selected_line_).ShouldShowTabMatchButton();
 }
 
-bool OmniboxPopupModel::SelectedLineHasButton() {
+bool OmniboxPopupModel::SelectedLineIsTabSwitchSuggestion() {
   return selected_line_ != kNoMatch &&
-         result().match_at(selected_line_).ShouldShowButton();
+         result().match_at(selected_line_).IsTabSwitchSuggestion();
 }
 
 void OmniboxPopupModel::OnFaviconFetched(const GURL& page_url,
                                          const gfx::Image& icon) {
-  if (icon.IsEmpty())
+  if (icon.IsEmpty() || !view_->IsOpen())
     return;
 
   // Notify all affected matches.

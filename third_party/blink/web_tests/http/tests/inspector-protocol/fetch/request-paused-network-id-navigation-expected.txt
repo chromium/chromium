@@ -1,0 +1,3 @@
+Verifies that requestPaused has a networkId corresponding to requestWillBeSent's requestId on navigation
+requestPaused.networkId === requestWillBeSent.requestId: true
+

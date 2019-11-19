@@ -1,0 +1,28 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutTableRow TR",
+          "rect": [8, 8, 114, 54],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='blockDiv'",
+          "rect": [90, 30, 20, 20],
+          "reason": "full"
+        },
+        {
+          "object": "InlineTextBox 'A'",
+          "rect": [90, 30, 12, 19],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

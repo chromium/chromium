@@ -1,0 +1,73 @@
+[ca]
+default_ca = CA_root
+preserve   = yes
+
+# The default test root, used to generate certificates and CRLs.
+[CA_root]
+dir           = out
+key_size      = 2048
+algo          = sha256
+cert_type     = root
+database      = $dir/${ENV::CA_ID}-index.txt
+new_certs_dir = $dir
+serial        = $dir/${ENV::CA_ID}-serial
+certificate   = $dir/${ENV::CA_ID}.pem
+private_key   = $dir/${ENV::CA_ID}.key
+RANDFILE      = $dir/.rand
+default_days     = 3650
+default_crl_days = 30
+default_md       = sha256
+policy           = policy_anything
+unique_subject   = no
+copy_extensions  = copy
+
+[leaf_cert_san_ip]
+# Extensions to add when signing a request for an leaf cert
+basicConstraints       = critical, CA:false
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always
+extendedKeyUsage       = serverAuth, clientAuth
+subjectAltName         = IP:${ENV::CN}
+
+[leaf_cert_san_dns]
+# Extensions to add when signing a request for an leaf cert
+basicConstraints       = critical, CA:false
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always
+extendedKeyUsage       = serverAuth, clientAuth
+subjectAltName         = DNS:${ENV::CN}
+
+[leaf_cert_without_san]
+# Extensions to add when signing a request for an leaf cert
+basicConstraints       = critical, CA:false
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always
+extendedKeyUsage       = serverAuth, clientAuth
+
+[ca_cert]
+# Extensions to add when signing a request for an intermediate/CA cert
+basicConstraints       = critical, CA:true
+subjectKeyIdentifier   = hash
+authorityKeyIdentifier = keyid:always
+keyUsage               = critical, keyCertSign, cRLSign
+
+[policy_anything]
+# Default signing policy
+countryName            = optional
+stateOrProvinceName    = optional
+localityName           = optional
+organizationName       = optional
+organizationalUnitName = optional
+commonName             = optional
+emailAddress           = optional
+
+[req]
+default_bits       = 2048
+default_md         = sha256
+string_mask        = utf8only
+prompt             = no
+encrypt_key        = no
+distinguished_name = dn
+
+[dn]
+CN = ${ENV::CN}

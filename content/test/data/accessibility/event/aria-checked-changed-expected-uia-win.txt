@@ -1,0 +1,8 @@
+AriaProperties changed on role=checkbox, name=checkbox1
+AriaProperties changed on role=checkbox, name=checkbox2
+AriaProperties changed on role=radio, name=radio1
+AriaProperties changed on role=radio, name=radio2
+ToggleToggleState changed on role=checkbox, name=checkbox1
+ToggleToggleState changed on role=checkbox, name=checkbox2
+ToggleToggleState changed on role=radio, name=radio1
+ToggleToggleState changed on role=radio, name=radio2

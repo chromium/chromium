@@ -15,8 +15,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/zlib/zlib.h"
 
-using content::BrowserThread;
-
 namespace {
 
 static const size_t kMinimumGzipOutputBufferSize = 256;  // In bytes.
@@ -261,11 +259,11 @@ WebRtcRtpDumpWriter::WebRtcRtpDumpWriter(
     : max_dump_size_(max_dump_size),
       max_dump_size_reached_callback_(max_dump_size_reached_callback),
       total_dump_size_on_disk_(0),
-      background_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
+      background_task_runner_(
+          base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                           base::TaskPriority::BEST_EFFORT})),
       incoming_file_thread_worker_(new FileWorker(incoming_dump_path)),
-      outgoing_file_thread_worker_(new FileWorker(outgoing_dump_path)),
-      weak_ptr_factory_(this) {}
+      outgoing_file_thread_worker_(new FileWorker(outgoing_dump_path)) {}
 
 WebRtcRtpDumpWriter::~WebRtcRtpDumpWriter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -9,10 +9,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import static org.chromium.net.CronetTestRule.SERVER_CERT_PEM;
+import static org.chromium.net.CronetTestRule.SERVER_KEY_PKCS8_PEM;
 import static org.chromium.net.CronetTestRule.getContext;
 import static org.chromium.net.CronetTestRule.getTestStorage;
 
 import android.support.test.filters.SmallTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.json.JSONObject;
 import org.junit.After;
@@ -21,7 +24,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 import org.chromium.net.test.util.CertTestUtil;
@@ -38,10 +40,8 @@ import java.util.Set;
 /**
  * Public-Key-Pinning tests of Cronet Java API.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class PkpTest {
-    private static final String CERT_USED = "quic-chain.pem";
-    private static final String[] CERTS_USED = {CERT_USED};
     private static final int DISTANT_FUTURE = Integer.MAX_VALUE;
     private static final boolean INCLUDE_SUBDOMAINS = true;
     private static final boolean EXCLUDE_SUBDOMAINS = false;
@@ -56,7 +56,7 @@ public class PkpTest {
     private CronetEngine mCronetEngine;
     private ExperimentalCronetEngine.Builder mBuilder;
     private TestUrlRequestCallback mListener;
-    private String mServerUrl; // https://test.example.com:6121
+    private String mServerUrl; // https://test.example.com:8443
     private String mServerHost; // test.example.com
     private String mDomain; // example.com
 
@@ -65,17 +65,18 @@ public class PkpTest {
         if (mTestRule.testingJavaImpl()) {
             return;
         }
-        // Start QUIC Test Server
+        // Start HTTP2 Test Server
         System.loadLibrary("cronet_tests");
-        QuicTestServer.startQuicTestServer(getContext());
-        mServerUrl = QuicTestServer.getServerURL();
-        mServerHost = QuicTestServer.getServerHost();
+        assertTrue(Http2TestServer.startHttp2TestServer(
+                getContext(), SERVER_CERT_PEM, SERVER_KEY_PKCS8_PEM));
+        mServerHost = "test.example.com";
+        mServerUrl = "https://" + mServerHost + ":" + Http2TestServer.getServerPort();
         mDomain = mServerHost.substring(mServerHost.indexOf('.') + 1, mServerHost.length());
     }
 
     @After
     public void tearDown() throws Exception {
-        QuicTestServer.shutdownQuicTestServer();
+        Http2TestServer.shutdownHttp2TestServer();
         shutdownCronetEngine();
     }
 
@@ -112,7 +113,7 @@ public class PkpTest {
     public void testSuccessIfPinMatches() throws Exception {
         createCronetEngineBuilder(ENABLE_PINNING_BYPASS_FOR_LOCAL_ANCHORS, KNOWN_ROOT);
         // Get PKP hash of the real certificate
-        X509Certificate cert = readCertFromFileInPemFormat(CERT_USED);
+        X509Certificate cert = readCertFromFileInPemFormat(SERVER_CERT_PEM);
         byte[] matchingHash = CertTestUtil.getPublicKeySha256(cert);
 
         addPkpSha256(mServerHost, matchingHash, EXCLUDE_SUBDOMAINS, DISTANT_FUTURE);
@@ -392,17 +393,11 @@ public class PkpTest {
 
     /**
      * Asserts that the response from the server contains an PKP error.
-     * TODO(kapishnikov): currently QUIC returns ERR_QUIC_PROTOCOL_ERROR instead of expected
-     * ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN error code when the pin doesn't match.
-     * This method should be changed when the bug is resolved.
-     * See http://crbug.com/548378
-     * See http://crbug.com/568669
      */
     private void assertErrorResponse() {
         assertNotNull("Expected an error", mListener.mError);
         int errorCode = ((NetworkException) mListener.mError).getCronetInternalErrorCode();
         Set<Integer> expectedErrors = new HashSet<>();
-        expectedErrors.add(NetError.ERR_QUIC_PROTOCOL_ERROR);
         expectedErrors.add(NetError.ERR_CONNECTION_REFUSED);
         expectedErrors.add(NetError.ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN);
         assertTrue(String.format("Incorrect error code. Expected one of %s but received %s",
@@ -427,17 +422,15 @@ public class PkpTest {
         // Set common CronetEngine parameters
         mBuilder = new ExperimentalCronetEngine.Builder(getContext());
         mBuilder.enablePublicKeyPinningBypassForLocalTrustAnchors(bypassPinningForLocalAnchors);
-        mBuilder.enableQuic(true);
-        mBuilder.addQuicHint(QuicTestServer.getServerHost(), QuicTestServer.getServerPort(),
-                QuicTestServer.getServerPort());
         JSONObject hostResolverParams = CronetTestUtil.generateHostResolverRules();
         JSONObject experimentalOptions = new JSONObject()
                                                  .put("HostResolverRules", hostResolverParams);
         mBuilder.setExperimentalOptions(experimentalOptions.toString());
         mBuilder.setStoragePath(getTestStorage(getContext()));
         mBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISK_NO_HTTP, 1000 * 1024);
+        final String[] server_certs = {SERVER_CERT_PEM};
         CronetTestUtil.setMockCertVerifierForTesting(
-                mBuilder, MockCertVerifier.createMockCertVerifier(CERTS_USED, knownRoot));
+                mBuilder, MockCertVerifier.createMockCertVerifier(server_certs, knownRoot));
     }
 
     private void startCronetEngine() {
@@ -467,9 +460,9 @@ public class PkpTest {
     private void sendRequestAndWaitForResult() {
         mListener = new TestUrlRequestCallback();
 
-        String quicURL = mServerUrl + "/simple.txt";
+        String httpURL = mServerUrl + "/simple.txt";
         UrlRequest.Builder requestBuilder =
-                mCronetEngine.newUrlRequestBuilder(quicURL, mListener, mListener.getExecutor());
+                mCronetEngine.newUrlRequestBuilder(httpURL, mListener, mListener.getExecutor());
         requestBuilder.build().start();
         mListener.blockForDone();
     }

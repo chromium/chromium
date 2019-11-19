@@ -17,6 +17,7 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/socket_permission_request.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/host/dispatch_host_message.h"
@@ -33,7 +34,8 @@ bool LookUpProxyForURLCallback(
     int render_process_host_id,
     int render_frame_host_id,
     const GURL& url,
-    network::mojom::ProxyLookupClientPtr proxy_lookup_client) {
+    mojo::PendingRemote<network::mojom::ProxyLookupClient>
+        proxy_lookup_client) {
   RenderFrameHost* render_frame_host =
       RenderFrameHost::FromID(render_process_host_id, render_frame_host_id);
   if (!render_frame_host)
@@ -57,11 +59,10 @@ PepperNetworkProxyHost::PepperNetworkProxyHost(BrowserPpapiHostImpl* host,
       render_process_id_(0),
       render_frame_id_(0),
       is_allowed_(false),
-      waiting_for_ui_thread_data_(true),
-      weak_factory_(this) {
+      waiting_for_ui_thread_data_(true) {
   host->GetRenderFrameIDsForInstance(instance, &render_process_id_,
                                      &render_frame_id_);
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&GetUIThreadDataOnUIThread, render_process_id_,
                      render_frame_id_, host->external_plugin()),

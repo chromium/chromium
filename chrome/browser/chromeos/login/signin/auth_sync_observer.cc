@@ -14,10 +14,10 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_type.h"
-#include "services/identity/public/cpp/identity_manager.h"
 
 namespace chromeos {
 
@@ -66,18 +66,12 @@ void AuthSyncObserver::OnStateChanged(syncer::SyncService* sync) {
 }
 
 void AuthSyncObserver::OnErrorChanged() {
-  SigninErrorController* const error_controller =
-      SigninErrorControllerFactory::GetForProfile(profile_);
-  const std::string error_account_id = error_controller->error_account_id();
-
-  const std::string primary_account_id =
-      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountId();
-
-  // Bail if there is an error account id and it is not the primary account id.
-  if (!error_account_id.empty() && error_account_id != primary_account_id)
-    return;
-
-  HandleAuthError(error_controller->auth_error());
+  // This notification could have come for any account but we are only
+  // interested in errors for the Primary Account.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  HandleAuthError(identity_manager->GetErrorStateOfRefreshTokenForAccount(
+      identity_manager->GetPrimaryAccountId()));
 }
 
 void AuthSyncObserver::HandleAuthError(
@@ -113,15 +107,16 @@ void AuthSyncObserver::HandleAuthError(
           base::UserMetricsAction("ManagedUsers_Chromeos_Sync_Invalidated"));
     }
   } else if (auth_error.state() == GoogleServiceAuthError::NONE) {
-    if (user->GetType() == user_manager::USER_TYPE_SUPERVISED &&
-        user->oauth_token_status() ==
-            user_manager::User::OAUTH2_TOKEN_STATUS_INVALID) {
+    if (user->oauth_token_status() ==
+        user_manager::User::OAUTH2_TOKEN_STATUS_INVALID) {
       LOG(ERROR) << "Got an incorrectly invalidated token case, restoring "
                     "token status.";
       user_manager::UserManager::Get()->SaveUserOAuthStatus(
           user->GetAccountId(), user_manager::User::OAUTH2_TOKEN_STATUS_VALID);
-      base::RecordAction(
-          base::UserMetricsAction("ManagedUsers_Chromeos_Sync_Recovered"));
+      if (user->GetType() == user_manager::USER_TYPE_SUPERVISED) {
+        base::RecordAction(
+            base::UserMetricsAction("ManagedUsers_Chromeos_Sync_Recovered"));
+      }
     }
   }
 }

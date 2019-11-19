@@ -20,7 +20,21 @@ function onResize() {
 
 function initPage() {
   var isGiantWebView = loadTimeData.getBoolean('is_giant');
+  var darkModeAvailable = loadTimeData.getBoolean('darkModeAvailable');
+  var interstitialType = loadTimeData.getString('type');
+  var safebrowsing = interstitialType == "SAFEBROWSING";
+  var heavyAd = interstitialType == "HEAVYAD";
+
   document.body.className = isGiantWebView ? 'giant' : '';
+
+  if (darkModeAvailable) {
+    document.body.classList.add('dark-mode-available');
+  }
+
+  if (heavyAd) {
+    document.body.classList.add('heavy-ad');
+  }
+
   preventDefaultOnPoundLinkClicks();
 
   $('details-link').addEventListener('click', function(event) {
@@ -28,9 +42,11 @@ function initPage() {
     $('main-content').classList.toggle(HIDDEN_CLASS, !hiddenDetails);
   });
 
-  $('proceed-link').addEventListener('click', function(event) {
-    sendCommand(SecurityInterstitialCommandId.CMD_PROCEED);
-  });
+  if (safebrowsing) {
+    $('proceed-link').addEventListener('click', function(event) {
+      sendCommand(SecurityInterstitialCommandId.CMD_PROCEED);
+    });
+  }
 
   window.addEventListener('resize', onResize);
 }

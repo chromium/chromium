@@ -19,6 +19,9 @@ typedef NS_ENUM(NSInteger, TranslateInfobarViewState) {
 // Height of the infobar.
 extern const CGFloat kInfobarHeight;
 
+// The a11y identifier for the translate infobar view.
+extern NSString* const kTranslateInfobarViewId;
+
 @protocol TranslateInfobarViewDelegate;
 
 // An infobar for translating the page. Starting from the leading edge, it

@@ -2823,14 +2823,21 @@ ecp_nistz256_point_add:
 	orq	%r8,%r12
 	orq	%r9,%r12
 
-.byte	0x3e
-	jnz	.Ladd_proceedq
 .byte	102,73,15,126,208
 .byte	102,73,15,126,217
-	testq	%r8,%r8
+	orq	%r8,%r12
+.byte	0x3e
 	jnz	.Ladd_proceedq
+
+
+
 	testq	%r9,%r9
 	jz	.Ladd_doubleq
+
+
+
+
+
 
 .byte	102,72,15,126,199
 	pxor	%xmm0,%xmm0
@@ -3944,14 +3951,21 @@ ecp_nistz256_point_addx:
 	orq	%r8,%r12
 	orq	%r9,%r12
 
-.byte	0x3e
-	jnz	.Ladd_proceedx
 .byte	102,73,15,126,208
 .byte	102,73,15,126,217
-	testq	%r8,%r8
+	orq	%r8,%r12
+.byte	0x3e
 	jnz	.Ladd_proceedx
+
+
+
 	testq	%r9,%r9
 	jz	.Ladd_doublex
+
+
+
+
+
 
 .byte	102,72,15,126,199
 	pxor	%xmm0,%xmm0
@@ -4526,3 +4540,4 @@ ecp_nistz256_point_add_affinex:
 .cfi_endproc	
 .size	ecp_nistz256_point_add_affinex,.-ecp_nistz256_point_add_affinex
 #endif
+.section	.note.GNU-stack,"",@progbits

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<org.chromium.chrome.browser.tasks.tab_management.TabGridIphItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_grid_iph_item"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/tab_grid_iph_card_height"
+    android:layout_margin="@dimen/tab_grid_iph_card_margin"
+    android:background="@drawable/popup_bg_tinted"
+    android:visibility="invisible">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/iph_description"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="4"
+            android:layout_marginStart="@dimen/tab_grid_iph_card_text_inset"
+            android:text="@string/iph_drag_and_drop_introduction"
+            android:textAppearance="@style/TextAppearance.BlackBodyDefault"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"/>
+        <TextView
+            android:id="@+id/show_me_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="@string/iph_drag_and_drop_show_me"
+            android:textAppearance="@style/TextAppearance.BlueTitle2"
+            android:layout_gravity="center"
+            android:layout_weight="2"
+            android:gravity="center_vertical|end"/>
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/close_iph_button"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            style="@style/BottomToolbarButton"
+            android:contentDescription="@string/close"
+            android:tint="@color/default_icon_color" />
+    </LinearLayout>
+</org.chromium.chrome.browser.tasks.tab_management.TabGridIphItemView>

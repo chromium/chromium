@@ -7,6 +7,8 @@
 #include <string>
 #include <utility>
 
+#include "base/stl_util.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/wake_lock/wake_lock.h"
 
 namespace device {
@@ -23,13 +25,27 @@ WakeLockContext::WakeLockContext(
 
 WakeLockContext::~WakeLockContext() {}
 
-void WakeLockContext::GetWakeLock(mojom::WakeLockType type,
-                                  mojom::WakeLockReason reason,
-                                  const std::string& description,
-                                  mojom::WakeLockRequest request) {
-  // WakeLock owns itself.
-  new WakeLock(std::move(request), type, reason, description, context_id_,
-               native_view_getter_, file_task_runner_);
+void WakeLockContext::GetWakeLock(
+    mojom::WakeLockType type,
+    mojom::WakeLockReason reason,
+    const std::string& description,
+    mojo::PendingReceiver<mojom::WakeLock> receiver) {
+  wake_locks_.push_back(std::make_unique<WakeLock>(
+      std::move(receiver), type, reason, description, context_id_,
+      native_view_getter_, file_task_runner_, this));
+}
+
+void WakeLockContext::OnWakeLockActivated(mojom::WakeLockType type) {}
+
+void WakeLockContext::OnWakeLockDeactivated(mojom::WakeLockType type) {}
+
+void WakeLockContext::OnWakeLockChanged(mojom::WakeLockType old_type,
+                                        mojom::WakeLockType new_type) {}
+
+void WakeLockContext::OnConnectionError(mojom::WakeLockType type,
+                                        WakeLock* wake_lock) {
+  base::EraseIf(wake_locks_,
+                [wake_lock](auto& entry) { return entry.get() == wake_lock; });
 }
 
 }  // namespace device

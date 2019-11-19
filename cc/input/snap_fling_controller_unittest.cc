@@ -14,7 +14,7 @@ namespace {
 
 class MockSnapFlingClient : public SnapFlingClient {
  public:
-  MOCK_CONST_METHOD3(GetSnapFlingInfo,
+  MOCK_CONST_METHOD3(GetSnapFlingInfoAndSetSnapTarget,
                      bool(const gfx::Vector2dF& natural_displacement,
                           gfx::Vector2dF* initial_offset,
                           gfx::Vector2dF* target_offset));
@@ -75,11 +75,12 @@ TEST_F(SnapFlingControllerTest, CreatesAndAnimatesCurveOnFirstInertialGSU) {
   gsu.delta = gfx::Vector2dF(0, -10);
   gsu.is_in_inertial_phase = true;
 
-  EXPECT_CALL(mock_client_,
-              GetSnapFlingInfo(testing::_, testing::_, testing::_))
-      .WillOnce(DoAll(testing::SetArgPointee<1>(gfx::Vector2dF(0, 0)),
-                      testing::SetArgPointee<2>(gfx::Vector2dF(0, 100)),
-                      testing::Return(true)));
+  EXPECT_CALL(mock_client_, GetSnapFlingInfoAndSetSnapTarget(
+                                testing::_, testing::_, testing::_))
+      .WillOnce(
+          testing::DoAll(testing::SetArgPointee<1>(gfx::Vector2dF(0, 0)),
+                         testing::SetArgPointee<2>(gfx::Vector2dF(0, 100)),
+                         testing::Return(true)));
   EXPECT_CALL(mock_client_, RequestAnimationForSnapFling()).Times(1);
   EXPECT_CALL(mock_client_, ScrollByForSnapFling(testing::_)).Times(1);
   EXPECT_TRUE(controller_->HandleGestureScrollUpdate(gsu));
@@ -91,8 +92,8 @@ TEST_F(SnapFlingControllerTest, DoesNotHandleNonInertialGSU) {
   gsu.delta = gfx::Vector2dF(0, -10);
   gsu.is_in_inertial_phase = false;
 
-  EXPECT_CALL(mock_client_,
-              GetSnapFlingInfo(testing::_, testing::_, testing::_))
+  EXPECT_CALL(mock_client_, GetSnapFlingInfoAndSetSnapTarget(
+                                testing::_, testing::_, testing::_))
       .Times(0);
   EXPECT_CALL(mock_client_, RequestAnimationForSnapFling()).Times(0);
   EXPECT_CALL(mock_client_, ScrollByForSnapFling(testing::_)).Times(0);

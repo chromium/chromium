@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/payments/payment_manager.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/payments/payment_app.mojom.h"
 #include "url/gurl.h"
@@ -21,7 +22,7 @@ namespace content {
 class BrowserContext;
 class PaymentAppContextImpl;
 class StoragePartitionImpl;
-class TestBrowserThreadBundle;
+class BrowserTaskEnvironment;
 
 class PaymentAppContentUnitTestBase : public testing::Test {
  protected:
@@ -46,9 +47,9 @@ class PaymentAppContentUnitTestBase : public testing::Test {
   StoragePartitionImpl* storage_partition();
   PaymentAppContextImpl* payment_app_context();
 
-  std::unique_ptr<TestBrowserThreadBundle> thread_bundle_;
+  std::unique_ptr<BrowserTaskEnvironment> task_environment_;
   std::unique_ptr<PaymentAppForWorkerTestHelper> worker_helper_;
-  std::vector<payments::mojom::PaymentManagerPtr> payment_managers_;
+  std::vector<mojo::Remote<payments::mojom::PaymentManager>> payment_managers_;
 
   DISALLOW_COPY_AND_ASSIGN(PaymentAppContentUnitTestBase);
 };

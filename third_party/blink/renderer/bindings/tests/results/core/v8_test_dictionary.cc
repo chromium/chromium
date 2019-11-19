@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_treat_non_object_as_null_void_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_uint8_array.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_callback_function.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
@@ -128,7 +129,7 @@ void V8TestDictionary::ToImpl(v8::Isolate* isolate, v8::Local<v8::Value> v8_valu
   if (any_in_record_member_value.IsEmpty() || any_in_record_member_value->IsUndefined()) {
     // Do nothing.
   } else {
-    Vector<std::pair<String, ScriptValue>> any_in_record_member_cpp_value = NativeValueTraits<IDLRecord<IDLString, ScriptValue>>::NativeValue(isolate, any_in_record_member_value, exception_state);
+    HeapVector<std::pair<String, ScriptValue>> any_in_record_member_cpp_value = NativeValueTraits<IDLRecord<IDLString, ScriptValue>>::NativeValue(isolate, any_in_record_member_value, exception_state);
     if (exception_state.HadException())
       return;
     impl->setAnyInRecordMember(any_in_record_member_cpp_value);
@@ -142,7 +143,7 @@ void V8TestDictionary::ToImpl(v8::Isolate* isolate, v8::Local<v8::Value> v8_valu
   if (any_member_value.IsEmpty() || any_member_value->IsUndefined()) {
     // Do nothing.
   } else {
-    ScriptValue any_member_cpp_value = ScriptValue(ScriptState::Current(isolate), any_member_value);
+    ScriptValue any_member_cpp_value = ScriptValue(isolate, any_member_value);
     impl->setAnyMember(any_member_cpp_value);
   }
 
@@ -410,7 +411,7 @@ void V8TestDictionary::ToImpl(v8::Isolate* isolate, v8::Local<v8::Value> v8_valu
     V8StringResource<> enum_member_cpp_value = enum_member_value;
     if (!enum_member_cpp_value.Prepare(exception_state))
       return;
-    const char* kValidValues[] = {
+    const char* const kValidValues[] = {
         "",
         "EnumValue1",
         "EnumValue2",
@@ -432,7 +433,7 @@ void V8TestDictionary::ToImpl(v8::Isolate* isolate, v8::Local<v8::Value> v8_valu
     V8StringResource<kTreatNullAndUndefinedAsNullString> enum_or_null_member_cpp_value = enum_or_null_member_value;
     if (!enum_or_null_member_cpp_value.Prepare(exception_state))
       return;
-    const char* kValidValues[] = {
+    const char* const kValidValues[] = {
         nullptr,
         "",
         "EnumValue1",
@@ -455,7 +456,7 @@ void V8TestDictionary::ToImpl(v8::Isolate* isolate, v8::Local<v8::Value> v8_valu
     Vector<String> enum_sequence_member_cpp_value = NativeValueTraits<IDLSequence<IDLString>>::NativeValue(isolate, enum_sequence_member_value, exception_state);
     if (exception_state.HadException())
       return;
-    const char* kValidValues[] = {
+    const char* const kValidValues[] = {
         "",
         "EnumValue1",
         "EnumValue2",
@@ -546,7 +547,7 @@ void V8TestDictionary::ToImpl(v8::Isolate* isolate, v8::Local<v8::Value> v8_valu
   if (object_member_value.IsEmpty() || object_member_value->IsUndefined()) {
     // Do nothing.
   } else {
-    ScriptValue object_member_cpp_value = ScriptValue(ScriptState::Current(isolate), object_member_value);
+    ScriptValue object_member_cpp_value = ScriptValue(isolate, object_member_value);
     if (!object_member_cpp_value.IsObject()) {
       exception_state.ThrowTypeError("member objectMember is not an object.");
       return;
@@ -564,7 +565,7 @@ void V8TestDictionary::ToImpl(v8::Isolate* isolate, v8::Local<v8::Value> v8_valu
   } else if (object_or_null_member_value->IsNull()) {
     impl->setObjectOrNullMemberToNull();
   } else {
-    ScriptValue object_or_null_member_cpp_value = ScriptValue(ScriptState::Current(isolate), object_or_null_member_value);
+    ScriptValue object_or_null_member_cpp_value = ScriptValue(isolate, object_or_null_member_value);
     if (!object_or_null_member_cpp_value.IsObject()) {
       exception_state.ThrowTypeError("member objectOrNullMember is not an object.");
       return;
@@ -1031,7 +1032,7 @@ void V8TestDictionary::ToImpl(v8::Isolate* isolate, v8::Local<v8::Value> v8_valu
     }
   }
 
-  if (origin_trials::FeatureNameEnabled(executionContext)) {
+  if (RuntimeEnabledFeatures::FeatureNameEnabled(executionContext)) {
     v8::Local<v8::Value> origin_trial_member_value;
     if (!v8Object->Get(context, keys[29].Get(isolate)).ToLocal(&origin_trial_member_value)) {
       exception_state.RethrowV8Exception(block.Exception());
@@ -1047,7 +1048,7 @@ void V8TestDictionary::ToImpl(v8::Isolate* isolate, v8::Local<v8::Value> v8_valu
     }
   }
 
-  if (origin_trials::FeatureName1Enabled(executionContext)) {
+  if (RuntimeEnabledFeatures::FeatureName1Enabled(executionContext)) {
     v8::Local<v8::Value> origin_trial_second_member_value;
     if (!v8Object->Get(context, keys[30].Get(isolate)).ToLocal(&origin_trial_second_member_value)) {
       exception_state.RethrowV8Exception(block.Exception());
@@ -1806,7 +1807,7 @@ bool toV8TestDictionary(const TestDictionary* impl, v8::Local<v8::Object> dictio
     }
   }
 
-  if (origin_trials::FeatureNameEnabled(executionContext)) {
+  if (RuntimeEnabledFeatures::FeatureNameEnabled(executionContext)) {
     v8::Local<v8::Value> origin_trial_member_value;
     bool origin_trial_member_has_value_or_default = false;
     if (impl->hasOriginTrialMember()) {
@@ -1819,7 +1820,7 @@ bool toV8TestDictionary(const TestDictionary* impl, v8::Local<v8::Object> dictio
     }
   }
 
-  if (origin_trials::FeatureName1Enabled(executionContext)) {
+  if (RuntimeEnabledFeatures::FeatureName1Enabled(executionContext)) {
     v8::Local<v8::Value> origin_trial_second_member_value;
     bool origin_trial_second_member_has_value_or_default = false;
     if (impl->hasOriginTrialSecondMember()) {

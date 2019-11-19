@@ -8,15 +8,19 @@
 class GURL;
 
 @class ShareToData;
-@class Tab;
+
+namespace web {
+class WebState;
+}
 
 namespace activity_services {
 
-// Returns a ShareToData object using data from |tab|. |shareURL| is the URL to
-// be shared with share extensions (excluding password managers). If |shareURL|
-// is empty, the visible URL associated with |tab| will be used instead. |tab|
-// must not be nil. Function may return nil.
-ShareToData* ShareToDataForTab(Tab* tab, const GURL& shareURL);
+// Returns a ShareToData object using data from |web_state|. |share_url| is the
+// URL to be shared with share extensions (excluding password managers). If
+// |share_url| is empty, the visible URL associated with |web_state| will be
+// used instead. |web_state| must not be nil. Function may return nil.
+ShareToData* ShareToDataForWebState(web::WebState* web_state,
+                                    const GURL& share_url);
 
 }  // namespace activity_services
 

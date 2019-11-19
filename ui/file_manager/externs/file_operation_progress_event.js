@@ -2,14 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * @constructor
- * @extends {Event}
- */
-var FileOperationProgressEvent = function() {};
+class FileOperationProgressEvent extends Event {
+  constructor() {
+    /** @type {fileOperationUtil.EventRouter.EventType} */
+    this.reason;
 
-/** @type {fileOperationUtil.EventRouter.EventType} */
-FileOperationProgressEvent.prototype.reason;
+    /** @type {(fileOperationUtil.Error|undefined)} */
+    this.error;
 
-/** @type {(fileOperationUtil.Error|undefined)} */
-FileOperationProgressEvent.prototype.error;
+    /** @public {string} */
+    this.taskId;
+
+    /** @public {?Array<!Entry>} */
+    this.entries;
+
+    /** @public {?Object} */
+    this.status;
+
+    /** @public {number} */
+    this.totalBytes;
+
+    /** @public {number} */
+    this.processedBytes;
+  }
+}

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/name_node_list.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 
@@ -20,7 +21,8 @@ class LiveNodeListRegistryTest : public PageTestBase {
 
  protected:
   const LiveNodeListBase* CreateNodeList() {
-    return NameNodeList::Create(GetDocument(), kNameNodeListType, g_empty_atom);
+    return MakeGarbageCollected<NameNodeList>(GetDocument(), kNameNodeListType,
+                                              g_empty_atom);
   }
 };
 
@@ -98,8 +100,8 @@ TEST_F(LiveNodeListRegistryTest, ExplicitRemove) {
 // This is a hack for test purposes. The test below forces a GC to happen and
 // claims that there are no GC pointers on the stack. For this to be valid, the
 // tracker itself must live on the heap, not on the stack.
-struct LiveNodeListRegistryWrapper
-    : public GarbageCollectedFinalized<LiveNodeListRegistryWrapper> {
+struct LiveNodeListRegistryWrapper final
+    : public GarbageCollected<LiveNodeListRegistryWrapper> {
   LiveNodeListRegistry registry;
   void Trace(Visitor* visitor) { visitor->Trace(registry); }
 };
@@ -117,14 +119,14 @@ TEST_F(LiveNodeListRegistryTest, ImplicitRemove) {
   registry.Add(a, kInvalidateOnNameAttrChange);
   registry.Add(b, kInvalidateOnClassAttrChange);
   registry.Add(a, kInvalidateOnIdNameAttrChange);
-  ThreadState::Current()->CollectAllGarbage();
+  ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_FALSE(registry.IsEmpty());
   EXPECT_TRUE(registry.ContainsInvalidationType(kInvalidateOnNameAttrChange));
   EXPECT_TRUE(registry.ContainsInvalidationType(kInvalidateOnClassAttrChange));
   EXPECT_TRUE(registry.ContainsInvalidationType(kInvalidateOnIdNameAttrChange));
 
   a.Clear();
-  ThreadState::Current()->CollectAllGarbage();
+  ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_FALSE(registry.IsEmpty());
   EXPECT_FALSE(registry.ContainsInvalidationType(kInvalidateOnNameAttrChange));
   EXPECT_TRUE(registry.ContainsInvalidationType(kInvalidateOnClassAttrChange));
@@ -132,7 +134,7 @@ TEST_F(LiveNodeListRegistryTest, ImplicitRemove) {
       registry.ContainsInvalidationType(kInvalidateOnIdNameAttrChange));
 
   b.Clear();
-  ThreadState::Current()->CollectAllGarbage();
+  ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_TRUE(registry.IsEmpty());
   EXPECT_FALSE(registry.ContainsInvalidationType(kInvalidateOnNameAttrChange));
   EXPECT_FALSE(registry.ContainsInvalidationType(kInvalidateOnClassAttrChange));

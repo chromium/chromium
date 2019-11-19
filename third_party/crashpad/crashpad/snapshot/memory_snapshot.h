@@ -111,31 +111,6 @@ bool DetermineMergedRange(const MemorySnapshot* a,
                           const MemorySnapshot* b,
                           CheckedRange<uint64_t, size_t>* merged);
 
-namespace internal {
-
-//! \brief A standard implementation of MemorySnapshot::MergeWithOtherSnapshot()
-//!     for concrete MemorySnapshot implementations that use a
-//!     `process_reader_`.
-template <class T>
-const MemorySnapshot* MergeWithOtherSnapshotImpl(const T* self,
-                                                 const MemorySnapshot* other) {
-  const T* other_as_memory_snapshot_concrete =
-      reinterpret_cast<const T*>(other);
-  if (self->process_reader_ !=
-      other_as_memory_snapshot_concrete->process_reader_) {
-    LOG(ERROR) << "different process_reader_ for snapshots";
-    return nullptr;
-  }
-  CheckedRange<uint64_t, size_t> merged(0, 0);
-  if (!LoggingDetermineMergedRange(self, other, &merged))
-    return nullptr;
-
-  std::unique_ptr<T> result(new T());
-  result->Initialize(self->process_reader_, merged.base(), merged.size());
-  return result.release();
-}
-
-}  // namespace internal
 }  // namespace crashpad
 
 #endif  // CRASHPAD_SNAPSHOT_MEMORY_SNAPSHOT_H_

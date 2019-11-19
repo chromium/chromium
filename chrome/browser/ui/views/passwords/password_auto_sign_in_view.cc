@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/views/passwords/password_auto_sign_in_view.h"
 
+#include <memory>
+
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/passwords/credentials_item_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -25,11 +28,15 @@ PasswordAutoSignInView::~PasswordAutoSignInView() = default;
 PasswordAutoSignInView::PasswordAutoSignInView(
     content::WebContents* web_contents,
     views::View* anchor_view,
-    const gfx::Point& anchor_point,
     DisplayReason reason)
-    : PasswordBubbleViewBase(web_contents, anchor_view, anchor_point, reason) {
+    : PasswordBubbleViewBase(web_contents,
+                             anchor_view,
+                             reason,
+                             /*easily_dismissable=*/false) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   const autofill::PasswordForm& form = model()->pending_password();
+
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_NONE);
 
   set_margins(
       ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
@@ -40,7 +47,8 @@ PasswordAutoSignInView::PasswordAutoSignInView(
       form.username_value, kButtonHoverColor, &form,
       content::BrowserContext::GetDefaultStoragePartition(model()->GetProfile())
           ->GetURLLoaderFactoryForBrowserProcess()
-          .get());
+          .get(),
+      STYLE_HINT, views::style::STYLE_PRIMARY);
   credential->SetEnabled(false);
   AddChildView(credential);
 
@@ -64,10 +72,6 @@ void PasswordAutoSignInView::OnWidgetActivationChanged(views::Widget* widget,
                  &PasswordAutoSignInView::OnTimer);
   }
   LocationBarBubbleDelegateView::OnWidgetActivationChanged(widget, active);
-}
-
-int PasswordAutoSignInView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_NONE;
 }
 
 gfx::Size PasswordAutoSignInView::CalculatePreferredSize() const {

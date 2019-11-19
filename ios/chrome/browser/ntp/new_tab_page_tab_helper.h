@@ -10,10 +10,14 @@
 
 #include "base/macros.h"
 #include "base/timer/timer.h"
-#include "ios/web/public/web_state/web_state_observer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 @protocol NewTabPageTabHelperDelegate;
+
+namespace web {
+class NavigationItem;
+}
 
 // NewTabPageTabHelper which manages a single NTP per tab.
 class NewTabPageTabHelper : public web::WebStateObserver,
@@ -58,7 +62,7 @@ class NewTabPageTabHelper : public web::WebStateObserver,
 
   // Sets the NTP's NavigationItem title and virtualURL to the appropriate
   // string and chrome://newtab respectively.
-  void UpdatePendingItem();
+  void UpdateItem(web::NavigationItem* item);
 
   // Returns true if an |url| is either chrome://newtab or about://newtab.
   bool IsNTPURL(const GURL& url);

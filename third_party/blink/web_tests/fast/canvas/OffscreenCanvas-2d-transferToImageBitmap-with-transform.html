@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head></head>
+<body>
+  <canvas id="myCanvas" width="512" height="256"></canvas>
+</body>
+<script>
+// Test that an offscreen canvas' transform is applied correctly after a call
+// to transferToImageBitmap. transferToImageBitmap discards the resource but
+// needs to maintain the matrix.
+// See crbug.com/102321
+var canvas = document.getElementById("myCanvas");
+var halfWidth = canvas.width >> 1;
+
+var offscreenCanvas = new OffscreenCanvas(canvas.width, canvas.height);
+var offscreenCtx = offscreenCanvas.getContext('2d');
+
+// The bug only occurs when calling transferToImageBitmap after getting an
+// OffscreenCanvasRenderingContext2D.
+offscreenCanvas.transferToImageBitmap();
+offscreenCtx.translate(canvas.width/2, 0);
+
+offscreenCtx.fillStyle = 'green';
+offscreenCtx.fillRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+
+
+var ctx = canvas.getContext('2d');
+ctx.fillStyle = 'red';
+ctx.fillRect(canvas.width/2, 0, canvas.width/2, canvas.height);
+ctx.drawImage(offscreenCtx.canvas, 0, 0);
+</script>
+</html>

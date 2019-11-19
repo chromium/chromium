@@ -49,26 +49,6 @@ var i18nTemplate = (function() {
     },
 
     /**
-     * This handler adds options to a <select> element.
-     * @param {!HTMLElement} select The node to modify.
-     * @param {string} key The name of the value in |data|. It should
-     *     identify an array of values to initialize an <option>. Each value,
-     *     if a pair, represents [content, value]. Otherwise, it should be a
-     *     content string with no value.
-     * @param {!LoadTimeData} data The data source to draw from.
-     * @param {!Set<ProcessingRoot>} visited
-     */
-    'i18n-options': function(select, key, data, visited) {
-      const options = data.getValue(key);
-      options.forEach(function(optionData) {
-        const option = typeof optionData == 'string' ?
-            new Option(optionData) :
-            new Option(optionData[1], optionData[0]);
-        select.appendChild(option);
-      });
-    },
-
-    /**
      * This is used to set HTML attributes and DOM properties. The syntax is:
      *   attributename:key;
      *   .domProperty:key;

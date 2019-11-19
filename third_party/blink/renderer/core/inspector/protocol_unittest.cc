@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/inspector/v8_inspector_string.h"
 
-#include <vector>
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace blink {
@@ -16,9 +15,9 @@ TEST(ProtocolBinaryTest, base64EmptyArgs) {
   bool success = false;
   Binary decoded = Binary::fromBase64("", &success);
   EXPECT_TRUE(success);
-  EXPECT_EQ(
-      std::vector<uint8_t>(),
-      std::vector<uint8_t>(decoded.data(), decoded.data() + decoded.size()));
+  Vector<uint8_t> decoded_bytes;
+  decoded_bytes.Append(decoded.data(), decoded.size());
+  EXPECT_EQ(Vector<uint8_t>(), decoded_bytes);
 }
 
 TEST(ProtocolStringTest, AllBytesBase64Roundtrip) {

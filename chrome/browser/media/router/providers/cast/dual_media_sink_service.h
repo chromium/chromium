@@ -15,8 +15,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service.h"
-#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
 #include "chrome/browser/media/router/media_sinks_observer.h"
 #include "chrome/common/media_router/discovery/media_sink_internal.h"
 #include "chrome/common/media_router/media_source.h"
@@ -28,6 +26,7 @@ class CastAppDiscoveryService;
 class CastMediaSinkService;
 class DialMediaSinkService;
 class DialMediaSinkServiceImpl;
+class MediaSinkServiceBase;
 
 // This class uses DialMediaSinkService and CastMediaSinkService to discover
 // sinks used by the Cast MediaRouteProvider. It also encapsulates the setup

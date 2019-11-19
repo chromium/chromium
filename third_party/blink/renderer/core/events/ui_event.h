@@ -51,15 +51,15 @@ class CORE_EXPORT UIEvent : public Event {
           Bubbles,
           Cancelable,
           ComposedMode,
-          TimeTicks platform_time_stamp,
+          base::TimeTicks platform_time_stamp,
           AbstractView*,
           int detail,
           InputDeviceCapabilities* source_capabilities);
   UIEvent(const AtomicString&,
           const UIEventInit*,
-          TimeTicks platform_time_stamp);
+          base::TimeTicks platform_time_stamp);
   UIEvent(const AtomicString& type, const UIEventInit* init)
-      : UIEvent(type, init, CurrentTimeTicks()) {}
+      : UIEvent(type, init, base::TimeTicks::Now()) {}
   ~UIEvent() override;
 
   void initUIEvent(const AtomicString& type,

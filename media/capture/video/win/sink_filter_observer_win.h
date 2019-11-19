@@ -20,7 +20,8 @@ class SinkFilterObserver {
   virtual void FrameReceived(const uint8_t* buffer,
                              int length,
                              const VideoCaptureFormat& format,
-                             base::TimeDelta timestamp) = 0;
+                             base::TimeDelta timestamp,
+                             bool flip_y) = 0;
 
   virtual void FrameDropped(VideoCaptureFrameDropReason reason) = 0;
 

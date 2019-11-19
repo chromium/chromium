@@ -5,7 +5,7 @@
 #include "chrome/browser/offline_pages/fresh_offline_content_observer.h"
 
 #include "chrome/browser/offline_pages/prefetch/prefetched_pages_notifier.h"
-#include "components/offline_pages/core/client_policy_controller.h"
+#include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/offline_pages/core/offline_page_item.h"
 
@@ -36,13 +36,12 @@ void FreshOfflineContentObserver::OfflinePageModelLoaded(
 void FreshOfflineContentObserver::OfflinePageAdded(
     OfflinePageModel* model,
     const OfflinePageItem& added_page) {
-  if (model->GetPolicyController()->IsSupportedByDownload(
-          added_page.client_id.name_space)) {
+  if (GetPolicy(added_page.client_id.name_space).is_supported_by_download) {
     OnFreshOfflineContentAvailableForNotification();
   }
 }
 
 void FreshOfflineContentObserver::OfflinePageDeleted(
-    const OfflinePageModel::DeletedPageInfo& page_info) {}
+    const OfflinePageItem& item) {}
 
 }  // namespace offline_pages

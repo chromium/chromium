@@ -20,7 +20,6 @@
 #include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "components/sessions/core/session_id.h"
-#include "third_party/blink/public/platform/web_cache.h"
 #include "ui/gfx/image/image_skia.h"
 
 class PrefRegistrySimple;
@@ -28,10 +27,6 @@ class PrefRegistrySimple;
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace net {
-class URLRequest;
-}  // namespace net
 
 namespace task_manager {
 
@@ -49,16 +44,6 @@ class TaskManagerInterface {
   // Gets the existing instance of the task manager if any, otherwise it will
   // create it first. Must be called on the UI thread.
   static TaskManagerInterface* GetTaskManager();
-
-  // This notification will be received on the IO thread from
-  // ChromeNetworkDelegate to update the task manager with read network usage.
-  static void OnRawBytesRead(const net::URLRequest& request,
-                             int64_t bytes_read);
-
-  // This notification will be received on the IO thread from
-  // ChromeNetworkDelegate to update the task manager with sent network usage.
-  static void OnRawBytesSent(const net::URLRequest& request,
-                             int64_t bytes_sent);
 
   void AddObserver(TaskManagerObserver* observer);
   void RemoveObserver(TaskManagerObserver* observer);
@@ -209,11 +194,11 @@ class TaskManagerInterface {
                            int64_t* allocated,
                            int64_t* used) const = 0;
 
-  // Gets the Webkit resource cache stats for the task with |task_id|.
+  // Gets the Blink resource cache stats for the task with |task_id|.
   // A return value of false means that task does NOT report WebCache stats.
   virtual bool GetWebCacheStats(
       TaskId task_id,
-      blink::WebCache::ResourceTypeStats* stats) const = 0;
+      blink::WebCacheResourceTypeStats* stats) const = 0;
 
   // Returns the keep-alive counter if the Task is an event page, -1 otherwise.
   virtual int GetKeepaliveCount(TaskId task_id) const = 0;

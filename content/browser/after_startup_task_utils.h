@@ -13,7 +13,7 @@ namespace content {
 // ContentBrowserClient::SetBrowserStartupIsCompleteForTesting() as that can
 // only be called from the content implementation and including content/test in
 // the content implementation is a whole other can of worms. TODO(gab): Clean
-// this up when AfterStartupTasks go away in favor of TaskScheduler.
+// this up when AfterStartupTasks go away in favor of ThreadPool.
 void CONTENT_EXPORT SetBrowserStartupIsCompleteForTesting();
 
 }  // namespace content

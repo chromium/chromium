@@ -1,7 +1,5 @@
 #include "rar.hpp"
 
-namespace third_party_unrar {
-
 File::File()
 {
   hFile=FILE_BAD_HANDLE;
@@ -25,12 +23,10 @@ File::File()
 File::~File()
 {
   if (hFile!=FILE_BAD_HANDLE && !SkipClose)
-  {
     if (NewFile)
       Delete();
     else
       Close();
-  }
 }
 
 
@@ -298,7 +294,7 @@ bool File::Rename(const wchar *NewName)
     Success=RenameFile(FileName,NewName);
 
   if (Success)
-    wcscpy(FileName,NewName);
+    wcsncpyz(FileName,NewName,ASIZE(FileName));
 
   return Success;
 }
@@ -394,7 +390,6 @@ int File::Read(void *Data,size_t Size)
     {
       ErrorType=FILE_READERROR;
       if (AllowExceptions)
-      {
         if (IgnoreReadErrors)
         {
           ReadSize=0;
@@ -412,7 +407,6 @@ int File::Read(void *Data,size_t Size)
             continue;
           ErrHandler.ReadError(FileName);
         }
-      }
     }
     break;
   }
@@ -528,22 +522,18 @@ bool File::RawSeek(int64 Offset,int Method)
 int64 File::Tell()
 {
   if (hFile==FILE_BAD_HANDLE)
-  {
     if (AllowExceptions)
       ErrHandler.SeekError(FileName);
     else
       return -1;
-  }
 #ifdef _WIN_ALL
   LONG HighDist=0;
   uint LowDist=SetFilePointer(hFile,0,&HighDist,FILE_CURRENT);
   if (LowDist==0xffffffff && GetLastError()!=NO_ERROR)
-  {
     if (AllowExceptions)
       ErrHandler.SeekError(FileName);
     else
       return -1;
-  }
   return INT32TO64(HighDist,LowDist);
 #else
 #ifdef FILE_USE_OPEN
@@ -766,5 +756,3 @@ void File::SetFileHandle(FileHandle hF) {
   hOpenFile = hF;
 }
 #endif  // defined(CHROMIUM_UNRAR)
-
-}  // namespace third_party_unrar

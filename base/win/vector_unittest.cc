@@ -49,25 +49,26 @@ namespace win {
 
 namespace {
 
-using ::testing::ElementsAre;
-using ::testing::IsEmpty;
+using ABI::Windows::Foundation::IAsyncOperation;
 using ABI::Windows::Foundation::Uri;
 using ABI::Windows::Foundation::Collections::CollectionChange;
 using ABI::Windows::Foundation::Collections::CollectionChange_ItemChanged;
 using ABI::Windows::Foundation::Collections::CollectionChange_ItemInserted;
 using ABI::Windows::Foundation::Collections::CollectionChange_ItemRemoved;
 using ABI::Windows::Foundation::Collections::CollectionChange_Reset;
+using ABI::Windows::Foundation::Collections::IIterator;
 using ABI::Windows::Foundation::Collections::IObservableVector;
 using ABI::Windows::Foundation::Collections::IVectorChangedEventArgs;
 using ABI::Windows::Foundation::Collections::IVectorView;
 using ABI::Windows::Foundation::Collections::VectorChangedEventHandler;
-using ABI::Windows::Foundation::IAsyncOperation;
 using Microsoft::WRL::ClassicCom;
 using Microsoft::WRL::ComPtr;
 using Microsoft::WRL::InhibitRoOriginateError;
 using Microsoft::WRL::Make;
 using Microsoft::WRL::RuntimeClass;
 using Microsoft::WRL::RuntimeClassFlags;
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
 template <typename T>
 class FakeVectorChangedEventHandler
@@ -632,6 +633,48 @@ TEST(VectorTest, ConstructWithAggregateType) {
   HRESULT hr = vec->get_Size(&size);
   EXPECT_TRUE(SUCCEEDED(hr));
   EXPECT_EQ(0u, size);
+}
+
+TEST(VectorTest, First) {
+  auto vec = Make<Vector<int>>(g_one_two_three);
+  ComPtr<IIterator<int>> iterator;
+  HRESULT hr = vec->First(&iterator);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  boolean has_current;
+  hr = iterator->get_HasCurrent(&has_current);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  EXPECT_TRUE(has_current);
+  int current;
+  hr = iterator->get_Current(&current);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  EXPECT_EQ(1, current);
+  hr = iterator->MoveNext(&has_current);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  EXPECT_TRUE(has_current);
+  hr = iterator->get_Current(&current);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  EXPECT_EQ(2, current);
+  hr = iterator->MoveNext(&has_current);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  EXPECT_TRUE(has_current);
+  hr = iterator->get_Current(&current);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  EXPECT_EQ(3, current);
+  hr = iterator->MoveNext(&has_current);
+  EXPECT_FALSE(SUCCEEDED(hr));
+  EXPECT_EQ(E_BOUNDS, hr);
+  hr = iterator->get_Current(&current);
+  EXPECT_FALSE(SUCCEEDED(hr));
+  EXPECT_EQ(E_BOUNDS, hr);
+
+  hr = vec->First(&iterator);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  std::vector<int> copy(3);
+  unsigned actual;
+  hr = iterator->GetMany(copy.size(), copy.data(), &actual);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  EXPECT_EQ(3u, actual);
+  EXPECT_THAT(copy, ElementsAre(1, 2, 3));
 }
 
 }  // namespace win

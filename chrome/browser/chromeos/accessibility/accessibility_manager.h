@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_ACCESSIBILITY_ACCESSIBILITY_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_ACCESSIBILITY_ACCESSIBILITY_MANAGER_H_
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
 #include <vector>
 
-#include "ash/public/interfaces/accessibility_controller.mojom.h"
-#include "ash/public/interfaces/accessibility_focus_ring_controller.mojom.h"
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
@@ -21,20 +20,29 @@
 #include "chrome/browser/chromeos/accessibility/chromevox_panel.h"
 #include "chrome/browser/chromeos/accessibility/switch_access_panel.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_system.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
-#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
 
 class Browser;
-class Profile;
 class SwitchAccessEventHandlerDelegate;
+
+namespace ash {
+struct AccessibilityFocusRingInfo;
+enum class SelectToSpeakState;
+}  // namespace ash
 
 namespace gfx {
 class Rect;
@@ -102,7 +110,8 @@ class AccessibilityManager
       public extensions::ExtensionRegistryObserver,
       public user_manager::UserManager::UserSessionStateObserver,
       public input_method::InputMethodManager::Observer,
-      public CrasAudioHandler::AudioObserver {
+      public CrasAudioHandler::AudioObserver,
+      public ProfileObserver {
  public:
   // Creates an instance of AccessibilityManager, this should be called once,
   // because only one instance should exist at the same time.
@@ -148,6 +157,10 @@ class AccessibilityManager
 
   // Returns true if autoclick is enabled.
   bool IsAutoclickEnabled() const;
+
+  // Requests the Autoclick extension find the bounds of the nearest scrollable
+  // ancestor to the point in the screen, as given in screen coordinates.
+  void RequestAutoclickScrollableBoundsForPoint(gfx::Point& point_in_screen);
 
   // Enables or disables the virtual keyboard.
   void EnableVirtualKeyboard(bool enabled);
@@ -199,12 +212,12 @@ class AccessibilityManager
   void RequestSelectToSpeakStateChange();
 
   // Called when the Select-to-Speak extension state has changed.
-  void OnSelectToSpeakStateChanged(ash::mojom::SelectToSpeakState state);
+  void OnSelectToSpeakStateChanged(ash::SelectToSpeakState state);
 
-  // Invoked to enable or disable switch access.
+  // Invoked to enable or disable Switch Access.
   void SetSwitchAccessEnabled(bool enabled);
 
-  // Returns if switch access is enabled.
+  // Returns if Switch Access is enabled.
   bool IsSwitchAccessEnabled() const;
 
   // Returns true if a braille display is connected to the system, otherwise
@@ -212,7 +225,7 @@ class AccessibilityManager
   bool IsBrailleDisplayConnected() const;
 
   // user_manager::UserManager::UserSessionStateObserver overrides:
-  void ActiveUserChanged(const user_manager::User* active_user) override;
+  void ActiveUserChanged(user_manager::User* active_user) override;
 
   // Initiates play of shutdown sound and returns it's duration.
   base::TimeDelta PlayShutdownSound();
@@ -283,26 +296,26 @@ class AccessibilityManager
   // Shows the Switch Access menu.
   void ShowSwitchAccessMenu(const gfx::Rect& element_bounds,
                             int menu_width,
-                            int menu_height);
+                            int menu_height,
+                            bool back_button_only = false);
 
   // Starts or stops dictation (type what you speak).
   bool ToggleDictation();
 
-  // Sets the focus ring color.
-  void SetFocusRingColor(SkColor color, std::string caller_id);
-
-  // Resets the focus ring color back to the default.
-  void ResetFocusRingColor(std::string caller_id);
-
-  // Draws a focus ring around the given set of rects in screen coordinates. Use
-  // |focus_ring_behavior| to specify whether the focus ring should persist or
-  // fade out.
-  void SetFocusRing(const std::vector<gfx::Rect>& rects_in_screen,
-                    ash::mojom::FocusRingBehavior focus_ring_behavior,
-                    std::string caller_id);
+  // Sets the focus ring with the given ID based on |focus_ring|.
+  void SetFocusRing(
+      std::string focus_ring_id,
+      std::unique_ptr<ash::AccessibilityFocusRingInfo> focus_ring);
 
   // Hides focus ring on screen.
   void HideFocusRing(std::string caller_id);
+
+  // Initializes the focus rings when an extension loads.
+  void InitializeFocusRings(const std::string& extension_id);
+
+  // Hides all focus rings for the extension, and removes that extension from
+  // |focus_ring_names_for_extension_id_|.
+  void RemoveFocusRings(const std::string& extension_id);
 
   // Draws a highlight at the given rects in screen coordinates. Rects may be
   // overlapping and will be merged into one layer. This looks similar to
@@ -329,16 +342,20 @@ class AccessibilityManager
   // Sets the bluetooth braille display device address for the current user.
   void UpdateBluetoothBrailleDisplayAddress(const std::string& address);
 
+  // Create a focus ring ID from the extension ID and the name of the ring.
+  const std::string GetFocusRingId(const std::string& extension_id,
+                                   const std::string& focus_ring_name);
+
   // Test helpers:
   void SetProfileForTest(Profile* profile);
   static void SetBrailleControllerForTest(
       extensions::api::braille_display_private::BrailleController* controller);
-  void FlushForTesting();
   void SetFocusRingObserverForTest(base::RepeatingCallback<void()> observer);
   void SetSelectToSpeakStateObserverForTest(
       base::RepeatingCallback<void()> observer);
   void SetCaretBoundsObserverForTest(
       base::RepeatingCallback<void(const gfx::Rect&)> observer);
+  void SetSwitchAccessKeysForTest(const std::vector<int>& keys);
 
  protected:
   AccessibilityManager();
@@ -349,9 +366,14 @@ class AccessibilityManager
   void PostUnloadChromeVox();
   void PostSwitchChromeVoxProfile();
 
+  void PostLoadSelectToSpeak();
   void PostUnloadSelectToSpeak();
+
   void PostLoadSwitchAccess();
   void PostUnloadSwitchAccess();
+
+  void PostLoadAutoclick();
+  void PostUnloadAutoclick();
 
   void UpdateAlwaysShowMenuFromPref();
   void OnLargeCursorChanged();
@@ -365,7 +387,8 @@ class AccessibilityManager
   void OnFocusHighlightChanged();
   void OnTapDraggingChanged();
   void OnSelectToSpeakChanged();
-  void UpdateSwitchAccessFromPref();
+  void OnAutoclickChanged();
+  void OnSwitchAccessChanged();
 
   void CheckBrailleState();
   void ReceiveBrailleDisplayState(
@@ -375,7 +398,11 @@ class AccessibilityManager
 
   void SetProfile(Profile* profile);
 
+  void SetProfileByUser(const user_manager::User* user);
+
   void UpdateChromeOSAccessibilityHistograms();
+
+  void PlayVolumeAdjustSound();
 
   // content::NotificationObserver
   void Observe(int type,
@@ -404,43 +431,48 @@ class AccessibilityManager
   // CrasAudioHandler::AudioObserver:
   void OnActiveOutputNodeChanged() override;
 
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+
   // Profile which has the current a11y context.
-  Profile* profile_;
+  Profile* profile_ = nullptr;
+  ScopedObserver<Profile, ProfileObserver> profile_observer_{this};
 
   content::NotificationRegistrar notification_registrar_;
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
   std::unique_ptr<PrefChangeRegistrar> local_state_pref_change_registrar_;
-  std::unique_ptr<user_manager::ScopedUserSessionStateObserver>
-      session_state_observer_;
 
-  bool spoken_feedback_enabled_;
-  bool select_to_speak_enabled_;
-  bool switch_access_enabled_;
+  bool spoken_feedback_enabled_ = false;
+  bool select_to_speak_enabled_ = false;
+  bool switch_access_enabled_ = false;
+  bool autoclick_enabled_ = false;
 
   AccessibilityStatusCallbackList callback_list_;
 
-  bool braille_display_connected_;
+  bool braille_display_connected_ = false;
   ScopedObserver<extensions::api::braille_display_private::BrailleController,
-                 AccessibilityManager>
-      scoped_braille_observer_;
+                 extensions::api::braille_display_private::BrailleObserver>
+      scoped_braille_observer_{this};
 
-  bool braille_ime_current_;
+  bool braille_ime_current_ = false;
 
-  ChromeVoxPanel* chromevox_panel_;
+  ChromeVoxPanel* chromevox_panel_ = nullptr;
   std::unique_ptr<AccessibilityPanelWidgetObserver>
       chromevox_panel_widget_observer_;
 
-  SwitchAccessPanel* switch_access_panel_;
+  SwitchAccessPanel* switch_access_panel_ = nullptr;
   std::unique_ptr<AccessibilityPanelWidgetObserver>
       switch_access_panel_widget_observer_;
 
   std::string keyboard_listener_extension_id_;
-  bool keyboard_listener_capture_;
+  bool keyboard_listener_capture_ = false;
 
   // Listen to extension unloaded notifications.
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
+
+  std::unique_ptr<AccessibilityExtensionLoader> autoclick_extension_loader_;
 
   std::unique_ptr<AccessibilityExtensionLoader> chromevox_loader_;
 
@@ -454,13 +486,8 @@ class AccessibilityManager
   std::unique_ptr<SwitchAccessEventHandlerDelegate>
       switch_access_event_handler_delegate_;
 
-  // Ash's mojom::AccessibilityController used to request Ash's a11y feature.
-  ash::mojom::AccessibilityControllerPtr accessibility_controller_;
-
-  // Ash's mojom::AccessibilityFocusRingController used to request Ash's a11y
-  // focus ring feature.
-  ash::mojom::AccessibilityFocusRingControllerPtr
-      accessibility_focus_ring_controller_;
+  std::map<std::string, std::set<std::string>>
+      focus_ring_names_for_extension_id_;
 
   bool app_terminating_ = false;
 
@@ -472,9 +499,9 @@ class AccessibilityManager
       caret_bounds_observer_for_test_;
 
   // Used to set the audio focus enforcement type for ChromeVox.
-  media_session::mojom::AudioFocusManagerPtr audio_focus_manager_ptr_;
+  mojo::Remote<media_session::mojom::AudioFocusManager> audio_focus_manager_;
 
-  base::WeakPtrFactory<AccessibilityManager> weak_ptr_factory_;
+  base::WeakPtrFactory<AccessibilityManager> weak_ptr_factory_{this};
 
   friend class DictationTest;
   friend class SwitchAccessTest;

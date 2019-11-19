@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
@@ -20,8 +21,8 @@ class ReceivingUiHandlerRegistry;
 class SendTabToSelfEntry;
 class SendTabToSelfModel;
 
-// Singleton that owns all SendTabToSelfClientServices and associates them with
-// Profile.
+// Service that listens for SendTabToSelf model changes and calls UI
+// handlers to update the UI accordingly.
 class SendTabToSelfClientService : public KeyedService,
                                    public SendTabToSelfModelObserver {
  public:
@@ -41,11 +42,20 @@ class SendTabToSelfClientService : public KeyedService,
  protected:
   ~SendTabToSelfClientService() override;
 
+  // Sets up the ReceivingUiHandlerRegistry.
+  virtual void SetupHandlerRegistry(Profile* profile);
+
+  // Returns a vector containing the registered ReceivingUiHandlers.
+  virtual const std::vector<std::unique_ptr<ReceivingUiHandler>>& GetHandlers()
+      const;
+
  private:
   // Owned by the SendTabToSelfSyncService which should outlive this class
   SendTabToSelfModel* model_;
   // Singleton instance not owned by this class
   ReceivingUiHandlerRegistry* registry_;
+  // Profile for which this service is associated.
+  Profile* profile_;
   DISALLOW_COPY_AND_ASSIGN(SendTabToSelfClientService);
 };
 

@@ -4,70 +4,24 @@
 
 #include "chrome/chrome_cleaner/os/system_util.h"
 
+#include <windows.h>
+
 #include <objbase.h>
 #include <sddl.h>
+
+#include <vector>
 
 #include "base/strings/string_util.h"
 #include "base/win/windows_version.h"
 
 namespace chrome_cleaner {
 
-bool GetMediumIntegrityToken(base::win::ScopedHandle* medium_integrity_token) {
-  DCHECK(medium_integrity_token);
+namespace {
 
-  // Open the primary access token of the process.
-  HANDLE token = nullptr;
-  if (!::OpenProcessToken(::GetCurrentProcess(),
-                          TOKEN_DUPLICATE | TOKEN_QUERY | TOKEN_ADJUST_DEFAULT |
-                              TOKEN_ASSIGN_PRIMARY,
-                          &token)) {
-    PLOG(WARNING) << "Can't open process token.";
-    return false;
-  }
-  base::win::ScopedHandle process_token(token);
+// The initial number of services when enumerating services.
+const unsigned int kInitialNumberOfServices = 100;
 
-  // Duplicate the primary token of the current process.
-  HANDLE new_token = nullptr;
-  if (!::DuplicateTokenEx(token, 0, nullptr, SecurityImpersonation,
-                          TokenPrimary, &new_token)) {
-    PLOG(WARNING) << "Can't duplicate process token.";
-    return false;
-  }
-  base::win::ScopedHandle new_process_token(new_token);
-  new_token = nullptr;
-
-  // Create a medium integrity SID.
-  PSID medium_integrity_sid = nullptr;
-  if (!::ConvertStringSidToSid(L"S-1-16-8192", &medium_integrity_sid)) {
-    PLOG(WARNING) << "Can't AllocateAndInitializeSid.";
-    return false;
-  }
-  // Don't return until medium_integrity_sid has been freed.
-  BOOL success = FALSE;
-  {
-    TOKEN_MANDATORY_LABEL token_mandatory_label = {0};
-    token_mandatory_label.Label.Attributes = SE_GROUP_INTEGRITY;
-    token_mandatory_label.Label.Sid = medium_integrity_sid;
-    success = ::SetTokenInformation(
-        new_process_token.Get(), TokenIntegrityLevel, &token_mandatory_label,
-        (sizeof(token_mandatory_label) + ::GetLengthSid(medium_integrity_sid)));
-    ::FreeSid(medium_integrity_sid);
-  }
-  if (!success) {
-    PLOG(WARNING) << "Can't SetTokenInformation.";
-    return false;
-  }
-  medium_integrity_token->Set(new_process_token.Take());
-  return true;
-}
-
-void GUIDToString(const GUID& guid, base::string16* output) {
-  DCHECK(output);
-  static const size_t kGUIDStringSize = 39;
-  int result = ::StringFromGUID2(guid, base::WriteInto(output, kGUIDStringSize),
-                                 kGUIDStringSize);
-  DCHECK(result == kGUIDStringSize);
-}
+}  // namespace
 
 void SetBackgroundMode() {
   // Get the process working set size and flags, so that we can reset them
@@ -111,13 +65,44 @@ bool IsWowRedirectionActive() {
 }
 
 bool IsX64Architecture() {
-  return base::win::OSInfo::GetInstance()->architecture() ==
+  return base::win::OSInfo::GetArchitecture() ==
          base::win::OSInfo::X64_ARCHITECTURE;
 }
 
 bool IsX64Process() {
   // WOW64 redirection is enabled for 32-bit processes on 64-bit Windows.
   return IsX64Architecture() && !IsWowRedirectionActive();
+}
+
+bool EnumerateServices(const ScopedScHandle& service_manager,
+                       DWORD service_type,
+                       DWORD service_state,
+                       std::vector<ServiceStatus>* services) {
+  DCHECK(services);
+  std::vector<uint8_t> buffer(kInitialNumberOfServices *
+                              sizeof(ENUM_SERVICE_STATUS_PROCESS));
+  ULONG number_of_services = 0;
+  ULONG more_bytes_needed = 0;
+  while (!::EnumServicesStatusEx(service_manager.Get(), SC_ENUM_PROCESS_INFO,
+                                 service_type, service_state, buffer.data(),
+                                 buffer.size(), &more_bytes_needed,
+                                 &number_of_services, nullptr, nullptr)) {
+    if (::GetLastError() != ERROR_MORE_DATA) {
+      PLOG(ERROR) << "Cannot enumerate running services.";
+      return false;
+    }
+    buffer.resize(buffer.size() + more_bytes_needed);
+  }
+
+  services->reserve(number_of_services);
+  ENUM_SERVICE_STATUS_PROCESS* service_array =
+      reinterpret_cast<ENUM_SERVICE_STATUS_PROCESS*>(buffer.data());
+  for (size_t i = 0; i < number_of_services; i++) {
+    services->push_back(ServiceStatus{service_array[i].lpServiceName,
+                                      service_array[i].lpDisplayName,
+                                      service_array[i].ServiceStatusProcess});
+  }
+  return true;
 }
 
 }  // namespace chrome_cleaner

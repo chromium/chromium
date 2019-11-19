@@ -7,9 +7,13 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/launch_service/launch_service.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/chromeos/crostini/crostini_features.h"
 #include "chrome/browser/chromeos/crostini/crostini_registry_service.h"
 #include "chrome/browser/chromeos/crostini/crostini_registry_service_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
@@ -26,10 +30,10 @@
 #include "chrome/browser/ui/ash/launcher/arc_app_window_launcher_controller.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/extensions/app_launch_params.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "components/arc/arc_util.h"
 #include "components/arc/metrics/arc_metrics_constants.h"
@@ -61,7 +65,7 @@ const extensions::Extension* GetExtensionForTab(Profile* profile,
 
   // Use the Browser's app name to determine the extension for app windows and
   // use the tab's url for app tabs.
-  if (browser && browser->is_app()) {
+  if (browser && browser->deprecated_is_app()) {
     return registry->GetExtensionById(
         web_app::GetAppIdFromApplicationName(browser->app_name()),
         extensions::ExtensionRegistry::EVERYTHING);
@@ -75,14 +79,12 @@ const extensions::Extension* GetExtensionForTab(Profile* profile,
 
   // Bookmark app windows should match their launch url extension despite
   // their web extents.
-  if (extensions::util::IsNewBookmarkAppsEnabled()) {
-    for (const auto& i : extensions) {
-      if (i.get()->from_bookmark() &&
-          extensions::IsInNavigationScopeForLaunchUrl(
-              extensions::AppLaunchInfo::GetLaunchWebURL(i.get()), url) &&
-          !extensions::LaunchesInWindow(profile, i.get())) {
-        return i.get();
-      }
+  for (const auto& i : extensions) {
+    if (i.get()->from_bookmark() &&
+        extensions::IsInNavigationScopeForLaunchUrl(
+            extensions::AppLaunchInfo::GetLaunchWebURL(i.get()), url) &&
+        !extensions::LaunchesInWindow(profile, i.get())) {
+      return i.get();
     }
   }
   return nullptr;
@@ -120,6 +122,12 @@ base::string16 LauncherControllerHelper::GetAppTitle(
     return base::string16();
 
   // Get the title if the app is an ARC app.
+  //
+  // TODO(crbug.com/1002351): ARC converts the ShelfId and |app_id| here.
+  // ShelfId has not been added to AppService yet. So ARC's code is still used
+  // here to get the title name. When ShelfId is integrated to AppService, the
+  // ARC code can be removed, and use AppService to get title names for all
+  // apps.
   if (arc::IsArcItem(profile, app_id)) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info =
         ArcAppListPrefs::Get(profile)->GetApp(
@@ -127,6 +135,18 @@ base::string16 LauncherControllerHelper::GetAppTitle(
     DCHECK(app_info.get());
     if (app_info)
       return base::UTF8ToUTF16(app_info->name);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kAppServiceShelf)) {
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile);
+    if (!proxy)
+      return base::string16();
+    std::string name;
+    proxy->AppRegistryCache().ForOneApp(
+        app_id,
+        [&name](const apps::AppUpdate& update) { name = update.Name(); });
+    return base::UTF8ToUTF16(name);
   }
 
   crostini::CrostiniRegistryService* registry_service =
@@ -169,34 +189,28 @@ std::string LauncherControllerHelper::GetAppID(content::WebContents* tab) {
 }
 
 bool LauncherControllerHelper::IsValidIDForCurrentUser(
-    const std::string& id) const {
-  const ArcAppListPrefs* arc_prefs = GetArcAppListPrefs();
-  if (arc_prefs && arc_prefs->IsRegistered(id))
+    const std::string& app_id) const {
+  if (IsValidIDForArcApp(app_id)) {
     return true;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kAppServiceShelf)) {
+    return IsValidIDFromAppService(app_id);
+  }
 
   crostini::CrostiniRegistryService* registry_service =
       crostini::CrostiniRegistryServiceFactory::GetForProfile(profile_);
-  if (registry_service && registry_service->IsCrostiniShelfAppId(id)) {
-    return crostini::IsCrostiniUIAllowedForProfile(profile_) &&
-           registry_service->GetRegistration(id).has_value();
+  if (registry_service && registry_service->IsCrostiniShelfAppId(app_id)) {
+    return crostini::CrostiniFeatures::Get()->IsUIAllowed(profile_) &&
+           registry_service->GetRegistration(app_id).has_value();
   }
 
-  if (app_list::IsInternalApp(id))
+  if (app_list::IsInternalApp(app_id)) {
     return true;
+  }
 
-  if (!GetExtensionByID(profile_, id))
+  if (!GetExtensionByID(profile_, app_id)) {
     return false;
-  if (id == arc::kPlayStoreAppId) {
-    if (!arc::IsArcAllowedForProfile(profile()) || !arc::IsPlayStoreAvailable())
-      return false;
-    const arc::ArcSessionManager* arc_session_manager =
-        arc::ArcSessionManager::Get();
-    DCHECK(arc_session_manager);
-    if (!arc_session_manager->IsAllowed())
-      return false;
-    if (!arc::IsArcPlayStoreEnabledForProfile(profile()) &&
-        arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile()))
-      return false;
   }
 
   return true;
@@ -213,6 +227,15 @@ void LauncherControllerHelper::LaunchApp(const ash::ShelfID& id,
   }
 
   const std::string& app_id = id.app_id;
+  if (base::FeatureList::IsEnabled(features::kAppServiceShelf)) {
+    apps::AppServiceProxy* proxy =
+        apps::AppServiceProxyFactory::GetForProfile(profile_);
+    DCHECK(proxy);
+    proxy->Launch(app_id, event_flags, apps::mojom::LaunchSource::kFromShelf,
+                  display_id);
+    return;
+  }
+
   const ArcAppListPrefs* arc_prefs = GetArcAppListPrefs();
   if (arc_prefs && arc_prefs->IsRegistered(app_id)) {
     arc::LaunchApp(profile_, app_id, event_flags,
@@ -253,9 +276,9 @@ void LauncherControllerHelper::LaunchApp(const ash::ShelfID& id,
   }
 
   // The app will be created for the currently active profile.
-  AppLaunchParams params = CreateAppLaunchParamsWithEventFlags(
-      profile_, extension, event_flags, extensions::SOURCE_APP_LAUNCHER,
-      display_id);
+  apps::AppLaunchParams params = CreateAppLaunchParamsWithEventFlags(
+      profile_, extension, event_flags,
+      apps::mojom::AppLaunchSource::kSourceAppLauncher, display_id);
   if ((source == ash::LAUNCH_FROM_APP_LIST ||
        source == ash::LAUNCH_FROM_APP_LIST_SEARCH) &&
       app_id == extensions::kWebStoreAppId) {
@@ -269,7 +292,7 @@ void LauncherControllerHelper::LaunchApp(const ash::ShelfID& id,
   }
   params.launch_id = id.launch_id;
 
-  OpenApplication(params);
+  apps::LaunchService::Get(profile_)->OpenApplication(params);
 }
 
 ArcAppListPrefs* LauncherControllerHelper::GetArcAppListPrefs() const {
@@ -284,4 +307,48 @@ void LauncherControllerHelper::ExtensionEnableFlowFinished() {
 
 void LauncherControllerHelper::ExtensionEnableFlowAborted(bool user_initiated) {
   extension_enable_flow_.reset();
+}
+
+bool LauncherControllerHelper::IsValidIDForArcApp(
+    const std::string& app_id) const {
+  const ArcAppListPrefs* arc_prefs = GetArcAppListPrefs();
+  if (arc_prefs && arc_prefs->IsRegistered(app_id)) {
+    return true;
+  }
+
+  if (app_id == arc::kPlayStoreAppId) {
+    if (!arc::IsArcAllowedForProfile(profile()) ||
+        !arc::IsPlayStoreAvailable()) {
+      return false;
+    }
+    const arc::ArcSessionManager* arc_session_manager =
+        arc::ArcSessionManager::Get();
+    DCHECK(arc_session_manager);
+    if (!arc_session_manager->IsAllowed()) {
+      return false;
+    }
+    if (!arc::IsArcPlayStoreEnabledForProfile(profile()) &&
+        arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile())) {
+      return false;
+    }
+    return true;
+  }
+
+  return false;
+}
+
+bool LauncherControllerHelper::IsValidIDFromAppService(
+    const std::string& app_id) const {
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile_);
+  if (!proxy) {
+    return false;
+  }
+  apps::mojom::AppType app_type = proxy->AppRegistryCache().GetAppType(app_id);
+  if (app_type == apps::mojom::AppType::kUnknown ||
+      app_type == apps::mojom::AppType::kArc) {
+    return false;
+  }
+
+  return true;
 }

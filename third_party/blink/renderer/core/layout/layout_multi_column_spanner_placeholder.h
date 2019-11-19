@@ -26,8 +26,12 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
       const ComputedStyle& parent_style,
       LayoutBox&);
 
+  LayoutBlockFlow* MultiColumnBlockFlow() const {
+    return To<LayoutBlockFlow>(Parent());
+  }
+
   LayoutMultiColumnFlowThread* FlowThread() const {
-    return ToLayoutBlockFlow(Parent())->MultiColumnFlowThread();
+    return To<LayoutBlockFlow>(Parent())->MultiColumnFlowThread();
   }
 
   LayoutBox* LayoutObjectInFlowThread() const {
@@ -64,8 +68,8 @@ class LayoutMultiColumnSpannerPlaceholder final : public LayoutBox {
                             LogicalExtentComputedValues&) const override;
   void Paint(const PaintInfo&) const override;
   bool NodeAtPoint(HitTestResult&,
-                   const HitTestLocation& location_in_container,
-                   const LayoutPoint& accumulated_offset,
+                   const HitTestLocation&,
+                   const PhysicalOffset& accumulated_offset,
                    HitTestAction) override;
 
  private:

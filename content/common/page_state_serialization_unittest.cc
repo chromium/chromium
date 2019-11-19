@@ -75,6 +75,7 @@ void ExpectEquality(const ExplodedFrameState& expected,
   EXPECT_EQ(expected.url_string, actual.url_string);
   EXPECT_EQ(expected.referrer, actual.referrer);
   EXPECT_EQ(expected.referrer_policy, actual.referrer_policy);
+  EXPECT_EQ(expected.initiator_origin, actual.initiator_origin);
   EXPECT_EQ(expected.target, actual.target);
   EXPECT_EQ(expected.state_object, actual.state_object);
   ExpectEquality(expected.document_state, actual.document_state);
@@ -145,9 +146,30 @@ class PageStateSerializationTest : public testing::Test {
     referenced_files->emplace_back(path.AsUTF16Unsafe());
   }
 
-  void PopulateFrameStateForBackwardsCompatTest(
-      ExplodedFrameState* frame_state,
-      bool is_child) {
+  void PopulateFrameStateForBackwardsCompatTest(ExplodedFrameState* frame_state,
+                                                bool is_child,
+                                                int version) {
+    if (version < 28) {
+      // Older versions didn't cover |initiator_origin| -  we expect that
+      // deserialization will set it to the default, null value.
+      frame_state->initiator_origin = base::nullopt;
+    } else {
+      frame_state->initiator_origin =
+          url::Origin::Create(GURL("https://initiator.example.com"));
+    }
+
+    // Some of the test values below are the same as the default value that
+    // would be deserialized when reading old versions.  This is undesirable,
+    // because it means that the tests do not fully test that a non-default
+    // value is correctly deserialized.  Unfortunately this is tricky to change,
+    // because these default/old test values are baked into serialized_XX.dat
+    // test files (which we should be wary of modifying, since they are supposed
+    // to represent set-in-stone old serialization format).
+    //
+    // When introducing new fields, please test a non-default value, starting
+    // with the |version| where the new field is being introduced (set the
+    // |version|-dependent test value above - next to and similarly to how
+    // |initiator_origin| is handled).
     frame_state->url_string = base::UTF8ToUTF16("http://chromium.org/");
     frame_state->referrer = base::UTF8ToUTF16("http://google.com/");
     frame_state->referrer_policy = network::mojom::ReferrerPolicy::kDefault;
@@ -189,14 +211,15 @@ class PageStateSerializationTest : public testing::Test {
                                                        test_body2.size());
 
       ExplodedFrameState child_state;
-      PopulateFrameStateForBackwardsCompatTest(&child_state, true);
+      PopulateFrameStateForBackwardsCompatTest(&child_state, true, version);
       frame_state->children.push_back(child_state);
     }
   }
 
-  void PopulatePageStateForBackwardsCompatTest(ExplodedPageState* page_state) {
+  void PopulatePageStateForBackwardsCompatTest(ExplodedPageState* page_state,
+                                               int version) {
     page_state->referenced_files.push_back(base::UTF8ToUTF16("file.txt"));
-    PopulateFrameStateForBackwardsCompatTest(&page_state->top, false);
+    PopulateFrameStateForBackwardsCompatTest(&page_state->top, false, version);
   }
 
   void ReadBackwardsCompatPageState(const std::string& suffix,
@@ -251,7 +274,7 @@ class PageStateSerializationTest : public testing::Test {
 
     ExplodedPageState decoded_state;
     ExplodedPageState expected_state;
-    PopulatePageStateForBackwardsCompatTest(&expected_state);
+    PopulatePageStateForBackwardsCompatTest(&expected_state, version);
     ReadBackwardsCompatPageState(suffix, version, &decoded_state);
 
     ExpectEquality(expected_state, decoded_state);
@@ -390,7 +413,7 @@ TEST_F(PageStateSerializationTest, BadMessagesTest2) {
 // test compatibility and migration.
 TEST_F(PageStateSerializationTest, LegacyEncodePageStateFrozen) {
   ExplodedPageState actual_state;
-  PopulatePageStateForBackwardsCompatTest(&actual_state);
+  PopulatePageStateForBackwardsCompatTest(&actual_state, 25);
 
   std::string actual_encoded_state;
   LegacyEncodePageStateForTesting(actual_state, 25, &actual_encoded_state);
@@ -449,8 +472,11 @@ TEST_F(PageStateSerializationTest, ScrollAnchorSelectorLengthLimited) {
 // revision where page_state_serialization.cc:kCurrentVersion == 23.
 #if 0
 TEST_F(PageStateSerializationTest, DumpExpectedPageStateForBackwardsCompat) {
+  // Populate |state| with test data suitable for testing the current (i.e. the
+  // latest) version of serialization.  This is accomplished by asking for test
+  // data for version 9999 - a future, hypothetical version number.
   ExplodedPageState state;
-  PopulatePageStateForBackwardsCompatTest(&state);
+  PopulatePageStateForBackwardsCompatTest(&state, 9999);
 
   std::string encoded;
   EncodePageState(state, &encoded);
@@ -539,6 +565,10 @@ TEST_F(PageStateSerializationTest, BackwardsCompat_v26) {
 
 TEST_F(PageStateSerializationTest, BackwardsCompat_v27) {
   TestBackwardsCompat(27);
+}
+
+TEST_F(PageStateSerializationTest, BackwardsCompat_v28) {
+  TestBackwardsCompat(28);
 }
 
 // Add your new backwards compat test for future versions *above* this

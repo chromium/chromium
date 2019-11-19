@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/files/scoped_file.h"
 #include "base/optional.h"
 
 namespace mac {
@@ -29,7 +28,6 @@ struct JobCheckinInfo {
   ~JobCheckinInfo();
 
   std::string program;
-  int socket;
 };
 
 struct JobOptions {
@@ -49,12 +47,10 @@ struct JobOptions {
   std::string executable_path;
   std::vector<std::string> arguments;
 
-  // See launchd.plist(5) "Sockets" for details about the meaning of these two
-  // fields. The socket_key field corresponds to a top-level key in the socket
-  // dictionary; the socket_name field corresponds to a pathname to a Unix
-  // domain socket (the SockPathName member in the Sockets dictionary).
-  std::string socket_name;
-  std::string socket_key;
+  // See launchd.plist(5) "MachServices" for details about this field. The
+  // mach_service_ field corresponds to a key in the MachServices dictionary,
+  // whose value will be YES.
+  std::string mach_service_name;
 
   // Whether to run this job immediately once it is loaded.
   bool run_at_load;
@@ -66,7 +62,6 @@ struct JobOptions {
 };
 
 bool GetJobInfo(const std::string& label, JobInfo* info);
-bool CheckIn(const std::string& socket_key, JobCheckinInfo* info);
 
 bool SubmitJob(const JobOptions& options);
 bool RemoveJob(const std::string& label);

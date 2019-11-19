@@ -66,7 +66,7 @@ void ExitZeroIfCanPtrace(pid_t pid) {
 }
 
 bool CanSubProcessPtrace(pid_t pid) {
-  ScopedProcess process(base::Bind(&ExitZeroIfCanPtrace, pid));
+  ScopedProcess process(base::BindOnce(&ExitZeroIfCanPtrace, pid));
   bool signaled;
   int exit_code = process.WaitForExit(&signaled);
   CHECK(!signaled);
@@ -134,7 +134,7 @@ TEST(Yama, RestrictPtraceWorks) {
   if (HasLinux32Bug())
     return;
 
-  ScopedProcess process1(base::Bind(&SetYamaRestrictions, true));
+  ScopedProcess process1(base::BindOnce(&SetYamaRestrictions, true));
   ASSERT_TRUE(process1.WaitForClosureToRun());
 
   if (Yama::IsEnforcing()) {
@@ -147,7 +147,7 @@ TEST(Yama, RestrictPtraceWorks) {
     ASSERT_TRUE(CanPtrace(process1.GetPid()));
 
     // A sibling can ptrace process2 which disables any Yama protection.
-    ScopedProcess process2(base::Bind(&SetYamaRestrictions, false));
+    ScopedProcess process2(base::BindOnce(&SetYamaRestrictions, false));
     ASSERT_TRUE(process2.WaitForClosureToRun());
     ASSERT_TRUE(CanSubProcessPtrace(process2.GetPid()));
   }

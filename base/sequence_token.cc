@@ -5,8 +5,8 @@
 #include "base/sequence_token.h"
 
 #include "base/atomic_sequence_num.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/threading/thread_local.h"
 
 namespace base {
@@ -17,11 +17,15 @@ base::AtomicSequenceNumber g_sequence_token_generator;
 
 base::AtomicSequenceNumber g_task_token_generator;
 
-LazyInstance<ThreadLocalPointer<const SequenceToken>>::Leaky
-    tls_current_sequence_token = LAZY_INSTANCE_INITIALIZER;
+ThreadLocalPointer<const SequenceToken>& GetTlsCurrentSequenceToken() {
+  static base::NoDestructor<ThreadLocalPointer<const SequenceToken>> instance;
+  return *instance;
+}
 
-LazyInstance<ThreadLocalPointer<const TaskToken>>::Leaky
-    tls_current_task_token = LAZY_INSTANCE_INITIALIZER;
+ThreadLocalPointer<const TaskToken>& GetTlsCurrentTaskToken() {
+  static base::NoDestructor<ThreadLocalPointer<const TaskToken>> instance;
+  return *instance;
+}
 
 }  // namespace
 
@@ -47,7 +51,7 @@ SequenceToken SequenceToken::Create() {
 
 SequenceToken SequenceToken::GetForCurrentThread() {
   const SequenceToken* current_sequence_token =
-      tls_current_sequence_token.Get().Get();
+      GetTlsCurrentSequenceToken().Get();
   return current_sequence_token ? *current_sequence_token : SequenceToken();
 }
 
@@ -68,25 +72,25 @@ TaskToken TaskToken::Create() {
 }
 
 TaskToken TaskToken::GetForCurrentThread() {
-  const TaskToken* current_task_token = tls_current_task_token.Get().Get();
+  const TaskToken* current_task_token = GetTlsCurrentTaskToken().Get();
   return current_task_token ? *current_task_token : TaskToken();
 }
 
 ScopedSetSequenceTokenForCurrentThread::ScopedSetSequenceTokenForCurrentThread(
     const SequenceToken& sequence_token)
     : sequence_token_(sequence_token), task_token_(TaskToken::Create()) {
-  DCHECK(!tls_current_sequence_token.Get().Get());
-  DCHECK(!tls_current_task_token.Get().Get());
-  tls_current_sequence_token.Get().Set(&sequence_token_);
-  tls_current_task_token.Get().Set(&task_token_);
+  DCHECK(!GetTlsCurrentSequenceToken().Get());
+  DCHECK(!GetTlsCurrentTaskToken().Get());
+  GetTlsCurrentSequenceToken().Set(&sequence_token_);
+  GetTlsCurrentTaskToken().Set(&task_token_);
 }
 
 ScopedSetSequenceTokenForCurrentThread::
     ~ScopedSetSequenceTokenForCurrentThread() {
-  DCHECK_EQ(tls_current_sequence_token.Get().Get(), &sequence_token_);
-  DCHECK_EQ(tls_current_task_token.Get().Get(), &task_token_);
-  tls_current_sequence_token.Get().Set(nullptr);
-  tls_current_task_token.Get().Set(nullptr);
+  DCHECK_EQ(GetTlsCurrentSequenceToken().Get(), &sequence_token_);
+  DCHECK_EQ(GetTlsCurrentTaskToken().Get(), &task_token_);
+  GetTlsCurrentSequenceToken().Set(nullptr);
+  GetTlsCurrentTaskToken().Set(nullptr);
 }
 
 }  // namespace base

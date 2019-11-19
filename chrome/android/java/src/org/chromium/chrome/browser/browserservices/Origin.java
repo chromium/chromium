@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.browserservices;
 
 import android.net.Uri;
 
-import org.chromium.chrome.browser.UrlConstants;
+import org.chromium.chrome.browser.util.UrlConstants;
+
+import androidx.annotation.Nullable;
 
 /**
- * A class to canonically represent a web origin in Java. In comparison to
+ * A class to canonically represent a HTTP or HTTPS web origin in Java. In comparison to
  * {@link org.chromium.net.GURLUtils#getOrigin} it can be used before native is loaded and lets us
  * ensure conversion to an origin has been done with the type system.
  *
@@ -25,54 +27,74 @@ public class Origin {
 
     private final Uri mOrigin;
 
-    /**
-     * Constructs a canonical Origin from a String.
-     */
-    public Origin(String uri) {
-        this(Uri.parse(uri));
+    private Origin(Uri origin) {
+        mOrigin = origin;
     }
 
     /**
-     * Constructs a canonical Origin from an Uri.
+     * Constructs a canonical Origin from a String. Will return {@code null} for origins that are
+     * not HTTP or HTTPS.
      */
-    public Origin(Uri uri) {
+    @Nullable
+    public static Origin create(String uri) {
+        return create(Uri.parse(uri));
+    }
+
+    /**
+     * Constructs a canonical Origin from an Uri. Will return {@code null} for origins that are not
+     * HTTP or HTTPS.
+     */
+    @Nullable
+    public static Origin create(Uri uri) {
         if (uri == null || uri.getScheme() == null || uri.getAuthority() == null) {
-            mOrigin = Uri.EMPTY;
-            return;
+            return null;
+        }
+
+        // This class can only correctly handle certain origins, see https://crbug.com/1019244.
+        String scheme = uri.getScheme();
+        if (!scheme.equals(UrlConstants.HTTP_SCHEME) && !scheme.equals(UrlConstants.HTTPS_SCHEME)) {
+            return null;
         }
 
         // Make explicit ports implicit and remove any user:password.
         int port = uri.getPort();
-        String scheme = uri.getScheme();
         if (scheme.equals(UrlConstants.HTTP_SCHEME) && port == HTTP_DEFAULT_PORT) port = -1;
         if (scheme.equals(UrlConstants.HTTPS_SCHEME) && port == HTTPS_DEFAULT_PORT) port = -1;
 
         String authority = uri.getHost();
         if (port != -1) authority += ":" + port;
 
-        Uri origin;
         try {
-            origin = uri.normalizeScheme()
+            return new Origin(uri.normalizeScheme()
                     .buildUpon()
                     .opaquePart("")
                     .fragment("")
                     .path("")
                     .encodedAuthority(authority)
                     .clearQuery()
-                    .build();
+                    .build());
         } catch (UnsupportedOperationException e) {
-            origin = Uri.EMPTY;
+            return null;
         }
-
-        mOrigin = origin;
     }
 
     /**
-     * Returns whether the Origin is valid.
+     * Constructs a canonical Origin from a String, throwing an exception if parsing fails.
      */
-    public boolean isValid() { return !mOrigin.equals(Uri.EMPTY); }
+    public static Origin createOrThrow(String uri) {
+        return createOrThrow(Uri.parse(uri));
+    }
 
     /**
+     * Constructs a canonical Origin from an Uri, throwing an exception if parsing fails.
+     */
+    public static Origin createOrThrow(Uri uri) {
+        Origin origin = Origin.create(uri);
+        if (origin == null) throw new IllegalArgumentException("Could not parse: " + uri);
+        return origin;
+    }
+
+    /*
      * Returns a Uri representing the Origin.
      */
     public Uri uri() {

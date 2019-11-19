@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database_callbacks.h"
@@ -21,18 +22,20 @@ namespace blink {
 
 class MockWebIDBFactory : public testing::StrictMock<blink::WebIDBFactory> {
  public:
+  MockWebIDBFactory();
   ~MockWebIDBFactory() override;
-
-  static std::unique_ptr<MockWebIDBFactory> Create();
 
   void GetDatabaseInfo(std::unique_ptr<WebIDBCallbacks>);
   MOCK_METHOD1(GetDatabaseNames, void(std::unique_ptr<WebIDBCallbacks>));
-  MOCK_METHOD5(Open,
-               void(const WTF::String& name,
-                    long long version,
-                    long long transaction_id,
-                    std::unique_ptr<WebIDBCallbacks>,
-                    std::unique_ptr<WebIDBDatabaseCallbacks>));
+  MOCK_METHOD6(
+      Open,
+      void(const WTF::String& name,
+           int64_t version,
+           mojo::PendingAssociatedReceiver<mojom::blink::IDBTransaction>
+               transaction_receiver,
+           int64_t transaction_id,
+           std::unique_ptr<WebIDBCallbacks>,
+           std::unique_ptr<WebIDBDatabaseCallbacks>));
   MOCK_METHOD3(DeleteDatabase,
                void(const WTF::String& name,
                     std::unique_ptr<WebIDBCallbacks>,
@@ -41,7 +44,6 @@ class MockWebIDBFactory : public testing::StrictMock<blink::WebIDBFactory> {
   void SetCallbacksPointer(std::unique_ptr<WebIDBCallbacks>* callbacks);
 
  private:
-  MockWebIDBFactory();
   std::unique_ptr<WebIDBCallbacks>* callbacks_ptr_;
 };
 

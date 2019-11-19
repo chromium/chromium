@@ -25,7 +25,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LINE_LAYOUT_TEXT_INFO_H_
 
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

@@ -32,8 +32,7 @@ class CTObjectsExtractorTest : public ::testing::Test {
                                                   der_test_cert.length());
     ASSERT_TRUE(test_cert_);
 
-    log_ = CTLogVerifier::Create(ct::GetTestPublicKey(), "testlog",
-                                 "dns.example.com");
+    log_ = CTLogVerifier::Create(ct::GetTestPublicKey(), "testlog");
     ASSERT_TRUE(log_);
   }
 

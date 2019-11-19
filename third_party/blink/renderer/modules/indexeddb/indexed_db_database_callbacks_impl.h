@@ -26,7 +26,7 @@ class IndexedDBDatabaseCallbacksImpl
   void ForcedClose() override;
   void VersionChange(int64_t old_version, int64_t new_version) override;
   void Abort(int64_t transaction_id,
-             int32_t code,
+             mojom::blink::IDBException code,
              const WTF::String& message) override;
   void Complete(int64_t transaction_id) override;
   void Changes(mojom::blink::IDBObserverChangesPtr changes) override;

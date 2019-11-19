@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_RENDERER_HOST_MEDIA_MEDIA_DEVICES_MANAGER_H_
 
 #include <array>
+#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -21,9 +22,12 @@
 #include "media/audio/audio_device_description.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video_capture_types.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 
+using blink::mojom::AudioInputDeviceCapabilitiesPtr;
 using blink::mojom::VideoInputDeviceCapabilitiesPtr;
 
 namespace media {
@@ -62,7 +66,8 @@ class CONTENT_EXPORT MediaDevicesManager
       base::OnceCallback<void(const MediaDeviceEnumeration&)>;
   using EnumerateDevicesCallback = base::OnceCallback<void(
       const std::vector<blink::WebMediaDeviceInfoArray>&,
-      std::vector<VideoInputDeviceCapabilitiesPtr>)>;
+      std::vector<VideoInputDeviceCapabilitiesPtr>,
+      std::vector<AudioInputDeviceCapabilitiesPtr>)>;
   using StopRemovedInputDeviceCallback = base::RepeatingCallback<void(
       blink::MediaDeviceType type,
       const blink::WebMediaDeviceInfo& media_device_info)>;
@@ -99,13 +104,14 @@ class CONTENT_EXPORT MediaDevicesManager
                         int render_frame_id,
                         const BoolDeviceTypes& requested_types,
                         bool request_video_input_capabilities,
+                        bool request_audio_input_capabilities,
                         EnumerateDevicesCallback callback);
 
   uint32_t SubscribeDeviceChangeNotifications(
       int render_process_id,
       int render_frame_id,
       const BoolDeviceTypes& subscribe_types,
-      blink::mojom::MediaDevicesListenerPtr listener);
+      mojo::PendingRemote<blink::mojom::MediaDevicesListener> listener);
   void UnsubscribeDeviceChangeNotifications(uint32_t subscription_id);
 
   // Tries to start device monitoring. If successful, enables caching of
@@ -156,10 +162,11 @@ class CONTENT_EXPORT MediaDevicesManager
   struct EnumerationRequest;
 
   struct SubscriptionRequest {
-    SubscriptionRequest(int render_process_id,
-                        int render_frame_id,
-                        const BoolDeviceTypes& subscribe_types,
-                        blink::mojom::MediaDevicesListenerPtr listener);
+    SubscriptionRequest(
+        int render_process_id,
+        int render_frame_id,
+        const BoolDeviceTypes& subscribe_types,
+        mojo::Remote<blink::mojom::MediaDevicesListener> listener);
     SubscriptionRequest(SubscriptionRequest&&);
     ~SubscriptionRequest();
 
@@ -168,7 +175,28 @@ class CONTENT_EXPORT MediaDevicesManager
     int render_process_id;
     int render_frame_id;
     BoolDeviceTypes subscribe_types;
-    blink::mojom::MediaDevicesListenerPtr listener;
+    mojo::Remote<blink::mojom::MediaDevicesListener> listener_;
+  };
+
+  // Class containing the state of each spawned enumeration. This state is
+  // required since retrieving audio parameters is done asynchronously for each
+  // device and a new devices enumeration request can be started before all
+  // parameters have been collected.
+  class EnumerationState {
+   public:
+    EnumerationState();
+    EnumerationState(EnumerationState&& other);
+    ~EnumerationState();
+
+    EnumerationState& operator=(EnumerationState&& other);
+
+    bool video_input_capabilities_requested = false;
+    bool audio_input_capabilities_requested = false;
+    EnumerateDevicesCallback completion_cb;
+    std::vector<AudioInputDeviceCapabilitiesPtr> audio_capabilities;
+    int num_pending_audio_input_capabilities;
+    MediaDeviceEnumeration raw_enumeration_results;
+    std::vector<blink::WebMediaDeviceInfoArray> hashed_enumeration_results;
   };
 
   // The NO_CACHE policy is such that no previous results are used when
@@ -191,21 +219,35 @@ class CONTENT_EXPORT MediaDevicesManager
       int render_frame_id,
       const BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
+      bool request_audio_input_capabilities,
       EnumerateDevicesCallback callback,
       MediaDeviceSaltAndOrigin salt_and_origin);
   void OnPermissionsCheckDone(
       const MediaDevicesManager::BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
+      bool request_audio_input_capabilities,
       EnumerateDevicesCallback callback,
       MediaDeviceSaltAndOrigin salt_and_origin,
       const MediaDevicesManager::BoolDeviceTypes& has_permissions);
   void OnDevicesEnumerated(
       const MediaDevicesManager::BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
+      bool request_audio_input_capabilities,
       EnumerateDevicesCallback callback,
       const MediaDeviceSaltAndOrigin& salt_and_origin,
       const MediaDevicesManager::BoolDeviceTypes& has_permissions,
       const MediaDeviceEnumeration& enumeration);
+  void GetAudioInputCapabilities(
+      bool request_video_input_capabilities,
+      bool request_audio_input_capabilities,
+      EnumerateDevicesCallback callback,
+      const MediaDeviceEnumeration& enumeration,
+      const std::vector<blink::WebMediaDeviceInfoArray>& devices_info);
+  void GotAudioInputCapabilities(
+      size_t state_index,
+      size_t capabilities_index,
+      const base::Optional<media::AudioParameters>& parameters);
+  void FinalizeDevicesEnumerated(EnumerationState enumeration_state);
 
   std::vector<VideoInputDeviceCapabilitiesPtr> ComputeVideoInputCapabilities(
       const blink::WebMediaDeviceInfoArray& raw_device_infos,
@@ -289,7 +331,10 @@ class CONTENT_EXPORT MediaDevicesManager
   class AudioServiceDeviceListener;
   std::unique_ptr<AudioServiceDeviceListener> audio_service_device_listener_;
 
-  base::WeakPtrFactory<MediaDevicesManager> weak_factory_;
+  std::map<uint32_t, EnumerationState> enumeration_states_;
+  uint32_t next_enumeration_state_id_ = 0;
+
+  base::WeakPtrFactory<MediaDevicesManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaDevicesManager);
 };

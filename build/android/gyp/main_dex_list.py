@@ -5,17 +5,14 @@
 # found in the LICENSE file.
 
 import argparse
-import json
-import os
 import sys
 import tempfile
 import zipfile
 
 from util import build_utils
-from util import proguard_util
 
 
-def main(args):
+def _ParseArgs():
   parser = argparse.ArgumentParser()
   build_utils.AddDepfileOption(parser)
   parser.add_argument('--shrinked-android-path', required=True,
@@ -29,132 +26,95 @@ def main(args):
                            'main dex.')
   parser.add_argument('--main-dex-list-path', required=True,
                       help='The main dex list file to generate.')
-  parser.add_argument('--inputs',
-                      help='JARs for which a main dex list should be '
-                           'generated.')
-  parser.add_argument('--proguard-path', required=True,
-                      help='Path to the proguard executable.')
+  parser.add_argument(
+      '--class-inputs',
+      action='append',
+      help='GN-list of .jars with .class files.')
+  parser.add_argument(
+      '--class-inputs-filearg',
+      action='append',
+      help='GN-list of .jars with .class files (added to depfile).')
+  parser.add_argument(
+      '--r8-path', required=True, help='Path to the r8 executable.')
   parser.add_argument('--negative-main-dex-globs',
       help='GN-list of globs of .class names (e.g. org/chromium/foo/Bar.class) '
            'that will fail the build if they match files in the main dex.')
 
-  parser.add_argument('paths', nargs='*', default=[],
-                      help='JARs for which a main dex list should be '
-                           'generated.')
+  args = parser.parse_args(build_utils.ExpandFileArgs(sys.argv[1:]))
 
-  args = parser.parse_args(build_utils.ExpandFileArgs(args))
-
-  depfile_deps = []
-  if args.inputs:
-    args.inputs = build_utils.ParseGnList(args.inputs)
-    depfile_deps = args.inputs
-    args.paths.extend(args.inputs)
+  args.class_inputs = build_utils.ParseGnList(args.class_inputs)
+  args.class_inputs_filearg = build_utils.ParseGnList(args.class_inputs_filearg)
+  args.class_inputs += args.class_inputs_filearg
 
   if args.negative_main_dex_globs:
     args.negative_main_dex_globs = build_utils.ParseGnList(
         args.negative_main_dex_globs)
+  return args
 
+
+def main():
+  args = _ParseArgs()
   proguard_cmd = [
-    'java', '-jar', args.proguard_path,
-    '-forceprocessing',
-    '-dontwarn', '-dontoptimize', '-dontobfuscate', '-dontpreverify',
-    '-libraryjars', args.shrinked_android_path,
+      build_utils.JAVA_PATH,
+      '-jar',
+      args.r8_path,
+      '--classfile',
+      '--lib',
+      args.shrinked_android_path,
   ]
+
   for m in args.main_dex_rules_paths:
-    proguard_cmd.extend(['-include', m])
+    proguard_cmd.extend(['--pg-conf', m])
 
-  main_dex_list_cmd = [
-    'java', '-cp', args.dx_path,
-    'com.android.multidex.MainDexListBuilder',
-    # This workaround significantly increases main dex size and doesn't seem to
-    # be needed by Chrome. See comment in the source:
-    # https://android.googlesource.com/platform/dalvik/+/master/dx/src/com/android/multidex/MainDexListBuilder.java
-    '--disable-annotation-resolution-workaround',
+  proguard_flags = [
+      '-forceprocessing',
+      '-dontwarn',
+      '-dontoptimize',
+      '-dontobfuscate',
+      '-dontpreverify',
   ]
 
-  input_paths = list(args.paths)
-  input_paths += [
-    args.shrinked_android_path,
-    args.dx_path,
-  ]
-  input_paths += args.main_dex_rules_paths
-
-  input_strings = [
-    proguard_cmd,
-    main_dex_list_cmd,
-  ]
   if args.negative_main_dex_globs:
-    input_strings += args.negative_main_dex_globs
+    for glob in args.negative_main_dex_globs:
+      # Globs come with 1 asterix, but we want 2 to match subpackages.
+      proguard_flags.append('-checkdiscard class ' +
+                            glob.replace('*', '**').replace('/', '.'))
 
-  output_paths = [
-    args.main_dex_list_path,
-  ]
-
-  build_utils.CallAndWriteDepfileIfStale(
-      lambda: _OnStaleMd5(proguard_cmd, main_dex_list_cmd, args.paths,
-                          args.main_dex_list_path,
-                          args.negative_main_dex_globs),
-      args,
-      input_paths=input_paths,
-      input_strings=input_strings,
-      output_paths=output_paths,
-      depfile_deps=depfile_deps,
-      add_pydeps=False)
-
-  return 0
-
-
-def _CheckForUnwanted(kept_classes, proguard_cmd, negative_main_dex_globs):
-  # Check if ProGuard kept any unwanted classes.
-  found_unwanted_classes = sorted(
-      p for p in kept_classes
-      if build_utils.MatchesGlob(p, negative_main_dex_globs))
-
-  if found_unwanted_classes:
-    first_class = found_unwanted_classes[0].replace(
-        '.class', '').replace('/', '.')
-    proguard_cmd += ['-whyareyoukeeping', 'class', first_class, '{}']
-    output = build_utils.CheckOutput(
-        proguard_cmd, print_stderr=False,
-        stdout_filter=proguard_util.ProguardOutputFilter())
-    raise Exception(
-        ('Found classes that should not be in the main dex:\n    {}\n\n'
-         'Here is the -whyareyoukeeping output for {}: \n{}').format(
-             '\n    '.join(found_unwanted_classes), first_class, output))
-
-
-def _OnStaleMd5(proguard_cmd, main_dex_list_cmd, paths, main_dex_list_path,
-                negative_main_dex_globs):
-  paths_arg = ':'.join(paths)
   main_dex_list = ''
   try:
     with tempfile.NamedTemporaryFile(suffix='.jar') as temp_jar:
-      # Step 1: Use ProGuard to find all @MainDex code, and all code reachable
+      # Step 1: Use R8 to find all @MainDex code, and all code reachable
       # from @MainDex code (recursive).
-      proguard_cmd += [
-        '-injars', paths_arg,
-        '-outjars', temp_jar.name
-      ]
-      build_utils.CheckOutput(proguard_cmd, print_stderr=False)
+      proguard_cmd += ['--output', temp_jar.name]
+      with tempfile.NamedTemporaryFile() as proguard_flags_file:
+        for flag in proguard_flags:
+          proguard_flags_file.write(flag + '\n')
+        proguard_flags_file.flush()
+        proguard_cmd += ['--pg-conf', proguard_flags_file.name]
+        for injar in args.class_inputs:
+          proguard_cmd.append(injar)
+        build_utils.CheckOutput(proguard_cmd, print_stderr=False)
 
       # Record the classes kept by ProGuard. Not used by the build, but useful
       # for debugging what classes are kept by ProGuard vs. MainDexListBuilder.
       with zipfile.ZipFile(temp_jar.name) as z:
         kept_classes = [p for p in z.namelist() if p.endswith('.class')]
-      with open(main_dex_list_path + '.partial', 'w') as f:
+      with open(args.main_dex_list_path + '.partial', 'w') as f:
         f.write('\n'.join(kept_classes) + '\n')
-
-      if negative_main_dex_globs:
-        # Perform assertions before MainDexListBuilder because:
-        # a) MainDexListBuilder is not recursive, so being included by it isn't
-        #    a huge deal.
-        # b) Errors are much more actionable.
-        _CheckForUnwanted(kept_classes, proguard_cmd, negative_main_dex_globs)
 
       # Step 2: Expand inclusion list to all classes referenced by the .class
       # files of kept classes (non-recursive).
-      main_dex_list_cmd += [
-        temp_jar.name, paths_arg
+      main_dex_list_cmd = [
+          build_utils.JAVA_PATH,
+          '-cp',
+          args.dx_path,
+          'com.android.multidex.MainDexListBuilder',
+          # This workaround increases main dex size and does not seem to
+          # be needed by Chrome. See comment in the source:
+          # https://android.googlesource.com/platform/dalvik/+/master/dx/src/com/android/multidex/MainDexListBuilder.java
+          '--disable-annotation-resolution-workaround',
+          temp_jar.name,
+          ':'.join(args.class_inputs)
       ]
       main_dex_list = build_utils.CheckOutput(main_dex_list_cmd)
 
@@ -166,9 +126,16 @@ def _OnStaleMd5(proguard_cmd, main_dex_list_cmd, paths, main_dex_list_path,
     else:
       raise
 
-  with open(main_dex_list_path, 'w') as main_dex_list_file:
-    main_dex_list_file.write(main_dex_list)
+  with build_utils.AtomicOutput(args.main_dex_list_path) as f:
+    f.write(main_dex_list)
+
+  if args.depfile:
+    build_utils.WriteDepfile(
+        args.depfile,
+        args.main_dex_list_path,
+        inputs=args.class_inputs_filearg,
+        add_pydeps=False)
 
 
 if __name__ == '__main__':
-  sys.exit(main(sys.argv[1:]))
+  main()

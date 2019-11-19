@@ -15,7 +15,7 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread.h"
@@ -28,18 +28,16 @@
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/invalidation/public/object_id_invalidation_map.h"
-#include "components/sync/base/experiments.h"
 #include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/base/test_unrecoverable_error_handler.h"
-#include "components/sync/device_info/device_info.h"
+#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/cycle/commit_counters.h"
 #include "components/sync/engine/cycle/status_counters.h"
 #include "components/sync/engine/cycle/update_counters.h"
 #include "components/sync/engine/fake_sync_manager.h"
 #include "components/sync/engine/model_safe_worker.h"
-#include "components/sync/engine/net/http_bridge_network_resources.h"
-#include "components/sync/engine/net/network_resources.h"
+#include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/passive_model_worker.h"
 #include "components/sync/engine/sync_engine_host_stub.h"
 #include "components/sync/engine/sync_manager_factory.h"
@@ -52,10 +50,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-using ::testing::_;
-using ::testing::InvokeWithoutArgs;
-using ::testing::StrictMock;
 
 namespace syncer {
 
@@ -112,6 +106,7 @@ class FakeSyncManagerFactory : public SyncManagerFactory {
       FakeSyncManager** fake_manager,
       network::NetworkConnectionTracker* network_connection_tracker)
       : SyncManagerFactory(network_connection_tracker),
+        should_fail_on_init_(false),
         fake_manager_(fake_manager) {
     *fake_manager_ = nullptr;
   }
@@ -122,7 +117,7 @@ class FakeSyncManagerFactory : public SyncManagerFactory {
       const std::string& /* name */) override {
     *fake_manager_ =
         new FakeSyncManager(initial_sync_ended_types_, progress_marker_types_,
-                            configure_fail_types_);
+                            configure_fail_types_, should_fail_on_init_);
     return std::unique_ptr<SyncManager>(*fake_manager_);
   }
 
@@ -138,28 +133,16 @@ class FakeSyncManagerFactory : public SyncManagerFactory {
     configure_fail_types_ = types;
   }
 
+  void set_should_fail_on_init(bool should_fail_on_init) {
+    should_fail_on_init_ = should_fail_on_init;
+  }
+
  private:
   ModelTypeSet initial_sync_ended_types_;
   ModelTypeSet progress_marker_types_;
   ModelTypeSet configure_fail_types_;
+  bool should_fail_on_init_;
   FakeSyncManager** fake_manager_;
-};
-
-class NullEncryptionObserver : public SyncEncryptionHandler::Observer {
- public:
-  void OnPassphraseRequired(
-      PassphraseRequiredReason reason,
-      const KeyDerivationParams& key_derivation_params,
-      const sync_pb::EncryptedData& pending_keys) override {}
-  void OnPassphraseAccepted() override {}
-  void OnBootstrapTokenUpdated(const std::string& bootstrap_token,
-                               BootstrapTokenType type) override {}
-  void OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
-                               bool encrypt_everything) override {}
-  void OnEncryptionComplete() override {}
-  void OnCryptographerStateChanged(Cryptographer* cryptographer) override {}
-  void OnPassphraseTypeChanged(PassphraseType type,
-                               base::Time passphrase_time) override {}
 };
 
 class MockInvalidationService : public invalidation::InvalidationService {
@@ -182,6 +165,13 @@ class MockInvalidationService : public invalidation::InvalidationService {
                      void(base::RepeatingCallback<
                           void(const base::DictionaryValue&)> post_caller));
 };
+
+std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory() {
+  return std::make_unique<HttpBridgeFactory>(
+      /*user_agent=*/"",
+      /*url_loader_factory_info=*/nullptr,
+      /*network_time_update_callback=*/base::DoNothing());
+}
 
 class SyncEngineImplTest : public testing::Test {
  protected:
@@ -206,9 +196,6 @@ class SyncEngineImplTest : public testing::Test {
     backend_ = std::make_unique<SyncEngineImpl>(
         "dummyDebugName", &invalidator_, sync_prefs_->AsWeakPtr(),
         temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)));
-    credentials_.account_id = "user@example.com";
-    credentials_.email = "user@example.com";
-    credentials_.sync_token = "sync_token";
 
     fake_manager_factory_ = std::make_unique<FakeSyncManagerFactory>(
         &fake_manager_, network::TestNetworkConnectionTracker::GetInstance());
@@ -223,8 +210,6 @@ class SyncEngineImplTest : public testing::Test {
     enabled_types_.Put(SESSIONS);
     enabled_types_.Put(SEARCH_ENGINES);
     enabled_types_.Put(AUTOFILL);
-
-    network_resources_ = std::make_unique<HttpBridgeNetworkResources>();
   }
 
   void TearDown() override {
@@ -241,26 +226,17 @@ class SyncEngineImplTest : public testing::Test {
   // Synchronously initializes the backend.
   void InitializeBackend(bool expect_success) {
     host_.SetExpectSuccess(expect_success);
-    SyncEngine::HttpPostProviderFactoryGetter
-        http_post_provider_factory_getter =
-            base::BindOnce(&NetworkResources::GetHttpPostProviderFactory,
-                           base::Unretained(network_resources_.get()), nullptr,
-                           base::DoNothing());
 
     SyncEngine::InitParams params;
     params.sync_task_runner = sync_thread_.task_runner();
     params.host = &host_;
     params.registrar = std::make_unique<SyncBackendRegistrar>(
         std::string(), base::Bind(&CreateModelWorkerForGroup));
-    params.encryption_observer_proxy =
-        std::make_unique<NullEncryptionObserver>();
-    params.http_factory_getter = std::move(http_post_provider_factory_getter);
-    params.credentials = credentials_;
+    params.http_factory_getter = base::BindOnce(&CreateHttpBridgeFactory);
+    params.authenticated_account_id = CoreAccountId("account_id");
     params.sync_manager_factory = std::move(fake_manager_factory_);
-    params.delete_sync_data_folder = true;
     params.unrecoverable_error_handler =
         MakeWeakHandle(test_unrecoverable_error_handler_.GetWeakPtr()),
-    params.saved_nigori_state = std::move(saved_nigori_state_);
     sync_prefs_->GetInvalidationVersions(&params.invalidation_versions);
 
     backend_->Initialize(std::move(params));
@@ -321,12 +297,11 @@ class SyncEngineImplTest : public testing::Test {
     run_loop.Run();
   }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   base::Thread sync_thread_;
   TestSyncEngineHost host_;
-  SyncCredentials credentials_;
   TestUnrecoverableErrorHandler test_unrecoverable_error_handler_;
   std::unique_ptr<SyncPrefs> sync_prefs_;
   std::unique_ptr<SyncEngineImpl> backend_;
@@ -334,8 +309,6 @@ class SyncEngineImplTest : public testing::Test {
   FakeSyncManager* fake_manager_;
   ModelTypeSet engine_types_;
   ModelTypeSet enabled_types_;
-  std::unique_ptr<NetworkResources> network_resources_;
-  std::unique_ptr<SyncEncryptionHandler::NigoriState> saved_nigori_state_;
   base::OnceClosure quit_loop_;
   testing::NiceMock<MockInvalidationService> invalidator_;
 };
@@ -659,7 +632,7 @@ TEST_F(SyncEngineImplTest, DownloadControlTypes) {
   // Set sync manager behavior before passing it down. Experiments and device
   // info are new types without progress markers or initial sync ended, while
   // all other types have been fully downloaded and applied.
-  ModelTypeSet new_types(EXPERIMENTS, NIGORI);
+  ModelTypeSet new_types(NIGORI);
   ModelTypeSet old_types = Difference(enabled_types_, new_types);
   fake_manager_factory_->set_progress_marker_types(old_types);
   fake_manager_factory_->set_initial_sync_ended_types(old_types);
@@ -720,21 +693,6 @@ TEST_F(SyncEngineImplTest, DownloadControlTypesRestart) {
             fake_manager_->GetAndResetConfigureReason());
 }
 
-// It is SyncBackendHostCore responsibility to cleanup Sync Data folder if sync
-// setup hasn't been completed. This test ensures that cleanup happens.
-TEST_F(SyncEngineImplTest, TestStartupWithOldSyncData) {
-  const char* nonsense = "slon";
-  base::FilePath temp_directory =
-      temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir));
-  base::FilePath sync_file = temp_directory.AppendASCII("SyncData.sqlite3");
-  ASSERT_TRUE(base::CreateDirectory(temp_directory));
-  ASSERT_NE(-1, base::WriteFile(sync_file, nonsense, strlen(nonsense)));
-
-  InitializeBackend(true);
-
-  EXPECT_FALSE(base::PathExists(sync_file));
-}
-
 // If bookmarks encounter an error that results in disabling without purging
 // (such as when the type is unready), and then is explicitly disabled, the
 // SyncEngine needs to tell the manager to purge the type, even though
@@ -764,66 +722,6 @@ TEST_F(SyncEngineImplTest, DisableThenPurgeType) {
       fake_manager_->GetTypesWithEmptyProgressMarkerToken(error_types).Empty());
 }
 
-// Ensure that redundant invalidations are ignored and that the most recent
-// set of invalidation version is persisted across restarts.
-TEST_F(SyncEngineImplTest, IgnoreOldInvalidations) {
-  // Set up some old persisted invalidations.
-  std::map<ModelType, int64_t> invalidation_versions;
-  invalidation_versions[BOOKMARKS] = 20;
-  sync_prefs_->UpdateInvalidationVersions(invalidation_versions);
-  InitializeBackend(true);
-  EXPECT_EQ(0, fake_manager_->GetInvalidationCount());
-
-  // Receiving an invalidation with an old version should do nothing.
-  ObjectIdInvalidationMap invalidation_map;
-  std::string notification_type;
-  RealModelTypeToNotificationType(BOOKMARKS, &notification_type);
-  invalidation_map.Insert(Invalidation::Init(
-      invalidation::ObjectId(0, notification_type), 10, "payload"));
-  backend_->OnIncomingInvalidation(invalidation_map);
-  fake_manager_->WaitForSyncThread();
-  EXPECT_EQ(0, fake_manager_->GetInvalidationCount());
-
-  // Invalidations with new versions should be acted upon.
-  invalidation_map.Insert(Invalidation::Init(
-      invalidation::ObjectId(0, notification_type), 30, "payload"));
-  backend_->OnIncomingInvalidation(invalidation_map);
-  fake_manager_->WaitForSyncThread();
-  EXPECT_EQ(1, fake_manager_->GetInvalidationCount());
-
-  // Invalidation for new data types should be acted on.
-  RealModelTypeToNotificationType(SESSIONS, &notification_type);
-  invalidation_map.Insert(Invalidation::Init(
-      invalidation::ObjectId(0, notification_type), 10, "payload"));
-  backend_->OnIncomingInvalidation(invalidation_map);
-  fake_manager_->WaitForSyncThread();
-  EXPECT_EQ(2, fake_manager_->GetInvalidationCount());
-
-  // But redelivering that same invalidation should be ignored.
-  backend_->OnIncomingInvalidation(invalidation_map);
-  fake_manager_->WaitForSyncThread();
-  EXPECT_EQ(2, fake_manager_->GetInvalidationCount());
-
-  // If an invalidation with an unknown version is received, it should be
-  // acted on, but should not affect the persisted versions.
-  invalidation_map.Insert(Invalidation::InitUnknownVersion(
-      invalidation::ObjectId(0, notification_type)));
-  backend_->OnIncomingInvalidation(invalidation_map);
-  fake_manager_->WaitForSyncThread();
-  EXPECT_EQ(3, fake_manager_->GetInvalidationCount());
-
-  // Verify that the invalidation versions were updated in the prefs.
-  invalidation_versions[BOOKMARKS] = 30;
-  invalidation_versions[SESSIONS] = 10;
-  std::map<ModelType, int64_t> persisted_invalidation_versions;
-  sync_prefs_->GetInvalidationVersions(&persisted_invalidation_versions);
-  EXPECT_EQ(invalidation_versions.size(),
-            persisted_invalidation_versions.size());
-  for (auto iter : persisted_invalidation_versions) {
-    EXPECT_EQ(invalidation_versions[iter.first], iter.second);
-  }
-}
-
 // Tests that SyncEngineImpl retains ModelTypeConnector after call to
 // StopSyncingForShutdown. This is needed for datatype deactivation during
 // DataTypeManager shutdown.
@@ -836,34 +734,8 @@ TEST_F(SyncEngineImplTest, ModelTypeConnectorValidDuringShutdown) {
   backend_.reset();
 }
 
-TEST_F(SyncEngineImplTest, EnabledTypesStayUnchangedWhenFCMIsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      invalidation::switches::kFCMInvalidations);
-
-  // Making sure that the noisy types we're interested in are in the
-  // |enabled_types_|.
-  enabled_types_.Put(SESSIONS);
-  enabled_types_.Put(FAVICON_IMAGES);
-  enabled_types_.Put(FAVICON_TRACKING);
-
-  InitializeBackend(true);
-  EXPECT_CALL(invalidator_,
-              UpdateRegisteredInvalidationIds(
-                  backend_.get(), ModelTypeSetToObjectIdSet(enabled_types_)));
-  ConfigureDataTypes();
-
-  // At shutdown, we clear the registered invalidation ids.
-  EXPECT_CALL(invalidator_,
-              UpdateRegisteredInvalidationIds(backend_.get(), ObjectIdSet()));
-}
-
-TEST_F(
-    SyncEngineImplTest,
-    NoisyDataTypesInvalidationAreDiscardedByDefaultOnAndroidWhenFCMIsEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      invalidation::switches::kFCMInvalidations);
+TEST_F(SyncEngineImplTest,
+       NoisyDataTypesInvalidationAreDiscardedByDefaultOnAndroid) {
   // Making sure that the noisy types we're interested in are in the
   // |enabled_types_|.
   enabled_types_.Put(SESSIONS);
@@ -892,10 +764,7 @@ TEST_F(
               UpdateRegisteredInvalidationIds(backend_.get(), ObjectIdSet()));
 }
 
-TEST_F(SyncEngineImplTest, WhenEnabledTypesStayDisabledFCMIsEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      invalidation::switches::kFCMInvalidations);
+TEST_F(SyncEngineImplTest, WhenEnabledTypesStayDisabled) {
   // Testing that noisy types doesn't used for registration, when
   // they're disabled in Sync, hence removing noisy datatypes from
   // |enabled_types_|.
@@ -916,7 +785,6 @@ TEST_F(SyncEngineImplTest, WhenEnabledTypesStayDisabledFCMIsEnabled) {
 
 TEST_F(SyncEngineImplTest,
        EnabledTypesChangesWhenSetInvalidationsForSessionsCalled) {
-  base::test::ScopedFeatureList scoped_feature_list;
   // Making sure that the noisy types we're interested in are in the
   // |enabled_types_|.
   enabled_types_.Put(SESSIONS);
@@ -944,6 +812,28 @@ TEST_F(SyncEngineImplTest,
   // At shutdown, we clear the registered invalidation ids.
   EXPECT_CALL(invalidator_,
               UpdateRegisteredInvalidationIds(backend_.get(), ObjectIdSet()));
+}
+
+// Regression test for crbug.com/1019956.
+TEST_F(SyncEngineImplTest, ShouldDestroyAfterInitFailure) {
+  base::test::ScopedFeatureList override_features;
+  override_features.InitWithFeatures(
+      /*enable_feature=*/{switches::kSyncUSSPasswords,
+                          switches::kSyncUSSNigori},
+      /*disable_feature=*/{});
+
+  fake_manager_factory_->set_should_fail_on_init(true);
+  // Sync manager will report initialization failure and gets destroyed during
+  // the error handling.
+  InitializeBackend(false);
+
+  backend_->StopSyncingForShutdown();
+  // This line would post the task causing the crash before the fix, because
+  // sync manager was used during the shutdown handling.
+  backend_->Shutdown(STOP_SYNC);
+  backend_.reset();
+
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace

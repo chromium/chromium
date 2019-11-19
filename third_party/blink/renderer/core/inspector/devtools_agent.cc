@@ -56,8 +56,6 @@ DevToolsAgent::DevToolsAgent(
     scoped_refptr<InspectorTaskRunner> inspector_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : client_(client),
-      binding_(this),
-      associated_binding_(this),
       inspected_frames_(inspected_frames),
       probe_sink_(probe_sink),
       inspector_task_runner_(std::move(inspector_task_runner)),
@@ -78,39 +76,42 @@ void DevToolsAgent::Dispose() {
   CleanupConnection();
 }
 
-void DevToolsAgent::BindRequest(
-    mojom::blink::DevToolsAgentHostPtrInfo host_ptr_info,
-    mojom::blink::DevToolsAgentRequest request,
+void DevToolsAgent::BindReceiver(
+    mojo::PendingRemote<mojom::blink::DevToolsAgentHost> host_remote,
+    mojo::PendingReceiver<mojom::blink::DevToolsAgent> receiver,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(!binding_);
-  DCHECK(!associated_binding_);
-  binding_.Bind(std::move(request), std::move(task_runner));
-  host_ptr_.Bind(std::move(host_ptr_info));
-  host_ptr_.set_connection_error_handler(
+  DCHECK(!receiver_.is_bound());
+  DCHECK(!associated_receiver_.is_bound());
+  receiver_.Bind(std::move(receiver), std::move(task_runner));
+  host_remote_.Bind(std::move(host_remote));
+  host_remote_.set_disconnect_handler(
       WTF::Bind(&DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
 }
 
-void DevToolsAgent::BindRequest(
-    mojom::blink::DevToolsAgentHostAssociatedPtrInfo host_ptr_info,
-    mojom::blink::DevToolsAgentAssociatedRequest request,
+void DevToolsAgent::BindReceiver(
+    mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host_remote,
+    mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DCHECK(!binding_);
-  DCHECK(!associated_binding_);
-  associated_binding_.Bind(std::move(request), std::move(task_runner));
-  associated_host_ptr_.Bind(std::move(host_ptr_info));
-  associated_host_ptr_.set_connection_error_handler(
+  DCHECK(!receiver_.is_bound());
+  DCHECK(!associated_receiver_.is_bound());
+  associated_receiver_.Bind(std::move(receiver), std::move(task_runner));
+  associated_host_remote_.Bind(std::move(host_remote));
+  associated_host_remote_.set_disconnect_handler(
       WTF::Bind(&DevToolsAgent::CleanupConnection, WrapWeakPersistent(this)));
 }
 
 void DevToolsAgent::AttachDevToolsSession(
-    mojom::blink::DevToolsSessionHostAssociatedPtrInfo host,
-    mojom::blink::DevToolsSessionAssociatedRequest session_request,
-    mojom::blink::DevToolsSessionRequest io_session_request,
-    mojom::blink::DevToolsSessionStatePtr reattach_session_state) {
+    mojo::PendingAssociatedRemote<mojom::blink::DevToolsSessionHost> host,
+    mojo::PendingAssociatedReceiver<mojom::blink::DevToolsSession>
+        session_receiver,
+    mojo::PendingReceiver<mojom::blink::DevToolsSession> io_session_receiver,
+    mojom::blink::DevToolsSessionStatePtr reattach_session_state,
+    bool client_expects_binary_responses) {
   client_->DebuggerTaskStarted();
   DevToolsSession* session = MakeGarbageCollected<DevToolsSession>(
-      this, std::move(host), std::move(session_request),
-      std::move(io_session_request), std::move(reattach_session_state));
+      this, std::move(host), std::move(session_receiver),
+      std::move(io_session_receiver), std::move(reattach_session_state),
+      client_expects_binary_responses);
   sessions_.insert(session);
   client_->DebuggerTaskFinished();
 }
@@ -152,8 +153,9 @@ std::unique_ptr<WorkerDevToolsParams> DevToolsAgent::WorkerThreadCreated(
 
   auto data = std::make_unique<WorkerData>();
   data->url = url;
-  result->agent_request = mojo::MakeRequest(&data->agent_ptr);
-  data->host_request = mojo::MakeRequest(&result->agent_host_ptr_info);
+  result->agent_receiver = data->agent_remote.InitWithNewPipeAndPassReceiver();
+  data->host_receiver =
+      result->agent_host_remote.InitWithNewPipeAndPassReceiver();
   data->devtools_worker_token = result->devtools_worker_token;
   data->waiting_for_debugger = agent->pause_child_workers_on_start_;
   data->name = global_scope_name;
@@ -176,24 +178,24 @@ void DevToolsAgent::WorkerThreadTerminated(ExecutionContext* parent_context,
 }
 
 void DevToolsAgent::ReportChildWorker(std::unique_ptr<WorkerData> data) {
-  if (host_ptr_.is_bound()) {
-    host_ptr_->ChildWorkerCreated(
-        std::move(data->agent_ptr), std::move(data->host_request),
+  if (host_remote_.is_bound()) {
+    host_remote_->ChildWorkerCreated(
+        std::move(data->agent_remote), std::move(data->host_receiver),
         std::move(data->url), std::move(data->name),
         data->devtools_worker_token, data->waiting_for_debugger);
-  } else if (associated_host_ptr_.is_bound()) {
-    associated_host_ptr_->ChildWorkerCreated(
-        std::move(data->agent_ptr), std::move(data->host_request),
+  } else if (associated_host_remote_.is_bound()) {
+    associated_host_remote_->ChildWorkerCreated(
+        std::move(data->agent_remote), std::move(data->host_receiver),
         std::move(data->url), std::move(data->name),
         data->devtools_worker_token, data->waiting_for_debugger);
   }
 }
 
 void DevToolsAgent::CleanupConnection() {
-  binding_.Close();
-  associated_binding_.Close();
-  host_ptr_.reset();
-  associated_host_ptr_.reset();
+  receiver_.reset();
+  associated_receiver_.reset();
+  host_remote_.reset();
+  associated_host_remote_.reset();
   report_child_workers_ = false;
   pause_child_workers_on_start_ = false;
 }

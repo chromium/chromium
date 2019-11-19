@@ -35,6 +35,11 @@
           }],
         ],
       }],
+      ['OS=="android"', {
+        'ldflags': [
+          '-static-libstdc++',
+        ],
+      }],
     ],
   },
 }

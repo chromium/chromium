@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 # Invokes gperf for the GN build.
-# Usage: gperf.py [--developer_dir PATH_TO_XCODE] gperf ...
+# Usage: gperf.py gperf ...
 
 import argparse
 import os
@@ -68,11 +68,8 @@ def use_jinja_gperf_template(template_path, gperf_extra_args=None):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--developer_dir", required=False)
     parser.add_argument("--output-file")
     args, unknownargs = parser.parse_known_args()
-    if args.developer_dir:
-        os.environ['DEVELOPER_DIR'] = args.developer_dir
 
     gperf_path, gperf_args = unknownargs[0], unknownargs[1:]
     infile = None

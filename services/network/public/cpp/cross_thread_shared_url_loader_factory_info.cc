@@ -10,6 +10,8 @@
 #include "base/callback.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -35,15 +37,15 @@ class CrossThreadSharedURLLoaderFactoryInfo::State
 
   // Delegation for mojom::URLLoaderFactory API.
   void CreateLoaderAndStart(
-      mojom::URLLoaderRequest loader,
+      mojo::PendingReceiver<mojom::URLLoader> loader,
       int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const ResourceRequest& request,
-      mojom::URLLoaderClientPtrInfo client,
+      mojo::PendingRemote<mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
-  void Clone(mojom::URLLoaderFactoryRequest request);
+  void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver);
 
   // Sequence |base_factory()| and |this| run on.
   base::SequencedTaskRunner* task_runner() const { return task_runner_.get(); }
@@ -78,15 +80,15 @@ class CrossThreadSharedURLLoaderFactory : public SharedURLLoaderFactory {
   explicit CrossThreadSharedURLLoaderFactory(scoped_refptr<State> state);
 
   // mojom::URLLoaderFactory implementation:
-  void CreateLoaderAndStart(mojom::URLLoaderRequest loader,
+  void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> loader,
                             int32_t routing_id,
                             int32_t request_id,
                             uint32_t options,
                             const ResourceRequest& request,
-                            mojom::URLLoaderClientPtr client,
+                            mojo::PendingRemote<mojom::URLLoaderClient> client,
                             const net::MutableNetworkTrafficAnnotationTag&
                                 traffic_annotation) override;
-  void Clone(mojom::URLLoaderFactoryRequest request) override;
+  void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
   // SharedURLLoaderFactory implementation:
   std::unique_ptr<SharedURLLoaderFactoryInfo> Clone() override;
@@ -111,12 +113,12 @@ CrossThreadSharedURLLoaderFactory::~CrossThreadSharedURLLoaderFactory() {
 }
 
 void CrossThreadSharedURLLoaderFactory::CreateLoaderAndStart(
-    mojom::URLLoaderRequest loader,
+    mojo::PendingReceiver<mojom::URLLoader> loader,
     int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const ResourceRequest& request,
-    mojom::URLLoaderClientPtr client,
+    mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::SequencedTaskRunner* runner = state_->task_runner();
@@ -129,19 +131,19 @@ void CrossThreadSharedURLLoaderFactory::CreateLoaderAndStart(
         FROM_HERE,
         base::BindOnce(&State::CreateLoaderAndStart, state_, std::move(loader),
                        routing_id, request_id, options, request,
-                       client.PassInterface(), traffic_annotation));
+                       std::move(client), traffic_annotation));
   }
 }
 
 void CrossThreadSharedURLLoaderFactory::Clone(
-    mojom::URLLoaderFactoryRequest request) {
+    mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::SequencedTaskRunner* runner = state_->task_runner();
   if (runner->RunsTasksInCurrentSequence()) {
-    state_->base_factory()->Clone(std::move(request));
+    state_->base_factory()->Clone(std::move(receiver));
   } else {
     state_->task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&State::Clone, state_, std::move(request)));
+        FROM_HERE, base::BindOnce(&State::Clone, state_, std::move(receiver)));
   }
 }
 
@@ -186,23 +188,23 @@ void CrossThreadSharedURLLoaderFactoryInfo::State::DeleteOnCorrectThread()
 }
 
 void CrossThreadSharedURLLoaderFactoryInfo::State::CreateLoaderAndStart(
-    mojom::URLLoaderRequest loader,
+    mojo::PendingReceiver<mojom::URLLoader> loader,
     int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const ResourceRequest& request,
-    mojom::URLLoaderClientPtrInfo client,
+    mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base_factory_->CreateLoaderAndStart(
-      std::move(loader), routing_id, request_id, options, request,
-      mojom::URLLoaderClientPtr(std::move(client)), traffic_annotation);
+  base_factory_->CreateLoaderAndStart(std::move(loader), routing_id, request_id,
+                                      options, request, std::move(client),
+                                      traffic_annotation);
 }
 
 void CrossThreadSharedURLLoaderFactoryInfo::State::Clone(
-    mojom::URLLoaderFactoryRequest request) {
+    mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base_factory_->Clone(std::move(request));
+  base_factory_->Clone(std::move(receiver));
 }
 
 }  // namespace network

@@ -5,13 +5,8 @@
 #include "components/printing/browser/print_media_l10n.h"
 
 #include <map>
-#include <vector>
 
-#include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/strings/string_piece.h"
-#include "base/strings/string_split.h"
-#include "base/strings/string_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -156,51 +151,39 @@ int VendorIdToTranslatedId(const std::string& vendor_id) {
       {"prc_8_120x309mm", PRINT_PREVIEW_MEDIA_PRC_8_120X309MM},
       {"roc_16k_7.75x10.75in", PRINT_PREVIEW_MEDIA_ROC_16K_7_75X10_75IN},
       {"roc_8k_10.75x15.5in", PRINT_PREVIEW_MEDIA_ROC_8K_10_75X15_5IN},
+
+      // Here follow manually curated IDs not blessed with common names
+      // in PWG 5101.1-2002.
+
+      // JIS B*
+      {"jis_b0_1030x1456mm", PRINT_PREVIEW_MEDIA_JIS_B0_1030X1456MM},
+      {"jis_b1_728x1030mm", PRINT_PREVIEW_MEDIA_JIS_B1_728X1030MM},
+      {"jis_b2_515x728mm", PRINT_PREVIEW_MEDIA_JIS_B2_515X728MM},
+      {"jis_b3_364x515mm", PRINT_PREVIEW_MEDIA_JIS_B3_364X515MM},
+      {"jis_b4_257x364mm", PRINT_PREVIEW_MEDIA_JIS_B4_257X364MM},
+      {"jis_b5_182x257mm", PRINT_PREVIEW_MEDIA_JIS_B5_182X257MM},
+      {"jis_b6_128x182mm", PRINT_PREVIEW_MEDIA_JIS_B6_128X182MM},
+      {"jis_b7_91x128mm", PRINT_PREVIEW_MEDIA_JIS_B7_91X128MM},
+      {"jis_b8_64x91mm", PRINT_PREVIEW_MEDIA_JIS_B8_64X91MM},
+      {"jis_b9_45x64mm", PRINT_PREVIEW_MEDIA_JIS_B9_45X64MM},
+      {"jis_b10_32x45mm", PRINT_PREVIEW_MEDIA_JIS_B10_32X45MM},
   });
 
   auto it = media_map->find(vendor_id);
   return it != media_map->end() ? it->second : -1;
 }
 
-std::string SplitMediaName(const base::StringPiece& vendor_id) {
-  // <name>_<width>x<height>{in,mm}
-  // e.g. na_letter_8.5x11in, iso_a4_210x297mm
-  std::vector<base::StringPiece> pieces = base::SplitStringPiece(
-      vendor_id, "_", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  if (pieces.size() < 2)
-    return std::string();
-
-  // Append all tokens split out of the vendor ID. The last token is
-  // usually the <width>x<height> token, so skip it.
-  pieces.pop_back();
-  return base::JoinString(pieces, " ");
-}
-
 }  // namespace
 
 std::string LocalizePaperDisplayName(const std::string& vendor_id) {
-  std::string localized;
   // We can't do anything without a vendor ID.
   if (vendor_id.empty()) {
-    return localized;
+    return std::string();
   }
 
   int translation_id = VendorIdToTranslatedId(vendor_id);
-  // If we can't get a localized media name, we do our best to parse it
-  // on our own.
-  if (translation_id < 0) {
-    localized = SplitMediaName(base::StringPiece(vendor_id));
-  } else {
-    localized = l10n_util::GetStringUTF8(translation_id);
-  }
-
-  // If we still don't have a sane display name, fall back on showing
-  // the vendor ID.
-  if (localized.empty()) {
-    VLOG(1) << "No display name for " << vendor_id;
-    localized = vendor_id;
-  }
-  return localized;
+  return translation_id < 0 ? std::string()
+                            : l10n_util::GetStringUTF8(translation_id);
 }
 
 }  // namespace printing

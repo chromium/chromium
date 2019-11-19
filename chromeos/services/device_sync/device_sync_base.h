@@ -9,8 +9,10 @@
 
 #include "base/macros.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace chromeos {
 
@@ -22,14 +24,14 @@ class DeviceSyncBase : public mojom::DeviceSync {
   ~DeviceSyncBase() override;
 
   // mojom::DeviceSync:
-  void AddObserver(mojom::DeviceSyncObserverPtr observer,
+  void AddObserver(mojo::PendingRemote<mojom::DeviceSyncObserver> observer,
                    AddObserverCallback callback) override;
 
-  // Binds a request to this implementation. Should be called each time that the
-  // service receives a request.
-  void BindRequest(mojom::DeviceSyncRequest request);
+  // Binds a receiver to this implementation. Should be called each time that
+  // the service receives a receiver.
+  void BindReceiver(mojo::PendingReceiver<mojom::DeviceSync> receiver);
 
-  void CloseAllBindings();
+  void CloseAllReceivers();
 
  protected:
   DeviceSyncBase();
@@ -44,8 +46,8 @@ class DeviceSyncBase : public mojom::DeviceSync {
  private:
   void OnDisconnection();
 
-  mojo::InterfacePtrSet<mojom::DeviceSyncObserver> observers_;
-  mojo::BindingSet<mojom::DeviceSync> bindings_;
+  mojo::RemoteSet<mojom::DeviceSyncObserver> observers_;
+  mojo::ReceiverSet<mojom::DeviceSync> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(DeviceSyncBase);
 };

@@ -18,6 +18,11 @@
 
 // Used by tests to set internal state without having to change global input
 // source.
-void SetIsInputSourceDvorakQwertyForTesting(bool is_dvorak_qwerty);
+void SetIsInputSourceCommandQwertyForTesting(bool is_command_qwerty);
+
+// Returns whether the named keyboard layout has the command-qwerty behavior,
+// meaning that the layout acts as though it was QWERTY when the command key is
+// held.
+bool IsKeyboardLayoutCommandQwerty(NSString* layout_id);
 
 #endif  // CHROME_BROWSER_UI_COCOA_NSMENUITEM_ADDITIONS_H_

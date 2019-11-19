@@ -50,7 +50,7 @@ class VideoEncoder {
   // CastEnvironment thread with the result.  If false is returned, nothing
   // happens and the callback will not be run.
   virtual bool EncodeVideoFrame(
-      const scoped_refptr<media::VideoFrame>& video_frame,
+      scoped_refptr<media::VideoFrame> video_frame,
       const base::TimeTicks& reference_time,
       const FrameEncodedCallback& frame_encoded_callback) = 0;
 

@@ -253,8 +253,10 @@ void AudioOutputResource::Run() {
     }
 
     // Deinterleave the audio data into the shared memory as floats.
-    audio_bus_->FromInterleaved(client_buffer_.get(), audio_bus_->frames(),
-                                kBitsPerAudioOutputSample / 8);
+    static_assert(kBitsPerAudioOutputSample == 16,
+                  "FromInterleaved expects 2 bytes.");
+    audio_bus_->FromInterleaved<media::SignedInt16SampleTypeTraits>(
+        reinterpret_cast<int16_t*>(client_buffer_.get()), audio_bus_->frames());
 
     // Inform other side that we have read the data from the shared memory.
     // Let the other end know which buffer we just filled.  The buffer index is

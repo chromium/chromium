@@ -9,6 +9,7 @@
 #include "components/prefs/pref_service_factory.h"
 #include "components/prefs/testing_pref_store.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/network_service_util.h"
 #include "content/public/test/test_browser_context.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_prefs.h"
@@ -45,8 +46,8 @@ class ExtensionTestBrowserContext : public content::TestBrowserContext {
 namespace extensions {
 
 ExtensionsTest::ExtensionsTest(
-    std::unique_ptr<content::TestBrowserThreadBundle> thread_bundle)
-    : thread_bundle_(std::move(thread_bundle)),
+    std::unique_ptr<content::BrowserTaskEnvironment> task_environment)
+    : task_environment_(std::move(task_environment)),
       rvh_test_enabler_(
           std::make_unique<content::RenderViewHostTestEnabler>()) {}
 
@@ -54,7 +55,7 @@ ExtensionsTest::~ExtensionsTest() {
   // Destroy the task runners before nulling the browser/utility clients, as
   // posted tasks may use them.
   rvh_test_enabler_.reset();
-  thread_bundle_.reset();
+  task_environment_.reset();
   content::SetUtilityClientForTesting(nullptr);
 }
 
@@ -66,6 +67,7 @@ void ExtensionsTest::SetExtensionsBrowserClient(
 }
 
 void ExtensionsTest::SetUp() {
+  content::ForceInProcessNetworkService(true);
   content_utility_client_ = std::make_unique<TestContentUtilityClient>();
   browser_context_ = std::make_unique<ExtensionTestBrowserContext>();
   incognito_context_ = CreateTestIncognitoContext();
@@ -97,7 +99,7 @@ void ExtensionsTest::SetUp() {
       browser_context(), pref_service_.get(),
       browser_context()->GetPath().AppendASCII("Extensions"),
       extension_pref_value_map_.get(), false /* extensions_disabled */,
-      std::vector<ExtensionPrefsObserver*>()));
+      std::vector<EarlyExtensionPrefsObserver*>()));
 
   ExtensionPrefsFactory::GetInstance()->SetInstanceForTesting(
       browser_context(), std::move(extension_prefs));

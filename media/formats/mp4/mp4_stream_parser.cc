@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/numerics/math_constants.h"
 #include "base/strings/string_number_conversions.h"
@@ -21,7 +20,6 @@
 #include "media/base/audio_decoder_config.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
-#include "media/base/media_switches.h"
 #include "media/base/media_tracks.h"
 #include "media/base/media_util.h"
 #include "media/base/stream_parser_buffer.h"
@@ -44,38 +42,22 @@ const int kMaxEmptySampleLogs = 20;
 const int kMaxInvalidConversionLogs = 20;
 const int kMaxVideoKeyframeMismatchLogs = 10;
 
-// Caller should be prepared to handle return of Unencrypted() in case of
-// unsupported scheme.
+// Caller should be prepared to handle return of EncryptionScheme::kUnencrypted
+// in case of unsupported scheme.
 EncryptionScheme GetEncryptionScheme(const ProtectionSchemeInfo& sinf) {
   if (!sinf.HasSupportedScheme())
-    return Unencrypted();
+    return EncryptionScheme::kUnencrypted;
   FourCC fourcc = sinf.type.type;
-  EncryptionScheme::CipherMode mode = EncryptionScheme::CIPHER_MODE_UNENCRYPTED;
-  EncryptionPattern pattern;
-#if BUILDFLAG(ENABLE_CBCS_ENCRYPTION_SCHEME)
-  bool uses_pattern_encryption = false;
-#endif
   switch (fourcc) {
     case FOURCC_CENC:
-      mode = EncryptionScheme::CIPHER_MODE_AES_CTR;
-      break;
-#if BUILDFLAG(ENABLE_CBCS_ENCRYPTION_SCHEME)
+      return EncryptionScheme::kCenc;
     case FOURCC_CBCS:
-      mode = EncryptionScheme::CIPHER_MODE_AES_CBC;
-      uses_pattern_encryption = true;
-      break;
-#endif
+      return EncryptionScheme::kCbcs;
     default:
       NOTREACHED();
       break;
   }
-#if BUILDFLAG(ENABLE_CBCS_ENCRYPTION_SCHEME)
-  if (uses_pattern_encryption) {
-    pattern = {sinf.info.track_encryption.default_crypt_byte_block,
-               sinf.info.track_encryption.default_skip_byte_block};
-  }
-#endif
-  return EncryptionScheme(mode, pattern);
+  return EncryptionScheme::kUnencrypted;
 }
 }  // namespace
 
@@ -245,12 +227,9 @@ ParseResult MP4StreamParser::ParseBox() {
   return ParseResult::kOk;
 }
 
-static inline double FixedToFloatingPoint(const int32_t& i) {
-  return static_cast<double>(i >> 16);
-}
-
-VideoRotation MP4StreamParser::CalculateRotation(const TrackHeader& track,
-                                                 const MovieHeader& movie) {
+VideoTransformation MP4StreamParser::CalculateRotation(
+    const TrackHeader& track,
+    const MovieHeader& movie) {
   static_assert(kDisplayMatrixDimension == 9, "Display matrix must be 3x3");
   // 3x3 matrix: [ a b c ]
   //             [ d e f ]
@@ -275,39 +254,9 @@ VideoRotation MP4StreamParser::CalculateRotation(const TrackHeader& track,
     }
   }
 
-  // Rotation by angle Θ is represented in the matrix as:
-  // [ cos(Θ), -sin(Θ), ...]
-  // [ sin(Θ),  cos(Θ), ...]
-  // [ ...,     ...,     1 ]
-  // But we only need cos(Θ) for the angle and sin(Θ) for the quadrant.
-  double angle = acos(FixedToFloatingPoint(rotation_matrix[0]))
-    * 180 / base::kPiDouble;
-
-  if (angle < 0)
-    angle += 360;
-
-  if (angle >= 360)
-    angle -= 360;
-
-  // 16 bits of fixed point decimal is enough to give 6 decimals of precision
-  // to cos(Θ). A delta of ±0.000001 causes acos(cos(Θ)) to differ by a minimum
-  // of 0.0002, which is why we only need to check that the angle is only
-  // accurate to within four decimal places. This is preferred to checking for
-  // a more precise accuracy, as the 'double' type is architecture dependant and
-  // ther may variance in floating point errors.
-  if (abs(angle - 0) < 1e-4)
-    return VIDEO_ROTATION_0;
-
-  if (abs(angle - 180) < 1e-4)
-    return VIDEO_ROTATION_180;
-
-  if (abs(angle - 90) < 1e-4) {
-    bool quadrant = asin(FixedToFloatingPoint(rotation_matrix[3])) < 0;
-    return quadrant ? VIDEO_ROTATION_90 : VIDEO_ROTATION_270;
-  }
-
-  // TODO(tmathmeyer): Record this event and the faulty matrix somewhere.
-  return VIDEO_ROTATION_0;
+  int32_t rotation_only[4] = {rotation_matrix[0], rotation_matrix[1],
+                              rotation_matrix[3], rotation_matrix[4]};
+  return VideoTransformation(rotation_only);
 }
 
 bool MP4StreamParser::ParseMoov(BoxReader* reader) {
@@ -364,11 +313,11 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
                                 : entry.format;
 
       if (audio_format != FOURCC_OPUS && audio_format != FOURCC_FLAC &&
-#if BUILDFLAG(ENABLE_AC3_EAC3_AUDIO_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
           audio_format != FOURCC_AC3 && audio_format != FOURCC_EAC3 &&
 #endif
-#if BUILDFLAG(ENABLE_MPEG_H_AUDIO_DEMUXING)
-          audio_format != FOURCC_MHM1 &&
+#if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
+          audio_format != FOURCC_MHM1 && audio_format != FOURCC_MHA1 &&
 #endif
           audio_format != FOURCC_MP4A) {
         MEDIA_LOG(ERROR, media_log_)
@@ -405,8 +354,8 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         sample_per_second = entry.samplerate;
         extra_data = entry.dfla.stream_info;
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
-#if BUILDFLAG(ENABLE_MPEG_H_AUDIO_DEMUXING)
-      } else if (audio_format == FOURCC_MHM1) {
+#if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
+      } else if (audio_format == FOURCC_MHM1 || audio_format == FOURCC_MHA1) {
         codec = kCodecMpegHAudio;
         channel_layout = CHANNEL_LAYOUT_BITSTREAM;
         sample_per_second = entry.samplerate;
@@ -414,7 +363,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
 #endif
       } else {
         uint8_t audio_type = entry.esds.object_type;
-#if BUILDFLAG(ENABLE_AC3_EAC3_AUDIO_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
         if (audio_type == kForbidden) {
           if (audio_format == FOURCC_AC3)
             audio_type = kAC3;
@@ -441,7 +390,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
 #if defined(OS_ANDROID)
           extra_data = aac.codec_specific_data();
 #endif
-#if BUILDFLAG(ENABLE_AC3_EAC3_AUDIO_DEMUXING)
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
         } else if (audio_type == kAC3) {
           codec = kCodecAC3;
           channel_layout = GuessChannelLayout(entry.channelcount);
@@ -482,10 +431,10 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         return false;
       }
       bool is_track_encrypted = entry.sinf.info.track_encryption.is_encrypted;
-      EncryptionScheme scheme = Unencrypted();
+      EncryptionScheme scheme = EncryptionScheme::kUnencrypted;
       if (is_track_encrypted) {
         scheme = GetEncryptionScheme(entry.sinf);
-        if (!scheme.is_encrypted())
+        if (scheme == EncryptionScheme::kUnencrypted)
           return false;
       }
       audio_config.Initialize(codec, sample_format, channel_layout,
@@ -504,9 +453,10 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       has_audio_ = true;
       audio_track_ids_.insert(audio_track_id);
       const char* track_kind = (audio_track_ids_.size() == 1 ? "main" : "");
-      media_tracks->AddAudioTrack(audio_config, audio_track_id, track_kind,
-                                  track->media.handler.name,
-                                  track->media.header.language());
+      media_tracks->AddAudioTrack(
+          audio_config, audio_track_id, MediaTrack::Kind(track_kind),
+          MediaTrack::Label(track->media.handler.name),
+          MediaTrack::Language(track->media.header.language()));
       continue;
     }
 
@@ -550,14 +500,15 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         return false;
       }
       bool is_track_encrypted = entry.sinf.info.track_encryption.is_encrypted;
-      EncryptionScheme scheme = Unencrypted();
+      EncryptionScheme scheme = EncryptionScheme::kUnencrypted;
       if (is_track_encrypted) {
         scheme = GetEncryptionScheme(entry.sinf);
-        if (!scheme.is_encrypted())
+        if (scheme == EncryptionScheme::kUnencrypted)
           return false;
       }
       video_config.Initialize(entry.video_codec, entry.video_codec_profile,
-                              PIXEL_FORMAT_I420, VideoColorSpace::REC709(),
+                              VideoDecoderConfig::AlphaMode::kIsOpaque,
+                              VideoColorSpace::REC709(),
                               CalculateRotation(track->header, moov_->header),
                               coded_size, visible_rect, natural_size,
                               // No decoder-specific buffer needed for AVC;
@@ -572,10 +523,12 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       }
       has_video_ = true;
       video_track_ids_.insert(video_track_id);
-      const char* track_kind = (video_track_ids_.size() == 1 ? "main" : "");
-      media_tracks->AddVideoTrack(video_config, video_track_id, track_kind,
-                                  track->media.handler.name,
-                                  track->media.header.language());
+      auto track_kind =
+          MediaTrack::Kind(video_track_ids_.size() == 1 ? "main" : "");
+      media_tracks->AddVideoTrack(
+          video_config, video_track_id, track_kind,
+          MediaTrack::Label(track->media.handler.name),
+          MediaTrack::Language(track->media.header.language()));
       continue;
     }
 
@@ -850,11 +803,7 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
         // they mismatch. If other out-of-order codecs in mp4 (e.g. HEVC, DV)
         // implement keyframe analysis in their frame_bitstream_converter, we'll
         // similarly trust that analysis instead of the mp4.
-        // We'll only use the analysis to override the MP4 keyframeness if
-        // |media::kMseBufferByPts| is enabled.
-        if (base::FeatureList::IsEnabled(kMseBufferByPts)) {
-          is_keyframe = analysis.is_keyframe.value();
-        }
+        is_keyframe = analysis.is_keyframe.value();
       }
     }
   }
@@ -878,7 +827,7 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
     if (!subsamples.empty()) {
       // Create a new config with the updated subsamples.
       decrypt_config.reset(
-          new DecryptConfig(decrypt_config->encryption_mode(),
+          new DecryptConfig(decrypt_config->encryption_scheme(),
                             decrypt_config->key_id(), decrypt_config->iv(),
                             subsamples, decrypt_config->encryption_pattern()));
     }

@@ -6,14 +6,14 @@
  * Returns a mock of metadata model.
  *
  * @extends {MetadataModel}
+ * @final
  */
 class MockMetadataModel {
   /** @param {Object} initial_properties */
   constructor(initial_properties) {
     /**
      * Dummy properties, which can be overwritten by a test.
-     * @public {Object}
-     * @const
+     * @public @const {Object}
      */
     this.properties = initial_properties;
   }

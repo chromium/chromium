@@ -4,12 +4,12 @@
 
 #include "base/power_monitor/power_monitor_device_source.h"
 
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
-#include "base/win/wrapped_window_proc.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
+#include "base/win/wrapped_window_proc.h"
 
 namespace base {
 

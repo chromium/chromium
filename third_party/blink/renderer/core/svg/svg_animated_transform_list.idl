@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/coords.html#InterfaceSVGAnimatedTransformList
 
+[Exposed=Window]
 interface SVGAnimatedTransformList {
     [MeasureAs=SVGAnimatedTransformListBaseVal] readonly attribute SVGTransformList baseVal;
     readonly attribute SVGTransformList animVal;

@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
@@ -14,8 +15,8 @@
 #include "base/task/post_task.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -69,14 +70,6 @@ class DecodeRequestSenderImpl
 
 }  // namespace
 
-struct ArcWallpaperService::WallpaperIdPair {
-  // ID of wallpaper image which can be obtaind by
-  // WallpaperResizer::GetImageId().
-  uint32_t image_id;
-  // ID of wallpaper generated in the container side.
-  int32_t android_id;
-};
-
 class ArcWallpaperService::DecodeRequest : public ImageDecoder::ImageRequest {
  public:
   DecodeRequest(ArcWallpaperService* service, int32_t android_id)
@@ -127,24 +120,13 @@ ArcWallpaperService* ArcWallpaperService::GetForBrowserContext(
 ArcWallpaperService::ArcWallpaperService(content::BrowserContext* context,
                                          ArcBridgeService* bridge_service)
     : arc_bridge_service_(bridge_service),
-      decode_request_sender_(std::make_unique<DecodeRequestSenderImpl>()),
-      observer_binding_(this),
-      weak_ptr_factory_(this) {
+      decode_request_sender_(std::make_unique<DecodeRequestSenderImpl>()) {
   arc_bridge_service_->wallpaper()->SetHost(this);
-  arc_bridge_service_->wallpaper()->AddObserver(this);
 }
 
 ArcWallpaperService::~ArcWallpaperService() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  arc_bridge_service_->wallpaper()->RemoveObserver(this);
   arc_bridge_service_->wallpaper()->SetHost(nullptr);
-}
-
-void ArcWallpaperService::OnConnectionReady() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ash::mojom::WallpaperObserverAssociatedPtrInfo ptr_info;
-  observer_binding_.Bind(mojo::MakeRequest(&ptr_info));
-  WallpaperControllerClient::Get()->AddObserver(std::move(ptr_info));
 }
 
 void ArcWallpaperService::SetWallpaper(const std::vector<uint8_t>& data,
@@ -174,34 +156,12 @@ void ArcWallpaperService::SetDefaultWallpaper() {
 
 void ArcWallpaperService::GetWallpaper(GetWallpaperCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  WallpaperControllerClient::Get()->GetWallpaperImage(
-      base::BindOnce(&ArcWallpaperService::OnGetWallpaperImageCallback,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  gfx::ImageSkia image = WallpaperControllerClient::Get()->GetWallpaperImage();
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&EncodeImagePng, image), std::move(callback));
 }
-
-void ArcWallpaperService::OnWallpaperChanged(uint32_t image_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  bool current_wallpaper_notified = false;
-  for (auto it = id_pairs_.begin(); it != id_pairs_.end();) {
-    int32_t const android_id = it->android_id;
-    if (it->image_id == image_id) {
-      current_wallpaper_notified = true;
-      it = id_pairs_.erase(it);
-      NotifyWallpaperChanged(android_id);
-    } else {
-      ++it;
-    }
-  }
-
-  if (!current_wallpaper_notified)
-    NotifyWallpaperChanged(-1);
-}
-
-void ArcWallpaperService::OnWallpaperColorsChanged(
-    const std::vector<SkColor>& prominent_colors) {}
-
-void ArcWallpaperService::OnWallpaperBlurChanged(bool blurred) {}
 
 void ArcWallpaperService::OnWallpaperDecoded(const gfx::ImageSkia& image,
                                              int32_t android_id) {
@@ -210,11 +170,20 @@ void ArcWallpaperService::OnWallpaperDecoded(const gfx::ImageSkia& image,
   const std::string wallpaper_files_id =
       WallpaperControllerClient::Get()->GetFilesId(account_id);
 
-  WallpaperControllerClient::Get()->SetThirdPartyWallpaper(
+  const bool result = WallpaperControllerClient::Get()->SetThirdPartyWallpaper(
       account_id, wallpaper_files_id, kAndroidWallpaperFilename,
-      ash::WALLPAPER_LAYOUT_CENTER_CROPPED, image,
-      base::BindOnce(&ArcWallpaperService::OnSetThirdPartyWallpaperCallback,
-                     weak_ptr_factory_.GetWeakPtr(), android_id));
+      ash::WALLPAPER_LAYOUT_CENTER_CROPPED, image);
+
+  // Notify the Android side whether the request is going through or not.
+  if (result)
+    NotifyWallpaperChanged(android_id);
+  else
+    NotifyWallpaperChangedAndReset(android_id);
+
+  // TODO(crbug.com/618922): Register the wallpaper to Chrome OS wallpaper
+  // picker. Currently the new wallpaper does not appear there. The best way
+  // to make this happen seems to do the same things as wallpaper_api.cc and
+  // wallpaper_private_api.cc.
 }
 
 void ArcWallpaperService::NotifyWallpaperChanged(int android_id) {
@@ -233,28 +202,6 @@ void ArcWallpaperService::NotifyWallpaperChangedAndReset(int32_t android_id) {
   // Invoke NotifyWallpaperChanged with -1 so that Android side regards the
   // wallpaper of |android_id_| is no longer used at Chrome side.
   NotifyWallpaperChanged(-1);
-}
-
-void ArcWallpaperService::OnSetThirdPartyWallpaperCallback(int32_t android_id,
-                                                           bool allowed,
-                                                           uint32_t image_id) {
-  if (allowed)
-    id_pairs_.push_back({image_id, android_id});
-  else
-    NotifyWallpaperChangedAndReset(android_id);
-
-  // TODO(crbug.com/618922): Register the wallpaper to Chrome OS wallpaper
-  // picker. Currently the new wallpaper does not appear there. The best way
-  // to make this happen seems to do the same things as wallpaper_api.cc and
-  // wallpaper_private_api.cc.
-}
-
-void ArcWallpaperService::OnGetWallpaperImageCallback(
-    GetWallpaperCallback callback,
-    const gfx::ImageSkia& image) {
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&EncodeImagePng, image), std::move(callback));
 }
 
 }  // namespace arc

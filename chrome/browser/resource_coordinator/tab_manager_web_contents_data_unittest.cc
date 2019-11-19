@@ -69,13 +69,6 @@ const char kDefaultUrl[] = "https://www.google.com";
 
 }  // namespace
 
-TEST_F(TabManagerWebContentsDataTest, LastInactiveTime) {
-  EXPECT_TRUE(tab_data()->LastInactiveTime().is_null());
-  auto now = NowTicks();
-  tab_data()->SetLastInactiveTime(now);
-  EXPECT_EQ(now, tab_data()->LastInactiveTime());
-}
-
 TEST_F(TabManagerWebContentsDataTest, TabLoadingState) {
   EXPECT_EQ(UNLOADED, tab_data()->tab_loading_state());
   tab_data()->SetTabLoadingState(LOADING);
@@ -85,8 +78,6 @@ TEST_F(TabManagerWebContentsDataTest, TabLoadingState) {
 }
 
 TEST_F(TabManagerWebContentsDataTest, CopyState) {
-  tab_data()->SetLastInactiveTime(base::TimeTicks() +
-                                  base::TimeDelta::FromSeconds(42));
   tab_data()->SetTabLoadingState(LOADED);
   tab_data()->SetIsInSessionRestore(true);
   tab_data()->SetIsRestoredInForeground(true);

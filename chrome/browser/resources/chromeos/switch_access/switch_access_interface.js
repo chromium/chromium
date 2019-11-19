@@ -28,91 +28,78 @@ class SwitchAccessInterface {
   selectCurrentNode() {}
 
   /**
-   * Open the options page in a new tab.
+   * Restarts auto-scan if it is enabled.
    */
-  showOptionsPage() {}
+  restartAutoScan() {}
 
   /**
-   * Return a list of the names of all user commands.
-   * @return {!Array<string>}
+   * Sets whether the current node is in the virtual keyboard.
+   * @param {boolean} inKeyboard
    */
-  getCommands() {}
+  setInKeyboard(inKeyboard) {}
 
   /**
-   * Return the default key code for a command.
-   *
-   * @param {string} command
-   * @return {number}
-   */
-  getDefaultKeyCodeFor(command) {}
-
-  /**
-   * Forwards keycodes received from keyPress events to |callback|.
-   * @param {function(number)} callback
-   */
-  listenForKeycodes(callback) {}
-
-  /**
-   * Stops forwarding keycodes.
-   */
-  stopListeningForKeycodes() {}
-
-  /**
-   * Run the function binding for the specified command.
-   * @param {string} command
-   */
-  runCommand(command) {}
-
-  /**
-   * Perform actions as the result of actions by the user. Currently, restarts
-   * auto-scan if it is enabled.
-   */
-  performedUserAction() {}
-
-  /**
-   * Set the value of the preference |key| to |value| in chrome.storage.sync.
-   * this.prefs_ is not set until handleStorageChange_.
-   *
-   * @param {string} key
-   * @param {boolean|string|number} value
-   */
-  setPref(key, value) {}
-
-  /**
-   * Get the value of type 'boolean' of the preference |key|. Will throw a type
-   * error if the value of |key| is not 'boolean'.
-   *
-   * @param  {string} key
+   * Check whether or not the feature flag
+   * for improved text input is enabled.
    * @return {boolean}
    */
-  getBooleanPref(key) {}
+  improvedTextInputEnabled() {}
 
   /**
-   * Get the value of type 'number' of the preference |key|. Will throw a type
-   * error if the value of |key| is not 'number'.
-   *
-   * @param  {string} key
-   * @return {number}
+   * Handle a change in user preferences.
+   * @param {!Object} changes
    */
-  getNumberPref(key) {}
+  onPreferencesChanged(changes) {}
 
   /**
-   * Get the value of type 'string' of the preference |key|. Will throw a type
-   * error if the value of |key| is not 'string'.
+   * Returns whether prefs have initially loaded or not.
+   * @return {boolean}
+   */
+  prefsAreReady() {}
+
+  /**
+   * Set the value of the preference |name| to |value| in chrome.storage.sync.
+   * The behavior is not updated until the storage update is complete.
    *
-   * @param  {string} key
+   * @param {SAConstants.Preference} name
+   * @param {boolean|number} value
+   */
+  setPreference(name, value) {}
+
+  /**
+   * Get the boolean value for the given name. Will throw an error if the
+   * value associated with |name| is not a boolean, or undefined.
+   *
+   * @param  {SAConstants.Preference} name
+   * @return {boolean}
+   */
+  getBooleanPreference(name) {}
+
+  /**
+   * Get the string value for the given name. Will throw an error if the
+   * value associated with |name| is not a string, or is undefined.
+   *
+   * @param {SAConstants.Preference} name
    * @return {string}
    */
-  getStringPref(key) {}
+  getStringPreference(name) {}
 
   /**
-   * Returns true if |keyCode| is already used to run a command from the
-   * keyboard.
+   * Get the number value for the given name. Will throw an error if the
+   * value associated with |name| is not a number, or undefined.
    *
-   * @param {number} keyCode
-   * @return {boolean}
+   * @param  {SAConstants.Preference} name
+   * @return {number}
    */
-  keyCodeIsUsed(keyCode) {}
+  getNumberPreference(name) {}
+
+  /**
+   * Get the number value for the given name, or |null| if none exists.
+   *
+   * @param  {SAConstants.Preference} name
+   * @return {number|null}
+   */
+  getNumberPreferenceIfDefined(name) {}
 
   /**
    * Sets up the connection between the menuPanel and the menuManager.

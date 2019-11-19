@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+  <div>Tests for frozen user agent working properly as defined by https://github.com/WICG/ua-client-hints</div>
+<script>
+    if (window.testRunner) {
+        testRunner.dumpAsText();
+    }
+
+    var userAgent = navigator.userAgent;
+    var platform = navigator.platform;
+
+    // Validate the user agent string using the following frozen user agent strings found in content/common/user_agent.h:
+    var desktopUserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3764.0 Safari/537.36"
+    var frozenUserAgents = [
+      desktopUserAgent,
+      "Mozilla/5.0 (Linux; Android 9; Unspecified Device) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3764.0 Safari/537.36",
+      "Mozilla/5.0 (Linux; Android 9; Unspecified Device) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3764.0 Mobile Safari/537.36"
+    ];
+
+    // Platform values should match strings defined in third_party/blink/renderer/core/frame/navigator.cc.
+    var desktopPlatform = "Win32";
+    var mobilePlatform = "Linux armv8l";
+
+    document.write("UserAgent should match one of the frozen UA strings: " + (frozenUserAgents.indexOf(userAgent) > -1) + "<br>");
+
+    var platformMatchesUserAgent;
+    if (userAgent == desktopUserAgent) {
+      platformMatchesUserAgent = (platform == desktopPlatform);
+    } else {
+      platformMatchesUserAgent = (platform == mobilePlatform);
+    }
+
+    // Validate navigator.appVersion and navigator.appCodeName
+    document.write("Navigator.platform should match the corresponding frozen user agent: " +  platformMatchesUserAgent);
+</script>
+</body>
+</html>

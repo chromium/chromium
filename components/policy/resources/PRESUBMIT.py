@@ -6,7 +6,7 @@
 # mnissler@chromium.org, bartfab@chromium.org or atwilson@chromium.org.
 
 import sys
-import xml.dom.minidom
+from xml.dom import minidom
 
 def _GetPolicyTemplates(template_path):
   # Read list of policies in the template. eval() is used instead of a JSON
@@ -32,8 +32,11 @@ def _CheckPolicyTemplatesSyntax(input_api, output_api):
       sys.path = [ tools_path ] + sys.path
       # Optimization: only load this when it's needed.
       import syntax_check_policy_template_json
+      device_policy_proto_path = input_api.os_path.join(
+          local_path, '../proto/chrome_device_policy.proto')
+      args = ["--device_policy_proto_path=" + device_policy_proto_path]
       checker = syntax_check_policy_template_json.PolicyTemplateChecker()
-      if checker.Run([], filepath) > 0:
+      if checker.Run(args, filepath) > 0:
         return [output_api.PresubmitError('Syntax error(s) in file:',
                                           [filepath])]
     finally:
@@ -74,7 +77,7 @@ def _CheckPolicyHistograms(input_api, output_api, policies):
   histograms = input_api.os_path.join(
       root, 'tools', 'metrics', 'histograms', 'enums.xml')
   with open(histograms) as f:
-    tree = xml.dom.minidom.parseString(f.read())
+    tree = minidom.parseString(f.read())
   enums = (tree.getElementsByTagName('histogram-configuration')[0]
                .getElementsByTagName('enums')[0]
                .getElementsByTagName('enum'))
@@ -109,10 +112,69 @@ def _CheckPolicyHistograms(input_api, output_api, policies):
   return results
 
 
+def _CheckPolicyAtomicGroupsHistograms(input_api, output_api, atomic_groups):
+  root = input_api.change.RepositoryRoot()
+  histograms = input_api.os_path.join(
+      root, 'tools', 'metrics', 'histograms', 'enums.xml')
+  with open(histograms) as f:
+    tree = minidom.parseString(f.read())
+  enums = (tree.getElementsByTagName('histogram-configuration')[0]
+               .getElementsByTagName('enums')[0]
+               .getElementsByTagName('enum'))
+  atomic_group_enum = [e for e in enums
+                 if e.getAttribute('name') == 'PolicyAtomicGroups'][0]
+  atomic_group_enum_ids = frozenset(int(e.getAttribute('value'))
+                              for e in atomic_group_enum
+                                .getElementsByTagName('int'))
+  atomic_group_id_to_name = {policy['id']: policy['name']
+                                    for policy in atomic_groups}
+  atomic_group_ids = frozenset(atomic_group_id_to_name.keys())
+
+  missing_ids = atomic_group_ids - atomic_group_enum_ids
+  extra_ids = atomic_group_enum_ids - atomic_group_ids
+
+  error_missing = ('Policy atomic group \'%s\' (id %d) was added to '
+                   'policy_templates.json but not to '
+                   'src/tools/metrics/histograms/enums.xml. Please update '
+                   'both files. To regenerate the policy part of enums.xml, '
+                   'run:\n'
+                   'python tools/metrics/histograms/update_policies.py')
+  error_extra = ('Policy atomic group id %d was found in '
+                 'src/tools/metrics/histograms/enums.xml, but no policy with '
+                 'this id exists in policy_templates.json. To regenerate the '
+                 'policy part of enums.xml, run:\n'
+                 'python tools/metrics/histograms/update_policies.py')
+  results = []
+  for atomic_group_id in missing_ids:
+    results.append(output_api.PresubmitError(error_missing %
+                              (atomic_group_id_to_name[atomic_group_id],
+                              atomic_group_id)))
+  for atomic_group_id in extra_ids:
+    results.append(output_api.PresubmitError(error_extra % atomic_group_id))
+  return results
+
+def _CheckMissingPlaceholders(input_api, output_api, template_path):
+  with open(template_path) as f:
+    template_data = eval(f.read(), {})
+
+  results = []
+  items = template_data['policy_definitions'] \
+          + [msg for msg in template_data['messages'].values()]
+  for item in items:
+    for key in ['desc', 'text']:
+      if not key in item:
+        continue
+      node = minidom.parseString('<msg>%s</msg>' % item[key]).childNodes[0]
+      for child in node.childNodes:
+        if child.nodeType == minidom.Node.TEXT_NODE and '$' in child.data:
+          warning = ('Character \'$\' found outside of a placeholder in "%s". '
+                     'Should it be in a placeholder ?') % item[key]
+          results.append(output_api.PresubmitPromptWarning(warning))
+  return results
+
+
 def _CommonChecks(input_api, output_api):
   results = []
-  results.extend(_CheckPolicyTemplatesSyntax(input_api, output_api))
-
   root = input_api.change.RepositoryRoot()
   template_path = template_path = input_api.os_path.join(
       root, 'components', 'policy', 'resources', 'policy_templates.json')
@@ -121,6 +183,8 @@ def _CommonChecks(input_api, output_api):
       root, 'chrome', 'test', 'data', 'policy', 'policy_test_cases.json')
   affected_files = input_api.change.AffectedFiles()
 
+  results.extend(_CheckMissingPlaceholders(input_api, output_api,
+      template_path))
   template_changed = any(f.AbsoluteLocalPath() == template_path \
     for f in affected_files)
   tests_changed = any(f.AbsoluteLocalPath() == test_cases_path \
@@ -134,6 +198,7 @@ def _CommonChecks(input_api, output_api):
       return results
     results.extend(_CheckPolicyTestCases(input_api, output_api, policies))
     if template_changed:
+      results.extend(_CheckPolicyTemplatesSyntax(input_api, output_api))
       results.extend(_CheckPolicyHistograms(input_api, output_api, policies))
 
   return results

@@ -1,0 +1,15 @@
+Name: libcurl (headers and examples only)
+Short Name: libcurl
+URL: https://github.com/curl/curl
+Version: 7.65.1
+Revision: 69248b58f649e35b09a126c12781353e3471f5c6
+License: MIT/X11-like
+License File: NOT_SHIPPED
+Security Critical: no
+Description:
+Headers and examples from the libcurl repository. Useful for creating
+alternative implementations of the libcurl API.
+Local Modifications:
+Only includes COPYING, include/, and docs/examples/ -- all other files and
+directories from the original repository are not included -- DOES NOT contain
+the implementation of the libcurl API.

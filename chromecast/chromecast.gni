@@ -17,11 +17,6 @@ declare_args() {
   # when the default value is used.
   cast_build_incremental = "999999"
 
-  # If true, IS_CAST_DEBUG_BUILD() will evaluate to 1 in version.h. Otherwise,
-  # it will evaluate to 0. Overriding this when is_debug=false is useful for
-  # doing engineering builds.
-  cast_is_debug = is_debug
-
   if (is_android) {
     # If true, run receiver apps in an Android service instead of an activity.
     display_web_contents_in_service = is_cast_audio_only
@@ -40,6 +35,14 @@ declare_args() {
   # still be used to enable multizone.
   supports_multizone = is_cast_audio_only && !is_cast_desktop_build
 
+  # Set to true if there is a full mixer implementation; if not, we create a
+  # shim mixer service receiver that pushes audio to the CMA backend.
+  have_full_mixer = is_cast_audio_only
+
+  # Set to true on devices where the VolumeControl implementation is in the
+  # libcast_avsettings_1.0.so instead of in libcast_media_1.0.so.
+  cast_volume_control_in_avsettings = false
+
   # Set to true for builds targeting ARC.
   is_android_arc = false
 
@@ -49,9 +52,6 @@ declare_args() {
   # Set true if the platform works as a single volume device, mapping all
   # volume streams to a single one.
   is_single_volume = false
-
-  # Set to true to start music apps in headless mode.
-  enable_headless_music_mode = false
 
   # Set to true to keep Android activities alive when they are moved to the
   # background.
@@ -73,6 +73,7 @@ declare_args() {
     # Set the package name and class path for the component which will provide device logs
     # Values defined in eureka-internal
     # These values are unused if use_remote_service_logcat is false
+    # device_logs_provider_package is a CSV, and the first resolved one would be used.
     device_logs_provider_package = ""
     device_logs_provider_class = ""
   }
@@ -102,9 +103,6 @@ declare_args() {
   # Set to true to enable wayland server
   enable_cast_wayland_server = false
 
-  # Whether to build cast for Android Things N version
-  build_for_android_things_n = false
-
   # Set to true to enable mixing in CastAudioManager. Only needed on devices
   # that do not have a mixer in the CMA backend.
   enable_cast_audio_manager_mixer =
@@ -114,9 +112,17 @@ declare_args() {
   enable_video_capture_service = false
 
   # Set to true to enable external Mojo services to communicate with services
-  # within cast_shell. Enable for desktop builds to ensure that Chromium CQ
-  # builds the external Mojo broker code.
-  enable_external_mojo_services = is_cast_desktop_build
+  # within cast_shell.
+  enable_external_mojo_services = is_linux
+
+  # Recording happens at this sample rate. Must be 16000, 48000 or 96000 Hz.
+  audio_input_sample_rate = 16000
+
+  # Whether use unix sockets in Cast input/output stream.
+  use_unix_sockets = is_linux
+
+  # Set to true to enable audio capture service for audio input.
+  enable_audio_capture_service = false
 }
 
 declare_args() {
@@ -151,7 +157,7 @@ enable_chromecast_extensions = enable_extensions
 # Use Chromecast CDMs for protected content. Some Android platforms use
 # MediaDrm for CDM support.
 declare_args() {
-  use_chromecast_cdms = is_cast_using_cma_backend
+  use_chromecast_cdms = true
 }
 
 foreach(target_type,

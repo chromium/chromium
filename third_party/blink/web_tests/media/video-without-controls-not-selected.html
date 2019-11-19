@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Tests that the containing focusable div is selected instead of the video when there are no controls.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="media-controls.js"></script>
+<div id="container" tabindex=0>
+  <video></video>
+</div>
+<script>
+async_test(t => {
+  const video = document.querySelector("video");
+  window.addEventListener('load', t.step_func(() => {
+    // Click on the video.
+    var coords = elementCoordinates(video);
+    singleTapAtCoordinates(coords[0], coords[1], t.step_func_done(() => {
+
+      // There should be no focus on the video, only the containing div.
+      assert_equals(document.activeElement, document.getElementById("container"));
+    }));
+  }));
+});
+</script>

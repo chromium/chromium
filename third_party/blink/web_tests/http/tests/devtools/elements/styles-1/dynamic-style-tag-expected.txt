@@ -58,27 +58,27 @@ element.style { ()
     color: red;
 
 [expanded] 
-.inline-style-created-by-script-with-source-url { (inlineStyleCrea…ByScript.css:1 -> inlineStyleCreatedByScript.css:1:50)
+.inline-style-created-by-script-with-source-url { (inlineStyle…cript.css:1 -> inlineStyleCreatedByScript.css:1:50)
 /-- overloaded --/     color: grey;
 
 [expanded] 
-.inline-style-created-by-script { (<style>…</style>)
+.inline-style-created-by-script { (<style>)
 /-- overloaded --/     color: orange;
 
 [expanded] 
-.inline-style-added-by-document-write-with-source-url { (inlineStyleAdde…entWrite.css:2 -> inlineStyleAddedByDocumentWrite.css:2:56)
+.inline-style-added-by-document-write-with-source-url { (inlineStyle…Write.css:2 -> inlineStyleAddedByDocumentWrite.css:2:56)
 /-- overloaded --/     color: yellow;
 
 [expanded] 
-.inline-style-added-by-parser-in-document-write { (<style>…</style>)
+.inline-style-added-by-parser-in-document-write { (<style>)
 /-- overloaded --/     color: blue;
 
 [expanded] 
-.inline-style-added-by-parser-with-source-url { (inlineStyleAddedByParser.css:2 -> inlineStyleAddedByParser.css:2:48)
+.inline-style-added-by-parser-with-source-url { (inlineStyle…arser.css:2 -> inlineStyleAddedByParser.css:2:48)
 /-- overloaded --/     color: green;
 
 [expanded] 
-.inline-style-added-by-parser { (dynamic-style-tag.html:3 -> dynamic-style-tag.html:3:45)
+.inline-style-added-by-parser { (dynamic-sty…-tag.html:3 -> dynamic-style-tag.html:3:45)
 /-- overloaded --/     color: red;
 
 [expanded] 

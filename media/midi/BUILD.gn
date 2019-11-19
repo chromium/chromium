@@ -49,7 +49,9 @@ if (is_android) {
   android_library("midi_java") {
     deps = [
       "//base:base_java",
+      "//base:jni_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     java_files = [
       "java/src/org/chromium/midi/MidiDeviceAndroid.java",
@@ -70,7 +72,6 @@ if (is_android) {
       "java/src/org/chromium/midi/UsbMidiDeviceAndroid.java",
       "java/src/org/chromium/midi/UsbMidiDeviceFactoryAndroid.java",
     ]
-    jni_package = "midi"
   }
 }
 
@@ -137,13 +138,15 @@ component("midi") {
   }
 
   if (is_win) {
-    deps += [ "//device/usb" ]
+    deps += [ "//services/device/public/cpp/usb" ]
     sources += [
       "midi_manager_win.cc",
       "midi_manager_win.h",
       "midi_manager_winrt.cc",
       "midi_manager_winrt.h",
     ]
+
+    libs += [ "setupapi.lib" ]
 
     # This library is included in base in static builds.
     if (is_component_build) {
@@ -235,5 +238,15 @@ fuzzer_test("midi_message_queue_fuzzer") {
   seed_corpus = "fuzz/corpus"
   deps = [
     ":midi",
+  ]
+}
+
+fuzzer_test("usb_midi_descriptor_parser_fuzzer") {
+  sources = [ "usb_midi_descriptor_parser_fuzzer.cc" ] + usb_midi_sources
+  seed_corpus = "fuzz/usb_midi_descriptor_corpus"
+  deps = [
+    ":midi",
+    ":mojo",
+    "//base",
   ]
 }

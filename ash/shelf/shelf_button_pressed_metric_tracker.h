@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/public/interfaces/shelf.mojom.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/macros.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"

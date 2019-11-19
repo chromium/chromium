@@ -5,6 +5,7 @@
 """Creates a archive manifest used for Fuchsia package generation."""
 
 import argparse
+import elfinfo
 import json
 import os
 import re
@@ -70,44 +71,16 @@ def _WriteBuildIdsTxt(binary_paths, ids_txt_path):
   """Writes an index text file that maps build IDs to the paths of unstripped
   binaries."""
 
-  READELF_FILE_PREFIX = 'File: '
-  READELF_BUILD_ID_PREFIX = 'Build ID: '
-
-  # List of binaries whose build IDs are awaiting processing by readelf.
-  # Entries are removed as readelf's output is parsed.
-  unprocessed_binary_paths = {os.path.basename(p): p for p in binary_paths}
-
   with open(ids_txt_path, 'w') as ids_file:
-    readelf_stdout = subprocess.check_output(
-        ['readelf', '-n'] + map(_GetStrippedPath, binary_paths))
+    for binary_path in binary_paths:
+      # Paths to the unstripped executables listed in "ids.txt" are specified
+      # as relative paths to that file.
+      relative_path = os.path.relpath(
+          os.path.abspath(binary_path),
+          os.path.dirname(os.path.abspath(ids_txt_path)))
 
-    if len(binary_paths) == 1:
-      # Readelf won't report a binary's path if only one was provided to the
-      # tool.
-      binary_shortname = binary_paths[0]
-    else:
-      binary_shortname = None
-
-    for line in readelf_stdout.split('\n'):
-      line = line.strip()
-
-      if line.startswith(READELF_FILE_PREFIX):
-        binary_shortname = os.path.basename(line[len(READELF_FILE_PREFIX):])
-        assert binary_shortname in unprocessed_binary_paths
-
-      elif line.startswith(READELF_BUILD_ID_PREFIX):
-        # Paths to the unstripped executables listed in "ids.txt" are specified
-        # as relative paths to that file.
-        unstripped_rel_path = os.path.relpath(
-            os.path.abspath(unprocessed_binary_paths[binary_shortname]),
-            os.path.dirname(os.path.abspath(ids_txt_path)))
-
-        build_id = line[len(READELF_BUILD_ID_PREFIX):]
-        ids_file.write(build_id + ' ' + unstripped_rel_path + '\n')
-        del unprocessed_binary_paths[binary_shortname]
-
-  # Did readelf forget anything? Make sure that all binaries are accounted for.
-  assert not unprocessed_binary_paths
+      info = elfinfo.get_elf_info(_GetStrippedPath(binary_path))
+      ids_file.write(info.build_id + ' ' + relative_path + '\n')
 
 
 def BuildManifest(args):
@@ -172,10 +145,10 @@ def BuildManifest(args):
     cmx_file_path = os.path.join(os.path.dirname(args.manifest_path),
                                  args.app_name + '.cmx')
     with open(cmx_file_path, 'w') as component_manifest_file:
-      component_manifest = {
+      component_manifest = json.load(open(args.manifest_input_path, 'r'))
+      component_manifest.update({
           'program': { 'binary': args.app_filename },
-          'sandbox': json.load(open(args.sandbox_policy_path, 'r')),
-      }
+      })
       json.dump(component_manifest, component_manifest_file)
 
       manifest.write('meta/%s=%s\n' %
@@ -199,8 +172,8 @@ def main():
   parser.add_argument('--app-name', required=True, help='Package name')
   parser.add_argument('--app-filename', required=True,
       help='Path to the main application binary relative to the output dir.')
-  parser.add_argument('--sandbox-policy-path', required=True,
-      help='Path to the sandbox policy file relative to the output dir.')
+  parser.add_argument('--manifest-input-path', required=True,
+      help='Path to the manifest file relative to the output dir.')
   parser.add_argument('--runtime-deps-file', required=True,
       help='File with the list of runtime dependencies.')
   parser.add_argument('--depfile-path', required=True,

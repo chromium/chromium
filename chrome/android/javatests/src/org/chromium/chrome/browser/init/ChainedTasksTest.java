@@ -10,10 +10,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,14 +50,13 @@ public class ChainedTasksTest {
                 Arrays.asList(new String[] {"First", "Second", "Third"});
         final List<String> messages = new ArrayList<>();
         final ChainedTasks tasks = new ChainedTasks();
-        for (String message : expectedMessages) tasks.add(new TestRunnable(messages, message));
+        for (String message : expectedMessages) {
+            tasks.add(UiThreadTaskTraits.DEFAULT, new TestRunnable(messages, message));
+        }
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                tasks.start(true);
-                Assert.assertEquals(expectedMessages, messages);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tasks.start(true);
+            Assert.assertEquals(expectedMessages, messages);
         });
     }
 
@@ -68,7 +67,7 @@ public class ChainedTasksTest {
         final Semaphore finished = new Semaphore(0);
         final ChainedTasks tasks = new ChainedTasks();
 
-        tasks.add(new Runnable() {
+        tasks.add(UiThreadTaskTraits.DEFAULT, new Runnable() {
             @Override
             public void run() {
                 try {
@@ -81,8 +80,10 @@ public class ChainedTasksTest {
 
         List<String> expectedMessages = Arrays.asList(new String[] {"First", "Second", "Third"});
         final List<String> messages = new ArrayList<>();
-        for (String message : expectedMessages) tasks.add(new TestRunnable(messages, message));
-        tasks.add(new Runnable() {
+        for (String message : expectedMessages) {
+            tasks.add(UiThreadTaskTraits.DEFAULT, new TestRunnable(messages, message));
+        }
+        tasks.add(UiThreadTaskTraits.DEFAULT, new Runnable() {
             @Override
             public void run() {
                 finished.release();
@@ -105,20 +106,19 @@ public class ChainedTasksTest {
         final ChainedTasks tasks = new ChainedTasks();
         final Semaphore finished = new Semaphore(0);
 
-        for (String message : expectedMessages) tasks.add(new TestRunnable(messages, message));
-        tasks.add(new Runnable() {
+        for (String message : expectedMessages) {
+            tasks.add(UiThreadTaskTraits.DEFAULT, new TestRunnable(messages, message));
+        }
+        tasks.add(UiThreadTaskTraits.DEFAULT, new Runnable() {
             @Override
             public void run() {
                 finished.release();
             }
         });
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                tasks.start(false);
-                Assert.assertTrue("No task should run synchronously", messages.isEmpty());
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tasks.start(false);
+            Assert.assertTrue("No task should run synchronously", messages.isEmpty());
         });
         Assert.assertTrue(finished.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
         Assert.assertEquals(expectedMessages, messages);
@@ -137,9 +137,9 @@ public class ChainedTasksTest {
 
         // Posts 2 tasks, waits for a high priority task to be posted from another thread, and
         // carries on.
-        tasks.add(new TestRunnable(messages, "First"));
-        tasks.add(new TestRunnable(messages, "Second"));
-        tasks.add(new Runnable() {
+        tasks.add(UiThreadTaskTraits.DEFAULT, new TestRunnable(messages, "First"));
+        tasks.add(UiThreadTaskTraits.DEFAULT, new TestRunnable(messages, "Second"));
+        tasks.add(UiThreadTaskTraits.DEFAULT, new Runnable() {
             @Override
             public void run() {
                 try {
@@ -150,8 +150,8 @@ public class ChainedTasksTest {
                 }
             }
         });
-        tasks.add(new TestRunnable(messages, "Third"));
-        tasks.add(new Runnable() {
+        tasks.add(UiThreadTaskTraits.DEFAULT, new TestRunnable(messages, "Third"));
+        tasks.add(UiThreadTaskTraits.DEFAULT, new Runnable() {
             @Override
             public void run() {
                 finished.release();
@@ -175,16 +175,16 @@ public class ChainedTasksTest {
         final ChainedTasks tasks = new ChainedTasks();
         final Semaphore finished = new Semaphore(0);
 
-        tasks.add(new TestRunnable(messages, "First"));
-        tasks.add(new TestRunnable(messages, "Second"));
-        tasks.add(new Runnable() {
+        tasks.add(UiThreadTaskTraits.DEFAULT, new TestRunnable(messages, "First"));
+        tasks.add(UiThreadTaskTraits.DEFAULT, new TestRunnable(messages, "Second"));
+        tasks.add(UiThreadTaskTraits.DEFAULT, new Runnable() {
             @Override
             public void run() {
                 tasks.cancel();
             }
         });
-        tasks.add(new TestRunnable(messages, "Third"));
-        tasks.add(new Runnable() {
+        tasks.add(UiThreadTaskTraits.DEFAULT, new TestRunnable(messages, "Third"));
+        tasks.add(UiThreadTaskTraits.DEFAULT, new Runnable() {
             @Override
             public void run() {
                 finished.release();
@@ -197,7 +197,7 @@ public class ChainedTasksTest {
 
     @Test
     @SmallTest
-    public void testThreadRestrictions() throws Exception {
+    public void testThreadRestrictions() {
         ChainedTasks tasks = new ChainedTasks();
         tasks.start(false);
         try {

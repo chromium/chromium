@@ -68,7 +68,7 @@ class KioskAppsHandler : public content::WebUIMessageHandler,
   bool is_kiosk_enabled_;
   bool is_auto_launch_enabled_;
   OwnerSettingsServiceChromeOS* const owner_settings_service_;  // not owned
-  base::WeakPtrFactory<KioskAppsHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<KioskAppsHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KioskAppsHandler);
 };

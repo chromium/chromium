@@ -24,7 +24,8 @@ void PointerHandler::RegisterMessages() {
 
 void PointerHandler::OnJavascriptAllowed() {
   if (!pointer_device_observer_) {
-    pointer_device_observer_.reset(new system::PointerDeviceObserver());
+    pointer_device_observer_ =
+        std::make_unique<system::PointerDeviceObserver>();
     pointer_device_observer_->Init();
   }
 

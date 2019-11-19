@@ -24,7 +24,7 @@ BufferedSpdyFramer::BufferedSpdyFramer(uint32_t max_header_list_size,
                                        const NetLogWithSource& net_log,
                                        TimeFunc time_func)
     : spdy_framer_(spdy::SpdyFramer::ENABLE_COMPRESSION),
-      visitor_(NULL),
+      visitor_(nullptr),
       frames_received_(0),
       max_header_list_size_(max_header_list_size),
       net_log_(net_log),
@@ -138,7 +138,7 @@ void BufferedSpdyFramer::OnHeaderFrameEnd(spdy::SpdyStreamId stream_id) {
                     << control_frame_fields_->type;
       break;
   }
-  control_frame_fields_.reset(NULL);
+  control_frame_fields_.reset(nullptr);
 }
 
 void BufferedSpdyFramer::OnSettings() {

@@ -6,28 +6,24 @@ package org.chromium.chrome.browser.toolbar.bottom;
 
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.appmenu.AppMenuButtonHelper;
-import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
+import org.chromium.chrome.browser.ThemeColorProvider;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.compositor.layouts.ToolbarSwipeLayout;
-import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.IncognitoStateProvider;
 import org.chromium.chrome.browser.toolbar.MenuButton;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
-import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.resources.ResourceManager;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 
 /**
- * The root coordinator for the bottom toolbar. It has two subcomponents. The browing mode bottom
+ * The root coordinator for the bottom toolbar. It has two sub-components: the browsing mode bottom
  * toolbar and the tab switcher mode bottom toolbar.
  */
-public class BottomToolbarCoordinator {
+class BottomToolbarCoordinator {
     /** The browsing mode bottom toolbar component */
     private final BrowsingModeBottomToolbarCoordinator mBrowsingModeCoordinator;
 
@@ -38,33 +34,30 @@ public class BottomToolbarCoordinator {
     private final ViewStub mTabSwitcherModeStub;
 
     /** A provider that notifies components when the theme color changes.*/
-    private final BottomToolbarThemeColorProvider mBottomToolbarThemeColorProvider;
-
-    /** The root view of the bottom toolbar. */
-    private final View mRoot;
+    private final ThemeColorProvider mThemeColorProvider;
 
     /**
      * Build the coordinator that manages the bottom toolbar.
-     * @param fullscreenManager A {@link ChromeFullscreenManager} to update the bottom controls
-     *                          height for the renderer.
      * @param stub The bottom toolbar {@link ViewStub} to inflate.
      * @param tabProvider The {@link ActivityTabProvider} used for making the IPH.
      * @param homeButtonListener The {@link OnClickListener} for the home button.
      * @param searchAcceleratorListener The {@link OnClickListener} for the search accelerator.
      * @param shareButtonListener The {@link OnClickListener} for the share button.
+     * @param themeColorProvider The {@link ThemeColorProvider} for the bottom toolbar.
      */
-    public BottomToolbarCoordinator(ChromeFullscreenManager fullscreenManager, ViewStub stub,
-            ActivityTabProvider tabProvider, OnClickListener homeButtonListener,
-            OnClickListener searchAcceleratorListener, OnClickListener shareButtonListener) {
-        mRoot = stub.inflate();
+    BottomToolbarCoordinator(ViewStub stub, ActivityTabProvider tabProvider,
+            OnClickListener homeButtonListener, OnClickListener searchAcceleratorListener,
+            OnClickListener shareButtonListener, OnLongClickListener tabsSwitcherLongClickListner,
+            ThemeColorProvider themeColorProvider) {
+        View root = stub.inflate();
 
-        mBrowsingModeCoordinator =
-                new BrowsingModeBottomToolbarCoordinator(mRoot, fullscreenManager, tabProvider,
-                        homeButtonListener, searchAcceleratorListener, shareButtonListener);
+        mBrowsingModeCoordinator = new BrowsingModeBottomToolbarCoordinator(root, tabProvider,
+                homeButtonListener, searchAcceleratorListener, shareButtonListener,
+                tabsSwitcherLongClickListner);
 
-        mTabSwitcherModeStub = mRoot.findViewById(R.id.bottom_toolbar_tab_switcher_mode_stub);
+        mTabSwitcherModeStub = root.findViewById(R.id.bottom_toolbar_tab_switcher_mode_stub);
 
-        mBottomToolbarThemeColorProvider = new BottomToolbarThemeColorProvider(mRoot.getContext());
+        mThemeColorProvider = themeColorProvider;
     }
 
     /**
@@ -72,50 +65,35 @@ public class BottomToolbarCoordinator {
      * dependencies.
      * <p>
      * Calling this must occur after the native library have completely loaded.
-     * @param resourceManager A {@link ResourceManager} for loading textures into the compositor.
-     * @param layoutManager A {@link LayoutManager} to attach overlays to.
      * @param tabSwitcherListener An {@link OnClickListener} that is triggered when the
      *                            tab switcher button is clicked.
      * @param newTabClickListener An {@link OnClickListener} that is triggered when the
      *                            new tab button is clicked.
      * @param menuButtonHelper An {@link AppMenuButtonHelper} that is triggered when the
      *                         menu button is clicked.
-     * @param tabModelSelector A {@link TabModelSelector} that incognito toggle tab layout uses to
-                               switch between normal and incognito tabs.
      * @param overviewModeBehavior The overview mode manager.
-     * @param windowAndroid A {@link WindowAndroid} for watching keyboard visibility events.
      * @param tabCountProvider Updates the tab count number in the tab switcher button and in the
      *                         incognito toggle tab layout.
      * @param incognitoStateProvider Notifies components when incognito mode is entered or exited.
      * @param topToolbarRoot The root {@link ViewGroup} of the top toolbar.
      */
-    public void initializeWithNative(ResourceManager resourceManager, LayoutManager layoutManager,
-            OnClickListener tabSwitcherListener, OnClickListener newTabClickListener,
-            OnClickListener closeTabsClickListener, AppMenuButtonHelper menuButtonHelper,
-            TabModelSelector tabModelSelector, OverviewModeBehavior overviewModeBehavior,
-            WindowAndroid windowAndroid, TabCountProvider tabCountProvider,
-            IncognitoStateProvider incognitoStateProvider, ViewGroup topToolbarRoot) {
-        mBottomToolbarThemeColorProvider.setIncognitoStateProvider(incognitoStateProvider);
-        mBottomToolbarThemeColorProvider.setOverviewModeBehavior(overviewModeBehavior);
-
-        mBrowsingModeCoordinator.initializeWithNative(resourceManager, layoutManager,
-                tabSwitcherListener, menuButtonHelper, overviewModeBehavior, windowAndroid,
-                tabCountProvider, mBottomToolbarThemeColorProvider, tabModelSelector);
+    void initializeWithNative(OnClickListener tabSwitcherListener,
+            OnClickListener newTabClickListener, OnClickListener closeTabsClickListener,
+            AppMenuButtonHelper menuButtonHelper, OverviewModeBehavior overviewModeBehavior,
+            TabCountProvider tabCountProvider, IncognitoStateProvider incognitoStateProvider,
+            ViewGroup topToolbarRoot) {
+        mBrowsingModeCoordinator.initializeWithNative(tabSwitcherListener, menuButtonHelper,
+                overviewModeBehavior, tabCountProvider, mThemeColorProvider,
+                incognitoStateProvider);
         mTabSwitcherModeCoordinator = new TabSwitcherBottomToolbarCoordinator(mTabSwitcherModeStub,
-                topToolbarRoot, incognitoStateProvider, mBottomToolbarThemeColorProvider,
-                newTabClickListener, closeTabsClickListener, menuButtonHelper, tabModelSelector,
-                overviewModeBehavior, tabCountProvider);
+                topToolbarRoot, incognitoStateProvider, mThemeColorProvider, newTabClickListener,
+                closeTabsClickListener, menuButtonHelper, overviewModeBehavior, tabCountProvider);
     }
 
     /**
      * @param isVisible Whether the bottom toolbar is visible.
      */
-    public void setBottomToolbarVisible(boolean isVisible) {
-        // TODO (amaralp): The coordinator should not have direct access to the view.
-        mRoot.setVisibility(isVisible ? View.VISIBLE : View.GONE);
-
-        mBrowsingModeCoordinator.setVisible(isVisible);
-
+    void setBottomToolbarVisible(boolean isVisible) {
         if (mTabSwitcherModeCoordinator != null) {
             mTabSwitcherModeCoordinator.showToolbarOnTop(!isVisible);
         }
@@ -124,49 +102,40 @@ public class BottomToolbarCoordinator {
     /**
      * Show the update badge over the bottom toolbar's app menu.
      */
-    public void showAppMenuUpdateBadge() {
+    void showAppMenuUpdateBadge() {
         mBrowsingModeCoordinator.showAppMenuUpdateBadge();
     }
 
     /**
      * Remove the update badge.
      */
-    public void removeAppMenuUpdateBadge() {
+    void removeAppMenuUpdateBadge() {
         mBrowsingModeCoordinator.removeAppMenuUpdateBadge();
     }
 
     /**
      * @return Whether the update badge is showing.
      */
-    public boolean isShowingAppMenuUpdateBadge() {
+    boolean isShowingAppMenuUpdateBadge() {
         return mBrowsingModeCoordinator.isShowingAppMenuUpdateBadge();
-    }
-
-    /**
-     * @param layout The {@link ToolbarSwipeLayout} that the bottom toolbar will hook into. This
-     *               allows the bottom toolbar to provide the layout with scene layers with the
-     *               bottom toolbar's texture.
-     */
-    public void setToolbarSwipeLayout(ToolbarSwipeLayout layout) {
-        mBrowsingModeCoordinator.setToolbarSwipeLayout(layout);
     }
 
     /**
      * @return The wrapper for the browsing mode toolbar's app menu button.
      */
-    public MenuButton getMenuButtonWrapper() {
+    MenuButton getMenuButtonWrapper() {
         return mBrowsingModeCoordinator.getMenuButton();
     }
 
     /**
      * Clean up any state when the bottom toolbar is destroyed.
      */
-    public void destroy() {
+    void destroy() {
         mBrowsingModeCoordinator.destroy();
         if (mTabSwitcherModeCoordinator != null) {
             mTabSwitcherModeCoordinator.destroy();
             mTabSwitcherModeCoordinator = null;
         }
-        mBottomToolbarThemeColorProvider.destroy();
+        mThemeColorProvider.destroy();
     }
 }

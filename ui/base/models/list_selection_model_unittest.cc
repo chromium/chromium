@@ -19,15 +19,15 @@ typedef testing::Test ListSelectionModelTest;
 // Returns the state of the selection model as a string. The format is:
 // 'active=X anchor=X selection=X X X...'.
 static std::string StateAsString(const ListSelectionModel& model) {
-  std::string result = "active=" + base::IntToString(model.active()) +
-      " anchor=" + base::IntToString(model.anchor()) +
-      " selection=";
+  std::string result = "active=" + base::NumberToString(model.active()) +
+                       " anchor=" + base::NumberToString(model.anchor()) +
+                       " selection=";
   const ListSelectionModel::SelectedIndices& selection(
       model.selected_indices());
   for (size_t i = 0; i < selection.size(); ++i) {
     if (i != 0)
       result += " ";
-    result += base::IntToString(selection[i]);
+    result += base::NumberToString(selection[i]);
   }
   return result;
 }

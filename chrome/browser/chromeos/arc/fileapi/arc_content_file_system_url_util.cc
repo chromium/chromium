@@ -7,13 +7,11 @@
 #include "base/files/file_path.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "net/base/escape.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace arc {
 
 const char kContentFileSystemMountPointName[] = "arc-content";
-const char kIntentHelperFileproviderUrl[] =
-    "content://org.chromium.arc.intent_helper.fileprovider/";
 const char kFileSystemFileproviderUrl[] =
     "content://org.chromium.arc.file_system.fileprovider/";
 
@@ -25,10 +23,7 @@ std::string EscapeArcUrl(const GURL& arc_url) {
 }
 
 GURL UnescapeArcUrl(const std::string& escaped_arc_url) {
-  return GURL(net::UnescapeURLComponent(
-      escaped_arc_url,
-      net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS |
-          net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS));
+  return GURL(net::UnescapeBinaryURLComponent(escaped_arc_url));
 }
 
 GURL ArcUrlToExternalFileUrl(const GURL& arc_url) {

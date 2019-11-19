@@ -4,6 +4,7 @@
 
 #include "components/offline_pages/core/prefetch/prefetch_network_request_factory_impl.h"
 
+#include "base/bind_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_simple_task_runner.h"
@@ -61,8 +62,7 @@ TEST_F(PrefetchNetworkRequestFactoryTest, TestMakeGetOperationRequest) {
   EXPECT_TRUE(operation_names->empty());
 
   // Then, make the request and ensure we can find it by name.
-  request_factory()->MakeGetOperationRequest(operation_name,
-                                             PrefetchRequestFinishedCallback());
+  request_factory()->MakeGetOperationRequest(operation_name, base::DoNothing());
   EXPECT_TRUE(request_factory()->HasOutstandingRequests());
   request = request_factory()->FindGetOperationRequestByName(operation_name);
   EXPECT_NE(nullptr, request);
@@ -81,7 +81,7 @@ TEST_F(PrefetchNetworkRequestFactoryTest, TestMakeGetOperationRequest) {
 
   // Then make the second request.
   request_factory()->MakeGetOperationRequest(operation_name_2,
-                                             PrefetchRequestFinishedCallback());
+                                             base::DoNothing());
 
   // Query for the second request, ensure it is different than the first
   // request, and ensure it didn't change the first request.
@@ -94,8 +94,7 @@ TEST_F(PrefetchNetworkRequestFactoryTest, TestMakeGetOperationRequest) {
 
   // Then overwrite the first request with a new one, and make sure it's
   // different.
-  request_factory()->MakeGetOperationRequest(operation_name,
-                                             PrefetchRequestFinishedCallback());
+  request_factory()->MakeGetOperationRequest(operation_name, base::DoNothing());
   EXPECT_NE(request,
             request_factory()->FindGetOperationRequestByName(operation_name));
 }
@@ -106,8 +105,8 @@ TEST_F(PrefetchNetworkRequestFactoryTest, TestMakeGeneratePageBundleRequest) {
 
   EXPECT_FALSE(request_factory()->HasOutstandingRequests());
 
-  request_factory()->MakeGeneratePageBundleRequest(
-      urls, reg_id, PrefetchRequestFinishedCallback());
+  request_factory()->MakeGeneratePageBundleRequest(urls, reg_id,
+                                                   base::DoNothing());
 
   EXPECT_TRUE(request_factory()->HasOutstandingRequests());
 
@@ -116,8 +115,8 @@ TEST_F(PrefetchNetworkRequestFactoryTest, TestMakeGeneratePageBundleRequest) {
   EXPECT_THAT(*requested_urls, Contains(urls[1]));
 
   std::vector<std::string> urls2 = {"example.com/3"};
-  request_factory()->MakeGeneratePageBundleRequest(
-      urls2, reg_id, PrefetchRequestFinishedCallback());
+  request_factory()->MakeGeneratePageBundleRequest(urls2, reg_id,
+                                                   base::DoNothing());
   requested_urls = request_factory()->GetAllUrlsRequested();
   EXPECT_THAT(*requested_urls, Contains(urls[0]));
   EXPECT_THAT(*requested_urls, Contains(urls[1]));
@@ -130,14 +129,14 @@ TEST_F(PrefetchNetworkRequestFactoryTest, ManyGenerateBundleRequests) {
   const int kTooManyRequests = 20;
 
   for (int i = 0; i < kTooManyRequests; ++i) {
-    request_factory()->MakeGeneratePageBundleRequest(
-        urls1, reg_id, PrefetchRequestFinishedCallback());
+    request_factory()->MakeGeneratePageBundleRequest(urls1, reg_id,
+                                                     base::DoNothing());
   }
 
   // Add one more request, over the maximum count of concurrent requests.
   std::vector<std::string> urls2 = {"example.com/2"};
-  request_factory()->MakeGeneratePageBundleRequest(
-      urls2, reg_id, PrefetchRequestFinishedCallback());
+  request_factory()->MakeGeneratePageBundleRequest(urls2, reg_id,
+                                                   base::DoNothing());
 
   auto requested_urls = request_factory()->GetAllUrlsRequested();
   EXPECT_THAT(*requested_urls, Contains(urls1[0]));
@@ -150,14 +149,14 @@ TEST_F(PrefetchNetworkRequestFactoryTest, ManyGetOperationRequests) {
   const int kTooManyRequests = 20;
 
   for (int i = 0; i < kTooManyRequests; ++i) {
-    request_factory()->MakeGetOperationRequest(
-        operation_name1, PrefetchRequestFinishedCallback());
+    request_factory()->MakeGetOperationRequest(operation_name1,
+                                               base::DoNothing());
   }
 
   // Add one more request, over the maximum count of concurrent requests.
   std::string operation_name2 = "an operation 2";
   request_factory()->MakeGetOperationRequest(operation_name2,
-                                             PrefetchRequestFinishedCallback());
+                                             base::DoNothing());
 
   auto operation_names = request_factory()->GetAllOperationNamesRequested();
   EXPECT_THAT(*operation_names, Contains(operation_name1));
@@ -176,14 +175,14 @@ TEST_F(PrefetchNetworkRequestFactoryTest, ManyRequestsMixedType) {
   const int kNotTooManyRequests = 6;
 
   for (int i = 0; i < kNotTooManyRequests; ++i) {
-    request_factory()->MakeGetOperationRequest(
-        operation_name1, PrefetchRequestFinishedCallback());
+    request_factory()->MakeGetOperationRequest(operation_name1,
+                                               base::DoNothing());
   }
 
   // Still possible to make more requests...
   std::string operation_name2 = "an operation 2";
   request_factory()->MakeGetOperationRequest(operation_name2,
-                                             PrefetchRequestFinishedCallback());
+                                             base::DoNothing());
 
   auto operation_names = request_factory()->GetAllOperationNamesRequested();
   EXPECT_THAT(*operation_names, Contains(operation_name1));
@@ -193,14 +192,14 @@ TEST_F(PrefetchNetworkRequestFactoryTest, ManyRequestsMixedType) {
   std::vector<std::string> urls1 = {"example.com/1"};
   std::string reg_id = "a registration id";
   for (int i = 0; i < kNotTooManyRequests; ++i) {
-    request_factory()->MakeGeneratePageBundleRequest(
-        urls1, reg_id, PrefetchRequestFinishedCallback());
+    request_factory()->MakeGeneratePageBundleRequest(urls1, reg_id,
+                                                     base::DoNothing());
   }
 
   // Add one more request, over the maximum count of concurrent requests.
   std::string operation_name3 = "an operation 3";
   request_factory()->MakeGetOperationRequest(operation_name3,
-                                             PrefetchRequestFinishedCallback());
+                                             base::DoNothing());
 
   operation_names = request_factory()->GetAllOperationNamesRequested();
   EXPECT_THAT(*operation_names, Contains(operation_name1));

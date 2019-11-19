@@ -13,6 +13,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/renderer/extension_url_loader_throttle.h"
 #include "net/base/url_util.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 
@@ -22,8 +23,7 @@ const unsigned int ExtensionThrottleManager::kMaximumNumberOfEntries = 1500;
 const unsigned int ExtensionThrottleManager::kRequestsBetweenCollecting = 200;
 
 ExtensionThrottleManager::ExtensionThrottleManager()
-    : requests_since_last_gc_(0),
-      ignore_user_gesture_load_flag_for_tests_(false) {
+    : requests_since_last_gc_(0) {
   url_id_replacements_.ClearPassword();
   url_id_replacements_.ClearUsername();
   url_id_replacements_.ClearQuery();
@@ -36,7 +36,7 @@ ExtensionThrottleManager::~ExtensionThrottleManager() {
   url_entries_.clear();
 }
 
-std::unique_ptr<content::URLLoaderThrottle>
+std::unique_ptr<blink::URLLoaderThrottle>
 ExtensionThrottleManager::MaybeCreateURLLoaderThrottle(
     const blink::WebURLRequest& request) {
   if (!request.SiteForCookies().ProtocolIs(extensions::kExtensionScheme))
@@ -67,12 +67,10 @@ ExtensionThrottleEntry* ExtensionThrottleManager::RegisterRequestUrl(
   // Create the entry if needed.
   if (!entry) {
     if (backoff_policy_for_tests_) {
-      entry.reset(
-          new ExtensionThrottleEntry(url_id, backoff_policy_for_tests_.get(),
-                                     ignore_user_gesture_load_flag_for_tests_));
+      entry = std::make_unique<ExtensionThrottleEntry>(
+          url_id, backoff_policy_for_tests_.get());
     } else {
-      entry.reset(new ExtensionThrottleEntry(
-          url_id, ignore_user_gesture_load_flag_for_tests_));
+      entry = std::make_unique<ExtensionThrottleEntry>(url_id);
     }
 
     // We only disable back-off throttling on an entry that we have
@@ -89,16 +87,13 @@ ExtensionThrottleEntry* ExtensionThrottleManager::RegisterRequestUrl(
   return entry.get();
 }
 
-bool ExtensionThrottleManager::ShouldRejectRequest(const GURL& request_url,
-                                                   int request_load_flags) {
+bool ExtensionThrottleManager::ShouldRejectRequest(const GURL& request_url) {
   base::AutoLock auto_lock(lock_);
-  return RegisterRequestUrl(request_url)
-      ->ShouldRejectRequest(request_load_flags);
+  return RegisterRequestUrl(request_url)->ShouldRejectRequest();
 }
 
 bool ExtensionThrottleManager::ShouldRejectRedirect(
     const GURL& request_url,
-    int request_load_flags,
     const net::RedirectInfo& redirect_info) {
   {
     // An entry GC when requests are outstanding can purge entries so check
@@ -108,12 +103,12 @@ bool ExtensionThrottleManager::ShouldRejectRedirect(
     if (it != url_entries_.end())
       it->second->UpdateWithResponse(redirect_info.status_code);
   }
-  return ShouldRejectRequest(redirect_info.new_url, request_load_flags);
+  return ShouldRejectRequest(redirect_info.new_url);
 }
 
 void ExtensionThrottleManager::WillProcessResponse(
     const GURL& response_url,
-    const network::ResourceResponseHead& response_head) {
+    const network::mojom::URLResponseHead& response_head) {
   if (response_head.network_accessed) {
     // An entry GC when requests are outstanding can purge entries so check
     // before use.
@@ -148,12 +143,6 @@ void ExtensionThrottleManager::EraseEntryForTests(const GURL& url) {
   // Normalize the url.
   std::string url_id = GetIdFromUrl(url);
   url_entries_.erase(url_id);
-}
-
-void ExtensionThrottleManager::SetIgnoreUserGestureLoadFlagForTests(
-    bool ignore_user_gesture_load_flag_for_tests) {
-  base::AutoLock auto_lock(lock_);
-  ignore_user_gesture_load_flag_for_tests_ = true;
 }
 
 void ExtensionThrottleManager::SetOnline(bool is_online) {

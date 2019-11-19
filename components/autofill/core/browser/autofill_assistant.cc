@@ -8,7 +8,7 @@
 #include "base/containers/adapters.h"
 #include "base/strings/string16.h"
 #include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -16,9 +16,7 @@
 namespace autofill {
 
 AutofillAssistant::AutofillAssistant(AutofillManager* autofill_manager)
-    : credit_card_form_data_(nullptr),
-      autofill_manager_(autofill_manager),
-      weak_ptr_factory_(this) {}
+    : credit_card_form_data_(nullptr), autofill_manager_(autofill_manager) {}
 
 AutofillAssistant::~AutofillAssistant() {}
 

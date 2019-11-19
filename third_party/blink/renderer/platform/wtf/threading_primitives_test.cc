@@ -10,7 +10,6 @@
 #include "base/threading/thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace WTF {
 namespace {

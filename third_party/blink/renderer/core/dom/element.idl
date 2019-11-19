@@ -26,7 +26,9 @@ callback ScrollStateCallback = void (ScrollState scrollState);
 
 // https://dom.spec.whatwg.org/#interface-element
 
-interface Element : Node {
+[
+    Exposed=Window
+] interface Element : Node {
     readonly attribute DOMString? namespaceURI;
     readonly attribute DOMString? prefix;
     readonly attribute DOMString localName;
@@ -36,13 +38,6 @@ interface Element : Node {
     [Affects=Nothing, CEReactions, Reflect=class] attribute DOMString className;
     [Affects=Nothing, SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList classList;
     [Unscopable, CEReactions, Reflect] attribute DOMString slot;
-    [RuntimeEnabled=CSSPartPseudoElement, Affects=Nothing, SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList part;
-
-    // Pointer Events
-    // https://w3c.github.io/pointerevents/#extensions-to-the-element-interface
-    [RaisesException] void setPointerCapture (long pointerId);
-    [RaisesException] void releasePointerCapture (long pointerId);
-    boolean hasPointerCapture (long pointerId);
 
     [Affects=Nothing] boolean hasAttributes();
     [Affects=Nothing, SameObject, PerWorldBindings, ImplementedAs=attributesForBindings] readonly attribute NamedNodeMap attributes;
@@ -53,9 +48,9 @@ interface Element : Node {
     [RaisesException, CEReactions, CustomElementCallbacks] void setAttributeNS(DOMString? namespaceURI, DOMString name, TrustedString value);
     [CEReactions, CustomElementCallbacks] void removeAttribute(DOMString name);
     [CEReactions, CustomElementCallbacks] void removeAttributeNS(DOMString? namespaceURI, DOMString localName);
+    [RaisesException, CEReactions, CustomElementCallbacks] boolean toggleAttribute(DOMString qualifiedName, optional boolean force);
     [Affects=Nothing] boolean hasAttribute(DOMString name);
     [Affects=Nothing] boolean hasAttributeNS(DOMString? namespaceURI, DOMString localName);
-    [RaisesException] boolean toggleAttribute(DOMString qualifiedName, optional boolean force);
 
     Attr? getAttributeNode(DOMString name);
     Attr? getAttributeNodeNS(DOMString? namespaceURI, DOMString localName);
@@ -63,12 +58,12 @@ interface Element : Node {
     [RaisesException, CEReactions, CustomElementCallbacks] Attr? setAttributeNodeNS(Attr attr);
     [RaisesException, CEReactions, CustomElementCallbacks] Attr removeAttributeNode(Attr attr);
 
+    [RaisesException, MeasureAs=ElementAttachShadow] ShadowRoot attachShadow(ShadowRootInit shadowRootInitDict);
+    [Affects=Nothing, PerWorldBindings, ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
+
     [RaisesException] Element? closest(DOMString selectors);
     [RaisesException] boolean matches(DOMString selectors);
     [RaisesException, ImplementedAs=matches, MeasureAs=ElementPrefixedMatchesSelector] boolean webkitMatchesSelector(DOMString selectors); // historical alias of .matches
-
-    [RaisesException, MeasureAs=ElementAttachShadow] ShadowRoot attachShadow(ShadowRootInit shadowRootInitDict);
-    [Affects=Nothing, PerWorldBindings, ImplementedAs=OpenShadowRoot] readonly attribute ShadowRoot? shadowRoot;
 
     [Affects=Nothing] HTMLCollection getElementsByTagName(DOMString localName);
     [Affects=Nothing] HTMLCollection getElementsByTagNameNS(DOMString? namespaceURI, DOMString localName);
@@ -76,6 +71,16 @@ interface Element : Node {
 
     [RaisesException, CEReactions, CustomElementCallbacks] Element? insertAdjacentElement(DOMString where, Element element);
     [RaisesException] void insertAdjacentText(DOMString where, DOMString data);
+
+    // CSS Shadow Parts
+    // https://drafts.csswg.org/css-shadow-parts/#idl
+    [Affects=Nothing, SameObject, PerWorldBindings, PutForwards=value] readonly attribute DOMTokenList part;
+
+    // Pointer Events
+    // https://w3c.github.io/pointerevents/#extensions-to-the-element-interface
+    [RaisesException] void setPointerCapture (long pointerId);
+    [RaisesException] void releasePointerCapture (long pointerId);
+    boolean hasPointerCapture (long pointerId);
 
     // Mixin Slotable
     // https://dom.spec.whatwg.org/#mixin-slotable
@@ -91,7 +96,7 @@ interface Element : Node {
 
     // Pointer Lock
     // https://w3c.github.io/pointerlock/#extensions-to-the-element-interface
-    [MeasureAs=ElementRequestPointerLock] void requestPointerLock();
+    [MeasureAs=ElementRequestPointerLock] void requestPointerLock(optional PointerLockOptions options);
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extension-to-the-element-interface
@@ -122,8 +127,8 @@ interface Element : Node {
 
     // Non-standard API
     [MeasureAs=ElementScrollIntoViewIfNeeded] void scrollIntoViewIfNeeded(optional boolean centerIfNeeded);
-    [OriginTrialEnabled=ShadowDOMV0, RaisesException, DeprecateAs=ElementCreateShadowRoot] ShadowRoot createShadowRoot();
-    [OriginTrialEnabled=ShadowDOMV0] NodeList getDestinationInsertionPoints();
+    [RuntimeEnabled=ShadowDOMV0, RaisesException, DeprecateAs=ElementCreateShadowRoot] ShadowRoot createShadowRoot();
+    [RuntimeEnabled=ShadowDOMV0] NodeList getDestinationInsertionPoints();
 
     // Experimental accessibility API
     [RuntimeEnabled=ComputedAccessibilityInfo] readonly attribute DOMString? computedRole;
@@ -140,10 +145,14 @@ interface Element : Node {
     attribute EventHandler onbeforepaste;
     attribute EventHandler onsearch;
 
-    // Display locking. Returns a display lock context.
-    [RuntimeEnabled=DisplayLocking, ImplementedAs=getDisplayLockForBindings] readonly attribute DisplayLockContext displayLock;
+    // Declarative display locking.
+    [RuntimeEnabled=DisplayLocking, CEReactions, CustomElementCallbacks, Reflect] attribute DOMString renderSubtree;
+    [RuntimeEnabled=DisplayLocking, CallWith=ScriptState] Promise<any> updateRendering();
+
+    // Element Timing
+    [Affects=Nothing, CEReactions, Reflect=elementtiming] attribute DOMString elementTiming;
 };
 
-Element implements ParentNode;
-Element implements ChildNode;
-Element implements NonDocumentTypeChildNode;
+Element includes ParentNode;
+Element includes ChildNode;
+Element includes NonDocumentTypeChildNode;

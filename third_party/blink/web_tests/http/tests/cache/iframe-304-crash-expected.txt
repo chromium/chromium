@@ -1,5 +1,1 @@
-http://127.0.0.1:8000/cache/resources/iframe304.php - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/cache/resources/iframe304.php, main document URL http://127.0.0.1:8000/cache/iframe-304-crash.html, http method GET>
-http://127.0.0.1:8000/cache/resources/iframe304.php - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/cache/resources/iframe304.php, http status code 200>
-http://127.0.0.1:8000/cache/resources/iframe304.php - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/cache/resources/iframe304.php, main document URL http://127.0.0.1:8000/cache/iframe-304-crash.html, http method GET>
-http://127.0.0.1:8000/cache/resources/iframe304.php - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/cache/resources/iframe304.php, http status code 200>
-
+This test passes if does not crash. 

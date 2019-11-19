@@ -15,13 +15,10 @@
 namespace web {
 
 WKHTTPCookieStore* WKCookieStoreForBrowserState(BrowserState* browser_state) {
-  if (@available(iOS 11, *)) {
-    WKWebViewConfigurationProvider& config_provider =
-        WKWebViewConfigurationProvider::FromBrowserState(browser_state);
-    WKWebViewConfiguration* config = config_provider.GetWebViewConfiguration();
-    return config.websiteDataStore.httpCookieStore;
-  }
-  return nil;
+  WKWebViewConfigurationProvider& config_provider =
+      WKWebViewConfigurationProvider::FromBrowserState(browser_state);
+  WKWebViewConfiguration* config = config_provider.GetWebViewConfiguration();
+  return config.websiteDataStore.httpCookieStore;
 }
 
 }  // namespace web

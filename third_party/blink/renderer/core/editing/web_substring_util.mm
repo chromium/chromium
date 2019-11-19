@@ -33,6 +33,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/mac/foundation_util.h"
 #include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
@@ -74,11 +75,9 @@ NSAttributedString* AttributedSubstringFromRange(const EphemeralRange& range,
 
   unsigned position = 0;
 
-  // TODO(editing-dev): The use of updateStyleAndLayoutIgnorePendingStylesheets
+  // TODO(editing-dev): The use of updateStyleAndLayout
   // needs to be audited.  see http://crbug.com/590369 for more details.
-  range.StartPosition()
-      .GetDocument()
-      ->UpdateStyleAndLayoutIgnorePendingStylesheets();
+  range.StartPosition().GetDocument()->UpdateStyleAndLayout();
 
   for (TextIterator it(range.StartPosition(), range.EndPosition());
        !it.AtEnd() && [string length] < length; it.Advance()) {
@@ -96,7 +95,7 @@ NSAttributedString* AttributedSubstringFromRange(const EphemeralRange& range,
     FontPlatformData font_platform_data =
         style->GetFont().PrimaryFont()->PlatformData();
     font_platform_data.text_size_ *= font_scale;
-    NSFont* font = toNSFont(font_platform_data.CtFont());
+    NSFont* font = base::mac::CFToNSCast(font_platform_data.CtFont());
     // If the platform font can't be loaded, or the size is incorrect comparing
     // to the computed style, it's likely that the site is using a web font.
     // For now, just use the default font instead.
@@ -126,11 +125,11 @@ NSAttributedString* AttributedSubstringFromRange(const EphemeralRange& range,
     else
       [attrs removeObjectForKey:NSBackgroundColorAttributeName];
 
-    ForwardsTextBuffer characters;
-    it.CopyTextTo(&characters);
+    String characters = it.GetText().GetTextForTesting();
+    characters.Ensure16Bit();
     NSString* substring =
-        [[[NSString alloc] initWithCharacters:characters.Data()
-                                       length:characters.Size()] autorelease];
+        [[[NSString alloc] initWithCharacters:characters.Characters16()
+                                       length:characters.length()] autorelease];
     [string replaceCharactersInRange:NSMakeRange(position, 0)
                           withString:substring];
     [string setAttributes:attrs range:NSMakeRange(position, num_characters)];

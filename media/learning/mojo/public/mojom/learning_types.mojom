@@ -19,3 +19,9 @@ struct LabelledExample {
   array<FeatureValue> features;
   TargetValue target_value;
 };
+
+// learning::ObservationCompletion (common/learning_task_controller.h)
+struct ObservationCompletion {
+  TargetValue target_value;
+  uint64 weight = 1;
+};

@@ -5,6 +5,7 @@
 #include "services/network/http_server_properties_pref_delegate.h"
 
 #include "base/bind.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -39,16 +40,21 @@ void HttpServerPropertiesPrefDelegate::SetServerProperties(
     pref_service_->CommitPendingWrite(std::move(callback));
 }
 
-void HttpServerPropertiesPrefDelegate::StartListeningForUpdates(
-    const base::RepeatingClosure& callback) {
-  pref_change_registrar_.Add(kPrefPath, callback);
-  // PrefChangeRegistrar isn't notified of initial pref load, so watch for that,
-  // too.
+void HttpServerPropertiesPrefDelegate::WaitForPrefLoad(
+    base::OnceClosure callback) {
+  // If prefs haven't loaded yet, set up a pref init observer.
   if (pref_service_->GetInitializationStatus() ==
       PrefService::INITIALIZATION_STATUS_WAITING) {
     pref_service_->AddPrefInitObserver(base::BindOnce(
-        [](const base::Closure& callback, bool) { callback.Run(); }, callback));
+        [](base::OnceClosure callback, bool) { std::move(callback).Run(); },
+        std::move(callback)));
+    return;
   }
+
+  // If prefs have already loaded (currently doesn't happen), invoke the pref
+  // observer asynchronously.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   std::move(callback));
 }
 
 }  // namespace network

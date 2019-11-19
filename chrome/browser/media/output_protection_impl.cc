@@ -16,7 +16,7 @@
 // static
 void OutputProtectionImpl::Create(
     content::RenderFrameHost* render_frame_host,
-    media::mojom::OutputProtectionRequest request) {
+    mojo::PendingReceiver<media::mojom::OutputProtection> receiver) {
   DVLOG(2) << __func__;
 
   // OutputProtectionProxy requires to run on the UI thread.
@@ -25,16 +25,15 @@ void OutputProtectionImpl::Create(
 
   // The object is bound to the lifetime of |render_frame_host| and the mojo
   // connection. See FrameServiceBase for details.
-  new OutputProtectionImpl(render_frame_host, std::move(request));
+  new OutputProtectionImpl(render_frame_host, std::move(receiver));
 }
 
 OutputProtectionImpl::OutputProtectionImpl(
     content::RenderFrameHost* render_frame_host,
-    media::mojom::OutputProtectionRequest request)
-    : FrameServiceBase(render_frame_host, std::move(request)),
+    mojo::PendingReceiver<media::mojom::OutputProtection> receiver)
+    : FrameServiceBase(render_frame_host, std::move(receiver)),
       render_process_id_(render_frame_host->GetProcess()->GetID()),
-      render_frame_id_(render_frame_host->GetRoutingID()),
-      weak_factory_(this) {}
+      render_frame_id_(render_frame_host->GetRoutingID()) {}
 
 OutputProtectionImpl::~OutputProtectionImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

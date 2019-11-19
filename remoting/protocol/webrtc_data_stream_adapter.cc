@@ -24,7 +24,7 @@ namespace protocol {
 
 WebrtcDataStreamAdapter::WebrtcDataStreamAdapter(
     rtc::scoped_refptr<webrtc::DataChannelInterface> channel)
-    : channel_(channel.get()), weak_ptr_factory_(this) {
+    : channel_(channel.get()) {
   channel_->RegisterObserver(this);
   DCHECK_EQ(channel_->state(), webrtc::DataChannelInterface::kConnecting);
 }
@@ -52,7 +52,11 @@ void WebrtcDataStreamAdapter::Start(EventHandler* event_handler) {
 
 void WebrtcDataStreamAdapter::Send(google::protobuf::MessageLite* message,
                                    base::OnceClosure done) {
-  DCHECK(state_ == State::OPEN);
+  // This shouldn't DCHECK in the CLOSED case, because the connection may be
+  // abruptly closed at any time and the caller may not have been notified, yet.
+  // The message will still be enqueued so that the outstanding done callbacks
+  // are dropped at the expected time in the expected order.
+  DCHECK(state_ != State::CONNECTING);
 
   rtc::CopyOnWriteBuffer buffer;
   buffer.SetSize(message->ByteSize());
@@ -62,10 +66,7 @@ void WebrtcDataStreamAdapter::Send(google::protobuf::MessageLite* message,
       webrtc::DataBuffer(std::move(buffer), true /* binary */),
       std::move(done));
 
-  // Send asynchronously to avoid nested calls to Send.
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&WebrtcDataStreamAdapter::SendMessagesIfReady,
-                                weak_ptr_factory_.GetWeakPtr()));
+  SendMessagesIfReady();
 }
 
 void WebrtcDataStreamAdapter::SendMessagesIfReady() {
@@ -77,7 +78,8 @@ void WebrtcDataStreamAdapter::SendMessagesIfReady() {
 
   // Send messages to the data channel until it has to add one to its own queue.
   // This ensures that the lower-level buffers remain full.
-  while (channel_->buffered_amount() == 0 && !pending_messages_.empty()) {
+  while (state_ == State::OPEN && channel_->buffered_amount() == 0 &&
+         !pending_messages_.empty()) {
     PendingMessage message = std::move(pending_messages_.front());
     pending_messages_.pop();
     if (!channel_->Send(std::move(message.buffer))) {
@@ -87,7 +89,9 @@ void WebrtcDataStreamAdapter::SendMessagesIfReady() {
     }
 
     if (message.done_callback) {
-      std::move(message.done_callback).Run();
+      // Invoke callback asynchronously to avoid nested calls to Send.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, std::move(message.done_callback));
     }
   }
 }
@@ -97,13 +101,18 @@ void WebrtcDataStreamAdapter::OnStateChange() {
     case webrtc::DataChannelInterface::kOpen:
       DCHECK(state_ == State::CONNECTING);
       state_ = State::OPEN;
-      event_handler_->OnMessagePipeOpen();
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&WebrtcDataStreamAdapter::InvokeOpenEvent,
+                                    weak_ptr_factory_.GetWeakPtr()));
       break;
 
     case webrtc::DataChannelInterface::kClosing:
       if (state_ != State::CLOSED) {
         state_ = State::CLOSED;
-        event_handler_->OnMessagePipeClosed();
+        base::SequencedTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&WebrtcDataStreamAdapter::InvokeClosedEvent,
+                           weak_ptr_factory_.GetWeakPtr()));
       }
       break;
 
@@ -123,7 +132,10 @@ void WebrtcDataStreamAdapter::OnMessage(const webrtc::DataBuffer& rtc_buffer) {
   buffer->AppendCopyOf(reinterpret_cast<const char*>(rtc_buffer.data.data()),
                        rtc_buffer.data.size());
   buffer->Lock();
-  event_handler_->OnMessageReceived(std::move(buffer));
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebrtcDataStreamAdapter::InvokeMessageEvent,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(buffer)));
 }
 
 void WebrtcDataStreamAdapter::OnBufferedAmountChange(uint64_t previous_amount) {
@@ -132,6 +144,19 @@ void WebrtcDataStreamAdapter::OnBufferedAmountChange(uint64_t previous_amount) {
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&WebrtcDataStreamAdapter::SendMessagesIfReady,
                                 weak_ptr_factory_.GetWeakPtr()));
+}
+
+void WebrtcDataStreamAdapter::InvokeOpenEvent() {
+  event_handler_->OnMessagePipeOpen();
+}
+
+void WebrtcDataStreamAdapter::InvokeClosedEvent() {
+  event_handler_->OnMessagePipeClosed();
+}
+
+void WebrtcDataStreamAdapter::InvokeMessageEvent(
+    std::unique_ptr<CompoundBuffer> buffer) {
+  event_handler_->OnMessageReceived(std::move(buffer));
 }
 
 WebrtcDataStreamAdapter::PendingMessage::PendingMessage(

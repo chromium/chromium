@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/utility/transformer_util.h"
 #include "base/command_line.h"
+#include "components/viz/common/features.h"
 #include "ui/compositor/dip_util.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_layout_store.h"
@@ -32,20 +33,20 @@ namespace {
 // call |CreateRotationTransform()|, the |old_rotation| will implicitly be
 // |display::Display::ROTATE_0|.
 gfx::Transform CreateRootWindowRotationTransform(
-    aura::Window* root_window,
     const display::Display& display) {
   display::ManagedDisplayInfo info =
       Shell::Get()->display_manager()->GetDisplayInfo(display.id());
-  gfx::SizeF size(display.GetSizeInPixel());
+  gfx::SizeF size(info.size_in_pixel());
+
   // Use SizeF so that the origin of translated layer will be
   // aligned when scaled back at pixels.
   size.Scale(1.f / display.device_scale_factor());
   return CreateRotationTransform(display::Display::ROTATE_0,
-                                 info.GetActiveRotation(), size);
+                                 info.GetLogicalActiveRotation(), size);
 }
 
-gfx::Transform CreateInsetsAndScaleTransform(const gfx::Insets& insets,
-                                             float device_scale_factor) {
+gfx::Transform CreateInsetsTransform(const gfx::Insets& insets,
+                                     float device_scale_factor) {
   gfx::Transform transform;
   if (insets.top() != 0 || insets.left() != 0) {
     float x_offset = insets.left() / device_scale_factor;
@@ -55,26 +56,73 @@ gfx::Transform CreateInsetsAndScaleTransform(const gfx::Insets& insets,
   return transform;
 }
 
+// Returns a transform with rotation adjusted |insets_in_pixel|. The transform
+// is applied to the root window so that |insets_in_pixel| looks correct after
+// the rotation applied at the output.
+gfx::Transform CreateReverseRotatedInsetsTransform(
+    display::Display::Rotation rotation,
+    const gfx::Insets& insets_in_pixel,
+    float device_scale_factor) {
+  float x_offset = 0;
+  float y_offset = 0;
+
+  switch (rotation) {
+    case display::Display::ROTATE_0:
+      x_offset = insets_in_pixel.left();
+      y_offset = insets_in_pixel.top();
+      break;
+    case display::Display::ROTATE_90:
+      x_offset = insets_in_pixel.top();
+      y_offset = insets_in_pixel.right();
+      break;
+    case display::Display::ROTATE_180:
+      x_offset = insets_in_pixel.right();
+      y_offset = insets_in_pixel.bottom();
+      break;
+    case display::Display::ROTATE_270:
+      x_offset = insets_in_pixel.bottom();
+      y_offset = insets_in_pixel.left();
+      break;
+  }
+
+  gfx::Transform transform;
+  if (x_offset != 0 || y_offset != 0) {
+    x_offset /= device_scale_factor;
+    y_offset /= device_scale_factor;
+    transform.Translate(x_offset, y_offset);
+  }
+  return transform;
+}
+
 // RootWindowTransformer for ash environment.
 class AshRootWindowTransformer : public RootWindowTransformer {
  public:
-  AshRootWindowTransformer(aura::Window* root, const display::Display& display)
-      : root_window_(root) {
+  AshRootWindowTransformer(const display::Display& display) {
     display::DisplayManager* display_manager = Shell::Get()->display_manager();
     display::ManagedDisplayInfo info =
         display_manager->GetDisplayInfo(display.id());
     host_insets_ = info.GetOverscanInsetsInPixel();
-    root_window_bounds_transform_ =
-        CreateInsetsAndScaleTransform(host_insets_,
-                                      display.device_scale_factor()) *
-        CreateRootWindowRotationTransform(root, display);
-    transform_ = root_window_bounds_transform_;
+    gfx::Transform insets_and_rotation_transform =
+        CreateInsetsTransform(host_insets_, display.device_scale_factor()) *
+        CreateRootWindowRotationTransform(display);
+    transform_ = insets_and_rotation_transform;
+    insets_and_scale_transform_ = CreateReverseRotatedInsetsTransform(
+        info.GetLogicalActiveRotation(), host_insets_,
+        display.device_scale_factor());
     MagnificationController* magnifier =
         Shell::Get()->magnification_controller();
-    if (magnifier)
-      transform_ *= magnifier->GetMagnifierTransform();
+    if (magnifier) {
+      gfx::Transform magnifier_scale = magnifier->GetMagnifierTransform();
+      transform_ *= magnifier_scale;
+      insets_and_scale_transform_ *= magnifier_scale;
+    }
 
     CHECK(transform_.GetInverse(&invert_transform_));
+    CHECK(insets_and_rotation_transform.GetInverse(
+        &root_window_bounds_transform_));
+
+    root_window_bounds_transform_.Scale(1.f / display.device_scale_factor(),
+                                        1.f / display.device_scale_factor());
   }
 
   // aura::RootWindowTransformer overrides:
@@ -83,13 +131,12 @@ class AshRootWindowTransformer : public RootWindowTransformer {
     return invert_transform_;
   }
   gfx::Rect GetRootWindowBounds(const gfx::Size& host_size) const override {
-    gfx::Rect bounds(host_size);
-    bounds.Inset(host_insets_);
-    bounds = ui::ConvertRectToDIP(root_window_->layer(), bounds);
-    gfx::RectF new_bounds(bounds);
+    gfx::RectF new_bounds = gfx::RectF(gfx::SizeF(host_size));
+    new_bounds.Inset(host_insets_);
     root_window_bounds_transform_.TransformRect(&new_bounds);
-    // Ignore the origin because RootWindow's insets are handled by
-    // the transform.
+
+    // Root window origin will be (0,0) except during bounds changes.
+    // Set to exactly zero to avoid rounding issues.
     // Floor the size because the bounds is no longer aligned to
     // backing pixel when |root_window_scale_| is specified
     // (850 height at 1.25 scale becomes 1062.5 for example.)
@@ -97,11 +144,13 @@ class AshRootWindowTransformer : public RootWindowTransformer {
   }
 
   gfx::Insets GetHostInsets() const override { return host_insets_; }
+  gfx::Transform GetInsetsAndScaleTransform() const override {
+    return insets_and_scale_transform_;
+  }
 
  private:
   ~AshRootWindowTransformer() override = default;
 
-  aura::Window* root_window_;
   gfx::Transform transform_;
 
   // The accurate representation of the inverse of the |transform_|.
@@ -109,11 +158,25 @@ class AshRootWindowTransformer : public RootWindowTransformer {
   // |gfx::Transform::GetInverse|.
   gfx::Transform invert_transform_;
 
-  // The transform of the root window bounds. This is used to calculate
-  // the size of root window.
+  // The transform of the root window bounds. This is used to calculate the size
+  // of the root window. It is the composition of the following transforms
+  //   - inverse of insets. Insets position the content area within the display.
+  //   - inverse of rotation. Rotation changes orientation of the content area.
+  //   - inverse of device scale. Scaling up content shrinks the content area.
+  //
+  // Insets also shrink the content area but this happens prior to applying the
+  // transformation in GetRootWindowBounds().
+  //
+  // Magnification does not affect the window size. Content is clipped in this
+  // case, but the magnifier allows panning to reach clipped areas.
+  //
+  // The transforms are inverted because GetTransform() is the transform from
+  // root window coordinates to host coordinates, but this transform is used in
+  // the reverse direction (derives root window bounds from display bounds).
   gfx::Transform root_window_bounds_transform_;
 
   gfx::Insets host_insets_;
+  gfx::Transform insets_and_scale_transform_;
 
   DISALLOW_COPY_AND_ASSIGN(AshRootWindowTransformer);
 };
@@ -141,8 +204,8 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
       // Calculate the transform to undo the rotation and apply it to the
       // source display.
       rotation_transform = CreateRotationTransform(
-          source_display_info.GetActiveRotation(), display::Display::ROTATE_0,
-          gfx::SizeF(root_bounds_.size()));
+          source_display_info.GetLogicalActiveRotation(),
+          display::Display::ROTATE_0, gfx::SizeF(root_bounds_.size()));
       gfx::RectF rotated_bounds(root_bounds_);
       rotation_transform.TransformRect(&rotated_bounds);
       root_bounds_ = gfx::ToNearestRect(rotated_bounds);
@@ -179,8 +242,12 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
       transform_.Scale(inverted_scale, inverted_scale);
     }
 
-    // Make sure the rotation transform is applied in the beginning.
-    transform_.PreconcatTransform(rotation_transform);
+    // Apply rotation only when reflector is used for mirroring (non viz display
+    // compositor).
+    if (!features::IsVizDisplayCompositorEnabled()) {
+      // Make sure the rotation transform is applied in the beginning.
+      transform_.PreconcatTransform(rotation_transform);
+    }
   }
 
   // aura::RootWindowTransformer overrides:
@@ -194,6 +261,9 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     return root_bounds_;
   }
   gfx::Insets GetHostInsets() const override { return insets_; }
+  gfx::Transform GetInsetsAndScaleTransform() const override {
+    return transform_;
+  }
 
  private:
   ~MirrorRootWindowTransformer() override = default;
@@ -252,6 +322,9 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
     return root_bounds_;
   }
   gfx::Insets GetHostInsets() const override { return gfx::Insets(); }
+  gfx::Transform GetInsetsAndScaleTransform() const override {
+    return transform_;
+  }
 
  private:
   gfx::Transform transform_;
@@ -263,9 +336,8 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
 }  // namespace
 
 RootWindowTransformer* CreateRootWindowTransformerForDisplay(
-    aura::Window* root,
     const display::Display& display) {
-  return new AshRootWindowTransformer(root, display);
+  return new AshRootWindowTransformer(display);
 }
 
 RootWindowTransformer* CreateRootWindowTransformerForMirroredDisplay(

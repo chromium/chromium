@@ -15,13 +15,14 @@
 #include "chrome/browser/chromeos/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/browser/chromeos/arc/input_method_manager/arc_input_method_manager_service.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "components/arc/common/accessibility_helper.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/mojom/accessibility_helper.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/wm/public/activation_change_observer.h"
 
+class PrefService;
 class Profile;
 
 namespace content {
@@ -37,6 +38,8 @@ namespace arc {
 class AXTreeSourceArc;
 class ArcBridgeService;
 
+arc::mojom::CaptionStylePtr GetCaptionStyleFromPrefs(PrefService* prefs);
+
 // ArcAccessibilityHelperBridge is an instance to receive converted Android
 // accessibility events and info via mojo interface and dispatch them to chrome
 // os components.
@@ -50,6 +53,9 @@ class ArcAccessibilityHelperBridge
       public arc::ArcInputMethodManagerService::Observer,
       public ash::ArcNotificationSurfaceManager::Observer {
  public:
+  // Builds the ArcAccessibilityHelperBridgeFactory.
+  static void CreateFactory();
+
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcAccessibilityHelperBridge* GetForBrowserContext(
@@ -109,10 +115,14 @@ class ArcAccessibilityHelperBridge
 
   void set_filter_type_all_for_test() { use_filter_type_all_for_test_ = true; }
 
- protected:
-  virtual aura::Window* GetActiveWindow();
-
  private:
+  // virtual for testing.
+  virtual aura::Window* GetActiveWindow();
+  virtual extensions::EventRouter* GetEventRouter() const;
+
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+  void UpdateCaptionSettings() const;
+
   // wm::ActivationChangeObserver overrides.
   void OnWindowActivated(ActivationReason reason,
                          aura::Window* gained_active,

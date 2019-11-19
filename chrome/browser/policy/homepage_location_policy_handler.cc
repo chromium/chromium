@@ -13,9 +13,19 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/url_formatter/url_fixer.h"
 #include "url/gurl.h"
 
 namespace policy {
+
+namespace {
+
+// Calls url_formatter::FixupURL.
+GURL FixUrl(const std::string& url_spec) {
+  return url_formatter::FixupURL(url_spec, std::string());
+}
+
+}  // namespace
 
 HomepageLocationPolicyHandler::HomepageLocationPolicyHandler()
     : TypeCheckingPolicyHandler(key::kHomepageLocation,
@@ -32,8 +42,9 @@ bool HomepageLocationPolicyHandler::CheckPolicySettings(
   if (!value)
     return true;
 
-  // Check whether the URL is a standard scheme to prevent e.g. Javascript.
-  GURL homepage_url(value->GetString());
+  // Check whether the URL is a standard scheme to prevent e.g. Javascript,
+  // doing a best effort fixing invalid URLs like "example.com".
+  GURL homepage_url = FixUrl(value->GetString());
   if (!homepage_url.is_valid() || !homepage_url.IsStandard()) {
     errors->AddError(policy_name(), IDS_POLICY_HOMEPAGE_LOCATION_ERROR);
     return false;
@@ -46,8 +57,10 @@ void HomepageLocationPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
     PrefValueMap* prefs) {
   const base::Value* policy_value = nullptr;
-  if (CheckAndGetValue(policies, nullptr, &policy_value) && policy_value)
-    prefs->SetString(prefs::kHomePage, policy_value->GetString());
+  if (CheckAndGetValue(policies, nullptr, &policy_value) && policy_value) {
+    prefs->SetString(prefs::kHomePage,
+                     FixUrl(policy_value->GetString()).spec());
+  }
 }
 
 }  // namespace policy

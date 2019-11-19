@@ -6,6 +6,8 @@ import sys
 latest_channels = {
     'firefox': 'nightly',
     'chrome': 'dev',
+    'chrome_android': 'dev',
+    'edgechromium': 'dev',
     'safari': 'preview',
     'servo': 'nightly'
 }
@@ -18,6 +20,7 @@ channel_by_name = {
     'dev': latest_channels,
     'preview': latest_channels,
     'experimental': latest_channels,
+    'canary': 'canary',
 }
 
 

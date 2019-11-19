@@ -7,38 +7,15 @@
 
 #include <memory>
 
-#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
-#include "components/sync/engine/net/network_resources.h"
-#include "components/sync/engine/net/network_time_update_callback.h"
-
-namespace network {
-class SharedURLLoaderFactoryInfo;
-}  // namespace network
+#include "components/sync/engine/net/http_post_provider_factory.h"
 
 namespace fake_server {
 
 class FakeServer;
-class HttpPostProviderFactory;
 
-class FakeServerNetworkResources : public syncer::NetworkResources {
- public:
-  explicit FakeServerNetworkResources(
-      const base::WeakPtr<FakeServer>& fake_server);
-  ~FakeServerNetworkResources() override;
-
-  // NetworkResources
-  std::unique_ptr<syncer::HttpPostProviderFactory> GetHttpPostProviderFactory(
-      std::unique_ptr<network::SharedURLLoaderFactoryInfo>
-          url_loader_factory_info,
-      const syncer::NetworkTimeUpdateCallback& network_time_update_callback,
-      syncer::CancelationSignal* cancelation_signal) override;
-
- private:
-  base::WeakPtr<FakeServer> fake_server_;
-  scoped_refptr<base::SingleThreadTaskRunner> fake_server_task_runner_;
-};
+syncer::CreateHttpPostProviderFactory CreateFakeServerHttpPostProviderFactory(
+    const base::WeakPtr<FakeServer>& fake_server);
 
 }  // namespace fake_server
 

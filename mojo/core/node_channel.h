@@ -59,7 +59,7 @@ class NodeChannel : public base::RefCountedThreadSafe<NodeChannel>,
                              PlatformHandle channel_handle) = 0;
     virtual void OnBroadcast(const ports::NodeName& from_node,
                              Channel::MessagePtr message) = 0;
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_WIN)
     virtual void OnRelayEventMessage(const ports::NodeName& from_node,
                                      base::ProcessHandle from_process,
                                      const ports::NodeName& destination,
@@ -132,8 +132,9 @@ class NodeChannel : public base::RefCountedThreadSafe<NodeChannel>,
   void Introduce(const ports::NodeName& name, PlatformHandle channel_handle);
   void SendChannelMessage(Channel::MessagePtr message);
   void Broadcast(Channel::MessagePtr message);
+  void BindBrokerHost(PlatformHandle broker_host_handle);
 
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_WIN)
   // Relay the message to the specified node via this channel.  This is used to
   // pass windows handles between two processes that do not have permission to
   // duplicate handles into the other's address space. The relay process is
@@ -161,6 +162,10 @@ class NodeChannel : public base::RefCountedThreadSafe<NodeChannel>,
               scoped_refptr<base::TaskRunner> io_task_runner,
               const ProcessErrorCallback& process_error_callback);
   ~NodeChannel() override;
+
+  // Creates a BrokerHost to satisfy a |BindBrokerHost()| request from the other
+  // end of the channel.
+  void CreateAndBindLocalBrokerHost(PlatformHandle broker_host_handle);
 
   // Channel::Delegate:
   void OnChannelMessage(const void* payload,

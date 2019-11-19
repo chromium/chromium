@@ -9,8 +9,8 @@
 #include <string>
 
 #include "components/reading_list/core/reading_list_model_observer.h"
-#include "ios/web/public/web_state/web_state_observer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 namespace base {
 class RepeatingTimer;
@@ -125,6 +125,13 @@ class OfflinePageTabHelper : public web::WebStateUserData<OfflinePageTabHelper>,
   // Whether the navigation for which this tab helper started the timer has been
   // committed.
   bool navigation_committed_ = false;
+  // Whether the latest navigation started for this tab helper was initiated
+  // with chrome://offline URL.
+  bool is_offline_navigation_ = false;
+  // Some parameters of the latest navigation started observed by this tab
+  // helper.
+  ui::PageTransition navigation_transition_type_ = ui::PAGE_TRANSITION_FIRST;
+  bool navigation_is_renderer_initiated_ = false;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };

@@ -15,7 +15,6 @@
 #include "cc/layers/render_surface_impl.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/trees/effect_node.h"
-#include "cc/trees/layer_tree_host_common.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -25,13 +24,10 @@ std::unique_ptr<DamageTracker> DamageTracker::Create() {
   return base::WrapUnique(new DamageTracker());
 }
 
-DamageTracker::DamageTracker() : mailboxId_(0) {}
-
+DamageTracker::DamageTracker() = default;
 DamageTracker::~DamageTracker() = default;
 
-void DamageTracker::UpdateDamageTracking(
-    LayerTreeImpl* layer_tree_impl,
-    const RenderSurfaceList& render_surface_list) {
+void DamageTracker::UpdateDamageTracking(LayerTreeImpl* layer_tree_impl) {
   //
   // This function computes the "damage rect" of each target surface, and
   // updates the state that is used to correctly track damage across frames. The
@@ -105,7 +101,7 @@ void DamageTracker::UpdateDamageTracking(
   //         erased from map.
   //
 
-  for (RenderSurfaceImpl* render_surface : render_surface_list) {
+  for (auto* render_surface : layer_tree_impl->GetRenderSurfaceList()) {
     render_surface->damage_tracker()->PrepareForUpdate();
   }
 
@@ -171,8 +167,6 @@ void DamageTracker::ComputeSurfaceDamage(RenderSurfaceImpl* render_surface) {
   // These functions cannot be bypassed with early-exits, even if we know what
   // the damage will be for this frame, because we need to update the damage
   // tracker state to correctly track the next frame.
-  DamageAccumulator damage_from_surface_mask =
-      TrackDamageFromSurfaceMask(render_surface->MaskLayer());
   DamageAccumulator damage_from_leftover_rects = TrackDamageFromLeftoverRects();
   // True if any layer is removed.
   has_damage_from_contributing_content_ |=
@@ -186,7 +180,6 @@ void DamageTracker::ComputeSurfaceDamage(RenderSurfaceImpl* render_surface) {
   } else {
     // TODO(shawnsingh): can we clamp this damage to the surface's content rect?
     // (affects performance, but not correctness)
-    damage_for_this_update_.Union(damage_from_surface_mask);
     damage_for_this_update_.Union(damage_from_leftover_rects);
 
     gfx::Rect damage_rect;
@@ -238,24 +231,6 @@ DamageTracker::SurfaceRectMapData& DamageTracker::RectDataForSurface(
   }
 
   return *it;
-}
-
-DamageTracker::DamageAccumulator DamageTracker::TrackDamageFromSurfaceMask(
-    LayerImpl* target_surface_mask_layer) {
-  DamageAccumulator damage;
-
-  if (!target_surface_mask_layer)
-    return damage;
-
-  // Currently, if there is any change to the mask, we choose to damage the
-  // entire surface. This could potentially be optimized later, but it is not
-  // expected to be a common case.
-  if (target_surface_mask_layer->LayerPropertyChanged() ||
-      !target_surface_mask_layer->update_rect().IsEmpty()) {
-    damage.Union(gfx::Rect(target_surface_mask_layer->bounds()));
-  }
-
-  return damage;
 }
 
 void DamageTracker::PrepareForUpdate() {
@@ -365,7 +340,8 @@ void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
   // This method is called when we want to consider how a layer contributes to
   // its target RenderSurface, even if that layer owns the target RenderSurface
   // itself. To consider how a layer's target surface contributes to the
-  // ancestor surface, ExtendDamageForRenderSurface() must be called instead.
+  // ancestor surface, AccumulateDamageFromRenderSurface() must be called
+  // instead.
   bool layer_is_new = false;
   LayerRectMapData& data = RectDataForLayer(layer->id(), &layer_is_new);
   gfx::Rect old_rect_in_target_space = data.rect_;
@@ -385,7 +361,7 @@ void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
     // If the layer properties haven't changed, then the the target surface is
     // only affected by the layer's damaged area, which could be empty.
     gfx::Rect damage_rect =
-        gfx::UnionRects(layer->update_rect(), layer->damage_rect());
+        gfx::UnionRects(layer->update_rect(), layer->GetDamageRect());
     damage_rect.Intersect(gfx::Rect(layer->bounds()));
 
     if (!damage_rect.IsEmpty()) {
@@ -415,7 +391,7 @@ void DamageTracker::AccumulateDamageFromLayer(LayerImpl* layer) {
 
   if (layer_is_new || !layer->update_rect().IsEmpty() ||
       layer->LayerPropertyChangedNotFromPropertyTrees() ||
-      !layer->damage_rect().IsEmpty() || property_change_on_non_target_node) {
+      !layer->GetDamageRect().IsEmpty() || property_change_on_non_target_node) {
     has_damage_from_contributing_content_ |= !damage_for_this_update_.IsEmpty();
   }
 }

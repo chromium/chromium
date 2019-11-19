@@ -32,8 +32,6 @@ class HTMLFontElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLFontElement);
-
   static bool CssValueFromFontSizeNumber(const String&, CSSValueID&);
 
   explicit HTMLFontElement(Document&);

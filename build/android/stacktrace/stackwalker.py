@@ -4,6 +4,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import argparse
 import os
 import re
@@ -95,7 +97,7 @@ def AddArguments(parser):
 def _PrintAndLog(line, fp):
   if fp:
     fp.write('%s\n' % line)
-  print line
+  print(line)
 
 
 def main():
@@ -105,7 +107,7 @@ def main():
 
   micro_dumps = GetMicroDumps(args.stack_trace_path)
   if not micro_dumps:
-    print 'No microdump found. Exiting.'
+    print('No microdump found. Exiting.')
     return 0
 
   symbolized_dumps = []

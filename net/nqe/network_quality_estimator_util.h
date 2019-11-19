@@ -13,6 +13,8 @@ namespace net {
 
 class HostPortPair;
 class HostResolver;
+class NetworkIsolationKey;
+class URLRequest;
 
 namespace nqe {
 
@@ -21,18 +23,23 @@ namespace internal {
 // A unified compact representation of an IPv6 or an IPv4 address.
 typedef uint64_t IPHash;
 
-// Returns true if the host contained in |host_port_pair| is a host in a
-// private Internet as defined by RFC 1918 or if the requests to
-// |host_port_pair| are not expected to generate useful network quality
-// information. This includes localhost, hosts on private subnets, and
-// hosts on subnets that are reserved for specific usage, and are unlikely
-// to be used by public web servers.
-// To make this determination, IsPrivateHost() makes the best
-// effort estimate including trying to resolve the host in the
-// |host_port_pair|. The method is synchronous.
-// |host_resolver| must not be null.
-NET_EXPORT_PRIVATE bool IsPrivateHost(HostResolver* host_resolver,
-                                      const HostPortPair& host_port_pair);
+// Returns true if the host contained of |request.url()| is a host in a
+// private Internet as defined by RFC 1918 or if the requests to it are not
+// expected to generate useful network quality information. This includes
+// localhost, hosts on private subnets, and hosts on subnets that are reserved
+// for specific usage, and are unlikely to be used by public web servers.
+//
+// To make this determination, this method makes the best effort estimate
+// including trying to resolve the host from the HostResolver's cache. This
+// method is synchronous.
+NET_EXPORT_PRIVATE bool IsRequestForPrivateHost(const URLRequest& request);
+
+// Provides access to the method used internally by IsRequestForPrivateHost(),
+// for testing.
+NET_EXPORT_PRIVATE bool IsPrivateHostForTesting(
+    HostResolver* host_resolver,
+    const HostPortPair& host_port_pair,
+    const NetworkIsolationKey& network_isolation_key);
 
 }  // namespace internal
 

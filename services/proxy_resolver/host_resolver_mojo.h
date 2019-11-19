@@ -12,22 +12,28 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "net/dns/host_cache.h"
-#include "net/proxy_resolution/proxy_host_resolver.h"
 #include "net/proxy_resolution/proxy_resolve_dns_operation.h"
+#include "services/proxy_resolver/proxy_host_resolver.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+
+namespace net {
+class NetworkIsolationKey;
+}  // namespace net
 
 namespace proxy_resolver {
 
 // A ProxyHostResolver implementation that converts requests to mojo types and
 // forwards them to a mojo Impl interface.
-class HostResolverMojo : public net::ProxyHostResolver {
+class HostResolverMojo : public ProxyHostResolver {
  public:
   class Impl {
    public:
     virtual ~Impl() = default;
-    virtual void ResolveDns(const std::string& hostname,
-                            net::ProxyResolveDnsOperation operation,
-                            mojom::HostResolverRequestClientPtr) = 0;
+    virtual void ResolveDns(
+        const std::string& hostname,
+        net::ProxyResolveDnsOperation operation,
+        const net::NetworkIsolationKey& network_isolation_key,
+        mojo::PendingRemote<mojom::HostResolverRequestClient> client) = 0;
   };
 
   // |impl| must outlive |this|.
@@ -37,7 +43,8 @@ class HostResolverMojo : public net::ProxyHostResolver {
   // ProxyHostResolver overrides.
   std::unique_ptr<Request> CreateRequest(
       const std::string& hostname,
-      net::ProxyResolveDnsOperation operation) override;
+      net::ProxyResolveDnsOperation operation,
+      const net::NetworkIsolationKey& network_isolation_key) override;
 
  private:
   class Job;

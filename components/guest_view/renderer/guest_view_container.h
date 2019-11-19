@@ -107,7 +107,7 @@ class GuestViewContainer : public content::BrowserPluginDelegate {
   v8::Global<v8::Function> element_resize_callback_;
   v8::Isolate* element_resize_isolate_;
 
-  base::WeakPtrFactory<GuestViewContainer> weak_ptr_factory_;
+  base::WeakPtrFactory<GuestViewContainer> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GuestViewContainer);
 };

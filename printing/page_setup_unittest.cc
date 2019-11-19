@@ -45,60 +45,55 @@ TEST(PageSetupTest, Random) {
   PageMargins effective_margins;
   effective_margins.header = std::max(margins.header, printable_area.y());
   effective_margins.left = std::max(margins.left, printable_area.x());
-  effective_margins.top = std::max(margins.top,
-                                   effective_margins.header + kTextHeight);
-  effective_margins.footer = std::max(margins.footer,
-                                      page_size.height() -
-                                          printable_area.bottom());
-  effective_margins.right = std::max(margins.right,
-                                      page_size.width() -
-                                          printable_area.right());
-  effective_margins.bottom = std::max(margins.bottom,
-                                      effective_margins.footer  + kTextHeight);
+  effective_margins.top =
+      std::max(margins.top, effective_margins.header + kTextHeight);
+  effective_margins.footer =
+      std::max(margins.footer, page_size.height() - printable_area.bottom());
+  effective_margins.right =
+      std::max(margins.right, page_size.width() - printable_area.right());
+  effective_margins.bottom =
+      std::max(margins.bottom, effective_margins.footer + kTextHeight);
 
   // Calculate the overlay area.
-  gfx::Rect overlay_area(effective_margins.left, effective_margins.header,
-                         page_size.width() - effective_margins.right -
-                            effective_margins.left,
-                         page_size.height() - effective_margins.footer -
-                            effective_margins.header);
+  gfx::Rect overlay_area(
+      effective_margins.left, effective_margins.header,
+      page_size.width() - effective_margins.right - effective_margins.left,
+      page_size.height() - effective_margins.footer - effective_margins.header);
 
   // Calculate the content area.
-  gfx::Rect content_area(overlay_area.x(),
-                         effective_margins.top,
-                         overlay_area.width(),
-                         page_size.height() - effective_margins.bottom -
-                             effective_margins.top);
+  gfx::Rect content_area(
+      overlay_area.x(), effective_margins.top, overlay_area.width(),
+      page_size.height() - effective_margins.bottom - effective_margins.top);
 
   // Test values.
-  EXPECT_EQ(page_size, setup.physical_size()) << seed << " " <<
-      page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
-  EXPECT_EQ(overlay_area, setup.overlay_area()) << seed << " " <<
-      page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
-  EXPECT_EQ(content_area, setup.content_area()) << seed << " " <<
-      page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
+  EXPECT_EQ(page_size, setup.physical_size())
+      << seed << " " << page_size.ToString() << " " << printable_area.ToString()
+      << " " << kTextHeight;
+  EXPECT_EQ(overlay_area, setup.overlay_area())
+      << seed << " " << page_size.ToString() << " " << printable_area.ToString()
+      << " " << kTextHeight;
+  EXPECT_EQ(content_area, setup.content_area())
+      << seed << " " << page_size.ToString() << " " << printable_area.ToString()
+      << " " << kTextHeight;
 
-  EXPECT_EQ(effective_margins.header, setup.effective_margins().header) <<
-      seed << " " << page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
-  EXPECT_EQ(effective_margins.footer, setup.effective_margins().footer) <<
-      seed << " " << page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
-  EXPECT_EQ(effective_margins.left, setup.effective_margins().left) << seed <<
-      " " << page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
-  EXPECT_EQ(effective_margins.top, setup.effective_margins().top) << seed <<
-      " " << page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
-  EXPECT_EQ(effective_margins.right, setup.effective_margins().right) << seed <<
-      " " << page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
-  EXPECT_EQ(effective_margins.bottom, setup.effective_margins().bottom) <<
-      seed << " " << page_size.ToString() << " " << printable_area.ToString() <<
-       " " << kTextHeight;
+  EXPECT_EQ(effective_margins.header, setup.effective_margins().header)
+      << seed << " " << page_size.ToString() << " " << printable_area.ToString()
+      << " " << kTextHeight;
+  EXPECT_EQ(effective_margins.footer, setup.effective_margins().footer)
+      << seed << " " << page_size.ToString() << " " << printable_area.ToString()
+      << " " << kTextHeight;
+  EXPECT_EQ(effective_margins.left, setup.effective_margins().left)
+      << seed << " " << page_size.ToString() << " " << printable_area.ToString()
+      << " " << kTextHeight;
+  EXPECT_EQ(effective_margins.top, setup.effective_margins().top)
+      << seed << " " << page_size.ToString() << " " << printable_area.ToString()
+      << " " << kTextHeight;
+  EXPECT_EQ(effective_margins.right, setup.effective_margins().right)
+      << seed << " " << page_size.ToString() << " " << printable_area.ToString()
+      << " " << kTextHeight;
+  EXPECT_EQ(effective_margins.bottom, setup.effective_margins().bottom)
+      << seed << " " << page_size.ToString() << " " << printable_area.ToString()
+      << " " << kTextHeight;
 }
 
 TEST(PageSetupTest, HardCoded) {
@@ -137,33 +132,34 @@ TEST(PageSetupTest, HardCoded) {
   gfx::Rect content_area(4, 6, 92, 88);
 
   // Test values.
-  EXPECT_EQ(page_size, setup.physical_size()) << " " << page_size.ToString() <<
-      " " << printable_area.ToString() << " " << kTextHeight;
-  EXPECT_EQ(overlay_area, setup.overlay_area()) << " " <<
-      page_size.ToString() <<  " " << printable_area.ToString() <<
-      " " << kTextHeight;
-  EXPECT_EQ(content_area, setup.content_area()) << " " <<
-      page_size.ToString() <<  " " << printable_area.ToString() <<
-      " " << kTextHeight;
+  EXPECT_EQ(page_size, setup.physical_size())
+      << " " << page_size.ToString() << " " << printable_area.ToString() << " "
+      << kTextHeight;
+  EXPECT_EQ(overlay_area, setup.overlay_area())
+      << " " << page_size.ToString() << " " << printable_area.ToString() << " "
+      << kTextHeight;
+  EXPECT_EQ(content_area, setup.content_area())
+      << " " << page_size.ToString() << " " << printable_area.ToString() << " "
+      << kTextHeight;
 
-  EXPECT_EQ(effective_margins.header, setup.effective_margins().header) <<
-      " " << page_size.ToString() << " " <<
-      printable_area.ToString() << " " << kTextHeight;
-  EXPECT_EQ(effective_margins.footer, setup.effective_margins().footer) <<
-      " " << page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
-  EXPECT_EQ(effective_margins.left, setup.effective_margins().left) <<
-      " " << page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
-  EXPECT_EQ(effective_margins.top, setup.effective_margins().top) <<
-      " " << page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
-  EXPECT_EQ(effective_margins.right, setup.effective_margins().right) <<
-      " " << page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
-  EXPECT_EQ(effective_margins.bottom, setup.effective_margins().bottom) <<
-      " " << page_size.ToString() << " " << printable_area.ToString() <<
-      " " << kTextHeight;
+  EXPECT_EQ(effective_margins.header, setup.effective_margins().header)
+      << " " << page_size.ToString() << " " << printable_area.ToString() << " "
+      << kTextHeight;
+  EXPECT_EQ(effective_margins.footer, setup.effective_margins().footer)
+      << " " << page_size.ToString() << " " << printable_area.ToString() << " "
+      << kTextHeight;
+  EXPECT_EQ(effective_margins.left, setup.effective_margins().left)
+      << " " << page_size.ToString() << " " << printable_area.ToString() << " "
+      << kTextHeight;
+  EXPECT_EQ(effective_margins.top, setup.effective_margins().top)
+      << " " << page_size.ToString() << " " << printable_area.ToString() << " "
+      << kTextHeight;
+  EXPECT_EQ(effective_margins.right, setup.effective_margins().right)
+      << " " << page_size.ToString() << " " << printable_area.ToString() << " "
+      << kTextHeight;
+  EXPECT_EQ(effective_margins.bottom, setup.effective_margins().bottom)
+      << " " << page_size.ToString() << " " << printable_area.ToString() << " "
+      << kTextHeight;
 }
 
 TEST(PageSetupTest, OutOfRangeMargins) {

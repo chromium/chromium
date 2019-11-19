@@ -20,8 +20,8 @@
 #include "chrome/browser/sync_file_system/sync_direction.h"
 #include "components/drive/drive_notification_observer.h"
 #include "components/drive/service/drive_service_interface.h"
-#include "components/signin/core/browser/account_info.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -36,6 +36,7 @@ class DriveUploaderInterface;
 }
 
 namespace extensions {
+class ExtensionRegistry;
 class ExtensionServiceInterface;
 }
 
@@ -65,7 +66,7 @@ class SyncEngine
       public LocalChangeProcessor,
       public drive::DriveNotificationObserver,
       public drive::DriveServiceObserver,
-      public identity::IdentityManager::Observer,
+      public signin::IdentityManager::Observer,
       public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
   typedef RemoteFileSyncService::Observer SyncServiceObserver;
@@ -75,7 +76,7 @@ class SyncEngine
     DriveServiceFactory() {}
     virtual ~DriveServiceFactory() {}
     virtual std::unique_ptr<drive::DriveServiceInterface> CreateDriveService(
-        identity::IdentityManager* identity_manager,
+        signin::IdentityManager* identity_manager,
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
         base::SequencedTaskRunner* blocking_task_runner);
 
@@ -151,8 +152,6 @@ class SyncEngine
       const CoreAccountInfo& primary_account_info) override;
   void OnPrimaryAccountCleared(
       const CoreAccountInfo& previous_primary_account_info) override;
-  void OnPrimaryAccountSigninFailed(
-      const GoogleServiceAuthError& error) override;
 
  private:
   class WorkerObserver;
@@ -168,7 +167,8 @@ class SyncEngine
              TaskLogger* task_logger,
              drive::DriveNotificationManager* notification_manager,
              extensions::ExtensionServiceInterface* extension_service,
-             identity::IdentityManager* identity_manager,
+             extensions::ExtensionRegistry* extension_registry,
+             signin::IdentityManager* identity_manager,
              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
              std::unique_ptr<DriveServiceFactory> drive_service_factory,
              leveldb::Env* env_override);
@@ -198,7 +198,8 @@ class SyncEngine
   // KeyedService::DependsOn().
   drive::DriveNotificationManager* notification_manager_;
   extensions::ExtensionServiceInterface* extension_service_;
-  identity::IdentityManager* identity_manager_;
+  extensions::ExtensionRegistry* extension_registry_;
+  signin::IdentityManager* identity_manager_;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
@@ -231,7 +232,7 @@ class SyncEngine
 
   CallbackTracker callback_tracker_;
 
-  base::WeakPtrFactory<SyncEngine> weak_ptr_factory_;
+  base::WeakPtrFactory<SyncEngine> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(SyncEngine);
 };
 

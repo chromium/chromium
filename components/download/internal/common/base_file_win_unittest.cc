@@ -14,9 +14,9 @@
 namespace download {
 
 TEST(BaseFileWin, AnnotateWithSourceInformation) {
+  const char kTestFileContents[] = "Hello world!";
   const base::FilePath::CharType kZoneIdentifierStreamName[] =
       FILE_PATH_LITERAL(":Zone.Identifier");
-  const char kInternetZoneIdentifierString[] = "[ZoneTransfer]\r\nZoneId=3\r\n";
 
   struct {
     const char* const url;
@@ -48,10 +48,6 @@ TEST(BaseFileWin, AnnotateWithSourceInformation) {
   base::ScopedTempDir target_directory;
   ASSERT_TRUE(target_directory.CreateUniqueTempDir());
 
-  ASSERT_EQ(
-      6, base::WriteFile(target_directory.GetPath().AppendASCII("exists.txt"),
-                         "Exists", 6));
-
   for (const auto& test_case : kTestCases) {
     GURL url(test_case.url);
     GURL referrer(test_case.referrer);
@@ -79,7 +75,10 @@ TEST(BaseFileWin, AnnotateWithSourceInformation) {
               base_file.Rename(
                   target_directory.GetPath().AppendASCII("test_file.doc")));
     ASSERT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
-              base_file.AnnotateWithSourceInformation(
+              base_file.AppendDataToFile(kTestFileContents,
+                                         base::size(kTestFileContents)));
+    ASSERT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE,
+              base_file.AnnotateWithSourceInformationSync(
                   "7B2CEE7C-DC81-4160-86F1-9C968597118F", url, referrer));
     base_file.Detach();
     base_file.Finish();
@@ -94,20 +93,18 @@ TEST(BaseFileWin, AnnotateWithSourceInformation) {
     base::ReadFileToString(zone_identifier_stream, &zone_identifier);
 
     if (test_case.expected_internet_zone) {
-      EXPECT_STREQ(kInternetZoneIdentifierString, zone_identifier.c_str());
-    } else {
+      // The actual assigned zone could be anything and the contents of the zone
+      // identifier depends on the version of Windows. So only testing that
+      // there is a zone annotation.
+      EXPECT_FALSE(zone_identifier.empty());
+    } else if (!zone_identifier.empty()) {
       // Seeing an unexpected zone identifier is not an error, but we log a
       // warning just the same so that such cases can be identified during
       // manual testing.
-      if (zone_identifier == kInternetZoneIdentifierString) {
-        LOG(WARNING) << "Unexpected internet zone annotation for Source:"
-                     << url.spec() << " Referrer:" << test_case.referrer;
-      } else if (!zone_identifier.empty()) {
-        LOG(WARNING) << "Unexpected zone annotation for Source:" << url.spec()
-                     << " Referrer:" << test_case.referrer
-                     << " Annotation:" << std::endl
-                     << zone_identifier;
-      }
+      LOG(WARNING) << "Unexpected zone annotation for Source:" << url.spec()
+                   << " Referrer:" << test_case.referrer
+                   << " Annotation:" << std::endl
+                   << zone_identifier;
     }
     base::DeleteFile(path, false);
   }

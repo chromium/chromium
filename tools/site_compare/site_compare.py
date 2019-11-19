@@ -11,6 +11,7 @@ performs comparison operations on the resulting bitmaps and
 saves the results
 """
 
+from __future__ import print_function
 
 # This line is necessary to work around a QEMU bug
 import _imaging
@@ -125,7 +126,7 @@ def Compare(base, compare, ops, root_path=None, out_path=None):
   description_string = ("Comparing %s %s to %s %s" %
                         (base[0], base[1], compare[0], compare[1]))
   out_file.write(description_string)
-  print description_string
+  print(description_string)
 
   base_dir = os.path.join(base_dir, base[1])
   compare_dir = os.path.join(compare_dir, compare[1])
@@ -135,7 +136,7 @@ def Compare(base, compare, ops, root_path=None, out_path=None):
 
     if not os.path.isfile(os.path.join(compare_dir, filename)):
       out_file.write("Does not exist in target directory\n")
-      print "File %s does not exist in target directory" % filename
+      print("File %s does not exist in target directory" % filename)
       continue
 
     base_filename = os.path.join(base_dir, filename)
@@ -148,10 +149,10 @@ def Compare(base, compare, ops, root_path=None, out_path=None):
 
       ret = module.Compare(base_filename, compare_filename)
       if ret is None:
-        print "%s: OK" % (filename,)
+        print("%s: OK" % (filename,))
         out_file.write("OK\n")
       else:
-        print "%s: %s" % (filename, ret[0])
+        print("%s: %s" % (filename, ret[0]))
         out_file.write("%s\n" % (ret[0]))
         ret[1].save(os.path.join(out_path, filename))
 

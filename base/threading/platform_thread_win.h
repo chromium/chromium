@@ -25,10 +25,6 @@ BASE_EXPORT extern const Feature kWindowsThreadModeBackground;
 
 namespace internal {
 
-// The value returned by ::GetThreadPriority() after background thread mode is
-// enabled on Windows 7. Exposed for unit tests.
-constexpr int kWin7BackgroundThreadModePriority = 4;
-
 // Assert that the memory priority of |thread| is |memory_priority|. No-op on
 // Windows 7 because ::GetThreadInformation() is not available. Exposed for unit
 // tests.

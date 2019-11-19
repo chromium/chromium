@@ -6,38 +6,23 @@
 
 #include <algorithm>
 
+#include "base/numerics/ranges.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/view.h"
 
-namespace {
-
-const double kStepSize = 0.1;
-
-double SetToMax(double percent) {
-  return std::min(std::max(percent, 0.0), 1.0);
-}
-
-}  // namespace
-
 namespace views {
 namespace examples {
 
-ProgressBarExample::ProgressBarExample()
-    : ExampleBase("Progress Bar"),
-      minus_button_(nullptr),
-      plus_button_(nullptr),
-      progress_bar_(nullptr),
-      current_percent_(0.0) {}
+ProgressBarExample::ProgressBarExample() : ExampleBase("Progress Bar") {}
 
-ProgressBarExample::~ProgressBarExample() {
-}
+ProgressBarExample::~ProgressBarExample() = default;
 
 void ProgressBarExample::CreateExampleView(View* container) {
-  GridLayout* layout = container->SetLayoutManager(
-      std::make_unique<views::GridLayout>(container));
+  GridLayout* layout =
+      container->SetLayoutManager(std::make_unique<views::GridLayout>());
 
   ColumnSet* column_set = layout->AddColumnSet(0);
   column_set->AddColumn(GridLayout::TRAILING, GridLayout::CENTER, 0,
@@ -50,33 +35,31 @@ void ProgressBarExample::CreateExampleView(View* container) {
                         GridLayout::USE_PREF, 0, 0);
 
   layout->StartRow(0, 0);
-  minus_button_ = MdTextButton::Create(this, base::ASCIIToUTF16("-"));
-  layout->AddView(minus_button_);
-  progress_bar_ = new ProgressBar();
-  layout->AddView(progress_bar_);
-  plus_button_ = MdTextButton::Create(this, base::ASCIIToUTF16("+"));
-  layout->AddView(plus_button_);
-
-  layout->StartRowWithPadding(0, 0, 0, 10);
-  layout->AddView(new Label(base::ASCIIToUTF16("Infinite loader:")));
-  ProgressBar* infinite_bar = new ProgressBar();
-  infinite_bar->SetValue(-1);
-  layout->AddView(infinite_bar);
+  minus_button_ =
+      layout->AddView(MdTextButton::Create(this, base::ASCIIToUTF16("-")));
+  progress_bar_ = layout->AddView(std::make_unique<ProgressBar>());
+  plus_button_ =
+      layout->AddView(MdTextButton::Create(this, base::ASCIIToUTF16("+")));
 
   layout->StartRowWithPadding(0, 0, 0, 10);
   layout->AddView(
-      new Label(base::ASCIIToUTF16("Infinite loader (very short):")));
-  ProgressBar* shorter_bar = new ProgressBar(2);
+      std::make_unique<Label>(base::ASCIIToUTF16("Infinite loader:")));
+  auto infinite_bar = std::make_unique<ProgressBar>();
+  infinite_bar->SetValue(-1);
+  layout->AddView(std::move(infinite_bar));
+
+  layout->StartRowWithPadding(0, 0, 0, 10);
+  layout->AddView(std::make_unique<Label>(
+      base::ASCIIToUTF16("Infinite loader (very short):")));
+  auto shorter_bar = std::make_unique<ProgressBar>(2);
   shorter_bar->SetValue(-1);
-  layout->AddView(shorter_bar);
+  layout->AddView(std::move(shorter_bar));
 }
 
 void ProgressBarExample::ButtonPressed(Button* sender, const ui::Event& event) {
-  if (sender == minus_button_)
-    current_percent_ = SetToMax(current_percent_ - kStepSize);
-  else if (sender == plus_button_)
-    current_percent_ = SetToMax(current_percent_ + kStepSize);
-
+  constexpr double kStepSize = 0.1;
+  const double step = (sender == minus_button_) ? -kStepSize : kStepSize;
+  current_percent_ = base::ClampToRange(current_percent_ + step, 0.0, 1.0);
   progress_bar_->SetValue(current_percent_);
 }
 

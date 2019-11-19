@@ -26,7 +26,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace content {
@@ -34,9 +34,7 @@ namespace content {
 SpeechRecognitionDispatcherHost::SpeechRecognitionDispatcherHost(
     int render_process_id,
     int render_frame_id)
-    : render_process_id_(render_process_id),
-      render_frame_id_(render_frame_id),
-      weak_factory_(this) {
+    : render_process_id_(render_process_id), render_frame_id_(render_frame_id) {
   // Do not add any non-trivial initialization here, instead do it lazily when
   // required (e.g. see the method |SpeechRecognitionManager::GetInstance()|) or
   // add an Init() method.
@@ -46,10 +44,10 @@ SpeechRecognitionDispatcherHost::SpeechRecognitionDispatcherHost(
 void SpeechRecognitionDispatcherHost::Create(
     int render_process_id,
     int render_frame_id,
-    blink::mojom::SpeechRecognizerRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<SpeechRecognitionDispatcherHost>(
-                              render_process_id, render_frame_id),
-                          std::move(request));
+    mojo::PendingReceiver<blink::mojom::SpeechRecognizer> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<SpeechRecognitionDispatcherHost>(
+                                  render_process_id, render_frame_id),
+                              std::move(receiver));
 }
 
 SpeechRecognitionDispatcherHost::~SpeechRecognitionDispatcherHost() {}
@@ -75,7 +73,7 @@ void SpeechRecognitionDispatcherHost::Start(
     return;
   }
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&SpeechRecognitionDispatcherHost::StartRequestOnUI,
                      AsWeakPtr(), render_process_id_, render_frame_id_,
@@ -139,7 +137,7 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
   StoragePartition* storage_partition = BrowserContext::GetStoragePartition(
       browser_context, web_contents->GetSiteInstance());
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &SpeechRecognitionDispatcherHost::StartSessionOnIO,
@@ -192,8 +190,8 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
       SpeechRecognitionManager::GetInstance()->CreateSession(config);
   DCHECK_NE(session_id, SpeechRecognitionManager::kSessionIDInvalid);
   session->SetSessionId(session_id);
-  mojo::MakeStrongBinding(std::move(session),
-                          std::move(params->session_request));
+  mojo::MakeSelfOwnedReceiver(std::move(session),
+                              std::move(params->session_receiver));
 
   SpeechRecognitionManager::GetInstance()->StartSession(session_id);
 }
@@ -201,12 +199,11 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
 // ---------------------- SpeechRecognizerSession -----------------------------
 
 SpeechRecognitionSession::SpeechRecognitionSession(
-    blink::mojom::SpeechRecognitionSessionClientPtrInfo client_ptr_info)
+    mojo::PendingRemote<blink::mojom::SpeechRecognitionSessionClient> client)
     : session_id_(SpeechRecognitionManager::kSessionIDInvalid),
-      client_(std::move(client_ptr_info)),
-      stopped_(false),
-      weak_factory_(this) {
-  client_.set_connection_error_handler(
+      client_(std::move(client)),
+      stopped_(false) {
+  client_.set_disconnect_handler(
       base::BindOnce(&SpeechRecognitionSession::ConnectionErrorHandler,
                      base::Unretained(this)));
 }

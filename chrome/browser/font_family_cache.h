@@ -12,8 +12,6 @@
 #include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/font_pref_change_notifier.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/common/web_preferences.h"
 
 class PrefService;
@@ -29,8 +27,7 @@ FORWARD_DECLARE_TEST(FontFamilyCacheTest, Caching);
 // "content::ScriptFontFamilyMap". This is necessary since Chrome attempts to
 // update content::ScriptFontFamilyMap 20000 times at startup. See
 // https://crbug.com/308095.
-class FontFamilyCache : public base::SupportsUserData::Data,
-                        public content::NotificationObserver {
+class FontFamilyCache : public base::SupportsUserData::Data {
  public:
   explicit FontFamilyCache(Profile* profile);
   ~FontFamilyCache() override;
@@ -76,12 +73,6 @@ class FontFamilyCache : public base::SupportsUserData::Data,
   // Note: It is safe to remove the observer from the pref change callback.
   void OnPrefsChanged(const std::string& pref_name);
 
-  // content::NotificationObserver override.
-  // Called when the profile is being destructed.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
-
   // Cache of font family preferences.
   FontFamilyMap font_family_map_;
 
@@ -90,11 +81,12 @@ class FontFamilyCache : public base::SupportsUserData::Data,
   // PrefService, so there is no worry about an invalid pointer.
   const PrefService* prefs_;
 
-  // Reacts to profile font changes.
+  // Reacts to profile font changes. |font_change_registrar_| will be
+  // automatically unregistered when the FontPrefChangeNotifier is destroyed as
+  // part of Profile destruction, thus ensuring safe unregistration even though
+  // |this| is destroyed after the Profile destructor completes as part of
+  // Profile's super class destructor ~base::SupportsUserData.
   FontPrefChangeNotifier::Registrar font_change_registrar_;
-
-  // Listens for profile destruction.
-  content::NotificationRegistrar notification_registrar_;
 
   DISALLOW_COPY_AND_ASSIGN(FontFamilyCache);
 };

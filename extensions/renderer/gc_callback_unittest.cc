@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature.h"
@@ -112,7 +112,7 @@ class GCCallbackTest : public testing::TestWithParam<CallbackType> {
     RequestGarbageCollection();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   ScopedWebFrame web_frame_;  // (this will construct the v8::Isolate)
   // ExtensionsRendererClient is a dependency of ScriptContextSet.

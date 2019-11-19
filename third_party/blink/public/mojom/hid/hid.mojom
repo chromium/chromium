@@ -1,0 +1,90 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/device/public/mojom/hid.mojom";
+
+// USB and Bluetooth devices report a pair of values that allow a host to
+// identify a connected device. Vendor IDs are 16-bit values assigned by the USB
+// Implementers Forum or Bluetooth Special Interest Group and identify the
+// device vendor or manufacturer. Product IDs are 16-bit values allocated by the
+// vendor and identify a specific device.
+//
+// USB vendor IDs are available from the USB-IF website:
+// https://cms.usb.org/usb/api/usbif.json
+//
+// Bluetooth vendor IDs are available from the Bluetooth SIG website:
+// https://www.bluetooth.com/specifications/assigned-numbers/company-identifiers/
+//
+// A community-sourced (and incomplete) database of known USB device ID pairs is
+// maintained at http://www.linux-usb.org/usb.ids
+struct VendorAndProduct {
+  uint16 vendor;
+  uint16 product;
+};
+
+// A device ID filter may be specified to match a vendor ID, or to match both a
+// vendor ID and a product ID.
+union DeviceIdFilter {
+  uint16 vendor;
+  VendorAndProduct vendor_and_product;
+};
+
+// Human Interface Device (HID) usages are 32-bit values that communicate the
+// intended function or meaning of a particular control or group of controls.
+// When applied to a top-level HID collection, usages describe the intended
+// function of the device. A 32-bit usage is composed of a 16-bit usage page
+// describing the general category of the usage and a 16-bit usage value which
+// references a specific usage in that category. A usage filter may be
+// specified to match only the usage page, or to match both the usage page and
+// usage value.
+//
+// HID usages are defined in the USB HID Usages Tables document, v1.12.
+// https://www.usb.org/document-library/hid-usage-tables-112
+union UsageFilter {
+  uint16 page;
+  device.mojom.HidUsageAndPage usage_and_page;
+};
+
+// A HID device filter may include a device ID filter, a usage filter, both, or
+// neither. A device filter matches a device only if all included filters match.
+// If no filters are included, the device filter will match any device.
+struct HidDeviceFilter {
+  // The device ID filter, if provided, will match a device only if has the same
+  // vendor ID. If the filter also specifies a product ID, the filter will match
+  // only if both the vendor ID and product ID match.
+  DeviceIdFilter? device_ids;
+
+  // The usage filter, if provided, will match a device only if it has a
+  // top-level collection with the specified usage page. If the filter also
+  // specifies a usage value, the filter will match only if both the usage page
+  // and value match.
+  UsageFilter? usage;
+};
+
+// An interface for requesting access to Human Interface Device (HID)
+// peripherals from the render process. The implementation is responsible for
+// checking device access permissions and should not return information about a
+// device unless permission to access that device has already been granted.
+interface HidService {
+  // Retrieves information about all devices that this client has permission to
+  // access.
+  GetDevices() => (array<device.mojom.HidDeviceInfo> devices);
+
+  // Requests access to a device. A chooser dialog is displayed with a list of
+  // connected devices. If |filters| is non-empty, only devices that match one
+  // or more of the filters will be included in the chooser list. If |filters|
+  // is empty, all connected devices are included. |device| contains the chosen
+  // device, or nullptr if the chooser dialog was canceled.
+  RequestDevice(array<HidDeviceFilter> filters)
+      => (device.mojom.HidDeviceInfo? device);
+
+  // Opens a connection to the device with GUID matching |device_guid|. |client|
+  // will be notified when an input report is received from the device.
+  // |connection| contains the opened connection, or a null remote if the
+  // device could not be opened.
+  Connect(string device_guid, pending_remote<device.mojom.HidConnectionClient> client)
+      => (pending_remote<device.mojom.HidConnection>? connection);
+};

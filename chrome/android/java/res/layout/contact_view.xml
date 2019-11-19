@@ -16,7 +16,7 @@
         android:id="@+id/content"
         style="@style/ListItemContainer">
 
-        <include layout="@layout/modern_list_item_view" />
+        <include layout="@layout/contacts_list_item_view" />
 
     </LinearLayout>
 </org.chromium.chrome.browser.contacts_picker.ContactView>

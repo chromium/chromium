@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<script src="resources/composited-scroll.js"></script>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
 <style>
 #scroller {
     overflow: scroll;
@@ -31,35 +31,9 @@
 if (window.internals)
     internals.settings.setPreferCompositingToLCDTextEnabled(true);
 
-if (window.testRunner) {
-    testRunner.dumpAsText();
-    testRunner.waitUntilDone();
-}
-
-var result = "";
-
 onload = function() {
-    if (window.internals) {
-        result += "No border radius (should be using composited scrolling): ";
-        if (elementSubtreeHasCompositedScrollLayers(document.getElementById('scroller')))
-            result += "Pass.\n";
-        else
-            result += "Fail.\n"
-    }
-    document.getElementById("scroller").style.borderRadius = '5px';
-    requestAnimationFrame(function() {
-        if (window.internals) {
-            result += "Has border radius (should also be using composited scrolling): ";
-            if (elementSubtreeHasCompositedScrollLayers(document.getElementById('scroller')))
-                result += "Pass.\n";
-            else
-                result += "Fail.\n"
-        }
-
-        if (window.testRunner) {
-            testRunner.setCustomTextOutput(result);
-            testRunner.notifyDone();
-        }
-    });
+    runAfterLayoutAndPaint(function() {
+        scroller.style.borderRadius = '5px';
+    }, true);
 };
 </script>

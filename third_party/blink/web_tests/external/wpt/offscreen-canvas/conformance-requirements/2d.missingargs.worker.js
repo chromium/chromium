@@ -4,7 +4,7 @@
 // Note:
 
 importScripts("/resources/testharness.js");
-importScripts("/common/canvas-tests.js");
+importScripts("/2dcontext/resources/canvas-tests.js");
 
 var t = async_test("Missing arguments cause TypeError");
 t.step(function() {
@@ -26,7 +26,6 @@ if (ctx.transform) { // (avoid spurious failures, since the aim here is not to t
     assert_throws(new TypeError(), function() { ctx.transform(1, 0, 0, 1, 0); });
 }
 if (ctx.setTransform) {
-    assert_throws(new TypeError(), function() { ctx.setTransform(); });
     assert_throws(new TypeError(), function() { ctx.setTransform(1); });
     assert_throws(new TypeError(), function() { ctx.setTransform(1, 0); });
     assert_throws(new TypeError(), function() { ctx.setTransform(1, 0, 0); });

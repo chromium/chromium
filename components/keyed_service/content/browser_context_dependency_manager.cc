@@ -19,12 +19,11 @@ const char kDumpBrowserContextDependencyGraphFlag[] =
 #endif  // NDEBUG
 
 void BrowserContextDependencyManager::RegisterProfilePrefsForServices(
-    content::BrowserContext* context,
     user_prefs::PrefRegistrySyncable* pref_registry) {
   TRACE_EVENT0(
      "browser",
      "BrowserContextDependencyManager::RegisterProfilePrefsForServices");
-  RegisterPrefsForServices(context, pref_registry);
+  RegisterPrefsForServices(pref_registry);
 }
 
 void BrowserContextDependencyManager::CreateBrowserContextServices(
@@ -91,9 +90,8 @@ void BrowserContextDependencyManager::DumpContextDependencies(
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           kDumpBrowserContextDependencyGraphFlag)) {
     base::FilePath dot_file =
-        static_cast<const content::BrowserContext*>(context)
-            ->GetPath()
-            .AppendASCII("browser-context-dependencies.dot");
+        static_cast<content::BrowserContext*>(context)->GetPath().AppendASCII(
+            "browser-context-dependencies.dot");
     DumpDependenciesAsGraphviz("BrowserContext", dot_file);
   }
 }

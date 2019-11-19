@@ -1,15 +1,16 @@
 rootWebArea
-++form
-++++group name='Browser Engines:'
-++++++legend
-++++++++staticText name='Browser Engines:'
-++++++++++inlineTextBox name='Browser Engines:'
-++++++staticText name='Browser: '
-++++++++inlineTextBox name='Browser: '
-++++++textField
-++++++++genericContainer
-++++++staticText name=' Rendering Engine: '
-++++++++inlineTextBox name=' '
-++++++++inlineTextBox name='Rendering Engine: '
-++++++textField
-++++++++genericContainer
+++genericContainer ignored
+++++form
+++++++group name='Browser Engines:'
+++++++++legend
+++++++++++staticText name='Browser Engines:'
+++++++++++++inlineTextBox name='Browser Engines:'
+++++++++staticText name='Browser: '
+++++++++++inlineTextBox name='Browser: '
+++++++++textField
+++++++++++genericContainer
+++++++++staticText name=' Rendering Engine: '
+++++++++++inlineTextBox name=' '
+++++++++++inlineTextBox name='Rendering Engine: '
+++++++++textField
+++++++++++genericContainer

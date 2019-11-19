@@ -17,7 +17,6 @@
 #include "components/feed/core/user_classifier.h"
 #include "components/web_resource/eula_accepted_notifier.h"
 
-class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
@@ -86,8 +85,6 @@ class FeedSchedulerHost : web_resource::EulaAcceptedNotifier::Observer {
   using ScheduleBackgroundTaskCallback =
       base::RepeatingCallback<void(base::TimeDelta)>;
 
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-
   // Provide dependent pieces of functionality the scheduler relies on. Should
   // be called exactly once before other public methods are called. This is
   // separate from the constructor because the FeedHostService owns and creates
@@ -143,6 +140,11 @@ class FeedSchedulerHost : web_resource::EulaAcceptedNotifier::Observer {
   // Surface last_fetch_status_ for internals debugging page.
   int GetLastFetchStatusForDebugging() const;
 
+  // Surface the TriggerType for the last ShouldRefresh check that resulted in
+  // kShouldRefresh. Callers of ShouldRefresh are presumed to follow with the
+  // actual refresh.
+  TriggerType* GetLastFetchTriggerTypeForDebugging() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(FeedSchedulerHostTest, GetTriggerThreshold);
 
@@ -150,8 +152,8 @@ class FeedSchedulerHost : web_resource::EulaAcceptedNotifier::Observer {
   void OnEulaAccepted() override;
 
   // Determines whether a refresh should be performed for the given |trigger|.
-  // If this method is called and returns true we presume the refresh will
-  // happen, therefore we report metrics respectively and update
+  // If this method is called and returns kShouldRefresh we presume the refresh
+  // will happen, therefore we report metrics respectively and update
   // |tracking_oustanding_request_|.
   ShouldRefreshResult ShouldRefresh(TriggerType trigger);
 
@@ -226,7 +228,10 @@ class FeedSchedulerHost : web_resource::EulaAcceptedNotifier::Observer {
       throttlers_;
 
   // Status of the last fetch for debugging.
-  int last_fetch_status_;
+  int last_fetch_status_ = 0;
+
+  // Reason for last fetch for debugging.
+  std::unique_ptr<TriggerType> last_fetch_trigger_type_;
 
   DISALLOW_COPY_AND_ASSIGN(FeedSchedulerHost);
 };

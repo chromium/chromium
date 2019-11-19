@@ -70,6 +70,11 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) Authenticator
   // ARC kiosk mode mounts a public cryptohome.
   virtual void LoginAsArcKioskAccount(const AccountId& app_account_id) = 0;
 
+  // Initiates login into web kiosk mode account identified by |app_account_id|.
+  // The |app_account_id| is a generated account id for the account.
+  // Web kiosk mode mounts a public cryptohome.
+  virtual void LoginAsWebKioskAccount(const AccountId& app_account_id) = 0;
+
   // Notifies caller that login was successful. Must be called on the UI thread.
   virtual void OnAuthSuccess() = 0;
 

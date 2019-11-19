@@ -14,7 +14,8 @@
 #include "base/sequenced_task_runner_helpers.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_message_filter.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "url/gurl.h"
 
@@ -65,7 +66,8 @@ class CONTENT_EXPORT ResolveProxyMsgHelper : public BrowserMessageFilter,
   // to the RenderProcessHost no longer existing.
   virtual bool SendRequestToNetworkService(
       const GURL& url,
-      network::mojom::ProxyLookupClientPtr proxy_lookup_client);
+      mojo::PendingRemote<network::mojom::ProxyLookupClient>
+          proxy_lookup_client);
 
   // network::mojom::ProxyLookupClient implementation.
   void OnProxyLookupComplete(
@@ -99,12 +101,12 @@ class CONTENT_EXPORT ResolveProxyMsgHelper : public BrowserMessageFilter,
 
   // Self-reference. Owned as long as there's an outstanding proxy lookup.
   // Needed to shut down safely, since this class is refcounted, with some
-  // references owned on multiple threads, while |binding_| lives on the UI
+  // references owned on multiple threads, while |receiver_| lives on the UI
   // thread, and may receive callbacks there whenever there's a pending request.
   scoped_refptr<ResolveProxyMsgHelper> owned_self_;
 
-  // Binding for the currently in-progress request, if any.
-  mojo::Binding<network::mojom::ProxyLookupClient> binding_;
+  // Receiver for the currently in-progress request, if any.
+  mojo::Receiver<network::mojom::ProxyLookupClient> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ResolveProxyMsgHelper);
 };

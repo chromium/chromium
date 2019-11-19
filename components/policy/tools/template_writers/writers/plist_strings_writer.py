@@ -57,6 +57,8 @@ class PListStringsWriter(template_writer.TemplateWriter):
       for item in policy['items']:
         item_descs.append(str(item['value']) + ' - ' + item['caption'])
       desc = '\n'.join(item_descs) + '\n' + desc
+    if self.HasExpandedPolicyDescription(policy):
+      desc += '\n' + self.GetExpandedPolicyDescription(policy)
 
     self._AddToStringTable(policy['name'], policy['label'], desc)
 

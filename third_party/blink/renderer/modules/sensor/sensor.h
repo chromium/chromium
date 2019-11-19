@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/platform_event_controller.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_options.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_proxy.h"
 #include "third_party/blink/renderer/modules/sensor/spatial_sensor_options.h"
@@ -26,10 +27,10 @@ class DOMException;
 class ExceptionState;
 class ExecutionContext;
 
-class Sensor : public EventTargetWithInlineData,
-               public ActiveScriptWrappable<Sensor>,
-               public ContextLifecycleObserver,
-               public SensorProxy::Observer {
+class MODULES_EXPORT Sensor : public EventTargetWithInlineData,
+                              public ActiveScriptWrappable<Sensor>,
+                              public ContextLifecycleObserver,
+                              public SensorProxy::Observer {
   USING_GARBAGE_COLLECTED_MIXIN(Sensor);
   DEFINE_WRAPPERTYPEINFO();
 

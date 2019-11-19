@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "net/base/url_util.h"
+#include "remoting/proto/remoting/v1/network_traversal_messages.pb.h"
 
 namespace remoting {
 namespace protocol {
@@ -217,6 +218,43 @@ IceConfig IceConfig::Parse(const std::string& config_json) {
   }
 
   return Parse(*dictionary);
+}
+
+// static
+IceConfig IceConfig::Parse(const apis::v1::GetIceConfigResponse& config) {
+  IceConfig ice_config;
+
+  // Parse lifetimeDuration field.
+  base::TimeDelta lifetime =
+      base::TimeDelta::FromSeconds(config.lifetime_duration().seconds()) +
+      base::TimeDelta::FromNanoseconds(config.lifetime_duration().nanos());
+  ice_config.expiration_time = base::Time::Now() + lifetime;
+
+  // Parse iceServers list and store them in |ice_config|.
+  ice_config.max_bitrate_kbps = 0;
+  for (const auto& server : config.servers()) {
+    // Compute the lowest specified bitrate of all the ICE servers.
+    // Ideally the bitrate would be stored per ICE server, but it is not
+    // possible (at the application level) to look up which particular
+    // ICE server was used for the P2P connection.
+    ice_config.max_bitrate_kbps =
+        MinimumSpecified(ice_config.max_bitrate_kbps, server.max_rate_kbps());
+
+    for (const auto& url : server.urls()) {
+      if (!AddServerToConfig(url, server.username(), server.credential(),
+                             &ice_config)) {
+        LOG(ERROR) << "Invalid ICE server URL: " << url;
+      }
+    }
+  }
+
+  // If there are no STUN or no TURN servers then mark the config as expired so
+  // it will be refreshed for the next session.
+  if (ice_config.stun_servers.empty() || ice_config.turn_servers.empty()) {
+    ice_config.expiration_time = base::Time::Now();
+  }
+
+  return ice_config;
 }
 
 }  // namespace protocol

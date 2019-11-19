@@ -12,12 +12,12 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/http/transport_security_state.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -26,7 +26,7 @@ namespace {
 
 const char kReportUri[] = "http://www.example.test/report";
 
-class TransportSecurityPersisterTest : public TestWithScopedTaskEnvironment {
+class TransportSecurityPersisterTest : public TestWithTaskEnvironment {
  public:
   TransportSecurityPersisterTest() = default;
 

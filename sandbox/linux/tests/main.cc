@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
   // SIGABRT).  The normal test launcher does this at initialization, but since
   // we still do not use this on Android, we must install the handler ourselves.
   logging::ScopedLogAssertHandler scoped_assert_handler(
-      base::Bind(UnitTestAssertHandler));
+      base::BindRepeating(UnitTestAssertHandler));
 #endif
   // Always go through re-execution for death tests.
   // This makes gtest only marginally slower for us and has the

@@ -10,20 +10,22 @@
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/ash_pref_names.h"
+#include "ash/public/cpp/login_screen_client.h"
+#include "ash/public/cpp/toast_data.h"
 #include "ash/root_window_controller.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/login_shelf_view.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_delegate.h"
-#include "ash/system/toast/toast_data.h"
-#include "ash/system/toast/toast_manager.h"
+#include "ash/system/toast/toast_manager_impl.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/debug/alias.h"
-#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/session_manager/session_manager_types.h"
@@ -61,7 +63,7 @@ void SetSystemTrayVisibility(SystemTrayVisibility visibility) {
 
 LoginScreenController::LoginScreenController(
     SystemTrayNotifier* system_tray_notifier)
-    : system_tray_notifier_(system_tray_notifier), weak_factory_(this) {
+    : system_tray_notifier_(system_tray_notifier) {
   system_tray_notifier_->AddSystemTrayFocusObserver(this);
 }
 
@@ -77,13 +79,6 @@ void LoginScreenController::RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterStringPref(prefs::kQuickUnlockPinSalt, "");
     return;
   }
-
-  // Pref is owned by chrome and flagged as PUBLIC.
-  registry->RegisterForeignPref(prefs::kQuickUnlockPinSalt);
-}
-
-void LoginScreenController::BindRequest(mojom::LoginScreenRequest request) {
-  bindings_.AddBinding(this, std::move(request));
 }
 
 bool LoginScreenController::IsAuthenticating() const {
@@ -101,7 +96,7 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
       << "Duplicate authentication attempt; current authentication stage is "
       << static_cast<int>(authentication_stage_);
 
-  if (!login_screen_client_) {
+  if (!client_) {
     std::move(callback).Run(base::nullopt);
     return;
   }
@@ -129,10 +124,11 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
 
   authentication_stage_ = AuthenticationStage::kDoAuthenticate;
 
-  int dummy_value;
-  bool is_pin =
-      authenticated_by_pin && base::StringToInt(password, &dummy_value);
-  login_screen_client_->AuthenticateUserWithPasswordOrPin(
+  // Checking if the password is only formed of numbers with base::StringToInt
+  // will easily fail due to numeric limits. ContainsOnlyChars is used instead.
+  const bool is_pin =
+      authenticated_by_pin && base::ContainsOnlyChars(password, "0123456789");
+  client_->AuthenticateUserWithPasswordOrPin(
       account_id, password, is_pin,
       base::BindOnce(&LoginScreenController::OnAuthenticateComplete,
                      weak_factory_.GetWeakPtr(), base::Passed(&callback)));
@@ -147,13 +143,13 @@ void LoginScreenController::AuthenticateUserWithExternalBinary(
       << "Duplicate authentication attempt; current authentication stage is "
       << static_cast<int>(authentication_stage_);
 
-  if (!login_screen_client_) {
+  if (!client_) {
     std::move(callback).Run(base::nullopt);
     return;
   }
 
   authentication_stage_ = AuthenticationStage::kDoAuthenticate;
-  login_screen_client_->AuthenticateUserWithExternalBinary(
+  client_->AuthenticateUserWithExternalBinary(
       account_id,
       base::BindOnce(&LoginScreenController::OnAuthenticateComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -161,12 +157,12 @@ void LoginScreenController::AuthenticateUserWithExternalBinary(
 
 void LoginScreenController::EnrollUserWithExternalBinary(
     OnAuthenticateCallback callback) {
-  if (!login_screen_client_) {
+  if (!client_) {
     std::move(callback).Run(base::nullopt);
     return;
   }
 
-  login_screen_client_->EnrollUserWithExternalBinary(base::BindOnce(
+  client_->EnrollUserWithExternalBinary(base::BindOnce(
       [](OnAuthenticateCallback callback, bool success) {
         std::move(callback).Run(base::make_optional<bool>(success));
       },
@@ -177,319 +173,143 @@ void LoginScreenController::AuthenticateUserWithEasyUnlock(
     const AccountId& account_id) {
   // TODO(jdufault): integrate this into authenticate stage after mojom is
   // refactored to use a callback.
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->AuthenticateUserWithEasyUnlock(account_id);
+  client_->AuthenticateUserWithEasyUnlock(account_id);
 }
 
-void LoginScreenController::ValidateParentAccessCode(
+void LoginScreenController::AuthenticateUserWithChallengeResponse(
     const AccountId& account_id,
-    const std::string& code,
-    OnParentAccessValidation callback) {
-  if (!login_screen_client_) {
-    std::move(callback).Run(base::nullopt);
+    OnAuthenticateCallback callback) {
+  LOG_IF(FATAL, IsAuthenticating())
+      << "Duplicate authentication attempt; current authentication stage is "
+      << static_cast<int>(authentication_stage_);
+
+  if (!client_) {
+    std::move(callback).Run(/*success=*/base::nullopt);
     return;
   }
 
-  login_screen_client_->ValidateParentAccessCode(
-      account_id, code,
-      base::BindOnce(&LoginScreenController::OnParentAccessValidationComplete,
+  authentication_stage_ = AuthenticationStage::kDoAuthenticate;
+  client_->AuthenticateUserWithChallengeResponse(
+      account_id,
+      base::BindOnce(&LoginScreenController::OnAuthenticateComplete,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+bool LoginScreenController::ValidateParentAccessCode(
+    const AccountId& account_id,
+    const std::string& code,
+    base::Time validation_time) {
+  if (!client_)
+    return false;
+
+  return client_->ValidateParentAccessCode(account_id, code, validation_time);
+}
+
 void LoginScreenController::HardlockPod(const AccountId& account_id) {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->HardlockPod(account_id);
+  client_->HardlockPod(account_id);
 }
 
 void LoginScreenController::OnFocusPod(const AccountId& account_id) {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->OnFocusPod(account_id);
+  client_->OnFocusPod(account_id);
 }
 
 void LoginScreenController::OnNoPodFocused() {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->OnNoPodFocused();
+  client_->OnNoPodFocused();
 }
 
 void LoginScreenController::LoadWallpaper(const AccountId& account_id) {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->LoadWallpaper(account_id);
+  client_->LoadWallpaper(account_id);
 }
 
 void LoginScreenController::SignOutUser() {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->SignOutUser();
+  client_->SignOutUser();
 }
 
 void LoginScreenController::CancelAddUser() {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->CancelAddUser();
+  client_->CancelAddUser();
 }
 
 void LoginScreenController::LoginAsGuest() {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->LoginAsGuest();
+  client_->LoginAsGuest();
 }
 
 void LoginScreenController::OnMaxIncorrectPasswordAttempted(
     const AccountId& account_id) {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->OnMaxIncorrectPasswordAttempted(account_id);
+  client_->OnMaxIncorrectPasswordAttempted(account_id);
 }
 
 void LoginScreenController::FocusLockScreenApps(bool reverse) {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->FocusLockScreenApps(reverse);
+  client_->FocusLockScreenApps(reverse);
 }
 
-void LoginScreenController::ShowGaiaSignin(
-    bool can_close,
-    const base::Optional<AccountId>& prefilled_account) {
-  if (!login_screen_client_)
+void LoginScreenController::ShowGaiaSignin(bool can_close,
+                                           const AccountId& prefilled_account) {
+  if (!client_)
     return;
-  login_screen_client_->ShowGaiaSignin(can_close, prefilled_account);
+  client_->ShowGaiaSignin(can_close, prefilled_account);
 }
 
 void LoginScreenController::OnRemoveUserWarningShown() {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->OnRemoveUserWarningShown();
+  client_->OnRemoveUserWarningShown();
 }
 
 void LoginScreenController::RemoveUser(const AccountId& account_id) {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->RemoveUser(account_id);
+  client_->RemoveUser(account_id);
 }
 
 void LoginScreenController::LaunchPublicSession(
     const AccountId& account_id,
     const std::string& locale,
     const std::string& input_method) {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->LaunchPublicSession(account_id, locale, input_method);
+  client_->LaunchPublicSession(account_id, locale, input_method);
 }
 
 void LoginScreenController::RequestPublicSessionKeyboardLayouts(
     const AccountId& account_id,
     const std::string& locale) {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->RequestPublicSessionKeyboardLayouts(account_id, locale);
+  client_->RequestPublicSessionKeyboardLayouts(account_id, locale);
 }
 
 void LoginScreenController::ShowFeedback() {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->ShowFeedback();
+  client_->ShowFeedback();
 }
 
-void LoginScreenController::AddObserver(
-    LoginScreenControllerObserver* observer) {
-  observers_.AddObserver(observer);
+void LoginScreenController::SetClient(LoginScreenClient* client) {
+  client_ = client;
 }
 
-void LoginScreenController::RemoveObserver(
-    LoginScreenControllerObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-void LoginScreenController::FlushForTesting() {
-  login_screen_client_.FlushForTesting();
-}
-
-void LoginScreenController::SetClient(mojom::LoginScreenClientPtr client) {
-  login_screen_client_ = std::move(client);
-}
-
-void LoginScreenController::ShowLockScreen(ShowLockScreenCallback on_shown) {
-  OnShow();
-  ash::LockScreen::Show(ash::LockScreen::ScreenType::kLock);
-  std::move(on_shown).Run(true);
-}
-
-void LoginScreenController::ShowLoginScreen(ShowLoginScreenCallback on_shown) {
-  // Login screen can only be used during login.
-  if (Shell::Get()->session_controller()->GetSessionState() !=
-      session_manager::SessionState::LOGIN_PRIMARY) {
-    LOG(ERROR) << "Not showing login screen since session state is "
-               << static_cast<int>(
-                      Shell::Get()->session_controller()->GetSessionState());
-    std::move(on_shown).Run(false);
-    return;
-  }
-
-  OnShow();
-  // TODO(jdufault): rename ash::LockScreen to ash::LoginScreen.
-  ash::LockScreen::Show(ash::LockScreen::ScreenType::kLogin);
-  std::move(on_shown).Run(true);
-}
-
-void LoginScreenController::ShowErrorMessage(int32_t login_attempts,
-                                             const std::string& error_text,
-                                             const std::string& help_link_text,
-                                             int32_t help_topic_id) {
-  NOTIMPLEMENTED();
-}
-
-void LoginScreenController::ShowWarningBanner(const base::string16& message) {
-  if (DataDispatcher())
-    DataDispatcher()->ShowWarningBanner(message);
-}
-
-void LoginScreenController::HideWarningBanner() {
-  if (DataDispatcher())
-    DataDispatcher()->HideWarningBanner();
-}
-
-void LoginScreenController::ClearErrors() {
-  NOTIMPLEMENTED();
-}
-
-void LoginScreenController::ShowUserPodCustomIcon(
-    const AccountId& account_id,
-    mojom::EasyUnlockIconOptionsPtr icon) {
-  DataDispatcher()->ShowEasyUnlockIcon(account_id, icon);
-}
-
-void LoginScreenController::HideUserPodCustomIcon(const AccountId& account_id) {
-  auto icon_options = mojom::EasyUnlockIconOptions::New();
-  icon_options->icon = mojom::EasyUnlockIconId::NONE;
-  DataDispatcher()->ShowEasyUnlockIcon(account_id, icon_options);
-}
-
-void LoginScreenController::SetAuthType(
-    const AccountId& account_id,
-    proximity_auth::mojom::AuthType auth_type,
-    const base::string16& initial_value) {
-  if (auth_type == proximity_auth::mojom::AuthType::USER_CLICK) {
-    DataDispatcher()->SetTapToUnlockEnabledForUser(account_id,
-                                                   true /*enabled*/);
-  } else if (auth_type == proximity_auth::mojom::AuthType::ONLINE_SIGN_IN) {
-    DataDispatcher()->SetForceOnlineSignInForUser(account_id);
-  } else {
-    NOTIMPLEMENTED();
-  }
-}
-
-void LoginScreenController::SetUserList(
-    std::vector<mojom::LoginUserInfoPtr> users) {
-  DCHECK(DataDispatcher());
-
-  DataDispatcher()->NotifyUsers(users);
-}
-
-void LoginScreenController::SetPinEnabledForUser(const AccountId& account_id,
-                                                 bool is_enabled) {
-  // Chrome will update pin pod state every time user tries to authenticate.
-  // LockScreen is destroyed in the case of authentication success.
-  if (DataDispatcher())
-    DataDispatcher()->SetPinEnabledForUser(account_id, is_enabled);
-}
-
-void LoginScreenController::SetFingerprintState(const AccountId& account_id,
-                                                mojom::FingerprintState state) {
-  if (DataDispatcher())
-    DataDispatcher()->SetFingerprintState(account_id, state);
-}
-
-void LoginScreenController::NotifyFingerprintAuthResult(
-    const AccountId& account_id,
-    bool successful) {
-  if (DataDispatcher())
-    DataDispatcher()->NotifyFingerprintAuthResult(account_id, successful);
-}
-
-void LoginScreenController::SetAvatarForUser(const AccountId& account_id,
-                                             mojom::UserAvatarPtr avatar) {
-  for (auto& observer : observers_)
-    observer.SetAvatarForUser(account_id, avatar);
-}
-
-void LoginScreenController::SetAuthEnabledForUser(
-    const AccountId& account_id,
-    bool is_enabled,
-    base::Optional<base::Time> auth_reenabled_time) {
-  if (DataDispatcher()) {
-    DataDispatcher()->SetAuthEnabledForUser(account_id, is_enabled,
-                                            auth_reenabled_time);
-  }
-}
-
-void LoginScreenController::HandleFocusLeavingLockScreenApps(bool reverse) {
-  for (auto& observer : observers_)
-    observer.OnFocusLeavingLockScreenApps(reverse);
-}
-
-void LoginScreenController::SetSystemInfo(
-    bool show_if_hidden,
-    const std::string& os_version_label_text,
-    const std::string& enterprise_info_text,
-    const std::string& bluetooth_name) {
-  if (DataDispatcher()) {
-    DataDispatcher()->SetSystemInfo(show_if_hidden, os_version_label_text,
-                                    enterprise_info_text, bluetooth_name);
-  }
-}
-
-void LoginScreenController::IsReadyForPassword(
-    IsReadyForPasswordCallback callback) {
-  std::move(callback).Run(LockScreen::HasInstance() && !IsAuthenticating());
-}
-
-void LoginScreenController::SetPublicSessionDisplayName(
-    const AccountId& account_id,
-    const std::string& display_name) {
-  if (DataDispatcher())
-    DataDispatcher()->SetPublicSessionDisplayName(account_id, display_name);
-}
-
-void LoginScreenController::SetPublicSessionLocales(
-    const AccountId& account_id,
-    std::vector<mojom::LocaleItemPtr> locales,
-    const std::string& default_locale,
-    bool show_advanced_view) {
-  if (DataDispatcher()) {
-    DataDispatcher()->SetPublicSessionLocales(
-        account_id, locales, default_locale, show_advanced_view);
-  }
-}
-
-void LoginScreenController::SetPublicSessionKeyboardLayouts(
-    const AccountId& account_id,
-    const std::string& locale,
-    std::vector<mojom::InputMethodItemPtr> keyboard_layouts) {
-  if (DataDispatcher()) {
-    DataDispatcher()->SetPublicSessionKeyboardLayouts(account_id, locale,
-                                                      keyboard_layouts);
-  }
-}
-
-void LoginScreenController::SetPublicSessionShowFullManagementDisclosure(
-    bool is_full_management_disclosure_needed) {
-  if (DataDispatcher()) {
-    DataDispatcher()->SetPublicSessionShowFullManagementDisclosure(
-        is_full_management_disclosure_needed);
-  }
-}
-
-void LoginScreenController::SetKioskApps(
-    std::vector<mojom::KioskAppInfoPtr> kiosk_apps) {
-  Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
-      ->shelf_widget()
-      ->login_shelf_view()
-      ->SetKioskApps(std::move(kiosk_apps));
+LoginScreenModel* LoginScreenController::GetModel() {
+  return &login_data_dispatcher_;
 }
 
 void LoginScreenController::ShowKioskAppError(const std::string& message) {
@@ -498,38 +318,6 @@ void LoginScreenController::ShowKioskAppError(const std::string& message) {
       base::Optional<base::string16>(base::string16()) /*dismiss_text*/,
       true /*visible_on_lock_screen*/);
   Shell::Get()->toast_manager()->Show(toast_data);
-}
-
-void LoginScreenController::NotifyOobeDialogState(
-    mojom::OobeDialogState state) {
-  for (auto& observer : observers_)
-    observer.OnOobeDialogStateChanged(state);
-}
-
-void LoginScreenController::SetAllowLoginAsGuest(bool allow_guest) {
-  Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
-      ->shelf_widget()
-      ->login_shelf_view()
-      ->SetAllowLoginAsGuest(allow_guest);
-}
-
-void LoginScreenController::SetShowGuestButtonInOobe(bool show) {
-  Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
-      ->shelf_widget()
-      ->login_shelf_view()
-      ->SetShowGuestButtonInOobe(show);
-}
-
-void LoginScreenController::SetShowParentAccessButton(bool show) {
-  Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
-      ->shelf_widget()
-      ->login_shelf_view()
-      ->SetShowParentAccessButton(show);
-}
-
-void LoginScreenController::SetShowParentAccessDialog(bool show) {
-  if (DataDispatcher())
-    DataDispatcher()->SetShowParentAccessDialog(show);
 }
 
 void LoginScreenController::FocusLoginShelf(bool reverse) {
@@ -549,42 +337,137 @@ void LoginScreenController::FocusLoginShelf(bool reverse) {
   }
 }
 
-void LoginScreenController::SetAddUserButtonEnabled(bool enable) {
+bool LoginScreenController::IsReadyForPassword() {
+  return LockScreen::HasInstance() && !IsAuthenticating();
+}
+
+void LoginScreenController::EnableAddUserButton(bool enable) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
       ->login_shelf_view()
       ->SetAddUserButtonEnabled(enable);
 }
 
-void LoginScreenController::SetShutdownButtonEnabled(bool enable) {
+void LoginScreenController::EnableShutdownButton(bool enable) {
   Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
       ->shelf_widget()
       ->login_shelf_view()
       ->SetShutdownButtonEnabled(enable);
 }
 
-void LoginScreenController::LaunchKioskApp(const std::string& app_id) {
-  login_screen_client_->LaunchKioskApp(app_id);
+void LoginScreenController::ShowGuestButtonInOobe(bool show) {
+  Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
+      ->shelf_widget()
+      ->login_shelf_view()
+      ->ShowGuestButtonInOobe(show);
 }
 
-void LoginScreenController::LaunchArcKioskApp(const AccountId& account_id) {
-  login_screen_client_->LaunchArcKioskApp(account_id);
+void LoginScreenController::ShowParentAccessButton(bool show) {
+  Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
+      ->shelf_widget()
+      ->login_shelf_view()
+      ->ShowParentAccessButton(show);
+}
+
+void LoginScreenController::ShowParentAccessWidget(
+    const AccountId& child_account_id,
+    ParentAccessWidget::OnExitCallback callback,
+    ParentAccessRequestReason reason,
+    bool extra_dimmer,
+    base::Time validation_time) {
+  DCHECK(!ParentAccessWidget::Get());
+  ParentAccessWidget::Show(child_account_id, std::move(callback), reason,
+                           extra_dimmer, validation_time);
+}
+
+void LoginScreenController::SetAllowLoginAsGuest(bool allow_guest) {
+  Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
+      ->shelf_widget()
+      ->login_shelf_view()
+      ->SetAllowLoginAsGuest(allow_guest);
+}
+
+std::unique_ptr<ScopedGuestButtonBlocker>
+LoginScreenController::GetScopedGuestButtonBlocker() {
+  return Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
+      ->shelf_widget()
+      ->login_shelf_view()
+      ->GetScopedGuestButtonBlocker();
+}
+
+void LoginScreenController::RequestSecurityTokenPin(
+    SecurityTokenPinRequest request) {
+  if (!LockScreen::HasInstance()) {
+    // Corner case: the PIN request is made at inappropriate time, racing with
+    // the lock screen showing/hiding.
+    std::move(request.pin_ui_closed_callback).Run();
+    return;
+  }
+  LockScreen::Get()->RequestSecurityTokenPin(std::move(request));
+}
+
+void LoginScreenController::ClearSecurityTokenPinRequest() {
+  if (!LockScreen::HasInstance()) {
+    // Corner case: the request is made at inappropriate time, racing with the
+    // lock screen showing/hiding.
+    return;
+  }
+  LockScreen::Get()->ClearSecurityTokenPinRequest();
+}
+
+void LoginScreenController::ShowLockScreen() {
+  OnShow();
+  LockScreen::Show(LockScreen::ScreenType::kLock);
+}
+
+void LoginScreenController::ShowLoginScreen() {
+  // Login screen can only be used during login.
+  CHECK_EQ(session_manager::SessionState::LOGIN_PRIMARY,
+           Shell::Get()->session_controller()->GetSessionState())
+      << "Not showing login screen since session state is "
+      << static_cast<int>(
+             Shell::Get()->session_controller()->GetSessionState());
+
+  OnShow();
+  // TODO(jdufault): rename LockScreen to LoginScreen.
+  LockScreen::Show(LockScreen::ScreenType::kLogin);
+}
+
+void LoginScreenController::SetKioskApps(
+    const std::vector<KioskAppMenuEntry>& kiosk_apps,
+    const base::RepeatingCallback<void(const KioskAppMenuEntry&)>& launch_app) {
+  Shelf::ForWindow(Shell::Get()->GetPrimaryRootWindow())
+      ->shelf_widget()
+      ->login_shelf_view()
+      ->SetKioskApps(kiosk_apps, launch_app);
 }
 
 void LoginScreenController::ShowResetScreen() {
-  login_screen_client_->ShowResetScreen();
+  client_->ShowResetScreen();
 }
 
 void LoginScreenController::ShowAccountAccessHelpApp() {
-  login_screen_client_->ShowAccountAccessHelpApp();
+  client_->ShowAccountAccessHelpApp();
+}
+
+void LoginScreenController::ShowParentAccessHelpApp() {
+  client_->ShowParentAccessHelpApp();
+}
+
+void LoginScreenController::ShowLockScreenNotificationSettings() {
+  client_->ShowLockScreenNotificationSettings();
 }
 
 void LoginScreenController::FocusOobeDialog() {
-  login_screen_client_->FocusOobeDialog();
+  if (!client_)
+    return;
+  client_->FocusOobeDialog();
 }
 
 void LoginScreenController::NotifyUserActivity() {
-  login_screen_client_->OnUserActivity();
+  if (!client_)
+    return;
+  client_->OnUserActivity();
 }
 
 void LoginScreenController::OnAuthenticateComplete(
@@ -593,18 +476,6 @@ void LoginScreenController::OnAuthenticateComplete(
   authentication_stage_ = AuthenticationStage::kUserCallback;
   std::move(callback).Run(base::make_optional<bool>(success));
   authentication_stage_ = AuthenticationStage::kIdle;
-}
-
-void LoginScreenController::OnParentAccessValidationComplete(
-    OnParentAccessValidation callback,
-    bool success) {
-  std::move(callback).Run(base::make_optional<bool>(success));
-}
-
-LoginDataDispatcher* LoginScreenController::DataDispatcher() const {
-  if (!ash::LockScreen::HasInstance())
-    return nullptr;
-  return ash::LockScreen::Get()->data_dispatcher();
 }
 
 void LoginScreenController::OnShow() {
@@ -618,9 +489,9 @@ void LoginScreenController::OnShow() {
 }
 
 void LoginScreenController::OnFocusLeavingSystemTray(bool reverse) {
-  if (!login_screen_client_)
+  if (!client_)
     return;
-  login_screen_client_->OnFocusLeavingSystemTray(reverse);
+  client_->OnFocusLeavingSystemTray(reverse);
 }
 
 }  // namespace ash

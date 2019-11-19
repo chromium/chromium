@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
@@ -79,10 +78,6 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
   void IncrementExecutionCount(const std::string& extension_id);
 
   void SetUp() override;
-
-  // Used to enable extensions_features::kRuntimeHostPermissions for
-  // ExtensionActionRunner to take effect.
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   // The associated ExtensionActionRunner.
   ExtensionActionRunner* extension_action_runner_ = nullptr;
@@ -174,9 +169,6 @@ void ExtensionActionRunnerUnitTest::IncrementExecutionCount(
 
 void ExtensionActionRunnerUnitTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
-
-  scoped_feature_list_.InitAndEnableFeature(
-      extensions_features::kRuntimeHostPermissions);
 
   // Skip syncing for testing purposes.
   ExtensionSyncServiceFactory::GetInstance()->SetTestingFactory(

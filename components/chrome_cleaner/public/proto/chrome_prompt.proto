@@ -1,0 +1,91 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package chrome_cleaner;
+
+// Request messages are sent from the Chrome Cleaner to Chrome.
+// Response messages are sent from Chrome to the Chrome Cleaner.
+
+// Tells Chrome to close the IPC connection to the cleaner. There is no
+// response to this request.
+message CloseConnectionRequest {}
+
+message QueryCapabilityRequest {
+  // Add “optional bool supports_foo” fields to this message for each capability
+  // that may or may not be supported by Chrome.
+}
+
+message QueryCapabilityResponse {
+  // Add a matching “optional bool supports_foo” field to this message for each
+  // field in QueryCapabilityRequest.
+}
+
+// Tells Chrome to prompt the user to start a cleanup because the Chrome
+// Cleanup tool has detected unwanted software on the system.
+message PromptUserRequest {
+  // List of fully-qualified paths of the files that will be deleted by the
+  // Chrome Cleanup tool.
+  repeated string files_to_delete = 1;
+
+  // List of fully-qualified paths of the registry keys that will be changed or
+  // deleted by the Chrome Cleanup tool. These are formatted for display to the
+  // user (eg. "HKCU:32\software\unwanted_software").
+  repeated string registry_keys = 2;
+
+  // List of IDs of extensions that will be removed by the Chrome Cleanup tool.
+  // These are 32-character extension ID's.
+  repeated string extension_ids = 3;
+
+  // After deserializing, Chrome must check if
+  // PromptUserRequest.unknown_fields() is empty. If the request includes any
+  // fields that Chrome does not know how to display it will immediately return
+  // DENIED instead of showing the prompt.
+}
+
+// Tells the Chrome Cleanup tool whether the user accepted the prompt.
+message PromptUserResponse {
+  enum PromptAcceptance {
+    UNSPECIFIED = 0;
+    // The user explicitly accepted the cleanup operation and cleaner logs
+    // upload is allowed.
+    ACCEPTED_WITH_LOGS = 1;
+    // The user explicitly accepted the cleanup operation and cleaner logs
+    // upload is not allowed.
+    ACCEPTED_WITHOUT_LOGS = 2;
+    // The user explicitly denied the Chrome prompt.
+    DENIED = 3;
+  };
+
+  // Missing or UNSPECIFIED |prompt_acceptance| will cause Chrome Cleanup to
+  // exit with an error.
+  optional PromptAcceptance prompt_acceptance = 1 [default = UNSPECIFIED];
+}
+
+// Tells Chrome to remove the given extensions.
+message RemoveExtensionsRequest {
+  repeated string extension_ids = 1;
+}
+
+// Tells the Chrome Cleanup tool whether Chrome successfully removed all
+// extensions.
+message RemoveExtensionsResponse {
+  // Missing |success| will cause Chrome Cleanup to exit with an error.
+  optional bool success = 1;
+}
+
+message ChromePromptRequest {
+  oneof request {
+    CloseConnectionRequest close_connection = 1;
+    QueryCapabilityRequest query_capability = 2;
+    PromptUserRequest prompt_user = 3;
+    RemoveExtensionsRequest remove_extensions = 4;
+    // An unrecognized |request| will cause Chrome to kill the Chrome Cleanup
+    // process, since it has no response message to return. Chrome Cleanup
+    // should send QueryCapabilityRequest to see if Chrome supports requests
+    // that aren’t in the first interface version.
+  }
+}

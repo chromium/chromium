@@ -10,7 +10,6 @@
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/format_macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
@@ -26,7 +25,7 @@ namespace ui_devtools {
 
 namespace {
 const char kChromeDeveloperToolsPrefix[] =
-    "chrome-devtools://devtools/bundled/devtools_app.html?ws=";
+    "devtools://devtools/bundled/devtools_app.html?uiDevTools=true&ws=";
 }  // namespace
 
 UiDevToolsServer* UiDevToolsServer::devtools_server_ = nullptr;
@@ -75,7 +74,7 @@ const net::NetworkTrafficAnnotationTag UiDevToolsServer::kVizDevtoolsServerTag =
 
 UiDevToolsServer::UiDevToolsServer(int port,
                                    net::NetworkTrafficAnnotationTag tag)
-    : port_(port), tag_(tag), weak_ptr_factory_(this) {
+    : port_(port), tag_(tag) {
   DCHECK(!devtools_server_);
   devtools_server_ = this;
 }
@@ -91,9 +90,9 @@ std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViews(
   // TODO(mhashmi): Change port if more than one inspectable clients
   auto server =
       base::WrapUnique(new UiDevToolsServer(port, kUIDevtoolsServerTag));
-  network::mojom::TCPServerSocketPtr server_socket;
-  auto request = mojo::MakeRequest(&server_socket);
-  CreateTCPServerSocket(std::move(request), network_context, port,
+  mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket;
+  auto receiver = server_socket.InitWithNewPipeAndPassReceiver();
+  CreateTCPServerSocket(std::move(receiver), network_context, port,
                         kUIDevtoolsServerTag,
                         base::BindOnce(&UiDevToolsServer::MakeServer,
                                        server->weak_ptr_factory_.GetWeakPtr(),
@@ -103,7 +102,7 @@ std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViews(
 
 // static
 std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViz(
-    network::mojom::TCPServerSocketPtr server_socket,
+    mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
     int port) {
   auto server =
       base::WrapUnique(new UiDevToolsServer(port, kVizDevtoolsServerTag));
@@ -113,7 +112,8 @@ std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViz(
 
 // static
 void UiDevToolsServer::CreateTCPServerSocket(
-    network::mojom::TCPServerSocketRequest server_socket_request,
+    mojo::PendingReceiver<network::mojom::TCPServerSocket>
+        server_socket_receiver,
     network::mojom::NetworkContext* network_context,
     int port,
     net::NetworkTrafficAnnotationTag tag,
@@ -124,7 +124,7 @@ void UiDevToolsServer::CreateTCPServerSocket(
   network_context->CreateTCPServerSocket(
       net::IPEndPoint(address, port), kBacklog,
       net::MutableNetworkTrafficAnnotationTag(tag),
-      std::move(server_socket_request), std::move(callback));
+      std::move(server_socket_receiver), std::move(callback));
 }
 
 // static
@@ -168,13 +168,13 @@ void UiDevToolsServer::AttachClient(std::unique_ptr<UiDevToolsClient> client) {
 }
 
 void UiDevToolsServer::SendOverWebSocket(int connection_id,
-                                         const protocol::String& message) {
+                                         base::StringPiece message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
   server_->SendOverWebSocket(connection_id, message, tag_);
 }
 
 void UiDevToolsServer::MakeServer(
-    network::mojom::TCPServerSocketPtr server_socket,
+    mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
     int result,
     const base::Optional<net::IPEndPoint>& local_addr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
@@ -214,8 +214,7 @@ void UiDevToolsServer::OnWebSocketRequest(
   server_->AcceptWebSocket(connection_id, info, tag_);
 }
 
-void UiDevToolsServer::OnWebSocketMessage(int connection_id,
-                                          const std::string& data) {
+void UiDevToolsServer::OnWebSocketMessage(int connection_id, std::string data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(devtools_server_sequence_);
   auto it = connections_.find(connection_id);
   DCHECK(it != connections_.end());

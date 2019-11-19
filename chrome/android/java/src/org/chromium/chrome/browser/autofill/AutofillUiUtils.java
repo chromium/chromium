@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import android.content.ComponentCallbacks;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
 import android.os.Build;
 import android.os.Handler;
-import android.support.annotation.IntDef;
 import android.support.v4.widget.TextViewCompat;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -20,8 +21,11 @@ import android.widget.EditText;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.VisibleForTesting;
+import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 
 import java.lang.annotation.Retention;
@@ -85,10 +89,32 @@ public class AutofillUiUtils {
         popup.setOutsideTouchable(true);
         popup.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
                 resources, R.drawable.store_locally_tooltip_background));
+
+        // An alternate solution is to extend TextView and override onConfigurationChanged. However,
+        // due to lemon compression, onConfigurationChanged never gets called.
+        final ComponentCallbacks componentCallbacks = new ComponentCallbacks() {
+            @Override
+            public void onConfigurationChanged(Configuration configuration) {
+                // If the popup was already showing dismiss it. This may happen during an
+                // orientation change.
+                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                        && popup != null) {
+                    popup.dismiss();
+                }
+            }
+
+            @Override
+            public void onLowMemory() {}
+        };
+
+        ContextUtils.getApplicationContext().registerComponentCallbacks(componentCallbacks);
+
         popup.setOnDismissListener(() -> {
             Handler h = new Handler();
             h.postDelayed(dismissAction, TOOLTIP_DEFERRED_PERIOD_MS);
+            ContextUtils.getApplicationContext().unregisterComponentCallbacks(componentCallbacks);
         });
+
         popup.showAsDropDown(anchorView, offsetProvider.getXOffset(textView),
                 offsetProvider.getYOffset(textView));
         textView.announceForAccessibility(textView.getText());
@@ -118,6 +144,7 @@ public class AutofillUiUtils {
                     || (!monthInput.isFocused() && didFocusOnMonth)) {
                 return ErrorType.EXPIRATION_MONTH;
             }
+            // If year was focused before, proceed to check if year is valid.
             if (!didFocusOnYear) {
                 return ErrorType.NOT_ENOUGH_INFO;
             }
@@ -131,7 +158,10 @@ public class AutofillUiUtils {
             }
             return ErrorType.NOT_ENOUGH_INFO;
         }
-
+        // Year is valid but month is still being edited.
+        if (month == -1) {
+            return ErrorType.NOT_ENOUGH_INFO;
+        }
         if (year == thisYear && month < thisMonth) {
             return ErrorType.EXPIRATION_DATE;
         }

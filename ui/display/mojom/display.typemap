@@ -1,0 +1,24 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/display/mojom/display.mojom"
+public_headers = [ "//ui/display/display.h" ]
+traits_headers = [ "//ui/display/mojom/display_mojom_traits.h" ]
+sources = [
+  "//ui/display/mojom/display_mojom_traits.cc",
+]
+public_deps = [
+  "//ui/display",
+]
+deps = [
+  "//ui/gfx/geometry",
+  "//ui/gfx/geometry/mojom:mojom_traits",
+]
+
+type_mappings = [
+  "display.mojom.Display=::display::Display",
+  "display.mojom.Rotation=::display::Display::Rotation",
+  "display.mojom.TouchSupport=::display::Display::TouchSupport",
+  "display.mojom.AccelerometerSupport=::display::Display::AccelerometerSupport",
+]

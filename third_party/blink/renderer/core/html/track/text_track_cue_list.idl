@@ -25,6 +25,7 @@
 
 // https://html.spec.whatwg.org/C/#texttrackcuelist
 
+[Exposed=Window]
 interface TextTrackCueList {
     readonly attribute unsigned long length;
     getter TextTrackCue (unsigned long index);

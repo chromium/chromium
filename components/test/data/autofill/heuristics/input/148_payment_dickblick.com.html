@@ -334,7 +334,7 @@ Sys.WebForms.PageRequestManager._initialize('ScriptManager', 'Form', [], [], [],
 
         <div id="unbxdSearch" class="unbxdNew unbxdSearchBarContainer unbxdSearch">
             <div id="unbxdSearchContainer" class="unbxdSearchContainer unbxd-yui-skin-sam">
-                <input type="text" id="unbxd_q" class="unbxd_q" name="unbxd_q" value="enter keyword or item number..." autocomplete="off" data-search-url="/search">
+                <input type="text" id="unbxd_q" class="unbxd_q" name="unbxd_q" value="enter keyword or item number..." data-search-url="/search">
                 <img id="unbxdSubmit" class="unbxdHeaderSearchButton" alt="search" src="https://cdn.dick-blick.com/images/header/search-magnifier_optimized.png">
                 <input type="hidden" name="unbxd_x" value="0">
                 <input type="hidden" name="unbxd_y" value="0">
@@ -539,7 +539,7 @@ Sys.WebForms.PageRequestManager._initialize('ScriptManager', 'Form', [], [], [],
 
 
             <li>
-                <input id="rdbCreditCardPaymentMethod" type="radio" name="paymentMethod" value="CreditCard" autocomplete="off" checked="checked">
+                <input id="rdbCreditCardPaymentMethod" type="radio" name="paymentMethod" value="CreditCard" checked="checked">
                 <label for="rdbCreditCardPaymentMethod">Credit Card</label>
                 <img src="/DesktopModules/BlickCheckout/Content/images/accepted-credit-cards.gif" alt="We accept Discover, MasterCard, Visa, American Express, Diners Club, and JCB credit cards">
                 <div class="paymentOptionFields creditCardFields" style="display: block;">
@@ -598,7 +598,7 @@ Sys.WebForms.PageRequestManager._initialize('ScriptManager', 'Form', [], [], [],
 
 
                     <li>
-                        <input id="rdbPaypalPaymentMethod" type="radio" name="paymentMethod" value="PayPal" autocomplete="off">
+                        <input id="rdbPaypalPaymentMethod" type="radio" name="paymentMethod" value="PayPal">
                         <label for="rdbPaypalPaymentMethod">PayPal</label>
                         <img src="/DesktopModules/BlickCheckout/Content/images/paypal.gif" style="vertical-align: middle" alt="Use PayPal for payment ...">
                         <div class="paymentOptionFields paypalFields" style="display: none;">
@@ -607,7 +607,7 @@ Sys.WebForms.PageRequestManager._initialize('ScriptManager', 'Form', [], [], [],
                     </li>
 
             <li>
-                <input id="rdbCheckOrMoneyPaymentMethod" type="radio" name="paymentMethod" value="CheckOrMoneyOrder" autocomplete="off">
+                <input id="rdbCheckOrMoneyPaymentMethod" type="radio" name="paymentMethod" value="CheckOrMoneyOrder">
                 <label for="rdbCheckOrMoneyPaymentMethod">Check or Money Order</label>
                 <div class="paymentOptionFields checkOrMoneyOrderFields" style="display: none;">
                     <p>
@@ -626,7 +626,7 @@ Sys.WebForms.PageRequestManager._initialize('ScriptManager', 'Form', [], [], [],
 <fieldset>
     <legend>What is your billing address?</legend>
     <span class="inputField checkboxField">
-        <input type="checkbox" id="UseShippingAddressAsBillingAddress" name="UseShippingAddressAsBillingAddress" value="true" autocomplete="off">
+        <input type="checkbox" id="UseShippingAddressAsBillingAddress" name="UseShippingAddressAsBillingAddress" value="true">
         <label for="UseShippingAddressAsBillingAddress">My billing address is the same as my shipping address</label>
     </span>
     <input data-val="true" data-val-required="The IsBillingAddressInternational field is required." id="IsBillingAddressInternational" name="IsBillingAddressInternational" type="hidden" value="false">
@@ -644,7 +644,7 @@ Sys.WebForms.PageRequestManager._initialize('ScriptManager', 'Form', [], [], [],
         </span>
         <span class="inputField textboxField local international" style="display: block;">
             <label for="BillingAddressCompanyName">School or Company Name:</label>
-            <input autocomplete="off" data-val="true" data-val-length="The company name can not be longer than 32 characters." data-val-length-max="32" data-val-length-min="1" id="BillingAddressCompanyName" maxlength="32" name="BillingAddressCompanyName" type="text" value="">
+            <input data-val="true" data-val-length="The company name can not be longer than 32 characters." data-val-length-max="32" data-val-length-min="1" id="BillingAddressCompanyName" maxlength="32" name="BillingAddressCompanyName" type="text" value="">
             <span class="field-validation-valid" data-valmsg-for="BillingAddressCompanyName" data-valmsg-replace="true"></span>
         </span>
         <span class="inputField required textboxField local international" style="display: block;">
@@ -659,7 +659,7 @@ Sys.WebForms.PageRequestManager._initialize('ScriptManager', 'Form', [], [], [],
         </span>
         <span class="inputField textboxField local international" style="display: block;">
             <label for="BillingAddressStreetLine2">Street Address Line 2 (optional):</label>
-            <input autocomplete="off" data-val="true" data-val-length="The street line 2 can not be longer than 32 characters." data-val-length-max="32" data-val-length-min="1" data-val-regex="The street line 2 seems to be invalid." data-val-regex-pattern="^[^#]*$" id="BillingAddressStreetLine2" maxlength="32" name="BillingAddressStreetLine2" type="text" value="">
+            <input data-val="true" data-val-length="The street line 2 can not be longer than 32 characters." data-val-length-max="32" data-val-length-min="1" data-val-regex="The street line 2 seems to be invalid." data-val-regex-pattern="^[^#]*$" id="BillingAddressStreetLine2" maxlength="32" name="BillingAddressStreetLine2" type="text" value="">
             <span class="field-validation-valid" data-valmsg-for="BillingAddressStreetLine2" data-valmsg-replace="true"></span>
         </span>
         <span class="inputField required textboxField  local international clear" style="display: block;">
@@ -1459,7 +1459,7 @@ Chromium Org<br>
 
 
         <input name="ScrollTop" type="hidden" id="ScrollTop">
-        <input name="__dnnVariable" type="hidden" id="__dnnVariable" autocomplete="off" value="`{`trackLinks`:`false`,`__scdoff`:`1`,`sf_siteRoot`:`/`,`sf_tabId`:`112`,`evoq_TabId`:`112`,`evoq_PageLanguage`:`en-US`,`evoq_ContentItemId`:`-1`,`evoq_UrlReferrer`:``,`evoq_UrlPath`:`https%3a%2f%2flocalhost%3a91%2fv2%2fcheckout%3fstep%3dBillingAndContact`,`evoq_UrlQuery`:`%3fTabId%3d112%26%26step%3dBillingAndContact`,`evoq_ContentItemReferrer`:`-1`,`evoq_PersonalizedUrlReferrer`:`-1`,`evoq_DisableAnalytics`:`False`}">
+        <input name="__dnnVariable" type="hidden" id="__dnnVariable" value="`{`trackLinks`:`false`,`__scdoff`:`1`,`sf_siteRoot`:`/`,`sf_tabId`:`112`,`evoq_TabId`:`112`,`evoq_PageLanguage`:`en-US`,`evoq_ContentItemId`:`-1`,`evoq_UrlReferrer`:``,`evoq_UrlPath`:`https%3a%2f%2flocalhost%3a91%2fv2%2fcheckout%3fstep%3dBillingAndContact`,`evoq_UrlQuery`:`%3fTabId%3d112%26%26step%3dBillingAndContact`,`evoq_ContentItemReferrer`:`-1`,`evoq_PersonalizedUrlReferrer`:`-1`,`evoq_DisableAnalytics`:`False`}">
         <input name="__RequestVerificationToken" type="hidden" value="PzQGtYX8iLgyVtfNpR1BB-QgIIphkolapsEHDSIjVpyzxIv89iZnENurvJv75X251pHHXg2">
     </form><div class="unbxd-as-wrapper" style="position: absolute; display: none;"></div>
     <!--CDF(Javascript|/js/dnncore.js)--><!--CDF(Javascript|/js/dnn.modalpopup.js)--><!--CDF(Css|/Resources/Shared/stylesheets/dnndefault/7.0.0/default.css)--><!--CDF(Css|/Portals/_default/skins/blickecommerce/skin.css)--><!--CDF(Css|/DesktopModules/BlickCheckout/module.css)--><!--CDF(Css|/DesktopModules/BlickCheckout/module.css)--><!--CDF(Css|/DesktopModules/BlickCartSubtotal/module.css)--><!--CDF(Css|/DesktopModules/BlickCartSubtotal/module.css)--><!--CDF(Css|/Portals/0/portal.css)--><!--CDF(Javascript|/js/dnn.js)--><!--CDF(Javascript|/js/dnn.servicesframework.js)--><!--CDF(Javascript|/Resources/libraries/jQuery/01_09_01/jquery.js)--><!--CDF(Javascript|/Resources/libraries/jQuery-UI/01_11_03/jquery-ui.js)-->

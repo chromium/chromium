@@ -1,0 +1,40 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/gfx/geometry/mojom/geometry.mojom"
+public_headers = [
+  "//ui/gfx/geometry/point.h",
+  "//ui/gfx/geometry/point_f.h",
+  "//ui/gfx/geometry/point3_f.h",
+  "//ui/gfx/geometry/size.h",
+  "//ui/gfx/geometry/rect.h",
+  "//ui/gfx/geometry/rect_f.h",
+  "//ui/gfx/geometry/safe_integer_conversions.h",
+  "//ui/gfx/geometry/scroll_offset.h",
+  "//ui/gfx/geometry/insets.h",
+  "//ui/gfx/geometry/quaternion.h",
+  "//ui/gfx/geometry/vector2d.h",
+  "//ui/gfx/geometry/vector2d_f.h",
+  "//ui/gfx/geometry/vector3d_f.h",
+]
+traits_headers = [ "//ui/gfx/geometry/mojom/geometry_mojom_traits.h" ]
+public_deps = [
+  "//ui/gfx/geometry/mojom:mojom_traits",
+]
+type_mappings = [
+  "gfx.mojom.Point=::gfx::Point",
+  "gfx.mojom.PointF=::gfx::PointF",
+  "gfx.mojom.Point3F=::gfx::Point3F",
+  "gfx.mojom.Size=::gfx::Size",
+  "gfx.mojom.SizeF=::gfx::SizeF",
+  "gfx.mojom.Rect=::gfx::Rect",
+  "gfx.mojom.RectF=::gfx::RectF",
+  "gfx.mojom.Insets=::gfx::Insets",
+  "gfx.mojom.InsetsF=::gfx::InsetsF",
+  "gfx.mojom.Quaternion=::gfx::Quaternion",
+  "gfx.mojom.Vector2d=::gfx::Vector2d",
+  "gfx.mojom.Vector2dF=::gfx::Vector2dF",
+  "gfx.mojom.Vector3dF=::gfx::Vector3dF",
+  "gfx.mojom.ScrollOffset=::gfx::ScrollOffset",
+]

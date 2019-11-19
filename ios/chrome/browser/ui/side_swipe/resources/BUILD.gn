@@ -12,12 +12,3 @@ imageset("side_swipe_navigation_back") {
     "side_swipe_navigation_back.imageset/side_swipe_navigation_back@3x.png",
   ]
 }
-
-imageset("side_swipe_navigation_content_shadow") {
-  sources = [
-    "side_swipe_navigation_content_shadow.imageset/Contents.json",
-    "side_swipe_navigation_content_shadow.imageset/side_swipe_navigation_content_shadow.png",
-    "side_swipe_navigation_content_shadow.imageset/side_swipe_navigation_content_shadow@2x.png",
-    "side_swipe_navigation_content_shadow.imageset/side_swipe_navigation_content_shadow@3x.png",
-  ]
-}

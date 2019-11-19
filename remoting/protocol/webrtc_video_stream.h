@@ -21,12 +21,12 @@
 #include "remoting/codec/webrtc_video_encoder_selector.h"
 #include "remoting/protocol/host_video_stats_dispatcher.h"
 #include "remoting/protocol/video_stream.h"
+#include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/common_types.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace webrtc {
 class PeerConnectionInterface;
-class RtpSenderInterface;
 }  // namespace webrtc
 
 namespace remoting {
@@ -75,19 +75,22 @@ class WebrtcVideoStream : public VideoStream,
 
   void OnEncoderCreated(webrtc::VideoCodecType codec_type);
 
+  // Helper functions to create software encoders that run on the encode thread.
+  std::unique_ptr<WebrtcVideoEncoder> CreateVP8Encoder();
+  std::unique_ptr<WebrtcVideoEncoder> CreateVP9Encoder();
+
   // Capturer used to capture the screen.
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
   // Used to send across encoded frames.
   WebrtcTransport* webrtc_transport_ = nullptr;
-  // Task runner used to run |encoder_|.
+  // Task runner used by software encoders.
   scoped_refptr<base::SequencedTaskRunner> encode_task_runner_;
-  // Used to encode captured frames. Always accessed on the encode thread.
+  // Used to encode captured frames.
   std::unique_ptr<WebrtcVideoEncoder> encoder_;
 
   scoped_refptr<InputEventTimestampsSource> event_timestamps_source_;
 
   scoped_refptr<webrtc::PeerConnectionInterface> peer_connection_;
-  scoped_refptr<webrtc::RtpSenderInterface> video_sender_;
 
   HostVideoStatsDispatcher video_stats_dispatcher_;
 
@@ -106,7 +109,12 @@ class WebrtcVideoStream : public VideoStream,
 
   const SessionOptions session_options_;
 
-  base::WeakPtrFactory<WebrtcVideoStream> weak_factory_;
+  // Settings that are received from video-control messages. These are stored
+  // here in case a message is received before the encoder is created.
+  bool lossless_encode_ = false;
+  bool lossless_color_ = false;
+
+  base::WeakPtrFactory<WebrtcVideoStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebrtcVideoStream);
 };

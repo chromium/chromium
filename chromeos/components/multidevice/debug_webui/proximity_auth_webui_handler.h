@@ -128,7 +128,7 @@ class ProximityAuthWebUIHandler
   bool sync_update_waiting_for_debug_info_ = false;
   bool get_local_state_update_waiting_for_debug_info_ = false;
 
-  base::WeakPtrFactory<ProximityAuthWebUIHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<ProximityAuthWebUIHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProximityAuthWebUIHandler);
 };

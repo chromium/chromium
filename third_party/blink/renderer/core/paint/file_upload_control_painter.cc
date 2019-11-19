@@ -16,7 +16,7 @@
 namespace blink {
 
 void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
-                                           const LayoutPoint& paint_offset) {
+                                           const PhysicalOffset& paint_offset) {
   if (layout_file_upload_control_.StyleRef().Visibility() !=
       EVisibility::kVisible)
     return;
@@ -33,7 +33,7 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
     text_run.SetExpansionBehavior(TextRun::kAllowTrailingExpansion);
 
     // Determine where the filename should be placed
-    LayoutUnit content_left = paint_offset.X() +
+    LayoutUnit content_left = paint_offset.left +
                               layout_file_upload_control_.BorderLeft() +
                               layout_file_upload_control_.PaddingLeft();
     Node* button = layout_file_upload_control_.UploadButton();
@@ -59,7 +59,7 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
     // FIXME: Make this work with transforms.
     if (LayoutButton* button_layout_object =
             ToLayoutButton(button->GetLayoutObject()))
-      text_y = paint_offset.Y() + layout_file_upload_control_.BorderTop() +
+      text_y = paint_offset.top + layout_file_upload_control_.BorderTop() +
                layout_file_upload_control_.PaddingTop() +
                button_layout_object->BaselinePosition(
                    kAlphabeticBaseline, true, kHorizontalLine,
@@ -78,10 +78,14 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
     paint_info.context.DrawBidiText(
         font, text_run_paint_info,
         FloatPoint(RoundToInt(text_x), RoundToInt(text_y)));
-    if (RuntimeEnabledFeatures::FirstContentfulPaintPlusPlusEnabled()) {
-      PaintTimingDetector::NotifyTextPaint(
+    if (!font.ShouldSkipDrawing()) {
+      ScopedPaintTimingDetectorBlockPaintHook
+          scoped_paint_timing_detector_block_paint_hook;
+      scoped_paint_timing_detector_block_paint_hook.EmplaceIfNeeded(
           layout_file_upload_control_, paint_info.context.GetPaintController()
                                            .CurrentPaintChunkProperties());
+      PaintTimingDetector::NotifyTextPaint(
+          layout_file_upload_control_.FragmentsVisualRectBoundingBox());
     }
   }
 

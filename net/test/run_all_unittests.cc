@@ -9,11 +9,9 @@
 #include "base/test/launcher/unit_test_launcher.h"
 #include "build/build_config.h"
 #include "crypto/nss_util.h"
-#include "net/socket/client_socket_pool_base.h"
+#include "net/socket/transport_client_socket_pool.h"
 #include "net/test/net_test_suite.h"
 #include "url/buildflags.h"
-
-using net::internal::ClientSocketPoolBaseHelper;
 
 namespace {
 
@@ -52,9 +50,9 @@ int main(int argc, char** argv) {
     return 1;
 
   NetTestSuite test_suite(argc, argv);
-  ClientSocketPoolBaseHelper::set_connect_backup_jobs_enabled(false);
+  net::TransportClientSocketPool::set_connect_backup_jobs_enabled(false);
 
   return base::LaunchUnitTests(
-      argc, argv, base::Bind(&NetTestSuite::Run,
-                             base::Unretained(&test_suite)));
+      argc, argv,
+      base::BindOnce(&NetTestSuite::Run, base::Unretained(&test_suite)));
 }

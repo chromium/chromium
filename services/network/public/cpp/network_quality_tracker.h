@@ -12,8 +12,8 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/nqe/effective_connection_type.h"
 #include "services/network/public/mojom/network_quality_estimator_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom-forward.h"
@@ -179,7 +179,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetworkQualityTracker
   base::ObserverList<RTTAndThroughputEstimatesObserver>::Unchecked
       rtt_and_throughput_observer_list_;
 
-  mojo::Binding<network::mojom::NetworkQualityEstimatorManagerClient> binding_;
+  mojo::Receiver<network::mojom::NetworkQualityEstimatorManagerClient>
+      receiver_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

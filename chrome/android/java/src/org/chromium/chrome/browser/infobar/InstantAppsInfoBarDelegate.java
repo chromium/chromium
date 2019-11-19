@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.infobar;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.instantapps.InstantAppsBannerData;
 import org.chromium.chrome.browser.instantapps.InstantAppsHandler;
 import org.chromium.content_public.browser.WebContents;
@@ -18,7 +19,8 @@ public class InstantAppsInfoBarDelegate {
     private InstantAppsBannerData mData;
 
     public static void launch(InstantAppsBannerData data) {
-        nativeLaunch(data.getWebContents(), data, data.getUrl(), data.isInstantAppDefault());
+        InstantAppsInfoBarDelegateJni.get().launch(
+                data.getWebContents(), data, data.getUrl(), data.isInstantAppDefault());
     }
 
     @CalledByNative
@@ -33,6 +35,9 @@ public class InstantAppsInfoBarDelegate {
         InstantAppsHandler.getInstance().launchFromBanner(data);
     }
 
-    private static native void nativeLaunch(WebContents webContents, InstantAppsBannerData data,
-            String url, boolean instantAppIsDefault);
+    @NativeMethods
+    interface Natives {
+        void launch(WebContents webContents, InstantAppsBannerData data, String url,
+                boolean instantAppIsDefault);
+    }
 }

@@ -58,6 +58,10 @@ _AUTOMATION_EXTERNS = (
 _METRICS_PRIVATE_EXTERNS = (
     ChromeRootPath('third_party/closure_compiler/externs/metrics_private.js'))
 
+# LoginState externs file.
+_LOGIN_STATE_EXTERNS = (
+    ChromeRootPath('third_party/closure_compiler/externs/login_state.js'))
+
 # Settings private API externs file.
 _SETTINGS_PRIVATE_EXTERNS = (
     ChromeRootPath('third_party/closure_compiler/externs/settings_private.js'))
@@ -78,10 +82,9 @@ _COMMANDLINE_PRIVATE_EXTERNS = (
 
 # Externs common to many ChromeVox scripts.
 _COMMON_EXTERNS = [
-    CVoxPath('common/externs.js'),
+    CVoxPath('background/externs.js'),
     CVoxPath('common/chrome_extension_externs.js'),
-    CVoxPath('chromevox/background/externs.js'),
-    CVoxPath('host/chrome/externs.js'),
+    CVoxPath('common/externs.js'),
     _ACCESSIBILITY_PRIVATE_EXTERNS,
     _AUDIO_EXTERNS,
     _AUTOMATION_EXTERNS,
@@ -89,16 +92,16 @@ _COMMON_EXTERNS = [
     _CHROME_EXTENSIONS_EXTERNS,
     _COMMANDLINE_PRIVATE_EXTERNS,
     _METRICS_PRIVATE_EXTERNS,
+    _LOGIN_STATE_EXTERNS,
     _SETTINGS_PRIVATE_EXTERNS,]
 
 # List of top-level scripts and externs that we can check.
 _TOP_LEVEL_SCRIPTS = [
-    [[CVoxPath('chromevox/background/kbexplorer_loader.js')], _COMMON_EXTERNS],
-    [[CVoxPath('chromevox/background/options_loader.js')], _COMMON_EXTERNS],
-    [[CVoxPath('cvox2/background/log_loader.js')], _COMMON_EXTERNS],
-    [[CVoxPath('chromevox/injected/loader.js')], _COMMON_EXTERNS],
-    [[CVoxPath('cvox2/background/loader.js')], _COMMON_EXTERNS],
-    [[CVoxPath('cvox2/background/panel_loader.js')], _COMMON_EXTERNS],
+    [[CVoxPath('background/learn_mode/kbexplorer_loader.js')], _COMMON_EXTERNS],
+    [[CVoxPath('background/loader.js')], _COMMON_EXTERNS],
+    [[CVoxPath('background/logging/log_loader.js')], _COMMON_EXTERNS],
+    [[CVoxPath('background/options/options_loader.js')], _COMMON_EXTERNS],
+    [[CVoxPath('background/panel/panel_loader.js')], _COMMON_EXTERNS],
     ]
 
 

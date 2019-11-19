@@ -65,9 +65,6 @@ enum IDCollectionKey {
   // server side experimental behavior, transmitted through the
   // X-Client-Data header.
   GOOGLE_WEB_PROPERTIES_TRIGGER,
-  // This collection is used by Chrome Sync services, transmitted through the
-  // Sync Event Logger.
-  CHROME_SYNC_EVENT_LOGGER,
   // The total count of collections.
   ID_COLLECTION_COUNT,
 };
@@ -149,14 +146,12 @@ bool GetVariationParamByFeatureAsBool(const base::Feature& feature,
 // Expose some functions for testing.
 namespace testing {
 
-// Clears all of the mapped associations. Deprecated, try to use
-// VariationParamsManager instead as it does a lot of work for you
-// automatically.
+// Clears all of the mapped associations. Deprecated, use ScopedFeatureList
+// instead as it does a lot of work for you automatically.
 void ClearAllVariationIDs();
 
-// Clears all of the associated params. Deprecated, try to use
-// VariationParamsManager instead as it does a lot of work for you
-// automatically.
+// Clears all of the associated params. Deprecated, use ScopedFeatureList
+// instead as it does a lot of work for you automatically.
 void ClearAllVariationParams();
 
 }  // namespace testing

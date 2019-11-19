@@ -31,9 +31,9 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "third_party/blink/public/common/manifest/web_display_mode.h"
+#include "third_party/blink/public/common/css/navigation_controls.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/platform/pointer_properties.h"
-#include "third_party/blink/public/platform/web_color_scheme.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/public/platform/web_viewport_style.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/core/settings_macros.h"
 #include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/graphics/high_contrast_settings.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/image_animation_policy.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -59,7 +59,7 @@ class CORE_EXPORT Settings {
   USING_FAST_MALLOC(Settings);
 
  public:
-  static std::unique_ptr<Settings> Create();
+  Settings();
 
   GenericFontFamilySettings& GetGenericFontFamilySettings() {
     return generic_font_family_settings_;
@@ -86,15 +86,9 @@ class CORE_EXPORT Settings {
 
   SETTINGS_GETTERS_AND_SETTERS
 
-  // FIXME: This does not belong here.
-  static void SetMockScrollbarsEnabled(bool flag);
-  static bool MockScrollbarsEnabled();
-
   void SetDelegate(SettingsDelegate*);
 
  private:
-  Settings();
-
   void Invalidate(SettingsDelegate::ChangeType);
 
   SettingsDelegate* delegate_;

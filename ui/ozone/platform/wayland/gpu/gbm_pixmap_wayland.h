@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_GPU_GBM_PIXMAP_WAYLAND_H_
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_GBM_PIXMAP_WAYLAND_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/files/scoped_file.h"
@@ -16,25 +17,29 @@
 
 namespace ui {
 
-class WaylandSurfaceFactory;
-class WaylandConnectionProxy;
+class WaylandBufferManagerGpu;
 
 class GbmPixmapWayland : public gfx::NativePixmap {
  public:
-  GbmPixmapWayland(WaylandSurfaceFactory* surface_manager,
-                   WaylandConnectionProxy* connection);
+  explicit GbmPixmapWayland(WaylandBufferManagerGpu* buffer_manager);
 
   // Creates a buffer object and initializes the pixmap buffer.
   bool InitializeBuffer(gfx::Size size,
                         gfx::BufferFormat format,
                         gfx::BufferUsage usage);
 
+  // The widget that this pixmap backs can be assigned later. Can be assigned
+  // only once.
+  void SetAcceleratedWiget(gfx::AcceleratedWidget widget);
+
   // gfx::NativePixmap overrides:
   bool AreDmaBufFdsValid() const override;
   int GetDmaBufFd(size_t plane) const override;
-  int GetDmaBufPitch(size_t plane) const override;
-  int GetDmaBufOffset(size_t plane) const override;
-  uint64_t GetDmaBufModifier(size_t plane) const override;
+  uint32_t GetDmaBufPitch(size_t plane) const override;
+  size_t GetDmaBufOffset(size_t plane) const override;
+  size_t GetDmaBufPlaneSize(size_t plane) const override;
+  size_t GetNumberOfPlanes() const override;
+  uint64_t GetBufferFormatModifier() const override;
   gfx::BufferFormat GetBufferFormat() const override;
   gfx::Size GetBufferSize() const override;
   uint32_t GetUniqueId() const override;
@@ -51,15 +56,16 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   ~GbmPixmapWayland() override;
 
   // Asks Wayland to create a dmabuf based wl_buffer.
-  void CreateZwpLinuxDmabuf();
+  void CreateDmabufBasedBuffer();
 
   // gbm_bo wrapper for struct gbm_bo.
   std::unique_ptr<GbmBuffer> gbm_bo_;
 
-  WaylandSurfaceFactory* surface_manager_ = nullptr;
-
   // Represents a connection to Wayland.
-  WaylandConnectionProxy* connection_ = nullptr;
+  WaylandBufferManagerGpu* const buffer_manager_;
+
+  // Represents widget this pixmap backs.
+  gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
 
   DISALLOW_COPY_AND_ASSIGN(GbmPixmapWayland);
 };

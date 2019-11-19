@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.webapps;
 
+import android.content.Intent;
 import android.support.test.filters.MediumTest;
 import android.support.test.rule.UiThreadTestRule;
 
@@ -15,7 +16,9 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.blink_public.platform.WebDisplayMode;
+import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.test.util.browser.webapps.WebApkInfoBuilder;
+import org.chromium.chrome.test.util.browser.webapps.WebappTestHelper;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.test.NativeLibraryTestRule;
 
@@ -33,7 +36,7 @@ public class WebappVisibilityTest {
     private static final String WEBAPP_URL = "http://originalwebsite.com";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mActivityTestRule.loadNativeLibraryNoBrowserProcess();
     }
 
@@ -61,7 +64,7 @@ public class WebappVisibilityTest {
         Assert.assertTrue(canAutoHideBrowserControls(ConnectionSecurityLevel.NONE));
         Assert.assertTrue(canAutoHideBrowserControls(ConnectionSecurityLevel.SECURE));
         Assert.assertTrue(canAutoHideBrowserControls(ConnectionSecurityLevel.EV_SECURE));
-        Assert.assertTrue(canAutoHideBrowserControls(ConnectionSecurityLevel.HTTP_SHOW_WARNING));
+        Assert.assertTrue(canAutoHideBrowserControls(ConnectionSecurityLevel.WARNING));
         Assert.assertFalse(canAutoHideBrowserControls(ConnectionSecurityLevel.DANGEROUS));
     }
 
@@ -128,13 +131,15 @@ public class WebappVisibilityTest {
 
     private static WebappInfo createWebappInfo(String webappStartUrlOrScopeUrl,
             @WebappScopePolicy.Type int scopePolicy, @WebDisplayMode int displayMode) {
-        return scopePolicy == WebappScopePolicy.Type.LEGACY
-                ? WebappInfo.create("", webappStartUrlOrScopeUrl, null, null, null, null,
-                          displayMode, 0, 0, 0, 0, null, false /* isIconGenerated */,
-                          false /* isIconAdaptive */, false /* forceNavigation */)
-                : WebApkInfo.create("", "", webappStartUrlOrScopeUrl, null, null, null, null, null,
-                          displayMode, 0, 0, 0, 0, "", 0, null, "",
-                          WebApkInfo.WebApkDistributor.BROWSER, null, null,
-                          false /* forceNavigation */, false /* useTransparentSplash */, null /* shareData */);
+        if (scopePolicy == WebappScopePolicy.Type.LEGACY) {
+            Intent webappIntent = WebappTestHelper.createMinimalWebappIntent(
+                    "" /* id */, webappStartUrlOrScopeUrl);
+            webappIntent.putExtra(ShortcutHelper.EXTRA_DISPLAY_MODE, displayMode);
+            return WebappInfo.create(webappIntent);
+        }
+        WebApkInfoBuilder webApkInfoBuilder = new WebApkInfoBuilder("random.package", "" /* url */);
+        webApkInfoBuilder.setScope(webappStartUrlOrScopeUrl);
+        webApkInfoBuilder.setDisplayMode(displayMode);
+        return webApkInfoBuilder.build();
     }
 }

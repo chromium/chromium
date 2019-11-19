@@ -8,82 +8,95 @@
 #error "This file requires ARC support."
 #endif
 
-UrlLoadParams* UrlLoadParams::InCurrentTab(
+UrlLoadParams UrlLoadParams::InCurrentTab(
     const web::NavigationManager::WebLoadParams& web_params) {
-  UrlLoadParams* params = new UrlLoadParams();
-  params->disposition = WindowOpenDisposition::CURRENT_TAB;
-  params->web_params = web_params;
+  UrlLoadParams params = UrlLoadParams();
+  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.web_params = web_params;
   return params;
 }
 
-UrlLoadParams* UrlLoadParams::InCurrentTab(const GURL& url) {
-  UrlLoadParams* params = new UrlLoadParams();
-  params->disposition = WindowOpenDisposition::CURRENT_TAB;
-  params->web_params = web::NavigationManager::WebLoadParams(url);
+UrlLoadParams UrlLoadParams::InCurrentTab(const GURL& url,
+                                          const GURL& virtual_url) {
+  UrlLoadParams params = UrlLoadParams();
+  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.web_params = web::NavigationManager::WebLoadParams(url);
+  params.web_params.virtual_url = virtual_url;
   return params;
 }
 
-UrlLoadParams* UrlLoadParams::InNewTab(const GURL& url,
-                                       const web::Referrer& referrer,
-                                       bool in_incognito,
-                                       bool in_background,
-                                       OpenPosition append_to) {
-  UrlLoadParams* params = new UrlLoadParams();
-  params->disposition = in_background
-                            ? WindowOpenDisposition::NEW_BACKGROUND_TAB
-                            : WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params->web_params = web::NavigationManager::WebLoadParams(url);
-  params->web_params.referrer = referrer;
-  params->in_incognito = in_incognito;
-  params->append_to = append_to;
-  params->user_initiated = true;
+UrlLoadParams UrlLoadParams::InCurrentTab(const GURL& url) {
+  UrlLoadParams params = UrlLoadParams();
+  params.disposition = WindowOpenDisposition::CURRENT_TAB;
+  params.web_params = web::NavigationManager::WebLoadParams(url);
   return params;
 }
 
-UrlLoadParams* UrlLoadParams::InNewEmptyTab(bool in_incognito,
-                                            bool in_background) {
-  UrlLoadParams* params = new UrlLoadParams();
-  params->disposition = in_background
-                            ? WindowOpenDisposition::NEW_BACKGROUND_TAB
-                            : WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params->in_incognito = in_incognito;
-  params->user_initiated = true;
+UrlLoadParams UrlLoadParams::InNewTab(
+    const web::NavigationManager::WebLoadParams& web_params) {
+  UrlLoadParams params = UrlLoadParams();
+  params.web_params = web_params;
   return params;
 }
 
-UrlLoadParams* UrlLoadParams::InNewFromChromeTab(const GURL& url) {
-  UrlLoadParams* params = new UrlLoadParams();
-  params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params->web_params = web::NavigationManager::WebLoadParams(url);
-  params->append_to = kLastTab;
-  params->from_chrome = true;
+UrlLoadParams UrlLoadParams::InNewTab(const GURL& url,
+                                      const GURL& virtual_url) {
+  UrlLoadParams params = UrlLoadParams();
+  params.web_params = web::NavigationManager::WebLoadParams(url);
+  params.web_params.virtual_url = virtual_url;
   return params;
 }
 
-UrlLoadParams* UrlLoadParams::InNewForegroundTab(bool in_incognito,
-                                                 CGPoint origin_point) {
-  UrlLoadParams* params = new UrlLoadParams();
-  params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params->origin_point = origin_point;
-  params->user_initiated = true;
+UrlLoadParams UrlLoadParams::InNewTab(const GURL& url) {
+  UrlLoadParams params = UrlLoadParams();
+  params.web_params = web::NavigationManager::WebLoadParams(url);
   return params;
 }
 
-UrlLoadParams* UrlLoadParams::InNewForegroundTab(bool in_incognito) {
-  UrlLoadParams* params = new UrlLoadParams();
-  params->disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  params->user_initiated = true;
+UrlLoadParams UrlLoadParams::SwitchToTab(
+    const web::NavigationManager::WebLoadParams& web_params) {
+  UrlLoadParams params = UrlLoadParams();
+  params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+  params.web_params = web_params;
   return params;
 }
 
-UrlLoadParams::UrlLoadParams() : web_params(GURL()) {}
+UrlLoadParams::UrlLoadParams()
+    : web_params(GURL()),
+      disposition(WindowOpenDisposition::NEW_FOREGROUND_TAB),
+      in_incognito(false),
+      append_to(kLastTab),
+      origin_point(CGPointZero),
+      from_chrome(false),
+      user_initiated(true),
+      should_focus_omnibox(false),
+      load_strategy(UrlLoadStrategy::NORMAL) {}
 
 UrlLoadParams::UrlLoadParams(const UrlLoadParams& other)
-    : web_params(other.web_params), disposition(other.disposition) {}
+    : web_params(other.web_params),
+      disposition(other.disposition),
+      in_incognito(other.in_incognito),
+      append_to(other.append_to),
+      origin_point(other.origin_point),
+      from_chrome(other.from_chrome),
+      user_initiated(other.user_initiated),
+      should_focus_omnibox(other.should_focus_omnibox),
+      load_strategy(other.load_strategy) {}
 
 UrlLoadParams& UrlLoadParams::operator=(const UrlLoadParams& other) {
   web_params = other.web_params;
   disposition = other.disposition;
-
+  in_incognito = other.in_incognito;
+  append_to = other.append_to;
+  origin_point = other.origin_point;
+  from_chrome = other.from_chrome;
+  user_initiated = other.user_initiated;
+  should_focus_omnibox = other.should_focus_omnibox;
+  load_strategy = other.load_strategy;
   return *this;
+}
+
+void UrlLoadParams::SetInBackground(bool in_background) {
+  this->disposition = in_background ? WindowOpenDisposition::NEW_BACKGROUND_TAB
+                                    : WindowOpenDisposition::NEW_FOREGROUND_TAB;
 }

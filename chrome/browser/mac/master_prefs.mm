@@ -6,13 +6,14 @@
 
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
+#include "build/branding_buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths_internal.h"
 #include "components/version_info/version_info.h"
 
 namespace {
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // This should be NSApplicationSupportDirectory, but it has already been
 // released using NSLibraryDirectory.
 const NSSearchPathDirectory kSearchPath = NSLibraryDirectory;
@@ -22,7 +23,7 @@ const char kMasterPreferencesFileName[] = "Google Chrome Master Preferences";
 const NSSearchPathDirectory kSearchPath = NSApplicationSupportDirectory;
 const char kMasterPreferencesDirectory[] = "Chromium";
 const char kMasterPreferencesFileName[] = "Chromium Master Preferences";
-#endif  // GOOGLE_CHROME_BUILD
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace
 
@@ -30,12 +31,12 @@ const char kMasterPreferencesFileName[] = "Chromium Master Preferences";
 namespace master_prefs {
 
 base::FilePath MasterPrefsPath() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Don't load master preferences for the canary.
   version_info::Channel channel = chrome::GetChannel();
   if (channel == version_info::Channel::CANARY)
     return base::FilePath();
-#endif  // GOOGLE_CHROME_BUILD
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // On official builds, try
   //~/Library/Application Support/Google/Chrome/Google Chrome Master Preferences

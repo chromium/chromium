@@ -14,7 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/browser/site_details.h"
+#include "chrome/browser/site_isolation/site_details.h"
 #include "components/nacl/common/nacl_process_type.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"

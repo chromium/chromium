@@ -99,7 +99,7 @@ void SecureChannelImpl::ListenForConnectionFromDevice(
     const multidevice::RemoteDevice& local_device,
     const std::string& feature,
     ConnectionPriority connection_priority,
-    mojom::ConnectionDelegatePtr delegate) {
+    mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
   ProcessConnectionRequest(
       ApiFunctionName::kListenForConnection, device_to_connect, local_device,
       ClientConnectionParametersImpl::Factory::Get()->BuildInstance(
@@ -113,7 +113,7 @@ void SecureChannelImpl::InitiateConnectionToDevice(
     const multidevice::RemoteDevice& local_device,
     const std::string& feature,
     ConnectionPriority connection_priority,
-    mojom::ConnectionDelegatePtr delegate) {
+    mojo::PendingRemote<mojom::ConnectionDelegate> delegate) {
   ProcessConnectionRequest(
       ApiFunctionName::kInitiateConnection, device_to_connect, local_device,
       ClientConnectionParametersImpl::Factory::Get()->BuildInstance(

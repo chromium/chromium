@@ -1,52 +1,53 @@
 rootWebArea
-++link name='Empty anchor' inPageLinkTargetId=anchor
-++++staticText name='Empty anchor'
-++++++inlineTextBox name='Empty anchor'
-++staticText name=' '
-++++inlineTextBox name=' '
-++link name='Anchor with content' inPageLinkTargetId=anchor
-++++staticText name='Anchor with content'
-++++++inlineTextBox name='Anchor with content'
-++staticText name=' '
-++++inlineTextBox name=' '
-++link name='Anchor with ID' inPageLinkTargetId=anchor
-++++staticText name='Anchor with ID'
-++++++inlineTextBox name='Anchor with ID'
-++staticText name=' '
-++++inlineTextBox name=' '
-++link name='Empty span' inPageLinkTargetId=genericContainer
-++++staticText name='Empty span'
-++++++inlineTextBox name='Empty span'
-++staticText name=' '
-++++inlineTextBox name=' '
-++link name='Span with content' inPageLinkTargetId=genericContainer
-++++staticText name='Span with content'
-++++++inlineTextBox name='Span with content'
-++staticText name=' '
-++++inlineTextBox name=' '
-++link name='Paragraph with content' inPageLinkTargetId=paragraph
-++++staticText name='Paragraph with content'
-++++++inlineTextBox name='Paragraph with content'
-++paragraph
-++++anchor
-++++staticText name='After empty anchor'
-++++++inlineTextBox name='After empty anchor'
-++paragraph
-++++anchor name='Anchor with content'
+++genericContainer ignored
+++++link name='Empty anchor' inPageLinkTargetId=anchor
+++++++staticText name='Empty anchor'
+++++++++inlineTextBox name='Empty anchor'
+++++staticText name=' '
+++++++inlineTextBox name=' '
+++++link name='Anchor with content' inPageLinkTargetId=anchor
 ++++++staticText name='Anchor with content'
 ++++++++inlineTextBox name='Anchor with content'
-++paragraph
-++++anchor name='Anchor with ID'
+++++staticText name=' '
+++++++inlineTextBox name=' '
+++++link name='Anchor with ID' inPageLinkTargetId=anchor
 ++++++staticText name='Anchor with ID'
 ++++++++inlineTextBox name='Anchor with ID'
-++paragraph
-++++genericContainer
-++++staticText name='After empty span'
-++++++inlineTextBox name='After empty span'
-++paragraph
-++++genericContainer
+++++staticText name=' '
+++++++inlineTextBox name=' '
+++++link name='Empty span' inPageLinkTargetId=genericContainer
+++++++staticText name='Empty span'
+++++++++inlineTextBox name='Empty span'
+++++staticText name=' '
+++++++inlineTextBox name=' '
+++++link name='Span with content' inPageLinkTargetId=genericContainer
 ++++++staticText name='Span with content'
 ++++++++inlineTextBox name='Span with content'
-++paragraph
-++++staticText name='Paragraph with content'
-++++++inlineTextBox name='Paragraph with content'
+++++staticText name=' '
+++++++inlineTextBox name=' '
+++++link name='Paragraph with content' inPageLinkTargetId=paragraph
+++++++staticText name='Paragraph with content'
+++++++++inlineTextBox name='Paragraph with content'
+++++paragraph
+++++++anchor
+++++++staticText name='After empty anchor'
+++++++++inlineTextBox name='After empty anchor'
+++++paragraph
+++++++anchor name='Anchor with content'
+++++++++staticText name='Anchor with content'
+++++++++++inlineTextBox name='Anchor with content'
+++++paragraph
+++++++anchor name='Anchor with ID'
+++++++++staticText name='Anchor with ID'
+++++++++++inlineTextBox name='Anchor with ID'
+++++paragraph
+++++++genericContainer
+++++++staticText name='After empty span'
+++++++++inlineTextBox name='After empty span'
+++++paragraph
+++++++genericContainer
+++++++++staticText name='Span with content'
+++++++++++inlineTextBox name='Span with content'
+++++paragraph
+++++++staticText name='Paragraph with content'
+++++++++inlineTextBox name='Paragraph with content'

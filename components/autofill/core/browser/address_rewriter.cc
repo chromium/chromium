@@ -9,33 +9,69 @@
 
 #include "base/i18n/case_conversion.h"
 #include "base/memory/singleton.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/grit/autofill_address_rewriter_resources_map.h"
 #include "third_party/re2/src/re2/re2.h"
+#include "third_party/zlib/google/compression_utils.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace autofill {
 namespace {
 
-// Import in the internal rule table symbols. The data is defined in
-// components/autofill/core/browser/address_rewriter_rules.cc
-using internal::Rule;
-using internal::RegionInfo;
-using internal::kRuleTable;
-using internal::kRuleTableSize;
-
 // Aliases for the types used by the compiled rules cache.
-using CompiledRule = std::pair<std::unique_ptr<re2::RE2>, re2::StringPiece>;
+using CompiledRule = std::pair<std::unique_ptr<re2::RE2>, std::string>;
 using CompiledRuleVector = std::vector<CompiledRule>;
 using CompiledRuleCache = std::unordered_map<std::string, CompiledRuleVector>;
 
-// Helper function to find the rules associated with |region|. Note that this
-// requires that kRuleTable be sorted by region.
-static const RegionInfo* GetRegionInfo(const base::StringPiece& region) {
-  const RegionInfo* begin = kRuleTable;
-  const RegionInfo* end = kRuleTable + kRuleTableSize;
-  const RegionInfo* iter = std::lower_bound(begin, end, region);
-  if (iter != end && region == iter->region)
-    return iter;
-  return nullptr;
+// Helper function to convert region to mapping key string.
+std::string GetMapKey(const std::string& region) {
+  return base::StrCat({"IDR_ADDRESS_REWRITER_", region, "_RULES"});
+}
+
+// Helper function to extract region rules data into |out_data|.
+static bool ExtractRegionRulesData(const std::string& region,
+                                   std::string* out_data) {
+  int resource_id = 0;
+  std::string resource_key = GetMapKey(region);
+  for (size_t i = 0; i < kAutofillAddressRewriterResourcesSize; ++i) {
+    if (kAutofillAddressRewriterResources[i].name == resource_key) {
+      resource_id = kAutofillAddressRewriterResources[i].value;
+      break;
+    }
+  }
+
+  if (!resource_id)
+    return false;
+
+  // Gets and uncompresses resource data.
+  base::StringPiece raw_resource =
+      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(resource_id);
+  compression::GzipUncompress(raw_resource, out_data);
+
+  return true;
+}
+
+// Helper function to populate |compiled_rules| by parsing |data_string|.
+void CompileRulesFromData(const std::string& data_string,
+                          CompiledRuleVector* compiled_rules) {
+  base::StringPiece data = data_string;
+  re2::RE2::Options options;
+  options.set_utf8(true);
+  options.set_word_boundary(true);
+
+  size_t token_end = 0;
+  while (!data.empty()) {
+    token_end = data.find('\t');
+    re2::StringPiece pattern_re2(data.data(), token_end);
+    auto pattern = std::make_unique<re2::RE2>(pattern_re2, options);
+    data.remove_prefix(token_end + 1);
+
+    token_end = data.find('\n');
+    std::string rewrite_string = data.substr(0, token_end).as_string();
+    compiled_rules->emplace_back(std::move(pattern), std::move(rewrite_string));
+    data.remove_prefix(token_end + 1);
+  }
 }
 
 // The cache of compiled string replacement rules, keyed by region. This class
@@ -62,22 +98,26 @@ class Cache {
       return &cache_iter->second;
 
     // Cache miss. Look for the raw rules. If none, then return nullptr.
-    const RegionInfo* region_info = GetRegionInfo(region);
-    if (region_info == nullptr)
+    std::string region_rules;
+    bool region_found = ExtractRegionRulesData(region, &region_rules);
+
+    if (!region_found)
       return nullptr;
 
-    // Add a new rule vector the the cache and populate it with compiled rules.
-    re2::RE2::Options options;
-    options.set_utf8(true);
-    options.set_word_boundary(true);
+    // Add a new rule vector to the cache and populate it with compiled rules.
     CompiledRuleVector& compiled_rules = data_[region];
-    compiled_rules.reserve(region_info->num_rules);
-    for (size_t i = 0; i < region_info->num_rules; ++i) {
-      const Rule& rule = region_info->rules[i];
-      std::unique_ptr<re2::RE2> pattern(new re2::RE2(rule.pattern, options));
-      re2::StringPiece rewrite(rule.rewrite);
-      compiled_rules.emplace_back(std::move(pattern), std::move(rewrite));
-    }
+    CompileRulesFromData(region_rules, &compiled_rules);
+
+    // Return a pointer to the data.
+    return &compiled_rules;
+  }
+
+  // Uses a string of data to create and return a pointer to a
+  // CompiledRuleVector. Used for creating unit_tests.
+  const CompiledRuleVector* CreateRulesForData(const std::string& data) {
+    // Compiled rules vector must be kept in cache to be used elsewhere.
+    CompiledRuleVector& compiled_rules = data_[data];
+    CompileRulesFromData(data, &compiled_rules);
 
     // Return a pointer to the data.
     return &compiled_rules;
@@ -105,6 +145,15 @@ AddressRewriter AddressRewriter::ForCountryCode(
       base::UTF16ToUTF8(base::i18n::ToUpper(country_code));
   const CompiledRuleVector* rules =
       Cache::GetInstance()->GetRulesForRegion(region);
+  AddressRewriter rewriter;
+  rewriter.impl_ = rules;
+  return rewriter;
+}
+
+AddressRewriter AddressRewriter::ForCustomRules(
+    const std::string& custom_rules) {
+  const CompiledRuleVector* rules =
+      Cache::GetInstance()->CreateRulesForData(custom_rules);
   AddressRewriter rewriter;
   rewriter.impl_ = rules;
   return rewriter;

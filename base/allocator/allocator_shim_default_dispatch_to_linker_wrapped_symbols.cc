@@ -7,13 +7,6 @@
 #include "base/allocator/allocator_shim.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID) && __ANDROID_API__ < 17
-#include <dlfcn.h>
-// This is defined in malloc.h on other platforms. We just need the definition
-// for the decltype(malloc_usable_size)* call to work.
-size_t malloc_usable_size(const void*);
-#endif
-
 // This translation unit defines a default dispatch for the allocator shim which
 // routes allocations to the original libc functions when using the link-time
 // -Wl,-wrap,malloc approach (see README.md).
@@ -64,53 +57,20 @@ void RealFree(const AllocatorDispatch*, void* address, void* context) {
   __real_free(address);
 }
 
-#if defined(OS_ANDROID) && __ANDROID_API__ < 17
-size_t DummyMallocUsableSize(const void*) { return 0; }
-#endif
-
-size_t RealSizeEstimate(const AllocatorDispatch*,
-                        void* address,
-                        void* context) {
-#if defined(OS_ANDROID)
-#if __ANDROID_API__ < 17
-  // malloc_usable_size() is available only starting from API 17.
-  // TODO(dskiba): remove once we start building against 17+.
-  using MallocUsableSizeFunction = decltype(malloc_usable_size)*;
-  static MallocUsableSizeFunction usable_size_function = nullptr;
-  if (!usable_size_function) {
-    void* function_ptr = dlsym(RTLD_DEFAULT, "malloc_usable_size");
-    if (function_ptr) {
-      usable_size_function = reinterpret_cast<MallocUsableSizeFunction>(
-          function_ptr);
-    } else {
-      usable_size_function = &DummyMallocUsableSize;
-    }
-  }
-  return usable_size_function(address);
-#else
-  return malloc_usable_size(address);
-#endif
-#endif  // OS_ANDROID
-
-  // TODO(primiano): This should be redirected to malloc_usable_size or
-  //     the like.
-  return 0;
-}
-
 }  // namespace
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
-    &RealMalloc,       /* alloc_function */
-    &RealCalloc,       /* alloc_zero_initialized_function */
-    &RealMemalign,     /* alloc_aligned_function */
-    &RealRealloc,      /* realloc_function */
-    &RealFree,         /* free_function */
-    &RealSizeEstimate, /* get_size_estimate_function */
-    nullptr,           /* batch_malloc_function */
-    nullptr,           /* batch_free_function */
-    nullptr,           /* free_definite_size_function */
-    nullptr,           /* aligned_malloc_function */
-    nullptr,           /* aligned_realloc_function */
-    nullptr,           /* aligned_free_function */
-    nullptr,           /* next */
+    &RealMalloc,   /* alloc_function */
+    &RealCalloc,   /* alloc_zero_initialized_function */
+    &RealMemalign, /* alloc_aligned_function */
+    &RealRealloc,  /* realloc_function */
+    &RealFree,     /* free_function */
+    nullptr,       /* get_size_estimate_function */
+    nullptr,       /* batch_malloc_function */
+    nullptr,       /* batch_free_function */
+    nullptr,       /* free_definite_size_function */
+    nullptr,       /* aligned_malloc_function */
+    nullptr,       /* aligned_realloc_function */
+    nullptr,       /* aligned_free_function */
+    nullptr,       /* next */
 };

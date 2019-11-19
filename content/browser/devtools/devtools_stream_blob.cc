@@ -15,8 +15,8 @@
 #include "net/base/io_buffer.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/blob_reader.h"
+#include "storage/browser/blob/blob_storage_constants.h"
 #include "storage/browser/blob/blob_storage_context.h"
-#include "storage/common/blob_storage/blob_storage_constants.h"
 
 namespace content {
 
@@ -31,7 +31,7 @@ DevToolsStreamBlob::ReadRequest::~ReadRequest() = default;
 
 DevToolsStreamBlob::DevToolsStreamBlob()
     : DevToolsIOContext::Stream(
-          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})),
+          base::CreateSingleThreadTaskRunner({BrowserThread::IO})),
       last_read_pos_(0),
       failed_(false),
       is_binary_(false) {}
@@ -66,19 +66,18 @@ scoped_refptr<DevToolsIOContext::Stream> DevToolsStreamBlob::Create(
 }
 
 void DevToolsStreamBlob::ReadRequest::Fail() {
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(std::move(callback), nullptr, false,
-                                          Stream::StatusFailure));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(callback), nullptr, false,
+                                Stream::StatusFailure));
 }
 
 void DevToolsStreamBlob::Open(scoped_refptr<ChromeBlobStorageContext> context,
                               StoragePartition* partition,
                               const std::string& handle,
                               OpenCallback callback) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&DevToolsStreamBlob::OpenOnIO, this, context, handle,
-                     std::move(callback)));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&DevToolsStreamBlob::OpenOnIO, this, context,
+                                handle, std::move(callback)));
 }
 
 void DevToolsStreamBlob::Read(off_t position,
@@ -86,7 +85,7 @@ void DevToolsStreamBlob::Read(off_t position,
                               ReadCallback callback) {
   std::unique_ptr<ReadRequest> request(
       new ReadRequest(position, max_size, std::move(callback)));
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&DevToolsStreamBlob::ReadOnIO, this, std::move(request)));
 }
@@ -118,8 +117,8 @@ void DevToolsStreamBlob::OnBlobConstructionComplete(
     FailOnIO(std::move(open_callback_));
     return;
   }
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(std::move(open_callback_), true));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(open_callback_), true));
   if (!pending_reads_.empty())
     StartReadRequest();
 }
@@ -144,8 +143,8 @@ void DevToolsStreamBlob::FailOnIO() {
 }
 
 void DevToolsStreamBlob::FailOnIO(OpenCallback callback) {
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(std::move(callback), false));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(callback), false));
   FailOnIO();
 }
 
@@ -181,7 +180,7 @@ void DevToolsStreamBlob::BeginRead() {
     bytes_read = blob_reader_->net_error();
     DCHECK_LT(0, bytes_read);
   }
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&DevToolsStreamBlob::OnReadComplete, this, bytes_read));
 }
@@ -210,10 +209,9 @@ void DevToolsStreamBlob::OnReadComplete(int bytes_read) {
       *data = std::string(io_buf_->data(), bytes_read);
     }
   }
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(std::move(request->callback), std::move(data),
-                     base64_encoded, status));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(std::move(request->callback), std::move(data),
+                                base64_encoded, status));
   if (!pending_reads_.empty())
     StartReadRequest();
 }

@@ -449,13 +449,16 @@ void FloatingObjects::SetCachedLowestFloatLogicalBottom(
   lowest_float_bottom_cache_[float_index].dirty = false;
 }
 
-FloatingObject* FloatingObjects::LowestFloatingObject() const {
+FloatingObject* FloatingObjects::LowestFloatingObject() {
   bool is_in_horizontal_writing_mode = horizontal_writing_mode_;
+
+  // If we haven't yet found our lowest float, calculate it now:
   if (!HasLowestFloatLogicalBottomCached(is_in_horizontal_writing_mode,
                                          FloatingObject::kFloatLeft) &&
       !HasLowestFloatLogicalBottomCached(is_in_horizontal_writing_mode,
                                          FloatingObject::kFloatRight))
-    return nullptr;
+    LowestFloatLogicalBottom(FloatingObject::kFloatLeftRight);
+
   FloatingObject* lowest_left_object =
       lowest_float_bottom_cache_[0].floating_object;
   FloatingObject* lowest_right_object =

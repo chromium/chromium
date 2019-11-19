@@ -1,0 +1,14 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media_router.mojom;
+
+import "chrome/common/media_router/mojom/media_router.mojom";
+
+// All functions on this interface echo their arguments to test StructTraits
+// serialization and deserialization.
+interface MediaRouterTraitsTestService {
+  [Sync]
+  EchoMediaSink(MediaSink s) => (MediaSink sink);
+};

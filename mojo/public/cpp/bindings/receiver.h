@@ -5,6 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_RECEIVER_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_RECEIVER_H_
 
+#include <memory>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -12,11 +13,12 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
+#include "mojo/public/cpp/bindings/connection_error_callback.h"
+#include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/lib/binding_state.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/raw_ptr_impl_ref_traits.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace mojo {
@@ -25,8 +27,8 @@ namespace mojo {
 // implementation of Interface. Every Receiver object is permanently linked to
 // an implementation of Interface at construction time. The Receiver begins
 // receiving and scheduling method calls to the implementation once it becomes
-// bound by consuming a PendingReceiver, either at construction time or by
-// calling |Bind()|.
+// bound either by consuming a PendingReceiver (at construction time or via
+// |Bind()|) or by calling |BindNewPipeAndPassRemote()|.
 //
 // Receiver is NOT thread- or sequence- safe and must be used from a single
 // (but otherwise arbitrary) sequence. All bound Receiver objects are associated
@@ -49,8 +51,8 @@ class Receiver {
 
   // Constructs an unbound Receiver linked to |impl| for the duration of the
   // Receive's lifetime. The Receiver can be bound later by calling |Bind()| or
-  // |BindNewRemote()|. An unbound Receiver does not schedule any asynchronous
-  // tasks.
+  // |BindNewPipeAndPassRemote()|. An unbound Receiver does not schedule any
+  // asynchronous tasks.
   explicit Receiver(ImplPointerType impl) : internal_state_(std::move(impl)) {}
 
   // Constructs a bound Receiver by consuming |pending_receiver|. The Receiver
@@ -91,10 +93,25 @@ class Receiver {
     internal_state_.set_connection_error_handler(std::move(handler));
   }
 
+  // Like above but if this callback is set instead of the above, it can receive
+  // additional details about why the remote endpoint was closed, if provided.
+  void set_disconnect_with_reason_handler(
+      ConnectionErrorWithReasonCallback error_handler) {
+    DCHECK(is_bound());
+    internal_state_.set_connection_error_with_reason_handler(
+        std::move(error_handler));
+  }
+
   // Resets this Receiver to an unbound state. An unbound Receiver will NEVER
   // schedule method calls or disconnection notifications, and any pending tasks
   // which were scheduled prior to unbinding are effectively cancelled.
   void reset() { internal_state_.Close(); }
+
+  // Similar to the method above, but also specifies a disconnect reason.
+  void ResetWithReason(uint32_t custom_reason_code,
+                       const std::string& description) {
+    internal_state_.CloseWithReason(custom_reason_code, description);
+  }
 
   // Binds this Receiver, connecting it to a new PendingRemote which is
   // returned for transmission elsewhere (typically to a Remote who will consume
@@ -104,19 +121,19 @@ class Receiver {
   // notifications on the default SequencedTaskRunner (i.e.
   // base::SequencedTaskRunnerHandle::Get() at the time of this call). Must only
   // be called on an unbound Receiver.
-  PendingRemote<Interface> BindNewRemote() WARN_UNUSED_RESULT {
-    return BindNewRemote(nullptr);
+  PendingRemote<Interface> BindNewPipeAndPassRemote() WARN_UNUSED_RESULT {
+    return BindNewPipeAndPassRemote(nullptr);
   }
 
   // Like above, but the Receiver will schedule incoming |impl| method calls and
   // disconnection notifications on |task_runner| rather than on the default
   // SequencedTaskRunner. Must only be called on an unbound Receiver.
   // |task_runner| must run tasks on the same sequence that owns this Receiver.
-  PendingRemote<Interface> BindNewRemote(
+  PendingRemote<Interface> BindNewPipeAndPassRemote(
       scoped_refptr<base::SequencedTaskRunner> task_runner) WARN_UNUSED_RESULT {
     DCHECK(!is_bound()) << "Receiver is already bound";
     PendingRemote<Interface> remote;
-    Bind(remote.MakeReceiver(), std::move(task_runner));
+    Bind(remote.InitWithNewPipeAndPassReceiver(), std::move(task_runner));
     return remote;
   }
 
@@ -127,7 +144,6 @@ class Receiver {
   // disconnection notifications on the default SequencedTaskRunner (i.e.
   // base::SequencedTaskRunnerHandle::Get() at the time of this call).
   void Bind(PendingReceiver<Interface> pending_receiver) {
-    DCHECK(pending_receiver.is_valid());
     Bind(std::move(pending_receiver), nullptr);
   }
 
@@ -138,7 +154,12 @@ class Receiver {
   // Receiver.
   void Bind(PendingReceiver<Interface> pending_receiver,
             scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    internal_state_.Bind(pending_receiver.TakePipe(), std::move(task_runner));
+    if (pending_receiver) {
+      internal_state_.Bind(pending_receiver.internal_state(),
+                           std::move(task_runner));
+    } else {
+      reset();
+    }
   }
 
   // Unbinds this Receiver, preventing any further |impl| method calls or
@@ -155,10 +176,70 @@ class Receiver {
   // response callbacks that haven't been invoked, as once the Receiver is
   // unbound those response callbacks are no longer valid and the Remote will
   // never be able to receive its expected responses.
-  PendingReceiver<Interface> Unbind() {
+  PendingReceiver<Interface> Unbind() WARN_UNUSED_RESULT {
     CHECK(!internal_state_.HasAssociatedInterfaces());
     return PendingReceiver<Interface>(
         internal_state_.Unbind().PassMessagePipe());
+  }
+
+  // Sets the message filter to be notified of each incoming message before
+  // dispatch. If a filter returns |false| from Accept(), the message is not
+  // dispatched and the pipe is closed. Filters cannot be removed once added
+  // and only one can be set.
+  void SetFilter(std::unique_ptr<MessageFilter> filter) {
+    DCHECK(is_bound());
+    internal_state_.SetFilter(std::move(filter));
+  }
+
+  // Pause and resume message dispatch.
+  void Pause() {
+    CHECK(!internal_state_.HasAssociatedInterfaces());
+    internal_state_.PauseIncomingMethodCallProcessing();
+  }
+
+  void Resume() { internal_state_.ResumeIncomingMethodCallProcessing(); }
+
+  // Blocks the calling thread until a new message arrives and is dispatched
+  // to the bound implementation.
+  bool WaitForIncomingCall() {
+    return internal_state_.WaitForIncomingMethodCall(MOJO_DEADLINE_INDEFINITE);
+  }
+
+  // Flushes any replies previously sent by the Receiver, only unblocking once
+  // acknowledgement from the Remote is received.
+  void FlushForTesting() { internal_state_.FlushForTesting(); }
+
+  // Exposed for testing, should not generally be used.
+  void EnableTestingMode() { internal_state_.EnableTestingMode(); }
+
+  // Allows test code to swap the interface implementation.
+  ImplPointerType SwapImplForTesting(ImplPointerType new_impl) {
+    return internal_state_.SwapImplForTesting(new_impl);
+  }
+
+  // Reports the currently dispatching message as bad and resets this receiver.
+  // Note that this is only legal to call from within the stack frame of a
+  // message dispatch. If you need to do asynchronous work before determining
+  // the legitimacy of a message, use GetBadMessageCallback() and retain its
+  // result until ready to invoke or discard it.
+  void ReportBadMessage(const std::string& error) {
+    GetBadMessageCallback().Run(error);
+  }
+
+  // Acquires a callback which may be run to report the currently dispatching
+  // message as bad and reset this receiver. Note that this is only legal to
+  // call from directly within stack frame of a message dispatch, but the
+  // returned callback may be called exactly once any time thereafter to report
+  // the message as bad. |GetBadMessageCallback()| may only be called once per
+  // message, and the returned callback must be run on the same sequence to
+  // which this Receiver is bound.
+  ReportBadMessageCallback GetBadMessageCallback() {
+    return internal_state_.GetBadMessageCallback();
+  }
+
+  // DO NOT USE. Exposed only for internal use and for testing.
+  internal::BindingState<Interface, ImplRefTraits>* internal_state() {
+    return &internal_state_;
   }
 
  private:

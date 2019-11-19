@@ -1,21 +1,20 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <p id="fontFamily" style="font-family: serif">Font family.</p>
 <p id="fontSize" style="font-size: 200%">Font size.</p>
 
 <script>
-  test_after_layout_and_paint(() => {
+  test(() => {
     let fontFamily = document.getElementById('fontFamily');
     let axFontFamily = accessibilityController.accessibleElementById('fontFamily');
-    assert_equals(axFontFamily.fontFamily, 'AXFontFamily: -webkit-serif');
+    let initialFamily = axFontFamily.fontFamily;
     fontFamily.style.fontFamily = 'sans-serif';
-    assert_equals(axFontFamily.fontFamily, 'AXFontFamily: -webkit-sans-serif');
+    assert_not_equals(axFontFamily.fontFamily, initialFamily);
   }, 'Ensures that the font family can be dynamically changed.');
 
-  test_after_layout_and_paint(() => {
+  test(() => {
     let fontSize = document.getElementById('fontSize');
     let axFontSize = accessibilityController.accessibleElementById('fontSize');
     assert_equals(axFontSize.fontSize, 32);

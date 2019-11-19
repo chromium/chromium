@@ -9,6 +9,9 @@
 
 syntax = "proto2";
 
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
 option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
@@ -18,25 +21,27 @@ message AppListSpecifics {
   // Unique identifier for the item:
   // * TYPE_FOLDER: Folder id (generated)
   // * TYPE_APP: App Id
-  // * TYPE_URL: Url
   optional string item_id = 1;
 
   // What type of item this is.
   enum AppListItemType {
-    // An extension app.
+    // An app, whether a web app, Android app, etc.
+    //
+    // For bookmark apps (URL shortcuts), additional information such as their
+    // URLs are kept in the AppSpecifics.bookmark_app_foobar fields.
     TYPE_APP = 1;
     // A request to remove any matching default installed apps.
     TYPE_REMOVE_DEFAULT_APP = 2;
     // A folder containing entries whose |parent_id| matches |item_id|.
     TYPE_FOLDER = 3;
-    // A URL shortcut (functionally equivalent to a bookmark).
-    TYPE_URL = 4;
+    // Obsolete type, intended for URL shortcuts, that was never implemented.
+    TYPE_OBSOLETE_URL = 4;
     // A "page break" item (Indicate creation of a new page in app list).
     TYPE_PAGE_BREAK = 5;
   }
   optional AppListItemType item_type = 2;
 
-  // Item name (FOLDER or URL).
+  // Item name (FOLDER).
   optional string item_name = 3;
 
   // Id of the parent (folder) item.

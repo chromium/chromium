@@ -37,9 +37,7 @@ RegisterAppTask::RegisterAppTask(SyncEngineContext* sync_context,
                                  const std::string& app_id)
     : sync_context_(sync_context),
       create_folder_retry_count_(0),
-      app_id_(app_id),
-      weak_ptr_factory_(this) {
-}
+      app_id_(app_id) {}
 
 RegisterAppTask::~RegisterAppTask() {
 }

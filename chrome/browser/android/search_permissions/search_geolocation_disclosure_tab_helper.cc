@@ -11,6 +11,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "chrome/android/chrome_jni_headers/GeolocationHeader_jni.h"
+#include "chrome/android/chrome_jni_headers/SearchGeolocationDisclosureTabHelper_jni.h"
 #include "chrome/browser/android/search_permissions/search_geolocation_disclosure_infobar_delegate.h"
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -30,9 +32,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/web_contents.h"
-#include "jni/GeolocationHeader_jni.h"
-#include "jni/SearchGeolocationDisclosureTabHelper_jni.h"
-#include "third_party/blink/public/platform/modules/permissions/permission_status.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/origin.h"
 
 namespace {
@@ -145,7 +145,7 @@ void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForValidUrl(
 
   // Only show disclosure if the DSE geolocation setting is on.
   if (PermissionManager::Get(GetProfile())
-          ->GetPermissionStatus(CONTENT_SETTINGS_TYPE_GEOLOCATION, gurl, gurl)
+          ->GetPermissionStatus(ContentSettingsType::GEOLOCATION, gurl, gurl)
           .content_setting != CONTENT_SETTING_ALLOW) {
     return;
   }
@@ -160,6 +160,10 @@ void SearchGeolocationDisclosureTabHelper::MaybeShowDisclosureForValidUrl(
       TemplateURLServiceFactory::GetForProfile(GetProfile());
   const TemplateURL* template_url =
       template_url_service->GetDefaultSearchProvider();
+  // ShouldShowDisclosureForNavigation() checked explicitly that the default
+  // search |template_url| was non-null, and ShouldShowDisclosureForAPIAccess()
+  // would have also seen an empty DSE origin if it were.
+  DCHECK(template_url);
   base::string16 search_engine_name = template_url->short_name();
   SearchGeolocationDisclosureInfoBarDelegate::Create(web_contents(), gurl,
                                                      search_engine_name);
@@ -182,7 +186,7 @@ bool SearchGeolocationDisclosureTabHelper::ShouldShowDisclosureForAPIAccess(
   if (gIgnoreUrlChecksForTesting)
     return true;
 
-  return service->IsPermissionControlledByDSE(CONTENT_SETTINGS_TYPE_GEOLOCATION,
+  return service->IsPermissionControlledByDSE(ContentSettingsType::GEOLOCATION,
                                               url::Origin::Create(gurl));
 }
 
@@ -202,8 +206,7 @@ bool SearchGeolocationDisclosureTabHelper::ShouldShowDisclosureForNavigation(
   const TemplateURL* template_url =
       template_url_service->GetDefaultSearchProvider();
   return template_url &&
-         template_url->HasGoogleBaseURLs(
-             UIThreadSearchTermsData(GetProfile())) &&
+         template_url->HasGoogleBaseURLs(UIThreadSearchTermsData()) &&
          template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
              gurl);
 }
@@ -215,7 +218,7 @@ void SearchGeolocationDisclosureTabHelper::RecordPreDisclosureMetrics(
           prefs::kSearchGeolocationPreDisclosureMetricsRecorded)) {
     ContentSetting status =
         HostContentSettingsMapFactory::GetForProfile(GetProfile())
-            ->GetContentSetting(gurl, gurl, CONTENT_SETTINGS_TYPE_GEOLOCATION,
+            ->GetContentSetting(gurl, gurl, ContentSettingsType::GEOLOCATION,
                                 std::string());
 
     UMA_HISTOGRAM_BOOLEAN("GeolocationDisclosure.PreDisclosureDSESetting",
@@ -233,7 +236,7 @@ void SearchGeolocationDisclosureTabHelper::RecordPostDisclosureMetrics(
           prefs::kSearchGeolocationPostDisclosureMetricsRecorded)) {
     ContentSetting status =
         HostContentSettingsMapFactory::GetForProfile(GetProfile())
-            ->GetContentSetting(gurl, gurl, CONTENT_SETTINGS_TYPE_GEOLOCATION,
+            ->GetContentSetting(gurl, gurl, ContentSettingsType::GEOLOCATION,
                                 std::string());
 
     UMA_HISTOGRAM_BOOLEAN("GeolocationDisclosure.PostDisclosureDSESetting",

@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/macros.h"
-#include "base/test/scoped_task_environment.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "mojo/public/interfaces/bindings/tests/ping_service.mojom-test-utils.h"
@@ -20,15 +21,15 @@ class TestHelperTest : public testing::Test {
   ~TestHelperTest() override = default;
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(TestHelperTest);
 };
 
 class PingImpl : public test::PingService {
  public:
-  explicit PingImpl(test::PingServiceRequest request)
-      : binding_(this, std::move(request)) {}
+  explicit PingImpl(PendingReceiver<test::PingService> receiver)
+      : receiver_(this, std::move(receiver)) {}
   ~PingImpl() override = default;
 
   bool pinged() const { return pinged_; }
@@ -41,15 +42,15 @@ class PingImpl : public test::PingService {
 
  private:
   bool pinged_ = false;
-  Binding<test::PingService> binding_;
+  Receiver<test::PingService> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(PingImpl);
 };
 
 class EchoImpl : public test::EchoService {
  public:
-  explicit EchoImpl(test::EchoServiceRequest request)
-      : binding_(this, std::move(request)) {}
+  explicit EchoImpl(PendingReceiver<test::EchoService> receiver)
+      : receiver_(this, std::move(receiver)) {}
   ~EchoImpl() override = default;
 
   // test::EchoService:
@@ -58,15 +59,15 @@ class EchoImpl : public test::EchoService {
   }
 
  private:
-  Binding<test::EchoService> binding_;
+  Receiver<test::EchoService> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(EchoImpl);
 };
 
 class TrampolineImpl : public test::HandleTrampoline {
  public:
-  explicit TrampolineImpl(test::HandleTrampolineRequest request)
-      : binding_(this, std::move(request)) {}
+  explicit TrampolineImpl(PendingReceiver<test::HandleTrampoline> receiver)
+      : receiver_(this, std::move(receiver)) {}
   ~TrampolineImpl() override = default;
 
   // test::HandleTrampoline:
@@ -82,22 +83,22 @@ class TrampolineImpl : public test::HandleTrampoline {
   }
 
  private:
-  Binding<test::HandleTrampoline> binding_;
+  Receiver<test::HandleTrampoline> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(TrampolineImpl);
 };
 
 TEST_F(TestHelperTest, AsyncWaiter) {
-  test::PingServicePtr ping;
-  PingImpl ping_impl(MakeRequest(&ping));
+  Remote<test::PingService> ping;
+  PingImpl ping_impl(ping.BindNewPipeAndPassReceiver());
 
   test::PingServiceAsyncWaiter wait_for_ping(ping.get());
   EXPECT_FALSE(ping_impl.pinged());
   wait_for_ping.Ping();
   EXPECT_TRUE(ping_impl.pinged());
 
-  test::EchoServicePtr echo;
-  EchoImpl echo_impl(MakeRequest(&echo));
+  Remote<test::EchoService> echo;
+  EchoImpl echo_impl(echo.BindNewPipeAndPassReceiver());
 
   test::EchoServiceAsyncWaiter wait_for_echo(echo.get());
   const std::string kTestString = "a machine that goes 'ping'";
@@ -105,8 +106,8 @@ TEST_F(TestHelperTest, AsyncWaiter) {
   wait_for_echo.Echo(kTestString, &response);
   EXPECT_EQ(kTestString, response);
 
-  test::HandleTrampolinePtr trampoline;
-  TrampolineImpl trampoline_impl(MakeRequest(&trampoline));
+  Remote<test::HandleTrampoline> trampoline;
+  TrampolineImpl trampoline_impl(trampoline.BindNewPipeAndPassReceiver());
 
   test::HandleTrampolineAsyncWaiter wait_for_trampoline(trampoline.get());
   MessagePipe pipe;

@@ -18,6 +18,8 @@ Polymer({
   behaviors: [PrefControlBehavior],
 
   properties: {
+    groupAriaLabel: String,
+
     selected: String,
   },
 

@@ -15,15 +15,17 @@ namespace views {
 class ViewsDelegate;
 }
 
-#if defined(USE_AURA)
 namespace ui_devtools {
 class UiDevToolsServer;
 }
+
+#if defined(USE_AURA)
 namespace wm {
 class WMState;
 }
 #endif
 
+class DevtoolsProcessObserver;
 class RelaunchNotificationController;
 
 class ChromeBrowserMainExtraPartsViews : public ChromeBrowserMainExtraParts {
@@ -42,10 +44,11 @@ class ChromeBrowserMainExtraPartsViews : public ChromeBrowserMainExtraParts {
   std::unique_ptr<views::ViewsDelegate> views_delegate_;
   std::unique_ptr<views::LayoutProvider> layout_provider_;
 
-#if defined(USE_AURA)
   // Only used when running in --enable-ui-devtools.
   std::unique_ptr<ui_devtools::UiDevToolsServer> devtools_server_;
+  std::unique_ptr<DevtoolsProcessObserver> devtools_process_observer_;
 
+#if defined(USE_AURA)
   std::unique_ptr<wm::WMState> wm_state_;
 #endif
 

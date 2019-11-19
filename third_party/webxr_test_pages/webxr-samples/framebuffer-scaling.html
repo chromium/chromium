@@ -35,6 +35,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
     <!--The polyfill is not needed for browser that have native API support,
         but is linked by these samples for wider compatibility.-->
+    <script src='js/xrray-polyfill.js' type='module'></script>
     <script src='js/webxr-polyfill.js'></script>
 
     <script src='js/webxr-button.js'></script>
@@ -50,8 +51,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           buffer sizes)
 
           Framebuffer scaling should be used to make a performance/memory/quality
-          tradeoff for the lifetime of the session. 
-          <a class="back" href="./">Back</a>
+          tradeoff for the lifetime of the session.
+          <a class="back" href="./index.html">Back</a>
           <br/>
           <hr/>
           <input id='framebufferScaleSelect' value='1.0' min='0.25' max='2.0' step='0.125' type='range'/><br/>
@@ -60,7 +61,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       </details>
     </header>
     <main style='text-align: center;'>
-      <p>Click 'Enter XR' to see content</p> 
+      <p>Click 'Enter XR' to see content</p>
     </main>
     <script type="module">
       import {Scene} from './js/cottontail/src/scenes/scene.js';
@@ -106,22 +107,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       function initXR() {
         xrButton = new XRDeviceButton({
           onRequestSession: onRequestSession,
-          onEndSession: onEndSession
+          onEndSession: onEndSession,
+          supportedSessionTypes: ['immersive-vr']
         });
         document.querySelector('header').appendChild(xrButton.domElement);
-
-        if (navigator.xr) {
-          navigator.xr.supportsSessionMode('immersive-vr').then(() => {
-            xrButton.enabled = true;
-          });
-        }
       }
 
       function onRequestSession() {
-        navigator.xr.requestSession({ mode: 'immersive-vr' }).then(onSessionStarted);
+        navigator.xr.requestSession('immersive-vr').then(onSessionStarted);
       }
 
       function onSessionStarted(session) {
+        session.mode = 'immersive-vr';
         xrButton.setSession(session);
 
         session.addEventListener('end', onSessionEnded);
@@ -140,9 +137,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           scene.inputRenderer.setControllerMesh(new Gltf2Node({url: '../media/gltf/controller/controller.gltf'}));
         }
 
-        let outputCanvas = document.createElement('canvas');
-        document.body.appendChild(outputCanvas);
-
         // This is the only meaningful change in this sample from xr-presentation.js.
         // It sets a requested scale to be applied to the framebuffer created
         // for the layer. The UA is allowed to ignore the request or adjust it
@@ -153,11 +147,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         session.updateRenderState({
             baseLayer: new XRWebGLLayer(session, gl, {
               framebufferScaleFactor: scale
-            }),
-            outputContext: outputCanvas.getContext('xrpresent')
+            })
         });
 
-        session.requestReferenceSpace({ type: 'stationary', subtype: 'eye-level' }).then((refSpace) => {
+        session.requestReferenceSpace('local').then((refSpace) => {
           xrRefSpace = refSpace;
 
           session.requestAnimationFrame(onXRFrame);
@@ -170,11 +163,6 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
       function onSessionEnded(event) {
         xrButton.setSession(null);
-
-        if (event.session.renderState.outputContext) {
-          document.body.removeChild(event.session.renderState.outputContext.canvas);
-        }
-
         gl = null;
       }
 

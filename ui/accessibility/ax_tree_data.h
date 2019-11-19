@@ -15,6 +15,7 @@
 #include "base/strings/string_split.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree_id_registry.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -46,28 +47,28 @@ struct AX_EXPORT AXTreeData {
   // Attributes specific to trees that are web frames.
   std::string doctype;
   bool loaded = false;
-  float loading_progress = 0.0;
+  float loading_progress = 0.0f;
   std::string mimetype;
   std::string title;
   std::string url;
 
-  // The node with keyboard focus within this tree, if any, or -1 if no node
-  // in this tree has focus.
-  int32_t focus_id = -1;
+  // The node with keyboard focus within this tree, if any, or
+  // AXNode::kInvalidAXID if no node in this tree has focus.
+  AXNode::AXID focus_id = AXNode::kInvalidAXID;
 
   // The current text selection within this tree, if any, expressed as the
   // node ID and character offset of the anchor (selection start) and focus
   // (selection end). If the offset could correspond to a position on two
   // different lines, sel_upstream_affinity means the cursor is on the first
   // line, otherwise it's on the second line.
-  int32_t sel_anchor_object_id = -1;
+  // Most use cases will want to use ui::OwnerTree::GetUnignoredSelection.
+  bool sel_is_backward = false;
+  AXNode::AXID sel_anchor_object_id = AXNode::kInvalidAXID;
   int32_t sel_anchor_offset = -1;
-  ax::mojom::TextAffinity sel_anchor_affinity =
-      ax::mojom::TextAffinity::kUpstream;
-  int32_t sel_focus_object_id = -1;
+  ax::mojom::TextAffinity sel_anchor_affinity;
+  AXNode::AXID sel_focus_object_id = AXNode::kInvalidAXID;
   int32_t sel_focus_offset = -1;
-  ax::mojom::TextAffinity sel_focus_affinity =
-      ax::mojom::TextAffinity::kDownstream;
+  ax::mojom::TextAffinity sel_focus_affinity;
 };
 
 AX_EXPORT bool operator==(const AXTreeData& lhs, const AXTreeData& rhs);

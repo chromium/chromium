@@ -5,8 +5,10 @@
 #include "components/dom_distiller/core/url_utils.h"
 
 #include "components/dom_distiller/core/url_constants.h"
+#include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/url_util.h"
 
 namespace dom_distiller {
 
@@ -15,9 +17,12 @@ namespace url_utils {
 TEST(DomDistillerUrlUtilsTest, TestPathUtil) {
   const std::string single_key = "mypath?foo=bar";
   EXPECT_EQ("bar", GetValueForKeyInUrlPathQuery(single_key, "foo"));
+
   const std::string two_keys = "mypath?key1=foo&key2=bar";
   EXPECT_EQ("foo", GetValueForKeyInUrlPathQuery(two_keys, "key1"));
   EXPECT_EQ("bar", GetValueForKeyInUrlPathQuery(two_keys, "key2"));
+
+  // First occurrence wins.
   const std::string multiple_same_key = "mypath?key=foo&key=bar";
   EXPECT_EQ("foo", GetValueForKeyInUrlPathQuery(multiple_same_key, "key"));
 }
@@ -41,13 +46,41 @@ TEST(DomDistillerUrlUtilsTest, TestGetValueForKeyInUrlPathQuery) {
   EXPECT_EQ("foo", GetValueForKeyInUrlPathQuery(valid_url_two_keys, "key"));
 }
 
-std::string ThroughDistiller(const std::string& url) {
-  return GetOriginalUrlFromDistillerUrl(
-      GetDistillerViewUrlFromUrl(kDomDistillerScheme, GURL(url), 123)).spec();
+void AssertEqualExceptHost(const GURL& a, const GURL& b) {
+  url::Replacements<char> no_host;
+  no_host.ClearHost();
+  EXPECT_EQ(a.ReplaceComponents(no_host), b.ReplaceComponents(no_host));
+}
+
+TEST(DomDistillerUrlUtilsTest, TestGetDistillerViewUrlFromUrl) {
+  AssertEqualExceptHost(
+      GURL("chrome-distiller://any/"
+           "?time=123&url=http%3A%2F%2Fexample.com%2Fpath%3Fq%3Dabc%26p%3D1%"
+           "23anchor"),
+      GetDistillerViewUrlFromUrl(
+          kDomDistillerScheme, GURL("http://example.com/path?q=abc&p=1#anchor"),
+          123));
 }
 
 std::string GetOriginalUrlFromDistillerUrl(const std::string& url) {
   return GetOriginalUrlFromDistillerUrl(GURL(url)).spec();
+}
+
+TEST(DomDistillerUrlUtilsTest, TestGetOriginalUrlFromDistillerUrl) {
+  EXPECT_EQ(
+      "http://example.com/path?q=abc&p=1#anchor",
+      GetOriginalUrlFromDistillerUrl(
+          "chrome-distiller://"
+          "any_"
+          "d091ebf8f841eae9ca23822c3d0f369c16d3748478d0b74111be176eb96722e5/"
+          "?time=123&url=http%3A%2F%2Fexample.com%2Fpath%3Fq%3Dabc%26p%3D1%"
+          "23anchor"));
+}
+
+std::string ThroughDistiller(const std::string& url) {
+  return GetOriginalUrlFromDistillerUrl(
+             GetDistillerViewUrlFromUrl(kDomDistillerScheme, GURL(url), 123))
+      .spec();
 }
 
 TEST(DomDistillerUrlUtilsTest, TestDistillerEndToEnd) {
@@ -64,8 +97,24 @@ TEST(DomDistillerUrlUtilsTest, TestDistillerEndToEnd) {
 
   // Tests a url with file:// scheme.
   const std::string url_file = "file:///home/userid/path/index.html";
-  EXPECT_EQ(url_file, ThroughDistiller(url_file));
+  EXPECT_EQ("", ThroughDistiller(url_file));
   EXPECT_EQ(url_file, GetOriginalUrlFromDistillerUrl(url_file));
+
+  // Tests a nested url.
+  const std::string nested_url =
+      GetDistillerViewUrlFromUrl(kDomDistillerScheme, GURL(url)).spec();
+  EXPECT_EQ("", ThroughDistiller(nested_url));
+  EXPECT_EQ(url, GetOriginalUrlFromDistillerUrl(nested_url));
+}
+
+TEST(DomDistillerUrlUtilsTest, TestRejectInvalidURLs) {
+  const std::string url = "http://example.com/";
+  const std::string url2 = "http://example.org/";
+  const GURL view_url =
+      GetDistillerViewUrlFromUrl(kDomDistillerScheme, GURL(url), 123);
+  GURL bad_view_url =
+      net::AppendOrReplaceQueryParameter(view_url, kUrlKey, url2);
+  EXPECT_EQ(GURL(), GetOriginalUrlFromDistillerUrl(bad_view_url));
 }
 }  // namespace url_utils
 

@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/memory/shared_memory.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/single_thread_task_runner.h"
 #include "extensions/renderer/api/display_source/wifi_display/wifi_display_media_encoder.h"
 #include "media/base/video_frame.h"
@@ -35,7 +35,7 @@ class WiFiDisplayVideoEncoder : public WiFiDisplayMediaEncoder {
       base::Callback<void(const ReceiveVideoEncodeAcceleratorCallback&)>;
 
   using ReceiveEncodeMemoryCallback =
-      base::Callback<void(std::unique_ptr<base::SharedMemory>)>;
+      base::Callback<void(base::UnsafeSharedMemoryRegion)>;
   using CreateEncodeMemoryCallback =
       base::Callback<void(size_t size, const ReceiveEncodeMemoryCallback&)>;
 
@@ -72,7 +72,7 @@ class WiFiDisplayVideoEncoder : public WiFiDisplayMediaEncoder {
   // Encodes the given raw frame. The resulting encoded frame is passed
   // as an |encoded_callback|'s argument which is set via 'SetCallbacks'
   // method.
-  void InsertRawVideoFrame(const scoped_refptr<media::VideoFrame>& video_frame,
+  void InsertRawVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
                            base::TimeTicks reference_time);
 
   // Requests the next encoded frame to be an instantaneous decoding refresh

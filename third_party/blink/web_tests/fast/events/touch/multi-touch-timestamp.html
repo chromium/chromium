@@ -1,0 +1,63 @@
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<body>
+<div id="box" style="width:100%; height:100%; background:green">Target</div>
+</body>
+<script type="text/javascript">
+
+var box = document.getElementById("box");
+var targetRect = box.getBoundingClientRect();
+var offset = 50;
+var x = targetRect.left + offset;
+var y = targetRect.top + offset;
+var last_event_time = 0;
+
+function validTouchResult(event) {
+    if (last_event_time) {
+      testTouchPointers.step(function () {
+        assert_greater_than(event.timeStamp, last_event_time)
+      });
+    }
+    last_event_time = Math.floor(event.timeStamp);
+}
+
+function endTest() {
+    testTouchPointers.done();
+}
+
+function testMultiTouchPointers() {
+    if (window.chrome && chrome.gpuBenchmarking) {
+        var pointerActions =
+            [{source: "touch", id: 0,
+              actions: [
+                { name: "pointerDown", x: x, y: y },
+                { name: "pointerMove", x: x + 30, y: y + 30 },
+                { name: "pause", },
+                { name: "pointerMove", x: x + 50, y: y + 50 },
+                { name: "pause", },
+                { name: "pointerMove", x: x + 90, y: y + 90 },
+                { name: "pause", },
+                { name: "pointerUp" }]},
+             {source: "touch", id: 1,
+              actions: [
+                { name: "pause" },
+                { name: "pointerDown", x: x, y: y },
+                { name: "pointerMove", x: x + 50, y: y },
+                { name: "pause" },
+                { name: "pointerMove", x: x + 60, y: y + 20 },
+                { name: "pause", },
+                { name: "pointerMove", x: x + 90, y: y + 30 },
+                { name: "pointerUp"}]}];
+        chrome.gpuBenchmarking.pointerActionSequence(pointerActions, endTest);
+      }
+}
+
+var testTouchPointers = async_test("Test touch event timestamp with multiple finger.");
+
+box.addEventListener('touchstart', validTouchResult);
+box.addEventListener('touchmove', validTouchResult);
+box.addEventListener('touchend', validTouchResult);
+testMultiTouchPointers();
+
+</script>
+

@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
+#include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -47,7 +48,6 @@
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/frame/remote_dom_window.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
@@ -58,7 +58,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
@@ -112,7 +112,7 @@ void V8Window::EventAttributeGetterCustom(
   }
 
   v8::Local<v8::Value> js_event;
-  if (!V8PrivateProperty::GetGlobalEvent(isolate)
+  if (!V8PrivateProperty::GetSymbol(isolate, kPrivatePropertyGlobalEvent)
            .GetOrUndefined(info.Holder())
            .ToLocal(&js_event)) {
     return;

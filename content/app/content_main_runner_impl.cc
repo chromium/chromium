@@ -29,29 +29,35 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_base.h"
 #include "base/path_service.h"
+#include "base/power_monitor/power_monitor.h"
+#include "base/power_monitor/power_monitor_device_source.h"
 #include "base/process/launch.h"
 #include "base/process/memory.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
+#include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "content/app/mojo/mojo_init.h"
+#include "content/app/service_manager_environment.h"
 #include "content/browser/browser_process_sub_thread.h"
 #include "content/browser/browser_thread_impl.h"
 #include "content/browser/scheduler/browser_task_executor.h"
 #include "content/browser/startup_data_impl.h"
 #include "content/browser/startup_helper.h"
+#include "content/browser/tracing/memory_instrumentation_util.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/url_schemes.h"
 #include "content/public/app/content_main_delegate.h"
+#include "content/public/browser/system_connector.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_descriptor_keys.h"
 #include "content/public/common/content_features.h"
@@ -84,8 +90,7 @@
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/display/win/dpi.h"
 #elif defined(OS_MACOSX)
-#include "base/mac/mach_port_broker.h"
-#include "base/power_monitor/power_monitor_device_source.h"
+#include "sandbox/mac/seatbelt.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #endif  // OS_WIN
 
@@ -160,7 +165,6 @@
 #endif
 
 #if defined(OS_ANDROID)
-#include "base/android/build_info.h"
 #include "content/browser/android/browser_startup_controller.h"
 #endif
 
@@ -177,12 +181,6 @@ extern int UtilityMain(const MainFunctionParams&);
 namespace content {
 
 namespace {
-
-#if defined(OS_ANDROID)
-// Finch parameter key value for devices to always run in process.
-const base::FeatureParam<std::string> kDevicesForceInProcessParam{
-    &network::features::kNetworkService, "devices_force_in_process", ""};
-#endif
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA) && defined(OS_ANDROID)
 #if defined __LP64__
@@ -225,24 +223,6 @@ void LoadV8SnapshotFile() {
   gin::V8Initializer::LoadV8Snapshot(kSnapshotType);
 #endif  // !CHROME_MULTIPLE_DLL_BROWSER
 }
-
-void LoadV8NativesFile() {
-#if defined(OS_POSIX) && !defined(OS_MACOSX)
-  base::FileDescriptorStore& file_descriptor_store =
-      base::FileDescriptorStore::GetInstance();
-  base::MemoryMappedFile::Region region;
-  base::ScopedFD fd =
-      file_descriptor_store.MaybeTakeFD(kV8NativesDataDescriptor, &region);
-  if (fd.is_valid()) {
-    base::File file(fd.release());
-    gin::V8Initializer::LoadV8NativesFromFile(std::move(file), &region);
-    return;
-  }
-#endif  // OS_POSIX && !OS_MACOSX
-#if !defined(CHROME_MULTIPLE_DLL_BROWSER)
-  gin::V8Initializer::LoadV8Natives();
-#endif  // !CHROME_MULTIPLE_DLL_BROWSER
-}
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
 
 void InitializeV8IfNeeded(const base::CommandLine& command_line,
@@ -252,7 +232,6 @@ void InitializeV8IfNeeded(const base::CommandLine& command_line,
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   LoadV8SnapshotFile();
-  LoadV8NativesFile();
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
 }
 
@@ -543,17 +522,9 @@ static void RegisterMainThreadFactories() {
 int RunBrowserProcessMain(const MainFunctionParams& main_function_params,
                           ContentMainDelegate* delegate) {
   int exit_code = delegate->RunProcess("", main_function_params);
-#if defined(OS_ANDROID)
-  // In Android's browser process, the negative exit code doesn't mean the
-  // default behavior should be used as the UI message loop is managed by
-  // the Java and the browser process's default behavior is always
-  // overridden.
-  return exit_code;
-#else
   if (exit_code >= 0)
     return exit_code;
   return BrowserMain(main_function_params);
-#endif
 }
 #endif  // !defined(CHROME_MULTIPLE_DLL_CHILD)
 
@@ -726,10 +697,6 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
         delegate_->ProcessRegistersWithSystemProcess(process_type)) {
       base::PowerMonitorDeviceSource::AllocateSystemIOPorts();
     }
-
-    if (!process_type.empty() && delegate_->ShouldSendMachPort(process_type)) {
-      base::MachPortBroker::ChildSendTaskPortToParent(kMachBootstrapName);
-    }
 #endif
 
     // If we are on a platform where the default allocator is overridden (shim
@@ -757,18 +724,44 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
 #endif
 
     RegisterPathProvider();
-    RegisterContentSchemes(true);
+    RegisterContentSchemes(delegate_->ShouldLockSchemeRegistry());
 
 #if defined(OS_ANDROID) && (ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE)
-    int icudata_fd = g_fds->MaybeGet(kAndroidICUDataDescriptor);
-    if (icudata_fd != -1) {
-      auto icudata_region = g_fds->GetRegion(kAndroidICUDataDescriptor);
-      if (!base::i18n::InitializeICUWithFileDescriptor(icudata_fd,
-                                                       icudata_region))
+    // On Android, we have two ICU data files. A main one with most languages
+    // that is expected to always be available and an extra one that is
+    // installed separately via a dynamic feature module. If the extra ICU data
+    // file is available we have to apply it _before_ the main ICU data file.
+    // Otherwise, the languages of the extra ICU file will be overridden.
+    if (process_type.empty()) {
+      // In browser process load ICU data files from disk.
+      if (GetContentClient()->browser()->ShouldLoadExtraIcuDataFile()) {
+        if (!base::i18n::InitializeExtraICU()) {
+          return TerminateForFatalInitializationError();
+        }
+      }
+      if (!base::i18n::InitializeICU()) {
         return TerminateForFatalInitializationError();
+      }
     } else {
-      if (!base::i18n::InitializeICU())
+      // In child process map ICU data files loaded by browser process.
+      int icu_extra_data_fd = g_fds->MaybeGet(kAndroidICUExtraDataDescriptor);
+      if (icu_extra_data_fd != -1) {
+        auto icu_extra_data_region =
+            g_fds->GetRegion(kAndroidICUExtraDataDescriptor);
+        if (!base::i18n::InitializeExtraICUWithFileDescriptor(
+                icu_extra_data_fd, icu_extra_data_region)) {
+          return TerminateForFatalInitializationError();
+        }
+      }
+      int icu_data_fd = g_fds->MaybeGet(kAndroidICUDataDescriptor);
+      if (icu_data_fd == -1) {
         return TerminateForFatalInitializationError();
+      }
+      auto icu_data_region = g_fds->GetRegion(kAndroidICUDataDescriptor);
+      if (!base::i18n::InitializeICUWithFileDescriptor(icu_data_fd,
+                                                       icu_data_region)) {
+        return TerminateForFatalInitializationError();
+      }
     }
 #else
     if (!base::i18n::InitializeICU())
@@ -800,6 +793,8 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
             service_manager::switches::kDisableInProcessStackTraces)) {
       base::debug::EnableInProcessStackDumping();
     }
+
+    base::debug::VerifyDebugger();
 #endif  // !defined(OFFICIAL_BUILD)
 
     delegate_->PreSandboxStartup();
@@ -810,19 +805,16 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
             params.sandbox_info))
       return TerminateForFatalInitializationError();
 #elif defined(OS_MACOSX)
-    // Do not initialize the sandbox at this point if the V2
-    // sandbox is enabled for the process type.
+    // Only the GPU process still runs the V1 sandbox.
     bool v2_enabled = base::CommandLine::ForCurrentProcess()->HasSwitch(
         sandbox::switches::kSeatbeltClientName);
 
-    if (process_type == switches::kRendererProcess ||
-        process_type == switches::kPpapiPluginProcess || v2_enabled ||
-        delegate_->DelaySandboxInitialization(process_type)) {
-      // On OS X the renderer sandbox needs to be initialized later in the
-      // startup sequence in RendererMainPlatformDelegate::EnableSandbox().
-    } else {
-      if (!InitializeSandbox())
+    if (!v2_enabled && process_type == switches::kGpuProcess) {
+      if (!InitializeSandbox()) {
         return TerminateForFatalInitializationError();
+      }
+    } else if (v2_enabled) {
+      CHECK(sandbox::Seatbelt::IsSandboxed());
     }
 #endif
 
@@ -886,17 +878,21 @@ int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
     return -1;
 
   bool should_start_service_manager_only = start_service_manager_only;
-  if (!service_manager_context_) {
+  if (!service_manager_environment_) {
     if (delegate_->ShouldCreateFeatureList()) {
-      DCHECK(!field_trial_list_);
-      field_trial_list_ = SetUpFieldTrialsAndFeatureList();
+      // This is intentionally leaked since it needs to live for the duration
+      // of the process and there's no benefit in cleaning it up at exit.
+      base::FieldTrialList* leaked_field_trial_list =
+          SetUpFieldTrialsAndFeatureList().release();
+      ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
+      ignore_result(leaked_field_trial_list);
       delegate_->PostFieldTrialInitialization();
     }
 
-    if (GetContentClient()->browser()->ShouldCreateTaskScheduler()) {
-      // Create and start the TaskScheduler early to allow upcoming code to use
+    if (GetContentClient()->browser()->ShouldCreateThreadPool()) {
+      // Create and start the ThreadPool early to allow upcoming code to use
       // the post_task.h API.
-      base::TaskScheduler::Create("Browser");
+      base::ThreadPoolInstance::Create("Browser");
     }
 
     delegate_->PreCreateMainMessageLoop();
@@ -917,50 +913,33 @@ int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
 
     delegate_->PostEarlyInitialization(main_params.ui_task != nullptr);
 
-    if (GetContentClient()->browser()->ShouldCreateTaskScheduler()) {
-      // The FeatureList needs to create before starting the TaskScheduler.
-      StartBrowserTaskScheduler();
+    if (GetContentClient()->browser()->ShouldCreateThreadPool()) {
+      // The FeatureList needs to create before starting the ThreadPool.
+      StartBrowserThreadPool();
     }
 
     BrowserTaskExecutor::PostFeatureListSetup();
 
-    if (!base::FeatureList::IsEnabled(
-            features::kAllowStartingServiceManagerOnly)) {
-      should_start_service_manager_only = false;
-    }
+    tracing::InitTracingPostThreadPoolStartAndFeatureList();
 
-    if (base::FeatureList::IsEnabled(network::features::kNetworkService)) {
-      bool force_in_process = false;
-      if (should_start_service_manager_only) {
-        force_in_process = true;
-      } else {
-#if defined(OS_ANDROID)
-        auto finch_value = kDevicesForceInProcessParam.Get();
-        auto devices = base::SplitString(
-            finch_value, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-        auto current_device =
-            std::string(base::android::BuildInfo::GetInstance()->model());
-        for (auto device : devices) {
-          if (device == current_device) {
-            force_in_process = true;
-            break;
-          }
-        }
-#endif
-      }
+    if (should_start_service_manager_only)
+      ForceInProcessNetworkService(true);
 
-      if (force_in_process) {
-        // This must be called before creating the ServiceManagerContext.
-        ForceInProcessNetworkService(true);
-      }
-    }
+    discardable_shared_memory_manager_ =
+        std::make_unique<discardable_memory::DiscardableSharedMemoryManager>();
 
-    // The thread used to start the ServiceManager is handed-off to
-    // BrowserMain() which may elect to promote it (e.g. to BrowserThread::IO).
-    service_manager_thread_ = BrowserProcessSubThread::CreateIOThread();
-    service_manager_context_.reset(
-        new ServiceManagerContext(service_manager_thread_->task_runner()));
-    download::SetIOTaskRunner(service_manager_thread_->task_runner());
+    // PowerMonitor is needed in reduced mode. BrowserMainLoop will safely skip
+    // initializing it again if it has already been initialized.
+    base::PowerMonitor::Initialize(
+        std::make_unique<base::PowerMonitorDeviceSource>());
+
+    service_manager_environment_ = std::make_unique<ServiceManagerEnvironment>(
+        BrowserTaskExecutor::CreateIOThread());
+    download::SetIOTaskRunner(
+        service_manager_environment_->ipc_thread()->task_runner());
+
+    InitializeBrowserMemoryInstrumentationClient();
+
 #if defined(OS_ANDROID)
     if (start_service_manager_only) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -969,13 +948,14 @@ int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
 #endif
   }
 
-  if (should_start_service_manager_only)
+  if (should_start_service_manager_only) {
+    DVLOG(0) << "Chrome is running in ServiceManager only mode.";
     return -1;
+  }
 
+  DVLOG(0) << "Chrome is running in full browser mode.";
   is_browser_main_loop_started_ = true;
-  startup_data_ = std::make_unique<StartupDataImpl>();
-  startup_data_->thread = std::move(service_manager_thread_);
-  startup_data_->service_manager_context = service_manager_context_.get();
+  startup_data_ = service_manager_environment_->CreateBrowserStartupData();
   main_params.startup_data = startup_data_.get();
   return RunBrowserProcessMain(main_params, delegate_);
 }
@@ -984,6 +964,10 @@ int ContentMainRunnerImpl::RunServiceManager(MainFunctionParams& main_params,
 void ContentMainRunnerImpl::Shutdown() {
   DCHECK(is_initialized_);
   DCHECK(!is_shutdown_);
+
+#if !defined(CHROME_MULTIPLE_DLL_CHILD)
+  service_manager_environment_.reset();
+#endif
 
   if (completed_basic_startup_) {
     const base::CommandLine& command_line =
@@ -995,6 +979,7 @@ void ContentMainRunnerImpl::Shutdown() {
   }
 
 #if !defined(CHROME_MULTIPLE_DLL_CHILD)
+  service_manager_environment_.reset();
   // The BrowserTaskExecutor needs to be destroyed before |exit_manager_|.
   BrowserTaskExecutor::Shutdown();
 #endif  // !defined(CHROME_MULTIPLE_DLL_CHILD)

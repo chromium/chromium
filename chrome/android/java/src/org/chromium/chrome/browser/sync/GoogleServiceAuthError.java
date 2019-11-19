@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.sync;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import org.chromium.chrome.R;
 
@@ -17,10 +17,8 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class GoogleServiceAuthError {
     @IntDef({State.NONE, State.INVALID_GAIA_CREDENTIALS, State.USER_NOT_SIGNED_UP,
-            State.CONNECTION_FAILED, State.CAPTCHA_REQUIRED, State.ACCOUNT_DELETED,
-            State.ACCOUNT_DISABLED, State.SERVICE_UNAVAILABLE, State.TWO_FACTOR,
-            State.REQUEST_CANCELED, State.UNEXPECTED_SERVICE_RESPONSE, State.SERVICE_ERROR,
-            State.WEB_LOGIN_REQUIRED})
+            State.CONNECTION_FAILED, State.SERVICE_UNAVAILABLE, State.REQUEST_CANCELED,
+            State.UNEXPECTED_SERVICE_RESPONSE, State.SERVICE_ERROR})
     @Retention(RetentionPolicy.SOURCE)
     public @interface State {
         // The user is authenticated.
@@ -38,30 +36,33 @@ public class GoogleServiceAuthError {
         // the service needing GAIA tokens during authentication.
         int CONNECTION_FAILED = 3;
 
+        // DEPRECATED.
         // The user needs to satisfy a CAPTCHA challenge to unlock their account.
         // If no other information is available, this can be resolved by visiting
         // https://www.google.com/accounts/DisplayUnlockCaptcha. Otherwise,
         // captcha() will provide details about the associated challenge.
-        int CAPTCHA_REQUIRED = 4;
+        // int CAPTCHA_REQUIRED = 4;
 
+        // DEPRECATED.
         // The user account has been deleted.
-        int ACCOUNT_DELETED = 5;
+        // int ACCOUNT_DELETED = 5;
 
+        // DEPRECATED.
         // The user account has been disabled.
-        int ACCOUNT_DISABLED = 6;
+        // int ACCOUNT_DISABLED = 6;
 
         // The service is not available; try again later.
         int SERVICE_UNAVAILABLE = 7;
 
+        // DEPRECATED.
         // The password is valid but we need two factor to get a token.
-        int TWO_FACTOR = 8;
+        // int TWO_FACTOR = 8;
 
         // The requestor of the authentication step cancelled the request
         // prior to completion.
         int REQUEST_CANCELED = 9;
 
-        // HOSTED accounts are deprecated; left in enumeration to match
-        // GoogleServiceAuthError enum in histograms.xml.
+        // HOSTED accounts are deprecated.
         // int HOSTED_NOT_ALLOWED_DEPRECATED = 10;
 
         // Indicates the service responded to a request, but we cannot
@@ -72,8 +73,9 @@ public class GoogleServiceAuthError {
         // application error.
         int SERVICE_ERROR = 12;
 
+        // DEPRECATED.
         // The password is valid but web login is required to get a token.
-        int WEB_LOGIN_REQUIRED = 13;
+        // int WEB_LOGIN_REQUIRED = 13;
 
         int NUM_ENTRIES = 14;
     }
@@ -87,15 +89,9 @@ public class GoogleServiceAuthError {
             case State.SERVICE_UNAVAILABLE:
                 return R.string.sync_error_service_unavailable;
             // case State.NONE:
-            // case State.USER_NOT_SIGNED_UP:
-            // case State.CAPTCHA_REQUIRED:
-            // case State.ACCOUNT_DELETED:
-            // case State.ACCOUNT_DISABLED:
-            // case State.TWO_FACTOR:
             // case State.REQUEST_CANCELED:
             // case State.UNEXPECTED_SERVICE_RESPONSE:
             // case State.SERVICE_ERROR:
-            // case State.WEB_LOGIN_REQUIRED:
             default:
                 return R.string.sync_error_generic;
         }

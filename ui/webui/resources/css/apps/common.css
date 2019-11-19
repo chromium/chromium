@@ -4,7 +4,8 @@
 
 button.white-button,
 button.blue-button {
-  border: 5px solid transparent;
+  border: 1px solid transparent;
+  border-radius: 2px;
   box-sizing: content-box;
   cursor: default;
   font-size: 14px;
@@ -14,157 +15,50 @@ button.blue-button {
   min-height: 21px;
   min-width: 55px;
   outline: none;
-  padding: 0 10px;
+  padding: 4px 14px;
   position: relative;
   text-align: center;
   z-index: 1;
 }
 
-button.white-button {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/button.png) 1x,
-    url(chrome://resources/images/2x/apps/button.png)
-        2x) 5 fill / 5px / 2px repeat;
+button.white-button[disabled] {
+  border-color: #c6c6c6;
 }
 
-button.white-button:hover {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/button_hover.png) 1x,
-    url(chrome://resources/images/2x/apps/button_hover.png)
-        2x) 5 fill / 5px / 2px repeat;
+button.white-button:focus:active,
+button.white-button:focus {
+  border-color: rgb(62, 126, 248);
 }
 
 button.white-button:active {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/button_pressed.png) 1x,
-    url(chrome://resources/images/2x/apps/button_pressed.png)
-        2x) 5 fill / 5px / 2px repeat;
+  background-color: #e6e6e6;
+  border-color: #a6a6a6;
 }
 
-button.white-button:focus {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/button_focused.png) 1x,
-    url(chrome://resources/images/2x/apps/button_focused.png)
-        2x) 5 fill / 5px / 2px repeat;
-}
-
-button.white-button:focus:hover {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/button_focused_hover.png) 1x,
-    url(chrome://resources/images/2x/apps/button_focused_hover.png)
-        2x) 5 fill / 5px / 2px repeat;
-}
-
-button.white-button:focus:active {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/button_focused_pressed.png) 1x,
-    url(chrome://resources/images/2x/apps/button_focused_pressed.png)
-        2x) 5 fill / 5px / 2px repeat;
-}
-
-button.white-button[disabled] {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/button_inactive.png) 1x,
-    url(chrome://resources/images/2x/apps/button_inactive.png)
-        2x) 5 fill / 5px / 2px repeat;
+button.white-button {
+  background-color: #f9f9f9;
+  border-color: #a4a4a4;
 }
 
 button.blue-button {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/blue_button.png) 1x,
-    url(chrome://resources/images/2x/apps/blue_button.png)
-        2x) 5 fill / 5px / 2px repeat;
+  background-color: rgb(50, 100, 255);
+  border-color: rgb(43, 103, 206);
 }
 
 button.blue-button:hover {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/blue_button_hover.png) 1x,
-    url(chrome://resources/images/2x/apps/blue_button_hover.png)
-        2x) 5 fill / 5px / 2px repeat;
+  background-color: rgb(60, 110, 255);
 }
 
 button.blue-button:active {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/blue_button_pressed.png) 1x,
-    url(chrome://resources/images/2x/apps/blue_button_pressed.png)
-        2x) 5 fill / 5px / 2px repeat;
+  background-color: rgb(26, 91, 216);
+  border-color: rgb(35, 82, 162);
 }
 
 button.blue-button:focus {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/blue_button_focused.png) 1x,
-    url(chrome://resources/images/2x/apps/blue_button_focused.png)
-        2x) 5 fill / 5px / 2px repeat;
-}
-
-button.blue-button:focus:hover {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/blue_button_focused_hover.png) 1x,
-    url(chrome://resources/images/2x/apps/blue_button_focused_hover.png)
-        2x) 5 fill / 5px / 2px repeat;
-}
-
-button.blue-button:focus:active {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/blue_button_focused_pressed.png) 1x,
-    url(chrome://resources/images/2x/apps/blue_button_focused_pressed.png)
-        2x) 5 fill / 5px / 2px repeat;
+  box-shadow: 0 0 0 1px inset rgb(173, 204, 255);
 }
 
 button.blue-button[disabled] {
-  border-image: -webkit-image-set(
-    url(chrome://resources/images/apps/blue_button_inactive.png) 1x,
-    url(chrome://resources/images/2x/apps/blue_button_inactive.png)
-        2x) 5 fill / 5px / 2px repeat;
-}
-
-input[type='checkbox'] {
-  -webkit-appearance: none;
-  border: none;
-  outline: none;
-}
-
-input[type='checkbox']::after {
-  content: '';
-  display: block;
-  height: 16px;
-  left: -2px;
-  top: -2px;
-  width: 16px;
-}
-
-input[type='checkbox']:not(:checked)::after {
-  background-image: -webkit-image-set(
-    url(chrome://resources/images/apps/checkbox.png) 1x,
-    url(chrome://resources/images/2x/apps/checkbox.png) 2x);
-}
-
-input[type='checkbox']:focus:not(:checked)::after {
-  background-image: -webkit-image-set(
-    url(chrome://resources/images/apps/checkbox_focused.png) 1x,
-    url(chrome://resources/images/2x/apps/checkbox_focused.png) 2x);
-}
-
-input[type='checkbox']:disabled:not(:checked)::after {
-  background-image: -webkit-image-set(
-    url(chrome://resources/images/apps/checkbox_inactive.png) 1x,
-    url(chrome://resources/images/2x/apps/checkbox_inactive.png) 2x);
-}
-
-input[type='checkbox']:checked::after {
-  background-image: -webkit-image-set(
-    url(chrome://resources/images/apps/checkbox_checked.png) 1x,
-    url(chrome://resources/images/2x/apps/checkbox_checked.png) 2x);
-}
-
-input[type='checkbox']:focus:checked::after {
-  background-image: -webkit-image-set(
-    url(chrome://resources/images/apps/checkbox_focused_checked.png) 1x,
-    url(chrome://resources/images/2x/apps/checkbox_focused_checked.png) 2x);
-}
-
-input[type='checkbox']:disabled:checked::after {
-  background-image: -webkit-image-set(
-    url(chrome://resources/images/apps/checkbox_checked_inactive.png) 1x,
-    url(chrome://resources/images/2x/apps/checkbox_checked_inactive.png) 2x);
+  background-color: rgb(110, 140, 255);
+  border-color: rgb(148, 177, 229);
 }

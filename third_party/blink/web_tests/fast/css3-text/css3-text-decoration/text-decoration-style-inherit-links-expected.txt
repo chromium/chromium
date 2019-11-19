@@ -1,8 +1,0 @@
-Unvisited link: Solid blue underline, blue text.
-Visited link: Solid purple underline, purple text.
-Custom visited link: Purple wavy underline, purple solid underline on top, purple text.
-Custom visited link: Purple solid underline, purple wavy overline, purple text.
-Custom visited link: Purple wavy underline, purple text.
-Custom visited link: Green wavy underline, green solid underline on top, green text.
-Custom visited link: Purple wavy underline, purple text.
-Custom visited link: Purple solid underline, purple wavy overline, purple text.

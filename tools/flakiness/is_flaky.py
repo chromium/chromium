@@ -6,6 +6,8 @@
 """Runs a test repeatedly to measure its flakiness. The return code is non-zero
 if the failure rate is higher than the specified threshold, but is not 100%."""
 
+from __future__ import print_function
+
 import argparse
 import multiprocessing.dummy
 import subprocess
@@ -25,8 +27,8 @@ def load_options():
   return parser.parse_args()
 
 def run_test(job):
-  print 'Starting retry attempt %d out of %d' % (job['index'] + 1,
-                                                 job['retries'])
+  print('Starting retry attempt %d out of %d' % (job['index'] + 1,
+                                                 job['retries']))
   return subprocess.check_call(job['cmd'], stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT)
 
@@ -47,7 +49,7 @@ def main():
   else:
     flakiness = num_failed / float(len(results))
 
-  print 'Flakiness is %.2f' % flakiness
+  print('Flakiness is %.2f' % flakiness)
   if flakiness > options.threshold:
     return 1
   else:

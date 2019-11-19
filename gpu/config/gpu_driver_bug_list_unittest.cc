@@ -24,6 +24,7 @@ TEST_F(GpuDriverBugListTest, CurrentListForARM) {
   GPUInfo gpu_info;
   gpu_info.gl_vendor = "ARM";
   gpu_info.gl_renderer = "MALi_T604";
+  gpu_info.gl_version = "OpenGL ES 2.0";
   std::set<int> bugs = list->MakeDecision(
       GpuControlList::kOsAndroid, "4.1", gpu_info);
   EXPECT_EQ(1u, bugs.count(USE_CLIENT_SIDE_ARRAYS_FOR_STREAM_BUFFERS));
@@ -34,6 +35,7 @@ TEST_F(GpuDriverBugListTest, CurrentListForImagination) {
   GPUInfo gpu_info;
   gpu_info.gl_vendor = "Imagination Technologies";
   gpu_info.gl_renderer = "PowerVR SGX 540";
+  gpu_info.gl_version = "OpenGL ES 2.0";
   std::set<int> bugs = list->MakeDecision(
       GpuControlList::kOsAndroid, "4.1", gpu_info);
   EXPECT_EQ(1u, bugs.count(USE_CLIENT_SIDE_ARRAYS_FOR_STREAM_BUFFERS));
@@ -57,17 +59,17 @@ TEST_F(GpuDriverBugListTest, AppendSingleWorkaround) {
 TEST_F(GpuDriverBugListTest, AppendForceGPUWorkaround) {
   base::CommandLine command_line(0, nullptr);
   command_line.AppendSwitch(
-      GpuDriverBugWorkaroundTypeToString(FORCE_DISCRETE_GPU));
+      GpuDriverBugWorkaroundTypeToString(FORCE_HIGH_PERFORMANCE_GPU));
   std::set<int> workarounds;
   workarounds.insert(EXIT_ON_CONTEXT_LOST);
-  workarounds.insert(FORCE_INTEGRATED_GPU);
+  workarounds.insert(FORCE_LOW_POWER_GPU);
   EXPECT_EQ(2u, workarounds.size());
-  EXPECT_EQ(1u, workarounds.count(FORCE_INTEGRATED_GPU));
+  EXPECT_EQ(1u, workarounds.count(FORCE_LOW_POWER_GPU));
   GpuDriverBugList::AppendWorkaroundsFromCommandLine(
       &workarounds, command_line);
   EXPECT_EQ(2u, workarounds.size());
-  EXPECT_EQ(0u, workarounds.count(FORCE_INTEGRATED_GPU));
-  EXPECT_EQ(1u, workarounds.count(FORCE_DISCRETE_GPU));
+  EXPECT_EQ(0u, workarounds.count(FORCE_LOW_POWER_GPU));
+  EXPECT_EQ(1u, workarounds.count(FORCE_HIGH_PERFORMANCE_GPU));
 }
 
 // Test for invariant "Assume the newly last added entry has the largest ID".

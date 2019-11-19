@@ -20,7 +20,8 @@
 
 - (id)initWithDelegate:(id<FullscreenToolbarContextDelegate>)delegate {
   if ((self = [super init])) {
-    animationController_.reset(new FullscreenToolbarAnimationController(self));
+    animationController_ =
+        std::make_unique<FullscreenToolbarAnimationController>(self);
     visibilityLockController_.reset(
         [[FullscreenToolbarVisibilityLockController alloc]
             initWithFullscreenToolbarController:self

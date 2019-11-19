@@ -1,0 +1,26 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: acquire, display:contents</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+
+<body></body>
+<script>
+// TODO(vmpstr): Add tests for display:contents, slot, which cannot be locked.
+
+async_test(async (t) => {
+  let slot = document.createElement("slot");
+  slot.style = "display: block;";
+  document.body.appendChild(slot);
+  await setInvisible(slot).then(() => {
+    t.step(() => assert_equals(slot.renderSubtree, INVISIBLE_NOT_ACTIVATABLE));
+    t.done();
+  });
+}, "<slot> with changed display type can be locked");
+</script>
+</html>

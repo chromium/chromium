@@ -6,7 +6,6 @@
  * Used to create fake data for both passwords and autofill.
  * These sections are related, so it made sense to share this.
  */
-
 function FakeDataMaker() {}
 
 /**
@@ -141,6 +140,100 @@ FakeDataMaker.patternMaker_ = function(pattern, base) {
   });
 };
 
+
+/**
+ * Helper class for creating password-section sub-element from fake data and
+ * appending them to the document.
+ */
+class PasswordSectionElementFactory {
+  /**
+   * @param {HTMLDocument} document The test's |document| object.
+   */
+  constructor(document) {
+    this.document = document;
+  }
+
+  /**
+   * Helper method used to create a password section for the given lists.
+   * @param {!PasswordManagerProxy} passwordManager
+   * @param {!Array<!chrome.passwordsPrivate.PasswordUiEntry>} passwordList
+   * @param {!Array<!chrome.passwordsPrivate.ExceptionEntry>} exceptionList
+   * @return {!Object}
+   */
+  createPasswordsSection(passwordManager, passwordList, exceptionList) {
+    // Override the PasswordManagerProxy data for testing.
+    passwordManager.data.passwords = passwordList;
+    passwordManager.data.exceptions = exceptionList;
+
+    // Create a passwords-section to use for testing.
+    const passwordsSection = this.document.createElement('passwords-section');
+    passwordsSection.prefs = {
+      credentials_enable_service: {},
+      profile: {
+        password_manager_leak_detection: {
+          value: true,
+        }
+      },
+    };
+    this.document.body.appendChild(passwordsSection);
+    Polymer.dom.flush();
+    return passwordsSection;
+  }
+
+  /**
+   * Helper method used to create a password list item.
+   * @param {!chrome.passwordsPrivate.PasswordUiEntry} passwordEntry
+   * @return {!Object}
+   */
+  createPasswordListItem(passwordEntry) {
+    const passwordListItem = this.document.createElement('password-list-item');
+    passwordListItem.item = {entry: passwordEntry, password: ''};
+    this.document.body.appendChild(passwordListItem);
+    Polymer.dom.flush();
+    return passwordListItem;
+  }
+
+  /**
+   * Helper method used to create a password editing dialog.
+   * @param {!chrome.passwordsPrivate.PasswordUiEntry} passwordEntry
+   * @return {!Object}
+   */
+  createPasswordEditDialog(passwordEntry) {
+    const passwordDialog = this.document.createElement('password-edit-dialog');
+    passwordDialog.item = {entry: passwordEntry, password: ''};
+    this.document.body.appendChild(passwordDialog);
+    Polymer.dom.flush();
+    return passwordDialog;
+  }
+
+  /**
+   * Helper method used to create an export passwords dialog.
+   * @return {!Object}
+   */
+  createExportPasswordsDialog(passwordManager) {
+    passwordManager.requestExportProgressStatus = callback => {
+      callback(chrome.passwordsPrivate.ExportProgressStatus.NOT_STARTED);
+    };
+    passwordManager.addPasswordsFileExportProgressListener = callback => {
+      passwordManager.progressCallback = callback;
+    };
+    passwordManager.removePasswordsFileExportProgressListener = () => {};
+    passwordManager.exportPasswords = (callback) => {
+      callback();
+    };
+
+    const dialog = this.document.createElement('passwords-export-dialog');
+    this.document.body.appendChild(dialog);
+    Polymer.dom.flush();
+
+    if (cr.isChromeOS) {
+      dialog.tokenRequestManager = new settings.BlockingRequestManager();
+    }
+
+    return dialog;
+  }
+}
+
 /** @constructor */
 function PasswordManagerExpectations() {
   this.requested = {
@@ -183,19 +276,19 @@ function TestAutofillManager() {
 
   // Holds the last callbacks so they can be called when needed.
   this.lastCallback = {
-    addAddressListChangedListener: null,
+    setPersonalDataManagerListener: null,
   };
 }
 
 TestAutofillManager.prototype = {
   /** @override */
-  addAddressListChangedListener: function(listener) {
+  setPersonalDataManagerListener: function(listener) {
     this.actual_.listeningAddresses++;
-    this.lastCallback.addAddressListChangedListener = listener;
+    this.lastCallback.setPersonalDataManagerListener = listener;
   },
 
   /** @override */
-  removeAddressListChangedListener: function(listener) {
+  removePersonalDataManagerListener: function(listener) {
     this.actual_.listeningAddresses--;
   },
 
@@ -239,19 +332,19 @@ function TestPaymentsManager() {
 
   // Holds the last callbacks so they can be called when needed.
   this.lastCallback = {
-    addCreditCardListChangedListener: null,
+    setPersonalDataManagerListener: null,
   };
 }
 
 TestPaymentsManager.prototype = {
   /** @override */
-  addCreditCardListChangedListener: function(listener) {
+  setPersonalDataManagerListener: function(listener) {
     this.actual_.listeningCreditCards++;
-    this.lastCallback.addCreditCardListChangedListener = listener;
+    this.lastCallback.setPersonalDataManagerListener = listener;
   },
 
   /** @override */
-  removeCreditCardListChangedListener: function(listener) {
+  removePersonalDataManagerListener: function(listener) {
     this.actual_.listeningCreditCards--;
   },
 

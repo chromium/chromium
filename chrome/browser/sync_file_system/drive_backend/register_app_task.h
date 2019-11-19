@@ -55,7 +55,7 @@ class RegisterAppTask : public ExclusiveTask {
 
   std::unique_ptr<FolderCreator> folder_creator_;
 
-  base::WeakPtrFactory<RegisterAppTask> weak_ptr_factory_;
+  base::WeakPtrFactory<RegisterAppTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RegisterAppTask);
 };

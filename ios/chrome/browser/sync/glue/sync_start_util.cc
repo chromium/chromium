@@ -13,8 +13,8 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 
 namespace ios {
 namespace {
@@ -47,7 +47,7 @@ void StartSyncOnUIThread(const base::FilePath& browser_state_path,
 
 void StartSyncProxy(const base::FilePath& browser_state_path,
                     syncer::ModelType type) {
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {web::WebThread::UI},
       base::BindOnce(&StartSyncOnUIThread, browser_state_path, type));
 }

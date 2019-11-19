@@ -8,12 +8,9 @@
 
 namespace gcm {
 
-FakeGCMAppHandler::FakeGCMAppHandler()
-    : received_event_(NO_EVENT) {
-}
+FakeGCMAppHandler::FakeGCMAppHandler() : received_event_(NO_EVENT) {}
 
-FakeGCMAppHandler::~FakeGCMAppHandler() {
-}
+FakeGCMAppHandler::~FakeGCMAppHandler() = default;
 
 void FakeGCMAppHandler::WaitForNotification() {
   run_loop_.reset(new base::RunLoop);
@@ -21,8 +18,7 @@ void FakeGCMAppHandler::WaitForNotification() {
   run_loop_.reset();
 }
 
-void FakeGCMAppHandler::ShutdownHandler() {
-}
+void FakeGCMAppHandler::ShutdownHandler() {}
 
 void FakeGCMAppHandler::OnStoreReset() {}
 
@@ -61,6 +57,17 @@ void FakeGCMAppHandler::OnSendAcknowledged(
   ClearResults();
   app_id_ = app_id;
   acked_message_id_ = message_id;
+  if (run_loop_)
+    run_loop_->Quit();
+}
+
+void FakeGCMAppHandler::OnMessageDecryptionFailed(
+    const std::string& app_id,
+    const std::string& message_id,
+    const std::string& error_message) {
+  ClearResults();
+  received_event_ = DECRYPTION_FAILED_EVENT;
+  app_id_ = app_id;
   if (run_loop_)
     run_loop_->Quit();
 }

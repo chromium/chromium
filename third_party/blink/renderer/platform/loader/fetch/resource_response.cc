@@ -31,12 +31,16 @@
 #include <memory>
 #include <string>
 
+#include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_response.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_load_info.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -77,14 +81,20 @@ ResourceResponse::SignedCertificateTimestamp::IsolatedCopy() const {
       signature_data_.IsolatedCopy());
 }
 
-ResourceResponse::ResourceResponse() : is_null_(true) {}
+ResourceResponse::ResourceResponse()
+    : is_null_(true),
+      response_type_(network::mojom::FetchResponseType::kDefault) {}
 
 ResourceResponse::ResourceResponse(const KURL& current_request_url)
-    : current_request_url_(current_request_url), is_null_(false) {}
+    : current_request_url_(current_request_url),
+      is_null_(false),
+      response_type_(network::mojom::FetchResponseType::kDefault) {}
 
 ResourceResponse::ResourceResponse(const ResourceResponse&) = default;
 ResourceResponse& ResourceResponse::operator=(const ResourceResponse&) =
     default;
+
+ResourceResponse::~ResourceResponse() = default;
 
 bool ResourceResponse::IsHTTP() const {
   return current_request_url_.ProtocolIsInHTTPFamily();
@@ -182,7 +192,7 @@ const AtomicString& ResourceResponse::HttpStatusText() const {
   return http_status_text_;
 }
 
-void ResourceResponse::SetHTTPStatusText(const AtomicString& status_text) {
+void ResourceResponse::SetHttpStatusText(const AtomicString& status_text) {
   http_status_text_ = status_text;
 }
 
@@ -223,28 +233,29 @@ void ResourceResponse::SetSecurityDetails(
     time_t valid_to,
     const Vector<AtomicString>& certificate,
     const SignedCertificateTimestampList& sct_list) {
-  security_details_.protocol = protocol;
-  security_details_.key_exchange = key_exchange;
-  security_details_.key_exchange_group = key_exchange_group;
-  security_details_.cipher = cipher;
-  security_details_.mac = mac;
-  security_details_.subject_name = subject_name;
-  security_details_.san_list = san_list;
-  security_details_.issuer = issuer;
-  security_details_.valid_from = valid_from;
-  security_details_.valid_to = valid_to;
-  security_details_.certificate = certificate;
-  security_details_.sct_list = sct_list;
+  DCHECK_NE(security_style_, SecurityStyle::kUnknown);
+  DCHECK_NE(security_style_, SecurityStyle::kNeutral);
+  security_details_ = SecurityDetails(
+      protocol, key_exchange, key_exchange_group, cipher, mac, subject_name,
+      san_list, issuer, valid_from, valid_to, certificate, sct_list);
 }
 
-void ResourceResponse::SetHTTPHeaderField(const AtomicString& name,
+bool ResourceResponse::IsCorsSameOrigin() const {
+  return network::cors::IsCorsSameOriginResponseType(response_type_);
+}
+
+bool ResourceResponse::IsCorsCrossOrigin() const {
+  return network::cors::IsCorsCrossOriginResponseType(response_type_);
+}
+
+void ResourceResponse::SetHttpHeaderField(const AtomicString& name,
                                           const AtomicString& value) {
   UpdateHeaderParsedState(name);
 
   http_header_fields_.Set(name, value);
 }
 
-void ResourceResponse::AddHTTPHeaderField(const AtomicString& name,
+void ResourceResponse::AddHttpHeaderField(const AtomicString& name,
                                           const AtomicString& value) {
   UpdateHeaderParsedState(name);
 
@@ -253,7 +264,27 @@ void ResourceResponse::AddHTTPHeaderField(const AtomicString& name,
     result.stored_value->value = result.stored_value->value + ", " + value;
 }
 
-void ResourceResponse::ClearHTTPHeaderField(const AtomicString& name) {
+void ResourceResponse::AddHttpHeaderFieldWithMultipleValues(
+    const AtomicString& name,
+    const Vector<AtomicString>& values) {
+  if (values.IsEmpty())
+    return;
+
+  UpdateHeaderParsedState(name);
+
+  StringBuilder value_builder;
+  const auto it = http_header_fields_.Find(name);
+  if (it != http_header_fields_.end())
+    value_builder.Append(it->value);
+  for (const auto& value : values) {
+    if (!value_builder.IsEmpty())
+      value_builder.Append(", ");
+    value_builder.Append(value);
+  }
+  http_header_fields_.Set(name, value_builder.ToAtomicString());
+}
+
+void ResourceResponse::ClearHttpHeaderField(const AtomicString& name) {
   http_header_fields_.Remove(name);
 }
 
@@ -295,7 +326,7 @@ bool ResourceResponse::HasCacheValidatorFields() const {
          !http_header_fields_.Get(kETagHeader).IsEmpty();
 }
 
-double ResourceResponse::CacheControlMaxAge() const {
+base::Optional<base::TimeDelta> ResourceResponse::CacheControlMaxAge() const {
   if (!cache_control_header_.parsed) {
     cache_control_header_ = ParseCacheControlDirectives(
         http_header_fields_.Get(kCacheControlHeader),
@@ -304,35 +335,37 @@ double ResourceResponse::CacheControlMaxAge() const {
   return cache_control_header_.max_age;
 }
 
-double ResourceResponse::CacheControlStaleWhileRevalidate() const {
+base::TimeDelta ResourceResponse::CacheControlStaleWhileRevalidate() const {
   if (!cache_control_header_.parsed) {
     cache_control_header_ = ParseCacheControlDirectives(
         http_header_fields_.Get(kCacheControlHeader),
         http_header_fields_.Get(kPragmaHeader));
   }
-  if (!std::isfinite(cache_control_header_.stale_while_revalidate) ||
-      cache_control_header_.stale_while_revalidate < 0) {
-    return 0;
+  if (!cache_control_header_.stale_while_revalidate ||
+      cache_control_header_.stale_while_revalidate.value() <
+          base::TimeDelta()) {
+    return base::TimeDelta();
   }
-  return cache_control_header_.stale_while_revalidate;
+  return cache_control_header_.stale_while_revalidate.value();
 }
 
-static double ParseDateValueInHeader(const HTTPHeaderMap& headers,
-                                     const AtomicString& header_name) {
+static base::Optional<base::Time> ParseDateValueInHeader(
+    const HTTPHeaderMap& headers,
+    const AtomicString& header_name) {
   const AtomicString& header_value = headers.Get(header_name);
   if (header_value.IsEmpty())
-    return std::numeric_limits<double>::quiet_NaN();
+    return base::nullopt;
   // This handles all date formats required by RFC2616:
   // Sun, 06 Nov 1994 08:49:37 GMT  ; RFC 822, updated by RFC 1123
   // Sunday, 06-Nov-94 08:49:37 GMT ; RFC 850, obsoleted by RFC 1036
   // Sun Nov  6 08:49:37 1994       ; ANSI C's asctime() format
-  double date_in_milliseconds = ParseDate(header_value);
-  if (!std::isfinite(date_in_milliseconds))
-    return std::numeric_limits<double>::quiet_NaN();
-  return date_in_milliseconds / 1000;
+  base::Optional<base::Time> date = ParseDate(header_value);
+  if (date && date.value().is_max())
+    return base::nullopt;
+  return date;
 }
 
-double ResourceResponse::Date() const {
+base::Optional<base::Time> ResourceResponse::Date() const {
   if (!have_parsed_date_header_) {
     static const char kHeaderName[] = "date";
     date_ = ParseDateValueInHeader(http_header_fields_, kHeaderName);
@@ -341,20 +374,23 @@ double ResourceResponse::Date() const {
   return date_;
 }
 
-double ResourceResponse::Age() const {
+base::Optional<base::TimeDelta> ResourceResponse::Age() const {
   if (!have_parsed_age_header_) {
     static const char kHeaderName[] = "age";
     const AtomicString& header_value = http_header_fields_.Get(kHeaderName);
     bool ok;
-    age_ = header_value.ToDouble(&ok);
-    if (!ok)
-      age_ = std::numeric_limits<double>::quiet_NaN();
+    double seconds = header_value.ToDouble(&ok);
+    if (!ok) {
+      age_ = base::nullopt;
+    } else {
+      age_ = base::TimeDelta::FromSecondsD(seconds);
+    }
     have_parsed_age_header_ = true;
   }
   return age_;
 }
 
-double ResourceResponse::Expires() const {
+base::Optional<base::Time> ResourceResponse::Expires() const {
   if (!have_parsed_expires_header_) {
     static const char kHeaderName[] = "expires";
     expires_ = ParseDateValueInHeader(http_header_fields_, kHeaderName);
@@ -363,7 +399,7 @@ double ResourceResponse::Expires() const {
   return expires_;
 }
 
-double ResourceResponse::LastModified() const {
+base::Optional<base::Time> ResourceResponse::LastModified() const {
   if (!have_parsed_last_modified_header_) {
     static const char kHeaderName[] = "last-modified";
     last_modified_ = ParseDateValueInHeader(http_header_fields_, kHeaderName);
@@ -384,7 +420,7 @@ bool ResourceResponse::IsAttachment() const {
 
 AtomicString ResourceResponse::HttpContentType() const {
   return ExtractMIMETypeFromMediaType(
-      HttpHeaderField(http_names::kContentType).DeprecatedLower());
+      HttpHeaderField(http_names::kContentType).LowerASCII());
 }
 
 bool ResourceResponse::WasCached() const {

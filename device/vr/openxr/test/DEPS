@@ -1,0 +1,4 @@
+include_rules = [
+  "+third_party/openxr/src/include/openxr",
+  "+third_party/openxr/src/src/common",
+]

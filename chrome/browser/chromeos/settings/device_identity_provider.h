@@ -13,28 +13,26 @@ namespace chromeos {
 class DeviceOAuth2TokenService;
 
 // Identity provider implementation backed by DeviceOAuth2TokenService.
-class DeviceIdentityProvider : public invalidation::IdentityProvider,
-                               public OAuth2TokenService::Observer {
+class DeviceIdentityProvider : public invalidation::IdentityProvider {
  public:
   explicit DeviceIdentityProvider(
       chromeos::DeviceOAuth2TokenService* token_service);
   ~DeviceIdentityProvider() override;
 
   // IdentityProvider:
-  std::string GetActiveAccountId() override;
+  CoreAccountId GetActiveAccountId() override;
   bool IsActiveAccountWithRefreshToken() override;
   std::unique_ptr<invalidation::ActiveAccountAccessTokenFetcher>
   FetchAccessToken(
       const std::string& oauth_consumer_name,
-      const OAuth2TokenService::ScopeSet& scopes,
+      const OAuth2AccessTokenManager::ScopeSet& scopes,
       invalidation::ActiveAccountAccessTokenCallback callback) override;
-  void InvalidateAccessToken(const OAuth2TokenService::ScopeSet& scopes,
+  void InvalidateAccessToken(const OAuth2AccessTokenManager::ScopeSet& scopes,
                              const std::string& access_token) override;
-  void SetActiveAccountId(const std::string& account_id) override;
+  void SetActiveAccountId(const CoreAccountId& account_id) override;
 
-  // OAuth2TokenService::Observer:
-  void OnRefreshTokenAvailable(const std::string& account_id) override;
-  void OnRefreshTokenRevoked(const std::string& account_id) override;
+  void OnRefreshTokenAvailable(const CoreAccountId& account_id);
+  void OnRefreshTokenRevoked(const CoreAccountId& account_id);
 
  private:
   chromeos::DeviceOAuth2TokenService* token_service_;

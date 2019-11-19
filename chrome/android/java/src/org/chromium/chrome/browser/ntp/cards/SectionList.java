@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.ntp.cards;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Log;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.ntp.cards.NewTabPageViewHolder.PartialBindCallback;
 import org.chromium.chrome.browser.ntp.snippets.CategoryInt;
 import org.chromium.chrome.browser.ntp.snippets.CategoryStatus;
@@ -16,6 +17,8 @@ import org.chromium.chrome.browser.ntp.snippets.SuggestionsSource;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.signin.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.SigninManager;
 import org.chromium.chrome.browser.suggestions.SuggestionsRanker;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.net.NetworkChangeNotifier;
@@ -44,20 +47,29 @@ public class SectionList extends InnerNode<NewTabPageViewHolder, PartialBindCall
     private final Set<Integer> mBlacklistedCategories = new HashSet<>();
     private final SuggestionsUiDelegate mUiDelegate;
     private final OfflinePageBridge mOfflinePageBridge;
+    private final SigninManager mSigninManager;
 
     public SectionList(SuggestionsUiDelegate uiDelegate, OfflinePageBridge offlinePageBridge) {
+        this(uiDelegate, offlinePageBridge, IdentityServicesProvider.getSigninManager());
+    }
+
+    @VisibleForTesting
+    public SectionList(SuggestionsUiDelegate uiDelegate, OfflinePageBridge offlinePageBridge,
+            SigninManager signinManager) {
         mUiDelegate = uiDelegate;
         mUiDelegate.getSuggestionsSource().addObserver(this);
         mOfflinePageBridge = offlinePageBridge;
 
         mUiDelegate.addDestructionObserver(this::removeAllSections);
+
+        mSigninManager = signinManager;
     }
 
     /**
      * Returns whether prefetched suggestions metrics should be reported for a given category.
      * @param category given category to check.
      */
-    static public boolean shouldReportPrefetchedSuggestionsMetrics(@CategoryInt int category) {
+    public static boolean shouldReportPrefetchedSuggestionsMetrics(@CategoryInt int category) {
         return category == KnownCategories.ARTICLES && !NetworkChangeNotifier.isOnline();
     }
 
@@ -118,7 +130,7 @@ public class SectionList extends InnerNode<NewTabPageViewHolder, PartialBindCall
         if (section == null) {
             SuggestionsRanker suggestionsRanker = mUiDelegate.getSuggestionsRanker();
             section = new SuggestionsSection(
-                    this, mUiDelegate, suggestionsRanker, mOfflinePageBridge, info);
+                    this, mUiDelegate, suggestionsRanker, mOfflinePageBridge, info, mSigninManager);
             mSections.put(category, section);
             suggestionsRanker.registerCategory(category);
             addChildren(section);

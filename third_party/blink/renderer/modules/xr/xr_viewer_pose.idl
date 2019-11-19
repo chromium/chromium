@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 // https://immersive-web.github.io/webxr/#xrviewerpose-interface
-// TODO(https://crbug.com/915021): Update definition to match spec.
 [
     SecureContext,
     Exposed=Window,
-    OriginTrialEnabled=WebXR
+    RuntimeEnabled=WebXR
 ] interface XRViewerPose : XRPose {
-  readonly attribute FrozenArray<XRView> views;
+  [SameObject, SaveSameObject] readonly attribute FrozenArray<XRView> views;
 };

@@ -49,17 +49,13 @@ class FileWriterSync final : public ScriptWrappable,
   USING_GARBAGE_COLLECTED_MIXIN(FileWriterSync);
 
  public:
-  static FileWriterSync* Create(ExecutionContext* context) {
-    return MakeGarbageCollected<FileWriterSync>(context);
-  }
-
   explicit FileWriterSync(ExecutionContext* context);
   ~FileWriterSync() override;
   void Trace(blink::Visitor*) override;
 
   void write(Blob*, ExceptionState&);
-  void seek(long long position, ExceptionState&);
-  void truncate(long long length, ExceptionState&);
+  void seek(int64_t position, ExceptionState&);
+  void truncate(int64_t length, ExceptionState&);
 
   // FileWriterBase
   void DidWriteImpl(int64_t bytes, bool complete) override;

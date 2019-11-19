@@ -114,6 +114,12 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   // when HasUploadData() is true.
   void ReadAndSendRequestBodyData();
 
+  // Send an empty body.  Must only be called if there is no upload data and
+  // sending greased HTTP/2 frames is enabled.  This allows SpdyStream to
+  // prepend a greased HTTP/2 frame to the empty DATA frame that closes the
+  // stream.
+  void SendEmptyBody();
+
   // Called when data has just been read from the request body stream;
   // does the actual sending of data.
   void OnRequestBodyReadCompleted(int status);
@@ -209,7 +215,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
 
   bool was_alpn_negotiated_;
 
-  base::WeakPtrFactory<SpdyHttpStream> weak_factory_;
+  base::WeakPtrFactory<SpdyHttpStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SpdyHttpStream);
 };

@@ -4,8 +4,9 @@
 
 #import "ios/showcase/test/showcase_eg_utils.h"
 
-#include "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
+#import "ios/showcase/test/showcase_test_case.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -16,9 +17,9 @@ namespace {
 // Matcher for the back button on screens presented from the Showcase home
 // screen.
 id<GREYMatcher> BackButton() {
-  return grey_allOf(grey_accessibilityLabel(@"SC"),
-                    grey_accessibilityTrait(UIAccessibilityTraitButton),
-                    grey_userInteractionEnabled(), nil);
+  return grey_allOf(grey_kindOfClass([UIButton class]),
+                    grey_ancestor(grey_kindOfClass([UINavigationBar class])),
+                    grey_accessibilityLabel(@"SC"), nil);
 }
 
 // Matcher for the Showcase home screen view.

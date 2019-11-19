@@ -2,15 +2,6 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-#tpm-error-message {
-  min-width: 650px;
+oobe-dialog > iron-icon.warning {
+  --iron-icon-fill-color: rgb(219, 68, 55);
 }
-
-#oobe.tpm-error-message #step-logo {
-  z-index: 1;
-}
-
-#tpm-error-message-controls {
-  text-align: end;
-}
-

@@ -36,39 +36,39 @@ function checkFontStyleValue() {
 style.fontSize = "20px";
 // We need all font longhands to build the shorthand.
 shouldBe("style.font", "''");
-shouldBe("computedStyle.font", "'normal normal 400 normal 20px / normal foobar'");
+shouldBe("computedStyle.font", "'20px foobar'");
 shouldBe("computedStyle.fontSize", "'20px'");
 shouldBe("checkFontStyleValue()", "true");
 
 style.fontSize = "20px";
 style.fontFamily = "sans-serif";
 shouldBe("style.font", "''");
-shouldBe("computedStyle.font", "'normal normal 400 normal 20px / normal sans-serif'");
+shouldBe("computedStyle.font", "'20px sans-serif'");
 shouldBe("computedStyle.fontFamily", "'sans-serif'");
 
 style.fontStyle = "italic";
 shouldBe("style.font", "''");
-shouldBe("computedStyle.font", "'italic normal 400 normal 20px / normal sans-serif'");
+shouldBe("computedStyle.font", "'italic 20px sans-serif'");
 shouldBe("computedStyle.fontStyle", "'italic'");
 
 style.fontVariant = "small-caps";
 shouldBe("style.font", "''");
-shouldBe("computedStyle.font", "'italic small-caps 400 normal 20px / normal sans-serif'");
+shouldBe("computedStyle.font", "'italic small-caps 20px sans-serif'");
 shouldBe("computedStyle.fontVariant", "'small-caps'");
 
 style.fontWeight = "bold";
 shouldBe("style.font", "''");
-shouldBe("computedStyle.font", "'italic small-caps 700 normal 20px / normal sans-serif'");
-shouldBe("computedStyle.fontWeight", "'bold'");
+shouldBe("computedStyle.font", "'italic small-caps 700 20px sans-serif'");
+shouldBe("computedStyle.fontWeight", "'700'");
 
 style.lineHeight = "40px";
 shouldBe("style.font", "''");
-shouldBe("computedStyle.font", "'italic small-caps 700 normal 20px / 40px sans-serif'");
+shouldBe("computedStyle.font", "'italic small-caps 700 20px / 40px sans-serif'");
 shouldBe("computedStyle.lineHeight", "'40px'");
 
 style.fontStretch = "ultra-expanded";
 // All font longhands are set, therefore shorthand is built
-shouldBe("style.font", "'italic small-caps bold ultra-expanded 20px/40px sans-serif'");
+shouldBe("style.font", "'italic small-caps bold ultra-expanded 20px / 40px sans-serif'");
 shouldBe("computedStyle.font", "'italic small-caps 700 ultra-expanded 20px / 40px sans-serif'");
 shouldBe("checkFontStyleValue()", "true");
 
@@ -78,7 +78,7 @@ shouldBe("style.font", "''");
 shouldBe("computedStyle.font", "''");
 // Reset for next test.
 style.fontVariantLigatures = "normal";
-shouldBe("style.font", "'italic small-caps bold ultra-expanded 20px/40px sans-serif'");
+shouldBe("style.font", "'italic small-caps bold ultra-expanded 20px / 40px sans-serif'");
 shouldBe("computedStyle.font", "'italic small-caps 700 ultra-expanded 20px / 40px sans-serif'");
 
 style.fontVariantNumeric = "lining-nums";
@@ -87,12 +87,12 @@ shouldBe("style.font", "''");
 shouldBe("computedStyle.font", "''");
 // Reset for next test.
 style.fontVariantNumeric = "normal";
-shouldBe("style.font", "'italic small-caps bold ultra-expanded 20px/40px sans-serif'");
+shouldBe("style.font", "'italic small-caps bold ultra-expanded 20px / 40px sans-serif'");
 shouldBe("computedStyle.font", "'italic small-caps 700 ultra-expanded 20px / 40px sans-serif'");
 
 style.font = "";
 shouldBe("style.font", "''");
-shouldBe("computedStyle.font", "'normal normal 400 normal 16px / normal foobar'");
+shouldBe("computedStyle.font", "'16px foobar'");
 shouldBe("checkFontStyleValue()", "true");
 
 style.fontVariantCaps = "all-small-caps";

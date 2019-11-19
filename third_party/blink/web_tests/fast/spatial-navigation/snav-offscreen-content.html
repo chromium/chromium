@@ -1,5 +1,5 @@
-<html>
-  <!--
+<!DOCTYPE html>
+<!--
     This test ensures the content overflow traversal correctness of Spatial Navigation
     algorithm: focusable elements in an scrollable containers (e.g. <div>) should be
     accessible, including offscreen content.
@@ -16,58 +16,29 @@
 
     * Expected results: All focusable element in scrollable content, including
     offscreen ones, should be accessible via SNav. -->
-  <head>
-    <style type="text/css">
-      .offscreen {
-        position: absolute;
-        left: -1000em;
-      }
-    </style>
 
-    <script src="../../resources/js-test.js"></script>
-    <script src="resources/spatial-navigation-utils.js"></script>
-    <script type="application/javascript">
+<style type="text/css">
+  .offscreen {
+    position: absolute;
+    left: -1000em;
+  }
+</style>
 
-    var resultMap = [
-      ["Left", "1"],
-      ["DONE", "DONE"]
-    ];
+<div style="margin-left:120px">
+  <a id="off" class="offscreen" href="a">offscreen content</a>
+  <a id="start" href="a">Right link</a>
+</div><br>
+<a id="1" href="a">Down link</a><br>
 
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.overridePreference("WebKitTabToLinksPreferenceKey", 1);
-      testRunner.overridePreference("WebKitSpatialNavigationEnabled", 1);
-      testRunner.waitUntilDone();
-    }
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+<script type="application/javascript">
+  var resultMap = [
+    ["Left", "1"]
+  ];
 
-    function runTest()
-    {
-      // starting the test itself: get to a known place.
-      document.getElementById("start").focus();
-
-      initTest(resultMap, testCompleted);
-    }
-
-    function testCompleted()
-    {
-      if (window.testRunner)
-        testRunner.notifyDone();
-    }
-
-    window.onload = runTest;
-
-    </script>
-  </head>
-
-
-  <body id="some-content" xmlns="http://www.w3.org/1999/xhtml">
-
-    <div style="margin-left:120px">
-      <a id="off" class="offscreen" href="a">offscreen content</a>
-      <a id="start" href="a">Right link</a>
-    </div><br>
-    <a id="1" href="a">Down link</a><br>
-    <div id="console"></div>
-  </body>
-</html>
-
+  // starting the test itself: get to a known place.
+  document.getElementById("start").focus();
+  snav.assertFocusMoves(resultMap);
+</script>

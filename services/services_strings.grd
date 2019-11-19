@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+This file contains strings for code in //services.
+-->
+
+<grit base_dir="." latest_public_release="0" current_release="1"
+      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+  <outputs>
+    <output filename="grit/services_strings.h" type="rc_header">
+      <emit emit_type="prepend"></emit>
+    </output>
+    <output filename="services_strings_am.pak" type="data_package" lang="am" />
+    <output filename="services_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="services_strings_bg.pak" type="data_package" lang="bg" />
+    <output filename="services_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="services_strings_ca.pak" type="data_package" lang="ca" />
+    <output filename="services_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="services_strings_da.pak" type="data_package" lang="da" />
+    <output filename="services_strings_de.pak" type="data_package" lang="de" />
+    <output filename="services_strings_el.pak" type="data_package" lang="el" />
+    <output filename="services_strings_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="services_strings_en-US.pak" type="data_package" lang="en" />
+    <output filename="services_strings_es.pak" type="data_package" lang="es" />
+    <output filename="services_strings_es-419.pak" type="data_package" lang="es-419" />
+    <output filename="services_strings_et.pak" type="data_package" lang="et" />
+    <output filename="services_strings_fa.pak" type="data_package" lang="fa" />
+    <output filename="services_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
+    <output filename="services_strings_fi.pak" type="data_package" lang="fi" />
+    <output filename="services_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="services_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="services_strings_gu.pak" type="data_package" lang="gu" />
+    <output filename="services_strings_he.pak" type="data_package" lang="he" />
+    <output filename="services_strings_hi.pak" type="data_package" lang="hi" />
+    <output filename="services_strings_hr.pak" type="data_package" lang="hr" />
+    <output filename="services_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="services_strings_id.pak" type="data_package" lang="id" />
+    <output filename="services_strings_it.pak" type="data_package" lang="it" />
+    <output filename="services_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="services_strings_kn.pak" type="data_package" lang="kn" />
+    <output filename="services_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="services_strings_lt.pak" type="data_package" lang="lt" />
+    <output filename="services_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="services_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="services_strings_mr.pak" type="data_package" lang="mr" />
+    <output filename="services_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="services_strings_nl.pak" type="data_package" lang="nl" />
+    <!-- The translation console uses 'no' for Norwegian Bokmål. It should
+         be 'nb'. -->
+    <output filename="services_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="services_strings_pl.pak" type="data_package" lang="pl" />
+    <output filename="services_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    <output filename="services_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="services_strings_ro.pak" type="data_package" lang="ro" />
+    <output filename="services_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="services_strings_sk.pak" type="data_package" lang="sk" />
+    <output filename="services_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="services_strings_sr.pak" type="data_package" lang="sr" />
+    <output filename="services_strings_sv.pak" type="data_package" lang="sv" />
+    <output filename="services_strings_sw.pak" type="data_package" lang="sw" />
+    <output filename="services_strings_ta.pak" type="data_package" lang="ta" />
+    <output filename="services_strings_te.pak" type="data_package" lang="te" />
+    <output filename="services_strings_th.pak" type="data_package" lang="th" />
+    <output filename="services_strings_tr.pak" type="data_package" lang="tr" />
+    <output filename="services_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="services_strings_vi.pak" type="data_package" lang="vi" />
+    <output filename="services_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="services_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+  </outputs>
+  <translations>
+    <file path="strings/services_strings_am.xtb" lang="am" />
+    <file path="strings/services_strings_ar.xtb" lang="ar" />
+    <file path="strings/services_strings_bg.xtb" lang="bg" />
+    <file path="strings/services_strings_bn.xtb" lang="bn" />
+    <file path="strings/services_strings_ca.xtb" lang="ca" />
+    <file path="strings/services_strings_cs.xtb" lang="cs" />
+    <file path="strings/services_strings_da.xtb" lang="da" />
+    <file path="strings/services_strings_de.xtb" lang="de" />
+    <file path="strings/services_strings_el.xtb" lang="el" />
+    <file path="strings/services_strings_en-GB.xtb" lang="en-GB" />
+    <file path="strings/services_strings_es.xtb" lang="es" />
+    <file path="strings/services_strings_es-419.xtb" lang="es-419" />
+    <file path="strings/services_strings_et.xtb" lang="et" />
+    <file path="strings/services_strings_fa.xtb" lang="fa" />
+    <file path="strings/services_strings_fi.xtb" lang="fi" />
+    <file path="strings/services_strings_fil.xtb" lang="fil" />
+    <file path="strings/services_strings_fr.xtb" lang="fr" />
+    <file path="strings/services_strings_gu.xtb" lang="gu" />
+    <file path="strings/services_strings_hi.xtb" lang="hi" />
+    <file path="strings/services_strings_hr.xtb" lang="hr" />
+    <file path="strings/services_strings_hu.xtb" lang="hu" />
+    <file path="strings/services_strings_id.xtb" lang="id" />
+    <file path="strings/services_strings_it.xtb" lang="it" />
+    <!-- The translation console uses 'iw' for Hebrew, but we use 'he'. -->
+    <file path="strings/services_strings_iw.xtb" lang="he" />
+    <file path="strings/services_strings_ja.xtb" lang="ja" />
+    <file path="strings/services_strings_kn.xtb" lang="kn" />
+    <file path="strings/services_strings_ko.xtb" lang="ko" />
+    <file path="strings/services_strings_lt.xtb" lang="lt" />
+    <file path="strings/services_strings_lv.xtb" lang="lv" />
+    <file path="strings/services_strings_ml.xtb" lang="ml" />
+    <file path="strings/services_strings_mr.xtb" lang="mr" />
+    <file path="strings/services_strings_ms.xtb" lang="ms" />
+    <file path="strings/services_strings_nl.xtb" lang="nl" />
+    <file path="strings/services_strings_no.xtb" lang="no" />
+    <file path="strings/services_strings_pl.xtb" lang="pl" />
+    <file path="strings/services_strings_pt-BR.xtb" lang="pt-BR" />
+    <file path="strings/services_strings_pt-PT.xtb" lang="pt-PT" />
+    <file path="strings/services_strings_ro.xtb" lang="ro" />
+    <file path="strings/services_strings_ru.xtb" lang="ru" />
+    <file path="strings/services_strings_sk.xtb" lang="sk" />
+    <file path="strings/services_strings_sl.xtb" lang="sl" />
+    <file path="strings/services_strings_sr.xtb" lang="sr" />
+    <file path="strings/services_strings_sv.xtb" lang="sv" />
+    <file path="strings/services_strings_sw.xtb" lang="sw" />
+    <file path="strings/services_strings_ta.xtb" lang="ta" />
+    <file path="strings/services_strings_te.xtb" lang="te" />
+    <file path="strings/services_strings_th.xtb" lang="th" />
+    <file path="strings/services_strings_tr.xtb" lang="tr" />
+    <file path="strings/services_strings_uk.xtb" lang="uk" />
+    <file path="strings/services_strings_vi.xtb" lang="vi" />
+    <file path="strings/services_strings_zh-CN.xtb" lang="zh-CN" />
+    <file path="strings/services_strings_zh-TW.xtb" lang="zh-TW" />
+  </translations>
+  <release seq="1" allow_pseudo="false">
+    <messages fallback_to_english="true">
+      <message name="IDS_PROXY_RESOLVER_DISPLAY_NAME" desc="The name of the display name (in system task manager, etc) of the service process used for out-of-process V8 proxy resolution.">
+        V8 Proxy Resolver
+      </message>
+    </messages>
+  </release>
+</grit>

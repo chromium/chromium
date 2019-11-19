@@ -46,7 +46,10 @@ SyncPointOrderData::OrderFence::~OrderFence() = default;
 
 SyncPointOrderData::SyncPointOrderData(SyncPointManager* sync_point_manager,
                                        SequenceId sequence_id)
-    : sync_point_manager_(sync_point_manager), sequence_id_(sequence_id) {}
+    : sync_point_manager_(sync_point_manager), sequence_id_(sequence_id) {
+  // Creation could happen outside of GPU thread.
+  DETACH_FROM_THREAD(processing_thread_checker_);
+}
 
 SyncPointOrderData::~SyncPointOrderData() {
   DCHECK(destroyed_);
@@ -263,8 +266,12 @@ void SyncPointClientState::ReleaseFenceSyncHelper(uint64_t release) {
   {
     base::AutoLock auto_lock(fence_sync_lock_);
 
-    DLOG_IF(ERROR, release <= fence_sync_release_)
-        << "Client submitted fence releases out of order.";
+    if (release <= fence_sync_release_) {
+      DLOG(ERROR) << "Client submitted fence releases out of order.";
+      DCHECK(release_callback_queue_.empty() ||
+             release_callback_queue_.top().release_count > release);
+      return;
+    }
     fence_sync_release_ = release;
 
     while (!release_callback_queue_.empty() &&

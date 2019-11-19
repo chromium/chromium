@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "base/bind.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
@@ -52,11 +53,12 @@ class TtsPlatformImplMac : public content::TtsPlatformImpl {
  public:
   bool PlatformImplAvailable() override { return true; }
 
-  bool Speak(int utterance_id,
+  void Speak(int utterance_id,
              const std::string& utterance,
              const std::string& lang,
              const content::VoiceData& voice,
-             const content::UtteranceContinuousParameters& params) override;
+             const content::UtteranceContinuousParameters& params,
+             base::OnceCallback<void(bool)> on_speak_finished) override;
 
   bool StopSpeaking() override;
 
@@ -73,6 +75,7 @@ class TtsPlatformImplMac : public content::TtsPlatformImpl {
   void OnSpeechEvent(NSSpeechSynthesizer* sender,
                      content::TtsEventType event_type,
                      int char_index,
+                     int char_length,
                      const std::string& error_message);
 
   // Get the single instance of this class.
@@ -81,6 +84,13 @@ class TtsPlatformImplMac : public content::TtsPlatformImpl {
  private:
   TtsPlatformImplMac();
   ~TtsPlatformImplMac() override;
+
+  void ProcessSpeech(int utterance_id,
+                     const std::string& lang,
+                     const content::VoiceData& voice,
+                     const content::UtteranceContinuousParameters& params,
+                     base::OnceCallback<void(bool)> on_speak_finished,
+                     const std::string& parsed_utterance);
 
   base::scoped_nsobject<SingleUseSpeechSynthesizer> speech_synthesizer_;
   base::scoped_nsobject<ChromeTtsDelegate> delegate_;
@@ -91,6 +101,8 @@ class TtsPlatformImplMac : public content::TtsPlatformImpl {
 
   friend struct base::DefaultSingletonTraits<TtsPlatformImplMac>;
 
+  base::WeakPtrFactory<TtsPlatformImplMac> weak_factory_;
+
   DISALLOW_COPY_AND_ASSIGN(TtsPlatformImplMac);
 };
 
@@ -99,20 +111,36 @@ content::TtsPlatformImpl* content::TtsPlatformImpl::GetInstance() {
   return TtsPlatformImplMac::GetInstance();
 }
 
-bool TtsPlatformImplMac::Speak(
+void TtsPlatformImplMac::Speak(
     int utterance_id,
     const std::string& utterance,
     const std::string& lang,
     const content::VoiceData& voice,
-    const content::UtteranceContinuousParameters& params) {
-  // TODO: convert SSML to SAPI xml. http://crbug.com/88072
-  utterance_ = utterance;
+    const content::UtteranceContinuousParameters& params,
+    base::OnceCallback<void(bool)> on_speak_finished) {
+  // Parse SSML and process speech.
+  content::TtsController::GetInstance()->StripSSML(
+      utterance, base::BindOnce(&TtsPlatformImplMac::ProcessSpeech,
+                                weak_factory_.GetWeakPtr(), utterance_id, lang,
+                                voice, params, std::move(on_speak_finished)));
+}
+
+void TtsPlatformImplMac::ProcessSpeech(
+    int utterance_id,
+    const std::string& lang,
+    const content::VoiceData& voice,
+    const content::UtteranceContinuousParameters& params,
+    base::OnceCallback<void(bool)> on_speak_finished,
+    const std::string& parsed_utterance) {
+  utterance_ = parsed_utterance;
   paused_ = false;
 
   NSString* utterance_nsstring =
       [NSString stringWithUTF8String:utterance_.c_str()];
-  if (!utterance_nsstring)
-    return false;
+  if (!utterance_nsstring) {
+    std::move(on_speak_finished).Run(false);
+    return;
+  }
 
   // Deliberately construct a new speech synthesizer every time Speak is
   // called, otherwise there's no way to know whether calls to the delegate
@@ -165,7 +193,7 @@ bool TtsPlatformImplMac::Speak(
     content::TtsController* controller = content::TtsController::GetInstance();
     controller->OnTtsEvent(utterance_id_, content::TTS_EVENT_START, 0, -1, "");
   }
-  return success;
+  std::move(on_speak_finished).Run(success);
 }
 
 bool TtsPlatformImplMac::StopSpeaking() {
@@ -255,6 +283,7 @@ void TtsPlatformImplMac::GetVoices(std::vector<content::VoiceData>* outVoices) {
 void TtsPlatformImplMac::OnSpeechEvent(NSSpeechSynthesizer* sender,
                                        content::TtsEventType event_type,
                                        int char_index,
+                                       int char_length,
                                        const std::string& error_message) {
   // Don't send events from an utterance that's already completed.
   // This depends on the fact that we construct a new NSSpeechSynthesizer
@@ -265,13 +294,12 @@ void TtsPlatformImplMac::OnSpeechEvent(NSSpeechSynthesizer* sender,
   if (event_type == content::TTS_EVENT_END)
     char_index = utterance_.size();
 
-  // TODO: Use mac's word length here.
   content::TtsController::GetInstance()->OnTtsEvent(
-      utterance_id_, event_type, char_index, -1, error_message);
+      utterance_id_, event_type, char_index, char_length, error_message);
   last_char_index_ = char_index;
 }
 
-TtsPlatformImplMac::TtsPlatformImplMac() {
+TtsPlatformImplMac::TtsPlatformImplMac() : weak_factory_(this) {
   utterance_id_ = -1;
   paused_ = false;
 
@@ -296,7 +324,7 @@ TtsPlatformImplMac* TtsPlatformImplMac::GetInstance() {
 
 - (void)speechSynthesizer:(NSSpeechSynthesizer*)sender
         didFinishSpeaking:(BOOL)finished_speaking {
-  ttsImplMac_->OnSpeechEvent(sender, content::TTS_EVENT_END, 0, "");
+  ttsImplMac_->OnSpeechEvent(sender, content::TTS_EVENT_END, 0, -1, "");
 }
 
 - (void)speechSynthesizer:(NSSpeechSynthesizer*)sender
@@ -308,7 +336,7 @@ TtsPlatformImplMac* TtsPlatformImplMac::GetInstance() {
     return;
 
   ttsImplMac_->OnSpeechEvent(sender, content::TTS_EVENT_WORD,
-                             word_range.location, "");
+                             word_range.location, word_range.length, "");
 }
 
 - (void)speechSynthesizer:(NSSpeechSynthesizer*)sender
@@ -322,7 +350,7 @@ TtsPlatformImplMac* TtsPlatformImplMac::GetInstance() {
 
   std::string message_utf8 = base::SysNSStringToUTF8(message);
   ttsImplMac_->OnSpeechEvent(sender, content::TTS_EVENT_ERROR, character_index,
-                             message_utf8);
+                             -1, message_utf8);
 }
 
 @end

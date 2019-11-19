@@ -30,7 +30,7 @@ class UsersPrivateDelegateFactory : public BrowserContextKeyedServiceFactory {
   UsersPrivateDelegateFactory();
   ~UsersPrivateDelegateFactory() override;
 
-  // BrowserContextKeyedBaseFactory implementation.
+  // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
 

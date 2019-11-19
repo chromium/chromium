@@ -57,14 +57,6 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
                    const NetLogWithSource& net_log);
   virtual ~HttpStreamParser();
 
-  // Sets whether or not HTTP/0.9 is only allowed on default ports. It's not
-  // allowed, by default.
-  void set_http_09_on_non_default_ports_enabled(
-      bool http_09_on_non_default_ports_enabled) {
-    http_09_on_non_default_ports_enabled_ =
-        http_09_on_non_default_ports_enabled;
-  }
-
   // These functions implement the interface described in HttpStream with
   // some additional functionality
   int SendRequest(const std::string& request_line,
@@ -72,6 +64,8 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
                   const NetworkTrafficAnnotationTag& traffic_annotation,
                   HttpResponseInfo* response,
                   CompletionOnceCallback callback);
+
+  int ConfirmHandshake(CompletionOnceCallback callback);
 
   int ReadResponseHeaders(CompletionOnceCallback callback);
 
@@ -183,6 +177,8 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   // This handles most of the logic for DoReadHeadersComplete.
   int HandleReadHeaderResult(int result);
 
+  void RunConfirmHandshakeCallback(int rv);
+
   // Examines |read_buf_| to find the start and end of the headers. If they are
   // found, parse them with DoParseResponseHeaders().  Return the offset for
   // the end of the headers, or -1 if the complete headers were not found, or
@@ -215,9 +211,6 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   // Size of just the request headers.  May be less than the length of
   // |request_headers_| if the body was merged with the headers.
   int request_headers_length_;
-
-  // True if HTTP/0.9 should be permitted on non-default ports.
-  bool http_09_on_non_default_ports_enabled_;
 
   // Temporary buffer for reading.
   scoped_refptr<GrowableIOBuffer> read_buf_;
@@ -266,6 +259,9 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
   scoped_refptr<IOBuffer> user_read_buf_;
   int user_read_buf_len_;
 
+  // The callback to notify a user that the handshake has been confirmed.
+  CompletionOnceCallback confirm_handshake_callback_;
+
   // The callback to notify a user that their request or response is
   // complete or there was an error
   CompletionOnceCallback callback_;
@@ -296,7 +292,7 @@ class NET_EXPORT_PRIVATE HttpStreamParser {
 
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
 
-  base::WeakPtrFactory<HttpStreamParser> weak_ptr_factory_;
+  base::WeakPtrFactory<HttpStreamParser> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HttpStreamParser);
 };

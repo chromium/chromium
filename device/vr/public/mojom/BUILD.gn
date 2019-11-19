@@ -15,12 +15,13 @@ mojom_component("mojom") {
   ]
 
   public_deps = [
+    ":test_mojom",
     "//device/gamepad/public/mojom",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
-    "//ui/display/mojo:interfaces",
-    "//ui/gfx/geometry/mojo",
-    "//ui/gfx/mojo:mojo",
+    "//ui/display/mojom:mojom",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
   ]
 
   enabled_features = []
@@ -33,6 +34,9 @@ mojom_component("mojom") {
   if (enable_windows_mr) {
     enabled_features += [ "enable_windows_mr" ]
   }
+  if (enable_openxr) {
+    enabled_features += [ "enable_openxr" ]
+  }
 }
 
 mojom_component("test_mojom") {
@@ -44,7 +48,7 @@ mojom_component("test_mojom") {
   ]
 
   public_deps = [
-    "//ui/gfx/geometry/mojo",
-    "//ui/gfx/mojo:mojo",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/mojom",
   ]
 }

@@ -20,7 +20,9 @@
 
 // https://dom.spec.whatwg.org/#interface-nodelist
 
-interface NodeList {
+[
+    Exposed=Window
+] interface NodeList {
     [Affects=Nothing] getter Node? item(unsigned long index);
     [Affects=Nothing] readonly attribute unsigned long length;
     iterable<Node>;

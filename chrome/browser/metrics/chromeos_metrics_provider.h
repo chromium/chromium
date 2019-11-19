@@ -14,6 +14,10 @@
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_provider.h"
 
+namespace arc {
+struct ArcFeatures;
+}
+
 namespace device {
 class BluetoothAdapter;
 }
@@ -23,6 +27,7 @@ extern const base::Feature kUmaShortHWClass;
 }
 
 namespace metrics {
+class CachedMetricsProfile;
 class ChromeUserMetricsExtension;
 }
 
@@ -61,6 +66,10 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   // run.
   void InitTaskGetBluetoothAdapter(const base::Closure& callback);
 
+  // Retrieves ARC features using ArcFeaturesParser. When this task is complete,
+  // |callback| is run.
+  void InitTaskGetArcFeatures(const base::RepeatingClosure& callback);
+
   // metrics::MetricsProvider:
   void Init() override;
   void AsyncInit(const base::Closure& done_callback) override;
@@ -73,6 +82,8 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* uma_proto) override;
 
  private:
+  void ProvideAccessibilityMetrics();
+
   // Update the number of users logged into a multi-profile session.
   // If the number of users change while the log is open, the call invalidates
   // the user count value.
@@ -88,11 +99,25 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   void SetFullHardwareClass(base::Closure callback,
                             std::string full_hardware_class);
 
+  // Updates ARC-related system profile fields, then calls the callback.
+  void OnArcFeaturesParsed(base::RepeatingClosure callback,
+                           base::Optional<arc::ArcFeatures> features);
+
   // Writes info about paired Bluetooth devices on this system.
   void WriteBluetoothProto(metrics::SystemProfileProto* system_profile_proto);
 
+  // Called from the ProvideCurrentSessionData(...) to record UserType.
+  void UpdateUserTypeUMA();
+
+  // Writes info about the linked Android phone if there is one.
+  void WriteLinkedAndroidPhoneProto(
+      metrics::SystemProfileProto* system_profile_proto);
+
   // For collecting systemwide performance data via the UMA channel.
   std::unique_ptr<metrics::ProfileProvider> profile_provider_;
+
+  // Use the first signed-in profile for profile-dependent metrics.
+  std::unique_ptr<metrics::CachedMetricsProfile> cached_profile_;
 
   // Bluetooth Adapter instance for collecting information about paired devices.
   scoped_refptr<device::BluetoothAdapter> adapter_;
@@ -112,7 +137,10 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   // the configured system components such as CPU, WiFi adapter, etc.
   std::string full_hardware_class_;
 
-  base::WeakPtrFactory<ChromeOSMetricsProvider> weak_ptr_factory_;
+  // ARC release version obtained from build properties.
+  base::Optional<std::string> arc_release_ = base::nullopt;
+
+  base::WeakPtrFactory<ChromeOSMetricsProvider> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeOSMetricsProvider);
 };

@@ -12,11 +12,6 @@
 
 namespace net {
 
-// Return a std::string of binary data represented by the hex string |input|.
-// For example, HexDecode("48656c6c6f20776f726c6421") == "Hello world!"
-// This is the inverse function of base::HexEncode().
-NET_EXPORT_PRIVATE std::string HexDecode(base::StringPiece input);
-
 // Return a std::string containing hex and ASCII representations of the binary
 // buffer |input|, with offsets at the beginning of each line, in the style of
 // hexdump.  Non-printable characters will be shown as '.' in the ASCII output.

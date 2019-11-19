@@ -6,11 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BROADCASTCHANNEL_BROADCAST_CHANNEL_H_
 
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/associated_binding.h"
-#include "third_party/blink/public/platform/modules/broadcastchannel/broadcast_channel.mojom-blink.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -65,8 +67,13 @@ class BroadcastChannel final : public EventTargetWithInlineData,
   scoped_refptr<const SecurityOrigin> origin_;
   String name_;
 
-  mojo::AssociatedBinding<mojom::blink::BroadcastChannelClient> binding_;
-  mojom::blink::BroadcastChannelClientAssociatedPtr remote_client_;
+  mojo::AssociatedReceiver<mojom::blink::BroadcastChannelClient> receiver_{
+      this};
+  mojo::AssociatedRemote<mojom::blink::BroadcastChannelClient> remote_client_;
+
+  // Notifies the scheduler that a broadcast channel is active.
+  FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
+      feature_handle_for_scheduler_;
 
   DISALLOW_COPY_AND_ASSIGN(BroadcastChannel);
 };

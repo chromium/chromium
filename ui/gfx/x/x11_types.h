@@ -19,6 +19,7 @@ typedef union _XEvent XEvent;
 typedef struct _XImage XImage;
 typedef struct _XGC *GC;
 typedef struct _XDisplay XDisplay;
+typedef struct _XRegion XRegion;
 typedef struct __GLXFBConfigRec *GLXFBConfig;
 typedef XID GLXWindow;
 typedef XID GLXDrawable;

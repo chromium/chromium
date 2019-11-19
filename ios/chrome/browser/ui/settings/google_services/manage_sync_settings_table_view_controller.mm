@@ -16,6 +16,9 @@
 #error "This file requires ARC support."
 #endif
 
+NSString* const kManageSyncTableViewAccessibilityIdentifier =
+    @"ManageSyncTableViewAccessibilityIdentifier";
+
 @implementation ManageSyncSettingsTableViewController
 
 #pragma mark - UIViewController
@@ -23,7 +26,7 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier =
-      @"manage_sync_settings_view_controller";
+      kManageSyncTableViewAccessibilityIdentifier;
   self.title = l10n_util::GetNSString(IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE);
 }
 

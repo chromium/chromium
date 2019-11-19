@@ -25,7 +25,6 @@ struct URLLoaderCompletionStatus;
 
 namespace content {
 
-class NavigationData;
 struct GlobalRequestID;
 struct SubresourceLoaderParams;
 
@@ -52,13 +51,12 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
   //
   // |download_policy| specifies if downloading is disallowed.
   virtual void OnResponseStarted(
-      const scoped_refptr<network::ResourceResponse>& response,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      std::unique_ptr<NavigationData> navigation_data,
+      const scoped_refptr<network::ResourceResponse>& response_head,
+      mojo::ScopedDataPipeConsumerHandle response_body,
       const GlobalRequestID& request_id,
       bool is_download,
       NavigationDownloadPolicy download_policy,
-      bool is_stream,
       base::Optional<SubresourceLoaderParams> subresource_loader_params) = 0;
 
   // Called if the request fails before receving a response. Specific

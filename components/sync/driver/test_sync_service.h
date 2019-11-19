@@ -10,7 +10,7 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/test_sync_user_settings.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
@@ -38,16 +38,22 @@ class TestSyncService : public SyncService {
   void SetPreferredDataTypes(const ModelTypeSet& types);
   void SetActiveDataTypes(const ModelTypeSet& types);
   void SetLastCycleSnapshot(const SyncCycleSnapshot& snapshot);
+  void SetUserDemographics(
+      const UserDemographicsResult& user_demographics_result);
+  void SetExperimentalAuthenticationKey(
+      std::unique_ptr<crypto::ECPrivateKey> experimental_authentication_key);
+
   // Convenience versions of the above, for when the caller doesn't care about
   // the particular values in the snapshot, just whether there is one.
   void SetEmptyLastCycleSnapshot();
   void SetNonEmptyLastCycleSnapshot();
   void SetDetailedSyncStatus(bool engine_available, SyncStatus status);
   void SetPassphraseRequired(bool required);
-  void SetPassphraseRequiredForDecryption(bool required);
+  void SetPassphraseRequiredForPreferredDataTypes(bool required);
   void SetIsUsingSecondaryPassphrase(bool enabled);
 
   void FireStateChanged();
+  void FireSyncCycleCompleted();
 
   // SyncService implementation.
   syncer::SyncUserSettings* GetUserSettings() override;
@@ -58,49 +64,49 @@ class TestSyncService : public SyncService {
   CoreAccountInfo GetAuthenticatedAccountInfo() const override;
   bool IsAuthenticatedAccountPrimary() const override;
   GoogleServiceAuthError GetAuthError() const override;
+  base::Time GetAuthErrorTime() const override;
+  bool RequiresClientUpgrade() const override;
+  std::unique_ptr<crypto::ECPrivateKey> GetExperimentalAuthenticationKey()
+      const override;
 
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
       override;
   bool IsSetupInProgress() const override;
 
   ModelTypeSet GetRegisteredDataTypes() const override;
-  ModelTypeSet GetForcedDataTypes() const override;
   ModelTypeSet GetPreferredDataTypes() const override;
   ModelTypeSet GetActiveDataTypes() const override;
 
   void StopAndClear() override;
   void OnDataTypeRequestsSyncStartup(ModelType type) override;
   void TriggerRefresh(const ModelTypeSet& types) override;
-  void ReenableDatatype(ModelType type) override;
-  void ReadyForStartChanged(syncer::ModelType type) override;
+  void DataTypePreconditionChanged(syncer::ModelType type) override;
 
   void AddObserver(SyncServiceObserver* observer) override;
   void RemoveObserver(SyncServiceObserver* observer) override;
   bool HasObserver(const SyncServiceObserver* observer) const override;
 
-  void AddPreferenceProvider(SyncTypePreferenceProvider* provider) override;
-  void RemovePreferenceProvider(SyncTypePreferenceProvider* provider) override;
-  bool HasPreferenceProvider(
-      SyncTypePreferenceProvider* provider) const override;
-
   UserShare* GetUserShare() const override;
 
-  SyncTokenStatus GetSyncTokenStatus() const override;
-  bool QueryDetailedSyncStatus(SyncStatus* result) const override;
-  base::Time GetLastSyncedTime() const override;
-  SyncCycleSnapshot GetLastCycleSnapshot() const override;
-  std::unique_ptr<base::Value> GetTypeStatusMap() override;
-  const GURL& sync_service_url() const override;
-  std::string unrecoverable_error_message() const override;
-  base::Location unrecoverable_error_location() const override;
+  SyncTokenStatus GetSyncTokenStatusForDebugging() const override;
+  bool QueryDetailedSyncStatusForDebugging(SyncStatus* result) const override;
+  base::Time GetLastSyncedTimeForDebugging() const override;
+  SyncCycleSnapshot GetLastCycleSnapshotForDebugging() const override;
+  std::unique_ptr<base::Value> GetTypeStatusMapForDebugging() override;
+  const GURL& GetSyncServiceUrlForDebugging() const override;
+  std::string GetUnrecoverableErrorMessageForDebugging() const override;
+  base::Location GetUnrecoverableErrorLocationForDebugging() const override;
   void AddProtocolEventObserver(ProtocolEventObserver* observer) override;
   void RemoveProtocolEventObserver(ProtocolEventObserver* observer) override;
   void AddTypeDebugInfoObserver(TypeDebugInfoObserver* observer) override;
   void RemoveTypeDebugInfoObserver(TypeDebugInfoObserver* observer) override;
   base::WeakPtr<JsController> GetJsController() override;
-  void GetAllNodes(const base::Callback<void(std::unique_ptr<base::ListValue>)>&
-                       callback) override;
+  void GetAllNodesForDebugging(
+      const base::Callback<void(std::unique_ptr<base::ListValue>)>& callback)
+      override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
+  UserDemographicsResult GetUserNoisedBirthYearAndGender(
+      base::Time now) override;
 
   // KeyedService implementation.
   void Shutdown() override;
@@ -127,6 +133,10 @@ class TestSyncService : public SyncService {
   base::ObserverList<syncer::SyncServiceObserver>::Unchecked observers_;
 
   GURL sync_service_url_;
+
+  UserDemographicsResult user_demographics_result_;
+
+  std::unique_ptr<crypto::ECPrivateKey> experimental_authentication_key_;
 
   DISALLOW_COPY_AND_ASSIGN(TestSyncService);
 };

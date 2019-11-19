@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL scriptPercentScaleDown=80, scriptScriptPercentScaleDown=40 assert_equals: expected "0" but got ""
+FAIL scriptPercentScaleDown=0, scriptScriptPercentScaleDown=40 assert_equals: expected "0" but got ""
+FAIL scriptPercentScaleDown=80, scriptScriptPercentScaleDown=0 assert_equals: expected "0" but got ""
+FAIL No MATH table assert_equals: expected "0" but got ""
+Harness: the test ran to completion.
+

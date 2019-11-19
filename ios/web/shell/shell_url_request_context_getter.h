@@ -21,14 +21,18 @@ class ProxyConfigService;
 class TransportSecurityPersister;
 class URLRequestContext;
 class URLRequestContextStorage;
+class SystemCookieStore;
 }
 
 namespace web {
+
+class BrowserState;
 
 class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
  public:
   ShellURLRequestContextGetter(
       const base::FilePath& base_path,
+      web::BrowserState* browser_state,
       const scoped_refptr<base::SingleThreadTaskRunner>& network_task_runner);
 
   // net::URLRequestContextGetter implementation.
@@ -49,6 +53,12 @@ class ShellURLRequestContextGetter : public net::URLRequestContextGetter {
   std::unique_ptr<net::NetLog> net_log_;
   std::unique_ptr<net::TransportSecurityPersister>
       transport_security_persister_;
+  // SystemCookieStore must be created on UI thread in
+  // ShellURLRequestContextGetter's constructor. Later the ownership is passed
+  // to net::URLRequestContextStorage on IO thread. |system_cookie_store_| is
+  // created in constructor and cleared in GetURLRequestContext() where
+  // net::URLRequestContextStorage is lazily created.
+  std::unique_ptr<net::SystemCookieStore> system_cookie_store_;
 
   DISALLOW_COPY_AND_ASSIGN(ShellURLRequestContextGetter);
 };

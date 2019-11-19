@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<resources>
+    <dimen name="autofill_assistant_bottombar_horizontal_spacing">24dp</dimen>
+    <dimen name="autofill_assistant_bottombar_vertical_spacing">20dp</dimen>
+    <dimen name="autofill_assistant_details_image_size">60dp</dimen>
+    <dimen name="autofill_assistant_poodle_size">24dp</dimen>
+    <dimen name="autofill_assistant_profile_size">24dp</dimen>
+    <dimen name="autofill_assistant_info_box_spacing">16dp</dimen>
+    <dimen name="autofill_assistant_poodle_view_size">34dp</dimen>
+    <dimen name="autofill_assistant_filled_button_border_width">0dp</dimen>
+    <dimen name="autofill_assistant_button_corner_radius">40dp</dimen>
+    <!-- Sets drawable inset to 4dp so that min height of the button background drawable is 40dp
+         while maintaining a 48dp min height of the button. -->
+    <dimen name="autofill_assistant_button_bg_vertical_inset">4dp</dimen>
+    <dimen name="autofill_assistant_suggestions_spacing">16dp</dimen>
+    <dimen name="autofill_assistant_actions_spacing">8dp</dimen>
+    <dimen name="autofill_assistant_actions_shadow_width">8dp</dimen>
+    <dimen name="autofill_assistant_actions_gradient_width">160dp</dimen>
+    <dimen name="autofill_assistant_toolbar_vertical_padding">8dp</dimen>
+    <dimen name="autofill_assistant_toolbar_swipe_handle_height">4dp</dimen>
+    <dimen name="autofill_assistant_choicelist_edit_button_size">20dp</dimen>
+    <dimen name="autofill_assistant_minimum_touch_target_size">48dp</dimen>
+
+    <dimen name="autofill_assistant_payment_request_choice_top_bottom_padding">8dp</dimen>
+    <!-- This is less than autofill_assistant_bottombar_horizontal_spacing to allow for larger
+         touch targets at the right side of the PR, while keeping alignment with bottom bar. -->
+    <dimen name="autofill_assistant_payment_request_choice_list_padding_end">12dp</dimen>
+    <!-- Amount of padding between a PR section and the next divider (and vice-versa). -->
+    <dimen name="autofill_assistant_payment_request_section_padding">12dp</dimen>
+    <!-- Amount of padding between PR section title and summary/expanded part. -->
+    <dimen name="autofill_assistant_payment_request_title_padding">2dp</dimen>
+    <!-- Payment method needs slightly more padding to because of vendor logo. in summary/expanded part. -->
+    <dimen name="autofill_assistant_payment_request_payment_method_title_padding">4dp</dimen>
+    <dimen name="autofill_assistant_payment_request_column_spacing">8dp</dimen>
+</resources>

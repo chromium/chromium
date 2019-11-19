@@ -3,34 +3,31 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 <resources>
+    <!-- The color of the ripple effect on clickable elements. -->
     <attr name="rippleColor" format="color"/>
-
-    <declare-styleable name="DualControlLayout">
-        <attr name="stackedMargin" format="reference"/>
-        <attr name="primaryButtonText" format="reference|string"/>
-        <attr name="secondaryButtonText" format="reference|string"/>
-        <attr name="buttonAlignment" format="enum">
-            <enum name="start" value="0" />
-            <enum name="end" value="1" />
-            <enum name="apart" value="2" />
-        </attr>
-    </declare-styleable>
+    <!-- The top or bottom inset of a drawable. -->
+    <attr name="verticalInset" format="reference|dimension"/>
 
     <declare-styleable name="ButtonCompat">
+        <!-- The color of the button background. -->
         <attr name="buttonColor" format="color"/>
         <attr name="rippleColor"/>
+        <!-- Whether the button is elevated. -->
         <attr name="buttonRaised" format="boolean"/>
+        <!-- The vertical inset of the button background drawable. -->
+        <attr name="verticalInset"/>
     </declare-styleable>
 
     <declare-styleable name="ChipView">
         <attr name="chipColor" format="color"/>
         <attr name="chipStyle" format="reference"/>
-        <attr name="cornerRadius" format="reference|dimension"/>
+        <attr name="cornerRadius" format="dimension"/>
         <attr name="iconWidth" format="reference|dimension"/>
         <attr name="iconHeight" format="reference|dimension"/>
         <attr name="primaryTextAppearance" format="reference"/>
         <attr name="secondaryTextAppearance" format="reference"/>
         <attr name="rippleColor"/>
+        <attr name="verticalInset"/>
     </declare-styleable>
 
     <declare-styleable name="TextViewWithLeading">
@@ -42,13 +39,5 @@
              becomes visible or when forced to do so. The layout resource must be a
              valid reference to a layout. -->
         <attr name="layout" format="reference" />
-    </declare-styleable>
-
-    <declare-styleable name="RoundedCornerImageView">
-        <attr name="cornerRadiusTopStart" format="dimension" />
-        <attr name="cornerRadiusTopEnd" format="dimension" />
-        <attr name="cornerRadiusBottomStart" format="dimension" />
-        <attr name="cornerRadiusBottomEnd" format="dimension" />
-        <attr name="roundedfillColor" format="reference|color" />
     </declare-styleable>
 </resources>

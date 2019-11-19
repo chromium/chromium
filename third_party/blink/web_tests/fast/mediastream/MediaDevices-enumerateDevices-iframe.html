@@ -25,8 +25,7 @@ window.onmessage = t.step_func(event => {
   navigator.mediaDevices.enumerateDevices().then(main_devices => {
     assert_equals(main_devices.length, iframe_devices.length);
     for (var i = 0; i < main_devices.length; i++) {
-      assert_equals(main_devices[i].deviceId, iframe_devices[i].deviceId);
-      assert_equals(main_devices[i].groupId, iframe_devices[i].groupId);
+      assert_not_equals(main_devices[i].groupId, iframe_devices[i].groupId);
       assert_equals(main_devices[i].kind, iframe_devices[i].kind);
       assert_equals(main_devices[i].label, iframe_devices[i].label);
     }

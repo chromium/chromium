@@ -1,0 +1,22 @@
+<html>
+<body>
+<div> div tag </div>
+<script>
+	var img = document.createElement("img");
+	img.src="image.png";
+	document.getElementsByTagName('div')[0].appendChild(img);
+
+	function checkImage() {
+		sendValueToTest(document.images[0].complete);
+	}
+
+	function imageSrc() {
+		sendValueToTest(document.images[0].src);
+	}
+
+	function sendValueToTest(value) {
+	  window.domAutomationController.send(value);
+	}
+</script>
+</body>
+</html>

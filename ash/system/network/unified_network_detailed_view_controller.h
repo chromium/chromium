@@ -5,8 +5,10 @@
 #ifndef ASH_SYSTEM_NETWORK_UNIFIED_NETWORK_DETAILED_VIEW_CONTROLLER_H_
 #define ASH_SYSTEM_NETWORK_UNIFIED_NETWORK_DETAILED_VIEW_CONTROLLER_H_
 
-#include "ash/system/network/tray_network_state_observer.h"
+#include <memory>
+
 #include "ash/system/unified/detailed_view_controller.h"
+#include "base/macros.h"
 
 namespace ash {
 
@@ -18,9 +20,7 @@ class DetailedViewDelegate;
 class UnifiedSystemTrayController;
 
 // Controller of Network detailed view in UnifiedSystemTray.
-class UnifiedNetworkDetailedViewController
-    : public DetailedViewController,
-      public TrayNetworkStateObserver::Delegate {
+class UnifiedNetworkDetailedViewController : public DetailedViewController {
  public:
   explicit UnifiedNetworkDetailedViewController(
       UnifiedSystemTrayController* tray_controller);
@@ -29,12 +29,8 @@ class UnifiedNetworkDetailedViewController
   // DetailedViewControllerBase:
   views::View* CreateView() override;
 
-  // TrayNetworkStateObserver::Delegate:
-  void NetworkStateChanged(bool notify_a11y) override;
-
  private:
   const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
-  const std::unique_ptr<TrayNetworkStateObserver> network_state_observer_;
 
   tray::NetworkListView* view_ = nullptr;
 

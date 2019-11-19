@@ -12,14 +12,10 @@
 #include <string>
 #include <vector>
 
-#include "device/usb/public/mojom/device.mojom.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/set_disjunction_permission.h"
 #include "extensions/common/permissions/usb_device_permission_data.h"
-
-namespace device {
-class UsbDevice;
-}
+#include "services/device/public/mojom/usb_device.mojom.h"
 
 namespace extensions {
 
@@ -30,9 +26,6 @@ class UsbDevicePermission
                                     UsbDevicePermission> {
  public:
   struct CheckParam : public APIPermission::CheckParam {
-    static std::unique_ptr<CheckParam> ForUsbDevice(
-        const Extension* extension,
-        const device::UsbDevice* device);
     static std::unique_ptr<CheckParam> ForUsbDevice(
         const Extension* extension,
         const device::mojom::UsbDeviceInfo& device_info);

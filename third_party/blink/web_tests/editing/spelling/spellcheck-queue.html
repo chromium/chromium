@@ -59,17 +59,17 @@ spellcheck_test(
     const textarea1 = document.getElementById('textarea1');
     const textarea2 = document.getElementById('textarea2');
     textarea1.focus();
-    document.execCommand('insertText', false, 'foo.');
+    document.execCommand('insertText', false, 'foo. ');
     runIdleTimeSpellCheckerIfNeeded(document);
     textarea2.focus();
-    document.execCommand('insertText', false, 'baz.');
+    document.execCommand('insertText', false, 'baz. ');
     runIdleTimeSpellCheckerIfNeeded(document);
     textarea1.focus();
-    document.execCommand('insertText', false, 'zz.');
+    document.execCommand('insertText', false, 'zz. ');
   },
   [
-    '<textarea id="textarea1">#foo#.#zz#.</textarea>',
-    '<textarea id="textarea2">#baz#.</textarea>'
+    '<textarea id="textarea1">#foo#. #zz#. </textarea>',
+    '<textarea id="textarea2">#baz#. </textarea>'
   ].join(''),
   'Spellchecker invokes requests in sequence order.');
 </script>

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.ntp;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
@@ -17,19 +15,13 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.ScrollView;
 
-import org.chromium.base.Log;
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.FadingShadow;
-
 /**
  * Simple wrapper on top of a ScrollView that will acquire focus when tapped.  Ensures the
  * New Tab page receives focus when clicked. This is only used in the Incognito NTP.
  */
 public class NewTabPageScrollView extends ScrollView {
-    private static final String TAG = "NewTabPageScrollView";
 
     private GestureDetector mGestureDetector;
-    private FadingShadow mFadingShadow;
 
     /**
      * Constructor needed to inflate from XML.
@@ -48,18 +40,6 @@ public class NewTabPageScrollView extends ScrollView {
                 });
     }
 
-    /**
-     * Enables drawing a shadow at the bottom of the view when the view's content extends beyond
-     * the bottom of the view. This is exactly the same as a fading edge, except that the shadow
-     * color can have an alpha component, whereas a fading edge color must be opaque.
-     *
-     * @param shadowColor The color of the shadow, e.g. 0x11000000.
-     */
-    public void enableBottomShadow(int shadowColor) {
-        mFadingShadow = new FadingShadow(shadowColor);
-        setFadingEdgeLength(getResources().getDimensionPixelSize(R.dimen.ntp_shadow_height));
-    }
-
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         mGestureDetector.onTouchEvent(ev);
@@ -73,21 +53,7 @@ public class NewTabPageScrollView extends ScrollView {
         if (ev.getActionMasked() != MotionEvent.ACTION_DOWN) {
             mGestureDetector.onTouchEvent(ev);
         }
-        try {
-            return super.onTouchEvent(ev);
-        } catch (IllegalArgumentException ex) {
-            // In JB MR0 and earlier, an ACTION_MOVE that is not preceded by an ACTION_DOWN event
-            // causes a crash. This can happen under normal circumstances (e.g. going back to the
-            // NTP while a finger is down on the screen) and should not crash. The most reliable way
-            // to prevent this crash is to catch the exception. http://crbug.com/293822
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN_MR1
-                    && ev.getActionMasked() == MotionEvent.ACTION_MOVE
-                    && "pointerIndex out of range".equals(ex.getMessage())) {
-                Log.d(TAG, "Ignoring pointerIndex out of range exception.");
-                return true;
-            }
-            throw ex;
-        }
+        return super.onTouchEvent(ev);
     }
 
     @Override
@@ -118,18 +84,5 @@ public class NewTabPageScrollView extends ScrollView {
         // Fixes lanscape transitions when unfocusing the URL bar: crbug.com/288546
         outAttrs.imeOptions = EditorInfo.IME_FLAG_NO_FULLSCREEN;
         return super.onCreateInputConnection(outAttrs);
-    }
-
-    @Override
-    protected void dispatchDraw(Canvas canvas) {
-        super.dispatchDraw(canvas);
-        if (mFadingShadow != null) {
-            setVerticalFadingEdgeEnabled(true);
-            float shadowStrength = getBottomFadingEdgeStrength();
-            float shadowHeight = getVerticalFadingEdgeLength();
-            setVerticalFadingEdgeEnabled(false);
-            mFadingShadow.drawShadow(this, canvas, FadingShadow.POSITION_BOTTOM,
-                    shadowHeight, shadowStrength);
-        }
     }
 }

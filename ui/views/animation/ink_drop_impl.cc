@@ -17,31 +17,36 @@ namespace views {
 
 namespace {
 
-// The duration, in milliseconds for the highlight state fade in/out animations
-// when it is triggered by a hover changed event.
-const int kHighlightFadeInOnHoverChangeDurationMs = 250;
-const int kHighlightFadeOutOnHoverChangeDurationMs = 250;
+// The duration for the highlight state fade in/out animations when they are
+// triggered by a hover changed event.
+constexpr auto kHighlightFadeInOnHoverChangeDuration =
+    base::TimeDelta::FromMilliseconds(250);
+constexpr auto kHighlightFadeOutOnHoverChangeDuration =
+    base::TimeDelta::FromMilliseconds(250);
 
-// The duration, in milliseconds for the highlight state fade in/out animations
-// when it is triggered by a focus changed event.
-const int kHighlightFadeInOnFocusChangeDurationMs = 0;
-const int kHighlightFadeOutOnFocusChangeDurationMs = 0;
+// The duration for the highlight state fade in/out animations when they are
+// triggered by a focus changed event.
+constexpr auto kHighlightFadeInOnFocusChangeDuration = base::TimeDelta();
+constexpr auto kHighlightFadeOutOnFocusChangeDuration = base::TimeDelta();
 
-// The duration, in milliseconds, for showing/hiding the highlight when
-// triggered by ripple visibility changes for the HIDE_ON_RIPPLE
-// AutoHighlightMode.
-const int kHighlightFadeInOnRippleHidingDurationMs = 250;
-const int kHighlightFadeOutOnRippleShowingDurationMs = 120;
+// The duration for showing/hiding the highlight when triggered by ripple
+// visibility changes for the HIDE_ON_RIPPLE AutoHighlightMode.
+constexpr auto kHighlightFadeInOnRippleHidingDuration =
+    base::TimeDelta::FromMilliseconds(250);
+constexpr auto kHighlightFadeOutOnRippleShowingDuration =
+    base::TimeDelta::FromMilliseconds(120);
 
-// The duration, in milliseconds, for showing/hiding the highlight when
-// triggered by ripple visibility changes for the SHOW_ON_RIPPLE
-// AutoHighlightMode.
-const int kHighlightFadeInOnRippleShowingDurationMs = 250;
-const int kHighlightFadeOutOnRippleHidingDurationMs = 120;
+// The duration for showing/hiding the highlight when triggered by ripple
+// visibility changes for the SHOW_ON_RIPPLE AutoHighlightMode.
+constexpr auto kHighlightFadeInOnRippleShowingDuration =
+    base::TimeDelta::FromMilliseconds(250);
+constexpr auto kHighlightFadeOutOnRippleHidingDuration =
+    base::TimeDelta::FromMilliseconds(120);
 
-// The amount of time in milliseconds that |highlight_| should delay after a
-// ripple animation before fading in, for highlight due to mouse hover.
-const int kHoverFadeInAfterRippleDelayMs = 1000;
+// The amount of time that |highlight_| should delay after a ripple animation
+// before fading in, for highlight due to mouse hover.
+constexpr auto kHoverFadeInAfterRippleDelay =
+    base::TimeDelta::FromMilliseconds(1000);
 
 // Returns true if an ink drop with the given |ink_drop_state| should
 // automatically transition to the InkDropState::HIDDEN state.
@@ -111,7 +116,7 @@ class InkDropImpl::NoAutoHighlightHiddenState
  private:
   // Handles all changes to the hover/focus status and transitions to a visible
   // state if necessary.
-  void HandleHoverAndFocusChangeChanges(int animation_duration_ms);
+  void HandleHoverAndFocusChangeChanges(base::TimeDelta animation_duration);
 
   // The fade out animation duration.
   base::TimeDelta animation_duration_;
@@ -145,7 +150,7 @@ class InkDropImpl::NoAutoHighlightVisibleState
  private:
   // Handles all changes to the hover/focus status and transitions to a hidden
   // state if necessary.
-  void HandleHoverAndFocusChangeChanges(int animation_duration_ms);
+  void HandleHoverAndFocusChangeChanges(base::TimeDelta animation_duration);
 
   // The fade in animation duration.
   base::TimeDelta animation_duration_;
@@ -172,29 +177,29 @@ void InkDropImpl::NoAutoHighlightHiddenState::Enter() {
 
 void InkDropImpl::NoAutoHighlightHiddenState::ShowOnHoverChanged() {
   HandleHoverAndFocusChangeChanges(
-      GetInkDrop()->hover_highlight_fade_duration_ms().value_or(
-          kHighlightFadeInOnHoverChangeDurationMs));
+      GetInkDrop()->hover_highlight_fade_duration().value_or(
+          kHighlightFadeInOnHoverChangeDuration));
 }
 
 void InkDropImpl::NoAutoHighlightHiddenState::OnHoverChanged() {
   HandleHoverAndFocusChangeChanges(
-      GetInkDrop()->hover_highlight_fade_duration_ms().value_or(
-          kHighlightFadeInOnHoverChangeDurationMs));
+      GetInkDrop()->hover_highlight_fade_duration().value_or(
+          kHighlightFadeInOnHoverChangeDuration));
 }
 
 void InkDropImpl::NoAutoHighlightHiddenState::ShowOnFocusChanged() {
-  HandleHoverAndFocusChangeChanges(kHighlightFadeInOnFocusChangeDurationMs);
+  HandleHoverAndFocusChangeChanges(kHighlightFadeInOnFocusChangeDuration);
 }
 
 void InkDropImpl::NoAutoHighlightHiddenState::OnFocusChanged() {
-  HandleHoverAndFocusChangeChanges(kHighlightFadeInOnFocusChangeDurationMs);
+  HandleHoverAndFocusChangeChanges(kHighlightFadeInOnFocusChangeDuration);
 }
 
 void InkDropImpl::NoAutoHighlightHiddenState::HandleHoverAndFocusChangeChanges(
-    int animation_duration_ms) {
+    base::TimeDelta animation_duration) {
   if (GetInkDrop()->ShouldHighlight()) {
-    GetInkDrop()->SetHighlightState(state_factory()->CreateVisibleState(
-        base::TimeDelta::FromMilliseconds(animation_duration_ms), false));
+    GetInkDrop()->SetHighlightState(
+        state_factory()->CreateVisibleState(animation_duration, false));
   }
 }
 
@@ -221,29 +226,29 @@ void InkDropImpl::NoAutoHighlightVisibleState::Enter() {
 
 void InkDropImpl::NoAutoHighlightVisibleState::ShowOnHoverChanged() {
   HandleHoverAndFocusChangeChanges(
-      GetInkDrop()->hover_highlight_fade_duration_ms().value_or(
-          kHighlightFadeOutOnHoverChangeDurationMs));
+      GetInkDrop()->hover_highlight_fade_duration().value_or(
+          kHighlightFadeOutOnHoverChangeDuration));
 }
 
 void InkDropImpl::NoAutoHighlightVisibleState::OnHoverChanged() {
   HandleHoverAndFocusChangeChanges(
-      GetInkDrop()->hover_highlight_fade_duration_ms().value_or(
-          kHighlightFadeOutOnHoverChangeDurationMs));
+      GetInkDrop()->hover_highlight_fade_duration().value_or(
+          kHighlightFadeOutOnHoverChangeDuration));
 }
 
 void InkDropImpl::NoAutoHighlightVisibleState::ShowOnFocusChanged() {
-  HandleHoverAndFocusChangeChanges(kHighlightFadeOutOnFocusChangeDurationMs);
+  HandleHoverAndFocusChangeChanges(kHighlightFadeOutOnFocusChangeDuration);
 }
 
 void InkDropImpl::NoAutoHighlightVisibleState::OnFocusChanged() {
-  HandleHoverAndFocusChangeChanges(kHighlightFadeOutOnFocusChangeDurationMs);
+  HandleHoverAndFocusChangeChanges(kHighlightFadeOutOnFocusChangeDuration);
 }
 
 void InkDropImpl::NoAutoHighlightVisibleState::HandleHoverAndFocusChangeChanges(
-    int animation_duration_ms) {
+    base::TimeDelta animation_duration) {
   if (!GetInkDrop()->ShouldHighlight()) {
-    GetInkDrop()->SetHighlightState(state_factory()->CreateHiddenState(
-        base::TimeDelta::FromMilliseconds(animation_duration_ms), false));
+    GetInkDrop()->SetHighlightState(
+        state_factory()->CreateHiddenState(animation_duration, false));
   }
 }
 
@@ -380,13 +385,12 @@ void InkDropImpl::HideHighlightOnRippleHiddenState::AnimationEnded(
 
 void InkDropImpl::HideHighlightOnRippleHiddenState::
     StartHighlightAfterRippleTimer() {
-  highlight_after_ripple_timer_.reset(new base::OneShotTimer);
+  highlight_after_ripple_timer_ = std::make_unique<base::OneShotTimer>();
   highlight_after_ripple_timer_->Start(
-      FROM_HERE,
-      base::TimeDelta::FromMilliseconds(kHoverFadeInAfterRippleDelayMs),
-      base::Bind(&InkDropImpl::HideHighlightOnRippleHiddenState::
-                     HighlightAfterRippleTimerFired,
-                 base::Unretained(this)));
+      FROM_HERE, kHoverFadeInAfterRippleDelay,
+      base::BindOnce(&InkDropImpl::HideHighlightOnRippleHiddenState::
+                         HighlightAfterRippleTimerFired,
+                     base::Unretained(this)));
 }
 
 void InkDropImpl::HideHighlightOnRippleHiddenState::
@@ -395,9 +399,7 @@ void InkDropImpl::HideHighlightOnRippleHiddenState::
   if (GetInkDrop()->GetTargetInkDropState() == InkDropState::HIDDEN &&
       GetInkDrop()->ShouldHighlight()) {
     GetInkDrop()->SetHighlightState(state_factory()->CreateVisibleState(
-        base::TimeDelta::FromMilliseconds(
-            kHighlightFadeInOnRippleHidingDurationMs),
-        true));
+        kHighlightFadeInOnRippleHidingDuration, true));
   }
 }
 
@@ -415,9 +417,7 @@ void InkDropImpl::HideHighlightOnRippleVisibleState::AnimationStarted(
     InkDropState ink_drop_state) {
   if (ink_drop_state != InkDropState::HIDDEN) {
     GetInkDrop()->SetHighlightState(state_factory()->CreateHiddenState(
-        base::TimeDelta::FromMilliseconds(
-            kHighlightFadeOutOnRippleShowingDurationMs),
-        true));
+        kHighlightFadeOutOnRippleShowingDuration, true));
   }
 }
 
@@ -475,9 +475,7 @@ void InkDropImpl::ShowHighlightOnRippleHiddenState::AnimationStarted(
     InkDropState ink_drop_state) {
   if (ink_drop_state != views::InkDropState::HIDDEN) {
     GetInkDrop()->SetHighlightState(state_factory()->CreateVisibleState(
-        base::TimeDelta::FromMilliseconds(
-            kHighlightFadeInOnRippleShowingDurationMs),
-        false));
+        kHighlightFadeInOnRippleShowingDuration, false));
   }
 }
 
@@ -520,9 +518,7 @@ void InkDropImpl::ShowHighlightOnRippleVisibleState::AnimationStarted(
   if (ink_drop_state == InkDropState::HIDDEN &&
       !GetInkDrop()->ShouldHighlight()) {
     GetInkDrop()->SetHighlightState(state_factory()->CreateHiddenState(
-        base::TimeDelta::FromMilliseconds(
-            kHighlightFadeOutOnRippleHidingDurationMs),
-        false));
+        kHighlightFadeOutOnRippleHidingDuration, false));
   }
 }
 
@@ -630,7 +626,8 @@ void InkDropImpl::HostSizeChanged(const gfx::Size& new_size) {
   // |root_layer_| should fill the entire host because it affects the clipping
   // when a mask layer is applied to it. This will not affect clipping if no
   // mask layer is set.
-  root_layer_->SetBounds(gfx::Rect(new_size));
+  root_layer_->SetBounds(gfx::Rect(new_size) +
+                         root_layer_->bounds().OffsetFromOrigin());
 
   const bool create_ink_drop_ripple = !!ink_drop_ripple_;
   InkDropState state = GetTargetInkDropState();
@@ -673,12 +670,12 @@ void InkDropImpl::AnimateToState(InkDropState ink_drop_state) {
   ink_drop_ripple_->AnimateToState(ink_drop_state);
 }
 
-void InkDropImpl::SetHoverHighlightFadeDurationMs(int duration_ms) {
-  hover_highlight_fade_duration_ms_ = duration_ms;
+void InkDropImpl::SetHoverHighlightFadeDuration(base::TimeDelta duration) {
+  hover_highlight_fade_duration_ = duration;
 }
 
 void InkDropImpl::UseDefaultHoverHighlightFadeDuration() {
-  hover_highlight_fade_duration_ms_.reset();
+  hover_highlight_fade_duration_.reset();
 }
 
 void InkDropImpl::SnapToActivated() {

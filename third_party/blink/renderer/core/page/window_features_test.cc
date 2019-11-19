@@ -34,4 +34,34 @@ TEST_F(WindowFeaturesTest, NoOpener) {
   }
 }
 
+TEST_F(WindowFeaturesTest, NoReferrer) {
+  static const struct {
+    const char* feature_string;
+    bool noopener;
+    bool noreferrer;
+  } kCases[] = {
+      {"", false, false},
+      {"something", false, false},
+      {"something, something", false, false},
+      {"notreferrer", false, false},
+      {"noreferrer", true, true},
+      {"something, noreferrer", true, true},
+      {"noreferrer, something", true, true},
+      {"NoReFeRrEr", true, true},
+      {"noreferrer, noopener=0", true, true},
+      {"noreferrer=0, noreferrer=1", true, true},
+      {"noreferrer=1, noreferrer=0", false, false},
+      {"noreferrer=1, noreferrer=0, noopener=1", true, false},
+      {"something, noreferrer=1, noreferrer=0", false, false},
+      {"noopener=1, noreferrer=1, noreferrer=0", true, false},
+      {"noopener=0, noreferrer=1, noreferrer=0", false, false},
+  };
+
+  for (const auto& test : kCases) {
+    EXPECT_EQ(test.noreferrer,
+              GetWindowFeaturesFromString(test.feature_string).noreferrer)
+        << "Testing '" << test.feature_string << "'";
+  }
+}
+
 }  // namespace blink

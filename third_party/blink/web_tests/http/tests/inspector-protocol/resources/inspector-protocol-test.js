@@ -135,6 +135,27 @@ var TestRunner = class {
     return eval(`${source}\n//# sourceURL=${url}`);
   };
 
+  async loadScriptAbsolute(url) {
+    var source = await this._fetch(url);
+    return eval(`${source}\n//# sourceURL=${url}`);
+  };
+
+  async loadScriptModule(path) {
+    const source = await this._fetch(this._testBaseURL + path);
+
+    return new Promise((resolve, reject) => {
+      const src = URL.createObjectURL(new Blob([source], { type: 'application/javascript' }));
+      const script = Object.assign(document.createElement('script'), {
+        src,
+        type: 'module',
+        onerror: reject,
+        onload: resolve
+      });
+
+      document.head.appendChild(script);
+    })
+  };
+
   browserP() {
     return this._browserSession.protocol;
   }
@@ -260,7 +281,24 @@ TestRunner.Page = class {
   async loadHTML(html) {
     html = html.replace(/'/g, "\\'").replace(/\n/g, '\\n');
     var session = await this.createSession();
-    await session.protocol.Runtime.evaluate({expression: `document.write('${html}');document.close();`});
+    await session.protocol.Runtime.evaluate({
+      awaitPromise: true,
+      expression: `
+      document.write('${html}');
+
+      // wait for all scripts to load
+      const promise = new Promise(x => window._loadHTMLResolve = x).then(() => {
+        delete window._loadHTMLResolve;
+      });
+      // We do a document.write here to serialize with the previous document.write
+      if (document.querySelector('script[src]'))
+        document.write('<script>window._loadHTMLResolve(); document.currentScript.remove();</script>');
+      else
+        window._loadHTMLResolve();
+
+      document.close();
+      promise;
+    `});
     await session.disconnect();
   }
 };
@@ -294,25 +332,23 @@ TestRunner.Session = class {
   }
 
   async evaluate(code, ...args) {
-    if (typeof code === 'function') {
-      var argsString = args.map(JSON.stringify.bind(JSON)).join(', ');
-      code = `(${code.toString()})(${argsString})`;
-    }
-    var response = await this.protocol.Runtime.evaluate({expression: code, returnByValue: true});
-    if (response.error || response.result.exceptionDetails) {
-      this._testRunner.log(`Error while evaluating '${code}': ${JSON.stringify(response.error || response.result.exceptionDetails)}`);
-      this._testRunner.completeTest();
-    } else {
-      return response.result.result.value;
-    }
+    return this._innerEvaluate(false /* awaitPromise */, false /* userGesture */, code, ...args);
   }
 
   async evaluateAsync(code, ...args) {
+    return this._innerEvaluate(true /* awaitPromise */, false /* userGesture */, code, ...args);
+  }
+
+  async evaluateAsyncWithUserGesture(code, ...args) {
+    return this._innerEvaluate(true /* awaitPromise */, true /* userGesture */, code, ...args);
+  }
+
+  async _innerEvaluate(awaitPromise, userGesture, code, ...args) {
     if (typeof code === 'function') {
       var argsString = args.map(JSON.stringify.bind(JSON)).join(', ');
       code = `(${code.toString()})(${argsString})`;
     }
-    var response = await this.protocol.Runtime.evaluate({expression: code, returnByValue: true, awaitPromise: true});
+    var response = await this.protocol.Runtime.evaluate({expression: code, returnByValue: true, awaitPromise, userGesture});
     if (response.error) {
       this._testRunner.log(`Error while evaluating async '${code}': ${response.error}`);
       this._testRunner.completeTest();
@@ -328,8 +364,9 @@ TestRunner.Session = class {
   async _navigate(url) {
     await this.protocol.Page.enable();
     await this.protocol.Page.setLifecycleEventsEnabled({enabled: true});
-    await this.protocol.Page.navigate({url: url});
-    await this.protocol.Page.onceLifecycleEvent(event => event.params.name === 'load');
+    const frameId = (await this.protocol.Page.navigate({url: url})).result.frameId;
+    await this.protocol.Page.onceLifecycleEvent(
+        event => event.params.name === 'load' && event.params.frameId === frameId);
   }
 
   _dispatchMessage(message) {
@@ -389,64 +426,6 @@ TestRunner.Session = class {
       };
       this._addEventHandler(eventName, handler);
     });
-  }
-};
-
-class WorkerProtocol {
-  constructor(dp, sessionId) {
-    this._sessionId = sessionId;
-    this._callbacks = new Map();
-    this._dp = dp;
-    this._dp.Target.onReceivedMessageFromTarget(
-        (message) => this._onMessage(message));
-    this.dp = this._setupProtocol();
-  }
-
-  _setupProtocol() {
-    let lastId = 0;
-    return new Proxy({}, {
-      get: (target, agentName, receiver) => new Proxy({}, {
-        get: (target, methodName, receiver) => {
-          const eventPattern = /^(once)?([A-Z][A-Za-z0-9]*)/;
-          var match = eventPattern.exec(methodName);
-          if (!match || match[1] !== 'once') {
-            return args => new Promise(resolve => {
-                     let id = ++lastId;
-                     this._callbacks.set(id, resolve);
-                     this._dp.Target.sendMessageToTarget({
-                       sessionId: this._sessionId,
-                       message: JSON.stringify({
-                         method: `${agentName}.${methodName}`,
-                         params: args || {},
-                         id: id
-                       })
-                     });
-                   });
-          }
-          var eventName = match[2];
-          eventName = eventName.charAt(0).toLowerCase() + eventName.slice(1);
-          return () => new Promise(resolve => {
-                   this._callbacks.set(`${agentName}.${eventName}`, resolve);
-                 });
-        }
-      })
-    });
-  }
-
-  _onMessage(message) {
-    if (message.params.sessionId !== this._sessionId)
-      return;
-    const {id, result, method, params} = JSON.parse(message.params.message);
-    if (id && this._callbacks.has(id)) {
-      let callback = this._callbacks.get(id);
-      this._callbacks.delete(id);
-      callback(result);
-    }
-    if (method && this._callbacks.has(method)) {
-      let callback = this._callbacks.get(method);
-      this._callbacks.delete(method);
-      callback(params);
-    }
   }
 };
 

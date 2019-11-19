@@ -2,7 +2,8 @@ This is a testharness.js-based test.
 PASS setLocalDescription() with valid answer should succeed
 PASS setLocalDescription() with type answer and null sdp should use lastAnswer generated from createAnswer
 PASS setLocalDescription() with answer not created by own createAnswer() should reject with InvalidModificationError
-FAIL Calling setLocalDescription(answer) from stable state should reject with InvalidStateError assert_throws: function "function() { throw e }" threw object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Failed to set local answer sdp: Called in wrong state: kStable" that is not a DOMException InvalidStateError: property "code" is equal to 0, expected 11
-FAIL Calling setLocalDescription(answer) from have-local-offer state should reject with InvalidStateError assert_throws: function "function() { throw e }" threw object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Failed to set local answer sdp: Called in wrong state: kHaveLocalOffer" that is not a DOMException InvalidStateError: property "code" is equal to 0, expected 11
+FAIL Calling setLocalDescription(answer) from stable state should reject with InvalidModificationError assert_throws: function "function() { throw e }" threw object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Failed to set local answer sdp: Called in wrong state: kStable" that is not a DOMException InvalidModificationError: property "code" is equal to 0, expected 13
+FAIL Calling setLocalDescription(answer) from have-local-offer state should reject with InvalidModificationError assert_throws: function "function() { throw e }" threw object "OperationError: Failed to execute 'setLocalDescription' on 'RTCPeerConnection': Failed to set local answer sdp: Called in wrong state: kHaveLocalOffer" that is not a DOMException InvalidModificationError: property "code" is equal to 0, expected 13
+PASS Setting previously generated answer after a call to createOffer should work
 Harness: the test ran to completion.
 

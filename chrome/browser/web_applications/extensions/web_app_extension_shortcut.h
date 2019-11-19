@@ -21,10 +21,6 @@ class Extension;
 
 namespace web_app {
 
-// Callback made when CreateShortcuts has finished trying to create the
-// platform shortcuts indicating whether or not they were successfully created.
-using CreateShortcutsCallback = base::OnceCallback<void(bool shortcut_created)>;
-
 // Called by GetShortcutInfoForApp after fetching the ShortcutInfo.
 using ShortcutInfoCallback =
     base::OnceCallback<void(std::unique_ptr<ShortcutInfo>)>;
@@ -53,11 +49,6 @@ std::unique_ptr<ShortcutInfo> ShortcutInfoForExtensionAndProfile(
 bool ShouldCreateShortcutFor(ShortcutCreationReason reason,
                              Profile* profile,
                              const extensions::Extension* extension);
-
-// Gets the user data directory to use for |extension| located inside
-// |profile_path|.
-base::FilePath GetWebAppDataDirectory(const base::FilePath& profile_path,
-                                      const extensions::Extension& extension);
 
 // Creates shortcuts for an app. This loads the app's icon from disk, and calls
 // CreateShortcutsWithInfo(). If you already have a ShortcutInfo with the app's

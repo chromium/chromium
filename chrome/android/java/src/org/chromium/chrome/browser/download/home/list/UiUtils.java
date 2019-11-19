@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.download.home.list;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.VisibleForTesting;
 import android.text.format.DateUtils;
 import android.text.format.Formatter;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
@@ -156,11 +157,17 @@ public final class UiUtils {
      */
     public static CharSequence generateGenericCaption(OfflineItem item) {
         Context context = ContextUtils.getApplicationContext();
-        String displaySize = Formatter.formatFileSize(context, item.totalSizeBytes);
         String displayUrl = item.pageUrl;
         if (!sDisableUrlFormatting) {
             displayUrl = UrlFormatter.formatUrlForSecurityDisplayOmitScheme(item.pageUrl);
         }
+
+        if (item.totalSizeBytes == 0) {
+            return context.getString(
+                    R.string.download_manager_list_item_description_no_size, displayUrl);
+        }
+
+        String displaySize = Formatter.formatFileSize(context, item.totalSizeBytes);
         return context.getString(
                 R.string.download_manager_list_item_description, displaySize, displayUrl);
     }
@@ -168,9 +175,10 @@ public final class UiUtils {
     /** @return Whether or not {@code item} can show a thumbnail in the UI. */
     public static boolean canHaveThumbnails(OfflineItem item) {
         switch (item.filter) {
-            case OfflineItemFilter.FILTER_PAGE:
-            case OfflineItemFilter.FILTER_VIDEO:
-            case OfflineItemFilter.FILTER_IMAGE:
+            case OfflineItemFilter.PAGE:
+            case OfflineItemFilter.VIDEO:
+            case OfflineItemFilter.IMAGE:
+            case OfflineItemFilter.AUDIO:
                 return true;
             default:
                 return false;
@@ -242,7 +250,7 @@ public final class UiUtils {
                 shownState = CircularProgressView.UiState.PAUSED;
                 break;
             case OfflineItemState.INTERRUPTED:
-                shownState = item.isResumable ? CircularProgressView.UiState.PAUSED
+                shownState = item.isResumable ? CircularProgressView.UiState.RUNNING
                                               : CircularProgressView.UiState.RETRY;
                 break;
             case OfflineItemState.COMPLETE: // Intentional fallthrough.

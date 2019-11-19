@@ -122,6 +122,12 @@ String ExceptionMessages::ArgumentNullOrIncorrectType(
          " object.";
 }
 
+String ExceptionMessages::ArgumentNotOfType(int argument_index,
+                                            const char* expected_type) {
+  return String::Format("parameter %d is not of type '%s'.", argument_index + 1,
+                        expected_type);
+}
+
 String ExceptionMessages::NotASequenceTypeProperty(
     const String& property_name) {
   return "'" + property_name +

@@ -17,11 +17,11 @@
 #include "base/values.h"
 #include "components/invalidation/impl/deprecated_invalidator_registrar.h"
 #include "components/invalidation/impl/invalidation_logger.h"
-#include "components/invalidation/impl/ticl_settings_provider.h"
 #include "components/invalidation/public/identity_provider.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 
@@ -46,28 +46,17 @@ class GCMInvalidationBridge;
 // It provides invalidations for desktop platforms (Win, Mac, Linux).
 class TiclInvalidationService : public InvalidationService,
                                 public IdentityProvider::Observer,
-                                public TiclSettingsProvider::Observer,
                                 public syncer::InvalidationHandler {
  public:
-  enum InvalidationNetworkChannel {
-    PUSH_CLIENT_CHANNEL = 0,
-    GCM_NETWORK_CHANNEL = 1,
-
-    // This enum is used in UMA_HISTOGRAM_ENUMERATION. Insert new values above
-    // this line.
-    NETWORK_CHANNELS_COUNT = 2
-  };
-
   TiclInvalidationService(
       const std::string& user_agent,
       IdentityProvider* identity_provider,
-      std::unique_ptr<TiclSettingsProvider> settings_provider,
       gcm::GCMDriver* gcm_driver,
       // |get_socket_factory_callback| will be safe to call on the IO thread,
       // but will check its WeakPtr parameter on the UI thread.
-      base::RepeatingCallback<
-          void(base::WeakPtr<TiclInvalidationService>,
-               network::mojom::ProxyResolvingSocketFactoryRequest)>
+      base::RepeatingCallback<void(
+          base::WeakPtr<TiclInvalidationService>,
+          mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
           get_socket_factory_callback,
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -104,9 +93,6 @@ class TiclInvalidationService : public InvalidationService,
   void OnActiveAccountLogin() override;
   void OnActiveAccountLogout() override;
 
-  // TiclSettingsProvider::Observer implementation.
-  void OnUseGCMChannelChanged() override;
-
   // syncer::InvalidationHandler implementation.
   void OnInvalidatorStateChange(syncer::InvalidatorState state) override;
   void OnIncomingInvalidation(
@@ -121,20 +107,17 @@ class TiclInvalidationService : public InvalidationService,
 
  private:
   friend class TiclInvalidationServiceTestDelegate;
-  friend class TiclProfileSettingsProviderTest;
 
   bool IsReadyToStart();
   bool IsStarted() const;
 
-  void StartInvalidator(InvalidationNetworkChannel network_channel);
-  void UpdateInvalidationNetworkChannel();
+  void StartInvalidator();
   void UpdateInvalidatorCredentials();
   void StopInvalidator();
 
   const std::string user_agent_;
 
   IdentityProvider* identity_provider_;
-  std::unique_ptr<TiclSettingsProvider> settings_provider_;
 
   std::unique_ptr<syncer::DeprecatedInvalidatorRegistrar>
       invalidator_registrar_;
@@ -151,11 +134,10 @@ class TiclInvalidationService : public InvalidationService,
   base::OneShotTimer request_access_token_retry_timer_;
   net::BackoffEntry request_access_token_backoff_;
 
-  InvalidationNetworkChannel network_channel_type_;
   gcm::GCMDriver* gcm_driver_;
   std::unique_ptr<GCMInvalidationBridge> gcm_invalidation_bridge_;
   base::RepeatingCallback<void(
-      network::mojom::ProxyResolvingSocketFactoryRequest)>
+      mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
       get_socket_factory_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> network_task_runner_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
@@ -165,14 +147,10 @@ class TiclInvalidationService : public InvalidationService,
   // and invalidations.
   InvalidationLogger logger_;
 
-  // Keep a copy of the important parameters used in network channel creation
-  // for debugging.
-  base::DictionaryValue network_channel_options_;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Used on the UI thread.
-  base::WeakPtrFactory<TiclInvalidationService> weak_ptr_factory_;
+  base::WeakPtrFactory<TiclInvalidationService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TiclInvalidationService);
 };

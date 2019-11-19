@@ -19,33 +19,26 @@ class ForeignSessionHelper {
   explicit ForeignSessionHelper(Profile* profile);
   ~ForeignSessionHelper();
 
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
-  jboolean IsTabSyncEnabled(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj);
-  void TriggerSessionSync(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
+  jboolean IsTabSyncEnabled(JNIEnv* env);
+  void TriggerSessionSync(JNIEnv* env);
   void SetOnForeignSessionCallback(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& callback);
   jboolean GetForeignSessions(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& result);
   jboolean OpenForeignSessionTab(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& j_tab,
       const base::android::JavaParamRef<jstring>& session_tag,
       jint tab_id,
       jint disposition);
   void DeleteForeignSession(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jstring>& session_tag);
   void SetInvalidationsForSessionsEnabled(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jboolean enabled);
 
  private:

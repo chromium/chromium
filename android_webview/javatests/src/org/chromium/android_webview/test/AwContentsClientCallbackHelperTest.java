@@ -81,7 +81,7 @@ public class AwContentsClientCallbackHelperTest {
     private Looper mLooper;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mLooper = Looper.getMainLooper();
         mContentsClient = new TestAwContentsClient();
         mClientHelper = new AwContentsClientCallbackHelper(mLooper, mContentsClient);

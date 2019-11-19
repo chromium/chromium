@@ -37,15 +37,8 @@ class FirstRunFieldTrialGroup {
 // at first run must be pre-defined in client code.
 class FirstRunFieldTrialConfig {
  public:
-  // Initializes with |trial_name| as the name of the FieldTrial with default
-  // duration.
+  // Initializes with |trial_name| as the name of the FieldTrial.
   FirstRunFieldTrialConfig(const std::string& trial_name);
-  // Initializes with |trial_name| as the name of the FieldTrial and one that
-  // ends on (year, month, day_of_month).
-  FirstRunFieldTrialConfig(const std::string& trial_name,
-                           int year,
-                           int month,
-                           int day_of_month);
   ~FirstRunFieldTrialConfig();
 
   // Adds a new FieldTrial group of |name| with a probability of |percentage|.
@@ -58,16 +51,10 @@ class FirstRunFieldTrialConfig {
   const std::vector<FirstRunFieldTrialGroup>& groups() const { return groups_; }
   // Accessors for this FieldTrial.
   const std::string& trial_name() { return trial_name_; }
-  int expire_year() { return expire_year_; }
-  int expire_month() { return expire_month_; }
-  int expire_day_of_month() { return expire_day_of_month_; }
 
  private:
   std::string trial_name_;
   std::vector<FirstRunFieldTrialGroup> groups_;
-  int expire_year_;
-  int expire_month_;
-  int expire_day_of_month_;
 
   DISALLOW_COPY_AND_ASSIGN(FirstRunFieldTrialConfig);
 };

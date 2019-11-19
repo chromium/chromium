@@ -15,10 +15,6 @@ class HTMLMediaElement;
 
 class CORE_EXPORT HTMLMediaElementControlsList final : public DOMTokenList {
  public:
-  static HTMLMediaElementControlsList* Create(HTMLMediaElement* element) {
-    return MakeGarbageCollected<HTMLMediaElementControlsList>(element);
-  }
-
   explicit HTMLMediaElementControlsList(HTMLMediaElement*);
 
   // Whether the list dictates to hide a certain control.

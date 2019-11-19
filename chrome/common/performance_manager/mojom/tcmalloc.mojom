@@ -1,0 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tcmalloc.mojom;
+
+// Interface used for changing tcmallocs tunables for a subprocess over
+// mojo IPC. This interface is implemented in the renderer processes and
+// is invoked by the browser process.
+interface TcmallocTunables {
+
+  // Changes the current max size of an individual processes' thread cache.
+  SetMaxTotalThreadCacheBytes(uint32 size_bytes);
+};
+

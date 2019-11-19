@@ -1,0 +1,67 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next min version: 4
+
+module cros.mojom;
+
+import "components/chromeos_camera/common/jpeg_encode_accelerator.mojom";
+import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
+import "media/capture/video/chromeos/mojom/camera_common.mojom";
+
+// The CrOS camera HAL v3 Mojo dispatcher.  The dispatcher acts as a proxy and
+// waits for the server and the clients to register.  There can only be one
+// server registered, with multiple clients requesting connections to the
+// server.  For each client, the dispatcher is responsible for creating a Mojo
+// channel to the server and pass the established Mojo channel to the client in
+// order to set up a Mojo channel between the client and the server.
+//
+// Next method ID: 4
+interface CameraHalDispatcher {
+  // A CameraHalServer calls RegisterServer to register itself with the
+  // dispatcher.
+  RegisterServer@0(pending_remote<CameraHalServer> server);
+
+  // A CameraHalClient calls RegisterClient to register itself with the
+  // dispatcher.
+  RegisterClient@1(pending_remote<CameraHalClient> client);
+
+  // Get JpegDecodeAccelerator from dispatcher.
+  [MinVersion=1] GetJpegDecodeAccelerator@2(
+    pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator>
+        jda_receiver);
+
+  // Get JpegEncodeAccelerator from dispatcher.
+  [MinVersion=2] GetJpegEncodeAccelerator@3(
+    pending_receiver<chromeos_camera.mojom.JpegEncodeAccelerator> jea_receiver);
+};
+
+// The CrOS camera HAL v3 Mojo server.
+//
+// Next method ID: 2
+interface CameraHalServer {
+  // A caller calls CreateChannel to create a new Mojo channel to the camera
+  // HAL v3 adapter.  Upon successfully binding of |camera_module_request|, the
+  // caller will have a established Mojo channel to the camera HAL v3 adapter
+  // process.
+  CreateChannel@0(pending_receiver<CameraModule> camera_module_request);
+
+  // Enable or disable tracing.
+  [MinVersion=3]
+  SetTracingEnabled@1(bool enabled);
+};
+
+// The CrOS camera HAL v3 Mojo client.
+//
+// Next method ID: 1
+interface CameraHalClient {
+  // A caller calls SetUpChannel to dispatch the established Mojo channel
+  // |camera_module_ptr| to the client.  The CameraHalClient can create a
+  // Mojo channel to the camera HAL v3 adapter process with |camera_module_ptr|.
+  // SetUpChannel may be called multiple times.  In cases such as the
+  // CameraHalServer which holds the original Mojo channel crashes,
+  // CameraHalDispatcher will call SetUpChannel again once a new CameraHalServer
+  // reconnects.
+  SetUpChannel@0(pending_remote<CameraModule> camera_module_ptr);
+};

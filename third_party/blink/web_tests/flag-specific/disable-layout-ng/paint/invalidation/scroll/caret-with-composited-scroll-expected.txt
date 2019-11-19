@@ -1,0 +1,71 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV id='scroller'",
+      "bounds": [100, 100],
+      "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [205, 1022],
+      "paintInvalidations": [
+        {
+          "object": "LayoutTextControl INPUT id='text'",
+          "rect": [0, 999, 205, 23],
+          "reason": "subtree"
+        },
+        {
+          "object": "LayoutTextControl INPUT id='text'",
+          "rect": [0, 999, 205, 23],
+          "reason": "chunk appeared"
+        },
+        {
+          "object": "LayoutBlockFlow DIV",
+          "rect": [3, 1003, 1, 16],
+          "reason": "chunk appeared"
+        }
+      ],
+      "transform": 2
+    },
+    {
+      "name": "Horizontal Scrollbar Layer",
+      "position": [0, 100],
+      "bounds": [100, 0],
+      "transform": 1
+    },
+    {
+      "name": "Vertical Scrollbar Layer",
+      "position": [100, 0],
+      "bounds": [0, 100],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 48, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -922, 0, 1]
+      ]
+    }
+  ]
+}
+

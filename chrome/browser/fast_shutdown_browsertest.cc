@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -18,7 +17,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -50,13 +48,10 @@ IN_PROC_BROWSER_TEST_F(FastShutdown, DISABLED_SlowTermination) {
   GURL url = embedded_test_server()->GetURL("/fast_shutdown/on_unloader.html");
   EXPECT_EQ("", content::GetCookies(browser()->profile(), url));
 
-  content::WindowedNotificationObserver window_observer(
-      chrome::NOTIFICATION_BROWSER_OPENED,
-      content::NotificationService::AllSources());
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_NONE);
-  window_observer.Wait();
+  ui_test_utils::WaitForBrowserToOpen();
 
   // Close the new window, removing the one and only beforeunload handler.
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());

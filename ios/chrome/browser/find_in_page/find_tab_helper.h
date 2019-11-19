@@ -9,11 +9,12 @@
 
 #include "base/ios/block_types.h"
 #include "base/macros.h"
-#include "ios/web/public/web_state/web_state_observer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 @class FindInPageController;
 @class FindInPageModel;
+@protocol FindInPageResponseDelegate;
 
 typedef void (^FindInPageCompletionBlock)(FindInPageModel*);
 
@@ -32,6 +33,10 @@ class FindTabHelper : public web::WebStateObserver,
     FORWARD,
     REVERSE,
   };
+
+  // Sets the FindInPageResponseDelegate delegate to send responses to
+  // StartFinding(), ContinueFinding(), and StopFinding().
+  void SetResponseDelegate(id<FindInPageResponseDelegate> response_delegate);
 
   // Starts an asynchronous Find operation that will call the given completion
   // handler with results.  Highlights matches on the current page.  Always

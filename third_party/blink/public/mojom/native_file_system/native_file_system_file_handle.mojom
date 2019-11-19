@@ -1,0 +1,36 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/file_info.mojom";
+import "third_party/blink/public/mojom/blob/blob.mojom";
+import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
+import "third_party/blink/public/mojom/native_file_system/native_file_system_error.mojom";
+import "third_party/blink/public/mojom/native_file_system/native_file_system_file_writer.mojom";
+import "third_party/blink/public/mojom/native_file_system/native_file_system_transfer_token.mojom";
+import "third_party/blink/public/mojom/permissions/permission_status.mojom";
+
+// This interface represents a handle to a directory in the Native File System
+// API.
+interface NativeFileSystemFileHandle {
+  // Queries the current permission status for this handle.
+  GetPermissionStatus(bool writable) => (PermissionStatus status);
+
+  // Requests read and/or write permission for this handle. Returns the new
+  // permission status for this handle.
+  RequestPermission(bool writable) => (NativeFileSystemError result, PermissionStatus status);
+
+  // Returns a blob representing the current state of this file.
+  AsBlob() => (NativeFileSystemError result, mojo_base.mojom.FileInfo info, SerializedBlob? blob);
+
+  // Returns a FileWriter object. The FileWriter provides write operations on a file.
+  CreateFileWriter(bool keep_existing_data) => (
+      NativeFileSystemError result, pending_remote<NativeFileSystemFileWriter>? writer);
+
+  // Create a TransferToken for this directory. This token can be used to pass
+  // a reference to this directory to other methods, for example to copy or move
+  // the file, or when transferring the handle over postMessage.
+  Transfer(pending_receiver<NativeFileSystemTransferToken> token);
+};

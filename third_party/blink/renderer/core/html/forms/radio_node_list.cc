@@ -36,16 +36,18 @@
 
 namespace blink {
 
-RadioNodeList::RadioNodeList(ContainerNode& root_node,
-                             const AtomicString& name,
-                             CollectionType type)
-    : LiveNodeList(root_node,
+RadioNodeList::RadioNodeList(ContainerNode& owner_node,
+                             CollectionType type,
+                             const AtomicString& name)
+    : LiveNodeList(owner_node,
                    type,
                    kInvalidateForFormControls,
-                   IsHTMLFormElement(root_node)
+                   IsA<HTMLFormElement>(owner_node)
                        ? NodeListSearchRoot::kTreeScope
                        : NodeListSearchRoot::kOwnerNode),
-      name_(name) {}
+      name_(name) {
+  DCHECK(type == kRadioNodeListType || type == kRadioImgNodeListType);
+}
 
 RadioNodeList::~RadioNodeList() = default;
 
@@ -95,8 +97,8 @@ bool RadioNodeList::CheckElementMatchesRadioNodeListFilter(
   DCHECK(!ShouldOnlyMatchImgElements());
   DCHECK(IsHTMLObjectElement(test_element) ||
          test_element.IsFormControlElement());
-  if (IsHTMLFormElement(ownerNode())) {
-    HTMLFormElement* form_element = ToHTMLElement(test_element).formOwner();
+  if (IsA<HTMLFormElement>(ownerNode())) {
+    auto* form_element = To<HTMLElement>(test_element).formOwner();
     if (!form_element || form_element != ownerNode())
       return false;
   }

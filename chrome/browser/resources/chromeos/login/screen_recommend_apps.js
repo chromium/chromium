@@ -92,14 +92,20 @@ login.createScreen('RecommendAppsScreen', 'recommend-apps', function() {
       // Hide the loading throbber and show the recommend app list.
       this.setThrobberVisible(false);
 
+      // Disable install button until the webview reports that some apps are
+      // selected.
+      $('recommend-apps-screen')
+          .getElement('recommend-apps-install-button')
+          .disabled = true;
+
       const appListView = this.getElement_('app-list-view');
       const subtitle = this.getElement_('subtitle');
       subtitle.innerText = loadTimeData.getStringF(
           'recommendAppsScreenDescription', appList.length);
       appListView.addEventListener('contentload', () => {
-        appListView.contentWindow.postMessage('initialMessage', '*');
-
         appListView.executeScript({file: 'recommend_app_list_view.js'}, () => {
+          appListView.contentWindow.postMessage('initialMessage', '*');
+
           appList.forEach(function(app, index) {
             let generateItemScript = 'generateContents("' + app.icon + '", "' +
                 app.name + '", "' + app.package_name + '");';

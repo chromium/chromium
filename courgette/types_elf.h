@@ -36,6 +36,35 @@ struct Elf32_Ehdr {
   Elf32_Half     e_shstrndx;
 };
 
+// Indexes for header->e_ident[].
+enum e_ident_indexes {
+  EI_MAG0 = 0,        // File identification.
+  EI_MAG1 = 1,        // File identification.
+  EI_MAG2 = 2,        // File identification.
+  EI_MAG3 = 3,        // File identification.
+  EI_CLASS = 4,       // File class.
+  EI_DATA = 5,        // Data encoding.
+  EI_VERSION = 6,     // File version.
+  EI_OSABI = 7,       // Operating system/ABI identification.
+  EI_ABIVERSION = 8,  // ABI version.
+  EI_PAD = 9,         // Start of padding bytes.
+  EI_NIDENT = 16      // Size of e_ident[].
+};
+
+// Values for header->e_ident[EI_CLASS].
+enum e_ident_class_values {
+  ELFCLASSNONE = 0,  // Invalid class.
+  ELFCLASS32 = 1,    // 32-bit objects.
+  ELFCLASS64 = 2     // 64-bit objects.
+};
+
+// Values for header->e_ident[EI_DATA].
+enum e_ident_data_values {
+  ELFDATANONE = 0,  // Unknown data format.
+  ELFDATA2LSB = 1,  // Two's complement, little-endian.
+  ELFDATA2MSB = 2,  // Two's complement, big-endian.
+};
+
 // values for header->e_type
 enum e_type_values {
   ET_NONE = 0,  // No file type
@@ -55,6 +84,8 @@ enum e_machine_values {
   EM_x86_64 = 62,  // Intel x86-64 Architecture
   // Other values skipped
 };
+
+enum { SHN_UNDEF = 0 };
 
 // A section header in the section header table
 struct Elf32_Shdr {

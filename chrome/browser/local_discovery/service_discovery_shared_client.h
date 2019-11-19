@@ -19,9 +19,6 @@ class ServiceDiscoverySharedClient
  public:
   static scoped_refptr<ServiceDiscoverySharedClient> GetInstance();
 
-  typedef base::Callback<void(
-      const scoped_refptr<ServiceDiscoverySharedClient>&)> GetInstanceCallback;
-
  protected:
   ServiceDiscoverySharedClient();
   ~ServiceDiscoverySharedClient() override;

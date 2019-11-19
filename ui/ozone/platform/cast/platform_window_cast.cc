@@ -10,7 +10,6 @@
 #include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
-#include "ui/platform_window/platform_window_delegate.h"
 
 namespace ui {
 

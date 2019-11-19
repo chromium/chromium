@@ -49,7 +49,7 @@ if [ -z "${DEST}" ] || [ "${DEST:0:1}" != "/" ] || [ -e "${DEST}" ] ; then
 fi
 
 # Do the copy.
-rsync -lrpt "${SRC}/" "${DEST}"
+rsync --links --recursive --perms --times "${SRC}/" "${DEST}"
 
 # The remaining steps are not considered critical.
 set +e

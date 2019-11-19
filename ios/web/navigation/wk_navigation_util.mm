@@ -9,7 +9,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
-#import "ios/web/public/navigation_item.h"
+#include "ios/web/common/features.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_client.h"
 #include "net/base/escape.h"
 #include "net/base/url_util.h"
@@ -31,6 +32,7 @@ const int kMaxSessionSize = 75;
 const char kRestoreSessionSessionHashPrefix[] = "session=";
 const char kRestoreSessionTargetUrlHashPrefix[] = "targetUrl=";
 const char kOriginalUrlKey[] = "for";
+NSString* const kReferrerHeaderName = @"Referer";
 
 namespace {
 // Returns begin and end iterators and an updated last committed index for the
@@ -58,18 +60,20 @@ int GetSafeItemIterators(
     return last_committed_item_index;
   }
 
-  if (items.size() - last_committed_item_index < kMaxSessionSize / 2) {
+  if (items.size() - last_committed_item_index <= kMaxSessionSize / 2) {
     // Items which are the furthest to |last_committed_item_index| are located
     // on the left side of the vector. Trim those.
     *begin = items.end() - kMaxSessionSize;
     *end = items.end();
-    return last_committed_item_index - kMaxSessionSize;
+  } else {
+    // Trim items from both sides of the vector. Keep the same number of items
+    // on the left and right side of |last_committed_item_index|.
+    *begin = items.begin() + last_committed_item_index - kMaxSessionSize / 2;
+    *end = items.begin() + last_committed_item_index + kMaxSessionSize / 2 + 1;
   }
 
-  // Trim items from both sides of the vector. Keep the same number of items
-  // on the left and right side of |last_committed_item_index|.
-  *begin = items.begin() + last_committed_item_index - kMaxSessionSize / 2;
-  *end = items.begin() + last_committed_item_index + kMaxSessionSize / 2 + 1;
+  // The beginning of the vector has been trimmed, so move up the last committed
+  // item index by whatever was trimmed from the left.
   return last_committed_item_index - (*begin - items.begin());
 }
 }
@@ -109,9 +113,11 @@ GURL GetRestoreSessionBaseUrl() {
   return GURL(url::kAboutBlankURL).ReplaceComponents(replacements);
 }
 
-GURL CreateRestoreSessionUrl(
+void CreateRestoreSessionUrl(
     int last_committed_item_index,
-    const std::vector<std::unique_ptr<NavigationItem>>& items) {
+    const std::vector<std::unique_ptr<NavigationItem>>& items,
+    GURL* url,
+    int* first_index) {
   DCHECK(last_committed_item_index >= 0 &&
          last_committed_item_index < static_cast<int>(items.size()));
 
@@ -130,13 +136,8 @@ GURL CreateRestoreSessionUrl(
   restored_titles.GetList().reserve(new_size);
   for (auto it = begin; it != end; ++it) {
     NavigationItem* item = (*it).get();
-    GURL original_url = item->GetURL();
-    GURL restored_url = original_url;
-    if (web::GetWebClient()->IsAppSpecificURL(original_url)) {
-      restored_url = CreatePlaceholderUrlForUrl(original_url);
-    }
-    restored_urls.GetList().push_back(base::Value(restored_url.spec()));
-    restored_titles.GetList().push_back(base::Value(item->GetTitle()));
+    restored_urls.Append(base::Value(item->GetURL().spec()));
+    restored_titles.Append(base::Value(item->GetTitle()));
   }
   base::Value session(base::Value::Type::DICTIONARY);
   int offset = new_last_committed_item_index + 1 - new_size;
@@ -151,7 +152,8 @@ GURL CreateRestoreSessionUrl(
       net::EscapeQueryParamValue(session_json, false /* use_plus */);
   GURL::Replacements replacements;
   replacements.SetRefStr(ref);
-  return GetRestoreSessionBaseUrl().ReplaceComponents(replacements);
+  *first_index = begin - items.begin();
+  *url = GetRestoreSessionBaseUrl().ReplaceComponents(replacements);
 }
 
 bool IsRestoreSessionUrl(const GURL& url) {
@@ -177,11 +179,7 @@ bool ExtractTargetURL(const GURL& restore_session_url, GURL* target_url) {
   if (success) {
     std::string encoded_target_url = restore_session_url.ref().substr(
         strlen(kRestoreSessionTargetUrlHashPrefix));
-    net::UnescapeRule::Type unescape_rules =
-        net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS |
-        net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS;
-    *target_url =
-        GURL(net::UnescapeURLComponent(encoded_target_url, unescape_rules));
+    *target_url = GURL(net::UnescapeBinaryURLComponent(encoded_target_url));
   }
 
   return success;

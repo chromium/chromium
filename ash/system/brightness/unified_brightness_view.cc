@@ -32,4 +32,8 @@ void UnifiedBrightnessView::OnDisplayBrightnessChanged(bool by_user) {
   SetSliderValue(model_->display_brightness(), by_user);
 }
 
+const char* UnifiedBrightnessView::GetClassName() const {
+  return "UnifiedBrightnessView";
+}
+
 }  // namespace ash

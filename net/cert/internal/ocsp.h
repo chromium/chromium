@@ -39,7 +39,7 @@ class ParsedCertificate;
 //    issuerKeyHash           OCTET STRING, -- Hash of issuer's public key
 //    serialNumber            CertificateSerialNumber
 // }
-struct OCSPCertID {
+struct NET_EXPORT_PRIVATE OCSPCertID {
   OCSPCertID();
   ~OCSPCertID();
 
@@ -224,24 +224,6 @@ struct NET_EXPORT OCSPResponse {
   std::vector<der::Input> certs;
 };
 
-// Baseline Requirements 1.5.6, section 4.9.10:
-//   For the status of Subscriber Certificates: The CA SHALL update information
-//     provided via an Online Certificate Status Protocol at least every four
-//     days.  OCSP responses from this service MUST have a maximum expiration
-//     time of ten days.
-// TODO(mattm): Document the rationale for 7 days.
-constexpr base::TimeDelta kMaxOCSPLeafUpdateAge = base::TimeDelta::FromDays(7);
-
-// Baseline Requirements 1.5.6, section 4.9.10:
-//   For the status of Subordinate CA Certificates: The CA SHALL update
-//     information provided via an Online Certificate Status Protocol at least
-//     (i) every twelve months and (ii) within 24 hours after revoking a
-//     Subordinate CA Certificate.
-// Use 366 days to allow for leap years, though it is overly permissive in
-// other years.
-constexpr base::TimeDelta kMaxOCSPIntermediateUpdateAge =
-    base::TimeDelta::FromDays(366);
-
 // From RFC 6960:
 //
 // id-pkix-ocsp           OBJECT IDENTIFIER ::= { id-ad-ocsp }
@@ -289,7 +271,7 @@ NET_EXPORT_PRIVATE bool ParseOCSPResponse(const der::Input& raw_tlv,
                                           OCSPResponse* out);
 
 // Checks the revocation status of the certificate |certificate_der| by using
-// the der-encoded |raw_response|.
+// the DER-encoded |raw_response|.
 //
 // Returns GOOD if the OCSP response indicates the certificate is not revoked,
 // REVOKED if it indicates it is revoked, or UNKNOWN for all other cases.
@@ -303,8 +285,6 @@ NET_EXPORT_PRIVATE bool ParseOCSPResponse(const der::Input& raw_tlv,
 //        the |this_update| field in OCSPSingleResponse. Responses older than
 //        |max_age| will be considered invalid.
 //  * |response_details|: Additional details about failures.
-//      TODO(eroman): This is only being used for logging of Expect-Staple, can
-//      remove if that gets pulled out.
 NET_EXPORT OCSPRevocationStatus CheckOCSP(
     base::StringPiece raw_response,
     base::StringPiece certificate_der,
@@ -313,14 +293,18 @@ NET_EXPORT OCSPRevocationStatus CheckOCSP(
     const base::TimeDelta& max_age,
     OCSPVerifyResult::ResponseStatus* response_details) WARN_UNUSED_RESULT;
 
-// Returns true if |response|, a valid OCSP response with a thisUpdate field and
-// potentially a nextUpdate field, is valid at |verify_time| and not older than
-// |max_age|. Expressed differently, returns true if |response.thisUpdate| <=
-// |verify_time| < response.nextUpdate, and |response.thisUpdate| >=
-// |verify_time| - |max_age|.
-NET_EXPORT_PRIVATE bool CheckOCSPDateValid(const OCSPSingleResponse& response,
-                                           const base::Time& verify_time,
-                                           const base::TimeDelta& max_age);
+// Checks the revocation status of |certificate| by using the DER-encoded
+// |raw_response|.
+//
+// Arguments are the same as above, except that it takes already parsed
+// instances of the certificate and issuer certificate.
+NET_EXPORT OCSPRevocationStatus CheckOCSP(
+    base::StringPiece raw_response,
+    const ParsedCertificate* certificate,
+    const ParsedCertificate* issuer_certificate,
+    const base::Time& verify_time,
+    const base::TimeDelta& max_age,
+    OCSPVerifyResult::ResponseStatus* response_details) WARN_UNUSED_RESULT;
 
 // Creates a DER-encoded OCSPRequest for |cert|. The request is fairly basic:
 //  * No signature

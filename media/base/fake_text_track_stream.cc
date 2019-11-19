@@ -24,17 +24,21 @@ FakeTextTrackStream::~FakeTextTrackStream() {
   DCHECK(!read_cb_);
 }
 
-void FakeTextTrackStream::Read(const ReadCB& read_cb) {
+void FakeTextTrackStream::Read(ReadCB read_cb) {
   DCHECK(read_cb);
   DCHECK(!read_cb_);
   OnRead();
-  read_cb_ = read_cb;
+  read_cb_ = std::move(read_cb);
 
   if (stopping_) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(&FakeTextTrackStream::AbortPendingRead,
                                   base::Unretained(this)));
   }
+}
+
+bool FakeTextTrackStream::IsReadPending() const {
+  return !read_cb_.is_null();
 }
 
 DemuxerStream::Type FakeTextTrackStream::type() const {
@@ -77,7 +81,7 @@ void FakeTextTrackStream::SatisfyPendingRead(
 
 void FakeTextTrackStream::AbortPendingRead() {
   DCHECK(read_cb_);
-  std::move(read_cb_).Run(kAborted, NULL);
+  std::move(read_cb_).Run(kAborted, nullptr);
 }
 
 void FakeTextTrackStream::SendEosNotification() {

@@ -1,0 +1,1 @@
+CONSOLE WARNING: '-webkit-appearance: button' for elements other than <button> and <input type=button/color/reset/submit> is deprecated and will be removed in M80, around February 2020. See https://www.chromestatus.com/features/4867142128238592 for more details.

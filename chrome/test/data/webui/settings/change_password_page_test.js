@@ -38,7 +38,7 @@ suite('ChangePasswordHandler', function() {
   });
 
   test('changePasswordButtonPressed', function() {
-    let actionButton = changePasswordPage.$$('#changePassword');
+    const actionButton = changePasswordPage.$$('#changePassword');
     assertTrue(!!actionButton);
     actionButton.click();
     return browserProxy.whenCalled('changePassword');

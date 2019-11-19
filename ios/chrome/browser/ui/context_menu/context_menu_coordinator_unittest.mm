@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/mac/foundation_util.h"
-#import "ios/web/public/web_state/context_menu_params.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -40,40 +39,34 @@ class ContextMenuCoordinatorTest : public PlatformTest {
 
 // Tests the context menu reports as visible after presenting.
 TEST_F(ContextMenuCoordinatorTest, ValidateIsVisible) {
-  web::ContextMenuParams params;
-  params.location = CGPointZero;
-  params.view = [view_controller_ view];
   menu_coordinator_ = [[ContextMenuCoordinator alloc]
       initWithBaseViewController:view_controller_
-                          params:params];
+                           title:@"Context Menu"
+                          inView:view_controller_.view
+                      atLocation:CGPointZero];
   [menu_coordinator_ start];
-
   EXPECT_TRUE([menu_coordinator_ isVisible]);
 }
 
 // Tests the context menu dismissal.
 TEST_F(ContextMenuCoordinatorTest, ValidateDismissalOnStop) {
-  web::ContextMenuParams params;
-  params.location = CGPointZero;
-  params.view = [view_controller_ view];
   menu_coordinator_ = [[ContextMenuCoordinator alloc]
       initWithBaseViewController:view_controller_
-                          params:params];
+                           title:nil
+                          inView:view_controller_.view
+                      atLocation:CGPointZero];
   [menu_coordinator_ start];
-
   [menu_coordinator_ stop];
-
   EXPECT_FALSE([menu_coordinator_ isVisible]);
 }
 
 // Tests that only the expected actions are present on the context menu.
 TEST_F(ContextMenuCoordinatorTest, ValidateActions) {
-  web::ContextMenuParams params;
-  params.location = CGPointZero;
-  params.view = [view_controller_ view];
   menu_coordinator_ = [[ContextMenuCoordinator alloc]
       initWithBaseViewController:view_controller_
-                          params:params];
+                           title:nil
+                          inView:view_controller_.view
+                      atLocation:CGPointZero];
 
   NSArray* menu_titles = @[ @"foo", @"bar" ];
   for (NSString* title in menu_titles) {
@@ -103,12 +96,11 @@ TEST_F(ContextMenuCoordinatorTest, ValidateActions) {
 
 // Validates that the cancel action is present on the context menu.
 TEST_F(ContextMenuCoordinatorTest, CancelButtonExists) {
-  web::ContextMenuParams params;
-  params.location = CGPointZero;
-  params.view = [view_controller_ view];
   menu_coordinator_ = [[ContextMenuCoordinator alloc]
       initWithBaseViewController:view_controller_
-                          params:params];
+                           title:nil
+                          inView:view_controller_.view
+                      atLocation:CGPointZero];
 
   [menu_coordinator_ start];
 
@@ -127,14 +119,11 @@ TEST_F(ContextMenuCoordinatorTest, CancelButtonExists) {
 TEST_F(ContextMenuCoordinatorTest, ValidateContextMenuParams) {
   CGPoint location = CGPointMake(100.0, 125.0);
   NSString* title = @"Context Menu Title";
-
-  web::ContextMenuParams params;
-  params.location = location;
-  params.menu_title = title;
-  params.view = [view_controller_ view];
   menu_coordinator_ = [[ContextMenuCoordinator alloc]
       initWithBaseViewController:view_controller_
-                          params:params];
+                           title:title
+                          inView:view_controller_.view
+                      atLocation:location];
   [menu_coordinator_ start];
 
   EXPECT_TRUE([[view_controller_ presentedViewController]

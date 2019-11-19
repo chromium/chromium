@@ -10,7 +10,8 @@
 
 #include "base/bind.h"
 #include "chromecast/common/mojom/multiroom.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromecast {
 namespace media {
@@ -20,8 +21,9 @@ class MockMultiroomManager : public mojom::MultiroomManager {
   ~MockMultiroomManager() override;
 
   void Bind(mojo::ScopedMessagePipeHandle handle) {
-    binding_.Close();
-    binding_.Bind(mojom::MultiroomManagerRequest(std::move(handle)));
+    receiver_.reset();
+    receiver_.Bind(
+        mojo::PendingReceiver<mojom::MultiroomManager>(std::move(handle)));
   }
 
   void GetMultiroomInfo(const std::string& session_id,
@@ -31,13 +33,13 @@ class MockMultiroomManager : public mojom::MultiroomManager {
   const std::string GetLastSessionId() { return last_session_id_; }
 
  private:
-  mojo::Binding<mojom::MultiroomManager> binding_;
+  mojo::Receiver<mojom::MultiroomManager> receiver_{this};
   chromecast::mojom::MultiroomInfo info_;
   std::string last_session_id_;
 };
 
 inline MockMultiroomManager::MockMultiroomManager()
-    : binding_(this), last_session_id_("default_session_id") {}
+    : last_session_id_("default_session_id") {}
 
 inline MockMultiroomManager::~MockMultiroomManager() = default;
 

@@ -29,7 +29,6 @@ const char* kSwitchesToPropagate[]{
     kChromeVersionSwitch, kDumpRawLogsSwitch,   kEnableCrashReportingSwitch,
     kEngineSwitch,        kExecutionModeSwitch, kLogUploadRetryIntervalSwitch,
     kNoSelfDeleteSwitch,  kTestingSwitch,       kUmaUserSwitch,
-    kQuarantineSwitch,
 };
 
 // The name of the task to run post reboot.

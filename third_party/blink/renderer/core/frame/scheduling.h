@@ -18,6 +18,7 @@ class Scheduling : public ScriptWrappable {
 
  public:
   bool isInputPending(ScriptState*, const Vector<String>& input_types) const;
+  bool isFramePending() const;
 };
 
 }  // namespace blink

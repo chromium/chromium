@@ -9,7 +9,7 @@
     .clipping-container {
         position: absolute;
         height: 300px;
-        transform: translateZ(0);
+        will-change: transform;
     }
 
     .with-initial-clipping {
@@ -21,7 +21,7 @@
         height: 250px;
         background-color: yellow;
         border: 1px solid black;
-        transform: translateZ(0);
+        will-change: transform;
     }
 </style>
 <style id="alt1">

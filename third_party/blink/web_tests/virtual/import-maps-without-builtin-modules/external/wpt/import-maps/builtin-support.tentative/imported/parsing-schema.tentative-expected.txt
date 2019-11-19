@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS Invalid JSON
+PASS Mismatching the top-level schema / should throw for top-level non-objects
+PASS Mismatching the top-level schema / should throw if imports is a non-object
+PASS Mismatching the top-level schema / should throw if scopes is a non-object
+PASS Mismatching the top-level schema / should ignore unspecified top-level entries
+FAIL Mismatching the specifier map schema / should ignore entries where the address is not a string, array, or null assert_equals: expected "{\"bar\":[\"https://example.com/\"]}" but got "{}"
+PASS Mismatching the specifier map schema / should ignore entries where the specifier key is an empty string
+FAIL Mismatching the specifier map schema / should ignore members of an address array that are not strings assert_equals: expected "{\"bar\":[\"https://example.com/\"],\"foo\":[\"https://example.com/\"]}" but got "{}"
+PASS Mismatching the specifier map schema / should throw if a scope's value is not an object
+PASS Normalization / should normalize empty import maps to have imports and scopes keys
+PASS Normalization / should normalize an import map without imports to have imports
+PASS Normalization / should normalize an import map without scopes to have scopes
+FAIL Normalization / should normalize addresses to arrays assert_equals: expected "{\"bar\":[\"https://example.com/2\"],\"baz\":[],\"foo\":[\"https://example.com/1\"]}" but got "{\"foo\":[\"https://example.com/1\"]}"
+Harness: the test ran to completion.
+

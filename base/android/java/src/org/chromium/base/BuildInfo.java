@@ -9,10 +9,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Build;
-import android.os.Build.VERSION;
 import android.text.TextUtils;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.compat.ApiHelperForP;
 
 /**
  * BuildInfo is a utility class providing easy access to {@link PackageInfo} information. This is
@@ -25,14 +25,17 @@ public class BuildInfo {
     private static PackageInfo sBrowserPackageInfo;
     private static boolean sInitialized;
 
+    /** Not a member variable to avoid creating the instance early (it is set early in start up). */
+    private static String sFirebaseAppId = "";
+
     /** The application name (e.g. "Chrome"). For WebView, this is name of the embedding app. */
     public final String hostPackageLabel;
     /** By default: same as versionCode. For WebView: versionCode of the embedding app. */
-    public final int hostVersionCode;
+    public final long hostVersionCode;
     /** The packageName of Chrome/WebView. Use application context for host app packageName. */
     public final String packageName;
     /** The versionCode of the apk. */
-    public final int versionCode;
+    public final long versionCode;
     /** The versionName of Chrome/WebView. Use application context for host app versionName. */
     public final String versionName;
     /** Result of PackageManager.getInstallerPackageName(). Never null, but may be "". */
@@ -75,16 +78,25 @@ public class BuildInfo {
                 buildInfo.gmsVersionCode,
                 buildInfo.installerPackageName,
                 buildInfo.abiString,
-                BuildConfig.FIREBASE_APP_ID,
+                sFirebaseAppId,
                 buildInfo.customThemes,
                 buildInfo.resourcesVersion,
                 buildInfo.extractedFileSuffix,
                 isAtLeastQ() ? "1" : "0",
+                isDebugAndroid() ? "1" : "0",
         };
     }
 
     private static String nullToEmpty(CharSequence seq) {
         return seq == null ? "" : seq.toString();
+    }
+
+    private static long packageVersionCode(PackageInfo pi) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return ApiHelperForP.getLongVersionCode(pi);
+        } else {
+            return pi.versionCode;
+        }
     }
 
     /**
@@ -106,10 +118,10 @@ public class BuildInfo {
             String hostPackageName = appContext.getPackageName();
             PackageManager pm = appContext.getPackageManager();
             PackageInfo pi = pm.getPackageInfo(hostPackageName, 0);
-            hostVersionCode = pi.versionCode;
+            hostVersionCode = packageVersionCode(pi);
             if (sBrowserPackageInfo != null) {
                 packageName = sBrowserPackageInfo.packageName;
-                versionCode = sBrowserPackageInfo.versionCode;
+                versionCode = packageVersionCode(sBrowserPackageInfo);
                 versionName = nullToEmpty(sBrowserPackageInfo.versionName);
                 sBrowserPackageInfo = null;
             } else {
@@ -125,10 +137,11 @@ public class BuildInfo {
             try {
                 gmsPackageInfo = pm.getPackageInfo("com.google.android.gms", 0);
             } catch (NameNotFoundException e) {
-                Log.d(TAG, "GMS package is not found.", e);
+                Log.d(TAG, "GMS package is not found.");
             }
-            gmsVersionCode = gmsPackageInfo != null ? String.valueOf(gmsPackageInfo.versionCode)
-                                                    : "gms versionCode not available.";
+            gmsVersionCode = gmsPackageInfo != null
+                    ? String.valueOf(packageVersionCode(gmsPackageInfo))
+                    : "gms versionCode not available.";
 
             String hasCustomThemes = "true";
             try {
@@ -164,10 +177,9 @@ public class BuildInfo {
                 abiString = String.format("ABI1: %s, ABI2: %s", Build.CPU_ABI, Build.CPU_ABI2);
             }
 
-            // Use lastUpdateTime when developing locally, since versionCode does not normally
-            // change in this case.
-            long version = versionCode > 10 ? versionCode : pi.lastUpdateTime;
-            extractedFileSuffix = String.format("@%x", version);
+            // Append lastUpdateTime to versionCode, since versionCode is unlikely to change when
+            // developing locally but lastUpdateTime is.
+            extractedFileSuffix = String.format("@%x_%x", versionCode, pi.lastUpdateTime);
 
             // The value is truncated, as this is used for crash and UMA reporting.
             androidBuildFingerprint = Build.FINGERPRINT.substring(
@@ -199,17 +211,23 @@ public class BuildInfo {
      * @return {@code true} if Q APIs are available for use, {@code false} otherwise
      */
     public static boolean isAtLeastQ() {
-        return VERSION.CODENAME.length() == 1 && VERSION.CODENAME.charAt(0) >= 'Q'
-                && VERSION.CODENAME.charAt(0) <= 'Z';
+        return Build.VERSION.SDK_INT >= 29;
     }
 
     /**
      * Checks if the application targets pre-release SDK Q
      */
     public static boolean targetsAtLeastQ() {
-        return isAtLeastQ()
-                && ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion
-                == Build.VERSION_CODES.CUR_DEVELOPMENT;
+        return ContextUtils.getApplicationContext().getApplicationInfo().targetSdkVersion >= 29;
+    }
+
+    public static void setFirebaseAppId(String id) {
+        assert sFirebaseAppId.equals("");
+        sFirebaseAppId = id;
+    }
+
+    public static String getFirebaseAppId() {
+        return sFirebaseAppId;
     }
 
     // End:BuildCompat

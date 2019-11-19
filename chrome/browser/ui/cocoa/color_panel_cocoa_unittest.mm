@@ -4,6 +4,8 @@
 
 #import "chrome/browser/ui/cocoa/color_chooser_mac.h"
 
+#include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "skia/ext/skia_utils_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +28,7 @@ class ColorPanelCocoaTest : public CocoaTest {
     [[NSColorPanel sharedColorPanel] makeKeyAndOrderFront:nil];
     Init();
   }
+  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(ColorPanelCocoaTest, ClearTargetOnEnd) {
@@ -36,6 +39,7 @@ TEST_F(ColorPanelCocoaTest, ClearTargetOnEnd) {
     // Create a ColorPanelCocoa.
     ColorChooserMac* color_chooser_mac =
         ColorChooserMac::Open(nullptr, SK_ColorBLACK);
+    base::RunLoop().RunUntilIdle();
 
     // Confirm the NSColorPanel's configuration by the ColorChooserMac's
     // ColorPanelCocoa.
@@ -44,8 +48,6 @@ TEST_F(ColorPanelCocoaTest, ClearTargetOnEnd) {
     // Release the ColorPanelCocoa.
     color_chooser_mac->End();
   }
-  // Confirm the ColorPanelCocoa is no longer the NSColorPanel's target
-  EXPECT_EQ([nscolor_panel __target], nil);
 }
 
 TEST_F(ColorPanelCocoaTest, SetColor) {
@@ -60,6 +62,7 @@ TEST_F(ColorPanelCocoaTest, SetColor) {
   SkColor initial_color = SK_ColorBLACK;
   ColorChooserMac* color_chooser_mac =
       ColorChooserMac::Open(nullptr, SK_ColorBLACK);
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_NSEQ([nscolor_panel color],
               skia::SkColorToDeviceNSColor(initial_color));
@@ -67,6 +70,7 @@ TEST_F(ColorPanelCocoaTest, SetColor) {
   // Confirm that -[ColorPanelCocoa setColor:] sets the NSColorPanel's color.
   SkColor test_color = SK_ColorRED;
   color_chooser_mac->SetSelectedColor(test_color);
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_NSEQ([nscolor_panel color], skia::SkColorToDeviceNSColor(test_color));
 

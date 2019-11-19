@@ -45,7 +45,8 @@ class ContextGroupTest : public GpuServiceTest {
  protected:
   void SetUp() override {
     GpuServiceTest::SetUp();
-    decoder_.reset(new MockGLES2Decoder(&command_buffer_service_, &outputter_));
+    decoder_.reset(
+        new MockGLES2Decoder(&client_, &command_buffer_service_, &outputter_));
     scoped_refptr<FeatureInfo> feature_info = new FeatureInfo;
     group_ = scoped_refptr<ContextGroup>(new ContextGroup(
         gpu_preferences_, false, &mailbox_manager_,
@@ -62,6 +63,7 @@ class ContextGroupTest : public GpuServiceTest {
   ServiceDiscardableManager discardable_manager_;
   SharedImageManager shared_image_manager_;
   FakeCommandBufferServiceBase command_buffer_service_;
+  FakeDecoderClient client_;
   MailboxManagerImpl mailbox_manager_;
   TraceOutputter outputter_;
   std::unique_ptr<MockGLES2Decoder> decoder_;
@@ -121,9 +123,10 @@ TEST_F(ContextGroupTest, InitializeNoExtensions) {
 
 TEST_F(ContextGroupTest, MultipleContexts) {
   FakeCommandBufferServiceBase command_buffer_service2;
+  FakeDecoderClient client2;
   TraceOutputter outputter;
   std::unique_ptr<MockGLES2Decoder> decoder2_(
-      new MockGLES2Decoder(&command_buffer_service2, &outputter));
+      new MockGLES2Decoder(&client2, &command_buffer_service2, &outputter));
   TestHelper::SetupContextGroupInitExpectations(
       gl_.get(), DisallowedFeatures(), "", "",
       CONTEXT_TYPE_OPENGLES2, kBindGeneratesResource);

@@ -13,11 +13,11 @@ found in the LICENSE file.
   <link rel="stylesheet" href="snippets_internals.css">
 
   <script src="chrome://resources/js/cr.js"></script>
-  <script src="chrome://resources/js/mojo_bindings.js"></script>
+  <script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js"></script>
   <script src="chrome://resources/js/jstemplate_compiled.js"></script>
   <script src="chrome://resources/js/util.js"></script>
 
-  <script src="snippets_internals.mojom.js"></script>
+  <script src="snippets_internals.mojom-lite.js"></script>
   <script src="snippets_internals.js"></script>
 </head>
 
@@ -33,18 +33,6 @@ found in the LICENSE file.
       <tr>
         <td class="name">Offlining Recent Tabs enabled</td>
         <td id="flag-offlining-recent-pages-feature" class="value"></td>
-      </tr>
-      <tr>
-        <td class="name">Asset Download Suggestions enabled</td>
-        <td id="flag-asset-download-suggestions" class="value"></td>
-      </tr>
-      <tr>
-        <td class="name">Offline Page Download Suggestions enabled</td>
-        <td id="flag-offline-page-download-suggestions" class="value"></td>
-      </tr>
-      <tr>
-        <td class="name">Bookmark Suggestions enabled</td>
-        <td id="flag-bookmark-suggestions" class="value"></td>
       </tr>
       <tr>
         <td class="name">Snippets fetch URL</td>
@@ -102,7 +90,6 @@ found in the LICENSE file.
     <h2>Content Suggestions Service Actions</h2>
     <div class="forms">
       <button id="reload-suggestions">Reload suggestions</button>
-      <button id="debug-log-dump">Dump the debug log</button>
       <button id="clear-cached-suggestions">
         Clear cached suggestions
       </button>
@@ -128,23 +115,12 @@ found in the LICENSE file.
     <button id="background-fetch-button">
       Fetch remote suggestions in the background in 2 seconds
     </button>
-    <button id="push-dummy-suggestion">
-      Push dummy suggestion in 10 seconds
-    </button>
     <button id="last-json-button">Show the last JSON</button>
     <div id="last-json-container" class="hidden">
       <div id="last-json-text"></div>
       <button id="last-json-dump">Dump the last JSON</button>
     </div>
   </div>
-
-  <div id="notifications">
-    <h2>Notifications</h2>
-    <button id="reset-notifications-state-button">
-      Reset notifications state
-    </button>
-  </div>
-
 
   <div id="content-suggestions">
     <h2>Content suggestions by category

@@ -7,68 +7,87 @@
 
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
-{% for feature in features %}
-{% if feature.origin_trial_feature_name %}
-const char origin_trials::k{{feature.name}}TrialName[] = "{{feature.origin_trial_feature_name}}";
-{% endif %}
-{% endfor %}
+using TrialToFeaturesMap = HashMap<String, Vector<OriginTrialFeature>>;
 
-{% for feature in features %}
-{% if feature.origin_trial_feature_name %}
+namespace {
 
-bool origin_trials::{{feature.name}}Enabled(const ExecutionContext* executionContext) {
-  if (RuntimeEnabledFeatures::{{feature.name}}EnabledByRuntimeFlag())
-    return true;
-{% if feature.origin_trial_os %}
-#if
-{%- for os in feature.origin_trial_os %}
-{%- if not loop.first %} ||{% endif %}
- defined(OS_{{os | upper}})
-{%- endfor %}
-{% endif %}
-
-{%- for depends_on in feature.depends_on %}
-  if (!RuntimeEnabledFeatures::{{depends_on}}Enabled())
-    return false;
-{%- endfor %}
-
-  const OriginTrialContext* context = OriginTrialContext::From(executionContext);
-  if (!context) return false;
-  if (context->IsTrialEnabled(k{{feature.name}}TrialName))
-    return true;
-{% for implied_by_name in feature.implied_by_origin_trials %}
-  // TODO(crbug.com/831346): This check should be redundant with
-  // GetImpliedTrials() being checked in OriginTrialContext::EnableTrialFromToken().
-  // Remove when verified by further testing.
-  if (context->IsTrialEnabled(k{{implied_by_name}}TrialName))
-    return true;
-{% endfor %}
-  return false;
-{% if feature.origin_trial_os %}
-#else
-  return false;
-#endif
-{% endif %}
+const TrialToFeaturesMap& GetTrialToFeaturesMap() {
+  // The object needs to be thread-safe because service workers can call this
+  // function as well.
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(TrialToFeaturesMap, trial_to_features_map, ());
+  if (trial_to_features_map.IsEmpty()) {
+    {% for trial_name, features_list in trial_to_features_map.items() %}
+    trial_to_features_map.Set("{{trial_name}}",
+                              Vector<OriginTrialFeature>({
+      {%- for trial_feature in features_list %}
+OriginTrialFeature::k{{trial_feature.name}},
+      {%- endfor %}
+  }));
+    {% endfor %}
+    // For testing
+    trial_to_features_map.Set("This trial does not exist",
+                              Vector<OriginTrialFeature>({OriginTrialFeature::kNonExisting}));
+  }
+  return trial_to_features_map;
 }
 
-{% endif %}
-{% endfor %}
+} // namespace
 
-Vector<AtomicString> origin_trials::GetImpliedTrials(const String& trial_name) {
+bool origin_trials::IsTrialValid(const String& trial_name) {
+  return GetTrialToFeaturesMap().Contains(trial_name);
+}
+
+
+const Vector<OriginTrialFeature>& origin_trials::FeaturesForTrial(const String& trial_name) {
+  DCHECK(IsTrialValid(trial_name));
+  return GetTrialToFeaturesMap().find(trial_name)->value;
+}
+
+
+Vector<OriginTrialFeature> origin_trials::GetImpliedFeatures(OriginTrialFeature feature) {
 {% for implied_by_name, implied_list in implied_origin_trial_features.items() %}
-  if (trial_name == k{{implied_by_name}}TrialName) {
-    Vector<AtomicString> implied_trials = {
+  if (feature == OriginTrialFeature::k{{implied_by_name}}) {
+    Vector<OriginTrialFeature> implied_features = {
 {%- for implied_name in implied_list %}
-AtomicString(k{{implied_name}}TrialName),
+OriginTrialFeature::k{{implied_name}},
 {%- endfor %}
 };
-    return implied_trials;
+    return implied_features;
   }
 {% endfor %}
-  return Vector<AtomicString>();
+  return Vector<OriginTrialFeature>();
+}
+
+
+bool origin_trials::FeatureEnabledForOS(OriginTrialFeature feature) {
+  switch (feature) {
+    {% for feature in features %}
+    {% if feature.origin_trial_feature_name %}
+    case OriginTrialFeature::k{{feature.name}}:
+      {% if feature.origin_trial_os %}
+#if
+  {%- for os in feature.origin_trial_os %}
+  {%- if not loop.first %} ||{% endif %}
+ defined(OS_{{os | upper}})
+  {%- endfor %}
+
+      return true;
+#else
+      return false;
+#endif
+      {% else %}
+      return true;
+      {% endif %}
+    {% endif %}
+    {% endfor %}
+    // For testing
+    case OriginTrialFeature::kNonExisting:
+      return true;
+  }
 }
 
 } // namespace blink

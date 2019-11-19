@@ -123,6 +123,8 @@ class GL_EXPORT RealGLApi : public GLApiBase {
   void glClearDepthFn(GLclampd depth) override;
   void glDepthRangeFn(GLclampd z_near, GLclampd z_far) override;
 
+  void glUseProgramFn(GLuint program) override;
+
   void set_gl_workarounds(const GLWorkarounds& workarounds);
   void set_version(std::unique_ptr<GLVersionInfo> version);
   void ClearCachedGLExtensions();

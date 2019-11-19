@@ -20,15 +20,8 @@ UnifiedCastDetailedViewController::~UnifiedCastDetailedViewController() =
 
 views::View* UnifiedCastDetailedViewController::CreateView() {
   DCHECK(!view_);
-  view_ = new tray::CastDetailedView(
-      detailed_view_delegate_.get(),
-      Shell::Get()->cast_config()->sinks_and_routes());
+  view_ = new tray::CastDetailedView(detailed_view_delegate_.get());
   return view_;
-}
-
-void UnifiedCastDetailedViewController::OnDevicesUpdated(
-    std::vector<mojom::SinkAndRoutePtr> devices) {
-  view_->UpdateReceiverList(std::move(devices));
 }
 
 }  // namespace ash

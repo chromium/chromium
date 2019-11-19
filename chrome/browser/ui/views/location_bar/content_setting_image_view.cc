@@ -6,21 +6,63 @@
 
 #include <utility>
 
+#include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
+#include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+
+base::Optional<ViewID> GetViewID(
+    ContentSettingImageModel::ImageType image_type) {
+  using ImageType = ContentSettingImageModel::ImageType;
+  switch (image_type) {
+    case ImageType::JAVASCRIPT:
+      return ViewID::VIEW_ID_CONTENT_SETTING_JAVASCRIPT;
+
+    case ImageType::POPUPS:
+      return ViewID::VIEW_ID_CONTENT_SETTING_POPUP;
+
+    case ImageType::COOKIES:
+    case ImageType::IMAGES:
+    case ImageType::PPAPI_BROKER:
+    case ImageType::PLUGINS:
+    case ImageType::GEOLOCATION:
+    case ImageType::MIXEDSCRIPT:
+    case ImageType::PROTOCOL_HANDLERS:
+    case ImageType::MEDIASTREAM:
+    case ImageType::ADS:
+    case ImageType::AUTOMATIC_DOWNLOADS:
+    case ImageType::MIDI_SYSEX:
+    case ImageType::SOUND:
+    case ImageType::FRAMEBUST:
+    case ImageType::CLIPBOARD_READ:
+    case ImageType::SENSORS:
+    case ImageType::NOTIFICATIONS_QUIET_PROMPT:
+      return base::nullopt;
+
+    case ImageType::NUM_IMAGE_TYPES:
+      break;
+  }
+  NOTREACHED();
+  return base::nullopt;
+}
+
+}  // namespace
 
 ContentSettingImageView::ContentSettingImageView(
     std::unique_ptr<ContentSettingImageModel> image_model,
@@ -33,6 +75,11 @@ ContentSettingImageView::ContentSettingImageView(
   DCHECK(delegate_);
   SetUpForInOutAnimation();
   image()->EnableCanvasFlippingForRTLUI(true);
+
+  base::Optional<ViewID> view_id =
+      GetViewID(content_setting_image_model_->image_type());
+  if (view_id)
+    SetID(*view_id);
 }
 
 ContentSettingImageView::~ContentSettingImageView() {
@@ -55,6 +102,18 @@ void ContentSettingImageView::Update() {
   DCHECK(web_contents);
   UpdateImage();
   SetVisible(true);
+
+  if (content_setting_image_model_->ShouldNotifyAccessibility(web_contents)) {
+    GetViewAccessibility().OverrideName(l10n_util::GetStringUTF16(
+        content_setting_image_model_->explanatory_string_id()));
+    NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+    content_setting_image_model_->AccessibilityWasNotified(web_contents);
+  }
+
+  if (content_setting_image_model_->ShouldAutoOpenBubble(web_contents)) {
+    ShowBubbleImpl();
+    content_setting_image_model_->SetBubbleWasAutoOpened(web_contents);
+  }
 
   // If the content usage or blockage should be indicated to the user, start the
   // animation and record that the icon has been shown.
@@ -100,15 +159,14 @@ bool ContentSettingImageView::OnMousePressed(const ui::MouseEvent& event) {
 bool ContentSettingImageView::OnKeyPressed(const ui::KeyEvent& event) {
   // Pause animation so that the icon does not shrink and deselect while the
   // user is attempting to press it using key commands.
-  if (GetKeyClickActionForEvent(event) == KeyClickAction::CLICK_ON_KEY_RELEASE)
+  if (GetKeyClickActionForEvent(event) == KeyClickAction::kOnKeyRelease)
     PauseAnimation();
   return Button::OnKeyPressed(event);
 }
 
-void ContentSettingImageView::OnNativeThemeChanged(
-    const ui::NativeTheme* native_theme) {
+void ContentSettingImageView::OnThemeChanged() {
   UpdateImage();
-  IconLabelBubbleView::OnNativeThemeChanged(native_theme);
+  IconLabelBubbleView::OnThemeChanged();
 }
 
 SkColor ContentSettingImageView::GetTextColor() const {
@@ -121,6 +179,10 @@ bool ContentSettingImageView::ShouldShowSeparator() const {
 }
 
 bool ContentSettingImageView::ShowBubble(const ui::Event& event) {
+  return ShowBubbleImpl();
+}
+
+bool ContentSettingImageView::ShowBubbleImpl() {
   PauseAnimation();
   content::WebContents* web_contents =
       delegate_->GetContentSettingWebContents();

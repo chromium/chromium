@@ -12,7 +12,7 @@
 
 #include "base/bind.h"
 #include "base/optional.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
@@ -117,18 +117,15 @@ constexpr char kIncorrectHandshakeKey[] = "INCORRECT_HANDSHAKE_KEY_12345678";
 // factors (i.e. authenticator session random, session pre key, and nonce) are
 // |kAuthenticatorSessionRandom|, |kTestSessionPreKey|, and |kTestNonce|,
 // respectively.
-std::string GetExpectedEncryptionKey(
+std::vector<uint8_t> GetExpectedEncryptionKey(
     base::span<const uint8_t> client_random_nonce) {
   std::vector<uint8_t> nonce_message =
       fido_parsing_utils::Materialize(kTestNonce);
   fido_parsing_utils::Append(&nonce_message, client_random_nonce);
   fido_parsing_utils::Append(&nonce_message, kAuthenticatorSessionRandom);
-  return crypto::HkdfSha256(
-      fido_parsing_utils::ConvertToStringPiece(kTestSessionPreKey),
-      fido_parsing_utils::ConvertToStringPiece(
-          fido_parsing_utils::CreateSHA256Hash(
-              fido_parsing_utils::ConvertToStringPiece(nonce_message))),
-      kCableDeviceEncryptionKeyInfo, 32);
+  return crypto::HkdfSha256(kTestSessionPreKey,
+                            crypto::SHA256Hash(nonce_message),
+                            kCableDeviceEncryptionKeyInfo, 32);
 }
 
 // Given a hello message and handshake key from the authenticator, construct
@@ -264,11 +261,11 @@ class FidoCableHandshakeHandlerTest : public Test {
     connection_->read_callback() = device_->GetReadCallbackForTesting();
   }
 
-  std::unique_ptr<FidoCableHandshakeHandler> CreateHandshakeHandler(
+  std::unique_ptr<FidoCableV1HandshakeHandler> CreateHandshakeHandler(
       std::array<uint8_t, 8> nonce,
       std::array<uint8_t, 32> session_pre_key) {
-    return std::make_unique<FidoCableHandshakeHandler>(device_.get(), nonce,
-                                                       session_pre_key);
+    return std::make_unique<FidoCableV1HandshakeHandler>(device_.get(), nonce,
+                                                         session_pre_key);
   }
 
   void ConnectWithLength(uint16_t length) {
@@ -288,7 +285,7 @@ class FidoCableHandshakeHandlerTest : public Test {
   TestDeviceCallbackReceiver& callback_receiver() { return callback_receiver_; }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
  private:
   scoped_refptr<MockBluetoothAdapter> adapter_ =

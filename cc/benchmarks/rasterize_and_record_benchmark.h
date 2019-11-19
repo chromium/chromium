@@ -62,7 +62,7 @@ class RasterizeAndRecordBenchmark : public MicroBenchmark {
 
   LayerTreeHost* layer_tree_host_;
 
-  base::WeakPtrFactory<RasterizeAndRecordBenchmark> weak_ptr_factory_;
+  base::WeakPtrFactory<RasterizeAndRecordBenchmark> weak_ptr_factory_{this};
 };
 
 }  // namespace cc

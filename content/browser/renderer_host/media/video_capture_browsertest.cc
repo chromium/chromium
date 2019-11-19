@@ -39,23 +39,23 @@ class MockVideoCaptureControllerEventHandler
     : public VideoCaptureControllerEventHandler {
  public:
   MOCK_METHOD3(DoOnNewBuffer,
-               void(VideoCaptureControllerID id,
+               void(const VideoCaptureControllerID& id,
                     media::mojom::VideoBufferHandlePtr* buffer_handle,
                     int buffer_id));
   MOCK_METHOD2(OnBufferDestroyed,
-               void(VideoCaptureControllerID, int buffer_id));
+               void(const VideoCaptureControllerID&, int buffer_id));
   MOCK_METHOD3(OnBufferReady,
-               void(VideoCaptureControllerID id,
+               void(const VideoCaptureControllerID& id,
                     int buffer_id,
                     const media::mojom::VideoFrameInfoPtr& frame_info));
-  MOCK_METHOD1(OnStarted, void(VideoCaptureControllerID));
-  MOCK_METHOD1(OnEnded, void(VideoCaptureControllerID));
+  MOCK_METHOD1(OnStarted, void(const VideoCaptureControllerID&));
+  MOCK_METHOD1(OnEnded, void(const VideoCaptureControllerID&));
   MOCK_METHOD2(OnError,
-               void(VideoCaptureControllerID, media::VideoCaptureError));
-  MOCK_METHOD1(OnStartedUsingGpuDecode, void(VideoCaptureControllerID));
-  MOCK_METHOD1(OnStoppedUsingGpuDecode, void(VideoCaptureControllerID));
+               void(const VideoCaptureControllerID&, media::VideoCaptureError));
+  MOCK_METHOD1(OnStartedUsingGpuDecode, void(const VideoCaptureControllerID&));
+  MOCK_METHOD1(OnStoppedUsingGpuDecode, void(const VideoCaptureControllerID&));
 
-  void OnNewBuffer(VideoCaptureControllerID id,
+  void OnNewBuffer(const VideoCaptureControllerID& id,
                    media::mojom::VideoBufferHandlePtr buffer_handle,
                    int buffer_id) override {
     DoOnNewBuffer(id, &buffer_handle, buffer_id);
@@ -64,9 +64,15 @@ class MockVideoCaptureControllerEventHandler
 
 class MockMediaStreamProviderListener : public MediaStreamProviderListener {
  public:
-  MOCK_METHOD2(Opened, void(blink::MediaStreamType, int));
-  MOCK_METHOD2(Closed, void(blink::MediaStreamType, int));
-  MOCK_METHOD2(Aborted, void(blink::MediaStreamType, int));
+  MOCK_METHOD2(Opened,
+               void(blink::mojom::MediaStreamType,
+                    const base::UnguessableToken&));
+  MOCK_METHOD2(Closed,
+               void(blink::mojom::MediaStreamType,
+                    const base::UnguessableToken&));
+  MOCK_METHOD2(Aborted,
+               void(blink::mojom::MediaStreamType,
+                    const base::UnguessableToken&));
 };
 
 using DeviceIndex = size_t;
@@ -165,7 +171,7 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
     command_line->AppendSwitch(switches::kUseFakeUIForMediaStream);
     if (params_.exercise_accelerated_jpeg_decoding) {
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
-          switches::kUseFakeJpegDecodeAccelerator);
+          switches::kUseFakeMjpegDecodeAccelerator);
     } else {
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
           switches::kDisableAcceleratedMjpegDecode);
@@ -187,8 +193,8 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
     ASSERT_TRUE(params_.device_index_to_use < descriptors.size());
     const auto& descriptor = descriptors[params_.device_index_to_use];
     blink::MediaStreamDevice media_stream_device(
-        blink::MEDIA_DEVICE_VIDEO_CAPTURE, descriptor.device_id,
-        descriptor.display_name(), descriptor.facing);
+        blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
+        descriptor.device_id, descriptor.display_name(), descriptor.facing);
     session_id_ = video_capture_manager_->Open(media_stream_device);
     media::VideoCaptureParams capture_params;
     capture_params.requested_format = media::VideoCaptureFormat(
@@ -217,8 +223,9 @@ class VideoCaptureBrowserTest : public ContentBrowserTest,
   TestParams params_;
   MediaStreamManager* media_stream_manager_ = nullptr;
   VideoCaptureManager* video_capture_manager_ = nullptr;
-  int session_id_ = 0;
-  const VideoCaptureControllerID stub_client_id_ = 123;
+  base::UnguessableToken session_id_;
+  const VideoCaptureControllerID stub_client_id_ =
+      base::UnguessableToken::Create();
   MockMediaStreamProviderListener mock_stream_provider_listener_;
   MockVideoCaptureControllerEventHandler mock_controller_event_handler_;
   base::WeakPtr<VideoCaptureController> controller_;
@@ -236,7 +243,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest, StartAndImmediatelyStop) {
       base::Bind(&VideoCaptureBrowserTest::TearDownCaptureDeviceOnIOThread,
                  base::Unretained(this),
                  std::move(quit_run_loop_on_current_thread_cb), true);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(
           &VideoCaptureBrowserTest::SetUpAndStartCaptureDeviceOnIOThread,
@@ -276,6 +283,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
                  std::move(quit_run_loop_on_current_thread_cb), true);
 
   bool must_wait_for_gpu_decode_to_start = false;
+#if defined(OS_CHROMEOS)
   if (params_.exercise_accelerated_jpeg_decoding) {
     // Since the GPU jpeg decoder is created asynchronously while decoding
     // in software is ongoing, we have to keep pushing frames until a message
@@ -288,6 +296,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
           must_wait_for_gpu_decode_to_start = false;
         }));
   }
+#endif  // defined(OS_CHROMEOS)
   EXPECT_CALL(mock_controller_event_handler_, DoOnNewBuffer(_, _, _))
       .Times(AtLeast(1));
   EXPECT_CALL(mock_controller_event_handler_, OnBufferReady(_, _, _))
@@ -313,7 +322,7 @@ IN_PROC_BROWSER_TEST_P(VideoCaptureBrowserTest,
           }));
 
   base::Closure do_nothing;
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(
           &VideoCaptureBrowserTest::SetUpAndStartCaptureDeviceOnIOThread,

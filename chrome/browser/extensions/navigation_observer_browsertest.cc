@@ -10,6 +10,8 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/navigation_observer.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -21,6 +23,11 @@ namespace extensions {
 // re-enable it.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
                        PromptToReEnableExtensionsOnNavigation) {
+  // TODO(lukasza): https://crbug.com/970917: We should not terminate a renderer
+  // that hosts a disabled extension.  Once that is fixed, we should remove
+  // ScopedAllowRendererCrashes below.
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+
   NavigationObserver::SetAllowedRepeatedPromptingForTesting(true);
   base::ScopedClosureRunner reset_repeated_prompting(base::BindOnce([]() {
     NavigationObserver::SetAllowedRepeatedPromptingForTesting(false);
@@ -124,6 +131,47 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
     EXPECT_EQ(disable_reason::DISABLE_PERMISSIONS_INCREASE,
               prefs->GetDisableReasons(kHostedAppId));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, NoExtensionsInRefererHeader) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  scoped_refptr<const Extension> extension =
+      ChromeTestExtensionLoader(profile()).LoadExtension(
+          test_data_dir_.AppendASCII("simple_with_file"));
+  ASSERT_TRUE(extension);
+  GURL page_url = extension->GetResourceURL("file.html");
+  ui_test_utils::NavigateToURL(browser(), page_url);
+
+  // Click a link in the extension.
+  GURL target_url = embedded_test_server()->GetURL("/echoheader?referer");
+  const char kScriptTemplate[] = R"(
+      let a = document.createElement('a');
+      a.href = $1;
+      document.body.appendChild(a);
+      a.click();
+  )";
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver nav_observer(web_contents, 1);
+  ExecuteScriptAsync(web_contents,
+                     content::JsReplace(kScriptTemplate, target_url));
+
+  // Wait for navigation to complete and verify it was successful.
+  nav_observer.WaitForNavigationFinished();
+  EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(target_url, nav_observer.last_navigation_url());
+  EXPECT_EQ(target_url, web_contents->GetLastCommittedURL());
+
+  // Verify that the Referrer header was not present (in particular, it should
+  // not reveal the identity of the extension).
+  content::WaitForLoadStop(web_contents);
+  EXPECT_EQ("None", content::EvalJs(web_contents, "document.body.innerText"));
+
+  // Verify that the initiator_origin was present and set to the extension.
+  ASSERT_TRUE(nav_observer.last_initiator_origin().has_value());
+  EXPECT_EQ(url::Origin::Create(page_url),
+            nav_observer.last_initiator_origin());
 }
 
 }  // namespace extensions

@@ -12,7 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 
@@ -30,54 +32,61 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
                             int render_frame_id,
                             MediaStreamManager* media_stream_manager);
   ~MediaStreamDispatcherHost() override;
-  static void Create(int render_process_id,
-                     int render_frame_id,
-                     MediaStreamManager* media_stream_manager,
-                     blink::mojom::MediaStreamDispatcherHostRequest request);
+  static void Create(
+      int render_process_id,
+      int render_frame_id,
+      MediaStreamManager* media_stream_manager,
+      mojo::PendingReceiver<blink::mojom::MediaStreamDispatcherHost> receiver);
 
   void set_salt_and_origin_callback_for_testing(
       MediaDeviceSaltAndOriginCallback callback) {
     salt_and_origin_callback_ = std::move(callback);
   }
   void SetMediaStreamDeviceObserverForTesting(
-      blink::mojom::MediaStreamDeviceObserverPtr observer) {
-    media_stream_device_observer_ = std::move(observer);
+      mojo::PendingRemote<blink::mojom::MediaStreamDeviceObserver> observer) {
+    media_stream_device_observer_.Bind(std::move(observer));
   }
 
  private:
   friend class MockMediaStreamDispatcherHost;
 
-  const blink::mojom::MediaStreamDeviceObserverPtr&
+  const mojo::Remote<blink::mojom::MediaStreamDeviceObserver>&
   GetMediaStreamDeviceObserver();
   void OnMediaStreamDeviceObserverConnectionError();
   void CancelAllRequests();
 
   // mojom::MediaStreamDispatcherHost implementation
-  void GenerateStream(int32_t request_id,
-                      const blink::StreamControls& controls,
-                      bool user_gesture,
-                      GenerateStreamCallback callback) override;
+  void GenerateStream(
+      int32_t request_id,
+      const blink::StreamControls& controls,
+      bool user_gesture,
+      blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
+      GenerateStreamCallback callback) override;
   void CancelRequest(int32_t request_id) override;
-  void StopStreamDevice(const std::string& device_id,
-                        int32_t session_id) override;
+  void StopStreamDevice(
+      const std::string& device_id,
+      const base::Optional<base::UnguessableToken>& session_id) override;
   void OpenDevice(int32_t request_id,
                   const std::string& device_id,
-                  blink::MediaStreamType type,
+                  blink::mojom::MediaStreamType type,
                   OpenDeviceCallback callback) override;
   void CloseDevice(const std::string& label) override;
-  void SetCapturingLinkSecured(int32_t session_id,
-                               blink::MediaStreamType type,
-                               bool is_secure) override;
+  void SetCapturingLinkSecured(
+      const base::Optional<base::UnguessableToken>& session_id,
+      blink::mojom::MediaStreamType type,
+      bool is_secure) override;
   void OnStreamStarted(const std::string& label) override;
 
-  void DoGenerateStream(int32_t request_id,
-                        const blink::StreamControls& controls,
-                        bool user_gesture,
-                        GenerateStreamCallback callback,
-                        MediaDeviceSaltAndOrigin salt_and_origin);
+  void DoGenerateStream(
+      int32_t request_id,
+      const blink::StreamControls& controls,
+      bool user_gesture,
+      blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
+      GenerateStreamCallback callback,
+      MediaDeviceSaltAndOrigin salt_and_origin);
   void DoOpenDevice(int32_t request_id,
                     const std::string& device_id,
-                    blink::MediaStreamType type,
+                    blink::mojom::MediaStreamType type,
                     OpenDeviceCallback callback,
                     MediaDeviceSaltAndOrigin salt_and_origin);
 
@@ -93,10 +102,11 @@ class CONTENT_EXPORT MediaStreamDispatcherHost
   const int render_frame_id_;
   const int requester_id_;
   MediaStreamManager* media_stream_manager_;
-  blink::mojom::MediaStreamDeviceObserverPtr media_stream_device_observer_;
+  mojo::Remote<blink::mojom::MediaStreamDeviceObserver>
+      media_stream_device_observer_;
   MediaDeviceSaltAndOriginCallback salt_and_origin_callback_;
 
-  base::WeakPtrFactory<MediaStreamDispatcherHost> weak_factory_;
+  base::WeakPtrFactory<MediaStreamDispatcherHost> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaStreamDispatcherHost);
 };

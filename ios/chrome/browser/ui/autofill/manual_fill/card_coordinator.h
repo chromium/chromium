@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/ui/autofill/manual_fill/fallback_coordinator.h"
 
+@protocol BrowserCoordinatorCommands;
 class WebStateList;
 
 // Delegate for the coordinator actions.
@@ -30,10 +31,11 @@ class WebStateList;
 // Creates a coordinator that uses a |viewController|, |browserState|,
 // |webStateList| and |injectionHandler|.
 - (instancetype)
-initWithBaseViewController:(UIViewController*)viewController
-              browserState:(ios::ChromeBrowserState*)browserState
-              webStateList:(WebStateList*)webStateList
-          injectionHandler:(ManualFillInjectionHandler*)injectionHandler
+    initWithBaseViewController:(UIViewController*)viewController
+                  browserState:(ios::ChromeBrowserState*)browserState
+                  webStateList:(WebStateList*)webStateList
+              injectionHandler:(ManualFillInjectionHandler*)injectionHandler
+                    dispatcher:(id<BrowserCoordinatorCommands>)dispatcher
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)

@@ -11,7 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,7 +60,7 @@ class DeferredSequencedTaskRunnerTest : public testing::Test {
       : runner_(
             new DeferredSequencedTaskRunner(ThreadTaskRunnerHandle::Get())) {}
 
-  test::ScopedTaskEnvironment scoped_task_environment_;
+  test::TaskEnvironment task_environment_;
   scoped_refptr<DeferredSequencedTaskRunner> runner_;
   mutable Lock lock_;
   std::vector<int> executed_task_ids_;
@@ -201,7 +201,7 @@ TEST_F(DeferredSequencedTaskRunnerTest, StartWithTaskRunner) {
   base::RunLoop run_loop;
   runner->PostTask(FROM_HERE,
                    BindOnce(
-                       [](bool* run_called, base::Closure quit_closure) {
+                       [](bool* run_called, base::OnceClosure quit_closure) {
                          *run_called = true;
                          std::move(quit_closure).Run();
                        },

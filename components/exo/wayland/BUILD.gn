@@ -4,14 +4,10 @@
 
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
+import("//gpu/vulkan/features.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/ozone/ozone.gni")
-
-declare_args() {
-  # Enable experimental vulkan wayland client.
-  enable_vulkan_wayland_client = false
-}
 
 if (use_xkbcommon) {
   pkg_config("xkbcommon") {
@@ -19,18 +15,12 @@ if (use_xkbcommon) {
   }
 }
 
-if (use_ozone) {
-  if (enable_vulkan_wayland_client) {
-    pkg_config("vulkan") {
-      packages = [ "vulkan" ]
-    }
-  }
-}
-
 source_set("wayland") {
   sources = [
     "scoped_wl.cc",
     "scoped_wl.h",
+    "serial_tracker.cc",
+    "serial_tracker.h",
     "server.cc",
     "server.h",
     "server_util.cc",
@@ -41,6 +31,8 @@ source_set("wayland") {
     "wayland_display_output.h",
     "wayland_input_delegate.cc",
     "wayland_input_delegate.h",
+    "wayland_pointer_delegate.cc",
+    "wayland_pointer_delegate.h",
     "wayland_touch_delegate.cc",
     "wayland_touch_delegate.h",
     "wayland_watcher.cc",
@@ -61,6 +53,8 @@ source_set("wayland") {
     "wp_presentation.h",
     "wp_viewporter.cc",
     "wp_viewporter.h",
+    "zaura_shell.cc",
+    "zaura_shell.h",
     "zcr_alpha_compositing.cc",
     "zcr_alpha_compositing.h",
     "zcr_secure_output.cc",
@@ -69,6 +63,8 @@ source_set("wayland") {
     "zcr_stylus.h",
     "zcr_vsync_feedback.cc",
     "zcr_vsync_feedback.h",
+    "zwp_linux_explicit_synchronization.cc",
+    "zwp_linux_explicit_synchronization.h",
   ]
 
   defines = [ "EXO_IMPLEMENTATION" ]
@@ -77,12 +73,10 @@ source_set("wayland") {
     sources += [
       "wayland_keyboard_delegate.cc",
       "wayland_keyboard_delegate.h",
-      "wayland_pointer_delegate.cc",
-      "wayland_pointer_delegate.h",
+      "wayland_positioner.cc",
+      "wayland_positioner.h",
       "wl_shell.cc",
       "wl_shell.h",
-      "zaura_shell.cc",
-      "zaura_shell.h",
       "zcr_cursor_shapes.cc",
       "zcr_cursor_shapes.h",
       "zcr_gaming_input.cc",
@@ -99,8 +93,8 @@ source_set("wayland") {
       "zcr_stylus_tools.h",
       "zwp_input_timestamps_manager.cc",
       "zwp_input_timestamps_manager.h",
-      "zwp_linux_explicit_synchronization.cc",
-      "zwp_linux_explicit_synchronization.h",
+      "zwp_pointer_constraints.cc",
+      "zwp_pointer_constraints.h",
       "zwp_pointer_gestures.cc",
       "zwp_pointer_gestures.h",
       "zwp_relative_pointer_manager.cc",
@@ -117,8 +111,10 @@ source_set("wayland") {
     "//components/exo",
     "//components/exo/wayland/protocol:aura_shell_protocol",
     "//device/gamepad",
-    "//services/viz/public/interfaces",
+    "//services/viz/privileged/mojom/compositing",
+    "//services/viz/public/mojom",
     "//skia",
+    "//third_party/libsync",
     "//third_party/wayland:wayland_server",
     "//third_party/wayland-protocols:alpha_compositing_protocol",
     "//third_party/wayland-protocols:cursor_shapes_protocol",
@@ -128,6 +124,7 @@ source_set("wayland") {
     "//third_party/wayland-protocols:keyboard_extension_protocol",
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     "//third_party/wayland-protocols:notification_shell_protocol",
+    "//third_party/wayland-protocols:pointer_constraints_protocol",
     "//third_party/wayland-protocols:pointer_gestures_protocol",
     "//third_party/wayland-protocols:presentation_time_protocol",
     "//third_party/wayland-protocols:relative_pointer_protocol",
@@ -144,6 +141,7 @@ source_set("wayland") {
     "//ui/display/manager",
     "//ui/events:dom_keycode_converter",
     "//ui/events:events_base",
+    "//ui/events/devices:devices",
     "//ui/views",
     "//ui/wm:wm",
     "//ui/wm/public",
@@ -195,16 +193,28 @@ source_set("unit_tests") {
     "//base",
     "//components/exo",
     "//components/exo:test_support",
+    "//components/exo/wayland/fuzzer:unit_tests",
     "//skia",
     "//testing/gtest",
     "//third_party/wayland:wayland_client",
   ]
 
   if (is_chromeos) {
-    sources += [ "server_util_unittest.cc" ]
+    sources += [
+      "wayland_positioner_unittest.cc",
+      "zaura_shell_unittest.cc",
+      "zcr_remote_shell_unittest.cc",
+    ]
     deps += [
+      "//ash",
+      "//ash:test_support",
+      "//ash/public/cpp",
+      "//third_party/wayland-protocols:xdg_shell_protocol",
+      "//ui/compositor",
+      "//ui/compositor:test_support",
       "//ui/display",
       "//ui/gfx",
+      "//ui/wm/public",
     ]
   }
 }
@@ -212,7 +222,7 @@ source_set("unit_tests") {
 config("client_support_config") {
   if (ozone_platform_gbm) {
     defines = [ "USE_GBM" ]
-    if (enable_vulkan_wayland_client) {
+    if (enable_vulkan) {
       defines += [ "USE_VULKAN" ]
     }
   }
@@ -228,6 +238,8 @@ source_set("client_support") {
 
   deps = [
     "//base",
+    "//gpu/vulkan:vulkan",
+    "//gpu/vulkan/init:init",
     "//ui/gl",
     "//ui/gl/init",
   ]
@@ -241,13 +253,11 @@ source_set("client_support") {
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
     "//third_party/wayland-protocols:linux_explicit_synchronization_protocol",
     "//third_party/wayland-protocols:presentation_time_protocol",
+    "//third_party/wayland-protocols:vsync_feedback_protocol",
   ]
 
   if (ozone_platform_gbm) {
     configs += [ "//ui/gl:gl_config" ]
-    if (enable_vulkan_wayland_client) {
-      configs += [ ":vulkan" ]
-    }
     deps += [
       "//build/config/linux/libdrm",
       "//ui/ozone",
@@ -299,6 +309,7 @@ source_set("simple") {
     "//third_party/wayland:wayland_client",
     "//third_party/wayland-protocols:linux_dmabuf_protocol",
     "//third_party/wayland-protocols:presentation_time_protocol",
+    "//third_party/wayland-protocols:vsync_feedback_protocol",
     "//ui/gfx/geometry",
     "//ui/gl",
   ]
@@ -420,6 +431,41 @@ executable("wayland_info_client") {
   ]
 }
 
+source_set("wayland_client_test_helper") {
+  testonly = true
+
+  sources = [
+    "clients/test/wayland_client_test_helper.cc",
+    "clients/test/wayland_client_test_helper.h",
+  ]
+
+  deps = [
+    ":wayland",
+    "//base",
+    "//components/exo",
+    "//components/exo/wayland",
+    "//ui/aura",
+    "//ui/events:gesture_detection",
+    "//ui/wm",
+  ]
+
+  data_deps = []
+
+  if (is_chromeos) {
+    data_deps += [
+      "//ash/strings:ash_test_strings",
+      "//ash/resources:ash_test_resources_100_percent",
+      "//ash/resources:ash_test_resources_200_percent",
+    ]
+
+    deps += [
+      "//ash",
+      "//ash:test_support",
+      "//ash/public/cpp",
+    ]
+  }
+}
+
 test("wayland_client_perftests") {
   sources = [
     "clients/perftests.cc",
@@ -432,22 +478,17 @@ test("wayland_client_perftests") {
     ":blur",
     ":client_support",
     ":simple",
-    ":wayland",
-    "//base",
+    ":wayland_client_test_helper",
     "//base/test:test_support",
     "//cc:test_support",
-    "//components/exo",
     "//components/viz/test:test_support",
     "//mojo/core/embedder",
     "//testing/gtest",
     "//testing/perf",
-    "//ui/aura",
     "//ui/aura:test_support",
     "//ui/base",
     "//ui/compositor:test_support",
-    "//ui/events:gesture_detection",
     "//ui/gl:test_support",
-    "//ui/wm",
   ]
 
   data_deps = []
@@ -464,11 +505,7 @@ test("wayland_client_perftests") {
       "//ash/resources:ash_test_resources_200_percent",
     ]
 
-    deps += [
-      "//ash",
-      "//ash:test_support",
-      "//ash/public/cpp",
-    ]
+    deps += [ "//ash:test_support" ]
   }
 }
 
@@ -511,7 +548,7 @@ if (ozone_platform_gbm) {
     configs += [ "//ui/gl:gl_config" ]
   }
 
-  if (enable_vulkan_wayland_client) {
+  if (enable_vulkan) {
     executable("wayland_vulkan_client") {
       sources = [
         "clients/vulkan.cc",
@@ -521,6 +558,7 @@ if (ozone_platform_gbm) {
         ":client_support",
         "//base",
         "//build/config/linux/libdrm",
+        "//gpu/vulkan/init",
         "//skia",
         "//third_party/wayland:wayland_client",
         "//third_party/wayland-protocols:linux_dmabuf_protocol",

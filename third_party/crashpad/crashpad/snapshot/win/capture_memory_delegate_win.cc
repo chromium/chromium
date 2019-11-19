@@ -17,7 +17,7 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
-#include "snapshot/win/memory_snapshot_win.h"
+#include "snapshot/memory_snapshot_generic.h"
 
 namespace crashpad {
 namespace internal {
@@ -25,7 +25,7 @@ namespace internal {
 CaptureMemoryDelegateWin::CaptureMemoryDelegateWin(
     ProcessReaderWin* process_reader,
     const ProcessReaderWin::Thread& thread,
-    std::vector<std::unique_ptr<MemorySnapshotWin>>* snapshots,
+    std::vector<std::unique_ptr<MemorySnapshotGeneric>>* snapshots,
     uint32_t* budget_remaining)
     : stack_(thread.stack_region_address, thread.stack_region_size),
       process_reader_(process_reader),
@@ -57,9 +57,9 @@ void CaptureMemoryDelegateWin::AddNewMemorySnapshot(
     return;
   if (budget_remaining_ && *budget_remaining_ == 0)
     return;
-  snapshots_->push_back(std::make_unique<internal::MemorySnapshotWin>());
-  internal::MemorySnapshotWin* snapshot = snapshots_->back().get();
-  snapshot->Initialize(process_reader_, range.base(), range.size());
+  snapshots_->push_back(std::make_unique<internal::MemorySnapshotGeneric>());
+  internal::MemorySnapshotGeneric* snapshot = snapshots_->back().get();
+  snapshot->Initialize(process_reader_->Memory(), range.base(), range.size());
   if (budget_remaining_) {
     if (!base::IsValueInRangeForNumericType<int64_t>(range.size())) {
       *budget_remaining_ = 0;

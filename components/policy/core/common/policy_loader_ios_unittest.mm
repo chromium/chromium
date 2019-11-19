@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/mac/scoped_cftyperef.h"
 #include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
@@ -90,7 +91,6 @@ void TestHarness::SetUp() {
 ConfigurationPolicyProvider* TestHarness::CreateProvider(
     SchemaRegistry* registry,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
-  std::unique_ptr<AsyncPolicyLoader> loader();
   return new AsyncPolicyProvider(
       registry, std::make_unique<PolicyLoaderIOS>(task_runner));
 }
@@ -127,7 +127,8 @@ void TestHarness::InstallBooleanPolicy(const std::string& policy_name,
 void TestHarness::InstallStringListPolicy(const std::string& policy_name,
                                           const base::ListValue* policy_value) {
   NSString* key = base::SysUTF8ToNSString(policy_name);
-  base::ScopedCFTypeRef<CFPropertyListRef> value(ValueToProperty(policy_value));
+  base::ScopedCFTypeRef<CFPropertyListRef> value(
+      ValueToProperty(*policy_value));
   AddPolicies(@{
       key: static_cast<NSArray*>(value.get())
   });
@@ -137,7 +138,8 @@ void TestHarness::InstallDictionaryPolicy(
     const std::string& policy_name,
     const base::DictionaryValue* policy_value) {
   NSString* key = base::SysUTF8ToNSString(policy_name);
-  base::ScopedCFTypeRef<CFPropertyListRef> value(ValueToProperty(policy_value));
+  base::ScopedCFTypeRef<CFPropertyListRef> value(
+      ValueToProperty(*policy_value));
   AddPolicies(@{
       key: static_cast<NSDictionary*>(value.get())
   });
@@ -256,9 +258,11 @@ TEST(PolicyProviderIOSTest, ChromePolicyOverEncodedChromePolicy) {
   PolicyMap& expectedMap =
       expected.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
   expectedMap.Set("shared", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                  POLICY_SOURCE_PLATFORM, new base::Value("right"), nullptr);
+                  POLICY_SOURCE_PLATFORM,
+                  std::make_unique<base::Value>("right"), nullptr);
   expectedMap.Set("key2", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                  POLICY_SOURCE_PLATFORM, new base::Value("value2"), nullptr);
+                  POLICY_SOURCE_PLATFORM,
+                  std::make_unique<base::Value>("value2"), nullptr);
 
   scoped_refptr<base::TestSimpleTaskRunner> taskRunner =
       new base::TestSimpleTaskRunner();

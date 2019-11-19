@@ -108,7 +108,7 @@ class ClearBrowsingDataHandler : public SettingsPageUIHandler,
   // A weak pointer factory for asynchronous calls referencing this class.
   // The weak pointers are invalidated in |OnJavascriptDisallowed()| and
   // |HandleInitialize()| to cancel previously initiated tasks.
-  base::WeakPtrFactory<ClearBrowsingDataHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<ClearBrowsingDataHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ClearBrowsingDataHandler);
 };

@@ -4,12 +4,13 @@
 
 #include "chrome/browser/browsing_data/local_data_container.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "chrome/browser/browsing_data/browsing_data_flash_lso_helper.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "net/cookies/canonical_cookie.h"
-#include "third_party/blink/public/mojom/appcache/appcache_info.mojom.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // LocalDataContainer, public:
@@ -40,8 +41,7 @@ LocalDataContainer::LocalDataContainer(
       shared_worker_helper_(std::move(shared_worker_helper)),
       cache_storage_helper_(std::move(cache_storage_helper)),
       flash_lso_helper_(std::move(flash_lso_helper)),
-      media_license_helper_(std::move(media_license_helper)),
-      weak_ptr_factory_(this) {}
+      media_license_helper_(std::move(media_license_helper)) {}
 
 LocalDataContainer::~LocalDataContainer() {}
 
@@ -147,22 +147,9 @@ void LocalDataContainer::Init(CookiesTreeModel* model) {
 }
 
 void LocalDataContainer::OnAppCacheModelInfoLoaded(
-    scoped_refptr<content::AppCacheInfoCollection> appcache_info) {
-  using content::AppCacheInfoCollection;
-
-  if (!appcache_info.get() || appcache_info->infos_by_origin.empty()) {
-    // This batch has been canceled, so let the model know it won't be arriving.
-    model_->SetBatchExpectation(--batches_started_, false);
-    return;
-  }
-
-  for (const auto& origin : appcache_info->infos_by_origin) {
-    std::list<blink::mojom::AppCacheInfo>& info_list =
-        appcache_info_[origin.first];
-    info_list.insert(info_list.begin(), origin.second.begin(),
-                     origin.second.end());
-  }
-
+    const AppCacheInfoList& info_list) {
+  appcache_info_list_ = info_list;
+  DCHECK(model_);
   model_->PopulateAppCacheInfo(this);
 }
 

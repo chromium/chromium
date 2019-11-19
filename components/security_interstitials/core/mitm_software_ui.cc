@@ -44,6 +44,7 @@ void MITMSoftwareUI::PopulateStringsForHTML(
   common_string_util::PopulateSSLLayoutStrings(cert_error_, load_time_data);
   common_string_util::PopulateSSLDebuggingStrings(
       ssl_info_, base::Time::NowFromSystemTime(), load_time_data);
+  common_string_util::PopulateDarkModeDisplaySetting(load_time_data);
 
   // Set display booleans.
   load_time_data->SetBoolean("overridable", false);

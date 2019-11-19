@@ -16,12 +16,16 @@ namespace device {
 
 // This enum represents the transport protocols over which Fido WebAuthN API is
 // currently supported.
+// This enum is used for UMA histograms and the values should not be
+// reassigned. New transports added should be reflected in the
+// WebAuthenticationFidoTransport enum.
 enum class FidoTransportProtocol : uint8_t {
-  kUsbHumanInterfaceDevice,
-  kNearFieldCommunication,
-  kBluetoothLowEnergy,
-  kCloudAssistedBluetoothLowEnergy,
-  kInternal,
+  kUsbHumanInterfaceDevice = 0,
+  kNearFieldCommunication = 1,
+  kBluetoothLowEnergy = 2,
+  kCloudAssistedBluetoothLowEnergy = 3,
+  kInternal = 4,
+  kMaxValue = kInternal,
 };
 
 // String representation of above FidoTransportProtocol enum.

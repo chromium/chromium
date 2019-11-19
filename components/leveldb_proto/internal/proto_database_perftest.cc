@@ -19,6 +19,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread.h"
@@ -26,10 +27,12 @@
 #include "components/leveldb_proto/internal/leveldb_database.h"
 #include "components/leveldb_proto/internal/proto_database_impl.h"
 #include "components/leveldb_proto/internal/unique_proto_database.h"
+#include "components/leveldb_proto/public/proto_database.h"
+#include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "components/leveldb_proto/testing/proto/test_db.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
@@ -68,6 +71,16 @@ struct PerfStats {
 };
 
 static const std::string kSingleDBName = "singledb";
+static constexpr char kMetricNumRunsCount[] = "num_runs";
+static constexpr char kMetricTimeMs[] = "time";
+static constexpr char kMetricMaxMemoryUseBytes[] = "max_memory_use";
+static constexpr char kMetricAverageMemoryUseBytes[] = "average_memory_use";
+static constexpr char kMetricTotalMemoryUseBytes[] = "total_memory_use";
+static constexpr char kMetricMemUseAfterWritesBytes[] =
+    "memory_use_after_writes";
+static constexpr char kMetricMemUseAfterLoadBytes[] = "memory_use_after_load";
+static constexpr char kMetricTotalTimeTakenMs[] = "total_time_taken";
+static constexpr char kMetricMaxIndTimeTakenMs[] = "max_individual_time_taken";
 
 static const int kSmallDataSize = 10;
 static const int kMediumDataSize = 100;
@@ -95,20 +108,20 @@ static const std::vector<TestParams> kManyEntriesDistributionTestParams = {
 
 class TestDatabase {
  public:
-  TestDatabase(const std::string& name,
-               scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-               const base::FilePath& path) {
-    db_.reset(new ProtoDatabaseImpl<TestProto>(task_runner));
-    leveldb_env::Options options = leveldb_proto::CreateSimpleOptions();
-
+  TestDatabase(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+               const base::FilePath& path)
+      : db_(std::make_unique<ProtoDatabaseImpl<TestProto>>(
+            ProtoDbType::TEST_DATABASE0,
+            path,
+            task_runner)) {
     base::RunLoop run_init_db;
-    db_->Init(name.c_str(), path, options,
-              base::BindOnce(
-                  [](base::OnceClosure signal, bool success) {
-                    EXPECT_TRUE(success);
-                    std::move(signal).Run();
-                  },
-                  run_init_db.QuitClosure()));
+    db_->Init(base::BindOnce(
+        [](base::OnceClosure signal, Enums::InitStatus status) {
+          bool success = status == Enums::kOK;
+          EXPECT_TRUE(success);
+          std::move(signal).Run();
+        },
+        run_init_db.QuitClosure()));
     run_init_db.Run();
 
     is_initialized_ = true;
@@ -132,13 +145,12 @@ class ProtoDBPerfTest : public testing::Test {
   }
 
   void TearDown() override {
-    base::RunLoop().RunUntilIdle();
-    main_loop_.reset();
     ShutdownDBs();
   }
 
   void ShutdownDBs() {
     dbs_.clear();
+    base::RunLoop().RunUntilIdle();
     PruneBlockCache();
     uint64_t mem;
     GetApproximateMemoryUsage(&mem);
@@ -155,12 +167,17 @@ class ProtoDBPerfTest : public testing::Test {
     return task_runner_;
   }
 
-  void InitDB(const std::string& name, const ScopedTempDir& temp_dir) {
-    InitDB(name, temp_dir.GetPath());
-  }
-
-  void InitDB(const std::string& name, const base::FilePath& path) {
-    auto db = std::make_unique<TestDatabase>(name, task_runner_, path);
+  // Initializes a DB named |name| in a dedicated directory. The same directory
+  // will be used for all instances created for the same |name| for the lifetime
+  // of the test.
+  void InitDB(const std::string& name) {
+    if (!base::Contains(temp_dirs_, name)) {
+      auto temp_dir = std::make_unique<ScopedTempDir>();
+      EXPECT_TRUE(temp_dir->CreateUniqueTempDir());
+      temp_dirs_[name] = std::move(temp_dir);
+    }
+    auto db = std::make_unique<TestDatabase>(task_runner_,
+                                             temp_dirs_[name]->GetPath());
     EXPECT_TRUE(db->is_initialized());
     dbs_[name] = std::move(db);
   }
@@ -235,15 +252,14 @@ class ProtoDBPerfTest : public testing::Test {
   // Runs a test to alternately insert elements with different prefixes into
   // either a database for each prefix or a single DB.
   void RunAlternatingInsertTest(const std::string& test_name,
-                                const std::string& test_modifier,
+                                const std::string& story_name,
                                 const std::vector<std::string>& prefixes,
                                 const TestParams& params) {
     // Make the entries for each database first.
     KeyEntryVectorMap entries =
         GenerateTestEntries(prefixes, params.num_entries, params.data_size);
 
-    std::vector<std::unique_ptr<ScopedTempDir>> temp_dirs;
-    InitDBs(params.single_db, prefixes, &temp_dirs);
+    InitDBs(params.single_db, prefixes);
 
     int remaining = params.num_entries;
     PerfStats stats;
@@ -264,23 +280,21 @@ class ProtoDBPerfTest : public testing::Test {
       remaining -= params.batch_size;
     }
 
-    perf_test::PrintResult(test_name, test_modifier, "num_runs",
-                           static_cast<size_t>(stats.num_runs), "", true);
-    perf_test::PrintResult(test_name, test_modifier, "time", stats.time_ms,
-                           "ms", true);
-    perf_test::PrintResult(test_name, test_modifier, "max memory use",
-                           static_cast<size_t>(stats.max_memory_used_bytes),
-                           "bytes", true);
+    perf_test::PerfResultReporter reporter =
+        SetUpReporter(test_name, story_name);
+    reporter.AddResult(kMetricNumRunsCount,
+                       static_cast<size_t>(stats.num_runs));
+    reporter.AddResult(kMetricTimeMs, stats.time_ms);
+    reporter.AddResult(kMetricMaxMemoryUseBytes,
+                       static_cast<size_t>(stats.max_memory_used_bytes));
     uint64_t average_memory_use = stats.memory_summed_bytes / stats.num_runs;
-    perf_test::PrintResult(test_name, test_modifier, "average memory use",
-                           static_cast<size_t>(average_memory_use), "bytes",
-                           true);
+    reporter.AddResult(kMetricAverageMemoryUseBytes,
+                       static_cast<size_t>(average_memory_use));
   }
 
   // Used to measure the impact on memory in the case where the distribution of
   // entries isn't equal amongst individual databases.
-  void RunDistributionTestAndCleanup(const std::string& test_name,
-                                     const std::string& test_modifier,
+  void RunDistributionTestAndCleanup(const std::string& story_name,
                                      const std::vector<TestParams>& test_params,
                                      bool single_db) {
     std::vector<std::string> prefixes;
@@ -288,8 +302,7 @@ class ProtoDBPerfTest : public testing::Test {
       prefixes.emplace_back(base::StringPrintf("test%03d_", i));
     }
 
-    std::vector<std::unique_ptr<ScopedTempDir>> temp_dirs;
-    InitDBs(single_db, prefixes, &temp_dirs);
+    InitDBs(single_db, prefixes);
 
     PerfStats stats;
     for (int i = 0; i < static_cast<int>(test_params.size()); i++) {
@@ -312,9 +325,10 @@ class ProtoDBPerfTest : public testing::Test {
       }
     }
 
-    perf_test::PrintResult(test_name, test_modifier, "Total memory use",
-                           static_cast<size_t>(stats.max_memory_used_bytes),
-                           "bytes", true);
+    perf_test::PerfResultReporter reporter =
+        SetUpReporter("Distribution", story_name);
+    reporter.AddResult(kMetricTotalMemoryUseBytes,
+                       static_cast<size_t>(stats.max_memory_used_bytes));
     ShutdownDBs();
   }
 
@@ -325,18 +339,14 @@ class ProtoDBPerfTest : public testing::Test {
                                           std::string test_modifier,
                                           unsigned int* num_entries_loaded,
                                           bool fill_read_cache = true) {
-    ScopedTempDir temp_dir;
-    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
     std::vector<std::string> prefixes = GenerateDBNames(num_dbs);
-    PrefillDatabase(kSingleDBName, prefixes, num_entries, data_size, temp_dir);
+    PrefillDatabase(kSingleDBName, prefixes, num_entries, data_size);
     uint64_t memory_use_before;
     GetApproximateMemoryUsage(&memory_use_before);
 
     ShutdownDBs();
 
-    ASSERT_TRUE(temp_dir.IsValid());
-    InitDB(kSingleDBName, temp_dir.GetPath());
+    InitDB(kSingleDBName);
     TestDatabase* db;
     GetDatabase(kSingleDBName, &db);
 
@@ -360,20 +370,17 @@ class ProtoDBPerfTest : public testing::Test {
     uint64_t memory_use_after;
     GetApproximateMemoryUsage(&memory_use_after);
 
-    auto test_modifier_str = base::StringPrintf(
-        "%s_%u_%u_%zu", test_modifier.c_str(), num_dbs, num_entries, data_size);
-    perf_test::PrintResult(
-        "ProtoDBPerfTest", test_modifier_str, "Memory use after writes",
-        static_cast<size_t>(memory_use_before), "bytes", true);
-    perf_test::PrintResult(
-        "ProtoDBPerfTest", test_modifier_str, "Memory use after load",
-        static_cast<size_t>(memory_use_after), "bytes", true);
-    perf_test::PrintResult("ProtoDBPerfTest", test_modifier_str,
-                           "Total time taken", static_cast<size_t>(time_ms),
-                           "ms", true);
-    perf_test::PrintResult("ProtoDBPerfTest", test_modifier_str,
-                           "Max individual time taken",
-                           static_cast<size_t>(max_time_ms), "ms", true);
+    auto story_name =
+        base::StringPrintf("%u_%u_%zu", num_dbs, num_entries, data_size);
+    perf_test::PerfResultReporter reporter =
+        SetUpReporter(test_modifier, story_name);
+    reporter.AddResult(kMetricMemUseAfterWritesBytes,
+                       static_cast<size_t>(memory_use_before));
+    reporter.AddResult(kMetricMemUseAfterLoadBytes,
+                       static_cast<size_t>(memory_use_after));
+    reporter.AddResult(kMetricTotalTimeTakenMs, static_cast<size_t>(time_ms));
+    reporter.AddResult(kMetricMaxIndTimeTakenMs,
+                       static_cast<size_t>(max_time_ms));
 
     ShutdownDBs();
   }
@@ -386,12 +393,9 @@ class ProtoDBPerfTest : public testing::Test {
                                          unsigned int* num_entries_loaded,
                                          bool fill_read_cache = true) {
     std::vector<std::string> prefixes = GenerateDBNames(num_dbs);
-    ScopedTempDir temp_dirs[num_dbs];
     for (unsigned int i = 0; i < num_dbs; i++) {
-      ASSERT_TRUE(temp_dirs[i].CreateUniqueTempDir());
       std::vector<std::string> single_prefix = {prefixes[i]};
-      PrefillDatabase(prefixes[i], single_prefix, num_entries, data_size,
-                      temp_dirs[i]);
+      PrefillDatabase(prefixes[i], single_prefix, num_entries, data_size);
     }
     uint64_t memory_use_before;
     GetApproximateMemoryUsage(&memory_use_before);
@@ -403,8 +407,7 @@ class ProtoDBPerfTest : public testing::Test {
     for (unsigned int i = 0; i < num_dbs; i++) {
       if (dbs_to_load.size() > 0 && dbs_to_load.find(i) == dbs_to_load.end())
         continue;
-      InitDB(prefixes[i], temp_dirs[i].GetPath());
-      ASSERT_TRUE(temp_dirs[i].IsValid());
+      InitDB(prefixes[i]);
       TestDatabase* db;
       GetDatabase(prefixes[i], &db);
 
@@ -419,39 +422,27 @@ class ProtoDBPerfTest : public testing::Test {
 
     uint64_t memory_use_after;
     GetApproximateMemoryUsage(&memory_use_after);
-    auto test_modifier_str = base::StringPrintf(
-        "%s_%u_%u_%zu", test_modifier.c_str(), num_dbs, num_entries, data_size);
-    perf_test::PrintResult(
-        "ProtoDBPerfTest", test_modifier_str, "Memory use after writes",
-        static_cast<size_t>(memory_use_before), "bytes", true);
-    perf_test::PrintResult(
-        "ProtoDBPerfTest", test_modifier_str, "Memory use after load",
-        static_cast<size_t>(memory_use_after), "bytes", true);
-    perf_test::PrintResult("ProtoDBPerfTest", test_modifier_str,
-                           "Total time taken", static_cast<size_t>(time_ms),
-                           "ms", true);
-    perf_test::PrintResult("ProtoDBPerfTest", test_modifier_str,
-                           "Max individual time taken",
-                           static_cast<size_t>(max_time_ms), "ms", true);
+    auto story_name =
+        base::StringPrintf("%u_%u_%zu", num_dbs, num_entries, data_size);
+    perf_test::PerfResultReporter reporter =
+        SetUpReporter(test_modifier, story_name);
+    reporter.AddResult(kMetricMemUseAfterWritesBytes,
+                       static_cast<size_t>(memory_use_before));
+    reporter.AddResult(kMetricMemUseAfterLoadBytes,
+                       static_cast<size_t>(memory_use_after));
+    reporter.AddResult(kMetricTotalTimeTakenMs, static_cast<size_t>(time_ms));
+    reporter.AddResult(kMetricMaxIndTimeTakenMs,
+                       static_cast<size_t>(max_time_ms));
 
     ShutdownDBs();
   }
 
-  void InitDBs(bool single_db,
-               const std::vector<std::string>& prefixes,
-               std::vector<std::unique_ptr<ScopedTempDir>>* temp_dirs) {
-    temp_dirs->clear();
+  void InitDBs(bool single_db, const std::vector<std::string>& prefixes) {
     if (single_db) {
-      auto temp_dir = std::make_unique<ScopedTempDir>();
-      ASSERT_TRUE(temp_dir->CreateUniqueTempDir());
-      InitDB(kSingleDBName, *(temp_dir.get()));
-      temp_dirs->push_back(std::move(temp_dir));
+      InitDB(kSingleDBName);
     } else {
       for (auto& prefix : prefixes) {
-        auto temp_dir = std::make_unique<ScopedTempDir>();
-        ASSERT_TRUE(temp_dir->CreateUniqueTempDir());
-        InitDB(prefix, *(temp_dir.get()));
-        temp_dirs->push_back(std::move(temp_dir));
+        InitDB(prefix);
       }
     }
   }
@@ -459,9 +450,8 @@ class ProtoDBPerfTest : public testing::Test {
   PerfStats PrefillDatabase(const std::string& name,
                             std::vector<std::string>& prefixes,
                             int num_entries,
-                            int data_size,
-                            const ScopedTempDir& temp_dir) {
-    InitDB(name, temp_dir);
+                            int data_size) {
+    InitDB(name);
 
     auto entries = GenerateTestEntries(prefixes, num_entries, data_size);
     PerfStats stats;
@@ -553,6 +543,23 @@ class ProtoDBPerfTest : public testing::Test {
         ->GetApproximateMemoryUse(memory_use);
   }
 
+  perf_test::PerfResultReporter SetUpReporter(const std::string& test_type,
+                                              const std::string& story_name) {
+    perf_test::PerfResultReporter reporter("ProtoDB_" + test_type + ".",
+                                           story_name);
+    reporter.RegisterImportantMetric(kMetricNumRunsCount, "count");
+    reporter.RegisterImportantMetric(kMetricTimeMs, "ms");
+    reporter.RegisterImportantMetric(kMetricMaxMemoryUseBytes, "bytes");
+    reporter.RegisterImportantMetric(kMetricAverageMemoryUseBytes, "bytes");
+    reporter.RegisterImportantMetric(kMetricTotalMemoryUseBytes, "bytes");
+    reporter.RegisterImportantMetric(kMetricMemUseAfterWritesBytes, "bytes");
+    reporter.RegisterImportantMetric(kMetricMemUseAfterLoadBytes, "bytes");
+    reporter.RegisterImportantMetric(kMetricTotalTimeTakenMs, "ms");
+    reporter.RegisterImportantMetric(kMetricMaxIndTimeTakenMs, "ms");
+    return reporter;
+  }
+
+  std::map<std::string, std::unique_ptr<ScopedTempDir>> temp_dirs_;
   std::map<std::string, std::unique_ptr<TestDatabase>> dbs_;
   std::unique_ptr<MessageLoop> main_loop_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
@@ -647,35 +654,33 @@ TEST_F(ProtoDBPerfTest, InsertSingleDBAlternating_LargeBatch_1000b) {
 }
 
 TEST_F(ProtoDBPerfTest, DistributionTestSmall_FewEntries_Single) {
-  RunDistributionTestAndCleanup("DistributionTestSmall_FewEntries", "Single",
+  RunDistributionTestAndCleanup("Small_FewEntries_Single",
                                 kFewEntriesDistributionTestParams, true);
 }
 
 TEST_F(ProtoDBPerfTest, DistributionTestSmall_FewEntries_Multi) {
-  RunDistributionTestAndCleanup("DistributionTestSmall_FewEntries", "Multi",
+  RunDistributionTestAndCleanup("Small_FewEntries_Multi",
                                 kFewEntriesDistributionTestParams, false);
 }
 
 TEST_F(ProtoDBPerfTest, DistributionTestSmall_ManyEntries_Single) {
-  RunDistributionTestAndCleanup("DistributionTestSmall_ManyEntries", "Single",
+  RunDistributionTestAndCleanup("Small_ManyEntries_Single",
                                 kManyEntriesDistributionTestParams, true);
 }
 
 TEST_F(ProtoDBPerfTest, DistributionTestSmall_ManyEntries_Multi) {
-  RunDistributionTestAndCleanup("DistributionTestSmall_ManyEntries", "Multi",
+  RunDistributionTestAndCleanup("Small_ManyEntries_Multi",
                                 kManyEntriesDistributionTestParams, false);
 }
 
 TEST_F(ProtoDBPerfTest, DistributionTestSmall_ManyEntries_Batch_Single) {
-  RunDistributionTestAndCleanup("DistributionTestSmall_ManyEntries_Batch",
-                                "Single", kManyEntriesDistributionTestParams,
-                                true);
+  RunDistributionTestAndCleanup("Small_ManyEntries_Batch_Single",
+                                kManyEntriesDistributionTestParams, true);
 }
 
 TEST_F(ProtoDBPerfTest, DistributionTestSmall_ManyEntries_Batch_Multi) {
-  RunDistributionTestAndCleanup("DistributionTestSmall_ManyEntries_Batch",
-                                "Multi", kManyEntriesDistributionTestParams,
-                                false);
+  RunDistributionTestAndCleanup("Small_ManyEntries_Batch_Multi",
+                                kManyEntriesDistributionTestParams, false);
 }
 
 TEST_F(ProtoDBPerfTest, LoadEntriesSingle_Small) {

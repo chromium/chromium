@@ -16,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RetryOnFailure;
@@ -29,6 +28,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonType;
@@ -65,7 +65,7 @@ public class RepostFormWarningTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
@@ -150,15 +150,14 @@ public class RepostFormWarningTest {
         reload();
         waitForRepostFormWarningDialog();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                (Runnable) ()
-                        -> mActivityTestRule.getActivity().getCurrentTabModel().closeTab(mTab));
+        TestThreadUtils.runOnUiThreadBlocking(
+                (Runnable) () -> mActivityTestRule.getActivity().getCurrentTabModel().closeTab(mTab));
 
         waitForNoReportFormWarningDialog();
     }
 
     private PropertyModel getCurrentModalDialog() {
-        return ThreadUtils.runOnUiThreadBlockingNoException(
+        return TestThreadUtils.runOnUiThreadBlockingNoException(
                 ()
                         -> mActivityTestRule.getActivity()
                                    .getModalDialogManager()
@@ -195,7 +194,7 @@ public class RepostFormWarningTest {
     }
 
     /** Performs a POST navigation in mTab. */
-    private void postNavigation() throws Throwable {
+    private void postNavigation() {
         final String url = "/chrome/test/data/android/test.html";
         final byte[] postData = new byte[] {42};
 
@@ -206,13 +205,12 @@ public class RepostFormWarningTest {
     }
 
     /** Reloads mTab. */
-    private void reload() throws Throwable {
+    private void reload() {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(() -> mTab.reload());
     }
 
     /** Clicks the given button in the given dialog. */
-    private void clickButton(final PropertyModel dialog, final @ButtonType int type)
-            throws Throwable {
+    private void clickButton(final PropertyModel dialog, final @ButtonType int type) {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> dialog.get(ModalDialogProperties.CONTROLLER).onClick(dialog, type));
     }

@@ -9,7 +9,7 @@
 
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
-#include "net/log/net_log_parameters_callback.h"
+#include "net/log/net_log_event_type.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace crypto {
@@ -21,6 +21,8 @@ class Location;
 }
 
 namespace net {
+
+class NetLogWithSource;
 
 // Puts a net error, |err|, on the error stack in OpenSSL. The file and line are
 // extracted from |posted_from|. The function code of the error is left as 0.
@@ -48,7 +50,7 @@ NET_EXPORT_PRIVATE int MapOpenSSLError(
 
 // Helper struct to store information about an OpenSSL error stack entry.
 struct OpenSSLErrorInfo {
-  OpenSSLErrorInfo() : error_code(0), file(NULL), line(0) {}
+  OpenSSLErrorInfo() : error_code(0), file(nullptr), line(0) {}
 
   uint32_t error_code;
   const char* file;
@@ -68,11 +70,12 @@ int MapOpenSSLErrorWithDetails(int err,
                                const crypto::OpenSSLErrStackTracer& tracer,
                                OpenSSLErrorInfo* out_error_info);
 
-// Creates NetLog callback for an OpenSSL error.
-NetLogParametersCallback CreateNetLogOpenSSLErrorCallback(
-    int net_error,
-    int ssl_error,
-    const OpenSSLErrorInfo& error_info);
+// Logs an OpenSSL error to the NetLog.
+void NetLogOpenSSLError(const NetLogWithSource& net_log,
+                        NetLogEventType type,
+                        int net_error,
+                        int ssl_error,
+                        const OpenSSLErrorInfo& error_info);
 
 // Returns the net SSL version number (see ssl_connection_status_flags.h) for
 // this SSL connection.

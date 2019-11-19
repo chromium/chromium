@@ -12,12 +12,14 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
+#include "extensions/browser/content_verifier/content_verifier_utils.h"
+#include "extensions/browser/content_verifier/scoped_uma_recorder.h"
 
 namespace extensions {
 
@@ -32,38 +34,10 @@ const int kVersion = 2;
 
 namespace {
 
-// Helper to record UMA for ComputedHashes::Reader::InitFromFile.
-// Records failure UMA if RecordSuccess() isn't explicitly called.
-class ScopedUMARecorder {
- public:
-  ScopedUMARecorder() = default;
-
-  ~ScopedUMARecorder() {
-    if (recorded_)
-      return;
-    RecordImpl(false);
-  }
-
-  void RecordSuccess() {
-    recorded_ = true;
-    RecordImpl(true);
-  }
-
- private:
-  void RecordImpl(bool succeeded) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Extensions.ContentVerification.ComputedHashesReadResult", succeeded);
-    if (succeeded) {
-      UMA_HISTOGRAM_TIMES(
-          "Extensions.ContentVerification.ComputedHashesInitTime",
-          timer_.Elapsed());
-    }
-  }
-
-  bool recorded_ = false;
-  base::ElapsedTimer timer_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedUMARecorder);
-};
+const char kUMAComputedHashesReadResult[] =
+    "Extensions.ContentVerification.ComputedHashesReadResult";
+const char kUMAComputedHashesInitTime[] =
+    "Extensions.ContentVerification.ComputedHashesInitTime";
 
 }  // namespace
 
@@ -74,62 +48,66 @@ ComputedHashes::Reader::~Reader() {
 }
 
 bool ComputedHashes::Reader::InitFromFile(const base::FilePath& path) {
-  ScopedUMARecorder uma_recorder;
+  ScopedUMARecorder<kUMAComputedHashesReadResult, kUMAComputedHashesInitTime>
+      uma_recorder;
   std::string contents;
   if (!base::ReadFileToString(path, &contents))
     return false;
 
-  base::DictionaryValue* top_dictionary = NULL;
-  std::unique_ptr<base::Value> value(
-      base::JSONReader::ReadDeprecated(contents));
-  if (!value.get() || !value->GetAsDictionary(&top_dictionary))
+  base::Optional<base::Value> top_dictionary = base::JSONReader::Read(contents);
+  if (!top_dictionary || !top_dictionary->is_dict())
     return false;
 
   // For now we don't support forwards or backwards compatability in the
   // format, so we return false on version mismatch.
-  int version = 0;
-  if (!top_dictionary->GetInteger(computed_hashes::kVersionKey, &version) ||
-      version != computed_hashes::kVersion)
+  base::Optional<int> version =
+      top_dictionary->FindIntKey(computed_hashes::kVersionKey);
+  if (!version || *version != computed_hashes::kVersion)
     return false;
 
-  base::ListValue* all_hashes = NULL;
-  if (!top_dictionary->GetList(computed_hashes::kFileHashesKey, &all_hashes))
+  const base::Value* all_hashes =
+      top_dictionary->FindListKey(computed_hashes::kFileHashesKey);
+  if (!all_hashes)
     return false;
 
-  for (size_t i = 0; i < all_hashes->GetSize(); i++) {
-    base::DictionaryValue* dictionary = NULL;
-    if (!all_hashes->GetDictionary(i, &dictionary))
+  for (const base::Value& file_hash : all_hashes->GetList()) {
+    if (!file_hash.is_dict())
       return false;
 
-    std::string relative_path_utf8;
-    if (!dictionary->GetString(computed_hashes::kPathKey, &relative_path_utf8))
+    const std::string* relative_path_utf8 =
+        file_hash.FindStringKey(computed_hashes::kPathKey);
+    if (!relative_path_utf8)
       return false;
 
-    int block_size;
-    if (!dictionary->GetInteger(computed_hashes::kBlockSizeKey, &block_size))
+    base::Optional<int> block_size =
+        file_hash.FindIntKey(computed_hashes::kBlockSizeKey);
+    if (!block_size)
       return false;
-    if (block_size <= 0 || ((block_size % 1024) != 0)) {
-      LOG(ERROR) << "Invalid block size: " << block_size;
+    if (*block_size <= 0 || ((*block_size % 1024) != 0)) {
+      LOG(ERROR) << "Invalid block size: " << *block_size;
       return false;
     }
 
-    base::ListValue* hashes_list = NULL;
-    if (!dictionary->GetList(computed_hashes::kBlockHashesKey, &hashes_list))
+    const base::Value* block_hashes =
+        file_hash.FindListKey(computed_hashes::kBlockHashesKey);
+    if (!block_hashes)
       return false;
 
+    base::span<const base::Value> hashes_list = block_hashes->GetList();
+
     base::FilePath relative_path =
-        base::FilePath::FromUTF8Unsafe(relative_path_utf8);
+        base::FilePath::FromUTF8Unsafe(*relative_path_utf8);
     relative_path = relative_path.NormalizePathSeparatorsTo('/');
 
-    data_[relative_path] = HashInfo(block_size, std::vector<std::string>());
+    data_[relative_path] = HashInfo(*block_size, std::vector<std::string>());
     std::vector<std::string>* hashes = &(data_[relative_path].second);
 
-    for (size_t j = 0; j < hashes_list->GetSize(); j++) {
-      std::string encoded;
-      if (!hashes_list->GetString(j, &encoded))
+    for (const base::Value& value : hashes_list) {
+      if (!value.is_string())
         return false;
 
       hashes->push_back(std::string());
+      const std::string& encoded = value.GetString();
       std::string* decoded = &hashes->back();
       if (!base::Base64Decode(encoded, decoded)) {
         hashes->clear();
@@ -145,24 +123,43 @@ bool ComputedHashes::Reader::GetHashes(const base::FilePath& relative_path,
                                        int* block_size,
                                        std::vector<std::string>* hashes) const {
   base::FilePath path = relative_path.NormalizePathSeparatorsTo('/');
-  auto i = data_.find(path);
-  if (i == data_.end()) {
-    // If we didn't find the entry using exact match, it's possible the
-    // developer is using a path with some letters in the incorrect case, which
-    // happens to work on windows/osx. So try doing a linear scan to look for a
-    // case-insensitive match. In practice most extensions don't have that big
-    // a list of files so the performance penalty is probably not too big
-    // here. Also for crbug.com/29941 we plan to start warning developers when
-    // they are making this mistake, since their extension will be broken on
-    // linux/chromeos.
-    for (i = data_.begin(); i != data_.end(); ++i) {
-      const base::FilePath& entry = i->first;
-      if (base::FilePath::CompareEqualIgnoreCase(entry.value(), path.value()))
-        break;
+  auto find_data = [&](const base::FilePath& normalized_path) {
+    auto i = data_.find(normalized_path);
+    if (i == data_.end()) {
+      // If we didn't find the entry using exact match, it's possible the
+      // developer is using a path with some letters in the incorrect case,
+      // which happens to work on windows/osx. So try doing a linear scan to
+      // look for a case-insensitive match. In practice most extensions don't
+      // have that big a list of files so the performance penalty is probably
+      // not too big here. Also for crbug.com/29941 we plan to start warning
+      // developers when they are making this mistake, since their extension
+      // will be broken on linux/chromeos.
+      for (i = data_.begin(); i != data_.end(); ++i) {
+        const base::FilePath& entry = i->first;
+        if (base::FilePath::CompareEqualIgnoreCase(entry.value(),
+                                                   normalized_path.value())) {
+          break;
+        }
+      }
     }
-    if (i == data_.end())
-      return false;
+    return i;
+  };
+  auto i = find_data(path);
+#if defined(OS_WIN)
+  if (i == data_.end()) {
+    base::FilePath::StringType trimmed_path_value;
+    // Also search for path with (.| )+ suffix trimmed as they are ignored in
+    // windows. This matches the canonicalization behavior of
+    // VerifiedContents::Create.
+    if (content_verifier_utils::TrimDotSpaceSuffix(path.value(),
+                                                   &trimmed_path_value)) {
+      i = find_data(base::FilePath(trimmed_path_value));
+    }
   }
+#endif  // defined(OS_WIN)
+  if (i == data_.end())
+    return false;
+
   const HashInfo& info = i->second;
   *block_size = info.first;
   *hashes = info.second;
@@ -183,7 +180,7 @@ void ComputedHashes::Writer::AddHashes(const base::FilePath& relative_path,
   for (const auto& hash : hashes) {
     std::string encoded;
     base::Base64Encode(hash, &encoded);
-    block_hashes->GetList().emplace_back(std::move(encoded));
+    block_hashes->Append(std::move(encoded));
   }
 
   auto dict = std::make_unique<base::DictionaryValue>();
@@ -212,10 +209,11 @@ bool ComputedHashes::Writer::WriteToFile(const base::FilePath& path) {
   return true;
 }
 
-void ComputedHashes::ComputeHashesForContent(const std::string& contents,
-                                             size_t block_size,
-                                             std::vector<std::string>* hashes) {
+std::vector<std::string> ComputedHashes::GetHashesForContent(
+    const std::string& contents,
+    size_t block_size) {
   size_t offset = 0;
+  std::vector<std::string> hashes;
   // Even when the contents is empty, we want to output at least one hash
   // block (the hash of the empty string).
   do {
@@ -226,10 +224,10 @@ void ComputedHashes::ComputeHashesForContent(const std::string& contents,
         crypto::SecureHash::Create(crypto::SecureHash::SHA256));
     hash->Update(block_start, bytes_to_read);
 
-    hashes->push_back(std::string());
-    std::string* buffer = &(hashes->back());
-    buffer->resize(crypto::kSHA256Length);
-    hash->Finish(base::data(*buffer), buffer->size());
+    std::string buffer;
+    buffer.resize(crypto::kSHA256Length);
+    hash->Finish(base::data(buffer), buffer.size());
+    hashes.push_back(std::move(buffer));
 
     // If |contents| is empty, then we want to just exit here.
     if (bytes_to_read == 0)
@@ -237,6 +235,8 @@ void ComputedHashes::ComputeHashesForContent(const std::string& contents,
 
     offset += bytes_to_read;
   } while (offset < contents.size());
+
+  return hashes;
 }
 
 }  // namespace extensions

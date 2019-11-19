@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.net.CronetTestRule.getContext;
 
 import android.support.test.filters.LargeTest;
+import android.support.test.runner.AndroidJUnit4;
 
 import org.junit.After;
 import org.junit.Before;
@@ -17,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.CronetTestRule.CronetTestFramework;
 import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
@@ -25,7 +25,7 @@ import org.chromium.net.CronetTestRule.OnlyRunNativeCronet;
 /**
  * Tests that making a large number of requests do not lead to crashes.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class CronetStressTest {
     @Rule
     public final CronetTestRule mTestRule = new CronetTestRule();

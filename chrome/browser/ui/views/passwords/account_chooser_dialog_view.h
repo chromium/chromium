@@ -14,13 +14,13 @@ namespace content {
 class WebContents;
 }
 
-class PasswordDialogController;
+class CredentialManagerDialogController;
 
 class AccountChooserDialogView : public views::BubbleDialogDelegateView,
                                  public views::ButtonListener,
                                  public AccountChooserPrompt {
  public:
-  AccountChooserDialogView(PasswordDialogController* controller,
+  AccountChooserDialogView(CredentialManagerDialogController* controller,
                            content::WebContents* web_contents);
   ~AccountChooserDialogView() override;
 
@@ -38,8 +38,7 @@ class AccountChooserDialogView : public views::BubbleDialogDelegateView,
   // DialogDelegate:
   bool Accept() override;
   int GetDialogButtons() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
-  views::View* CreateFootnoteView() override;
+  std::unique_ptr<views::View> CreateFootnoteView() override;
 
   // ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;
@@ -48,7 +47,7 @@ class AccountChooserDialogView : public views::BubbleDialogDelegateView,
   void InitWindow();
 
   // A weak pointer to the controller.
-  PasswordDialogController* controller_;
+  CredentialManagerDialogController* controller_;
   content::WebContents* web_contents_;
   // The "Sign in" button is shown for one credential only. The variable is
   // cached because the framework can call GetDialogButtons() after the

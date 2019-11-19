@@ -112,6 +112,14 @@ struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
 
 template <>
 struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
+    EnumTraits<device::mojom::GamepadMapping, device::GamepadMapping> {
+  static device::mojom::GamepadMapping ToMojom(device::GamepadMapping input);
+  static bool FromMojom(device::mojom::GamepadMapping input,
+                        device::GamepadMapping* output);
+};
+
+template <>
+struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
     EnumTraits<device::mojom::GamepadHand, device::GamepadHand> {
   static device::mojom::GamepadHand ToMojom(device::GamepadHand input);
   static bool FromMojom(device::mojom::GamepadHand input,
@@ -143,7 +151,9 @@ struct COMPONENT_EXPORT(GAMEPAD_SHARED_TRAITS)
   static uint32_t display_id(const device::Gamepad& r) { return r.display_id; }
 
   static base::span<const uint16_t> id(const device::Gamepad& r);
-  static base::span<const uint16_t> mapping(const device::Gamepad& r);
+  static const device::GamepadMapping& mapping(const device::Gamepad& r) {
+    return r.mapping;
+  }
   static bool Read(device::mojom::GamepadDataView data, device::Gamepad* out);
 };
 

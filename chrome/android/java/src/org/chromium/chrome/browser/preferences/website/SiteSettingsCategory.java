@@ -16,17 +16,17 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Process;
-import android.preference.Preference;
 import android.provider.Settings;
-import android.support.annotation.IntDef;
+import android.support.v7.preference.Preference;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.ContentSettingsType;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -38,36 +38,39 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class SiteSettingsCategory {
     @IntDef({Type.ALL_SITES, Type.ADS, Type.AUTOMATIC_DOWNLOADS, Type.AUTOPLAY,
-            Type.BACKGROUND_SYNC, Type.CAMERA, Type.CLIPBOARD, Type.COOKIES, Type.DEVICE_LOCATION,
-            Type.JAVASCRIPT, Type.MICROPHONE, Type.NOTIFICATIONS, Type.POPUPS, Type.PROTECTED_MEDIA,
-            Type.SENSORS, Type.SOUND, Type.USE_STORAGE, Type.USB})
+            Type.BACKGROUND_SYNC, Type.BLUETOOTH_SCANNING, Type.CAMERA, Type.CLIPBOARD,
+            Type.COOKIES, Type.DEVICE_LOCATION, Type.JAVASCRIPT, Type.MICROPHONE, Type.NFC,
+            Type.NOTIFICATIONS, Type.POPUPS, Type.PROTECTED_MEDIA, Type.SENSORS, Type.SOUND,
+            Type.USB, Type.USE_STORAGE})
     @Retention(RetentionPolicy.SOURCE)
     public @interface Type {
         // Values used to address array index - should be enumerated from 0 and can't have gaps.
         // All updates here must also be reflected in {@link #preferenceKey(int)
         // preferenceKey} and {@link #contentSettingsType(int) contentSettingsType}.
-        int ALL_SITES = 0;
+        int ALL_SITES = 0; // Always first as it should appear in the UI at the top.
         int ADS = 1;
-        int AUTOPLAY = 2;
-        int BACKGROUND_SYNC = 3;
-        int CAMERA = 4;
-        int CLIPBOARD = 5;
-        int COOKIES = 6;
-        int DEVICE_LOCATION = 7;
-        int JAVASCRIPT = 8;
-        int MICROPHONE = 9;
-        int NOTIFICATIONS = 10;
-        int POPUPS = 11;
-        int PROTECTED_MEDIA = 12;
-        int SENSORS = 13;
-        int SOUND = 14;
-        int USE_STORAGE = 15;
-        int USB = 16;
-        int AUTOMATIC_DOWNLOADS = 17;
+        int AUTOMATIC_DOWNLOADS = 2;
+        int AUTOPLAY = 3;
+        int BACKGROUND_SYNC = 4;
+        int BLUETOOTH_SCANNING = 5;
+        int CAMERA = 6;
+        int CLIPBOARD = 7;
+        int COOKIES = 8;
+        int DEVICE_LOCATION = 9;
+        int JAVASCRIPT = 10;
+        int MICROPHONE = 11;
+        int NFC = 12;
+        int NOTIFICATIONS = 13;
+        int POPUPS = 14;
+        int PROTECTED_MEDIA = 15;
+        int SENSORS = 16;
+        int SOUND = 17;
+        int USB = 18;
+        int USE_STORAGE = 19; // Always last as it should appear in the UI at the bottom.
         /**
          * Number of handled categories used for calculating array sizes.
          */
-        int NUM_ENTRIES = 18;
+        int NUM_ENTRIES = 20;
     }
 
     // The id of this category.
@@ -130,39 +133,56 @@ public class SiteSettingsCategory {
     public static int contentSettingsType(@Type int type) {
         switch (type) {
             case Type.ADS:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_ADS;
+                return ContentSettingsType.ADS;
             case Type.AUTOMATIC_DOWNLOADS:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS;
+                return ContentSettingsType.AUTOMATIC_DOWNLOADS;
             case Type.AUTOPLAY:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_AUTOPLAY;
+                return ContentSettingsType.AUTOPLAY;
             case Type.BACKGROUND_SYNC:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_BACKGROUND_SYNC;
+                return ContentSettingsType.BACKGROUND_SYNC;
+            case Type.BLUETOOTH_SCANNING:
+                return ContentSettingsType.BLUETOOTH_SCANNING;
             case Type.CAMERA:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA;
+                return ContentSettingsType.MEDIASTREAM_CAMERA;
             case Type.CLIPBOARD:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_CLIPBOARD_READ;
+                return ContentSettingsType.CLIPBOARD_READ;
             case Type.COOKIES:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_COOKIES;
+                return ContentSettingsType.COOKIES;
             case Type.DEVICE_LOCATION:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION;
+                return ContentSettingsType.GEOLOCATION;
             case Type.JAVASCRIPT:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_JAVASCRIPT;
+                return ContentSettingsType.JAVASCRIPT;
             case Type.MICROPHONE:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC;
+                return ContentSettingsType.MEDIASTREAM_MIC;
+            case Type.NFC:
+                return ContentSettingsType.NFC;
             case Type.NOTIFICATIONS:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS;
+                return ContentSettingsType.NOTIFICATIONS;
             case Type.POPUPS:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_POPUPS;
+                return ContentSettingsType.POPUPS;
             case Type.PROTECTED_MEDIA:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER;
+                return ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER;
             case Type.SENSORS:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_SENSORS;
+                return ContentSettingsType.SENSORS;
             case Type.SOUND:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_SOUND;
+                return ContentSettingsType.SOUND;
             case Type.USB:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_USB_GUARD;
+                return ContentSettingsType.USB_GUARD;
             // case Type.ALL_SITES
             // case Type.USE_STORAGE
+            default:
+                return -1; // Conversion unavailable.
+        }
+    }
+
+    /**
+     * Get the chooser data type {@link ContentSettingsType} corresponding to the given
+     * {@link ContentSettingsType}.
+     */
+    public static int objectChooserDataTypeFromGuard(@ContentSettingsType int type) {
+        switch (type) {
+            case ContentSettingsType.USB_GUARD:
+                return ContentSettingsType.USB_CHOOSER_DATA;
             default:
                 return -1; // Conversion unavailable.
         }
@@ -183,6 +203,8 @@ public class SiteSettingsCategory {
                 return "autoplay";
             case Type.BACKGROUND_SYNC:
                 return "background_sync";
+            case Type.BLUETOOTH_SCANNING:
+                return "bluetooth_scanning";
             case Type.CAMERA:
                 return "camera";
             case Type.CLIPBOARD:
@@ -195,6 +217,8 @@ public class SiteSettingsCategory {
                 return "javascript";
             case Type.MICROPHONE:
                 return "microphone";
+            case Type.NFC:
+                return "nfc";
             case Type.NOTIFICATIONS:
                 return "notifications";
             case Type.POPUPS:
@@ -223,6 +247,14 @@ public class SiteSettingsCategory {
     }
 
     /**
+     * Returns the {@link ContentSettingsType} representing the chooser data type for this category,
+     * or -1 if this category does not have a chooser data type.
+     */
+    public @ContentSettingsType int getObjectChooserDataType() {
+        return objectChooserDataTypeFromGuard(contentSettingsType(mCategory));
+    }
+
+    /**
      * Returns whether this category is the specified type.
      */
     public boolean showSites(@Type int type) {
@@ -241,23 +273,22 @@ public class SiteSettingsCategory {
      * custodian of a supervised account.
      */
     public boolean isManaged() {
-        PrefServiceBridge prefs = PrefServiceBridge.getInstance();
         if (showSites(Type.AUTOMATIC_DOWNLOADS)) {
-            return prefs.isAutomaticDownloadsManaged();
+            return WebsitePreferenceBridge.isAutomaticDownloadsManaged();
         } else if (showSites(Type.BACKGROUND_SYNC)) {
-            return prefs.isBackgroundSyncManaged();
+            return WebsitePreferenceBridge.isBackgroundSyncManaged();
         } else if (showSites(Type.COOKIES)) {
-            return !prefs.isAcceptCookiesUserModifiable();
+            return !WebsitePreferenceBridge.isAcceptCookiesUserModifiable();
         } else if (showSites(Type.DEVICE_LOCATION)) {
-            return !prefs.isAllowLocationUserModifiable();
+            return !WebsitePreferenceBridge.isAllowLocationUserModifiable();
         } else if (showSites(Type.JAVASCRIPT)) {
-            return prefs.javaScriptManaged();
+            return WebsitePreferenceBridge.javaScriptManaged();
         } else if (showSites(Type.CAMERA)) {
-            return !prefs.isCameraUserModifiable();
+            return !WebsitePreferenceBridge.isCameraUserModifiable();
         } else if (showSites(Type.MICROPHONE)) {
-            return !prefs.isMicUserModifiable();
+            return !WebsitePreferenceBridge.isMicUserModifiable();
         } else if (showSites(Type.POPUPS)) {
-            return prefs.isPopupsManaged();
+            return WebsitePreferenceBridge.isPopupsManaged();
         }
         return false;
     }
@@ -267,15 +298,14 @@ public class SiteSettingsCategory {
      * enterprise admin) of the account if the account is supervised.
      */
     public boolean isManagedByCustodian() {
-        PrefServiceBridge prefs = PrefServiceBridge.getInstance();
         if (showSites(Type.COOKIES)) {
-            return prefs.isAcceptCookiesManagedByCustodian();
+            return WebsitePreferenceBridge.isAcceptCookiesManagedByCustodian();
         } else if (showSites(Type.DEVICE_LOCATION)) {
-            return prefs.isAllowLocationManagedByCustodian();
+            return WebsitePreferenceBridge.isAllowLocationManagedByCustodian();
         } else if (showSites(Type.CAMERA)) {
-            return prefs.isCameraManagedByCustodian();
+            return WebsitePreferenceBridge.isCameraManagedByCustodian();
         } else if (showSites(Type.MICROPHONE)) {
-            return prefs.isMicManagedByCustodian();
+            return WebsitePreferenceBridge.isMicManagedByCustodian();
         }
         return false;
     }
@@ -290,7 +320,6 @@ public class SiteSettingsCategory {
      *                       calling this method, if osWarningExtra has no title, the preference
      *                       should not be added to the preference screen.
      * @param activity The current activity.
-     * @param category The category associated with the warnings.
      * @param specificCategory Whether the warnings refer to a single category or is an aggregate
      *                         for many permissions.
      */
@@ -404,10 +433,21 @@ public class SiteSettingsCategory {
      * @param plural Whether it applies to one per-app permission or multiple.
      */
     protected String getMessageForEnablingOsPerAppPermission(Activity activity, boolean plural) {
+        @ContentSettingsType
+        int type = this.getContentSettingsType();
+        int permission_string = R.string.android_permission_off;
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_SITE_SETTINGS_UI_REFRESH)) {
-            return activity.getResources().getString(plural
-                            ? R.string.android_permission_also_off_plural
-                            : R.string.android_permission_also_off);
+            if (type == ContentSettingsType.GEOLOCATION) {
+                permission_string = R.string.android_location_permission_off;
+            } else if (type == ContentSettingsType.MEDIASTREAM_CAMERA) {
+                permission_string = R.string.android_camera_permission_off;
+            } else if (type == ContentSettingsType.MEDIASTREAM_MIC) {
+                permission_string = R.string.android_microphone_permission_off;
+            } else if (type == ContentSettingsType.NOTIFICATIONS) {
+                permission_string = R.string.android_notifications_permission_off;
+            }
+            return activity.getResources().getString(
+                    plural ? R.string.android_permission_off_plural : permission_string);
         } else {
             return activity.getResources().getString(plural ? R.string.android_permission_off_plural
                                                             : R.string.android_permission_off);

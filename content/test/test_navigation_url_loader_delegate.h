@@ -24,7 +24,6 @@ struct ResourceResponse;
 
 namespace content {
 
-// PlzNavigate
 // Test implementation of NavigationURLLoaderDelegate to monitor navigation
 // progress in the network stack.
 class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
@@ -36,7 +35,7 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
   network::ResourceResponse* redirect_response() const {
     return redirect_response_.get();
   }
-  network::ResourceResponse* response() const { return response_.get(); }
+  network::ResourceResponse* response() const { return response_head_.get(); }
   int net_error() const { return net_error_; }
   const net::SSLInfo& ssl_info() const { return ssl_info_; }
   int on_request_handled_counter() const { return on_request_handled_counter_; }
@@ -61,13 +60,12 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
       const net::RedirectInfo& redirect_info,
       const scoped_refptr<network::ResourceResponse>& response) override;
   void OnResponseStarted(
-      const scoped_refptr<network::ResourceResponse>& response,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
-      std::unique_ptr<NavigationData> navigation_data,
+      const scoped_refptr<network::ResourceResponse>& response_head,
+      mojo::ScopedDataPipeConsumerHandle response_body,
       const GlobalRequestID& request_id,
       bool is_download,
       NavigationDownloadPolicy download_policy,
-      bool is_stream,
       base::Optional<SubresourceLoaderParams> subresource_loader_params)
       override;
   void OnRequestFailed(
@@ -78,7 +76,8 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
   net::RedirectInfo redirect_info_;
   scoped_refptr<network::ResourceResponse> redirect_response_;
   network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints_;
-  scoped_refptr<network::ResourceResponse> response_;
+  scoped_refptr<network::ResourceResponse> response_head_;
+  mojo::ScopedDataPipeConsumerHandle response_body_;
   int net_error_;
   net::SSLInfo ssl_info_;
   int on_request_handled_counter_;

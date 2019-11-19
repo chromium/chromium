@@ -17,7 +17,9 @@ namespace content {
 
 namespace {
 
-const int kPollInterval = 1;
+constexpr base::TimeDelta kPollInterval = base::TimeDelta::FromSeconds(1);
+
+constexpr base::TimeDelta kMinimumThreshold = base::TimeDelta::FromSeconds(60);
 
 // Default provider implementation. Everything is delegated to
 // ui::CalculateIdleState, ui::CalculateIdleTime, and
@@ -60,8 +62,7 @@ blink::mojom::IdleStatePtr IdleTimeToIdleState(bool locked,
 
 }  // namespace
 
-IdleManager::IdleManager()
-    : idle_time_provider_(new DefaultIdleProvider()), weak_factory_(this) {}
+IdleManager::IdleManager() : idle_time_provider_(new DefaultIdleProvider()) {}
 
 IdleManager::~IdleManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -73,24 +74,24 @@ IdleManager::~IdleManager() {
   }
 }
 
-void IdleManager::CreateService(blink::mojom::IdleManagerRequest request,
-                                const url::Origin& origin) {
+void IdleManager::CreateService(blink::mojom::IdleManagerRequest request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   bindings_.AddBinding(this, std::move(request));
 }
 
-void IdleManager::AddMonitor(base::TimeDelta threshold,
-                             blink::mojom::IdleMonitorPtr monitor_ptr,
-                             AddMonitorCallback callback) {
+void IdleManager::AddMonitor(
+    base::TimeDelta threshold,
+    mojo::PendingRemote<blink::mojom::IdleMonitor> monitor_remote,
+    AddMonitorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (threshold.is_zero()) {
-    mojo::ReportBadMessage("Invalid threshold");
+  if (threshold < kMinimumThreshold) {
+    bindings_.ReportBadMessage("Minimum threshold is 60 seconds.");
     return;
   }
 
   auto monitor = std::make_unique<IdleMonitor>(
-      std::move(monitor_ptr), CheckIdleState(threshold), threshold);
+      std::move(monitor_remote), CheckIdleState(threshold), threshold);
 
   // This unretained reference is safe because IdleManager owns all IdleMonitor
   // instances.
@@ -129,7 +130,7 @@ bool IdleManager::IsPollingForTest() {
 void IdleManager::StartPolling() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!poll_timer_.IsRunning()) {
-    poll_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(kPollInterval),
+    poll_timer_.Start(FROM_HERE, kPollInterval,
                       base::BindRepeating(&IdleManager::UpdateIdleState,
                                           base::Unretained(this)));
   }

@@ -51,7 +51,7 @@ public class LoadDataWithBaseUrlTest {
     private WebContents mWebContents;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new TestAwContentsClient();
         mCookieManager = new AwCookieManager();
         final AwTestContainerView testContainerView =

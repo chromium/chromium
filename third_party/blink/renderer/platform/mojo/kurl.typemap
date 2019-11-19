@@ -3,9 +3,12 @@
 # found in the LICENSE file.
 
 mojom = "//url/mojom/url.mojom"
-public_headers = [ "//third_party/blink/renderer/platform/weborigin/kurl.h" ]
+public_headers = [
+  "//third_party/blink/renderer/platform/weborigin/kurl.h",
+  "//third_party/blink/renderer/platform/weborigin/kurl_hash.h",
+]
 traits_headers =
-    [ "//third_party/blink/renderer/platform/mojo/kurl_struct_traits.h" ]
+    [ "//third_party/blink/renderer/platform/mojo/kurl_mojom_traits.h" ]
 
 # Note: consumers of this typemap must themselves depend on platform.
 deps = [

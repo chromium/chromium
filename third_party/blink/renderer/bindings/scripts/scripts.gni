@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/core/core_idl_files.gni")
 import("//third_party/blink/renderer/modules/modules_idl_files.gni")
 
 bindings_scripts_dir = get_path_info(".", "abspath")
-bindings_scripts_output_dir =
-    "$root_gen_dir/third_party/blink/renderer/bindings/scripts"
+bindings_scripts_output_dir = get_path_info(".", "gen_dir")
 
 jinja_module_files = [
   "//third_party/jinja2/__init__.py",
@@ -57,27 +57,6 @@ idl_compiler_files = get_path_info(
         ],
         "abspath")
 
-web_idl_scripts = get_path_info([
-                                  "web_idl/argument.py",
-                                  "web_idl/attribute.py",
-                                  "web_idl/callback_function.py",
-                                  "web_idl/constant.py",
-                                  "web_idl/dictionary.py",
-                                  "web_idl/ecma_script_types.py",
-                                  "web_idl/enumeration.py",
-                                  "web_idl/extended_attribute.py",
-                                  "web_idl/idl_types.py",
-                                  "web_idl/implements.py",
-                                  "web_idl/interface.py",
-                                  "web_idl/literal_token.py",
-                                  "web_idl/namespace.py",
-                                  "web_idl/operation.py",
-                                  "web_idl/typedef.py",
-                                  "web_idl/utilities.py",
-                                  "web_idl/idl_definition_builder.py",
-                                ],
-                                "abspath")
-
 # Calls the compute_interfaces_info_individual script.
 #
 # Parameters:
@@ -85,15 +64,21 @@ web_idl_scripts = get_path_info([
 #   interfaces_info_file = output pickle file for interfaces info.
 #   component_info_file = output pickle file for component wide info.
 #   deps = dependencies
-template("compute_interfaces_info_individual") {
+template("compute_interfaces_info") {
   action(target_name) {
     script = "$bindings_scripts_dir/compute_interfaces_info_individual.py"
     if (defined(invoker.visibility)) {
       visibility = invoker.visibility
     }
 
-    inputs = [ "$bindings_scripts_dir/utilities.py" ] + idl_compiler_files +
-             invoker.sources
+    build_scripts_output_dir =
+        "$root_gen_dir/third_party/blink/renderer/build/scripts"
+    runtime_enabled_features_file =
+        "$build_scripts_output_dir/runtime_enabled_features.pickle"
+    inputs = [
+               "$bindings_scripts_dir/utilities.py",
+               runtime_enabled_features_file,
+             ] + idl_compiler_files + invoker.sources
     outputs = [
       invoker.interfaces_info_file,
       invoker.component_info_file,
@@ -109,9 +94,14 @@ template("compute_interfaces_info_individual") {
       rebase_path(invoker.interfaces_info_file, root_build_dir),
       "--component-info-file",
       rebase_path(invoker.component_info_file, root_build_dir),
+      "--runtime-enabled-features-file",
+      rebase_path(runtime_enabled_features_file, root_build_dir),
     ]
 
-    deps = [ "//third_party/blink/renderer/bindings/scripts:cached_lex_yacc_tables" ] + invoker.deps
+    deps = [
+             "//third_party/blink/renderer/bindings/scripts:cached_lex_yacc_tables",
+             "//third_party/blink/renderer/platform:runtime_enabled_features",
+           ] + invoker.deps
   }
 }
 
@@ -182,7 +172,7 @@ template("idl_compiler") {
     # [ImplementedAs]) changes, we rebuild all files, since we're not
     # computing dependencies file-by-file in the build.
     # This data is generally stable.
-    "$bindings_modules_output_dir/InterfacesInfoOverall.pickle",
+    "$bindings_output_dir/interfaces_info.pickle",
   ]
 
   # Further, if any dependency (partial interface or implemented
@@ -195,12 +185,9 @@ template("idl_compiler") {
   _inputs += core_all_dependency_idl_files + modules_all_dependency_idl_files
 
   _public_deps = [
+    "//third_party/blink/renderer/bindings:global_constructors_idls",
+    "//third_party/blink/renderer/bindings:interfaces_info",
     "//third_party/blink/renderer/bindings/core:core_global_constructors_idls",
-
-    # FIXME: should be interfaces_info_core (w/o modules)
-    # http://crbug.com/358074
-    "//third_party/blink/renderer/bindings/modules:interfaces_info",
-    "//third_party/blink/renderer/bindings/modules:modules_core_global_constructors_idls",
     "//third_party/blink/renderer/bindings/modules:modules_global_constructors_idls",
     "//third_party/blink/renderer/bindings/scripts:cached_jinja_templates",
     "//third_party/blink/renderer/bindings/scripts:cached_lex_yacc_tables",
@@ -302,11 +289,7 @@ template("idl_impl") {
     ]
 
     deps = [
-      # FIXME: should be interfaces_info_core (w/o modules)
-      # http://crbug.com/358074
-      "//third_party/blink/renderer/bindings/core:interfaces_info_individual_core",
-      "//third_party/blink/renderer/bindings/modules:interfaces_info",
-      "//third_party/blink/renderer/bindings/modules:interfaces_info_individual_modules",
+      "//third_party/blink/renderer/bindings:interfaces_info",
       "//third_party/blink/renderer/bindings/scripts:cached_jinja_templates",
       "//third_party/blink/renderer/bindings/scripts:cached_lex_yacc_tables",
     ]
@@ -434,7 +417,12 @@ template("generate_global_constructors") {
     }
 
     outputs = output_idl_files + output_header_files
-    deps = invoker.deps
+    if (defined(invoker.deps)) {
+      deps = invoker.deps
+    }
+    if (defined(invoker.public_deps)) {
+      public_deps = invoker.public_deps
+    }
   }
 }
 
@@ -460,6 +448,7 @@ template("generate_origin_trial_features") {
                "//third_party/blink/renderer/bindings/scripts/utilities.py",
                "//third_party/blink/renderer/bindings/templates/origin_trial_features_for_${invoker.component}.cc.tmpl",
                "//third_party/blink/renderer/bindings/templates/origin_trial_features_for_${invoker.component}.h.tmpl",
+               "$bindings_output_dir/interfaces_info.pickle",
                idl_files_list,
              ] + invoker.sources
 
@@ -481,40 +470,7 @@ template("generate_origin_trial_features") {
       "${invoker.output_dir}/origin_trial_features_for_${invoker.component}.h",
     ]
 
-    # TODO: This should not always require modules; For core features, this
-    # should be interfaces_info_core (w/o modules). This is the same issue as
-    # above in the idl_compiler template.
-    # http://crbug.com/358074
-    deps = invoker.deps +
-           [ "//third_party/blink/renderer/bindings/modules:interfaces_info" ]
-  }
-}
-
-template("generate_web_idl_collection") {
-  action(target_name) {
-    script = "${bindings_scripts_dir}/generate_web_idl_collection.py"
-    output_dir = invoker.output_dir
-    output_file_name = invoker.output
-    output_path = "${output_dir}/${output_file_name}"
-    inputs = [
-               script,
-               "${bindings_scripts_dir}/web_idl/collection.py",
-               "${bindings_scripts_dir}/web_idl/collector.py",
-             ] + idl_lexer_parser_files + invoker.sources
-    outputs = [
-      output_path,
-    ]
-    deps = invoker.deps
-
-    # List input file names in a temporary file.
-    response_file_contents = rebase_path(invoker.sources, root_build_dir)
-    args = [
-      "--idl-list-file",
-      "{{response_file_name}}",
-      "--component",
-      invoker.component,
-      "--output",
-      rebase_path(output_path, root_build_dir),
-    ]
+    deps = [ "//third_party/blink/renderer/bindings:interfaces_info" ] +
+           invoker.deps
   }
 }

@@ -22,11 +22,10 @@ struct DecorationInfo;
 
 // Helper class used to layout a list of decorations inside the omnibox.
 class LocationBarLayout {
-
  public:
-  enum Position {
-    LEFT_EDGE = 0,
-    RIGHT_EDGE,
+  enum class Position {
+    kLeftEdge,
+    kRightEdge,
   };
 
   LocationBarLayout(Position position, int item_edit_padding);

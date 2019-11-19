@@ -41,8 +41,7 @@ KeepAliveScheduler::KeepAliveScheduler(
       active_host_(active_host),
       host_scan_cache_(host_scan_cache),
       device_id_tether_network_guid_map_(device_id_tether_network_guid_map),
-      timer_(std::move(timer)),
-      weak_ptr_factory_(this) {
+      timer_(std::move(timer)) {
   active_host_->AddObserver(this);
 }
 

@@ -8,10 +8,9 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/one_shot_event.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/extension_cookie_notifier.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/common/one_shot_event.h"
 
 class Profile;
 
@@ -48,7 +47,6 @@ class ExtensionSystemImpl : public ExtensionSystem {
   void Shutdown() override;
 
   void InitForRegularProfile(bool extensions_enabled) override;
-  void InitForIncognitoProfile() override;
 
   ExtensionService* extension_service() override;  // shared
   RuntimeData* runtime_data() override;            // shared
@@ -70,7 +68,7 @@ class ExtensionSystemImpl : public ExtensionSystem {
       const std::string& extension_id,
       const UnloadedExtensionReason reason) override;
 
-  const OneShotEvent& ready() const override;
+  const base::OneShotEvent& ready() const override;
   ContentVerifier* content_verifier() override;  // shared
   std::unique_ptr<ExtensionSet> GetDependentExtensions(
       const Extension* extension) override;
@@ -113,7 +111,7 @@ class ExtensionSystemImpl : public ExtensionSystem {
     InfoMap* info_map();
     QuotaService* quota_service();
     AppSorting* app_sorting();
-    const OneShotEvent& ready() const { return ready_; }
+    const base::OneShotEvent& ready() const { return ready_; }
     ContentVerifier* content_verifier();
 
    private:
@@ -154,10 +152,8 @@ class ExtensionSystemImpl : public ExtensionSystem {
     std::unique_ptr<InstallGate> kiosk_app_update_install_gate_;
 #endif
 
-    OneShotEvent ready_;
+    base::OneShotEvent ready_;
   };
-
-  std::unique_ptr<ExtensionCookieNotifier> cookie_notifier_;
 
   Profile* profile_;
 

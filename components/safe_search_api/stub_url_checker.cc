@@ -4,8 +4,11 @@
 
 #include "components/safe_search_api/stub_url_checker.h"
 
+#include <utility>
+
 #include "base/json/json_writer.h"
 #include "base/values.h"
+#include "components/safe_search_api/safe_search/safe_search_url_checker_client.h"
 #include "components/safe_search_api/url_checker.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -43,9 +46,10 @@ StubURLChecker::StubURLChecker()
 StubURLChecker::~StubURLChecker() = default;
 
 std::unique_ptr<URLChecker> StubURLChecker::BuildURLChecker(size_t cache_size) {
-  return std::make_unique<URLChecker>(test_shared_loader_factory_,
-                                      TRAFFIC_ANNOTATION_FOR_TESTS,
-                                      std::string(), cache_size);
+  return std::make_unique<URLChecker>(
+      std::make_unique<SafeSearchURLCheckerClient>(
+          test_shared_loader_factory_, TRAFFIC_ANNOTATION_FOR_TESTS),
+      cache_size);
 }
 
 void StubURLChecker::SetUpValidResponse(bool is_porn) {
@@ -65,7 +69,7 @@ void StubURLChecker::SetUpResponse(net::Error error,
   network::URLLoaderCompletionStatus status(error);
   status.decoded_body_length = response.size();
   test_url_loader_factory_.AddResponse(GURL(kSafeSearchApiUrl),
-                                       network::ResourceResponseHead(),
+                                       network::mojom::URLResponseHead::New(),
                                        response, status);
 }
 

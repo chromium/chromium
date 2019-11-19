@@ -13,7 +13,6 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
 namespace content {
-
 namespace background_fetch {
 
 // Gets a pending request for a given registration, and moves it
@@ -61,14 +60,13 @@ class StartNextPendingRequestTask : public DatabaseTask {
 
   scoped_refptr<BackgroundFetchRequestInfo> next_request_;
 
-  base::WeakPtrFactory<StartNextPendingRequestTask>
-      weak_factory_;  // Keep as last.
+  base::WeakPtrFactory<StartNextPendingRequestTask> weak_factory_{
+      this};  // Keep as last.
 
   DISALLOW_COPY_AND_ASSIGN(StartNextPendingRequestTask);
 };
 
 }  // namespace background_fetch
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_START_NEXT_PENDING_REQUEST_TASK_H_

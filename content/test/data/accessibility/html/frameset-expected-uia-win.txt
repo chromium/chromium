@@ -1,0 +1,18 @@
+document
+++document
+++++document
+++++++group
+++++++++description Name='My favorite browser is '
+++++++++group
+++++++++++description Name='ABC'
+++++++++description Name=' '
+++++++++group
+++++++++++description Name='Chrome'
+++++++++description Name='!'
+++document
+++++document
+++++++group
+++++++++description Name='This test is to check '
+++++++++description
+++++++++++description Name='mark tag'
+++++++++description Name='.'

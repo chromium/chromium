@@ -48,8 +48,7 @@ class LoginMetricsRecorderTest : public LoginTestBase {
 
  protected:
   void EnableTabletMode(bool enable) {
-    Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(
-        enable);
+    Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enable);
   }
 
   LoginMetricsRecorder* metrics_recorder() {
@@ -91,7 +90,7 @@ TEST_F(LoginMetricsRecorderTest, NoteActionButtonClick) {
   std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
 
   LockContentsView::TestApi test_api(contents);
-  EXPECT_TRUE(test_api.note_action()->visible());
+  EXPECT_TRUE(test_api.note_action()->GetVisible());
 
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->MoveMouseTo(
@@ -110,6 +109,25 @@ TEST_F(LoginMetricsRecorderTest, NoteActionButtonClick) {
 TEST_F(LoginMetricsRecorderTest, RecordNumLoginAttempts) {
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOCKED);
+
+  metrics_recorder()->RecordNumLoginAttempts(5, true /*success*/);
+  histogram_tester_->ExpectTotalCount(kNumAttemptTilSuccessHistogramName, 1);
+  histogram_tester_->ExpectBucketCount(kNumAttemptTilSuccessHistogramName, 5,
+                                       1);
+
+  metrics_recorder()->RecordNumLoginAttempts(7, false /*success*/);
+  histogram_tester_->ExpectTotalCount(kNumAttemptTilSuccessHistogramName, 1);
+  histogram_tester_->ExpectBucketCount(kNumAttemptTilSuccessHistogramName, 5,
+                                       1);
+  histogram_tester_->ExpectTotalCount(kNumAttemptTilFailureHistogramName, 1);
+  histogram_tester_->ExpectBucketCount(kNumAttemptTilFailureHistogramName, 7,
+                                       1);
+}
+
+// Verifies that the number of auth attempts at sign in is record successfully.
+TEST_F(LoginMetricsRecorderTest, RecordNumSignInAttempts) {
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::ACTIVE);
 
   metrics_recorder()->RecordNumLoginAttempts(5, true /*success*/);
   histogram_tester_->ExpectTotalCount(kNumAttemptTilSuccessHistogramName, 1);

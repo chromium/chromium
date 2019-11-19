@@ -45,11 +45,6 @@ class WebUserGestureIndicator {
   // on the main thread.
   BLINK_EXPORT static bool IsProcessingUserGesture(WebLocalFrame*);
 
-  // Can be called from any thread. Note that this is slower than the non
-  // thread-safe version due to thread id lookups. Prefer the non thread-safe
-  // version for code that will only execute on the main thread.
-  BLINK_EXPORT static bool IsProcessingUserGestureThreadSafe(WebLocalFrame*);
-
   // Returns true if a consumable gesture exists and has been successfully
   // consumed.
   BLINK_EXPORT static bool ConsumeUserGesture(
@@ -65,8 +60,6 @@ class WebUserGestureIndicator {
   // continue processing the user gesture later on using a
   // WebScopedUserGesture.
   BLINK_EXPORT static WebUserGestureToken CurrentUserGestureToken();
-
-  BLINK_EXPORT static void ExtendTimeout();
 };
 
 }  // namespace blink

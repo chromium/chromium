@@ -12,11 +12,10 @@ namespace {
 constexpr char kMimeTypeFilename[] = "chromium/filename";
 }
 
-// I would love for the ClipboardFormatType to really be a wrapper around an X11
-// ::Atom, but there are a few problems. Chromeos unit tests spawn a new X11
-// server for each test, so Atom numeric values don't persist across tests. We
-// could still maybe deal with that if we didn't have static accessor methods
-// everywhere.
+// TODO(huangdarwin): Investigate creating a new clipboard_format_type_x11 as a
+// wrapper around an X11 ::Atom. This wasn't possible in the past, because unit
+// tests spawned a new X11 server for each test, meaning Atom numeric values
+// didn't persist across tests.
 ClipboardFormatType::ClipboardFormatType() = default;
 
 ClipboardFormatType::~ClipboardFormatType() = default;

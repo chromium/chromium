@@ -115,7 +115,7 @@ const Extension* CastExtensionSystem::LoadExtension(
   int load_flags = Extension::FOLLOW_SYMLINKS_ANYWHERE;
   std::string load_error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
-      extension_dir, Manifest::COMMAND_LINE, load_flags, &load_error);
+      extension_dir, Manifest::COMPONENT, load_flags, &load_error);
   if (!extension.get()) {
     LOG(ERROR) << "Loading extension at " << extension_dir.value()
                << " failed with: " << load_error;
@@ -130,10 +130,9 @@ const Extension* CastExtensionSystem::LoadExtension(
       LOG(WARNING) << warning.message;
   }
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&CastExtensionSystem::PostLoadExtension,
-                     base::Unretained(this), extension));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&CastExtensionSystem::PostLoadExtension,
+                                base::Unretained(this), extension));
 
   return extension.get();
 }
@@ -174,8 +173,8 @@ void CastExtensionSystem::LaunchApp(const ExtensionId& extension_id) {
   const Extension* extension = ExtensionRegistry::Get(browser_context_)
                                    ->enabled_extensions()
                                    .GetByID(extension_id);
-  AppRuntimeEventRouter::DispatchOnLaunchedEvent(browser_context_, extension,
-                                                 SOURCE_UNTRACKED, nullptr);
+  AppRuntimeEventRouter::DispatchOnLaunchedEvent(
+      browser_context_, extension, AppLaunchSource::kSourceUntracked, nullptr);
 }
 
 void CastExtensionSystem::Shutdown() {}
@@ -195,10 +194,6 @@ void CastExtensionSystem::InitForRegularProfile(bool extensions_enabled) {
 
   extension_registrar_ =
       std::make_unique<ExtensionRegistrar>(browser_context_, this);
-}
-
-void CastExtensionSystem::InitForIncognitoProfile() {
-  NOTREACHED();
 }
 
 ExtensionService* CastExtensionSystem::extension_service() {
@@ -250,19 +245,18 @@ AppSorting* CastExtensionSystem::app_sorting() {
 void CastExtensionSystem::RegisterExtensionWithRequestContexts(
     const Extension* extension,
     const base::Closure& callback) {
-  base::PostTaskWithTraitsAndReply(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&InfoMap::AddExtension, info_map(),
-                     base::RetainedRef(extension), base::Time::Now(), false,
-                     false),
-      callback);
+  base::PostTaskAndReply(FROM_HERE, {BrowserThread::IO},
+                         base::BindOnce(&InfoMap::AddExtension, info_map(),
+                                        base::RetainedRef(extension),
+                                        base::Time::Now(), false, false),
+                         callback);
 }
 
 void CastExtensionSystem::UnregisterExtensionWithRequestContexts(
     const std::string& extension_id,
     const UnloadedExtensionReason reason) {}
 
-const OneShotEvent& CastExtensionSystem::ready() const {
+const base::OneShotEvent& CastExtensionSystem::ready() const {
   return ready_;
 }
 

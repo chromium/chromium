@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "jni/HashSet_jni.h"
+#include "content/public/android/jar_jni/HashSet_jni.h"
 
 namespace content {
 

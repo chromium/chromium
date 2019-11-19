@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('bookmarks', function() {
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+
   /**
    * Manages focus restoration for modal dialogs. After the final dialog in a
    * stack is closed, restores focus to the element which was focused when the
    * first dialog was opened.
    */
-  class DialogFocusManager {
+  export class DialogFocusManager {
     constructor() {
       /** @private {HTMLElement} */
       this.previousFocusElement_ = null;
@@ -102,9 +104,5 @@ cr.define('bookmarks', function() {
     }
   }
 
-  cr.addSingletonGetter(DialogFocusManager);
+  addSingletonGetter(DialogFocusManager);
 
-  return {
-    DialogFocusManager: DialogFocusManager,
-  };
-});

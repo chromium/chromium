@@ -592,7 +592,7 @@ base::string16 BluetoothLowEnergyWrapperFake::GenerateGattServiceDevicePath(
     base::string16 resident_device_path,
     USHORT service_attribute_handle) {
   std::string sub_path = std::to_string(service_attribute_handle);
-  return resident_device_path + L"/" +
+  return resident_device_path + STRING16_LITERAL("/") +
          base::string16(sub_path.begin(), sub_path.end());
 }
 

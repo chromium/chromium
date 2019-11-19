@@ -31,13 +31,13 @@ class LocationBarModelImpl : public LocationBarModel {
   base::string16 GetFormattedFullURL() const override;
   base::string16 GetURLForDisplay() const override;
   GURL GetURL() const override;
-  security_state::SecurityLevel GetSecurityLevel(
-      bool ignore_editing) const override;
+  security_state::SecurityLevel GetSecurityLevel() const override;
   bool GetDisplaySearchTerms(base::string16* search_terms) override;
+  metrics::OmniboxEventProto::PageClassification GetPageClassification(
+      OmniboxFocusSource focus_source) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   base::string16 GetSecureDisplayText() const override;
   base::string16 GetSecureAccessibilityText() const override;
-  base::string16 GetEVCertName() const override;
   bool ShouldDisplayURL() const override;
   bool IsOfflinePage() const override;
 
@@ -53,7 +53,9 @@ class LocationBarModelImpl : public LocationBarModel {
         : display_text_(display_text), accessibility_label_(display_text) {}
   };
 
-  // Get the security chip labels for the current security state.
+  // Get the security chip labels for the current security state. Always returns
+  // the text corresponding to the currently displayed page, irrespective of any
+  // user input in progress or displayed suggestions.
   SecureChipText GetSecureChipText() const;
 
   base::string16 GetFormattedURL(

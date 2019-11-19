@@ -12,17 +12,15 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/search/ntp_features.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/search/local_ntp_test_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/ntp_tiles/constants.h"
+#include "components/ntp_tiles/features.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -53,11 +51,6 @@ const base::FilePath& GetTestDataDir() {
 
 class LocalNTPRenderTest : public InProcessBrowserTest {
  public:
-  LocalNTPRenderTest() {
-    // Making sure we are running with the Local NTP.
-    feature_list_.InitWithFeatures({features::kUseGoogleLocalNtp}, {});
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // This is required for the output to be rendered, then captured.
     command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
@@ -107,7 +100,6 @@ class LocalNTPRenderTest : public InProcessBrowserTest {
     run_loop_->Quit();
   }
 
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

@@ -5,12 +5,16 @@
 package org.chromium.components.aboutui;
 
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 
 /** Credits-related utilities. */
 @JNINamespace("about_ui")
 public class CreditUtils {
     private CreditUtils() {}
 
-    /** Returns a string containing the content of about_credits.html. */
-    public static native byte[] nativeGetJavaWrapperCredits();
+    @NativeMethods
+    public interface Natives {
+        /** Writes the chrome://credits HTML to the given descriptor. */
+        void writeCreditsHtml(int fd);
+    }
 }

@@ -55,9 +55,9 @@ void OperationCompleteCallback(WeakPtr<ServiceWorkerInternalsUI> internals,
                                int callback_id,
                                blink::ServiceWorkerStatusCode status) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             base::BindOnce(OperationCompleteCallback,
-                                            internals, callback_id, status));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(OperationCompleteCallback, internals,
+                                  callback_id, status));
     return;
   }
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -153,6 +153,19 @@ void UpdateVersionInfo(const ServiceWorkerVersionInfo& version,
   info->SetInteger("process_host_id", version.process_id);
   info->SetInteger("thread_id", version.thread_id);
   info->SetInteger("devtools_agent_route_id", version.devtools_agent_route_id);
+
+  auto clients = ListValue();
+  for (auto& it : version.clients) {
+    auto client = DictionaryValue();
+    client.SetStringPath("client_id", it.first);
+    if (it.second.web_contents_getter) {
+      WebContents* web_contents = it.second.web_contents_getter.Run();
+      if (web_contents)
+        client.SetStringPath("url", web_contents->GetURL().spec());
+    }
+    clients.Append(std::move(client));
+  }
+  info->SetPath("clients", std::move(clients));
 }
 
 std::unique_ptr<ListValue> GetRegistrationListValue(
@@ -200,24 +213,24 @@ std::unique_ptr<ListValue> GetVersionListValue(
   return result;
 }
 
-void DidGetStoredRegistrationsOnIOThread(
+void DidGetStoredRegistrationsOnCoreThread(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     GetRegistrationsCallback callback,
     blink::ServiceWorkerStatusCode status,
     const std::vector<ServiceWorkerRegistrationInfo>& stored_registrations) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  base::PostTaskWithTraits(
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(std::move(callback), context->GetAllLiveRegistrationInfo(),
                      context->GetAllLiveVersionInfo(), stored_registrations));
 }
 
-void GetRegistrationsOnIOThread(
+void GetRegistrationsOnCoreThread(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     GetRegistrationsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   context->GetAllRegistrations(base::BindOnce(
-      DidGetStoredRegistrationsOnIOThread, context, std::move(callback)));
+      DidGetStoredRegistrationsOnCoreThread, context, std::move(callback)));
 }
 
 void DidGetRegistrations(
@@ -250,12 +263,28 @@ class ServiceWorkerInternalsUI::PartitionObserver
       : partition_id_(partition_id), web_ui_(web_ui) {}
   ~PartitionObserver() override {}
   // ServiceWorkerContextCoreObserver overrides:
-  void OnRunningStateChanged(int64_t version_id,
-                             EmbeddedWorkerStatus) override {
+  void OnStarting(int64_t version_id) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     web_ui_->CallJavascriptFunctionUnsafe(
-        "serviceworker.onRunningStateChanged", Value(partition_id_),
-        Value(base::NumberToString(version_id)));
+        "serviceworker.onRunningStateChanged");
+  }
+  void OnStarted(int64_t version_id,
+                 const GURL& scope,
+                 int process_id,
+                 const GURL& script_url) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    web_ui_->CallJavascriptFunctionUnsafe(
+        "serviceworker.onRunningStateChanged");
+  }
+  void OnStopping(int64_t version_id) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    web_ui_->CallJavascriptFunctionUnsafe(
+        "serviceworker.onRunningStateChanged");
+  }
+  void OnStopped(int64_t version_id) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    web_ui_->CallJavascriptFunctionUnsafe(
+        "serviceworker.onRunningStateChanged");
   }
   void OnVersionStateChanged(int64_t version_id,
                              const GURL& scope,
@@ -287,7 +316,7 @@ class ServiceWorkerInternalsUI::PartitionObserver
     args.push_back(std::make_unique<Value>(partition_id_));
     args.push_back(std::make_unique<Value>(base::NumberToString(version_id)));
     auto value = std::make_unique<DictionaryValue>();
-    value->SetInteger("sourceIdentifier", message.source_identifier);
+    value->SetInteger("sourceIdentifier", static_cast<int>(message.source));
     value->SetInteger("message_level", static_cast<int>(message.message_level));
     value->SetString("message", message.message);
     value->SetInteger("lineNumber", message.line_number);
@@ -320,14 +349,13 @@ ServiceWorkerInternalsUI::ServiceWorkerInternalsUI(WebUI* web_ui)
       WebUIDataSource::Create(kChromeUIServiceWorkerInternalsHost);
   source->OverrideContentSecurityPolicyScriptSrc(
       "script-src chrome://resources 'self' 'unsafe-eval';");
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
   source->AddResourcePath("serviceworker_internals.js",
                           IDR_SERVICE_WORKER_INTERNALS_JS);
   source->AddResourcePath("serviceworker_internals.css",
                           IDR_SERVICE_WORKER_INTERNALS_CSS);
   source->SetDefaultResource(IDR_SERVICE_WORKER_INTERNALS_HTML);
   source->DisableDenyXFrameOptions();
-  source->UseGzip();
 
   BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
@@ -420,10 +448,10 @@ void ServiceWorkerInternalsUI::AddContextFromStoragePartition(
         std::move(new_observer);
   }
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
+  RunOrPostTaskOnThread(
+      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
       base::BindOnce(
-          GetRegistrationsOnIOThread, context,
+          GetRegistrationsOnCoreThread, context,
           base::BindOnce(DidGetRegistrations, AsWeakPtr(), partition_id,
                          context->is_incognito() ? base::FilePath()
                                                  : partition->GetPath())));
@@ -563,12 +591,11 @@ void ServiceWorkerInternalsUI::StopWorkerWithId(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     int64_t version_id,
     StatusCallback callback) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&ServiceWorkerInternalsUI::StopWorkerWithId,
-                       base::Unretained(this), context, version_id,
-                       std::move(callback)));
+  if (!BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId())) {
+    base::PostTask(FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
+                   base::BindOnce(&ServiceWorkerInternalsUI::StopWorkerWithId,
+                                  base::Unretained(this), context, version_id,
+                                  std::move(callback)));
     return;
   }
 
@@ -589,9 +616,9 @@ void ServiceWorkerInternalsUI::UnregisterWithScope(
     scoped_refptr<ServiceWorkerContextWrapper> context,
     const GURL& scope,
     ServiceWorkerInternalsUI::StatusCallback callback) const {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
+  if (!BrowserThread::CurrentlyOn(ServiceWorkerContext::GetCoreThreadId())) {
+    base::PostTask(
+        FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
         base::BindOnce(&ServiceWorkerInternalsUI::UnregisterWithScope,
                        base::Unretained(this), context, scope,
                        std::move(callback)));

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,7 @@
 #include "absl/strings/substitute.h"
 
 #include <cstdint>
+#include <vector>
 
 #include "gtest/gtest.h"
 #include "absl/strings/str_cat.h"
@@ -170,6 +171,17 @@ TEST(SubstituteTest, SubstituteAndAppend) {
   absl::SubstituteAndAppend(&str, "$0 $1 $2 $3 $4 $5 $6 $7 $8 $9", "a", "b",
                             "c", "d", "e", "f", "g", "h", "i", "j");
   EXPECT_EQ("a b c d e f g h i j", str);
+}
+
+TEST(SubstituteTest, VectorBoolRef) {
+  std::vector<bool> v = {true, false};
+  const auto& cv = v;
+  EXPECT_EQ("true false true false",
+            absl::Substitute("$0 $1 $2 $3", v[0], v[1], cv[0], cv[1]));
+
+  std::string str = "Logic be like: ";
+  absl::SubstituteAndAppend(&str, "$0 $1 $2 $3", v[0], v[1], cv[0], cv[1]);
+  EXPECT_EQ("Logic be like: true false true false", str);
 }
 
 #ifdef GTEST_HAS_DEATH_TEST

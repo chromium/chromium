@@ -4,6 +4,8 @@
 
 #include "components/offline_pages/core/model/startup_maintenance_task.h"
 
+#include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -15,7 +17,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/offline_pages/core/archive_manager.h"
-#include "components/offline_pages/core/client_policy_controller.h"
+#include "components/offline_pages/core/model/delete_page_task.h"
 #include "components/offline_pages/core/offline_page_client_policy.h"
 #include "components/offline_pages/core/offline_page_metadata_store.h"
 #include "components/offline_pages/core/offline_store_utils.h"
@@ -68,20 +70,6 @@ std::set<base::FilePath> GetAllArchives(const base::FilePath& archives_dir) {
   return result;
 }
 
-bool DeletePagesByOfflineIds(const std::vector<int64_t>& offline_ids,
-                             sql::Database* db) {
-  static const char kSql[] =
-      "DELETE FROM " OFFLINE_PAGES_TABLE_NAME " WHERE offline_id = ?";
-
-  for (const auto& offline_id : offline_ids) {
-    sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindInt64(0, offline_id);
-    if (!statement.Run())
-      return false;
-  }
-  return true;
-}
-
 bool DeleteFiles(const std::vector<base::FilePath>& file_paths) {
   bool result = true;
   for (const auto& file_path : file_paths)
@@ -99,8 +87,6 @@ bool DeleteFiles(const std::vector<base::FilePath>& file_paths) {
 //   Delete the files, since they're 'headless' and has no way to be accessed.
 SyncOperationResult ClearLegacyPagesInPrivateDirSync(
     sql::Database* db,
-    const std::vector<std::string>& temporary_namespaces,
-    const std::vector<std::string>& persistent_namespaces,
     const base::FilePath& private_dir) {
   // One large database transaction that will:
   // 1. Get temporary page infos from the database.
@@ -118,9 +104,9 @@ SyncOperationResult ClearLegacyPagesInPrivateDirSync(
     return SyncOperationResult::TRANSACTION_BEGIN_ERROR;
 
   std::vector<PageInfo> temporary_page_infos =
-      GetPageInfosByNamespaces(temporary_namespaces, db);
+      GetPageInfosByNamespaces(GetTemporaryPolicyNamespaces(), db);
   std::vector<PageInfo> persistent_page_infos =
-      GetPageInfosByNamespaces(persistent_namespaces, db);
+      GetPageInfosByNamespaces(GetPersistentPolicyNamespaces(), db);
   std::map<base::FilePath, PageInfo> path_to_page_info;
 
   std::set<base::FilePath> archive_paths = GetAllArchives(private_dir);
@@ -140,7 +126,7 @@ SyncOperationResult ClearLegacyPagesInPrivateDirSync(
   // If there's any database related errors, the function will return failure,
   // and the database operations will be rolled back since the transaction will
   // not be committed.
-  if (!DeletePagesByOfflineIds(offline_ids_to_delete, db))
+  if (!DeletePageTask::DeletePagesFromDbSync(offline_ids_to_delete, db))
     return SyncOperationResult::DB_OPERATION_ERROR;
 
   if (!transaction.Commit())
@@ -164,7 +150,6 @@ SyncOperationResult ClearLegacyPagesInPrivateDirSync(
 
 SyncOperationResult CheckTemporaryPageConsistencySync(
     sql::Database* db,
-    const std::vector<std::string>& namespaces,
     const base::FilePath& archives_dir) {
   // One large database transaction that will:
   // 1. Get page infos by |namespaces| from the database.
@@ -174,7 +159,8 @@ SyncOperationResult CheckTemporaryPageConsistencySync(
   if (!transaction.Begin())
     return SyncOperationResult::TRANSACTION_BEGIN_ERROR;
 
-  std::vector<PageInfo> page_infos = GetPageInfosByNamespaces(namespaces, db);
+  std::vector<PageInfo> page_infos =
+      GetPageInfosByNamespaces(GetTemporaryPolicyNamespaces(), db);
 
   std::set<base::FilePath> page_info_paths;
   std::vector<int64_t> offline_ids_to_delete;
@@ -194,7 +180,7 @@ SyncOperationResult CheckTemporaryPageConsistencySync(
     // database related errors, the function will return false, and the database
     // operations will be rolled back since the transaction will not be
     // committed.
-    if (!DeletePagesByOfflineIds(offline_ids_to_delete, db))
+    if (!DeletePageTask::DeletePagesFromDbSync(offline_ids_to_delete, db))
       return SyncOperationResult::DB_OPERATION_ERROR;
     UMA_HISTOGRAM_COUNTS_1M(
         "OfflinePages.ConsistencyCheck.Temporary.PagesMissingArchiveFileCount",
@@ -224,12 +210,11 @@ SyncOperationResult CheckTemporaryPageConsistencySync(
   return SyncOperationResult::SUCCESS;
 }
 
-void ReportStorageUsageSync(sql::Database* db,
-                            const std::vector<std::string>& namespaces) {
+void ReportStorageUsageSync(sql::Database* db) {
   static const char kSql[] =
       "SELECT sum(file_size) FROM " OFFLINE_PAGES_TABLE_NAME
       " WHERE client_namespace = ?";
-  for (const auto& name_space : namespaces) {
+  for (const auto& name_space : GetAllPolicyNamespaces()) {
     sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
     statement.BindString(0, name_space);
     int size_in_kib = 0;
@@ -243,44 +228,34 @@ void ReportStorageUsageSync(sql::Database* db,
 }
 
 bool StartupMaintenanceSync(
-    const std::vector<std::string>& persistent_namespaces,
-    const std::vector<std::string>& temporary_namespaces,
     const base::FilePath& temporary_archives_dir,
     const base::FilePath& private_archives_dir,
     sql::Database* db) {
   // Clear temporary pages that are in legacy directory, which is also the
   // directory that serves as the 'private' directory.
-  SyncOperationResult result = ClearLegacyPagesInPrivateDirSync(
-      db, temporary_namespaces, persistent_namespaces, private_archives_dir);
+  SyncOperationResult result =
+      ClearLegacyPagesInPrivateDirSync(db, private_archives_dir);
 
   // Clear temporary pages in cache directory.
-  result = CheckTemporaryPageConsistencySync(db, temporary_namespaces,
-                                             temporary_archives_dir);
+  result = CheckTemporaryPageConsistencySync(db, temporary_archives_dir);
   UMA_HISTOGRAM_ENUMERATION("OfflinePages.ConsistencyCheck.Temporary.Result",
                             result);
 
   // Report storage usage UMA, |temporary_namespaces| + |persistent_namespaces|
   // should be all namespaces. This is implicitly checked by the
   // TestReportStorageUsage unit test.
-  ReportStorageUsageSync(db, temporary_namespaces);
-  ReportStorageUsageSync(db, persistent_namespaces);
+  ReportStorageUsageSync(db);
 
   return true;
 }
 
 }  // namespace
 
-StartupMaintenanceTask::StartupMaintenanceTask(
-    OfflinePageMetadataStore* store,
-    ArchiveManager* archive_manager,
-    ClientPolicyController* policy_controller)
-    : store_(store),
-      archive_manager_(archive_manager),
-      policy_controller_(policy_controller),
-      weak_ptr_factory_(this) {
+StartupMaintenanceTask::StartupMaintenanceTask(OfflinePageMetadataStore* store,
+                                               ArchiveManager* archive_manager)
+    : store_(store), archive_manager_(archive_manager) {
   DCHECK(store_);
   DCHECK(archive_manager_);
-  DCHECK(policy_controller_);
 }
 
 StartupMaintenanceTask::~StartupMaintenanceTask() = default;
@@ -288,16 +263,8 @@ StartupMaintenanceTask::~StartupMaintenanceTask() = default;
 void StartupMaintenanceTask::Run() {
   TRACE_EVENT_ASYNC_BEGIN0("offline_pages", "StartupMaintenanceTask running",
                            this);
-  std::vector<std::string> all_namespaces =
-      policy_controller_->GetAllNamespaces();
-  std::vector<std::string> temporary_namespaces =
-      policy_controller_->GetNamespacesRemovedOnCacheReset();
-  std::vector<std::string> persistent_namespaces =
-      policy_controller_->GetNamespacesForUserRequestedDownload();
-
   store_->Execute(
-      base::BindOnce(&StartupMaintenanceSync, persistent_namespaces,
-                     temporary_namespaces,
+      base::BindOnce(&StartupMaintenanceSync,
                      archive_manager_->GetTemporaryArchivesDir(),
                      archive_manager_->GetPrivateArchivesDir()),
       base::BindOnce(&StartupMaintenanceTask::OnStartupMaintenanceDone,

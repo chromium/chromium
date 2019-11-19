@@ -27,8 +27,8 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_set.h"
 #include "storage/browser/blob/scoped_file.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -68,7 +68,7 @@ bool LocalFileSyncService::OriginChangeMap::NextOriginToProcess(GURL* origin) {
       next_ = change_count_map_.begin();
     DCHECK_NE(0, next_->second);
     *origin = next_++->first;
-    if (!base::ContainsKey(disabled_origins_, *origin))
+    if (!base::Contains(disabled_origins_, *origin))
       return true;
   } while (next_ != begin);
   return false;
@@ -78,7 +78,7 @@ int64_t LocalFileSyncService::OriginChangeMap::GetTotalChangeCount() const {
   int64_t num_changes = 0;
   for (auto iter = change_count_map_.begin(); iter != change_count_map_.end();
        ++iter) {
-    if (base::ContainsKey(disabled_origins_, iter->first))
+    if (base::Contains(disabled_origins_, iter->first))
       continue;
     num_changes += iter->second;
   }
@@ -164,7 +164,7 @@ void LocalFileSyncService::ProcessLocalChange(
     return;
   }
   DCHECK(!origin.is_empty());
-  DCHECK(base::ContainsKey(origin_to_contexts_, origin));
+  DCHECK(base::Contains(origin_to_contexts_, origin));
 
   DVLOG(1) << "Starting ProcessLocalChange";
 
@@ -187,7 +187,7 @@ void LocalFileSyncService::SetLocalChangeProcessorCallback(
 void LocalFileSyncService::HasPendingLocalChanges(
     const FileSystemURL& url,
     const HasPendingLocalChangeCallback& callback) {
-  if (!base::ContainsKey(origin_to_contexts_, url.origin().GetURL())) {
+  if (!base::Contains(origin_to_contexts_, url.origin().GetURL())) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
         base::BindOnce(callback, SYNC_FILE_ERROR_INVALID_URL, false));
@@ -217,7 +217,7 @@ void LocalFileSyncService::PromoteDemotedChanges(
 
 void LocalFileSyncService::GetLocalFileMetadata(
     const FileSystemURL& url, const SyncFileMetadataCallback& callback) {
-  DCHECK(base::ContainsKey(origin_to_contexts_, url.origin().GetURL()));
+  DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
   sync_context_->GetFileMetadata(origin_to_contexts_[url.origin().GetURL()],
                                  url, callback);
 }
@@ -227,7 +227,7 @@ void LocalFileSyncService::PrepareForProcessRemoteChange(
     const PrepareChangeCallback& callback) {
   DVLOG(1) << "PrepareForProcessRemoteChange: " << url.DebugString();
 
-  if (!base::ContainsKey(origin_to_contexts_, url.origin().GetURL())) {
+  if (!base::Contains(origin_to_contexts_, url.origin().GetURL())) {
     // This could happen if a remote sync is triggered for the app that hasn't
     // been initialized in this service.
     DCHECK(profile_);
@@ -262,7 +262,7 @@ void LocalFileSyncService::PrepareForProcessRemoteChange(
     return;
   }
 
-  DCHECK(base::ContainsKey(origin_to_contexts_, url.origin().GetURL()));
+  DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
   sync_context_->PrepareForSync(
       origin_to_contexts_[url.origin().GetURL()], url,
       LocalFileSyncContext::SYNC_EXCLUSIVE,
@@ -274,7 +274,7 @@ void LocalFileSyncService::ApplyRemoteChange(
     const base::FilePath& local_path,
     const FileSystemURL& url,
     const SyncStatusCallback& callback) {
-  DCHECK(base::ContainsKey(origin_to_contexts_, url.origin().GetURL()));
+  DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
   util::Log(logging::LOG_VERBOSE, FROM_HERE,
             "[Remote -> Local] ApplyRemoteChange: %s on %s",
             change.DebugString().c_str(),
@@ -290,7 +290,7 @@ void LocalFileSyncService::FinalizeRemoteSync(
     const FileSystemURL& url,
     bool clear_local_changes,
     const base::Closure& completion_callback) {
-  DCHECK(base::ContainsKey(origin_to_contexts_, url.origin().GetURL()));
+  DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
   sync_context_->FinalizeExclusiveSync(
       origin_to_contexts_[url.origin().GetURL()], url, clear_local_changes,
       completion_callback);
@@ -300,7 +300,7 @@ void LocalFileSyncService::RecordFakeLocalChange(
     const FileSystemURL& url,
     const FileChange& change,
     const SyncStatusCallback& callback) {
-  DCHECK(base::ContainsKey(origin_to_contexts_, url.origin().GetURL()));
+  DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
   sync_context_->RecordFakeLocalChange(
       origin_to_contexts_[url.origin().GetURL()], url, change, callback);
 }
@@ -310,7 +310,7 @@ void LocalFileSyncService::OnChangesAvailableInOrigins(
   bool need_notification = false;
   for (auto iter = origins.begin(); iter != origins.end(); ++iter) {
     const GURL& origin = *iter;
-    if (!base::ContainsKey(origin_to_contexts_, origin)) {
+    if (!base::Contains(origin_to_contexts_, origin)) {
       // This could happen if this is called for apps/origins that haven't
       // been initialized yet, or for apps/origins that are disabled.
       // (Local change tracker could call this for uninitialized origins
@@ -335,7 +335,7 @@ void LocalFileSyncService::OnChangesAvailableInOrigins(
 }
 
 void LocalFileSyncService::SetOriginEnabled(const GURL& origin, bool enabled) {
-  if (!base::ContainsKey(origin_to_contexts_, origin))
+  if (!base::Contains(origin_to_contexts_, origin))
     return;
   origin_change_map_.SetOriginEnabled(origin, enabled);
 }
@@ -346,10 +346,8 @@ LocalFileSyncService::LocalFileSyncService(Profile* profile,
       sync_context_(new LocalFileSyncContext(
           profile_->GetPath(),
           env_override,
-          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI})
-              .get(),
-          base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO})
-              .get())),
+          base::CreateSingleThreadTaskRunner({BrowserThread::UI}).get(),
+          base::CreateSingleThreadTaskRunner({BrowserThread::IO}).get())),
       local_change_processor_(nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   sync_context_->AddOriginChangeObserver(this);
@@ -471,7 +469,7 @@ void LocalFileSyncService::ProcessNextChangeForURL(
 
   const FileSystemURL& url = sync_file_info.url;
   if (status != SYNC_STATUS_OK || changes.empty()) {
-    DCHECK(base::ContainsKey(origin_to_contexts_, url.origin().GetURL()));
+    DCHECK(base::Contains(origin_to_contexts_, url.origin().GetURL()));
     sync_context_->FinalizeSnapshotSync(
         origin_to_contexts_[url.origin().GetURL()], url, status,
         base::Bind(callback, status, url));

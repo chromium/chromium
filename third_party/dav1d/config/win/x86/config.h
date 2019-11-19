@@ -9,6 +9,8 @@
 
 #define ARCH_ARM 0
 
+#define ARCH_PPC64LE 0
+
 #define ARCH_X86 1
 
 #define ARCH_X86_32 1
@@ -21,6 +23,8 @@
 
 // #define CONFIG_LOG 1 -- Logging is controlled by Chromium
 
+#define ENDIANNESS_BIG 0
+
 #define HAVE_ALIGNED_MALLOC 1
 
 #define HAVE_ASM 1
@@ -30,3 +34,15 @@
 #define PREFIX 1
 
 // #define STACK_ALIGNMENT 4 -- Stack alignment is controlled by Chromium
+
+#define UNICODE 1
+
+#define _UNICODE 1
+
+// #define _WIN32_WINNT 0x0601 -- Windows version is controlled by Chromium
+
+#define __USE_MINGW_ANSI_STDIO 1
+
+#define fseeko _fseeki64
+
+#define ftello _ftelli64

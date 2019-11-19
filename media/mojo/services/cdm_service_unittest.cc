@@ -7,13 +7,15 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/cdm/default_cdm_factory.h"
 #include "media/media_buildflags.h"
-#include "media/mojo/interfaces/constants.mojom.h"
+#include "media/mojo/mojom/constants.mojom.h"
 #include "media/mojo/services/cdm_service.h"
 #include "media/mojo/services/media_interface_provider.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/test/test_connector_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,21 +79,22 @@ class CdmServiceTest : public testing::Test {
     service_->set_termination_closure(base::BindOnce(
         &CdmServiceTest::DestroyService, base::Unretained(this)));
 
-    connector()->BindInterface(media::mojom::kCdmServiceName,
-                               &cdm_service_ptr_);
-    cdm_service_ptr_.set_connection_error_handler(base::BindOnce(
+    connector()->Connect(media::mojom::kCdmServiceName,
+                         cdm_service_remote_.BindNewPipeAndPassReceiver());
+    cdm_service_remote_.set_disconnect_handler(base::BindOnce(
         &CdmServiceTest::CdmServiceConnectionClosed, base::Unretained(this)));
 
-    service_manager::mojom::InterfaceProviderPtr interfaces;
+    mojo::PendingRemote<service_manager::mojom::InterfaceProvider> interfaces;
     auto provider = std::make_unique<MediaInterfaceProvider>(
-        mojo::MakeRequest(&interfaces));
+        interfaces.InitWithNewPipeAndPassReceiver());
 
-    ASSERT_FALSE(cdm_factory_ptr_);
-    cdm_service_ptr_->CreateCdmFactory(mojo::MakeRequest(&cdm_factory_ptr_),
-                                       std::move(interfaces));
-    cdm_service_ptr_.FlushForTesting();
-    ASSERT_TRUE(cdm_factory_ptr_);
-    cdm_factory_ptr_.set_connection_error_handler(base::BindOnce(
+    ASSERT_FALSE(cdm_factory_remote_);
+    cdm_service_remote_->CreateCdmFactory(
+        cdm_factory_remote_.BindNewPipeAndPassReceiver(),
+        std::move(interfaces));
+    cdm_service_remote_.FlushForTesting();
+    ASSERT_TRUE(cdm_factory_remote_);
+    cdm_factory_remote_.set_disconnect_handler(base::BindOnce(
         &CdmServiceTest::CdmFactoryConnectionClosed, base::Unretained(this)));
   }
 
@@ -107,15 +110,16 @@ class CdmServiceTest : public testing::Test {
 
   void InitializeCdm(const std::string& key_system, bool expected_result) {
     base::RunLoop run_loop;
-    cdm_factory_ptr_->CreateCdm(key_system, mojo::MakeRequest(&cdm_ptr_));
-    cdm_ptr_.set_connection_error_handler(base::BindOnce(
+    cdm_factory_remote_->CreateCdm(key_system,
+                                   cdm_remote_.BindNewPipeAndPassReceiver());
+    cdm_remote_.set_disconnect_handler(base::BindOnce(
         &CdmServiceTest::CdmConnectionClosed, base::Unretained(this)));
     EXPECT_CALL(*this, OnCdmInitialized(MatchesResult(expected_result), _, _))
         .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-    cdm_ptr_->Initialize(key_system, url::Origin::Create(GURL(kSecurityOrigin)),
-                         CdmConfig(),
-                         base::BindOnce(&CdmServiceTest::OnCdmInitialized,
-                                        base::Unretained(this)));
+    cdm_remote_->Initialize(
+        key_system, url::Origin::Create(GURL(kSecurityOrigin)), CdmConfig(),
+        base::BindOnce(&CdmServiceTest::OnCdmInitialized,
+                       base::Unretained(this)));
     run_loop.Run();
   }
 
@@ -127,10 +131,10 @@ class CdmServiceTest : public testing::Test {
 
   CdmService* cdm_service() { return service_.get(); }
 
-  base::test::ScopedTaskEnvironment task_environment_;
-  mojom::CdmServicePtr cdm_service_ptr_;
-  mojom::CdmFactoryPtr cdm_factory_ptr_;
-  mojom::ContentDecryptionModulePtr cdm_ptr_;
+  base::test::TaskEnvironment task_environment_;
+  mojo::Remote<mojom::CdmService> cdm_service_remote_;
+  mojo::Remote<mojom::CdmFactory> cdm_factory_remote_;
+  mojo::Remote<mojom::ContentDecryptionModule> cdm_remote_;
 
  private:
   service_manager::TestConnectorFactory test_connector_factory_;
@@ -159,12 +163,12 @@ TEST_F(CdmServiceTest, LoadCdm) {
   base::FilePath cdm_path(FILE_PATH_LITERAL("dummy path"));
 #if defined(OS_MACOSX)
   // Token provider will not be used since the path is a dummy path.
-  cdm_service_ptr_->LoadCdm(cdm_path, nullptr);
+  cdm_service_remote_->LoadCdm(cdm_path, nullptr);
 #else
-  cdm_service_ptr_->LoadCdm(cdm_path);
+  cdm_service_remote_->LoadCdm(cdm_path);
 #endif
 
-  cdm_service_ptr_.FlushForTesting();
+  cdm_service_remote_.FlushForTesting();
 }
 
 TEST_F(CdmServiceTest, InitializeCdm_Success) {
@@ -180,12 +184,12 @@ TEST_F(CdmServiceTest, InitializeCdm_InvalidKeySystem) {
 TEST_F(CdmServiceTest, DestroyAndRecreateCdm) {
   Initialize();
   InitializeCdm(kClearKeyKeySystem, true);
-  cdm_ptr_.reset();
+  cdm_remote_.reset();
   InitializeCdm(kClearKeyKeySystem, true);
 }
 
 // CdmFactory connection error will NOT destroy CDMs. Instead, it will only be
-// destroyed after |cdm_ptr_| is reset.
+// destroyed after |cdm_remote_| is reset.
 TEST_F(CdmServiceTest, DestroyCdmFactory) {
   Initialize();
   auto* service = cdm_service();
@@ -194,12 +198,12 @@ TEST_F(CdmServiceTest, DestroyCdmFactory) {
   EXPECT_EQ(service->BoundCdmFactorySizeForTesting(), 1u);
   EXPECT_EQ(service->UnboundCdmFactorySizeForTesting(), 0u);
 
-  cdm_factory_ptr_.reset();
+  cdm_factory_remote_.reset();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(service->BoundCdmFactorySizeForTesting(), 0u);
   EXPECT_EQ(service->UnboundCdmFactorySizeForTesting(), 1u);
 
-  cdm_ptr_.reset();
+  cdm_remote_.reset();
   base::RunLoop().RunUntilIdle();
 
   // The service should be destroyed by the time we get here.
@@ -207,8 +211,8 @@ TEST_F(CdmServiceTest, DestroyCdmFactory) {
 }
 
 // Same as DestroyCdmFactory test, but do not disable delayed service release.
-// TODO(xhwang): Use ScopedTaskEnvironment::MainThreadType::MOCK_TIME and
-// ScopedTaskEnvironment::FastForwardBy() so we don't have to really wait for
+// TODO(xhwang): Use  TaskEnvironment::TimeSource::MOCK_TIME and
+// TaskEnvironment::FastForwardBy() so we don't have to really wait for
 // the delay in the test. But currently FastForwardBy() doesn't support delayed
 // task yet.
 TEST_F(CdmServiceTest, DestroyCdmFactory_DelayedServiceRelease) {
@@ -217,12 +221,12 @@ TEST_F(CdmServiceTest, DestroyCdmFactory_DelayedServiceRelease) {
   InitializeWithServiceReleaseDelay(kKeepaliveIdleTimeout);
 
   InitializeCdm(kClearKeyKeySystem, true);
-  cdm_factory_ptr_.reset();
+  cdm_factory_remote_.reset();
   base::RunLoop().RunUntilIdle();
 
   base::RunLoop run_loop;
   auto start_time = base::Time::Now();
-  cdm_ptr_.reset();
+  cdm_remote_.reset();
   EXPECT_CALL(*this, CdmServiceConnectionClosed())
       .WillOnce(Invoke(&run_loop, &base::RunLoop::Quit));
   run_loop.Run();

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.preferences;
 import android.util.SparseArray;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * This class is the Java implementation of native PrefChangeRegistrar. It receives notification for
@@ -30,7 +31,7 @@ public class PrefChangeRegistrar {
      * Initialize native PrefChangeRegistrar.
      */
     public PrefChangeRegistrar() {
-        mNativeRegistrar = nativeInit();
+        mNativeRegistrar = PrefChangeRegistrarJni.get().init(PrefChangeRegistrar.this);
     }
 
     /**
@@ -42,7 +43,7 @@ public class PrefChangeRegistrar {
         assert mObservers.get(preference)
                 == null : "Only one observer should be added to each preference.";
         mObservers.put(preference, observer);
-        nativeAdd(mNativeRegistrar, preference);
+        PrefChangeRegistrarJni.get().add(mNativeRegistrar, PrefChangeRegistrar.this, preference);
     }
 
     /**
@@ -53,7 +54,7 @@ public class PrefChangeRegistrar {
         PrefObserver observer = mObservers.get(preference);
         if (observer == null) return;
         mObservers.remove(preference);
-        nativeRemove(mNativeRegistrar, preference);
+        PrefChangeRegistrarJni.get().remove(mNativeRegistrar, PrefChangeRegistrar.this, preference);
     }
 
     /**
@@ -61,7 +62,7 @@ public class PrefChangeRegistrar {
      */
     public void destroy() {
         if (mNativeRegistrar != 0) {
-            nativeDestroy(mNativeRegistrar);
+            PrefChangeRegistrarJni.get().destroy(mNativeRegistrar, PrefChangeRegistrar.this);
         }
         mNativeRegistrar = 0;
     }
@@ -73,8 +74,12 @@ public class PrefChangeRegistrar {
         mObservers.get(preference).onPreferenceChange();
     }
 
-    private native long nativeInit();
-    private native void nativeAdd(long nativePrefChangeRegistrarAndroid, int preference);
-    private native void nativeRemove(long nativePrefChangeRegistrarAndroid, int preference);
-    private native void nativeDestroy(long nativePrefChangeRegistrarAndroid);
+    @NativeMethods
+    interface Natives {
+        long init(PrefChangeRegistrar caller);
+        void add(long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller, int preference);
+        void remove(
+                long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller, int preference);
+        void destroy(long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller);
+    }
 }

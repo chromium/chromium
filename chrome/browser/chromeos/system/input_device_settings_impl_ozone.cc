@@ -11,16 +11,14 @@
 #include "chrome/browser/chromeos/system/fake_input_device_settings.h"
 #include "chromeos/system/devicemode.h"
 #include "content/public/browser/browser_thread.h"
-#include "services/ws/public/cpp/input_devices/input_device_controller_client.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace chromeos {
 namespace system {
 namespace {
 
 InputDeviceSettings* g_input_device_settings_impl_ozone_instance = nullptr;
-
-// Callback from SetInternalTouchpadEnabled().
-void OnSetInternalTouchpadEnabled(bool result) {}
 
 // InputDeviceSettings for Ozone.
 class InputDeviceSettingsImplOzone : public InputDeviceSettings {
@@ -44,14 +42,17 @@ class InputDeviceSettingsImplOzone : public InputDeviceSettings {
   void SetMouseSensitivity(int value) override;
   void SetPrimaryButtonRight(bool right) override;
   void SetMouseReverseScroll(bool enabled) override;
+  void SetMouseAcceleration(bool enabled) override;
+  void SetTouchpadAcceleration(bool enabled) override;
   void ReapplyTouchpadSettings() override;
   void ReapplyMouseSettings() override;
   InputDeviceSettings::FakeInterface* GetFakeInterface() override;
   void SetInternalTouchpadEnabled(bool enabled) override;
   void SetTouchscreensEnabled(bool enabled) override;
 
-  // Cached InputDeviceControllerClient. It is owned by BrowserProcess.
-  ws::InputDeviceControllerClient* input_device_controller_client_;
+  ui::InputController* input_controller() {
+    return ui::OzonePlatform::GetInstance()->GetInputController();
+  }
 
   // Respective device setting objects.
   TouchpadSettings current_touchpad_settings_;
@@ -60,17 +61,12 @@ class InputDeviceSettingsImplOzone : public InputDeviceSettings {
   DISALLOW_COPY_AND_ASSIGN(InputDeviceSettingsImplOzone);
 };
 
-InputDeviceSettingsImplOzone::InputDeviceSettingsImplOzone()
-    : input_device_controller_client_(g_browser_process->platform_part()
-                                          ->GetInputDeviceControllerClient()) {
-  // Make sure the input controller does exist.
-  DCHECK(input_device_controller_client_);
-}
+InputDeviceSettingsImplOzone::InputDeviceSettingsImplOzone() = default;
 
 void InputDeviceSettingsImplOzone::TouchpadExists(
     DeviceExistsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  input_device_controller_client_->GetHasTouchpad(std::move(callback));
+  std::move(callback).Run(input_controller()->HasTouchpad());
 }
 
 void InputDeviceSettingsImplOzone::UpdateTouchpadSettings(
@@ -82,33 +78,33 @@ void InputDeviceSettingsImplOzone::UpdateTouchpadSettings(
 void InputDeviceSettingsImplOzone::SetTouchpadSensitivity(int value) {
   DCHECK(value >= kMinPointerSensitivity && value <= kMaxPointerSensitivity);
   current_touchpad_settings_.SetSensitivity(value);
-  input_device_controller_client_->SetTouchpadSensitivity(value);
+  input_controller()->SetTouchpadSensitivity(value);
 }
 
 void InputDeviceSettingsImplOzone::SetNaturalScroll(bool enabled) {
   current_touchpad_settings_.SetNaturalScroll(enabled);
-  input_device_controller_client_->SetNaturalScroll(enabled);
+  input_controller()->SetNaturalScroll(enabled);
 }
 
 void InputDeviceSettingsImplOzone::SetTapToClick(bool enabled) {
   current_touchpad_settings_.SetTapToClick(enabled);
-  input_device_controller_client_->SetTapToClick(enabled);
+  input_controller()->SetTapToClick(enabled);
 }
 
 void InputDeviceSettingsImplOzone::SetThreeFingerClick(bool enabled) {
   // For Alex/ZGB.
   current_touchpad_settings_.SetThreeFingerClick(enabled);
-  input_device_controller_client_->SetThreeFingerClick(enabled);
+  input_controller()->SetThreeFingerClick(enabled);
 }
 
 void InputDeviceSettingsImplOzone::SetTapDragging(bool enabled) {
   current_touchpad_settings_.SetTapDragging(enabled);
-  input_device_controller_client_->SetTapDragging(enabled);
+  input_controller()->SetTapDragging(enabled);
 }
 
 void InputDeviceSettingsImplOzone::MouseExists(DeviceExistsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  input_device_controller_client_->GetHasMouse(std::move(callback));
+  std::move(callback).Run(input_controller()->HasMouse());
 }
 
 void InputDeviceSettingsImplOzone::UpdateMouseSettings(
@@ -120,17 +116,27 @@ void InputDeviceSettingsImplOzone::UpdateMouseSettings(
 void InputDeviceSettingsImplOzone::SetMouseSensitivity(int value) {
   DCHECK(value >= kMinPointerSensitivity && value <= kMaxPointerSensitivity);
   current_mouse_settings_.SetSensitivity(value);
-  input_device_controller_client_->SetMouseSensitivity(value);
+  input_controller()->SetMouseSensitivity(value);
 }
 
 void InputDeviceSettingsImplOzone::SetPrimaryButtonRight(bool right) {
   current_mouse_settings_.SetPrimaryButtonRight(right);
-  input_device_controller_client_->SetPrimaryButtonRight(right);
+  input_controller()->SetPrimaryButtonRight(right);
 }
 
 void InputDeviceSettingsImplOzone::SetMouseReverseScroll(bool enabled) {
   current_mouse_settings_.SetReverseScroll(enabled);
-  input_device_controller_client_->SetMouseReverseScroll(enabled);
+  input_controller()->SetMouseReverseScroll(enabled);
+}
+
+void InputDeviceSettingsImplOzone::SetMouseAcceleration(bool enabled) {
+  current_mouse_settings_.SetAcceleration(enabled);
+  input_controller()->SetMouseAcceleration(enabled);
+}
+
+void InputDeviceSettingsImplOzone::SetTouchpadAcceleration(bool enabled) {
+  current_touchpad_settings_.SetAcceleration(enabled);
+  input_controller()->SetTouchpadAcceleration(enabled);
 }
 
 void InputDeviceSettingsImplOzone::ReapplyTouchpadSettings() {
@@ -147,12 +153,11 @@ InputDeviceSettingsImplOzone::GetFakeInterface() {
 }
 
 void InputDeviceSettingsImplOzone::SetInternalTouchpadEnabled(bool enabled) {
-  input_device_controller_client_->SetInternalTouchpadEnabled(
-      enabled, base::BindOnce(&OnSetInternalTouchpadEnabled));
+  input_controller()->SetInternalTouchpadEnabled(enabled);
 }
 
 void InputDeviceSettingsImplOzone::SetTouchscreensEnabled(bool enabled) {
-  input_device_controller_client_->SetTouchscreensEnabled(enabled);
+  input_controller()->SetTouchscreensEnabled(enabled);
 }
 
 }  // namespace

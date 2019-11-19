@@ -26,13 +26,7 @@ FakeContentLayerClient::ImageData::ImageData(const ImageData& other) = default;
 
 FakeContentLayerClient::ImageData::~ImageData() = default;
 
-FakeContentLayerClient::FakeContentLayerClient()
-    : fill_with_nonsolid_color_(false),
-      last_canvas_(nullptr),
-      last_painting_control_(PAINTING_BEHAVIOR_NORMAL),
-      reported_memory_usage_(0),
-      bounds_set_(false),
-      contains_slow_paths_(false) {}
+FakeContentLayerClient::FakeContentLayerClient() = default;
 
 FakeContentLayerClient::~FakeContentLayerClient() = default;
 
@@ -105,6 +99,14 @@ FakeContentLayerClient::PaintContentsToDisplayList(
       display_list->push<DrawIRectOp>(gfx::RectToSkIRect(draw_rect), flags);
       draw_rect.Inset(1, 1);
     }
+    display_list->EndPaintOfUnpaired(PaintableRegion());
+  }
+
+  if (has_non_aa_paint_) {
+    PaintFlags flags;
+    flags.setAntiAlias(false);
+    display_list->StartPaint();
+    display_list->push<DrawRectOp>(SkRect::MakeWH(10, 10), flags);
     display_list->EndPaintOfUnpaired(PaintableRegion());
   }
 

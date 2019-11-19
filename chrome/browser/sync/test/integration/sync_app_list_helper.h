@@ -27,7 +27,10 @@ class SyncAppListHelper {
   void SetupIfNecessary(SyncTest* test);
 
   // Returns true iff all existing profiles have the same app list entries.
-  bool AllProfilesHaveSameAppList();
+  //
+  // If it returns true and |size_out| is non-nullptr, |*size_out| is set to
+  // the common size of the app lists.
+  bool AllProfilesHaveSameAppList(size_t* size_out = nullptr);
 
   // Moves an app in |profile| to |folder_id|.
   void MoveAppToFolder(Profile* profile,

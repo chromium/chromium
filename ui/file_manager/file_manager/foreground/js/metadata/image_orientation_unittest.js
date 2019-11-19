@@ -23,12 +23,12 @@ function testCancelImageOrientation() {
   const context = canvas.getContext('2d');
   const imageData = context.createImageData(2, 1);
   imageData.data[0] = 255;  // R
-  imageData.data[1] = 0;  // G
-  imageData.data[2] = 0;  // B
+  imageData.data[1] = 0;    // G
+  imageData.data[2] = 0;    // B
   imageData.data[3] = 100;  // A
-  imageData.data[4] = 0;  // R
-  imageData.data[5] = 0;  // G
-  imageData.data[6] = 0;  // B
+  imageData.data[4] = 0;    // R
+  imageData.data[5] = 0;    // G
+  imageData.data[6] = 0;    // B
   imageData.data[7] = 100;  // A
   context.putImageData(imageData, 0, 0);
 
@@ -52,8 +52,8 @@ function assertImageOrientationEquals(expected, actual, message) {
 function testFromRotationAndScale() {
   const rotate270 = {scaleX: 1, scaleY: 1, rotate90: -1};
   const rotate90 = {scaleX: 1, scaleY: 1, rotate90: 1};
-  const flipX = {scaleX: -1, scaleY: 1, rotate90: 0 };
-  const flipY = {scaleX: 1, scaleY: -1, rotate90: 0 };
+  const flipX = {scaleX: -1, scaleY: 1, rotate90: 0};
+  const flipY = {scaleX: 1, scaleY: -1, rotate90: 0};
   const flipBoth = {scaleX: -1, scaleY: -1, rotate90: 0};
   const rotate180 = {scaleX: 1, scaleY: 1, rotate90: 2};
   const flipXAndRotate90 = {scaleX: -1, scaleY: 1, rotate90: 1};
@@ -67,26 +67,36 @@ function testFromRotationAndScale() {
    |             =====>       |
    V e_y                      O----> e'_y = (1, 0)' = (c, d)'
   */
-  assertImageOrientationEquals(new ImageOrientation(0, -1, 1, 0),
+  assertImageOrientationEquals(
+      new ImageOrientation(0, -1, 1, 0),
       ImageOrientation.fromRotationAndScale(rotate270), 'rotate270');
-  assertImageOrientationEquals(new ImageOrientation(0, 1, -1, 0),
+  assertImageOrientationEquals(
+      new ImageOrientation(0, 1, -1, 0),
       ImageOrientation.fromRotationAndScale(rotate90), 'rotate90');
-  assertImageOrientationEquals(new ImageOrientation(-1, 0, 0, 1),
+  assertImageOrientationEquals(
+      new ImageOrientation(-1, 0, 0, 1),
       ImageOrientation.fromRotationAndScale(flipX), 'flipX');
-  assertImageOrientationEquals(new ImageOrientation(1, 0, 0, -1),
+  assertImageOrientationEquals(
+      new ImageOrientation(1, 0, 0, -1),
       ImageOrientation.fromRotationAndScale(flipY), 'flipY');
-  assertImageOrientationEquals(new ImageOrientation(-1, 0, 0, -1),
+  assertImageOrientationEquals(
+      new ImageOrientation(-1, 0, 0, -1),
       ImageOrientation.fromRotationAndScale(flipBoth), 'flipBoth');
-  assertImageOrientationEquals(new ImageOrientation(-1, 0, 0, -1),
+  assertImageOrientationEquals(
+      new ImageOrientation(-1, 0, 0, -1),
       ImageOrientation.fromRotationAndScale(rotate180), 'rotate180');
-  assertImageOrientationEquals(new ImageOrientation(0, -1, -1, 0),
+  assertImageOrientationEquals(
+      new ImageOrientation(0, -1, -1, 0),
       ImageOrientation.fromRotationAndScale(flipXAndRotate90),
       'flipXAndRotate90');
-  assertImageOrientationEquals(new ImageOrientation(0, 1, 1, 0),
+  assertImageOrientationEquals(
+      new ImageOrientation(0, 1, 1, 0),
       ImageOrientation.fromRotationAndScale(flipYAndRotate90),
       'flipYAndRotate90');
-  assertTrue(ImageOrientation.fromRotationAndScale(flipBothAndRotate180)
-      .isIdentity(), 'flipBothAndRotate180');
-  assertTrue(ImageOrientation.fromRotationAndScale(rotate1080).isIdentity(),
+  assertTrue(
+      ImageOrientation.fromRotationAndScale(flipBothAndRotate180).isIdentity(),
+      'flipBothAndRotate180');
+  assertTrue(
+      ImageOrientation.fromRotationAndScale(rotate1080).isIdentity(),
       'rotate1080');
 }

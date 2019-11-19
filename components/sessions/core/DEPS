@@ -1,4 +1,7 @@
 include_rules = [
   "+components/keyed_service/core",
   "+components/prefs",
+
+  # SkColor is referenced in a struct in session_types.h
+  "+third_party/skia/include/core/SkColor.h",
 ]

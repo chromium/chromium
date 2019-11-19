@@ -44,7 +44,7 @@ const String& TestEnumOrDouble::GetAsTestEnum() const {
 void TestEnumOrDouble::SetTestEnum(const String& value) {
   DCHECK(IsNull());
   NonThrowableExceptionState exception_state;
-  const char* kValidValues[] = {
+  const char* const kValidValues[] = {
       "",
       "EnumValue1",
       "EnumValue2",
@@ -95,7 +95,7 @@ void V8TestEnumOrDouble::ToImpl(
     V8StringResource<> cpp_value = v8_value;
     if (!cpp_value.Prepare(exception_state))
       return;
-    const char* kValidValues[] = {
+    const char* const kValidValues[] = {
         "",
         "EnumValue1",
         "EnumValue2",

@@ -1,0 +1,54 @@
+Tests that audits panel prevents run of unauditable pages.
+
+
+
+**Prevents audit with no categories**
+
+========== Audits Start Audit State ==========
+[ ] Performance
+[ ] Progressive Web App
+[ ] Best practices
+[ ] Accessibility
+[ ] SEO
+[ ] Clear storage
+Help text: At least one category must be selected.
+Run audits: disabled visible
+
+
+**Allows audit with a single category**
+
+========== Audits Start Audit State ==========
+[x] Performance
+[ ] Progressive Web App
+[ ] Best practices
+[ ] Accessibility
+[ ] SEO
+[ ] Clear storage
+Run audits: enabled visible
+
+
+**Allows audit on undockable page**
+
+========== Audits Start Audit State ==========
+[x] Performance
+[ ] Progressive Web App
+[ ] Best practices
+[ ] Accessibility
+[ ] SEO
+[ ] Clear storage
+Run audits: enabled visible
+
+
+**Prevents audit on internal page**
+URL: about:blank
+
+========== Audits Start Audit State ==========
+[x] Performance
+[ ] Progressive Web App
+[ ] Best practices
+[ ] Accessibility
+[ ] SEO
+[ ] Clear storage
+Help text: Can only audit HTTP/HTTPS pages and Chrome extensions. Navigate to a different page to start an audit.
+Run audits: disabled visible
+

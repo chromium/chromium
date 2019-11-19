@@ -21,6 +21,7 @@
 
 // https://html.spec.whatwg.org/C/#the-htmlformcontrolscollection-interface
 
+[Exposed=Window]
 interface HTMLFormControlsCollection : HTMLCollection {
     // inherits length and item()
     [ImplementedAs=namedGetter] getter (RadioNodeList or Element)? namedItem(DOMString name); // shadows inherited namedItem()

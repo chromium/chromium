@@ -59,7 +59,7 @@ public class JavaBridgeChildFrameTest {
     TestController mTestController;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mTestController = new TestController();
         mActivityTestRule.injectObjectAndReload(mTestController, "testController");
     }
@@ -274,8 +274,8 @@ public class JavaBridgeChildFrameTest {
         Assert.assertNull(testObject.mWeakRefForInner.get());
     }
 
-    private String executeJavaScriptAndGetResult(final WebContents webContents,
-            final String script) throws Throwable {
+    private String executeJavaScriptAndGetResult(
+            final WebContents webContents, final String script) {
         final String[] result = new String[1];
         class ResultCallback extends Controller implements JavaScriptCallback {
             @Override

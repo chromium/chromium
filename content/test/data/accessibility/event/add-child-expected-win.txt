@@ -1,3 +1,3 @@
-IA2_EVENT_TEXT_INSERTED on role=ROLE_SYSTEM_LIST new_text={'<obj>' start=2 end=3}
-EVENT_OBJECT_SHOW on role=ROLE_SYSTEM_LISTITEM name="Item 3"
-EVENT_OBJECT_REORDER on role=ROLE_SYSTEM_LIST
+EVENT_OBJECT_REORDER on <div> role=ROLE_SYSTEM_LIST SetSize=3
+EVENT_OBJECT_SHOW on <div> role=ROLE_SYSTEM_LISTITEM name="Item 3" PosInSet=3 SetSize=3
+IA2_EVENT_TEXT_INSERTED on <div> role=ROLE_SYSTEM_LIST SetSize=3 new_text={'<obj>' start=2 end=3}

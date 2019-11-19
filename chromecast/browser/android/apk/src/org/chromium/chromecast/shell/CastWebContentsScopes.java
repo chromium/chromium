@@ -26,6 +26,8 @@ class CastWebContentsScopes {
         IBinder provideWindowToken();
     }
 
+    static final String VIEW_TAG_CONTENT_VIEW = "ContentView";
+
     public static Observer<WebContents> onLayoutActivity(
             Activity activity, FrameLayout layout, @ColorInt int backgroundColor) {
         layout.setBackgroundColor(backgroundColor);
@@ -77,6 +79,7 @@ class CastWebContentsScopes {
             layout.addView(contentView, matchParent);
             contentView.setFocusable(true);
             contentView.requestFocus();
+            contentView.setTag(VIEW_TAG_CONTENT_VIEW);
             contentViewRenderView.setCurrentWebContents(webContents);
             return () -> {
                 layout.setForeground(new ColorDrawable(backgroundColor));

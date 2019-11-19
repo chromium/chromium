@@ -7,9 +7,9 @@
 #include <math.h>
 
 #include "base/time/time.h"
-#include "content/public/renderer/document_state.h"
 #include "extensions/renderer/v8_helpers.h"
 #include "net/http/http_response_info.h"
+#include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_performance.h"
 #include "v8/include/v8.h"
@@ -18,7 +18,6 @@ using blink::WebDocumentLoader;
 using blink::WebLocalFrame;
 using blink::WebNavigationType;
 using blink::WebPerformance;
-using content::DocumentState;
 
 // Values for CSI "tran" property
 const int kTransitionLink = 0;
@@ -132,11 +131,7 @@ class LoadTimesExtensionWrapper : public v8::Extension {
     if (!document_loader) {
       return;
     }
-    DocumentState* document_state =
-        DocumentState::FromDocumentLoader(document_loader);
-    if (!document_state) {
-      return;
-    }
+    const blink::WebURLResponse& response = document_loader->GetResponse();
     WebPerformance web_performance = frame->Performance();
     // Though request time now tends to be used to describe the time that the
     // request for the main resource was issued, when chrome.loadTimes() was
@@ -153,12 +148,12 @@ class LoadTimesExtensionWrapper : public v8::Extension {
     // browser-initiated navigations, this is some time after navigation start,
     // which means that developers who used this value as a way to track the
     // start of a navigation were misusing this timestamp and getting the wrong
-    // value - they should be using navigationStart intead. Additionally,
-    // once plznavigate ships, provisional loads will not be processed by the
-    // render process for browser-initiated navigations, so reporting the time a
-    // provisional load was processed in the render process will no longer make
-    // sense. Thus, we now report the time for navigationStart, which is a value
-    // more consistent with what developers currently use start_load_time for.
+    // value - they should be using navigationStart instead. Provisional loads
+    // will not be processed by the render process for browser-initiated
+    // navigations, so reporting the time a provisional load was processed in
+    // the render process will no longer make sense. Thus, we now report the
+    // time for navigationStart, which is a value more consistent with what
+    // developers currently use start_load_time for.
     double start_load_time = web_performance.NavigationStart();
     // TODO(bmcquade): Remove this. 'commit' time is a concept internal to
     // chrome that shouldn't be exposed to the web platform.
@@ -174,16 +169,16 @@ class LoadTimesExtensionWrapper : public v8::Extension {
     double first_paint_after_load_time = 0.0;
     std::string navigation_type =
         GetNavigationType(document_loader->GetNavigationType());
-    bool was_fetched_via_spdy = document_state->was_fetched_via_spdy();
-    bool was_alpn_negotiated = document_state->was_alpn_negotiated();
+    bool was_fetched_via_spdy = response.WasFetchedViaSPDY();
+    bool was_alpn_negotiated = response.WasAlpnNegotiated();
     std::string alpn_negotiated_protocol =
-        document_state->alpn_negotiated_protocol();
+        response.AlpnNegotiatedProtocol().Utf8();
     bool was_alternate_protocol_available =
-        document_state->was_alternate_protocol_available();
+        response.WasAlternateProtocolAvailable();
     std::string connection_info = net::HttpResponseInfo::ConnectionInfoToString(
-        document_state->connection_info());
+        response.ConnectionInfo());
 
-    // Important: |frame|, |document_loader| and |document_state| should not be
+    // Important: |frame| and |document_loader| should not be
     // referred to below this line, as JS setters below can invalidate these
     // pointers.
     v8::Isolate* isolate = args.GetIsolate();

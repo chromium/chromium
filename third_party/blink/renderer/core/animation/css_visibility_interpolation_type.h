@@ -14,7 +14,7 @@ class CSSVisibilityInterpolationType : public CSSInterpolationType {
  public:
   CSSVisibilityInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
-    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyVisibility);
+    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kVisibility);
   }
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(

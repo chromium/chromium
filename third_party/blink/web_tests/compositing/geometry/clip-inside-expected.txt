@@ -3,31 +3,21 @@ Test CSS clip with composited layers. Left and right sides should look the same.
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='composited box'",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited box'",
+      "position": [5, 15],
       "bounds": [90, 80],
       "contentsOpaque": true,
       "backgroundColor": "#808080",
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow (relative positioned) DIV class='composited inner'",
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='composited inner'",
       "bounds": [120, 120],
       "backgroundColor": "#00000033",
       "transform": 4
@@ -40,7 +30,7 @@ Test CSS clip with composited layers. Left and right sides should look the same.
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [25, 35, 0, 1]
+        [20, 20, 0, 1]
       ]
     },
     {

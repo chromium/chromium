@@ -6,9 +6,6 @@
 
 namespace chrome_cleaner {
 
-const UwSId kGoogleTestAUwSID = 20001;
-const UwSId kGoogleTestBUwSID = 20002;
-
 const char kGoogleTestAUwEID[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 const char kGoogleTestBUwEID[] = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 // invalid because the characters must be between 'a' and 'p' (inclusive).

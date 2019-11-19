@@ -6,7 +6,7 @@
 
 #include "chrome/browser/sync/test/integration/migration_waiter.h"
 #include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
-#include "components/browser_sync/profile_sync_service.h"
+#include "components/sync/driver/profile_sync_service.h"
 
 MigrationWatcher::MigrationWatcher(ProfileSyncServiceHarness* harness)
     : harness_(harness), migration_waiter_(nullptr) {

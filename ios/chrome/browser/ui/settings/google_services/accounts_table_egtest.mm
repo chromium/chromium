@@ -6,9 +6,8 @@
 #import <XCTest/XCTest.h>
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/browser_sync/profile_sync_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/nigori.h"
+#include "components/sync/driver/profile_sync_service.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/protocol/proto_value_conversions.h"
@@ -19,7 +18,6 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #include "ios/chrome/browser/system_flags.h"
-#import "ios/chrome/browser/ui/authentication/cells/account_control_item.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/authentication/signin_earlgrey_utils.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -37,6 +35,7 @@
 
 using chrome_test_util::AccountsSyncButton;
 using chrome_test_util::ButtonWithAccessibilityLabel;
+using chrome_test_util::GoogleServicesSettingsButton;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SignOutAccountsButton;
@@ -69,7 +68,6 @@ id<GREYMatcher> ButtonWithIdentity(ChromeIdentity* identity) {
   [SigninEarlGreyUI signinWithIdentity:identity];
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
-  [ChromeEarlGreyUI tapAccountsMenuButton:AccountsSyncButton()];
 
   // Forget |identity|, screens should be popped back to the Main Settings.
   [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
@@ -78,7 +76,7 @@ id<GREYMatcher> ButtonWithIdentity(ChromeIdentity* identity) {
 
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [SigninEarlGreyUtils assertSignedOut];
+  [SigninEarlGreyUtils checkSignedOut];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -104,7 +102,7 @@ id<GREYMatcher> ButtonWithIdentity(ChromeIdentity* identity) {
 
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [SigninEarlGreyUtils assertSignedOut];
+  [SigninEarlGreyUtils checkSignedOut];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -137,46 +135,7 @@ id<GREYMatcher> ButtonWithIdentity(ChromeIdentity* identity) {
                                    grey_accessibilityLabel(identity2.userEmail),
                                    grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_nil()];
-  [SigninEarlGreyUtils assertSignedInWithIdentity:identity1];
-
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
-}
-
-// Tests that the Sync Settings screen is correctly reloaded when one of the
-// secondary accounts disappears.
-- (void)testSignInReloadSyncOnForgetIdentity {
-  ios::FakeChromeIdentityService* identity_service =
-      ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-  ChromeIdentity* identity1 = [SigninEarlGreyUtils fakeIdentity1];
-  ChromeIdentity* identity2 = [SigninEarlGreyUtils fakeIdentity2];
-  identity_service->AddIdentity(identity2);
-
-  // Sign In |identity|, then open the Sync Settings.
-  [SigninEarlGreyUI signinWithIdentity:identity1];
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
-  [ChromeEarlGreyUI tapAccountsMenuButton:AccountsSyncButton()];
-
-  // Forget |identity2|, allowing the UI to synchronize before and after
-  // forgetting the identity.
-  [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
-  identity_service->ForgetIdentity(identity2, nil);
-  [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
-
-  // Check that both |identity1| and |identity2| aren't shown in the Sync
-  // Settings.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityLabel(identity1.userEmail),
-                                   grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_nil()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityLabel(identity2.userEmail),
-                                   grey_sufficientlyVisible(), nil)]
-      assertWithMatcher:grey_nil()];
-  [SigninEarlGreyUtils assertSignedInWithIdentity:identity1];
+  [SigninEarlGreyUtils checkSignedInWithIdentity:identity1];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -202,7 +161,7 @@ id<GREYMatcher> ButtonWithIdentity(ChromeIdentity* identity) {
   // Check that the user is signed out and the Main Settings screen is shown.
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [SigninEarlGreyUtils assertSignedOut];
+  [SigninEarlGreyUtils checkSignedOut];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -231,76 +190,10 @@ id<GREYMatcher> ButtonWithIdentity(ChromeIdentity* identity) {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
                                           SettingsAccountsCollectionView()]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [SigninEarlGreyUtils assertSignedInWithIdentity:identity];
+  [SigninEarlGreyUtils checkSignedInWithIdentity:identity];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
-}
-
-// Checks if the sync cell is correctly configured with the expected detail text
-// label and an image.
-- (void)checkSyncCellWithExpectedTextLabelCallback:
-    (ExpectedTextLabelCallback)callback {
-  NSAssert(callback, @"Need callback");
-  ChromeIdentity* identity = [SigninEarlGreyUtils fakeIdentity1];
-
-  // Sign In |identity|, then open the Account Settings.
-  [SigninEarlGreyUI signinWithIdentity:identity];
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
-
-  NSString* expectedDetailTextLabel = callback([identity userEmail]);
-  // Check that account sync button displays the expected detail text label and
-  // an image.
-  GREYPerformBlock block = ^BOOL(id element, NSError* __strong* errorOrNil) {
-    GREYAssertTrue([element isKindOfClass:[AccountControlCell class]],
-                   @"Should be AccountControlCell type");
-    AccountControlCell* cell = static_cast<AccountControlCell*>(element);
-    return
-        [cell.detailTextLabel.text isEqualToString:expectedDetailTextLabel] &&
-        cell.imageView.image != nil;
-  };
-  [[EarlGrey selectElementWithMatcher:AccountsSyncButton()]
-      performAction:[GREYActionBlock
-                        actionWithName:@"Invoke clearStateForTest selector"
-                          performBlock:block]];
-}
-
-// Tests the sync cell is correctly configured when having a MDM error.
-- (void)testMDMError {
-  ios::FakeChromeIdentityService* fakeChromeIdentityService =
-      ios::FakeChromeIdentityService::GetInstanceFromChromeProvider();
-  fakeChromeIdentityService->SetFakeMDMError(true);
-  ExpectedTextLabelCallback callback = ^(NSString* identityEmail) {
-    return l10n_util::GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_SYNC_ERROR);
-  };
-  [self checkSyncCellWithExpectedTextLabelCallback:callback];
-}
-
-// Tests the sync cell is correctly configured when no error.
-- (void)testSyncItemWithSyncingMessage {
-  ExpectedTextLabelCallback callback = ^(NSString* identityEmail) {
-    return l10n_util::GetNSStringF(IDS_IOS_SIGN_IN_TO_CHROME_SETTING_SYNCING,
-                                   base::SysNSStringToUTF16(identityEmail));
-  };
-  [self checkSyncCellWithExpectedTextLabelCallback:callback];
-}
-
-// Tests the sync cell is correctly configured when the passphrase is required.
-- (void)testSyncItemWithPassphraseRequired {
-  ExpectedTextLabelCallback callback = ^(NSString* identityEmail) {
-    ios::ChromeBrowserState* browser_state =
-        chrome_test_util::GetOriginalBrowserState();
-    browser_sync::ProfileSyncService* profile_sync_service =
-        ProfileSyncServiceFactory::GetAsProfileSyncServiceForBrowserState(
-            browser_state);
-    profile_sync_service->GetEncryptionObserverForTest()->OnPassphraseRequired(
-        syncer::REASON_DECRYPTION,
-        syncer::KeyDerivationParams::CreateForPbkdf2(),
-        sync_pb::EncryptedData());
-    return l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_DESCRIPTION);
-  };
-  [self checkSyncCellWithExpectedTextLabelCallback:callback];
 }
 
 @end

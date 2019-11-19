@@ -10,14 +10,11 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 namespace aura {
 class Window;
-}
-
-namespace views {
-class Widget;
 }
 
 namespace ash {
@@ -65,10 +62,10 @@ class ASH_EXPORT LockScreenActionBackgroundControllerImpl
   views::Widget* background_widget_ = nullptr;
   LockScreenActionBackgroundView* contents_view_ = nullptr;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_;
+  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
 
   base::WeakPtrFactory<LockScreenActionBackgroundControllerImpl>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LockScreenActionBackgroundControllerImpl);
 };

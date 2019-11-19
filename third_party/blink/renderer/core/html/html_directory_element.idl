@@ -18,7 +18,9 @@
  */
 
 // https://html.spec.whatwg.org/C/#htmldirectoryelement
-[HTMLConstructor]
-interface HTMLDirectoryElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLDirectoryElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean compact;
 };

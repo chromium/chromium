@@ -10,16 +10,16 @@
 
 class Browser;
 class Profile;
-class UIThreadExtensionFunction;
+class ExtensionFunction;
 
-// Provides Chrome-specific details to UIThreadExtensionFunction
+// Provides Chrome-specific details to ExtensionFunction
 // implementations.
 class ChromeExtensionFunctionDetails {
  public:
   // Constructs a new ChromeExtensionFunctionDetails instance for |function|.
   // This instance does not own |function|. |function| must outlive this
   // instance.
-  explicit ChromeExtensionFunctionDetails(UIThreadExtensionFunction* function);
+  explicit ChromeExtensionFunctionDetails(ExtensionFunction* function);
   ~ChromeExtensionFunctionDetails();
 
   Profile* GetProfile() const;
@@ -55,14 +55,14 @@ class ChromeExtensionFunctionDetails {
   // - A browser with the same profile
   gfx::NativeWindow GetNativeWindowForUI();
 
-  // Returns a pointer to the associated UIThreadExtensionFunction
-  UIThreadExtensionFunction* function() { return function_; }
-  const UIThreadExtensionFunction* function() const { return function_; }
+  // Returns a pointer to the associated ExtensionFunction
+  ExtensionFunction* function() { return function_; }
+  const ExtensionFunction* function() const { return function_; }
 
  private:
   // The function for which these details have been created. Must outlive the
   // ChromeExtensionFunctionDetails instance.
-  UIThreadExtensionFunction* function_;
+  ExtensionFunction* function_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeExtensionFunctionDetails);
 };

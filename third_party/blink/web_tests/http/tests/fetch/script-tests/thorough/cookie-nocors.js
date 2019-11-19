@@ -47,35 +47,37 @@ var TEST_TARGETS = [];
 
 // Test cross-origin requests.
 
-// URL to check current cookie.
-var OTHER_CHECK_URL =
-  OTHER_BASE_URL +
-  'mode=cors&credentials=include&method=POST&ACAOrigin=' + BASE_ORIGIN +
-  '&ACACredentials=true&label=';
+if (shouldIncludeCrossSiteCookieTests()) {
+  // URL to check current cookie.
+  var OTHER_CHECK_URL =
+    OTHER_BASE_URL +
+    'mode=cors&credentials=include&method=POST&ACAOrigin=' + BASE_ORIGIN +
+    '&ACACredentials=true&label=';
 
-TEST_TARGETS.push(
-  // At first, cookie is cookie=cookie2.
-  // Tests for mode=no-cors.
+  TEST_TARGETS.push(
+    // At first, cookie is cookie=cookie2.
+    // Tests for mode=no-cors.
 
-  // Try to set cookieC, but
-  // cookie is not sent/updated because credentials flag is not set.
-  [OTHER_BASE_URL + 'mode=no-cors&credentials=omit&SetCookie=cookieC',
-   [fetchResolved, noBody, typeOpaque],
-   onlyOnServiceWorkerProxiedTest([cookieCheckNone])],
-  [OTHER_CHECK_URL + 'otherCheck1', [fetchResolved], [cookieCheck2]],
+    // Try to set cookieC, but
+    // cookie is not sent/updated because credentials flag is not set.
+    [OTHER_BASE_URL + 'mode=no-cors&credentials=omit&SetCookie=cookieC&SameSiteNone',
+     [fetchResolved, noBody, typeOpaque],
+     onlyOnServiceWorkerProxiedTest([cookieCheckNone])],
+    [OTHER_CHECK_URL + 'otherCheck1', [fetchResolved], [cookieCheck2]],
 
-  // Set cookieC with opaque response. Response is opaque, but cookie is set.
-  [OTHER_BASE_URL + 'mode=no-cors&credentials=include&SetCookie=cookieC',
-   [fetchResolved, noBody, typeOpaque],
-   onlyOnServiceWorkerProxiedTest([cookieCheck2])],
-  [OTHER_CHECK_URL + 'otherCheck2', [fetchResolved], [cookieCheckC]],
+    // Set cookieC with opaque response. Response is opaque, but cookie is set.
+    [OTHER_BASE_URL + 'mode=no-cors&credentials=include&SetCookie=cookieC&SameSiteNone',
+     [fetchResolved, noBody, typeOpaque],
+     onlyOnServiceWorkerProxiedTest([cookieCheck2])],
+    [OTHER_CHECK_URL + 'otherCheck2', [fetchResolved], [cookieCheckC]],
 
-  // Set cookieA with opaque response. Response is opaque and cookie is not set.
-  [OTHER_BASE_URL + 'mode=no-cors&credentials=same-origin&SetCookie=cookieA',
-   [fetchResolved, noBody, typeOpaque],
-   onlyOnServiceWorkerProxiedTest([cookieCheckNone])],
-  [OTHER_CHECK_URL + 'otherCheck3', [fetchResolved], [cookieCheckC]]
-);
+    // Set cookieA with opaque response. Response is opaque and cookie is not set.
+    [OTHER_BASE_URL + 'mode=no-cors&credentials=same-origin&SetCookie=cookieA&SameSiteNone',
+     [fetchResolved, noBody, typeOpaque],
+     onlyOnServiceWorkerProxiedTest([cookieCheckNone])],
+    [OTHER_CHECK_URL + 'otherCheck3', [fetchResolved], [cookieCheckC]]
+  );
+}
 
 if (self.importScripts) {
   executeTests(TEST_TARGETS);

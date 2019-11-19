@@ -1,0 +1,25 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="../prefs/prefs.html">
+<link rel="import" href="../prefs/prefs_behavior.html">
+<link rel="import" href="../settings_shared_css.html">
+
+<dom-module id="storage-external-entry">
+  <template>
+    <style include="settings-shared">
+      settings-toggle-button {
+        margin-inline-end: var(--cr-section-padding);
+        margin-inline-start: var(--cr-section-indent-padding);
+        padding-inline-end: 0;
+        padding-inline-start: 0;
+      }
+    </style>
+    <settings-toggle-button class="hr"
+        pref="{{visiblePref_}}"
+        label="[[label]]"
+        on-settings-boolean-control-change="onVisibleChange_">
+    </settings-toggle-button>
+  </template>
+  <script src="storage_external_entry.js"></script>
+</dom-module>

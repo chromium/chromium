@@ -16,6 +16,6 @@ PASS padding-right percentage(%) / events
 PASS padding-top percentage(%) / values
 PASS padding-top percentage(%) / events
 FAIL vertical-align vertical(keyword) / values assert_not_equals: must not be target value after start got disallowed value "bottom"
-FAIL vertical-align vertical(keyword) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "vertical-align:0.5s" but got ""
+FAIL vertical-align vertical(keyword) / events assert_equals: Expected TransitionEnd events triggered on .transition expected "vertical-align:2s" but got ""
 Harness: the test ran to completion.
 

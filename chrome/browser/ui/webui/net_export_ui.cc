@@ -22,7 +22,6 @@
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
-#include "chrome/browser/io_thread.h"
 #include "chrome/browser/net/net_export_helper.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/platform_util.h"
@@ -62,10 +61,9 @@ content::WebUIDataSource* CreateNetExportHTMLSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUINetExportHost);
 
-  source->SetJsonPath("strings.js");
+  source->UseStringsJs();
   source->AddResourcePath(net_log::kNetExportUIJS, IDR_NET_LOG_NET_EXPORT_JS);
   source->SetDefaultResource(IDR_NET_LOG_NET_EXPORT_HTML);
-  source->UseGzip();
   return source;
 }
 
@@ -153,7 +151,7 @@ class NetExportMessageHandler
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
 
-  base::WeakPtrFactory<NetExportMessageHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<NetExportMessageHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetExportMessageHandler);
 };
@@ -161,8 +159,7 @@ class NetExportMessageHandler
 NetExportMessageHandler::NetExportMessageHandler()
     : file_writer_(g_browser_process->system_network_context_manager()
                        ->GetNetExportFileWriter()),
-      state_observer_manager_(this),
-      weak_ptr_factory_(this) {
+      state_observer_manager_(this) {
   file_writer_->Initialize();
 }
 
@@ -215,10 +212,10 @@ void NetExportMessageHandler::OnEnableNotifyUIWithState(
 void NetExportMessageHandler::OnStartNetLog(const base::ListValue* list) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const base::Value::ListStorage& params = list->GetList();
+  base::span<const base::Value> params = list->GetList();
 
   // Determine the capture mode.
-  capture_mode_ = net::NetLogCaptureMode::Default();
+  capture_mode_ = net::NetLogCaptureMode::kDefault;
   if (!params.empty() && params[0].is_string()) {
     capture_mode_ = net_log::NetExportFileWriter::CaptureModeFromString(
         params[0].GetString());

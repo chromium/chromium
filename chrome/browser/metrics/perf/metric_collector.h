@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
-#include <vector>
 
 #include "base/macros.h"
 #include "base/sequence_checker.h"
@@ -20,46 +20,61 @@ namespace metrics {
 
 class SampledProfile;
 
-// Provides a common interface for metric collectors with custom trigger
-// definitions. Extends base::SupportWeakPtr to pass around the "this"
-// pointer across threads safely.
-class MetricCollector : public base::SupportsWeakPtr<MetricCollector> {
+namespace internal {
+
+// MetricCollector implements the basic collector functionality, including the
+// scheduling and synchronization logic between the various trigger events, and
+// the profile post-processing logic. Except for the constructor that can be
+// invoked from a different thread, all its methods run on the same sequence,
+// which is enforced by a sequence checker. A collector is managed by a
+// MetricProvider, including the sequence on which it runs.
+class MetricCollector {
  public:
-  explicit MetricCollector(const std::string& name);
-  explicit MetricCollector(const std::string& name,
-                           const CollectionParams& collection_params);
+  using ProfileDoneCallback =
+      base::RepeatingCallback<void(std::unique_ptr<SampledProfile>)>;
+
+  // It may be invoked on a difference sequence than the member functions.
+  MetricCollector(const std::string& name,
+                  const CollectionParams& collection_params);
+
   virtual ~MetricCollector();
 
-  // Collector specific initialization.
-  virtual void Init() {}
+  virtual const char* ToolName() const = 0;
 
-  // Appends collected perf data protobufs to |sampled_profiles|. Clears all the
-  // stored profile data. Returns true if it wrote to |sampled_profiles|.
-  bool GetSampledProfiles(std::vector<SampledProfile>* sampled_profiles);
+  void Init();
+
+  // These methods are used to update the cached_data_size_ field via PostTask
+  // from the provider.
+  void AddCachedDataDelta(size_t delta);
+  void ResetCachedDataSize();
 
   // Turns on profile collection. Resets the timer that's used to schedule
   // collections.
-  void OnUserLoggedIn();
+  void RecordUserLogin(base::TimeTicks login_time);
 
-  // Turns off profile collection. Does not delete any data that was already
-  // collected and stored in |cached_profile_data_|.
-  void Deactivate();
+  // Deactivates the timer and turns off profile collection. Does not delete any
+  // profile data that was already collected.
+  void StopTimer();
 
-  // Called when a suspend finishes. This is a successful suspend followed by
-  // a resume.
-  void SuspendDone(base::TimeDelta sleep_duration);
+  // Schedules a collection after a resume from suspend event. A collection is
+  // scheduled with the probablity given by the sampling factor stored in
+  // |collection_params_|.
+  void ScheduleSuspendDoneCollection(base::TimeDelta sleep_duration);
 
-  // Called when a session restore has finished.
-  void OnSessionRestoreDone(int num_tabs_restored);
+  // Schedules a collection after a session restore event. A collection is
+  // scheduled with the probablity given by the sampling factor stored in
+  // |collection_params_|.
+  void ScheduleSessionRestoreCollection(int num_tabs_restored);
+
+  // Called when a jank started/stopped.
+  void OnJankStarted();
+  void OnJankStopped();
+
+  void set_profile_done_callback(ProfileDoneCallback cb) {
+    profile_done_callback_ = std::move(cb);
+  }
 
  protected:
-  // Perf proto type.
-  enum class PerfProtoType {
-    PERF_TYPE_DATA,
-    PERF_TYPE_STAT,
-    PERF_TYPE_UNSUPPORTED,
-  };
-
   // Enumeration representing success and various failure modes for collecting
   // profile data. These values are persisted to logs. Entries should not be
   // renumbered and numeric values should never be reused.
@@ -72,17 +87,23 @@ class MetricCollector : public base::SupportsWeakPtr<MetricCollector> {
     ILLEGAL_DATA_RETURNED,
     ALREADY_COLLECTING,
     UNABLE_TO_COLLECT,
+    DATA_COLLECTION_FAILED,
     NUM_OUTCOMES
   };
+
+  // Returns a WeakPtr to this instance.
+  virtual base::WeakPtr<MetricCollector> GetWeakPtr() = 0;
+
+  // Collector specific initialization.
+  virtual void SetUp() {}
 
   // Saves the given outcome to the uma histogram associated with the collector.
   void AddToUmaHistogram(CollectionAttemptStatus outcome) const;
 
-  const CollectionParams& collection_params() const {
-    return collection_params_;
-  }
-
-  const base::OneShotTimer& timer() const { return timer_; }
+  // Returns whether the underlying timer is running or not.
+  bool IsRunning() { return timer_.IsRunning(); }
+  // Returns the current timer delay. Useful for debugging.
+  base::TimeDelta CurrentTimerDelay() { return timer_.GetCurrentDelay(); }
 
   base::TimeTicks login_time() const { return login_time_; }
 
@@ -99,7 +120,7 @@ class MetricCollector : public base::SupportsWeakPtr<MetricCollector> {
                                           int num_tabs_restored);
 
   // Selects a random time in the upcoming profiling interval that begins at
-  // |next_profiling_interval_start_|. Schedules |timer_| to invoke
+  // |next_profiling_interval_start|. Schedules |timer| to invoke
   // DoPeriodicCollection() when that time comes.
   void ScheduleIntervalCollection();
 
@@ -118,31 +139,36 @@ class MetricCollector : public base::SupportsWeakPtr<MetricCollector> {
   virtual void CollectProfile(
       std::unique_ptr<SampledProfile> sampled_profile) = 0;
 
-  // Returns if a collector should upload any profiles at this time. A collector
-  // implementation can override this logic.
-  virtual bool ShouldUpload() const;
+  // Collector specific logic for stopping the current collection.
+  virtual void StopCollection() {}
 
-  // Parses the given serialized perf proto of the given type (data or stat).
-  // If valid, it adds it to the given sampled_profile and stores it in the
-  // local profile data cache.
+  // Parses the given serialized perf data proto. If valid, it adds it to the
+  // given sampled_profile and stores it in the local profile data cache.
   void SaveSerializedPerfProto(std::unique_ptr<SampledProfile> sampled_profile,
-                               PerfProtoType type,
-                               const std::string& serialized_proto);
+                               std::string serialized_proto);
 
-  // Returns the size of the cached profile data.
-  size_t cached_profile_data_size() const;
+  // Returns a const reference to the collection_params.
+  const CollectionParams& collection_params() const {
+    return collection_params_;
+  }
 
-  // Parameters controlling how profiles are collected.
-  CollectionParams collection_params_;
+  // Returns a mutable reference to the collection_params, so that collectors
+  // and tests can update the params.
+  CollectionParams& collection_params() { return collection_params_; }
 
+  // The size of cached profile data.
+  size_t cached_data_size_ = 0;
+
+  // Checks that some methods are called on the collector sequence.
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
+  // Parameters controlling how profiles are collected. Initialized at
+  // collector creation time. Then accessed only on the collector sequence.
+  CollectionParams collection_params_;
+
   // For scheduling collection of profile data.
   base::OneShotTimer timer_;
-
-  // Vector of SampledProfile protobufs containing perf profiles.
-  std::vector<SampledProfile> cached_profile_data_;
 
   // Record of the last login time.
   base::TimeTicks login_time_;
@@ -153,14 +179,17 @@ class MetricCollector : public base::SupportsWeakPtr<MetricCollector> {
   // Tracks the last time a session restore was collected.
   base::TimeTicks last_session_restore_collection_time_;
 
-  // Name of the histogram that represents the success and various failure modes
-  // of collection attempts.
-  std::string collect_uma_histogram_;
-  // Name of the histogram that counts the number of uploaded reports.
-  std::string upload_uma_histogram_;
+  // Name of the histogram that represents the success and various failure
+  // modes of collection attempts.
+  const std::string collect_uma_histogram_;
+
+  // A callback to be Run on each successfully collected profile.
+  ProfileDoneCallback profile_done_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(MetricCollector);
 };
+
+}  // namespace internal
 
 }  // namespace metrics
 

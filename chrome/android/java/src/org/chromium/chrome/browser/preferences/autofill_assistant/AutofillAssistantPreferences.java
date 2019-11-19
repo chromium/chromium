@@ -4,44 +4,42 @@
 
 package org.chromium.chrome.browser.preferences.autofill_assistant;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceChangeListener;
-import android.preference.PreferenceFragment;
+import android.support.v7.preference.PreferenceFragmentCompat;
+import android.support.v7.preference.PreferenceScreen;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromeSwitchPreference;
 
 /** The "Autofill Assistant" preferences screen in Settings. */
-public class AutofillAssistantPreferences extends PreferenceFragment {
+public class AutofillAssistantPreferences extends PreferenceFragmentCompat {
     /** Autofill Assistant switch preference key name. */
     public static final String PREF_AUTOFILL_ASSISTANT_SWITCH = "autofill_assistant_switch";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         getActivity().setTitle(R.string.prefs_autofill_assistant_title);
-        setPreferenceScreen(getPreferenceManager().createPreferenceScreen(getActivity()));
+
+        PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
+        setPreferenceScreen(screen);
         createAutofillAssistantSwitch();
     }
 
     private void createAutofillAssistantSwitch() {
         ChromeSwitchPreference autofillAssistantSwitch =
-                new ChromeSwitchPreference(getActivity(), null);
+                new ChromeSwitchPreference(getStyledContext(), null);
         autofillAssistantSwitch.setKey(PREF_AUTOFILL_ASSISTANT_SWITCH);
         autofillAssistantSwitch.setTitle(R.string.prefs_autofill_assistant_switch);
         autofillAssistantSwitch.setSummaryOn(R.string.text_on);
         autofillAssistantSwitch.setSummaryOff(R.string.text_off);
-        autofillAssistantSwitch.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                ContextUtils.getAppSharedPreferences()
-                        .edit()
-                        .putBoolean(PREF_AUTOFILL_ASSISTANT_SWITCH, (boolean) newValue)
-                        .apply();
-                return true;
-            }
+        autofillAssistantSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+            ContextUtils.getAppSharedPreferences()
+                    .edit()
+                    .putBoolean(PREF_AUTOFILL_ASSISTANT_SWITCH, (boolean) newValue)
+                    .apply();
+            return true;
         });
         getPreferenceScreen().addPreference(autofillAssistantSwitch);
 
@@ -51,5 +49,9 @@ public class AutofillAssistantPreferences extends PreferenceFragment {
         // called after .addPreference()
         autofillAssistantSwitch.setChecked(ContextUtils.getAppSharedPreferences().getBoolean(
                 PREF_AUTOFILL_ASSISTANT_SWITCH, true));
+    }
+
+    private Context getStyledContext() {
+        return getPreferenceManager().getContext();
     }
 }

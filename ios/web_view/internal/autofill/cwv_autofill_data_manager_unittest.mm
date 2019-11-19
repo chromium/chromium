@@ -6,16 +6,20 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/test_password_store.h"
+#include "ios/web/public/test/web_task_environment.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_profile_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
+#import "ios/web_view/internal/passwords/cwv_password_internal.h"
 #import "ios/web_view/public/cwv_autofill_data_manager_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -49,13 +53,17 @@ class CWVAutofillDataManagerTest : public PlatformTest {
         std::make_unique<autofill::TestPersonalDataManager>();
 
     // Set to stub out behavior inside PersonalDataManager.
-    personal_data_manager_->SetAutofillEnabled(true);
     personal_data_manager_->SetAutofillProfileEnabled(true);
     personal_data_manager_->SetAutofillCreditCardEnabled(true);
     personal_data_manager_->SetAutofillWalletImportEnabled(true);
 
+    password_store_ = new password_manager::TestPasswordStore();
+    password_store_->Init(base::RepeatingCallback<void(syncer::ModelType)>(),
+                          nullptr);
+
     autofill_data_manager_ = [[CWVAutofillDataManager alloc]
-        initWithPersonalDataManager:personal_data_manager_.get()];
+        initWithPersonalDataManager:personal_data_manager_.get()
+                      passwordStore:password_store_.get()];
   }
 
   // Fetches profiles from |autofill_data_manager_| and returns them in
@@ -90,12 +98,45 @@ class CWVAutofillDataManagerTest : public PlatformTest {
     });
   }
 
+  // Create a test password form for testing.
+  autofill::PasswordForm GetTestPassword() {
+    autofill::PasswordForm password_form;
+    password_form.origin = GURL("http://www.example.com/accounts/LoginAuth");
+    password_form.action = GURL("http://www.example.com/accounts/Login");
+    password_form.username_element = base::SysNSStringToUTF16(@"Email");
+    password_form.username_value = base::SysNSStringToUTF16(@"test@egmail.com");
+    password_form.password_element = base::SysNSStringToUTF16(@"Passwd");
+    password_form.password_value = base::SysNSStringToUTF16(@"test");
+    password_form.submit_element = base::SysNSStringToUTF16(@"signIn");
+    password_form.signon_realm = "http://www.example.com/";
+    password_form.preferred = false;
+    password_form.scheme = autofill::PasswordForm::Scheme::kHtml;
+    password_form.blacklisted_by_user = false;
+    return password_form;
+  }
+
+  // Fetches passwords from |autofill_data_manager_| and returns them.
+  NSArray<CWVPassword*>* FetchPasswords() WARN_UNUSED_RESULT {
+    __block NSArray<CWVPassword*>* fetched_passwords = nil;
+    [autofill_data_manager_ fetchPasswordsWithCompletionHandler:^(
+                                NSArray<CWVPassword*>* passwords) {
+      fetched_passwords = passwords;
+    }];
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool {
+      base::RunLoop().RunUntilIdle();
+      return fetched_passwords != nil;
+    }));
+    return fetched_passwords;
+  }
+
   ~CWVAutofillDataManagerTest() override {
+    password_store_->ShutdownOnUIThread();
     ui::ResourceBundle::CleanupSharedInstance();
   }
 
-  web::TestWebThreadBundle web_thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<autofill::TestPersonalDataManager> personal_data_manager_;
+  scoped_refptr<password_manager::TestPasswordStore> password_store_;
   CWVAutofillDataManager* autofill_data_manager_;
 };
 
@@ -202,33 +243,23 @@ TEST_F(CWVAutofillDataManagerTest, UpdateCreditCard) {
   }));
 }
 
-// Tests CWVAutofillDataManager properly deletes all local data.
-TEST_F(CWVAutofillDataManagerTest, ClearAllLocalData) {
-  personal_data_manager_->AddCreditCard(autofill::test::GetCreditCard());
-  personal_data_manager_->AddCreditCard(autofill::test::GetCreditCard2());
-  personal_data_manager_->AddServerCreditCard(
-      autofill::test::GetMaskedServerCard());
-  personal_data_manager_->AddProfile(autofill::test::GetFullProfile());
-  personal_data_manager_->AddProfile(autofill::test::GetFullProfile2());
+// Tests CWVAutofillDataManager properly returns passwords.
+TEST_F(CWVAutofillDataManagerTest, ReturnPassword) {
+  autofill::PasswordForm test_password = GetTestPassword();
+  password_store_->AddLogin(test_password);
+  NSArray<CWVPassword*>* fetched_passwords = FetchPasswords();
+  EXPECT_EQ(1ul, fetched_passwords.count);
+  EXPECT_EQ(test_password, *[fetched_passwords[0] internalPasswordForm]);
+}
 
-  EXPECT_TRUE(FetchCreditCards(^(NSArray<CWVCreditCard*>* credit_cards) {
-    EXPECT_EQ(3ul, credit_cards.count);
-  }));
-
-  EXPECT_TRUE(FetchProfiles(^(NSArray<CWVAutofillProfile*>* profiles) {
-    EXPECT_EQ(2ul, profiles.count);
-  }));
-
-  [autofill_data_manager_ clearAllLocalData];
-
-  EXPECT_TRUE(FetchCreditCards(^(NSArray<CWVCreditCard*>* credit_cards) {
-    EXPECT_EQ(1ul, credit_cards.count);
-    EXPECT_TRUE(credit_cards.firstObject.fromGooglePay);
-  }));
-
-  EXPECT_TRUE(FetchProfiles(^(NSArray<CWVAutofillProfile*>* profiles) {
-    EXPECT_EQ(0ul, profiles.count);
-  }));
+// Tests CWVAutofillDataManager properly deletes passwords.
+TEST_F(CWVAutofillDataManagerTest, DeletePassword) {
+  password_store_->AddLogin(GetTestPassword());
+  NSArray<CWVPassword*>* passwords = FetchPasswords();
+  ASSERT_EQ(1ul, passwords.count);
+  [autofill_data_manager_ deletePassword:passwords[0]];
+  passwords = FetchPasswords();
+  EXPECT_EQ(0ul, passwords.count);
 }
 
 }  // namespace ios_web_view

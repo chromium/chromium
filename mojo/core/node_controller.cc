@@ -14,7 +14,6 @@
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/message_loop/message_loop_current.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
@@ -30,10 +29,6 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
-#endif
-
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-#include "mojo/core/mach_port_relay.h"
 #endif
 
 #if !defined(OS_NACL)
@@ -116,19 +111,19 @@ class ThreadDestructionObserver
     : public base::MessageLoopCurrent::DestructionObserver {
  public:
   static void Create(scoped_refptr<base::TaskRunner> task_runner,
-                     const base::Closure& callback) {
+                     base::OnceClosure callback) {
     if (task_runner->RunsTasksInCurrentSequence()) {
       // Owns itself.
-      new ThreadDestructionObserver(callback);
+      new ThreadDestructionObserver(std::move(callback));
     } else {
-      task_runner->PostTask(FROM_HERE,
-                            base::BindOnce(&Create, task_runner, callback));
+      task_runner->PostTask(
+          FROM_HERE, base::BindOnce(&Create, task_runner, std::move(callback)));
     }
   }
 
  private:
-  explicit ThreadDestructionObserver(const base::Closure& callback)
-      : callback_(callback) {
+  explicit ThreadDestructionObserver(base::OnceClosure callback)
+      : callback_(std::move(callback)) {
     base::MessageLoopCurrent::Get()->AddDestructionObserver(this);
   }
 
@@ -138,11 +133,11 @@ class ThreadDestructionObserver
 
   // base::MessageLoopCurrent::DestructionObserver:
   void WillDestroyCurrentMessageLoop() override {
-    callback_.Run();
+    std::move(callback_).Run();
     delete this;
   }
 
-  const base::Closure callback_;
+  base::OnceClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadDestructionObserver);
 };
@@ -158,20 +153,12 @@ NodeController::NodeController(Core* core)
   DVLOG(1) << "Initializing node " << name_;
 }
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-void NodeController::CreateMachPortRelay(base::PortProvider* port_provider) {
-  base::AutoLock lock(mach_port_relay_lock_);
-  DCHECK(!mach_port_relay_);
-  mach_port_relay_.reset(new MachPortRelay(port_provider));
-}
-#endif
-
 void NodeController::SetIOTaskRunner(
     scoped_refptr<base::TaskRunner> task_runner) {
   io_task_runner_ = task_runner;
   ThreadDestructionObserver::Create(
       io_task_runner_,
-      base::Bind(&NodeController::DropAllPeers, base::Unretained(this)));
+      base::BindOnce(&NodeController::DropAllPeers, base::Unretained(this)));
 }
 
 void NodeController::SendBrokerClientInvitation(
@@ -205,31 +192,53 @@ void NodeController::SendBrokerClientInvitation(
 
 void NodeController::AcceptBrokerClientInvitation(
     ConnectionParams connection_params) {
+  base::Optional<PlatformHandle> broker_host_handle;
   DCHECK(!GetConfiguration().is_broker_process);
 #if !defined(OS_MACOSX) && !defined(OS_NACL_SFI) && !defined(OS_FUCHSIA)
-  // Use the bootstrap channel for the broker and receive the node's channel
-  // synchronously as the first message from the broker.
-  DCHECK(connection_params.endpoint().is_valid());
-  base::ElapsedTimer timer;
-  broker_ = std::make_unique<Broker>(
-      connection_params.TakeEndpoint().TakePlatformHandle());
-  PlatformChannelEndpoint endpoint = broker_->GetInviterEndpoint();
+  if (!connection_params.is_async()) {
+    // Use the bootstrap channel for the broker and receive the node's channel
+    // synchronously as the first message from the broker.
+    DCHECK(connection_params.endpoint().is_valid());
+    base::ElapsedTimer timer;
+    broker_ = std::make_unique<Broker>(
+        connection_params.TakeEndpoint().TakePlatformHandle(),
+        /*wait_for_channel_handle=*/true);
+    PlatformChannelEndpoint endpoint = broker_->GetInviterEndpoint();
 
-  if (!endpoint.is_valid()) {
-    // Most likely the inviter's side of the channel has already been closed and
-    // the broker was unable to negotiate a NodeChannel pipe. In this case we
-    // can cancel our connection to our inviter.
-    DVLOG(1) << "Cannot connect to invalid inviter channel.";
-    CancelPendingPortMerges();
-    return;
+    if (!endpoint.is_valid()) {
+      // Most likely the inviter's side of the channel has already been closed
+      // and the broker was unable to negotiate a NodeChannel pipe. In this case
+      // we can cancel our connection to our inviter.
+      DVLOG(1) << "Cannot connect to invalid inviter channel.";
+      CancelPendingPortMerges();
+      return;
+    }
+
+    const bool leak_endpoint = connection_params.leak_endpoint();
+    connection_params = ConnectionParams(std::move(endpoint));
+    connection_params.set_leak_endpoint(leak_endpoint);
+  } else {
+    // For async connections, we instead create a new channel for the broker and
+    // send a request for the inviting process to bind to it. This avoids doing
+    // blocking I/O to accept the invitation. Does not work in some sandboxed
+    // environments, where the PlatformChannel constructor will CHECK fail.
+    PlatformChannel channel;
+    broker_ = std::make_unique<Broker>(
+        channel.TakeLocalEndpoint().TakePlatformHandle(),
+        /*wait_for_channel_handle=*/false);
+    broker_host_handle = channel.TakeRemoteEndpoint().TakePlatformHandle();
   }
-  connection_params = ConnectionParams(std::move(endpoint));
 #endif
+  // Re-enable port merge operations, which may have been disabled if this isn't
+  // the first invitation accepted by this process.
+  base::AutoLock lock(pending_port_merges_lock_);
+  reject_pending_merges_ = false;
 
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&NodeController::AcceptBrokerClientInvitationOnIOThread,
-                     base::Unretained(this), std::move(connection_params)));
+                     base::Unretained(this), std::move(connection_params),
+                     std::move(broker_host_handle)));
 }
 
 void NodeController::ConnectIsolated(ConnectionParams connection_params,
@@ -238,8 +247,8 @@ void NodeController::ConnectIsolated(ConnectionParams connection_params,
   io_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&NodeController::ConnectIsolatedOnIOThread,
-                     base::Unretained(this), base::Passed(&connection_params),
-                     port, connection_name.as_string()));
+                     base::Unretained(this), std::move(connection_params), port,
+                     connection_name.as_string()));
 }
 
 void NodeController::SetPortObserver(const ports::PortRef& port,
@@ -303,10 +312,10 @@ base::WritableSharedMemoryRegion NodeController::CreateSharedBuffer(
   return base::WritableSharedMemoryRegion::Create(num_bytes);
 }
 
-void NodeController::RequestShutdown(const base::Closure& callback) {
+void NodeController::RequestShutdown(base::OnceClosure callback) {
   {
     base::AutoLock lock(shutdown_lock_);
-    shutdown_callback_ = callback;
+    shutdown_callback_ = std::move(callback);
     shutdown_callback_flag_.Set(true);
   }
 
@@ -318,6 +327,15 @@ void NodeController::NotifyBadMessageFrom(const ports::NodeName& source_node,
   scoped_refptr<NodeChannel> peer = GetPeerChannel(source_node);
   if (peer)
     peer->NotifyBadMessage(error);
+}
+
+void NodeController::ForceDisconnectProcessForTesting(
+    base::ProcessId process_id) {
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &NodeController::ForceDisconnectProcessForTestingOnIOThread,
+          base::Unretained(this), process_id));
 }
 
 // static
@@ -344,28 +362,39 @@ void NodeController::SendBrokerClientInvitationOnIOThread(
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
 #if !defined(OS_MACOSX) && !defined(OS_NACL) && !defined(OS_FUCHSIA)
-  PlatformChannel node_channel;
-  ConnectionParams node_connection_params(node_channel.TakeLocalEndpoint());
-  // BrokerHost owns itself.
-  BrokerHost* broker_host =
-      new BrokerHost(target_process.get(), std::move(connection_params),
-                     process_error_callback);
-  bool channel_ok = broker_host->SendChannel(
-      node_channel.TakeRemoteEndpoint().TakePlatformHandle());
+  ConnectionParams node_connection_params;
+  if (!connection_params.is_async()) {
+    // Sync connections usurp the passed endpoint and use it for the sync broker
+    // channel. A new channel is created here for the NodeChannel and sent over
+    // a sync broker message to the client.
+    PlatformChannel node_channel;
+    node_connection_params = ConnectionParams(node_channel.TakeLocalEndpoint());
+    // BrokerHost owns itself.
+    BrokerHost* broker_host =
+        new BrokerHost(target_process.get(), std::move(connection_params),
+                       process_error_callback);
+    bool channel_ok = broker_host->SendChannel(
+        node_channel.TakeRemoteEndpoint().TakePlatformHandle());
 
 #if defined(OS_WIN)
-  if (!channel_ok) {
-    // On Windows the above operation may fail if the channel is crossing a
-    // session boundary. In that case we fall back to a named pipe.
-    NamedPlatformChannel::Options options;
-    NamedPlatformChannel named_channel(options);
-    node_connection_params =
-        ConnectionParams(named_channel.TakeServerEndpoint());
-    broker_host->SendNamedChannel(named_channel.GetServerName());
-  }
+    if (!channel_ok) {
+      // On Windows the above operation may fail if the channel is crossing a
+      // session boundary. In that case we fall back to a named pipe.
+      NamedPlatformChannel::Options options;
+      NamedPlatformChannel named_channel(options);
+      node_connection_params =
+          ConnectionParams(named_channel.TakeServerEndpoint());
+      broker_host->SendNamedChannel(named_channel.GetServerName());
+    }
 #else
-  CHECK(channel_ok);
+    CHECK(channel_ok);
 #endif  // defined(OS_WIN)
+  } else {
+    // For async connections, the passed endpoint really is the NodeChannel
+    // endpoint. The broker channel will be established asynchronously by a
+    // |BIND_SYNC_BROKER| message from the invited client.
+    node_connection_params = std::move(connection_params);
+  }
 
   scoped_refptr<NodeChannel> channel =
       NodeChannel::Create(this, std::move(node_connection_params),
@@ -393,12 +422,23 @@ void NodeController::SendBrokerClientInvitationOnIOThread(
 }
 
 void NodeController::AcceptBrokerClientInvitationOnIOThread(
-    ConnectionParams connection_params) {
+    ConnectionParams connection_params,
+    base::Optional<PlatformHandle> broker_host_handle) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
   {
     base::AutoLock lock(inviter_lock_);
-    DCHECK(inviter_name_ == ports::kInvalidNodeName);
+    if (inviter_name_ != ports::kInvalidNodeName) {
+      // We've already accepted an invitation before and are already part of
+      // a different Mojo process network. In order to accept this new one and
+      // remain in a consistent state, we have to purge all peer connections and
+      // start from scratch.
+      {
+        base::AutoUnlock unlock(inviter_lock_);
+        DropAllPeers();
+      }
+      inviter_name_ = ports::kInvalidNodeName;
+    }
 
     // At this point we don't know the inviter's name, so we can't yet insert it
     // into our |peers_| map. That will happen as soon as we receive an
@@ -407,12 +447,22 @@ void NodeController::AcceptBrokerClientInvitationOnIOThread(
         NodeChannel::Create(this, std::move(connection_params),
                             Channel::HandlePolicy::kAcceptHandles,
                             io_task_runner_, ProcessErrorCallback());
-    // Prevent the inviter pipe handle from being closed on shutdown. Pipe
-    // closure may be used by the inviter to detect the invitee process has
-    // exited.
-    bootstrap_inviter_channel_->LeakHandleOnShutdown();
+
+    if (connection_params.leak_endpoint()) {
+      // Prevent the inviter pipe handle from being closed on shutdown. Pipe
+      // closure may be used by the inviter to detect that the invited process
+      // has terminated. In such cases, the invited process must not be invited
+      // more than once in its lifetime; otherwise this leak matters.
+      //
+      // Note that this behavior is supported primarily to help adapt legacy
+      // Chrome IPC to Mojo, since channel disconnection is used there as a
+      // signal for normal child process termination.
+      bootstrap_inviter_channel_->LeakHandleOnShutdown();
+    }
   }
   bootstrap_inviter_channel_->Start();
+  if (broker_host_handle)
+    bootstrap_inviter_channel_->BindBrokerHost(std::move(*broker_host_handle));
 }
 
 void NodeController::ConnectIsolatedOnIOThread(
@@ -612,28 +662,6 @@ void NodeController::SendPeerEvent(const ports::NodeName& name,
       return;
     }
   }
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
-  if (event_message->has_mach_ports()) {
-    // Messages containing Mach ports are always routed through the broker, even
-    // if the broker process is the intended recipient.
-    bool use_broker = false;
-    if (!GetConfiguration().is_broker_process) {
-      base::AutoLock lock(inviter_lock_);
-      use_broker = (bootstrap_inviter_channel_ ||
-                    inviter_name_ != ports::kInvalidNodeName);
-    }
-
-    if (use_broker) {
-      scoped_refptr<NodeChannel> broker = GetBrokerChannel();
-      if (broker) {
-        broker->RelayEventMessage(name, std::move(event_message));
-      } else {
-        base::AutoLock lock(broker_lock_);
-        pending_relay_messages_[name].emplace(std::move(event_message));
-      }
-      return;
-    }
-  }
 #endif  // defined(OS_WIN)
 
   if (peer) {
@@ -791,14 +819,14 @@ void NodeController::OnAcceptInvitation(const ports::NodeName& from_node,
 
   {
     base::AutoLock lock(reserved_ports_lock_);
-    auto it = reserved_ports_.find(from_node);
-    if (it != reserved_ports_.end()) {
+    auto reserved_ports_it = reserved_ports_.find(from_node);
+    if (reserved_ports_it != reserved_ports_.end()) {
       // Swap the temporary node name's reserved ports into an entry keyed by
       // the real node name.
-      auto result =
-          reserved_ports_.emplace(invitee_name, std::move(it->second));
+      auto result = reserved_ports_.emplace(
+          invitee_name, std::move(reserved_ports_it->second));
       DCHECK(result.second);
-      reserved_ports_.erase(it);
+      reserved_ports_.erase(reserved_ports_it);
     }
   }
 
@@ -969,7 +997,7 @@ void NodeController::OnAcceptBrokerClient(const ports::NodeName& from_node,
     pending_broker_clients.pop();
   }
 
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_WIN)
   // Have the broker relay any messages we have waiting.
   for (auto& entry : pending_relay_messages) {
     const ports::NodeName& destination = entry.first;
@@ -1128,7 +1156,7 @@ void NodeController::OnBroadcast(const ports::NodeName& from_node,
   }
 }
 
-#if defined(OS_WIN) || (defined(OS_MACOSX) && !defined(OS_IOS))
+#if defined(OS_WIN)
 void NodeController::OnRelayEventMessage(const ports::NodeName& from_node,
                                          base::ProcessHandle from_process,
                                          const ports::NodeName& destination,
@@ -1221,20 +1249,6 @@ void NodeController::OnChannelError(const ports::NodeName& from_node,
   }
 }
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-MachPortRelay* NodeController::GetMachPortRelay() {
-  {
-    base::AutoLock lock(inviter_lock_);
-    // Return null if we're not the root.
-    if (bootstrap_inviter_channel_ || inviter_name_ != ports::kInvalidNodeName)
-      return nullptr;
-  }
-
-  base::AutoLock lock(mach_port_relay_lock_);
-  return mach_port_relay_.get();
-}
-#endif
-
 void NodeController::CancelPendingPortMerges() {
   std::vector<ports::PortRef> ports_to_close;
 
@@ -1258,7 +1272,7 @@ void NodeController::AttemptShutdownIfRequested() {
   if (!shutdown_callback_flag_)
     return;
 
-  base::Closure callback;
+  base::OnceClosure callback;
   {
     base::AutoLock lock(shutdown_lock_);
     if (shutdown_callback_.is_null())
@@ -1269,14 +1283,38 @@ void NodeController::AttemptShutdownIfRequested() {
       return;
     }
 
-    callback = shutdown_callback_;
-    shutdown_callback_.Reset();
+    callback = std::move(shutdown_callback_);
     shutdown_callback_flag_.Set(false);
   }
 
   DCHECK(!callback.is_null());
 
-  callback.Run();
+  std::move(callback).Run();
+}
+
+void NodeController::ForceDisconnectProcessForTestingOnIOThread(
+    base::ProcessId process_id) {
+#if defined(OS_NACL) || defined(OS_IOS)
+  NOTREACHED();
+#else
+  DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
+  RequestContext request_context;
+
+  // A channel may have multiple aliases since we generate one for any we
+  // invite and then only later refer to it by its own chosen name.
+  NodeMap peers_to_drop;
+  for (auto& peer : peers_) {
+    NodeChannel* channel = peer.second.get();
+    if (channel->HasRemoteProcessHandle()) {
+      base::Process process(channel->CloneRemoteProcessHandle().release());
+      if (process.Pid() == process_id)
+        peers_to_drop.emplace(peer.first, peer.second);
+    }
+  }
+
+  for (auto& peer : peers_to_drop)
+    DropPeer(peer.first, peer.second.get());
+#endif
 }
 
 NodeController::IsolatedConnection::IsolatedConnection() = default;

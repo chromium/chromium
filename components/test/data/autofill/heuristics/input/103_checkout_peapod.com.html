@@ -1,4 +1,4 @@
-<form method="POST" action="/checkoutBillingInfoFrame.jhtml?_DARGS=/checkoutBillingInfoFrame.jhtml" name="CheckoutBillingInformation"> 
+<form method="POST" action="/checkoutBillingInfoFrame.jhtml?_DARGS=/checkoutBillingInfoFrame.jhtml" name="CheckoutBillingInformation">
 <!-- <setvalue bean="CheckoutRegistrationHandler.submitSuccessURL" value="processShowRegistrationNextPage.jhtml"> -->
 <table border="0" width="100%" cellpadding="0" cellspacing="0">
 <tbody><tr>
@@ -109,7 +109,7 @@ My Account</a></td>
 </tr>
 <tr>
 <td colspan="3">&nbsp;</td>
-</tr> 
+</tr>
 <tr>
 <td  nowrap=""><div align="right">Title:</div></td>
 <td colspan="2">
@@ -200,7 +200,7 @@ My Account</a></td>
 <tbody><tr>
 <td >To secure your account, we require all customers to have a valid credit card on file. When it comes time to pay for your order, you will be able to choose to pay with a credit or debit card.<br><br></td>
 <td valign="top">
-<a href="javascript:vrsn_splash()" tabindex="-1"><img name="seal" border="true" src="https://seal.websecurity.norton.com/getseal?at=0&amp;sealid=1&amp;dn=www.peapod.com&amp;lang=en" oncontextmenu="return false;" alt="Click to Verify - This site has chosen an SSL Certificate to improve Web site security"></a> 
+<a href="javascript:vrsn_splash()" tabindex="-1"><img name="seal" border="true" src="https://seal.websecurity.norton.com/getseal?at=0&amp;sealid=1&amp;dn=www.peapod.com&amp;lang=en" oncontextmenu="return false;" alt="Click to Verify - This site has chosen an SSL Certificate to improve Web site security"></a>
 </td>
 </tr>
 </tbody></table>
@@ -212,7 +212,7 @@ My Account</a></td>
 <tbody><tr>
 <td valign="top"><img src="https://www.peapod.com/c/QK/QKLIM.gif" border="0" bgcolor="white" name="verisign"></td>
 <td >&nbsp;</td>
-<td >We use SSL encryption to protect your personal information, including your credit card information.<br></td> 
+<td >We use SSL encryption to protect your personal information, including your credit card information.<br></td>
 </tr>
 </tbody></table>
 </td>
@@ -243,7 +243,7 @@ My Account</a></td>
 <td colspan="2">
 <table border="0" cellpadding="0" cellspacing="0" bgcolor="white" width="100%">
 <tbody><tr>
-<td nowrap=""><input maxlength="16" autocomplete="off" name="cardNum" id="creditCardNumber" size="24" type="TEXT" value=""  onfocus="return !showInfoBoxII('cardNumberHelp', event, 1 );"><input type="hidden" name="_D:cardNum" value=" "></td>
+<td nowrap=""><input maxlength="16" name="cardNum" id="creditCardNumber" size="24" type="TEXT" value=""  onfocus="return !showInfoBoxII('cardNumberHelp', event, 1 );"><input type="hidden" name="_D:cardNum" value=" "></td>
 <td>&nbsp;<a href="#" tabindex="-1"  onclick="return !showInfoBoxII('cardNumberHelp', event);"><img src="https://www.peapod.com/c/C5/C5NC5.gif" width="21" height="21" border="0" alt="Help on entering your credit card number"></a>
 <input id="ccNum" type="HIDDEN" value="" name="/peapod/handler/iditarod/CheckoutRegistrationHandler.ccNum"><input type="hidden" name="_D:/peapod/handler/iditarod/CheckoutRegistrationHandler.ccNum" value=" ">
 <input id="cvv" type="HIDDEN" value="" name="/peapod/handler/iditarod/CheckoutRegistrationHandler.cvv"><input type="hidden" name="_D:/peapod/handler/iditarod/CheckoutRegistrationHandler.cvv" value=" ">
@@ -261,14 +261,14 @@ My Account</a></td>
 </tr>
 <!-- card id number -->
 <tr>
-<td align="RIGHT"  nowrap="">Security Code:</td> 
+<td align="RIGHT"  nowrap="">Security Code:</td>
 <td align="left">
 <table cellspacing="0" cellpadding="0">
 <tbody><tr>
-<td align="left"><input maxlength="4" name="cid" id="creditCardCid" size="4" autocomplete="off" type="TEXT" value=""  onfocus="return !showInfoBoxII('CardIdNumberHelp', event, 1 );"><input type="hidden" name="_D:cid" value=" ">&nbsp;<a href="#" tabindex="-1" class="popupLink" onclick="return !showInfoBoxII('CardIdNumberHelp', event);"><img src="https://www.peapod.com/c/C5/C5NC5.gif" title="Help on entering your Security Code" width="21" height="21" border="0"></a></td>
+<td align="left"><input maxlength="4" name="cid" id="creditCardCid" size="4" type="TEXT" value=""  onfocus="return !showInfoBoxII('CardIdNumberHelp', event, 1 );"><input type="hidden" name="_D:cid" value=" ">&nbsp;<a href="#" tabindex="-1" class="popupLink" onclick="return !showInfoBoxII('CardIdNumberHelp', event);"><img src="https://www.peapod.com/c/C5/C5NC5.gif" title="Help on entering your Security Code" width="21" height="21" border="0"></a></td>
 <!-- red arrow looks bad &nbsp;&nbsp;<img src="bean:Image.URL[11405]" border=0></td> -->
 </tr>
-<!-- displayed at top 
+<!-- displayed at top
 <tr>
 <td align="left" >
 <droplet bean="Switch">
@@ -325,7 +325,7 @@ My Account</a></td>
 <td colspan="2">
 <table border="0" cellpadding="0" cellspacing="0" bgcolor="white" width="100%">
 <tbody><tr><td nowrap="">
-<input  maxlength="20" autocomplete="off" name="cardName" size="20" type="TEXT" value="Shorty Nge" onfocus="return !showInfoBoxII('cardNameHelp', event, 1 );"><input type="hidden" name="_D:cardName" value=" ">
+<input  maxlength="20" name="cardName" size="20" type="TEXT" value="Shorty Nge" onfocus="return !showInfoBoxII('cardNameHelp', event, 1 );"><input type="hidden" name="_D:cardName" value=" ">
 </td>
 <!--
 <valueof bean="CheckoutRegistrationHandler.billFirstName"></valueof> <valueof bean="CheckoutRegistrationHandler.billMiddleInitial"></valueof> <valueof bean="CheckoutRegistrationHandler.billLastName"></valueof></td>
@@ -344,7 +344,7 @@ My Account</a></td>
 <td>&nbsp;</td>
 <td>&nbsp;</td>
 </tr>
-</tbody></table>	
+</tbody></table>
 </td>
 <td width="15" valign="top"><img src="https://www.peapod.com/c/2Z/2ZAEE.gif" width="15" height="15"></td>
 <td valign="top">

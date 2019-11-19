@@ -1,0 +1,23 @@
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<a id="b" href="javascript:log('b_href')"></a>
+<a id="a" href="javascript:log('a_href')" onclick="b.click(); log('a_click')"></a>
+<script>
+var t = async_test();
+eventOrder = [];
+
+function log(message) {
+  eventOrder.push(message);
+  if (eventOrder.length == 3) {
+    assert_array_equals(eventOrder, ['a_click', 'b_href', 'a_href']);
+    t.done();
+  }
+}
+
+t.step(() => a.click());
+</script>
+</body>
+

@@ -13,11 +13,11 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
+#include "components/offline_items_collection/core/update_delta.h"
 #include "content/public/browser/background_fetch_delegate.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/gfx/image/image.h"
@@ -54,10 +54,9 @@ class BackgroundFetchDelegateImpl
 
   // BackgroundFetchDelegate implementation:
   void GetIconDisplaySize(GetIconDisplaySizeCallback callback) override;
-  void GetPermissionForOrigin(
-      const url::Origin& origin,
-      const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
-      GetPermissionForOriginCallback callback) override;
+  void GetPermissionForOrigin(const url::Origin& origin,
+                              const content::WebContents::Getter& wc_getter,
+                              GetPermissionForOriginCallback callback) override;
   void CreateDownloadJob(base::WeakPtr<Client> client,
                          std::unique_ptr<content::BackgroundFetchDescription>
                              fetch_description) override;
@@ -105,9 +104,13 @@ class BackgroundFetchDelegateImpl
                    SingleItemCallback callback) override;
   void GetAllItems(MultipleItemCallback callback) override;
   void GetVisualsForItem(const offline_items_collection::ContentId& id,
+                         GetVisualsOptions options,
                          VisualsCallback callback) override;
   void GetShareInfoForItem(const offline_items_collection::ContentId& id,
                            ShareCallback callback) override;
+  void RenameItem(const offline_items_collection::ContentId& id,
+                  const std::string& name,
+                  RenameCallback callback) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
@@ -128,9 +131,8 @@ class BackgroundFetchDelegateImpl
   void GetUploadData(const std::string& download_guid,
                      download::GetUploadDataCallback callback);
 
-  void set_history_query_complete_closure_for_testing(
-      base::OnceClosure closure) {
-    history_query_complete_closure_for_testing_ = std::move(closure);
+  void set_ukm_event_recorded_for_testing(base::OnceClosure closure) {
+    ukm_event_recorded_for_testing_ = std::move(closure);
   }
 
   base::WeakPtr<BackgroundFetchDelegateImpl> GetWeakPtr() {
@@ -197,11 +199,7 @@ class BackgroundFetchDelegateImpl
 
       Status status = Status::kAbsent;
 
-      // The request body blob will be stored here after the Download Service
-      // queries the upload data. The blob handle needs to be kept alive
-      // while the request is sent out, and will be cleared after.
-      blink::mojom::SerializedBlobPtr request_body_blob = nullptr;
-
+      uint64_t body_size_bytes = 0u;
       uint64_t in_progress_uploaded_bytes = 0u;
       uint64_t in_progress_downloaded_bytes = 0u;
     };
@@ -215,6 +213,7 @@ class BackgroundFetchDelegateImpl
     std::map<std::string, RequestData> current_fetch_guids;
 
     offline_items_collection::OfflineItem offline_item;
+    base::Optional<offline_items_collection::UpdateDelta> update_delta;
     State job_state;
     std::unique_ptr<content::BackgroundFetchDescription> fetch_description;
     bool cancelled_from_ui = false;
@@ -259,17 +258,13 @@ class BackgroundFetchDelegateImpl
   base::WeakPtr<Client> GetClient(const std::string& job_unique_id);
 
   // Helper methods for recording BackgroundFetchDeletingRegistration UKM event.
-  // We try to look for any URL corresponding to this origin in the user's
-  // browsing history. If we find one, we record the UKM event with a new
-  // SourceID, after associating it with |origin|.
+  // We check with UkmBackgroundRecorderService whether this event for |origin|
+  // can be recorded.
   void RecordBackgroundFetchDeletingRegistrationUkmEvent(
       const url::Origin& origin,
       bool user_initiated_abort);
-  void DidQueryUrl(const GURL& origin_url,
-                   bool user_initiated_abort,
-                   bool success,
-                   int num_visits,
-                   base::Time first_visit);
+  void DidGetBackgroundSourceId(bool user_initiated_abort,
+                                base::Optional<ukm::SourceId> source_id);
 
   // The profile this service is being created for.
   Profile* profile_;
@@ -294,14 +289,10 @@ class BackgroundFetchDelegateImpl
   // Set of Observers to be notified of any changes to the shown notifications.
   std::set<Observer*> observers_;
 
-  // Task tracker used for querying URLs in the history service.
-  base::CancelableTaskTracker task_tracker_;
+  // Testing-only closure to inform tests when a UKM event has been recorded.
+  base::OnceClosure ukm_event_recorded_for_testing_;
 
-  // Testing-only closure to observe when the history service query has
-  // finished, and the result of logging UKM can be observed.
-  base::OnceClosure history_query_complete_closure_for_testing_;
-
-  base::WeakPtrFactory<BackgroundFetchDelegateImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<BackgroundFetchDelegateImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchDelegateImpl);
 };

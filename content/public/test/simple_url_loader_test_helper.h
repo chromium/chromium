@@ -48,7 +48,7 @@ class SimpleURLLoaderTestHelper {
 
   std::unique_ptr<std::string> response_body_;
 
-  base::WeakPtrFactory<SimpleURLLoaderTestHelper> weak_ptr_factory_;
+  base::WeakPtrFactory<SimpleURLLoaderTestHelper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SimpleURLLoaderTestHelper);
 };

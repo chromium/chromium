@@ -44,7 +44,7 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
 
   // ui::TextInputClient:
   void SetCompositionText(const ui::CompositionText& composition) override;
-  void ConfirmCompositionText() override;
+  void ConfirmCompositionText(bool keep_selection) override;
   void ClearCompositionText() override;
   void InsertText(const base::string16& text) override;
   void InsertChar(const ui::KeyEvent& event) override;
@@ -76,11 +76,17 @@ class VIEWS_EXPORT PrefixSelector : public ui::TextInputClient {
   ukm::SourceId GetClientSourceForMetrics() const override;
   bool ShouldDoLearning() override;
 
-#if defined(OS_WIN)
-  // Overridden from ui::TextInputClient(Windows only):
-  void SetCompositionFromExistingText(
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+  bool SetCompositionFromExistingText(
       const gfx::Range& range,
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) override;
+#endif
+
+#if defined(OS_WIN)
+  void SetActiveCompositionForAccessibility(
+      const gfx::Range& range,
+      const base::string16& active_composition_text,
+      bool is_composition_committed) override;
 #endif
 
   void set_tick_clock_for_testing(const base::TickClock* clock) {

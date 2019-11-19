@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf8">
+<title>Display Locking: overflow auto (reference)</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<style>
+#border {
+  border: 1px solid black;
+  width: max-content;
+}
+#container {
+  contain: style layout;
+  width: 12px;
+  height: 100px;
+}
+</style>
+
+<div id="border">
+  <div id="container"></div>
+</div>
+</html>

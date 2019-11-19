@@ -5,10 +5,8 @@
 #include "cc/input/single_scrollbar_animation_controller_thinning.h"
 
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
-#include "cc/test/fake_impl_task_runner_provider.h"
-#include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/geometry_test_utils.h"
-#include "cc/test/test_task_graph_runner.h"
+#include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,62 +49,49 @@ class MockSingleScrollbarAnimationControllerClient
   LayerTreeHostImpl* host_impl_;
 };
 
-class SingleScrollbarAnimationControllerThinningTest : public testing::Test {
+class SingleScrollbarAnimationControllerThinningTest
+    : public LayerTreeImplTestBase,
+      public testing::Test {
  public:
-  SingleScrollbarAnimationControllerThinningTest()
-      : host_impl_(&task_runner_provider_, &task_graph_runner_),
-        client_(&host_impl_) {}
+  SingleScrollbarAnimationControllerThinningTest() : client_(host_impl()) {}
 
  protected:
   const base::TimeDelta kThinningDuration = base::TimeDelta::FromSeconds(2);
 
   void SetUp() override {
-    std::unique_ptr<LayerImpl> scroll_layer =
-        LayerImpl::Create(host_impl_.active_tree(), 1);
-    std::unique_ptr<LayerImpl> clip =
-        LayerImpl::Create(host_impl_.active_tree(), 3);
+    root_layer()->SetBounds(gfx::Size(100, 100));
+    auto* scroll_layer = AddLayer<LayerImpl>();
+    scroll_layer->SetBounds(gfx::Size(200, 200));
+    scroll_layer->SetScrollable(gfx::Size(100, 100));
     scroll_layer->SetElementId(
         LayerIdToElementIdForTesting(scroll_layer->id()));
-    clip_layer_ = clip.get();
-    LayerImpl* scroll_layer_ptr = scroll_layer.get();
 
-    const int kId = 2;
     const int kThumbThickness = 10;
     const int kTrackStart = 0;
     const int kTrackLength = 100;
     const bool kIsLeftSideVerticalScrollbar = false;
-    const bool kIsOverlayScrollbar = true;
 
-    std::unique_ptr<SolidColorScrollbarLayerImpl> scrollbar =
-        SolidColorScrollbarLayerImpl::Create(
-            host_impl_.active_tree(), kId, HORIZONTAL, kThumbThickness,
-            kTrackStart, kIsLeftSideVerticalScrollbar, kIsOverlayScrollbar);
-    scrollbar_layer_ = scrollbar.get();
-
-    scroll_layer->test_properties()->AddChild(std::move(scrollbar));
-    clip_layer_->test_properties()->AddChild(std::move(scroll_layer));
-    host_impl_.active_tree()->SetRootLayerForTesting(std::move(clip));
+    scrollbar_layer_ = AddLayer<SolidColorScrollbarLayerImpl>(
+        HORIZONTAL, kThumbThickness, kTrackStart, kIsLeftSideVerticalScrollbar);
 
     scrollbar_layer_->SetBounds(gfx::Size(kThumbThickness, kTrackLength));
-    scrollbar_layer_->test_properties()->position = gfx::PointF(90, 0);
-    scrollbar_layer_->SetScrollElementId(scroll_layer_ptr->element_id());
-    scrollbar_layer_->test_properties()->opacity_can_animate = true;
-    clip_layer_->SetBounds(gfx::Size(100, 100));
-    scroll_layer_ptr->SetBounds(gfx::Size(200, 200));
-    host_impl_.active_tree()->UpdateScrollbarGeometries();
-    host_impl_.active_tree()->BuildLayerListAndPropertyTreesForTesting();
+    scrollbar_layer_->SetScrollElementId(scroll_layer->element_id());
+
+    CopyProperties(root_layer(), scroll_layer);
+    CreateTransformNode(scroll_layer);
+    CreateScrollNode(scroll_layer);
+    CopyProperties(scroll_layer, scrollbar_layer_);
+    scrollbar_layer_->SetOffsetToTransformParent(gfx::Vector2dF(90, 0));
+    CreateEffectNode(scrollbar_layer_).has_potential_opacity_animation = true;
+
+    UpdateActiveTreeDrawProperties();
 
     scrollbar_controller_ = SingleScrollbarAnimationControllerThinning::Create(
-        scroll_layer_ptr->element_id(), HORIZONTAL, &client_,
-        kThinningDuration);
+        scroll_layer->element_id(), HORIZONTAL, &client_, kThinningDuration);
   }
 
-  FakeImplTaskRunnerProvider task_runner_provider_;
-  TestTaskGraphRunner task_graph_runner_;
-  FakeLayerTreeHostImpl host_impl_;
   std::unique_ptr<SingleScrollbarAnimationControllerThinning>
       scrollbar_controller_;
-  LayerImpl* clip_layer_;
   SolidColorScrollbarLayerImpl* scrollbar_layer_;
   NiceMock<MockSingleScrollbarAnimationControllerClient> client_;
 };

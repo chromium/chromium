@@ -1,0 +1,19 @@
+Tests that breakpoints appear correct in the sidebar pane.
+
+Script source was shown.
+
+Set first breakpoint.
+Breakpoint sidebar pane 
+a.js:18  return a + b;
+
+Set second breakpoint on the same line.
+Breakpoint sidebar pane 
+a.js:18:3return a + b;
+a.js:18:16
+
+Set a third breakpoint on a different line.
+Breakpoint sidebar pane 
+a.js:17  b = b / 2;
+a.js:18:3return a + b;
+a.js:18:16
+

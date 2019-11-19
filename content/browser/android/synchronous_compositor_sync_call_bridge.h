@@ -124,8 +124,6 @@ class SynchronousCompositorSyncCallBridge
 
   enum class RemoteState { INIT, READY, CLOSED };
 
-  const int routing_id_;
-
   // UI thread only.
   SynchronousCompositorHost* host_;
 

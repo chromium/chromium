@@ -10,6 +10,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -100,7 +101,13 @@ class CONTENT_EXPORT AppCache
 
   base::Time update_time() const { return update_time_; }
 
+  // The sum of all the sizes of the resources in this cache.
   int64_t cache_size() const { return cache_size_; }
+
+  // The sum of all the padding sizes of the resources in this cache.
+  //
+  // See AppCacheEntry for a description of how padding size works.
+  int64_t padding_size() const { return padding_size_; }
 
   void set_update_time(base::Time ticks) { update_time_ = ticks; }
 
@@ -189,6 +196,7 @@ class CONTENT_EXPORT AppCache
   base::Time update_time_;
 
   int64_t cache_size_;
+  int64_t padding_size_;
 
   // to notify storage when cache is deleted
   AppCacheStorage* storage_;

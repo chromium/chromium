@@ -14,9 +14,6 @@ class SyncService;
 
 namespace password_bubble_experiment {
 
-extern const char kSmartBubbleExperimentName[];
-extern const char kSmartBubbleThresholdParam[];
-
 // Registers prefs which controls appearance of the first run experience for the
 // Smart Lock UI, namely was first run experience shown for save prompt or auto
 // sign-in prompt.

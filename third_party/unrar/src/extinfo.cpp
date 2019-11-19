@@ -15,7 +15,7 @@
 #endif
 #endif
 
-namespace third_party_unrar {
+
 
 // RAR2 service header extra records.
 #ifndef SFX_MODULE
@@ -176,5 +176,3 @@ bool ExtractSymlink(CommandData *Cmd,ComprDataIO &DataIO,Archive &Arc,const wcha
 #endif
   return false;
 }
-
-}  // namespace third_party_unrar

@@ -13,6 +13,10 @@ size_t QuotaForString(const String& s) {
   return s.length() * sizeof(UChar);
 }
 
+size_t MemoryForString(const String& s) {
+  return s.CharactersSizeInBytes();
+}
+
 }  // namespace
 
 StorageAreaMap::StorageAreaMap(size_t quota) : quota_(quota) {
@@ -77,6 +81,7 @@ bool StorageAreaMap::RemoveItem(const String& key, String* old_value) {
   if (it == keys_values_.end())
     return false;
   quota_used_ -= QuotaForString(key) + QuotaForString(it->value);
+  memory_used_ -= MemoryForString(key) + MemoryForString(it->value);
   if (old_value)
     *old_value = it->value;
   keys_values_.erase(it);
@@ -95,14 +100,18 @@ bool StorageAreaMap::SetItemInternal(const String& key,
                                      bool check_quota) {
   const auto it = keys_values_.find(key);
   size_t old_item_size = 0;
+  size_t old_item_memory = 0;
   if (it != keys_values_.end()) {
     old_item_size = QuotaForString(key) + QuotaForString(it->value);
+    old_item_memory = MemoryForString(key) + MemoryForString(it->value);
     if (old_value)
       *old_value = it->value;
   }
   DCHECK_GE(quota_used_, old_item_size);
   size_t new_item_size = QuotaForString(key) + QuotaForString(value);
+  size_t new_item_memory = MemoryForString(key) + MemoryForString(value);
   size_t new_quota_used = quota_used_ - old_item_size + new_item_size;
+  size_t new_memory_used = memory_used_ - old_item_memory + new_item_memory;
 
   // Only check quota if the size is increasing, this allows
   // shrinking changes to pre-existing files that are over budget.
@@ -112,6 +121,7 @@ bool StorageAreaMap::SetItemInternal(const String& key,
   keys_values_.Set(key, value);
   ResetKeyIterator();
   quota_used_ = new_quota_used;
+  memory_used_ = new_memory_used;
   return true;
 }
 

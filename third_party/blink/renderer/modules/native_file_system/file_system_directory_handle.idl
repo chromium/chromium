@@ -1,0 +1,21 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/native-file-system/#filesystemdirectoryhandle
+[
+    Exposed=(Window,Worker),
+    SecureContext,
+    Serializable,
+    RuntimeEnabled=NativeFileSystem,
+    ImplementedAs=NativeFileSystemDirectoryHandle
+] interface FileSystemDirectoryHandle : FileSystemHandle {
+    [CallWith=ScriptState] Promise<FileSystemFileHandle> getFile(USVString name, optional FileSystemGetFileOptions options);
+    [CallWith=ScriptState] Promise<FileSystemDirectoryHandle> getDirectory(USVString name, optional FileSystemGetDirectoryOptions options);
+    [CallWith=ScriptState] object getEntries();
+
+    [CallWith=ScriptState] Promise<void> removeEntry(USVString name, optional FileSystemRemoveOptions options);
+
+    [CallWith=ScriptState, Measure]
+    static Promise<FileSystemDirectoryHandle> getSystemDirectory(GetSystemDirectoryOptions options);
+};

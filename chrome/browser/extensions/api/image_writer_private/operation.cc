@@ -15,7 +15,6 @@
 #include "chrome/browser/extensions/api/image_writer_private/unzip_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace extensions {
 namespace image_writer {
@@ -29,7 +28,6 @@ const int kMD5BufferSize = 1024;
 }  // namespace
 
 Operation::Operation(base::WeakPtr<OperationManager> manager,
-                     std::unique_ptr<service_manager::Connector> connector,
                      const ExtensionId& extension_id,
                      const std::string& device_path,
                      const base::FilePath& download_folder)
@@ -41,18 +39,13 @@ Operation::Operation(base::WeakPtr<OperationManager> manager,
       device_path_(device_path),
 #endif
       temp_dir_(std::make_unique<base::ScopedTempDir>()),
-      connector_(std::move(connector)),
       stage_(image_writer_api::STAGE_UNKNOWN),
       progress_(0),
       download_folder_(download_folder),
-      task_runner_(
-          base::CreateSequencedTaskRunnerWithTraits(blocking_task_traits())) {
+      task_runner_(base::CreateSequencedTaskRunner(blocking_task_traits())) {
 }
 
 Operation::~Operation() {
-  // The connector_ is bound to the |task_runner_| and must be deleted there.
-  task_runner_->DeleteSoon(FROM_HERE, std::move(connector_));
-
   // base::ScopedTempDir must be destroyed on a thread that allows blocking IO
   // because it will try delete the directory if a call to Delete() hasn't been
   // made or was unsuccessful.
@@ -134,7 +127,7 @@ void Operation::Finish() {
 
   CleanUp();
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&OperationManager::OnComplete, manager_, extension_id_));
 }
@@ -142,7 +135,7 @@ void Operation::Finish() {
 void Operation::Error(const std::string& error_message) {
   DCHECK(IsRunningInCorrectSequence());
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&OperationManager::OnError, manager_, extension_id_,
                      stage_, progress_, error_message));
@@ -163,10 +156,9 @@ void Operation::SetProgress(int progress) {
 
   progress_ = progress;
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&OperationManager::OnProgress, manager_, extension_id_,
-                     stage_, progress_));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&OperationManager::OnProgress, manager_,
+                                extension_id_, stage_, progress_));
 }
 
 void Operation::SetStage(image_writer_api::Stage stage) {
@@ -178,10 +170,9 @@ void Operation::SetStage(image_writer_api::Stage stage) {
   stage_ = stage;
   progress_ = 0;
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&OperationManager::OnProgress, manager_, extension_id_,
-                     stage_, progress_));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&OperationManager::OnProgress, manager_,
+                                extension_id_, stage_, progress_));
 }
 
 bool Operation::IsCancelled() {
@@ -205,9 +196,7 @@ void Operation::CompleteAndContinue(const base::Closure& continuation) {
 void Operation::StartUtilityClient() {
   DCHECK(IsRunningInCorrectSequence());
   if (!image_writer_client_.get()) {
-    // connector_ can be null in tests.
-    image_writer_client_ = ImageWriterUtilityClient::Create(
-        task_runner_, connector_ ? connector_->Clone() : nullptr);
+    image_writer_client_ = ImageWriterUtilityClient::Create(task_runner_);
     AddCleanUpFunction(base::BindOnce(&Operation::StopUtilityClient, this));
   }
 }

@@ -39,9 +39,8 @@ TEST_F(DOMNodeIdsTest, DeletedNode) {
   DOMNodeId id_a = DOMNodeIds::IdForNode(a);
 
   a->remove();
-  ThreadState::Current()->CollectGarbage(
-      BlinkGC::kNoHeapPointersOnStack, BlinkGC::kAtomicMarking,
-      BlinkGC::kEagerSweeping, BlinkGC::GCReason::kForcedGC);
+  ThreadState::Current()->CollectAllGarbageForTesting(
+      BlinkGC::kNoHeapPointersOnStack);
   EXPECT_EQ(nullptr, DOMNodeIds::NodeForId(id_a));
 }
 

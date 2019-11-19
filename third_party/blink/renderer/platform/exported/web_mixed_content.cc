@@ -30,6 +30,8 @@
 
 #include "third_party/blink/public/platform/web_mixed_content.h"
 
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+
 namespace blink {
 
 // static

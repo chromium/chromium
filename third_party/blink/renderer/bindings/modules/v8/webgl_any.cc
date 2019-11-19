@@ -12,7 +12,7 @@
 namespace blink {
 
 ScriptValue WebGLAny(ScriptState* script_state, bool value) {
-  return ScriptValue(script_state,
+  return ScriptValue(script_state->GetIsolate(),
                      v8::Boolean::New(script_state->GetIsolate(), value));
 }
 
@@ -20,69 +20,73 @@ ScriptValue WebGLAny(ScriptState* script_state,
                      const bool* value,
                      uint32_t size) {
   auto span = base::make_span(value, size);
-  return ScriptValue(script_state, ToV8(span, script_state));
+  return ScriptValue(script_state->GetIsolate(), ToV8(span, script_state));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, const Vector<bool>& value) {
-  return ScriptValue(script_state, ToV8(value, script_state));
+  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, const Vector<unsigned>& value) {
-  return ScriptValue(script_state, ToV8(value, script_state));
+  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, const Vector<int>& value) {
-  return ScriptValue(script_state, ToV8(value, script_state));
+  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, int value) {
-  return ScriptValue(script_state,
+  return ScriptValue(script_state->GetIsolate(),
                      v8::Integer::New(script_state->GetIsolate(), value));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, unsigned value) {
   return ScriptValue(
-      script_state, v8::Integer::NewFromUnsigned(script_state->GetIsolate(),
-                                                 static_cast<unsigned>(value)));
+      script_state->GetIsolate(),
+      v8::Integer::NewFromUnsigned(script_state->GetIsolate(),
+                                   static_cast<unsigned>(value)));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, int64_t value) {
-  return ScriptValue(script_state, v8::Number::New(script_state->GetIsolate(),
-                                                   static_cast<double>(value)));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      v8::Number::New(script_state->GetIsolate(), static_cast<double>(value)));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, uint64_t value) {
-  return ScriptValue(script_state, v8::Number::New(script_state->GetIsolate(),
-                                                   static_cast<double>(value)));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      v8::Number::New(script_state->GetIsolate(), static_cast<double>(value)));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, float value) {
-  return ScriptValue(script_state,
+  return ScriptValue(script_state->GetIsolate(),
                      v8::Number::New(script_state->GetIsolate(), value));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, String value) {
-  return ScriptValue(script_state, V8String(script_state->GetIsolate(), value));
+  return ScriptValue(script_state->GetIsolate(),
+                     V8String(script_state->GetIsolate(), value));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, WebGLObject* value) {
-  return ScriptValue(script_state, ToV8(value, script_state));
+  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, DOMFloat32Array* value) {
-  return ScriptValue(script_state, ToV8(value, script_state));
+  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, DOMInt32Array* value) {
-  return ScriptValue(script_state, ToV8(value, script_state));
+  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, DOMUint8Array* value) {
-  return ScriptValue(script_state, ToV8(value, script_state));
+  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
 }
 
 ScriptValue WebGLAny(ScriptState* script_state, DOMUint32Array* value) {
-  return ScriptValue(script_state, ToV8(value, script_state));
+  return ScriptValue(script_state->GetIsolate(), ToV8(value, script_state));
 }
 
 }  // namespace blink

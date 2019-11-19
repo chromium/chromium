@@ -1,0 +1,223 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remote_cocoa.mojom;
+
+import "components/remote_cocoa/common/select_file_dialog.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "ui/base/mojom/ui_base_types.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/ca_layer_params.mojom";
+
+// The window class (subclass of kNativeWidgetMacNSWindow) to use for a given
+// window.
+enum WindowClass {
+  // NativeWidgetMacNSWindow
+  kDefault,
+  // BrowserNativeWidgetWindow
+  kBrowser,
+  // NativeWidgetMacFramelessNSWindow
+  kFrameless,
+};
+
+// Parameters used to described creation of an NSWindow.
+struct CreateWindowParams {
+  // The subclass of NativeWidgetMacNSWindow to use for this window.
+  WindowClass window_class;
+
+  // The NSWindowStyleMask for the window.
+  uint64 style_mask;
+
+  // Whether or not the titlebar should be forced to be transparent. If so, then
+  // the window is responsible for drawing its own titlebar. Note that the
+  // traffic lights will be drawn independent of this setting.
+  bool titlebar_appears_transparent;
+
+  // Whether or not to hide the default title drawn by the window. If so, then
+  // the window is responsible for drawing its own title.
+  bool window_title_hidden;
+
+  // Whether or not window animations should be initially enabled.
+  bool animation_enabled;
+};
+
+// Ways of changing the visibility of the bridged NSWindow.
+enum WindowVisibilityState {
+  // Hides with -[NSWindow orderOut:].
+  kHideWindow,
+  // Shows with -[NSWindow makeKeyAndOrderFront:].
+  kShowAndActivateWindow,
+  // Shows with -[NSWindow orderWindow:..]. Orders the window above its parent
+  // if it has one.
+  kShowInactive
+};
+
+// Window transitions to animate, mirrors views::Widget::VisibilityTransition.
+enum VisibilityTransition {
+  kShow = 1,
+  kHide = 2,
+  kBoth = 3,
+  kNone = 4,
+};
+
+struct NativeWidgetNSWindowInitParams {
+  ui.mojom.ModalType modal_type;
+  // If true, the underlying window potentially be seen through.
+  bool is_translucent;
+  // True if the widget is considered top level widget.
+  bool widget_is_top_level;
+  // True if the bounds specified to SetBounds should be treated as though they
+  // are in screen coordinates.
+  bool position_window_in_screen_coords;
+  // If true, then the NSWindow is set to have a shadow using
+  // -[NSWindow setHasShadow:YES].
+  bool has_window_server_shadow;
+  // If true, the NSWindow's collection behavior is set to include
+  // NSWindowCollectionBehaviorParticipatesInCycle (this is not the
+  // default for NSWindows with NSBorderlessWindowMask).
+  bool force_into_collection_cycle;
+  // An opaque blob of AppKit data which includes, among other things, a
+  // window's workspace and fullscreen state, and can be retrieved from or
+  // applied to a window.
+  array<uint8> state_restoration_data;
+};
+
+// The interface through which a NativeWidgetMac may interact with an NSWindow
+// (possibly in a process separate from the browser process).
+interface NativeWidgetNSWindow {
+  // Create and set the NSWindow for the bridge.
+  CreateWindow(CreateWindowParams params);
+
+  // Set the NativeWidgetNSWindow indicated by |parent_id| to be the parent of
+  // this NativeWidgetNSWindow.
+  SetParent(uint64 parent_id);
+
+  // Open a panel for file selection or creation.
+  CreateSelectFileDialog(pending_receiver<SelectFileDialog> dialog);
+
+  // Places this NativeWidgetNSWindow in front of the NativeWidgetNSWindow
+  // indicated by |sibling_id| in z-order.
+  StackAbove(uint64 sibling_id);
+
+  StackAtTop();
+
+  // Show the emoji panel for the NSWindow's process.
+  ShowEmojiPanel();
+
+  // Initialize the window's style.
+  InitWindow(NativeWidgetNSWindowInitParams params);
+
+  // Initialize the view to display compositor output. This will send the
+  // current visibility and dimensions (and any future updates) to the
+  // NativeWidgetNSWindowHost.
+  InitCompositorView();
+
+  // Create the NSView to be the content view for the window. Use |ns_view_id|
+  // to look up this NSView in other functions (e.g, to specify a parent view).
+  CreateContentView(uint64 ns_view_id, gfx.mojom.Rect bounds);
+
+  // Destroy the content NSView for this window. Note that the window will
+  // become blank once this has been called.
+  DestroyContentView();
+
+  // Initiate the closing of the window (the closing may be animated or posted
+  // to be run later).
+  CloseWindow();
+
+  // Immediately close the window (which will have the consequence of deleting
+  // |this| and its host).
+  CloseWindowNow();
+
+  // Specify initial bounds for the window via |new_bounds| in screen
+  // coordinates. It is invalid for |new_bounds| to have an empty size and
+  // non-zero position. The size of the window will be expanded so that the
+  // content size will be at least |minimum_content_size|.
+  SetInitialBounds(gfx.mojom.Rect new_bounds,
+                   gfx.mojom.Size minimum_content_size);
+
+  // Specify new bounds for the window via |new_bounds| in screen coordinates.
+  // The size of the window will be expanded so that the content size will be
+  // at least |minimum_content_size|.
+  SetBounds(gfx.mojom.Rect new_bounds,
+            gfx.mojom.Size minimum_content_size);
+
+  // Centers the window and sets its content size to |content_size|. The size of
+  // the window will be expanded so that the content size will be at least
+  // |minimum_content_size|.
+  SetSizeAndCenter(gfx.mojom.Size content_size,
+                   gfx.mojom.Size minimum_content_size);
+
+  // Sets the desired visibility of the window and updates the visibility of
+  // descendant windows where necessary.
+  SetVisibilityState(WindowVisibilityState new_state);
+
+  // Enables or disables all window animations.
+  SetAnimationEnabled(bool animation_enabled);
+
+  // Sets which transitions will animate. Currently this only affects non-native
+  // animations.
+  SetTransitionsToAnimate(VisibilityTransition transitions);
+
+  // Sets the collection behavior so that the window will or will not be visible
+  // on all spaces.
+  SetVisibleOnAllSpaces(bool always_visible);
+
+  // Called by NativeWidgetMac to initiate a transition to the specified target
+  // fullscreen state.
+  SetFullscreen(bool fullscreen);
+
+  // Called by NativeWidgetMac; sets whether the window can share fullscreen
+  // windows' spaces by changing the NSWindow's collectionBehavior.
+  SetCanAppearInExistingFullscreenSpaces(
+      bool can_appear_in_existing_fullscreen_spaces);
+
+  // Miniaturize or deminiaturize the window.
+  SetMiniaturized(bool miniaturized);
+
+  // Called by NativeWidgetMac when the window size constraints change.
+  SetSizeConstraints(gfx.mojom.Size min_size,
+                     gfx.mojom.Size max_size,
+                     bool is_resizable,
+                     bool is_maximizable);
+
+  // Set the opacity of the NSWindow.
+  SetOpacity(float opacity);
+
+  // Set the window level of the NSWindow.
+  SetWindowLevel(int32 level);
+
+  // Set the content aspect ratio of the NSWindow.
+  SetContentAspectRatio(gfx.mojom.SizeF aspect_ratio);
+
+  // Specify the content to draw in the NSView.
+  SetCALayerParams(gfx.mojom.CALayerParams ca_layer_params);
+
+  // Set the NSWindow's title text.
+  SetWindowTitle(mojo_base.mojom.String16 title);
+
+  // Ignore or accept mouse events on the NSWindow.
+  SetIgnoresMouseEvents(bool ignores_mouse_events);
+
+  // Make the content view be the first responder for the NSWindow.
+  MakeFirstResponder();
+
+  // Sort the subviews of the content view of this window. The sorted ids of
+  // the NSViews attached by NativeViewHost::Attach are listed in
+  // |attached_subview_ids|.
+  SortSubviews(array<uint64> attached_subview_ids);
+
+  // Clear the touchbar.
+  ClearTouchBar();
+
+  // Update the tooltip text at the current mouse location.
+  UpdateTooltip();
+
+  // Acquiring mouse capture first steals capture from any existing
+  // CocoaMouseCaptureDelegate, then captures all mouse events until released.
+  AcquireCapture();
+  ReleaseCapture();
+
+  // Redispatch a keyboard event using the widget's window's CommandDispatcher.
+  RedispatchKeyEvent(array<uint8> native_event_data);
+};

@@ -91,8 +91,6 @@ class CORE_EXPORT TouchEvent final : public UIEventWithKeyState {
 
   void preventDefault() override;
 
-  void DoneDispatchingEventAtCurrentTarget() override;
-
   const WebCoalescedInputEvent* NativeEvent() const {
     return native_event_.get();
   }
@@ -107,8 +105,6 @@ class CORE_EXPORT TouchEvent final : public UIEventWithKeyState {
   Member<TouchList> touches_;
   Member<TouchList> target_touches_;
   Member<TouchList> changed_touches_;
-
-  bool default_prevented_before_current_target_;
 
   // The current effective touch action computed before each
   // touchstart event is generated. It is used for UMA histograms.

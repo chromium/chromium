@@ -41,7 +41,7 @@ StyleGeneratedImage::StyleGeneratedImage(const CSSImageGeneratorValue& value)
 bool StyleGeneratedImage::IsEqual(const StyleImage& other) const {
   if (!other.IsGeneratedImage())
     return false;
-  const auto& other_generated = ToStyleGeneratedImage(other);
+  const auto& other_generated = To<StyleGeneratedImage>(other);
   return image_generator_value_ == other_generated.image_generator_value_;
 }
 
@@ -49,8 +49,10 @@ CSSValue* StyleGeneratedImage::CssValue() const {
   return image_generator_value_.Get();
 }
 
-CSSValue* StyleGeneratedImage::ComputedCSSValue() const {
-  return image_generator_value_->ValueWithURLsMadeAbsolute();
+CSSValue* StyleGeneratedImage::ComputedCSSValue(
+    const ComputedStyle& style,
+    bool allow_visited_style) const {
+  return image_generator_value_->ComputedCSSValue(style, allow_visited_style);
 }
 
 FloatSize StyleGeneratedImage::ImageSize(
@@ -74,6 +76,13 @@ void StyleGeneratedImage::AddClient(ImageResourceObserver* observer) {
 
 void StyleGeneratedImage::RemoveClient(ImageResourceObserver* observer) {
   image_generator_value_->RemoveClient(observer);
+}
+
+bool StyleGeneratedImage::IsUsingCustomProperty(
+    const AtomicString& custom_property_name,
+    const Document& document) const {
+  return image_generator_value_->IsUsingCustomProperty(custom_property_name,
+                                                       document);
 }
 
 scoped_refptr<Image> StyleGeneratedImage::GetImage(

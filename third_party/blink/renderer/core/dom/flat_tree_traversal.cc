@@ -34,6 +34,63 @@
 
 namespace blink {
 
+#if DCHECK_IS_ON()
+void FlatTreeTraversal::AssertFlatTreeNodeDataUpdated(
+    const Node& root,
+    int& assigned_nodes_in_slot_count,
+    int& nodes_which_have_assigned_slot_count) {
+  for (Node& node : NodeTraversal::StartsAt(root)) {
+    if (auto* element = DynamicTo<Element>(node)) {
+      if (ShadowRoot* shadow_root = element->ShadowRootIfV1()) {
+        DCHECK(!shadow_root->NeedsSlotAssignmentRecalc());
+        AssertFlatTreeNodeDataUpdated(*shadow_root,
+                                      assigned_nodes_in_slot_count,
+                                      nodes_which_have_assigned_slot_count);
+      }
+    }
+    if (HTMLSlotElement* slot =
+            ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
+      assigned_nodes_in_slot_count += slot->AssignedNodes().size();
+    }
+    if (node.IsChildOfV1ShadowHost()) {
+      ShadowRoot* parent_shadow_root = node.ParentElementShadowRoot();
+      DCHECK(parent_shadow_root);
+      if (!parent_shadow_root->HasSlotAssignment()) {
+        // |node|'s FlatTreeNodeData can be anything in this case.
+        // Nothing can be checked.
+        continue;
+      }
+      if (!node.IsSlotable()) {
+        DCHECK(!node.GetFlatTreeNodeData());
+        continue;
+      }
+      if (HTMLSlotElement* assigned_slot =
+              parent_shadow_root->AssignedSlotFor(node)) {
+        ++nodes_which_have_assigned_slot_count;
+        DCHECK(node.GetFlatTreeNodeData());
+        DCHECK_EQ(node.GetFlatTreeNodeData()->AssignedSlot(), assigned_slot);
+        if (Node* previous =
+                node.GetFlatTreeNodeData()->PreviousInAssignedNodes()) {
+          DCHECK(previous->GetFlatTreeNodeData());
+          DCHECK_EQ(previous->GetFlatTreeNodeData()->NextInAssignedNodes(),
+                    node);
+          DCHECK_EQ(previous->parentElement(), node.parentElement());
+        }
+        if (Node* next = node.GetFlatTreeNodeData()->NextInAssignedNodes()) {
+          DCHECK(next->GetFlatTreeNodeData());
+          DCHECK_EQ(next->GetFlatTreeNodeData()->PreviousInAssignedNodes(),
+                    node);
+          DCHECK_EQ(next->parentElement(), node.parentElement());
+        }
+      } else {
+        DCHECK(!node.GetFlatTreeNodeData() ||
+               node.GetFlatTreeNodeData()->IsCleared());
+      }
+    }
+  }
+}
+#endif
+
 bool CanBeDistributedToV0InsertionPoint(const Node& node) {
   return node.IsInV0ShadowTree() || node.IsChildOfV0ShadowHost();
 }
@@ -76,13 +133,13 @@ Node* FlatTreeTraversal::V0ResolveDistributionStartingAt(
                       : sibling->previousSibling())) {
     if (!IsActiveV0InsertionPoint(*sibling))
       return const_cast<Node*>(sibling);
-    const V0InsertionPoint& insertion_point = ToV0InsertionPoint(*sibling);
+    const auto& insertion_point = To<V0InsertionPoint>(*sibling);
     if (Node* found = (direction == kTraversalDirectionForward
                            ? insertion_point.FirstDistributedNode()
                            : insertion_point.LastDistributedNode()))
       return found;
-    DCHECK(IsHTMLShadowElement(insertion_point) ||
-           (IsHTMLContentElement(insertion_point) &&
+    DCHECK(IsA<HTMLShadowElement>(insertion_point) ||
+           (IsA<HTMLContentElement>(insertion_point) &&
             !insertion_point.HasChildren()));
   }
   return nullptr;
@@ -116,15 +173,6 @@ Node* FlatTreeTraversal::TraverseSiblings(const Node& node,
 Node* FlatTreeTraversal::TraverseSiblingsForV1HostChild(
     const Node& node,
     TraversalDirection direction) {
-  if (!RuntimeEnabledFeatures::FastFlatTreeTraversalEnabled()) {
-    HTMLSlotElement* slot = node.AssignedSlot();
-    if (!slot)
-      return nullptr;
-    return direction == kTraversalDirectionForward
-               ? slot->AssignedNodeNextTo(node)
-               : slot->AssignedNodePreviousTo(node);
-  }
-
   ShadowRoot* shadow_root = node.ParentElementShadowRoot();
   DCHECK(shadow_root);
   if (!shadow_root->HasSlotAssignment()) {

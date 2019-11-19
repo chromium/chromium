@@ -4,19 +4,10 @@
 
 #include "ash/test_media_client.h"
 
-#include "mojo/public/cpp/bindings/associated_interface_ptr.h"
-
 namespace ash {
 
-TestMediaClient::TestMediaClient() : binding_(this) {}
-
+TestMediaClient::TestMediaClient() = default;
 TestMediaClient::~TestMediaClient() = default;
-
-mojom::MediaClientAssociatedPtrInfo TestMediaClient::CreateAssociatedPtrInfo() {
-  mojom::MediaClientAssociatedPtr ptr;
-  binding_.Bind(mojo::MakeRequestAssociatedWithDedicatedPipe(&ptr));
-  return ptr.PassInterface();
-}
 
 void TestMediaClient::HandleMediaNextTrack() {
   ++handle_media_next_track_count_;

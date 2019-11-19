@@ -10,9 +10,9 @@
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/animation/transform_operations.h"
+#include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/test/geometry_test_utils.h"
-#include "cc/trees/element_id.h"
 
 namespace gfx {
 class ScrollOffset;
@@ -99,6 +99,12 @@ int AddAnimatedFilterToAnimation(Animation* animation,
                                  float start_brightness,
                                  float end_brightness,
                                  KeyframeEffectId effect_id = 0);
+
+int AddAnimatedBackdropFilterToAnimation(Animation* animation,
+                                         double duration,
+                                         float start_invert,
+                                         float end_invert,
+                                         KeyframeEffectId effect_id = 0);
 
 int AddOpacityStepsToAnimation(Animation* animation,
                                double duration,

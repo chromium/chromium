@@ -12,7 +12,12 @@
 #include "build/build_config.h"
 
 #if defined(OS_MACOSX)
+#include "base/mac/mac_util.h"
+
 #include <mach/mach.h>
+#endif
+#if defined(OS_ANDROID)
+#include <sys/prctl.h>
 #endif
 #if defined(OS_LINUX)
 #include <sys/resource.h>
@@ -20,11 +25,39 @@
 #include <algorithm>
 #endif
 
+#include "base/allocator/partition_allocator/page_allocator.h"
+
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
 namespace base {
+
+#if defined(OS_ANDROID)
+namespace {
+const char* PageTagToName(PageTag tag) {
+  // Important: All the names should be string literals. As per prctl.h in
+  // //third_party/android_ndk the kernel keeps a pointer to the name instead
+  // of copying it.
+  //
+  // Having the name in .rodata ensures that the pointer remains valid as
+  // long as the mapping is alive.
+  switch (tag) {
+    case PageTag::kBlinkGC:
+      return "blink_gc";
+    case PageTag::kPartitionAlloc:
+      return "partition_alloc";
+    case PageTag::kChromium:
+      return "chromium";
+    case PageTag::kV8:
+      return "v8";
+    default:
+      DCHECK(false);
+      return "";
+  }
+}
+}  // namespace
+#endif  // defined(OS_ANDROID)
 
 // |mmap| uses a nearby address if the hint address is blocked.
 constexpr bool kHintIsAdvisory = true;
@@ -48,28 +81,6 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
   }
 }
 
-#if defined(OS_LINUX) && defined(ARCH_CPU_64_BITS)
-
-// Multiple guarded memory regions may exceed the process address space limit.
-// This function will raise or lower the limit by |amount|.
-bool AdjustAddressSpaceLimit(int64_t amount) {
-  struct rlimit old_rlimit;
-  if (getrlimit(RLIMIT_AS, &old_rlimit))
-    return false;
-  const rlim_t new_limit =
-      CheckAdd(old_rlimit.rlim_cur, amount).ValueOrDefault(old_rlimit.rlim_max);
-  const struct rlimit new_rlimit = {std::min(new_limit, old_rlimit.rlim_max),
-                                    old_rlimit.rlim_max};
-  // setrlimit will fail if limit > old_rlimit.rlim_max.
-  return setrlimit(RLIMIT_AS, &new_rlimit) == 0;
-}
-
-// Current WASM guarded memory regions have 8 GiB of address space. There are
-// schemes that reduce that to 4 GiB.
-constexpr size_t kMinimumGuardedMemorySize = 1ULL << 32;  // 4 GiB
-
-#endif  // defined(OS_LINUX) && defined(ARCH_CPU_64_BITS)
-
 void* SystemAllocPagesInternal(void* hint,
                                size_t length,
                                PageAccessibilityConfiguration accessibility,
@@ -86,12 +97,36 @@ void* SystemAllocPagesInternal(void* hint,
 #endif
 
   int access_flag = GetAccessFlags(accessibility);
+  int map_flags = MAP_ANONYMOUS | MAP_PRIVATE;
+
+#if defined(OS_MACOSX)
+  // On macOS 10.14 and higher, executables that are code signed with the
+  // "runtime" option cannot execute writable memory by default. They can opt
+  // into this capability by specifying the "com.apple.security.cs.allow-jit"
+  // code signing entitlement and allocating the region with the MAP_JIT flag.
+  static const bool kNeedMapJIT = mac::IsAtLeastOS10_14();
+  if (page_tag == PageTag::kV8 && kNeedMapJIT) {
+    map_flags |= MAP_JIT;
+  }
+#endif
+
   void* ret =
-      mmap(hint, length, access_flag, MAP_ANONYMOUS | MAP_PRIVATE, fd, 0);
+      mmap(hint, length, access_flag, map_flags, fd, 0);
   if (ret == MAP_FAILED) {
     s_allocPageErrorCode = errno;
     ret = nullptr;
   }
+
+#if defined(OS_ANDROID)
+  // On Android, anonymous mappings can have a name attached to them. This is
+  // useful for debugging, and double-checking memory attribution.
+  if (ret) {
+    // No error checking on purpose, testing only.
+    prctl(PR_SET_VMA, PR_SET_VMA_ANON_NAME, ret, length,
+          PageTagToName(page_tag));
+  }
+#endif
+
   return ret;
 }
 
@@ -133,13 +168,6 @@ void SetSystemPagesAccessInternal(
 
 void FreePagesInternal(void* address, size_t length) {
   CHECK(!munmap(address, length));
-
-#if defined(OS_LINUX) && defined(ARCH_CPU_64_BITS)
-  // Restore the address space limit.
-  if (length >= kMinimumGuardedMemorySize) {
-    CHECK(AdjustAddressSpaceLimit(-base::checked_cast<int64_t>(length)));
-  }
-#endif
 }
 
 void DecommitSystemPagesInternal(void* address, size_t length) {

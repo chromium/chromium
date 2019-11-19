@@ -4,19 +4,16 @@
 
 #include "extensions/common/extension_set.h"
 
-#include "base/callback.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/manifest_handlers/sandboxed_page_info.h"
+#include "extensions/common/url_pattern_set.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace extensions {
 
 namespace {
 
-std::string GetExtensionIdByURL(const GURL& url) {
+ExtensionId GetExtensionIdByURL(const GURL& url) {
   if (url.SchemeIs(kExtensionScheme))
     return url.host();
 
@@ -27,7 +24,7 @@ std::string GetExtensionIdByURL(const GURL& url) {
   if (origin.scheme() == kExtensionScheme)
     return origin.host();
 
-  return std::string();
+  return ExtensionId();
 }
 
 }  // namespace
@@ -58,14 +55,18 @@ bool ExtensionSet::is_empty() const {
   return extensions_.empty();
 }
 
-bool ExtensionSet::Contains(const std::string& extension_id) const {
+bool ExtensionSet::Contains(const ExtensionId& extension_id) const {
   return extensions_.find(extension_id) != extensions_.end();
 }
 
 bool ExtensionSet::Insert(const scoped_refptr<const Extension>& extension) {
-  bool was_present = base::ContainsKey(extensions_, extension->id());
-  extensions_[extension->id()] = extension;
-  return !was_present;
+  auto iter = extensions_.find(extension->id());
+  if (iter != extensions_.end()) {
+    iter->second = extension;
+    return false;  // Had a previous entry.
+  }
+  extensions_.emplace(extension->id(), extension);
+  return true;  // New entry added.
 }
 
 bool ExtensionSet::InsertAll(const ExtensionSet& extensions) {
@@ -77,7 +78,7 @@ bool ExtensionSet::InsertAll(const ExtensionSet& extensions) {
   return size() != before;
 }
 
-bool ExtensionSet::Remove(const std::string& id) {
+bool ExtensionSet::Remove(const ExtensionId& id) {
   return extensions_.erase(id) > 0;
 }
 
@@ -85,8 +86,8 @@ void ExtensionSet::Clear() {
   extensions_.clear();
 }
 
-std::string ExtensionSet::GetExtensionOrAppIDByURL(const GURL& url) const {
-  std::string extension_id = GetExtensionIdByURL(url);
+ExtensionId ExtensionSet::GetExtensionOrAppIDByURL(const GURL& url) const {
+  ExtensionId extension_id = GetExtensionIdByURL(url);
   if (!extension_id.empty())
     return extension_id;
 
@@ -94,13 +95,13 @@ std::string ExtensionSet::GetExtensionOrAppIDByURL(const GURL& url) const {
   // TODO(crbug/852162): Add support for blob: URLs in MatchesURL.
   const Extension* extension = GetHostedAppByURL(url);
   if (!extension)
-    return std::string();
+    return ExtensionId();
 
   return extension->id();
 }
 
 const Extension* ExtensionSet::GetExtensionOrAppByURL(const GURL& url) const {
-  std::string extension_id = GetExtensionIdByURL(url);
+  ExtensionId extension_id = GetExtensionIdByURL(url);
   if (!extension_id.empty())
     return GetByID(extension_id);
 
@@ -139,12 +140,11 @@ bool ExtensionSet::InSameExtent(const GURL& old_url,
       GetExtensionOrAppByURL(new_url);
 }
 
-const Extension* ExtensionSet::GetByID(const std::string& id) const {
+const Extension* ExtensionSet::GetByID(const ExtensionId& id) const {
   auto i = extensions_.find(id);
   if (i != extensions_.end())
     return i->second.get();
-  else
-    return NULL;
+  return nullptr;
 }
 
 ExtensionIdSet ExtensionSet::GetIDs() const {

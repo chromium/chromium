@@ -9,15 +9,16 @@
 #include "build/build_config.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "components/viz/client/hit_test_data_provider_draw_quad.h"
-#include "components/viz/client/local_surface_id_provider.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "components/viz/host/host_display_client.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/host/renderer_settings_creation.h"
-#include "services/viz/privileged/interfaces/compositing/frame_sink_manager.mojom.h"
-#include "services/viz/public/interfaces/compositing/compositor_frame_sink.mojom.h"
-#include "ui/compositor/host/external_begin_frame_controller_client_impl.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
+#include "services/viz/privileged/mojom/compositing/vsync_parameter_observer.mojom.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "ui/compositor/reflector.h"
 
 #if defined(OS_WIN)
@@ -27,8 +28,51 @@
 namespace ui {
 
 namespace {
+
 static const char* kBrowser = "Browser";
+
+#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+class HostDisplayClient : public viz::HostDisplayClient {
+ public:
+  explicit HostDisplayClient(ui::Compositor* compositor)
+      : viz::HostDisplayClient(compositor->widget()), compositor_(compositor) {}
+  ~HostDisplayClient() override = default;
+
+  // viz::HostDisplayClient:
+  void DidCompleteSwapWithNewSize(const gfx::Size& size) override {
+    compositor_->OnCompleteSwapWithNewSize(size);
+  }
+
+ private:
+  ui::Compositor* const compositor_;
+
+  DISALLOW_COPY_AND_ASSIGN(HostDisplayClient);
+};
+#else
+class HostDisplayClient : public viz::HostDisplayClient {
+ public:
+  explicit HostDisplayClient(ui::Compositor* compositor)
+      : viz::HostDisplayClient(compositor->widget()) {}
+  ~HostDisplayClient() override = default;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(HostDisplayClient);
+};
+#endif
+
 }  // namespace
+
+struct PendingBeginFrameArgs {
+  PendingBeginFrameArgs(
+      const viz::BeginFrameArgs& args,
+      bool force,
+      base::OnceCallback<void(const viz::BeginFrameAck&)> callback)
+      : args(args), force(force), callback(std::move(callback)) {}
+
+  viz::BeginFrameArgs args;
+  bool force;
+  base::OnceCallback<void(const viz::BeginFrameAck&)> callback;
+};
 
 HostContextFactoryPrivate::HostContextFactoryPrivate(
     uint32_t client_id,
@@ -36,7 +80,6 @@ HostContextFactoryPrivate::HostContextFactoryPrivate(
     scoped_refptr<base::SingleThreadTaskRunner> resize_task_runner)
     : frame_sink_id_allocator_(client_id),
       host_frame_sink_manager_(host_frame_sink_manager),
-      renderer_settings_(viz::CreateRendererSettings()),
       resize_task_runner_(std::move(resize_task_runner)) {
   DCHECK(host_frame_sink_manager_);
 }
@@ -58,36 +101,28 @@ void HostContextFactoryPrivate::ConfigureCompositor(
   gfx::RenderingWindowManager::GetInstance()->RegisterParent(
       compositor->widget());
 #endif
-
   auto& compositor_data = compositor_data_map_[compositor];
 
   auto root_params = viz::mojom::RootCompositorFrameSinkParams::New();
-
   // Create interfaces for a root CompositorFrameSink.
-  viz::mojom::CompositorFrameSinkAssociatedPtrInfo sink_info;
-  root_params->compositor_frame_sink = mojo::MakeRequest(&sink_info);
-  viz::mojom::CompositorFrameSinkClientRequest client_request =
-      mojo::MakeRequest(&root_params->compositor_frame_sink_client);
+  mojo::PendingAssociatedRemote<viz::mojom::CompositorFrameSink> sink_remote;
+  root_params->compositor_frame_sink =
+      sink_remote.InitWithNewEndpointAndPassReceiver();
+  mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient> client_receiver =
+      root_params->compositor_frame_sink_client
+          .InitWithNewPipeAndPassReceiver();
+  compositor_data.display_private.reset();
   root_params->display_private =
-      mojo::MakeRequest(&compositor_data.display_private);
+      compositor_data.display_private.BindNewEndpointAndPassReceiver();
   compositor_data.display_client =
-      std::make_unique<viz::HostDisplayClient>(compositor->widget());
+      std::make_unique<HostDisplayClient>(compositor);
   root_params->display_client =
-      compositor_data.display_client->GetBoundPtr(resize_task_runner_)
-          .PassInterface();
+      compositor_data.display_client->GetBoundRemote(resize_task_runner_);
 
-  // Initialize ExternalBeginFrameController client if enabled.
-  compositor_data.external_begin_frame_controller_client.reset();
-  if (compositor->external_begin_frame_client()) {
-    compositor_data.external_begin_frame_controller_client =
-        std::make_unique<ExternalBeginFrameControllerClientImpl>(
-            compositor->external_begin_frame_client());
+  if (compositor->use_external_begin_frame_control()) {
     root_params->external_begin_frame_controller =
-        compositor_data.external_begin_frame_controller_client
-            ->GetControllerRequest();
-    root_params->external_begin_frame_controller_client =
-        compositor_data.external_begin_frame_controller_client->GetBoundPtr()
-            .PassInterface();
+        compositor_data.external_begin_frame_controller
+            .BindNewEndpointAndPassReceiver();
   }
 
   root_params->frame_sink_id = compositor->frame_sink_id();
@@ -95,7 +130,7 @@ void HostContextFactoryPrivate::ConfigureCompositor(
   root_params->widget = compositor->widget();
 #endif
   root_params->gpu_compositing = gpu_compositing;
-  root_params->renderer_settings = renderer_settings_;
+  root_params->renderer_settings = viz::CreateRendererSettings();
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDisableFrameRateLimit))
@@ -109,16 +144,17 @@ void HostContextFactoryPrivate::ConfigureCompositor(
   compositor_data.display_private->Resize(compositor->size());
   compositor_data.display_private->SetOutputIsSecure(
       compositor_data.output_is_secure);
+  compositor_data.display_private->SetDisplayTransformHint(
+      compositor->display_transform());
 
   // Create LayerTreeFrameSink with the browser end of CompositorFrameSink.
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
   params.compositor_task_runner = compositor->task_runner();
   params.gpu_memory_buffer_manager =
       compositor->context_factory()->GetGpuMemoryBufferManager();
-  params.pipes.compositor_frame_sink_associated_info = std::move(sink_info);
-  params.pipes.client_request = std::move(client_request);
-  params.enable_surface_synchronization = true;
-  if (features::IsVizHitTestingDrawQuadEnabled()) {
+  params.pipes.compositor_frame_sink_associated_remote = std::move(sink_remote);
+  params.pipes.client_receiver = std::move(client_receiver);
+  if (!features::IsVizHitTestingSurfaceLayerEnabled()) {
     params.hit_test_data_provider =
         std::make_unique<viz::HitTestDataProviderDrawQuad>(
             false /* should_ask_for_child_region */,
@@ -129,6 +165,12 @@ void HostContextFactoryPrivate::ConfigureCompositor(
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           std::move(context_provider), std::move(worker_context_provider),
           &params));
+  auto* args = compositor_data.pending_begin_frame_args.get();
+  if (args && compositor->use_external_begin_frame_control()) {
+    compositor_data.external_begin_frame_controller->IssueExternalBeginFrame(
+        args->args, args->force, std::move(args->callback));
+    compositor_data.pending_begin_frame_args.reset();
+  }
 }
 
 void HostContextFactoryPrivate::UnconfigureCompositor(Compositor* compositor) {
@@ -213,13 +255,13 @@ void HostContextFactoryPrivate::SetDisplayColorMatrix(
 
 void HostContextFactoryPrivate::SetDisplayColorSpace(
     Compositor* compositor,
-    const gfx::ColorSpace& blending_color_space,
-    const gfx::ColorSpace& output_color_space) {
+    const gfx::ColorSpace& output_color_space,
+    float sdr_white_level) {
   auto iter = compositor_data_map_.find(compositor);
   if (iter == compositor_data_map_.end() || !iter->second.display_private)
     return;
-  iter->second.display_private->SetDisplayColorSpace(blending_color_space,
-                                                     output_color_space);
+  iter->second.display_private->SetDisplayColorSpace(output_color_space,
+                                                     sdr_white_level);
 }
 
 void HostContextFactoryPrivate::SetDisplayVSyncParameters(
@@ -234,14 +276,20 @@ void HostContextFactoryPrivate::SetDisplayVSyncParameters(
 
 void HostContextFactoryPrivate::IssueExternalBeginFrame(
     Compositor* compositor,
-    const viz::BeginFrameArgs& args) {
+    const viz::BeginFrameArgs& args,
+    bool force,
+    base::OnceCallback<void(const viz::BeginFrameAck&)> callback) {
   auto iter = compositor_data_map_.find(compositor);
-  if (iter == compositor_data_map_.end() || !iter->second.display_private)
+  DCHECK(iter != compositor_data_map_.end() && iter->second.display_private);
+  if (!iter->second.external_begin_frame_controller.is_bound()) {
+    DCHECK(!iter->second.pending_begin_frame_args);
+    iter->second.pending_begin_frame_args =
+        std::make_unique<PendingBeginFrameArgs>(args, force,
+                                                std::move(callback));
     return;
-
-  DCHECK(iter->second.external_begin_frame_controller_client);
-  iter->second.external_begin_frame_controller_client->GetController()
-      ->IssueExternalBeginFrame(args);
+  }
+  iter->second.external_begin_frame_controller->IssueExternalBeginFrame(
+      args, force, std::move(callback));
 }
 
 void HostContextFactoryPrivate::SetOutputIsSecure(Compositor* compositor,
@@ -255,14 +303,28 @@ void HostContextFactoryPrivate::SetOutputIsSecure(Compositor* compositor,
     iter->second.display_private->SetOutputIsSecure(secure);
 }
 
-viz::FrameSinkManagerImpl* HostContextFactoryPrivate::GetFrameSinkManager() {
-  // When running with viz there is no FrameSinkManagerImpl in the browser
-  // process. FrameSinkManagerImpl runs in the GPU process instead. Anything in
-  // the browser process that relies FrameSinkManagerImpl or SurfaceManager
-  // internal state needs to change. See https://crbug.com/787097 and
-  // https://crbug.com/760181 for more context.
-  NOTREACHED();
-  return nullptr;
+void HostContextFactoryPrivate::AddVSyncParameterObserver(
+    Compositor* compositor,
+    mojo::PendingRemote<viz::mojom::VSyncParameterObserver> observer) {
+  auto iter = compositor_data_map_.find(compositor);
+  if (iter == compositor_data_map_.end())
+    return;
+
+  if (iter->second.display_private) {
+    iter->second.display_private->AddVSyncParameterObserver(
+        std::move(observer));
+  }
+}
+
+void HostContextFactoryPrivate::SetDisplayTransformHint(
+    Compositor* compositor,
+    gfx::OverlayTransform transform) {
+  auto iter = compositor_data_map_.find(compositor);
+  if (iter == compositor_data_map_.end())
+    return;
+
+  if (iter->second.display_private)
+    iter->second.display_private->SetDisplayTransformHint(transform);
 }
 
 HostContextFactoryPrivate::CompositorData::CompositorData() = default;

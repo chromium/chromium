@@ -7,6 +7,10 @@ import copy
 import re
 
 
+def IsGroupOrAtomicGroup(policy):
+  return policy['type'] == 'group' or policy['type'] == 'atomic_group'
+
+
 class PolicyTemplateGenerator:
   '''Generates template text for a particular platform.
 
@@ -18,12 +22,8 @@ class PolicyTemplateGenerator:
 
   def _ImportMessage(self, msg_txt):
     msg_txt = msg_txt.decode('utf-8')
-    # Replace the placeholder of app name.
-    msg_txt = msg_txt.replace('$1', self._config['app_name'])
-    msg_txt = msg_txt.replace('$2', self._config['os_name'])
-    msg_txt = msg_txt.replace('$3', self._config['frame_name'])
-
     lines = msg_txt.split('\n')
+
     # Strip any extra leading spaces, but keep useful indentation:
     min_leading_spaces = min(list(self._IterateLeadingSpaces(lines)) or [0])
     if min_leading_spaces > 0:
@@ -60,6 +60,15 @@ class PolicyTemplateGenerator:
     for key in self._messages.keys():
       self._messages[key]['text'] = self._ImportMessage(
           self._messages[key]['text'])
+    self._AddGroups(self._policy_data['policy_definitions'])
+    self._AddAtomicGroups(self._policy_data['policy_definitions'],
+                          self._policy_data['policy_atomic_group_definitions'])
+    self._policy_data[
+        'policy_atomic_group_definitions'] = self._ExpandAtomicGroups(
+            self._policy_data['policy_definitions'],
+            self._policy_data['policy_atomic_group_definitions'])
+    self._ProcessPolicyList(
+        self._policy_data['policy_atomic_group_definitions'])
     self._policy_data['policy_definitions'] = self._ExpandGroups(
         self._policy_data['policy_definitions'])
     self._policy_definitions = self._policy_data['policy_definitions']
@@ -104,6 +113,7 @@ class PolicyTemplateGenerator:
         product, platform = {
             'android': ('chrome', 'android'),
             'webview_android': ('webview', 'android'),
+            'ios': ('chrome', 'ios'),
             'chrome_os': ('chrome_os', 'chrome_os'),
             'chrome_frame': ('chrome_frame', 'win'),
         }[product_platform_part]
@@ -125,20 +135,23 @@ class PolicyTemplateGenerator:
       policy: The data structure of the policy or group, that will get message
         strings here.
     '''
-    policy['desc'] = self._ImportMessage(policy['desc'])
+    if policy['type'] != 'atomic_group':
+      policy['desc'] = self._ImportMessage(policy['desc'])
     policy['caption'] = self._ImportMessage(policy['caption'])
     if 'label' in policy:
       policy['label'] = self._ImportMessage(policy['label'])
     if 'arc_support' in policy:
       policy['arc_support'] = self._ImportMessage(policy['arc_support'])
 
-    if policy['type'] == 'group':
+    if IsGroupOrAtomicGroup(policy):
       self._ProcessPolicyList(policy['policies'])
     elif policy['type'] in ('string-enum', 'int-enum', 'string-enum-list'):
       # Iterate through all the items of an enum-type policy, and add captions.
       for item in policy['items']:
         item['caption'] = self._ImportMessage(item['caption'])
-    if policy['type'] != 'group':
+      if 'supported_on' in item:
+        item['supported_on'] = self._ProcessSupportedOn(item['supported_on'])
+    if not IsGroupOrAtomicGroup(policy):
       if not 'label' in policy:
         # If 'label' is not specified, then it defaults to 'caption':
         policy['label'] = policy['caption']
@@ -171,6 +184,62 @@ class PolicyTemplateGenerator:
     policy_data_copy = copy.deepcopy(self._policy_data)
     return template_writer.WriteTemplate(policy_data_copy)
 
+
+  def _AddGroups(self, policy_list):
+    '''Adds a 'group' field, which is set to be the group's name, to the
+       policies that are part of a group.
+
+    Args:
+      policy_list: A list of policies and groups whose policies will have a
+      'group' field added.
+    '''
+    groups = [policy for policy in policy_list if policy['type'] == 'group']
+    policy_lookup = {
+        policy['name']: policy
+        for policy in policy_list
+        if not IsGroupOrAtomicGroup(policy)
+    }
+    for group in groups:
+      for policy_name in group['policies']:
+        policy_lookup[policy_name]['group'] = group['name']
+
+  def _AddAtomicGroups(self, policy_list, policy_atomic_groups):
+    '''Adds an 'atomic_group' field to the policies that are part of an atomic
+    group.
+
+    Args:
+      policy_list: A list of policies and groups.
+      policy_atomic_groups: A list of policy atomic groups
+    '''
+    policy_lookup = {
+        policy['name']: policy
+        for policy in policy_list
+        if not IsGroupOrAtomicGroup(policy)
+    }
+    for group in policy_atomic_groups:
+      for policy_name in group['policies']:
+        policy_lookup[policy_name]['atomic_group'] = group['name']
+        break
+
+  def _ExpandAtomicGroups(self, policy_list, policy_atomic_groups):
+    '''Replaces policies names inside atomic group definitions for actual
+    policies definitions.
+
+    Args:
+      policy_list: A list of policies and groups.
+
+    Returns:
+      Modified policy_list
+    '''
+    policies = [
+        policy for policy in policy_list if not IsGroupOrAtomicGroup(policy)
+    ]
+    for group in policy_atomic_groups:
+      group['type'] = 'atomic_group'
+    expanded = self._ExpandGroups(policies + policy_atomic_groups)
+    expanded = [policy for policy in expanded if IsGroupOrAtomicGroup(policy)]
+    return copy.deepcopy(expanded)
+
   def _ExpandGroups(self, policy_list):
     '''Replaces policies names inside group definitions for actual policies
     definitions. If policy does not belong to any group, leave it as is.
@@ -181,11 +250,11 @@ class PolicyTemplateGenerator:
     Returns:
       Modified policy_list
     '''
-    groups = [policy for policy in policy_list if policy['type'] == 'group']
+    groups = [policy for policy in policy_list if IsGroupOrAtomicGroup(policy)]
     policies = {
         policy['name']: policy
         for policy in policy_list
-        if policy['type'] != 'group'
+        if not IsGroupOrAtomicGroup(policy)
     }
     policies_in_groups = set()
     result_policies = []
@@ -200,7 +269,7 @@ class PolicyTemplateGenerator:
       result_policies.append(group)
 
     result_policies.extend([
-        policy for policy in policy_list if policy['type'] != 'group' and
+        policy for policy in policy_list if not IsGroupOrAtomicGroup(policy) and
         policy['name'] not in policies_in_groups
     ])
     return result_policies

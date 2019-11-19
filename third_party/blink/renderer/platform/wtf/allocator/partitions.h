@@ -31,41 +31,42 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_PARTITIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_PARTITIONS_H_
 
-#include <string.h>
-#include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
+
+namespace base {
+class PartitionStatsDumper;
+struct PartitionRoot;
+struct PartitionRootGeneric;
+}  // namespace base
 
 namespace WTF {
 
 class WTF_EXPORT Partitions {
  public:
-  typedef void (*ReportPartitionAllocSizeFunction)(size_t);
-
   // Name of allocator used by tracing for marking sub-allocations while take
   // memory snapshots.
   static const char* const kAllocatedObjectPoolName;
 
-  static void Initialize(ReportPartitionAllocSizeFunction);
+  static void Initialize();
+  static void StartPeriodicReclaim(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
+
   ALWAYS_INLINE static base::PartitionRootGeneric* ArrayBufferPartition() {
     DCHECK(initialized_);
-    return array_buffer_allocator_->root();
+    return array_buffer_root_;
   }
 
   ALWAYS_INLINE static base::PartitionRootGeneric* BufferPartition() {
     DCHECK(initialized_);
-    return buffer_allocator_->root();
-  }
-
-  ALWAYS_INLINE static base::PartitionRootGeneric* FastMallocPartition() {
-    DCHECK(initialized_);
-    return fast_malloc_allocator_->root();
+    return buffer_root_;
   }
 
   ALWAYS_INLINE static base::PartitionRoot* LayoutPartition() {
     DCHECK(initialized_);
-    return layout_allocator_->root();
+    return layout_root_;
   }
 
   ALWAYS_INLINE static size_t ComputeAllocationSize(size_t count, size_t size) {
@@ -74,68 +75,36 @@ class WTF_EXPORT Partitions {
     return total.ValueOrDie();
   }
 
-  static size_t TotalSizeOfCommittedPages() {
-    DCHECK(initialized_);
-    size_t total_size = 0;
-    total_size += fast_malloc_allocator_->root()->total_size_of_committed_pages;
-    total_size +=
-        array_buffer_allocator_->root()->total_size_of_committed_pages;
-    total_size += buffer_allocator_->root()->total_size_of_committed_pages;
-    total_size += layout_allocator_->root()->total_size_of_committed_pages;
-    return total_size;
-  }
+  static size_t TotalSizeOfCommittedPages();
 
   static size_t TotalActiveBytes();
 
-  static void DecommitFreeableMemory();
-
-  static void ReportMemoryUsageHistogram();
-
   static void DumpMemoryStats(bool is_light_dump, base::PartitionStatsDumper*);
 
-  ALWAYS_INLINE static void* BufferMalloc(size_t n, const char* type_name) {
-    return BufferPartition()->Alloc(n, type_name);
-  }
-  ALWAYS_INLINE static void* BufferRealloc(void* p,
-                                           size_t n,
-                                           const char* type_name) {
-    return BufferPartition()->Realloc(p, n, type_name);
-  }
-  ALWAYS_INLINE static void* BufferTryRealloc(void* p,
-                                              size_t n,
-                                              const char* type_name) {
-    return BufferPartition()->TryRealloc(p, n, type_name);
-  }
-  ALWAYS_INLINE static void BufferFree(void* p) { BufferPartition()->Free(p); }
-  ALWAYS_INLINE static size_t BufferActualSize(size_t n) {
-    return BufferPartition()->ActualSize(n);
-  }
-  static void* FastMalloc(size_t n, const char* type_name) {
-    return Partitions::FastMallocPartition()->Alloc(n, type_name);
-  }
-  static void* FastMallocFlags(int flags, size_t n, const char* type_name) {
-    return Partitions::FastMallocPartition()->AllocFlags(flags, n, type_name);
-  }
-  static void* FastZeroedMalloc(size_t n, const char* type_name) {
-    return Partitions::FastMallocPartition()->AllocFlags(
-        base::PartitionAllocZeroFill, n, type_name);
-  }
-  static void* FastRealloc(void* p, size_t n, const char* type_name) {
-    return Partitions::FastMallocPartition()->Realloc(p, n, type_name);
-  }
-  static void FastFree(void* p) { Partitions::FastMallocPartition()->Free(p); }
+  static void* BufferMalloc(size_t n, const char* type_name);
+  static void* BufferTryRealloc(void* p, size_t n, const char* type_name);
+  static void BufferFree(void* p);
+  static size_t BufferActualSize(size_t n);
+
+  static void* FastMalloc(size_t n, const char* type_name);
+  static void* FastZeroedMalloc(size_t n, const char* type_name);
+  static void FastFree(void* p);
 
   static void HandleOutOfMemory();
 
  private:
+  ALWAYS_INLINE static base::PartitionRootGeneric* FastMallocPartition() {
+    DCHECK(initialized_);
+    return fast_malloc_root_;
+  }
+
   static bool initialized_;
 
   // See Allocator.md for a description of these partitions.
-  static base::PartitionAllocatorGeneric* fast_malloc_allocator_;
-  static base::PartitionAllocatorGeneric* array_buffer_allocator_;
-  static base::PartitionAllocatorGeneric* buffer_allocator_;
-  static base::SizeSpecificPartitionAllocator<1024>* layout_allocator_;
-  static ReportPartitionAllocSizeFunction report_size_function_;
+  static base::PartitionRootGeneric* fast_malloc_root_;
+  static base::PartitionRootGeneric* array_buffer_root_;
+  static base::PartitionRootGeneric* buffer_root_;
+  static base::PartitionRoot* layout_root_;
 };
 
 }  // namespace WTF

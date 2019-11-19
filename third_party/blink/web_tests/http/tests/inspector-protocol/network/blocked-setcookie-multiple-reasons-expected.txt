@@ -1,0 +1,22 @@
+Verifies that we get multiple cookie blocked reasons when overwriting a Secure cookie over an insecure connection.
+set-cookie that would overwrite secure cookie blocked set-cookies: [
+  {
+    "blockedReasons": [
+      "SecureOnly",
+      "OverwriteSecure"
+    ],
+    "cookieLine": "name=value; Secure",
+    "cookie": {
+      "name": "name",
+      "value": "value",
+      "domain": "cookie.test",
+      "path": "/inspector-protocol/network/resources",
+      "expires": -1,
+      "size": 9,
+      "httpOnly": false,
+      "secure": true,
+      "session": true
+    }
+  }
+]
+

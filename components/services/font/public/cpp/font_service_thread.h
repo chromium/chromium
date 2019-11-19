@@ -11,8 +11,9 @@
 
 #include "base/files/file.h"
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
-#include "components/services/font/public/interfaces/font_service.mojom.h"
+#include "components/services/font/public/mojom/font_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/ports/SkFontConfigInterface.h"
@@ -32,7 +33,11 @@ class MappedFontFile;
 // TODO(936569): Rename FontServiceThread since it's no longer a thread.
 class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
  public:
-  explicit FontServiceThread(mojom::FontServicePtr font_service);
+  FontServiceThread();
+
+  // Initializes the thread, binding to |pending_font_service| in the
+  // background sequence.
+  void Init(mojo::PendingRemote<mojom::FontService> pending_font_service);
 
   // These methods are proxies which run on your thread, post a blocking task
   // to the FontServiceThread, and wait on an event signaled from the callback.
@@ -72,7 +77,7 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
   friend class base::RefCountedThreadSafe<FontServiceThread>;
   virtual ~FontServiceThread();
 
-  void Init();
+  void InitImpl(mojo::PendingRemote<mojom::FontService> pending_font_service);
 
   // Methods which run on the FontServiceThread. The public MatchFamilyName
   // calls this method, this method calls the mojo interface, and sets up the
@@ -167,15 +172,11 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
 
   // Connection to |font_service_| has gone away. Called on the background
   // thread.
-  void OnFontServiceConnectionError();
+  void OnFontServiceDisconnected();
 
-  // This member is used to safely pass data from one thread to another. It is
-  // set in the constructor and is consumed in Init().
-  mojom::FontServicePtrInfo font_service_info_;
-
-  // This member is set in Init(). It takes |font_service_info_|, which is
-  // non-thread bound, and binds it to the newly created thread.
-  mojom::FontServicePtr font_service_;
+  // This member is set in InitImpl(), binding to the provided PendingRemote on
+  // the background sequence.
+  mojo::Remote<mojom::FontService> font_service_;
 
   // All WaitableEvents supplied to OpenStreamImpl() and the other *Impl()
   // functions are added here while waiting on the response from the
@@ -187,7 +188,6 @@ class FontServiceThread : public base::RefCountedThreadSafe<FontServiceThread> {
   std::set<base::WaitableEvent*> pending_waitable_events_;
 
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::WeakPtrFactory<FontServiceThread> weak_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(FontServiceThread);
 };

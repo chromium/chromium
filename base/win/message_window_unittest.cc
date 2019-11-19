@@ -29,20 +29,20 @@ bool HandleMessage(
 // Checks that a window can be created.
 TEST(MessageWindowTest, Create) {
   win::MessageWindow window;
-  EXPECT_TRUE(window.Create(base::Bind(&HandleMessage)));
+  EXPECT_TRUE(window.Create(base::BindRepeating(&HandleMessage)));
 }
 
 // Checks that a named window can be created.
 TEST(MessageWindowTest, CreateNamed) {
   win::MessageWindow window;
-  EXPECT_TRUE(window.CreateNamed(base::Bind(&HandleMessage),
-              UTF8ToUTF16("test_message_window")));
+  EXPECT_TRUE(window.CreateNamed(base::BindRepeating(&HandleMessage),
+                                 UTF8ToUTF16("test_message_window")));
 }
 
 // Verifies that the created window can receive messages.
 TEST(MessageWindowTest, SendMessage) {
   win::MessageWindow window;
-  EXPECT_TRUE(window.Create(base::Bind(&HandleMessage)));
+  EXPECT_TRUE(window.Create(base::BindRepeating(&HandleMessage)));
 
   EXPECT_EQ(SendMessage(window.hwnd(), WM_USER, 100, 0), 100);
 }
@@ -51,7 +51,7 @@ TEST(MessageWindowTest, SendMessage) {
 TEST(MessageWindowTest, FindWindow) {
   string16 name = UTF8ToUTF16(base::GenerateGUID());
   win::MessageWindow window;
-  EXPECT_TRUE(window.CreateNamed(base::Bind(&HandleMessage), name));
+  EXPECT_TRUE(window.CreateNamed(base::BindRepeating(&HandleMessage), name));
 
   HWND hwnd = win::MessageWindow::FindWindow(name);
   EXPECT_TRUE(hwnd != NULL);

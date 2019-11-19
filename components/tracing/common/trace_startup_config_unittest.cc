@@ -232,4 +232,24 @@ TEST(TraceStartupConfigTest, EmptyContent) {
   EXPECT_FALSE(TraceStartupConfig::GetInstance()->IsEnabled());
 }
 
+TEST(TraceStartupConfigTest, TraceStartupDisabledSystemOwner) {
+  base::ShadowingAtExitManager sem;
+  // Set the owner to 'system' is not sufficient to setup startup tracing.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTraceStartupOwner, "system");
+  EXPECT_FALSE(TraceStartupConfig::GetInstance()->IsEnabled());
+}
+
+TEST(TraceStartupConfigTest, TraceStartupEnabledSystemOwner) {
+  base::ShadowingAtExitManager sem;
+  // With owner and --trace-startup TraceStartupConfig should be enabled with
+  // the owner being the system.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTraceStartupOwner, "system");
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTraceStartup);
+  EXPECT_TRUE(TraceStartupConfig::GetInstance()->IsEnabled());
+  EXPECT_EQ(TraceStartupConfig::SessionOwner::kSystemTracing,
+            TraceStartupConfig::GetInstance()->GetSessionOwner());
+}
+
 }  // namespace tracing

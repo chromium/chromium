@@ -92,7 +92,7 @@ class DeviceCloudPolicyStoreChromeOS
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
 
-  base::WeakPtrFactory<DeviceCloudPolicyStoreChromeOS> weak_factory_;
+  base::WeakPtrFactory<DeviceCloudPolicyStoreChromeOS> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceCloudPolicyStoreChromeOS);
 };

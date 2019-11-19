@@ -4,11 +4,10 @@
 
 #include "ash/system/unified/unified_system_tray_model.h"
 
-#include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/brightness_control_delegate.h"
 #include "base/bind.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 
 namespace ash {
@@ -73,8 +72,9 @@ void UnifiedSystemTrayModel::DBusObserver::KeyboardBrightnessChanged(
           power_manager::BacklightBrightnessChange_Cause_USER_REQUEST);
 }
 
-UnifiedSystemTrayModel::UnifiedSystemTrayModel()
-    : dbus_observer_(std::make_unique<DBusObserver>(this)) {}
+UnifiedSystemTrayModel::UnifiedSystemTrayModel(views::View* owner_view)
+    : dbus_observer_(std::make_unique<DBusObserver>(this)),
+      pagination_model_(std::make_unique<PaginationModel>(owner_view)) {}
 
 UnifiedSystemTrayModel::~UnifiedSystemTrayModel() = default;
 

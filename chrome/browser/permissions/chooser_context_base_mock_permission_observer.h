@@ -19,8 +19,8 @@ class MockPermissionObserver : public ChooserContextBase::PermissionObserver {
                void(ContentSettingsType guard_content_settings_type,
                     ContentSettingsType data_content_settings_type));
   MOCK_METHOD2(OnPermissionRevoked,
-               void(const GURL& requesting_origin,
-                    const GURL& embedding_origin));
+               void(const url::Origin& requesting_origin,
+                    const url::Origin& embedding_origin));
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_CHOOSER_CONTEXT_BASE_MOCK_PERMISSION_OBSERVER_H_

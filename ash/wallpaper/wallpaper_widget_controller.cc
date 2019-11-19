@@ -8,12 +8,10 @@
 
 #include "ash/ash_export.h"
 #include "ash/root_window_controller.h"
-#include "ash/shell.h"
-#include "ash/wallpaper/wallpaper_controller.h"
+#include "ash/wallpaper/wallpaper_view.h"
 #include "base/scoped_observer.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/views/widget/widget.h"
@@ -32,12 +30,13 @@ class WallpaperWidgetController::WidgetHandler
       public views::WidgetObserver,
       public aura::WindowObserver {
  public:
-  WidgetHandler(WallpaperWidgetController* controller, views::Widget* widget)
+  WidgetHandler(WallpaperWidgetController* controller,
+                views::Widget* widget,
+                WallpaperView* wallpaper_view)
       : controller_(controller),
         widget_(widget),
         parent_window_(widget->GetNativeWindow()->parent()),
-        widget_observer_(this),
-        window_observer_(this) {
+        wallpaper_view_(wallpaper_view) {
     DCHECK(controller_);
     DCHECK(widget_);
     widget_observer_.Add(widget_);
@@ -98,18 +97,17 @@ class WallpaperWidgetController::WidgetHandler
 
     parent_window_ = widget_->GetNativeWindow()->parent();
     window_observer_.Add(parent_window_);
-
-    has_blur_cache_ = widget_->GetLayer()->layer_blur() > 0.0f;
+    has_blur_cache_ = blur_sigma() > 0.0f;
     if (has_blur_cache_)
       parent_window_->layer()->AddCacheRenderSurfaceRequest();
 
     return true;
   }
 
-  float blur_sigma() const { return widget_->GetLayer()->layer_blur(); }
+  float blur_sigma() const { return wallpaper_view_->layer()->layer_blur(); }
 
   void SetBlur(float blur_sigma) {
-    widget_->GetLayer()->SetLayerBlur(blur_sigma);
+    wallpaper_view_->layer()->SetLayerBlur(blur_sigma);
 
     const bool old_has_blur_cache = has_blur_cache_;
     has_blur_cache_ = blur_sigma > 0.0f;
@@ -118,9 +116,30 @@ class WallpaperWidgetController::WidgetHandler
     } else if (old_has_blur_cache && !has_blur_cache_) {
       parent_window_->layer()->RemoveCacheRenderSurfaceRequest();
     }
+
+    // Reset the paint blur if any.
+    if (wallpaper_view_->repaint_blur() != 0.f ||
+        wallpaper_view_->repaint_opacity() != 1.f) {
+      wallpaper_view_->RepaintBlurAndOpacity(0, 1.f);
+    }
   }
 
   void StopAnimating() { widget_->GetLayer()->GetAnimator()->StopAnimating(); }
+
+  void SwitchToNonLayerBlur() {
+    float blur = blur_sigma();
+    if (has_blur_cache_) {
+      parent_window_->layer()->RemoveCacheRenderSurfaceRequest();
+      has_blur_cache_ = false;
+    }
+
+    // No need to repaint if blur is already zero.
+    if (blur == 0.f)
+      return;
+
+    wallpaper_view_->layer()->SetLayerBlur(0.f);
+    wallpaper_view_->RepaintBlurAndOpacity(blur, 1.f);
+  }
 
  private:
   void Reset(bool close) {
@@ -148,13 +167,14 @@ class WallpaperWidgetController::WidgetHandler
   WallpaperWidgetController* controller_;
   views::Widget* widget_;
   aura::Window* parent_window_;
+  WallpaperView* wallpaper_view_;
 
   bool reset_ = false;
   bool has_blur_cache_ = false;
   bool observing_implicit_animations_ = false;
 
-  ScopedObserver<views::Widget, WidgetHandler> widget_observer_;
-  ScopedObserver<aura::Window, WidgetHandler> window_observer_;
+  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
+  ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WidgetHandler);
 };
@@ -205,7 +225,8 @@ void WallpaperWidgetController::SetWallpaperWidget(
     active_widget_->StopAnimating();
   }
 
-  animating_widget_ = std::make_unique<WidgetHandler>(this, widget);
+  animating_widget_ =
+      std::make_unique<WidgetHandler>(this, widget, wallpaper_view);
   animating_widget_->SetBlur(blur_sigma);
   animating_widget_->Show();
 
@@ -229,19 +250,10 @@ void WallpaperWidgetController::SetWallpaperBlur(float blur_sigma) {
     active_widget_->SetBlur(blur_sigma);
 }
 
-float WallpaperWidgetController::GetWallpaperBlur() const {
-  return active_widget_ ? active_widget_->blur_sigma() : 0.f;
-}
-
-ui::Layer* WallpaperWidgetController::GetLayer() {
-  if (GetAnimatingWidget())
-    return GetAnimatingWidget()->GetNativeWindow()->layer();
-  return GetWidget() ? GetWidget()->GetNativeWindow()->layer() : nullptr;
-}
-
 void WallpaperWidgetController::ResetWidgetsForTesting() {
   animating_widget_.reset();
   active_widget_.reset();
+  wallpaper_view_ = nullptr;
 }
 
 void WallpaperWidgetController::WidgetHandlerReset(WidgetHandler* widget) {
@@ -272,7 +284,7 @@ void WallpaperWidgetController::SetAnimatingWidgetAsActive() {
 
   // Notify observers that animation finished.
   RunAnimationEndCallbacks();
-  Shell::Get()->wallpaper_controller()->OnWallpaperAnimationFinished();
+  active_widget_->SwitchToNonLayerBlur();
 }
 
 void WallpaperWidgetController::RunAnimationEndCallbacks() {

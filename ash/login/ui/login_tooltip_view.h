@@ -20,6 +20,7 @@ class LoginTooltipView : public LoginBaseBubbleView {
 
   // LoginBaseBubbleView:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  gfx::Point CalculatePosition() override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

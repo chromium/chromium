@@ -17,15 +17,16 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/hash/sha1.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/sha1.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -37,6 +38,7 @@
 #include "base/task/post_task.h"
 #include "base/test/thread_test_helper.h"
 #include "base/time/time.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/startup_task_runner_service_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -63,15 +65,17 @@
 #include "components/bookmarks/browser/startup_task_runner_service.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/db/database_manager.h"
 #include "components/safe_browsing/db/metadata.pb.h"
 #include "components/safe_browsing/db/test_database_manager.h"
 #include "components/safe_browsing/db/util.h"
 #include "components/safe_browsing/db/v4_database.h"
-#include "components/safe_browsing/db/v4_feature_list.h"
 #include "components/safe_browsing/db/v4_get_hash_protocol_manager.h"
 #include "components/safe_browsing/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/db/v4_test_util.h"
+#include "components/safe_browsing/features.h"
+#include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -83,6 +87,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "crypto/sha2.h"
 #include "net/cookies/cookie_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -103,7 +109,7 @@
 #include "chromeos/constants/chromeos_switches.h"
 #endif
 
-#if !defined(SAFE_BROWSING_DB_LOCAL)
+#if !BUILDFLAG(SAFE_BROWSING_DB_LOCAL)
 #error This test requires SAFE_BROWSING_DB_LOCAL.
 #endif
 
@@ -118,10 +124,10 @@ namespace safe_browsing {
 
 namespace {
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kBlacklistResource[] = "/blacklisted/script.js";
 const char kMaliciousResource[] = "/malware/script.js";
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kEmptyPage[] = "/empty.html";
 const char kMalwareFile[] = "/downloads/dangerous/dangerous.exe";
 const char kMalwarePage[] = "/safe_browsing/malware.html";
@@ -350,22 +356,21 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
   std::string GetThreatHash() const { return threat_hash_; }
 
   void CheckDownloadUrl(const std::vector<GURL>& url_chain) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&TestSBClient::CheckDownloadUrlOnIOThread, this,
-                       url_chain));
+    base::PostTask(FROM_HERE, {BrowserThread::IO},
+                   base::BindOnce(&TestSBClient::CheckDownloadUrlOnIOThread,
+                                  this, url_chain));
     content::RunMessageLoop();  // Will stop in OnCheckDownloadUrlResult.
   }
 
   void CheckBrowseUrl(const GURL& url) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&TestSBClient::CheckBrowseUrlOnIOThread, this, url));
     content::RunMessageLoop();  // Will stop in OnCheckBrowseUrlResult.
   }
 
   void CheckResourceUrl(const GURL& url) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&TestSBClient::CheckResourceUrlOnIOThread, this, url));
     content::RunMessageLoop();  // Will stop in OnCheckResourceUrlResult.
@@ -381,8 +386,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
                                                                      this);
     if (synchronous_safe_signal) {
       threat_type_ = SB_THREAT_TYPE_SAFE;
-      base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                               base::BindOnce(&TestSBClient::CheckDone, this));
+      base::PostTask(FROM_HERE, {BrowserThread::UI},
+                     base::BindOnce(&TestSBClient::CheckDone, this));
     }
   }
 
@@ -398,8 +403,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
             url, threat_types, this);
     if (synchronous_safe_signal) {
       threat_type_ = SB_THREAT_TYPE_SAFE;
-      base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                               base::BindOnce(&TestSBClient::CheckDone, this));
+      base::PostTask(FROM_HERE, {BrowserThread::UI},
+                     base::BindOnce(&TestSBClient::CheckDone, this));
     }
   }
 
@@ -408,8 +413,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
         safe_browsing_service_->database_manager()->CheckResourceUrl(url, this);
     if (synchronous_safe_signal) {
       threat_type_ = SB_THREAT_TYPE_SAFE;
-      base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                               base::BindOnce(&TestSBClient::CheckDone, this));
+      base::PostTask(FROM_HERE, {BrowserThread::UI},
+                     base::BindOnce(&TestSBClient::CheckDone, this));
     }
   }
 
@@ -417,8 +422,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
   void OnCheckDownloadUrlResult(const std::vector<GURL>& /* url_chain */,
                                 SBThreatType threat_type) override {
     threat_type_ = threat_type;
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             base::BindOnce(&TestSBClient::CheckDone, this));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&TestSBClient::CheckDone, this));
   }
 
   // Called when the result of checking a browse URL is known.
@@ -426,8 +431,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
                               SBThreatType threat_type,
                               const ThreatMetadata& /* metadata */) override {
     threat_type_ = threat_type;
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             base::BindOnce(&TestSBClient::CheckDone, this));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&TestSBClient::CheckDone, this));
   }
 
   // Called when the result of checking a resource URL is known.
@@ -436,8 +441,8 @@ class TestSBClient : public base::RefCountedThreadSafe<TestSBClient>,
                                 const std::string& threat_hash) override {
     threat_type_ = threat_type;
     threat_hash_ = threat_hash;
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             base::BindOnce(&TestSBClient::CheckDone, this));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&TestSBClient::CheckDone, this));
   }
 
   void CheckDone() { base::RunLoop::QuitCurrentWhenIdleDeprecated(); }
@@ -569,7 +574,7 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
   }
 
   void CreateCSDService() {
-#if defined(SAFE_BROWSING_CSD)
+#if BUILDFLAG(SAFE_BROWSING_CSD)
     SafeBrowsingService* sb_service =
         g_browser_process->safe_browsing_service();
 
@@ -583,6 +588,15 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
 
   bool ShowingInterstitialPage(Browser* browser) {
     WebContents* contents = browser->tab_strip_model()->GetActiveWebContents();
+    if (base::FeatureList::IsEnabled(kCommittedSBInterstitials)) {
+      security_interstitials::SecurityInterstitialTabHelper* helper =
+          security_interstitials::SecurityInterstitialTabHelper::
+              FromWebContents(contents);
+      return helper &&
+             (helper
+                  ->GetBlockingPageForCurrentlyCommittedNavigationForTesting() !=
+              nullptr);
+    }
     InterstitialPage* interstitial_page = contents->GetInterstitialPage();
     return interstitial_page != nullptr;
   }
@@ -609,6 +623,12 @@ class V4SafeBrowsingServiceTest : public InProcessBrowserTest {
   TestV4GetHashProtocolManagerFactory* v4_get_hash_factory_;
   // Owned by the V4Database.
   TestV4StoreFactory* store_factory_;
+
+#if defined(ADDRESS_SANITIZER)
+  // TODO(lukasza): https://crbug.com/971820: Disallow renderer crashes once the
+  // bug is fixed.
+  content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
+#endif
 
   DISALLOW_COPY_AND_ASSIGN(V4SafeBrowsingServiceTest);
 };
@@ -643,15 +663,30 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MalwareWithWhitelist) {
   Mock::VerifyAndClearExpectations(&observer_);
   // There should be an InterstitialPage.
   WebContents* contents = browser()->tab_strip_model()->GetActiveWebContents();
-  InterstitialPage* interstitial_page = contents->GetInterstitialPage();
-  ASSERT_TRUE(interstitial_page);
-  // Proceed through it.
-  content::WindowedNotificationObserver load_stop_observer(
-      content::NOTIFICATION_LOAD_STOP,
-      content::Source<content::NavigationController>(
-          &contents->GetController()));
-  interstitial_page->Proceed();
-  load_stop_observer.Wait();
+
+  if (base::FeatureList::IsEnabled(kCommittedSBInterstitials)) {
+    security_interstitials::SecurityInterstitialTabHelper* helper =
+        security_interstitials::SecurityInterstitialTabHelper::FromWebContents(
+            contents);
+    security_interstitials::SecurityInterstitialPage* interstitial =
+        helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting();
+    ASSERT_TRUE(helper);
+    // TODO(carlosil): 1 is CMD_PROCEED, this should be changed to the enum
+    // values once CommandReceived is changed to accept integers.
+    content::TestNavigationObserver observer(contents);
+    interstitial->CommandReceived("1");
+    observer.WaitForNavigationFinished();
+  } else {
+    InterstitialPage* interstitial_page = contents->GetInterstitialPage();
+    ASSERT_TRUE(interstitial_page);
+    // Proceed through it.
+    content::WindowedNotificationObserver load_stop_observer(
+        content::NOTIFICATION_LOAD_STOP,
+        content::Source<content::NavigationController>(
+            &contents->GetController()));
+    interstitial_page->Proceed();
+    load_stop_observer.Wait();
+  }
   EXPECT_FALSE(ShowingInterstitialPage());
 
   // Navigate to kEmptyPage again -- should hit the whitelist this time.
@@ -718,6 +753,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MainFrameHitWithReferrer) {
 
 IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
                        SubResourceHitWithMainFrameReferrer) {
+  // TODO(carlosil): Re-enable once committed SB subresource interstitials are
+  // functional.
+  if (base::FeatureList::IsEnabled(kCommittedSBInterstitials))
+    return;
   GURL first_url = embedded_test_server()->GetURL(kEmptyPage);
   GURL second_url = embedded_test_server()->GetURL(kMalwarePage);
   GURL bad_url = embedded_test_server()->GetURL(kMalwareImg);
@@ -749,6 +788,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
 
 IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
                        SubResourceHitWithMainFrameRendererInitiatedSlowLoad) {
+  // TODO(carlosil): Re-enable once committed SB subresource interstitials are
+  // functional.
+  if (base::FeatureList::IsEnabled(kCommittedSBInterstitials))
+    return;
   GURL first_url = embedded_test_server()->GetURL(kEmptyPage);
   GURL second_url = embedded_test_server()->GetURL(kMalwareDelayedLoadsPage);
   GURL third_url = embedded_test_server()->GetURL(kNeverCompletesPath);
@@ -785,7 +828,8 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
   // a site that does not respond.  Should show interstitial and have first page
   // in referrer.
   contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::ASCIIToUTF16("navigateAndLoadMalwareImage()"));
+      base::ASCIIToUTF16("navigateAndLoadMalwareImage()"),
+      base::NullCallback());
   load_stop_observer.Wait();
 
   EXPECT_TRUE(ShowingInterstitialPage());
@@ -799,6 +843,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
 
 IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
                        SubResourceHitWithMainFrameBrowserInitiatedSlowLoad) {
+  // TODO(carlosil): Re-enable once committed SB subresource interstitials are
+  // functional.
+  if (base::FeatureList::IsEnabled(kCommittedSBInterstitials))
+    return;
   GURL first_url = embedded_test_server()->GetURL(kEmptyPage);
   GURL second_url = embedded_test_server()->GetURL(kMalwareDelayedLoadsPage);
   GURL third_url = embedded_test_server()->GetURL(kNeverCompletesPath);
@@ -839,7 +887,8 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
 
   // While the top-level navigation is pending, run javascript
   // function in the page which loads the malware image.
-  rfh->ExecuteJavaScriptForTests(base::ASCIIToUTF16("loadMalwareImage()"));
+  rfh->ExecuteJavaScriptForTests(base::ASCIIToUTF16("loadMalwareImage()"),
+                                 base::NullCallback());
 
   // Wait for interstitial to show.
   load_stop_observer.Wait();
@@ -854,9 +903,13 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest,
 }
 
 IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
+  // TODO(carlosil): Re-enable once committed SB subresource interstitials are
+  // functional.
+  if (base::FeatureList::IsEnabled(kCommittedSBInterstitials))
+    return;
   // Allow popups.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_POPUPS,
+      ->SetDefaultContentSetting(ContentSettingsType::POPUPS,
                                  CONTENT_SETTING_ALLOW);
 
   // Add |kMalwareImg| to fake safebrowsing db.
@@ -869,7 +922,8 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
   content::RenderFrameHost* main_rfh = main_contents->GetMainFrame();
 
   content::WebContentsAddedObserver web_contents_added_observer;
-  main_rfh->ExecuteJavaScriptForTests(base::ASCIIToUTF16("w=window.open();"));
+  main_rfh->ExecuteJavaScriptForTests(base::ASCIIToUTF16("w=window.open();"),
+                                      base::NullCallback());
   WebContents* new_tab_contents = web_contents_added_observer.GetWebContents();
   content::RenderFrameHost* new_tab_rfh = new_tab_contents->GetMainFrame();
   // A fresh WebContents should not have any NavigationEntries yet. (See
@@ -883,8 +937,10 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, SubResourceHitOnFreshTab) {
   new_tab_rfh->ExecuteJavaScriptForTests(
       base::ASCIIToUTF16("var img=new Image();"
                          "img.src=\"" +
-                         img_url.spec() + "\";"
-                                          "document.body.appendChild(img);"));
+                         img_url.spec() +
+                         "\";"
+                         "document.body.appendChild(img);"),
+      base::NullCallback());
 
   // Wait for interstitial to show.
   content::WaitForInterstitialAttach(new_tab_contents);
@@ -1038,6 +1094,10 @@ using V4SafeBrowsingServiceJsRequestInterstitialTest =
 // deleted when the old database backend is removed.
 IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestInterstitialTest,
                        MalwareBlocked) {
+  // TODO(carlosil): Re-enable once committed SB subresource interstitials are
+  // functional.
+  if (base::FeatureList::IsEnabled(kCommittedSBInterstitials))
+    return;
   GURL base_url = embedded_test_server()->GetURL(kMalwareJsRequestPage);
   JsRequestTestParam param = GetParam();
   GURL js_request_url = ConstructJsRequestURL(base_url, param.request_type);
@@ -1167,9 +1227,9 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckDownloadUrlRedirects) {
   EXPECT_EQ(SB_THREAT_TYPE_URL_BINARY_MALWARE, client->GetThreatType());
 }
 
-#if defined(GOOGLE_CHROME_BUILD)
-// This test is only enabled when GOOGLE_CHROME_BUILD is true because the store
-// that this test uses is only populated on GOOGLE_CHROME_BUILD builds.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// This test is only enabled when GOOGLE_CHROME_BRANDING is true because the
+// store that this test uses is only populated on GOOGLE_CHROME_BRANDING builds.
 IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckResourceUrl) {
   GURL blacklist_url = embedded_test_server()->GetURL(kBlacklistResource);
   GURL malware_url = embedded_test_server()->GetURL(kMaliciousResource);
@@ -1178,7 +1238,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckResourceUrl) {
   scoped_refptr<TestSBClient> client(new TestSBClient);
   {
     MarkUrlForResourceUnexpired(blacklist_url);
-    blacklist_url_hash = GetFullHash(blacklist_url);
+    blacklist_url_hash = V4ProtocolManagerUtil::GetFullHash(blacklist_url);
 
     client->CheckResourceUrl(blacklist_url);
     EXPECT_EQ(SB_THREAT_TYPE_BLACKLISTED_RESOURCE, client->GetThreatType());
@@ -1187,7 +1247,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckResourceUrl) {
   {
     MarkUrlForMalwareUnexpired(malware_url);
     MarkUrlForResourceUnexpired(malware_url);
-    malware_url_hash = GetFullHash(malware_url);
+    malware_url_hash = V4ProtocolManagerUtil::GetFullHash(malware_url);
 
     // Since we're checking a resource url, we should receive result that it's
     // a blacklisted resource, not a malware.
@@ -1200,7 +1260,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, CheckResourceUrl) {
   client->CheckResourceUrl(embedded_test_server()->GetURL(kEmptyPage));
   EXPECT_EQ(SB_THREAT_TYPE_SAFE, client->GetThreatType());
 }
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 ///////////////////////////////////////////////////////////////////////////////
 // END: These tests use SafeBrowsingService::Client to directly interact with
 // SafeBrowsingService.
@@ -1240,6 +1300,10 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareMainFrame) {
 // Irrespective of the threat_type classification, if the iframe URL is marked
 // as Malware, an interstitial should be shown.
 IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareIFrame) {
+  // TODO(carlosil): Re-enable once committed SB subresource interstitials are
+  // functional.
+  if (base::FeatureList::IsEnabled(kCommittedSBInterstitials))
+    return;
   GURL main_url = embedded_test_server()->GetURL(kMalwarePage);
   GURL iframe_url = embedded_test_server()->GetURL(kMalwareIFrame);
 
@@ -1263,6 +1327,10 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareIFrame) {
 // Depending on the threat_type classification, if an embedded resource is
 // marked as Malware, an interstitial may be shown.
 IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceMetadataTest, MalwareImg) {
+  // TODO(carlosil): Re-enable once committed SB subresource interstitials are
+  // functional.
+  if (base::FeatureList::IsEnabled(kCommittedSBInterstitials))
+    return;
   GURL main_url = embedded_test_server()->GetURL(kMalwarePage);
   GURL img_url = embedded_test_server()->GetURL(kMalwareImg);
 

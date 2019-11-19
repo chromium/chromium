@@ -77,17 +77,20 @@ void NativeCursorManagerAsh::SetDisplay(
     const display::Display& display,
     ::wm::NativeCursorManagerDelegate* delegate) {
   DCHECK(display.is_valid());
+  auto managed_display_info =
+      Shell::Get()->display_manager()->GetDisplayInfo(display.id());
+
   // Use the platform's device scale factor instead of the display's, which
   // might have been adjusted for the UI scale.
-  const float original_scale = Shell::Get()
-                                   ->display_manager()
-                                   ->GetDisplayInfo(display.id())
-                                   .device_scale_factor();
+  const float original_scale = managed_display_info.device_scale_factor();
   // And use the nearest resource scale factor.
   const float cursor_scale =
       ui::GetScaleForScaleFactor(ui::GetSupportedScaleFactor(original_scale));
 
-  if (image_cursors_->SetDisplay(display, cursor_scale))
+  display::Display panel_adjusted(display);
+  panel_adjusted.set_rotation(managed_display_info.GetLogicalActiveRotation());
+
+  if (image_cursors_->SetDisplay(panel_adjusted, cursor_scale))
     SetCursor(delegate->GetCursor(), delegate);
 
   Shell::Get()
@@ -152,9 +155,9 @@ void NativeCursorManagerAsh::SetMouseEventsEnabled(
   delegate->CommitMouseEventsEnabled(enabled);
 
   if (enabled)
-    Shell::Get()->aura_env()->SetLastMouseLocation(disabled_cursor_location_);
+    aura::Env::GetInstance()->SetLastMouseLocation(disabled_cursor_location_);
   else
-    disabled_cursor_location_ = Shell::Get()->aura_env()->last_mouse_location();
+    disabled_cursor_location_ = aura::Env::GetInstance()->last_mouse_location();
 
   SetVisibility(delegate->IsCursorVisible(), delegate);
   NotifyMouseEventsEnableStateChange(enabled);

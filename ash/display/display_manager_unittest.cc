@@ -22,6 +22,7 @@
 #include "ash/screen_util.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/shell_state.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -29,6 +30,7 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/format_macros.h"
+#include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -44,11 +46,11 @@
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_observer.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_change_observer.h"
 #include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager_utilities.h"
 #include "ui/display/manager/display_util.h"
-#include "ui/display/manager/fake_display_snapshot.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/manager/test/touch_device_manager_test_api.h"
 #include "ui/display/screen.h"
@@ -1997,32 +1999,6 @@ TEST_F(DisplayManagerTest, Rotate) {
             post_rotation_info.GetActiveRotation());
 }
 
-TEST_F(DisplayManagerTest, FHD125DefaultsTo08UIScaling) {
-  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
-
-  display_id++;
-  display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
-                                                         display_id);
-
-  // Setup the display modes with UI-scale.
-  display::ManagedDisplayInfo native_display_info =
-      display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1920, 1080));
-  native_display_info.set_device_scale_factor(1.25);
-
-  const display::ManagedDisplayMode base_mode(gfx::Size(1920, 1080), 60.0f,
-                                              false, false);
-  display::ManagedDisplayInfo::ManagedDisplayModeList mode_list =
-      CreateInternalManagedDisplayModeList(base_mode);
-  native_display_info.SetManagedDisplayModes(mode_list);
-
-  std::vector<display::ManagedDisplayInfo> display_info_list;
-  display_info_list.push_back(native_display_info);
-
-  display_manager()->OnNativeDisplaysChanged(display_info_list);
-
-  EXPECT_EQ(1.25f, GetDisplayInfoAt(0).GetEffectiveDeviceScaleFactor());
-}
-
 TEST_F(DisplayManagerTest, ResolutionChangeInUnifiedMode) {
   // Don't check root window destruction in unified mode.
   Shell::GetPrimaryRootWindow()->RemoveObserver(this);
@@ -2068,11 +2044,76 @@ TEST_F(DisplayManagerTest, ResolutionChangeInUnifiedMode) {
   EXPECT_EQ("1200x600", active_mode.size().ToString());
 }
 
+TEST_F(DisplayManagerTest, RotateExternalDisplayWithNonNativeMode) {
+  const int64_t internal_display_id = 5;
+  const int64_t external_id = 11;
+  const display::ManagedDisplayInfo internal_display_info =
+      display::ManagedDisplayInfo::CreateFromSpecWithID(
+          "1920x1080#1280x720|640x480%60", internal_display_id);
+  // Create an external display with a different origin to avoid triggering HW
+  // mirroring.
+  display::ManagedDisplayInfo external_display_info =
+      display::ManagedDisplayInfo::CreateFromSpecWithID(
+          "1+1-1280x720#1280x720|640x480%60", external_id);
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+
+  display_info_list.push_back(internal_display_info);
+  display_info_list.push_back(external_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+
+  EXPECT_EQ(2U, display_manager()->num_connected_displays());
+  EXPECT_EQ(internal_display_id,
+            display::Screen::GetScreen()->GetPrimaryDisplay().id());
+
+  display::ManagedDisplayMode active_mode;
+  EXPECT_TRUE(
+      display_manager()->GetActiveModeForDisplayId(external_id, &active_mode));
+  EXPECT_TRUE(active_mode.native());
+
+  const auto& modes = external_display_info.display_modes();
+  EXPECT_TRUE(display::test::SetDisplayResolution(
+      display_manager(), external_id, modes[0].size()));
+  display_manager()->UpdateDisplays();
+
+  EXPECT_TRUE(
+      display_manager()->GetActiveModeForDisplayId(external_id, &active_mode));
+  EXPECT_FALSE(active_mode.native());
+
+  // Rotate the display.
+  display_manager()->SetDisplayRotation(
+      external_id, display::Display::ROTATE_90,
+      display::Display::RotationSource::ACTIVE);
+
+  // Refresh |external_display_info| since we have rotated the display.
+  external_display_info = display_manager()->GetDisplayInfo(external_id);
+
+  // Disconnect the external display.
+  display_info_list.clear();
+  display_info_list.push_back(internal_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  EXPECT_EQ(1U, display_manager()->num_connected_displays());
+
+  // Reconnect the external display.
+  display_info_list.push_back(external_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+
+  EXPECT_EQ(2U, display_manager()->num_connected_displays());
+
+  // Verify the display maintains the rotation.
+  auto external_info = display_manager()->GetDisplayInfo(external_id);
+  EXPECT_EQ(display::Display::ROTATE_90, external_info.GetActiveRotation());
+}
+
 TEST_F(DisplayManagerTest, UpdateMouseCursorAfterRotateZoom) {
   // Make sure just rotating will not change native location.
   UpdateDisplay("300x200,200x150");
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  aura::Env* env = Shell::Get()->aura_env();
+  aura::Env* env = aura::Env::GetInstance();
 
   ui::test::EventGenerator generator1(root_windows[0]);
   ui::test::EventGenerator generator2(root_windows[1]);
@@ -3014,7 +3055,7 @@ TEST_F(DisplayManagerTest, UnifiedDesktopTabletMode) {
 
   // Turn on tablet mode, expect that we switch to mirror mode without any
   // crashes.
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
 
@@ -3023,18 +3064,18 @@ TEST_F(DisplayManagerTest, UnifiedDesktopTabletMode) {
   // asynchronously.
   auto* app_list_controller = Shell::Get()->app_list_controller();
   auto* tablet_mode_controller = Shell::Get()->tablet_mode_controller();
-  EXPECT_TRUE(tablet_mode_controller->IsTabletModeWindowManagerEnabled());
+  EXPECT_TRUE(tablet_mode_controller->InTabletMode());
   EXPECT_TRUE(app_list_controller->IsVisible());
 
   // Exiting tablet mode should exit mirror mode and return back to Unified
   // mode.
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_TRUE(display_manager()->IsInUnifiedMode());
 
   // Home Launcher should be dismissed.
-  EXPECT_FALSE(tablet_mode_controller->IsTabletModeWindowManagerEnabled());
+  EXPECT_FALSE(tablet_mode_controller->InTabletMode());
   EXPECT_FALSE(app_list_controller->IsVisible());
 }
 
@@ -3055,7 +3096,7 @@ TEST_F(DisplayManagerTest, DisplayPrefsAndForcedMirrorMode) {
 
   // Turn on tablet mode, and expect that it's not possible to persist the
   // display prefs while forced mirror mode is active.
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_TRUE(
@@ -3066,7 +3107,7 @@ TEST_F(DisplayManagerTest, DisplayPrefsAndForcedMirrorMode) {
   EXPECT_TRUE(display_manager()->external_display_mirror_info().empty());
 
   // Exit tablet mode and expect everything is back to normal.
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_FALSE(
@@ -3257,26 +3298,11 @@ TEST_F(DisplayManagerFontTest,
   EXPECT_NE(gfx::FontRenderParams::HINTING_NONE, GetFontHintingParams());
 }
 
-TEST_F(DisplayManagerTest, SubsequentInitializationOfDisplayZoom) {
-  int64_t id = display_manager()->GetDisplayAt(0).id();
-  const float zoom_factor = 1.5f;
-  // Negative value of ui scale means that this is not the first boot with
-  // display zoom enabled.
-  display_manager()->RegisterDisplayProperty(id, display::Display::ROTATE_0,
-                                             -1000, nullptr, gfx::Size(), 1.f,
-                                             zoom_factor, 60.f, false);
-
-  const display::ManagedDisplayInfo& info =
-      display_manager()->GetDisplayInfo(id);
-
-  EXPECT_FLOAT_EQ(info.zoom_factor(), zoom_factor);
-}
-
 TEST_F(DisplayManagerTest, CheckInitializationOfRotationProperty) {
   int64_t id = display_manager()->GetDisplayAt(0).id();
   display_manager()->RegisterDisplayProperty(id, display::Display::ROTATE_90,
-                                             1.0f, nullptr, gfx::Size(), 1.0f,
-                                             1.0f, 60.f, false);
+                                             nullptr, gfx::Size(), 1.0f, 1.0f,
+                                             60.f, false);
 
   const display::ManagedDisplayInfo& info =
       display_manager()->GetDisplayInfo(id);
@@ -3528,11 +3554,12 @@ class DisplayManagerOrientationTest : public DisplayManagerTest {
 
   void SetUp() override {
     DisplayManagerTest::SetUp();
-    const float kMeanGravity = 9.8066f;
-    portrait_primary->Set(ACCELEROMETER_SOURCE_SCREEN, -kMeanGravity, 0.f, 0.f);
-    portrait_secondary->Set(ACCELEROMETER_SOURCE_SCREEN, kMeanGravity, 0.f,
-                            0.f);
-    landscape_primary->Set(ACCELEROMETER_SOURCE_SCREEN, 0, -kMeanGravity, 0.f);
+    portrait_primary->Set(ACCELEROMETER_SOURCE_SCREEN, false,
+                          -base::kMeanGravityFloat, 0.f, 0.f);
+    portrait_secondary->Set(ACCELEROMETER_SOURCE_SCREEN, false,
+                            base::kMeanGravityFloat, 0.f, 0.f);
+    landscape_primary->Set(ACCELEROMETER_SOURCE_SCREEN, false, 0,
+                           -base::kMeanGravityFloat, 0.f);
   }
 
  protected:
@@ -3614,7 +3641,7 @@ TEST_F(DisplayManagerOrientationTest, SaveRestoreUserRotationLock) {
 
   EXPECT_EQ(0, test_observer.countAndReset());
   // Just enabling will not save the lock.
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_EQ(1, test_observer.countAndReset());
 
   EXPECT_EQ(display::Display::ROTATE_0, screen->GetPrimaryDisplay().rotation());
@@ -3656,13 +3683,13 @@ TEST_F(DisplayManagerOrientationTest, SaveRestoreUserRotationLock) {
   EXPECT_EQ(0, test_observer.countAndReset());
 
   // Exit tablet mode reset to clamshell's rotation, which is 90.
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   EXPECT_EQ(1, test_observer.countAndReset());
   EXPECT_EQ(display::Display::ROTATE_270,
             screen->GetPrimaryDisplay().rotation());
   // Activate Any.
   wm::ActivateWindow(window_a);
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_EQ(1, test_observer.countAndReset());
   // Entering with active ANY will lock again to landscape.
   EXPECT_EQ(display::Display::ROTATE_0, screen->GetPrimaryDisplay().rotation());
@@ -3707,7 +3734,7 @@ TEST_F(DisplayManagerOrientationTest, UserRotationLockReverse) {
   display::Screen* screen = display::Screen::GetScreen();
 
   // Just enabling will not save the lock.
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   orientation_controller->LockOrientationForWindow(
       window, OrientationLockType::kPortrait);
@@ -3752,7 +3779,7 @@ TEST_F(DisplayManagerOrientationTest, LockToSpecificOrientation) {
                                                      OrientationLockType::kAny);
   }
   wm::ActivateWindow(window_a);
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   orientation_controller->OnAccelerometerUpdated(portrait_primary);
 
@@ -3819,7 +3846,7 @@ TEST_F(DisplayManagerOrientationTest, DisplayChangeShouldNotSaveUserRotation) {
   test_api.SetFirstDisplayAsInternalDisplay();
   display::Screen* screen = display::Screen::GetScreen();
 
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   // Emulate that Animator is calling this async when animation is completed.
   display_manager->SetDisplayRotation(
       screen->GetPrimaryDisplay().id(), display::Display::ROTATE_90,
@@ -3827,7 +3854,7 @@ TEST_F(DisplayManagerOrientationTest, DisplayChangeShouldNotSaveUserRotation) {
   EXPECT_EQ(display::Display::ROTATE_90,
             screen->GetPrimaryDisplay().rotation());
 
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(false);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(false);
   EXPECT_EQ(display::Display::ROTATE_0, screen->GetPrimaryDisplay().rotation());
 }
 
@@ -4363,7 +4390,8 @@ TEST_F(DisplayManagerTest, MirrorModeRestoreAfterResume) {
   EXPECT_TRUE(display_manager()->IsInMirrorMode());
 }
 
-TEST_F(DisplayManagerTest, SoftwareMirrorRotationForTablet) {
+// crbug.com/1003339
+TEST_F(DisplayManagerTest, DISABLED_SoftwareMirrorRotationForTablet) {
   UpdateDisplay("400x300,800x800");
   base::RunLoop().RunUntilIdle();
 
@@ -4373,7 +4401,7 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForTablet) {
       .SetFirstDisplayAsInternalDisplay();
 
   // Simulate turning on mirror mode triggered by tablet mode on.
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(true);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
   EXPECT_EQ(gfx::Rect(0, 0, 400, 300),
@@ -4430,7 +4458,8 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForTablet) {
   EXPECT_EQ(gfx::RectF(0.0f, 100.0f, 800.0f, 600.0f), transformed_rect3);
 }
 
-TEST_F(DisplayManagerTest, SoftwareMirrorRotationForNonTablet) {
+// crbug.com/1003339
+TEST_F(DisplayManagerTest, DISABLED_SoftwareMirrorRotationForNonTablet) {
   MirrorWindowTestApi test_api;
   UpdateDisplay("400x300,800x800");
 
@@ -4488,6 +4517,119 @@ TEST_F(DisplayManagerTest, SoftwareMirrorRotationForNonTablet) {
       &transformed_rect3);
   host_list[0]->window()->transform().TransformRect(&transformed_rect3);
   EXPECT_EQ(gfx::RectF(100.0f, 0.0f, 600.0f, 800.0f), transformed_rect3);
+}
+
+TEST_F(DisplayManagerTest, DPSizeTest) {
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  UpdateDisplay("3840x2160*2.66666");
+  EXPECT_EQ(gfx::Size(1440, 810),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
+
+  UpdateDisplay("1920x1200*1.77777");
+  EXPECT_EQ(gfx::Size(1080, 675),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
+}
+
+TEST_F(DisplayManagerTest, PanelOrientation) {
+  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+
+  display::test::ScopedSetInternalDisplayId set_internal(display_manager(),
+                                                         display_id);
+
+  // The panel is portrait but its orientation is landscape.
+  display::ManagedDisplayInfo native_display_info =
+      display::CreateDisplayInfo(display_id, gfx::Rect(0, 0, 1920, 1080));
+  native_display_info.set_panel_orientation(
+      display::PanelOrientation::kRightUp);
+  const display::ManagedDisplayMode base_mode(gfx::Size(1920, 1080), 60.0f,
+                                              false, false);
+  display::ManagedDisplayInfo::ManagedDisplayModeList mode_list =
+      CreateInternalManagedDisplayModeList(base_mode);
+  native_display_info.SetManagedDisplayModes(mode_list);
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(native_display_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  // Check display is landscape at ROTATE_0.
+  EXPECT_EQ(gfx::Size(1080, 1920),
+            display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel());
+  EXPECT_EQ(display::Display::ROTATE_0,
+            display::Screen::GetScreen()->GetPrimaryDisplay().rotation());
+
+  // Check the orientation controller reports correct orientation.
+  auto* screen_orientation_controller =
+      Shell::Get()->screen_orientation_controller();
+  EXPECT_EQ(OrientationLockType::kLandscape,
+            screen_orientation_controller->natural_orientation());
+  EXPECT_EQ(OrientationLockType::kLandscapePrimary,
+            screen_orientation_controller->GetCurrentOrientation());
+
+  // Test if changing rotation works as if it's landscape panel.
+  DisplayConfigurationController::DisableAnimatorForTest();
+  ScreenOrientationControllerTestApi(screen_orientation_controller)
+      .SetDisplayRotation(display::Display::ROTATE_270,
+                          display::Display::RotationSource::USER);
+
+  EXPECT_EQ(gfx::Size(1920, 1080),
+            display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel());
+  EXPECT_EQ(display::Display::ROTATE_270,
+            display::Screen::GetScreen()->GetPrimaryDisplay().rotation());
+  EXPECT_EQ(OrientationLockType::kPortraitPrimary,
+            screen_orientation_controller->GetCurrentOrientation());
+}
+
+TEST_F(DisplayManagerTest, UpdateRootWindowForNewWindows) {
+  Shell::GetPrimaryRootWindow()->RemoveObserver(this);
+
+  // Sets display configuration with three displays, sets the "root window for
+  // new windows" to the one at index before, removes the one at index 2, and
+  // checks that the "root window for new windows" is the one at index after.
+  const auto test_removing_secondary = [this](size_t before, size_t after) {
+    UpdateDisplay("800x600,800x600,800x600");
+    aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+    Shell::Get()->shell_state()->SetRootWindowForNewWindows(
+        root_windows[before]);
+    UpdateDisplay("800x600,800x600");
+    EXPECT_EQ(root_windows[after], Shell::GetRootWindowForNewWindows());
+  };
+  test_removing_secondary(0u, 0u);
+  test_removing_secondary(1u, 1u);
+  test_removing_secondary(2u, 0u);
+
+  // Each iteration sets display configuration with three displays, sets the
+  // "root window for new windows" to the one at index before, enters unified
+  // desktop mode, and checks that the "root window for new windows" is the
+  // primary one.
+  for (size_t before = 0u; before < 3u; ++before) {
+    UpdateDisplay("800x600,800x600,800x600");
+    Shell::Get()->shell_state()->SetRootWindowForNewWindows(
+        Shell::GetAllRootWindows()[before]);
+    display_manager()->SetUnifiedDesktopEnabled(true);
+    EXPECT_EQ(Shell::GetPrimaryRootWindow(),
+              Shell::GetRootWindowForNewWindows());
+    display_manager()->SetUnifiedDesktopEnabled(false);
+  }
+}
+
+// Test that exiting mirror mode in tablet mode with a fullscreen window
+// does not cause a crash (crbug.com/1021662).
+TEST_F(DisplayManagerTest, ExitMirrorModeInTabletMode) {
+  // Simulate a tablet with and external display connected.
+  display::test::DisplayManagerTestApi(display_manager())
+      .SetFirstDisplayAsInternalDisplay();
+  UpdateDisplay("800x600,800x600");
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(display_manager()->IsInSoftwareMirrorMode());
+
+  // Create a window to force in-app shelf.
+  std::unique_ptr<aura::Window> window = CreateTestWindow();
+
+  // Exit mirror mode.
+  display_manager()->SetMirrorMode(display::MirrorMode::kOff, base::nullopt);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(display_manager()->IsInSoftwareMirrorMode());
 }
 
 }  // namespace ash

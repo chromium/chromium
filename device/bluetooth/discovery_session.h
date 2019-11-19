@@ -37,7 +37,7 @@ class DiscoverySession : public mojom::DiscoverySession {
   // The underlying discovery session.
   std::unique_ptr<device::BluetoothDiscoverySession> discovery_session_;
 
-  base::WeakPtrFactory<DiscoverySession> weak_ptr_factory_;
+  base::WeakPtrFactory<DiscoverySession> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DiscoverySession);
 };

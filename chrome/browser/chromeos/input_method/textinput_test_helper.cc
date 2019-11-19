@@ -17,15 +17,15 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_utils.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/ime/input_method_factory.h"
+#include "ui/base/ime/init/input_method_factory.h"
 
 namespace chromeos {
 
-void TextInputTestBase::SetUpInProcessBrowserTestFixture() {
-  ui::SetUpInputMethodFactoryForTesting();
-}
+TextInputTestBase::TextInputTestBase() = default;
+TextInputTestBase::~TextInputTestBase() = default;
 
 ui::InputMethod* TextInputTestBase::GetInputMethod() const {
   return browser()->window()->GetNativeWindow()->GetHost()->GetInputMethod();

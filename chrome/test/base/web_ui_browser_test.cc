@@ -16,6 +16,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/test_switches.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -27,12 +28,14 @@
 #include "chrome/browser/ui/webui/web_ui_test_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/test/base/js_test_api.h"
 #include "chrome/test/base/test_chrome_web_ui_controller_factory.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test_utils.h"
@@ -256,7 +259,7 @@ void BaseWebUIBrowserTest::PreLoadJavascriptLibraries(
   libraries_preloaded_ = true;
 
   bool should_wait_flag = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::content::kWaitForDebuggerWebUI);
+      ::switches::kWaitForDebuggerWebUI);
 
   if (should_wait_flag)
     RunJavascriptUsingHandler("setWaitUser", {}, false, false, preload_host);
@@ -268,7 +271,8 @@ void BaseWebUIBrowserTest::BrowsePreload(const GURL& browse_to) {
   WebUIJsInjectionReadyObserver injection_observer(
       web_contents, this, preload_test_fixture_, preload_test_name_);
   content::TestNavigationObserver navigation_observer(web_contents);
-  NavigateParams params(browser(), GURL(browse_to), ui::PAGE_TRANSITION_TYPED);
+
+  NavigateParams params(browser(), browse_to, ui::PAGE_TRANSITION_TYPED);
   params.disposition = WindowOpenDisposition::CURRENT_TAB;
 
   Navigate(&params);
@@ -343,7 +347,8 @@ void BaseWebUIBrowserTest::BrowsePrintPreload(const GURL& browse_to) {
 #endif
 }
 
-const char BaseWebUIBrowserTest::kDummyURL[] = "chrome://DummyURL";
+const std::string BaseWebUIBrowserTest::kDummyURL =
+    content::GetWebUIURLString("DummyURL");
 
 BaseWebUIBrowserTest::BaseWebUIBrowserTest()
     : libraries_preloaded_(false), override_selected_web_ui_(nullptr) {}
@@ -358,6 +363,10 @@ void BaseWebUIBrowserTest::set_preload_test_name(
   preload_test_name_ = preload_test_name;
 }
 
+void BaseWebUIBrowserTest::set_webui_host(const std::string& webui_host) {
+  test_factory_->set_webui_host(webui_host);
+}
+
 namespace {
 
 // DataSource for the dummy URL.  If no data source is provided then an error
@@ -370,11 +379,11 @@ class MockWebUIDataSource : public content::URLDataSource {
   ~MockWebUIDataSource() override {}
 
  private:
-  std::string GetSource() const override { return "dummyurl"; }
+  std::string GetSource() override { return "dummyurl"; }
 
   void StartDataRequest(
-      const std::string& path,
-      const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+      const GURL& url,
+      const content::WebContents::Getter& wc_getter,
       const content::URLDataSource::GotDataCallback& callback) override {
     std::string dummy_html = "<html><body>Dummy</body></html>";
     scoped_refptr<base::RefCountedString> response =
@@ -382,14 +391,14 @@ class MockWebUIDataSource : public content::URLDataSource {
     callback.Run(response.get());
   }
 
-  std::string GetMimeType(const std::string& path) const override {
+  std::string GetMimeType(const std::string& path) override {
     return "text/html";
   }
 
   // Append 'unsave-eval' to the default script-src CSP policy, since it is
   // needed by some tests using chrome://dummyurl (because they depend on
   // Mock4JS, see crbug.com/844820).
-  std::string GetContentSecurityPolicyScriptSrc() const override {
+  std::string GetContentSecurityPolicyScriptSrc() override {
     return "script-src chrome://resources 'self' 'unsafe-eval';";
   }
 
@@ -433,8 +442,6 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
   JavaScriptBrowserTest::SetUpOnMainThread();
 
   logging::SetLogMessageHandler(&LogHandler);
-
-  AddLibrary(base::FilePath(kA11yAuditLibraryJSPath));
 
   content::WebUIControllerFactory::UnregisterFactoryForTesting(
       ChromeWebUIControllerFactory::GetInstance());
@@ -537,9 +544,7 @@ bool BaseWebUIBrowserTest::RunJavascriptUsingHandler(
 GURL BaseWebUIBrowserTest::WebUITestDataPathToURL(
     const base::FilePath::StringType& path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath dir_test_data;
-  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &dir_test_data));
-  base::FilePath test_path(dir_test_data.Append(kWebUITestFolder).Append(path));
+  base::FilePath test_path(JsTestApiConfig().search_path);
   EXPECT_TRUE(base::PathExists(test_path));
   return net::FilePathToFileURL(test_path);
 }

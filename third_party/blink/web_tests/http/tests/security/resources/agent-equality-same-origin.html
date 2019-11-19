@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Same origin test</title>
+</head>
+<body>
+<iframe id="sub1" src="http://127.0.0.1:8000/security/resources/empty.html">
+</iframe>
+<iframe id="sub2" src="http://127.0.0.1:8000/security/resources/empty.html">
+</iframe>
+<script>
+// This file should be loaded as an iframe hosted on 127.0.0.1:8000.
+
+// This test creates two sibling subframes both located on 127.0.0.1:8000, and
+// report the agent IDs of this document and two subframes.
+
+function run(evt) {
+  let sub1 = document.getElementById('sub1');
+  let sub2 = document.getElementById('sub2');
+
+  let message = [
+    'same-origin test',
+    internals.getDocumentAgentId(document),
+    internals.getDocumentAgentId(sub1.contentDocument),
+    internals.getDocumentAgentId(sub2.contentDocument)
+  ];
+
+  window.parent.postMessage(message, '*');
+}
+
+window.addEventListener('load', run, {'once': true});
+</script>
+</body>
+</html>

@@ -6,3 +6,4 @@ per-file clang_static_analyzer*=mmoroz@chromium.org
 
 # Code Coverage.
 per-file *code_coverage*=mmoroz@chromium.org
+per-file *code_coverage*=liaoyuke@chromium.org

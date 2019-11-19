@@ -34,8 +34,8 @@
 #include <string>
 #include <vector>
 
-#include "services/ws/public/mojom/ime/ime.mojom-shared.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ime/mojom/ime_types.mojom-shared.h"
 
 namespace blink {
 
@@ -58,7 +58,7 @@ struct WebImeTextSpan {
       : type(Type::kComposition),
         start_offset(0),
         end_offset(0),
-        thickness(ws::mojom::ImeTextSpanThickness::kThin),
+        thickness(ui::mojom::ImeTextSpanThickness::kThin),
         background_color(0),
         suggestion_highlight_color(0),
         suggestions(std::vector<std::string>()) {}
@@ -67,7 +67,7 @@ struct WebImeTextSpan {
       Type ty,
       unsigned s,
       unsigned e,
-      ws::mojom::ImeTextSpanThickness th,
+      ui::mojom::ImeTextSpanThickness th,
       SkColor bc,
       SkColor shc = 0,
       const std::vector<std::string>& su = std::vector<std::string>())
@@ -91,7 +91,7 @@ struct WebImeTextSpan {
   unsigned start_offset;
   unsigned end_offset;
   SkColor underline_color = SK_ColorTRANSPARENT;
-  ws::mojom::ImeTextSpanThickness thickness;
+  ui::mojom::ImeTextSpanThickness thickness;
   SkColor background_color;
   SkColor suggestion_highlight_color;
   bool remove_on_finish_composing;

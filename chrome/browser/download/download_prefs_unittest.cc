@@ -9,15 +9,13 @@
 #include "chrome/common/safe_browsing/file_type_policies.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_CHROMEOS)
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/drive/drive_integration_service.h"
 #include "chrome/browser/chromeos/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/drive/drive_pref_names.h"
 #include "content/public/test/test_service_manager_context.h"
 #endif
@@ -37,7 +35,7 @@ TEST(DownloadPrefsTest, Prerequisites) {
 TEST(DownloadPrefsTest, NoAutoOpenForDisallowedFileTypes) {
   const base::FilePath kDangerousFilePath(FILE_PATH_LITERAL("/b/very-bad.swf"));
 
-  content::TestBrowserThreadBundle threads_are_required_for_testing_profile;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
   DownloadPrefs prefs(&profile);
 
@@ -48,7 +46,7 @@ TEST(DownloadPrefsTest, NoAutoOpenForDisallowedFileTypes) {
 TEST(DownloadPrefsTest, NoAutoOpenForFilesWithNoExtension) {
   const base::FilePath kFileWithNoExtension(FILE_PATH_LITERAL("abcd"));
 
-  content::TestBrowserThreadBundle threads_are_required_for_testing_profile;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
   DownloadPrefs prefs(&profile);
 
@@ -62,7 +60,7 @@ TEST(DownloadPrefsTest, AutoOpenForSafeFiles) {
   const base::FilePath kAnotherSafeFilePath(
       FILE_PATH_LITERAL("/ok/not-bad.txt"));
 
-  content::TestBrowserThreadBundle threads_are_required_for_testing_profile;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
   DownloadPrefs prefs(&profile);
 
@@ -76,7 +74,7 @@ TEST(DownloadPrefsTest, AutoOpenPrefSkipsDangerousFileTypesInPrefs) {
   const base::FilePath kSafeFilePath(
       FILE_PATH_LITERAL("/good/nothing-wrong.txt"));
 
-  content::TestBrowserThreadBundle threads_are_required_for_testing_profile;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
   // This sets .swf files and .txt files as auto-open file types.
   profile.GetPrefs()->SetString(prefs::kDownloadExtensionsToOpen, "swf:txt");
@@ -87,7 +85,7 @@ TEST(DownloadPrefsTest, AutoOpenPrefSkipsDangerousFileTypesInPrefs) {
 }
 
 TEST(DownloadPrefsTest, PrefsInitializationSkipsInvalidFileTypes) {
-  content::TestBrowserThreadBundle threads_are_required_for_testing_profile;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
   profile.GetPrefs()->SetString(prefs::kDownloadExtensionsToOpen,
                                 "swf:txt::.foo:baz");
@@ -112,7 +110,7 @@ TEST(DownloadPrefsTest, PrefsInitializationSkipsInvalidFileTypes) {
 }
 
 TEST(DownloadPrefsTest, AutoOpenCheckIsCaseInsensitive) {
-  content::TestBrowserThreadBundle threads_are_required_for_testing_profile;
+  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile;
   profile.GetPrefs()->SetString(prefs::kDownloadExtensionsToOpen,
                                 "txt:Foo:BAR");
@@ -128,6 +126,52 @@ TEST(DownloadPrefsTest, AutoOpenCheckIsCaseInsensitive) {
       base::FilePath(FILE_PATH_LITERAL("x.Bar"))));
 }
 
+TEST(DownloadPrefsTest, MissingDefaultPathCorrected) {
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile;
+  profile.GetPrefs()->SetFilePath(prefs::kDownloadDefaultDirectory,
+                                  base::FilePath());
+  EXPECT_FALSE(profile.GetPrefs()
+                   ->GetFilePath(prefs::kDownloadDefaultDirectory)
+                   .IsAbsolute());
+
+  DownloadPrefs download_prefs(&profile);
+  EXPECT_TRUE(download_prefs.DownloadPath().IsAbsolute())
+      << "Default download directory is " << download_prefs.DownloadPath();
+}
+
+TEST(DownloadPrefsTest, RelativeDefaultPathCorrected) {
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile;
+
+  profile.GetPrefs()->SetFilePath(prefs::kDownloadDefaultDirectory,
+                                  base::FilePath::FromUTF8Unsafe(".."));
+  EXPECT_FALSE(profile.GetPrefs()
+                   ->GetFilePath(prefs::kDownloadDefaultDirectory)
+                   .IsAbsolute());
+
+  DownloadPrefs download_prefs(&profile);
+  EXPECT_TRUE(download_prefs.DownloadPath().IsAbsolute())
+      << "Default download directory is " << download_prefs.DownloadPath();
+}
+
+TEST(DownloadPrefsTest, DefaultPathChangedToInvalidValue) {
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile;
+  profile.GetPrefs()->SetFilePath(prefs::kDownloadDefaultDirectory,
+                                  profile.GetPath());
+  EXPECT_TRUE(profile.GetPrefs()
+                  ->GetFilePath(prefs::kDownloadDefaultDirectory)
+                  .IsAbsolute());
+
+  DownloadPrefs download_prefs(&profile);
+  EXPECT_TRUE(download_prefs.DownloadPath().IsAbsolute());
+
+  download_prefs.SetDownloadPath(base::FilePath::FromUTF8Unsafe(".."));
+  EXPECT_EQ(download_prefs.DownloadPath(),
+            download_prefs.GetDefaultDownloadDirectory());
+}
+
 #if defined(OS_CHROMEOS)
 void ExpectValidDownloadDir(Profile* profile,
                             DownloadPrefs* prefs,
@@ -139,7 +183,7 @@ void ExpectValidDownloadDir(Profile* profile,
 }
 
 TEST(DownloadPrefsTest, DownloadDirSanitization) {
-  content::TestBrowserThreadBundle threads_are_required_for_testing_profile;
+  content::BrowserTaskEnvironment task_environment_;
   content::TestServiceManagerContext service_manager_context;
   TestingProfile profile(base::FilePath("/home/chronos/u-0123456789abcdef"));
   DownloadPrefs prefs(&profile);
@@ -175,32 +219,8 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
                                 parent_reference.value());
   EXPECT_EQ(prefs.DownloadPath(), default_dir);
 
-  // Drive
-  {
-    base::test::ScopedFeatureList features;
-    features.InitAndDisableFeature(chromeos::features::kDriveFs);
-    auto* integration_service =
-        drive::DriveIntegrationServiceFactory::GetForProfile(&profile);
-    integration_service->SetEnabled(true);
-
-    // My Drive root.
-    ExpectValidDownloadDir(
-        &profile, &prefs,
-        base::FilePath("/special/drive-0123456789abcdef/root"));
-    // My Drive/foo.
-    ExpectValidDownloadDir(
-        &profile, &prefs,
-        base::FilePath("/special/drive-0123456789abcdef/root/foo"));
-    // Invalid path without one of the drive roots.
-    profile.GetPrefs()->SetString(prefs::kDownloadDefaultDirectory,
-                                  "/special/drive-0123456789abcdef");
-    EXPECT_EQ(prefs.DownloadPath(), default_dir);
-  }
-
   // DriveFS
   {
-    base::test::ScopedFeatureList features;
-    features.InitAndEnableFeature(chromeos::features::kDriveFs);
     // Create new profile for enabled feature to work.
     TestingProfile profile2(base::FilePath("/home/chronos/u-0123456789abcdef"));
     chromeos::FakeChromeUserManager user_manager;

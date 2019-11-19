@@ -1,0 +1,147 @@
+This is a testharness.js-based test.
+Found 143 tests; 131 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Document: original interface defined
+PASS Partial interface Document: member names are unique
+PASS Partial interface mixin DocumentOrShadowRoot: original interface mixin defined
+PASS Partial interface mixin DocumentOrShadowRoot: member names are unique
+PASS Partial interface Document[2]: member names are unique
+PASS Partial interface Document[3]: member names are unique
+PASS Element includes Animatable: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slotable: member names are unique
+PASS Document includes NonElementParentNode: member names are unique
+PASS Document includes DocumentOrShadowRoot: member names are unique
+PASS Document includes ParentNode: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
+PASS Document includes GlobalEventHandlers: member names are unique
+PASS Document includes DocumentAndElementEventHandlers: member names are unique
+PASS DocumentFragment includes NonElementParentNode: member names are unique
+PASS DocumentFragment includes ParentNode: member names are unique
+PASS ShadowRoot includes DocumentOrShadowRoot: member names are unique
+PASS AnimationTimeline interface: existence and properties of interface object
+PASS AnimationTimeline interface object length
+PASS AnimationTimeline interface object name
+PASS AnimationTimeline interface: existence and properties of interface prototype object
+PASS AnimationTimeline interface: existence and properties of interface prototype object's "constructor" property
+PASS AnimationTimeline interface: existence and properties of interface prototype object's @@unscopables property
+PASS AnimationTimeline interface: attribute currentTime
+PASS DocumentTimeline interface: existence and properties of interface object
+PASS DocumentTimeline interface object length
+PASS DocumentTimeline interface object name
+PASS DocumentTimeline interface: existence and properties of interface prototype object
+PASS DocumentTimeline interface: existence and properties of interface prototype object's "constructor" property
+PASS DocumentTimeline interface: existence and properties of interface prototype object's @@unscopables property
+PASS DocumentTimeline must be primary interface of document.timeline
+PASS Stringification of document.timeline
+PASS AnimationTimeline interface: document.timeline must inherit property "currentTime" with the proper type
+PASS Animation interface: existence and properties of interface object
+PASS Animation interface object length
+PASS Animation interface object name
+PASS Animation interface: existence and properties of interface prototype object
+PASS Animation interface: existence and properties of interface prototype object's "constructor" property
+PASS Animation interface: existence and properties of interface prototype object's @@unscopables property
+PASS Animation interface: attribute id
+PASS Animation interface: attribute effect
+PASS Animation interface: attribute timeline
+PASS Animation interface: attribute startTime
+PASS Animation interface: attribute currentTime
+PASS Animation interface: attribute playbackRate
+PASS Animation interface: attribute playState
+FAIL Animation interface: attribute replaceState assert_true: The prototype object must have a property "replaceState" expected true got false
+PASS Animation interface: attribute pending
+PASS Animation interface: attribute ready
+PASS Animation interface: attribute finished
+PASS Animation interface: attribute onfinish
+PASS Animation interface: attribute oncancel
+FAIL Animation interface: attribute onremove assert_true: The prototype object must have a property "onremove" expected true got false
+PASS Animation interface: operation cancel()
+PASS Animation interface: operation finish()
+PASS Animation interface: operation play()
+PASS Animation interface: operation pause()
+PASS Animation interface: operation updatePlaybackRate(double)
+PASS Animation interface: operation reverse()
+FAIL Animation interface: operation persist() assert_own_property: interface prototype object missing non-static operation expected property "persist" missing
+FAIL Animation interface: operation commitStyles() assert_own_property: interface prototype object missing non-static operation expected property "commitStyles" missing
+PASS Animation must be primary interface of new Animation()
+PASS Stringification of new Animation()
+PASS Animation interface: new Animation() must inherit property "id" with the proper type
+PASS Animation interface: new Animation() must inherit property "effect" with the proper type
+PASS Animation interface: new Animation() must inherit property "timeline" with the proper type
+PASS Animation interface: new Animation() must inherit property "startTime" with the proper type
+PASS Animation interface: new Animation() must inherit property "currentTime" with the proper type
+PASS Animation interface: new Animation() must inherit property "playbackRate" with the proper type
+PASS Animation interface: new Animation() must inherit property "playState" with the proper type
+FAIL Animation interface: new Animation() must inherit property "replaceState" with the proper type assert_inherits: property "replaceState" not found in prototype chain
+PASS Animation interface: new Animation() must inherit property "pending" with the proper type
+PASS Animation interface: new Animation() must inherit property "ready" with the proper type
+PASS Animation interface: new Animation() must inherit property "finished" with the proper type
+PASS Animation interface: new Animation() must inherit property "onfinish" with the proper type
+PASS Animation interface: new Animation() must inherit property "oncancel" with the proper type
+FAIL Animation interface: new Animation() must inherit property "onremove" with the proper type assert_inherits: property "onremove" not found in prototype chain
+PASS Animation interface: new Animation() must inherit property "cancel()" with the proper type
+PASS Animation interface: new Animation() must inherit property "finish()" with the proper type
+PASS Animation interface: new Animation() must inherit property "play()" with the proper type
+PASS Animation interface: new Animation() must inherit property "pause()" with the proper type
+PASS Animation interface: new Animation() must inherit property "updatePlaybackRate(double)" with the proper type
+PASS Animation interface: calling updatePlaybackRate(double) on new Animation() with too few arguments must throw TypeError
+PASS Animation interface: new Animation() must inherit property "reverse()" with the proper type
+FAIL Animation interface: new Animation() must inherit property "persist()" with the proper type assert_inherits: property "persist" not found in prototype chain
+FAIL Animation interface: new Animation() must inherit property "commitStyles()" with the proper type assert_inherits: property "commitStyles" not found in prototype chain
+PASS AnimationEffect interface: existence and properties of interface object
+PASS AnimationEffect interface object length
+PASS AnimationEffect interface object name
+PASS AnimationEffect interface: existence and properties of interface prototype object
+PASS AnimationEffect interface: existence and properties of interface prototype object's "constructor" property
+PASS AnimationEffect interface: existence and properties of interface prototype object's @@unscopables property
+PASS AnimationEffect interface: operation getTiming()
+PASS AnimationEffect interface: operation getComputedTiming()
+PASS AnimationEffect interface: operation updateTiming(OptionalEffectTiming)
+PASS KeyframeEffect interface: existence and properties of interface object
+PASS KeyframeEffect interface object length
+PASS KeyframeEffect interface object name
+PASS KeyframeEffect interface: existence and properties of interface prototype object
+PASS KeyframeEffect interface: existence and properties of interface prototype object's "constructor" property
+PASS KeyframeEffect interface: existence and properties of interface prototype object's @@unscopables property
+PASS KeyframeEffect interface: attribute target
+FAIL KeyframeEffect interface: attribute pseudoElement assert_true: The prototype object must have a property "pseudoElement" expected true got false
+PASS KeyframeEffect interface: attribute composite
+PASS KeyframeEffect interface: operation getKeyframes()
+PASS KeyframeEffect interface: operation setKeyframes(object)
+PASS KeyframeEffect must be primary interface of new KeyframeEffect(null, null)
+PASS Stringification of new KeyframeEffect(null, null)
+PASS KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "target" with the proper type
+FAIL KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "pseudoElement" with the proper type assert_inherits: property "pseudoElement" not found in prototype chain
+PASS KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "composite" with the proper type
+PASS KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "getKeyframes()" with the proper type
+PASS KeyframeEffect interface: new KeyframeEffect(null, null) must inherit property "setKeyframes(object)" with the proper type
+PASS KeyframeEffect interface: calling setKeyframes(object) on new KeyframeEffect(null, null) with too few arguments must throw TypeError
+PASS AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "getTiming()" with the proper type
+PASS AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "getComputedTiming()" with the proper type
+PASS AnimationEffect interface: new KeyframeEffect(null, null) must inherit property "updateTiming(OptionalEffectTiming)" with the proper type
+PASS AnimationEffect interface: calling updateTiming(OptionalEffectTiming) on new KeyframeEffect(null, null) with too few arguments must throw TypeError
+PASS AnimationPlaybackEvent interface: existence and properties of interface object
+PASS AnimationPlaybackEvent interface object length
+PASS AnimationPlaybackEvent interface object name
+PASS AnimationPlaybackEvent interface: existence and properties of interface prototype object
+PASS AnimationPlaybackEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS AnimationPlaybackEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS AnimationPlaybackEvent interface: attribute currentTime
+PASS AnimationPlaybackEvent interface: attribute timelineTime
+PASS AnimationPlaybackEvent must be primary interface of new AnimationPlaybackEvent("cancel")
+PASS Stringification of new AnimationPlaybackEvent("cancel")
+PASS AnimationPlaybackEvent interface: new AnimationPlaybackEvent("cancel") must inherit property "currentTime" with the proper type
+PASS AnimationPlaybackEvent interface: new AnimationPlaybackEvent("cancel") must inherit property "timelineTime" with the proper type
+PASS Document interface: attribute timeline
+PASS Document interface: operation getAnimations()
+PASS Document interface: document must inherit property "timeline" with the proper type
+PASS Document interface: document must inherit property "getAnimations()" with the proper type
+FAIL ShadowRoot interface: operation getAnimations() assert_own_property: interface prototype object missing non-static operation expected property "getAnimations" missing
+FAIL ShadowRoot interface: shadowRoot must inherit property "getAnimations()" with the proper type assert_inherits: property "getAnimations" not found in prototype chain
+PASS Element interface: operation animate(object, [object Object],[object Object])
+PASS Element interface: operation getAnimations(GetAnimationsOptions)
+Harness: the test ran to completion.
+

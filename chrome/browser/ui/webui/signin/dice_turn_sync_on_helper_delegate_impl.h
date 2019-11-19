@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 
 class Browser;
-class BrowserList;
 class Profile;
 
 // Default implementation for DiceTurnSyncOnHelper::Delegate.
@@ -69,10 +68,8 @@ class DiceTurnSyncOnHelperDelegateImpl : public DiceTurnSyncOnHelper::Delegate,
   Profile* profile_;
   base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
       sync_confirmation_callback_;
-  ScopedObserver<BrowserList, BrowserListObserver>
-      scoped_browser_list_observer_;
   ScopedObserver<LoginUIService, LoginUIService::Observer>
-      scoped_login_ui_service_observer_;
+      scoped_login_ui_service_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DiceTurnSyncOnHelperDelegateImpl);
 };

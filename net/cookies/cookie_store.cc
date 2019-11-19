@@ -6,11 +6,30 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "net/cookies/cookie_options.h"
 
 namespace net {
 
+CookieStore::CookieStore() = default;
+
 CookieStore::~CookieStore() = default;
+
+// Default implementation which returns a default vector of UNKNOWN
+// CookieAccessSemantics.
+void CookieStore::GetAllCookiesWithAccessSemanticsAsync(
+    GetAllCookiesWithAccessSemanticsCallback callback) {
+  GetAllCookiesCallback adapted_callback = base::BindOnce(
+      [](CookieStore::GetAllCookiesWithAccessSemanticsCallback
+             original_callback,
+         const CookieList& cookies) {
+        std::vector<CookieAccessSemantics> default_access_semantics_list;
+        default_access_semantics_list.assign(cookies.size(),
+                                             CookieAccessSemantics::UNKNOWN);
+        std::move(original_callback)
+            .Run(cookies, default_access_semantics_list);
+      },
+      std::move(callback));
+  GetAllCookiesAsync(std::move(adapted_callback));
+}
 
 void CookieStore::DeleteAllAsync(DeleteCallback callback) {
   DeleteAllCreatedInTimeRangeAsync(CookieDeletionInfo::TimeRange(),
@@ -21,29 +40,13 @@ void CookieStore::SetForceKeepSessionState() {
   // By default, do nothing.
 }
 
-void CookieStore::GetAllCookiesForURLAsync(const GURL& url,
-                                           GetCookieListCallback callback) {
-  CookieOptions options;
-  options.set_include_httponly();
-  options.set_same_site_cookie_context(
-      CookieOptions::SameSiteCookieContext::SAME_SITE_STRICT);
-  options.set_do_not_update_access_time();
-  GetCookieListWithOptionsAsync(url, options, std::move(callback));
-}
-
-void CookieStore::SetChannelIDServiceID(int id) {
-  DCHECK_EQ(-1, channel_id_service_id_);
-  channel_id_service_id_ = id;
-}
-
-int CookieStore::GetChannelIDServiceID() {
-  return channel_id_service_id_;
+void CookieStore::SetCookieAccessDelegate(
+    std::unique_ptr<CookieAccessDelegate> delegate) {
+  cookie_access_delegate_ = std::move(delegate);
 }
 
 void CookieStore::DumpMemoryStats(
     base::trace_event::ProcessMemoryDump* pmd,
     const std::string& parent_absolute_name) const {}
-
-CookieStore::CookieStore() : channel_id_service_id_(-1) {}
 
 }  // namespace net

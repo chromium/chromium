@@ -94,10 +94,10 @@ ModelTypeStoreServiceImpl::ModelTypeStoreServiceImpl(
     const base::FilePath& base_path)
     : sync_path_(base_path.Append(base::FilePath(kSyncDataFolderName))),
       leveldb_path_(sync_path_.Append(base::FilePath(kLevelDBFolderName))),
-      backend_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      store_backend_(ModelTypeStoreBackend::CreateUninitialized()),
-      weak_ptr_factory_(this) {
+      backend_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
+      store_backend_(ModelTypeStoreBackend::CreateUninitialized()) {
   DCHECK(backend_task_runner_);
   backend_task_runner_->PostTask(
       FROM_HERE,
@@ -122,17 +122,6 @@ scoped_refptr<base::SequencedTaskRunner>
 ModelTypeStoreServiceImpl::GetBackendTaskRunner() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
   return backend_task_runner_;
-}
-
-std::unique_ptr<BlockingModelTypeStore>
-ModelTypeStoreServiceImpl::CreateBlockingStoreFromBackendSequence(
-    ModelType type) {
-  DCHECK(backend_task_runner_->RunsTasksInCurrentSequence());
-  if (!store_backend_) {
-    return nullptr;
-  }
-  return std::make_unique<BlockingModelTypeStoreImpl>(type,
-                                                      store_backend_.get());
 }
 
 }  // namespace syncer

@@ -24,13 +24,13 @@
 
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_vertical_data.h"
 
-#include "SkTypeface.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_types.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/skia/skia_text_metrics.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 namespace blink {
 namespace open_type {

@@ -1,0 +1,12 @@
+{
+  "manifest_version": 2,
+  "name": "The content script should have an access to the page origin",
+  "version": "1.0",
+  "browser_action": {},
+  "background" : {
+    "scripts" : ["background.js"]
+  },
+  "permissions": [
+    "activeTab"
+  ]
+}

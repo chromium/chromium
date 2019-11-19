@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div id="container">
   <table role="presentation">
@@ -15,8 +14,8 @@
 </div>
 
 <script>
-test_after_layout_and_paint(() => {
-  var axTableContainer = accessibilityController.accessibleElementById('container');
+test(() => {
+  var axTableContainer = accessibilityController.accessibleElementById('container').childAtIndex(0);
   assert_equals(axTableContainer.childrenCount, 4);
   var axTextContainer1 = axTableContainer.childAtIndex(0);
   assert_equals(axTextContainer1.role, "AXRole: AXGenericContainer");

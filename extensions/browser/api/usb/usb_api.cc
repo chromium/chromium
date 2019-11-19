@@ -16,25 +16,20 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/values.h"
-#include "device/base/device_client.h"
-#include "device/usb/mojo/type_converters.h"
-#include "device/usb/public/cpp/usb_utils.h"
-#include "device/usb/public/mojom/device.mojom.h"
-#include "device/usb/public/mojom/device_enumeration_options.mojom.h"
-#include "device/usb/public/mojom/device_manager.mojom.h"
-#include "device/usb/usb_descriptors.h"
-#include "device/usb/usb_device_handle.h"
-#include "device/usb/usb_service.h"
 #include "extensions/browser/api/device_permissions_manager.h"
 #include "extensions/browser/api/device_permissions_prompt.h"
 #include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/api/usb/usb_device_manager.h"
 #include "extensions/browser/api/usb/usb_device_resource.h"
 #include "extensions/browser/extension_function_constants.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/api/usb.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/permissions/usb_device_permission.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "services/device/public/cpp/usb/usb_utils.h"
+#include "services/device/public/mojom/usb_device.mojom.h"
+#include "services/device/public/mojom/usb_enumeration_options.mojom.h"
+#include "services/device/public/mojom/usb_manager.mojom.h"
 
 namespace usb = extensions::api::usb;
 namespace BulkTransfer = usb::BulkTransfer;
@@ -57,25 +52,21 @@ namespace ResetDevice = usb::ResetDevice;
 namespace SetInterfaceAlternateSetting = usb::SetInterfaceAlternateSetting;
 
 using content::BrowserThread;
+using device::mojom::UsbControlTransferParams;
+using device::mojom::UsbControlTransferRecipient;
+using device::mojom::UsbControlTransferType;
 using device::mojom::UsbDeviceFilterPtr;
-using device::UsbConfigDescriptor;
-using device::UsbControlTransferRecipient;
-using device::UsbControlTransferType;
-using device::UsbDevice;
-using device::UsbDeviceHandle;
-using device::UsbEndpointDescriptor;
-using device::UsbInterfaceDescriptor;
-using device::UsbService;
-using device::UsbSynchronizationType;
-using device::UsbTransferDirection;
-using device::UsbTransferStatus;
-using device::UsbTransferType;
-using device::UsbUsageType;
+using device::mojom::UsbIsochronousPacketPtr;
+using device::mojom::UsbSynchronizationType;
+using device::mojom::UsbTransferDirection;
+using device::mojom::UsbTransferStatus;
+using device::mojom::UsbTransferType;
+using device::mojom::UsbUsageType;
 using std::string;
 using std::vector;
 using usb::ConfigDescriptor;
-using usb::ControlTransferInfo;
 using usb::ConnectionHandle;
+using usb::ControlTransferInfo;
 using usb::Device;
 using usb::Direction;
 using usb::EndpointDescriptor;
@@ -193,43 +184,14 @@ bool ConvertRecipientFromApi(const Recipient& input,
 }
 
 template <class T>
-bool GetTransferSize(const T& input, size_t* output) {
-  if (input.direction == usb::DIRECTION_IN) {
-    const int* length = input.length.get();
-    if (length && *length >= 0 &&
-        static_cast<size_t>(*length) < kMaxTransferLength) {
-      *output = *length;
-      return true;
-    }
-  } else if (input.direction == usb::DIRECTION_OUT) {
-    if (input.data.get()) {
-      *output = input.data->size();
-      return true;
-    }
+bool GetTransferInSize(const T& input, uint32_t* output) {
+  const int* length = input.length.get();
+  if (length && *length >= 0 &&
+      static_cast<uint32_t>(*length) < kMaxTransferLength) {
+    *output = *length;
+    return true;
   }
   return false;
-}
-
-template <class T>
-scoped_refptr<base::RefCountedBytes> CreateBufferForTransfer(
-    const T& input,
-    UsbTransferDirection direction,
-    size_t size) {
-  if (size >= kMaxTransferLength)
-    return nullptr;
-
-  if (direction == UsbTransferDirection::INBOUND) {
-    return base::MakeRefCounted<base::RefCountedBytes>(size);
-  }
-
-  if (direction == UsbTransferDirection::OUTBOUND && input.data &&
-      size <= input.data->size()) {
-    return base::MakeRefCounted<base::RefCountedBytes>(
-        reinterpret_cast<const uint8_t*>(input.data->data()), size);
-  }
-
-  NOTREACHED();
-  return nullptr;
 }
 
 const char* ConvertTransferStatusToApi(const UsbTransferStatus status) {
@@ -297,13 +259,13 @@ Direction ConvertDirectionToApi(const UsbTransferDirection& input) {
 SynchronizationType ConvertSynchronizationTypeToApi(
     const UsbSynchronizationType& input) {
   switch (input) {
-    case device::USB_SYNCHRONIZATION_NONE:
+    case UsbSynchronizationType::NONE:
       return usb::SYNCHRONIZATION_TYPE_NONE;
-    case device::USB_SYNCHRONIZATION_ASYNCHRONOUS:
+    case UsbSynchronizationType::ASYNCHRONOUS:
       return usb::SYNCHRONIZATION_TYPE_ASYNCHRONOUS;
-    case device::USB_SYNCHRONIZATION_ADAPTIVE:
+    case UsbSynchronizationType::ADAPTIVE:
       return usb::SYNCHRONIZATION_TYPE_ADAPTIVE;
-    case device::USB_SYNCHRONIZATION_SYNCHRONOUS:
+    case UsbSynchronizationType::SYNCHRONOUS:
       return usb::SYNCHRONIZATION_TYPE_SYNCHRONOUS;
     default:
       NOTREACHED();
@@ -311,19 +273,19 @@ SynchronizationType ConvertSynchronizationTypeToApi(
   }
 }
 
-UsageType ConvertUsageTypeToApi(const UsbUsageType& input) {
+usb::UsageType ConvertUsageTypeToApi(const UsbUsageType& input) {
   switch (input) {
-    case device::USB_USAGE_DATA:
+    case UsbUsageType::DATA:
       return usb::USAGE_TYPE_DATA;
-    case device::USB_USAGE_FEEDBACK:
+    case UsbUsageType::FEEDBACK:
       return usb::USAGE_TYPE_FEEDBACK;
-    case device::USB_USAGE_EXPLICIT_FEEDBACK:
+    case UsbUsageType::EXPLICIT_FEEDBACK:
       return usb::USAGE_TYPE_EXPLICITFEEDBACK;
-    case device::USB_USAGE_PERIODIC:
+    case UsbUsageType::PERIODIC:
       return usb::USAGE_TYPE_PERIODIC;
-    case device::USB_USAGE_NOTIFICATION:
+    case UsbUsageType::NOTIFICATION:
       return usb::USAGE_TYPE_NOTIFICATION;
-    case device::USB_USAGE_RESERVED:
+    case UsbUsageType::RESERVED:
       return usb::USAGE_TYPE_NONE;
     default:
       NOTREACHED();
@@ -332,12 +294,12 @@ UsageType ConvertUsageTypeToApi(const UsbUsageType& input) {
 }
 
 EndpointDescriptor ConvertEndpointDescriptor(
-    const UsbEndpointDescriptor& input) {
+    const device::mojom::UsbEndpointInfo& input) {
   EndpointDescriptor output;
-  output.address = input.address;
-  output.type = ConvertTransferTypeToApi(input.transfer_type);
+  output.address = device::ConvertEndpointNumberToAddress(input);
+  output.type = ConvertTransferTypeToApi(input.type);
   output.direction = ConvertDirectionToApi(input.direction);
-  output.maximum_packet_size = input.maximum_packet_size;
+  output.maximum_packet_size = input.packet_size;
   output.synchronization =
       ConvertSynchronizationTypeToApi(input.synchronization_type);
   output.usage = ConvertUsageTypeToApi(input.usage_type);
@@ -347,27 +309,39 @@ EndpointDescriptor ConvertEndpointDescriptor(
 }
 
 InterfaceDescriptor ConvertInterfaceDescriptor(
-    const UsbInterfaceDescriptor& input) {
+    uint8_t interface_number,
+    const device::mojom::UsbAlternateInterfaceInfo& input) {
   InterfaceDescriptor output;
-  output.interface_number = input.interface_number;
+  output.interface_number = interface_number;
   output.alternate_setting = input.alternate_setting;
-  output.interface_class = input.interface_class;
-  output.interface_subclass = input.interface_subclass;
-  output.interface_protocol = input.interface_protocol;
-  for (const UsbEndpointDescriptor& input_endpoint : input.endpoints)
-    output.endpoints.push_back(ConvertEndpointDescriptor(input_endpoint));
+  output.interface_class = input.class_code;
+  output.interface_subclass = input.subclass_code;
+  output.interface_protocol = input.protocol_code;
+  for (const auto& input_endpoint : input.endpoints) {
+    DCHECK(input_endpoint);
+    output.endpoints.push_back(ConvertEndpointDescriptor(*input_endpoint));
+  }
   output.extra_data.assign(input.extra_data.begin(), input.extra_data.end());
   return output;
 }
 
-ConfigDescriptor ConvertConfigDescriptor(const UsbConfigDescriptor& input) {
+ConfigDescriptor ConvertConfigDescriptor(
+    const device::mojom::UsbConfigurationInfo& input) {
   ConfigDescriptor output;
   output.configuration_value = input.configuration_value;
   output.self_powered = input.self_powered;
   output.remote_wakeup = input.remote_wakeup;
   output.max_power = input.maximum_power;
-  for (const UsbInterfaceDescriptor& input_interface : input.interfaces)
-    output.interfaces.push_back(ConvertInterfaceDescriptor(input_interface));
+  for (const auto& input_interface : input.interfaces) {
+    DCHECK(input_interface);
+    // device::mojom::UsbInterfaceInfo aggregated all alternate settings
+    // with the same interface number.
+    for (const auto& alternate : input_interface->alternates) {
+      DCHECK(alternate);
+      output.interfaces.push_back(ConvertInterfaceDescriptor(
+          input_interface->interface_number, *alternate));
+    }
+  }
   output.extra_data.assign(input.extra_data.begin(), input.extra_data.end());
   return output;
 }
@@ -400,15 +374,24 @@ device::mojom::UsbDeviceFilterPtr ConvertDeviceFilter(
 
 }  // namespace
 
-UsbPermissionCheckingFunction::UsbPermissionCheckingFunction()
-    : device_permissions_manager_(nullptr) {
+UsbExtensionFunction::UsbExtensionFunction() = default;
+UsbExtensionFunction::~UsbExtensionFunction() = default;
+
+UsbDeviceManager* UsbExtensionFunction::usb_device_manager() {
+  if (!usb_device_manager_) {
+    usb_device_manager_ = UsbDeviceManager::Get(browser_context());
+  }
+
+  return usb_device_manager_;
 }
 
-UsbPermissionCheckingFunction::~UsbPermissionCheckingFunction() {
-}
+UsbPermissionCheckingFunction::UsbPermissionCheckingFunction()
+    : device_permissions_manager_(nullptr) {}
+
+UsbPermissionCheckingFunction::~UsbPermissionCheckingFunction() = default;
 
 bool UsbPermissionCheckingFunction::HasDevicePermission(
-    scoped_refptr<UsbDevice> device) {
+    const device::mojom::UsbDeviceInfo& device) {
   if (!device_permissions_manager_) {
     device_permissions_manager_ =
         DevicePermissionsManager::Get(browser_context());
@@ -424,7 +407,7 @@ bool UsbPermissionCheckingFunction::HasDevicePermission(
   }
 
   std::unique_ptr<UsbDevicePermission::CheckParam> param =
-      UsbDevicePermission::CheckParam::ForUsbDevice(extension(), device.get());
+      UsbDevicePermission::CheckParam::ForUsbDevice(extension(), device);
   if (extension()->permissions_data()->CheckAPIPermissionWithParam(
           APIPermission::kUsbDevice, param.get())) {
     return true;
@@ -440,21 +423,22 @@ void UsbPermissionCheckingFunction::RecordDeviceLastUsed() {
   }
 }
 
-UsbConnectionFunction::UsbConnectionFunction() {
-}
+UsbConnectionFunction::UsbConnectionFunction() = default;
+UsbConnectionFunction::~UsbConnectionFunction() = default;
 
-UsbConnectionFunction::~UsbConnectionFunction() {
-}
-
-scoped_refptr<device::UsbDeviceHandle> UsbConnectionFunction::GetDeviceHandle(
-    const extensions::api::usb::ConnectionHandle& handle) {
+UsbDeviceResource* UsbConnectionFunction::GetResourceFromHandle(
+    const ConnectionHandle& handle) {
   ApiResourceManager<UsbDeviceResource>* manager =
       ApiResourceManager<UsbDeviceResource>::Get(browser_context());
   if (!manager) {
     return nullptr;
   }
+  return manager->Get(extension_id(), handle.handle);
+}
 
-  UsbDeviceResource* resource = manager->Get(extension_id(), handle.handle);
+device::mojom::UsbDevice* UsbConnectionFunction::GetDeviceFromHandle(
+    const ConnectionHandle& handle) {
+  UsbDeviceResource* resource = GetResourceFromHandle(handle);
   if (!resource) {
     return nullptr;
   }
@@ -462,38 +446,38 @@ scoped_refptr<device::UsbDeviceHandle> UsbConnectionFunction::GetDeviceHandle(
   return resource->device();
 }
 
-void UsbConnectionFunction::ReleaseDeviceHandle(
-    const extensions::api::usb::ConnectionHandle& handle) {
+const device::mojom::UsbDeviceInfo*
+UsbConnectionFunction::GetDeviceInfoFromHandle(const ConnectionHandle& handle) {
+  UsbDeviceResource* resource = GetResourceFromHandle(handle);
+  if (!resource || !resource->device()) {
+    return nullptr;
+  }
+
+  auto* device_manager = usb_device_manager();
+  if (!device_manager) {
+    return nullptr;
+  }
+
+  return device_manager->GetDeviceInfo(resource->guid());
+}
+
+void UsbConnectionFunction::ReleaseDeviceResource(
+    const ConnectionHandle& handle) {
   ApiResourceManager<UsbDeviceResource>* manager =
       ApiResourceManager<UsbDeviceResource>::Get(browser_context());
   manager->Remove(extension_id(), handle.handle);
 }
 
-UsbTransferFunction::UsbTransferFunction() {
-}
+UsbTransferFunction::UsbTransferFunction() = default;
+UsbTransferFunction::~UsbTransferFunction() = default;
 
-UsbTransferFunction::~UsbTransferFunction() {
-}
-
-void UsbTransferFunction::OnCompleted(UsbTransferStatus status,
-                                      scoped_refptr<base::RefCountedBytes> data,
-                                      size_t length) {
-  std::unique_ptr<base::DictionaryValue> transfer_info(
-      new base::DictionaryValue());
-  transfer_info->SetInteger(kResultCodeKey, static_cast<int>(status));
-
-  if (data) {
-    transfer_info->Set(kDataKey, base::Value::CreateWithCopiedBuffer(
-                                     data->front_as<char>(), length));
-  } else {
-    transfer_info->Set(
-        kDataKey, std::make_unique<base::Value>(base::Value::Type::BINARY));
-  }
-
+void UsbTransferFunction::OnCompleted(
+    UsbTransferStatus status,
+    std::unique_ptr<base::DictionaryValue> transfer_info) {
   if (status == UsbTransferStatus::COMPLETED) {
     Respond(OneArgument(std::move(transfer_info)));
   } else {
-    std::unique_ptr<base::ListValue> error_args(new base::ListValue());
+    auto error_args = std::make_unique<base::ListValue>();
     error_args->Append(std::move(transfer_info));
     // Using ErrorWithArguments is discouraged but required to provide the
     // detailed transfer info as the transfer may have partially succeeded.
@@ -502,14 +486,92 @@ void UsbTransferFunction::OnCompleted(UsbTransferStatus status,
   }
 }
 
-UsbFindDevicesFunction::UsbFindDevicesFunction() {
+void UsbTransferFunction::OnTransferInCompleted(
+    UsbTransferStatus status,
+    const std::vector<uint8_t>& data) {
+  auto transfer_info = std::make_unique<base::DictionaryValue>();
+  transfer_info->SetInteger(kResultCodeKey, static_cast<int>(status));
+  transfer_info->Set(
+      kDataKey, base::Value::CreateWithCopiedBuffer(
+                    reinterpret_cast<const char*>(data.data()), data.size()));
+
+  OnCompleted(status, std::move(transfer_info));
 }
 
-UsbFindDevicesFunction::~UsbFindDevicesFunction() {
+void UsbTransferFunction::OnTransferOutCompleted(UsbTransferStatus status) {
+  auto transfer_info = std::make_unique<base::DictionaryValue>();
+  transfer_info->SetInteger(kResultCodeKey, static_cast<int>(status));
+  transfer_info->Set(kDataKey,
+                     std::make_unique<base::Value>(base::Value::Type::BINARY));
+
+  OnCompleted(status, std::move(transfer_info));
 }
+
+void UsbTransferFunction::OnDisconnect() {
+  const auto status = UsbTransferStatus::DISCONNECT;
+  auto transfer_info = std::make_unique<base::DictionaryValue>();
+  transfer_info->SetInteger(kResultCodeKey, static_cast<int>(status));
+  OnCompleted(status, std::move(transfer_info));
+}
+
+UsbGenericTransferFunction::UsbGenericTransferFunction() = default;
+UsbGenericTransferFunction::~UsbGenericTransferFunction() = default;
+
+// const usb::InterruptTransfer::Params* or
+// const usb::BulkTransfer::Params*
+template <typename T>
+ExtensionFunction::ResponseAction UsbGenericTransferFunction::DoTransfer(
+    T params) {
+  device::mojom::UsbDevice* device = GetDeviceFromHandle(params->handle);
+  if (!device) {
+    return RespondNow(Error(kErrorNoConnection));
+  }
+
+  const GenericTransferInfo& transfer = params->transfer_info;
+  UsbTransferDirection direction = UsbTransferDirection::INBOUND;
+
+  if (!ConvertDirectionFromApi(transfer.direction, &direction)) {
+    return RespondNow(Error(kErrorConvertDirection));
+  }
+
+  int timeout = transfer.timeout ? *transfer.timeout : 0;
+  if (timeout < 0) {
+    return RespondNow(Error(kErrorInvalidTimeout));
+  }
+
+  if (direction == UsbTransferDirection::INBOUND) {
+    uint32_t size = 0;
+    if (!GetTransferInSize(transfer, &size)) {
+      return RespondNow(Error(kErrorInvalidTransferLength));
+    }
+
+    device->GenericTransferIn(
+        transfer.endpoint, size, timeout,
+        mojo::WrapCallbackWithDropHandler(
+            base::BindOnce(&UsbGenericTransferFunction::OnTransferInCompleted,
+                           this),
+            base::BindOnce(&UsbGenericTransferFunction::OnDisconnect, this)));
+  } else {
+    // For case direction == UsbTransferDirection::OUTBOUND.
+    if (!transfer.data) {
+      return RespondNow(Error(kErrorMalformedParameters));
+    }
+
+    device->GenericTransferOut(
+        transfer.endpoint, *transfer.data, timeout,
+        mojo::WrapCallbackWithDropHandler(
+            base::BindOnce(&UsbGenericTransferFunction::OnTransferOutCompleted,
+                           this),
+            base::BindOnce(&UsbGenericTransferFunction::OnDisconnect, this)));
+  }
+  return RespondLater();
+}
+
+UsbFindDevicesFunction::UsbFindDevicesFunction() = default;
+UsbFindDevicesFunction::~UsbFindDevicesFunction() = default;
 
 ExtensionFunction::ResponseAction UsbFindDevicesFunction::Run() {
-  std::unique_ptr<extensions::api::usb::FindDevices::Params> parameters =
+  std::unique_ptr<usb::FindDevices::Params> parameters =
       FindDevices::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
@@ -533,26 +595,27 @@ ExtensionFunction::ResponseAction UsbFindDevicesFunction::Run() {
     return RespondNow(Error(kErrorPermissionDenied));
   }
 
-  UsbService* service = device::DeviceClient::Get()->GetUsbService();
-  if (!service) {
+  auto* device_manager = usb_device_manager();
+  if (!device_manager) {
     return RespondNow(Error(kErrorInitService));
   }
 
-  service->GetDevices(
-      base::Bind(&UsbFindDevicesFunction::OnGetDevicesComplete, this));
+  device_manager->GetDevices(
+      base::BindOnce(&UsbFindDevicesFunction::OnGetDevicesComplete, this));
   return RespondLater();
 }
 
 void UsbFindDevicesFunction::OnGetDevicesComplete(
-    const std::vector<scoped_refptr<UsbDevice>>& devices) {
+    std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
   result_.reset(new base::ListValue());
   barrier_ = base::BarrierClosure(
-      devices.size(), base::Bind(&UsbFindDevicesFunction::OpenComplete, this));
+      devices.size(),
+      base::BindOnce(&UsbFindDevicesFunction::OpenComplete, this));
 
-  for (const scoped_refptr<UsbDevice>& device : devices) {
+  for (const auto& device_info : devices) {
     // Skip the device whose vendor and product ID do not match the target one.
-    if (device->vendor_id() != vendor_id_ ||
-        device->product_id() != product_id_) {
+    if (device_info->vendor_id != vendor_id_ ||
+        device_info->product_id != product_id_) {
       barrier_.Run();
       continue;
     }
@@ -565,27 +628,39 @@ void UsbFindDevicesFunction::OnGetDevicesComplete(
     // deferred until device's interface classes are known).
     std::unique_ptr<UsbDevicePermission::CheckParam> param =
         UsbDevicePermission::CheckParam::ForUsbDevice(extension(),
-                                                      device.get());
+                                                      *device_info);
     if (!extension()->permissions_data()->CheckAPIPermissionWithParam(
             APIPermission::kUsbDevice, param.get())) {
       barrier_.Run();
     } else {
-      device->Open(base::Bind(&UsbFindDevicesFunction::OnDeviceOpened, this));
+      mojo::Remote<device::mojom::UsbDevice> device;
+      usb_device_manager()->GetDevice(device_info->guid,
+                                      device.BindNewPipeAndPassReceiver());
+      auto* device_raw = device.get();
+      device_raw->Open(mojo::WrapCallbackWithDropHandler(
+          base::BindOnce(&UsbFindDevicesFunction::OnDeviceOpened, this,
+                         device_info->guid, std::move(device)),
+          base::BindOnce(&UsbFindDevicesFunction::OnDisconnect, this)));
     }
   }
 }
 
 void UsbFindDevicesFunction::OnDeviceOpened(
-    scoped_refptr<UsbDeviceHandle> device_handle) {
-  if (device_handle.get()) {
+    const std::string& guid,
+    mojo::Remote<device::mojom::UsbDevice> device,
+    device::mojom::UsbOpenDeviceError error) {
+  if (error == device::mojom::UsbOpenDeviceError::OK && device) {
     ApiResourceManager<UsbDeviceResource>* manager =
         ApiResourceManager<UsbDeviceResource>::Get(browser_context());
     UsbDeviceResource* resource =
-        new UsbDeviceResource(extension_id(), device_handle);
-    scoped_refptr<UsbDevice> device = device_handle->GetDevice();
-    result_->Append(PopulateConnectionHandle(
-        manager->Add(resource), device->vendor_id(), device->product_id()));
+        new UsbDeviceResource(extension_id(), guid, std::move(device));
+    result_->Append(PopulateConnectionHandle(manager->Add(resource), vendor_id_,
+                                             product_id_));
   }
+  barrier_.Run();
+}
+
+void UsbFindDevicesFunction::OnDisconnect() {
   barrier_.Run();
 }
 
@@ -593,14 +668,11 @@ void UsbFindDevicesFunction::OpenComplete() {
   Respond(OneArgument(std::move(result_)));
 }
 
-UsbGetDevicesFunction::UsbGetDevicesFunction() {
-}
-
-UsbGetDevicesFunction::~UsbGetDevicesFunction() {
-}
+UsbGetDevicesFunction::UsbGetDevicesFunction() = default;
+UsbGetDevicesFunction::~UsbGetDevicesFunction() = default;
 
 ExtensionFunction::ResponseAction UsbGetDevicesFunction::Run() {
-  std::unique_ptr<extensions::api::usb::GetDevices::Params> parameters =
+  std::unique_ptr<usb::GetDevices::Params> parameters =
       GetDevices::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
@@ -620,27 +692,24 @@ ExtensionFunction::ResponseAction UsbGetDevicesFunction::Run() {
     filters_.push_back(std::move(filter));
   }
 
-  UsbService* service = device::DeviceClient::Get()->GetUsbService();
-  if (!service) {
+  auto* device_manager = usb_device_manager();
+  if (!device_manager) {
     return RespondNow(Error(kErrorInitService));
   }
 
-  service->GetDevices(
-      base::Bind(&UsbGetDevicesFunction::OnGetDevicesComplete, this));
+  device_manager->GetDevices(
+      base::BindOnce(&UsbGetDevicesFunction::OnGetDevicesComplete, this));
   return RespondLater();
 }
 
 void UsbGetDevicesFunction::OnGetDevicesComplete(
-    const std::vector<scoped_refptr<UsbDevice>>& devices) {
+    std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
   std::unique_ptr<base::ListValue> result(new base::ListValue());
-  UsbDeviceManager* device_manager = UsbDeviceManager::Get(browser_context());
-  for (const scoped_refptr<UsbDevice>& device : devices) {
-    if (UsbDeviceFilterMatchesAny(filters_, *device) &&
-        HasDevicePermission(device)) {
+  for (const auto& device : devices) {
+    if (device::UsbDeviceFilterMatchesAny(filters_, *device) &&
+        HasDevicePermission(*device)) {
       Device api_device;
-      DCHECK(device);
-      auto device_info = device::mojom::UsbDeviceInfo::From(*device);
-      device_manager->GetApiDevice(*device_info, &api_device);
+      usb_device_manager()->GetApiDevice(*device, &api_device);
       result->Append(api_device.ToValue());
     }
   }
@@ -648,15 +717,14 @@ void UsbGetDevicesFunction::OnGetDevicesComplete(
   Respond(OneArgument(std::move(result)));
 }
 
-UsbGetUserSelectedDevicesFunction::UsbGetUserSelectedDevicesFunction() {
-}
-
-UsbGetUserSelectedDevicesFunction::~UsbGetUserSelectedDevicesFunction() {
-}
+UsbGetUserSelectedDevicesFunction::UsbGetUserSelectedDevicesFunction() =
+    default;
+UsbGetUserSelectedDevicesFunction::~UsbGetUserSelectedDevicesFunction() =
+    default;
 
 ExtensionFunction::ResponseAction UsbGetUserSelectedDevicesFunction::Run() {
-  std::unique_ptr<extensions::api::usb::GetUserSelectedDevices::Params>
-      parameters = GetUserSelectedDevices::Params::Create(*args_);
+  std::unique_ptr<usb::GetUserSelectedDevices::Params> parameters =
+      GetUserSelectedDevices::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
   if (!user_gesture()) {
@@ -696,7 +764,9 @@ ExtensionFunction::ResponseAction UsbGetUserSelectedDevicesFunction::Run() {
 void UsbGetUserSelectedDevicesFunction::OnDevicesChosen(
     std::vector<device::mojom::UsbDeviceInfoPtr> devices) {
   std::unique_ptr<base::ListValue> result(new base::ListValue());
-  UsbDeviceManager* device_manager = UsbDeviceManager::Get(browser_context());
+  auto* device_manager = usb_device_manager();
+  DCHECK(device_manager);
+
   for (const auto& device : devices) {
     Device api_device;
     device_manager->GetApiDevice(*device, &api_device);
@@ -706,43 +776,42 @@ void UsbGetUserSelectedDevicesFunction::OnDevicesChosen(
   Respond(OneArgument(std::move(result)));
 }
 
-UsbGetConfigurationsFunction::UsbGetConfigurationsFunction() {}
-
-UsbGetConfigurationsFunction::~UsbGetConfigurationsFunction() {}
+UsbGetConfigurationsFunction::UsbGetConfigurationsFunction() = default;
+UsbGetConfigurationsFunction::~UsbGetConfigurationsFunction() = default;
 
 ExtensionFunction::ResponseAction UsbGetConfigurationsFunction::Run() {
-  std::unique_ptr<extensions::api::usb::GetConfigurations::Params> parameters =
+  std::unique_ptr<usb::GetConfigurations::Params> parameters =
       GetConfigurations::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  UsbService* service = device::DeviceClient::Get()->GetUsbService();
-  if (!service) {
+  auto* device_manager = usb_device_manager();
+  if (!device_manager) {
     return RespondNow(Error(kErrorInitService));
   }
 
   std::string guid;
-  if (!UsbDeviceManager::Get(browser_context())
-           ->GetGuidFromId(parameters->device.device, &guid)) {
+  if (!device_manager->GetGuidFromId(parameters->device.device, &guid)) {
     return RespondNow(Error(kErrorNoDevice));
   }
 
-  scoped_refptr<UsbDevice> device = service->GetDevice(guid);
-  if (!device.get()) {
+  const auto* device_info = device_manager->GetDeviceInfo(guid);
+  if (!device_info) {
     return RespondNow(Error(kErrorNoDevice));
   }
 
-  if (!HasDevicePermission(device)) {
+  if (!HasDevicePermission(*device_info)) {
     // This function must act as if there is no such device. Otherwise it can be
     // used to fingerprint unauthorized devices.
     return RespondNow(Error(kErrorNoDevice));
   }
 
   std::unique_ptr<base::ListValue> configs(new base::ListValue());
-  const UsbConfigDescriptor* active_config = device->active_configuration();
-  for (const UsbConfigDescriptor& config : device->configurations()) {
-    ConfigDescriptor api_config = ConvertConfigDescriptor(config);
-    if (active_config &&
-        config.configuration_value == active_config->configuration_value) {
+  uint8_t active_config_value = device_info->active_configuration;
+  for (const auto& config : device_info->configurations) {
+    DCHECK(config);
+    ConfigDescriptor api_config = ConvertConfigDescriptor(*config);
+    if (active_config_value &&
+        config->configuration_value == active_config_value) {
       api_config.active = true;
     }
     configs->Append(api_config.ToValue());
@@ -750,59 +819,62 @@ ExtensionFunction::ResponseAction UsbGetConfigurationsFunction::Run() {
   return RespondNow(OneArgument(std::move(configs)));
 }
 
-UsbRequestAccessFunction::UsbRequestAccessFunction() {
-}
-
-UsbRequestAccessFunction::~UsbRequestAccessFunction() {
-}
+UsbRequestAccessFunction::UsbRequestAccessFunction() = default;
+UsbRequestAccessFunction::~UsbRequestAccessFunction() = default;
 
 ExtensionFunction::ResponseAction UsbRequestAccessFunction::Run() {
-  std::unique_ptr<extensions::api::usb::RequestAccess::Params> parameters =
+  std::unique_ptr<usb::RequestAccess::Params> parameters =
       RequestAccess::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
   return RespondNow(OneArgument(std::make_unique<base::Value>(true)));
 }
 
-UsbOpenDeviceFunction::UsbOpenDeviceFunction() {
-}
-
-UsbOpenDeviceFunction::~UsbOpenDeviceFunction() {
-}
+UsbOpenDeviceFunction::UsbOpenDeviceFunction() = default;
+UsbOpenDeviceFunction::~UsbOpenDeviceFunction() = default;
 
 ExtensionFunction::ResponseAction UsbOpenDeviceFunction::Run() {
-  std::unique_ptr<extensions::api::usb::OpenDevice::Params> parameters =
+  std::unique_ptr<usb::OpenDevice::Params> parameters =
       OpenDevice::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  UsbService* service = device::DeviceClient::Get()->GetUsbService();
-  if (!service) {
+  auto* device_manager = usb_device_manager();
+  if (!device_manager) {
     return RespondNow(Error(kErrorInitService));
   }
 
   std::string guid;
-  if (!UsbDeviceManager::Get(browser_context())
-           ->GetGuidFromId(parameters->device.device, &guid)) {
+  if (!device_manager->GetGuidFromId(parameters->device.device, &guid)) {
     return RespondNow(Error(kErrorNoDevice));
   }
 
-  scoped_refptr<UsbDevice> device = service->GetDevice(guid);
-  if (!device.get()) {
+  const device::mojom::UsbDeviceInfo* device_info =
+      device_manager->GetDeviceInfo(guid);
+  if (!device_info) {
     return RespondNow(Error(kErrorNoDevice));
   }
 
-  if (!HasDevicePermission(device)) {
+  if (!HasDevicePermission(*device_info)) {
     // This function must act as if there is no such device. Otherwise it can be
     // used to fingerprint unauthorized devices.
     return RespondNow(Error(kErrorNoDevice));
   }
 
-  device->Open(base::Bind(&UsbOpenDeviceFunction::OnDeviceOpened, this));
+  mojo::Remote<device::mojom::UsbDevice> device;
+  device_manager->GetDevice(device_info->guid,
+                            device.BindNewPipeAndPassReceiver());
+  auto* device_raw = device.get();
+  device_raw->Open(mojo::WrapCallbackWithDropHandler(
+      base::BindOnce(&UsbOpenDeviceFunction::OnDeviceOpened, this,
+                     device_info->guid, std::move(device)),
+      base::BindOnce(&UsbOpenDeviceFunction::OnDisconnect, this)));
   return RespondLater();
 }
 
 void UsbOpenDeviceFunction::OnDeviceOpened(
-    scoped_refptr<UsbDeviceHandle> device_handle) {
-  if (!device_handle.get()) {
+    std::string guid,
+    mojo::Remote<device::mojom::UsbDevice> device,
+    device::mojom::UsbOpenDeviceError error) {
+  if (error != device::mojom::UsbOpenDeviceError::OK || !device) {
     Respond(Error(kErrorOpen));
     return;
   }
@@ -811,146 +883,158 @@ void UsbOpenDeviceFunction::OnDeviceOpened(
 
   ApiResourceManager<UsbDeviceResource>* manager =
       ApiResourceManager<UsbDeviceResource>::Get(browser_context());
-  scoped_refptr<UsbDevice> device = device_handle->GetDevice();
-  Respond(OneArgument(PopulateConnectionHandle(
-      manager->Add(new UsbDeviceResource(extension_id(), device_handle)),
-      device->vendor_id(), device->product_id())));
+  const device::mojom::UsbDeviceInfo* device_info =
+      usb_device_manager()->GetDeviceInfo(guid);
+  DCHECK(device_info);
+  UsbDeviceResource* resource = new UsbDeviceResource(
+      extension_id(), device_info->guid, std::move(device));
+  Respond(OneArgument(PopulateConnectionHandle(manager->Add(resource),
+                                               device_info->vendor_id,
+                                               device_info->product_id)));
 }
 
-UsbSetConfigurationFunction::UsbSetConfigurationFunction() {
+void UsbOpenDeviceFunction::OnDisconnect() {
+  Respond(Error(kErrorDisconnect));
 }
 
-UsbSetConfigurationFunction::~UsbSetConfigurationFunction() {
-}
+UsbSetConfigurationFunction::UsbSetConfigurationFunction() = default;
+UsbSetConfigurationFunction::~UsbSetConfigurationFunction() = default;
 
 ExtensionFunction::ResponseAction UsbSetConfigurationFunction::Run() {
-  std::unique_ptr<extensions::api::usb::SetConfiguration::Params> parameters =
+  std::unique_ptr<usb::SetConfiguration::Params> parameters =
       SetConfiguration::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  scoped_refptr<UsbDeviceHandle> device_handle =
-      GetDeviceHandle(parameters->handle);
-  if (!device_handle.get()) {
+  UsbDeviceResource* resource = GetResourceFromHandle(parameters->handle);
+  if (!resource || !resource->device()) {
     return RespondNow(Error(kErrorNoConnection));
   }
 
-  device_handle->SetConfiguration(
-      parameters->configuration_value,
-      base::Bind(&UsbSetConfigurationFunction::OnComplete, this));
+  if (parameters->configuration_value < 0) {
+    return RespondNow(Error(kErrorMalformedParameters));
+  }
+
+  uint8_t config_value = parameters->configuration_value;
+  resource->device()->SetConfiguration(
+      config_value, mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                        base::BindOnce(&UsbSetConfigurationFunction::OnComplete,
+                                       this, resource->guid(), config_value),
+                        false));
   return RespondLater();
 }
 
-void UsbSetConfigurationFunction::OnComplete(bool success) {
+void UsbSetConfigurationFunction::OnComplete(const std::string& guid,
+                                             uint8_t config_value,
+                                             bool success) {
   if (success) {
+    bool updated_config =
+        usb_device_manager()->UpdateActiveConfig(guid, config_value);
+    DCHECK(updated_config);
     Respond(NoArguments());
   } else {
     Respond(Error(kErrorCannotSetConfiguration));
   }
 }
 
-UsbGetConfigurationFunction::UsbGetConfigurationFunction() {
-}
-
-UsbGetConfigurationFunction::~UsbGetConfigurationFunction() {
-}
+UsbGetConfigurationFunction::UsbGetConfigurationFunction() = default;
+UsbGetConfigurationFunction::~UsbGetConfigurationFunction() = default;
 
 ExtensionFunction::ResponseAction UsbGetConfigurationFunction::Run() {
-  std::unique_ptr<extensions::api::usb::GetConfiguration::Params> parameters =
+  std::unique_ptr<usb::GetConfiguration::Params> parameters =
       GetConfiguration::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  scoped_refptr<UsbDeviceHandle> device_handle =
-      GetDeviceHandle(parameters->handle);
-  if (!device_handle.get()) {
+  const device::mojom::UsbDeviceInfo* device_info =
+      GetDeviceInfoFromHandle(parameters->handle);
+  if (!device_info) {
     return RespondNow(Error(kErrorNoConnection));
   }
 
-  const UsbConfigDescriptor* config_descriptor =
-      device_handle->GetDevice()->active_configuration();
-  if (config_descriptor) {
-    ConfigDescriptor config = ConvertConfigDescriptor(*config_descriptor);
-    config.active = true;
-    return RespondNow(OneArgument(config.ToValue()));
-  } else {
-    return RespondNow(Error(kErrorNotConfigured));
+  uint8_t active_config_value = device_info->active_configuration;
+  if (active_config_value) {
+    for (const auto& config : device_info->configurations) {
+      DCHECK(config);
+      if (config->configuration_value == active_config_value) {
+        ConfigDescriptor api_config = ConvertConfigDescriptor(*config);
+        return RespondNow(OneArgument(api_config.ToValue()));
+      }
+    }
   }
+  // Respond with an error if there is no active config or the config object
+  // can't be found according to |active_config_value|.
+  return RespondNow(Error(kErrorNotConfigured));
 }
 
-UsbListInterfacesFunction::UsbListInterfacesFunction() {
-}
-
-UsbListInterfacesFunction::~UsbListInterfacesFunction() {
-}
+UsbListInterfacesFunction::UsbListInterfacesFunction() = default;
+UsbListInterfacesFunction::~UsbListInterfacesFunction() = default;
 
 ExtensionFunction::ResponseAction UsbListInterfacesFunction::Run() {
-  std::unique_ptr<extensions::api::usb::ListInterfaces::Params> parameters =
+  std::unique_ptr<usb::ListInterfaces::Params> parameters =
       ListInterfaces::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  scoped_refptr<UsbDeviceHandle> device_handle =
-      GetDeviceHandle(parameters->handle);
-  if (!device_handle.get()) {
+  const device::mojom::UsbDeviceInfo* device_info =
+      GetDeviceInfoFromHandle(parameters->handle);
+  if (!device_info) {
     return RespondNow(Error(kErrorNoConnection));
   }
 
-  const UsbConfigDescriptor* config_descriptor =
-      device_handle->GetDevice()->active_configuration();
-  if (config_descriptor) {
-    ConfigDescriptor config = ConvertConfigDescriptor(*config_descriptor);
-
-    std::unique_ptr<base::ListValue> result(new base::ListValue);
-    for (size_t i = 0; i < config.interfaces.size(); ++i) {
-      result->Append(config.interfaces[i].ToValue());
-    }
-
-    return RespondNow(OneArgument(std::move(result)));
-  } else {
+  uint8_t active_config_value = device_info->active_configuration;
+  if (!active_config_value) {
     return RespondNow(Error(kErrorNotConfigured));
   }
+
+  for (const auto& config : device_info->configurations) {
+    DCHECK(config);
+    if (config->configuration_value == active_config_value) {
+      ConfigDescriptor api_config = ConvertConfigDescriptor(*config);
+      std::unique_ptr<base::ListValue> result(new base::ListValue);
+      for (size_t i = 0; i < api_config.interfaces.size(); ++i) {
+        result->Append(api_config.interfaces[i].ToValue());
+      }
+      return RespondNow(OneArgument(std::move(result)));
+    }
+  }
+  // Respond with an error if the config object can't be found according to
+  // |active_config_value|.
+  return RespondNow(Error(kErrorNotConfigured));
 }
 
-UsbCloseDeviceFunction::UsbCloseDeviceFunction() {
-}
-
-UsbCloseDeviceFunction::~UsbCloseDeviceFunction() {
-}
+UsbCloseDeviceFunction::UsbCloseDeviceFunction() = default;
+UsbCloseDeviceFunction::~UsbCloseDeviceFunction() = default;
 
 ExtensionFunction::ResponseAction UsbCloseDeviceFunction::Run() {
-  std::unique_ptr<extensions::api::usb::CloseDevice::Params> parameters =
+  std::unique_ptr<usb::CloseDevice::Params> parameters =
       CloseDevice::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  scoped_refptr<UsbDeviceHandle> device_handle =
-      GetDeviceHandle(parameters->handle);
-  if (!device_handle.get()) {
+  device::mojom::UsbDevice* device = GetDeviceFromHandle(parameters->handle);
+  if (!device) {
     return RespondNow(Error(kErrorNoConnection));
   }
 
   // The device handle is closed when the resource is destroyed.
-  ReleaseDeviceHandle(parameters->handle);
+  ReleaseDeviceResource(parameters->handle);
   return RespondNow(NoArguments());
 }
 
-UsbClaimInterfaceFunction::UsbClaimInterfaceFunction() {
-}
-
-UsbClaimInterfaceFunction::~UsbClaimInterfaceFunction() {
-}
+UsbClaimInterfaceFunction::UsbClaimInterfaceFunction() = default;
+UsbClaimInterfaceFunction::~UsbClaimInterfaceFunction() = default;
 
 ExtensionFunction::ResponseAction UsbClaimInterfaceFunction::Run() {
-  std::unique_ptr<extensions::api::usb::ClaimInterface::Params> parameters =
+  std::unique_ptr<usb::ClaimInterface::Params> parameters =
       ClaimInterface::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  scoped_refptr<UsbDeviceHandle> device_handle =
-      GetDeviceHandle(parameters->handle);
-  if (!device_handle.get()) {
+  device::mojom::UsbDevice* device = GetDeviceFromHandle(parameters->handle);
+  if (!device) {
     return RespondNow(Error(kErrorNoConnection));
   }
 
-  device_handle->ClaimInterface(
+  device->ClaimInterface(
       parameters->interface_number,
-      base::Bind(&UsbClaimInterfaceFunction::OnComplete, this));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&UsbClaimInterfaceFunction::OnComplete, this), false));
   return RespondLater();
 }
 
@@ -962,26 +1046,24 @@ void UsbClaimInterfaceFunction::OnComplete(bool success) {
   }
 }
 
-UsbReleaseInterfaceFunction::UsbReleaseInterfaceFunction() {
-}
-
-UsbReleaseInterfaceFunction::~UsbReleaseInterfaceFunction() {
-}
+UsbReleaseInterfaceFunction::UsbReleaseInterfaceFunction() = default;
+UsbReleaseInterfaceFunction::~UsbReleaseInterfaceFunction() = default;
 
 ExtensionFunction::ResponseAction UsbReleaseInterfaceFunction::Run() {
-  std::unique_ptr<extensions::api::usb::ReleaseInterface::Params> parameters =
+  std::unique_ptr<usb::ReleaseInterface::Params> parameters =
       ReleaseInterface::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  scoped_refptr<UsbDeviceHandle> device_handle =
-      GetDeviceHandle(parameters->handle);
-  if (!device_handle.get()) {
+  device::mojom::UsbDevice* device = GetDeviceFromHandle(parameters->handle);
+  if (!device) {
     return RespondNow(Error(kErrorNoConnection));
   }
 
-  device_handle->ReleaseInterface(
+  device->ReleaseInterface(
       parameters->interface_number,
-      base::Bind(&UsbReleaseInterfaceFunction::OnComplete, this));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&UsbReleaseInterfaceFunction::OnComplete, this),
+          false));
   return RespondLater();
 }
 
@@ -993,28 +1075,28 @@ void UsbReleaseInterfaceFunction::OnComplete(bool success) {
 }
 
 UsbSetInterfaceAlternateSettingFunction::
-    UsbSetInterfaceAlternateSettingFunction() {
-}
+    UsbSetInterfaceAlternateSettingFunction() = default;
 
 UsbSetInterfaceAlternateSettingFunction::
-    ~UsbSetInterfaceAlternateSettingFunction() {
-}
+    ~UsbSetInterfaceAlternateSettingFunction() = default;
 
 ExtensionFunction::ResponseAction
 UsbSetInterfaceAlternateSettingFunction::Run() {
-  std::unique_ptr<extensions::api::usb::SetInterfaceAlternateSetting::Params>
-      parameters = SetInterfaceAlternateSetting::Params::Create(*args_);
+  std::unique_ptr<usb::SetInterfaceAlternateSetting::Params> parameters =
+      SetInterfaceAlternateSetting::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  scoped_refptr<UsbDeviceHandle> device_handle =
-      GetDeviceHandle(parameters->handle);
-  if (!device_handle.get()) {
+  device::mojom::UsbDevice* device = GetDeviceFromHandle(parameters->handle);
+  if (!device) {
     return RespondNow(Error(kErrorNoConnection));
   }
 
-  device_handle->SetInterfaceAlternateSetting(
+  device->SetInterfaceAlternateSetting(
       parameters->interface_number, parameters->alternate_setting,
-      base::Bind(&UsbSetInterfaceAlternateSettingFunction::OnComplete, this));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          base::BindOnce(&UsbSetInterfaceAlternateSettingFunction::OnComplete,
+                         this),
+          false));
   return RespondLater();
 }
 
@@ -1026,20 +1108,16 @@ void UsbSetInterfaceAlternateSettingFunction::OnComplete(bool success) {
   }
 }
 
-UsbControlTransferFunction::UsbControlTransferFunction() {
-}
-
-UsbControlTransferFunction::~UsbControlTransferFunction() {
-}
+UsbControlTransferFunction::UsbControlTransferFunction() = default;
+UsbControlTransferFunction::~UsbControlTransferFunction() = default;
 
 ExtensionFunction::ResponseAction UsbControlTransferFunction::Run() {
-  std::unique_ptr<extensions::api::usb::ControlTransfer::Params> parameters =
+  std::unique_ptr<usb::ControlTransfer::Params> parameters =
       ControlTransfer::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  scoped_refptr<UsbDeviceHandle> device_handle =
-      GetDeviceHandle(parameters->handle);
-  if (!device_handle.get()) {
+  device::mojom::UsbDevice* device = GetDeviceFromHandle(parameters->handle);
+  if (!device) {
     return RespondNow(Error(kErrorNoConnection));
   }
 
@@ -1047,7 +1125,6 @@ ExtensionFunction::ResponseAction UsbControlTransferFunction::Run() {
   UsbTransferDirection direction = UsbTransferDirection::INBOUND;
   UsbControlTransferType request_type;
   UsbControlTransferRecipient recipient;
-  size_t size = 0;
 
   if (!ConvertDirectionFromApi(transfer.direction, &direction)) {
     return RespondNow(Error(kErrorConvertDirection));
@@ -1061,144 +1138,95 @@ ExtensionFunction::ResponseAction UsbControlTransferFunction::Run() {
     return RespondNow(Error(kErrorConvertRecipient));
   }
 
-  if (!GetTransferSize(transfer, &size)) {
-    return RespondNow(Error(kErrorInvalidTransferLength));
-  }
-
-  scoped_refptr<base::RefCountedBytes> buffer =
-      CreateBufferForTransfer(transfer, direction, size);
-  if (!buffer)
-    return RespondNow(Error(kErrorMalformedParameters));
-
   int timeout = transfer.timeout ? *transfer.timeout : 0;
   if (timeout < 0) {
     return RespondNow(Error(kErrorInvalidTimeout));
   }
 
-  device_handle->ControlTransfer(
-      direction, request_type, recipient, transfer.request, transfer.value,
-      transfer.index, buffer, timeout,
-      base::Bind(&UsbControlTransferFunction::OnCompleted, this));
+  auto mojo_parameters =
+      UsbControlTransferParams::New(request_type, recipient, transfer.request,
+                                    transfer.value, transfer.index);
+
+  if (direction == UsbTransferDirection::INBOUND) {
+    uint32_t size = 0;
+    if (!GetTransferInSize(transfer, &size)) {
+      return RespondNow(Error(kErrorInvalidTransferLength));
+    }
+
+    device->ControlTransferIn(
+        std::move(mojo_parameters), size, timeout,
+        mojo::WrapCallbackWithDropHandler(
+            base::BindOnce(&UsbControlTransferFunction::OnTransferInCompleted,
+                           this),
+            base::BindOnce(&UsbControlTransferFunction::OnDisconnect, this)));
+  } else {
+    // For case direction == UsbTransferDirection::OUTBOUND.
+    if (!transfer.data) {
+      return RespondNow(Error(kErrorMalformedParameters));
+    }
+
+    device->ControlTransferOut(
+        std::move(mojo_parameters), *transfer.data, timeout,
+        mojo::WrapCallbackWithDropHandler(
+            base::BindOnce(&UsbControlTransferFunction::OnTransferOutCompleted,
+                           this),
+            base::BindOnce(&UsbControlTransferFunction::OnDisconnect, this)));
+  }
   return RespondLater();
 }
 
-UsbBulkTransferFunction::UsbBulkTransferFunction() {
-}
-
-UsbBulkTransferFunction::~UsbBulkTransferFunction() {
-}
+UsbBulkTransferFunction::UsbBulkTransferFunction() = default;
+UsbBulkTransferFunction::~UsbBulkTransferFunction() = default;
 
 ExtensionFunction::ResponseAction UsbBulkTransferFunction::Run() {
-  std::unique_ptr<extensions::api::usb::BulkTransfer::Params> parameters =
+  std::unique_ptr<usb::BulkTransfer::Params> parameters =
       BulkTransfer::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  scoped_refptr<UsbDeviceHandle> device_handle =
-      GetDeviceHandle(parameters->handle);
-  if (!device_handle.get()) {
-    return RespondNow(Error(kErrorNoConnection));
-  }
-
-  const GenericTransferInfo& transfer = parameters->transfer_info;
-  UsbTransferDirection direction = UsbTransferDirection::INBOUND;
-  size_t size = 0;
-
-  if (!ConvertDirectionFromApi(transfer.direction, &direction)) {
-    return RespondNow(Error(kErrorConvertDirection));
-  }
-
-  if (!GetTransferSize(transfer, &size)) {
-    return RespondNow(Error(kErrorInvalidTransferLength));
-  }
-
-  scoped_refptr<base::RefCountedBytes> buffer =
-      CreateBufferForTransfer(transfer, direction, size);
-  if (!buffer)
-    return RespondNow(Error(kErrorMalformedParameters));
-
-  int timeout = transfer.timeout ? *transfer.timeout : 0;
-  if (timeout < 0) {
-    return RespondNow(Error(kErrorInvalidTimeout));
-  }
-
-  device_handle->GenericTransfer(
-      direction, transfer.endpoint, buffer, timeout,
-      base::Bind(&UsbBulkTransferFunction::OnCompleted, this));
-  return RespondLater();
+  return DoTransfer<const usb::BulkTransfer::Params*>(parameters.get());
 }
 
-UsbInterruptTransferFunction::UsbInterruptTransferFunction() {
-}
-
-UsbInterruptTransferFunction::~UsbInterruptTransferFunction() {
-}
+UsbInterruptTransferFunction::UsbInterruptTransferFunction() = default;
+UsbInterruptTransferFunction::~UsbInterruptTransferFunction() = default;
 
 ExtensionFunction::ResponseAction UsbInterruptTransferFunction::Run() {
-  std::unique_ptr<extensions::api::usb::InterruptTransfer::Params> parameters =
+  std::unique_ptr<usb::InterruptTransfer::Params> parameters =
       InterruptTransfer::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  scoped_refptr<UsbDeviceHandle> device_handle =
-      GetDeviceHandle(parameters->handle);
-  if (!device_handle.get()) {
-    return RespondNow(Error(kErrorNoConnection));
-  }
-
-  const GenericTransferInfo& transfer = parameters->transfer_info;
-  UsbTransferDirection direction = UsbTransferDirection::INBOUND;
-  size_t size = 0;
-
-  if (!ConvertDirectionFromApi(transfer.direction, &direction)) {
-    return RespondNow(Error(kErrorConvertDirection));
-  }
-
-  if (!GetTransferSize(transfer, &size)) {
-    return RespondNow(Error(kErrorInvalidTransferLength));
-  }
-
-  scoped_refptr<base::RefCountedBytes> buffer =
-      CreateBufferForTransfer(transfer, direction, size);
-  if (!buffer)
-    return RespondNow(Error(kErrorMalformedParameters));
-
-  int timeout = transfer.timeout ? *transfer.timeout : 0;
-  if (timeout < 0) {
-    return RespondNow(Error(kErrorInvalidTimeout));
-  }
-
-  device_handle->GenericTransfer(
-      direction, transfer.endpoint, buffer, timeout,
-      base::Bind(&UsbInterruptTransferFunction::OnCompleted, this));
-  return RespondLater();
+  return DoTransfer<const usb::InterruptTransfer::Params*>(parameters.get());
 }
 
-UsbIsochronousTransferFunction::UsbIsochronousTransferFunction() {
-}
-
-UsbIsochronousTransferFunction::~UsbIsochronousTransferFunction() {
-}
+UsbIsochronousTransferFunction::UsbIsochronousTransferFunction() = default;
+UsbIsochronousTransferFunction::~UsbIsochronousTransferFunction() = default;
 
 ExtensionFunction::ResponseAction UsbIsochronousTransferFunction::Run() {
-  std::unique_ptr<extensions::api::usb::IsochronousTransfer::Params>
-      parameters = IsochronousTransfer::Params::Create(*args_);
+  std::unique_ptr<usb::IsochronousTransfer::Params> parameters =
+      IsochronousTransfer::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters.get());
 
-  scoped_refptr<UsbDeviceHandle> device_handle =
-      GetDeviceHandle(parameters->handle);
-  if (!device_handle.get()) {
+  device::mojom::UsbDevice* device = GetDeviceFromHandle(parameters->handle);
+  if (!device) {
     return RespondNow(Error(kErrorNoConnection));
   }
 
   const IsochronousTransferInfo& transfer = parameters->transfer_info;
   const GenericTransferInfo& generic_transfer = transfer.transfer_info;
-  size_t size = 0;
   UsbTransferDirection direction = UsbTransferDirection::INBOUND;
 
   if (!ConvertDirectionFromApi(generic_transfer.direction, &direction))
     return RespondNow(Error(kErrorConvertDirection));
 
-  if (!GetTransferSize(generic_transfer, &size))
-    return RespondNow(Error(kErrorInvalidTransferLength));
+  uint32_t size = 0;
+  if (direction == UsbTransferDirection::INBOUND) {
+    if (!GetTransferInSize(generic_transfer, &size))
+      return RespondNow(Error(kErrorInvalidTransferLength));
+  } else {
+    if (!generic_transfer.data)
+      return RespondNow(Error(kErrorMalformedParameters));
+
+    size = generic_transfer.data->size();
+  }
 
   if (transfer.packets < 0 || transfer.packets >= kMaxPackets)
     return RespondNow(Error(kErrorInvalidNumberOfPackets));
@@ -1212,6 +1240,7 @@ ExtensionFunction::ResponseAction UsbIsochronousTransferFunction::Run() {
   size_t total_length = packets * transfer.packet_length;
   if (packets > size || total_length > size)
     return RespondNow(Error(kErrorTransferLength));
+
   std::vector<uint32_t> packet_lengths(packets, transfer.packet_length);
 
   int timeout = generic_transfer.timeout ? *generic_transfer.timeout : 0;
@@ -1219,83 +1248,85 @@ ExtensionFunction::ResponseAction UsbIsochronousTransferFunction::Run() {
     return RespondNow(Error(kErrorInvalidTimeout));
 
   if (direction == UsbTransferDirection::INBOUND) {
-    device_handle->IsochronousTransferIn(
+    device->IsochronousTransferIn(
         generic_transfer.endpoint, packet_lengths, timeout,
-        base::Bind(&UsbIsochronousTransferFunction::OnCompleted, this));
+        mojo::WrapCallbackWithDropHandler(
+            base::BindOnce(
+                &UsbIsochronousTransferFunction::OnTransferInCompleted, this),
+            base::BindOnce(&UsbIsochronousTransferFunction::OnDisconnect,
+                           this)));
   } else {
-    scoped_refptr<base::RefCountedBytes> buffer = CreateBufferForTransfer(
-        generic_transfer, direction, transfer.packets * transfer.packet_length);
-    if (!buffer)
-      return RespondNow(Error(kErrorMalformedParameters));
-
-    device_handle->IsochronousTransferOut(
-        generic_transfer.endpoint, buffer.get(), packet_lengths, timeout,
-        base::Bind(&UsbIsochronousTransferFunction::OnCompleted, this));
+    device->IsochronousTransferOut(
+        generic_transfer.endpoint, *generic_transfer.data, packet_lengths,
+        timeout,
+        mojo::WrapCallbackWithDropHandler(
+            base::BindOnce(
+                &UsbIsochronousTransferFunction::OnTransferOutCompleted, this),
+            base::BindOnce(&UsbIsochronousTransferFunction::OnDisconnect,
+                           this)));
   }
   return RespondLater();
 }
 
-void UsbIsochronousTransferFunction::OnCompleted(
-    scoped_refptr<base::RefCountedBytes> data,
-    const std::vector<UsbDeviceHandle::IsochronousPacket>& packets) {
-  size_t length = std::accumulate(
-      packets.begin(), packets.end(), 0,
-      [](const size_t& a, const UsbDeviceHandle::IsochronousPacket& packet) {
-        return a + packet.transferred_length;
-      });
+void UsbIsochronousTransferFunction::OnTransferInCompleted(
+    const std::vector<uint8_t>& data,
+    std::vector<UsbIsochronousPacketPtr> packets) {
+  size_t length = std::accumulate(packets.begin(), packets.end(), 0,
+                                  [](const size_t& a, const auto& packet) {
+                                    return a + packet->transferred_length;
+                                  });
   std::vector<char> buffer;
   buffer.reserve(length);
 
   UsbTransferStatus status = UsbTransferStatus::COMPLETED;
-  const char* data_ptr = data ? data->front_as<char>() : nullptr;
+  const char* data_ptr = reinterpret_cast<const char*>(data.data());
   for (const auto& packet : packets) {
     // Capture the error status of the first unsuccessful packet.
     if (status == UsbTransferStatus::COMPLETED &&
-        packet.status != UsbTransferStatus::COMPLETED) {
-      status = packet.status;
+        packet->status != UsbTransferStatus::COMPLETED) {
+      status = packet->status;
     }
 
-    if (data) {
-      buffer.insert(buffer.end(), data_ptr,
-                    data_ptr + packet.transferred_length);
-      data_ptr += packet.length;
+    buffer.insert(buffer.end(), data_ptr,
+                  data_ptr + packet->transferred_length);
+    data_ptr += packet->length;
+  }
+
+  auto transfer_info = std::make_unique<base::DictionaryValue>();
+  transfer_info->SetKey(kResultCodeKey, base::Value(static_cast<int>(status)));
+  transfer_info->SetKey(kDataKey, base::Value(std::move(buffer)));
+  OnCompleted(status, std::move(transfer_info));
+}
+
+void UsbIsochronousTransferFunction::OnTransferOutCompleted(
+    std::vector<UsbIsochronousPacketPtr> packets) {
+  UsbTransferStatus status = UsbTransferStatus::COMPLETED;
+  for (const auto& packet : packets) {
+    // Capture the error status of the first unsuccessful packet.
+    if (status == UsbTransferStatus::COMPLETED &&
+        packet->status != UsbTransferStatus::COMPLETED) {
+      status = packet->status;
     }
   }
-
-  base::Value transfer_info(base::Value::Type::DICTIONARY);
-  transfer_info.SetKey(kResultCodeKey, base::Value(static_cast<int>(status)));
-  transfer_info.SetKey(kDataKey, base::Value(std::move(buffer)));
-  if (status == UsbTransferStatus::COMPLETED) {
-    Respond(
-        OneArgument(base::Value::ToUniquePtrValue(std::move(transfer_info))));
-  } else {
-    auto error_args = std::make_unique<base::ListValue>();
-    error_args->GetList().push_back(std::move(transfer_info));
-    // Using ErrorWithArguments is discouraged but required to provide the
-    // detailed transfer info as the transfer may have partially succeeded.
-    Respond(ErrorWithArguments(std::move(error_args),
-                               ConvertTransferStatusToApi(status)));
-  }
+  auto transfer_info = std::make_unique<base::DictionaryValue>();
+  transfer_info->SetKey(kResultCodeKey, base::Value(static_cast<int>(status)));
+  OnCompleted(status, std::move(transfer_info));
 }
 
-UsbResetDeviceFunction::UsbResetDeviceFunction() {
-}
-
-UsbResetDeviceFunction::~UsbResetDeviceFunction() {
-}
+UsbResetDeviceFunction::UsbResetDeviceFunction() = default;
+UsbResetDeviceFunction::~UsbResetDeviceFunction() = default;
 
 ExtensionFunction::ResponseAction UsbResetDeviceFunction::Run() {
   parameters_ = ResetDevice::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(parameters_.get());
 
-  scoped_refptr<UsbDeviceHandle> device_handle =
-      GetDeviceHandle(parameters_->handle);
-  if (!device_handle.get()) {
+  device::mojom::UsbDevice* device = GetDeviceFromHandle(parameters_->handle);
+  if (!device) {
     return RespondNow(Error(kErrorNoConnection));
   }
 
-  device_handle->ResetDevice(
-      base::Bind(&UsbResetDeviceFunction::OnComplete, this));
+  device->Reset(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      base::BindOnce(&UsbResetDeviceFunction::OnComplete, this), false));
   return RespondLater();
 }
 
@@ -1303,12 +1334,7 @@ void UsbResetDeviceFunction::OnComplete(bool success) {
   if (success) {
     Respond(OneArgument(std::make_unique<base::Value>(true)));
   } else {
-    scoped_refptr<UsbDeviceHandle> device_handle =
-        GetDeviceHandle(parameters_->handle);
-    if (device_handle.get()) {
-      device_handle->Close();
-    }
-    ReleaseDeviceHandle(parameters_->handle);
+    ReleaseDeviceResource(parameters_->handle);
 
     std::unique_ptr<base::ListValue> error_args(new base::ListValue());
     error_args->AppendBoolean(false);

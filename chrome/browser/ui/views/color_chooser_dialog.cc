@@ -67,11 +67,10 @@ void ColorChooserDialog::ExecuteOpen(SkColor color,
   cc.Flags = CC_ANYCOLOR | CC_FULLOPEN | CC_RGBINIT;
   bool success = !!ChooseColor(&cc);
   DisableOwner(cc.hwndOwner);
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&ColorChooserDialog::DidCloseDialog, this, success,
-                     skia::COLORREFToSkColor(cc.rgbResult),
-                     std::move(run_state)));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(&ColorChooserDialog::DidCloseDialog, this,
+                                success, skia::COLORREFToSkColor(cc.rgbResult),
+                                std::move(run_state)));
 }
 
 void ColorChooserDialog::DidCloseDialog(bool chose_color,

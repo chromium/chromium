@@ -51,7 +51,8 @@ class PolicyBlacklistNavigationThrottle : public content::NavigationThrottle {
   // should be canceled.
   bool should_cancel_ = false;
 
-  base::WeakPtrFactory<PolicyBlacklistNavigationThrottle> weak_ptr_factory_;
+  base::WeakPtrFactory<PolicyBlacklistNavigationThrottle> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(PolicyBlacklistNavigationThrottle);
 };

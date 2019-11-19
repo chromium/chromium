@@ -49,8 +49,9 @@ Msgs.getLocale = function() {
  */
 Msgs.getMsg = function(messageId, opt_subs) {
   var message = Msgs.Untranslated[messageId.toUpperCase()];
-  if (message !== undefined)
+  if (message !== undefined) {
     return Msgs.applySubstitutions_(message, opt_subs);
+  }
   message = chrome.i18n.getMessage(Msgs.NAMESPACE_ + messageId, opt_subs);
   if (message == undefined || message == '') {
     throw new Error('Invalid ChromeVox message id: ' + messageId);

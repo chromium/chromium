@@ -13,7 +13,6 @@
 #include "base/atomicops.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -21,7 +20,6 @@
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_entry.h"
 #include "net/log/net_log_event_type.h"
-#include "net/log/net_log_parameters_callback.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_source_type.h"
 
@@ -40,12 +38,48 @@ namespace net {
 // is usually accessed through a NetLogWithSource, which will always pass in a
 // specific source ID.
 //
-// All methods are thread safe, with the exception that no NetLog or
+// All methods on NetLog are thread safe, with the exception that no NetLog or
 // NetLog::ThreadSafeObserver functions may be called by an observer's
-// OnAddEntry() method.  Doing so will result in a deadlock.
+// OnAddEntry() method, as doing so will result in a deadlock.
 //
 // For a broader introduction see the design document:
 // https://sites.google.com/a/chromium.org/dev/developers/design-documents/network-stack/netlog
+//
+// ==================================
+// Materializing parameters
+// ==================================
+//
+// Events can contain a JSON serializable base::Value [1] referred to as its
+// "parameters".
+//
+// Functions for emitting events have overloads that take a |get_params|
+// argument for this purpose.
+//
+// |get_params| is essentially a block of code to conditionally execute when
+// the parameters need to be materialized. It is most easily specified as a C++
+// lambda.
+//
+// This idiom for specifying parameters avoids spending time building the
+// base::Value when capturing is off. For instance when specified as a lambda
+// that takes 0 arguments, the inlined code from template expansion roughly
+// does:
+//
+//   if (net_log->IsCapturing()) {
+//     base::Value params = get_params();
+//     net_log->EmitEventToAllObsevers(type, source, phase, std::move(params));
+//   }
+//
+// Alternately, the |get_params| argument could be an invocable that takes a
+// NetLogCaptureMode parameter:
+//
+//   base::Value params = get_params(capture_mode);
+//
+// In this case, |get_params| depends on the logging granularity and would be
+// called once per observed NetLogCaptureMode.
+//
+// [1] Being "JSON serializable" means you cannot use
+//     base::Value::Type::BINARY. Instead use NetLogBinaryValue() to repackage
+//     it as a base::Value::Type::STRING.
 class NET_EXPORT NetLog {
  public:
 
@@ -95,8 +129,6 @@ class NET_EXPORT NetLog {
    private:
     friend class NetLog;
 
-    void OnAddEntryData(const NetLogEntryData& entry_data);
-
     // Both of these values are only modified by the NetLog.
     NetLogCaptureMode capture_mode_;
     NetLog* net_log_;
@@ -107,19 +139,99 @@ class NET_EXPORT NetLog {
   NetLog();
   virtual ~NetLog();
 
+  void AddEntry(NetLogEventType type,
+                const NetLogSource& source,
+                NetLogEventPhase phase);
+
+  // NetLog parameter generators (lambdas) come in two flavors -- those that
+  // take no arguments, and those that take a single NetLogCaptureMode. This
+  // code allows differentiating between the two.
+  template <typename T, typename = void>
+  struct ExpectsCaptureMode : std::false_type {};
+  template <typename T>
+  struct ExpectsCaptureMode<T,
+                            decltype(void(std::declval<T>()(
+                                NetLogCaptureMode::kDefault)))>
+      : std::true_type {};
+
+  // Adds an entry for the given source, phase, and type, whose parameters are
+  // obtained by invoking |get_params()| with no arguments.
+  //
+  // See "Materializing parameters" for details.
+  template <typename ParametersCallback>
+  inline typename std::enable_if<!ExpectsCaptureMode<ParametersCallback>::value,
+                                 void>::type
+  AddEntry(NetLogEventType type,
+           const NetLogSource& source,
+           NetLogEventPhase phase,
+           const ParametersCallback& get_params) {
+    if (LIKELY(!IsCapturing()))
+      return;
+
+    AddEntryWithMaterializedParams(type, source, phase, get_params());
+  }
+
+  // Adds an entry for the given source, phase, and type, whose parameters are
+  // obtained by invoking |get_params(capture_mode)| with a NetLogCaptureMode.
+  //
+  // See "Materializing parameters" for details.
+  template <typename ParametersCallback>
+  inline typename std::enable_if<ExpectsCaptureMode<ParametersCallback>::value,
+                                 void>::type
+  AddEntry(NetLogEventType type,
+           const NetLogSource& source,
+           NetLogEventPhase phase,
+           const ParametersCallback& get_params) {
+    if (LIKELY(!IsCapturing()))
+      return;
+
+    // Indirect through virtual dispatch to reduce code bloat, as this is
+    // inlined in a number of places.
+    class GetParamsImpl : public GetParamsInterface {
+     public:
+      explicit GetParamsImpl(const ParametersCallback& get_params)
+          : get_params_(get_params) {}
+      base::Value GetParams(NetLogCaptureMode mode) const override {
+        return get_params_(mode);
+      }
+
+     private:
+      const ParametersCallback& get_params_;
+    };
+
+    GetParamsImpl wrapper(get_params);
+    AddEntryInternal(type, source, phase, &wrapper);
+  }
+
   // Emits a global event to the log stream, with its own unique source ID.
   void AddGlobalEntry(NetLogEventType type);
+
+  // Overload of AddGlobalEntry() that includes parameters.
+  //
+  // See "Materializing parameters" for details on |get_params|.
+  template <typename ParametersCallback>
   void AddGlobalEntry(NetLogEventType type,
-                      const NetLogParametersCallback& parameters_callback);
+                      const ParametersCallback& get_params) {
+    AddEntry(type, NetLogSource(NetLogSourceType::NONE, NextID()),
+             NetLogEventPhase::NONE, get_params);
+  }
+
+  void AddGlobalEntryWithStringParams(NetLogEventType type,
+                                      base::StringPiece name,
+                                      base::StringPiece value);
 
   // Returns a unique ID which can be used as a source ID.  All returned IDs
   // will be unique and greater than 0.
   uint32_t NextID();
 
-  // Returns true if there are any observers attached to the NetLog. This can be
-  // used as an optimization to avoid emitting log entries when there is no
-  // chance that the data will be consumed.
-  bool IsCapturing() const;
+  // Returns true if there are any observers attached to the NetLog.
+  //
+  // TODO(eroman): Survey current callsites; most are probably not necessary,
+  // and may even be harmful.
+  bool IsCapturing() const {
+    CheckAlive();
+    return GetObserverCaptureModes() != 0;
+  }
 
   // Adds an observer and sets its log capture mode.  The observer must not be
   // watching any NetLog, including this one, when this is called.
@@ -135,12 +247,6 @@ class NET_EXPORT NetLog {
   // testing or serialization.
   void AddObserver(ThreadSafeObserver* observer,
                    NetLogCaptureMode capture_mode);
-
-  // Sets the log capture mode of |observer| to |capture_mode|.  |observer| must
-  // be watching |this|.  NetLog implementations must call
-  // NetLog::OnSetObserverCaptureMode to update the observer's internal state.
-  void SetObserverCaptureMode(ThreadSafeObserver* observer,
-                              NetLogCaptureMode capture_mode);
 
   // Removes an observer.
   //
@@ -165,61 +271,71 @@ class NET_EXPORT NetLog {
 
   // Returns a dictionary that maps event type symbolic names to their enum
   // values.
-  static std::unique_ptr<base::Value> GetEventTypesAsValue();
+  static base::Value GetEventTypesAsValue();
 
   // Returns a C-String symbolic name for |source_type|.
   static const char* SourceTypeToString(NetLogSourceType source_type);
 
   // Returns a dictionary that maps source type symbolic names to their enum
   // values.
-  static std::unique_ptr<base::Value> GetSourceTypesAsValue();
+  static base::Value GetSourceTypesAsValue();
 
   // Returns a C-String symbolic name for |event_phase|.
   static const char* EventPhaseToString(NetLogEventPhase event_phase);
 
-  // Creates a NetLogParametersCallback that encapsulates a single bool.
-  // Warning: |name| must remain valid for the life of the callback.
-  static NetLogParametersCallback BoolCallback(const char* name, bool value);
-
-  // Warning: |name| must remain valid for the life of the callback.
-  static NetLogParametersCallback IntCallback(const char* name, int value);
-
-  // Creates a NetLogParametersCallback that encapsulates a single int64_t.  The
-  // callback will return the value as a StringValue, since IntegerValues
-  // only support 32-bit values.
-  // Warning: |name| must remain valid for the life of the callback.
-  static NetLogParametersCallback Int64Callback(const char* name,
-                                                int64_t value);
-
-  // Creates a NetLogParametersCallback that encapsulates a single UTF8 string.
-  // Takes
-  // |value| as a pointer to avoid copying, and emphasize it must be valid for
-  // the life of the callback.  |value| may not be NULL.
-  // Warning: |name| and |value| must remain valid for the life of the callback.
-  static NetLogParametersCallback StringCallback(const char* name,
-                                                 const std::string* value);
-  static NetLogParametersCallback StringCallback(const char* name,
-                                                 const char* value);
-
-  // Same as above, but takes in a UTF16 string.
-  static NetLogParametersCallback StringCallback(const char* name,
-                                                 const base::string16* value);
-
  private:
-  friend class NetLogWithSource;
+  class GetParamsInterface {
+   public:
+    virtual base::Value GetParams(NetLogCaptureMode mode) const = 0;
+    virtual ~GetParamsInterface() = default;
+  };
 
-  void AddEntry(NetLogEventType type,
-                const NetLogSource& source,
-                NetLogEventPhase phase,
-                const NetLogParametersCallback* parameters_callback);
+  // Helper for implementing AddEntry() that indirects parameter getting through
+  // virtual dispatch.
+  void AddEntryInternal(NetLogEventType type,
+                        const NetLogSource& source,
+                        NetLogEventPhase phase,
+                        const GetParamsInterface* get_params);
+
+  // Returns the set of all capture modes being observed.
+  NetLogCaptureModeSet GetObserverCaptureModes() const {
+    return base::subtle::NoBarrier_Load(&observer_capture_modes_);
+  }
+
+  // Adds an entry using already materialized parameters, when it is already
+  // known that the log is capturing (goes straight to acquiring observer lock).
+  //
+  // TODO(eroman): Drop the rvalue-ref on |params| unless can show it improves
+  // the generated code (initial testing suggests it makes no difference in
+  // clang).
+  void AddEntryWithMaterializedParams(NetLogEventType type,
+                                      const NetLogSource& source,
+                                      NetLogEventPhase phase,
+                                      base::Value&& params);
 
   // Called whenever an observer is added or removed, to update
-  // |has_observers_|. Must have acquired |lock_| prior to calling.
-  void UpdateIsCapturing();
+  // |observer_capture_modes_|. Must have acquired |lock_| prior to calling.
+  void UpdateObserverCaptureModes();
 
   // Returns true if |observer| is watching this NetLog. Must
   // be called while |lock_| is already held.
   bool HasObserver(ThreadSafeObserver* observer);
+
+  // In debug and ASAN builds, verify that the NetLog is not used while free.
+  // This is a regression test for https://crbug.com/983298.
+#if defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+  static constexpr int kAliveToken = 0xDEADBEEF;
+
+  inline void CheckAlive() const { CHECK_EQ(alive_, kAliveToken); }
+  inline void MarkDead() {
+    CheckAlive();
+    alive_ = 0;
+  }
+  int alive_ = kAliveToken;
+#else
+  inline void CheckAlive() const {}
+  inline void MarkDead() {}
+#endif
 
   // |lock_| protects access to |observers_|.
   base::Lock lock_;
@@ -227,10 +343,11 @@ class NET_EXPORT NetLog {
   // Last assigned source ID.  Incremented to get the next one.
   base::subtle::Atomic32 last_id_;
 
-  // |is_capturing_| will be 0 when there are no observers watching the NetLog,
-  // 1 otherwise. Note that this is stored as an Atomic32 rather than a boolean
-  // so it can be accessed without needing a lock.
-  base::subtle::Atomic32 is_capturing_;
+  // Holds the set of all capture modes that observers are watching the log at.
+  //
+  // Is 0 when there are no observers. Stored as an Atomic32 so it can be
+  // accessed and updated more efficiently.
+  base::subtle::Atomic32 observer_capture_modes_;
 
   // |observers_| is a list of observers, ordered by when they were added.
   // Pointers contained in |observers_| are non-owned, and must
@@ -244,39 +361,6 @@ class NET_EXPORT NetLog {
 
   DISALLOW_COPY_AND_ASSIGN(NetLog);
 };
-
-// Creates a base::Value() to represent the byte string |raw| when adding it to
-// the NetLog.
-//
-// When |raw| is an ASCII string, the returned value is a base::Value()
-// containing that exact string. Otherwise it is represented by a
-// percent-escaped version of the original string, along with a special prefix.
-//
-// This wrapper exists because base::Value strings are required to be UTF-8.
-// Often times NetLog consumers just want to log a std::string, and that string
-// may not be UTF-8.
-NET_EXPORT base::Value NetLogStringValue(base::StringPiece raw);
-
-// Creates a base::Value() to represent the octets |bytes|. This should be
-// used when adding binary data (i.e. not an ASCII or UTF-8 string) to the
-// NetLog. The resulting base::Value() holds a copy of the input data.
-//
-// This wrapper must be used rather than directly adding base::Value parameters
-// of type BINARY to the NetLog, since the JSON writer does not support
-// serializing them.
-//
-// This wrapper encodes |bytes| as a Base64 encoded string.
-NET_EXPORT base::Value NetLogBinaryValue(const void* bytes, size_t length);
-
-// Creates a base::Value() to represent integers, including 64-bit ones.
-// base::Value() does not directly support 64-bit integers, as it is not
-// representable in JSON.
-//
-// These wrappers will return values that are either numbers, or a string
-// representation of their decimal value, depending on what is needed to ensure
-// no loss of precision when de-serializing from JavaScript.
-NET_EXPORT base::Value NetLogNumberValue(int64_t num);
-NET_EXPORT base::Value NetLogNumberValue(uint64_t num);
 
 }  // namespace net
 

@@ -71,9 +71,11 @@ async_test(function(t) {
         assert_equals(document.webkitFullscreenElement, null,
                       "Should have exited fullscreen");
 
-        assert_equals(getComputedStyle(panel).opacity, "1",
-                      "Inline controls should show again after exiting " +
-                      "fullscreen since mouse is hovering over controls");
+        waitForHoverEffectUpdate(t.step_func(function() {
+          assert_equals(getComputedStyle(panel).opacity, "1",
+                        "Inline controls should show again after exiting " +
+                         "fullscreen since mouse is hovering over controls");
+        }));
 
         t.done();
       });

@@ -223,7 +223,7 @@ void BatchRequestConfigurator::Commit() {
 }
 
 DriveAPIService::DriveAPIService(
-    identity::IdentityManager* identity_manager,
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::SequencedTaskRunner* blocking_task_runner,
     const GURL& base_url,
@@ -243,7 +243,7 @@ DriveAPIService::~DriveAPIService() {
     sender_->auth_service()->RemoveObserver(this);
 }
 
-void DriveAPIService::Initialize(const std::string& account_id) {
+void DriveAPIService::Initialize(const CoreAccountId& account_id) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   std::vector<std::string> scopes;

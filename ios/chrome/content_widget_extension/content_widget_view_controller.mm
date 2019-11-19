@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "ios/chrome/common/app_group/app_group_command.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
@@ -141,9 +142,21 @@ NSString* const kXCallbackURLHost = @"x-callback-url";
 
 - (BOOL)updateWidget {
   NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
-  NSDictionary<NSURL*, NTPTile*>* newSites = [NSKeyedUnarchiver
-      unarchiveObjectWithData:[sharedDefaults
-                                  objectForKey:app_group::kSuggestedItems]];
+  NSData* data = [sharedDefaults objectForKey:app_group::kSuggestedItems];
+  NSError* error = nil;
+  NSKeyedUnarchiver* unarchiver =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:&error];
+
+  if (!unarchiver || error) {
+    DLOG(WARNING) << "Error creating unarchiver for widget extension: "
+                  << base::SysNSStringToUTF8([error description]);
+    return NO;
+  }
+
+  unarchiver.requiresSecureCoding = NO;
+
+  NSDictionary<NSURL*, NTPTile*>* newSites =
+      [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
   if ([newSites isEqualToDictionary:self.sites]) {
     return NO;
   }
@@ -164,47 +177,13 @@ NSString* const kXCallbackURLHost = @"x-callback-url";
 }
 
 - (void)openURL:(NSURL*)URL {
-  NSUserDefaults* sharedDefaults = app_group::GetGroupUserDefaults();
-  NSString* defaultsKey =
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandPreference);
-
-  NSString* timePrefKey =
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandTimePreference);
-  NSString* appPrefKey =
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandAppPreference);
-  NSString* commandPrefKey = base::SysUTF8ToNSString(
-      app_group::kChromeAppGroupCommandCommandPreference);
-  NSString* textPrefKey =
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandTextPreference);
-  NSString* indexKey =
-      base::SysUTF8ToNSString(app_group::kChromeAppGroupCommandIndexPreference);
-
-  NSDictionary* commandDict = @{
-    timePrefKey : [NSDate date],
-    appPrefKey : app_group::kOpenCommandSourceContentExtension,
-    commandPrefKey :
-        base::SysUTF8ToNSString(app_group::kChromeAppGroupOpenURLCommand),
-    textPrefKey : URL.absoluteString,
-    indexKey : [NSNumber numberWithInt:[self.sites objectForKey:URL].position]
-  };
-
-  [sharedDefaults setObject:commandDict forKey:defaultsKey];
-  [sharedDefaults synchronize];
-
-  NSString* scheme = base::mac::ObjCCast<NSString>([[NSBundle mainBundle]
-      objectForInfoDictionaryKey:@"KSChannelChromeScheme"]);
-  if (!scheme)
-    return;
-
-  NSURLComponents* urlComponents = [NSURLComponents new];
-  urlComponents.scheme = scheme;
-  urlComponents.host = kXCallbackURLHost;
-  urlComponents.path = [@"/"
-      stringByAppendingString:base::SysUTF8ToNSString(
-                                  app_group::kChromeAppGroupXCallbackCommand)];
-
-  NSURL* openURL = [urlComponents URL];
-  [self.extensionContext openURL:openURL completionHandler:nil];
+  AppGroupCommand* command = [[AppGroupCommand alloc]
+      initWithSourceApp:app_group::kOpenCommandSourceContentExtension
+         URLOpenerBlock:^(NSURL* openURL) {
+           [self.extensionContext openURL:openURL completionHandler:nil];
+         }];
+  [command prepareToOpenURL:URL];
+  [command executeInApp];
 }
 
 @end

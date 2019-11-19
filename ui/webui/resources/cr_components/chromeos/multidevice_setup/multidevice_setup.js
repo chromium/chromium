@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.exportPath('multidevice_setup');
-
-/** @enum {string} */
-multidevice_setup.PageName = {
-  PASSWORD: 'password-page',
-  SUCCESS: 'setup-succeeded-page',
-  START: 'start-setup-page',
-};
-
 cr.define('multidevice_setup', function() {
-  const PageName = multidevice_setup.PageName;
+  /** @enum {string} */
+  const PageName = {
+    PASSWORD: 'password-page',
+    SUCCESS: 'setup-succeeded-page',
+    START: 'start-setup-page',
+  };
 
   const MultiDeviceSetup = Polymer({
     is: 'multidevice-setup',
@@ -27,12 +23,12 @@ cr.define('multidevice_setup', function() {
       delegate: Object,
 
       /**
-       * Text to be shown on the forward navigation button.
+       * ID of loadTimeData string to be shown on the forward navigation button.
        * @type {string|undefined}
        */
-      forwardButtonText: {
+      forwardButtonTextId: {
         type: String,
-        computed: 'getForwardButtonText_(visiblePage_)',
+        computed: 'getForwardButtonTextId_(visiblePage_)',
         notify: true,
       },
 
@@ -45,22 +41,23 @@ cr.define('multidevice_setup', function() {
       },
 
       /**
-       * Text to be shown on the cancel button.
+       * ID of loadTimeData string to be shown on the cancel button.
        * @type {string|undefined}
        */
-      cancelButtonText: {
+      cancelButtonTextId: {
         type: String,
-        computed: 'getCancelButtonText_(visiblePage_)',
+        computed: 'getCancelButtonTextId_(visiblePage_)',
         notify: true,
       },
 
       /**
-       * Text to be shown on the backward navigation button.
+       * ID of loadTimeData string to be shown on the backward navigation
+       * button.
        * @type {string|undefined}
        */
-      backwardButtonText: {
+      backwardButtonTextId: {
         type: String,
-        computed: 'getBackwardButtonText_(visiblePage_)',
+        computed: 'getBackwardButtonTextId_(visiblePage_)',
         notify: true,
       },
 
@@ -94,7 +91,7 @@ cr.define('multidevice_setup', function() {
       /**
        * Array of objects representing all potential MultiDevice hosts.
        *
-       * @private {!Array<!chromeos.multidevice.mojom.RemoteDevice>}
+       * @private {!Array<!chromeos.multideviceSetup.mojom.HostDevice>}
        */
       devices_: Array,
 
@@ -142,9 +139,14 @@ cr.define('multidevice_setup', function() {
           this.initializeSetupFlow.bind(this));
     },
 
+    updateLocalizedContent: function() {
+      this.$.ironPages.querySelectorAll('.ui-page')
+          .forEach(page => page.i18nUpdateLocale());
+    },
+
     initializeSetupFlow: function() {
-      this.mojoInterfaceProvider_.getMojoServiceProxy()
-          .getEligibleHostDevices()
+      this.mojoInterfaceProvider_.getMojoServiceRemote()
+          .getEligibleActiveHostDevices()
           .then((responseParams) => {
             if (responseParams.eligibleHostDevices.length == 0) {
               console.warn('Potential host list is empty.');
@@ -201,6 +203,7 @@ cr.define('multidevice_setup', function() {
         case PageName.START:
           if (this.delegate.isPasswordRequiredToSetHost()) {
             this.visiblePageName = PageName.PASSWORD;
+            this.$$('password-page').focusPasswordTextInput();
           } else {
             this.setHostDevice_();
           }
@@ -240,15 +243,16 @@ cr.define('multidevice_setup', function() {
     },
 
     /**
-     * @return {string|undefined} The forward button text, which is undefined
-     *     if no button should be displayed.
+     * @return {string|undefined} The ID of loadTimeData string for the
+     *     forward button text, which is undefined if no button should be
+     *     displayed.
      * @private
      */
-    getForwardButtonText_: function() {
+    getForwardButtonTextId_: function() {
       if (!this.visiblePage_) {
         return undefined;
       }
-      return this.visiblePage_.forwardButtonText;
+      return this.visiblePage_.forwardButtonTextId;
     },
 
     /**
@@ -261,27 +265,29 @@ cr.define('multidevice_setup', function() {
     },
 
     /**
-     * @return {string|undefined} The cancel button text, which is undefined
-     *     if no button should be displayed.
+     * @return {string|undefined} The ID of loadTimeData string for the
+     *     cancel button text, which is undefined if no button should be
+     *     displayed.
      * @private
      */
-    getCancelButtonText_: function() {
+    getCancelButtonTextId_: function() {
       if (!this.visiblePage_) {
         return undefined;
       }
-      return this.visiblePage_.cancelButtonText;
+      return this.visiblePage_.cancelButtonTextId;
     },
 
     /**
-     * @return {string|undefined} The backward button text, which is undefined
-     *     if no button should be displayed.
+     * @return {string|undefined} The ID of loadTimeData string for the
+     *     backward button text, which is undefined if no button should be
+     *     displayed.
      * @private
      */
-    getBackwardButtonText_: function() {
+    getBackwardButtonTextId_: function() {
       if (!this.visiblePage_) {
         return undefined;
       }
-      return this.visiblePage_.backwardButtonText;
+      return this.visiblePage_.backwardButtonTextId;
     },
 
     /**
@@ -312,5 +318,6 @@ cr.define('multidevice_setup', function() {
 
   return {
     MultiDeviceSetup: MultiDeviceSetup,
+    PageName: PageName,
   };
 });

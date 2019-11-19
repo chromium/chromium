@@ -25,7 +25,7 @@ source_set("power_save_blocker") {
     "power_save_blocker_android.cc",
     "power_save_blocker_chromeos.cc",
     "power_save_blocker_mac.cc",
-    "power_save_blocker_ozone.cc",
+    "power_save_blocker_stub.cc",
     "power_save_blocker_win.cc",
     "power_save_blocker_x11.cc",
   ]
@@ -53,12 +53,16 @@ source_set("power_save_blocker") {
     ]
   }
 
-  # Dealing with power_save_blocker_{x11,ozone}.cc is a little complicated
+  # Dealing with power_save_blocker_{x11,stub}.cc is a little complicated
   # given the interaction between os_chromeos and the feature flags for X11 and
   # ozone, so do it all in one spot.
+  #
+  # stub implementation is only used at the moment non-chromeOS Ozone platforms
+  # such as Chromecast.
   if (is_chromeos || !use_ozone) {
-    sources -= [ "power_save_blocker_ozone.cc" ]
+    sources -= [ "power_save_blocker_stub.cc" ]
   }
+
   if (is_chromeos || !use_x11 || !use_dbus) {
     sources -= [ "power_save_blocker_x11.cc" ]
   }
@@ -70,8 +74,8 @@ source_set("power_save_blocker") {
 
   if (is_chromeos) {
     deps += [
-      "//chromeos/dbus",
-      "//chromeos/dbus:power_manager_proto",
+      "//chromeos/dbus/power",
+      "//chromeos/dbus/power:power_manager_proto",
     ]
   }
 
@@ -89,7 +93,6 @@ if (is_android) {
   generate_jni("jni_headers") {
     visibility = [ ":power_save_blocker" ]
     sources = java_sources_needing_jni
-    jni_package = "device"
   }
 
   android_library("java") {

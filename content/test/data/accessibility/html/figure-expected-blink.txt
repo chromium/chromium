@@ -1,3 +1,4 @@
 rootWebArea
-++figure
-++++image name='Sunspots'
+++genericContainer ignored
+++++figure
+++++++image name='Sunspots'

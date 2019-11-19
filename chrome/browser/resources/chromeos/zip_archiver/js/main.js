@@ -6,7 +6,12 @@ function init() {
   chrome.runtime.getBackgroundPage(function(backgroundPage) {
     backgroundPage.unpacker.app.stringDataLoadedPromise.then(function(strings) {
       loadTimeData.data = strings;
-      i18nTemplate.process(document, loadTimeData);
+      window.HTMLImports.whenReady(() => {
+        i18nTemplate.process(document, loadTimeData);
+        i18nTemplate.process(
+            document.querySelector('passphrase-dialog').shadowRoot,
+            loadTimeData);
+      });
     });
     backgroundPage.unpacker.app.cleanupOldStorageInfo();
   });

@@ -14,10 +14,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.VisibleForTesting;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelContentViewDelegate;
@@ -35,12 +35,11 @@ import org.chromium.chrome.browser.compositor.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.compositor.scene_layer.ToolbarSceneLayer;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
-import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.native_page.NativePageFactory;
-import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.TabHidingType;
+import org.chromium.chrome.browser.tab.TabBrowserControlsState;
 import org.chromium.chrome.browser.tab.TabThemeColorHelper;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
@@ -53,11 +52,13 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabSelectionType;
-import org.chromium.chrome.browser.util.ColorUtils;
+import org.chromium.chrome.browser.toolbar.ToolbarColors;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.SPenSupport;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
+import org.chromium.ui.util.TokenHolder;
 
 import java.util.List;
 
@@ -110,13 +111,14 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
 
     // Internal State
     private final SparseArray<LayoutTab> mTabCache = new SparseArray<>();
-    private int mControlsShowingToken = FullscreenManager.INVALID_TOKEN;
-    private int mControlsHidingToken = FullscreenManager.INVALID_TOKEN;
+    private int mControlsShowingToken = TokenHolder.INVALID_TOKEN;
+    private int mControlsHidingToken = TokenHolder.INVALID_TOKEN;
     private boolean mUpdateRequested;
     private final ContextualSearchPanel mContextualSearchPanel;
     private final EphemeralTabPanel mEphemeralTabPanel;
     private final OverlayPanelManager mOverlayPanelManager;
     private final ToolbarSceneLayer mToolbarOverlay;
+    private SceneOverlay mStatusIndicatorSceneOverlay;
 
     /** A delegate for interacting with the Contextual Search manager. */
     protected ContextualSearchManagementDelegate mContextualSearchDelegate;
@@ -153,8 +155,10 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
             // Open the new tab
             if (type == TabLaunchType.FROM_RESTORE || type == TabLaunchType.FROM_REPARENTING
                     || type == TabLaunchType.FROM_EXTERNAL_APP
-                    || type == TabLaunchType.FROM_LAUNCHER_SHORTCUT)
+                    || type == TabLaunchType.FROM_LAUNCHER_SHORTCUT
+                    || type == TabLaunchType.FROM_STARTUP) {
                 return;
+            }
 
             tabCreating(getTabModelSelector().getCurrentTabId(), tab.getUrl(), tab.isIncognito());
         }
@@ -352,7 +356,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
      * @return       Whether or not the {@link LayoutManager} needs more updates.
      */
     @VisibleForTesting
-    public boolean onUpdate(long timeMs, long dtMs) {
+    boolean onUpdate(long timeMs, long dtMs) {
         if (!mUpdateRequested) return false;
         mUpdateRequested = false;
 
@@ -458,6 +462,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         mSceneChangeObservers.clear();
         if (mStaticLayout != null) mStaticLayout.destroy();
         if (mOverlayPanelManager != null) mOverlayPanelManager.destroy();
+        if (mEphemeralTabPanel != null) mEphemeralTabPanel.destroy();
         if (mTabModelSelectorTabObserver != null) mTabModelSelectorTabObserver.destroy();
         if (mTabModelSelectorObserver != null) {
             getTabModelSelector().removeObserver(mTabModelSelectorObserver);
@@ -508,8 +513,7 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
     @Override
     public void releaseOverlayPanelContent() {
         if (getTabModelSelector() == null) return;
-        Tab tab = getTabModelSelector().getCurrentTab();
-        if (tab != null) tab.updateFullscreenEnabledState();
+        TabBrowserControlsState.updateEnabledState(getTabModelSelector().getCurrentTab());
     }
 
     /**
@@ -646,14 +650,12 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         boolean canUseLiveTexture = tab.getWebContents() != null && !SadTab.isShowing(tab)
                 && !isNativePage && !tab.isHidden();
 
-        boolean isNtp = tab.getNativePage() instanceof NewTabPage;
-        boolean isLocationBarShownInNtp =
-                isNtp ? ((NewTabPage) tab.getNativePage()).isLocationBarShownInNTP() : false;
-        boolean needsUpdate = layoutTab.initFromHost(tab.getBackgroundColor(), shouldStall(tab),
-                canUseLiveTexture, themeColor,
-                ColorUtils.getTextBoxColorForToolbarBackground(
-                        mContext.getResources(), isLocationBarShownInNtp, themeColor),
-                ColorUtils.getTextBoxAlphaForToolbarBackground(tab));
+        boolean needsUpdate = layoutTab.initFromHost(TabThemeColorHelper.getBackgroundColor(tab),
+                shouldStall(tab), canUseLiveTexture,
+                ToolbarColors.getToolbarSceneLayerBackground(tab),
+                ToolbarColors.getTextBoxColorForToolbarBackground(
+                        mContext.getResources(), tab, themeColor),
+                ToolbarColors.getTextBoxAlphaForToolbarBackground(tab));
         if (needsUpdate) requestUpdate();
 
         mHost.requestRender();
@@ -851,11 +853,29 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
         // Nothing to do here yet.
     }
 
+    // TODO(crbug.com/1002519): This should be a temporary solution until the scene layer ownership
+    // is redone and the toolbar component owns its scene layer.
     /**
-     * @return The {@link EdgeSwipeHandler} responsible for processing swipe events for the toolbar.
-     *         By default this returns null.
+     * @return The {@link ToolbarSceneLayer}.
+     */
+    public ToolbarSceneLayer getToolbarSceneLayer() {
+        return mToolbarOverlay;
+    }
+
+    /**
+     * @return The {@link EdgeSwipeHandler} responsible for processing swipe events for the normal
+     *         toolbar. By default this returns null.
      */
     public EdgeSwipeHandler getToolbarSwipeHandler() {
+        return null;
+    }
+
+    /**
+     * Creates a {@link EdgeSwipeHandler} instance.
+     * @param supportSwipeDown Whether or not to the handler should support swipe down gesture.
+     * @return The {@link EdgeSwipeHandler} cerated.
+     */
+    public EdgeSwipeHandler createToolbarSwipeHandler(boolean supportSwipeDown) {
         return null;
     }
 
@@ -865,6 +885,14 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
      */
     public boolean onBackPressed() {
         return getActiveLayout() != null && getActiveLayout().onBackPressed();
+    }
+
+    /**
+     * Set the status indicator {@link SceneOverlay} to be added to the layout.
+     * @param overlay The {@link SceneOverlay} to set.
+     */
+    public void setStatusIndicatorSceneOverlay(SceneOverlay overlay) {
+        mStatusIndicatorSceneOverlay = overlay;
     }
 
     /**
@@ -884,6 +912,9 @@ public class LayoutManager implements LayoutUpdateHost, LayoutProvider,
      */
     protected void addAllSceneOverlays() {
         addGlobalSceneOverlay(mToolbarOverlay);
+        if (mStatusIndicatorSceneOverlay != null) {
+            addGlobalSceneOverlay(mStatusIndicatorSceneOverlay);
+        }
         mStaticLayout.addSceneOverlay(mContextualSearchPanel);
         if (mEphemeralTabPanel != null) mStaticLayout.addSceneOverlay(mEphemeralTabPanel);
     }

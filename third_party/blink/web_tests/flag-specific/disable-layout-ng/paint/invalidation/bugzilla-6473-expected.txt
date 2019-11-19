@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (relative positioned) P",
+          "rect": [8, 152, 784, 20],
+          "reason": "chunk disappeared"
+        },
+        {
+          "object": "LayoutBlockFlow HTML",
+          "rect": [8, 136, 784, 20],
+          "reason": "chunk appeared"
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+// Variations:
+// 1. Entering the inline block from left or right side
+// 2. Resolved direction of the inline block in the parent context
+// 3. Direction of the first line text inside the inline block
+// 4. Direction of the last line text inside the inline block
+
+selection_test(
+  '<div contenteditable>foo|<span style="display:inline-block">bar<br>qux</span>baz</div>',
+  selection => selection.modify('move', 'right', 'character'),
+  '<div contenteditable>foo<span style="display:inline-block">b|ar<br>qux</span>baz</div>',
+  'Move right, LTR resolved direction, LTR/LTR text inside');
+
+selection_test(
+  '<div contenteditable>foo<span style="display:inline-block">bar<br>qux</span>|baz</div>',
+  selection => selection.modify('move', 'left', 'character'),
+  '<div contenteditable>foo<span style="display:inline-block">bar<br>qu|x</span>baz</div>',
+  'Move left, LTR resolved direction, LTR/LTR text inside');
+
+selection_test(
+  '<div contenteditable>foo|<span style="display:inline-block">\u05D0\u05D1\u05D2<br>qux</span>baz</div>',
+  selection => selection.modify('move', 'right', 'character'),
+  '<div contenteditable>foo<span style="display:inline-block">\u05D0|\u05D1\u05D2<br>qux</span>baz</div>',
+  'Move right, LTR resolved direction, RTL/LTR text inside');
+
+selection_test(
+  '<div contenteditable>foo<span style="display:inline-block">\u05D0\u05D1\u05D2<br>qux</span>|baz</div>',
+  selection => selection.modify('move', 'left', 'character'),
+  '<div contenteditable>foo<span style="display:inline-block">\u05D0\u05D1\u05D2<br>qu|x</span>baz</div>',
+  'Move left, LTR resolved direction, RTL/LTR text inside');
+
+selection_test(
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5|<span style="display:inline-block">bar<br>qux</span>\u05D6\u05D7\u05D8</div>',
+  selection => selection.modify('move', 'left', 'character'),
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5<span style="display:inline-block">b|ar<br>qux</span>\u05D6\u05D7\u05D8</div>',
+  'Move left, RTL resolved direction, LTR/LTR text inside');
+
+selection_test(
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5<span style="display:inline-block">bar<br>qux</span>|\u05D6\u05D7\u05D8</div>',
+  selection => selection.modify('move', 'right', 'character'),
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5<span style="display:inline-block">bar<br>qu|x</span>\u05D6\u05D7\u05D8</div>',
+  'Move right, RTL resolved direction, LTR/LTR text inside');
+
+selection_test(
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5|<span style="display:inline-block">\u05D0\u05D1\u05D2<br>qux</span>\u05D6\u05D7\u05D8</div>',
+  selection => selection.modify('move', 'left', 'character'),
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5<span style="display:inline-block">\u05D0|\u05D1\u05D2<br>qux</span>\u05D6\u05D7\u05D8</div>',
+  'Move left, RTL resolved direction, RTL/LTR text inside');
+
+selection_test(
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5<span style="display:inline-block">\u05D0\u05D1\u05D2<br>qux</span>|\u05D6\u05D7\u05D8</div>',
+  selection => selection.modify('move', 'right', 'character'),
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5<span style="display:inline-block">\u05D0\u05D1\u05D2<br>qu|x</span>\u05D6\u05D7\u05D8</div>',
+  'Move right, RTL resolved direction, RTL/LTR text inside');
+
+selection_test(
+  '<div contenteditable>foo|<span style="display:inline-block">bar<br>\u05D9\u05DA\u05DB</span>baz</div>',
+  selection => selection.modify('move', 'right', 'character'),
+  '<div contenteditable>foo<span style="display:inline-block">b|ar<br>\u05D9\u05DA\u05DB</span>baz</div>',
+  'Move right, LTR resolved direction, LTR/RTL text inside');
+
+selection_test(
+  '<div contenteditable>foo<span style="display:inline-block">bar<br>\u05D9\u05DA\u05DB</span>|baz</div>',
+  selection => selection.modify('move', 'left', 'character'),
+  '<div contenteditable>foo<span style="display:inline-block">bar<br>\u05D9\u05DA|\u05DB</span>baz</div>',
+  'Move left, LTR resolved direction, LTR/RTL text inside');
+
+selection_test(
+  '<div contenteditable>foo|<span style="display:inline-block">\u05D0\u05D1\u05D2<br>\u05D9\u05DA\u05DB</span>baz</div>',
+  selection => selection.modify('move', 'right', 'character'),
+  '<div contenteditable>foo<span style="display:inline-block">\u05D0|\u05D1\u05D2<br>\u05D9\u05DA\u05DB</span>baz</div>',
+  'Move right, LTR resolved direction, RTL/RTL text inside');
+
+selection_test(
+  '<div contenteditable>foo<span style="display:inline-block">\u05D0\u05D1\u05D2<br>\u05D9\u05DA\u05DB</span>|baz</div>',
+  selection => selection.modify('move', 'left', 'character'),
+  '<div contenteditable>foo<span style="display:inline-block">\u05D0\u05D1\u05D2<br>\u05D9\u05DA|\u05DB</span>baz</div>',
+  'Move left, LTR resolved direction, RTL/RTL text inside');
+
+selection_test(
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5|<span style="display:inline-block">bar<br>\u05D9\u05DA\u05DB</span>\u05D6\u05D7\u05D8</div>',
+  selection => selection.modify('move', 'left', 'character'),
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5<span style="display:inline-block">b|ar<br>\u05D9\u05DA\u05DB</span>\u05D6\u05D7\u05D8</div>',
+  'Move left, RTL resolved direction, LTR/RTL text inside');
+
+selection_test(
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5<span style="display:inline-block">bar<br>\u05D9\u05DA\u05DB</span>|\u05D6\u05D7\u05D8</div>',
+  selection => selection.modify('move', 'right', 'character'),
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5<span style="display:inline-block">bar<br>\u05D9\u05DA|\u05DB</span>\u05D6\u05D7\u05D8</div>',
+  'Move right, RTL resolved direction, LTR/RTL text inside');
+
+selection_test(
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5|<span style="display:inline-block">\u05D0\u05D1\u05D2<br>\u05D9\u05DA\u05DB</span>\u05D6\u05D7\u05D8</div>',
+  selection => selection.modify('move', 'left', 'character'),
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5<span style="display:inline-block">\u05D0|\u05D1\u05D2<br>\u05D9\u05DA\u05DB</span>\u05D6\u05D7\u05D8</div>',
+  'Move left, RTL resolved direction, RTL/RTL text inside');
+
+selection_test(
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5<span style="display:inline-block">\u05D0\u05D1\u05D2<br>\u05D9\u05DA\u05DB</span>|\u05D6\u05D7\u05D8</div>',
+  selection => selection.modify('move', 'right', 'character'),
+  '<div contenteditable dir="rtl">\u05D3\u05D4\u05D5<span style="display:inline-block">\u05D0\u05D1\u05D2<br>\u05D9\u05DA|\u05DB</span>\u05D6\u05D7\u05D8</div>',
+  'Move right, RTL resolved direction, RTL/RTL text inside');
+</script>

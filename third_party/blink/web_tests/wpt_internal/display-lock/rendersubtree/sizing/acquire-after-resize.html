@@ -1,0 +1,45 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: acquire after resizing</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="acquire-after-resize-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+#spacer {
+  width: 50px;
+  height: 50px;
+  background: lightgreen;
+}
+#small {
+  intrinsic-size: 150px 150px;
+}
+div:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+
+<div id="log"></div>
+<div id="small" class="contained">Lorem ipsum</div>
+<div id="spacer">
+
+<script>
+function finishTest(status_string) {
+  if (document.getElementById("log").innerHTML === "")
+    document.getElementById("log").innerHTML = status_string;
+  takeScreenshot();
+}
+
+function runTest() {
+  const container = document.getElementById("small");
+  setInvisible(container).then(
+    () => { finishTest("PASS"); },
+    (e) => { finishTest("FAIL " + e.message); });
+}
+
+window.onload = runTest;
+</script>
+</html>

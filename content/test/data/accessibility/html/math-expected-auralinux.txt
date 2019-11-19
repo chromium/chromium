@@ -1,10 +1,10 @@
 [document web]
 ++[section]
 ++++[math]
-++++++[text] name='a'
-++++++[text] name='2'
-++++++[text] name=' '
-++++++[text] name='+'
-++++++[text] name=' '
-++++++[text] name='b'
-++++++[text] name='2'
+++++++[static] name='a'
+++++++[static] name='2'
+++++++[static] name=' '
+++++++[static] name='+'
+++++++[static] name=' '
+++++++[static] name='b'
+++++++[static] name='2'

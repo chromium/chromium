@@ -8,7 +8,8 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/CacheStorage.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -21,11 +22,7 @@ class InspectedFrames;
 class MODULES_EXPORT InspectorCacheStorageAgent final
     : public InspectorBaseAgent<protocol::CacheStorage::Metainfo> {
  public:
-  using CachesMap = HashMap<String, mojom::blink::CacheStoragePtr>;
-
-  static InspectorCacheStorageAgent* Create(InspectedFrames* frames) {
-    return MakeGarbageCollected<InspectorCacheStorageAgent>(frames);
-  }
+  using CachesMap = HashMap<String, mojo::Remote<mojom::blink::CacheStorage>>;
 
   explicit InspectorCacheStorageAgent(InspectedFrames*);
   ~InspectorCacheStorageAgent() override;
@@ -34,8 +31,8 @@ class MODULES_EXPORT InspectorCacheStorageAgent final
   void requestCacheNames(const String& security_origin,
                          std::unique_ptr<RequestCacheNamesCallback>) override;
   void requestEntries(const String& cache_id,
-                      int skip_count,
-                      int page_size,
+                      protocol::Maybe<int> skip_count,
+                      protocol::Maybe<int> page_size,
                       protocol::Maybe<String> path_filter,
                       std::unique_ptr<RequestEntriesCallback>) override;
   void deleteCache(const String& cache_id,

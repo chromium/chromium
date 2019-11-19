@@ -17,7 +17,7 @@ ChromeClientConnectionManager::ChromeClientConnectionManager(
 bool ChromeClientConnectionManager::AllowedToProfileRenderer(
     content::RenderProcessHost* host) {
   return Profile::FromBrowserContext(host->GetBrowserContext())
-             ->GetProfileType() != Profile::INCOGNITO_PROFILE;
+      ->IsRegularProfile();
 }
 
 }  // namespace heap_profiling

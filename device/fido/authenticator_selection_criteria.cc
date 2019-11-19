@@ -28,6 +28,13 @@ AuthenticatorSelectionCriteria& AuthenticatorSelectionCriteria::operator=(
 AuthenticatorSelectionCriteria& AuthenticatorSelectionCriteria::operator=(
     const AuthenticatorSelectionCriteria& other) = default;
 
+bool AuthenticatorSelectionCriteria::operator==(
+    const AuthenticatorSelectionCriteria& other) const {
+  return authenticator_attachment_ == other.authenticator_attachment_ &&
+         require_resident_key_ == other.require_resident_key_ &&
+         user_verification_requirement_ == other.user_verification_requirement_;
+}
+
 AuthenticatorSelectionCriteria::~AuthenticatorSelectionCriteria() = default;
 
 }  // namespace device

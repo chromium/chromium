@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer_client.h"
+#include "third_party/blink/renderer/platform/graphics/compositing/layers_as_json.h"
 
 namespace blink {
 
@@ -29,7 +29,6 @@ void CORE_EXPORT VerboseLogGraphicsLayerTree(const GraphicsLayer*);
 #if DCHECK_IS_ON()
 // Outside the blink namespace for ease of invocation from gdb.
 void CORE_EXPORT showGraphicsLayerTree(const blink::GraphicsLayer*);
-void CORE_EXPORT showGraphicsLayers(const blink::GraphicsLayer*);
 #endif
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_GRAPHICS_LAYER_TREE_AS_TEXT_H_

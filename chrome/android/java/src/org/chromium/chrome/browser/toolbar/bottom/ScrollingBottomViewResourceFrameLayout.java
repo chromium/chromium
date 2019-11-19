@@ -11,9 +11,10 @@ import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.EdgeSwipeHandler;
 import org.chromium.chrome.browser.contextualsearch.SwipeRecognizer;
-import org.chromium.chrome.browser.widget.ViewResourceFrameLayout;
+import org.chromium.chrome.browser.ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
 /**
@@ -25,13 +26,14 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
     private final Rect mCachedRect = new Rect();
 
     /** The height of the shadow sitting above the bottom view in px. */
-    private int mTopShadowHeightPx;
+    private final int mTopShadowHeightPx;
 
     /** A swipe recognizer for handling swipe gestures. */
     private SwipeRecognizer mSwipeRecognizer;
 
     public ScrollingBottomViewResourceFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mTopShadowHeightPx = getResources().getDimensionPixelOffset(R.dimen.toolbar_shadow_height);
     }
 
     /**
@@ -86,13 +88,6 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
                 super.onCaptureStart(canvas, dirtyRect);
             }
         };
-    }
-
-    /**
-     * @param height The height of the view's top shadow in px.
-     */
-    public void setTopShadowHeight(int height) {
-        mTopShadowHeightPx = height;
     }
 
     /**

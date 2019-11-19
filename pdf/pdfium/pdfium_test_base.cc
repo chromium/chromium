@@ -6,9 +6,14 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/test/test_client.h"
 #include "pdf/test/test_document_loader.h"
+
+#if defined(OS_CHROMEOS)
+#include "base/system/sys_info.h"
+#endif
 
 namespace chrome_pdf {
 
@@ -21,18 +26,33 @@ std::unique_ptr<DocumentLoader> CreateTestDocumentLoader(
   return std::make_unique<TestDocumentLoader>(client, g_test_pdf_name);
 }
 
+bool IsValidLinkForTesting(const std::string& url) {
+  return !url.empty();
+}
+
 }  // namespace
 
 PDFiumTestBase::PDFiumTestBase() = default;
 
 PDFiumTestBase::~PDFiumTestBase() = default;
 
+// static
+bool PDFiumTestBase::IsRunningOnChromeOS() {
+#if defined(OS_CHROMEOS)
+  return base::SysInfo::IsRunningOnChromeOS();
+#else
+  return false;
+#endif
+}
+
 void PDFiumTestBase::SetUp() {
   InitializePDFium();
+  PDFiumPage::SetIsValidLinkFunctionForTesting(&IsValidLinkForTesting);
 }
 
 void PDFiumTestBase::TearDown() {
   PDFiumEngine::SetCreateDocumentLoaderFunctionForTesting(nullptr);
+  PDFiumPage::SetIsValidLinkFunctionForTesting(nullptr);
   g_test_pdf_name = nullptr;
   FPDF_DestroyLibrary();
 }
@@ -42,9 +62,12 @@ std::unique_ptr<PDFiumEngine> PDFiumTestBase::InitializeEngine(
     const base::FilePath::CharType* pdf_name) {
   SetDocumentForTest(pdf_name);
   pp::URLLoader dummy_loader;
-  auto engine = std::make_unique<PDFiumEngine>(client, true);
+  auto engine =
+      std::make_unique<PDFiumEngine>(client, /*enable_javascript=*/false);
+  client->set_engine(engine.get());
   if (!engine->New("https://chromium.org/dummy.pdf", "") ||
       !engine->HandleDocumentLoad(dummy_loader)) {
+    client->set_engine(nullptr);
     return nullptr;
   }
   return engine;
@@ -65,6 +88,13 @@ void PDFiumTestBase::InitializePDFium() {
   config.m_pIsolate = nullptr;
   config.m_v8EmbedderSlot = 0;
   FPDF_InitLibraryWithConfig(&config);
+}
+
+PDFiumPage* PDFiumTestBase::GetPDFiumPageForTest(PDFiumEngine* engine,
+                                                 size_t page_index) {
+  if (engine && page_index < engine->pages_.size())
+    return engine->pages_[page_index].get();
+  return nullptr;
 }
 
 }  // namespace chrome_pdf

@@ -64,14 +64,14 @@ class WebDOMActivityLogger {
 // Checks if a logger already exists for the world identified by worldId and
 // extensionID (worldId may be 0 identifying the main world). Extension ID is
 // used only in the case of main world and ignored otherwise.
-BLINK_EXPORT bool HasDOMActivityLogger(int world_id,
+BLINK_EXPORT bool HasDOMActivityLogger(int32_t world_id,
                                        const WebString& extension_id);
 
 // Checks if the provided logger is non-null and if so associates it with the
 // world identified by worldId and extension ID (worldId may be 0 identifying
 // the main world). The extension ID is ignored for other worlds than the main
 // one.
-BLINK_EXPORT void SetDOMActivityLogger(int world_id,
+BLINK_EXPORT void SetDOMActivityLogger(int32_t world_id,
                                        const WebString& extension_id,
                                        WebDOMActivityLogger*);
 

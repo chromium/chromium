@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -18,6 +19,7 @@ namespace blink {
 
 class ScriptResource;
 class SourceStream;
+class ResponseBodyLoaderClient;
 
 // ScriptStreamer streams incomplete script data to V8 so that it can be parsed
 // while it's loaded. ScriptResource holds a reference to ScriptStreamer.
@@ -27,7 +29,7 @@ class SourceStream;
 // ClassicPendingScript are destroyed while the streaming is in progress, and
 // ScriptStreamer handles it gracefully.
 class CORE_EXPORT ScriptStreamer final
-    : public GarbageCollectedFinalized<ScriptStreamer> {
+    : public GarbageCollected<ScriptStreamer> {
   USING_PRE_FINALIZER(ScriptStreamer, Prefinalize);
 
  public:
@@ -103,7 +105,9 @@ class CORE_EXPORT ScriptStreamer final
   }
 
   // Called by ScriptResource when data arrives from the network.
-  void NotifyAppendData();
+  bool TryStartStreaming(mojo::ScopedDataPipeConsumerHandle* data_pipe,
+                         ResponseBodyLoaderClient* response_body_loader_client);
+
   // Called by ScriptResource when loading has completed.
   //
   // Should not be called synchronously, as it can trigger script resource
@@ -115,7 +119,7 @@ class CORE_EXPORT ScriptStreamer final
   void StreamingCompleteOnBackgroundThread();
 
   const String& ScriptURLString() const { return script_url_string_; }
-  unsigned long ScriptResourceIdentifier() const {
+  uint64_t ScriptResourceIdentifier() const {
     return script_resource_identifier_;
   }
 
@@ -165,7 +169,7 @@ class CORE_EXPORT ScriptStreamer final
   const String script_url_string_;
 
   // Keep the script resource dentifier for event tracing.
-  const unsigned long script_resource_identifier_;
+  const uint64_t script_resource_identifier_;
 
   // Encoding of the streamed script. Saved for sanity checking purposes.
   v8::ScriptCompiler::StreamedSource::Encoding encoding_;

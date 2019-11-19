@@ -38,112 +38,207 @@
 
 namespace blink {
 
+namespace {
+
+WebScreenInfo GetScreenInfo(LocalFrame& frame) {
+  return frame.GetChromeClient().GetScreenInfo(frame);
+}
+
+}  // namespace
+
 Screen::Screen(LocalFrame* frame) : DOMWindowClient(frame) {}
 
 int Screen::height() const {
-  if (!GetFrame())
+  LocalFrame* frame = GetFrame();
+  if (!frame) {
+    if (RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+      return display_->bounds.height;
     return 0;
-  Page* page = GetFrame()->GetPage();
-  if (!page)
-    return 0;
+  }
+  Page* page = frame->GetPage();
   if (page->GetSettings().GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    WebScreenInfo screen_info = page->GetChromeClient().GetScreenInfo();
+    WebScreenInfo screen_info = GetScreenInfo(*frame);
     return static_cast<int>(
         lroundf(screen_info.rect.height * screen_info.device_scale_factor));
   }
-  return page->GetChromeClient().GetScreenInfo().rect.height;
+  return GetScreenInfo(*frame).rect.height;
 }
 
 int Screen::width() const {
-  if (!GetFrame())
+  LocalFrame* frame = GetFrame();
+  if (!frame) {
+    if (RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+      return display_->bounds.width;
     return 0;
-  Page* page = GetFrame()->GetPage();
-  if (!page)
-    return 0;
+  }
+  Page* page = frame->GetPage();
   if (page->GetSettings().GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    WebScreenInfo screen_info = page->GetChromeClient().GetScreenInfo();
+    WebScreenInfo screen_info = GetScreenInfo(*frame);
     return static_cast<int>(
         lroundf(screen_info.rect.width * screen_info.device_scale_factor));
   }
-  return page->GetChromeClient().GetScreenInfo().rect.width;
+  return GetScreenInfo(*frame).rect.width;
 }
 
 unsigned Screen::colorDepth() const {
-  if (!GetFrame() || !GetFrame()->GetPage())
+  LocalFrame* frame = GetFrame();
+  if (!frame) {
+    if (RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+      return display_->color_depth;
     return 0;
-  return static_cast<unsigned>(
-      GetFrame()->GetPage()->GetChromeClient().GetScreenInfo().depth);
+  }
+  return static_cast<unsigned>(GetScreenInfo(*frame).depth);
 }
 
 unsigned Screen::pixelDepth() const {
-  if (!GetFrame())
+  LocalFrame* frame = GetFrame();
+  if (!frame) {
+    if (RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+      return display_->color_depth;
     return 0;
-  return static_cast<unsigned>(
-      GetFrame()->GetPage()->GetChromeClient().GetScreenInfo().depth);
+  }
+  return static_cast<unsigned>(GetScreenInfo(*frame).depth);
 }
 
 int Screen::availLeft() const {
-  if (!GetFrame())
+  LocalFrame* frame = GetFrame();
+  if (!frame) {
+    if (RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+      return display_->work_area.x;
     return 0;
-  Page* page = GetFrame()->GetPage();
-  if (!page)
-    return 0;
+  }
+  Page* page = frame->GetPage();
   if (page->GetSettings().GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    WebScreenInfo screen_info = page->GetChromeClient().GetScreenInfo();
+    WebScreenInfo screen_info = GetScreenInfo(*frame);
     return static_cast<int>(lroundf(screen_info.available_rect.x *
                                     screen_info.device_scale_factor));
   }
-  return static_cast<int>(
-      page->GetChromeClient().GetScreenInfo().available_rect.x);
+  return static_cast<int>(GetScreenInfo(*frame).available_rect.x);
 }
 
 int Screen::availTop() const {
-  if (!GetFrame())
+  LocalFrame* frame = GetFrame();
+  if (!frame) {
+    if (RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+      return display_->work_area.y;
     return 0;
-  Page* page = GetFrame()->GetPage();
-  if (!page)
-    return 0;
+  }
+  Page* page = frame->GetPage();
   if (page->GetSettings().GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    WebScreenInfo screen_info = page->GetChromeClient().GetScreenInfo();
+    WebScreenInfo screen_info = GetScreenInfo(*frame);
     return static_cast<int>(lroundf(screen_info.available_rect.y *
                                     screen_info.device_scale_factor));
   }
-  return static_cast<int>(
-      page->GetChromeClient().GetScreenInfo().available_rect.y);
+  return static_cast<int>(GetScreenInfo(*frame).available_rect.y);
 }
 
 int Screen::availHeight() const {
-  if (!GetFrame())
+  LocalFrame* frame = GetFrame();
+  if (!frame) {
+    if (RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+      return display_->work_area.width;
     return 0;
-  Page* page = GetFrame()->GetPage();
-  if (!page)
-    return 0;
+  }
+  Page* page = frame->GetPage();
   if (page->GetSettings().GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    WebScreenInfo screen_info = page->GetChromeClient().GetScreenInfo();
+    WebScreenInfo screen_info = GetScreenInfo(*frame);
     return static_cast<int>(lroundf(screen_info.available_rect.height *
                                     screen_info.device_scale_factor));
   }
-  return page->GetChromeClient().GetScreenInfo().available_rect.height;
+  return GetScreenInfo(*frame).available_rect.height;
 }
 
 int Screen::availWidth() const {
-  if (!GetFrame())
+  LocalFrame* frame = GetFrame();
+  if (!frame) {
+    if (RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+      return display_->work_area.height;
     return 0;
-  Page* page = GetFrame()->GetPage();
-  if (!page)
-    return 0;
+  }
+  Page* page = frame->GetPage();
   if (page->GetSettings().GetReportScreenSizeInPhysicalPixelsQuirk()) {
-    WebScreenInfo screen_info = page->GetChromeClient().GetScreenInfo();
+    WebScreenInfo screen_info = GetScreenInfo(*frame);
     return static_cast<int>(lroundf(screen_info.available_rect.width *
                                     screen_info.device_scale_factor));
   }
-  return page->GetChromeClient().GetScreenInfo().available_rect.width;
+  return GetScreenInfo(*frame).available_rect.width;
 }
 
 void Screen::Trace(blink::Visitor* visitor) {
   ScriptWrappable::Trace(visitor);
   DOMWindowClient::Trace(visitor);
   Supplementable<Screen>::Trace(visitor);
+}
+
+Screen::Screen(display::mojom::blink::DisplayPtr display, bool primary)
+    : DOMWindowClient(static_cast<LocalFrame*>(nullptr)),
+      display_(std::move(display)),
+      primary_(primary) {}
+
+int Screen::left() const {
+  LocalFrame* frame = GetFrame();
+  if (!frame) {
+    if (RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+      return display_->bounds.x;
+    return 0;
+  }
+  Page* page = frame->GetPage();
+  if (page->GetSettings().GetReportScreenSizeInPhysicalPixelsQuirk()) {
+    WebScreenInfo screen_info = GetScreenInfo(*frame);
+    return static_cast<int>(
+        lroundf(screen_info.rect.x * screen_info.device_scale_factor));
+  }
+  return GetScreenInfo(*frame).rect.x;
+}
+
+int Screen::top() const {
+  LocalFrame* frame = GetFrame();
+  if (!frame) {
+    if (RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+      return display_->bounds.y;
+    return 0;
+  }
+  Page* page = frame->GetPage();
+  if (page->GetSettings().GetReportScreenSizeInPhysicalPixelsQuirk()) {
+    WebScreenInfo screen_info = GetScreenInfo(*frame);
+    return static_cast<int>(
+        lroundf(screen_info.rect.y * screen_info.device_scale_factor));
+  }
+  return GetScreenInfo(*frame).rect.y;
+}
+
+bool Screen::internal() const {
+  // TODO(http://crbug.com/994889): Implement this.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+bool Screen::primary() const {
+  LocalFrame* frame = GetFrame();
+  if (!frame && RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+    return primary_.has_value() && primary_.value();
+  // TODO(http://crbug.com/994889): Implement this for |window.screen|?
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+float Screen::scaleFactor() const {
+  LocalFrame* frame = GetFrame();
+  if (!frame) {
+    if (RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+      return display_->device_scale_factor;
+    return 0;
+  }
+  return GetScreenInfo(*frame).device_scale_factor;
+}
+
+const String Screen::name() const {
+  // TODO(http://crbug.com/994889): Implement this.
+  NOTIMPLEMENTED_LOG_ONCE();
+  LocalFrame* frame = GetFrame();
+  if (!frame && RuntimeEnabledFeatures::ScreenEnumerationEnabled() && display_)
+    return "Generic Screen";
+  return String();
 }
 
 }  // namespace blink

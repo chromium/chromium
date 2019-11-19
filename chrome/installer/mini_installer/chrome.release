@@ -18,7 +18,6 @@ chrome_proxy.exe: %(ChromeDir)s\
 #
 # Chrome version dir entries, sorted alphabetically.
 #
-api-ms-win-*.dll: %(VersionDir)s\
 chrome.dll: %(VersionDir)s\
 chrome_100_percent.pak: %(VersionDir)s\
 chrome_child.dll: %(VersionDir)s\
@@ -26,42 +25,29 @@ chrome_elf.dll: %(VersionDir)s\
 chrome_watcher.dll: %(VersionDir)s\
 d3dcompiler_47.dll: %(VersionDir)s\
 eventlog_provider.dll: %(VersionDir)s\
-ffmpeg.dll: %(VersionDir)s\
-icudt.dll: %(VersionDir)s\
 icudtl.dat: %(VersionDir)s\
 libEGL.dll: %(VersionDir)s\
 libGLESv2.dll: %(VersionDir)s\
 nacl64.exe: %(VersionDir)s\
 nacl_irt_x86_32.nexe: %(VersionDir)s\
 nacl_irt_x86_64.nexe: %(VersionDir)s\
-natives_blob.bin: %(VersionDir)s\
 notification_helper.exe: %(VersionDir)s\
 resources.pak: %(VersionDir)s\
-ucrtbase*.dll: %(VersionDir)s\
 v8_context_snapshot.bin: %(VersionDir)s\
 #
 # Sub directories living in the version dir
 #
-default_apps\*.crx: %(VersionDir)s\default_apps\
-default_apps\external_extensions.json: %(VersionDir)s\default_apps\
 Extensions\*.*: %(VersionDir)s\Extensions\
-locales\*.dll: %(VersionDir)s\Locales
 locales\*.pak: %(VersionDir)s\Locales
 
 #
 # VisualElements sub-dir.
 #
-# All or none of the following files need to be present as the creation of
+# All or none of the *Logo*.png files need to be present as the creation of
 # VisualElementsManifest.xml is based on the existence of
 # %(VersionDir)\VisualElements.
 Logo.png: %(VersionDir)s\VisualElements\
-LogoBeta.png: %(VersionDir)s\VisualElements\
-LogoCanary.png: %(VersionDir)s\VisualElements\
-LogoDev.png: %(VersionDir)s\VisualElements\
 SmallLogo.png: %(VersionDir)s\VisualElements\
-SmallLogoBeta.png: %(VersionDir)s\VisualElements\
-SmallLogoCanary.png: %(VersionDir)s\VisualElements\
-SmallLogoDev.png: %(VersionDir)s\VisualElements\
 
 #
 # SwiftShader sub-dir
@@ -85,6 +71,22 @@ chrome_200_percent.pak: %(VersionDir)s\
 elevation_service.exe: %(VersionDir)s\
 
 #
+# Sub directories living in the version dir
+#
+default_apps\*.crx: %(VersionDir)s\default_apps\
+default_apps\external_extensions.json: %(VersionDir)s\default_apps\
+
+#
+# VisualElements sub-dir.
+#
+LogoBeta.png: %(VersionDir)s\VisualElements\
+LogoCanary.png: %(VersionDir)s\VisualElements\
+LogoDev.png: %(VersionDir)s\VisualElements\
+SmallLogoBeta.png: %(VersionDir)s\VisualElements\
+SmallLogoCanary.png: %(VersionDir)s\VisualElements\
+SmallLogoDev.png: %(VersionDir)s\VisualElements\
+
+#
 # Widevine CDM sub-dir
 #
 WidevineCdm\manifest.json: %(VersionDir)s\WidevineCdm\
@@ -93,3 +95,9 @@ WidevineCdm\_platform_specific\win_x86\widevinecdm.dll: %(VersionDir)s\WidevineC
 WidevineCdm\_platform_specific\win_x86\widevinecdm.dll.sig: %(VersionDir)s\WidevineCdm\_platform_specific\win_x86\
 WidevineCdm\_platform_specific\win_x64\widevinecdm.dll: %(VersionDir)s\WidevineCdm\_platform_specific\win_x64\
 WidevineCdm\_platform_specific\win_x64\widevinecdm.dll.sig: %(VersionDir)s\WidevineCdm\_platform_specific\win_x64\
+
+[SNAPSHOTBLOB]
+# The snapshot_blob.bin V8 snapshot is needed in builds that don't use
+# v8_context_snapshot.bin, such as Linux-Windows cross-builds.
+# It has its own section here so that it's only included when necessary.
+snapshot_blob.bin: %(VersionDir)s\

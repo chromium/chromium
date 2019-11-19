@@ -1,0 +1,206 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="ltr">|    abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  '2-0 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr"> |   abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  '2-1 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">  |  abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  '2-2 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">   | abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  '2-3 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  '2-4 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    a|bc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  '2-5 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    ab|c    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  '2-6 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc|    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  '2-7 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc |   def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  '2-8 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc  |  def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  '2-9 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc   | def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  '2-10 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    |def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    |abc    def    hij    opq    </div>',
+  '2-11 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    d|ef    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc |   def    hij    opq    </div>',
+  '2-12 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    de|f    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc |   def    hij    opq    </div>',
+  '2-13 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def|    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc |   def    hij    opq    </div>',
+  '2-14 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def |   hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc |   def    hij    opq    </div>',
+  '2-15 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def  |  hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc |   def    hij    opq    </div>',
+  '2-16 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def   | hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc |   def    hij    opq    </div>',
+  '2-17 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    |hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc |   def    hij    opq    </div>',
+  '2-18 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    h|ij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def |   hij    opq    </div>',
+  '2-19 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hi|j    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def |   hij    opq    </div>',
+  '2-20 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hij|    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def |   hij    opq    </div>',
+  '2-21 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hij |   opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def |   hij    opq    </div>',
+  '2-22 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hij  |  opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def |   hij    opq    </div>',
+  '2-23 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hij   | opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def |   hij    opq    </div>',
+  '2-24 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hij    |opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def |   hij    opq    </div>',
+  '2-25 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hij    o|pq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def    hij |   opq    </div>',
+  '2-26 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hij    op|q    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def    hij |   opq    </div>',
+  '2-27 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hij    opq|    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def    hij |   opq    </div>',
+  '2-28 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hij    opq |   </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def    hij |   opq    </div>',
+  '2-29 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hij    opq  |  </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def    hij |   opq    </div>',
+  '2-30 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hij    opq   | </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def    hij |   opq    </div>',
+  '2-31 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr">    abc    def    hij    opq    |</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr">    abc    def    hij |   opq    </div>',
+  '2-32 left word');
+</script>

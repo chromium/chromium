@@ -11,69 +11,32 @@
     font-weight: bold;
 }
 </style>
+<script src=../../resources/testharness.js></script>
+<script src=../../resources/testharnessreport.js></script>
+</head>
+<body>
+<h1 id="heading"/>
 <script>
-if (window.testRunner)
-    testRunner.dumpAsText();
 var count = 0;
 
 function shouldThrowException(node)
 {
-    document.body.appendChild(document.createElement("br"));
-    var header = document.createElement("div");
-    header.textContent = ++count + ". Verifying XMLSerializer.serializeToString() should THROW exception with " + (arguments.length ? "argument " + node : "no argument");
-    document.body.appendChild(header);
-
     var xs = new XMLSerializer();
-    try {
-        var str = xs.serializeToString.apply(xs, arguments);
-
-        var result = document.createElement("div");
-        result.className = "failed"
-        result.textContent = "FAIL";
-        document.body.appendChild(result);
-    } catch (exception) {
-        var err = "Exception thrown = [" + exception.name + ": " + exception.message + "]";
-        var content = document.createElement("div");
-        content.textContent = err;
-        document.body.appendChild(content);
-
-        var result = document.createElement("div");
-        result.className = "passed"
-        result.textContent = "PASS";
-        document.body.appendChild(result);
-    }
+    assert_throws(new TypeError(), () => { xs.serializeToString.apply(xs, arguments); }, ++count + ". Verifying XMLSerializer.serializeToString() should THROW exception with " + (arguments.length ? "argument " + node : "no argument"));
 }
 
 function shouldNOTThrowException(node)
 {
-    document.body.appendChild(document.createElement("br"));
-    var header = document.createElement("div");
-    header.textContent = ++count + ". Verifying XMLSerializer.serializeToString() should NOT-THROW exception with argument " + node;
-    document.body.appendChild(header);
-
     var xs = new XMLSerializer();
+    ++count;
     try {
         var str = xs.serializeToString(node);
-
-        var result = document.createElement("div");
-        result.className = "passed"
-        result.textContent = "PASS";
-        document.body.appendChild(result);
     } catch (exception) {
-        var err = "Exception thrown = [" + exception.name + ": " + exception.message + "]";
-        var content = document.createElement("div");
-        content.textContent = err;
-        document.body.appendChild(content);
-
-        var result = document.createElement("div");
-        result.className = "failed"
-        result.textContent = "FAIL";
-        document.body.appendChild(result);
+        assert_unreached(count + ". Verifying XMLSerializer.serializeToString() should NOT-THROW exception with argument " + node);
     }
 }
 
-function runTest()
-{
+test(() => {
     shouldThrowException();
     shouldThrowException(null);
     shouldThrowException(undefined);
@@ -96,11 +59,7 @@ function runTest()
     var xmlDoc = domParser.parseFromString("<root/>", "text/xml");
     shouldNOTThrowException(xmlDoc);
     shouldNOTThrowException(xmlDoc.lastChild);
-}
+}, "This tests XMLSerializer.serializeToString() throwing exception when node value is invalid and passing otherwise");
 </script>
-</head>
-<body onload="runTest();">
-This tests XMLSerializer.serializeToString() throwing exception when node value is invalid and passing otherwise.
-<h1 id="heading"/>
 </body>
 </html>

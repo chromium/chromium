@@ -1,14 +1,13 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
     <button id="button1"></button>
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButton1 = accessibilityController.accessibleElementById("button1");
     assert_equals(axButton1.name, "");
 }, "Button with no content");
@@ -19,7 +18,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButton2 = accessibilityController.accessibleElementById("button2");
     assert_equals(axButton2.name, "button2-content");
     assert_equals(axButton2.nameFrom, "contents");
@@ -31,7 +30,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButton3 = accessibilityController.accessibleElementById("button3");
     assert_equals(axButton3.name, "");
 }, "Button with img content with no alt");
@@ -42,7 +41,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButton4 = accessibilityController.accessibleElementById("button4");
     assert_equals(axButton4.name, "cake");
     assert_equals(axButton4.nameFrom, "contents");
@@ -54,7 +53,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButton5 = accessibilityController.accessibleElementById("button5");
     assert_equals(axButton5.name, "I love !");
     assert_equals(axButton5.nameFrom, "contents");
@@ -66,7 +65,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButton6 = accessibilityController.accessibleElementById("button6");
     assert_equals(axButton6.name, "I love cake !");
     assert_equals(axButton6.nameFrom, "contents");
@@ -78,7 +77,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButton7 = accessibilityController.accessibleElementById("button7");
     assert_equals(axButton7.name, "button7-title");
     assert_equals(axButton7.nameFrom, "title");
@@ -90,7 +89,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButton8 = accessibilityController.accessibleElementById("button8");
     assert_equals(axButton8.name, "button8-content");
     assert_equals(axButton8.nameFrom, "contents");
@@ -102,7 +101,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButton9 = accessibilityController.accessibleElementById("button9");
     assert_equals(axButton9.name, "button9-title");
     assert_equals(axButton9.nameFrom, "title");
@@ -114,7 +113,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButton10 = accessibilityController.accessibleElementById("button10");
     assert_equals(axButton10.name, "cake");
     assert_equals(axButton10.nameFrom, "contents");
@@ -127,7 +126,7 @@ test_after_layout_and_paint(function(t) {
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
+test(function(t) {
     var axButton11 = accessibilityController.accessibleElementById("button11");
     assert_equals(axButton11.name, "label-for-button11");
     assert_equals(axButton11.nameFrom, "relatedElement");

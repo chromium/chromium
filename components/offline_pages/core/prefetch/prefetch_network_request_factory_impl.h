@@ -92,7 +92,7 @@ class PrefetchNetworkRequestFactoryImpl : public PrefetchNetworkRequestFactory {
 
   PrefService* prefs_;
 
-  base::WeakPtrFactory<PrefetchNetworkRequestFactoryImpl> weak_factory_;
+  base::WeakPtrFactory<PrefetchNetworkRequestFactoryImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchNetworkRequestFactoryImpl);
 };

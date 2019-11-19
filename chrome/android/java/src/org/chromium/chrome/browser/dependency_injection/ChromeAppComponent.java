@@ -6,13 +6,19 @@ package org.chromium.chrome.browser.dependency_injection;
 
 import org.chromium.chrome.browser.AppHooksModule;
 import org.chromium.chrome.browser.browserservices.ClearDataDialogResultRecorder;
-import org.chromium.chrome.browser.contextual_suggestions.ContextualSuggestionsModule;
-import org.chromium.chrome.browser.contextual_suggestions.EnabledStateMonitor;
+import org.chromium.chrome.browser.browserservices.SessionDataHolder;
+import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.NotificationPermissionUpdater;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
+import org.chromium.chrome.browser.customtabs.CustomTabsClientFileProcessor;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.dependency_injection.CustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.dependency_injection.CustomTabActivityModule;
 import org.chromium.chrome.browser.externalauth.ExternalAuthUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceManager;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.webapps.dependency_injection.WebappActivityComponent;
+import org.chromium.chrome.browser.webapps.dependency_injection.WebappActivityModule;
 
 import javax.inject.Singleton;
 
@@ -24,20 +30,23 @@ import dagger.Component;
 @Component(modules = {ChromeAppModule.class, AppHooksModule.class})
 @Singleton
 public interface ChromeAppComponent {
-    ChromeActivityComponent createChromeActivityComponent(ChromeActivityCommonsModule module,
-            ContextualSuggestionsModule contextualSuggestionsModule);
+    ChromeActivityComponent createChromeActivityComponent(ChromeActivityCommonsModule module);
 
     CustomTabActivityComponent createCustomTabActivityComponent(ChromeActivityCommonsModule module,
-            ContextualSuggestionsModule contextualSuggestionsModule,
             CustomTabActivityModule customTabActivityModule);
+    WebappActivityComponent createWebappActivityComponent(
+            ChromeActivityCommonsModule module, WebappActivityModule webappActivityModule);
 
     CustomTabsConnection resolveCustomTabsConnection();
+    SharedPreferencesManager resolveSharedPreferencesManager();
     ChromePreferenceManager resolvePreferenceManager();
     ClearDataDialogResultRecorder resolveTwaClearDataDialogRecorder();
-
-    // Temporary getters for DI migration process. All of these getters
-    // should eventually be replaced with constructor injection.
-    EnabledStateMonitor resolveContextualSuggestionsEnabledStateMonitor();
+    TrustedWebActivityPermissionManager resolveTwaPermissionManager();
+    NotificationPermissionUpdater resolveTwaPermissionUpdater();
+    TrustedWebActivityClient resolveTrustedWebActivityClient();
 
     ExternalAuthUtils resolveExternalAuthUtils();
+
+    CustomTabsClientFileProcessor resolveCustomTabsFileProcessor();
+    SessionDataHolder resolveSessionDataHolder();
 }

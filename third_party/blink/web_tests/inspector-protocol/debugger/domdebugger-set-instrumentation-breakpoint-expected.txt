@@ -15,18 +15,3 @@ Running test: testInvalidEventName
     sessionId : <string>
 }
 
-Running test: testScriptFirstStatementAndPause
-{
-    reasons : [
-        [0] : {
-            reason : other
-        }
-        [1] : {
-            auxData : {
-                eventName : instrumentation:scriptFirstStatement
-            }
-            reason : EventListener
-        }
-    ]
-}
-

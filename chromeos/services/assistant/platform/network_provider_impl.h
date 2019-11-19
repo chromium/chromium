@@ -6,33 +6,44 @@
 #define CHROMEOS_SERVICES_ASSISTANT_PLATFORM_NETWORK_PROVIDER_IMPL_H_
 
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
+#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "libassistant/shared/public/platform_net.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
-#include "services/network/public/mojom/network_change_manager.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace chromeos {
 namespace assistant {
 
-class NetworkProviderImpl
+class COMPONENT_EXPORT(ASSISTANT_SERVICE) NetworkProviderImpl
     : public assistant_client::NetworkProvider,
-      public network::NetworkConnectionTracker::NetworkConnectionObserver {
+      public network_config::mojom::CrosNetworkConfigObserver {
  public:
-  explicit NetworkProviderImpl(
-      network::NetworkConnectionTracker* network_connection_tracker);
+  explicit NetworkProviderImpl(mojom::Client* client);
   ~NetworkProviderImpl() override;
 
-  // network::NetworkConnectionTracker::NetworkConnectionObserver:
-  void OnConnectionChanged(network::mojom::ConnectionType type) override;
-
-  // assistant_client::NetworkProvider::NetworkChangeObserver overrides:
+  // assistant_client::NetworkProvider:
   ConnectionStatus GetConnectionStatus() override;
   assistant_client::MdnsResponder* GetMdnsResponder() override;
 
+  // network_config::mojom::CrosNetworkConfigObserver:
+  void OnActiveNetworksChanged(
+      std::vector<network_config::mojom::NetworkStatePropertiesPtr> networks)
+      override;
+  void OnNetworkStateChanged(
+      chromeos::network_config::mojom::NetworkStatePropertiesPtr network)
+      override {}
+  void OnNetworkStateListChanged() override {}
+  void OnDeviceStateListChanged() override {}
+  void OnVpnProvidersChanged() override {}
+  void OnNetworkCertificatesChanged() override {}
+
  private:
-  network::NetworkConnectionTracker* network_connection_tracker_;
-  network::mojom::ConnectionType connection_type_;
-  base::WeakPtrFactory<NetworkProviderImpl> weak_factory_;
+  ConnectionStatus connection_status_;
+  mojo::Receiver<network_config::mojom::CrosNetworkConfigObserver> receiver_{
+      this};
+  mojo::Remote<network_config::mojom::CrosNetworkConfig>
+      cros_network_config_remote_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkProviderImpl);
 };

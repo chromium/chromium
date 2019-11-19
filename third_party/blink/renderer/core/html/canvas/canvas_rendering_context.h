@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 
 namespace blink {
@@ -64,14 +65,15 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
   enum ContextType {
     // Do not change assigned numbers of existing items: add new features to the
     // end of the list.
-    kContext2d = 0,
+    kContext2D = 0,
     kContextExperimentalWebgl = 2,
     kContextWebgl = 3,
     kContextWebgl2 = 4,
     kContextImageBitmap = 5,
     kContextXRPresent = 6,
     kContextWebgl2Compute = 7,
-    kContextTypeUnknown = 8,
+    kContextGPUPresent = 8,
+    kContextTypeUnknown = 9,
     kMaxValue = kContextTypeUnknown,
   };
 
@@ -85,14 +87,14 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
 
   const CanvasColorParams& ColorParams() const { return color_params_; }
 
-  virtual scoped_refptr<StaticBitmapImage> GetImage(AccelerationHint) const = 0;
+  virtual scoped_refptr<StaticBitmapImage> GetImage(AccelerationHint) = 0;
   virtual ContextType GetContextType() const = 0;
   virtual bool IsComposited() const = 0;
   virtual bool IsAccelerated() const = 0;
   virtual bool IsOriginTopLeft() const {
     // Canvas contexts have the origin of coordinates on the top left corner.
     // Accelerated resources (e.g. GPU textures) have their origin of
-    // coordinates in the uppper left corner.
+    // coordinates in the upper left corner.
     return !IsAccelerated();
   }
   virtual bool ShouldAntialias() const { return false; }
@@ -133,8 +135,6 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
   // of a presentable frame.
   virtual void FinalizeFrame() {}
 
-  void NeedsFinalizeFrame();
-
   // Thread::TaskObserver implementation
   void DidProcessTask(const base::PendingTask&) override;
   void WillProcessTask(const base::PendingTask&) final {}
@@ -151,20 +151,20 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
   virtual void StyleDidChange(const ComputedStyle* old_style,
                               const ComputedStyle& new_style) {}
   virtual HitTestCanvasResult* GetControlAndIdIfHitRegionExists(
-      const LayoutPoint& location) {
+      const PhysicalOffset& location) {
     NOTREACHED();
-    return HitTestCanvasResult::Create(String(), nullptr);
+    return MakeGarbageCollected<HitTestCanvasResult>(String(), nullptr);
   }
   virtual String GetIdFromControl(const Element* element) { return String(); }
   virtual void ResetUsageTracking() {}
 
   // WebGL-specific interface
   virtual bool Is3d() const { return false; }
+  virtual bool UsingSwapChain() const { return false; }
   virtual void SetFilterQuality(SkFilterQuality) { NOTREACHED(); }
   virtual void Reshape(int width, int height) { NOTREACHED(); }
   virtual void MarkLayerComposited() { NOTREACHED(); }
-  virtual scoped_refptr<Uint8Array> PaintRenderingResultsToDataArray(
-      SourceDrawingBuffer) {
+  virtual sk_sp<SkData> PaintRenderingResultsToDataArray(SourceDrawingBuffer) {
     NOTREACHED();
     return nullptr;
   }
@@ -179,7 +179,8 @@ class CORE_EXPORT CanvasRenderingContext : public ScriptWrappable,
   }
 
   // OffscreenCanvas-specific methods
-  virtual void PushFrame() {}
+  virtual bool PushFrame() { return false; }
+  virtual bool IsDeferralEnabled() const { return false; }
   virtual ImageBitmap* TransferToImageBitmap(ScriptState*) { return nullptr; }
 
   bool WouldTaintOrigin(CanvasImageSource*);

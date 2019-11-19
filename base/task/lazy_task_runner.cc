@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/lazy_instance.h"
+#include "base/lazy_instance_helpers.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
 
@@ -45,20 +45,20 @@ LazyTaskRunner<SequencedTaskRunner, false>::Create() {
   // LazySequencedTaskRunner.
   DCHECK_EQ(thread_mode_, SingleThreadTaskRunnerThreadMode::SHARED);
 
-  return CreateSequencedTaskRunnerWithTraits(traits_);
+  return CreateSequencedTaskRunner(traits_);
 }
 
 template <>
 scoped_refptr<SingleThreadTaskRunner>
 LazyTaskRunner<SingleThreadTaskRunner, false>::Create() {
-  return CreateSingleThreadTaskRunnerWithTraits(traits_, thread_mode_);
+  return CreateSingleThreadTaskRunner(traits_, thread_mode_);
 }
 
 #if defined(OS_WIN)
 template <>
 scoped_refptr<SingleThreadTaskRunner>
 LazyTaskRunner<SingleThreadTaskRunner, true>::Create() {
-  return CreateCOMSTATaskRunnerWithTraits(traits_, thread_mode_);
+  return CreateCOMSTATaskRunner(traits_, thread_mode_);
 }
 #endif
 
@@ -107,14 +107,14 @@ ScopedLazyTaskRunnerListForTesting::ScopedLazyTaskRunnerListForTesting() {
 }
 
 ScopedLazyTaskRunnerListForTesting::~ScopedLazyTaskRunnerListForTesting() {
-  internal::AutoSchedulerLock auto_lock(lock_);
+  internal::CheckedAutoLock auto_lock(lock_);
   for (auto& callback : callbacks_)
     std::move(callback).Run();
   g_scoped_lazy_task_runner_list_for_testing = nullptr;
 }
 
 void ScopedLazyTaskRunnerListForTesting::AddCallback(OnceClosure callback) {
-  internal::AutoSchedulerLock auto_lock(lock_);
+  internal::CheckedAutoLock auto_lock(lock_);
   callbacks_.push_back(std::move(callback));
 }
 

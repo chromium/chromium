@@ -28,5 +28,5 @@ bool UnifiedAutoplayConfig::IsBlockAutoplayUserModifiable(Profile* profile) {
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
   return settings_map->GetDefaultContentSetting(
-             CONTENT_SETTINGS_TYPE_SOUND, nullptr) != CONTENT_SETTING_BLOCK;
+             ContentSettingsType::SOUND, nullptr) != CONTENT_SETTING_BLOCK;
 }

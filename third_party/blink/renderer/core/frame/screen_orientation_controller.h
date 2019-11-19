@@ -20,7 +20,7 @@ class WebLockOrientationCallback;
 // Callers of ScreenOrientationController::from() should always assume the
 // returned pointer can be nullptr.
 class CORE_EXPORT ScreenOrientationController
-    : public GarbageCollectedFinalized<ScreenOrientationController>,
+    : public GarbageCollected<ScreenOrientationController>,
       public Supplement<LocalFrame> {
   USING_GARBAGE_COLLECTED_MIXIN(ScreenOrientationController);
 

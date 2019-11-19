@@ -6,6 +6,7 @@
 #define CHROMEOS_DBUS_SYSTEM_CLOCK_FAKE_SYSTEM_CLOCK_CLIENT_H_
 
 #include <stdint.h>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/observer_list.h"
@@ -25,6 +26,7 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) FakeSystemClockClient
   // TestInterface
   void SetNetworkSynchronized(bool network_synchronized) override;
   void NotifyObserversSystemClockUpdated() override;
+  void SetServiceIsAvailable(bool is_available) override;
 
   // SystemClockClient overrides
   void AddObserver(Observer* observer) override;
@@ -38,8 +40,11 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) FakeSystemClockClient
   SystemClockClient::TestInterface* GetTestInterface() override;
 
  private:
+  bool is_available_ = true;
   bool network_synchronized_ = false;
 
+  std::vector<dbus::ObjectProxy::WaitForServiceToBeAvailableCallback>
+      callbacks_;
   base::ObserverList<Observer>::Unchecked observers_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeSystemClockClient);

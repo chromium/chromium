@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_IME_IME_WINDOW_FRAME_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_IME_IME_WINDOW_FRAME_VIEW_H_
 
-#include "chrome/browser/ui/ime/ime_window.h"
+#include "chrome/browser/ui/input_method/ime_window.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/window/non_client_view.h"
 
@@ -34,12 +34,8 @@ class ImeWindowFrameView : public views::NonClientFrameView,
   void UpdateIcon();
 
  private:
-  static constexpr int kButtonSize = 24;
   static constexpr int kImeBorderThickness = 1;
-  static constexpr int kTitleIconSize = 16;
   static constexpr int kTitlebarHeight = 32;
-  static constexpr int kTitlebarLeftPadding = 8;
-  static constexpr int kTitlebarRightPadding = 6;
 
   // Colors used to draw border, titlebar background and title text.
   static constexpr SkColor kImeBackgroundColor =
@@ -61,7 +57,6 @@ class ImeWindowFrameView : public views::NonClientFrameView,
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-  void Layout() override;
   void OnPaint(gfx::Canvas* canvas) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
@@ -82,10 +77,11 @@ class ImeWindowFrameView : public views::NonClientFrameView,
     return mode_ == ImeWindow::FOLLOW_CURSOR;
   }
 
-  ImeWindowView* ime_window_view_;
-  ImeWindow::Mode mode_;
-  views::ImageButton* close_button_;
-  views::ImageView* title_icon_;
+  ImeWindowView* const ime_window_view_;
+  const ImeWindow::Mode mode_;
+  views::ImageButton* close_button_ = nullptr;
+  views::ImageView* title_icon_ = nullptr;
+  views::View* content_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ImeWindowFrameView);
 };

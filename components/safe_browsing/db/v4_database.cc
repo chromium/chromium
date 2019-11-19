@@ -69,9 +69,9 @@ void V4Database::Create(
   const scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner =
       base::ThreadTaskRunnerHandle::Get();
   db_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&V4Database::CreateOnTaskRunner, db_task_runner,
-                                base_path, list_infos, callback_task_runner,
-                                new_db_callback, TimeTicks::Now()));
+      FROM_HERE,
+      base::BindOnce(&V4Database::CreateOnTaskRunner, db_task_runner, base_path,
+                     list_infos, callback_task_runner, new_db_callback));
 }
 
 // static
@@ -80,8 +80,7 @@ void V4Database::CreateOnTaskRunner(
     const base::FilePath& base_path,
     const ListInfos& list_infos,
     const scoped_refptr<base::SingleThreadTaskRunner>& callback_task_runner,
-    NewDatabaseReadyCallback new_db_callback,
-    const TimeTicks create_start_time) {
+    NewDatabaseReadyCallback new_db_callback) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
 
   if (!g_store_factory.Get())
@@ -112,9 +111,6 @@ void V4Database::CreateOnTaskRunner(
   // thread. This would unblock resource loads.
   callback_task_runner->PostTask(
       FROM_HERE, base::BindOnce(new_db_callback, std::move(v4_database)));
-
-  UMA_HISTOGRAM_TIMES("SafeBrowsing.V4DatabaseOpen.Time",
-                      TimeTicks::Now() - create_start_time);
 }
 
 // static
@@ -134,8 +130,7 @@ V4Database::V4Database(
     std::unique_ptr<StoreMap> store_map)
     : store_map_(std::move(store_map)),
       db_task_runner_(db_task_runner),
-      pending_store_updates_(0),
-      weak_factory_on_io_(this) {
+      pending_store_updates_(0) {
   DCHECK(db_task_runner->RunsTasksInCurrentSequence());
 }
 
@@ -297,18 +292,8 @@ void V4Database::OnChecksumVerified(
 
 bool V4Database::IsStoreAvailable(const ListIdentifier& identifier) const {
   const auto& store_pair = store_map_->find(identifier);
-  bool store_found = store_pair != store_map_->end();
-  UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.V4Store.IsStoreAvailable.ValidStore",
-                        store_found);
-  if (!store_found) {
-    // Store not in our list
-    return false;
-  }
-  if (!store_pair->second->HasValidData()) {
-    // Store never properly populated
-    return false;
-  }
-  return true;
+  return (store_pair != store_map_->end()) &&
+         store_pair->second->HasValidData();
 }
 
 void V4Database::RecordFileSizeHistograms() {

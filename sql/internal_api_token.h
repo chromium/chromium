@@ -7,6 +7,10 @@
 
 namespace sql {
 
+namespace test {
+struct ColumnInfo;
+}  // namespace test
+
 // Restricts access to APIs internal to the //sql package.
 //
 // This implements Java's package-private via the passkey idiom.
@@ -18,6 +22,7 @@ class InternalApiToken {
 
   friend class DatabaseTestPeer;
   friend class Recovery;
+  friend struct test::ColumnInfo;
 };
 
 }  // namespace sql

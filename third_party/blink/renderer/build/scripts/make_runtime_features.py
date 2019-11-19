@@ -28,24 +28,33 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import copy
+import cPickle as pickle
+import os
 import sys
 
 from blinkbuild.name_style_converter import NameStyleConverter
+import make_runtime_features_utilities as util
 import json5_generator
 import template_expander
 
 
-class RuntimeFeatureWriter(json5_generator.Writer):
-    class_name = 'RuntimeEnabledFeatures'
-    file_basename = 'runtime_enabled_features'
+class BaseRuntimeFeatureWriter(json5_generator.Writer):
+    # |class_name| should be passed as a template input to generate the target
+    # class. Set this variable if the template generates a class.
+    class_name = None
+    # |file_basename| must be set by subclasses since it is used to generate
+    # the header guard.
+    file_basename = None
 
     def __init__(self, json5_file_path, output_dir):
-        super(RuntimeFeatureWriter, self).__init__(json5_file_path, output_dir)
-        self._outputs = {(self.file_basename + '.h'): self.generate_header,
-                         (self.file_basename + '.cc'): self.generate_implementation,
-                        }
+        super(BaseRuntimeFeatureWriter, self).__init__(json5_file_path, output_dir)
+        # Subclasses should add generated output files and their contents to this dict.
+        self._outputs = {}
+        assert self.file_basename
 
         self._features = self.json5_file.name_dictionaries
+        # Dependency graph specified by 'depends_on' attribute.
+        self._dependency_graph = util.init_graph(self._features)
         # Make sure the resulting dictionaries have all the keys we expect.
         for feature in self._features:
             feature['data_member_name'] = self._data_member_name(feature['name'])
@@ -56,6 +65,8 @@ class RuntimeFeatureWriter(json5_generator.Writer):
             for implied_by_name in feature['implied_by']:
                 enabled_condition += ' || ' + self._data_member_name(implied_by_name)
             for dependant_name in feature['depends_on']:
+                assert dependant_name in self._dependency_graph, dependant_name + ' is not a feature.'
+                self._dependency_graph[dependant_name].append(str(feature['name']))
                 enabled_condition += ' && ' + self._data_member_name(dependant_name)
             feature['enabled_condition'] = enabled_condition
             # If 'status' is a dict, add the values for all the not-mentioned platforms too.
@@ -64,8 +75,11 @@ class RuntimeFeatureWriter(json5_generator.Writer):
             # Specify the type of status
             feature['status_type'] = "dict" if isinstance(feature['status'], dict) else "str"
 
+        util.check_if_dependency_graph_contains_cycle(self._dependency_graph)
+        util.set_origin_trials_features(self._features, self._dependency_graph)
+
         self._standard_features = [feature for feature in self._features if not feature['custom']]
-        self._origin_trial_features = [feature for feature in self._features if feature['origin_trial_feature_name']]
+        self._origin_trial_features = [feature for feature in self._features if feature['in_origin_trial']]
         self._header_guard = self.make_header_guard(self._relative_output_dir + self.file_basename + '.h')
 
     @staticmethod
@@ -92,6 +106,41 @@ class RuntimeFeatureWriter(json5_generator.Writer):
         platforms = self.json5_file.parameters['status']['valid_keys']
         return [platform for platform in platforms if platform != 'default']
 
+
+class RuntimeFeatureWriter(BaseRuntimeFeatureWriter):
+    class_name = 'RuntimeEnabledFeatures'
+    file_basename = 'runtime_enabled_features'
+
+    def __init__(self, json5_file_path, output_dir):
+        super(RuntimeFeatureWriter, self).__init__(json5_file_path, output_dir)
+        self._outputs = {
+            (self.file_basename + '.h'): self.generate_header,
+            (self.file_basename + '.cc'): self.generate_implementation,
+        }
+
+        # Write features to file for bindings generation
+        self._write_features_to_pickle_file(output_dir)
+
+    def _write_features_to_pickle_file(self, platform_output_dir):
+        # TODO(yashard): Get the file path from args instead of hardcoding it.
+        file_name = os.path.join(platform_output_dir, '..', 'build', 'scripts', 'runtime_enabled_features.pickle')
+        features_map = {}
+        for feature in self._features:
+            features_map[str(feature['name'])] = {
+                'in_origin_trial': feature['in_origin_trial']
+            }
+        if os.path.isfile(file_name):
+            with open(os.path.abspath(file_name)) as pickle_file:
+                # pylint: disable=broad-except
+                try:
+                    if pickle.load(pickle_file) == features_map:
+                        return
+                except Exception:
+                    # If trouble unpickling, overwrite
+                    pass
+        with open(os.path.abspath(file_name), 'w') as pickle_file:
+            pickle.dump(features_map, pickle_file)
+
     def _template_inputs(self):
         return {
             'features': self._features,
@@ -112,15 +161,13 @@ class RuntimeFeatureWriter(json5_generator.Writer):
         return self._template_inputs()
 
 
-class RuntimeFeatureTestHelpersWriter(json5_generator.Writer):
+class RuntimeFeatureTestHelpersWriter(BaseRuntimeFeatureWriter):
     class_name = 'ScopedRuntimeEnabledFeatureForTest'
     file_basename = 'runtime_enabled_features_test_helpers'
 
     def __init__(self, json5_file_path, output_dir):
         super(RuntimeFeatureTestHelpersWriter, self).__init__(json5_file_path, output_dir)
         self._outputs = {('testing/' + self.file_basename + '.h'): self.generate_header}
-        self._features = self.json5_file.name_dictionaries
-        self._header_guard = self.make_header_guard(self._relative_output_dir + self.file_basename + '.h')
 
     def _template_inputs(self):
         return {
@@ -132,6 +179,7 @@ class RuntimeFeatureTestHelpersWriter(json5_generator.Writer):
     @template_expander.use_jinja('templates/' + file_basename + '.h.tmpl')
     def generate_header(self):
         return self._template_inputs()
+
 
 if __name__ == '__main__':
     json5_generator.Maker(RuntimeFeatureWriter).main()

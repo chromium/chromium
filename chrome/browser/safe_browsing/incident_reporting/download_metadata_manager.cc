@@ -330,7 +330,7 @@ class DownloadMetadataManager::ManagerContext
   // in order when a pending read operation completes.
   std::list<GetDownloadDetailsCallback> get_details_callbacks_;
 
-  base::WeakPtrFactory<ManagerContext> weak_factory_;
+  base::WeakPtrFactory<ManagerContext> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ManagerContext);
 };
@@ -339,8 +339,8 @@ class DownloadMetadataManager::ManagerContext
 // DownloadMetadataManager -----------------------------------------------------
 
 DownloadMetadataManager::DownloadMetadataManager()
-    : task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::TaskPriority::BEST_EFFORT,
+    : task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
            base::MayBlock()})) {}
 
@@ -429,8 +429,7 @@ DownloadMetadataManager::ManagerContext::ManagerContext(
     content::DownloadManager* download_manager)
     : task_runner_(std::move(task_runner)),
       metadata_path_(GetMetadataPath(download_manager->GetBrowserContext())),
-      state_(WAITING_FOR_LOAD),
-      weak_factory_(this) {
+      state_(WAITING_FOR_LOAD) {
   // Observe all pre-existing items in the manager.
   content::DownloadManager::DownloadVector items;
   download_manager->GetAllDownloads(&items);

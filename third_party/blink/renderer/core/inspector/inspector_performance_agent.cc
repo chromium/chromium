@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/stl_util.h"
 #include "base/time/time_override.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -14,8 +15,8 @@
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/instance_counters.h"
-#include "third_party/blink/renderer/platform/wtf/dtoa/utils.h"
+#include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
 namespace blink {
 
@@ -49,13 +50,13 @@ void InspectorPerformanceAgent::Restore() {
 }
 
 void InspectorPerformanceAgent::InnerEnable() {
-  instrumenting_agents_->addInspectorPerformanceAgent(this);
+  instrumenting_agents_->AddInspectorPerformanceAgent(this);
   Thread::Current()->AddTaskTimeObserver(this);
-  layout_start_ticks_ = TimeTicks();
-  recalc_style_start_ticks_ = TimeTicks();
-  task_start_ticks_ = TimeTicks();
-  script_start_ticks_ = TimeTicks();
-  v8compile_start_ticks_ = TimeTicks();
+  layout_start_ticks_ = base::TimeTicks();
+  recalc_style_start_ticks_ = base::TimeTicks();
+  task_start_ticks_ = base::TimeTicks();
+  script_start_ticks_ = base::TimeTicks();
+  v8compile_start_ticks_ = base::TimeTicks();
   thread_time_origin_ = GetThreadTimeNow();
 }
 
@@ -71,7 +72,7 @@ protocol::Response InspectorPerformanceAgent::disable() {
   if (!enabled_.Get())
     return Response::OK();
   enabled_.Clear();
-  instrumenting_agents_->removeInspectorPerformanceAgent(this);
+  instrumenting_agents_->RemoveInspectorPerformanceAgent(this);
   Thread::Current()->RemoveTaskTimeObserver(this);
   return Response::OK();
 }
@@ -80,10 +81,10 @@ namespace {
 void AppendMetric(protocol::Array<protocol::Performance::Metric>* container,
                   const String& name,
                   double value) {
-  container->addItem(protocol::Performance::Metric::create()
-                         .setName(name)
-                         .setValue(value)
-                         .build());
+  container->emplace_back(protocol::Performance::Metric::create()
+                              .setName(name)
+                              .setValue(value)
+                              .build());
 }
 }  // namespace
 
@@ -94,11 +95,11 @@ Response InspectorPerformanceAgent::setTimeDomain(const String& time_domain) {
         " is enabled.");
   }
 
-  using namespace protocol::Performance::SetTimeDomain;
-
-  if (time_domain == TimeDomainEnum::TimeTicks) {
+  if (time_domain ==
+      protocol::Performance::SetTimeDomain::TimeDomainEnum::TimeTicks) {
     use_thread_ticks_.Clear();
-  } else if (time_domain == TimeDomainEnum::ThreadTicks) {
+  } else if (time_domain == protocol::Performance::SetTimeDomain::
+                                TimeDomainEnum::ThreadTicks) {
     if (!base::ThreadTicks::IsSupported()) {
       return Response::Error("Thread time is not supported on this platform.");
     }
@@ -111,12 +112,12 @@ Response InspectorPerformanceAgent::setTimeDomain(const String& time_domain) {
   return Response::OK();
 }
 
-TimeTicks InspectorPerformanceAgent::GetTimeTicksNow() {
+base::TimeTicks InspectorPerformanceAgent::GetTimeTicksNow() {
   return use_thread_ticks_.Get() ? GetThreadTimeNow()
                                  : base::subtle::TimeTicksNowIgnoringOverride();
 }
 
-TimeTicks InspectorPerformanceAgent::GetThreadTimeNow() {
+base::TimeTicks InspectorPerformanceAgent::GetThreadTimeNow() {
   return base::TimeTicks() +
          base::TimeDelta::FromMicroseconds(
              base::ThreadTicks::Now().since_origin().InMicroseconds());
@@ -126,25 +127,26 @@ Response InspectorPerformanceAgent::getMetrics(
     std::unique_ptr<protocol::Array<protocol::Performance::Metric>>*
         out_result) {
   if (!enabled_.Get()) {
-    *out_result = protocol::Array<protocol::Performance::Metric>::create();
+    *out_result =
+        std::make_unique<protocol::Array<protocol::Performance::Metric>>();
     return Response::OK();
   }
 
-  std::unique_ptr<protocol::Array<protocol::Performance::Metric>> result =
-      protocol::Array<protocol::Performance::Metric>::create();
+  auto result =
+      std::make_unique<protocol::Array<protocol::Performance::Metric>>();
 
   AppendMetric(result.get(), "Timestamp",
-               CurrentTimeTicks().since_origin().InSecondsF());
+               base::TimeTicks::Now().since_origin().InSecondsF());
 
   // Renderer instance counters.
-  for (size_t i = 0; i < ARRAY_SIZE(kInstanceCounterNames); ++i) {
+  for (size_t i = 0; i < base::size(kInstanceCounterNames); ++i) {
     AppendMetric(result.get(), kInstanceCounterNames[i],
                  InstanceCounters::CounterValue(
                      static_cast<InstanceCounters::CounterType>(i)));
   }
 
   // Page performance metrics.
-  TimeTicks now = GetTimeTicksNow();
+  base::TimeTicks now = GetTimeTicksNow();
   AppendMetric(result.get(), "LayoutCount", static_cast<double>(layout_count_));
   AppendMetric(result.get(), "RecalcStyleCount",
                static_cast<double>(recalc_style_count_));
@@ -152,30 +154,30 @@ Response InspectorPerformanceAgent::getMetrics(
   AppendMetric(result.get(), "RecalcStyleDuration",
                recalc_style_duration_.InSecondsF());
 
-  TimeDelta script_duration = script_duration_;
+  base::TimeDelta script_duration = script_duration_;
   if (!script_start_ticks_.is_null())
     script_duration += now - script_start_ticks_;
   AppendMetric(result.get(), "ScriptDuration", script_duration.InSecondsF());
 
-  TimeDelta v8compile_duration = v8compile_duration_;
+  base::TimeDelta v8compile_duration = v8compile_duration_;
   if (!v8compile_start_ticks_.is_null())
     v8compile_duration += now - v8compile_start_ticks_;
   AppendMetric(result.get(), "V8CompileDuration",
                v8compile_duration.InSecondsF());
 
-  TimeDelta task_duration = task_duration_;
+  base::TimeDelta task_duration = task_duration_;
   if (!task_start_ticks_.is_null())
     task_duration += now - task_start_ticks_;
   AppendMetric(result.get(), "TaskDuration", task_duration.InSecondsF());
 
   // Compute task time not accounted for by other metrics.
-  TimeDelta other_tasks_duration =
+  base::TimeDelta other_tasks_duration =
       task_duration -
       (script_duration + recalc_style_duration_ + layout_duration_);
   AppendMetric(result.get(), "TaskOtherDuration",
                other_tasks_duration.InSecondsF());
 
-  TimeDelta thread_time = GetThreadTimeNow() - thread_time_origin_;
+  base::TimeDelta thread_time = GetThreadTimeNow() - thread_time_origin_;
   AppendMetric(result.get(), "ThreadTime", thread_time.InSecondsF());
 
   v8::HeapStatistics heap_statistics;
@@ -227,7 +229,7 @@ void InspectorPerformanceAgent::ScriptEnds() {
   if (--script_call_depth_)
     return;
   script_duration_ += GetTimeTicksNow() - script_start_ticks_;
-  script_start_ticks_ = TimeTicks();
+  script_start_ticks_ = base::TimeTicks();
 }
 
 void InspectorPerformanceAgent::Will(const probe::CallFunction& probe) {
@@ -251,10 +253,10 @@ void InspectorPerformanceAgent::Will(const probe::RecalculateStyle& probe) {
 }
 
 void InspectorPerformanceAgent::Did(const probe::RecalculateStyle& probe) {
-  TimeDelta delta = GetTimeTicksNow() - recalc_style_start_ticks_;
+  base::TimeDelta delta = GetTimeTicksNow() - recalc_style_start_ticks_;
   recalc_style_duration_ += delta;
   recalc_style_count_++;
-  recalc_style_start_ticks_ = TimeTicks();
+  recalc_style_start_ticks_ = base::TimeTicks();
 
   // Exclude nested style re-calculations from script and layout duration.
   if (!script_start_ticks_.is_null())
@@ -271,10 +273,10 @@ void InspectorPerformanceAgent::Will(const probe::UpdateLayout& probe) {
 void InspectorPerformanceAgent::Did(const probe::UpdateLayout& probe) {
   if (--layout_depth_)
     return;
-  TimeDelta delta = GetTimeTicksNow() - layout_start_ticks_;
+  base::TimeDelta delta = GetTimeTicksNow() - layout_start_ticks_;
   layout_duration_ += delta;
   layout_count_++;
-  layout_start_ticks_ = TimeTicks();
+  layout_start_ticks_ = base::TimeTicks();
 
   // Exclude nested layout update from script and style re-calculations
   // duration.
@@ -291,7 +293,7 @@ void InspectorPerformanceAgent::Will(const probe::V8Compile& probe) {
 
 void InspectorPerformanceAgent::Did(const probe::V8Compile& probe) {
   v8compile_duration_ += GetTimeTicksNow() - v8compile_start_ticks_;
-  v8compile_start_ticks_ = TimeTicks();
+  v8compile_start_ticks_ = base::TimeTicks();
 }
 
 // Will/DidProcessTask() ignore caller provided times to ensure time domain
@@ -304,7 +306,7 @@ void InspectorPerformanceAgent::DidProcessTask(base::TimeTicks start_time,
                                                base::TimeTicks end_time) {
   if (!task_start_ticks_.is_null())
     task_duration_ += GetTimeTicksNow() - task_start_ticks_;
-  task_start_ticks_ = TimeTicks();
+  task_start_ticks_ = base::TimeTicks();
 }
 
 void InspectorPerformanceAgent::Trace(blink::Visitor* visitor) {

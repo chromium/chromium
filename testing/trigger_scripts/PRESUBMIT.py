@@ -9,13 +9,8 @@ for more details about the presubmit API built into depot_tools.
 """
 
 def CommonChecks(input_api, output_api):
-  commands = [
-    input_api.Command(
-      name='trigger_multiple_dimensions_unittest', cmd=[
-        input_api.python_executable, 'trigger_multiple_dimensions_unittest.py'],
-      kwargs={}, message=output_api.PresubmitError),
-  ]
-  return input_api.RunTests(commands)
+  return input_api.canned_checks.RunUnitTestsInDirectory(
+      input_api, output_api, '.', whitelist=['.*test.py'])
 
 def CheckChangeOnUpload(input_api, output_api):
   return CommonChecks(input_api, output_api)

@@ -28,7 +28,7 @@ public class AsyncTabCreationParamsManagerTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void testBasicAddingAndRemoval() throws Exception {
+    public void testBasicAddingAndRemoval() {
         AsyncTabCreationParams asyncParams =
                 new AsyncTabCreationParams(new LoadUrlParams("http://google.com"));
         AsyncTabParamsManager.add(11684, asyncParams);

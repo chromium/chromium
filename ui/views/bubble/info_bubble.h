@@ -17,6 +17,8 @@ class InfoBubbleFrame;
 // Class to create and manage an information bubble for errors or tooltips.
 class InfoBubble : public BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(InfoBubble);
+
   InfoBubble(View* anchor, const base::string16& message);
   ~InfoBubble() override;
 
@@ -32,7 +34,6 @@ class InfoBubble : public BubbleDialogDelegateView {
   void OnWidgetDestroyed(Widget* widget) override;
   void OnWidgetBoundsChanged(Widget* widget,
                              const gfx::Rect& new_bounds) override;
-  int GetDialogButtons() const override;
 
   View* anchor() { return anchor_; }
   const View* anchor() const { return anchor_; }

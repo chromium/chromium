@@ -259,6 +259,21 @@ function testCreate() {
           win2.contentWindow.close();
         }));
       }));
+    },
+    function sameWindowIdInitializesProperly() {
+      // Regression test for http://crbug.com/943710
+      // Both windows with the same id should be initialized
+      let callback_fires = 0;
+      chrome.app.window.create('test.html', { id: '1' },
+        callbackPass(function (w) {
+          chrome.test.assertTrue('contentWindow' in w);
+          if (++callback_fires == 2) w.contentWindow.close();
+        }));
+      chrome.app.window.create('test.html', { id: '1' }, callbackPass(function (w) {
+        chrome.test.assertTrue('contentWindow' in w);
+        if (++callback_fires == 2) w.contentWindow.close();
+      }));
+
     }
   ]);
 }

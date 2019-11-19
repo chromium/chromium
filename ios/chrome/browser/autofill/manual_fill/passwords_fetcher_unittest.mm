@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -42,7 +42,7 @@ using base::test::ios::WaitUntilCondition;
 
 - (void)passwordFetcher:(PasswordFetcher*)passwordFetcher
       didFetchPasswords:
-          (std::vector<std::unique_ptr<autofill::PasswordForm>>&)passwords {
+          (std::vector<std::unique_ptr<autofill::PasswordForm>>)passwords {
   _passwords = std::move(passwords);
 }
 
@@ -86,7 +86,7 @@ class PasswordFetcherTest : public PlatformTest {
     form.submit_element = base::ASCIIToUTF16("signIn");
     form.signon_realm = "http://www.example.com/";
     form.preferred = false;
-    form.scheme = autofill::PasswordForm::SCHEME_HTML;
+    form.scheme = autofill::PasswordForm::Scheme::kHtml;
     form.blacklisted_by_user = false;
     return form;
   }
@@ -106,7 +106,7 @@ class PasswordFetcherTest : public PlatformTest {
     form->submit_element = base::ASCIIToUTF16("signIn");
     form->signon_realm = "http://www.example2.com/";
     form->preferred = false;
-    form->scheme = autofill::PasswordForm::SCHEME_HTML;
+    form->scheme = autofill::PasswordForm::Scheme::kHtml;
     form->blacklisted_by_user = false;
     GetPasswordStore()->AddLogin(*std::move(form));
   }
@@ -124,12 +124,12 @@ class PasswordFetcherTest : public PlatformTest {
     form->submit_element = base::ASCIIToUTF16("signIn");
     form->signon_realm = "http://www.secret.test/";
     form->preferred = false;
-    form->scheme = autofill::PasswordForm::SCHEME_HTML;
+    form->scheme = autofill::PasswordForm::Scheme::kHtml;
     form->blacklisted_by_user = true;
     GetPasswordStore()->AddLogin(*std::move(form));
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
 };
 

@@ -1,0 +1,39 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: focus on skipped element</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<script src="../resources/utils.js"></script>
+
+<!--
+Focus on a div that has updated style/layout.
+-->
+
+<div id="container">
+  <div id="focusableA" tabindex="0">a</div>
+  <div id="focusableB" tabindex="0">b</div>
+</div>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+promise_test((t) => {
+  const acquirePromise = setInvisibleActivatable(container);
+  return new Promise((resolve, reject) => {
+    acquirePromise.then(() => {
+      focusableA.style = "display: none;";
+      eventSender.keyDown("Tab", []);
+      t.step(() => assert_equals(document.activeElement, focusableB));
+      eventSender.keyDown("Tab", []);
+      t.step(() => assert_equals(document.activeElement, focusableB));
+      focusableA.style = "display: block;";
+      eventSender.keyDown("Tab", []);
+      t.step(() => assert_equals(document.activeElement, focusableA));
+      resolve();
+    });
+  });
+}, "Trying to focus on an element in a locked subtree that's not visible anymore will skip that element");
+</script>
+</html>

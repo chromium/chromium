@@ -7,9 +7,9 @@
 #include <stdint.h>
 
 #include "base/android/jni_string.h"
+#include "base/base_jni_headers/EarlyTraceEvent_jni.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "jni/EarlyTraceEvent_jni.h"
 
 namespace base {
 namespace android {
@@ -33,7 +33,7 @@ static void JNI_EarlyTraceEvent_RecordEarlyEvent(
       TimeTicks::FromInternalValue(begin_us),
       TimeTicks::FromInternalValue(end_us),
       ThreadTicks::Now() + TimeDelta::FromMicroseconds(thread_duration_us),
-      TRACE_EVENT_FLAG_COPY);
+      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
 
 static void JNI_EarlyTraceEvent_RecordEarlyStartAsyncEvent(
@@ -44,9 +44,10 @@ static void JNI_EarlyTraceEvent_RecordEarlyStartAsyncEvent(
   std::string name = ConvertJavaStringToUTF8(env, jname);
   int64_t timestamp_us = timestamp_ns / 1000;
 
-  TRACE_EVENT_COPY_ASYNC_BEGIN_WITH_TIMESTAMP0(
+  TRACE_EVENT_ASYNC_BEGIN_WITH_TIMESTAMP_AND_FLAGS0(
       kEarlyJavaCategory, name.c_str(), id,
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(timestamp_us));
+      base::TimeTicks() + base::TimeDelta::FromMicroseconds(timestamp_us),
+      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
 
 static void JNI_EarlyTraceEvent_RecordEarlyFinishAsyncEvent(
@@ -57,9 +58,10 @@ static void JNI_EarlyTraceEvent_RecordEarlyFinishAsyncEvent(
   std::string name = ConvertJavaStringToUTF8(env, jname);
   int64_t timestamp_us = timestamp_ns / 1000;
 
-  TRACE_EVENT_COPY_ASYNC_END_WITH_TIMESTAMP0(
+  TRACE_EVENT_ASYNC_END_WITH_TIMESTAMP_AND_FLAGS0(
       kEarlyJavaCategory, name.c_str(), id,
-      base::TimeTicks() + base::TimeDelta::FromMicroseconds(timestamp_us));
+      base::TimeTicks() + base::TimeDelta::FromMicroseconds(timestamp_us),
+      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
 
 bool GetBackgroundStartupTracingFlag() {

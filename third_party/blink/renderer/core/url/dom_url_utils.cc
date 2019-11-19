@@ -97,8 +97,10 @@ void DOMURLUtils::setPort(const String& value) {
   KURL kurl = Url();
   if (!kurl.CanSetHostOrPort())
     return;
-
-  kurl.SetPort(value);
+  if (!value.IsEmpty())
+    kurl.SetPort(value);
+  else
+    kurl.RemovePort();
   SetURL(kurl);
 }
 

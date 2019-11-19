@@ -1,14 +1,13 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <div class="container">
     <a id="button" href="#" role="button"><span style="height:0px;position:absolute;overflow:hidden">Friend Requests:</span><span>0</span></a>
 </div>
 
 <script>
-test_after_layout_and_paint(function(t){
+test(function(t){
     var axButton = accessibilityController.accessibleElementById("button");
     assert_equals(axButton.name, "Friend Requests: 0");
     assert_equals(axButton.name, "Friend Requests: 0");

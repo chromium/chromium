@@ -1,4 +1,11 @@
 include_rules = [
+  "+chromeos/dbus/constants",
   "+chromeos/dbus/services",
   "+dbus",
 ]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+gmock/gmock.h",
+  ]
+}

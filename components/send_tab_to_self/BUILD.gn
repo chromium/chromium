@@ -4,32 +4,66 @@
 
 static_library("send_tab_to_self") {
   sources = [
+    "features.cc",
+    "features.h",
     "send_tab_to_self_bridge.cc",
     "send_tab_to_self_bridge.h",
     "send_tab_to_self_entry.cc",
     "send_tab_to_self_entry.h",
+    "send_tab_to_self_metrics.cc",
+    "send_tab_to_self_metrics.h",
     "send_tab_to_self_model.cc",
     "send_tab_to_self_model.h",
     "send_tab_to_self_model_observer.h",
+    "send_tab_to_self_model_type_controller.cc",
+    "send_tab_to_self_model_type_controller.h",
     "send_tab_to_self_sync_service.cc",
     "send_tab_to_self_sync_service.h",
+    "target_device_info.cc",
+    "target_device_info.h",
   ]
   deps = [
     "//base",
+    "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/send_tab_to_self/proto:send_tab_to_self_proto",
     "//components/sync",
+    "//components/sync_device_info",
     "//components/version_info",
+    "//google_apis",
     "//url",
   ]
   public_deps = [
     "//components/send_tab_to_self/proto:send_tab_to_self_proto",
+  ]
+  if (is_android) {
+    sources += [
+      "send_tab_to_self_infobar_delegate.cc",
+      "send_tab_to_self_infobar_delegate.h",
+    ]
+    deps += [
+      "//components/infobars/core",
+      "//content/public/browser",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_send_tab_to_self_model.cc",
+    "test_send_tab_to_self_model.h",
+  ]
+  deps = [
+    ":send_tab_to_self",
+    "//base",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "features_unittest.cc",
     "send_tab_to_self_bridge_unittest.cc",
     "send_tab_to_self_entry_unittest.cc",
   ]
@@ -37,10 +71,11 @@ source_set("unit_tests") {
     ":send_tab_to_self",
     "//base",
     "//base/test:test_support",
+    "//components/history/core/browser",
     "//components/send_tab_to_self/proto:send_tab_to_self_proto",
-    "//components/sync",
-    "//components/sync:test_support_driver",
-    "//components/sync:test_support_model",
+    "//components/sync:test_support",
+    "//components/sync_device_info:test_support",
+    "//components/sync_preferences:test_support",
     "//testing/gtest",
     "//url",
   ]

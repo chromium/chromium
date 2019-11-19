@@ -6,10 +6,10 @@ module media_session.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 4
+// Next MinVersion: 7
 
 [Extensible]
 enum MediaPlaybackState {
@@ -27,12 +27,17 @@ enum MediaSessionAction {
   kSeekForward,
   kSkipAd,
   kStop,
+  kSeekTo,
+  kScrubTo,
 };
 
 [Extensible]
 enum MediaSessionImageType {
-  // The artwork associated with the media session (e.g album art)
+  // The artwork associated with the media session (e.g album art).
   kArtwork,
+
+  // The icon associated with the source of the media session.
+  kSourceIcon,
 };
 
 // Album art in MediaMetadata
@@ -56,13 +61,28 @@ struct MediaMetadata {
   mojo_base.mojom.String16 source_title;
 };
 
+// The color type of the bitmap.
+[Extensible]
+enum MediaImageBitmapColorType {
+  kRGBA_8888,  // On Android, this is Bitmap.Config.ARGB_8888
+  kBGRA_8888,
+};
+
 // A bitmap image. We use this instead of SkImage or skia.image.Bitmap so we can
 // use it in ARC and we do not use ArcBitmap because we need to use it in the
 // service.
 struct MediaImageBitmap {
   int32 width;
   int32 height;
-  array<uint8> pixel_data;  // Must be ARGB_8888
+  array<uint8> pixel_data;
+  [MinVersion=5] MediaImageBitmapColorType color_type;
+};
+
+struct MediaPosition {
+  double playback_rate;
+  mojo_base.mojom.TimeDelta duration;
+  mojo_base.mojom.TimeDelta position;
+  mojo_base.mojom.TimeTicks last_updated_time;
 };
 
 // Contains state information about a MediaSession.
@@ -99,6 +119,11 @@ struct MediaSessionInfo {
   // If true then we will stop this MediaSession instead of suspending when the
   // session loses focus to a kGain focus type.
   [MinVersion=4] bool prefer_stop_for_gain_focus_loss;
+
+  // If true then the session is considered to be sensitive (e.g. from an
+  // off the record profile). This may result in it being hidden from certain
+  // UIs (e.g. lock screen media controls).
+  [MinVersion=6] bool is_sensitive;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed
@@ -115,7 +140,7 @@ struct MediaSessionDebugInfo {
 };
 
 // The observer for observing media session events.
-// Next Method ID: 4
+// Next Method ID: 5
 interface MediaSessionObserver {
   // Call when the info associated with the session changed.
   MediaSessionInfoChanged@0(MediaSessionInfo info);
@@ -132,13 +157,16 @@ interface MediaSessionObserver {
   // Called when the images associated with a media session change.
   MediaSessionImagesChanged@3(
       map<MediaSessionImageType, array<MediaImage>> images);
+
+  // Called when the position associated with the session has changed.
+  MediaSessionPositionChanged@4(MediaPosition? position);
 };
 
 // A MediaSession manages the media session and audio focus for a given
 // WebContents or ARC app.
 // TODO(https://crbug.com/875004): migrate media session from content/public
 // to mojo.
-// Next Method ID: 13
+// Next Method ID: 15
 interface MediaSession {
   [Extensible]
   enum SuspendType {
@@ -172,7 +200,7 @@ interface MediaSession {
   // |type| represents the origin of the request.
   Resume@5(SuspendType suspend_type);
 
-  AddObserver@6(MediaSessionObserver observer);
+  AddObserver@6(pending_remote<MediaSessionObserver> observer);
 
   // Skip to the previous track. If there is no previous track then this will
   // be a no-op.
@@ -182,11 +210,11 @@ interface MediaSession {
   // no-op.
   NextTrack@8();
 
-  // Seek the media session. If the media cannot seek then this will be a
-  // no-op. The |seek_time| is the time delta that the media will seek by and
-  // supports both positive and negative values. This value cannot be zero.
-  // The |kDefaultSeekTimeSeconds| provides a default value for seeking by a
-  // few seconds.
+  // Seek the media session from the current position. If the media cannot
+  // seek then this will be a no-op. The |seek_time| is the time delta that
+  // the media will seek by and supports both positive and negative values.
+  // This value cannot be zero. The |kDefaultSeekTimeSeconds| provides a
+  // default value for seeking by a few seconds.
   Seek@9(mojo_base.mojom.TimeDelta seek_time);
 
   // Stop the media session.
@@ -203,4 +231,15 @@ interface MediaSession {
   GetMediaImageBitmap@12(
       MediaImage image, int32 minimum_size_px, int32 desired_size_px)
           => (MediaImageBitmap? image);
+
+  // Seek the media session to a non-negative |seek_time| from the beginning of
+  // the current playing media. If the media cannot seek then this will be a
+  // no-op.
+  SeekTo@13(mojo_base.mojom.TimeDelta seek_time);
+
+  // Scrub ("fast seek") the media session to a non-negative |seek_time| from
+  // the beginning of the current playing media. If the media cannot scrub then
+  // this will be a no-op. The client should call |SeekTo| to finish the
+  // scrubbing operation.
+  ScrubTo@14(mojo_base.mojom.TimeDelta seek_time);
 };

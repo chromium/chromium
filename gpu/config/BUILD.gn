@@ -6,6 +6,7 @@ import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
 import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
+import("//gpu/vulkan/features.gni")
 
 group("config") {
   if (is_component_build) {
@@ -89,6 +90,31 @@ action("workaround_list") {
   }
 }
 
+if (enable_vulkan) {
+  component("vulkan_info") {
+    sources = [
+      "vulkan_info.cc",
+      "vulkan_info.h",
+    ]
+
+    configs += [ "//gpu:gpu_implementation" ]
+
+    deps = [
+      "//gpu/ipc/common:vulkan_interface",
+    ]
+
+    all_dependent_configs = [ "//third_party/vulkan:vulkan_config" ]
+
+    # surpass linke error 4217. It is because vulkan_info depends on
+    # //gpu/ipc/common:vulkan_interface and //gpu/ipc/common:vulkan_interface"
+    # depends on this target.
+    # TODO(penghuang): Fix this link error
+    if (is_win && is_component_build) {
+      ldflags = [ "/IGNORE:4217" ]
+    }
+  }
+}
+
 jumbo_source_set("config_sources") {
   # External code should depend on this via //gpu/config above rather than
   # depending on this directly or the component build will break.
@@ -97,8 +123,8 @@ jumbo_source_set("config_sources") {
   sources = [
     "dx_diag_node.cc",
     "dx_diag_node.h",
-    "gpu_blacklist.cc",
-    "gpu_blacklist.h",
+    "gpu_blocklist.cc",
+    "gpu_blocklist.h",
     "gpu_control_list.cc",
     "gpu_control_list.h",
     "gpu_crash_keys.cc",
@@ -110,6 +136,8 @@ jumbo_source_set("config_sources") {
     "gpu_driver_bug_workarounds.cc",
     "gpu_driver_bug_workarounds.h",
     "gpu_dx_diagnostics_win.cc",
+    "gpu_extra_info.cc",
+    "gpu_extra_info.h",
     "gpu_feature_info.cc",
     "gpu_feature_info.h",
     "gpu_feature_type.h",
@@ -150,10 +178,16 @@ jumbo_source_set("config_sources") {
     "//components/crash/core/common:crash_key",
   ]
 
+  if (enable_vulkan) {
+    public_deps += [ ":vulkan_info" ]
+  }
+
   deps = [
     ":process_json",
     "//base",
+    "//build:branding_buildflags",
     "//gpu/ipc/common:gpu_preferences_interface",
+    "//gpu/vulkan:buildflags",
     "//media:media_buildflags",
     "//third_party/re2",
     "//ui/gl",
@@ -161,19 +195,18 @@ jumbo_source_set("config_sources") {
     "//ui/gl/init",
   ]
 
+  # GpuPreferences is using its own mojo bindings which creates a
+  # cycle between this target and gpu_preferences_interface.
+  allow_circular_includes_from =
+      [ "//gpu/ipc/common:gpu_preferences_interface" ]
+
   # Prefer mesa GL headers to system headers, which cause problems on Win.
   include_dirs = [ "//third_party/mesa_headers" ]
 
   if (is_win) {
     libs = [
+      "dxgi.lib",
       "dxguid.lib",
-      "setupapi.lib",
-    ]
-
-    sources += [
-      "//third_party/nvml/nvml.h",
-      "nvml_info.cc",
-      "nvml_info.h",
     ]
 
     if (is_chrome_branded && is_official_build) {

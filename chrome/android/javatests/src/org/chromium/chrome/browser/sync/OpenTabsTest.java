@@ -16,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeSwitches;
@@ -32,6 +31,7 @@ import org.chromium.components.sync.protocol.SessionWindow;
 import org.chromium.components.sync.protocol.SyncEnums;
 import org.chromium.components.sync.protocol.TabNavigation;
 import org.chromium.content_public.browser.test.util.Criteria;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -100,7 +100,7 @@ public class OpenTabsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testUploadOpenTab() throws Exception {
+    public void testUploadOpenTab() {
         mSyncTestRule.loadUrl(URL);
         waitForLocalTabsForClient(mClientName, URL);
         waitForServerTabs(URL);
@@ -110,7 +110,7 @@ public class OpenTabsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testUploadMultipleOpenTabs() throws Exception {
+    public void testUploadMultipleOpenTabs() {
         mSyncTestRule.loadUrl(URL);
         mSyncTestRule.loadUrlInNewTab(URL2);
         mSyncTestRule.loadUrlInNewTab(URL3);
@@ -122,19 +122,16 @@ public class OpenTabsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testUploadAndCloseOpenTab() throws Exception {
+    public void testUploadAndCloseOpenTab() {
         mSyncTestRule.loadUrl(URL);
         // Can't have zero tabs, so we have to open two to test closing one.
         mSyncTestRule.loadUrlInNewTab(URL2);
         waitForLocalTabsForClient(mClientName, URL, URL2);
         waitForServerTabs(URL, URL2);
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                TabModelSelector selector = mSyncTestRule.getActivity().getTabModelSelector();
-                Assert.assertTrue(TabModelUtils.closeCurrentTab(selector.getCurrentModel()));
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            TabModelSelector selector = mSyncTestRule.getActivity().getTabModelSelector();
+            Assert.assertTrue(TabModelUtils.closeCurrentTab(selector.getCurrentModel()));
         });
 
         waitForLocalTabsForClient(mClientName, URL);
@@ -145,7 +142,7 @@ public class OpenTabsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testDownloadOpenTab() throws Exception {
+    public void testDownloadOpenTab() {
         addFakeServerTabs(FAKE_CLIENT, URL);
         SyncTestUtil.triggerSync();
         waitForLocalTabsForClient(FAKE_CLIENT, URL);
@@ -155,7 +152,7 @@ public class OpenTabsTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    public void testDownloadMultipleOpenTabs() throws Exception {
+    public void testDownloadMultipleOpenTabs() {
         addFakeServerTabs(FAKE_CLIENT, URL, URL2, URL3);
         SyncTestUtil.triggerSync();
         waitForLocalTabsForClient(FAKE_CLIENT, URL, URL2, URL3);
@@ -197,7 +194,7 @@ public class OpenTabsTest {
         return SESSION_TAG_PREFIX + (mSessionTagCounter++);
     }
 
-    private void addFakeServerTabs(String clientName, String... urls) throws InterruptedException {
+    private void addFakeServerTabs(String clientName, String... urls) {
         String tag = makeSessionTag();
         EntitySpecifics header = makeSessionEntity(tag, clientName, urls.length);
         mSyncTestRule.getFakeServerHelper().injectUniqueClientEntity(
@@ -257,8 +254,7 @@ public class OpenTabsTest {
         }
     }
 
-    private void waitForLocalTabsForClient(final String clientName, String... urls)
-            throws InterruptedException {
+    private void waitForLocalTabsForClient(final String clientName, String... urls) {
         final List<String> urlList = new ArrayList<>(urls.length);
         for (String url : urls) urlList.add(url);
         mSyncTestRule.pollInstrumentationThread(
@@ -270,7 +266,7 @@ public class OpenTabsTest {
                 }));
     }
 
-    private void waitForServerTabs(final String... urls) throws InterruptedException {
+    private void waitForServerTabs(final String... urls) {
         mSyncTestRule.pollInstrumentationThread(
                 new Criteria("Expected server open tabs: " + Arrays.toString(urls)) {
                     @Override

@@ -2,25 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//mojo/public/tools/bindings/mojom.gni")
-
-mojom("mojo_bindings") {
-  sources = [
-    "common/contextual_search_js_api_service.mojom",
-  ]
-  public_deps = [
-    "//url/mojom:url_mojom_gurl",
-  ]
-}
-
 static_library("browser") {
   sources = [
     "browser/contextual_search_js_api_service_impl.cc",
     "browser/contextual_search_js_api_service_impl.h",
   ]
   deps = [
-    ":mojo_bindings",
     "//base",
+    "//components/contextual_search/content/common/mojom",
   ]
 }
 
@@ -32,8 +21,8 @@ static_library("renderer") {
     "renderer/overlay_js_render_frame_observer.h",
   ]
   deps = [
-    ":mojo_bindings",
     "//base",
+    "//components/contextual_search/content/common/mojom",
     "//content/public/common",
     "//content/public/renderer",
     "//gin",

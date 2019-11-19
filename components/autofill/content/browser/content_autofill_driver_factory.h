@@ -8,10 +8,11 @@
 #include <string>
 
 #include "base/supports_user_data.h"
-#include "components/autofill/content/common/autofill_driver.mojom.h"
+#include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
 #include "components/autofill/core/browser/autofill_driver_factory.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
 namespace content {
 class RenderFrameHost;
@@ -52,8 +53,9 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
 
   static ContentAutofillDriverFactory* FromWebContents(
       content::WebContents* contents);
-  static void BindAutofillDriver(mojom::AutofillDriverAssociatedRequest request,
-                                 content::RenderFrameHost* render_frame_host);
+  static void BindAutofillDriver(
+      mojo::PendingAssociatedReceiver<mojom::AutofillDriver> pending_receiver,
+      content::RenderFrameHost* render_frame_host);
 
   // Gets the |ContentAutofillDriver| associated with |render_frame_host|.
   // |render_frame_host| must be owned by |web_contents()|.
@@ -61,7 +63,6 @@ class ContentAutofillDriverFactory : public AutofillDriverFactory,
       content::RenderFrameHost* render_frame_host);
 
   // content::WebContentsObserver:
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;

@@ -37,12 +37,10 @@ void PresentationConnectionCallbacks::HandlePresentationResponse(
   }
 
   if (result) {
-    DCHECK(result->connection_ptr);
-    DCHECK(result->connection_request);
-    OnSuccess(*result->presentation_info,
-              mojom::blink::PresentationConnectionPtr(
-                  std::move(result->connection_ptr)),
-              std::move(result->connection_request));
+    DCHECK(result->connection_remote);
+    DCHECK(result->connection_receiver);
+    OnSuccess(*result->presentation_info, std::move(result->connection_remote),
+              std::move(result->connection_receiver));
   } else {
     OnError(*error);
   }
@@ -50,8 +48,9 @@ void PresentationConnectionCallbacks::HandlePresentationResponse(
 
 void PresentationConnectionCallbacks::OnSuccess(
     const mojom::blink::PresentationInfo& presentation_info,
-    mojom::blink::PresentationConnectionPtr connection_ptr,
-    mojom::blink::PresentationConnectionRequest connection_request) {
+    mojo::PendingRemote<mojom::blink::PresentationConnection> connection_remote,
+    mojo::PendingReceiver<mojom::blink::PresentationConnection>
+        connection_receiver) {
   // Reconnect to existing connection.
   if (connection_ && connection_->GetState() ==
                          mojom::blink::PresentationConnectionState::CLOSED) {
@@ -66,7 +65,8 @@ void PresentationConnectionCallbacks::OnSuccess(
   }
 
   resolver_->Resolve(connection_);
-  connection_->Init(std::move(connection_ptr), std::move(connection_request));
+  connection_->Init(std::move(connection_remote),
+                    std::move(connection_receiver));
 }
 
 void PresentationConnectionCallbacks::OnError(

@@ -5,23 +5,21 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_TESTS_VARIANT_TEST_UTIL_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_TESTS_VARIANT_TEST_UTIL_H_
 
-#include <string.h>
+#include <type_traits>
 
-#include "base/logging.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace mojo {
 namespace test {
 
-// Converts a request of Interface1 to a request of Interface0. Interface0 and
-// Interface1 are expected to be two variants of the same mojom interface.
-// In real-world use cases, users shouldn't need to worry about this. Because it
-// is rare to deal with two variants of the same interface in the same app.
+// Converts a PendingReceiver of Interface1 to a one of Interface0. Interface0
+// and Interface1 must be two variants of the same mojom interface.
 template <typename Interface0, typename Interface1>
-InterfaceRequest<Interface0> ConvertInterfaceRequest(
-    InterfaceRequest<Interface1> request) {
-  DCHECK_EQ(0, strcmp(Interface0::Name_, Interface1::Name_));
-  return InterfaceRequest<Interface0>(request.PassMessagePipe());
+PendingReceiver<Interface0> ConvertPendingReceiver(
+    PendingReceiver<Interface1> receiver) {
+  static_assert(std::is_base_of<typename Interface0::Base_, Interface1>::value,
+                "Interface types are not variants of the same mojom interface");
+  return PendingReceiver<Interface0>(receiver.PassPipe());
 }
 
 }  // namespace test

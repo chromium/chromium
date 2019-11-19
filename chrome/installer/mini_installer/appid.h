@@ -5,17 +5,19 @@
 #ifndef CHROME_INSTALLER_MINI_INSTALLER_APPID_H_
 #define CHROME_INSTALLER_MINI_INSTALLER_APPID_H_
 
+#include "build/branding_buildflags.h"
+
 // The appid included by the mini_installer.
 namespace google_update {
 
 extern const wchar_t kAppGuid[];
 extern const wchar_t kMultiInstallAppGuid[];
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const wchar_t kBetaAppGuid[];
 extern const wchar_t kDevAppGuid[];
 extern const wchar_t kSxSAppGuid[];
-#endif  // defined(GOOGLE_CHROME_BUILD)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace google_update
 

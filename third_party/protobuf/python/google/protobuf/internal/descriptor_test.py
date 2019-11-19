@@ -192,6 +192,14 @@ class DescriptorTest(unittest.TestCase):
     self.assertTrue(enum_value_descriptor.has_options)
     self.assertFalse(other_enum_value_descriptor.has_options)
 
+  def testCustomOptionsCopyTo(self):
+    message_descriptor = (unittest_custom_options_pb2.
+                          TestMessageWithCustomOptions.DESCRIPTOR)
+    message_proto = descriptor_pb2.DescriptorProto()
+    message_descriptor.CopyToProto(message_proto)
+    self.assertEqual(len(message_proto.options.ListFields()),
+                     2)
+
   def testDifferentCustomOptionTypes(self):
     kint32min = -2**31
     kint64min = -2**63
@@ -451,6 +459,17 @@ class DescriptorTest(unittest.TestCase):
       message_descriptor.has_options = True
     self.assertEqual('attribute is not writable: has_options',
                      str(e.exception))
+
+  def testDefault(self):
+    message_descriptor = unittest_pb2.TestAllTypes.DESCRIPTOR
+    field = message_descriptor.fields_by_name['repeated_int32']
+    self.assertEqual(field.default_value, [])
+    field = message_descriptor.fields_by_name['repeated_nested_message']
+    self.assertEqual(field.default_value, [])
+    field = message_descriptor.fields_by_name['optionalgroup']
+    self.assertEqual(field.default_value, None)
+    field = message_descriptor.fields_by_name['optional_nested_message']
+    self.assertEqual(field.default_value, None)
 
 
 class NewDescriptorTest(DescriptorTest):

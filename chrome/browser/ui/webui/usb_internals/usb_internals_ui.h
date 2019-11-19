@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "chrome/browser/ui/webui/usb_internals/usb_internals.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class UsbInternalsPageHandler;
@@ -19,7 +20,7 @@ class UsbInternalsUI : public ui::MojoWebUIController {
 
  private:
   void BindUsbInternalsPageHandler(
-      mojom::UsbInternalsPageHandlerRequest request);
+      mojo::PendingReceiver<mojom::UsbInternalsPageHandler> receiver);
 
   std::unique_ptr<UsbInternalsPageHandler> page_handler_;
 

@@ -15,6 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
 #if !defined(OS_IOS)
@@ -239,7 +240,7 @@ const char* BaseBundleID() {
     return base_bundle_id;
   }
 
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return "com.google.Chrome";
 #else
   return "org.chromium.Chromium";
@@ -498,3 +499,31 @@ std::ostream& operator<<(std::ostream& o, const CFErrorRef err) {
   }
   return o;
 }
+
+std::ostream& operator<<(std::ostream& o, CFRange range) {
+  return o << NSStringFromRange(NSMakeRange(range.location, range.length));
+}
+
+std::ostream& operator<<(std::ostream& o, id obj) {
+  return obj ? o << [obj description].UTF8String : o << "(nil)";
+}
+
+std::ostream& operator<<(std::ostream& o, NSRange range) {
+  return o << NSStringFromRange(range);
+}
+
+std::ostream& operator<<(std::ostream& o, SEL selector) {
+  return o << NSStringFromSelector(selector);
+}
+
+#if !defined(OS_IOS)
+std::ostream& operator<<(std::ostream& o, NSPoint point) {
+  return o << NSStringFromPoint(point);
+}
+std::ostream& operator<<(std::ostream& o, NSRect rect) {
+  return o << NSStringFromRect(rect);
+}
+std::ostream& operator<<(std::ostream& o, NSSize size) {
+  return o << NSStringFromSize(size);
+}
+#endif

@@ -6,11 +6,12 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.annotation.StringRes;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.TextView;
+
+import androidx.annotation.StringRes;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -47,7 +48,7 @@ public class LightweightFirstRunActivity extends FirstRunActivityBase {
 
                 @ChildAccountStatus.Status
                 int childAccountStatus = freProperties.getInt(
-                        AccountFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
+                        SigninFirstRunFragment.CHILD_ACCOUNT_STATUS, ChildAccountStatus.NOT_CHILD);
                 onChildAccountKnown(ChildAccountStatus.isChild(childAccountStatus));
             }
         };

@@ -1,8 +1,6 @@
 #ifndef _RAR_MATCH_
 #define _RAR_MATCH_
 
-namespace third_party_unrar {
-
 enum {
    MATCH_NAMES,        // Paths are ignored.
                        // Compares names only using wildcards.
@@ -15,6 +13,10 @@ enum {
 
    MATCH_EXACT,        // Paths must match exactly.
                        // Names must match exactly.
+
+   MATCH_ALLWILD,      // Paths and names are compared using wildcards.
+                       // Unlike MATCH_SUBPATH, paths do not match subdirs
+                       // unless a wildcard tells so.
 
    MATCH_EXACTPATH,    // Paths must match exactly.
                        // Names are compared using wildcards.
@@ -32,7 +34,5 @@ enum {
 #define MATCH_FORCECASESENSITIVE 0x80000000
 
 bool CmpName(const wchar *Wildcard,const wchar *Name,int CmpMode);
-
-}  // namespace third_party_unrar
 
 #endif

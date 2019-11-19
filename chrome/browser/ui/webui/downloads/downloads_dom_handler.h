@@ -13,10 +13,12 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/download/download_danger_prompt.h"
-#include "chrome/browser/ui/webui/downloads/downloads_list_tracker.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
+#include "chrome/browser/ui/webui/downloads/downloads_list_tracker.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace content {
 class DownloadManager;
@@ -34,10 +36,11 @@ class DownloadItem;
 class DownloadsDOMHandler : public content::WebContentsObserver,
                             public downloads::mojom::PageHandler {
  public:
-  DownloadsDOMHandler(downloads::mojom::PageHandlerRequest request,
-                      downloads::mojom::PagePtr page,
-                      content::DownloadManager* download_manager,
-                      content::WebUI* web_ui);
+  DownloadsDOMHandler(
+      mojo::PendingReceiver<downloads::mojom::PageHandler> receiver,
+      mojo::PendingRemote<downloads::mojom::Page> page,
+      content::DownloadManager* download_manager,
+      content::WebUI* web_ui);
   ~DownloadsDOMHandler() override;
 
   // WebContentsObserver implementation.
@@ -123,7 +126,7 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
 
   content::WebUI* web_ui_;
 
-  mojo::Binding<downloads::mojom::PageHandler> binding_;
+  mojo::Receiver<downloads::mojom::PageHandler> receiver_;
 
   base::WeakPtrFactory<DownloadsDOMHandler> weak_ptr_factory_{this};
 

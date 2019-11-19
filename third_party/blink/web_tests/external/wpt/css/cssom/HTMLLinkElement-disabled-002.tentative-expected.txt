@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL HTMLLinkElement.disabled reflects the <link disabled> attribute, and behaves consistently, when the sheet is an alternate assert_equals: expected null but got Element node <link title="alt" rel="alternate stylesheet" href="data:t...
+Harness: the test ran to completion.
+

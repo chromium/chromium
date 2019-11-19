@@ -9,7 +9,6 @@
 
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "third_party/blink/public/mojom/frame/document_interface_broker.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -40,10 +39,10 @@ MojoCreateMessagePipeResult* Mojo::createMessagePipe() {
 
   result_dict->setResult(result);
   if (result == MOJO_RESULT_OK) {
-    result_dict->setHandle0(
-        MojoHandle::Create(mojo::ScopedHandle::From(std::move(handle0))));
-    result_dict->setHandle1(
-        MojoHandle::Create(mojo::ScopedHandle::From(std::move(handle1))));
+    result_dict->setHandle0(MakeGarbageCollected<MojoHandle>(
+        mojo::ScopedHandle::From(std::move(handle0))));
+    result_dict->setHandle1(MakeGarbageCollected<MojoHandle>(
+        mojo::ScopedHandle::From(std::move(handle1))));
   }
   return result_dict;
 }
@@ -70,10 +69,10 @@ MojoCreateDataPipeResult* Mojo::createDataPipe(
   MojoResult result = mojo::CreateDataPipe(&options, &producer, &consumer);
   result_dict->setResult(result);
   if (result == MOJO_RESULT_OK) {
-    result_dict->setProducer(
-        MojoHandle::Create(mojo::ScopedHandle::From(std::move(producer))));
-    result_dict->setConsumer(
-        MojoHandle::Create(mojo::ScopedHandle::From(std::move(consumer))));
+    result_dict->setProducer(MakeGarbageCollected<MojoHandle>(
+        mojo::ScopedHandle::From(std::move(producer))));
+    result_dict->setConsumer(MakeGarbageCollected<MojoHandle>(
+        mojo::ScopedHandle::From(std::move(consumer))));
   }
   return result_dict;
 }
@@ -89,7 +88,8 @@ MojoCreateSharedBufferResult* Mojo::createSharedBuffer(unsigned num_bytes) {
 
   result_dict->setResult(result);
   if (result == MOJO_RESULT_OK) {
-    result_dict->setHandle(MojoHandle::Create(mojo::MakeScopedHandle(handle)));
+    result_dict->setHandle(
+        MakeGarbageCollected<MojoHandle>(mojo::MakeScopedHandle(handle)));
   }
   return result_dict;
 }
@@ -98,9 +98,9 @@ MojoCreateSharedBufferResult* Mojo::createSharedBuffer(unsigned num_bytes) {
 void Mojo::bindInterface(ScriptState* script_state,
                          const String& interface_name,
                          MojoHandle* request_handle,
-                         const String& scope) {
-  std::string name =
-      StringUTF8Adaptor(interface_name).AsStringPiece().as_string();
+                         const String& scope,
+                         bool use_browser_interface_broker) {
+  std::string name = interface_name.Utf8();
   auto handle =
       mojo::ScopedMessagePipeHandle::From(request_handle->TakeHandle());
 
@@ -110,37 +110,21 @@ void Mojo::bindInterface(ScriptState* script_state,
     return;
   }
 
+  // This should replace InterfaceProvider usage below when all
+  // InterfaceProvider clients are converted to use BrowserInterfaceBroker. See
+  // crbug.com/936482.
+  if (use_browser_interface_broker) {
+    ExecutionContext::From(script_state)
+        ->GetBrowserInterfaceBroker()
+        .GetInterface(name, std::move(handle));
+    return;
+  }
+
+  // TODO(crbug.com/995556): remove when no longer used.
   if (auto* interface_provider =
           ExecutionContext::From(script_state)->GetInterfaceProvider()) {
     interface_provider->GetInterfaceByName(name, std::move(handle));
   }
-}
-
-// static
-MojoHandle* Mojo::getDocumentInterfaceBrokerHandle(ScriptState* script_state) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  DCHECK(execution_context);
-  Document* document = static_cast<Document*>(execution_context);
-  DCHECK(document);
-
-  mojo::MessagePipe pipe;
-  document->BindDocumentInterfaceBroker(std::move(pipe.handle0));
-  return MojoHandle::Create(mojo::ScopedHandle::From(std::move(pipe.handle1)));
-}
-
-// static
-MojoHandle* Mojo::replaceDocumentInterfaceBrokerForTesting(
-    ScriptState* script_state,
-    MojoHandle* test_broker_handle) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  DCHECK(execution_context);
-  Document* document = static_cast<Document*>(execution_context);
-  DCHECK(document);
-
-  return MojoHandle::Create(
-      mojo::ScopedHandle::From(document->SetDocumentInterfaceBrokerForTesting(
-          mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(
-              test_broker_handle->TakeHandle().release().value())))));
 }
 
 }  // namespace blink

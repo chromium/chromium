@@ -13,6 +13,12 @@ typedef unsigned long long DOMTimeStamp;
 callback Function = any (any... arguments);
 
 
+// Blink-specific forEach iterator's callback
+// https://heycam.github.io/webidl/#es-forEach
+
+callback ForEachIteratorCallback = void (any value, any key, any obj);
+
+
 // Blink-specific constructor type used in many places.
 
 callback NoArgumentConstructor = any ();

@@ -3,11 +3,9 @@
 <body>
 <iframe scrolling=no width=300 height=300></iframe>
 <script>
-if (window.testRunner) {
+if (window.testRunner)
     testRunner.waitUntilDone();
-    testRunner.dumpResourceResponseMIMETypes();
-    testRunner.dumpAsTextWithPixelResults();
-}
+
 function loadImage()
 {
     return "http://127.0.0.1:8000/resources/load-and-stall.php";

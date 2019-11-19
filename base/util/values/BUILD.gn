@@ -1,0 +1,26 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("values_util") {
+  sources = [
+    "values_util.cc",
+    "values_util.h",
+  ]
+
+  deps = [
+    "//base:base",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [
+    "values_util_unittest.cc",
+  ]
+
+  deps = [
+    ":values_util",
+    "//testing/gtest",
+  ]
+}

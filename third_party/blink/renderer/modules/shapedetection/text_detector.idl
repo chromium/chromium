@@ -8,6 +8,7 @@
     Constructor,
     ConstructorCallWith=ExecutionContext,
     Exposed=(Window,Worker),
+    SecureContext,
     MeasureAs=ShapeDetection_TextDetectorConstructor,
     RuntimeEnabled=ShapeDetection
 ] interface TextDetector {

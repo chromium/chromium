@@ -42,6 +42,13 @@
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
 #include "third_party/re2/src/re2/re2.h"
 
+#if defined(OS_WIN)
+#undef DeleteFile
+#define base_DeleteFile base::DeleteFileW
+#else  // defined(OS_WIN)
+#define base_DeleteFile base::DeleteFile
+#endif  // defined(OS_WIN)
+
 using base::FilePath;
 using base::trace_event::MemoryAllocatorDump;
 using base::trace_event::MemoryDumpArgs;
@@ -206,8 +213,9 @@ class ChromiumSequentialFile : public leveldb::SequentialFile {
       : filename_(fname), file_(std::move(f)), uma_logger_(uma_logger) {}
   virtual ~ChromiumSequentialFile() {}
 
+  // Note: This method is relatively hot during leveldb database
+  // compaction. Please avoid making them slower.
   Status Read(size_t n, Slice* result, char* scratch) override {
-    TRACE_EVENT1("leveldb", "ChromiumSequentialFile::Read", "size", n);
     int bytes_read = file_.ReadAtCurrentPosNoBestEffort(scratch, n);
     if (bytes_read == -1) {
       base::File::Error error = base::File::GetLastFileError();
@@ -299,12 +307,12 @@ class ChromiumEvictableRandomAccessFile : public leveldb::RandomAccessFile {
     file_cache_->Erase(cache_key_);
   }
 
+  // Note: This method is relatively hot during leveldb database
+  // compaction. Please avoid making them slower.
   Status Read(uint64_t offset,
               size_t n,
               Slice* result,
               char* scratch) const override {
-    TRACE_EVENT2("leveldb", "ChromiumEvictableRandomAccessFile::Read", "offset",
-                 offset, "size", n);
     leveldb::Cache::Handle* handle = file_cache_->Lookup(cache_key_);
     if (!handle) {
       int flags = base::File::FLAG_READ | base::File::FLAG_OPEN;
@@ -344,12 +352,12 @@ class ChromiumRandomAccessFile : public leveldb::RandomAccessFile {
 
   virtual ~ChromiumRandomAccessFile() {}
 
+  // Note: This method is relatively hot during leveldb database
+  // compaction. Please avoid making them slower.
   Status Read(uint64_t offset,
               size_t n,
               Slice* result,
               char* scratch) const override {
-    TRACE_EVENT2("leveldb", "ChromiumRandomAccessFile::Read", "offset", offset,
-                 "size", n);
     return ReadFromFileToScratch(offset, n, result, scratch, &file_, filepath_,
                                  uma_logger_);
   }
@@ -549,7 +557,7 @@ void RecordCacheUsageInTracing(ProcessMemoryDump* pmd,
 
 Options::Options() {
 // Note: Ensure that these default values correspond to those in
-// components/services/leveldb/public/interfaces/leveldb.mojom.
+// components/services/leveldb/public/mojom/leveldb.mojom.
 // TODO(cmumford) Create struct-trait for leveldb.mojom.OpenOptions to force
 // users to pass in a leveldb_env::Options instance (and it's defaults).
 //
@@ -869,7 +877,7 @@ void ChromiumEnv::DeleteBackupFiles(const FilePath& dir) {
                                   FILE_PATH_LITERAL("*.bak"));
   for (base::FilePath fname = dir_reader.Next(); !fname.empty();
        fname = dir_reader.Next()) {
-    histogram->AddBoolean(base::DeleteFile(fname, false));
+    histogram->AddBoolean(base_DeleteFile(fname, false));
   }
 }
 
@@ -903,7 +911,7 @@ Status ChromiumEnv::DeleteFile(const std::string& fname) {
   Status result;
   FilePath fname_filepath = FilePath::FromUTF8Unsafe(fname);
   // TODO(jorlow): Should we assert this is a file?
-  if (!base::DeleteFile(fname_filepath, false)) {
+  if (!base_DeleteFile(fname_filepath, false)) {
     result = MakeIOError(fname, "Could not delete file.", kDeleteFile);
     RecordErrorAt(kDeleteFile);
   }
@@ -927,7 +935,7 @@ Status ChromiumEnv::CreateDir(const std::string& name) {
 Status ChromiumEnv::DeleteDir(const std::string& name) {
   Status result;
   // TODO(jorlow): Should we assert this is a directory?
-  if (!base::DeleteFile(FilePath::FromUTF8Unsafe(name), false)) {
+  if (!base_DeleteFile(FilePath::FromUTF8Unsafe(name), false)) {
     result = MakeIOError(name, "Could not delete directory.", kDeleteDir);
     RecordErrorAt(kDeleteDir);
   }
@@ -987,22 +995,8 @@ Status ChromiumEnv::LockFile(const std::string& fname, FileLock** lock) {
   } while (!file.IsValid() && retrier.ShouldKeepTrying(error_code));
 
   if (!file.IsValid()) {
-    if (error_code == base::File::FILE_ERROR_NOT_FOUND) {
-      FilePath parent = FilePath::FromUTF8Unsafe(fname).DirName();
-      FilePath last_parent;
-      int num_missing_ancestors = 0;
-      do {
-        if (base::DirectoryExists(parent))
-          break;
-        ++num_missing_ancestors;
-        last_parent = parent;
-        parent = parent.DirName();
-      } while (parent != last_parent);
-      RecordLockFileAncestors(num_missing_ancestors);
-    }
-
-    result = MakeIOError(fname, FileErrorString(error_code), kLockFile,
-                         error_code);
+    result =
+        MakeIOError(fname, FileErrorString(error_code), kLockFile, error_code);
     RecordOSError(kLockFile, error_code);
     return result;
   }
@@ -1176,10 +1170,6 @@ void ChromiumEnv::RecordBytesWritten(int amount) const {
   RecordStorageBytesWritten(name_.c_str(), amount);
 }
 
-void ChromiumEnv::RecordLockFileAncestors(int num_missing_ancestors) const {
-  GetLockFileAncestorHistogram()->Add(num_missing_ancestors);
-}
-
 base::HistogramBase* ChromiumEnv::GetOSErrorHistogram(MethodID method,
                                                       int limit) const {
   std::string uma_name;
@@ -1194,17 +1184,6 @@ base::HistogramBase* ChromiumEnv::GetMethodIOErrorHistogram() const {
   uma_name.append(".IOError");
   return base::LinearHistogram::FactoryGet(uma_name, 1, kNumEntries,
       kNumEntries + 1, base::Histogram::kUmaTargetedHistogramFlag);
-}
-
-base::HistogramBase* ChromiumEnv::GetLockFileAncestorHistogram() const {
-  std::string uma_name(name_);
-  uma_name.append(".LockFileAncestorsNotFound");
-  const int kMin = 1;
-  const int kMax = 10;
-  const int kNumBuckets = 11;
-  return base::LinearHistogram::FactoryGet(
-      uma_name, kMin, kMax, kNumBuckets,
-      base::Histogram::kUmaTargetedHistogramFlag);
 }
 
 base::HistogramBase* ChromiumEnv::GetRetryTimeHistogram(MethodID method) const {
@@ -1323,8 +1302,14 @@ class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
   TrackedDBImpl(DBTracker* tracker,
                 const std::string name,
                 leveldb::DB* db,
-                const leveldb::Cache* block_cache)
-      : tracker_(tracker), name_(name), db_(db) {
+                const leveldb::Cache* block_cache,
+                DatabaseErrorReportingCallback on_get_error,
+                DatabaseErrorReportingCallback on_write_error)
+      : tracker_(tracker),
+        name_(name),
+        db_(db),
+        on_get_error_(std::move(on_get_error)),
+        on_write_error_(std::move(on_write_error)) {
     if (leveldb_chrome::GetSharedWebBlockCache() ==
         leveldb_chrome::GetSharedBrowserBlockCache()) {
       shared_read_cache_use_ = SharedReadCacheUse_Unified;
@@ -1342,6 +1327,8 @@ class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
 
   ~TrackedDBImpl() override {
     tracker_->DatabaseDestroyed(this, shared_read_cache_use_);
+    base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
+    db_.reset();
   }
 
   const std::string& name() const override { return name_; }
@@ -1363,13 +1350,23 @@ class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
 
   leveldb::Status Write(const leveldb::WriteOptions& options,
                         leveldb::WriteBatch* updates) override {
-    return db_->Write(options, updates);
+    leveldb::Status status = db_->Write(options, updates);
+    if (LIKELY(status.ok()))
+      return status;
+    if (on_write_error_)
+      on_write_error_.Run(status);
+    return status;
   }
 
   leveldb::Status Get(const leveldb::ReadOptions& options,
                       const leveldb::Slice& key,
                       std::string* value) override {
-    return db_->Get(options, key, value);
+    leveldb::Status status = db_->Get(options, key, value);
+    if (LIKELY(status.ok() || status.IsNotFound()))
+      return status;
+    if (on_get_error_)
+      on_get_error_.Run(status);
+    return status;
   }
 
   const leveldb::Snapshot* GetSnapshot() override { return db_->GetSnapshot(); }
@@ -1403,6 +1400,8 @@ class DBTracker::TrackedDBImpl : public base::LinkNode<TrackedDBImpl>,
   std::string name_;
   std::unique_ptr<leveldb::DB> db_;
   SharedReadCacheUse shared_read_cache_use_;
+  const DatabaseErrorReportingCallback on_get_error_;
+  const DatabaseErrorReportingCallback on_write_error_;
 
   DISALLOW_COPY_AND_ASSIGN(TrackedDBImpl);
 };
@@ -1582,7 +1581,7 @@ bool DBTracker::IsTrackedDB(const leveldb::DB* db) const {
   return false;
 }
 
-leveldb::Status DBTracker::OpenDatabase(const leveldb::Options& options,
+leveldb::Status DBTracker::OpenDatabase(const leveldb_env::Options& options,
                                         const std::string& name,
                                         TrackedDB** dbptr) {
   leveldb::DB* db = nullptr;
@@ -1592,7 +1591,9 @@ leveldb::Status DBTracker::OpenDatabase(const leveldb::Options& options,
   CHECK((status.ok() && db) || (!status.ok() && !db));
   if (status.ok()) {
     // TrackedDBImpl ctor adds the instance to the tracker.
-    *dbptr = new TrackedDBImpl(GetInstance(), name, db, options.block_cache);
+    *dbptr = new TrackedDBImpl(GetInstance(), name, db, options.block_cache,
+                               std::move(options.on_get_error),
+                               std::move(options.on_write_error));
   }
   return status;
 }
@@ -1716,6 +1717,11 @@ base::StringPiece MakeStringPiece(const leveldb::Slice& s) {
 
 leveldb::Slice MakeSlice(const base::StringPiece& s) {
   return leveldb::Slice(s.begin(), s.size());
+}
+
+leveldb::Slice MakeSlice(base::span<const uint8_t> s) {
+  return MakeSlice(
+      base::StringPiece(reinterpret_cast<const char*>(s.data()), s.size()));
 }
 
 }  // namespace leveldb_env

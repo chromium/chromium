@@ -8,8 +8,10 @@
 #include "base/files/file_util.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task_runner.h"
+#include "chrome/browser/safe_browsing/download_protection/two_phase_uploader.h"
 #include "components/safe_browsing/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/net_errors.h"
@@ -65,6 +67,9 @@ class DownloadFeedbackImpl : public DownloadFeedback {
                       const std::string& response);
 
   void RecordUploadResult(UploadResultType result);
+  void RecordErrorCodes(TwoPhaseUploader::State state,
+                        int net_error,
+                        int response_code);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   scoped_refptr<base::TaskRunner> file_task_runner_;
@@ -77,6 +82,9 @@ class DownloadFeedbackImpl : public DownloadFeedback {
   std::string ping_response_;
 
   std::unique_ptr<TwoPhaseUploader> uploader_;
+
+  // The time at which we started uploading. Used for metrics.
+  base::Time uploader_start_time_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadFeedbackImpl);
 };
@@ -172,6 +180,7 @@ void DownloadFeedbackImpl::Start(const base::Closure& finish_callback) {
                  finish_callback),
       traffic_annotation);
   uploader_->Start();
+  uploader_start_time_ = base::Time::Now();
 }
 
 void DownloadFeedbackImpl::FinishedUpload(base::Closure finish_callback,
@@ -201,10 +210,14 @@ void DownloadFeedbackImpl::FinishedUpload(base::Closure finish_callback,
       RecordUploadResult(net_error != net::OK ? UPLOAD_METADATA_NET_ERROR
                                               : UPLOAD_METADATA_RESPONSE_ERROR);
       break;
-    default:
+    case TwoPhaseUploader::STATE_NONE:
       NOTREACHED();
       break;
   }
+
+  RecordErrorCodes(state, net_error, response_code);
+  UMA_HISTOGRAM_LONG_TIMES("SBDownloadFeedback.UploadDuration",
+                           base::Time::Now() - uploader_start_time_);
 
   uploader_.reset();
 
@@ -222,6 +235,18 @@ void DownloadFeedbackImpl::RecordUploadResult(UploadResultType result) {
   }
   UMA_HISTOGRAM_ENUMERATION("SBDownloadFeedback.UploadResult", result,
                             UPLOAD_RESULT_MAX);
+}
+
+void DownloadFeedbackImpl::RecordErrorCodes(TwoPhaseUploader::State state,
+                                            int net_error,
+                                            int response_code) {
+  if (state == TwoPhaseUploader::UPLOAD_FILE) {
+    base::UmaHistogramSparse("SBDownloadFeedback.FileErrors",
+                             net_error == net::OK ? response_code : net_error);
+  } else if (state == TwoPhaseUploader::UPLOAD_METADATA) {
+    base::UmaHistogramSparse("SBDownloadFeedback.MetadataErrors",
+                             net_error == net::OK ? response_code : net_error);
+  }
 }
 
 }  // namespace

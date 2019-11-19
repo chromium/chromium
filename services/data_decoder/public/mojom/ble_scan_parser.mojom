@@ -1,0 +1,31 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module data_decoder.mojom;
+
+import "device/bluetooth/public/mojom/uuid.mojom";
+
+// This is a parsed version of the BLE advertising packet. The data matches the
+// fields defined in the BLE specification.
+// https://bit.ly/2DUTnsk
+struct ScanRecord {
+  // Defines the discovery mode and EDR support
+  int8 advertising_flags;
+  // The transmit power in dBm
+  int8 tx_power;
+  // Device name
+  string advertisement_name;
+  // UUIDs for services offered.
+  array<bluetooth.mojom.UUID> service_uuids;
+  // Service data: 16-bit service UUID, service data
+  map<string, array<uint8>> service_data_map;
+  // Manufacturer data: company code, data
+  map<uint16, array<uint8>> manufacturer_data_map;
+};
+
+// This interface contains the raw data read from a BLE advertising packet.
+interface BleScanParser {
+  // Parses a scan record. Returns null, if the parsing fails.
+  Parse(array<uint8> advertising_data) => (ScanRecord? scan_record);
+};

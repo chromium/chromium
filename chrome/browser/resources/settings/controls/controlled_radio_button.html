@@ -29,14 +29,25 @@
       }
     </style>
 
-    <div class="disc-wrapper">
+    <div
+        aria-checked$="[[getAriaChecked_(checked)]]"
+        aria-describedby="slotted-content"
+        aria-disabled$="[[getAriaDisabled_(disabled)]]"
+        aria-labelledby="label"
+        class="disc-wrapper"
+        id="button"
+        role="radio"
+        tabindex="0"
+        on-keydown="onInputKeydown_">
       <div class="disc-border"></div>
       <div class="disc"></div>
     </div>
 
     <div id="labelWrapper">
       <span id="label" hidden$="[[!label]]">[[label]]</span>
-      <slot></slot>
+      <span id="slotted-content">
+        <slot></slot>
+      </span>
     </div>
 
     <template is="dom-if" if="[[showIndicator_(disabled, name, pref.*)]]">

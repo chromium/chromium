@@ -10,7 +10,7 @@ generate_token.py http://127.0.0.1:8000 GenericSensor --expire-timestamp=2000000
 <script src="../../resources/origin-trials-helper.js"></script>
 <script>
 test(t => {
-  OriginTrialsHelper.check_properties(this,
+  OriginTrialsHelper.check_properties_exist(this,
       {'Sensor': ['start', 'stop', 'hasReading', 'activated', 'timestamp', 'onerror', 'onreading', 'onactivate'],
        'Accelerometer': ['x', 'y', 'z'],
        'Gyroscope': ['x', 'y', 'z'],

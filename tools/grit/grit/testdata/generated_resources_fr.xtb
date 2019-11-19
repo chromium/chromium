@@ -1,6 +1,8 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1525924600121678168">Salut!</translation>
+<translation id="5335090254790956485">Salut <ph name="USERNAME"/></translation>
 <translation id="6779164083355903755">Supprime&amp;r</translation>
 <translation id="6879617193011158416">Activer la barre de favoris</translation>
 <translation id="8130276680150879341">Déconnexion du réseau privé</translation>

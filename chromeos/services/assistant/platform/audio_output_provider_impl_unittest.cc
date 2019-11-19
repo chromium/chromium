@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "libassistant/shared/public/platform_audio_output.h"
 #include "media/base/audio_bus.h"
@@ -80,13 +80,14 @@ class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
 class AudioDeviceOwnerTest : public testing::Test {
  public:
   AudioDeviceOwnerTest()
-      : task_env_(base::test::ScopedTaskEnvironment::MainThreadType::DEFAULT,
-                  base::test::ScopedTaskEnvironment::ExecutionMode::QUEUED) {}
+      : task_env_(
+            base::test::TaskEnvironment::MainThreadType::DEFAULT,
+            base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
   ~AudioDeviceOwnerTest() override { task_env_.RunUntilIdle(); }
 
  private:
-  base::test::ScopedTaskEnvironment task_env_;
+  base::test::TaskEnvironment task_env_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioDeviceOwnerTest);
 };
@@ -104,9 +105,9 @@ TEST_F(AudioDeviceOwnerTest, BufferFilling) {
   delegate.Reset();
   auto owner = std::make_unique<AudioDeviceOwner>(
       base::SequencedTaskRunnerHandle::Get(),
-      base::SequencedTaskRunnerHandle::Get());
+      base::SequencedTaskRunnerHandle::Get(), "test device");
   // Upon start, it will start to fill the buffer.
-  owner->StartOnMainThread(&delegate, nullptr, format);
+  owner->StartOnMainThread(&delegate, mojo::NullRemote(), format);
   delegate.Wait();
 
   delegate.Reset();

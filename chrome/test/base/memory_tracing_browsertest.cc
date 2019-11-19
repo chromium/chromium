@@ -26,6 +26,7 @@
 
 namespace {
 
+using base::trace_event::MemoryDumpDeterminism;
 using base::trace_event::MemoryDumpManager;
 using base::trace_event::MemoryDumpType;
 using tracing::BeginTracingWithTraceConfig;
@@ -44,6 +45,7 @@ void OnStartTracingDoneCallback(
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDumpAndAppendToTrace(
           MemoryDumpType::EXPLICITLY_TRIGGERED, explicit_dump_type,
+          MemoryDumpDeterminism::NONE,
           Bind(&RequestGlobalDumpCallback, quit_closure));
 }
 

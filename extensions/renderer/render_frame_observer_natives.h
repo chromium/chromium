@@ -31,7 +31,7 @@ class RenderFrameObserverNatives : public ObjectBackedNativeHandler {
 
   void InvokeCallback(v8::Global<v8::Function> callback, bool succeeded);
 
-  base::WeakPtrFactory<RenderFrameObserverNatives> weak_ptr_factory_;
+  base::WeakPtrFactory<RenderFrameObserverNatives> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RenderFrameObserverNatives);
 };

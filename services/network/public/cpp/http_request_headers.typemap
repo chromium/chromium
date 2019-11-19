@@ -10,4 +10,4 @@ public_deps = [
   "//net",
   "//services/network/public/cpp:cpp_base",
 ]
-type_mappings = [ "network.mojom.HttpRequestHeaders=net::HttpRequestHeaders" ]
+type_mappings = [ "network.mojom.HttpRequestHeaders=::net::HttpRequestHeaders" ]

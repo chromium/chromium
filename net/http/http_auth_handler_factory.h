@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"
-#include "net/http/http_negotiate_auth_system.h"
+#include "net/http/http_auth_mechanism.h"
 #include "net/http/url_security_manager.h"
 #include "net/net_buildflags.h"
 
@@ -35,11 +35,11 @@ class NetLogWithSource;
 class NET_EXPORT HttpAuthHandlerFactory {
  public:
   enum CreateReason {
-    CREATE_CHALLENGE,     // Create a handler in response to a challenge.
-    CREATE_PREEMPTIVE,    // Create a handler preemptively.
+    CREATE_CHALLENGE,   // Create a handler in response to a challenge.
+    CREATE_PREEMPTIVE,  // Create a handler preemptively.
   };
 
-  HttpAuthHandlerFactory() : http_auth_preferences_(NULL) {}
+  HttpAuthHandlerFactory() : http_auth_preferences_(nullptr) {}
   virtual ~HttpAuthHandlerFactory() {}
 
   // Sets the source of the HTTP authentication preferences.
@@ -56,17 +56,16 @@ class NET_EXPORT HttpAuthHandlerFactory {
     return http_auth_preferences_;
   }
 
-  // Creates an HttpAuthHandler object based on the authentication
-  // challenge specified by |*challenge|. |challenge| must point to a valid
-  // non-NULL tokenizer.
+  // Creates an HttpAuthHandler object based on the authentication challenge
+  // specified by |*challenge|. |challenge| must point to a valid tokenizer.
   //
   // If an HttpAuthHandler object is successfully created it is passed back to
   // the caller through |*handler| and OK is returned.
   //
   // If |*challenge| specifies an unsupported authentication scheme, |*handler|
-  // is set to NULL and ERR_UNSUPPORTED_AUTH_SCHEME is returned.
+  // is set to nullptr and ERR_UNSUPPORTED_AUTH_SCHEME is returned.
   //
-  // If |*challenge| is improperly formed, |*handler| is set to NULL and
+  // If |*challenge| is improperly formed, |*handler| is set to nullptr and
   // ERR_INVALID_RESPONSE is returned.
   //
   // |create_reason| indicates why the handler is being created. This is used
@@ -128,12 +127,6 @@ class NET_EXPORT HttpAuthHandlerFactory {
       HostResolver* host_resolver,
       std::unique_ptr<HttpAuthHandler>* handler);
 
-  // Factory callback to create the auth system used for Negotiate
-  // authentication.
-  using NegotiateAuthSystemFactory =
-      base::RepeatingCallback<std::unique_ptr<net::HttpNegotiateAuthSystem>(
-          const net::HttpAuthPreferences*)>;
-
   // Creates a standard HttpAuthHandlerRegistryFactory. The caller is
   // responsible for deleting the factory.
   // The default factory supports Basic, Digest, NTLM, and Negotiate schemes.
@@ -142,17 +135,14 @@ class NET_EXPORT HttpAuthHandlerFactory {
   // used by the Negotiate authentication handler.
   static std::unique_ptr<HttpAuthHandlerRegistryFactory> CreateDefault(
       const HttpAuthPreferences* prefs = nullptr
-#if defined(OS_CHROMEOS)
-      ,
-      bool allow_gssapi_library_load = true
-#elif (defined(OS_POSIX) && !defined(OS_ANDROID)) || defined(OS_FUCHSIA)
+#if BUILDFLAG(USE_EXTERNAL_GSSAPI)
       ,
       const std::string& gssapi_library_name = ""
 #endif
 #if BUILDFLAG(USE_KERBEROS)
       ,
-      NegotiateAuthSystemFactory negotiate_auth_system_factory =
-          NegotiateAuthSystemFactory()
+      HttpAuthMechanismFactory negotiate_auth_system_factory =
+          HttpAuthMechanismFactory()
 #endif
   );
 
@@ -180,14 +170,14 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
   // The |*factory| object is assumed to be new-allocated, and its lifetime
   // will be managed by this HttpAuthHandlerRegistryFactory object (including
   // deleting it when it is no longer used.
-  // A NULL |factory| value means that HttpAuthHandlers's will not be created
+  // A nullptr |factory| value means that HttpAuthHandlers's will not be created
   // for |scheme|. If a factory object used to exist for |scheme|, it will be
   // deleted.
   void RegisterSchemeFactory(const std::string& scheme,
                              HttpAuthHandlerFactory* factory);
 
   // Retrieve the factory for the specified |scheme|. If no factory exists
-  // for the |scheme|, NULL is returned. The returned factory must not be
+  // for the |scheme|, nullptr is returned. The returned factory must not be
   // deleted by the caller, and it is guaranteed to be valid until either
   // a new factory is registered for the same scheme, or until this
   // registry factory is destroyed.
@@ -207,17 +197,14 @@ class NET_EXPORT HttpAuthHandlerRegistryFactory
   static std::unique_ptr<HttpAuthHandlerRegistryFactory> Create(
       const HttpAuthPreferences* prefs,
       const std::vector<std::string>& auth_schemes
-#if defined(OS_CHROMEOS)
-      ,
-      bool allow_gssapi_library_load = true
-#elif (defined(OS_POSIX) && !defined(OS_ANDROID)) || defined(OS_FUCHSIA)
+#if BUILDFLAG(USE_EXTERNAL_GSSAPI)
       ,
       const std::string& gssapi_library_name = ""
 #endif
 #if BUILDFLAG(USE_KERBEROS)
       ,
-      NegotiateAuthSystemFactory negotiate_auth_system_factory =
-          NegotiateAuthSystemFactory()
+      HttpAuthMechanismFactory negotiate_auth_system_factory =
+          HttpAuthMechanismFactory()
 #endif
   );
 

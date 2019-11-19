@@ -45,12 +45,12 @@ TEST_F(WallpaperWindowStateManagerTest, HideAndRestoreWindows) {
   std::unique_ptr<aura::Window> window3(CreateTestWindowInShellWithId(3));
   std::unique_ptr<aura::Window> window4(CreateTestWindowInShellWithId(4));
 
-  wm::WindowState* wallpaper_picker_window_state =
-      wm::GetWindowState(wallpaper_picker_window.get());
-  wm::WindowState* window1_state = wm::GetWindowState(window1.get());
-  wm::WindowState* window2_state = wm::GetWindowState(window2.get());
-  wm::WindowState* window3_state = wm::GetWindowState(window3.get());
-  wm::WindowState* window4_state = wm::GetWindowState(window4.get());
+  WindowState* wallpaper_picker_window_state =
+      WindowState::Get(wallpaper_picker_window.get());
+  WindowState* window1_state = WindowState::Get(window1.get());
+  WindowState* window2_state = WindowState::Get(window2.get());
+  WindowState* window3_state = WindowState::Get(window3.get());
+  WindowState* window4_state = WindowState::Get(window4.get());
 
   // Window 1 starts maximized and window 3 starts minimized.
   window1_state->Maximize();
@@ -105,9 +105,9 @@ TEST_F(WallpaperWindowStateManagerTest, HideAndManualUnminimizeWindows) {
       CreateTestWindowInShellWithId(0));
   std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
 
-  wm::WindowState* wallpaper_picker_window_state =
-      wm::GetWindowState(wallpaper_picker_window.get());
-  wm::WindowState* window1_state = wm::GetWindowState(window1.get());
+  WindowState* wallpaper_picker_window_state =
+      WindowState::Get(wallpaper_picker_window.get());
+  WindowState* window1_state = WindowState::Get(window1.get());
 
   // Activates the wallpaper picker window and call the minimize function.
   wallpaper_picker_window_state->Activate();
@@ -151,10 +151,10 @@ TEST_F(WallpaperWindowStateManagerTest, IgnoreInvisibleWindows) {
   std::unique_ptr<aura::Window> window1(CreateTestWindowInShellWithId(1));
   std::unique_ptr<aura::Window> window2(CreateTestWindowInShellWithId(2));
 
-  wm::WindowState* wallpaper_picker_window_state =
-      wm::GetWindowState(wallpaper_picker_window.get());
-  wm::WindowState* window1_state = wm::GetWindowState(window1.get());
-  wm::WindowState* window2_state = wm::GetWindowState(window2.get());
+  WindowState* wallpaper_picker_window_state =
+      WindowState::Get(wallpaper_picker_window.get());
+  WindowState* window1_state = WindowState::Get(window1.get());
+  WindowState* window2_state = WindowState::Get(window2.get());
 
   window2->Hide();
   EXPECT_FALSE(window2->IsVisible());

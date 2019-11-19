@@ -9,7 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/common/password_form.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -36,7 +36,7 @@ class PasswordImporterTest : public testing::Test {
                              base::Bind(&PasswordImporterTest::OnImportFinished,
                                         base::Unretained(this)));
 
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
 
     ASSERT_TRUE(callback_called_);
   }
@@ -57,7 +57,7 @@ class PasswordImporterTest : public testing::Test {
   base::ScopedTempDir temp_directory_;
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   bool callback_called_;
   PasswordImporter::Result result_;

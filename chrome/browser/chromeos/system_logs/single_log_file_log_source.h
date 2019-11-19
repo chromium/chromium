@@ -96,7 +96,7 @@ class SingleLogFileLogSource : public SystemLogsSource {
   // was originally opened for reading.
   ino_t file_inode_;
 
-  base::WeakPtrFactory<SingleLogFileLogSource> weak_ptr_factory_;
+  base::WeakPtrFactory<SingleLogFileLogSource> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SingleLogFileLogSource);
 };

@@ -1,0 +1,29 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+[
+    RuntimeEnabled=WebGPU
+] interface mixin GPURenderEncoderBase {
+    void setPipeline(GPURenderPipeline pipeline);
+
+    void setIndexBuffer(GPUBuffer buffer, optional GPUBufferSize offset = 0);
+    void setVertexBuffer(unsigned long slot,
+                         GPUBuffer buffer,
+                         optional GPUBufferSize offset = 0);
+
+    void draw(unsigned long vertexCount, unsigned long instanceCount,
+              unsigned long firstVertex,
+              unsigned long firstInstance);
+    void drawIndexed(unsigned long indexCount, unsigned long instanceCount,
+                     unsigned long firstIndex,
+                     long baseVertex,
+                     unsigned long firstInstance);
+
+    void drawIndirect(GPUBuffer indirectBuffer,
+                      GPUBufferSize indirectOffset);
+    void drawIndexedIndirect(GPUBuffer indirectBuffer,
+                             GPUBufferSize indirectOffset);
+};

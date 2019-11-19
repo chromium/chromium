@@ -10,4 +10,4 @@ sources = [
   "//mojo/public/cpp/base/memory_allocator_dump_cross_process_uid_mojom_traits.h",
 ]
 
-type_mappings = [ "mojo_base.mojom.MemoryAllocatorDumpCrossProcessUid=base::trace_event::MemoryAllocatorDumpGuid" ]
+type_mappings = [ "mojo_base.mojom.MemoryAllocatorDumpCrossProcessUid=::base::trace_event::MemoryAllocatorDumpGuid" ]

@@ -34,7 +34,7 @@ class ArcAppWindow : public AppWindowBase,
                      public AppIconLoaderDelegate {
  public:
   // TODO(khmel): use a bool set to false by default, or use an existing enum,
-  // like ash::mojom::WindowStateType.
+  // like ash::WindowStateType.
   enum class FullScreenMode {
     NOT_DEFINED,  // Fullscreen mode was not defined.
     ACTIVE,       // Fullscreen is activated for an app.

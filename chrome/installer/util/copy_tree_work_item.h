@@ -46,7 +46,7 @@ class CopyTreeWorkItem : public WorkItem {
   void RollbackImpl() override;
 
   // Checks if the path specified is in use (and hence can not be deleted)
-  bool IsFileInUse(const base::FilePath& path);
+  static bool IsFileInUse(const base::FilePath& path);
 
   // Source path to copy files from.
   base::FilePath source_path_;

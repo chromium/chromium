@@ -26,7 +26,7 @@ ExpiredHistogramsChecker::~ExpiredHistogramsChecker() {}
 
 bool ExpiredHistogramsChecker::ShouldRecord(uint64_t histogram_hash) const {
   // If histogram is whitelisted then it should always be recorded.
-  if (base::ContainsKey(whitelist_, histogram_hash))
+  if (base::Contains(whitelist_, histogram_hash))
     return true;
   return !std::binary_search(array_, array_ + size_, histogram_hash);
 }

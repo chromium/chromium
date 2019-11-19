@@ -5,11 +5,15 @@
 #include "components/offline_pages/core/model/get_pages_task.h"
 
 #include <algorithm>
+#include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
-#include "components/offline_pages/core/client_policy_controller.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/offline_pages/core/offline_page_client_policy.h"
+#include "components/offline_pages/core/offline_page_item_utils.h"
 #include "components/offline_pages/core/offline_store_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -21,398 +25,80 @@ namespace {
 
 using ReadResult = GetPagesTask::ReadResult;
 
-#define OFFLINE_PAGE_PROJECTION                                \
-  " offline_id, creation_time, file_size, last_access_time,"   \
-  " access_count, system_download_id, file_missing_time,"      \
-  " upgrade_attempt, client_namespace, client_id, online_url," \
-  " file_path, title, original_url, request_origin, digest"
+#define OFFLINE_PAGE_PROJECTION                           \
+  " offline_id,creation_time,file_size,last_access_time," \
+  "access_count,system_download_id,file_missing_time,"    \
+  "client_namespace,client_id,online_url,"                \
+  "file_path,title,original_url,request_origin,digest,"   \
+  "snippet,attribution"
+
+ClientId OfflinePageClientId(const sql::Statement& statement) {
+  return ClientId(statement.ColumnString(7), statement.ColumnString(8));
+}
 
 // Create an offline page item from a SQL result.
 // Expects the order of columns as defined by OFFLINE_PAGE_PROJECTION macro.
-OfflinePageItem MakeOfflinePageItem(sql::Statement* statement) {
-  int64_t id = statement->ColumnInt64(0);
-  base::Time creation_time =
-      store_utils::FromDatabaseTime(statement->ColumnInt64(1));
-  int64_t file_size = statement->ColumnInt64(2);
-  base::Time last_access_time =
-      store_utils::FromDatabaseTime(statement->ColumnInt64(3));
-  int access_count = statement->ColumnInt(4);
-  int64_t system_download_id = statement->ColumnInt64(5);
-  base::Time file_missing_time =
-      store_utils::FromDatabaseTime(statement->ColumnInt64(6));
-  int upgrade_attempt = statement->ColumnInt(7);
-  ClientId client_id(statement->ColumnString(8), statement->ColumnString(9));
-  GURL url(statement->ColumnString(10));
-  base::FilePath path(
-      store_utils::FromDatabaseFilePath(statement->ColumnString(11)));
-  base::string16 title = statement->ColumnString16(12);
-  GURL original_url(statement->ColumnString(13));
-  std::string request_origin = statement->ColumnString(14);
-  std::string digest = statement->ColumnString(15);
-
-  OfflinePageItem item(url, id, client_id, path, file_size, creation_time);
-  item.last_access_time = last_access_time;
-  item.access_count = access_count;
-  item.title = title;
-  item.original_url = original_url;
-  item.request_origin = request_origin;
-  item.system_download_id = system_download_id;
-  item.file_missing_time = file_missing_time;
-  item.upgrade_attempt = upgrade_attempt;
-  item.digest = digest;
+OfflinePageItem MakeOfflinePageItem(const sql::Statement& statement) {
+  OfflinePageItem item;
+  item.offline_id = statement.ColumnInt64(0);
+  item.creation_time = store_utils::FromDatabaseTime(statement.ColumnInt64(1));
+  item.file_size = statement.ColumnInt64(2);
+  item.last_access_time =
+      store_utils::FromDatabaseTime(statement.ColumnInt64(3));
+  item.access_count = statement.ColumnInt(4);
+  item.system_download_id = statement.ColumnInt64(5);
+  item.file_missing_time =
+      store_utils::FromDatabaseTime(statement.ColumnInt64(6));
+  item.client_id = OfflinePageClientId(statement);
+  item.url = GURL(statement.ColumnString(9));
+  item.file_path = base::FilePath(
+      store_utils::FromDatabaseFilePath(statement.ColumnString(10)));
+  item.title = statement.ColumnString16(11);
+  item.original_url_if_different = GURL(statement.ColumnString(12));
+  item.request_origin = statement.ColumnString(13);
+  item.digest = statement.ColumnString(14);
+  item.snippet = statement.ColumnString(15);
+  item.attribution = statement.ColumnString(16);
   return item;
 }
 
-ReadResult ReadAllPagesSync(sql::Database* db) {
-  ReadResult result;
-
-  static const char kSql[] =
-      "SELECT " OFFLINE_PAGE_PROJECTION " FROM offlinepages_v1";
-  sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-  while (statement.Step())
-    result.pages.emplace_back(MakeOfflinePageItem(&statement));
-
-  result.success = true;
-  return result;
-}
-
-ReadResult ReadPagesByClientIdsSync(const std::vector<ClientId>& client_ids,
-                                    sql::Database* db) {
-  ReadResult result;
-
-  sql::Transaction transaction(db);
-  if (!transaction.Begin())
-    return result;
-
-  static const char kSql[] = "SELECT " OFFLINE_PAGE_PROJECTION
-                             " FROM offlinepages_v1"
-                             " WHERE client_namespace = ? AND client_id = ?";
-  for (auto client_id : client_ids) {
-    sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-    statement.BindString(0, client_id.name_space);
-    statement.BindString(1, client_id.id);
-    while (statement.Step())
-      result.pages.emplace_back(MakeOfflinePageItem(&statement));
-  }
-
-  if (!transaction.Commit()) {
-    result.pages.clear();
-    return result;
-  }
-
-  result.success = true;
-  return result;
-}
-
-void ReadPagesByNamespaceSync(sql::Database* db,
-                              const std::string& name_space,
-                              ReadResult* result) {
-  DCHECK(db);
-  DCHECK(result);
-
-  static const char kSql[] = "SELECT " OFFLINE_PAGE_PROJECTION
-                             " FROM offlinepages_v1"
-                             " WHERE client_namespace = ?";
-  sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, name_space);
-  while (statement.Step())
-    result->pages.emplace_back(MakeOfflinePageItem(&statement));
-}
-
-ReadResult ReadPagesByMultipleNamespacesSync(
-    const std::vector<std::string>& namespaces,
-    sql::Database* db) {
-  ReadResult result;
-  sql::Transaction transaction(db);
-  if (!transaction.Begin())
-    return result;
-
-  for (auto name_space : namespaces)
-    ReadPagesByNamespaceSync(db, name_space, &result);
-
-  if (!transaction.Commit()) {
-    result.pages.clear();
-    return result;
-  }
-
-  result.success = true;
-  return result;
-}
-
-ReadResult ReadPagesByRequestOriginSync(const std::string& request_origin,
-                                        sql::Database* db) {
-  ReadResult result;
-
-  static const char kSql[] = "SELECT " OFFLINE_PAGE_PROJECTION
-                             " FROM offlinepages_v1"
-                             " WHERE request_origin = ?";
-  sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, request_origin);
-  while (statement.Step())
-    result.pages.emplace_back(MakeOfflinePageItem(&statement));
-
-  result.success = true;
-  return result;
-}
-
-// Notes on implementation:
-// The problem we are solving here is matching URLs, but disregarding the
-// fragments. We apply the following strategy:
-// * Dropping the fragments from the input url, on which we match
-// * Replacing '%' characters with '_', to prevent SQL side explosion of
-//   pattern matching. '%' - matches unbounded length of characters, while
-//   '_' matches a single character. This choice was made as opposed to
-//   escaping the '%' character, as it would still include updating the whole
-//   pattern string and would make the SQL query a little less readable.
-// * Appending '%' to the end of pattern, to match both URLs with or without
-//   fragments.
-// Above approach produces false positives, because '_' replacing '%' in
-// original URL, but we deal with that by doing exact URL match inside of the
-// while loop.
-ReadResult ReadPagesByUrlSync(const GURL& url, sql::Database* db) {
-  ReadResult result;
-
-  GURL::Replacements remove_fragment;
-  remove_fragment.ClearRef();
-  GURL url_to_match = url.ReplaceComponents(remove_fragment);
-  std::string string_to_match = url_to_match.spec();
+// Returns a pattern to be used in an SQLite LIKE expression to match a
+// a URL ignoring the fragment. Warning: this match produces false positives,
+// so the URL match must be verified by doing
+// UrlWithoutFragment(a)==UrlWithoutFragment(b).
+std::string RelaxedLikePattern(const GURL& url) {
+  // In a LIKE expression, % matches any number of characters, and _ matches any
+  // single character.
+  // Replace % with _ in the URL to because _ is more restrictive.
+  // Append a % to match any URL with our URL as a prefix, just in case the URL
+  // being matched has a fragment.
+  std::string string_to_match = UrlWithoutFragment(url).spec();
   std::replace(string_to_match.begin(), string_to_match.end(), '%', '_');
-  string_to_match = string_to_match.append(1UL, '%');
-  static const char kSql[] = "SELECT " OFFLINE_PAGE_PROJECTION
-                             " FROM offlinepages_v1"
-                             " WHERE online_url LIKE ? OR original_url like ?";
-  sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, string_to_match);
-  statement.BindString(1, string_to_match);
-  while (statement.Step()) {
-    OfflinePageItem temp_item = MakeOfflinePageItem(&statement);
-    if (temp_item.url.ReplaceComponents(remove_fragment) == url_to_match ||
-        temp_item.original_url.ReplaceComponents(remove_fragment) ==
-            url_to_match) {
-      result.pages.push_back(temp_item);
-    }
-  }
-
-  result.success = true;
-  return result;
-}
-
-ReadResult ReadPagesByOfflineId(int64_t offline_id, sql::Database* db) {
-  ReadResult result;
-
-  static const char kSql[] = "SELECT " OFFLINE_PAGE_PROJECTION
-                             " FROM offlinepages_v1"
-                             " WHERE offline_id = ?";
-  sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, offline_id);
-  while (statement.Step())
-    result.pages.emplace_back(MakeOfflinePageItem(&statement));
-
-  result.success = true;
-  return result;
-}
-
-ReadResult ReadPagesByGuid(const std::string& guid, sql::Database* db) {
-  ReadResult result;
-
-  static const char kSql[] = "SELECT " OFFLINE_PAGE_PROJECTION
-                             " FROM offlinepages_v1"
-                             " WHERE client_id = ?";
-  sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, guid);
-  while (statement.Step())
-    result.pages.emplace_back(MakeOfflinePageItem(&statement));
-
-  result.success = true;
-  return result;
-}
-
-ReadResult ReadPagesBySizeAndDigest(int64_t file_size,
-                                    const std::string& digest,
-                                    sql::Database* db) {
-  ReadResult result;
-
-  static const char kSql[] = "SELECT " OFFLINE_PAGE_PROJECTION
-                             " FROM offlinepages_v1"
-                             " WHERE file_size = ? AND digest = ?";
-  sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, file_size);
-  statement.BindString(1, digest);
-  while (statement.Step())
-    result.pages.emplace_back(MakeOfflinePageItem(&statement));
-
-  result.success = true;
-  return result;
-}
-
-void WrapInMultipleItemsCallback(SingleOfflinePageItemCallback callback,
-                                 const std::vector<OfflinePageItem>& pages) {
-  if (pages.size() == 0)
-    std::move(callback).Run(nullptr);
-  else
-    std::move(callback).Run(&pages[0]);
-}
-
-ReadResult SelectItemsForUpgrade(sql::Database* db) {
-  ReadResult result;
-
-  static const char kSql[] =
-      "SELECT " OFFLINE_PAGE_PROJECTION
-      " FROM offlinepages_v1"
-      " WHERE upgrade_attempt > 0"
-      " ORDER BY upgrade_attempt DESC, creation_time DESC";
-  sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
-
-  while (statement.Step())
-    result.pages.emplace_back(MakeOfflinePageItem(&statement));
-
-  result.success = true;
-  return result;
+  string_to_match.push_back('%');
+  return string_to_match;
 }
 
 }  // namespace
 
-GetPagesTask::ReadResult::ReadResult() {}
-
+GetPagesTask::ReadResult::ReadResult() = default;
 GetPagesTask::ReadResult::ReadResult(const ReadResult& other) = default;
-
-GetPagesTask::ReadResult::~ReadResult() {}
-
-// static
-std::unique_ptr<GetPagesTask> GetPagesTask::CreateTaskMatchingAllPages(
-    OfflinePageMetadataStore* store,
-    MultipleOfflinePageItemCallback callback) {
-  return base::WrapUnique(new GetPagesTask(
-      store, base::BindOnce(&ReadAllPagesSync), std::move(callback)));
-}
-
-// static
-std::unique_ptr<GetPagesTask> GetPagesTask::CreateTaskMatchingClientIds(
-    OfflinePageMetadataStore* store,
-    MultipleOfflinePageItemCallback callback,
-    const std::vector<ClientId>& client_ids) {
-  // Creates an instance of GetPagesTask, which wraps the client_ids argument in
-  // a OnceClosure. It will then be used to execute.
-  return base::WrapUnique(new GetPagesTask(
-      store, base::BindOnce(&ReadPagesByClientIdsSync, client_ids),
-      std::move(callback)));
-}
-
-// static
-std::unique_ptr<GetPagesTask> GetPagesTask::CreateTaskMatchingNamespace(
-    OfflinePageMetadataStore* store,
-    MultipleOfflinePageItemCallback callback,
-    const std::string& name_space) {
-  std::vector<std::string> namespaces = {name_space};
-  return base::WrapUnique(new GetPagesTask(
-      store, base::BindOnce(&ReadPagesByMultipleNamespacesSync, namespaces),
-      std::move(callback)));
-}
-
-// static
-std::unique_ptr<GetPagesTask>
-GetPagesTask::CreateTaskMatchingPagesRemovedOnCacheReset(
-    OfflinePageMetadataStore* store,
-    MultipleOfflinePageItemCallback callback,
-    ClientPolicyController* policy_controller) {
-  return base::WrapUnique(new GetPagesTask(
-      store,
-      base::BindOnce(&ReadPagesByMultipleNamespacesSync,
-                     policy_controller->GetNamespacesRemovedOnCacheReset()),
-      std::move(callback)));
-}
-
-// static
-std::unique_ptr<GetPagesTask>
-GetPagesTask::CreateTaskMatchingPagesSupportedByDownloads(
-    OfflinePageMetadataStore* store,
-    MultipleOfflinePageItemCallback callback,
-    ClientPolicyController* policy_controller) {
-  return base::WrapUnique(new GetPagesTask(
-      store,
-      base::BindOnce(&ReadPagesByMultipleNamespacesSync,
-                     policy_controller->GetNamespacesSupportedByDownload()),
-      std::move(callback)));
-}
-
-// static
-std::unique_ptr<GetPagesTask> GetPagesTask::CreateTaskMatchingRequestOrigin(
-    OfflinePageMetadataStore* store,
-    MultipleOfflinePageItemCallback callback,
-    const std::string& request_origin) {
-  return base::WrapUnique(new GetPagesTask(
-      store, base::BindOnce(&ReadPagesByRequestOriginSync, request_origin),
-      std::move(callback)));
-}
-
-// static
-std::unique_ptr<GetPagesTask> GetPagesTask::CreateTaskMatchingUrl(
-    OfflinePageMetadataStore* store,
-    MultipleOfflinePageItemCallback callback,
-    const GURL& url) {
-  return base::WrapUnique(new GetPagesTask(
-      store, base::BindOnce(&ReadPagesByUrlSync, url), std::move(callback)));
-}
-
-// static
-std::unique_ptr<GetPagesTask> GetPagesTask::CreateTaskMatchingOfflineId(
-    OfflinePageMetadataStore* store,
-    SingleOfflinePageItemCallback callback,
-    int64_t offline_id) {
-  return base::WrapUnique(new GetPagesTask(
-      store, base::BindOnce(&ReadPagesByOfflineId, offline_id),
-      base::BindOnce(&WrapInMultipleItemsCallback, std::move(callback))));
-}
-
-// static
-std::unique_ptr<GetPagesTask> GetPagesTask::CreateTaskMatchingGuid(
-    OfflinePageMetadataStore* store,
-    SingleOfflinePageItemCallback callback,
-    const std::string& guid) {
-  return base::WrapUnique(new GetPagesTask(
-      store, base::BindOnce(&ReadPagesByGuid, guid),
-      base::BindOnce(&WrapInMultipleItemsCallback, std::move(callback))));
-}
-
-// static
-std::unique_ptr<GetPagesTask> GetPagesTask::CreateTaskMatchingSizeAndDigest(
-    OfflinePageMetadataStore* store,
-    SingleOfflinePageItemCallback callback,
-    int64_t file_size,
-    const std::string& digest) {
-  return base::WrapUnique(new GetPagesTask(
-      store, base::BindOnce(&ReadPagesBySizeAndDigest, file_size, digest),
-      base::BindOnce(&WrapInMultipleItemsCallback, std::move(callback))));
-}
-
-// static
-std::unique_ptr<GetPagesTask>
-GetPagesTask::CreateTaskSelectingItemsMarkedForUpgrade(
-    OfflinePageMetadataStore* store,
-    MultipleOfflinePageItemCallback callback) {
-  return base::WrapUnique(new GetPagesTask(
-      store, base::BindOnce(&SelectItemsForUpgrade), std::move(callback)));
-}
+GetPagesTask::ReadResult::~ReadResult() = default;
 
 GetPagesTask::GetPagesTask(OfflinePageMetadataStore* store,
-                           DbWorkCallback db_work_callback,
+                           const PageCriteria& criteria,
                            MultipleOfflinePageItemCallback callback)
     : store_(store),
-      db_work_callback_(std::move(db_work_callback)),
-      callback_(std::move(callback)),
-      weak_ptr_factory_(this) {
+      criteria_(criteria),
+      callback_(std::move(callback)) {
   DCHECK(store_);
   DCHECK(!callback_.is_null());
 }
 
-GetPagesTask::~GetPagesTask() {}
+GetPagesTask::~GetPagesTask() = default;
 
 void GetPagesTask::Run() {
-  ReadRequests();
-}
-
-void GetPagesTask::ReadRequests() {
-  store_->Execute(std::move(db_work_callback_),
+  store_->Execute(base::BindOnce(&GetPagesTask::ReadPagesWithCriteriaSync,
+                                 std::move(criteria_)),
                   base::BindOnce(&GetPagesTask::CompleteWithResult,
                                  weak_ptr_factory_.GetWeakPtr()),
                   ReadResult());
@@ -421,6 +107,152 @@ void GetPagesTask::ReadRequests() {
 void GetPagesTask::CompleteWithResult(ReadResult result) {
   std::move(callback_).Run(result.pages);
   TaskComplete();
+}
+
+// Some comments on query performance as of March 2019:
+// - SQLite stores data in row-oriented fashion, so there's little cost to
+//   querying additional columns.
+// - SQLite supports REGEXP, but it's slow, seems hardly worth using. LIKE is
+//   fast.
+// - Adding more simple conditions to the WHERE clause seems to hardly increase
+//   runtime, so it's advantageous to add new conditions if they are likely to
+//   eliminate output.
+// - When a single item is returned from a query, using a WHERE clause is about
+//   10x faster compared to just querying all rows and filtering the output in
+//   C++.
+// - The below query can process 10K rows in ~1ms (in-memory db).
+// - If offline_id is in criteria, SQLite will use the index to evaluate the
+//   query quickly. Otherwise, we need to read the whole table anyway. Unless
+//   the db is loaded to memory, and disk access will likely dwarf any
+//   other query optimizations.
+ReadResult GetPagesTask::ReadPagesWithCriteriaSync(
+    const PageCriteria& criteria,
+    sql::Database* db) {
+  ReadResult result;
+
+  // Quick return for known empty results.
+  if ((criteria.offline_ids && criteria.offline_ids.value().empty()) ||
+      (criteria.client_ids && criteria.client_ids.value().empty()) ||
+      (criteria.client_namespaces &&
+       criteria.client_namespaces.value().empty())) {
+    result.success = true;
+    return result;
+  }
+
+  // Note: the WHERE clause here is a relaxed form of |criteria|, so returned
+  // items must be re-checked with |MeetsCriteria|.
+  static const char kSql[] =
+      "SELECT " OFFLINE_PAGE_PROJECTION
+      " FROM offlinepages_v1"
+      " WHERE"
+      " offline_id BETWEEN ? AND ?"
+      " AND (? OR file_size=?)"
+      " AND (? OR digest=?)"
+      " AND (? OR instr(?,client_namespace)>0)"
+      " AND (? OR request_origin=?)"
+      " AND (? OR instr(?,client_id)>0)"
+      " AND (? OR online_url LIKE ? OR original_url LIKE ?)"
+      // Order by either creation_time or last_access_time, depending on
+      // bound parameters.
+      " ORDER BY creation_time*?+last_access_time*?";
+
+  sql::Statement statement(db->GetCachedStatement(SQL_FROM_HERE, kSql));
+
+  int param = 0;
+
+  if (criteria.offline_ids) {
+    const std::vector<int64_t> ids = criteria.offline_ids.value();
+    auto min_max = std::minmax_element(ids.begin(), ids.end());
+    statement.BindInt64(param++, *min_max.first);
+    statement.BindInt64(param++, *min_max.second);
+  } else {
+    statement.BindInt64(param++, INT64_MIN);
+    statement.BindInt64(param++, INT64_MAX);
+  }
+
+  statement.BindBool(param++, !criteria.file_size);
+  statement.BindInt64(param++, criteria.file_size.value_or(0));
+
+  statement.BindBool(param++, criteria.digest.empty());
+  statement.BindString(param++, criteria.digest);
+
+  // For namespace and client_id, we use SQL's substring match function,
+  // instr(), to provided an inexact match within the query. In both cases, we
+  // pass SQLite a string equal to the concatenation of all possible values we
+  // want to find, and then search that string for the row's namespace and
+  // client_id respectively.
+  std::vector<std::string> potential_namespaces =
+      PotentiallyMatchingNamespaces(criteria);
+  if (!potential_namespaces.empty()) {
+    statement.BindBool(param++, false);
+    statement.BindString(param++, base::JoinString(potential_namespaces, ""));
+  } else {
+    statement.BindBool(param++, true);
+    statement.BindString(param++, "");
+  }
+
+  statement.BindBool(param++, criteria.request_origin.empty());
+  statement.BindString(param++, criteria.request_origin);
+
+  if (criteria.client_ids) {
+    // Collect all client ids into a single string for matching in the query
+    // with substring match (instr()).
+    std::string concatenated_ids;
+    for (const ClientId& id : criteria.client_ids.value()) {
+      concatenated_ids += id.id;
+    }
+    statement.BindBool(param++, false);
+    statement.BindString(param++, concatenated_ids);
+  } else {
+    statement.BindBool(param++, true);
+    statement.BindString(param++, std::string());
+  }
+
+  const std::string url_pattern = !criteria.url.is_empty()
+                                      ? RelaxedLikePattern(criteria.url)
+                                      : std::string();
+
+  statement.BindBool(param++, criteria.url.is_empty());
+  statement.BindString(param++, url_pattern);
+  statement.BindString(param++, url_pattern);
+
+  // ORDER BY criteria.
+  switch (criteria.result_order) {
+    case PageCriteria::kDescendingCreationTime:
+      statement.BindInt64(param++, -1);
+      statement.BindInt64(param++, 0);
+      break;
+    case PageCriteria::kAscendingAccessTime:
+      statement.BindInt64(param++, 0);
+      statement.BindInt64(param++, 1);
+      break;
+    case PageCriteria::kDescendingAccessTime:
+      statement.BindInt64(param++, 0);
+      statement.BindInt64(param++, -1);
+      break;
+  }
+
+  while (statement.Step()) {
+    // Initially, read just the client ID to avoid creating the offline item
+    // if it's filtered out.
+    if (!MeetsCriteria(criteria, OfflinePageClientId(statement))) {
+      continue;
+    }
+    OfflinePageItem item = MakeOfflinePageItem(statement);
+    if (!MeetsCriteria(criteria, item))
+      continue;
+
+    result.pages.push_back(std::move(item));
+    if (criteria.maximum_matches == result.pages.size())
+      break;
+  }
+
+  result.success = statement.Succeeded();
+  if (!result.success) {
+    DLOG(ERROR) << "ReadPagesWithCriteriaSync: statement.Succeeded()=false";
+    result.pages.clear();
+  }
+  return result;
 }
 
 }  // namespace offline_pages

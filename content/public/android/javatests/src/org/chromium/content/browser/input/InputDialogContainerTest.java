@@ -41,7 +41,7 @@ public class InputDialogContainerTest {
     InputDialogContainerForTests mInputDialogContainer;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mInputActionDelegate = new InputActionDelegateForTests();
         mInputDialogContainer = new InputDialogContainerForTests(
                 InstrumentationRegistry.getContext(), mInputActionDelegate);

@@ -1,0 +1,5 @@
+MOVE_TO, 38.5f, 24,
+R_LINE_TO, -23, 14.5f,
+R_V_LINE_TO, -29,
+R_LINE_TO, 23, 14.5f,
+CLOSE

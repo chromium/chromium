@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- We used nested LinearLayouts here because it was harder to align the text vertically with
+     the center of the image using a single RelativeLayout. A ConstraintLayout could be a better
+     choice here, but it isn't available to us, yet. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/revamped_context_menu_list_lateral_padding"
+    android:paddingEnd="@dimen/revamped_context_menu_list_lateral_padding">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp">
+
+        <!-- Circle background for when we have a favicon or monogram -->
+        <View
+            android:id="@+id/circle_background"
+            android:background="@drawable/tile_view_icon_background_modern"
+            android:layout_width="@dimen/revamped_context_menu_header_circle_bg_diameter"
+            android:layout_height="@dimen/revamped_context_menu_header_circle_bg_diameter"
+            android:layout_marginTop="@dimen/revamped_context_menu_header_circle_bg_vertical_margin"
+            android:layout_marginStart="@dimen/revamped_context_menu_header_circle_bg_lateral_margin"
+            android:layout_marginEnd="@dimen/revamped_context_menu_header_circle_bg_lateral_margin"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/menu_header_image"
+            android:layout_width="@dimen/revamped_context_menu_header_image_max_size"
+            android:layout_height="@dimen/revamped_context_menu_header_image_max_size"
+            android:scaleType="centerInside"
+            android:importantForAccessibility="no"
+            android:layout_marginTop="@dimen/revamped_context_menu_header_vertical_padding"
+            android:layout_marginBottom="@dimen/revamped_context_menu_bottom_padding"
+            android:src="@color/thumbnail_placeholder_on_primary_bg" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:id="@+id/title_and_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center_vertical"
+        android:paddingTop="@dimen/revamped_context_menu_header_vertical_padding"
+        android:paddingBottom="@dimen/revamped_context_menu_bottom_padding">
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/menu_header_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.BlackCaptionDefault"
+            app:leading="@dimen/text_size_small_leading" />
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/menu_header_url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
+            android:textDirection="ltr"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.BlackCaption"
+            app:leading="@dimen/text_size_small_leading" />
+    </LinearLayout>
+</LinearLayout>

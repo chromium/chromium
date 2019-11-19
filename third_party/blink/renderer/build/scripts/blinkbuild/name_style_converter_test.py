@@ -53,7 +53,6 @@ class SmartTokenizerTest(unittest.TestCase):
         self.assertEqual(tokenize_name('CDATASection'), ['CDATA', 'Section'])
 
         self.assertEqual(tokenize_name('ASCIICType'), ['ASCII', 'CType'])
-        self.assertEqual(tokenize_name('CString'), ['CString'])
 
         self.assertEqual(tokenize_name('HTMLDListElement'), ['HTML', 'DList', 'Element'])
         self.assertEqual(tokenize_name('HTMLOListElement'), ['HTML', 'OList', 'Element'])
@@ -116,6 +115,8 @@ class SmartTokenizerTest(unittest.TestCase):
         self.assertEqual(tokenize_name('webGL2Element'), ['webGL2', 'Element'])
         self.assertEqual(tokenize_name('xssError'), ['xss', 'Error'])
 
+        self.assertEqual(tokenize_name('FileURLs'), ['File', 'URLs'])
+
     def test_ignoring_characters(self):
         self.assertEqual(tokenize_name('Animation.idl'), ['Animation', 'idl'])
         self.assertEqual(tokenize_name('-webkit-appearance'), ['webkit', 'appearance'])
@@ -129,6 +130,7 @@ class NameStyleConverterTest(unittest.TestCase):
     def test_snake_case(self):
         converter = NameStyleConverter('HTMLElement')
         self.assertEqual(converter.to_snake_case(), 'html_element')
+        self.assertEqual(NameStyleConverter('FileURLs').to_snake_case(), 'file_urls')
 
     def test_to_class_data_member(self):
         converter = NameStyleConverter('HTMLElement')

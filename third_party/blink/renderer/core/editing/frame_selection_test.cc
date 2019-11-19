@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -130,7 +131,7 @@ TEST_F(FrameSelectionTest, PaintCaretShouldNotLayout) {
       SelectionInDOMTree::Builder().Collapse(Position(text, 0)).Build());
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(Selection().ComputeVisibleSelectionInDOMTree().IsCaret());
-  EXPECT_TRUE(ToLayoutBlock(GetDocument().body()->GetLayoutObject())
+  EXPECT_TRUE(To<LayoutBlock>(GetDocument().body()->GetLayoutObject())
                   ->ShouldPaintCursorCaret());
 
   unsigned start_count = LayoutCount();
@@ -142,19 +143,19 @@ TEST_F(FrameSelectionTest, PaintCaretShouldNotLayout) {
     frame_rect.SetHeight(frame_rect.Height() + 1);
     GetDummyPageHolder().GetFrameView().SetFrameRect(frame_rect);
   }
-  std::unique_ptr<PaintController> paint_controller = PaintController::Create();
+  auto paint_controller = std::make_unique<PaintController>();
   {
     GraphicsContext context(*paint_controller);
     paint_controller->UpdateCurrentPaintChunkProperties(
         root_paint_chunk_id_, PropertyTreeState::Root());
-    Selection().PaintCaret(context, LayoutPoint());
+    Selection().PaintCaret(context, PhysicalOffset());
   }
   paint_controller->CommitNewDisplayItems();
   EXPECT_EQ(start_count, LayoutCount());
 }
 
 #define EXPECT_EQ_SELECTED_TEXT(text) \
-  EXPECT_EQ(text, WebString(Selection().SelectedText()).Utf8())
+  EXPECT_EQ(text, Selection().SelectedText().Utf8())
 
 TEST_F(FrameSelectionTest, SelectWordAroundCaret) {
   // "Foo Bar  Baz,"
@@ -1055,7 +1056,7 @@ TEST_F(FrameSelectionTest, SelectionBounds) {
   const int node_margin_top = 2;
   // The top of the node should be visible but the bottom should be outside
   // by the viewport. The unclipped selection bounds should not be clipped.
-  EXPECT_EQ(LayoutRect(0, node_margin_top, node_width, node_height),
+  EXPECT_EQ(PhysicalRect(0, node_margin_top, node_width, node_height),
             Selection().AbsoluteUnclippedBounds());
 
   // Scroll 500px down so the top of the node is outside the viewport and the
@@ -1064,14 +1065,14 @@ TEST_F(FrameSelectionTest, SelectionBounds) {
   LocalFrameView* frame_view = GetDocument().View();
   frame_view->LayoutViewport()->SetScrollOffset(ScrollOffset(0, scroll_offset),
                                                 kProgrammaticScroll);
-  EXPECT_EQ(LayoutRect(0, node_margin_top, node_width, node_height),
+  EXPECT_EQ(PhysicalRect(0, node_margin_top, node_width, node_height),
             frame_view->FrameToDocument(Selection().AbsoluteUnclippedBounds()));
 
   // Adjust the page scale factor which changes the selection bounds as seen
   // through the viewport. The unclipped selection bounds should not be clipped.
   const int page_scale_factor = 2;
   GetPage().SetPageScaleFactor(page_scale_factor);
-  EXPECT_EQ(LayoutRect(0, node_margin_top, node_width, node_height),
+  EXPECT_EQ(PhysicalRect(0, node_margin_top, node_width, node_height),
             frame_view->FrameToDocument(Selection().AbsoluteUnclippedBounds()));
 }
 
@@ -1083,11 +1084,11 @@ TEST_F(FrameSelectionTest, SelectionContainsBidiBoundary) {
       SetSelectionOptions());
 
   // Check the right half of 'c'
-  const LayoutPoint c_right(35, 13);
+  const PhysicalOffset c_right(35, 13);
   EXPECT_TRUE(Selection().Contains(c_right));
 
   // Check the left half of "F"
-  const LayoutPoint f_left(45, 13);
+  const PhysicalOffset f_left(45, 13);
   EXPECT_TRUE(Selection().Contains(f_left));
 }
 

@@ -1,0 +1,3 @@
+AXWebArea
+++AXGroup
+++++AXStaticText AXValue='content'

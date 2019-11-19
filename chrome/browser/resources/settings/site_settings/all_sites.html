@@ -1,12 +1,13 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/html/md_select_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_search_field/cr_search_field.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
 <link rel="import" href="../global_scroll_target_behavior.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../settings_vars_css.html">
 <link rel="import" href="site_entry.html">
 <link rel="import" href="site_settings_behavior.html">
 
@@ -18,7 +19,7 @@
         display: flex;
         margin: 0 var(--cr-icon-button-margin-start);
         margin-bottom: 50px;
-        padding: 0 var(--settings-box-row-padding);
+        padding: 0 var(--cr-section-padding);
       }
 
       #sortMethod {
@@ -28,7 +29,7 @@
       /* There is only one top-level heading for All Sites, so remove the
        * additional leading padding used for lists. */
       .list-frame.without-heading {
-        padding-inline-start: var(--settings-box-row-padding);
+        padding-inline-start: var(--cr-section-padding);
       }
     </style>
     <div id="sort">
@@ -59,6 +60,7 @@
         <template>
           <site-entry site-group="[[item]]" list-index="[[index]]"
               iron-list-tab-index="[[tabIndex]]"
+              focus-row-index="[[index]]"
               tabindex$="[[tabIndex]]"
               last-focused="{{lastFocused_}}"
               list-blurred="{{listBlurred_}}"
@@ -71,7 +73,7 @@
     <!-- Overflow menu. -->
     <cr-lazy-render id="menu">
       <template>
-        <cr-action-menu>
+        <cr-action-menu role-description="$i18n{menu}">
           <button class="dropdown-item" role="menuitem"
               on-click="onConfirmResetSettings_">
             $i18n{siteSettingsSiteGroupReset}
@@ -97,12 +99,12 @@
                 actionMenuModel_.item.etldPlus1)]]
           </div>
           <div slot="button-container">
-            <paper-button class="cancel-button" on-click="onCloseDialog_">
+            <cr-button class="cancel-button" on-click="onCloseDialog_">
               $i18n{cancel}
-            </paper-button>
-            <paper-button class="action-button" on-click="onResetSettings_">
+            </cr-button>
+            <cr-button class="action-button" on-click="onResetSettings_">
               $i18n{siteSettingsSiteResetAll}
-            </paper-button>
+            </cr-button>
           </div>
         </cr-dialog>
       </template>
@@ -121,12 +123,12 @@
                 actionMenuModel_.item.etldPlus1)]]
           </div>
           <div slot="button-container">
-            <paper-button class="cancel-button" on-click="onCloseDialog_">
+            <cr-button class="cancel-button" on-click="onCloseDialog_">
               $i18n{cancel}
-            </paper-button>
-            <paper-button class="action-button" on-click="onClearData_">
+            </cr-button>
+            <cr-button class="action-button" on-click="onClearData_">
               $i18n{siteSettingsSiteClearStorage}
-            </paper-button>
+            </cr-button>
           </div>
         </cr-dialog>
       </template>

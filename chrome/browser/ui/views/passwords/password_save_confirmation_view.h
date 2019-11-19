@@ -16,7 +16,6 @@ class PasswordSaveConfirmationView : public PasswordBubbleViewBase,
  public:
   explicit PasswordSaveConfirmationView(content::WebContents* web_contents,
                                         views::View* anchor_view,
-                                        const gfx::Point& anchor_point,
                                         DisplayReason reason);
   ~PasswordSaveConfirmationView() override;
 
@@ -27,7 +26,6 @@ class PasswordSaveConfirmationView : public PasswordBubbleViewBase,
                               int event_flags) override;
 
   // LocationBarBubbleDelegateView:
-  int GetDialogButtons() const override;
   bool ShouldShowCloseButton() const override;
   gfx::Size CalculatePreferredSize() const override;
 

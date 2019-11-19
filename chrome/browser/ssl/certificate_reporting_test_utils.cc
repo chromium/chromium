@@ -12,16 +12,20 @@
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/cert_report_helper.h"
 #include "chrome/browser/ssl/certificate_error_report.h"
-#include "chrome/browser/ui/browser.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/common/safe_browsing_prefs.h"
 #include "components/variations/variations_associated_data.h"
 #include "net/url_request/report_sender.h"
 #include "net/url_request/url_request_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#endif
 
 namespace certificate_reporting_test_utils {
 
@@ -93,10 +97,12 @@ SSLCertReporterCallback::GetLatestChromeChannelReported() const {
   return chrome_channel_;
 }
 
+#if !defined(OS_ANDROID)
 void SetCertReportingOptIn(Browser* browser, OptIn opt_in) {
   safe_browsing::SetExtendedReportingPref(browser->profile()->GetPrefs(),
                                           opt_in == EXTENDED_REPORTING_OPT_IN);
 }
+#endif
 
 std::unique_ptr<SSLCertReporter> CreateMockSSLCertReporter(
     const base::Callback<

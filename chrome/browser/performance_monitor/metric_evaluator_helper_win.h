@@ -19,18 +19,26 @@ namespace performance_monitor {
 
 class MetricEvaluatorsHelperWin : public MetricEvaluatorsHelper {
  public:
-  MetricEvaluatorsHelperWin();
   ~MetricEvaluatorsHelperWin() override;
 
   // MetricEvaluatorsHelper:
   base::Optional<int> GetFreePhysicalMemoryMb() override;
   base::Optional<float> GetDiskIdleTimePercent() override;
+  base::Optional<int> GetChromeTotalResidentSetEstimateMb() override;
 
   bool wmi_refresher_initialized_for_testing() {
     return wmi_refresher_initialized_;
   }
 
  private:
+  friend class MetricEvaluatorsHelperWinTest;
+  friend class SystemMonitor;
+
+  // The constructor is made private to enforce that there's only one instance
+  // of this class existing at the same time. In practice this instance is meant
+  // to be instantiated by the SystemMonitor global instance.
+  MetricEvaluatorsHelperWin();
+
   // Callback that should be called once the initialization of the WMI refresher
   // has completed.
   void OnWMIRefresherInitialized(bool init_success) {
@@ -48,9 +56,12 @@ class MetricEvaluatorsHelperWin : public MetricEvaluatorsHelper {
   const std::unique_ptr<win::WMIRefresher, base::OnTaskRunnerDeleter>
       wmi_refresher_;
 
+  // The number of consecutive WMI failures.
+  size_t wmi_consecutive_failure_count_ = 0;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<MetricEvaluatorsHelperWin> weak_factory_;
+  base::WeakPtrFactory<MetricEvaluatorsHelperWin> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MetricEvaluatorsHelperWin);
 };

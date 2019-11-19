@@ -15,19 +15,68 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/system/system_monitor.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromeos/audio/audio_devices_pref_handler.h"
 #include "chromeos/audio/audio_devices_pref_handler_stub.h"
-#include "chromeos/dbus/audio_node.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_cras_audio_client.h"
+#include "chromeos/dbus/audio/audio_node.h"
+#include "chromeos/dbus/audio/fake_cras_audio_client.h"
 #include "media/base/video_facing.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/media_session/public/mojom/constants.mojom.h"
+#include "services/media_session/public/mojom/media_controller.mojom-test-utils.h"
+#include "services/service_manager/public/cpp/binder_registry.h"
+#include "services/service_manager/public/cpp/service.h"
+#include "services/service_manager/public/cpp/service_binding.h"
+#include "services/service_manager/public/cpp/test/test_connector_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace {
+
+class FakeMediaSessionService
+    : public media_session::mojom::MediaControllerManagerInterceptorForTesting,
+      public service_manager::Service {
+ public:
+  explicit FakeMediaSessionService(
+      service_manager::mojom::ServiceRequest request)
+      : binding_(this, std::move(request)) {
+    binder_registry_.AddInterface(base::BindRepeating(
+        &FakeMediaSessionService::BindMediaControllerManagerReceiver,
+        base::Unretained(this)));
+  }
+
+  MOCK_METHOD0(SuspendAllSessions, void());
+
+ private:
+  // service_manager::Service:
+  void OnConnect(const service_manager::BindSourceInfo& source,
+                 const std::string& interface_name,
+                 mojo::ScopedMessagePipeHandle interface_pipe) override {
+    binder_registry_.BindInterface(interface_name, std::move(interface_pipe));
+  }
+
+  // media_session::mojom::MediaControllerManagerInterceptorForTesting:
+  MediaControllerManager* GetForwardingInterface() override {
+    NOTREACHED();
+    return nullptr;
+  }
+
+  void BindMediaControllerManagerReceiver(
+      mojo::PendingReceiver<media_session::mojom::MediaControllerManager>
+          receiver) {
+    receivers_.Add(this, std::move(receiver));
+  }
+
+  service_manager::ServiceBinding binding_;
+  service_manager::BinderRegistry binder_registry_;
+  mojo::ReceiverSet<media_session::mojom::MediaControllerManager> receivers_;
+
+  DISALLOW_COPY_AND_ASSIGN(FakeMediaSessionService);
+};
 
 const uint64_t kInternalSpeakerId = 10001;
 const uint64_t kHeadphoneId = 10002;
@@ -159,8 +208,6 @@ class TestObserver : public chromeos::CrasAudioHandler::AudioObserver {
     return input_gain_changed_count_;
   }
 
-  bool output_mute_by_system() const { return output_mute_by_system_; }
-
   int output_channel_remixing_changed_count() const {
     return output_channel_remixing_changed_count_;
   }
@@ -179,9 +226,8 @@ class TestObserver : public chromeos::CrasAudioHandler::AudioObserver {
 
   void OnAudioNodesChanged() override { ++audio_nodes_changed_count_; }
 
-  void OnOutputMuteChanged(bool /* mute_on */, bool system_adjust) override {
+  void OnOutputMuteChanged(bool /* mute_on */) override {
     ++output_mute_changed_count_;
-    output_mute_by_system_ = system_adjust;
   }
 
   void OnInputMuteChanged(bool /* mute_on */) override {
@@ -209,7 +255,6 @@ class TestObserver : public chromeos::CrasAudioHandler::AudioObserver {
   int input_mute_changed_count_ = 0;
   int output_volume_changed_count_ = 0;
   int input_gain_changed_count_ = 0;
-  bool output_mute_by_system_ = false;  // output mute state adjusted by system.
   int output_channel_remixing_changed_count_ = 0;
 
   DISALLOW_COPY_AND_ASSIGN(TestObserver);
@@ -266,11 +311,14 @@ class FakeVideoCaptureManager {
 class CrasAudioHandlerTest : public testing::TestWithParam<int> {
  public:
   CrasAudioHandlerTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::UI) {}
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
   ~CrasAudioHandlerTest() override = default;
 
   void SetUp() override {
+    fake_service_ = std::make_unique<FakeMediaSessionService>(
+        connector_factory_.RegisterInstance(
+            media_session::mojom::kServiceName));
     system_monitor_.AddDevicesChangedObserver(&system_monitor_observer_);
     video_capture_manager_.reset(new FakeVideoCaptureManager);
   }
@@ -283,7 +331,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     video_capture_manager_.reset();
     CrasAudioHandler::Shutdown();
     audio_pref_handler_ = nullptr;
-    DBusThreadManager::Shutdown();
+    CrasAudioClient::Shutdown();
   }
 
   AudioNode GenerateAudioNode(const AudioNodeInfo* node_info) {
@@ -305,12 +353,11 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   }
 
   void SetUpCrasAudioHandler(const AudioNodeList& audio_nodes) {
-    DBusThreadManager::Initialize();
-    fake_cras_audio_client_ = static_cast<FakeCrasAudioClient*>(
-        DBusThreadManager::Get()->GetCrasAudioClient());
-    fake_cras_audio_client_->SetAudioNodesForTesting(audio_nodes);
+    CrasAudioClient::InitializeFake();
+    fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
     audio_pref_handler_ = new AudioDevicesPrefHandlerStub();
-    CrasAudioHandler::Initialize(audio_pref_handler_);
+    CrasAudioHandler::Initialize(connector_factory_.GetDefaultConnector(),
+                                 audio_pref_handler_);
     cras_audio_handler_ = CrasAudioHandler::Get();
     test_observer_.reset(new TestObserver);
     cras_audio_handler_->AddAudioObserver(test_observer_.get());
@@ -326,9 +373,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
       const AudioNodeList& audio_nodes_in_pref,
       const AudioDevice& active_device_in_pref,
       bool activate_by_user) {
-    DBusThreadManager::Initialize();
-    fake_cras_audio_client_ = static_cast<FakeCrasAudioClient*>(
-        DBusThreadManager::Get()->GetCrasAudioClient());
+    CrasAudioClient::InitializeFake();
     audio_pref_handler_ = new AudioDevicesPrefHandlerStub();
     bool active;
     for (const AudioNode& node : audio_nodes_in_pref) {
@@ -343,8 +388,9 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
     EXPECT_TRUE(active);
     EXPECT_EQ(activate_by, activate_by_user);
 
-    fake_cras_audio_client_->SetAudioNodesForTesting(audio_nodes);
-    CrasAudioHandler::Initialize(audio_pref_handler_);
+    fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
+    CrasAudioHandler::Initialize(connector_factory_.GetDefaultConnector(),
+                                 audio_pref_handler_);
 
     cras_audio_handler_ = CrasAudioHandler::Get();
     test_observer_.reset(new TestObserver);
@@ -355,13 +401,12 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   void SetUpCrasAudioHandlerWithPrimaryActiveNode(
       const AudioNodeList& audio_nodes,
       const AudioNode& primary_active_node) {
-    DBusThreadManager::Initialize();
-    fake_cras_audio_client_ = static_cast<FakeCrasAudioClient*>(
-        DBusThreadManager::Get()->GetCrasAudioClient());
-    fake_cras_audio_client_->SetAudioNodesForTesting(audio_nodes);
-    fake_cras_audio_client_->SetActiveOutputNode(primary_active_node.id);
+    CrasAudioClient::InitializeFake();
+    fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
+    fake_cras_audio_client()->SetActiveOutputNode(primary_active_node.id);
     audio_pref_handler_ = new AudioDevicesPrefHandlerStub();
-    CrasAudioHandler::Initialize(audio_pref_handler_);
+    CrasAudioHandler::Initialize(connector_factory_.GetDefaultConnector(),
+                                 audio_pref_handler_);
     cras_audio_handler_ = CrasAudioHandler::Get();
     test_observer_.reset(new TestObserver);
     cras_audio_handler_->AddAudioObserver(test_observer_.get());
@@ -369,7 +414,7 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   }
 
   void ChangeAudioNodes(const AudioNodeList& audio_nodes) {
-    fake_cras_audio_client_->SetAudioNodesAndNotifyObserversForTesting(
+    fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
         audio_nodes);
     base::RunLoop().RunUntilIdle();
   }
@@ -438,14 +483,19 @@ class CrasAudioHandlerTest : public testing::TestWithParam<int> {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  FakeCrasAudioClient* fake_cras_audio_client() {
+    return FakeCrasAudioClient::Get();
+  }
+
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::SystemMonitor system_monitor_;
   SystemMonitorObserver system_monitor_observer_;
   CrasAudioHandler* cras_audio_handler_ = nullptr;         // Not owned.
-  FakeCrasAudioClient* fake_cras_audio_client_ = nullptr;  // Not owned.
   std::unique_ptr<TestObserver> test_observer_;
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
+  std::unique_ptr<FakeMediaSessionService> fake_service_;
   std::unique_ptr<FakeVideoCaptureManager> video_capture_manager_;
+  service_manager::TestConnectorFactory connector_factory_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CrasAudioHandlerTest);
@@ -2000,16 +2050,16 @@ TEST_P(CrasAudioHandlerTest, RestartAudioClientWithCrasReady) {
 
   const int kDefaultVolume = cras_audio_handler_->GetOutputVolumePercent();
   // Disable the auto OutputNodeVolumeChanged signal.
-  fake_cras_audio_client_->set_notify_volume_change_with_delay(true);
+  fake_cras_audio_client()->set_notify_volume_change_with_delay(true);
 
-  fake_cras_audio_client_->SetAudioNodesForTesting(audio_nodes);
+  fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
   RestartAudioClient();
   EXPECT_EQ(0, test_observer_->output_volume_changed_count());
   EXPECT_EQ(kDefaultVolume, cras_audio_handler_->GetOutputVolumePercent());
 
   // The correct initialization OutputNodeVolumeChanged event is fired. We
   // should avoid notifying observers.
-  fake_cras_audio_client_->NotifyOutputNodeVolumeChangedForTesting(
+  fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
       kInternalSpeaker->id, kDefaultVolume);
   EXPECT_EQ(0, test_observer_->output_volume_changed_count());
   EXPECT_EQ(kDefaultVolume, cras_audio_handler_->GetOutputVolumePercent());
@@ -2017,7 +2067,7 @@ TEST_P(CrasAudioHandlerTest, RestartAudioClientWithCrasReady) {
   // The later OutputNodeVolumeChanged event after initialization should notify
   // observers.
   const int kVolume = 60;
-  fake_cras_audio_client_->NotifyOutputNodeVolumeChangedForTesting(
+  fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
       kInternalSpeaker->id, kVolume);
   EXPECT_EQ(1, test_observer_->output_volume_changed_count());
   EXPECT_EQ(kVolume, cras_audio_handler_->GetOutputVolumePercent());
@@ -2030,9 +2080,9 @@ TEST_P(CrasAudioHandlerTest, RestartAudioClientWithCrasDropRequest) {
 
   const int kDefaultVolume = cras_audio_handler_->GetOutputVolumePercent();
   // Disable the auto OutputNodeVolumeChanged signal.
-  fake_cras_audio_client_->set_notify_volume_change_with_delay(true);
+  fake_cras_audio_client()->set_notify_volume_change_with_delay(true);
 
-  fake_cras_audio_client_->SetAudioNodesForTesting(audio_nodes);
+  fake_cras_audio_client()->SetAudioNodesForTesting(audio_nodes);
   RestartAudioClient();
   EXPECT_EQ(0, test_observer_->output_volume_changed_count());
   EXPECT_EQ(kDefaultVolume, cras_audio_handler_->GetOutputVolumePercent());
@@ -2042,14 +2092,14 @@ TEST_P(CrasAudioHandlerTest, RestartAudioClientWithCrasDropRequest) {
   // to log warning message, clear the pending automated volume change reasons,
   // and notify observers about this change.
   const int kVolume1 = 30;
-  fake_cras_audio_client_->NotifyOutputNodeVolumeChangedForTesting(
+  fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
       kInternalSpeaker->id, kVolume1);
   EXPECT_EQ(1, test_observer_->output_volume_changed_count());
   EXPECT_EQ(kVolume1, cras_audio_handler_->GetOutputVolumePercent());
 
   // The later OutputNodeVolumeChanged event should notify observers.
   const int kVolume2 = 60;
-  fake_cras_audio_client_->NotifyOutputNodeVolumeChangedForTesting(
+  fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
       kInternalSpeaker->id, kVolume2);
   EXPECT_EQ(2, test_observer_->output_volume_changed_count());
   EXPECT_EQ(kVolume2, cras_audio_handler_->GetOutputVolumePercent());
@@ -2064,7 +2114,7 @@ TEST_P(CrasAudioHandlerTest, SetOutputVolumeWithDelayedSignal) {
   EXPECT_EQ(kDefaultVolume, cras_audio_handler_->GetOutputVolumePercent());
 
   // Disable the auto OutputNodeVolumeChanged signal.
-  fake_cras_audio_client_->set_notify_volume_change_with_delay(true);
+  fake_cras_audio_client()->set_notify_volume_change_with_delay(true);
 
   // Verify the volume state is not changed before OutputNodeVolumeChanged
   // signal fires.
@@ -2076,7 +2126,7 @@ TEST_P(CrasAudioHandlerTest, SetOutputVolumeWithDelayedSignal) {
   // Verify the output volume is changed to the designated value after
   // OnOutputNodeVolumeChanged cras signal fires, and the volume change event
   // has been fired to notify the observers.
-  fake_cras_audio_client_->NotifyOutputNodeVolumeChangedForTesting(
+  fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
       kInternalSpeaker->id, kVolume);
   EXPECT_EQ(1, test_observer_->output_volume_changed_count());
   EXPECT_EQ(kVolume, cras_audio_handler_->GetOutputVolumePercent());
@@ -2096,7 +2146,7 @@ TEST_P(CrasAudioHandlerTest,
   EXPECT_EQ(kDefaultVolume, cras_audio_handler_->GetOutputVolumePercent());
 
   // Disable the auto OutputNodeVolumeChanged signal.
-  fake_cras_audio_client_->set_notify_volume_change_with_delay(true);
+  fake_cras_audio_client()->set_notify_volume_change_with_delay(true);
 
   // Verify the volume state is not changed before OutputNodeVolumeChanged
   // signal fires.
@@ -2112,12 +2162,12 @@ TEST_P(CrasAudioHandlerTest,
   // to 50 then 60, but the volume changed signal for 50 comes back after
   // chrome sets the volume to 60. Verify chrome will sync to the designated
   // volume level after all signals arrive.
-  fake_cras_audio_client_->NotifyOutputNodeVolumeChangedForTesting(
+  fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
       kInternalSpeaker->id, kVolume1);
   EXPECT_EQ(1, test_observer_->output_volume_changed_count());
   EXPECT_EQ(kVolume1, cras_audio_handler_->GetOutputVolumePercent());
 
-  fake_cras_audio_client_->NotifyOutputNodeVolumeChangedForTesting(
+  fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
       kInternalSpeaker->id, kVolume2);
   EXPECT_EQ(2, test_observer_->output_volume_changed_count());
   EXPECT_EQ(kVolume2, cras_audio_handler_->GetOutputVolumePercent());
@@ -2137,7 +2187,7 @@ TEST_P(CrasAudioHandlerTest,
   // Verify chrome will sync its volume state to the volume from the signal,
   // and notify its observers for the volume change event.
   const int kVolume = 20;
-  fake_cras_audio_client_->NotifyOutputNodeVolumeChangedForTesting(
+  fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
       kInternalSpeaker->id, kVolume);
   EXPECT_EQ(1, test_observer_->output_volume_changed_count());
   EXPECT_EQ(kVolume, cras_audio_handler_->GetOutputVolumePercent());
@@ -2863,7 +2913,7 @@ TEST_P(CrasAudioHandlerTest, ChangeVolumeHotrodDualSpeakersWithDelayedSignals) {
   EXPECT_EQ(kDefaultVolume, cras_audio_handler_->GetOutputVolumePercent());
 
   // Disable the auto OutputNodeVolumeChanged signal.
-  fake_cras_audio_client_->set_notify_volume_change_with_delay(true);
+  fake_cras_audio_client()->set_notify_volume_change_with_delay(true);
   test_observer_->reset_output_volume_changed_count();
 
   // Adjust the volume of output devices continuously.
@@ -2871,13 +2921,13 @@ TEST_P(CrasAudioHandlerTest, ChangeVolumeHotrodDualSpeakersWithDelayedSignals) {
   cras_audio_handler_->SetOutputVolumePercent(30);
 
   // Sends delayed OutputNodeVolumeChanged signals.
-  fake_cras_audio_client_->NotifyOutputNodeVolumeChangedForTesting(
+  fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
       kUSBJabraSpeakerOutput2->id, 20);
-  fake_cras_audio_client_->NotifyOutputNodeVolumeChangedForTesting(
+  fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
       kUSBJabraSpeakerOutput1->id, 20);
-  fake_cras_audio_client_->NotifyOutputNodeVolumeChangedForTesting(
+  fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
       kUSBJabraSpeakerOutput2->id, 30);
-  fake_cras_audio_client_->NotifyOutputNodeVolumeChangedForTesting(
+  fake_cras_audio_client()->NotifyOutputNodeVolumeChangedForTesting(
       kUSBJabraSpeakerOutput1->id, 30);
 
   // Verify that both speakers are set to the designated volume level after
@@ -3906,7 +3956,6 @@ TEST_P(CrasAudioHandlerTest, HDMIOutputUnplugDuringSuspension) {
             cras_audio_handler_->GetPrimaryActiveOutputNode());
   EXPECT_FALSE(cras_audio_handler_->IsOutputMuted());
   EXPECT_EQ(1, test_observer_->output_mute_changed_count());
-  EXPECT_TRUE(test_observer_->output_mute_by_system());
 }
 
 TEST_P(CrasAudioHandlerTest, FrontCameraStartStop) {
@@ -4182,6 +4231,47 @@ TEST_P(CrasAudioHandlerTest, PlugInUSBHeadphoneAfterLastUnplugNotActive) {
   // USB headphone is active.
   EXPECT_EQ(kUSBHeadphone1->id,
             cras_audio_handler_->GetPrimaryActiveOutputNode());
+}
+
+TEST_P(CrasAudioHandlerTest, SuspendAllSessionsForOutput) {
+  // Set up initial output audio devices, with internal speaker, headphone and
+  // USBHeadphone.
+  AudioNodeList audio_nodes =
+      GenerateAudioNodeList({kInternalSpeaker, kHeadphone, kUSBHeadphone1});
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // Verify the headphone has been selected as the active output.
+  AudioDevice active_output;
+  EXPECT_TRUE(
+      cras_audio_handler_->GetPrimaryActiveOutputDevice(&active_output));
+  EXPECT_EQ(kHeadphone->id, active_output.id);
+  EXPECT_EQ(kHeadphone->id, cras_audio_handler_->GetPrimaryActiveOutputNode());
+
+  // Unplug USBHeadphone should not suspend media sessions.
+  EXPECT_CALL(*fake_service_.get(), SuspendAllSessions).Times(0);
+  audio_nodes = GenerateAudioNodeList({kInternalSpeaker, kHeadphone});
+  ChangeAudioNodes(audio_nodes);
+
+  // Unplug active output device should suspend all media sessions.
+  EXPECT_CALL(*fake_service_.get(), SuspendAllSessions).Times(1);
+  audio_nodes.clear();
+  audio_nodes.push_back(GenerateAudioNode(kInternalSpeaker));
+  ChangeAudioNodes(audio_nodes);
+}
+
+TEST_P(CrasAudioHandlerTest, SuspendAllSessionsForInput) {
+  // Set up initial input audio devices, with internal mic and mic jack.
+  AudioNodeList audio_nodes = GenerateAudioNodeList({kInternalMic, kMicJack});
+  SetUpCrasAudioHandler(audio_nodes);
+
+  // Verify the mic jack has been selected as the active input.
+  EXPECT_EQ(kMicJack->id, cras_audio_handler_->GetPrimaryActiveInputNode());
+
+  // Unplug active input device should not suspend media sessions.
+  EXPECT_CALL(*fake_service_.get(), SuspendAllSessions).Times(0);
+  audio_nodes.clear();
+  audio_nodes.push_back(GenerateAudioNode(kInternalMic));
+  ChangeAudioNodes(audio_nodes);
 }
 
 }  // namespace chromeos

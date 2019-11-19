@@ -1,0 +1,108 @@
+/* Copyright 2015 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+#info {
+  -webkit-column-width: 350px;
+}
+
+#info > div {
+  -webkit-column-break-inside: avoid;
+  width: 350px;
+}
+
+#info h2 {
+  color: rgb(74, 142, 230);
+  font-size: 100%;
+  margin-bottom: 0;
+}
+
+#info .err {
+  color: red;
+}
+
+#info .section {
+  display: inline-block;
+  margin-inline-end: auto;
+  margin-inline-start: auto;
+}
+
+#info .section.hidden {
+  display: none;
+}
+
+.section-details {
+  width: 100%;
+}
+
+.section-details .detail,
+.section-details .value {
+  width: 50%;
+}
+
+.section-details tr:nth-child(odd) {
+  background: rgb(239, 243, 255);
+}
+
+@keyframes highlight1 {
+  0% {
+    background: rgb(255, 255, 0);
+  }
+  100% {
+    background: #fff;
+  }
+}
+
+@keyframes highlight2 {
+  0% {
+    background: rgb(155, 158, 166);
+  }
+  100% {
+    background: rgb(239, 243, 255);
+  }
+}
+
+.section-details [highlighted] {
+  animation-duration: 3s;
+  animation-name: highlight1;
+  animation-timing-function: linear;
+}
+
+.section-details [highlighted]:nth-child(odd) {
+  animation-duration: 3s;
+  animation-name: highlight2;
+  animation-timing-function: linear;
+}
+
+.section-details .uninitialized {
+  color: #7f7f7f;
+}
+
+#filtering-results-container {
+  border: 1px solid;
+  height: 500px;
+  max-width: 500px;
+  overflow-y: auto;
+}
+
+.filtering-results-entry {
+  border: 2px outset;
+  padding: 0.5em;
+}
+
+.filtering-results-entry:hover {
+  background-color: #eee;
+}
+
+.filtering-results-entry .url {
+  font-weight: bold;
+  margin: 0.5em;
+}
+
+.filtering-results-entry .result {
+  margin: 0.5em;
+}
+
+.filtering-results-entry .reason {
+  margin: 0.5em;
+}

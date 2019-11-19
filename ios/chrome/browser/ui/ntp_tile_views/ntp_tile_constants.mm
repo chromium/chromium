@@ -13,47 +13,6 @@
 #error "This file requires ARC support."
 #endif
 
-// For font size < UIContentSizeCategoryExtraExtraExtraLarge
-const CGSize kMostVisitedCellSizeSmall = {/*width=*/73, /*height=*/100};
-// For font size == UIContentSizeCategoryExtraExtraExtraLarge
-const CGSize kMostVisitedCellSizeMedium = {/*width=*/73, /*height=*/112};
-// For font size == UIContentSizeCategoryAccessibilityMedium
-const CGSize kMostVisitedCellSizeLarge = {/*width=*/110, /*height=*/140};
-// For font size > UIContentSizeCategoryAccessibilityMedium
-const CGSize kMostVisitedCellSizeExtraLarge = {/*width=*/146, /*height=*/150};
-
-CGSize MostVisitedCellSize() {
-  UIContentSizeCategory category =
-      UIApplication.sharedApplication.preferredContentSizeCategory;
-  NSComparisonResult result = UIContentSizeCategoryCompareToCategory(
-      category, UIContentSizeCategoryAccessibilityMedium);
-  switch (result) {
-    case NSOrderedAscending:
-      return ([category
-                 isEqualToString:UIContentSizeCategoryExtraExtraExtraLarge])
-                 ? kMostVisitedCellSizeMedium
-                 : kMostVisitedCellSizeSmall;
-    case NSOrderedSame:
-      return kMostVisitedCellSizeLarge;
-    case NSOrderedDescending:
-      return kMostVisitedCellSizeExtraLarge;
-  }
-}
-
-NSUInteger NumberOfTilesPerRow() {
-  NSComparisonResult result = UIContentSizeCategoryCompareToCategory(
-      UIApplication.sharedApplication.preferredContentSizeCategory,
-      UIContentSizeCategoryAccessibilityMedium);
-  switch (result) {
-    case NSOrderedAscending:
-      return 4;
-    case NSOrderedSame:
-      return 3;
-    case NSOrderedDescending:
-      return 2;
-  }
-}
-
 // Returns the title to use for a cell with |action|.
 NSString* TitleForCollectionShortcutType(NTPCollectionShortcutType type) {
   switch (type) {
@@ -65,6 +24,10 @@ NSString* TitleForCollectionShortcutType(NTPCollectionShortcutType type) {
       return l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_RECENT_TABS);
     case NTPCollectionShortcutTypeHistory:
       return l10n_util::GetNSString(IDS_IOS_CONTENT_SUGGESTIONS_HISTORY);
+    case NTPCollectionShortcutTypeCount:
+      NOTREACHED();
+      return @"";
+      break;
   }
 }
 
@@ -83,6 +46,9 @@ UIImage* ImageForCollectionShortcutType(NTPCollectionShortcutType type) {
       break;
     case NTPCollectionShortcutTypeHistory:
       imageName = @"ntp_history_icon";
+      break;
+    case NTPCollectionShortcutTypeCount:
+      NOTREACHED();
       break;
   }
   return [[UIImage imageNamed:imageName]

@@ -1,0 +1,85 @@
+This is a testharness.js-based test.
+Found 81 tests; 64 PASS, 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS src set
+PASS src changed
+PASS src removed
+PASS srcset set
+PASS srcset changed
+PASS srcset removed
+PASS sizes set
+PASS sizes changed
+PASS sizes removed
+PASS src set to same value
+PASS crossorigin absent to empty, src absent
+PASS crossorigin absent to anonymous, src absent
+PASS crossorigin absent to use-credentials, src absent
+PASS crossorigin empty to absent, src absent
+PASS crossorigin empty to use-credentials, src absent
+PASS crossorigin anonymous to absent, src absent
+PASS crossorigin anonymous to use-credentials, src absent
+PASS crossorigin use-credentials to absent, src absent
+PASS crossorigin use-credentials to empty, src absent
+PASS crossorigin use-credentials to anonymous, src absent
+FAIL crossorigin absent to empty, src already set assert_unreached: update the image data didn't run Reached unreachable code
+FAIL crossorigin absent to anonymous, src already set assert_unreached: update the image data didn't run Reached unreachable code
+FAIL crossorigin absent to use-credentials, src already set assert_unreached: update the image data didn't run Reached unreachable code
+FAIL crossorigin empty to absent, src already set assert_unreached: update the image data didn't run Reached unreachable code
+FAIL crossorigin empty to use-credentials, src already set assert_unreached: update the image data didn't run Reached unreachable code
+FAIL crossorigin anonymous to absent, src already set assert_unreached: update the image data didn't run Reached unreachable code
+FAIL crossorigin anonymous to use-credentials, src already set assert_unreached: update the image data didn't run Reached unreachable code
+FAIL crossorigin use-credentials to absent, src already set assert_unreached: update the image data didn't run Reached unreachable code
+FAIL crossorigin use-credentials to empty, src already set assert_unreached: update the image data didn't run Reached unreachable code
+FAIL crossorigin use-credentials to anonymous, src already set assert_unreached: update the image data didn't run Reached unreachable code
+FAIL inserted into picture assert_unreached: update the image data didn't run Reached unreachable code
+FAIL removed from picture assert_unreached: update the image data didn't run Reached unreachable code
+PASS parent is picture, previous source inserted
+PASS parent is picture, previous source removed
+PASS parent is picture, previous source has srcset set
+PASS parent is picture, previous source has srcset changed
+PASS parent is picture, previous source has srcset removed
+PASS parent is picture, previous source has sizes set
+PASS parent is picture, previous source has sizes changed
+PASS parent is picture, previous source has sizes removed
+PASS parent is picture, previous source has media set
+PASS parent is picture, previous source has media changed
+PASS parent is picture, previous source has media removed
+PASS parent is picture, previous source has type set
+PASS parent is picture, previous source has type changed
+PASS parent is picture, previous source has type removed
+FAIL srcset is set to same value assert_unreached: update the image data was run Reached unreachable code
+FAIL sizes is set to same value assert_unreached: update the image data was run Reached unreachable code
+PASS crossorigin state not changed: absent, removeAttribute
+PASS crossorigin state not changed: empty to anonymous
+PASS crossorigin state not changed: anonymous to foobar
+PASS crossorigin state not changed: use-credentials to USE-CREDENTIALS
+PASS inserted into picture ancestor
+PASS removed from picture ancestor
+PASS ancestor picture has a source inserted
+PASS ancestor picture has a source removed
+PASS ancestor picture; previous sibling source inserted
+PASS ancestor picture; previous sibling source removed
+FAIL parent is picture, following sibling source inserted assert_unreached: update the image data was run Reached unreachable code
+FAIL parent is picture, following sibling source removed assert_unreached: update the image data was run Reached unreachable code
+FAIL parent is picture, following sibling source has srcset set assert_unreached: update the image data was run Reached unreachable code
+PASS media on img set
+PASS type on img set
+PASS class on img set
+PASS alt on img set
+PASS src on previous sibling source set
+PASS class on previous sibling source set
+PASS inserted/removed children of img
+PASS picture is inserted; img has src
+PASS picture is inserted; img has srcset
+PASS picture is inserted; img has previous sibling source
+PASS picture is inserted; img has following sibling source
+PASS picture is removed; img has src
+PASS picture is removed; img has srcset
+PASS picture is removed; img has previous sibling source
+PASS picture is removed; img has following sibling source
+PASS parent is picture, following img inserted
+PASS parent is picture, following img removed
+PASS parent is picture, following img has src set
+PASS parent is picture, following img has srcset set
+PASS parent is picture, following img has sizes set
+Harness: the test ran to completion.
+

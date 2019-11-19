@@ -9,22 +9,22 @@
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/logging.h"
-#include "base/memory/shared_memory.h"
 #include "base/system/sys_info.h"
+#include "base/threading/thread_checker.h"
 #include "components/arc/video_accelerator/protected_buffer_allocator.h"
+#include "media/gpu/macros.h"
+#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/surface_factory_ozone.h"
 
-#define VLOGF(level) VLOG(level) << __func__ << "(): "
-
 namespace arc {
 
 namespace {
 // Size of the pixmap to be used as the dummy handle for protected buffers.
-constexpr gfx::Size kDummyBufferSize(32, 32);
+constexpr gfx::Size kDummyBufferSize(16, 16);
 
 // Maximum number of concurrent ProtectedBufferAllocatorImpl instances.
 // Currently we have no way to know the resources of ProtectedBufferAllocator.
@@ -43,8 +43,9 @@ class ProtectedBufferManager::ProtectedBuffer {
   // Downcasting methods to return duplicated handles to the underlying
   // protected buffers for each buffer type, or empty/null handles if not
   // applicable.
-  virtual base::SharedMemoryHandle DuplicateSharedMemoryHandle() const {
-    return base::SharedMemoryHandle();
+  virtual base::subtle::PlatformSharedMemoryRegion
+  DuplicatePlatformSharedMemoryRegion() const {
+    return {};
   }
   virtual gfx::NativePixmapHandle DuplicateNativePixmapHandle() const {
     return gfx::NativePixmapHandle();
@@ -76,14 +77,15 @@ class ProtectedBufferManager::ProtectedSharedMemory
       scoped_refptr<gfx::NativePixmap> dummy_handle,
       size_t size);
 
-  base::SharedMemoryHandle DuplicateSharedMemoryHandle() const override {
-    return base::SharedMemory::DuplicateHandle(shmem_->handle());
+  base::subtle::PlatformSharedMemoryRegion DuplicatePlatformSharedMemoryRegion()
+      const override {
+    return region_.Duplicate();
   }
 
  private:
   explicit ProtectedSharedMemory(scoped_refptr<gfx::NativePixmap> dummy_handle);
 
-  std::unique_ptr<base::SharedMemory> shmem_;
+  base::subtle::PlatformSharedMemoryRegion region_;
 };
 
 ProtectedBufferManager::ProtectedSharedMemory::ProtectedSharedMemory(
@@ -103,23 +105,15 @@ ProtectedBufferManager::ProtectedSharedMemory::Create(
   size_t aligned_size =
       base::bits::Align(size, base::SysInfo::VMAllocationGranularity());
 
-  mojo::ScopedSharedBufferHandle mojo_shared_buffer =
-      mojo::SharedBufferHandle::Create(aligned_size);
-  if (!mojo_shared_buffer->is_valid()) {
+  auto shmem_region = mojo::CreateUnsafeSharedMemoryRegion(aligned_size);
+  if (!shmem_region.IsValid()) {
     VLOGF(1) << "Failed to allocate shared memory";
     return nullptr;
   }
 
-  base::SharedMemoryHandle shm_handle;
-  MojoResult mojo_result = mojo::UnwrapSharedMemoryHandle(
-      std::move(mojo_shared_buffer), &shm_handle, nullptr, nullptr);
-  if (mojo_result != MOJO_RESULT_OK) {
-    VLOGF(1) << "Failed to unwrap a mojo shared memory handle";
-    return nullptr;
-  }
-
-  protected_shmem->shmem_ =
-      std::make_unique<base::SharedMemory>(shm_handle, false);
+  protected_shmem->region_ =
+      base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
+          std::move(shmem_region));
   return protected_shmem;
 }
 
@@ -165,9 +159,9 @@ ProtectedBufferManager::ProtectedNativePixmap::Create(
 
   ui::OzonePlatform* platform = ui::OzonePlatform::GetInstance();
   ui::SurfaceFactoryOzone* factory = platform->GetSurfaceFactoryOzone();
-  protected_pixmap->native_pixmap_ =
-      factory->CreateNativePixmap(gfx::kNullAcceleratedWidget, size, format,
-                                  gfx::BufferUsage::SCANOUT_VDA_WRITE);
+  protected_pixmap->native_pixmap_ = factory->CreateNativePixmap(
+      gfx::kNullAcceleratedWidget, VK_NULL_HANDLE, size, format,
+      gfx::BufferUsage::SCANOUT_VDA_WRITE);
 
   if (!protected_pixmap->native_pixmap_) {
     VLOGF(1) << "Failed allocating a native pixmap";
@@ -395,8 +389,8 @@ void ProtectedBufferManager::ReleaseAllProtectedBuffers(uint64_t allocator_id) {
   allocator_to_buffers_map_.erase(allocator_id);
 }
 
-base::SharedMemoryHandle
-ProtectedBufferManager::GetProtectedSharedMemoryHandleFor(
+base::subtle::PlatformSharedMemoryRegion
+ProtectedBufferManager::GetProtectedSharedMemoryRegionFor(
     base::ScopedFD dummy_fd) {
   uint32_t id = 0;
   auto pixmap = ImportDummyFd(std::move(dummy_fd), &id);
@@ -404,9 +398,9 @@ ProtectedBufferManager::GetProtectedSharedMemoryHandleFor(
   base::AutoLock lock(buffer_map_lock_);
   const auto& iter = buffer_map_.find(id);
   if (iter == buffer_map_.end())
-    return base::SharedMemoryHandle();
+    return {};
 
-  return iter->second->DuplicateSharedMemoryHandle();
+  return iter->second->DuplicatePlatformSharedMemoryRegion();
 }
 
 gfx::NativePixmapHandle
@@ -427,10 +421,10 @@ scoped_refptr<gfx::NativePixmap>
 ProtectedBufferManager::GetProtectedNativePixmapFor(
     const gfx::NativePixmapHandle& handle) {
   // Only the first fd is used for lookup.
-  if (handle.fds.empty())
+  if (handle.planes.empty())
     return nullptr;
 
-  base::ScopedFD dummy_fd(HANDLE_EINTR(dup(handle.fds[0].fd)));
+  base::ScopedFD dummy_fd(HANDLE_EINTR(dup(handle.planes[0].fd.get())));
   uint32_t id = 0;
   auto pixmap = ImportDummyFd(std::move(dummy_fd), &id);
 
@@ -439,13 +433,7 @@ ProtectedBufferManager::GetProtectedNativePixmapFor(
   if (iter == buffer_map_.end())
     return nullptr;
 
-  auto native_pixmap = iter->second->GetNativePixmap();
-  if (native_pixmap) {
-    for (const auto& fd : handle.fds)
-      base::ScopedFD scoped_fd(fd.fd);
-  }
-
-  return native_pixmap;
+  return iter->second->GetNativePixmap();
 }
 
 scoped_refptr<gfx::NativePixmap> ProtectedBufferManager::ImportDummyFd(
@@ -458,15 +446,14 @@ scoped_refptr<gfx::NativePixmap> ProtectedBufferManager::ImportDummyFd(
   // CreateNativePixmapFromHandle() takes ownership and will close the handle
   // also on failure.
   gfx::NativePixmapHandle pixmap_handle;
-  pixmap_handle.fds.emplace_back(
-      base::FileDescriptor(dummy_fd.release(), true));
-  pixmap_handle.planes.emplace_back(gfx::NativePixmapPlane());
+  pixmap_handle.planes.emplace_back(
+      gfx::NativePixmapPlane(0, 0, 0, std::move(dummy_fd)));
   ui::OzonePlatform* platform = ui::OzonePlatform::GetInstance();
   ui::SurfaceFactoryOzone* factory = platform->GetSurfaceFactoryOzone();
   scoped_refptr<gfx::NativePixmap> pixmap =
       factory->CreateNativePixmapForProtectedBufferHandle(
-          gfx::kNullAcceleratedWidget, kDummyBufferSize, gfx::BufferFormat::R_8,
-          pixmap_handle);
+          gfx::kNullAcceleratedWidget, kDummyBufferSize,
+          gfx::BufferFormat::RGBA_8888, std::move(pixmap_handle));
   if (!pixmap) {
     VLOGF(1) << "Failed importing dummy handle";
     return nullptr;

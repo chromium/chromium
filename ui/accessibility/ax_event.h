@@ -5,7 +5,9 @@
 #ifndef UI_ACCESSIBILITY_AX_EVENT_H_
 #define UI_ACCESSIBILITY_AX_EVENT_H_
 
-#include "ui/accessibility/ax_enums.mojom.h"
+#include <string>
+
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_export.h"
 
 namespace ui {
@@ -15,13 +17,13 @@ struct AX_EXPORT AXEvent {
   virtual ~AXEvent();
 
   // The type of event.
-  ax::mojom::Event event_type = ax::mojom::Event::kNone;
+  ax::mojom::Event event_type;
 
   // The id of the node in the AXTree that the event should be fired on.
   int id = -1;
 
   // The source of the event.
-  ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone;
+  ax::mojom::EventFrom event_from;
 
   // The action request ID that was passed in if this event was fired in
   // direct response to a ax::mojom::Action.

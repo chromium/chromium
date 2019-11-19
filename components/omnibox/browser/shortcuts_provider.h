@@ -54,8 +54,7 @@ class ShortcutsProvider : public AutocompleteProvider,
       int relevance,
       const AutocompleteInput& input,
       const base::string16& fixed_up_input_text,
-      const base::string16 term_string,
-      const WordMap& terms_map);
+      const base::string16 term_string);
 
   // Returns iterator to first item in |shortcuts_map_| matching |keyword|.
   // Returns shortcuts_map_.end() if there are no matches.

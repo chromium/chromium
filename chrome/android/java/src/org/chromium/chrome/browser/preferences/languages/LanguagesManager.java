@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.preferences.languages;
 
-import android.support.annotation.IntDef;
+import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.translate.TranslateBridge;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -69,17 +69,14 @@ class LanguagesManager {
 
     private static LanguagesManager sManager;
 
-    private final PrefServiceBridge mPrefServiceBridge;
     private final Map<String, LanguageItem> mLanguagesMap;
 
     private AcceptLanguageObserver mObserver;
 
     private LanguagesManager() {
-        mPrefServiceBridge = PrefServiceBridge.getInstance();
-
         // Get all language data from native.
         mLanguagesMap = new LinkedHashMap<>();
-        for (LanguageItem item : mPrefServiceBridge.getChromeLanguageList()) {
+        for (LanguageItem item : TranslateBridge.getChromeLanguageList()) {
             mLanguagesMap.put(item.getCode(), item);
         }
     }
@@ -100,7 +97,7 @@ class LanguagesManager {
      */
     public List<LanguageItem> getUserAcceptLanguageItems() {
         // Always read the latest user accept language code list from native.
-        List<String> codes = mPrefServiceBridge.getUserLanguageCodes();
+        List<String> codes = TranslateBridge.getUserLanguageCodes();
 
         List<LanguageItem> results = new ArrayList<>();
         // Keep the same order as accept language codes list.
@@ -116,7 +113,7 @@ class LanguagesManager {
      */
     public List<LanguageItem> getLanguageItemsExcludingUserAccept() {
         // Always read the latest user accept language code list from native.
-        List<String> codes = mPrefServiceBridge.getUserLanguageCodes();
+        List<String> codes = TranslateBridge.getUserLanguageCodes();
 
         List<LanguageItem> results = new ArrayList<>();
         // Keep the same order as mLanguagesMap.
@@ -131,7 +128,7 @@ class LanguagesManager {
      * @param code The language code to remove.
      */
     public void addToAcceptLanguages(String code) {
-        mPrefServiceBridge.updateUserAcceptLanguages(code, true /* is_add */);
+        TranslateBridge.updateUserAcceptLanguages(code, true /* is_add */);
         notifyAcceptLanguageObserver();
     }
 
@@ -140,7 +137,7 @@ class LanguagesManager {
      * @param code The language code to remove.
      */
     public void removeFromAcceptLanguages(String code) {
-        mPrefServiceBridge.updateUserAcceptLanguages(code, false /* is_add */);
+        TranslateBridge.updateUserAcceptLanguages(code, false /* is_add */);
         notifyAcceptLanguageObserver();
     }
 
@@ -154,7 +151,19 @@ class LanguagesManager {
     public void moveLanguagePosition(String code, int offset, boolean reload) {
         if (offset == 0) return;
 
-        PrefServiceBridge.getInstance().moveAcceptLanguage(code, offset);
+        TranslateBridge.moveAcceptLanguage(code, offset);
+        recordAction(LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
+        if (reload) notifyAcceptLanguageObserver();
+    }
+
+    /**
+     * Sets the preference order of the user's accepted languages to the provided order.
+     *
+     * @param codes The new order for the user's languages.
+     * @param reload True iff the language list should be reloaded.
+     */
+    public void setOrder(String[] codes, boolean reload) {
+        TranslateBridge.setLanguageOrder(codes);
         recordAction(LanguageSettingsActionType.LANGUAGE_LIST_REORDERED);
         if (reload) notifyAcceptLanguageObserver();
     }

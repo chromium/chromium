@@ -8,14 +8,13 @@
 #include <stdint.h>
 
 #include <set>
+#include <string>
 
 #include "base/optional.h"
 #include "content/common/frame_replication_state.h"
-#include "content/common/render_frame_message_filter.mojom.h"
 #include "content/public/browser/browser_associated_interface.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/common/three_d_api_types.h"
-#include "net/cookies/canonical_cookie.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
@@ -28,12 +27,7 @@
 
 struct FrameHostMsg_CreateChildFrame_Params;
 struct FrameHostMsg_CreateChildFrame_Params_Reply;
-struct FrameHostMsg_DownloadUrl_Params;
 class GURL;
-
-namespace net {
-class URLRequestContextGetter;
-}
 
 namespace url {
 class Origin;
@@ -42,7 +36,6 @@ class Origin;
 namespace content {
 class BrowserContext;
 class PluginServiceImpl;
-struct Referrer;
 class RenderWidgetHelper;
 class ResourceContext;
 class StoragePartition;
@@ -54,10 +47,7 @@ struct WebPluginInfo;
 // with the routing id for a newly created RenderFrame.
 //
 // This object is created on the UI thread and used on the IO thread.
-class CONTENT_EXPORT RenderFrameMessageFilter
-    : public BrowserMessageFilter,
-      public BrowserAssociatedInterface<mojom::RenderFrameMessageFilter>,
-      public mojom::RenderFrameMessageFilter {
+class CONTENT_EXPORT RenderFrameMessageFilter : public BrowserMessageFilter {
  public:
   RenderFrameMessageFilter(int render_process_id,
                            PluginServiceImpl* plugin_service,
@@ -68,26 +58,11 @@ class CONTENT_EXPORT RenderFrameMessageFilter
   // BrowserMessageFilter methods:
   bool OnMessageReceived(const IPC::Message& message) override;
   void OnDestruct() const override;
-
-  network::mojom::CookieManagerPtr* GetCookieManager();
+  void OverrideThreadForMessage(const IPC::Message& message,
+                                BrowserThread::ID* thread) override;
 
   // Clears |resource_context_| to prevent accessing it after deletion.
   void ClearResourceContext();
-
- protected:
-  friend class TestSaveImageFromDataURL;
-
-  // This method will be overridden by TestSaveImageFromDataURL class for test.
-  virtual void DownloadUrl(
-      int render_view_id,
-      int render_frame_id,
-      const GURL& url,
-      const Referrer& referrer,
-      const url::Origin& initiator,
-      const base::string16& suggested_name,
-      const bool use_prompt,
-      const bool follow_cross_origin_redirects,
-      blink::mojom::BlobURLTokenPtrInfo blob_url_token) const;
 
  private:
   friend class BrowserThread;
@@ -98,32 +73,12 @@ class CONTENT_EXPORT RenderFrameMessageFilter
 
   ~RenderFrameMessageFilter() override;
 
-  void InitializeCookieManager(
-      network::mojom::CookieManagerRequest cookie_manager_request);
-
   // |params_reply| is an out parameter. Browser process defines it for the
   // renderer process.
   void OnCreateChildFrame(
       const FrameHostMsg_CreateChildFrame_Params& params,
       FrameHostMsg_CreateChildFrame_Params_Reply* params_reply);
-  void OnCookiesEnabled(int render_frame_id,
-                        const GURL& url,
-                        const GURL& site_for_cookies,
-                        bool* cookies_enabled);
 
-  // Check the policy for getting cookies. Gets the cookies if allowed.
-  void CheckPolicyForCookies(int render_frame_id,
-                             const GURL& url,
-                             const GURL& site_for_cookies,
-                             GetCookiesCallback callback,
-                             const net::CookieList& cookie_list,
-                             const net::CookieStatusList& excluded_cookies);
-
-  void OnDownloadUrl(const FrameHostMsg_DownloadUrl_Params& params);
-
-  void OnSaveImageFromDataURL(int render_view_id,
-                              int render_frame_id,
-                              const std::string& url_str);
 
   void OnAre3DAPIsBlocked(int render_frame_id,
                           const GURL& top_origin_url,
@@ -131,17 +86,6 @@ class CONTENT_EXPORT RenderFrameMessageFilter
                           bool* blocked);
 
   void OnRenderProcessGone();
-
-  // mojom::RenderFrameMessageFilter:
-  void SetCookie(int32_t render_frame_id,
-                 const GURL& url,
-                 const GURL& site_for_cookies,
-                 const std::string& cookie_line,
-                 SetCookieCallback callback) override;
-  void GetCookies(int render_frame_id,
-                  const GURL& url,
-                  const GURL& site_for_cookies,
-                  GetCookiesCallback callback) override;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   void OnGetPluginInfo(int render_frame_id,
@@ -163,8 +107,7 @@ class CONTENT_EXPORT RenderFrameMessageFilter
   void OnDidDeleteOutOfProcessPepperInstance(int plugin_child_id,
                                              int32_t pp_instance,
                                              bool is_external);
-  void OnOpenChannelToPpapiBroker(int routing_id,
-                                  const base::FilePath& path);
+  void OnOpenChannelToPpapiBroker(int routing_id, const base::FilePath& path);
   void OnPluginInstanceThrottleStateChange(int plugin_child_id,
                                            int32_t pp_instance,
                                            bool is_throttled);
@@ -178,13 +121,8 @@ class CONTENT_EXPORT RenderFrameMessageFilter
   base::TimeTicks last_plugin_refresh_time_;
 #endif  // ENABLE_PLUGINS
 
-  // Contextual information to be used for requests created here.
-  scoped_refptr<net::URLRequestContextGetter> request_context_;
-
   // The ResourceContext which is to be used on the IO thread.
   ResourceContext* resource_context_;
-
-  network::mojom::CookieManagerPtr cookie_manager_;
 
   // Needed for issuing routing ids and surface ids.
   scoped_refptr<RenderWidgetHelper> render_widget_helper_;

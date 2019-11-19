@@ -15,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/service_manager/embedder/switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,6 +60,7 @@ class OutOfMemoryReporterBrowserTest : public InProcessBrowserTest,
 #define MAYBE_MemoryExhaust MemoryExhaust
 #endif
 IN_PROC_BROWSER_TEST_F(OutOfMemoryReporterBrowserTest, MAYBE_MemoryExhaust) {
+
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   OutOfMemoryReporter::FromWebContents(web_contents)->AddObserver(this);
@@ -68,6 +70,8 @@ IN_PROC_BROWSER_TEST_F(OutOfMemoryReporterBrowserTest, MAYBE_MemoryExhaust) {
 
   // Careful, this doesn't actually commit the navigation. So, navigating to
   // this URL will cause an OOM associated with the previous committed URL.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(
+      browser()->tab_strip_model()->GetActiveWebContents());
   ui_test_utils::NavigateToURL(browser(),
                                GURL(content::kChromeUIMemoryExhaustURL));
   EXPECT_EQ(crash_url, last_oom_url_.value());

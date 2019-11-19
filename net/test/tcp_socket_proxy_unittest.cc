@@ -4,7 +4,7 @@
 
 #include "net/test/tcp_socket_proxy.h"
 
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
@@ -12,7 +12,7 @@
 #include "net/socket/tcp_client_socket.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,11 +21,11 @@ using net::test::IsOk;
 
 namespace net {
 
-class TcpSocketProxyTest : public TestWithScopedTaskEnvironment {
+class TcpSocketProxyTest : public TestWithTaskEnvironment {
  public:
   TcpSocketProxyTest() : io_thread_("TcpSocketProxyTest IO Thread") {
     EXPECT_TRUE(io_thread_.StartWithOptions(
-        base::Thread::Options(base::MessageLoop::TYPE_IO, 0)));
+        base::Thread::Options(base::MessagePumpType::IO, 0)));
 
     listen_socket_ =
         std::make_unique<TCPServerSocket>(nullptr, net::NetLogSource());

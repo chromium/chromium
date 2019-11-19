@@ -1,0 +1,48 @@
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+
+<dom-module id="shared-styles">
+  <template>
+    <style>
+      html,
+      :host {
+        --error-color: var(--google-red-700);
+        --page-width: 624px;
+        --title-icon-color: var(--paper-grey-500);
+        --user-manager-separator-line: 1px solid rgba(0, 0, 0, .12);
+      }
+
+      @media (prefers-color-scheme: dark) {
+        html,
+        :host {
+          --error-color: var(--google-red-refresh-300);
+          --user-manager-separator-line: var(--cr-separator-line);
+        }
+      }
+
+      a,
+      a:active,
+      a:hover,
+      a:visited {
+        color: var(--cr-link-color);
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      .product-logo {
+        content: -webkit-image-set(
+            url(../../../app/theme/default_100_percent/%DISTRIBUTION%/product_logo_name_22.png) 1x,
+            url(../../../app/theme/default_200_percent/%DISTRIBUTION%/product_logo_name_22.png) 2x);
+        height: 22px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        .product-logo {
+          content: -webkit-image-set(
+              url(../../../../components/resources/default_100_percent/%DISTRIBUTION%/product_logo_white.png) 1x,
+              url(../../../../components/resources/default_200_percent/%DISTRIBUTION%/product_logo_white.png) 2x);
+        }
+      }
+    </style>
+  </template>
+</dom-module>

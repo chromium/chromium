@@ -346,7 +346,7 @@ void EventListenerMap::CleanupListener(EventListener* listener) {
 }
 
 bool EventListenerMap::IsFilteredEvent(const Event& event) const {
-  return base::ContainsKey(filtered_events_, event.event_name);
+  return base::Contains(filtered_events_, event.event_name);
 }
 
 }  // namespace extensions

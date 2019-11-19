@@ -12,6 +12,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -87,11 +88,12 @@ bool GetDefaultUserDataDirectory(base::FilePath* result) {
         GetXDGDirectory(env.get(), kXdgConfigHomeEnvVar, kDotConfigDir);
   }
 
-#if defined(GOOGLE_CHROME_BUILD)
-  *result = config_dir.Append("google-chrome" + GetChannelSuffixForDataDir());
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  std::string data_dir_basename = "google-chrome";
 #else
-  *result = config_dir.Append("chromium");
+  std::string data_dir_basename = "chromium";
 #endif
+  *result = config_dir.Append(data_dir_basename + GetChannelSuffixForDataDir());
   return true;
 }
 

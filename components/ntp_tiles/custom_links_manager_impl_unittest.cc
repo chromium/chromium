@@ -11,7 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/ntp_tiles/pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -103,7 +103,7 @@ class CustomLinksManagerImplTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   base::ScopedTempDir scoped_temp_dir_;
   std::unique_ptr<history::HistoryService> history_service_;
@@ -469,7 +469,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldDeleteMostVisitedOnHistoryDeletion) {
                               base::UTF8ToUTF16(kTestCase2[0].title), true}}),
       custom_links_->GetLinks());
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CustomLinksManagerImplTest,
@@ -494,7 +494,7 @@ TEST_F(CustomLinksManagerImplTest,
                                 /*restrict_urls=*/base::nullopt));
   EXPECT_TRUE(custom_links_->GetLinks().empty());
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CustomLinksManagerImplTest, ShouldDeleteOnHistoryDeletionAfterShutdown) {
@@ -523,7 +523,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldDeleteOnHistoryDeletionAfterShutdown) {
                                 /*restrict_urls=*/base::nullopt));
   EXPECT_TRUE(custom_links_->GetLinks().empty());
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CustomLinksManagerImplTest, ShouldNotDeleteCustomLinkOnHistoryDeletion) {
@@ -567,7 +567,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldNotDeleteCustomLinkOnHistoryDeletion) {
                 {Link{GURL(kTestUrl), base::UTF8ToUTF16(kTestTitle), false}}),
             custom_links_->GetLinks());
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CustomLinksManagerImplTest, ShouldIgnoreHistoryExpiredDeletions) {
@@ -601,7 +601,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldIgnoreHistoryExpiredDeletions) {
 
   EXPECT_EQ(initial_links, custom_links_->GetLinks());
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CustomLinksManagerImplTest, ShouldIgnoreEmptyHistoryDeletions) {
@@ -622,7 +622,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldIgnoreEmptyHistoryDeletions) {
 
   EXPECT_EQ(initial_links, custom_links_->GetLinks());
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CustomLinksManagerImplTest, ShouldNotUndoAfterHistoryDeletion) {
@@ -654,7 +654,7 @@ TEST_F(CustomLinksManagerImplTest, ShouldNotUndoAfterHistoryDeletion) {
   EXPECT_FALSE(custom_links_->UndoAction());
   EXPECT_EQ(links_after_add, custom_links_->GetLinks());
 
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(CustomLinksManagerImplTest, UpdateListAfterRemoteChange) {

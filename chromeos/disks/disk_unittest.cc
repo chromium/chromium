@@ -26,7 +26,9 @@ const char kMountPath2[] = "/media/removable/second_mount_path";
 const char kDriveModel[] = "DriveModel";
 const char kIdLabel[] = "UNTITLED";
 const char kIdUuid[] = "XXXX-YYYY";
-const char kNativePath[] = "/sys/devices/.../sdb/sdb1";
+const char kStorageDevicePath[] =
+    "/sys/devices/pci0000:00/0000:00:14.0/usb2/2-8/2-8:1.0/host14/target14:0:0/"
+    "14:0:0:0";
 const char kProductId[] = "1234";
 const char kProductName[] = "Product Name";
 const char kVendorId[] = "0000";
@@ -84,7 +86,8 @@ void AppendBasicProperties(dbus::MessageWriter* array_writer) {
   AppendStringDictEntry(array_writer, cros_disks::kDriveModel, kDriveModel);
   AppendStringDictEntry(array_writer, cros_disks::kIdLabel, kIdLabel);
   AppendStringDictEntry(array_writer, cros_disks::kIdUuid, kIdUuid);
-  AppendStringDictEntry(array_writer, cros_disks::kNativePath, kNativePath);
+  AppendStringDictEntry(array_writer, cros_disks::kStorageDevicePath,
+                        kStorageDevicePath);
   AppendStringDictEntry(array_writer, cros_disks::kProductId, kProductId);
   AppendStringDictEntry(array_writer, cros_disks::kProductName, kProductName);
   AppendStringDictEntry(array_writer, cros_disks::kVendorId, kVendorId);
@@ -110,16 +113,13 @@ std::unique_ptr<dbus::Response> BuildBasicDbusResponse() {
 }
 
 TEST(DiskTest, ConstructFromDiskInfo) {
-  const char kSystemPathPrefix[] = "/system/path/prefix";
   const char kBaseMountpath[] = "/base/mount/path";
 
   std::unique_ptr<dbus::Response> response = BuildBasicDbusResponse();
   DiskInfo disk_info(kDevicePath, response.get());
-  Disk disk(disk_info, false /* write_disabled_by_policy */, kSystemPathPrefix,
-            kBaseMountpath);
+  Disk disk(disk_info, false /* write_disabled_by_policy */, kBaseMountpath);
 
   EXPECT_EQ(kDevicePath, disk.device_path());
-  EXPECT_EQ(kNativePath, disk.system_path());
   EXPECT_EQ(kDeviceFile, disk.file_path());
   EXPECT_EQ(kIdLabel, disk.device_label());
   EXPECT_EQ(kDriveModel, disk.drive_label());
@@ -130,7 +130,7 @@ TEST(DiskTest, ConstructFromDiskInfo) {
   EXPECT_EQ(kIdUuid, disk.fs_uuid());
   EXPECT_EQ(kDeviceSize, disk.total_size_in_bytes());
   EXPECT_EQ(DEVICE_TYPE_SD, disk.device_type());
-  EXPECT_EQ(kSystemPathPrefix, disk.system_path_prefix());
+  EXPECT_EQ(kStorageDevicePath, disk.storage_device_path());
   EXPECT_EQ(kBaseMountpath, disk.base_mount_path());
   EXPECT_FALSE(disk.is_parent());
   EXPECT_FALSE(disk.is_read_only());
@@ -141,6 +141,7 @@ TEST(DiskTest, ConstructFromDiskInfo) {
   EXPECT_FALSE(disk.is_mounted());
   EXPECT_FALSE(disk.IsStatefulPartition());
   EXPECT_FALSE(disk.is_auto_mountable());
+  EXPECT_TRUE(disk.is_first_mount());
 
   // Drives are hidden by default.
   EXPECT_TRUE(disk.is_hidden());
@@ -159,7 +160,7 @@ std::unique_ptr<Disk> BuildDiskWithProperty(const std::string& property,
     writer.CloseContainer(&array_writer);
   }
   DiskInfo disk_info(kDevicePath, response.get());
-  return std::make_unique<Disk>(disk_info, false, "", "");
+  return std::make_unique<Disk>(disk_info, false, "");
 }
 
 TEST(DiskTest, ConstructFromDiskInfo_BoolProperties) {
@@ -195,7 +196,7 @@ TEST(DiskTest, ConstructFromDiskInfo_BoolProperties) {
 TEST(DiskTest, ConstructFromDiskInfo_WriteDisabledByPolicy) {
   std::unique_ptr<dbus::Response> response = BuildBasicDbusResponse();
   DiskInfo disk_info(kDevicePath, response.get());
-  Disk disk(disk_info, true /* write_disabled_by_policy */, "", "");
+  Disk disk(disk_info, true /* write_disabled_by_policy */, "");
 
   EXPECT_TRUE(disk.is_read_only());
   EXPECT_FALSE(disk.is_read_only_hardware());
@@ -225,7 +226,7 @@ TEST(DiskTest, ConstructFromDiskInfo_Mounted) {
   }
 
   DiskInfo disk_info(kDevicePath, response.get());
-  Disk disk(disk_info, false, "", "");
+  Disk disk(disk_info, false, "");
 
   EXPECT_TRUE(disk.is_mounted());
   EXPECT_EQ(kMountPath1, disk.mount_path());
@@ -234,7 +235,7 @@ TEST(DiskTest, ConstructFromDiskInfo_Mounted) {
 TEST(DiskTest, SetMountPath) {
   std::unique_ptr<dbus::Response> response = BuildBasicDbusResponse();
   DiskInfo disk_info(kDevicePath, response.get());
-  Disk disk(disk_info, false /* write_disabled_by_policy */, "", "");
+  Disk disk(disk_info, false /* write_disabled_by_policy */, "");
 
   EXPECT_EQ("", disk.mount_path());
   EXPECT_EQ("", disk.base_mount_path());

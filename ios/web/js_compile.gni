@@ -122,7 +122,7 @@ template("js_compile_checked") {
       _js_modules = [
         "//ios/web/web_state/js/resources/base.js",
         "//ios/web/web_state/js/resources/common.js",
-        "//ios/web/web_state/js/resources/message.js",
+        "//ios/web/js_messaging/resources/message.js",
       ]
       if (defined(invoker.js_modules)) {
         _js_modules += invoker.js_modules

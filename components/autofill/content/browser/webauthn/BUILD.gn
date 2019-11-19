@@ -1,0 +1,19 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+
+jumbo_static_library("webauthn") {
+  if (is_component_build) {
+    check_includes = false
+  }
+  sources = [
+    "internal_authenticator_impl.cc",
+    "internal_authenticator_impl.h",
+  ]
+  deps = [
+    "//content/browser:for_internal_webauthn",
+    "//content/public/browser",
+  ]
+}

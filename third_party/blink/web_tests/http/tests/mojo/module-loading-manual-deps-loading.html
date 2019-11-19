@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<title>Mojo JavaScript bindings module loading tests (manual mojom deps loading)</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script>
+  mojo.config.autoLoadMojomDeps = false;
+</script>
+<script src="/gen/mojo/public/interfaces/bindings/tests/echo.mojom.js"></script>
+<script src="/gen/mojo/public/interfaces/bindings/tests/echo_import/echo_import.mojom.js"></script>
+<script>
+
+promise_test(async () => {
+  function EchoImpl() {}
+  EchoImpl.prototype.echoPoint = function(point) {
+    return Promise.resolve({result: point});
+  };
+
+  var echoServicePtr = new test.echo.mojom.EchoPtr();
+  var echoServiceBinding = new mojo.Binding(test.echo.mojom.Echo,
+                                            new EchoImpl(),
+                                            mojo.makeRequest(echoServicePtr));
+  var result = (await echoServicePtr.echoPoint({x: 1, y: 2})).result;
+  assert_equals(1, result.x);
+  assert_equals(2, result.y);
+}, 'Basics');
+
+</script>

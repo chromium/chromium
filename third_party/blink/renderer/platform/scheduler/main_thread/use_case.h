@@ -25,15 +25,17 @@ enum class UseCase {
   // listeners to find out the actual gesture type. To minimize touch latency,
   // only input handling work should run in this state.
   kTouchstart = 4,
-  // A page is loading.
+  // A page is loading, and we've seen first contentful paint.
   kLoading = 5,
   // A continuous gesture (e.g., scroll) which is being handled by the main
   // thread.
   kMainThreadGesture = 6,
+  // A page is loading but we've not had a first contentful paint yet.
+  kEarlyLoading = 7,
   kFirstUseCase = kNone,
 
   // Must be the last entry.
-  kCount = 7,
+  kCount = 8,
 };
 
 }  // namespace scheduler

@@ -34,16 +34,16 @@ class NotificationDelegateTest : public testing::Test {
 
 TEST_F(NotificationDelegateTest, ClickDelegate) {
   auto delegate = base::MakeRefCounted<HandleNotificationClickDelegate>(
-      base::Bind(&NotificationDelegateTest::BodyClickCallback,
-                 base::Unretained(this)));
+      base::BindRepeating(&NotificationDelegateTest::BodyClickCallback,
+                          base::Unretained(this)));
 
   delegate->Click(base::nullopt, base::nullopt);
   EXPECT_EQ(1, callback_count_);
 }
 
 TEST_F(NotificationDelegateTest, NullClickDelegate) {
-  auto delegate =
-      base::MakeRefCounted<HandleNotificationClickDelegate>(base::Closure());
+  auto delegate = base::MakeRefCounted<HandleNotificationClickDelegate>(
+      base::RepeatingClosure());
 
   delegate->Click(base::nullopt, base::nullopt);
   EXPECT_EQ(0, callback_count_);
@@ -51,8 +51,8 @@ TEST_F(NotificationDelegateTest, NullClickDelegate) {
 
 TEST_F(NotificationDelegateTest, ButtonClickDelegate) {
   auto delegate = base::MakeRefCounted<HandleNotificationClickDelegate>(
-      base::Bind(&NotificationDelegateTest::ButtonClickCallback,
-                 base::Unretained(this)));
+      base::BindRepeating(&NotificationDelegateTest::ButtonClickCallback,
+                          base::Unretained(this)));
 
   delegate->Click(base::nullopt, base::nullopt);
   EXPECT_EQ(1, callback_count_);

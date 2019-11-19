@@ -52,6 +52,36 @@ bool EncodeTimeAsGeneralizedTime(const base::Time& time,
   return true;
 }
 
+bool GeneralizedTimeToTime(const der::GeneralizedTime& generalized,
+                           base::Time* result) {
+  base::Time::Exploded exploded = {0};
+  exploded.year = generalized.year;
+  exploded.month = generalized.month;
+  exploded.day_of_month = generalized.day;
+  exploded.hour = generalized.hours;
+  exploded.minute = generalized.minutes;
+  exploded.second = generalized.seconds;
+
+  if (base::Time::FromUTCExploded(exploded, result))
+    return true;
+
+  // Fail on obviously bad dates.
+  if (!exploded.HasValidValues())
+    return false;
+
+  // TODO(mattm): consider consolidating this with
+  // SaturatedTimeFromUTCExploded from cookie_util.cc
+  if (static_cast<int>(generalized.year) > base::Time::kExplodedMaxYear) {
+    *result = base::Time::Max();
+    return true;
+  }
+  if (static_cast<int>(generalized.year) < base::Time::kExplodedMinYear) {
+    *result = base::Time::Min();
+    return true;
+  }
+  return false;
+}
+
 bool EncodeGeneralizedTime(const GeneralizedTime& time,
                            uint8_t out[kGeneralizedTimeLength]) {
   if (!WriteFourDigit(time.year, out) || !WriteTwoDigit(time.month, out + 4) ||

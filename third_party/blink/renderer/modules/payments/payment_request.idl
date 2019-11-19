@@ -14,10 +14,10 @@
     Exposed=Window,
     ActiveScriptWrappable
 ] interface PaymentRequest : EventTarget {
-    [CallWith=ScriptState, NewObject] Promise<PaymentResponse> show();
+    [CallWith=ScriptState, NewObject] Promise<PaymentResponse> show(optional Promise<PaymentDetailsUpdate> detailsPromise);
     [CallWith=ScriptState, NewObject] Promise<void> abort();
     [CallWith=ScriptState, HighEntropy, Measure, NewObject] Promise<boolean> canMakePayment();
-    [CallWith=ScriptState, HighEntropy, Measure, NewObject, RuntimeEnabled=PaymentRequestHasEnrolledInstrument] Promise<boolean> hasEnrolledInstrument();
+    [CallWith=ScriptState, HighEntropy, Measure, NewObject] Promise<boolean> hasEnrolledInstrument();
 
     readonly attribute DOMString id;
     [ImplementedAs=getShippingAddress] readonly attribute PaymentAddress? shippingAddress;

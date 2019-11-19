@@ -17,11 +17,11 @@ MockBrowsingDataRemoverDelegate::~MockBrowsingDataRemoverDelegate() {
 }
 
 BrowsingDataRemoverDelegate::EmbedderOriginTypeMatcher
-MockBrowsingDataRemoverDelegate::GetOriginTypeMatcher() const {
+MockBrowsingDataRemoverDelegate::GetOriginTypeMatcher() {
   return BrowsingDataRemoverDelegate::EmbedderOriginTypeMatcher();
 }
 
-bool MockBrowsingDataRemoverDelegate::MayRemoveDownloadHistory() const {
+bool MockBrowsingDataRemoverDelegate::MayRemoveDownloadHistory() {
   return true;
 }
 
@@ -29,11 +29,11 @@ void MockBrowsingDataRemoverDelegate::RemoveEmbedderData(
     const base::Time& delete_begin,
     const base::Time& delete_end,
     int remove_mask,
-    const BrowsingDataFilterBuilder& filter_builder,
+    BrowsingDataFilterBuilder* filter_builder,
     int origin_type_mask,
     base::OnceClosure callback) {
   actual_calls_.emplace_back(delete_begin, delete_end, remove_mask,
-                             origin_type_mask, filter_builder.Copy(),
+                             origin_type_mask, filter_builder->Copy(),
                              true /* should_compare_filter */);
   std::move(callback).Run();
 }
@@ -43,9 +43,9 @@ void MockBrowsingDataRemoverDelegate::ExpectCall(
     const base::Time& delete_end,
     int remove_mask,
     int origin_type_mask,
-    const BrowsingDataFilterBuilder& filter_builder) {
+    BrowsingDataFilterBuilder* filter_builder) {
   expected_calls_.emplace_back(delete_begin, delete_end, remove_mask,
-                               origin_type_mask, filter_builder.Copy(),
+                               origin_type_mask, filter_builder->Copy(),
                                true /* should_compare_filter */);
 }
 

@@ -23,7 +23,7 @@ String CSSCounterValue::CustomCSSText() const {
     result.Append(", ");
     result.Append(separator_->CssText());
   }
-  bool is_default_list_style = ListStyle() == CSSValueDecimal;
+  bool is_default_list_style = ListStyle() == CSSValueID::kDecimal;
   if (!is_default_list_style) {
     result.Append(", ");
     result.Append(list_style_->CssText());

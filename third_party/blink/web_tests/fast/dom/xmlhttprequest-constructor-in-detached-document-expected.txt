@@ -1,5 +1,0 @@
-CONSOLE ERROR: line 15: Uncaught NetworkError: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'xmlhttprequest-constructor-in-detached-document-frame.html'.
-Text for bug 25290: Crash when constructing XMLHttpRequest in a detached document.
-
-PASS
-

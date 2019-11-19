@@ -10,17 +10,21 @@ import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.provider.Browser;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsIntent;
+
+import androidx.annotation.Nullable;
+import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.payments.PaymentRequestImpl;
+import org.chromium.chrome.browser.payments.handler.PaymentHandlerCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.AsyncTabCreationParams;
@@ -39,6 +43,8 @@ import org.chromium.webapk.lib.client.WebApkIdentityServiceClient;
 import org.chromium.webapk.lib.client.WebApkNavigationClient;
 import org.chromium.webapk.lib.client.WebApkValidator;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**
@@ -73,7 +79,14 @@ public class ServiceTabLauncher {
         // Open popup window in custom tab.
         // Note that this is used by PaymentRequestEvent.openWindow().
         if (disposition == WindowOpenDisposition.NEW_POPUP) {
-            if (!createPopupCustomTab(requestId, url, incognito)) {
+            boolean success = false;
+            try {
+                success = PaymentHandlerCoordinator.isEnabled()
+                        ? PaymentRequestImpl.openPaymentHandlerWindow(new URI(url))
+                        : createPopupCustomTab(requestId, url, incognito);
+            } catch (URISyntaxException e) { /* Intentionally leave blank, so success is false. */
+            }
+            if (!success) {
                 PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                         () -> onWebContentsForRequestAvailable(requestId, null));
             }
@@ -100,18 +113,17 @@ public class ServiceTabLauncher {
         if (webApkPackageName != null) {
             final List<ResolveInfo> resolveInfosFinal = resolveInfos;
             WebApkIdentityServiceClient.CheckBrowserBacksWebApkCallback callback =
-                    doesBrowserBackWebApk -> {
-                        if (doesBrowserBackWebApk) {
-                            Intent intent = WebApkNavigationClient.createLaunchWebApkIntent(
-                                    webApkPackageName, url, true /* forceNavigation */);
-                            intent.putExtra(
-                                    ShortcutHelper.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
-                            ContextUtils.getApplicationContext().startActivity(intent);
-                            return;
-                        }
-                        launchTabOrWebapp(requestId, incognito, url, referrerUrl,
-                                referrerPolicy, extraHeaders, postData, resolveInfosFinal);
-                    };
+                    (doesBrowserBackWebApk, browserPackageName) -> {
+                if (doesBrowserBackWebApk) {
+                    Intent intent = WebApkNavigationClient.createLaunchWebApkIntent(
+                            webApkPackageName, url, true /* forceNavigation */);
+                    intent.putExtra(ShortcutHelper.EXTRA_SOURCE, ShortcutSource.NOTIFICATION);
+                    ContextUtils.getApplicationContext().startActivity(intent);
+                    return;
+                }
+                launchTabOrWebapp(requestId, incognito, url, referrerUrl, referrerPolicy,
+                        extraHeaders, postData, resolveInfosFinal);
+            };
             ChromeWebApkHost.checkChromeBacksWebApkAsync(webApkPackageName, callback);
             return;
         }
@@ -214,9 +226,11 @@ public class ServiceTabLauncher {
      */
     public static void onWebContentsForRequestAvailable(
             int requestId, @Nullable WebContents webContents) {
-        nativeOnWebContentsForRequestAvailable(requestId, webContents);
+        ServiceTabLauncherJni.get().onWebContentsForRequestAvailable(requestId, webContents);
     }
 
-    private static native void nativeOnWebContentsForRequestAvailable(
-            int requestId, WebContents webContents);
+    @NativeMethods
+    interface Natives {
+        void onWebContentsForRequestAvailable(int requestId, WebContents webContents);
+    }
 }

@@ -6,8 +6,9 @@
 #define SERVICES_VIDEO_CAPTURE_PUBLIC_CPP_MOCK_PRODUCER_H_
 
 #include "media/capture/mojom/video_capture_types.mojom.h"
-#include "media/mojo/interfaces/media_types.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/media_types.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/video_capture/public/mojom/producer.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -15,7 +16,7 @@ namespace video_capture {
 
 class MockProducer : public mojom::Producer {
  public:
-  MockProducer(mojom::ProducerRequest request);
+  MockProducer(mojo::PendingReceiver<mojom::Producer> receiver);
   ~MockProducer() override;
 
   // Use forwarding method to work around gmock not supporting move-only types.
@@ -30,7 +31,7 @@ class MockProducer : public mojom::Producer {
   MOCK_METHOD1(OnBufferRetired, void(int32_t));
 
  private:
-  const mojo::Binding<mojom::Producer> binding_;
+  const mojo::Receiver<mojom::Producer> receiver_;
 };
 
 }  // namespace video_capture

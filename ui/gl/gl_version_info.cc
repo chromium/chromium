@@ -60,6 +60,8 @@ void GLVersionInfo::Initialize(const char* version_str,
     is_d3d = renderer_string.find("Direct3D") != std::string::npos;
     // (is_d3d should only be possible if is_angle is true.)
     DCHECK(!is_d3d || is_angle);
+    if (is_angle && driver_vendor == "ANGLE")
+      ExtractDriverVendorANGLE(renderer_str);
   }
   is_desktop_core_profile =
       DesktopCoreCommonCheck(is_es, major_version, minor_version) &&
@@ -77,7 +79,7 @@ void GLVersionInfo::Initialize(const char* version_str,
       is_es3 = false;
     } else {
       major_version = 3;
-      minor_version = 0;
+      minor_version = 2;
     }
   }
 }
@@ -181,6 +183,36 @@ void GLVersionInfo::ParseVersionString(const char* version_str) {
   }
 }
 
+void GLVersionInfo::ExtractDriverVendorANGLE(const char* renderer_str) {
+  DCHECK(renderer_str);
+  DCHECK(is_angle);
+  DCHECK_EQ("ANGLE", driver_vendor);
+  base::StringPiece rstr(renderer_str);
+  DCHECK(base::StartsWith(rstr, "ANGLE (", base::CompareCase::SENSITIVE));
+  rstr = rstr.substr(sizeof("ANGLE (") - 1, rstr.size() - sizeof("ANGLE ("));
+  if (base::StartsWith(rstr, "Vulkan ", base::CompareCase::SENSITIVE)) {
+    size_t pos = rstr.find('(');
+    if (pos != std::string::npos)
+      rstr = rstr.substr(pos + 1, rstr.size() - 2);
+  }
+
+  if (base::StartsWith(rstr, "NVIDIA ", base::CompareCase::SENSITIVE))
+    driver_vendor = "ANGLE (NVIDIA)";
+  else if (base::StartsWith(rstr, "Radeon ", base::CompareCase::SENSITIVE))
+    driver_vendor = "ANGLE (AMD)";
+  else if (base::StartsWith(rstr, "Intel", base::CompareCase::SENSITIVE)) {
+    std::vector<base::StringPiece> pieces = base::SplitStringPiece(
+        rstr, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    for (size_t ii = 0; ii < pieces.size(); ++ii) {
+      if (base::StartsWith(pieces[ii], "Intel(R) ",
+                           base::CompareCase::SENSITIVE)) {
+        driver_vendor = "ANGLE (Intel)";
+        break;
+      }
+    }
+  }
+}
+
 bool GLVersionInfo::IsES3Capable(const gfx::ExtensionSet& extensions) const {
   // Version ES3 capable without extensions needed.
   if (IsAtLeastGLES(3, 0) || IsAtLeastGL(4, 2)) {
@@ -213,6 +245,57 @@ bool GLVersionInfo::IsES3Capable(const gfx::ExtensionSet& extensions) const {
 
 void GLVersionInfo::DisableES3ForTesting() {
   disable_es3_for_testing = true;
+}
+
+bool GLVersionInfo::IsVersionSubstituted() const {
+  // This is the only reason we're changing versions right now
+  return disable_es3_for_testing;
+}
+
+GLVersionInfo::VersionStrings GLVersionInfo::GetFakeVersionStrings(
+    unsigned major,
+    unsigned minor) const {
+  VersionStrings result;
+  if (is_es) {
+    if (major == 2) {
+      result.gl_version = "OpenGL ES 2.0";
+      result.glsl_version = "OpenGL ES GLSL ES 1.00";
+    } else if (major == 3) {
+      result.gl_version = "OpenGL ES 3.0";
+      result.glsl_version = "OpenGL ES GLSL ES 3.00";
+    } else {
+      NOTREACHED();
+    }
+  } else {
+    if (major == 4 && minor == 1) {
+      result.gl_version = "4.1";
+      result.glsl_version = "4.10";
+    } else if (major == 4 && minor == 0) {
+      result.gl_version = "4.0";
+      result.glsl_version = "4.00";
+    } else if (major == 3 && minor == 3) {
+      result.gl_version = "3.3";
+      result.glsl_version = "3.30";
+    } else if (major == 3 && minor == 2) {
+      result.gl_version = "3.2";
+      result.glsl_version = "1.50";
+    } else if (major == 3 && minor == 1) {
+      result.gl_version = "3.1";
+      result.glsl_version = "1.40";
+    } else if (major == 3 && minor == 0) {
+      result.gl_version = "3.0";
+      result.glsl_version = "1.30";
+    } else if (major == 2 && minor == 1) {
+      result.gl_version = "2.1";
+      result.glsl_version = "1.20";
+    } else if (major == 2 && minor == 0) {
+      result.gl_version = "2.0";
+      result.glsl_version = "1.10";
+    } else {
+      NOTREACHED();
+    }
+  }
+  return result;
 }
 
 }  // namespace gl

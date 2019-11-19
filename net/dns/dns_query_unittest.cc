@@ -4,8 +4,11 @@
 
 #include "net/dns/dns_query.h"
 
+#include <tuple>
+
 #include "base/stl_util.h"
 #include "net/base/io_buffer.h"
+#include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,6 +41,7 @@ const char kQNameData[] =
     "example"
     "\x03"
     "com";
+const base::StringPiece kQName(kQNameData, sizeof(kQNameData));
 
 TEST(DnsQueryTest, Constructor) {
   // This includes \0 at the end.
@@ -56,11 +60,10 @@ TEST(DnsQueryTest, Constructor) {
       0x00, 0x01,  // QCLASS: IN class.
   };
 
-  base::StringPiece qname(kQNameData, sizeof(kQNameData));
-  DnsQuery q1(0xbeef, qname, dns_protocol::kTypeA);
+  DnsQuery q1(0xbeef, kQName, dns_protocol::kTypeA);
   EXPECT_EQ(dns_protocol::kTypeA, q1.qtype());
   EXPECT_THAT(AsTuple(q1.io_buffer()), ElementsAreArray(query_data));
-  EXPECT_EQ(qname, q1.qname());
+  EXPECT_EQ(kQName, q1.qname());
 
   base::StringPiece question(reinterpret_cast<const char*>(query_data) + 12,
                              21);
@@ -115,6 +118,42 @@ TEST(DnsQueryTest, EDNS0) {
   base::StringPiece question(reinterpret_cast<const char*>(query_data) + 12,
                              21);
   EXPECT_EQ(question, q1.question());
+}
+
+TEST(DnsQueryTest, Block128Padding) {
+  DnsQuery query(46 /* id */, kQName, dns_protocol::kTypeAAAA,
+                 nullptr /* opt_rdata */,
+                 DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
+
+  // Query is expected to be short and fit in a single 128-byte padded block.
+  EXPECT_EQ(128, query.io_buffer()->size());
+
+  // Ensure created query still parses as expected.
+  DnsQuery parsed_query(query.io_buffer());
+  ASSERT_TRUE(parsed_query.Parse(query.io_buffer()->size()));
+  EXPECT_EQ(kQName, parsed_query.qname());
+  EXPECT_EQ(dns_protocol::kTypeAAAA, parsed_query.qtype());
+}
+
+TEST(DnsQueryTest, Block128Padding_LongName) {
+  std::string qname;
+  DNSDomainFromDot(
+      "really.long.domain.name.that.will.push.us.past.the.128.byte.block.size."
+      "because.it.would.be.nice.to.test.something.realy.long.like.that.com",
+      &qname);
+  DnsQuery query(112 /* id */, qname, dns_protocol::kTypeAAAA,
+                 nullptr /* opt_rdata */,
+                 DnsQuery::PaddingStrategy::BLOCK_LENGTH_128);
+
+  // Query is expected to pad into a second 128-byte block.
+  EXPECT_EQ(256, query.io_buffer()->size());
+  EXPECT_EQ(qname, query.qname());
+
+  // Ensure created query still parses as expected.
+  DnsQuery parsed_query(query.io_buffer());
+  ASSERT_TRUE(parsed_query.Parse(query.io_buffer()->size()));
+  EXPECT_EQ(qname, parsed_query.qname());
+  EXPECT_EQ(dns_protocol::kTypeAAAA, parsed_query.qtype());
 }
 
 TEST(DnsQueryParseTest, SingleQuestionForTypeARecord) {

@@ -10,8 +10,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_features.h"
 #include "ui/display/display_switches.h"
+#include "ui/display/fake/fake_display_snapshot.h"
 #include "ui/display/manager/display_configurator.h"
-#include "ui/display/manager/fake_display_snapshot.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/types/display_mode.h"
 #include "ui/gfx/geometry/rect.h"
@@ -172,8 +172,7 @@ TEST_P(DisplayChangeObserverTest, GetExternalManagedDisplayModeList) {
 TEST_P(DisplayChangeObserverTest, GetEmptyExternalManagedDisplayModeList) {
   FakeDisplaySnapshot display_snapshot(
       123, gfx::Point(), gfx::Size(), DISPLAY_CONNECTION_TYPE_UNKNOWN, false,
-      false, false, false, std::string(), {}, nullptr, nullptr, 0, gfx::Size(),
-      /*has_associated_crtc=*/true);
+      false, false, false, std::string(), {}, nullptr, nullptr, 0, gfx::Size());
 
   ManagedDisplayInfo::ManagedDisplayModeList display_modes =
       DisplayChangeObserver::GetExternalManagedDisplayModeList(
@@ -186,6 +185,10 @@ TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
 
   // 21.5" 1920x1080
   EXPECT_EQ(1.0f, ComputeDeviceScaleFactor(21.5f, gfx::Rect(1920, 1080)));
+
+  // 10" 1920x1200
+  EXPECT_NEAR(1.77777f, ComputeDeviceScaleFactor(10.f, gfx::Rect(1920, 1200)),
+              std::numeric_limits<float>::epsilon());
 
   // 12.1" 1280x800
   EXPECT_EQ(1.0f, ComputeDeviceScaleFactor(12.1f, gfx::Rect(1280, 800)));
@@ -208,13 +211,18 @@ TEST_P(DisplayChangeObserverTest, FindDeviceScaleFactor) {
   // 12.3" 2400x1600
   EXPECT_EQ(2.0f, ComputeDeviceScaleFactor(12.3f, gfx::Rect(2400, 1600)));
 
-// 12.3" 3000x2000 (meowth)
+  // 12.3" 3000x2000
   EXPECT_EQ(2.25f, ComputeDeviceScaleFactor(12.3f, gfx::Rect(3000, 2000)));
+
+  // 13.1" 3840x2160
+  EXPECT_NEAR(2.66666f, ComputeDeviceScaleFactor(13.1f, gfx::Rect(3840, 2160)),
+              std::numeric_limits<float>::epsilon());
 
   // Erroneous values should still work.
   EXPECT_EQ(1.0f, DisplayChangeObserver::FindDeviceScaleFactor(-100.0f));
   EXPECT_EQ(1.0f, DisplayChangeObserver::FindDeviceScaleFactor(0.0f));
-  EXPECT_EQ(2.25f, DisplayChangeObserver::FindDeviceScaleFactor(10000.0f));
+  EXPECT_NEAR(2.66666f, DisplayChangeObserver::FindDeviceScaleFactor(10000.0f),
+              std::numeric_limits<float>::epsilon());
 }
 
 TEST_P(DisplayChangeObserverTest,

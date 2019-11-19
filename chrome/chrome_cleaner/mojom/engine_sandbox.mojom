@@ -1,0 +1,82 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome_cleaner.mojom;
+
+import "chrome/chrome_cleaner/mojom/footprints.mojom";
+import "chrome/chrome_cleaner/mojom/cleaner_engine_requests.mojom";
+import "chrome/chrome_cleaner/mojom/engine_requests.mojom";
+import "chrome/chrome_cleaner/mojom/engine_file_requests.mojom";
+import "chrome/chrome_cleaner/mojom/pup.mojom";
+
+// All result_code parameters and return values in these interfaces are either
+// an EngineResultCode or, if higher than EngineResultCode::kEngineInternal, an
+// engine-specific value.
+
+// This interface passes scan results back from the target process to the
+// broker process.
+interface EngineScanResults {
+  // Called zero or more times with details of UwS.
+  FoundUwS(uint32 pup_id, PUP pup);
+
+  // Called exactly once, after any calls to FoundUwS.
+  Done(uint32 result_code);
+};
+
+// This interface passes cleanup results back from the target process to the
+// broker process.
+interface EngineCleanupResults {
+  // Called once the cleaner has finished cleaning.
+  Done(uint32 result_code);
+};
+
+// This interface sends commands from the sandbox broker process to the sandbox
+// target process.
+interface EngineCommands {
+  // Runs the engine's initialization routine.
+  Initialize(pending_associated_remote<EngineFileRequests> file_requests,
+             FilePath log_directory) => (uint32 result_code);
+
+  // Starts scanning the user's system.
+  // |enabled_uws| contains a list of UwS IDs to scan for.
+  // |enabled_trace_locations| is a list of trace locations, to which scanning
+  // should be limited.
+  // |include_details| is true if the results should include full details of
+  // each UwS found, false if the results should include only the ID.
+  // |results| is an interface which will be used to return results:
+  // FoundUwS will be called 0 or more times with details of the UwS found,
+  // followed by exactly one call to Done.
+  //
+  // If the scan request returns an error immediately, that error is returned
+  // and |results| is not used. Otherwise a success result code is returned and
+  // any further errors will be reported by calling Done on the |results|
+  // interface.
+  StartScan(
+    array<uint32> enabled_uws,
+    array<TraceLocation> enabled_trace_locations,
+    bool include_details,
+    pending_associated_remote<EngineFileRequests> file_requests,
+    pending_associated_remote<EngineRequests> sandboxed_engine_requests,
+    pending_associated_remote<EngineScanResults> results) =>
+      (uint32 result_code);
+
+  // Starts cleaning up the user's system. |enabled_uws| contains a list of UwS
+  // IDs to cleanup.
+  //
+  // If the cleanup request returns an error immediately, that error is returned
+  // and |results| is not used. Otherwise a success result code is returned and
+  // any further errors will be reported by calling Done on the |results|
+  // interface.
+  StartCleanup(
+    array<uint32> enabled_uws,
+    pending_associated_remote<EngineFileRequests> file_requests,
+    pending_associated_remote<EngineRequests> sandboxed_engine_requests,
+    pending_associated_remote<CleanerEngineRequests>
+      sandboxed_cleaner_engine_requests,
+    pending_associated_remote<EngineCleanupResults> results) =>
+      (uint32 result_code);
+
+  // Runs the engine's finalization routine.
+  Finalize() => (uint32 result_code);
+};

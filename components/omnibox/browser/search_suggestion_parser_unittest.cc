@@ -29,8 +29,9 @@ TEST(SearchSuggestionParserTest, DeserializeMalformedJsonIsInvalid) {
 
 TEST(SearchSuggestionParserTest, DeserializeJsonData) {
   std::string json_data = R"([{"one": 1}])";
-  std::unique_ptr<base::Value> manifest_value =
-      base::JSONReader::ReadDeprecated(json_data);
+  base::Optional<base::Value> manifest_value =
+      base::JSONReader::Read(json_data);
+  ASSERT_TRUE(manifest_value);
   std::unique_ptr<base::Value> result =
       SearchSuggestionParser::DeserializeJsonData(json_data);
   ASSERT_TRUE(result);
@@ -84,8 +85,8 @@ TEST(SearchSuggestionParserTest, ParseEmptyValueIsInvalid) {
 
 TEST(SearchSuggestionParserTest, ParseNonSuggestionValueIsInvalid) {
   std::string json_data = R"([{"one": 1}])";
-  std::unique_ptr<base::Value> root_val =
-      base::JSONReader::ReadDeprecated(json_data);
+  base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  ASSERT_TRUE(root_val);
   AutocompleteInput input;
   TestSchemeClassifier scheme_classifier;
   int default_result_relevance = 0;
@@ -120,8 +121,8 @@ TEST(SearchSuggestionParserTest, ParseSuggestResults) {
         "google:suggesttype": ["QUERY", "ENTITY"],
         "google:verbatimrelevance": 851
       }])";
-  std::unique_ptr<base::Value> root_val =
-      base::JSONReader::ReadDeprecated(json_data);
+  base::Optional<base::Value> root_val = base::JSONReader::Read(json_data);
+  ASSERT_TRUE(root_val);
   TestSchemeClassifier scheme_classifier;
   AutocompleteInput input(base::ASCIIToUTF16("chris"),
                           metrics::OmniboxEventProto::NTP, scheme_classifier);

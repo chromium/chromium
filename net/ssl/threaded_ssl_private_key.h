@@ -15,6 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "net/base/net_export.h"
 #include "net/ssl/ssl_private_key.h"
 
 namespace base {
@@ -25,7 +26,7 @@ namespace net {
 
 // An SSLPrivateKey implementation which offloads key operations to a background
 // task runner.
-class ThreadedSSLPrivateKey : public SSLPrivateKey {
+class NET_EXPORT ThreadedSSLPrivateKey : public SSLPrivateKey {
  public:
   // Interface for consumers to implement to perform the actual signing
   // operation.
@@ -81,7 +82,7 @@ class ThreadedSSLPrivateKey : public SSLPrivateKey {
 
   scoped_refptr<Core> core_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  base::WeakPtrFactory<ThreadedSSLPrivateKey> weak_factory_;
+  base::WeakPtrFactory<ThreadedSSLPrivateKey> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ThreadedSSLPrivateKey);
 };

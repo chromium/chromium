@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/elements/chrome_activity_overlay_view_controller.h"
 
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -11,10 +12,6 @@
 #endif
 
 namespace {
-// Alpha of the presented view's background.
-const CGFloat kViewBackgroundAlpha = 0.5;
-// Background white color of container view.
-const CGFloat kContainerBackgroundWhiteColor = 0.9;
 // Spacing between container view and subviews.
 const CGFloat kContainerViewSpacing = 25;
 // Corner radius of container view.
@@ -27,19 +24,15 @@ const CGFloat kActivityIndicatorViewSize = 55;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor =
-      [UIColor colorWithWhite:0 alpha:kViewBackgroundAlpha];
-
+  self.view.backgroundColor = [UIColor colorNamed:kScrimBackgroundColor];
   UIView* containerView = [[UIView alloc] init];
   containerView.translatesAutoresizingMaskIntoConstraints = NO;
-  containerView.backgroundColor =
-      [UIColor colorWithWhite:kContainerBackgroundWhiteColor alpha:1.0];
+  containerView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   containerView.layer.cornerRadius = kContainerCornerRadius;
   containerView.layer.masksToBounds = YES;
-
   UIActivityIndicatorView* activityView = [[UIActivityIndicatorView alloc]
       initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
-  activityView.color = [UIColor blackColor];
+  activityView.color = [UIColor colorNamed:kTextPrimaryColor];
   activityView.translatesAutoresizingMaskIntoConstraints = NO;
   [activityView startAnimating];
   [containerView addSubview:activityView];
@@ -73,6 +66,11 @@ const CGFloat kActivityIndicatorViewSize = 55;
 
   [self.view addSubview:containerView];
   AddSameCenterConstraints(self.view, containerView);
+
+  // To allow message text to be read by screen reader, and to make sure the
+  // speech will finish.
+  UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
+                                  self.messageText);
 }
 
 @end

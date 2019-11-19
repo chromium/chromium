@@ -1,0 +1,28 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-Chrome-OS builds cannot depend on //chromeos")
+
+component("audio") {
+  output_name = "chromeos_dbus_audio"
+
+  defines = [ "IS_DBUS_AUDIO_IMPL" ]
+
+  deps = [
+    "//base",
+    "//chromeos/dbus:common",
+    "//dbus",
+  ]
+
+  sources = [
+    "audio_node.cc",
+    "audio_node.h",
+    "cras_audio_client.cc",
+    "cras_audio_client.h",
+    "fake_cras_audio_client.cc",
+    "fake_cras_audio_client.h",
+    "volume_state.cc",
+    "volume_state.h",
+  ]
+}

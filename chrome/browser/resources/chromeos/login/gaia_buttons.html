@@ -4,32 +4,29 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
 <!--
   Material design buttons that mimic GAIA's buttons.
 
   Example:
-    <gaia-button type="dialog"></gaia-button>
+    <gaia-button link></gaia-button>
 
   Attributes:
-    'type' - there are three kinds of button: regular blue button (none type
-             provided), dialog button (type="dialog") and a button that looks
-             more like a link (type="link").
+    'link' - there are two kinds of button: regular blue button and a button
+             that looks more like a link.
     'disabled' - button is disabled when the attribute is set.
 -->
 <dom-module id="gaia-button">
   <link rel="stylesheet" href="gaia_button.css">
 
   <template>
-    <div on-click="onClick_" on-tap="onClick_">
-      <paper-button id="button" disabled="[[disabled]]"
-          on-focused-changed="focusedChanged_">
-        <slot></slot>
-      </paper-button>
-    </div>
+    <cr-button id="button" disabled="[[disabled]]" on-click="onClick_"
+        noink$="[[link]]">
+      <slot></slot>
+    </cr-button>
   </template>
 </dom-module>
 
@@ -51,10 +48,9 @@
   <link rel="stylesheet" href="gaia_icon_button.css">
 
   <template>
-    <div on-click="onClick_" on-tap="onClick_">
-      <paper-icon-button id="iconButton" icon="[[icon]]" disabled="[[disabled]]"
-          aria-label$="[[ariaLabel]]">
-      </paper-icon-button>
+    <div>
+      <cr-icon-button id="iconButton" iron-icon="[[icon]]" on-click="onClick_"
+          disabled="[[disabled]]" aria-label$="[[ariaLabel]]"></cr-icon-button>
     </div>
   </template>
 </dom-module>

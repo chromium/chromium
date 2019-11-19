@@ -58,7 +58,7 @@ SideSwipeDetector::SideSwipeDetector(CastGestureHandler* gesture_handler,
       gesture_handler_(gesture_handler),
       root_window_(root_window),
       current_swipe_(CastSideSwipeOrigin::NONE),
-      current_pointer_id_(ui::PointerDetails::kUnknownPointerId) {
+      current_pointer_id_(ui::kPointerIdUnknown) {
   DCHECK(gesture_handler);
   DCHECK(root_window);
   root_window_->GetHost()->GetEventSource()->AddEventRewriter(this);
@@ -99,11 +99,11 @@ void SideSwipeDetector::StashEvent(const ui::TouchEvent& event) {
   stashed_events_.push_back(event);
 }
 
-ui::EventRewriteStatus SideSwipeDetector::RewriteEvent(
+ui::EventDispatchDetails SideSwipeDetector::RewriteEvent(
     const ui::Event& event,
-    std::unique_ptr<ui::Event>* new_event) {
+    const Continuation continuation) {
   if (!event.IsTouchEvent()) {
-    return ui::EVENT_REWRITE_CONTINUE;
+    return SendEvent(continuation, &event);
   }
 
   const ui::TouchEvent* touch_event = event.AsTouchEvent();
@@ -127,12 +127,12 @@ ui::EventRewriteStatus SideSwipeDetector::RewriteEvent(
     // Check to see if we have any potential consumers of events on this side.
     // If not, we can continue on without consuming it.
     if (!gesture_handler_->CanHandleSwipe(side_swipe_origin)) {
-      return ui::EVENT_REWRITE_CONTINUE;
+      return SendEvent(continuation, &event);
     }
 
     // Detect the beginning of a system gesture swipe.
     if (touch_event->type() != ui::ET_TOUCH_PRESSED) {
-      return ui::EVENT_REWRITE_CONTINUE;
+      return SendEvent(continuation, &event);
     }
 
     current_swipe_ = side_swipe_origin;
@@ -142,7 +142,7 @@ ui::EventRewriteStatus SideSwipeDetector::RewriteEvent(
     gesture_handler_->HandleSideSwipe(CastSideSwipeEvent::BEGIN,
                                       side_swipe_origin, touch_location);
 
-    VLOG(1) << "side swipe gesture begin @ " << touch_location.ToString();
+    DVLOG(1) << "side swipe gesture begin @ " << touch_location.ToString();
     current_swipe_time_ = base::ElapsedTimer();
 
     // Stash a copy of the event should we decide to reconstitute it later if we
@@ -154,17 +154,17 @@ ui::EventRewriteStatus SideSwipeDetector::RewriteEvent(
     root_window_->CleanupGestureState();
 
     // And then stop the original event from propagating.
-    return ui::EVENT_REWRITE_DISCARD;
+    return DiscardEvent(continuation);
   }
 
   // If no swipe in progress, just move on.
   if (current_swipe_ == CastSideSwipeOrigin::NONE) {
-    return ui::EVENT_REWRITE_CONTINUE;
+    return SendEvent(continuation, &event);
   }
 
   // If the finger involved is not the one we're looking for, discard it.
   if (touch_event->pointer_details().id != current_pointer_id_) {
-    return ui::EVENT_REWRITE_DISCARD;
+    return DiscardEvent(continuation);
   }
 
   // A swipe is in progress, or has completed, so stop propagation of underlying
@@ -174,51 +174,41 @@ ui::EventRewriteStatus SideSwipeDetector::RewriteEvent(
   // The finger has lifted, which means the end of the gesture, or if the finger
   // hasn't travelled far enough, replay the original events.
   if (touch_event->type() == ui::ET_TOUCH_RELEASED) {
-    VLOG(1) << "gesture release; time since press: "
-            << current_swipe_time_.Elapsed().InMilliseconds() << "ms @ "
-            << touch_location.ToString();
+    DVLOG(1) << "gesture release; time since press: "
+             << current_swipe_time_.Elapsed().InMilliseconds() << "ms @ "
+             << touch_location.ToString();
     gesture_handler_->HandleSideSwipe(CastSideSwipeEvent::END, current_swipe_,
                                       touch_location);
     current_swipe_ = CastSideSwipeOrigin::NONE;
-    current_pointer_id_ = ui::PointerDetails::kUnknownPointerId;
+    current_pointer_id_ = ui::kPointerIdUnknown;
 
     // If the finger is still inside the touch margin at release, this is not
-    // really a side swipe. Start streaming out events we stashed for later
-    // retrieval.
+    // really a side swipe. Stream out events we stashed for later retrieval.
     if (side_swipe_origin != CastSideSwipeOrigin::NONE &&
         !stashed_events_.empty()) {
-      *new_event = ui::Event::Clone(stashed_events_.front());
-      stashed_events_.pop_front();
-      return ui::EVENT_REWRITE_DISPATCH_ANOTHER;
+      ui::EventDispatchDetails details;
+      for (const auto& it : stashed_events_) {
+        details = SendEvent(continuation, &it);
+        if (details.dispatcher_destroyed)
+          break;
+      }
+      stashed_events_.clear();
+      return details;
     }
 
     // Otherwise, clear them.
     stashed_events_.clear();
-
-    return ui::EVENT_REWRITE_DISCARD;
+    return DiscardEvent(continuation);
   }
 
   // The system gesture is ongoing...
   gesture_handler_->HandleSideSwipe(CastSideSwipeEvent::CONTINUE,
                                     current_swipe_, touch_location);
-  VLOG(1) << "gesture continue; time since press: "
-          << current_swipe_time_.Elapsed().InMilliseconds() << "ms @ "
-          << touch_location.ToString();
+  DVLOG(1) << "gesture continue; time since press: "
+           << current_swipe_time_.Elapsed().InMilliseconds() << "ms @ "
+           << touch_location.ToString();
 
-  return ui::EVENT_REWRITE_DISCARD;
-}
-
-ui::EventRewriteStatus SideSwipeDetector::NextDispatchEvent(
-    const ui::Event& last_event,
-    std::unique_ptr<ui::Event>* new_event) {
-  if (stashed_events_.empty()) {
-    return ui::EVENT_REWRITE_DISCARD;
-  }
-
-  *new_event = ui::Event::Clone(stashed_events_.front());
-  stashed_events_.pop_front();
-
-  return ui::EVENT_REWRITE_DISPATCH_ANOTHER;
+  return DiscardEvent(continuation);
 }
 
 }  // namespace chromecast

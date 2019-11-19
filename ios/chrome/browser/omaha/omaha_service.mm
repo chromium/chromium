@@ -36,14 +36,14 @@
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/public/provider/chrome/browser/omaha/omaha_service_provider.h"
 #include "ios/public/provider/chrome/browser/omaha/omaha_xml_writer.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
-#include "libxml/xmlwriter.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/load_flags.h"
 #include "net/url_request/url_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/libxml/chromium/xml_writer.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -71,50 +71,38 @@ NSString* const kRetryRequestIdKey = @"ChromeOmahaServiceRetryRequestId";
 
 class XmlWrapper : public OmahaXmlWriter {
  public:
-  XmlWrapper()
-      : buffer_(xmlBufferCreate()),
-        writer_(xmlNewTextWriterMemory(buffer_, /* compression */ 0)) {
-    DCHECK(buffer_);
-    DCHECK(writer_);
+  XmlWrapper() {
+    writer_.StartWriting();
+    writer_.StopIndenting();
   }
 
-  ~XmlWrapper() override {
-    xmlFreeTextWriter(writer_);
-    xmlBufferFree(buffer_);
-  }
+  ~XmlWrapper() override = default;
 
   void StartElement(const char* name) override {
     DCHECK(name);
-    int result = xmlTextWriterStartElement(
-        writer_, reinterpret_cast<const xmlChar*>(name));
-    DCHECK_GE(result, 0);
+    bool ok = writer_.StartElement(name);
+    DCHECK(ok);
   }
 
   void EndElement() override {
-    int result = xmlTextWriterEndElement(writer_);
-    DCHECK_GE(result, 0);
+    bool ok = writer_.EndElement();
+    DCHECK(ok);
   }
 
   void WriteAttribute(const char* name, const char* value) override {
     DCHECK(name);
-    int result = xmlTextWriterWriteAttribute(
-        writer_, reinterpret_cast<const xmlChar*>(name),
-        reinterpret_cast<const xmlChar*>(value));
-    DCHECK_GE(result, 0);
+    bool ok = writer_.AddAttribute(name, value);
+    DCHECK(ok);
   }
 
-  void Finalize() override {
-    int result = xmlTextWriterEndDocument(writer_);
-    DCHECK_GE(result, 0);
-  }
+  void Finalize() override { writer_.StopWriting(); }
 
   std::string GetContentAsString() override {
-    return std::string(reinterpret_cast<char*>(buffer_->content));
+    return writer_.GetWrittenString();
   }
 
  private:
-  xmlBufferPtr buffer_;
-  xmlTextWriterPtr writer_;
+  XmlWriter writer_;
 
   DISALLOW_COPY_AND_ASSIGN(XmlWrapper);
 };
@@ -308,9 +296,9 @@ void OmahaService::Start(std::unique_ptr<network::SharedURLLoaderFactoryInfo>
   DCHECK(!result->url_loader_factory_info_ || !result->url_loader_factory_);
   result->url_loader_factory_info_ = std::move(url_loader_factory_info);
   result->locale_lang_ = GetApplicationContext()->GetApplicationLocale();
-  base::PostTaskWithTraits(FROM_HERE, {web::WebThread::IO},
-                           base::BindOnce(&OmahaService::SendOrScheduleNextPing,
-                                          base::Unretained(result)));
+  base::PostTask(FROM_HERE, {web::WebThread::IO},
+                 base::BindOnce(&OmahaService::SendOrScheduleNextPing,
+                                base::Unretained(result)));
 }
 
 OmahaService::OmahaService()
@@ -390,10 +378,9 @@ void OmahaService::Initialize() {
 // static
 void OmahaService::GetDebugInformation(
     const base::Callback<void(base::DictionaryValue*)> callback) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {web::WebThread::IO},
-      base::BindOnce(&OmahaService::GetDebugInformationOnIOThread,
-                     base::Unretained(GetInstance()), callback));
+  base::PostTask(FROM_HERE, {web::WebThread::IO},
+                 base::BindOnce(&OmahaService::GetDebugInformationOnIOThread,
+                                base::Unretained(GetInstance()), callback));
 }
 
 // static
@@ -550,8 +537,7 @@ void OmahaService::SendPing() {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
   resource_request->method = "POST";
-  resource_request->load_flags =
-      net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   // If this is not the first try, notify the omaha server.
   if (number_of_tries_ && IsNextPingInstallRetry()) {
@@ -651,9 +637,8 @@ void OmahaService::OnURLLoadComplete(
   // Send notification for updates if needed.
   UpgradeRecommendedDetails* details = [delegate upgradeRecommendedDetails];
   if (details) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {web::WebThread::UI},
-        base::BindOnce(upgrade_recommended_callback_, *details));
+    base::PostTask(FROM_HERE, {web::WebThread::UI},
+                   base::BindOnce(upgrade_recommended_callback_, *details));
   }
 }
 
@@ -682,9 +667,8 @@ void OmahaService::GetDebugInformationOnIOThread(
                         (timer_.desired_run_time() - base::TimeTicks::Now())));
 
   // Sending the value to the callback.
-  base::PostTaskWithTraits(
-      FROM_HERE, {web::WebThread::UI},
-      base::BindOnce(callback, base::Owned(result.release())));
+  base::PostTask(FROM_HERE, {web::WebThread::UI},
+                 base::BindOnce(callback, base::Owned(result.release())));
 }
 
 bool OmahaService::IsNextPingInstallRetry() {

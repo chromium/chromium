@@ -34,43 +34,70 @@
 #include <limits>
 
 #include "base/macros.h"
+#include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-// Maintains a stationary clock time during script execution.  Tries to track
-// the glass time (the moment photons leave the screen) of the current animation
-// frame.
+// Maintains a stationary clock time during script execution. Tracks the glass
+// time of the beginning of the current animation frame (i.e. the moment photons
+// left the screen for the previous frame).
 class CORE_EXPORT AnimationClock {
   DISALLOW_NEW();
 
  public:
-  using TimeTicksFunction = base::TimeTicks (*)();
-  explicit AnimationClock(
-      TimeTicksFunction monotonically_increasing_time = WTF::CurrentTimeTicks)
-      : monotonically_increasing_time_(monotonically_increasing_time),
-        time_(),
+  AnimationClock()
+      : time_(),
+        can_dynamically_update_time_(false),
+        clock_(base::DefaultTickClock::GetInstance()),
         task_for_which_time_was_calculated_(
             std::numeric_limits<unsigned>::max()) {}
 
   void UpdateTime(base::TimeTicks time);
-  double CurrentTime();
-  void ResetTimeForTesting(base::TimeTicks time = base::TimeTicks());
-  void DisableSyntheticTimeForTesting() {
-    monotonically_increasing_time_ = nullptr;
+  base::TimeTicks CurrentTime();
+
+  // The HTML spec says that the clock for animations is only updated once per
+  // rendering lifecycle, at the start. However the spec also assumes that the
+  // user agent runs rendering lifecycles constantly, back-to-back. In Blink we
+  // attempt to *not* run rendering lifecycles as much as possible, to avoid
+  // unnecessary CPU usage.
+  //
+  // As such, when outside a rendering lifecycle (for example, if a setInterval
+  // triggers) we allow the AnimationClock to dynamically adjust its time to
+  // look like it is being updated by the rendering lifecycles that never
+  // happened.
+  //
+  // TODO(crbug.com/995806): Allowing the AnimationClock to update itself is
+  // error prone. We should instead get the latest impl-frame time from the
+  // compositor when outside of a Blink rendering lifecycle (whilst still
+  // not changing within the same task).
+  void SetAllowedToDynamicallyUpdateTime(bool can_dynamically_update_time) {
+    can_dynamically_update_time_ = can_dynamically_update_time;
   }
 
-  // notifyTaskStart should be called right before the main message loop starts
-  // to run the next task from the message queue.
+  // When using our dynamically update behavior outside rendering lifecycles, we
+  // still do not want the time to move forward within the same task (e.g.
+  // within a single setInterval callback). To achieve this we track the task in
+  // which the time was last updated, and don't update it again until we are in
+  // a new task.
   static void NotifyTaskStart() { ++currently_running_task_; }
 
+  void ResetTimeForTesting();
+  // The caller owns the passed in clock, which must outlive the AnimationClock.
+  void OverrideDynamicClockForTesting(const base::TickClock*);
+
  private:
-  TimeTicksFunction monotonically_increasing_time_;
   base::TimeTicks time_;
+
+  // See |SetAllowedToDynamicallyUpdateTime| documentation for these members.
+  bool can_dynamically_update_time_;
+  const base::TickClock* clock_;
+
+  // See |NotifyTaskStart| documentation for these members.
   unsigned task_for_which_time_was_calculated_;
   static unsigned currently_running_task_;
+
   DISALLOW_COPY_AND_ASSIGN(AnimationClock);
 };
 

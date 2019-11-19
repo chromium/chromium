@@ -5,7 +5,7 @@
 (async function() {
   await TestRunner.setupStartupTest('resources/console-clear-arguments-on-frame-navigation.html');
   TestRunner.addResult(
-      `Tests that Web Inspector will discard console message arguments and convert first argument into a string when iframe where the message was logged is navigated to a different page.\n`);
+      `Tests that Web Inspector will get the console message's all arguments.\n`);
   await TestRunner.loadModule('console_test_runner');
 
   for (var message of SDK.consoleModel.messages()) {

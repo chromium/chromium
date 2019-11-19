@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_SUGGESTION_MARKER_H_
 
 #include "third_party/blink/renderer/core/editing/markers/styleable_marker.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -55,11 +56,12 @@ class CORE_EXPORT SuggestionMarker final : public StyleableMarker {
   DISALLOW_COPY_AND_ASSIGN(SuggestionMarker);
 };
 
-DEFINE_TYPE_CASTS(SuggestionMarker,
-                  DocumentMarker,
-                  marker,
-                  marker->GetType() == DocumentMarker::kSuggestion,
-                  marker.GetType() == DocumentMarker::kSuggestion);
+template <>
+struct DowncastTraits<SuggestionMarker> {
+  static bool AllowFrom(const DocumentMarker& marker) {
+    return marker.GetType() == DocumentMarker::kSuggestion;
+  }
+};
 
 }  // namespace blink
 

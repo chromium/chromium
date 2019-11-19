@@ -1,0 +1,22 @@
+<!-- 
+  @UIA-WIN-ALLOW:Scroll.HorizontalScrollPercent=*
+  @UIA-WIN-ALLOW:Scroll.HorizontalViewSize=*
+  @UIA-WIN-ALLOW:Scroll.HorizontallyScrollable=*
+  @UIA-WIN-ALLOW:Scroll.VerticalScrollPercent=*
+  @UIA-WIN-ALLOW:Scroll.VerticalViewSize=*
+  @UIA-WIN-ALLOW:Scroll.VerticallyScrollable=*
+ -->
+<!DOCTYPE html>
+<html>
+  <body>
+    <div aria-label='not'>
+      not scrollable
+    </div>
+    <div style='width:100px; overflow:auto' aria-label='x'>
+        <div style='width:200px; height:100px'></div>
+    </div>
+    <div style='height:100px; overflow:auto' aria-label='y'>
+        <div style='width:100px; height:200px'></div>
+    </div>
+  </body>
+</html>

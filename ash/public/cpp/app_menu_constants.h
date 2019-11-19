@@ -59,6 +59,14 @@ enum CommandId {
   // Command for stopping an app, or stopping a VM via an associated app. Used
   // by AppContextMenu and LauncherContextMenu.
   STOP_APP = 2000,
+
+  // Reserved range for extension/app custom menus as defined by
+  //   IDC_EXTENSIONS_CONTEXT_CUSTOM_FIRST
+  //   IDC_EXTENSIONS_CONTEXT_CUSTOM_LAST
+  // in chrome/app/chrome_command_ids.h and used in ContextMenuMatcher.
+  EXTENSIONS_CONTEXT_CUSTOM_FIRST = 49000,
+  EXTENSIONS_CONTEXT_CUSTOM_LAST = 50000,
+
   COMMAND_ID_COUNT
 };
 

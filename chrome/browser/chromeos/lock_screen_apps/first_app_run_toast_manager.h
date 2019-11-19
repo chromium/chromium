@@ -9,14 +9,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-#include "ui/aura/window_observer.h"
+#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 class Profile;
-
-namespace views {
-class Widget;
-}
 
 namespace extensions {
 class AppWindow;
@@ -77,15 +73,16 @@ class FirstAppRunToastManager : public extensions::AppWindowRegistry::Observer,
   // The widget associated with the first run dialog, if the dialog is shown.
   views::Widget* toast_widget_ = nullptr;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> toast_widget_observer_;
+  ScopedObserver<views::Widget, views::WidgetObserver> toast_widget_observer_{
+      this};
   ScopedObserver<extensions::AppWindowRegistry,
                  extensions::AppWindowRegistry::Observer>
-      app_window_observer_;
+      app_window_observer_{this};
 
   class AppWidgetObserver;
   std::unique_ptr<AppWidgetObserver> app_widget_observer_;
 
-  base::WeakPtrFactory<FirstAppRunToastManager> weak_ptr_factory_;
+  base::WeakPtrFactory<FirstAppRunToastManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FirstAppRunToastManager);
 };

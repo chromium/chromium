@@ -30,7 +30,7 @@ class FakeNetworkManager : public rtc::NetworkManager {
   bool started_;
   std::unique_ptr<rtc::Network> network_;
 
-  base::WeakPtrFactory<FakeNetworkManager> weak_factory_;
+  base::WeakPtrFactory<FakeNetworkManager> weak_factory_{this};
 };
 
 }  // namespace remoting

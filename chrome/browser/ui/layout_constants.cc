@@ -32,26 +32,21 @@ int GetLayoutConstant(LayoutConstant constant) {
     case BOOKMARK_BAR_HEIGHT:
       // The fixed margin ensures the bookmark buttons appear centered relative
       // to the white space above and below.
-      static constexpr int kBookmarkBarAttachedVerticalMargin = 5;
+      static constexpr int kBookmarkBarAttachedVerticalMargin = 4;
       return GetLayoutConstant(BOOKMARK_BAR_BUTTON_HEIGHT) +
              kBookmarkBarAttachedVerticalMargin;
     case BOOKMARK_BAR_BUTTON_HEIGHT:
       return touch_ui ? 36 : 28;
     case BOOKMARK_BAR_NTP_HEIGHT:
       return touch_ui ? GetLayoutConstant(BOOKMARK_BAR_HEIGHT) : 39;
-    case HOSTED_APP_MENU_BUTTON_SIZE:
+    case WEB_APP_MENU_BUTTON_SIZE:
       return 24;
-    case HOSTED_APP_PAGE_ACTION_ICON_SIZE:
+    case WEB_APP_PAGE_ACTION_ICON_SIZE:
       // We must limit the size of icons in the title bar to avoid vertically
       // stretching the container view.
       return 16;
     case LOCATION_BAR_BUBBLE_FONT_VERTICAL_PADDING:
       return 2;
-    case LOCATION_BAR_BUBBLE_CORNER_RADIUS:
-      // TODO(tapted): This should match BubbleBorder::GetBorderRadius() once
-      // MD is default for secondary UI everywhere. That is, the constant should
-      // move to views/layout_provider.h so that all bubbles are consistent.
-      return 8;
     case LOCATION_BAR_BUBBLE_ANCHOR_VERTICAL_INSET:
       return 1;
     case LOCATION_BAR_CHILD_INTERIOR_PADDING:
@@ -76,6 +71,8 @@ int GetLayoutConstant(LayoutConstant constant) {
       return touch_ui ? 4 : 6;
     case TABSTRIP_TOOLBAR_OVERLAP:
       return 1;
+    case TOOLBAR_BUTTON_HEIGHT:
+      return touch_ui ? 48 : 28;
     case TOOLBAR_ELEMENT_PADDING:
       return touch_ui ? 0 : 4;
     case TOOLBAR_STANDARD_SPACING:
@@ -103,7 +100,7 @@ gfx::Insets GetLayoutInsets(LayoutInset inset) {
     }
 
     case TOOLBAR_INTERIOR_MARGIN:
-      return touch_ui ? gfx::Insets() : gfx::Insets(4, 8, 5, 8);
+      return touch_ui ? gfx::Insets() : gfx::Insets(4, 8);
   }
   NOTREACHED();
   return gfx::Insets();

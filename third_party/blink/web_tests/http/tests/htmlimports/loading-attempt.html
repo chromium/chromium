@@ -22,15 +22,21 @@ function nosuchErrorHandler() { onerrorWasCalledOnFail = true; }
 <link rel="import" href="resources/no-such.html" onload="nosuchLoadHandler()" onerror="nosuchErrorHandler()">
 
 <script>
-test(function() {
-    assert_true(onloadWasCalledOnSuccess);
-    assert_false(onerrorWasCalledOnSuccess);
-}, 'The loading attempt must be considered successful if IMPORT is not null on the algorithm completion, and failed otherwise. (1)');
+var onloadTest = async_test("Testing html import load order");
 
-test(function() {
-    assert_false(onloadWasCalledOnFail);
-    assert_true(onerrorWasCalledOnFail);
-}, 'The loading attempt must be considered successful if IMPORT is not null on the algorithm completion, and failed otherwise. (2)');
+window.onload = function () {
+    test(() => { 
+        assert_true(onloadWasCalledOnSuccess);
+        assert_false(onerrorWasCalledOnSuccess);
+    }, 'The loading attempt must be considered successful if IMPORT is not null on the algorithm completion, and failed otherwise. (1)');
+
+    test(() => {
+        assert_false(onloadWasCalledOnFail);
+        assert_true(onerrorWasCalledOnFail);
+    }, 'The loading attempt must be considered successful if IMPORT is not null on the algorithm completion, and failed otherwise. (2)');
+
+    onloadTest.done();
+};
 
 t1 = async_test('The loading attempt must be considered successful if IMPORT is not null on the algorithm completion, and failed otherwise. (3)')
 t1.step(function() {

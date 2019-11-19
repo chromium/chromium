@@ -51,7 +51,7 @@ class NaClBrowser {
 
   // Enqueues reply() in the message loop when all the resources needed to start
   // a process have been acquired.
-  void WaitForResources(const base::Closure& reply);
+  void WaitForResources(base::OnceClosure reply);
 
   // Asynchronously attempt to get the IRT open.
   // This is entailed by EnsureInitialized.  This method is exposed as part of
@@ -121,7 +121,7 @@ class NaClBrowser {
 
   bool QueryKnownToValidate(const std::string& signature, bool off_the_record);
   void SetKnownToValidate(const std::string& signature, bool off_the_record);
-  void ClearValidationCache(const base::Closure& callback);
+  void ClearValidationCache(base::OnceClosure callback);
 #if defined(OS_WIN)
   // Get path to NaCl loader on the filesystem if possible.
   // |exe_path| does not change if the method fails.
@@ -201,13 +201,13 @@ class NaClBrowser {
   bool has_failed_;
 
   // A list of pending tasks to start NaCl processes.
-  std::vector<base::Closure> waiting_;
+  std::vector<base::OnceClosure> waiting_;
 
   base::circular_deque<base::Time> crash_times_;
 
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_ =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                       base::TaskPriority::USER_VISIBLE});
 
   DISALLOW_COPY_AND_ASSIGN(NaClBrowser);
 };

@@ -25,6 +25,9 @@ public class NotificationJobService extends JobService {
         PersistableBundle bundle = new PersistableBundle();
         bundle.putString(NotificationConstants.EXTRA_NOTIFICATION_ID,
                 intent.getStringExtra(NotificationConstants.EXTRA_NOTIFICATION_ID));
+        bundle.putInt(NotificationConstants.EXTRA_NOTIFICATION_TYPE,
+                intent.getIntExtra(NotificationConstants.EXTRA_NOTIFICATION_TYPE,
+                        NotificationType.WEB_PERSISTENT));
         bundle.putString(NotificationConstants.EXTRA_NOTIFICATION_INFO_ORIGIN,
                 intent.getStringExtra(NotificationConstants.EXTRA_NOTIFICATION_INFO_ORIGIN));
         bundle.putString(NotificationConstants.EXTRA_NOTIFICATION_INFO_SCOPE,

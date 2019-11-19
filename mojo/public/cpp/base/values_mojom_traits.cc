@@ -25,8 +25,7 @@ bool StructTraits<mojo_base::mojom::DictionaryValueDataView, base::Value>::Read(
       return false;
     dict_storage.emplace_back(key.as_string(), std::move(value));
   }
-  *value_out = base::Value(base::Value::DictStorage(std::move(dict_storage),
-                                                    base::KEEP_LAST_OF_DUPES));
+  *value_out = base::Value(base::Value::DictStorage(std::move(dict_storage)));
   return true;
 }
 

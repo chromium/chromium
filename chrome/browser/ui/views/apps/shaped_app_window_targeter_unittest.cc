@@ -11,19 +11,18 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"
-#include "services/ws/public/mojom/window_tree_constants.mojom.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/test/views_test_base.h"
 #include "ui/wm/core/default_activation_client.h"
 #include "ui/wm/core/easy_resize_window_targeter.h"
 
 using extensions::AppWindow;
 
-class ShapedAppWindowTargeterTest : public aura::test::AuraTestBase {
+class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
  public:
   ShapedAppWindowTargeterTest()
       : web_view_(NULL) {
@@ -38,15 +37,15 @@ class ShapedAppWindowTargeterTest : public aura::test::AuraTestBase {
 
  protected:
   void SetUp() override {
-    aura::test::AuraTestBase::SetUp();
+    views::ViewsTestBase::SetUp();
     new wm::DefaultActivationClient(root_window());
-    widget_.reset(new views::Widget);
+    widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
     params.remove_standard_frame = true;
     params.bounds = gfx::Rect(30, 30, 100, 100);
     params.context = root_window();
     params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    widget_->Init(params);
+    widget_->Init(std::move(params));
 
     app_window_.set_web_view_for_testing(&web_view_);
     app_window_.set_window_for_testing(widget_.get());
@@ -56,15 +55,15 @@ class ShapedAppWindowTargeterTest : public aura::test::AuraTestBase {
 
   void TearDown() override {
     widget_.reset();
-    aura::test::AuraTestBase::TearDown();
+    views::ViewsTestBase::TearDown();
   }
 
   void SetWindowResizable(bool resizable) {
     widget_->GetNativeWindow()->SetProperty(
         aura::client::kResizeBehaviorKey,
-        ws::mojom::kResizeBehaviorCanMaximize |
-            ws::mojom::kResizeBehaviorCanMinimize |
-            (resizable ? ws::mojom::kResizeBehaviorCanResize : 0));
+        aura::client::kResizeBehaviorCanMaximize |
+            aura::client::kResizeBehaviorCanMinimize |
+            (resizable ? aura::client::kResizeBehaviorCanResize : 0));
   }
 
  private:

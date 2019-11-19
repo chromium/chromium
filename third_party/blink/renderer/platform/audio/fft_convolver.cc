@@ -31,8 +31,6 @@
 
 namespace blink {
 
-using namespace vector_math;
-
 FFTConvolver::FFTConvolver(size_t fft_size)
     : frame_(fft_size),
       read_write_index_(0),
@@ -52,8 +50,6 @@ void FFTConvolver::Process(const FFTFrame* fft_kernel,
   bool is_good =
       !(half_size % frames_to_process && frames_to_process % half_size);
   DCHECK(is_good);
-  if (!is_good)
-    return;
 
   size_t number_of_divisions =
       half_size <= frames_to_process ? (frames_to_process / half_size) : 1;
@@ -65,13 +61,9 @@ void FFTConvolver::Process(const FFTFrame* fft_kernel,
     // Copy samples to input buffer (note contraint above!)
     float* input_p = input_buffer_.Data();
 
-    // Sanity check
-    bool is_copy_good1 =
-        source_p && input_p &&
-        read_write_index_ + division_size <= input_buffer_.size();
-    DCHECK(is_copy_good1);
-    if (!is_copy_good1)
-      return;
+    DCHECK(source_p);
+    DCHECK(input_p);
+    DCHECK_LE(read_write_index_ + division_size, input_buffer_.size());
 
     memcpy(input_p + read_write_index_, source_p,
            sizeof(float) * division_size);
@@ -79,13 +71,9 @@ void FFTConvolver::Process(const FFTFrame* fft_kernel,
     // Copy samples from output buffer
     float* output_p = output_buffer_.Data();
 
-    // Sanity check
-    bool is_copy_good2 =
-        dest_p && output_p &&
-        read_write_index_ + division_size <= output_buffer_.size();
-    DCHECK(is_copy_good2);
-    if (!is_copy_good2)
-      return;
+    DCHECK(dest_p);
+    DCHECK(output_p);
+    DCHECK_LE(read_write_index_ + division_size, output_buffer_.size());
 
     memcpy(dest_p, output_p + read_write_index_, sizeof(float) * division_size);
     read_write_index_ += division_size;
@@ -98,15 +86,12 @@ void FFTConvolver::Process(const FFTFrame* fft_kernel,
       frame_.DoInverseFFT(output_buffer_.Data());
 
       // Overlap-add 1st half from previous time
-      Vadd(output_buffer_.Data(), 1, last_overlap_buffer_.Data(), 1,
-           output_buffer_.Data(), 1, half_size);
+      vector_math::Vadd(output_buffer_.Data(), 1, last_overlap_buffer_.Data(),
+                        1, output_buffer_.Data(), 1, half_size);
 
       // Finally, save 2nd half of result
-      bool is_copy_good3 = output_buffer_.size() == 2 * half_size &&
-                           last_overlap_buffer_.size() == half_size;
-      DCHECK(is_copy_good3);
-      if (!is_copy_good3)
-        return;
+      DCHECK_EQ(output_buffer_.size(), 2 * half_size);
+      DCHECK_EQ(last_overlap_buffer_.size(), half_size);
 
       memcpy(last_overlap_buffer_.Data(), output_buffer_.Data() + half_size,
              sizeof(float) * half_size);

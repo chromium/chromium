@@ -55,12 +55,12 @@ base::CancelableTaskTracker::TaskId
 ChromeBookmarkClient::GetFaviconImageForPageURL(
     const GURL& page_url,
     favicon_base::IconType type,
-    const favicon_base::FaviconImageCallback& callback,
+    favicon_base::FaviconImageCallback callback,
     base::CancelableTaskTracker* tracker) {
   return favicon::GetFaviconImageForPageURL(
       FaviconServiceFactory::GetForProfile(profile_,
                                            ServiceAccessType::EXPLICIT_ACCESS),
-      page_url, type, callback, tracker);
+      page_url, type, std::move(callback), tracker);
 }
 
 bool ChromeBookmarkClient::SupportsTypedCountForUrls() {
@@ -105,11 +105,12 @@ void ChromeBookmarkClient::RecordAction(const base::UserMetricsAction& action) {
   base::RecordAction(action);
 }
 
-bookmarks::LoadExtraCallback ChromeBookmarkClient::GetLoadExtraNodesCallback() {
+bookmarks::LoadManagedNodeCallback
+ChromeBookmarkClient::GetLoadManagedNodeCallback() {
   if (!managed_bookmark_service_)
-    return bookmarks::LoadExtraCallback();
+    return bookmarks::LoadManagedNodeCallback();
 
-  return managed_bookmark_service_->GetLoadExtraNodesCallback();
+  return managed_bookmark_service_->GetLoadManagedNodeCallback();
 }
 
 bool ChromeBookmarkClient::CanSetPermanentNodeTitle(

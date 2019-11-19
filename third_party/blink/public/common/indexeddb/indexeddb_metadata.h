@@ -88,6 +88,8 @@ struct BLINK_COMMON_EXPORT IndexedDBDatabaseMetadata {
   int64_t max_object_store_id;
 
   std::map<int64_t, IndexedDBObjectStoreMetadata> object_stores;
+
+  bool was_cold_open;
 };
 
 }  // namespace blink

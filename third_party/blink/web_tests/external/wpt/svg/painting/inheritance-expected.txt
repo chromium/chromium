@@ -31,8 +31,6 @@ PASS Property paint-order has initial value normal
 PASS Property paint-order inherits
 PASS Property color-interpolation has initial value srgb
 PASS Property color-interpolation inherits
-PASS Property color-rendering has initial value auto
-PASS Property color-rendering inherits
 PASS Property shape-rendering has initial value auto
 PASS Property shape-rendering inherits
 PASS Property text-rendering has initial value auto

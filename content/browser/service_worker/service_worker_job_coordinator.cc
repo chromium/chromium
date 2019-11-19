@@ -15,14 +15,6 @@
 
 namespace content {
 
-namespace {
-
-bool IsRegisterJob(const ServiceWorkerRegisterJobBase& job) {
-  return job.GetType() == ServiceWorkerRegisterJobBase::REGISTRATION_JOB;
-}
-
-}  // namespace
-
 ServiceWorkerJobCoordinator::JobQueue::JobQueue() = default;
 
 ServiceWorkerJobCoordinator::JobQueue::JobQueue(JobQueue&&) = default;
@@ -39,7 +31,6 @@ ServiceWorkerRegisterJobBase* ServiceWorkerJobCoordinator::JobQueue::Push(
     StartOneJob();
   } else if (!job->Equals(jobs_.back().get())) {
     jobs_.push_back(std::move(job));
-    DoomInstallingWorkerIfNeeded();
   }
   // Note we are releasing 'job' here in case neither of the two if() statements
   // above were true.
@@ -56,25 +47,9 @@ void ServiceWorkerJobCoordinator::JobQueue::Pop(
     StartOneJob();
 }
 
-void ServiceWorkerJobCoordinator::JobQueue::DoomInstallingWorkerIfNeeded() {
-  DCHECK(!jobs_.empty());
-  if (!IsRegisterJob(*jobs_.front().get()))
-    return;
-  ServiceWorkerRegisterJob* job =
-      static_cast<ServiceWorkerRegisterJob*>(jobs_.front().get());
-  auto it = jobs_.begin();
-  for (++it; it != jobs_.end(); ++it) {
-    if (IsRegisterJob(**it)) {
-      job->DoomInstallingWorker();
-      return;
-    }
-  }
-}
-
 void ServiceWorkerJobCoordinator::JobQueue::StartOneJob() {
   DCHECK(!jobs_.empty());
   jobs_.front()->Start();
-  DoomInstallingWorkerIfNeeded();
 }
 
 void ServiceWorkerJobCoordinator::JobQueue::AbortAll() {
@@ -84,20 +59,18 @@ void ServiceWorkerJobCoordinator::JobQueue::AbortAll() {
 }
 
 void ServiceWorkerJobCoordinator::JobQueue::ClearForShutdown() {
+  for (const auto& job : jobs_)
+    job->WillShutDown();
   jobs_.clear();
 }
 
 ServiceWorkerJobCoordinator::ServiceWorkerJobCoordinator(
-    base::WeakPtr<ServiceWorkerContextCore> context)
+    ServiceWorkerContextCore* context)
     : context_(context) {
+  DCHECK(context_);
 }
 
 ServiceWorkerJobCoordinator::~ServiceWorkerJobCoordinator() {
-  if (!context_) {
-    for (auto& job_pair : job_queues_)
-      job_pair.second.ClearForShutdown();
-    job_queues_.clear();
-  }
   DCHECK(job_queues_.empty()) << "Destroying ServiceWorkerJobCoordinator with "
                               << job_queues_.size() << " job queues";
 }
@@ -105,9 +78,13 @@ ServiceWorkerJobCoordinator::~ServiceWorkerJobCoordinator() {
 void ServiceWorkerJobCoordinator::Register(
     const GURL& script_url,
     const blink::mojom::ServiceWorkerRegistrationOptions& options,
+    blink::mojom::FetchClientSettingsObjectPtr
+        outside_fetch_client_settings_object,
     ServiceWorkerRegisterJob::RegistrationCallback callback) {
   std::unique_ptr<ServiceWorkerRegisterJobBase> job(
-      new ServiceWorkerRegisterJob(context_, script_url, options));
+      new ServiceWorkerRegisterJob(
+          context_, script_url, options,
+          std::move(outside_fetch_client_settings_object)));
   ServiceWorkerRegisterJob* queued_job = static_cast<ServiceWorkerRegisterJob*>(
       job_queues_[options.scope].Push(std::move(job)));
   queued_job->AddCallback(std::move(callback));
@@ -128,25 +105,31 @@ void ServiceWorkerJobCoordinator::Update(
     ServiceWorkerRegistration* registration,
     bool force_bypass_cache) {
   DCHECK(registration);
+  // Use an empty fetch client settings object because this method is for
+  // browser-initiated update and there is no associated execution context.
   job_queues_[registration->scope()].Push(
       base::WrapUnique<ServiceWorkerRegisterJobBase>(
-          new ServiceWorkerRegisterJob(context_, registration,
-                                       force_bypass_cache,
-                                       false /* skip_script_comparison */)));
+          new ServiceWorkerRegisterJob(
+              context_, registration, force_bypass_cache,
+              false /* skip_script_comparison */,
+              blink::mojom::FetchClientSettingsObject::New())));
 }
 
 void ServiceWorkerJobCoordinator::Update(
     ServiceWorkerRegistration* registration,
     bool force_bypass_cache,
     bool skip_script_comparison,
+    blink::mojom::FetchClientSettingsObjectPtr
+        outside_fetch_client_settings_object,
     ServiceWorkerRegisterJob::RegistrationCallback callback) {
   DCHECK(registration);
   ServiceWorkerRegisterJob* queued_job = static_cast<ServiceWorkerRegisterJob*>(
       job_queues_[registration->scope()].Push(
           base::WrapUnique<ServiceWorkerRegisterJobBase>(
-              new ServiceWorkerRegisterJob(context_, registration,
-                                           force_bypass_cache,
-                                           skip_script_comparison))));
+              new ServiceWorkerRegisterJob(
+                  context_, registration, force_bypass_cache,
+                  skip_script_comparison,
+                  std::move(outside_fetch_client_settings_object)))));
   queued_job->AddCallback(std::move(callback));
 }
 
@@ -161,6 +144,12 @@ void ServiceWorkerJobCoordinator::Abort(const GURL& scope) {
 void ServiceWorkerJobCoordinator::AbortAll() {
   for (auto& job_pair : job_queues_)
     job_pair.second.AbortAll();
+  job_queues_.clear();
+}
+
+void ServiceWorkerJobCoordinator::ClearForShutdown() {
+  for (auto& job_pair : job_queues_)
+    job_pair.second.ClearForShutdown();
   job_queues_.clear();
 }
 

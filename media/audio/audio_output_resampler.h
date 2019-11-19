@@ -54,6 +54,7 @@ class MEDIA_EXPORT AudioOutputResampler : public AudioOutputDispatcher {
   void StopStream(AudioOutputProxy* stream_proxy) override;
   void StreamVolumeSet(AudioOutputProxy* stream_proxy, double volume) override;
   void CloseStream(AudioOutputProxy* stream_proxy) override;
+  void FlushStream(AudioOutputProxy* stream_proxy) override;
 
  private:
   using CallbackMap =
@@ -104,7 +105,7 @@ class MEDIA_EXPORT AudioOutputResampler : public AudioOutputDispatcher {
   RegisterDebugRecordingSourceCallback
       register_debug_recording_source_callback_;
 
-  base::WeakPtrFactory<AudioOutputResampler> weak_factory_;
+  base::WeakPtrFactory<AudioOutputResampler> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AudioOutputResampler);
 };
 

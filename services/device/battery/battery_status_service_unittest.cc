@@ -9,8 +9,8 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "services/device/battery/battery_status_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -110,7 +110,7 @@ class BatteryStatusServiceTest : public testing::Test {
     battery_status_ = status;
   }
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   BatteryStatusService battery_service_;
   FakeBatteryManager* battery_manager_;
   BatteryStatusService::BatteryUpdateCallback callback1_;

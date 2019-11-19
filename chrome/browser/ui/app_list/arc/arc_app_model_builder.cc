@@ -32,8 +32,7 @@ void ArcAppModelBuilder::RemoveApp(const std::string& id,
 
 void ArcAppModelBuilder::BuildModel() {
   icon_loader_ = std::make_unique<ArcAppIconLoader>(
-      profile(), app_list::AppListConfig::instance().grid_icon_dimension(),
-      this);
+      profile(), ash::AppListConfig::instance().grid_icon_dimension(), this);
 
   prefs_ = ArcAppListPrefs::Get(profile());
   DCHECK(prefs_);

@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
@@ -20,7 +19,7 @@
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/common/chrome_features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -31,7 +30,8 @@
 #include "components/prefs/pref_store.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/common/service_names.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/preferences/public/cpp/pref_service_main.h"
 #include "services/preferences/public/cpp/tracked/configuration.h"
 #include "services/preferences/public/cpp/tracked/mock_validation_delegate.h"
@@ -105,7 +105,7 @@ class PrefStoreReadObserver : public PrefStore::Observer {
 
   void OnInitializationCompleted(bool succeeded) override {
     if (!stop_waiting_.is_null()) {
-      base::ResetAndReturn(&stop_waiting_).Run();
+      std::move(stop_waiting_).Run();
     }
   }
 
@@ -220,13 +220,14 @@ class ProfilePrefStoreManagerTest : public testing::Test,
   void InitializePrefs() {
     // According to the implementation of ProfilePrefStoreManager, this is
     // actually a SegregatedPrefStore backed by two underlying pref stores.
-    prefs::mojom::ResetOnLoadObserverPtr observer;
-    reset_on_load_observer_bindings_.AddBinding(this,
-                                                mojo::MakeRequest(&observer));
-    prefs::mojom::TrackedPreferenceValidationDelegatePtr validation_delegate;
-    mock_validation_delegate_bindings_.AddBinding(
+    mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver> observer;
+    reset_on_load_observer_receivers_.Add(
+        this, observer.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<prefs::mojom::TrackedPreferenceValidationDelegate>
+        validation_delegate;
+    mock_validation_delegate_receivers_.Add(
         mock_validation_delegate_.get(),
-        mojo::MakeRequest(&validation_delegate));
+        validation_delegate.InitWithNewPipeAndPassReceiver());
     scoped_refptr<PersistentPrefStore> pref_store =
         manager_->CreateProfilePrefStore(
             prefs::CloneTrackedConfiguration(configuration_), kReportingIdCount,
@@ -246,7 +247,7 @@ class ProfilePrefStoreManagerTest : public testing::Test,
       run_loop.Run();
 
       pref_store_->RemoveObserver(&registry_verifier_);
-      pref_store_ = NULL;
+      pref_store_.reset();
       // Nothing should have to happen on the background threads, but just in
       // case...
       base::RunLoop().RunUntilIdle();
@@ -274,13 +275,14 @@ class ProfilePrefStoreManagerTest : public testing::Test,
 
   void LoadExistingPrefs() {
     DestroyPrefStore();
-    prefs::mojom::ResetOnLoadObserverPtr observer;
-    reset_on_load_observer_bindings_.AddBinding(this,
-                                                mojo::MakeRequest(&observer));
-    prefs::mojom::TrackedPreferenceValidationDelegatePtr validation_delegate;
-    mock_validation_delegate_bindings_.AddBinding(
+    mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver> observer;
+    reset_on_load_observer_receivers_.Add(
+        this, observer.InitWithNewPipeAndPassReceiver());
+    mojo::PendingRemote<prefs::mojom::TrackedPreferenceValidationDelegate>
+        validation_delegate;
+    mock_validation_delegate_receivers_.Add(
         mock_validation_delegate_.get(),
-        mojo::MakeRequest(&validation_delegate));
+        validation_delegate.InitWithNewPipeAndPassReceiver());
     pref_store_ = manager_->CreateProfilePrefStore(
         prefs::CloneTrackedConfiguration(configuration_), kReportingIdCount,
         base::ThreadTaskRunnerHandle::Get(), std::move(observer),
@@ -327,15 +329,15 @@ class ProfilePrefStoreManagerTest : public testing::Test,
       ADD_FAILURE() << "No validation observed for preference: " << pref_path;
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::vector<prefs::mojom::TrackedPreferenceMetadataPtr> configuration_;
   base::ScopedTempDir profile_dir_;
   scoped_refptr<user_prefs::PrefRegistrySyncable> profile_pref_registry_;
   RegistryVerifier registry_verifier_;
   scoped_refptr<MockValidationDelegateRecord> mock_validation_delegate_record_;
   std::unique_ptr<MockValidationDelegate> mock_validation_delegate_;
-  mojo::BindingSet<prefs::mojom::TrackedPreferenceValidationDelegate>
-      mock_validation_delegate_bindings_;
+  mojo::ReceiverSet<prefs::mojom::TrackedPreferenceValidationDelegate>
+      mock_validation_delegate_receivers_;
   std::unique_ptr<ProfilePrefStoreManager> manager_;
   scoped_refptr<PersistentPrefStore> pref_store_;
 
@@ -352,9 +354,8 @@ class ProfilePrefStoreManagerTest : public testing::Test,
 
   base::test::ScopedFeatureList feature_list_;
   bool reset_recorded_;
-  service_manager::mojom::ConnectorRequest connector_request_;
-  mojo::BindingSet<prefs::mojom::ResetOnLoadObserver>
-      reset_on_load_observer_bindings_;
+  mojo::ReceiverSet<prefs::mojom::ResetOnLoadObserver>
+      reset_on_load_observer_receivers_;
 };
 
 TEST_F(ProfilePrefStoreManagerTest, StoreValues) {

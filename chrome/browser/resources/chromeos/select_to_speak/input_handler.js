@@ -86,8 +86,9 @@ let InputHandler = function(callbacks) {
    * @private
    */
   this.onMouseMove_ = function(evt) {
-    if (!this.trackingMouse_)
+    if (!this.trackingMouse_) {
       return false;
+    }
 
     var rect = RectUtils.rectFromPoints(
         this.mouseStart_.x, this.mouseStart_.y, evt.screenX, evt.screenY);
@@ -231,8 +232,9 @@ InputHandler.prototype = {
    * @public
    */
   onMouseUp_: function(evt) {
-    if (!this.trackingMouse_)
+    if (!this.trackingMouse_) {
       return false;
+    }
     this.onMouseMove_(evt);
     this.trackingMouse_ = false;
     if (!this.keysCurrentlyDown_.has(SelectToSpeak.SEARCH_KEY_CODE)) {

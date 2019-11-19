@@ -1,0 +1,14 @@
+[document web]
+++[table] rowcount:5 cols=3 headers=('cell 2', 'cell 3', 'cell 4'); rows=2 headers=(NONE); caption=false; spans=(cell at 1,2: 0x0)
+++++[table row] selectable
+++++++[column header] name='cell 2' selectable rowindex:3 (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='cell 2'
+++++++[column header] name='cell 3' selectable rowindex:3 (row=0, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='cell 3'
+++++++[column header] name='cell 4' selectable rowindex:3 rowspan:2 (row=0, col=2, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='cell 4'
+++++[table row] selectable
+++++++[table cell] name='cell 2' selectable rowindex:4 (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='cell 2'
+++++++[table cell] name='cell 3' selectable rowindex:4 (row=1, col=1, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='cell 3'

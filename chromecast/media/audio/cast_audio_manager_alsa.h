@@ -22,6 +22,11 @@ namespace media {
 
 class CastAudioManagerAlsa : public CastAudioManager {
  public:
+  enum StreamType {
+    kStreamPlayback = 0,
+    kStreamCapture,
+  };
+
   CastAudioManagerAlsa(
       std::unique_ptr<::media::AudioThread> audio_thread,
       ::media::AudioLogFactory* audio_log_factory,
@@ -41,11 +46,6 @@ class CastAudioManagerAlsa : public CastAudioManager {
       const std::string& device_id) override;
 
  private:
-  enum StreamType {
-    kStreamPlayback = 0,
-    kStreamCapture,
-  };
-
   // CastAudioManager implementation.
   ::media::AudioInputStream* MakeLinearInputStream(
       const ::media::AudioParameters& params,
@@ -69,11 +69,6 @@ class CastAudioManagerAlsa : public CastAudioManager {
   void GetAlsaDevicesInfo(StreamType type,
                           void** hint,
                           ::media::AudioDeviceNames* device_names);
-
-  // Checks if the specific ALSA device is available.
-  static bool IsAlsaDeviceAvailable(StreamType type, const char* device_name);
-
-  static const char* UnwantedDeviceTypeWhenEnumerating(StreamType wanted_type);
 
   std::unique_ptr<::media::AlsaWrapper> wrapper_;
 

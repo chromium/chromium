@@ -21,8 +21,6 @@ namespace message_center {
 PaddedButton::PaddedButton(views::ButtonListener* listener)
     : views::ImageButton(listener) {
   SetFocusForPlatform();
-  SetFocusPainter(views::Painter::CreateSolidFocusPainter(
-      kFocusBorderColor, gfx::Insets(1, 2, 2, 2)));
   SetBackground(views::CreateSolidBackground(kControlButtonBackgroundColor));
   SetBorder(views::CreateEmptyBorder(gfx::Insets(kControlButtonBorderSize)));
   set_animate_on_state_change(false);

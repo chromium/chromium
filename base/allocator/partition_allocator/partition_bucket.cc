@@ -39,8 +39,9 @@ ALWAYS_INLINE PartitionPage* PartitionDirectMap(PartitionRootBase* root,
   map_size += kPageAllocationGranularityOffsetMask;
   map_size &= kPageAllocationGranularityBaseMask;
 
-  char* ptr = reinterpret_cast<char*>(
-      AllocPages(nullptr, map_size, kSuperPageSize, PageReadWrite));
+  char* ptr = reinterpret_cast<char*>(AllocPages(nullptr, map_size,
+                                                 kSuperPageSize, PageReadWrite,
+                                                 PageTag::kPartitionAlloc));
   if (UNLIKELY(!ptr))
     return nullptr;
 
@@ -78,7 +79,7 @@ ALWAYS_INLINE PartitionPage* PartitionDirectMap(PartitionRootBase* root,
   page->freelist_head = reinterpret_cast<PartitionFreelistEntry*>(slot);
   PartitionFreelistEntry* next_entry =
       reinterpret_cast<PartitionFreelistEntry*>(slot);
-  next_entry->next = PartitionFreelistEntry::Transform(nullptr);
+  next_entry->next = PartitionFreelistEntry::Encode(nullptr);
 
   DCHECK(!bucket->active_pages_head);
   DCHECK(!bucket->empty_pages_head);
@@ -219,8 +220,9 @@ ALWAYS_INLINE void* PartitionBucket::AllocNewSlotSpan(
   // page table bloat and not fragmenting address spaces in 32 bit
   // architectures.
   char* requested_address = root->next_super_page;
-  char* super_page = reinterpret_cast<char*>(AllocPages(
-      requested_address, kSuperPageSize, kSuperPageSize, PageReadWrite));
+  char* super_page = reinterpret_cast<char*>(
+      AllocPages(requested_address, kSuperPageSize, kSuperPageSize,
+                 PageReadWrite, PageTag::kPartitionAlloc));
   if (UNLIKELY(!super_page))
     return nullptr;
 
@@ -392,10 +394,10 @@ ALWAYS_INLINE char* PartitionBucket::AllocAndFillFreelist(PartitionPage* page) {
       freelist_pointer += size;
       PartitionFreelistEntry* next_entry =
           reinterpret_cast<PartitionFreelistEntry*>(freelist_pointer);
-      entry->next = PartitionFreelistEntry::Transform(next_entry);
+      entry->next = PartitionFreelistEntry::Encode(next_entry);
       entry = next_entry;
     }
-    entry->next = PartitionFreelistEntry::Transform(nullptr);
+    entry->next = PartitionFreelistEntry::Encode(nullptr);
   } else {
     page->freelist_head = nullptr;
   }
@@ -553,7 +555,7 @@ void* PartitionBucket::SlowPathAlloc(PartitionRootBase* root,
   if (LIKELY(new_page->freelist_head != nullptr)) {
     PartitionFreelistEntry* entry = new_page->freelist_head;
     PartitionFreelistEntry* new_head =
-        PartitionFreelistEntry::Transform(entry->next);
+        EncodedPartitionFreelistEntry::Decode(entry->next);
     new_page->freelist_head = new_head;
     new_page->num_allocated_slots++;
     return entry;

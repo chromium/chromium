@@ -1,0 +1,24 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package games;
+
+option optimize_for = LITE_RUNTIME;
+
+message Date {
+  // Year of date. Must be from 1 to 9999, or 0 if specifying a date without
+  // a year.
+  int32 year = 1;
+
+  // Month of year. Must be from 1 to 12, or 0 if specifying a year without a
+  // month and day.
+  int32 month = 2;
+
+  // Day of month. Must be from 1 to 31 and valid for the year and month, or 0
+  // if specifying a year by itself or a year and month where the day is not
+  // significant.
+  int32 day = 3;
+}

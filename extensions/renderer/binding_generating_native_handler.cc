@@ -13,7 +13,7 @@
 
 namespace extensions {
 
-using namespace v8_helpers;
+using v8_helpers::GetProperty;
 
 BindingGeneratingNativeHandler::BindingGeneratingNativeHandler(
     ScriptContext* context,
@@ -45,7 +45,7 @@ v8::Local<v8::Object> BindingGeneratingNativeHandler::NewInstance() {
   // Convert |api_name| and |bind_to| into their v8::Strings to pass
   // through the v8 APIs.
   v8::Local<v8::String> v8_api_name;
-  if (!ToV8String(isolate, api_name_, &v8_api_name)) {
+  if (!v8_helpers::ToV8String(isolate, api_name_, &v8_api_name)) {
     NOTREACHED();
     return v8::Local<v8::Object>();
   }

@@ -59,6 +59,10 @@ class CONTENT_EXPORT TouchActionFilter {
     return allowed_touch_action_;
   }
 
+  base::Optional<cc::TouchAction> active_touch_action() const {
+    return active_touch_action_;
+  }
+
   cc::TouchAction white_listed_touch_action() const {
     return white_listed_touch_action_;
   }

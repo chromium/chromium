@@ -43,8 +43,8 @@ std::unique_ptr<SourceLocation> SourceLocation::Capture(
   if (stack_trace && !stack_trace->isEmpty())
     return SourceLocation::CreateFromNonEmptyV8StackTrace(
         std::move(stack_trace), 0);
-  return SourceLocation::Create(url, line_number, column_number,
-                                std::move(stack_trace));
+  return std::make_unique<SourceLocation>(url, line_number, column_number,
+                                          std::move(stack_trace));
 }
 
 // static
@@ -64,11 +64,11 @@ std::unique_ptr<SourceLocation> SourceLocation::Capture(
         line_number =
             document->GetScriptableDocumentParser()->LineNumber().OneBasedInt();
     }
-    return SourceLocation::Create(document->Url().GetString(), line_number, 0,
-                                  std::move(stack_trace));
+    return std::make_unique<SourceLocation>(
+        document->Url().GetString(), line_number, 0, std::move(stack_trace));
   }
 
-  return SourceLocation::Create(
+  return std::make_unique<SourceLocation>(
       execution_context ? execution_context->Url().GetString() : String(), 0, 0,
       std::move(stack_trace));
 }
@@ -106,19 +106,8 @@ std::unique_ptr<SourceLocation> SourceLocation::FromMessage(
       message->GetScriptOrigin().ResourceName());
   if (url.IsEmpty())
     url = execution_context->Url();
-  return SourceLocation::Create(url, line_number, column_number,
-                                std::move(stack_trace), script_id);
-}
-
-// static
-std::unique_ptr<SourceLocation> SourceLocation::Create(
-    const String& url,
-    unsigned line_number,
-    unsigned column_number,
-    std::unique_ptr<v8_inspector::V8StackTrace> stack_trace,
-    int script_id) {
-  return base::WrapUnique(new SourceLocation(
-      url, line_number, column_number, std::move(stack_trace), script_id));
+  return std::make_unique<SourceLocation>(url, line_number, column_number,
+                                          std::move(stack_trace), script_id);
 }
 
 // static
@@ -137,12 +126,12 @@ std::unique_ptr<SourceLocation> SourceLocation::CreateFromNonEmptyV8StackTrace(
 std::unique_ptr<SourceLocation> SourceLocation::FromFunction(
     v8::Local<v8::Function> function) {
   if (!function.IsEmpty())
-    return SourceLocation::Create(
+    return std::make_unique<SourceLocation>(
         ToCoreStringWithUndefinedOrNullCheck(
             function->GetScriptOrigin().ResourceName()),
         function->GetScriptLineNumber() + 1,
         function->GetScriptColumnNumber() + 1, nullptr, function->ScriptId());
-  return SourceLocation::Create(String(), 0, 0, nullptr, 0);
+  return std::make_unique<SourceLocation>(String(), 0, 0, nullptr, 0);
 }
 
 // static
@@ -152,7 +141,7 @@ std::unique_ptr<SourceLocation> SourceLocation::CaptureWithFullStackTrace() {
   if (stack_trace && !stack_trace->isEmpty())
     return SourceLocation::CreateFromNonEmptyV8StackTrace(
         std::move(stack_trace), 0);
-  return SourceLocation::Create(String(), 0, 0, nullptr, 0);
+  return std::make_unique<SourceLocation>(String(), 0, 0, nullptr, 0);
 }
 
 SourceLocation::SourceLocation(
@@ -192,7 +181,13 @@ std::unique_ptr<SourceLocation> SourceLocation::Clone() const {
 
 std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>
 SourceLocation::BuildInspectorObject() const {
-  return stack_trace_ ? stack_trace_->buildInspectorObject() : nullptr;
+  return BuildInspectorObject(std::numeric_limits<int>::max());
+}
+
+std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>
+SourceLocation::BuildInspectorObject(int max_async_depth) const {
+  return stack_trace_ ? stack_trace_->buildInspectorObject(max_async_depth)
+                      : nullptr;
 }
 
 String SourceLocation::ToString() const {

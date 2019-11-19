@@ -21,11 +21,16 @@ class SocketBuffer;
 // Fake StreamSocket that communicates with another instance in memory.
 class FakeStreamSocket : public net::StreamSocket {
  public:
+  FakeStreamSocket();
   explicit FakeStreamSocket(const net::IPEndPoint& local_address);
   ~FakeStreamSocket() override;
 
   // Sets the peer for this socket.
   void SetPeer(FakeStreamSocket* peer);
+
+  // Enables/disables "bad sender mode", where Write() will always try to send
+  // less than the full buffer. Disabled by default.
+  void SetBadSenderMode(bool bad_sender);
 
   // net::StreamSocket implementation:
   int Read(net::IOBuffer* buf,
@@ -60,6 +65,7 @@ class FakeStreamSocket : public net::StreamSocket {
   const std::unique_ptr<SocketBuffer> buffer_;
   FakeStreamSocket* peer_;
   net::NetLogWithSource net_log_;
+  bool bad_sender_mode_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FakeStreamSocket);
 };

@@ -4,17 +4,12 @@
 
 // Custom binding for the Cast Streaming Session API.
 
-var binding = apiBridge ||
-              require('binding').Binding.create('cast.streaming.session');
 var natives = requireNative('cast_streaming_natives');
 
-binding.registerCustomHook(function(bindingsAPI, extensionId) {
+apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
   var apiFunctions = bindingsAPI.apiFunctions;
   apiFunctions.setHandleRequest('create',
       function(audioTrack, videoTrack, callback) {
         natives.CreateSession(audioTrack, videoTrack, callback);
   });
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

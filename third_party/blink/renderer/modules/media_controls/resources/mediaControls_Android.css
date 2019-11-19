@@ -1,0 +1,10 @@
+/* Copyright 2019 The Chromium Authors. All rights reserved.
+   Use of this source code is governed by a BSD-style license that can be
+   found in the LICENSE file.*/
+
+
+/* On Android, we always want the slider thumb to appear. */
+video::-webkit-media-controls input[pseudo="-webkit-media-controls-timeline" i]::-webkit-slider-thumb,
+audio::-webkit-media-controls input[pseudo="-webkit-media-controls-timeline" i]::-webkit-slider-thumb {
+  opacity: 1;
+}

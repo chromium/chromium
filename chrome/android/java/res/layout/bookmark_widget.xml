@@ -5,9 +5,11 @@
 
 <ListView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/bookmarks_list"
+    style="@style/DarkModeCompatibleVerticalScrolling"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ddffffff"
+    android:background="@color/bookmark_widget_background"
     android:divider="@null"
     android:drawSelectorOnTop="true"
-    android:listSelector="@drawable/bookmark_widget_list_selector" />
+    android:listSelector="@drawable/bookmark_widget_list_selector"
+    android:alpha="0.9" />

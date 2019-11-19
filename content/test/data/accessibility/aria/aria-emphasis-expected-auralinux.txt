@@ -1,0 +1,7 @@
+[document web]
+++[static] xml-roles:emphasis
+++++[static] name='role'
+++[static] name='element (no name)'
+++[static] name=' '
+++[static] name='include me'
+++++[static] name='element (with name)'

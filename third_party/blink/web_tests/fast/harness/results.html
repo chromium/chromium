@@ -218,7 +218,6 @@ p, h2, h3, h4 {
   <p>Select the results you are interested in using "Query" buttons.
   Narrow down the results further with "Filter" checkboxes.</p>
 
-  <p>"Did not pass" query will exclude PASS and WONTFIX tests.</p>
 
   <h3>Displaying results.</h3>
   <p>You can view the list of matched tests in several result formats.
@@ -342,7 +341,6 @@ TestResult(CRASH) + TextExpectation(Failure) => [ Failure <b>Crash</b> ]</pre>
     <label id="AUDIO"><input type="checkbox">Audio failure <span></span></label>
     <label id="SKIP"><input type="checkbox">Skipped <span></span></label>
     <label id="PASS"><input type="checkbox">Pass <span></span></label>
-    <label id="WONTFIX"><input type="checkbox">WontFix <span></span></label>
     <label id="MISSING"><input type="checkbox">Missing <span></span></label>
     <label id="LEAK"><input type="checkbox">Leak <span></span></label>
   </div>
@@ -391,9 +389,8 @@ const TestResultInformation = {
   "SLOW":       { index: 9, text: "Slow", isFailure: false, isSuccess: true },
   "SKIP":       { index: 10, text: "Skip", isFailure: false, isSuccess: false },
   "MISSING":    { index: 11, text: "Missing", isFailure: false, isSuccess: false },
-  "WONTFIX":    { index: 12, text: "WontFix", isFailure: false, isSuccess: false },
-  "PASS":       { index: 13, text: "Pass", isFailure: false, isSuccess: true },
-  "NOTRUN":     { index: 14, text: "NOTRUN", isFailure: false, isSuccess: true }
+  "PASS":       { index: 12, text: "Pass", isFailure: false, isSuccess: true },
+  "NOTRUN":     { index: 13, text: "NOTRUN", isFailure: false, isSuccess: true }
 };
 
 // Sorted from worst to best.
@@ -531,8 +528,7 @@ const Report = {
     let pathParser = new PathParser(path);
     let html = `
     <div class='expect' tabindex='0' data-id='${test.expectId}'>
-      <div class='details'></div>${Report.printFlag(test)}
-     ${pathParser.dir}<a target='test' tabindex='-1' href='${pathParser.testHref}'>${pathParser.file}${pathParser.query}</a>
+      <div class='details'></div>${Report.printFlag(test)}${pathParser.dir}<a target='test' tabindex='-1' href='${pathParser.testHref}'>${pathParser.file}${pathParser.query}</a>
     </div>`;
     traversal.html.push(html);
   },
@@ -556,8 +552,6 @@ const Report = {
       let result = s;
       if (result == "TEXT" || result == "IMAGE" || result == "IMAGE+TEXT")
         result = "FAIL";
-      if (result == "SKIP" && test.expectedMap.has("WONTFIX"))
-        result = "WONTFIX";
       statusMap.set(result, "bold");
     }
     let status = "";
@@ -961,7 +955,6 @@ const Filters = {
   },
   containsNoPass: function(map) {
     return map.has("FAIL")
-        || map.has("WONTFIX")
         || map.has("SKIP")
         || map.has("CRASH");
   },
@@ -969,8 +962,7 @@ const Filters = {
     return !Filters.containsPass(test.expectedMap) && Filters.containsPass(test.actualMap);
   },
   regressionFromExpectedMap: (finalResult, expectedMap) => {
-    if (expectedMap.has("NEEDSREBASELINE")
-        || expectedMap.has("WONTFIX"))
+    if (expectedMap.has("NEEDSREBASELINE"))
       return false;
     switch (finalResult) {
       case "SKIP":
@@ -1000,13 +992,12 @@ const Filters = {
       return false;
     return Filters.regressionFromExpectedMap(test.actualFinal, test.expectedMap);
   },
-  notpass: test => test.actualFinal != "PASS" && test.expected != "WONTFIX",
+  notpass: test => test.actualFinal != "PASS",
   actual: tag => {  // Returns comparator for tag.
     return function(test) {
       return test.actualMap.has(tag);
     };
   },
-  wontfix: test => test.expected == "WONTFIX",
   all: _ => true,
   flaky: test => test.actualMap.size > 1,
   unexpectedFlaky: test => test.actualMap.size > 1 && test.expectedMap.size <= 1,
@@ -1014,8 +1005,7 @@ const Filters = {
   flagFailure: test => { // Tests that are failing, but expected to pass in base.
     if (Filters.containsPass(test.actualMap))
       return false;
-    if (test.expectedMap.has("NEEDSREBASELINE")
-        || test.expectedMap.has("WONTFIX"))
+    if (test.expectedMap.has("NEEDSREBASELINE"))
       return false;
     let baseMap = test.flagMap ? test.baseMap : test.expectedMap;
     switch (test.actualFinal) {
@@ -1085,6 +1075,62 @@ const GUI = {
     }
   },
 
+  translateArtifactsIntoResult: function(artifacts, result, test){
+    let artifact_names = Object.keys(artifacts);
+    if(result == 'FAIL'){
+      if(artifact_names.some(name => name.startsWith('expected'))){
+        // The test is a mismatch between baseline output and actual
+        // output or a reftest failure.
+        if(artifacts.hasOwnProperty('expected_image') &&
+           artifacts.hasOwnProperty('expected_text')){
+          result = 'IMAGE+TEXT';
+        }else if(artifacts.hasOwnProperty('expected_image')){
+          result = 'IMAGE';
+        }else if(artifacts.hasOwnProperty('expected_text')){
+          result = 'TEXT';
+        }else{
+          result = 'AUDIO';
+        }
+      }else if(test.is_testharness_test){
+        result = 'TEXT';
+      }else if(artifact_names.includes('reference_file_match')){
+        result = 'IMAGE';
+      }else if(artifact_names.includes('leak_log')){
+        result = 'LEAK';
+      }else{
+        // if there are no baselines in the artifacts then by default,
+        // the result is missing
+        result = 'MISSING';
+      }
+    }
+    return result;
+  },
+
+  deriveWebTestResults: function(test){
+    let actual_results = [];
+    for(let [iteration, result] of test.actual.split(' ').entries()){
+      if(test.artifacts != null){
+        let perIterationArtifact = Object();
+        for(let [name, paths] of Object.entries(test.artifacts)){
+          for(let path of paths){
+            if(iteration == 0 && !path.startsWith('retry_') ||
+               iteration > 0 && path.startsWith('retry_' + iteration)){
+              if(!perIterationArtifact.hasOwnProperty(name)){
+                perIterationArtifact[name] = [];
+              }
+              perIterationArtifact[name].push(path);
+            }
+          }
+        }
+        actual_results.push(GUI.translateArtifactsIntoResult(
+            perIterationArtifact, result, test));
+      }else{
+        actual_results.push(result);
+      }
+    }
+    return actual_results;
+  },
+
   optimizeResults: function(fullResults) {
     // Optimizes fullResults for querying.
     let t = new Traversal(fullResults.tests);
@@ -1102,11 +1148,13 @@ const GUI = {
     t.traverse(
       test => true,
       (test, path) => {
+        let web_test_results = GUI.deriveWebTestResults(test);
         test.expectId = nextId++;
         globalTestMap.set(test.expectId, test);
         test.expectPath = path;
         test.actualMap = new Map();
-        for (let result of test.actual.split(" ")) {
+        test.actual = web_test_results.join(' ');
+        for (let result of web_test_results) {
           test.actualFinal = result;  // last result count as definite.
           test.actualMap.set(result, true);
         }

@@ -49,8 +49,7 @@ ImportCompletedTask::ImportCompletedTask(
       prefetch_store_(prefetch_store),
       prefetch_importer_(prefetch_importer),
       offline_id_(offline_id),
-      success_(success),
-      weak_ptr_factory_(this) {}
+      success_(success) {}
 
 ImportCompletedTask::~ImportCompletedTask() {}
 

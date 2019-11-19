@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Initial value of text-underline-offset assert_equals: Must be set to value auto as initial value. expected (string) "auto" but got (undefined) undefined
+Harness: the test ran to completion.
+

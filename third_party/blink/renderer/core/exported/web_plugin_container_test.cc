@@ -37,7 +37,6 @@
 #include "cc/layers/layer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_coalesced_input_event.h"
 #include "third_party/blink/public/platform/web_mouse_wheel_event.h"
 #include "third_party/blink/public/platform/web_pointer_event.h"
@@ -82,9 +81,7 @@ class WebPluginContainerTest : public testing::Test {
   WebPluginContainerTest() : base_url_("http://www.test.com/") {}
 
   void TearDown() override {
-    Platform::Current()
-        ->GetURLLoaderMockFactory()
-        ->UnregisterAllURLsAndClearMemoryCache();
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
   void CalculateGeometry(WebPluginContainerImpl* plugin_container_impl,
@@ -98,6 +95,8 @@ class WebPluginContainerTest : public testing::Test {
   void RegisterMockedURL(
       const std::string& file_name,
       const std::string& mime_type = std::string("text/html")) {
+    // TODO(crbug.com/751425): We should use the mock functionality
+    // via the WebViewHelper in each test case.
     url_test_helpers::RegisterMockedURLLoadFromBase(
         WebString::FromUTF8(base_url_), test::CoreTestDataPath(),
         WebString::FromUTF8(file_name), WebString::FromUTF8(mime_type));
@@ -203,8 +202,7 @@ class TestPluginWebFrameClient : public frame_test_helpers::TestWebFrameClient {
                                   WebTreeScopeType scope,
                                   const WebString& name,
                                   const WebString& fallback_name,
-                                  WebSandboxFlags sandbox_flags,
-                                  const ParsedFeaturePolicy& container_policy,
+                                  const FramePolicy&,
                                   const WebFrameOwnerProperties&,
                                   FrameOwnerElementType owner_type) override {
     return CreateLocalChild(*parent, scope,
@@ -264,6 +262,7 @@ String ReadClipboard() {
 
 void ClearClipboardBuffer() {
   SystemClipboard::GetInstance().WritePlainText(String(""));
+  SystemClipboard::GetInstance().CommitWrite();
   EXPECT_EQ(String(""), ReadClipboard());
 }
 
@@ -788,7 +787,7 @@ TEST_F(WebPluginContainerTest, GestureLongPressReachesPlugin) {
   WebGestureEvent event(WebInputEvent::kGestureLongPress,
                         WebInputEvent::kNoModifiers,
                         WebInputEvent::GetStaticTimeStampForTests(),
-                        kWebGestureDeviceTouchscreen);
+                        WebGestureDevice::kTouchscreen);
 
   // First, send an event that doesn't hit the plugin to verify that the
   // plugin doesn't receive it.
@@ -885,7 +884,7 @@ TEST_F(WebPluginContainerTest, TouchEventScrolled) {
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_scroll.html", &plugin_web_frame_client);
   EnablePlugins(web_view, WebSize(300, 300));
-  web_view->SmoothScroll(0, 200, 0);
+  web_view->SmoothScroll(0, 200, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
 
@@ -926,7 +925,7 @@ TEST_F(WebPluginContainerTest, TouchEventScrolledWithCoalescedTouches) {
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_scroll.html", &plugin_web_frame_client);
   EnablePlugins(web_view, WebSize(300, 300));
-  web_view->SmoothScroll(0, 200, 0);
+  web_view->SmoothScroll(0, 200, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
 
@@ -1020,7 +1019,7 @@ TEST_F(WebPluginContainerTest, MouseWheelEventScrolled) {
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_scroll.html", &plugin_web_frame_client);
   EnablePlugins(web_view, WebSize(300, 300));
-  web_view->SmoothScroll(0, 200, 0);
+  web_view->SmoothScroll(0, 200, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
 
@@ -1057,7 +1056,7 @@ TEST_F(WebPluginContainerTest, MouseEventScrolled) {
   WebViewImpl* web_view = web_view_helper.InitializeAndLoad(
       base_url_ + "plugin_scroll.html", &plugin_web_frame_client);
   EnablePlugins(web_view, WebSize(300, 300));
-  web_view->SmoothScroll(0, 200, 0);
+  web_view->SmoothScroll(0, 200, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
 
@@ -1096,7 +1095,7 @@ TEST_F(WebPluginContainerTest, MouseEventZoomed) {
   web_view->GetSettings()->SetPluginsEnabled(true);
   web_view->MainFrameWidget()->Resize(WebSize(300, 300));
   web_view->SetPageScaleFactor(2);
-  web_view->SmoothScroll(0, 300, 0);
+  web_view->SmoothScroll(0, 300, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
 
@@ -1137,7 +1136,7 @@ TEST_F(WebPluginContainerTest, MouseWheelEventZoomed) {
   web_view->GetSettings()->SetPluginsEnabled(true);
   web_view->MainFrameWidget()->Resize(WebSize(300, 300));
   web_view->SetPageScaleFactor(2);
-  web_view->SmoothScroll(0, 300, 0);
+  web_view->SmoothScroll(0, 300, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
 
@@ -1179,7 +1178,7 @@ TEST_F(WebPluginContainerTest, TouchEventZoomed) {
   web_view->GetSettings()->SetPluginsEnabled(true);
   web_view->MainFrameWidget()->Resize(WebSize(300, 300));
   web_view->SetPageScaleFactor(2);
-  web_view->SmoothScroll(0, 300, 0);
+  web_view->SmoothScroll(0, 300, base::TimeDelta());
   UpdateAllLifecyclePhases(web_view);
   RunPendingTasks();
 
@@ -1362,7 +1361,8 @@ TEST_F(WebPluginContainerTest, ClippedRectsForShiftedIframedElement) {
   for (auto& root_document_scroll_to : root_document_scrolls_to) {
     for (auto& iframe_scroll_to : iframe_scrolls_to) {
       web_view->SmoothScroll(root_document_scroll_to.Width(),
-                             root_document_scroll_to.Height(), 0);
+                             root_document_scroll_to.Height(),
+                             base::TimeDelta());
       iframe->SetScrollOffset(iframe_scroll_to);
       UpdateAllLifecyclePhases(web_view);
       RunPendingTasks();
@@ -1421,7 +1421,7 @@ TEST_F(WebPluginContainerTest, ClippedRectsForSubpixelPositionedPlugin) {
 }
 
 TEST_F(WebPluginContainerTest, TopmostAfterDetachTest) {
-  static WebRect topmost_rect(10, 10, 40, 40);
+  static constexpr WebRect kTopmostRect(10, 10, 40, 40);
 
   // Plugin that checks isRectTopmost in destroy().
   class TopmostPlugin : public FakeWebPlugin {
@@ -1429,11 +1429,11 @@ TEST_F(WebPluginContainerTest, TopmostAfterDetachTest) {
     explicit TopmostPlugin(const WebPluginParams& params)
         : FakeWebPlugin(params) {}
 
-    bool IsRectTopmost() { return Container()->IsRectTopmost(topmost_rect); }
+    bool IsRectTopmost() { return Container()->IsRectTopmost(kTopmostRect); }
 
     void Destroy() override {
       // In destroy, IsRectTopmost is no longer valid.
-      EXPECT_FALSE(Container()->IsRectTopmost(topmost_rect));
+      EXPECT_FALSE(Container()->IsRectTopmost(kTopmostRect));
       FakeWebPlugin::Destroy();
     }
 
@@ -1454,7 +1454,7 @@ TEST_F(WebPluginContainerTest, TopmostAfterDetachTest) {
           web_view, WebString::FromUTF8("translated-plugin")));
   plugin_container_impl->SetFrameRect(IntRect(0, 0, 300, 300));
 
-  EXPECT_TRUE(plugin_container_impl->IsRectTopmost(topmost_rect));
+  EXPECT_TRUE(plugin_container_impl->IsRectTopmost(kTopmostRect));
 
   TopmostPlugin* test_plugin =
       static_cast<TopmostPlugin*>(plugin_container_impl->Plugin());
@@ -1463,7 +1463,7 @@ TEST_F(WebPluginContainerTest, TopmostAfterDetachTest) {
   // Cause the plugin's frame to be detached.
   web_view_helper.Reset();
 
-  EXPECT_FALSE(plugin_container_impl->IsRectTopmost(topmost_rect));
+  EXPECT_FALSE(plugin_container_impl->IsRectTopmost(kTopmostRect));
 }
 
 namespace {
@@ -1513,7 +1513,7 @@ TEST_F(WebPluginContainerTest, CompositedPluginCAP) {
   const auto* plugin =
       static_cast<const CompositedPlugin*>(container->Plugin());
 
-  std::unique_ptr<PaintController> paint_controller = PaintController::Create();
+  auto paint_controller = std::make_unique<PaintController>();
   paint_controller->UpdateCurrentPaintChunkProperties(
       base::nullopt, PropertyTreeState::Root());
   GraphicsContext graphics_context(*paint_controller);

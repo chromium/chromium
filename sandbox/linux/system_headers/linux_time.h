@@ -15,12 +15,20 @@
 #define CLOCKFD 3
 #endif
 
+#if !defined(CLOCK_MONOTONIC_RAW)
+#define CLOCK_MONOTONIC_RAW 4
+#endif
+
 #if !defined(CLOCK_REALTIME_COARSE)
 #define CLOCK_REALTIME_COARSE 5
 #endif
 
 #if !defined(CLOCK_MONOTONIC_COARSE)
 #define CLOCK_MONOTONIC_COARSE 6
+#endif
+
+#if !defined(CLOCK_BOOTTIME)
+#define CLOCK_BOOTTIME 7
 #endif
 
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_TIME_H_

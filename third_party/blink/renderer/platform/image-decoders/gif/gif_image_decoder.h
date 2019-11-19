@@ -30,7 +30,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
 #include "third_party/skia/include/codec/SkCodec.h"
 
 namespace blink {
@@ -48,7 +48,7 @@ class PLATFORM_EXPORT GIFImageDecoder final : public ImageDecoder {
   void OnSetData(SegmentReader* data) override;
   int RepetitionCount() const override;
   bool FrameIsReceivedAtIndex(size_t) const override;
-  TimeDelta FrameDurationAtIndex(size_t) const override;
+  base::TimeDelta FrameDurationAtIndex(size_t) const override;
   // CAUTION: SetFailed() deletes |codec_|.  Be careful to avoid
   // accessing deleted memory.
   bool SetFailed() override;

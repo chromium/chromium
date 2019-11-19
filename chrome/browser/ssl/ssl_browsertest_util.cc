@@ -20,8 +20,7 @@ namespace AuthState {
 
 void Check(content::NavigationEntry* entry, int expected_authentication_state) {
   if (expected_authentication_state == AuthState::SHOWING_ERROR ||
-      (base::FeatureList::IsEnabled(features::kSSLCommittedInterstitials) &&
-       expected_authentication_state == AuthState::SHOWING_INTERSTITIAL)) {
+      expected_authentication_state == AuthState::SHOWING_INTERSTITIAL) {
     EXPECT_EQ(content::PAGE_TYPE_ERROR, entry->GetPageType());
   } else {
     EXPECT_EQ(
@@ -58,9 +57,7 @@ namespace SecurityStyle {
 void Check(content::WebContents* tab,
            security_state::SecurityLevel expected_security_level) {
   SecurityStateTabHelper* helper = SecurityStateTabHelper::FromWebContents(tab);
-  security_state::SecurityInfo security_info;
-  helper->GetSecurityInfo(&security_info);
-  EXPECT_EQ(expected_security_level, security_info.security_level);
+  EXPECT_EQ(expected_security_level, helper->GetSecurityLevel());
 }
 
 }  // namespace SecurityStyle
@@ -87,9 +84,8 @@ void CheckSecurityState(content::WebContents* tab,
                         int expected_authentication_state) {
   ASSERT_FALSE(tab->IsCrashed());
   content::NavigationEntry* entry =
-      tab->ShowingInterstitialPage()
-          ? tab->GetController().GetTransientEntry()
-          : tab->GetController().GetLastCommittedEntry();
+      tab->ShowingInterstitialPage() ? tab->GetController().GetTransientEntry()
+                                     : tab->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
   CertError::Check(entry, expected_error);
   SecurityStyle::Check(tab, expected_security_level);

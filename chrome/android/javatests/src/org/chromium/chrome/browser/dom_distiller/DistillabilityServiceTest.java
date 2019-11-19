@@ -59,7 +59,7 @@ public class DistillabilityServiceTest {
     @Feature({"Distillability-Service"})
     @MediumTest
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testServiceAliveAfterNativePage() throws InterruptedException, TimeoutException {
+    public void testServiceAliveAfterNativePage() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
 

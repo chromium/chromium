@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_manager.h"
 #include "media/audio/fake_audio_input_stream.h"
@@ -144,7 +144,7 @@ class AudioInputControllerTest : public testing::TestWithParam<bool> {
     run_loop.Run();
   }
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   // Parameterize tests to run AudioInputController either on audio thread
   // (synchronously), or on a different thread (non-blocking).

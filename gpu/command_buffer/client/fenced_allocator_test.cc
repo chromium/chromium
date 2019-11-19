@@ -11,8 +11,8 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/memory/aligned_memory.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/cmd_buffer_helper.h"
 #include "gpu/command_buffer/client/fenced_allocator.h"
 #include "gpu/command_buffer/service/command_buffer_direct.h"
@@ -58,7 +58,7 @@ class BaseFencedAllocatorTest : public testing::Test {
   std::unique_ptr<CommandBufferDirect> command_buffer_;
   std::unique_ptr<AsyncAPIMock> api_mock_;
   std::unique_ptr<CommandBufferHelper> helper_;
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 #ifndef _MSC_VER

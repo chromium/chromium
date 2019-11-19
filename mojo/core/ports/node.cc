@@ -7,10 +7,10 @@
 #include <string.h>
 
 #include <algorithm>
+#include <atomic>
 #include <utility>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/containers/stack_container.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -87,6 +87,8 @@ bool CanAcceptMoreMessages(const Port* port) {
   if (port->state == Port::kClosed)
     return false;
   if (port->peer_closed || port->remove_proxy_on_last_message) {
+    if (port->peer_lost_unexpectedly)
+      return port->message_queue.HasNextMessage();
     if (port->last_sequence_num_to_receive == next_sequence_num - 1)
       return false;
   }
@@ -157,7 +159,7 @@ int Node::GetPort(const PortName& port_name, PortRef* port_ref) {
 
 #if defined(OS_ANDROID) && defined(ARCH_CPU_ARM64)
   // Workaround for https://crbug.com/665869.
-  base::subtle::MemoryBarrier();
+  std::atomic_thread_fence(std::memory_order_seq_cst);
 #endif
 
   *port_ref = PortRef(port_name, iter->second);
@@ -313,6 +315,10 @@ int Node::GetStatus(const PortRef& port_ref, PortStatus* port_status) {
   port_status->queued_message_count =
       port->message_queue.queued_message_count();
   port_status->queued_num_bytes = port->message_queue.queued_num_bytes();
+  port_status->unacknowledged_message_count =
+      port->next_sequence_num_to_send - port->last_sequence_num_acknowledged -
+      1;
+
   return OK;
 }
 
@@ -323,6 +329,8 @@ int Node::GetMessage(const PortRef& port_ref,
 
   DVLOG(4) << "GetMessage for " << port_ref.name() << "@" << name_;
 
+  NodeName peer_node_name;
+  ScopedEvent ack_event;
   {
     SinglePortLocker locker(&port_ref);
     auto* port = locker.port();
@@ -338,7 +346,16 @@ int Node::GetMessage(const PortRef& port_ref,
       return ERROR_PORT_PEER_CLOSED;
 
     port->message_queue.GetNextMessage(message, filter);
+    if (*message &&
+        (*message)->sequence_num() == port->sequence_num_to_acknowledge) {
+      peer_node_name = port->peer_node_name;
+      ack_event = std::make_unique<UserMessageReadAckEvent>(
+          port->peer_port_name, port->sequence_num_to_acknowledge);
+    }
   }
+
+  if (ack_event)
+    delegate_->ForwardEvent(peer_node_name, std::move(ack_event));
 
   // Allow referenced ports to trigger PortStatusChanged calls.
   if (*message) {
@@ -381,6 +398,35 @@ int Node::SendUserMessage(const PortRef& port_ref,
   return rv;
 }
 
+int Node::SetAcknowledgeRequestInterval(
+    const PortRef& port_ref,
+    uint64_t sequence_num_acknowledge_interval) {
+  NodeName peer_node_name;
+  PortName peer_port_name;
+  uint64_t sequence_num_to_request_ack = 0;
+  {
+    SinglePortLocker locker(&port_ref);
+    auto* port = locker.port();
+    if (port->state != Port::kReceiving)
+      return ERROR_PORT_STATE_UNEXPECTED;
+
+    port->sequence_num_acknowledge_interval = sequence_num_acknowledge_interval;
+    if (!sequence_num_acknowledge_interval)
+      return OK;
+
+    peer_node_name = port->peer_node_name;
+    peer_port_name = port->peer_port_name;
+
+    sequence_num_to_request_ack = port->last_sequence_num_acknowledged +
+                                  sequence_num_acknowledge_interval;
+  }
+
+  delegate_->ForwardEvent(peer_node_name,
+                          std::make_unique<UserMessageReadAckRequestEvent>(
+                              peer_port_name, sequence_num_to_request_ack));
+  return OK;
+}
+
 int Node::AcceptEvent(ScopedEvent event) {
   switch (event->type()) {
     case Event::Type::kUserMessage:
@@ -395,6 +441,11 @@ int Node::AcceptEvent(ScopedEvent event) {
       return OnObserveClosure(Event::Cast<ObserveClosureEvent>(&event));
     case Event::Type::kMergePort:
       return OnMergePort(Event::Cast<MergePortEvent>(&event));
+    case Event::Type::kUserMessageReadAckRequest:
+      return OnUserMessageReadAckRequest(
+          Event::Cast<UserMessageReadAckRequestEvent>(&event));
+    case Event::Type::kUserMessageReadAck:
+      return OnUserMessageReadAck(Event::Cast<UserMessageReadAckEvent>(&event));
   }
   return OOPS(ERROR_NOT_IMPLEMENTED);
 }
@@ -593,7 +644,7 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
            << event->proxy_target_port_name() << "@"
            << event->proxy_target_node_name();
 
-  bool update_status = false;
+  bool peer_changed = false;
   ScopedEvent event_to_forward;
   NodeName event_target_node;
   {
@@ -613,7 +664,7 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
         event_target_node = event->proxy_node_name();
         event_to_forward = std::make_unique<ObserveProxyAckEvent>(
             event->proxy_port_name(), port->next_sequence_num_to_send - 1);
-        update_status = true;
+        peer_changed = true;
         DVLOG(2) << "Forwarding ObserveProxyAck from " << event->port_name()
                  << "@" << name_ << " to " << event->proxy_port_name() << "@"
                  << event_target_node;
@@ -648,8 +699,14 @@ int Node::OnObserveProxy(std::unique_ptr<ObserveProxyEvent> event) {
   if (event_to_forward)
     delegate_->ForwardEvent(event_target_node, std::move(event_to_forward));
 
-  if (update_status)
+  if (peer_changed) {
+    // Re-send ack and/or ack requests, as the previous peer proxy may not have
+    // forwarded the previous request before it died.
+    MaybeResendAck(port_ref);
+    MaybeResendAckRequest(port_ref);
+
     delegate_->PortStatusChanged(port_ref);
+  }
 
   return OK;
 }
@@ -732,6 +789,11 @@ int Node::OnObserveClosure(std::unique_ptr<ObserveClosureEvent> event) {
       // may be semantically confusing since the forwarding port is not actually
       // closed. Consider replacing this with a new event type.
       event->set_last_sequence_num(port->next_sequence_num_to_send - 1);
+
+      // Treat the closure as an acknowledge that all sent messages have been
+      // read from the other end.
+      port->last_sequence_num_acknowledged =
+          port->next_sequence_num_to_send - 1;
     } else {
       // We haven't yet reached the receiving peer of the closed port, so we'll
       // forward the message along as-is.
@@ -797,6 +859,115 @@ int Node::OnMergePort(std::unique_ptr<MergePortEvent> event) {
 
   return MergePortsInternal(port_ref, new_port_ref,
                             false /* allow_close_on_bad_state */);
+}
+
+int Node::OnUserMessageReadAckRequest(
+    std::unique_ptr<UserMessageReadAckRequestEvent> event) {
+  PortRef port_ref;
+  GetPort(event->port_name(), &port_ref);
+
+  DVLOG(1) << "AckRequest " << port_ref.name() << "@" << name_ << " sequence "
+           << event->sequence_num_to_acknowledge();
+
+  if (!port_ref.is_valid())
+    return ERROR_PORT_UNKNOWN;
+
+  NodeName peer_node_name;
+  std::unique_ptr<Event> event_to_send;
+  {
+    SinglePortLocker locker(&port_ref);
+    auto* port = locker.port();
+
+    peer_node_name = port->peer_node_name;
+    if (port->state == Port::kProxying) {
+      // Proxies simply forward the ack request to their peer.
+      event->set_port_name(port->peer_port_name);
+      event_to_send = std::move(event);
+    } else {
+      uint64_t current_sequence_num =
+          port->message_queue.next_sequence_num() - 1;
+      // Either this is requesting an ack for a sequence number already read, or
+      // else for a sequence number that is yet to be read.
+      if (current_sequence_num >= event->sequence_num_to_acknowledge()) {
+        // If the current sequence number to read already exceeds the ack
+        // request, send an ack immediately.
+        event_to_send = std::make_unique<UserMessageReadAckEvent>(
+            port->peer_port_name, current_sequence_num);
+
+        // This might be a late or duplicate acknowledge request, that's
+        // requesting acknowledge for an already read message. There may already
+        // have been a request for future reads, so take care not to back up
+        // the requested acknowledge counter.
+        if (current_sequence_num > port->sequence_num_to_acknowledge)
+          port->sequence_num_to_acknowledge = current_sequence_num;
+      } else {
+        // This is request to ack a sequence number that hasn't been read yet.
+        // The state of the port can either be that it already has a
+        // future-requested ack, or not. Because ack requests aren't guaranteed
+        // to arrive in order, store the earlier of the current  queued request
+        // and the new one, if one was already requested.
+        bool has_queued_ack_request =
+            port->sequence_num_to_acknowledge > current_sequence_num;
+        if (!has_queued_ack_request ||
+            port->sequence_num_to_acknowledge >
+                event->sequence_num_to_acknowledge()) {
+          port->sequence_num_to_acknowledge =
+              event->sequence_num_to_acknowledge();
+        }
+        return OK;
+      }
+    }
+  }
+
+  delegate_->ForwardEvent(peer_node_name, std::move(event_to_send));
+
+  return OK;
+}
+
+int Node::OnUserMessageReadAck(std::unique_ptr<UserMessageReadAckEvent> event) {
+  PortRef port_ref;
+  GetPort(event->port_name(), &port_ref);
+
+  DVLOG(1) << "Acknowledge " << port_ref.name() << "@" << name_ << " sequence "
+           << event->sequence_num_acknowledged();
+
+  NodeName peer_node_name;
+  ScopedEvent ack_request_event;
+  if (port_ref.is_valid()) {
+    SinglePortLocker locker(&port_ref);
+    auto* port = locker.port();
+
+    if (event->sequence_num_acknowledged() >= port->next_sequence_num_to_send) {
+      // TODO(http://crbug.com/980952): This is a malformed event.
+      //      This could return a new error "ERROR_MALFORMED_EVENT" which the
+      //      delegate could use as a signal to drop the peer node.
+      return OK;
+    }
+
+    // Keep the largest acknowledge seen.
+    if (event->sequence_num_acknowledged() <=
+        port->last_sequence_num_acknowledged) {
+      // The acknowledge was late or a duplicate, it's safe to ignore it.
+      return OK;
+    }
+
+    port->last_sequence_num_acknowledged = event->sequence_num_acknowledged();
+    // Send another ack request if the interval is non-zero and the peer has
+    // not been closed.
+    if (port->sequence_num_acknowledge_interval && !port->peer_closed) {
+      peer_node_name = port->peer_node_name;
+      ack_request_event = std::make_unique<UserMessageReadAckRequestEvent>(
+          port->peer_port_name, port->last_sequence_num_acknowledged +
+                                    port->sequence_num_acknowledge_interval);
+    }
+  }
+  if (ack_request_event)
+    delegate_->ForwardEvent(peer_node_name, std::move(ack_request_event));
+
+  if (port_ref.is_valid())
+    delegate_->PortStatusChanged(port_ref);
+
+  return OK;
 }
 
 int Node::AddPortWithName(const PortName& port_name, scoped_refptr<Port> port) {
@@ -879,7 +1050,7 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
   {
     // Needed to swap peer map entries below.
     PortLocker::AssertNoPortsLockedOnCurrentThread();
-    base::Optional<base::AutoLock> ports_locker(base::in_place, ports_lock_);
+    base::ReleasableAutoLock ports_locker(&ports_lock_);
 
     base::Optional<PortLocker> locker(base::in_place, port_refs, 2);
     auto* port0 = locker->GetPort(port0_ref);
@@ -910,7 +1081,7 @@ int Node::MergePortsInternal(const PortRef& port0_ref,
       const bool close_port1 =
           port1->state == Port::kReceiving || allow_close_on_bad_state;
       locker.reset();
-      ports_locker.reset();
+      ports_locker.Release();
       if (close_port0)
         ClosePort(port0_ref);
       if (close_port1)
@@ -1207,6 +1378,9 @@ int Node::BeginProxying(const PortRef& port_ref) {
   if (rv != OK)
     return rv;
 
+  // Forward any pending acknowledge request.
+  MaybeForwardAckRequest(port_ref);
+
   bool try_remove_proxy_immediately;
   ScopedEvent closure_event;
   NodeName closure_target_node;
@@ -1366,9 +1540,7 @@ void Node::DestroyAllPortsWithPeer(const NodeName& node_name,
           // messages.
 
           port->peer_closed = true;
-          port->last_sequence_num_to_receive =
-              port->message_queue.next_sequence_num() - 1;
-
+          port->peer_lost_unexpectedly = true;
           if (port->state == Port::kReceiving)
             ports_to_notify.push_back(local_port_ref);
         }
@@ -1482,6 +1654,71 @@ void Node::SwapPortPeers(const PortName& port0_name,
 
   std::swap(port0->peer_node_name, port1->peer_node_name);
   std::swap(port0->peer_port_name, port1->peer_port_name);
+}
+
+void Node::MaybeResendAckRequest(const PortRef& port_ref) {
+  NodeName peer_node_name;
+  ScopedEvent ack_request_event;
+  {
+    SinglePortLocker locker(&port_ref);
+    auto* port = locker.port();
+    if (port->state != Port::kReceiving)
+      return;
+
+    if (!port->sequence_num_acknowledge_interval)
+      return;
+
+    peer_node_name = port->peer_node_name;
+    ack_request_event = std::make_unique<UserMessageReadAckRequestEvent>(
+        port->peer_port_name, port->last_sequence_num_acknowledged +
+                                  port->sequence_num_acknowledge_interval);
+  }
+
+  delegate_->ForwardEvent(peer_node_name, std::move(ack_request_event));
+}
+
+void Node::MaybeForwardAckRequest(const PortRef& port_ref) {
+  NodeName peer_node_name;
+  ScopedEvent ack_request_event;
+  {
+    SinglePortLocker locker(&port_ref);
+    auto* port = locker.port();
+    if (port->state != Port::kProxying)
+      return;
+
+    if (!port->sequence_num_to_acknowledge)
+      return;
+
+    peer_node_name = port->peer_node_name;
+    ack_request_event = std::make_unique<UserMessageReadAckRequestEvent>(
+        port->peer_port_name, port->sequence_num_to_acknowledge);
+
+    port->sequence_num_to_acknowledge = 0;
+  }
+
+  delegate_->ForwardEvent(peer_node_name, std::move(ack_request_event));
+}
+
+void Node::MaybeResendAck(const PortRef& port_ref) {
+  NodeName peer_node_name;
+  ScopedEvent ack_event;
+  {
+    SinglePortLocker locker(&port_ref);
+    auto* port = locker.port();
+    if (port->state != Port::kReceiving)
+      return;
+
+    uint64_t last_sequence_num_read =
+        port->message_queue.next_sequence_num() - 1;
+    if (!port->sequence_num_to_acknowledge || !last_sequence_num_read)
+      return;
+
+    peer_node_name = port->peer_node_name;
+    ack_event = std::make_unique<UserMessageReadAckEvent>(
+        port->peer_port_name, last_sequence_num_read);
+  }
+
+  delegate_->ForwardEvent(peer_node_name, std::move(ack_event));
 }
 
 Node::DelegateHolder::DelegateHolder(Node* node, NodeDelegate* delegate)

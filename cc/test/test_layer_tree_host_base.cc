@@ -8,6 +8,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_raster_source.h"
+#include "cc/test/layer_test_common.h"
 #include "cc/trees/layer_tree_impl.h"
 
 namespace cc {
@@ -17,8 +18,8 @@ TestLayerTreeHostBase::TestLayerTreeHostBase()
       pending_layer_(nullptr),
       active_layer_(nullptr),
       old_pending_layer_(nullptr),
-      root_id_(6),
-      id_(7) {}
+      root_id_(1),
+      next_layer_id_(2) {}
 
 TestLayerTreeHostBase::~TestLayerTreeHostBase() = default;
 
@@ -32,8 +33,7 @@ void TestLayerTreeHostBase::SetUp() {
 }
 
 LayerTreeSettings TestLayerTreeHostBase::CreateSettings() {
-  LayerTreeSettings settings;
-  return settings;
+  return LayerListSettings();
 }
 
 std::unique_ptr<LayerTreeFrameSink>
@@ -96,81 +96,73 @@ void TestLayerTreeHostBase::SetupPendingTree(
 void TestLayerTreeHostBase::SetupPendingTree(
     scoped_refptr<RasterSource> raster_source,
     const gfx::Size& tile_size,
-    const Region& invalidation,
-    Layer::LayerMaskType mask_type) {
+    const Region& invalidation) {
   host_impl()->CreatePendingTree();
   host_impl()->pending_tree()->PushPageScaleFromMainThread(1.f, 0.00001f,
                                                            100000.f);
   LayerTreeImpl* pending_tree = host_impl()->pending_tree();
-  pending_tree->SetDeviceViewportSize(
-      host_impl()->active_tree()->GetDeviceViewport().size());
+  pending_tree->SetDeviceViewportRect(
+      host_impl()->active_tree()->GetDeviceViewport());
   pending_tree->SetDeviceScaleFactor(
       host_impl()->active_tree()->device_scale_factor());
 
   // Steal from the recycled tree if possible.
-  LayerImpl* pending_root = pending_tree->root_layer_for_testing();
-  std::unique_ptr<FakePictureLayerImpl> pending_layer;
+  LayerImpl* pending_root = pending_tree->root_layer();
+  DCHECK(!pending_layer_);
   DCHECK(!pending_root || pending_root->id() == root_id_);
+
   if (!pending_root) {
-    std::unique_ptr<LayerImpl> new_pending_root =
-        LayerImpl::Create(pending_tree, root_id_);
-    switch (mask_type) {
-      case Layer::LayerMaskType::NOT_MASK:
-        pending_layer = FakePictureLayerImpl::Create(pending_tree, id_);
-        break;
-      case Layer::LayerMaskType::SINGLE_TEXTURE_MASK:
-        pending_layer =
-            FakePictureLayerImpl::CreateSingleTextureMask(pending_tree, id_);
-        break;
-      case Layer::LayerMaskType::MULTI_TEXTURE_MASK:
-        pending_layer = FakePictureLayerImpl::CreateMask(pending_tree, id_);
-        break;
-      default:
-        NOTREACHED();
-    }
-    if (!tile_size.IsEmpty())
-      pending_layer->set_fixed_tile_size(tile_size);
-    pending_layer->SetDrawsContent(true);
-    pending_layer->SetScrollable(gfx::Size(1, 1));
-    pending_root = new_pending_root.get();
-    pending_tree->SetRootLayerForTesting(std::move(new_pending_root));
+    pending_tree->SetRootLayerForTesting(
+        LayerImpl::Create(pending_tree, root_id_));
+    pending_root = pending_tree->root_layer();
+
+    auto* page_scale_layer = AddLayer<LayerImpl>(pending_tree);
+    pending_layer_ = AddLayer<FakePictureLayerImpl>(pending_tree);
+    pending_layer_->SetDrawsContent(true);
+    pending_layer_->SetScrollable(gfx::Size(1, 1));
+
+    pending_tree->SetElementIdsForTesting();
+    SetupRootProperties(pending_root);
+    CopyProperties(pending_root, page_scale_layer);
+    CreateTransformNode(page_scale_layer).in_subtree_of_page_scale_layer = true;
+    CopyProperties(page_scale_layer, pending_layer_);
+    CreateTransformNode(pending_layer_);
+    CreateScrollNode(pending_layer_);
+
+    auto viewport_property_ids = pending_tree->ViewportPropertyIdsForTesting();
+    viewport_property_ids.page_scale_transform =
+        page_scale_layer->transform_tree_index();
+    pending_tree->SetViewportPropertyIds(viewport_property_ids);
   } else {
-    pending_layer.reset(static_cast<FakePictureLayerImpl*>(
-        pending_root->test_properties()
-            ->RemoveChild(pending_root->test_properties()->children[0])
-            .release()));
-    if (!tile_size.IsEmpty())
-      pending_layer->set_fixed_tile_size(tile_size);
+    pending_layer_ = old_pending_layer_;
+    old_pending_layer_ = nullptr;
   }
-  pending_root->test_properties()->force_render_surface = true;
+
+  if (!tile_size.IsEmpty())
+    pending_layer_->set_fixed_tile_size(tile_size);
+
   // The bounds() just mirror the raster source size.
-  pending_layer->SetBounds(raster_source->GetSize());
-  pending_layer->SetRasterSourceOnPending(raster_source, invalidation);
+  if (raster_source) {
+    pending_layer_->SetBounds(raster_source->GetSize());
+    pending_layer_->SetRasterSource(raster_source, invalidation);
+  }
 
-  pending_root->test_properties()->AddChild(std::move(pending_layer));
-  LayerTreeImpl::ViewportLayerIds viewport_ids;
-  viewport_ids.page_scale = pending_tree->root_layer_for_testing()->id();
-  pending_tree->SetViewportLayersFromIds(viewport_ids);
-
-  pending_layer_ = static_cast<FakePictureLayerImpl*>(
-      host_impl()->pending_tree()->LayerById(id_));
-
-  // Add tilings/tiles for the layer.
-  RebuildPropertyTreesOnPendingTree();
-  host_impl()->pending_tree()->UpdateDrawProperties();
+  host_impl()->pending_tree()->set_needs_update_draw_properties();
+  UpdateDrawProperties(host_impl()->pending_tree());
 }
 
 void TestLayerTreeHostBase::ActivateTree() {
-  RebuildPropertyTreesOnPendingTree();
+  UpdateDrawProperties(host_impl()->pending_tree());
+
   host_impl()->ActivateSyncTree();
   CHECK(!host_impl()->pending_tree());
   CHECK(host_impl()->recycle_tree());
   old_pending_layer_ = pending_layer_;
   pending_layer_ = nullptr;
   active_layer_ = static_cast<FakePictureLayerImpl*>(
-      host_impl()->active_tree()->LayerById(id_));
+      host_impl()->active_tree()->LayerById(old_pending_layer_->id()));
 
-  host_impl()->active_tree()->UpdateDrawProperties();
+  UpdateDrawProperties(host_impl()->active_tree());
 }
 
 void TestLayerTreeHostBase::PerformImplSideInvalidation() {
@@ -185,11 +177,6 @@ void TestLayerTreeHostBase::PerformImplSideInvalidation() {
   old_pending_layer_ = nullptr;
 }
 
-void TestLayerTreeHostBase::RebuildPropertyTreesOnPendingTree() {
-  host_impl()->pending_tree()->property_trees()->needs_rebuild = true;
-  host_impl()->pending_tree()->BuildLayerListAndPropertyTreesForTesting();
-}
-
 void TestLayerTreeHostBase::SetInitialTreePriority() {
   GlobalStateThatImpactsTilePriority state;
 
@@ -202,6 +189,11 @@ void TestLayerTreeHostBase::SetInitialTreePriority() {
   host_impl_->resource_pool()->SetResourceUsageLimits(
       state.soft_memory_limit_in_bytes, state.num_resources_limit);
   host_impl_->tile_manager()->SetGlobalStateForTesting(state);
+}
+
+void TestLayerTreeHostBase::ResetTrees() {
+  host_impl_->ResetTreesForTesting();
+  pending_layer_ = old_pending_layer_ = active_layer_ = nullptr;
 }
 
 }  // namespace cc

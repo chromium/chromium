@@ -23,6 +23,13 @@ class FlatTreeNodeData final : public GarbageCollected<FlatTreeNodeData> {
   }
   void Trace(Visitor*);
 
+#if DCHECK_IS_ON()
+  bool IsCleared() const {
+    return !assigned_slot_ && !previous_in_assigned_nodes_ &&
+           !next_in_assigned_nodes_;
+  }
+#endif
+
  private:
   void SetAssignedSlot(HTMLSlotElement* assigned_slot) {
     assigned_slot_ = assigned_slot;
@@ -40,6 +47,7 @@ class FlatTreeNodeData final : public GarbageCollected<FlatTreeNodeData> {
   friend class FlatTreeTraversal;
   friend class HTMLSlotElement;
   friend HTMLSlotElement* Node::AssignedSlot() const;
+  friend Element* Node::FlatTreeParentForChildDirty() const;
 
   WeakMember<HTMLSlotElement> assigned_slot_;
   WeakMember<Node> previous_in_assigned_nodes_;

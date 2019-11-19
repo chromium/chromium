@@ -28,7 +28,7 @@ void SurfaceDrawQuad::SetNew(const SharedQuadState* shared_quad_state,
                              bool stretch_content_to_fill_bounds,
                              bool ignores_input_event) {
   bool needs_blending = true;
-  DrawQuad::SetAll(shared_quad_state, DrawQuad::SURFACE_CONTENT, rect,
+  DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSurfaceContent, rect,
                    visible_rect, needs_blending);
   this->surface_range = surface_range;
   this->default_background_color = default_background_color;
@@ -43,17 +43,21 @@ void SurfaceDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                              const SurfaceRange& surface_range,
                              SkColor default_background_color,
                              bool stretch_content_to_fill_bounds,
-                             bool ignores_input_event) {
-  DrawQuad::SetAll(shared_quad_state, DrawQuad::SURFACE_CONTENT, rect,
+                             bool ignores_input_event,
+                             bool is_reflection,
+                             bool allow_merge) {
+  DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kSurfaceContent, rect,
                    visible_rect, needs_blending);
   this->surface_range = surface_range;
   this->default_background_color = default_background_color;
   this->stretch_content_to_fill_bounds = stretch_content_to_fill_bounds;
   this->ignores_input_event = ignores_input_event;
+  this->is_reflection = is_reflection;
+  this->allow_merge = allow_merge;
 }
 
 const SurfaceDrawQuad* SurfaceDrawQuad::MaterialCast(const DrawQuad* quad) {
-  DCHECK_EQ(quad->material, DrawQuad::SURFACE_CONTENT);
+  DCHECK_EQ(quad->material, DrawQuad::Material::kSurfaceContent);
   return static_cast<const SurfaceDrawQuad*>(quad);
 }
 

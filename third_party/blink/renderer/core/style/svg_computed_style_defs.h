@@ -34,16 +34,15 @@
 #include "third_party/blink/renderer/core/style/style_path.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/ref_vector.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class StyleSVGResource;
 
-typedef RefVector<Length> SVGDashArray;
+typedef base::RefCountedData<WTF::Vector<Length>> SVGDashArray;
 
 enum SVGPaintType {
   SVG_PAINTTYPE_RGBCOLOR,

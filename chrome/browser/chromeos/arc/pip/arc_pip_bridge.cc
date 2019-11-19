@@ -6,18 +6,15 @@
 
 #include <utility>
 
-#include "ash/public/cpp/ash_pref_names.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "chrome/browser/chromeos/arc/pip/arc_picture_in_picture_window_controller_impl.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
-#include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/prefs/pref_change_registrar.h"
-#include "components/prefs/pref_service.h"
+#include "components/arc/arc_features.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 
 namespace arc {
@@ -54,20 +51,10 @@ ArcPipBridge* ArcPipBridge::GetForBrowserContext(
 
 ArcPipBridge::ArcPipBridge(content::BrowserContext* context,
                            ArcBridgeService* bridge_service)
-    : arc_bridge_service_(bridge_service),
-      profile_(Profile::FromBrowserContext(context)) {
-  DCHECK(context);
-  DCHECK(profile_);
-
+    : arc_bridge_service_(bridge_service) {
   DVLOG(2) << "ArcPipBridge::ArcPipBridge";
   arc_bridge_service_->pip()->SetHost(this);
   arc_bridge_service_->pip()->AddObserver(this);
-
-  pref_change_registrar_.Init(profile_->GetPrefs());
-  pref_change_registrar_.Add(
-      ash::prefs::kAccessibilitySpokenFeedbackEnabled,
-      base::BindRepeating(&ArcPipBridge::OnSpokenFeedbackChanged,
-                          base::Unretained(this)));
 }
 
 ArcPipBridge::~ArcPipBridge() {
@@ -78,8 +65,6 @@ ArcPipBridge::~ArcPipBridge() {
 
 void ArcPipBridge::OnConnectionReady() {
   DVLOG(1) << "ArcPipBridge::OnConnectionReady";
-  // Send the initial status.
-  OnSpokenFeedbackChanged();
 }
 
 void ArcPipBridge::OnConnectionClosed() {
@@ -114,28 +99,6 @@ void ArcPipBridge::ClosePip() {
 
   if (!prevent_closing_pip_)
     instance->ClosePip();
-}
-
-bool ArcPipBridge::ShouldSuppressPip() const {
-  return profile_->GetPrefs()->GetBoolean(
-      ash::prefs::kAccessibilitySpokenFeedbackEnabled);
-}
-
-void ArcPipBridge::OnSpokenFeedbackChanged() {
-  const bool should_suppress = ShouldSuppressPip();
-
-  DVLOG(1) << "ArcPipBridge::OnSpokenFeedbackChanged (status: "
-           << should_suppress << ")";
-
-  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->pip(),
-                                               SetPipSuppressionStatus);
-  if (!instance)
-    return;
-
-  instance->SetPipSuppressionStatus(should_suppress);
-
-  // TODO(yoshiki): Add the code to suppress Chrome PIP window when the spoken
-  // feedback gets enabled.
 }
 
 }  // namespace arc

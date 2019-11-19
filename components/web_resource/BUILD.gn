@@ -16,12 +16,13 @@ static_library("web_resource") {
 
   deps = [
     "//base",
-    "//components/data_use_measurement/core",
-    "//components/google/core/browser",
+    "//build:branding_buildflags",
+    "//components/google/core/common",
     "//components/pref_registry",
     "//components/prefs",
     "//components/version_info",
     "//net",
+    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//ui/base",
   ]
@@ -55,6 +56,7 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/version_info",
     "//net:test_support",
+    "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gtest",

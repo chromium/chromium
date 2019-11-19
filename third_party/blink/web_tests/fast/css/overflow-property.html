@@ -17,9 +17,6 @@
 <div id="test5" style="overflow-y: auto"></div>
 <div id="test6" style="overflow: invalid"></div>
 <div id="test7"></div>
-<div id="test8" style="overflow-y: -webkit-paged-x;"></div>
-<div id="test9" style="overflow: -webkit-paged-y;"></div>
-<div id="test10" style="overflow-x: visible; overflow-y: -webkit-paged-y;"></div>
 
 </div>
 
@@ -31,10 +28,7 @@
     var test4 = document.getElementById("test4");
     var test5 = document.getElementById("test5");
     var test6 = document.getElementById("test6");
-    var test7 = document.getElementById("test6");
-    var test8 = document.getElementById("test8");
-    var test9 = document.getElementById("test9");
-    var test10 = document.getElementById("test10");
+    var test7 = document.getElementById("test7");
 
     shouldBeEqualToString("test0.style.overflow", "auto");
     shouldBeEqualToString("test0.style.overflowX", "auto");
@@ -60,12 +54,6 @@
     shouldBeEqualToString("test7.style.overflow", "");
     shouldBeEqualToString("test7.style.overflowX", "");
     shouldBeEqualToString("test7.style.overflowY", "");
-    shouldBeEqualToString("test8.style.overflowX", "");
-    shouldBeEqualToString("test8.style.overflowY", "-webkit-paged-x");
-    shouldBeEqualToString("test9.style.overflowX", "auto");
-    shouldBeEqualToString("test9.style.overflowY", "-webkit-paged-y");
-    shouldBeEqualToString("test10.style.overflowX", "visible");
-    shouldBeEqualToString("test10.style.overflowY", "-webkit-paged-y");
 
     // clean up after ourselves
     var tests_container = document.getElementById("tests_container");

@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "third_party/perfetto/include/perfetto/tracing/core/shared_memory.h"
+#include "third_party/perfetto/include/perfetto/ext/tracing/core/shared_memory.h"
 
 namespace tracing {
 

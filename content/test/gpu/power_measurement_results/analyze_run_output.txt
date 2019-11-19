@@ -1,0 +1,851 @@
+DEBUG:root:Loading /usr/local/google/home/zmo/src/chrome.git/src/content/test/gpu/power_measurement_results/win10_intel_hd_630/build_4370_4425_repeat3.json
+DEBUG:root:Loading /usr/local/google/home/zmo/src/chrome.git/src/content/test/gpu/power_measurement_results/win10_intel_hd_630/build_4426_4759_repeat3.json
+DEBUG:root:Loading /usr/local/google/home/zmo/src/chrome.git/src/content/test/gpu/power_measurement_results/win10_intel_hd_630/build_4760_5047_repeat3.json
+
+**************************************************************
+Locate potential bad bots: thresh=0.50, repeat=each
+**************************************************************
+
+DEBUG:root:Processed builds: [4370, 5047]
+DEBUG:root:Total number of bots: 75
+
+DEBUG:root:Results for test: Video_720_MP4
+DEBUG:root:Potential bad bot BUILD146-A9: stdev = 0.595372
+DEBUG:root:Potential bad bot BUILD143-A9: stdev = 0.705838
+DEBUG:root:Potential bad bot BUILD142-A9: stdev = 1.610050
+DEBUG:root:Potential bad bot BUILD125-A9: stdev = 0.505095
+DEBUG:root:Potential bad bot BUILD179-A9: stdev = 0.555427
+DEBUG:root:Potential bad bot BUILD159-A9: stdev = 0.871236
+DEBUG:root:Potential bad bot BUILD174-A9: stdev = 1.851846
+DEBUG:root:Potential bad bot BUILD128-A9: stdev = 0.833245
+DEBUG:root:Potential bad bot BUILD123-A9: stdev = 0.703378
+DEBUG:root:Potential bad bot BUILD162-A9: stdev = 0.710410
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 0.934519
+DEBUG:root:Potential bad bot BUILD154-A9: stdev = 1.439566
+DEBUG:root:Potential bad bot BUILD176-A9: stdev = 2.226722
+DEBUG:root:Potential bad bot BUILD141-A9: stdev = 0.564170
+DEBUG:root:Potential bad bot BUILD137-A9: stdev = 3.046057
+DEBUG:root:Potential bad bot BUILD145-A9: stdev = 0.635783
+DEBUG:root:Potential bad bot BUILD124-A9: stdev = 0.599947
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 1.611051
+DEBUG:root:Potential bad bot BUILD177-A9: stdev = 2.108679
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.898116
+DEBUG:root:Total bots considered: 63
+DEBUG:root:Bad bots: 20
+DEBUG:root:[u'BUILD146-A9', u'BUILD143-A9', u'BUILD142-A9', u'BUILD125-A9', u'BUILD179-A9', u'BUILD159-A9', u'BUILD174-A9', u'BUILD128-A9', u'BUILD123-A9', u'BUILD162-A9', u'BUILD119-A9', u'BUILD154-A9', u'BUILD176-A9', u'BUILD141-A9', u'BUILD137-A9', u'BUILD145-A9', u'BUILD124-A9', u'BUILD175-A9', u'BUILD177-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay
+DEBUG:root:Potential bad bot BUILD146-A9: stdev = 2.280162
+DEBUG:root:Potential bad bot BUILD101-A9: stdev = 3.993673
+DEBUG:root:Potential bad bot BUILD180-A9: stdev = 2.811598
+DEBUG:root:Potential bad bot BUILD142-A9: stdev = 1.825258
+DEBUG:root:Potential bad bot BUILD125-A9: stdev = 1.031254
+DEBUG:root:Potential bad bot BUILD179-A9: stdev = 0.865361
+DEBUG:root:Potential bad bot BUILD174-A9: stdev = 1.978669
+DEBUG:root:Potential bad bot BUILD166-A9: stdev = 2.686518
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 1.590389
+DEBUG:root:Potential bad bot BUILD120-A9: stdev = 0.849324
+DEBUG:root:Potential bad bot BUILD155-A9: stdev = 0.698091
+DEBUG:root:Potential bad bot BUILD141-A9: stdev = 0.768600
+DEBUG:root:Potential bad bot BUILD169-A9: stdev = 0.512143
+DEBUG:root:Potential bad bot BUILD136-A9: stdev = 1.141502
+DEBUG:root:Potential bad bot BUILD173-A9: stdev = 1.398360
+DEBUG:root:Potential bad bot BUILD135-A9: stdev = 0.867472
+DEBUG:root:Potential bad bot BUILD172-A9: stdev = 0.924073
+DEBUG:root:Potential bad bot BUILD145-A9: stdev = 0.521650
+DEBUG:root:Potential bad bot BUILD124-A9: stdev = 0.601451
+DEBUG:root:Potential bad bot BUILD105-A9: stdev = 0.904199
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 0.803965
+DEBUG:root:Potential bad bot BUILD177-A9: stdev = 0.975245
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.940682
+DEBUG:root:Total bots considered: 63
+DEBUG:root:Bad bots: 23
+DEBUG:root:[u'BUILD146-A9', u'BUILD101-A9', u'BUILD180-A9', u'BUILD142-A9', u'BUILD125-A9', u'BUILD179-A9', u'BUILD174-A9', u'BUILD166-A9', u'BUILD119-A9', u'BUILD120-A9', u'BUILD155-A9', u'BUILD141-A9', u'BUILD169-A9', u'BUILD136-A9', u'BUILD173-A9', u'BUILD135-A9', u'BUILD172-A9', u'BUILD145-A9', u'BUILD124-A9', u'BUILD105-A9', u'BUILD175-A9', u'BUILD177-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Fullscreen
+DEBUG:root:Potential bad bot BUILD146-A9: stdev = 0.968728
+DEBUG:root:Potential bad bot BUILD180-A9: stdev = 2.004136
+DEBUG:root:Potential bad bot BUILD143-A9: stdev = 0.637337
+DEBUG:root:Potential bad bot BUILD140-A9: stdev = 0.841296
+DEBUG:root:Potential bad bot BUILD142-A9: stdev = 1.735161
+DEBUG:root:Potential bad bot BUILD129-A9: stdev = 0.618781
+DEBUG:root:Potential bad bot BUILD125-A9: stdev = 0.787166
+DEBUG:root:Potential bad bot BUILD179-A9: stdev = 1.031040
+DEBUG:root:Potential bad bot BUILD174-A9: stdev = 1.993113
+DEBUG:root:Potential bad bot BUILD127-A9: stdev = 0.520383
+DEBUG:root:Potential bad bot BUILD128-A9: stdev = 0.530450
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 0.996301
+DEBUG:root:Potential bad bot BUILD155-A9: stdev = 0.577851
+DEBUG:root:Potential bad bot BUILD141-A9: stdev = 0.590456
+DEBUG:root:Potential bad bot BUILD136-A9: stdev = 0.971805
+DEBUG:root:Potential bad bot BUILD172-A9: stdev = 1.855190
+DEBUG:root:Potential bad bot BUILD145-A9: stdev = 0.611465
+DEBUG:root:Potential bad bot BUILD124-A9: stdev = 0.598236
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 2.312920
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.888970
+DEBUG:root:Total bots considered: 63
+DEBUG:root:Bad bots: 20
+DEBUG:root:[u'BUILD146-A9', u'BUILD180-A9', u'BUILD143-A9', u'BUILD140-A9', u'BUILD142-A9', u'BUILD129-A9', u'BUILD125-A9', u'BUILD179-A9', u'BUILD174-A9', u'BUILD127-A9', u'BUILD128-A9', u'BUILD119-A9', u'BUILD155-A9', u'BUILD141-A9', u'BUILD136-A9', u'BUILD172-A9', u'BUILD145-A9', u'BUILD124-A9', u'BUILD175-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay_Fullscreen
+DEBUG:root:Potential bad bot BUILD101-A9: stdev = 2.196704
+DEBUG:root:Potential bad bot BUILD142-A9: stdev = 1.745756
+DEBUG:root:Potential bad bot BUILD125-A9: stdev = 0.557574
+DEBUG:root:Potential bad bot BUILD179-A9: stdev = 0.845659
+DEBUG:root:Potential bad bot BUILD174-A9: stdev = 1.969950
+DEBUG:root:Potential bad bot BUILD127-A9: stdev = 0.526115
+DEBUG:root:Potential bad bot BUILD21-B1: stdev = 0.597260
+DEBUG:root:Potential bad bot BUILD166-A9: stdev = 4.369427
+DEBUG:root:Potential bad bot BUILD128-A9: stdev = 0.576087
+DEBUG:root:Potential bad bot BUILD138-A9: stdev = 0.772415
+DEBUG:root:Potential bad bot BUILD121-A9: stdev = 0.612820
+DEBUG:root:Potential bad bot BUILD120-A9: stdev = 2.438143
+DEBUG:root:Potential bad bot BUILD169-A9: stdev = 0.738157
+DEBUG:root:Potential bad bot BUILD173-A9: stdev = 1.358314
+DEBUG:root:Potential bad bot BUILD135-A9: stdev = 0.744469
+DEBUG:root:Potential bad bot BUILD164-A9: stdev = 0.898606
+DEBUG:root:Potential bad bot BUILD124-A9: stdev = 0.650996
+DEBUG:root:Potential bad bot BUILD105-A9: stdev = 0.948906
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 0.763945
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.911686
+DEBUG:root:Total bots considered: 63
+DEBUG:root:Bad bots: 20
+DEBUG:root:[u'BUILD101-A9', u'BUILD142-A9', u'BUILD125-A9', u'BUILD179-A9', u'BUILD174-A9', u'BUILD127-A9', u'BUILD21-B1', u'BUILD166-A9', u'BUILD128-A9', u'BUILD138-A9', u'BUILD121-A9', u'BUILD120-A9', u'BUILD169-A9', u'BUILD173-A9', u'BUILD135-A9', u'BUILD164-A9', u'BUILD124-A9', u'BUILD105-A9', u'BUILD175-A9', u'BUILD148-A9']
+
+DEBUG:root:All potential bad bots: 38
+DEBUG:root:[u'BUILD101-A9', u'BUILD105-A9', u'BUILD119-A9', u'BUILD120-A9', u'BUILD121-A9', u'BUILD123-A9', u'BUILD124-A9', u'BUILD125-A9', u'BUILD127-A9', u'BUILD128-A9', u'BUILD129-A9', u'BUILD135-A9', u'BUILD136-A9', u'BUILD137-A9', u'BUILD138-A9', u'BUILD140-A9', u'BUILD141-A9', u'BUILD142-A9', u'BUILD143-A9', u'BUILD145-A9', u'BUILD146-A9', u'BUILD148-A9', u'BUILD154-A9', u'BUILD155-A9', u'BUILD159-A9', u'BUILD162-A9', u'BUILD164-A9', u'BUILD166-A9', u'BUILD169-A9', u'BUILD172-A9', u'BUILD173-A9', u'BUILD174-A9', u'BUILD175-A9', u'BUILD176-A9', u'BUILD177-A9', u'BUILD179-A9', u'BUILD180-A9', u'BUILD21-B1']
+
+DEBUG:root:Bad bot BUILD101-A9 builds: [4919, 4991, 5039]
+DEBUG:root:Bad bot BUILD105-A9 builds: [4886, 4961, 4964]
+DEBUG:root:Bad bot BUILD119-A9 builds: [4386, 4399, 4590, 4788, 4798, 4890, 4938, 4982, 5015]
+DEBUG:root:Bad bot BUILD120-A9 builds: [4421, 4426, 4461, 4521, 4552, 4723, 4989]
+DEBUG:root:Bad bot BUILD121-A9 builds: [4417, 4452, 4486, 4512, 4547, 4716, 4802, 4944, 4984, 5017, 5018]
+DEBUG:root:Bad bot BUILD123-A9 builds: [4390, 4458, 4589, 4606, 4637, 4715, 4717, 4929, 4953, 5040]
+DEBUG:root:Bad bot BUILD124-A9 builds: [4472, 4526, 4625, 4722, 4826, 4882, 4887]
+DEBUG:root:Bad bot BUILD125-A9 builds: [4392, 4407, 4429, 4478, 4520, 4613, 4633, 4638, 4753, 4832, 4884, 4959, 5003, 5013]
+DEBUG:root:Bad bot BUILD127-A9 builds: [4427, 4487, 4488, 4511, 4607, 4664, 4727, 4766, 4954, 5037]
+DEBUG:root:Bad bot BUILD128-A9 builds: [4389, 4405, 4414, 4433, 4465, 4515, 4532, 4615, 4670, 4735, 4772, 4778, 4906]
+DEBUG:root:Bad bot BUILD129-A9 builds: [4406, 4415, 4467, 4507, 4624, 4648, 4661, 4698, 4724, 4736, 4752, 4786, 4977, 4978]
+DEBUG:root:Bad bot BUILD135-A9 builds: [4438, 4456, 4492, 4623, 4803, 4892, 5027]
+DEBUG:root:Bad bot BUILD136-A9 builds: [4591, 4650, 4732, 4742, 4784, 4910]
+DEBUG:root:Bad bot BUILD137-A9 builds: [4420, 4450, 4525, 4567, 4602, 4925]
+DEBUG:root:Bad bot BUILD138-A9 builds: [4418, 4468, 4629, 4746, 4755, 4757, 4768, 4783]
+DEBUG:root:Bad bot BUILD140-A9 builds: [4446, 4474, 4537, 4577, 4586, 4608, 4640, 4663, 4709, 4731, 4749, 4765, 4779, 5004]
+DEBUG:root:Bad bot BUILD141-A9 builds: [4375, 4436, 4440, 4480, 4527, 4555, 4720, 4761, 4776, 4912, 4915, 4981, 4985, 4995, 5033, 5043]
+DEBUG:root:Bad bot BUILD142-A9 builds: [4469, 4494, 4499, 4571, 4745, 4796, 4812]
+DEBUG:root:Bad bot BUILD143-A9 builds: [4408, 4439, 4471, 4516, 4628, 4740, 4743, 4764, 4787, 4811, 4899, 4904, 4937, 5044]
+DEBUG:root:Bad bot BUILD145-A9 builds: [4370, 4380, 4396, 4464, 4517, 4529, 4710, 4896, 4900, 4933]
+DEBUG:root:Bad bot BUILD146-A9 builds: [4535, 4548, 4605, 4612, 4794, 4806, 4934, 4967]
+DEBUG:root:Bad bot BUILD148-A9 builds: [4416, 4477, 4489, 4501, 4573, 4609, 4635, 4712, 4767, 4775, 5012, 5024]
+DEBUG:root:Bad bot BUILD154-A9 builds: [4384, 4394, 4485, 4493, 4497, 4538, 4614, 4643, 4760, 4781, 4790, 4805, 4818, 4833, 4926]
+DEBUG:root:Bad bot BUILD155-A9 builds: [4403, 4524, 4543, 4580, 4654, 4707, 4708, 4997]
+DEBUG:root:Bad bot BUILD159-A9 builds: [4557, 4639, 4697, 4713, 4789, 4823, 4973, 4976, 4998, 5020]
+DEBUG:root:Bad bot BUILD162-A9 builds: [4404, 4549, 4558, 4592, 4636, 4972]
+DEBUG:root:Bad bot BUILD164-A9 builds: [4383, 4387, 4505, 4551, 4559, 4668, 4728, 4769, 4879, 4930]
+DEBUG:root:Bad bot BUILD166-A9 builds: [4445, 4619, 4739, 4830, 4966, 4992, 5026]
+DEBUG:root:Bad bot BUILD169-A9 builds: [4603, 4659, 4672, 4758, 4762, 4801, 4821, 4936, 5046]
+DEBUG:root:Bad bot BUILD172-A9 builds: [4398, 4431, 4455, 4459, 4541, 4645, 4651, 4770, 4791, 4820, 4951]
+DEBUG:root:Bad bot BUILD173-A9 builds: [4479, 4483, 4539, 4544, 4569, 4647, 4652, 4655, 4725, 4730, 4754, 4780, 4815, 4940, 4950]
+DEBUG:root:Bad bot BUILD174-A9 builds: [4397, 4556, 4653, 4737, 4809, 4923]
+DEBUG:root:Bad bot BUILD175-A9 builds: [4377, 4381, 4490, 4579, 4593, 4621, 4703, 4814, 4828, 4880, 4894, 5011, 5036]
+DEBUG:root:Bad bot BUILD176-A9 builds: [4496, 4533, 4564, 4582, 4734, 4825, 4946, 4968]
+DEBUG:root:Bad bot BUILD177-A9 builds: [4388, 4393, 4412, 4422, 4451, 4546, 4560, 4726, 4738, 4756, 4960, 4986]
+DEBUG:root:Bad bot BUILD179-A9 builds: [4372, 4410, 4447, 4513, 4581, 4616, 4627]
+DEBUG:root:Bad bot BUILD180-A9 builds: [4453, 4510, 4561, 4601, 4642, 4721, 4888, 4962]
+DEBUG:root:Bad bot BUILD21-B1 builds: [4382, 4542, 4554, 4588, 4596, 4700, 4971, 5028, 5045]
+
+**************************************************************
+Locate potential good bots: thresh=0.20, repeat=each
+**************************************************************
+
+DEBUG:root:Processed builds: [4370, 5047]
+DEBUG:root:Total number of bots: 75
+
+DEBUG:root:Results for test: Video_720_MP4
+DEBUG:root:Potential good bot BUILD144-A9: mean = 7.235441, stdev = 0.148635
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.673140, stdev = 0.159978
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.231977, stdev = 0.146148
+DEBUG:root:Regular bot BUILD168-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD158-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD170-A9: mean = 6.412984, stdev = 0.188968
+DEBUG:root:Good bot BUILD170-A9: 1 runs out of 8% range
+DEBUG:root:Regular bot BUILD181-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD183-A9: mean = 7.202441, stdev = 0.182360
+DEBUG:root:Regular bot BUILD178-A9: 1 runs out of 15% range
+DEBUG:root:Total bots considered: 25
+DEBUG:root:Good bots: 5
+DEBUG:root:[u'BUILD144-A9', u'BUILD118-A9', u'BUILD161-A9', u'BUILD170-A9', u'BUILD183-A9']
+DEBUG:root:Average per bot stdev: 0.567802
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay
+DEBUG:root:Regular bot BUILD147-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD160-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD132-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD165-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD118-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD161-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD151-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD153-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD182-A9: 1 runs out of 15% range
+DEBUG:root:Total bots considered: 25
+DEBUG:root:Good bots: 0
+DEBUG:root:[]
+DEBUG:root:Average per bot stdev: 0.687140
+
+DEBUG:root:Results for test: Video_720_MP4_Fullscreen
+DEBUG:root:Regular bot BUILD130-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.660517, stdev = 0.130595
+DEBUG:root:Potential good bot BUILD170-A9: mean = 6.437721, stdev = 0.184955
+DEBUG:root:Regular bot BUILD153-A9: 2 runs out of 15% range
+DEBUG:root:Total bots considered: 25
+DEBUG:root:Good bots: 2
+DEBUG:root:[u'BUILD118-A9', u'BUILD170-A9']
+DEBUG:root:Average per bot stdev: 0.530111
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay_Fullscreen
+DEBUG:root:Regular bot BUILD147-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD165-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD156-A9: mean = 6.553219, stdev = 0.173611
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.763714, stdev = 0.154711
+DEBUG:root:Regular bot BUILD182-A9: 1 runs out of 15% range
+DEBUG:root:Total bots considered: 25
+DEBUG:root:Good bots: 2
+DEBUG:root:[u'BUILD156-A9', u'BUILD118-A9']
+DEBUG:root:Average per bot stdev: 0.586627
+
+DEBUG:root:All potential good bots: 0
+DEBUG:root:[]
+
+
+**************************************************************
+Locate potential bad bots: thresh=0.50, repeat=average
+**************************************************************
+
+DEBUG:root:Processed builds: [4370, 5047]
+DEBUG:root:Total number of bots: 75
+
+DEBUG:root:Results for test: Video_720_MP4
+DEBUG:root:Potential bad bot BUILD146-A9: stdev = 0.546046
+DEBUG:root:Potential bad bot BUILD159-A9: stdev = 0.580658
+DEBUG:root:Potential bad bot BUILD128-A9: stdev = 0.766308
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 0.873562
+DEBUG:root:Potential bad bot BUILD154-A9: stdev = 0.778359
+DEBUG:root:Potential bad bot BUILD176-A9: stdev = 2.216256
+DEBUG:root:Potential bad bot BUILD145-A9: stdev = 0.599484
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 1.372520
+DEBUG:root:Potential bad bot BUILD177-A9: stdev = 1.287373
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.877830
+DEBUG:root:Total bots considered: 43
+DEBUG:root:Bad bots: 10
+DEBUG:root:[u'BUILD146-A9', u'BUILD159-A9', u'BUILD128-A9', u'BUILD119-A9', u'BUILD154-A9', u'BUILD176-A9', u'BUILD145-A9', u'BUILD175-A9', u'BUILD177-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay
+DEBUG:root:Potential bad bot BUILD146-A9: stdev = 1.923973
+DEBUG:root:Potential bad bot BUILD180-A9: stdev = 2.252364
+DEBUG:root:Potential bad bot BUILD125-A9: stdev = 0.643396
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 1.494096
+DEBUG:root:Potential bad bot BUILD141-A9: stdev = 0.649757
+DEBUG:root:Potential bad bot BUILD173-A9: stdev = 0.806344
+DEBUG:root:Potential bad bot BUILD172-A9: stdev = 0.545772
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 0.645064
+DEBUG:root:Potential bad bot BUILD177-A9: stdev = 0.663995
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.888387
+DEBUG:root:Total bots considered: 43
+DEBUG:root:Bad bots: 10
+DEBUG:root:[u'BUILD146-A9', u'BUILD180-A9', u'BUILD125-A9', u'BUILD119-A9', u'BUILD141-A9', u'BUILD173-A9', u'BUILD172-A9', u'BUILD175-A9', u'BUILD177-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Fullscreen
+DEBUG:root:Potential bad bot BUILD146-A9: stdev = 0.894537
+DEBUG:root:Potential bad bot BUILD180-A9: stdev = 1.068816
+DEBUG:root:Potential bad bot BUILD125-A9: stdev = 0.653201
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 0.979992
+DEBUG:root:Potential bad bot BUILD172-A9: stdev = 1.049467
+DEBUG:root:Potential bad bot BUILD145-A9: stdev = 0.577024
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 2.059916
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.813088
+DEBUG:root:Total bots considered: 43
+DEBUG:root:Bad bots: 8
+DEBUG:root:[u'BUILD146-A9', u'BUILD180-A9', u'BUILD125-A9', u'BUILD119-A9', u'BUILD172-A9', u'BUILD145-A9', u'BUILD175-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay_Fullscreen
+DEBUG:root:Potential bad bot BUILD169-A9: stdev = 0.589316
+DEBUG:root:Potential bad bot BUILD173-A9: stdev = 0.771205
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 0.501333
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.868981
+DEBUG:root:Total bots considered: 42
+DEBUG:root:Bad bots: 4
+DEBUG:root:[u'BUILD169-A9', u'BUILD173-A9', u'BUILD175-A9', u'BUILD148-A9']
+
+DEBUG:root:All potential bad bots: 16
+DEBUG:root:[u'BUILD119-A9', u'BUILD125-A9', u'BUILD128-A9', u'BUILD141-A9', u'BUILD145-A9', u'BUILD146-A9', u'BUILD148-A9', u'BUILD154-A9', u'BUILD159-A9', u'BUILD169-A9', u'BUILD172-A9', u'BUILD173-A9', u'BUILD175-A9', u'BUILD176-A9', u'BUILD177-A9', u'BUILD180-A9']
+
+DEBUG:root:Bad bot BUILD119-A9 builds: [4386, 4399, 4590, 4788, 4798, 4890, 4938, 4982, 5015]
+DEBUG:root:Bad bot BUILD125-A9 builds: [4392, 4407, 4429, 4478, 4520, 4613, 4633, 4638, 4753, 4832, 4884, 4959, 5003, 5013]
+DEBUG:root:Bad bot BUILD128-A9 builds: [4389, 4405, 4414, 4433, 4465, 4515, 4532, 4615, 4670, 4735, 4772, 4778, 4906]
+DEBUG:root:Bad bot BUILD141-A9 builds: [4375, 4436, 4440, 4480, 4527, 4555, 4720, 4761, 4776, 4912, 4915, 4981, 4985, 4995, 5033, 5043]
+DEBUG:root:Bad bot BUILD145-A9 builds: [4370, 4380, 4396, 4464, 4517, 4529, 4710, 4896, 4900, 4933]
+DEBUG:root:Bad bot BUILD146-A9 builds: [4535, 4548, 4605, 4612, 4794, 4806, 4934, 4967]
+DEBUG:root:Bad bot BUILD148-A9 builds: [4416, 4477, 4489, 4501, 4573, 4609, 4635, 4712, 4767, 4775, 5012, 5024]
+DEBUG:root:Bad bot BUILD154-A9 builds: [4384, 4394, 4485, 4493, 4497, 4538, 4614, 4643, 4760, 4781, 4790, 4805, 4818, 4833, 4926]
+DEBUG:root:Bad bot BUILD159-A9 builds: [4557, 4639, 4697, 4713, 4789, 4823, 4973, 4976, 4998, 5020]
+DEBUG:root:Bad bot BUILD169-A9 builds: [4603, 4659, 4672, 4758, 4762, 4801, 4821, 4936, 5046]
+DEBUG:root:Bad bot BUILD172-A9 builds: [4398, 4431, 4455, 4459, 4541, 4645, 4651, 4770, 4791, 4820, 4951]
+DEBUG:root:Bad bot BUILD173-A9 builds: [4479, 4483, 4539, 4544, 4569, 4647, 4652, 4655, 4725, 4730, 4754, 4780, 4815, 4940, 4950]
+DEBUG:root:Bad bot BUILD175-A9 builds: [4377, 4381, 4490, 4579, 4593, 4621, 4703, 4814, 4828, 4880, 4894, 5011, 5036]
+DEBUG:root:Bad bot BUILD176-A9 builds: [4496, 4533, 4564, 4582, 4734, 4825, 4946, 4968]
+DEBUG:root:Bad bot BUILD177-A9 builds: [4388, 4393, 4412, 4422, 4451, 4546, 4560, 4726, 4738, 4756, 4960, 4986]
+DEBUG:root:Bad bot BUILD180-A9 builds: [4453, 4510, 4561, 4601, 4642, 4721, 4888, 4962]
+
+**************************************************************
+Locate potential good bots: thresh=0.20, repeat=average
+**************************************************************
+
+DEBUG:root:Processed builds: [4370, 5047]
+DEBUG:root:Total number of bots: 75
+
+DEBUG:root:Results for test: Video_720_MP4
+DEBUG:root:Potential good bot BUILD147-A9: mean = 6.699539, stdev = 0.182983
+DEBUG:root:Potential good bot BUILD160-A9: mean = 6.546943, stdev = 0.149769
+DEBUG:root:Potential good bot BUILD133-A9: mean = 6.846024, stdev = 0.186132
+DEBUG:root:Regular bot BUILD143-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD140-A9: mean = 6.635809, stdev = 0.169199
+DEBUG:root:Potential good bot BUILD163-A9: mean = 7.013218, stdev = 0.171313
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.673140, stdev = 0.067923
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.231977, stdev = 0.121262
+DEBUG:root:Regular bot BUILD127-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD181-A9: mean = 7.411561, stdev = 0.196114
+DEBUG:root:Potential good bot BUILD182-A9: mean = 6.622871, stdev = 0.195646
+DEBUG:root:Total bots considered: 27
+DEBUG:root:Good bots: 9
+DEBUG:root:[u'BUILD147-A9', u'BUILD160-A9', u'BUILD133-A9', u'BUILD140-A9', u'BUILD163-A9', u'BUILD118-A9', u'BUILD161-A9', u'BUILD181-A9', u'BUILD182-A9']
+DEBUG:root:Average per bot stdev: 0.436675
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay
+DEBUG:root:Potential good bot BUILD143-A9: mean = 7.066403, stdev = 0.192314
+DEBUG:root:Potential good bot BUILD118-A9: mean = 7.093584, stdev = 0.131152
+DEBUG:root:Potential good bot BUILD168-A9: mean = 7.914967, stdev = 0.190163
+DEBUG:root:Potential good bot BUILD181-A9: mean = 7.834577, stdev = 0.176509
+DEBUG:root:Total bots considered: 27
+DEBUG:root:Good bots: 4
+DEBUG:root:[u'BUILD143-A9', u'BUILD118-A9', u'BUILD168-A9', u'BUILD181-A9']
+DEBUG:root:Average per bot stdev: 0.440376
+
+DEBUG:root:Results for test: Video_720_MP4_Fullscreen
+DEBUG:root:Potential good bot BUILD147-A9: mean = 6.671865, stdev = 0.199871
+DEBUG:root:Potential good bot BUILD160-A9: mean = 6.548505, stdev = 0.145083
+DEBUG:root:Potential good bot BUILD132-A9: mean = 7.644525, stdev = 0.185307
+DEBUG:root:Potential good bot BUILD133-A9: mean = 6.840042, stdev = 0.168415
+DEBUG:root:Regular bot BUILD143-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD140-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD163-A9: mean = 7.028349, stdev = 0.139590
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.660517, stdev = 0.050815
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.330253, stdev = 0.146405
+DEBUG:root:Regular bot BUILD127-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD151-A9: mean = 7.300573, stdev = 0.198135
+DEBUG:root:Potential good bot BUILD138-A9: mean = 6.268265, stdev = 0.177014
+DEBUG:root:Regular bot BUILD155-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD181-A9: mean = 7.376859, stdev = 0.175783
+DEBUG:root:Potential good bot BUILD178-A9: mean = 6.954382, stdev = 0.199546
+DEBUG:root:Total bots considered: 27
+DEBUG:root:Good bots: 11
+DEBUG:root:[u'BUILD147-A9', u'BUILD160-A9', u'BUILD132-A9', u'BUILD133-A9', u'BUILD163-A9', u'BUILD118-A9', u'BUILD161-A9', u'BUILD151-A9', u'BUILD138-A9', u'BUILD181-A9', u'BUILD178-A9']
+DEBUG:root:Average per bot stdev: 0.401520
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay_Fullscreen
+DEBUG:root:Potential good bot BUILD147-A9: mean = 6.839070, stdev = 0.195170
+DEBUG:root:Potential good bot BUILD160-A9: mean = 6.645570, stdev = 0.195385
+DEBUG:root:Potential good bot BUILD143-A9: mean = 6.757017, stdev = 0.183538
+DEBUG:root:Potential good bot BUILD140-A9: mean = 6.748664, stdev = 0.134225
+DEBUG:root:Potential good bot BUILD163-A9: mean = 7.105561, stdev = 0.159695
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.763714, stdev = 0.076544
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.360710, stdev = 0.148677
+DEBUG:root:Potential good bot BUILD168-A9: mean = 7.576016, stdev = 0.140184
+DEBUG:root:Regular bot BUILD121-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD181-A9: mean = 7.445381, stdev = 0.166386
+DEBUG:root:Potential good bot BUILD153-A9: mean = 6.567025, stdev = 0.197829
+DEBUG:root:Regular bot BUILD164-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD178-A9: mean = 7.030082, stdev = 0.149645
+DEBUG:root:Total bots considered: 27
+DEBUG:root:Good bots: 11
+DEBUG:root:[u'BUILD147-A9', u'BUILD160-A9', u'BUILD143-A9', u'BUILD140-A9', u'BUILD163-A9', u'BUILD118-A9', u'BUILD161-A9', u'BUILD168-A9', u'BUILD181-A9', u'BUILD153-A9', u'BUILD178-A9']
+DEBUG:root:Average per bot stdev: 0.317105
+
+DEBUG:root:All potential good bots: 2
+DEBUG:root:[u'BUILD118-A9', u'BUILD181-A9']
+
+DEBUG:root:Good bot BUILD118-A9 builds: [4504, 4528, 4575, 4656, 4729, 4822, 4924, 4987]
+DEBUG:root:Good bot BUILD181-A9 builds: [4401, 4514, 4523, 4540, 4550, 4611, 4644, 4695, 4696, 4702, 4943, 4955, 5019, 5038]
+
+**************************************************************
+Locate potential bad bots: thresh=0.50, repeat=median
+**************************************************************
+
+DEBUG:root:Processed builds: [4370, 5047]
+DEBUG:root:Total number of bots: 75
+
+DEBUG:root:Results for test: Video_720_MP4
+DEBUG:root:Potential bad bot BUILD146-A9: stdev = 0.647471
+DEBUG:root:Potential bad bot BUILD143-A9: stdev = 1.090631
+DEBUG:root:Potential bad bot BUILD125-A9: stdev = 0.600429
+DEBUG:root:Potential bad bot BUILD159-A9: stdev = 1.397959
+DEBUG:root:Potential bad bot BUILD21-B1: stdev = 0.517452
+DEBUG:root:Potential bad bot BUILD168-A9: stdev = 0.503216
+DEBUG:root:Potential bad bot BUILD128-A9: stdev = 0.623207
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 0.847916
+DEBUG:root:Potential bad bot BUILD176-A9: stdev = 2.435680
+DEBUG:root:Potential bad bot BUILD145-A9: stdev = 0.624195
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 0.825512
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.777490
+DEBUG:root:Total bots considered: 43
+DEBUG:root:Bad bots: 12
+DEBUG:root:[u'BUILD146-A9', u'BUILD143-A9', u'BUILD125-A9', u'BUILD159-A9', u'BUILD21-B1', u'BUILD168-A9', u'BUILD128-A9', u'BUILD119-A9', u'BUILD176-A9', u'BUILD145-A9', u'BUILD175-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay
+DEBUG:root:Potential bad bot BUILD146-A9: stdev = 2.471577
+DEBUG:root:Potential bad bot BUILD180-A9: stdev = 3.433998
+DEBUG:root:Potential bad bot BUILD165-A9: stdev = 0.519640
+DEBUG:root:Potential bad bot BUILD125-A9: stdev = 1.625536
+DEBUG:root:Potential bad bot BUILD151-A9: stdev = 0.694548
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 2.138623
+DEBUG:root:Potential bad bot BUILD141-A9: stdev = 0.814520
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 1.114879
+DEBUG:root:Potential bad bot BUILD177-A9: stdev = 1.477464
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.930350
+DEBUG:root:Total bots considered: 43
+DEBUG:root:Bad bots: 10
+DEBUG:root:[u'BUILD146-A9', u'BUILD180-A9', u'BUILD165-A9', u'BUILD125-A9', u'BUILD151-A9', u'BUILD119-A9', u'BUILD141-A9', u'BUILD175-A9', u'BUILD177-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Fullscreen
+DEBUG:root:Potential bad bot BUILD146-A9: stdev = 1.126826
+DEBUG:root:Potential bad bot BUILD140-A9: stdev = 0.981715
+DEBUG:root:Potential bad bot BUILD128-A9: stdev = 0.662099
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 0.996010
+DEBUG:root:Potential bad bot BUILD155-A9: stdev = 0.700452
+DEBUG:root:Potential bad bot BUILD141-A9: stdev = 0.504620
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 2.078755
+DEBUG:root:Potential bad bot BUILD177-A9: stdev = 0.584262
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.813225
+DEBUG:root:Total bots considered: 43
+DEBUG:root:Bad bots: 9
+DEBUG:root:[u'BUILD146-A9', u'BUILD140-A9', u'BUILD128-A9', u'BUILD119-A9', u'BUILD155-A9', u'BUILD141-A9', u'BUILD175-A9', u'BUILD177-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay_Fullscreen
+DEBUG:root:Potential bad bot BUILD165-A9: stdev = 0.601628
+DEBUG:root:Potential bad bot BUILD128-A9: stdev = 0.868208
+DEBUG:root:Potential bad bot BUILD138-A9: stdev = 0.557887
+DEBUG:root:Potential bad bot BUILD141-A9: stdev = 0.500030
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 1.051985
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.991113
+DEBUG:root:Total bots considered: 42
+DEBUG:root:Bad bots: 6
+DEBUG:root:[u'BUILD165-A9', u'BUILD128-A9', u'BUILD138-A9', u'BUILD141-A9', u'BUILD175-A9', u'BUILD148-A9']
+
+DEBUG:root:All potential bad bots: 20
+DEBUG:root:[u'BUILD119-A9', u'BUILD125-A9', u'BUILD128-A9', u'BUILD138-A9', u'BUILD140-A9', u'BUILD141-A9', u'BUILD143-A9', u'BUILD145-A9', u'BUILD146-A9', u'BUILD148-A9', u'BUILD151-A9', u'BUILD155-A9', u'BUILD159-A9', u'BUILD165-A9', u'BUILD168-A9', u'BUILD175-A9', u'BUILD176-A9', u'BUILD177-A9', u'BUILD180-A9', u'BUILD21-B1']
+
+DEBUG:root:Bad bot BUILD119-A9 builds: [4386, 4399, 4590, 4788, 4798, 4890, 4938, 4982, 5015]
+DEBUG:root:Bad bot BUILD125-A9 builds: [4392, 4407, 4429, 4478, 4520, 4613, 4633, 4638, 4753, 4832, 4884, 4959, 5003, 5013]
+DEBUG:root:Bad bot BUILD128-A9 builds: [4389, 4405, 4414, 4433, 4465, 4515, 4532, 4615, 4670, 4735, 4772, 4778, 4906]
+DEBUG:root:Bad bot BUILD138-A9 builds: [4418, 4468, 4629, 4746, 4755, 4757, 4768, 4783]
+DEBUG:root:Bad bot BUILD140-A9 builds: [4446, 4474, 4537, 4577, 4586, 4608, 4640, 4663, 4709, 4731, 4749, 4765, 4779, 5004]
+DEBUG:root:Bad bot BUILD141-A9 builds: [4375, 4436, 4440, 4480, 4527, 4555, 4720, 4761, 4776, 4912, 4915, 4981, 4985, 4995, 5033, 5043]
+DEBUG:root:Bad bot BUILD143-A9 builds: [4408, 4439, 4471, 4516, 4628, 4740, 4743, 4764, 4787, 4811, 4899, 4904, 4937, 5044]
+DEBUG:root:Bad bot BUILD145-A9 builds: [4370, 4380, 4396, 4464, 4517, 4529, 4710, 4896, 4900, 4933]
+DEBUG:root:Bad bot BUILD146-A9 builds: [4535, 4548, 4605, 4612, 4794, 4806, 4934, 4967]
+DEBUG:root:Bad bot BUILD148-A9 builds: [4416, 4477, 4489, 4501, 4573, 4609, 4635, 4712, 4767, 4775, 5012, 5024]
+DEBUG:root:Bad bot BUILD151-A9 builds: [4425, 4442, 4503, 4534, 4565, 4570, 4600, 4604, 4747, 4771, 4785, 4979]
+DEBUG:root:Bad bot BUILD155-A9 builds: [4403, 4524, 4543, 4580, 4654, 4707, 4708, 4997]
+DEBUG:root:Bad bot BUILD159-A9 builds: [4557, 4639, 4697, 4713, 4789, 4823, 4973, 4976, 4998, 5020]
+DEBUG:root:Bad bot BUILD165-A9 builds: [4419, 4531, 4599, 4671, 4706, 4773, 4920, 4952, 5016]
+DEBUG:root:Bad bot BUILD168-A9 builds: [4437, 4466, 4473, 4576, 4594, 4631, 4799, 4891]
+DEBUG:root:Bad bot BUILD175-A9 builds: [4377, 4381, 4490, 4579, 4593, 4621, 4703, 4814, 4828, 4880, 4894, 5011, 5036]
+DEBUG:root:Bad bot BUILD176-A9 builds: [4496, 4533, 4564, 4582, 4734, 4825, 4946, 4968]
+DEBUG:root:Bad bot BUILD177-A9 builds: [4388, 4393, 4412, 4422, 4451, 4546, 4560, 4726, 4738, 4756, 4960, 4986]
+DEBUG:root:Bad bot BUILD180-A9 builds: [4453, 4510, 4561, 4601, 4642, 4721, 4888, 4962]
+DEBUG:root:Bad bot BUILD21-B1 builds: [4382, 4542, 4554, 4588, 4596, 4700, 4971, 5028, 5045]
+
+**************************************************************
+Locate potential good bots: thresh=0.20, repeat=median
+**************************************************************
+
+DEBUG:root:Processed builds: [4370, 5047]
+DEBUG:root:Total number of bots: 75
+
+DEBUG:root:Results for test: Video_720_MP4
+DEBUG:root:Regular bot BUILD129-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.648706, stdev = 0.142217
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.240093, stdev = 0.144927
+DEBUG:root:Regular bot BUILD127-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD181-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD169-A9: mean = 7.112916, stdev = 0.175324
+DEBUG:root:Total bots considered: 23
+DEBUG:root:Good bots: 3
+DEBUG:root:[u'BUILD118-A9', u'BUILD161-A9', u'BUILD169-A9']
+DEBUG:root:Average per bot stdev: 0.479397
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay
+DEBUG:root:Potential good bot BUILD163-A9: mean = 7.292434, stdev = 0.145784
+DEBUG:root:Potential good bot BUILD118-A9: mean = 7.007987, stdev = 0.105304
+DEBUG:root:Total bots considered: 23
+DEBUG:root:Good bots: 2
+DEBUG:root:[u'BUILD163-A9', u'BUILD118-A9']
+DEBUG:root:Average per bot stdev: 0.573087
+
+DEBUG:root:Results for test: Video_720_MP4_Fullscreen
+DEBUG:root:Potential good bot BUILD133-A9: mean = 6.815080, stdev = 0.143763
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.675563, stdev = 0.124682
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.351718, stdev = 0.150521
+DEBUG:root:Regular bot BUILD153-A9: 1 runs out of 15% range
+DEBUG:root:Total bots considered: 23
+DEBUG:root:Good bots: 3
+DEBUG:root:[u'BUILD133-A9', u'BUILD118-A9', u'BUILD161-A9']
+DEBUG:root:Average per bot stdev: 0.415612
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay_Fullscreen
+DEBUG:root:Potential good bot BUILD163-A9: mean = 7.045420, stdev = 0.198760
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.738240, stdev = 0.179695
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.354841, stdev = 0.199923
+DEBUG:root:Regular bot BUILD127-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD169-A9: 1 runs out of 15% range
+DEBUG:root:Total bots considered: 23
+DEBUG:root:Good bots: 3
+DEBUG:root:[u'BUILD163-A9', u'BUILD118-A9', u'BUILD161-A9']
+DEBUG:root:Average per bot stdev: 0.369771
+
+DEBUG:root:All potential good bots: 1
+DEBUG:root:[u'BUILD118-A9']
+
+DEBUG:root:Good bot BUILD118-A9 builds: [4504, 4528, 4575, 4656, 4729, 4822, 4924, 4987]
+
+**************************************************************
+Locate potential bad bots: thresh=0.50, repeat=minimum (first two)
+**************************************************************
+
+DEBUG:root:Processed builds: [4370, 5047]
+DEBUG:root:Total number of bots: 75
+
+DEBUG:root:Results for test: Video_720_MP4
+DEBUG:root:Potential bad bot BUILD128-A9: stdev = 0.595686
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 0.894841
+DEBUG:root:Potential bad bot BUILD155-A9: stdev = 0.516297
+DEBUG:root:Potential bad bot BUILD176-A9: stdev = 2.259578
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 0.821991
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.793072
+DEBUG:root:Total bots considered: 43
+DEBUG:root:Bad bots: 6
+DEBUG:root:[u'BUILD128-A9', u'BUILD119-A9', u'BUILD155-A9', u'BUILD176-A9', u'BUILD175-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay
+DEBUG:root:Potential bad bot BUILD180-A9: stdev = 3.315998
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 0.976231
+DEBUG:root:Potential bad bot BUILD141-A9: stdev = 0.839775
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.958963
+DEBUG:root:Total bots considered: 43
+DEBUG:root:Bad bots: 4
+DEBUG:root:[u'BUILD180-A9', u'BUILD119-A9', u'BUILD141-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Fullscreen
+DEBUG:root:Potential bad bot BUILD146-A9: stdev = 0.629801
+DEBUG:root:Potential bad bot BUILD128-A9: stdev = 0.547961
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 0.878951
+DEBUG:root:Potential bad bot BUILD155-A9: stdev = 0.506811
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 0.900679
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.787230
+DEBUG:root:Total bots considered: 43
+DEBUG:root:Bad bots: 6
+DEBUG:root:[u'BUILD146-A9', u'BUILD128-A9', u'BUILD119-A9', u'BUILD155-A9', u'BUILD175-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay_Fullscreen
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.875911
+DEBUG:root:Total bots considered: 42
+DEBUG:root:Bad bots: 1
+DEBUG:root:[u'BUILD148-A9']
+
+DEBUG:root:All potential bad bots: 9
+DEBUG:root:[u'BUILD119-A9', u'BUILD128-A9', u'BUILD141-A9', u'BUILD146-A9', u'BUILD148-A9', u'BUILD155-A9', u'BUILD175-A9', u'BUILD176-A9', u'BUILD180-A9']
+
+DEBUG:root:Bad bot BUILD119-A9 builds: [4386, 4399, 4590, 4788, 4798, 4890, 4938, 4982, 5015]
+DEBUG:root:Bad bot BUILD128-A9 builds: [4389, 4405, 4414, 4433, 4465, 4515, 4532, 4615, 4670, 4735, 4772, 4778, 4906]
+DEBUG:root:Bad bot BUILD141-A9 builds: [4375, 4436, 4440, 4480, 4527, 4555, 4720, 4761, 4776, 4912, 4915, 4981, 4985, 4995, 5033, 5043]
+DEBUG:root:Bad bot BUILD146-A9 builds: [4535, 4548, 4605, 4612, 4794, 4806, 4934, 4967]
+DEBUG:root:Bad bot BUILD148-A9 builds: [4416, 4477, 4489, 4501, 4573, 4609, 4635, 4712, 4767, 4775, 5012, 5024]
+DEBUG:root:Bad bot BUILD155-A9 builds: [4403, 4524, 4543, 4580, 4654, 4707, 4708, 4997]
+DEBUG:root:Bad bot BUILD175-A9 builds: [4377, 4381, 4490, 4579, 4593, 4621, 4703, 4814, 4828, 4880, 4894, 5011, 5036]
+DEBUG:root:Bad bot BUILD176-A9 builds: [4496, 4533, 4564, 4582, 4734, 4825, 4946, 4968]
+DEBUG:root:Bad bot BUILD180-A9 builds: [4453, 4510, 4561, 4601, 4642, 4721, 4888, 4962]
+
+**************************************************************
+Locate potential good bots: thresh=0.20, repeat=minimum (first two)
+**************************************************************
+
+DEBUG:root:Processed builds: [4370, 5047]
+DEBUG:root:Total number of bots: 75
+
+DEBUG:root:Results for test: Video_720_MP4
+DEBUG:root:Potential good bot BUILD147-A9: mean = 6.592935, stdev = 0.151224
+DEBUG:root:Potential good bot BUILD160-A9: mean = 6.417144, stdev = 0.139738
+DEBUG:root:Potential good bot BUILD133-A9: mean = 6.723445, stdev = 0.178423
+DEBUG:root:Regular bot BUILD143-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD140-A9: mean = 6.535796, stdev = 0.164980
+DEBUG:root:Potential good bot BUILD163-A9: mean = 6.937775, stdev = 0.199554
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.551439, stdev = 0.061927
+DEBUG:root:Potential good bot BUILD159-A9: mean = 6.423296, stdev = 0.131890
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.176015, stdev = 0.138307
+DEBUG:root:Regular bot BUILD127-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD168-A9: mean = 7.266906, stdev = 0.188252
+DEBUG:root:Potential good bot BUILD181-A9: mean = 7.248851, stdev = 0.152874
+DEBUG:root:Potential good bot BUILD153-A9: mean = 6.375228, stdev = 0.193078
+DEBUG:root:Total bots considered: 34
+DEBUG:root:Good bots: 11
+DEBUG:root:[u'BUILD147-A9', u'BUILD160-A9', u'BUILD133-A9', u'BUILD140-A9', u'BUILD163-A9', u'BUILD118-A9', u'BUILD159-A9', u'BUILD161-A9', u'BUILD168-A9', u'BUILD181-A9', u'BUILD153-A9']
+DEBUG:root:Average per bot stdev: 0.362785
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay
+DEBUG:root:Potential good bot BUILD160-A9: mean = 6.845794, stdev = 0.198766
+DEBUG:root:Potential good bot BUILD163-A9: mean = 7.277230, stdev = 0.153286
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.937209, stdev = 0.072646
+DEBUG:root:Potential good bot BUILD159-A9: mean = 6.812691, stdev = 0.136147
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.655660, stdev = 0.138135
+DEBUG:root:Potential good bot BUILD168-A9: mean = 7.812740, stdev = 0.198147
+DEBUG:root:Potential good bot BUILD181-A9: mean = 7.689248, stdev = 0.179146
+DEBUG:root:Potential good bot BUILD153-A9: mean = 6.752351, stdev = 0.196009
+DEBUG:root:Regular bot BUILD173-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD178-A9: mean = 7.230103, stdev = 0.178254
+DEBUG:root:Total bots considered: 34
+DEBUG:root:Good bots: 9
+DEBUG:root:[u'BUILD160-A9', u'BUILD163-A9', u'BUILD118-A9', u'BUILD159-A9', u'BUILD161-A9', u'BUILD168-A9', u'BUILD181-A9', u'BUILD153-A9', u'BUILD178-A9']
+DEBUG:root:Average per bot stdev: 0.375436
+
+DEBUG:root:Results for test: Video_720_MP4_Fullscreen
+DEBUG:root:Potential good bot BUILD160-A9: mean = 6.465007, stdev = 0.183664
+DEBUG:root:Potential good bot BUILD132-A9: mean = 7.512333, stdev = 0.168578
+DEBUG:root:Potential good bot BUILD133-A9: mean = 6.706059, stdev = 0.152222
+DEBUG:root:Potential good bot BUILD143-A9: mean = 6.613247, stdev = 0.190281
+DEBUG:root:Potential good bot BUILD140-A9: mean = 6.578537, stdev = 0.181091
+DEBUG:root:Potential good bot BUILD163-A9: mean = 6.928034, stdev = 0.121490
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.544944, stdev = 0.044102
+DEBUG:root:Potential good bot BUILD159-A9: mean = 6.434052, stdev = 0.152854
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.260269, stdev = 0.143155
+DEBUG:root:Regular bot BUILD127-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD21-B1: mean = 8.079442, stdev = 0.196823
+DEBUG:root:Potential good bot BUILD151-A9: mean = 7.169570, stdev = 0.174192
+DEBUG:root:Potential good bot BUILD138-A9: mean = 6.166970, stdev = 0.186181
+DEBUG:root:Potential good bot BUILD154-A9: mean = 7.204820, stdev = 0.140826
+DEBUG:root:Potential good bot BUILD181-A9: mean = 7.244859, stdev = 0.146182
+DEBUG:root:Potential good bot BUILD172-A9: mean = 6.302835, stdev = 0.149827
+DEBUG:root:Regular bot BUILD145-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD178-A9: mean = 6.854271, stdev = 0.169440
+DEBUG:root:Total bots considered: 34
+DEBUG:root:Good bots: 16
+DEBUG:root:[u'BUILD160-A9', u'BUILD132-A9', u'BUILD133-A9', u'BUILD143-A9', u'BUILD140-A9', u'BUILD163-A9', u'BUILD118-A9', u'BUILD159-A9', u'BUILD161-A9', u'BUILD21-B1', u'BUILD151-A9', u'BUILD138-A9', u'BUILD154-A9', u'BUILD181-A9', u'BUILD172-A9', u'BUILD178-A9']
+DEBUG:root:Average per bot stdev: 0.294192
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay_Fullscreen
+DEBUG:root:Potential good bot BUILD147-A9: mean = 6.692639, stdev = 0.181205
+DEBUG:root:Potential good bot BUILD160-A9: mean = 6.527557, stdev = 0.164378
+DEBUG:root:Potential good bot BUILD143-A9: mean = 6.660354, stdev = 0.166079
+DEBUG:root:Potential good bot BUILD140-A9: mean = 6.653348, stdev = 0.176180
+DEBUG:root:Potential good bot BUILD163-A9: mean = 6.965585, stdev = 0.154863
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.626400, stdev = 0.036989
+DEBUG:root:Potential good bot BUILD159-A9: mean = 6.509832, stdev = 0.157655
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.292008, stdev = 0.171216
+DEBUG:root:Potential good bot BUILD168-A9: mean = 7.475801, stdev = 0.156227
+DEBUG:root:Potential good bot BUILD181-A9: mean = 7.315989, stdev = 0.167332
+DEBUG:root:Potential good bot BUILD178-A9: mean = 6.945027, stdev = 0.172765
+DEBUG:root:Total bots considered: 34
+DEBUG:root:Good bots: 11
+DEBUG:root:[u'BUILD147-A9', u'BUILD160-A9', u'BUILD143-A9', u'BUILD140-A9', u'BUILD163-A9', u'BUILD118-A9', u'BUILD159-A9', u'BUILD161-A9', u'BUILD168-A9', u'BUILD181-A9', u'BUILD178-A9']
+DEBUG:root:Average per bot stdev: 0.269628
+
+DEBUG:root:All potential good bots: 6
+DEBUG:root:[u'BUILD118-A9', u'BUILD159-A9', u'BUILD160-A9', u'BUILD161-A9', u'BUILD163-A9', u'BUILD181-A9']
+
+DEBUG:root:Good bot BUILD118-A9 builds: [4504, 4528, 4575, 4656, 4729, 4822, 4924, 4987]
+DEBUG:root:Good bot BUILD159-A9 builds: [4557, 4639, 4697, 4713, 4789, 4823, 4973, 4976, 4998, 5020]
+DEBUG:root:Good bot BUILD160-A9 builds: [4448, 4449, 4522, 4595, 4597, 4669, 4714, 4817, 4916, 4956, 4983, 5047]
+DEBUG:root:Good bot BUILD161-A9 builds: [4430, 4572, 4626, 4750, 4797, 4908, 4939, 5007, 5021]
+DEBUG:root:Good bot BUILD163-A9 builds: [4400, 4506, 4632, 4893, 4895, 4947, 4970, 4975, 5042]
+DEBUG:root:Good bot BUILD181-A9 builds: [4401, 4514, 4523, 4540, 4550, 4611, 4644, 4695, 4696, 4702, 4943, 4955, 5019, 5038]
+
+**************************************************************
+Locate potential bad bots: thresh=0.50, repeat=minimum
+**************************************************************
+
+DEBUG:root:Processed builds: [4370, 5047]
+DEBUG:root:Total number of bots: 75
+
+DEBUG:root:Results for test: Video_720_MP4
+DEBUG:root:Potential bad bot BUILD128-A9: stdev = 0.602847
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 0.913944
+DEBUG:root:Potential bad bot BUILD176-A9: stdev = 2.050249
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 0.824671
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.796311
+DEBUG:root:Total bots considered: 43
+DEBUG:root:Bad bots: 5
+DEBUG:root:[u'BUILD128-A9', u'BUILD119-A9', u'BUILD176-A9', u'BUILD175-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 0.990261
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.880704
+DEBUG:root:Total bots considered: 43
+DEBUG:root:Bad bots: 2
+DEBUG:root:[u'BUILD119-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Fullscreen
+DEBUG:root:Potential bad bot BUILD146-A9: stdev = 0.647597
+DEBUG:root:Potential bad bot BUILD119-A9: stdev = 0.902504
+DEBUG:root:Potential bad bot BUILD175-A9: stdev = 0.892195
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.792029
+DEBUG:root:Total bots considered: 43
+DEBUG:root:Bad bots: 4
+DEBUG:root:[u'BUILD146-A9', u'BUILD119-A9', u'BUILD175-A9', u'BUILD148-A9']
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay_Fullscreen
+DEBUG:root:Potential bad bot BUILD148-A9: stdev = 0.878224
+DEBUG:root:Total bots considered: 42
+DEBUG:root:Bad bots: 1
+DEBUG:root:[u'BUILD148-A9']
+
+DEBUG:root:All potential bad bots: 6
+DEBUG:root:[u'BUILD119-A9', u'BUILD128-A9', u'BUILD146-A9', u'BUILD148-A9', u'BUILD175-A9', u'BUILD176-A9']
+
+DEBUG:root:Bad bot BUILD119-A9 builds: [4386, 4399, 4590, 4788, 4798, 4890, 4938, 4982, 5015]
+DEBUG:root:Bad bot BUILD128-A9 builds: [4389, 4405, 4414, 4433, 4465, 4515, 4532, 4615, 4670, 4735, 4772, 4778, 4906]
+DEBUG:root:Bad bot BUILD146-A9 builds: [4535, 4548, 4605, 4612, 4794, 4806, 4934, 4967]
+DEBUG:root:Bad bot BUILD148-A9 builds: [4416, 4477, 4489, 4501, 4573, 4609, 4635, 4712, 4767, 4775, 5012, 5024]
+DEBUG:root:Bad bot BUILD175-A9 builds: [4377, 4381, 4490, 4579, 4593, 4621, 4703, 4814, 4828, 4880, 4894, 5011, 5036]
+DEBUG:root:Bad bot BUILD176-A9 builds: [4496, 4533, 4564, 4582, 4734, 4825, 4946, 4968]
+
+**************************************************************
+Locate potential good bots: thresh=0.20, repeat=minimum
+**************************************************************
+
+DEBUG:root:Processed builds: [4370, 5047]
+DEBUG:root:Total number of bots: 75
+
+DEBUG:root:Results for test: Video_720_MP4
+DEBUG:root:Potential good bot BUILD147-A9: mean = 6.546819, stdev = 0.161637
+DEBUG:root:Potential good bot BUILD160-A9: mean = 6.392669, stdev = 0.137809
+DEBUG:root:Potential good bot BUILD180-A9: mean = 7.561751, stdev = 0.199999
+DEBUG:root:Potential good bot BUILD133-A9: mean = 6.687159, stdev = 0.170075
+DEBUG:root:Potential good bot BUILD143-A9: mean = 6.547055, stdev = 0.156888
+DEBUG:root:Potential good bot BUILD140-A9: mean = 6.510149, stdev = 0.138443
+DEBUG:root:Potential good bot BUILD163-A9: mean = 6.857470, stdev = 0.134241
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.540405, stdev = 0.054022
+DEBUG:root:Potential good bot BUILD159-A9: mean = 6.406767, stdev = 0.119354
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.161417, stdev = 0.138036
+DEBUG:root:Regular bot BUILD127-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD168-A9: mean = 7.257741, stdev = 0.194859
+DEBUG:root:Potential good bot BUILD138-A9: mean = 6.139842, stdev = 0.193927
+DEBUG:root:Potential good bot BUILD154-A9: mean = 7.135970, stdev = 0.160836
+DEBUG:root:Potential good bot BUILD181-A9: mean = 7.237784, stdev = 0.156157
+DEBUG:root:Potential good bot BUILD153-A9: mean = 6.368986, stdev = 0.195960
+DEBUG:root:Regular bot BUILD141-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD172-A9: mean = 6.266400, stdev = 0.168743
+DEBUG:root:Regular bot BUILD145-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD178-A9: mean = 6.839420, stdev = 0.163050
+DEBUG:root:Total bots considered: 37
+DEBUG:root:Good bots: 17
+DEBUG:root:[u'BUILD147-A9', u'BUILD160-A9', u'BUILD180-A9', u'BUILD133-A9', u'BUILD143-A9', u'BUILD140-A9', u'BUILD163-A9', u'BUILD118-A9', u'BUILD159-A9', u'BUILD161-A9', u'BUILD168-A9', u'BUILD138-A9', u'BUILD154-A9', u'BUILD181-A9', u'BUILD153-A9', u'BUILD172-A9', u'BUILD178-A9']
+DEBUG:root:Average per bot stdev: 0.329117
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay
+DEBUG:root:Potential good bot BUILD160-A9: mean = 6.833835, stdev = 0.171026
+DEBUG:root:Potential good bot BUILD133-A9: mean = 7.136103, stdev = 0.169421
+DEBUG:root:Potential good bot BUILD143-A9: mean = 6.926603, stdev = 0.190420
+DEBUG:root:Potential good bot BUILD163-A9: mean = 7.277230, stdev = 0.153286
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.928506, stdev = 0.052249
+DEBUG:root:Potential good bot BUILD159-A9: mean = 6.803223, stdev = 0.119618
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.605569, stdev = 0.153384
+DEBUG:root:Potential good bot BUILD168-A9: mean = 7.769822, stdev = 0.165873
+DEBUG:root:Potential good bot BUILD181-A9: mean = 7.678564, stdev = 0.172007
+DEBUG:root:Potential good bot BUILD153-A9: mean = 6.744233, stdev = 0.196633
+DEBUG:root:Regular bot BUILD141-A9: 1 runs out of 15% range
+DEBUG:root:Regular bot BUILD173-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD178-A9: mean = 7.212441, stdev = 0.174820
+DEBUG:root:Total bots considered: 37
+DEBUG:root:Good bots: 11
+DEBUG:root:[u'BUILD160-A9', u'BUILD133-A9', u'BUILD143-A9', u'BUILD163-A9', u'BUILD118-A9', u'BUILD159-A9', u'BUILD161-A9', u'BUILD168-A9', u'BUILD181-A9', u'BUILD153-A9', u'BUILD178-A9']
+DEBUG:root:Average per bot stdev: 0.280920
+
+DEBUG:root:Results for test: Video_720_MP4_Fullscreen
+DEBUG:root:Potential good bot BUILD147-A9: mean = 6.532881, stdev = 0.177390
+DEBUG:root:Potential good bot BUILD160-A9: mean = 6.419373, stdev = 0.155409
+DEBUG:root:Potential good bot BUILD132-A9: mean = 7.476550, stdev = 0.175370
+DEBUG:root:Potential good bot BUILD180-A9: mean = 7.569214, stdev = 0.173547
+DEBUG:root:Potential good bot BUILD133-A9: mean = 6.699338, stdev = 0.156221
+DEBUG:root:Potential good bot BUILD143-A9: mean = 6.551536, stdev = 0.144569
+DEBUG:root:Potential good bot BUILD140-A9: mean = 6.571006, stdev = 0.184352
+DEBUG:root:Potential good bot BUILD163-A9: mean = 6.880377, stdev = 0.123488
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.544944, stdev = 0.044102
+DEBUG:root:Potential good bot BUILD159-A9: mean = 6.407451, stdev = 0.133607
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.159395, stdev = 0.096270
+DEBUG:root:Potential good bot BUILD131-A9: mean = 6.973926, stdev = 0.178174
+DEBUG:root:Regular bot BUILD127-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD151-A9: mean = 7.139444, stdev = 0.178962
+DEBUG:root:Potential good bot BUILD138-A9: mean = 6.164326, stdev = 0.187815
+DEBUG:root:Potential good bot BUILD154-A9: mean = 7.170985, stdev = 0.137610
+DEBUG:root:Potential good bot BUILD181-A9: mean = 7.228905, stdev = 0.153624
+DEBUG:root:Potential good bot BUILD153-A9: mean = 6.392251, stdev = 0.176982
+DEBUG:root:Potential good bot BUILD172-A9: mean = 6.262124, stdev = 0.144681
+DEBUG:root:Regular bot BUILD145-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD178-A9: mean = 6.812767, stdev = 0.137246
+DEBUG:root:Total bots considered: 37
+DEBUG:root:Good bots: 19
+DEBUG:root:[u'BUILD147-A9', u'BUILD160-A9', u'BUILD132-A9', u'BUILD180-A9', u'BUILD133-A9', u'BUILD143-A9', u'BUILD140-A9', u'BUILD163-A9', u'BUILD118-A9', u'BUILD159-A9', u'BUILD161-A9', u'BUILD131-A9', u'BUILD151-A9', u'BUILD138-A9', u'BUILD154-A9', u'BUILD181-A9', u'BUILD153-A9', u'BUILD172-A9', u'BUILD178-A9']
+DEBUG:root:Average per bot stdev: 0.272677
+
+DEBUG:root:Results for test: Video_720_MP4_Underlay_Fullscreen
+DEBUG:root:Potential good bot BUILD147-A9: mean = 6.642448, stdev = 0.161878
+DEBUG:root:Potential good bot BUILD160-A9: mean = 6.510982, stdev = 0.165798
+DEBUG:root:Potential good bot BUILD143-A9: mean = 6.638931, stdev = 0.175673
+DEBUG:root:Potential good bot BUILD140-A9: mean = 6.636981, stdev = 0.171991
+DEBUG:root:Potential good bot BUILD163-A9: mean = 6.942883, stdev = 0.149991
+DEBUG:root:Potential good bot BUILD118-A9: mean = 6.620030, stdev = 0.039031
+DEBUG:root:Potential good bot BUILD159-A9: mean = 6.476734, stdev = 0.131850
+DEBUG:root:Potential good bot BUILD161-A9: mean = 6.242119, stdev = 0.151560
+DEBUG:root:Potential good bot BUILD131-A9: mean = 7.061947, stdev = 0.197571
+DEBUG:root:Potential good bot BUILD168-A9: mean = 7.417147, stdev = 0.187066
+DEBUG:root:Potential good bot BUILD154-A9: mean = 7.270245, stdev = 0.149645
+DEBUG:root:Potential good bot BUILD181-A9: mean = 7.290462, stdev = 0.145507
+DEBUG:root:Regular bot BUILD141-A9: 1 runs out of 15% range
+DEBUG:root:Potential good bot BUILD178-A9: mean = 6.893932, stdev = 0.143355
+DEBUG:root:Total bots considered: 36
+DEBUG:root:Good bots: 13
+DEBUG:root:[u'BUILD147-A9', u'BUILD160-A9', u'BUILD143-A9', u'BUILD140-A9', u'BUILD163-A9', u'BUILD118-A9', u'BUILD159-A9', u'BUILD161-A9', u'BUILD131-A9', u'BUILD168-A9', u'BUILD154-A9', u'BUILD181-A9', u'BUILD178-A9']
+DEBUG:root:Average per bot stdev: 0.254578
+
+DEBUG:root:All potential good bots: 8
+DEBUG:root:[u'BUILD118-A9', u'BUILD143-A9', u'BUILD159-A9', u'BUILD160-A9', u'BUILD161-A9', u'BUILD163-A9', u'BUILD178-A9', u'BUILD181-A9']
+
+DEBUG:root:Good bot BUILD118-A9 builds: [4504, 4528, 4575, 4656, 4729, 4822, 4924, 4987]
+DEBUG:root:Good bot BUILD143-A9 builds: [4408, 4439, 4471, 4516, 4628, 4740, 4743, 4764, 4787, 4811, 4899, 4904, 4937, 5044]
+DEBUG:root:Good bot BUILD159-A9 builds: [4557, 4639, 4697, 4713, 4789, 4823, 4973, 4976, 4998, 5020]
+DEBUG:root:Good bot BUILD160-A9 builds: [4448, 4449, 4522, 4595, 4597, 4669, 4714, 4817, 4916, 4956, 4983, 5047]
+DEBUG:root:Good bot BUILD161-A9 builds: [4430, 4572, 4626, 4750, 4797, 4908, 4939, 5007, 5021]
+DEBUG:root:Good bot BUILD163-A9 builds: [4400, 4506, 4632, 4893, 4895, 4947, 4970, 4975, 5042]
+DEBUG:root:Good bot BUILD178-A9 builds: [4423, 4667, 4718, 4719, 4733, 4741, 4763, 4807, 4831, 5035]
+DEBUG:root:Good bot BUILD181-A9 builds: [4401, 4514, 4523, 4540, 4550, 4611, 4644, 4695, 4696, 4702, 4943, 4955, 5019, 5038]
+
+**************************************************************
+Find 25 bots with best variations, threshold = 12.00%
+**************************************************************
+
+DEBUG:root:Intended to find 25 bots, actually found 19
+DEBUG:root:[u'BUILD118-A9', u'BUILD123-A9', u'BUILD129-A9', u'BUILD131-A9', u'BUILD133-A9', u'BUILD139-A9', u'BUILD140-A9', u'BUILD143-A9', u'BUILD147-A9', u'BUILD154-A9', u'BUILD157-A9', u'BUILD159-A9', u'BUILD160-A9', u'BUILD163-A9', u'BUILD165-A9', u'BUILD168-A9', u'BUILD178-A9', u'BUILD181-A9', u'BUILD182-A9']
+
+DEBUG:root:Validate test Video_720_MP4: mean = 6.833997, stdev = 0.387951
+DEBUG:root:4 runs out of 214 are not within 12.00% range: [8.023793333333332, 7.8221059602649, 7.796853333333333, 8.020606666666664]
+DEBUG:root:[{'bot': u'BUILD165-A9', 'build': 4419}, {'bot': u'BUILD123-A9', 'build': 4390}, {'bot': u'BUILD123-A9', 'build': 4458}, {'bot': u'BUILD157-A9', 'build': 4705}]
+
+DEBUG:root:Validate test Video_720_MP4_Underlay: mean = 7.268671, stdev = 0.422171
+DEBUG:root:4 runs out of 214 are not within 12.00% range: [8.639419999999998, 8.336814569536424, 8.274476821192053, 8.355306666666666]
+DEBUG:root:[{'bot': u'BUILD165-A9', 'build': 4419}, {'bot': u'BUILD123-A9', 'build': 4390}, {'bot': u'BUILD123-A9', 'build': 4458}, {'bot': u'BUILD157-A9', 'build': 4705}]
+
+DEBUG:root:Validate test Video_720_MP4_Fullscreen: mean = 6.855843, stdev = 0.390929
+DEBUG:root:5 runs out of 214 are not within 12.00% range: [8.166793333333333, 8.015350993377478, 7.793573333333332, 7.729393333333335, 7.766543046357615]
+DEBUG:root:[{'bot': u'BUILD165-A9', 'build': 4419}, {'bot': u'BUILD168-A9', 'build': 4473}, {'bot': u'BUILD123-A9', 'build': 4390}, {'bot': u'BUILD123-A9', 'build': 4458}, {'bot': u'BUILD157-A9', 'build': 4705}]
+
+DEBUG:root:Validate test Video_720_MP4_Underlay_Fullscreen: mean = 6.945010, stdev = 0.398847
+DEBUG:root:4 runs out of 214 are not within 12.00% range: [8.110000000000001, 7.976298013245032, 7.8850933333333355, 7.994686666666666]
+DEBUG:root:[{'bot': u'BUILD165-A9', 'build': 4419}, {'bot': u'BUILD123-A9', 'build': 4390}, {'bot': u'BUILD123-A9', 'build': 4458}, {'bot': u'BUILD157-A9', 'build': 4705}]

@@ -86,10 +86,11 @@ class PythonChecker(object):
             finder.path_from_chromium_base('third_party'),  # for jinja2
             finder.path_from_chromium_base('third_party', 'catapult', 'devil'),
             finder.path_from_chromium_base('third_party', 'pymock'),
+            finder.path_from_chromium_base('tools'),
         ])
         return executive.run_command([
             sys.executable,
-            finder.path_from_depot_tools_base('pylint.py'),
+            finder.path_from_depot_tools_base('pylint'),
             '--output-format=parseable',
             '--rcfile=' + finder.path_from_blink_tools('blinkpy', 'pylintrc'),
             path,

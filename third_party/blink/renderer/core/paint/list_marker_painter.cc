@@ -67,7 +67,7 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
     return;
 
   const auto& local_paint_info = paint_state.GetPaintInfo();
-  auto box_origin = paint_state.PaintOffset();
+  auto box_origin = paint_state.PaintOffset().ToLayoutPoint();
 
   DrawingRecorder recorder(local_paint_info.context, layout_list_marker_,
                            local_paint_info.phase);
@@ -155,6 +155,13 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
     text_run.SetText(reversed_text.ToString());
   }
 
+  if (style_category == LayoutListMarker::ListStyleCategory::kStaticString) {
+    // Don't add a suffix.
+    context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId);
+    context.GetPaintController().SetTextPainted();
+    return;
+  }
+
   const UChar suffix =
       list_marker_text::Suffix(layout_list_marker_.StyleRef().ListStyleType(),
                                layout_list_marker_.ListItem()->Value());
@@ -165,19 +172,17 @@ void ListMarkerPainter::Paint(const PaintInfo& paint_info) {
   TextRunPaintInfo suffix_run_info(suffix_run);
 
   if (layout_list_marker_.StyleRef().IsLeftToRightDirection()) {
-    context.DrawText(font, text_run_paint_info, text_origin,
-                     NodeHolder::EmptyNodeHolder());
+    context.DrawText(font, text_run_paint_info, text_origin, kInvalidDOMNodeId);
     context.DrawText(font, suffix_run_info,
                      text_origin + FloatSize(IntSize(font.Width(text_run), 0)),
-                     NodeHolder::EmptyNodeHolder());
+                     kInvalidDOMNodeId);
   } else {
-    context.DrawText(font, suffix_run_info, text_origin,
-                     NodeHolder::EmptyNodeHolder());
+    context.DrawText(font, suffix_run_info, text_origin, kInvalidDOMNodeId);
     // Is the truncation to IntSize below meaningful or a bug?
     context.DrawText(
         font, text_run_paint_info,
         text_origin + FloatSize(IntSize(font.Width(suffix_run), 0)),
-        NodeHolder::EmptyNodeHolder());
+        kInvalidDOMNodeId);
   }
   // TODO(npm): Check that there are non-whitespace characters. See
   // crbug.com/788444.

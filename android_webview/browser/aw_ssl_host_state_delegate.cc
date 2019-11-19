@@ -56,7 +56,7 @@ void AwSSLHostStateDelegate::HostRanInsecureContent(
 bool AwSSLHostStateDelegate::DidHostRunInsecureContent(
     const std::string& host,
     int child_id,
-    InsecureContentType content_type) const {
+    InsecureContentType content_type) {
   // Intentional no-op for Android WebView.
   return false;
 }
@@ -88,8 +88,7 @@ void AwSSLHostStateDelegate::Clear(
 SSLHostStateDelegate::CertJudgment AwSSLHostStateDelegate::QueryPolicy(
     const std::string& host,
     const net::X509Certificate& cert,
-    int error,
-    bool* expired_previous_decision) {
+    int error) {
   return cert_policy_for_host_[host].Check(cert, error)
              ? SSLHostStateDelegate::ALLOWED
              : SSLHostStateDelegate::DENIED;
@@ -100,7 +99,7 @@ void AwSSLHostStateDelegate::RevokeUserAllowExceptions(
   cert_policy_for_host_.erase(host);
 }
 
-bool AwSSLHostStateDelegate::HasAllowException(const std::string& host) const {
+bool AwSSLHostStateDelegate::HasAllowException(const std::string& host) {
   auto policy_iterator = cert_policy_for_host_.find(host);
   return policy_iterator != cert_policy_for_host_.end() &&
          policy_iterator->second.HasAllowException();

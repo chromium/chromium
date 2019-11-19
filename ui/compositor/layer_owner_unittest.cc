@@ -16,7 +16,7 @@
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/compositor/test/context_factories_for_test.h"
+#include "ui/compositor/test/test_context_factories.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ui {
@@ -61,6 +61,7 @@ class LayerOwnerTestWithCompositor : public testing::Test {
   ui::Compositor* compositor() { return compositor_.get(); }
 
  private:
+  std::unique_ptr<ui::TestContextFactories> context_factories_;
   std::unique_ptr<ui::Compositor> compositor_;
 
   DISALLOW_COPY_AND_ASSIGN(LayerOwnerTestWithCompositor);
@@ -76,22 +77,21 @@ void LayerOwnerTestWithCompositor::SetUp() {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       new base::NullTaskRunner();
 
-  ui::ContextFactory* context_factory = nullptr;
-  ui::ContextFactoryPrivate* context_factory_private = nullptr;
+  const bool enable_pixel_output = false;
+  context_factories_ =
+      std::make_unique<ui::TestContextFactories>(enable_pixel_output);
 
-  ui::InitializeContextFactoryForTests(false, &context_factory,
-                                       &context_factory_private);
-
-  compositor_.reset(
-      new ui::Compositor(context_factory_private->AllocateFrameSinkId(),
-                         context_factory, context_factory_private, task_runner,
-                         false /* enable_pixel_canvas */));
+  compositor_ = std::make_unique<ui::Compositor>(
+      context_factories_->GetContextFactoryPrivate()->AllocateFrameSinkId(),
+      context_factories_->GetContextFactory(),
+      context_factories_->GetContextFactoryPrivate(), task_runner,
+      false /* enable_pixel_canvas */);
   compositor_->SetAcceleratedWidget(gfx::kNullAcceleratedWidget);
 }
 
 void LayerOwnerTestWithCompositor::TearDown() {
   compositor_.reset();
-  ui::TerminateContextFactoryForTests();
+  context_factories_.reset();
 }
 
 }  // namespace

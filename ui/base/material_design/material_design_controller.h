@@ -35,7 +35,7 @@ class UI_BASE_EXPORT MaterialDesignController {
 
   static bool touch_ui() { return touch_ui_; }
 
-  // Exposed for TabletModeClient on ChromeOS + ash.
+  // Exposed for TabletModePageBehavior on ChromeOS + ash.
   static void OnTabletModeToggled(bool enabled);
 
   static MaterialDesignController* GetInstance();

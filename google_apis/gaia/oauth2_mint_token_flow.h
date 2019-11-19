@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
 class GoogleServiceAuthError;
@@ -103,10 +104,10 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
   GURL CreateApiCallUrl() override;
   std::string CreateApiCallBody() override;
 
-  void ProcessApiCallSuccess(const network::ResourceResponseHead* head,
+  void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
   void ProcessApiCallFailure(int net_error,
-                             const network::ResourceResponseHead* head,
+                             const network::mojom::URLResponseHead* head,
                              std::unique_ptr<std::string> body) override;
   net::PartialNetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag()
       override;
@@ -131,7 +132,7 @@ class OAuth2MintTokenFlow : public OAuth2ApiCallFlow {
 
   Delegate* delegate_;
   Parameters parameters_;
-  base::WeakPtrFactory<OAuth2MintTokenFlow> weak_factory_;
+  base::WeakPtrFactory<OAuth2MintTokenFlow> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OAuth2MintTokenFlow);
 };

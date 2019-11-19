@@ -60,14 +60,6 @@ bool SharedMemory::Create(const SharedMemoryCreateOptions& options) {
   return false;
 }
 
-bool SharedMemory::Delete(const std::string& name) {
-  return false;
-}
-
-bool SharedMemory::Open(const std::string& name, bool read_only) {
-  return false;
-}
-
 bool SharedMemory::MapAt(off_t offset, size_t bytes) {
   if (!shm_.IsValid())
     return false;

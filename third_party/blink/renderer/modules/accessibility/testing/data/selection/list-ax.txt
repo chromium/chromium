@@ -2,46 +2,48 @@
 ================================================================================
 AXSelection from AX object anchored position in "List": "", 1 to AX object anchored position in "List": "", 3
 ================================================================================
-++<List>
-++++<ListItem>
-++++++<ListMarker: 1. >
-++++++<StaticText: tic>
-^++++<ListItem>
-++++++<ListMarker: 2. >
-++++++<StaticText: tac>
-++++<ListItem>
-++++++<ListMarker: 3. >
-++++++<StaticText: toe>
-|++<List>
-++++<ListItem>
-++++++<StaticText: tic>
-++++<StaticText:  >
-++++<ListItem>
-++++++<StaticText: tac>
-++++<StaticText:  >
-++++<ListItem>
-++++++<StaticText: toe>
+++<GenericContainer>
+++++<List>
+++++++<ListItem>
+++++++++<ListMarker: 1. >
+++++++++<StaticText: tic>
+^++++++<ListItem>
+++++++++<ListMarker: 2. >
+++++++++<StaticText: tac>
+++++++<ListItem>
+++++++++<ListMarker: 3. >
+++++++++<StaticText: toe>
+|++++<List>
+++++++<ListItem>
+++++++++<StaticText: tic>
+++++++<StaticText:  >
+++++++<ListItem>
+++++++++<StaticText: tac>
+++++++<StaticText:  >
+++++++<ListItem>
+++++++++<StaticText: toe>
 
 ================================================================================
-AXSelection from AX object anchored position in "WebArea": "", 1 to AX object anchored position in "WebArea": "", 2
+AXSelection from AX object anchored position in "GenericContainer": "", 1 to AX object anchored position in "GenericContainer": "", 2
 ================================================================================
-++<List>
-++++<ListItem>
-++++++<ListMarker: 1. >
-++++++<StaticText: tic>
-++++<ListItem>
-++++++<ListMarker: 2. >
-++++++<StaticText: tac>
-++++<ListItem>
-++++++<ListMarker: 3. >
-++++++<StaticText: toe>
-^++<List>
-++++<ListItem>
-++++++<StaticText: tic>
-++++<StaticText:  >
-++++<ListItem>
-++++++<StaticText: tac>
-++++<StaticText:  >
-++++<ListItem>
-++++++<StaticText: toe>
+++<GenericContainer>
+++++<List>
+++++++<ListItem>
+++++++++<ListMarker: 1. >
+++++++++<StaticText: tic>
+++++++<ListItem>
+++++++++<ListMarker: 2. >
+++++++++<StaticText: tac>
+++++++<ListItem>
+++++++++<ListMarker: 3. >
+++++++++<StaticText: toe>
+^++++<List>
+++++++<ListItem>
+++++++++<StaticText: tic>
+++++++<StaticText:  >
+++++++<ListItem>
+++++++++<StaticText: tac>
+++++++<StaticText:  >
+++++++<ListItem>
+++++++++<StaticText: toe>
 |

@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
 
 namespace media {
 
@@ -47,28 +48,32 @@ const uint32_t kLargeDataSize = 20 * 1024 + 7;
   } while(0);
 
 #define CREATE_FILE_IO \
-  ADD_TEST_STEP(ACTION_CREATE, kSuccess, NULL, 0)
+  ADD_TEST_STEP(ACTION_CREATE, kSuccess, nullptr, 0)
 
 #define OPEN_FILE \
-  ADD_TEST_STEP(ACTION_OPEN, kSuccess, NULL, 0)
+  ADD_TEST_STEP(ACTION_OPEN, kSuccess, nullptr, 0)
 
 #define EXPECT_FILE_OPENED(status) \
-  ADD_TEST_STEP(RESULT_OPEN, status, NULL, 0)
+  ADD_TEST_STEP(RESULT_OPEN, status, nullptr, 0)
 
 #define READ_FILE \
-  ADD_TEST_STEP(ACTION_READ, kSuccess, NULL, 0)
+  ADD_TEST_STEP(ACTION_READ, kSuccess, nullptr, 0)
 
 #define EXPECT_FILE_READ(status, data, data_size) \
   ADD_TEST_STEP(RESULT_READ, status, data, data_size)
+
+#define EXPECT_FILE_READ_EITHER(status, data, data_size, data2, data2_size) \
+  test_case->AddResultReadEither(cdm::FileIOClient::Status::status, (data), \
+                                 (data_size), (data2), (data2_size));
 
 #define WRITE_FILE(data, data_size) \
   ADD_TEST_STEP(ACTION_WRITE, kSuccess, data, data_size)
 
 #define EXPECT_FILE_WRITTEN(status) \
-  ADD_TEST_STEP(RESULT_WRITE, status, NULL, 0)
+  ADD_TEST_STEP(RESULT_WRITE, status, nullptr, 0)
 
 #define CLOSE_FILE \
-  ADD_TEST_STEP(ACTION_CLOSE, kSuccess, NULL, 0)
+  ADD_TEST_STEP(ACTION_CLOSE, kSuccess, nullptr, 0)
 
 // FileIOTestRunner implementation.
 
@@ -150,7 +155,7 @@ void FileIOTestRunner::AddTests() {
 
   START_TEST_CASE("ReadBeforeOpeningFile")
     READ_FILE
-    EXPECT_FILE_READ(kError, NULL, 0)
+    EXPECT_FILE_READ(kError, nullptr, 0)
   END_TEST_CASE
 
   START_TEST_CASE("WriteBeforeOpeningFile")
@@ -162,7 +167,7 @@ void FileIOTestRunner::AddTests() {
     OPEN_FILE
     READ_FILE
     EXPECT_FILE_OPENED(kSuccess)
-    EXPECT_FILE_READ(kError, NULL, 0)
+    EXPECT_FILE_READ(kError, nullptr, 0)
     // After file opened, we can still do normal operations.
     WRITE_FILE(kData, kDataSize)
     EXPECT_FILE_WRITTEN(kSuccess)
@@ -189,7 +194,7 @@ void FileIOTestRunner::AddTests() {
     EXPECT_FILE_WRITTEN(kSuccess)
     READ_FILE
     READ_FILE
-    EXPECT_FILE_READ(kInUse, NULL, 0)
+    EXPECT_FILE_READ(kInUse, nullptr, 0)
     EXPECT_FILE_READ(kSuccess, kData, kDataSize)
     // Read again.
     READ_FILE
@@ -201,7 +206,7 @@ void FileIOTestRunner::AddTests() {
     EXPECT_FILE_OPENED(kSuccess)
     WRITE_FILE(kData, kDataSize)
     READ_FILE
-    EXPECT_FILE_READ(kInUse, NULL, 0)
+    EXPECT_FILE_READ(kInUse, nullptr, 0)
     EXPECT_FILE_WRITTEN(kSuccess)
     // Read again.
     READ_FILE
@@ -214,7 +219,7 @@ void FileIOTestRunner::AddTests() {
     READ_FILE
     WRITE_FILE(kData, kDataSize)
     EXPECT_FILE_WRITTEN(kInUse)
-    EXPECT_FILE_READ(kSuccess, NULL, 0)
+    EXPECT_FILE_READ(kSuccess, nullptr, 0)
     // We can still do normal operations.
     WRITE_FILE(kData, kDataSize)
     EXPECT_FILE_WRITTEN(kSuccess)
@@ -238,7 +243,7 @@ void FileIOTestRunner::AddTests() {
     OPEN_FILE
     EXPECT_FILE_OPENED(kSuccess)
     READ_FILE
-    EXPECT_FILE_READ(kSuccess, NULL, 0)
+    EXPECT_FILE_READ(kSuccess, nullptr, 0)
   END_TEST_CASE
 
   START_TEST_CASE("WriteAndRead")
@@ -253,10 +258,10 @@ void FileIOTestRunner::AddTests() {
   START_TEST_CASE("WriteAndReadEmptyFile")
     OPEN_FILE
     EXPECT_FILE_OPENED(kSuccess)
-    WRITE_FILE(NULL, 0)
+    WRITE_FILE(nullptr, 0)
     EXPECT_FILE_WRITTEN(kSuccess)
     READ_FILE
-    EXPECT_FILE_READ(kSuccess, NULL, 0)
+    EXPECT_FILE_READ(kSuccess, nullptr, 0)
   END_TEST_CASE
 
   START_TEST_CASE("WriteAndReadLargeData")
@@ -275,10 +280,10 @@ void FileIOTestRunner::AddTests() {
     EXPECT_FILE_WRITTEN(kSuccess)
     READ_FILE
     EXPECT_FILE_READ(kSuccess, kData, kDataSize)
-    WRITE_FILE(NULL, 0)
+    WRITE_FILE(nullptr, 0)
     EXPECT_FILE_WRITTEN(kSuccess)
     READ_FILE
-    EXPECT_FILE_READ(kSuccess, NULL, 0)
+    EXPECT_FILE_READ(kSuccess, nullptr, 0)
   END_TEST_CASE
 
   START_TEST_CASE("OverwriteWithSmallerData")
@@ -353,7 +358,7 @@ void FileIOTestRunner::AddTests() {
     EXPECT_FILE_OPENED(kSuccess)
     // Read file which doesn't exist.
     READ_FILE
-    EXPECT_FILE_READ(kSuccess, NULL, 0)
+    EXPECT_FILE_READ(kSuccess, nullptr, 0)
     // Write kData to file.
     WRITE_FILE(kData, kDataSize)
     EXPECT_FILE_WRITTEN(kSuccess)
@@ -376,11 +381,11 @@ void FileIOTestRunner::AddTests() {
     READ_FILE
     EXPECT_FILE_READ(kSuccess, kData, kDataSize)
     // Overwrite file with zero bytes.
-    WRITE_FILE(NULL, 0)
+    WRITE_FILE(nullptr, 0)
     EXPECT_FILE_WRITTEN(kSuccess)
     // Read file.
     READ_FILE
-    EXPECT_FILE_READ(kSuccess, NULL, 0)
+    EXPECT_FILE_READ(kSuccess, nullptr, 0)
   END_TEST_CASE
 
   START_TEST_CASE("OpenAfterOpen")
@@ -430,12 +435,17 @@ void FileIOTestRunner::AddTests() {
     EXPECT_FILE_WRITTEN(kSuccess)
     WRITE_FILE(kBigData, kBigDataSize)
     CLOSE_FILE
-    // Write() didn't finish and the content of the file is not modified.
+    // Write() is async, so it may or may not modify the content of the file.
     CREATE_FILE_IO
     OPEN_FILE
     EXPECT_FILE_OPENED(kSuccess)
     READ_FILE
-    EXPECT_FILE_READ(kSuccess, kData, kDataSize)
+    // As Write() is async, it is possible that the second write above
+    // succeeds before the file is closed. So check that the contents
+    // is either data set.
+    EXPECT_FILE_READ_EITHER(kSuccess,
+                            kData, kDataSize,
+                            kBigData, kBigDataSize)
   END_TEST_CASE
 
   START_TEST_CASE("CloseDuringPendingOverwriteWithSmallerData")
@@ -445,12 +455,17 @@ void FileIOTestRunner::AddTests() {
     EXPECT_FILE_WRITTEN(kSuccess)
     WRITE_FILE(kData, kDataSize)
     CLOSE_FILE
-    // Write() didn't finish and the content of the file is not modified.
+    // Write() is async, so it may or may not modify the content of the file.
     CREATE_FILE_IO
     OPEN_FILE
     EXPECT_FILE_OPENED(kSuccess)
     READ_FILE
-    EXPECT_FILE_READ(kSuccess, kBigData, kBigDataSize)
+    // As Write() is async, it is possible that the second write above
+    // succeeds before the file is closed. So check that the contents
+    // is either data set.
+    EXPECT_FILE_READ_EITHER(kSuccess,
+                            kBigData, kBigDataSize,
+                            kData, kDataSize)
   END_TEST_CASE
 
   START_TEST_CASE("CloseDuringPendingRead")
@@ -482,7 +497,12 @@ void FileIOTestRunner::AddTests() {
       OPEN_FILE
       EXPECT_FILE_OPENED(kSuccess)
       READ_FILE
-      EXPECT_FILE_READ(kSuccess, kData, kDataSize)
+      // As Write() is async, it is possible that the second write above
+      // succeeds before the file is closed. So check that the contents
+      // is either data set.
+      EXPECT_FILE_READ_EITHER(kSuccess,
+                              kData, kDataSize,
+                              kBigData, kBigDataSize)
       CLOSE_FILE
     }
   END_TEST_CASE
@@ -530,6 +550,16 @@ void FileIOTest::AddTestStep(StepType type,
   test_steps_.push_back(TestStep(type, status, data, data_size));
 }
 
+void FileIOTest::AddResultReadEither(Status status,
+                                     const uint8_t* data,
+                                     uint32_t data_size,
+                                     const uint8_t* data2,
+                                     uint32_t data2_size) {
+  DCHECK_NE(data_size, data2_size);
+  test_steps_.push_back(TestStep(FileIOTest::RESULT_READ, status, data,
+                                 data_size, data2, data2_size));
+}
+
 void FileIOTest::Run(const CompletionCB& completion_cb) {
   FILE_IO_DVLOG(3) << "Run " << test_name_;
   completion_cb_ = completion_cb;
@@ -538,7 +568,7 @@ void FileIOTest::Run(const CompletionCB& completion_cb) {
 }
 
 void FileIOTest::OnOpenComplete(Status status) {
-  OnResult(TestStep(RESULT_OPEN, status, NULL, 0));
+  OnResult(TestStep(RESULT_OPEN, status));
 }
 
 void FileIOTest::OnReadComplete(Status status,
@@ -548,7 +578,7 @@ void FileIOTest::OnReadComplete(Status status,
 }
 
 void FileIOTest::OnWriteComplete(Status status) {
-  OnResult(TestStep(RESULT_WRITE, status, NULL, 0));
+  OnResult(TestStep(RESULT_WRITE, status));
 }
 
 bool FileIOTest::IsResult(const TestStep& test_step) {
@@ -570,11 +600,18 @@ bool FileIOTest::IsResult(const TestStep& test_step) {
 
 bool FileIOTest::MatchesResult(const TestStep& a, const TestStep& b) {
   DCHECK(IsResult(a) && IsResult(b));
+  DCHECK(!b.data2);
+
   if (a.type != b.type || a.status != b.status)
     return false;
 
   if (a.type != RESULT_READ || a.status != cdm::FileIOClient::Status::kSuccess)
     return true;
+
+  // If |a| specifies a data2, compare it first. If the size matches, compare
+  // the contents.
+  if (a.data2 && b.data_size == a.data2_size)
+    return std::equal(a.data2, a.data2 + a.data2_size, b.data);
 
   return (a.data_size == b.data_size &&
           std::equal(a.data, a.data + a.data_size, b.data));
@@ -590,13 +627,14 @@ void FileIOTest::RunNextStep() {
     TestStep test_step = test_steps_.front();
     test_steps_.pop_front();
 
-    cdm::FileIO* file_io = file_io_stack_.empty() ? NULL : file_io_stack_.top();
+    cdm::FileIO* file_io =
+        file_io_stack_.empty() ? nullptr : file_io_stack_.top();
 
     switch (test_step.type) {
       case ACTION_CREATE:
         file_io = create_file_io_cb_.Run(this);
         if (!file_io) {
-          FILE_IO_DVLOG(3) << "Cannot create FileIO object.";
+          LOG(WARNING) << test_name_ << " cannot create FileIO object.";
           OnTestComplete(false);
           return;
         }
@@ -627,6 +665,19 @@ void FileIOTest::RunNextStep() {
 void FileIOTest::OnResult(const TestStep& result) {
   DCHECK(IsResult(result));
   if (!CheckResult(result)) {
+    LOG(WARNING) << test_name_ << " got unexpected result. type=" << result.type
+                 << ", status=" << (uint32_t)result.status
+                 << ", data_size=" << result.data_size << ", received data="
+                 << (result.data
+                         ? base::HexEncode(result.data, result.data_size)
+                         : "<null>");
+    for (const auto& step : test_steps_) {
+      if (IsResult(step)) {
+        LOG(WARNING) << test_name_ << " expected type=" << step.type
+                     << ", status=" << (uint32_t)step.status
+                     << ", data_size=" << step.data_size;
+      }
+    }
     OnTestComplete(false);
     return;
   }
@@ -660,7 +711,7 @@ void FileIOTest::OnTestComplete(bool success) {
     file_io_stack_.pop();
   }
   FILE_IO_DVLOG(3) << test_name_ << (success ? " PASSED" : " FAILED");
-  DLOG_IF(WARNING, !success) << test_name_ << " FAILED";
+  LOG_IF(WARNING, !success) << test_name_ << " FAILED";
   std::move(completion_cb_).Run(success);
 }
 

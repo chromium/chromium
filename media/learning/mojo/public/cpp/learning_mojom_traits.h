@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "media/learning/common/learning_task_controller.h"
 #include "media/learning/common/value.h"
 #include "media/learning/mojo/public/mojom/learning_types.mojom.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -50,6 +51,23 @@ class StructTraits<media::learning::mojom::TargetValueDataView,
   }
   static bool Read(media::learning::mojom::TargetValueDataView data,
                    media::learning::TargetValue* out_target_value);
+};
+
+template <>
+class StructTraits<media::learning::mojom::ObservationCompletionDataView,
+                   media::learning::ObservationCompletion> {
+ public:
+  static media::learning::TargetValue target_value(
+      const media::learning::ObservationCompletion& e) {
+    return e.target_value;
+  }
+  static media::learning::WeightType weight(
+      const media::learning::ObservationCompletion& e) {
+    return e.weight;
+  }
+  static bool Read(
+      media::learning::mojom::ObservationCompletionDataView data,
+      media::learning::ObservationCompletion* out_observation_completion);
 };
 
 }  // namespace mojo

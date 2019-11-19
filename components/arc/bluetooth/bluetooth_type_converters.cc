@@ -12,12 +12,11 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/stl_util.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/arc/bluetooth/bluetooth_type_converters.h"
+#include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace {
 
@@ -31,16 +30,6 @@ constexpr uint16_t kBrowseGroupList = 0x0005;
 constexpr uint16_t kBluetoothProfileDescriptorList = 0x0009;
 constexpr uint16_t kServiceName = 0x0100;
 
-bool IsNonHex(char c) {
-  return !isxdigit(c);
-}
-
-std::string StripNonHex(const std::string& str) {
-  std::string result = str;
-  base::EraseIf(result, IsNonHex);
-  return result;
-}
-
 }  // namespace
 
 namespace mojo {
@@ -52,7 +41,10 @@ TypeConverter<arc::mojom::BluetoothAddressPtr, std::string>::Convert(
 
   arc::mojom::BluetoothAddressPtr mojo_addr =
       arc::mojom::BluetoothAddress::New();
-  base::HexStringToBytes(StripNonHex(address), &mojo_addr->address);
+
+  mojo_addr->address.resize(kAddressSize);
+  if (!device::BluetoothDevice::ParseAddress(address, mojo_addr->address))
+    mojo_addr->address.clear();
 
   return mojo_addr;
 }

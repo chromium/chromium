@@ -18,16 +18,6 @@
 // - the accessors changed in the way we expected.
 
 namespace viz {
-namespace {
-
-::testing::AssertionResult ParentSequenceNumberIsSet(
-    const LocalSurfaceId& local_surface_id);
-::testing::AssertionResult ChildSequenceNumberIsSet(
-    const LocalSurfaceId& local_surface_id);
-::testing::AssertionResult EmbedTokenIsValid(
-    const LocalSurfaceId& local_surface_id);
-
-}  // namespace
 
 class ParentLocalSurfaceIdAllocatorTest : public testing::Test {
  public:
@@ -133,36 +123,6 @@ TEST_F(ParentLocalSurfaceIdAllocatorTest,
   EXPECT_FALSE(allocator().is_allocation_suppressed());
 }
 
-// This test verifies that calling reset with a LocalSurfaceId updates the
-// GetCurrentLocalSurfaceId and affects GenerateId.
-TEST_F(ParentLocalSurfaceIdAllocatorTest, ResetUpdatesComponents) {
-  allocator().GenerateId();
-  LocalSurfaceId default_local_surface_id =
-      allocator().GetCurrentLocalSurfaceIdAllocation().local_surface_id();
-  EXPECT_TRUE(default_local_surface_id.is_valid());
-  EXPECT_TRUE(ParentSequenceNumberIsSet(default_local_surface_id));
-  EXPECT_TRUE(ChildSequenceNumberIsSet(default_local_surface_id));
-  EXPECT_TRUE(EmbedTokenIsValid(default_local_surface_id));
-
-  LocalSurfaceId new_local_surface_id(
-      2u, 2u, base::UnguessableToken::Deserialize(0, 1u));
-
-  allocator().Reset(new_local_surface_id);
-  EXPECT_EQ(
-      new_local_surface_id,
-      allocator().GetCurrentLocalSurfaceIdAllocation().local_surface_id());
-
-  allocator().GenerateId();
-  LocalSurfaceId generated_id =
-      allocator().GetCurrentLocalSurfaceIdAllocation().local_surface_id();
-
-  EXPECT_EQ(generated_id.embed_token(), new_local_surface_id.embed_token());
-  EXPECT_EQ(generated_id.child_sequence_number(),
-            new_local_surface_id.child_sequence_number());
-  EXPECT_EQ(generated_id.parent_sequence_number(),
-            new_local_surface_id.child_sequence_number() + 1);
-}
-
 // This test verifies that if the child-allocated LocalSurfaceId has the most
 // recent parent sequence number at the time UpdateFromChild is called, then
 // its allocation time is used as the latest allocation time in
@@ -205,32 +165,4 @@ TEST_F(ParentLocalSurfaceIdAllocatorTest,
   }
 }
 
-namespace {
-
-::testing::AssertionResult ParentSequenceNumberIsSet(
-    const LocalSurfaceId& local_surface_id) {
-  if (local_surface_id.parent_sequence_number() != kInvalidParentSequenceNumber)
-    return ::testing::AssertionSuccess();
-
-  return ::testing::AssertionFailure()
-         << "parent_sequence_number() is not set.";
-}
-
-::testing::AssertionResult ChildSequenceNumberIsSet(
-    const LocalSurfaceId& local_surface_id) {
-  if (local_surface_id.child_sequence_number() != kInvalidChildSequenceNumber)
-    return ::testing::AssertionSuccess();
-
-  return ::testing::AssertionFailure() << "child_sequence_number() is not set.";
-}
-
-::testing::AssertionResult EmbedTokenIsValid(
-    const LocalSurfaceId& local_surface_id) {
-  if (!local_surface_id.embed_token().is_empty())
-    return ::testing::AssertionSuccess();
-
-  return ::testing::AssertionFailure() << "embed_token() is invalid.";
-}
-
-}  // namespace
 }  // namespace viz

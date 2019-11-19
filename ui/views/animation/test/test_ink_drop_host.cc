@@ -4,6 +4,8 @@
 
 #include "ui/views/animation/test/test_ink_drop_host.h"
 
+#include <memory>
+
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
@@ -34,11 +36,11 @@ class TestInkDropRipple : public SquareInkDropRipple {
                             color,
                             visible_opacity) {}
 
-  ~TestInkDropRipple() override {}
+  ~TestInkDropRipple() override = default;
 
   test::InkDropRippleTestApi* GetTestApi() override {
     if (!test_api_)
-      test_api_.reset(new test::SquareInkDropRippleTestApi(this));
+      test_api_ = std::make_unique<test::SquareInkDropRippleTestApi>(this);
     return test_api_.get();
   }
 
@@ -58,11 +60,11 @@ class TestInkDropHighlight : public InkDropHighlight {
                        SkColor color)
       : InkDropHighlight(size, corner_radius, center_point, color) {}
 
-  ~TestInkDropHighlight() override {}
+  ~TestInkDropHighlight() override = default;
 
   test::InkDropHighlightTestApi* GetTestApi() override {
     if (!test_api_)
-      test_api_.reset(new test::InkDropHighlightTestApi(this));
+      test_api_ = std::make_unique<test::InkDropHighlightTestApi>(this);
     return test_api_.get();
   }
 
@@ -74,16 +76,9 @@ class TestInkDropHighlight : public InkDropHighlight {
 
 }  // namespace
 
-TestInkDropHost::TestInkDropHost()
-    : num_ink_drop_layers_added_(0),
-      num_ink_drop_layers_removed_(0),
-      num_ink_drop_ripples_created_(0),
-      num_ink_drop_highlights_created_(0),
-      last_ink_drop_ripple_(nullptr),
-      last_ink_drop_highlight_(nullptr),
-      disable_timers_for_test_(false) {}
+TestInkDropHost::TestInkDropHost() = default;
 
-TestInkDropHost::~TestInkDropHost() {}
+TestInkDropHost::~TestInkDropHost() = default;
 
 void TestInkDropHost::AddInkDropLayer(ui::Layer* ink_drop_layer) {
   ++num_ink_drop_layers_added_;
@@ -106,8 +101,8 @@ std::unique_ptr<InkDropRipple> TestInkDropHost::CreateInkDropRipple() const {
 std::unique_ptr<InkDropHighlight> TestInkDropHost::CreateInkDropHighlight()
     const {
   std::unique_ptr<InkDropHighlight> highlight;
-  highlight.reset(
-      new TestInkDropHighlight(size(), 0, gfx::PointF(), SK_ColorBLACK));
+  highlight = std::make_unique<TestInkDropHighlight>(size(), 0, gfx::PointF(),
+                                                     SK_ColorBLACK);
   if (disable_timers_for_test_)
     highlight->GetTestApi()->SetDisableAnimationTimers(true);
   num_ink_drop_highlights_created_++;

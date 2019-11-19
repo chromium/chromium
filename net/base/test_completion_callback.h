@@ -8,11 +8,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "net/base/completion_callback.h"
+#include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
 
 //-----------------------------------------------------------------------------
@@ -59,6 +60,11 @@ class TestCompletionCallbackBaseInternal {
 };
 
 template <typename R>
+struct NetErrorIsPendingHelper {
+  bool operator()(R status) const { return status == ERR_IO_PENDING; }
+};
+
+template <typename R, typename IsPendingHelper = NetErrorIsPendingHelper<R>>
 class TestCompletionCallbackTemplate
     : public TestCompletionCallbackBaseInternal {
  public:
@@ -66,12 +72,13 @@ class TestCompletionCallbackTemplate
 
   R WaitForResult() {
     TestCompletionCallbackBaseInternal::WaitForResult();
-    return result_;
+    return std::move(result_);
   }
 
   R GetResult(R result) {
-    if (ERR_IO_PENDING != result)
-      return result;
+    IsPendingHelper check_pending;
+    if (!check_pending(result))
+      return std::move(result);
     return WaitForResult();
   }
 
@@ -80,7 +87,7 @@ class TestCompletionCallbackTemplate
 
   // Override this method to gain control as the callback is running.
   virtual void SetResult(R result) {
-    result_ = result;
+    result_ = std::move(result);
     DidSetResult();
   }
 
@@ -116,27 +123,29 @@ typedef internal::TestCompletionCallbackTemplate<int64_t>
 
 class TestCompletionCallback : public TestCompletionCallbackBase {
  public:
-  TestCompletionCallback();
+  TestCompletionCallback() {}
   ~TestCompletionCallback() override;
 
-  const CompletionCallback& callback() const { return callback_; }
+  CompletionOnceCallback callback() {
+    return base::BindOnce(&TestCompletionCallback::SetResult,
+                          base::Unretained(this));
+  }
 
  private:
-  const CompletionCallback callback_;
-
   DISALLOW_COPY_AND_ASSIGN(TestCompletionCallback);
 };
 
 class TestInt64CompletionCallback : public TestInt64CompletionCallbackBase {
  public:
-  TestInt64CompletionCallback();
+  TestInt64CompletionCallback() {}
   ~TestInt64CompletionCallback() override;
 
-  const Int64CompletionCallback& callback() const { return callback_; }
+  Int64CompletionOnceCallback callback() {
+    return base::BindOnce(&TestInt64CompletionCallback::SetResult,
+                          base::Unretained(this));
+  }
 
  private:
-  const Int64CompletionCallback callback_;
-
   DISALLOW_COPY_AND_ASSIGN(TestInt64CompletionCallback);
 };
 

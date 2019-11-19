@@ -3,7 +3,6 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body>
 
@@ -17,7 +16,7 @@
 
 <script>
 
-async_test_after_layout_and_paint((t) => {
+async_test((t) => {
     var notificationCalled = false;
 
     var axParagraph = accessibilityController.accessibleElementById('p');
@@ -30,7 +29,8 @@ async_test_after_layout_and_paint((t) => {
     assert_equals(axInlineBefore1.name, 'two lines of text.');
 
     // Modify the text.
-    document.getElementById("p").innerText += ' One more sentence.';
+    var p = document.getElementById("p");
+    p.firstChild.data = p.innerText + ' One more sentence.';
 
     // Wait for a notification on the element before checking the new state.
     axStaticText.addNotificationListener(t.step_func((notification) => {

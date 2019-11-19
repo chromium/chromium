@@ -17,8 +17,6 @@ sys.path.append(os.path.join(os.path.dirname(__file__),
 from chrome_telemetry_build import chromium_config
 from core import path_util
 
-TELEMETRY_DIR = path_util.GetTelemetryDir()
-
 _top_level_dir = os.path.dirname(os.path.realpath(__file__))
 
 

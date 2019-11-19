@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Obrázky byly nahrazeny textem z atributu alt.</translation>
 <translation id="4896660567607030658">Žádná zpětná vazba, jen zobrazit kurzor</translation>
 <translation id="4937901943818762779">Povolit animované obrázky, ale pouze jednou</translation>
+<translation id="4949131196216960195">Procházení pomocí kurzoru zapnete stisknutím klávesy &lt;span class='key'&gt;Search&lt;/span&gt; a klávesy &lt;img src='increase_brightness.png'&gt; (klávesa zvýšení jasu nebo F7). Dalším stisknutím ho opět vypnete.</translation>
 <translation id="4954450790315188152">Když je aktivováno procházení pomocí kurzoru:</translation>
 <translation id="5041932793799765940">Úprava barev</translation>
 <translation id="5094574508723441140">Zvýšený kontrast</translation>
@@ -59,7 +60,6 @@
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="786423340267544509">Přidat k prvkům s atributem aria-describedat nebo longdesc ohraničení.</translation>
 <translation id="7942349550061667556">Červená</translation>
-<translation id="8254860724243898966">Procházení pomocí kurzoru zapnete stisknutím klávesy &lt;span class='key'&gt;Alt&lt;/span&gt; a klávesy &lt;img src='increase_brightness.png'&gt; (klávesa zvýšení jasu nebo F7). Opakovaným stisknutím jej opět vypnete.</translation>
 <translation id="8260673944985561857">Možnosti procházení pomocí kurzoru</translation>
 <translation id="8321034316479930120">Zásady animací</translation>
 <translation id="8480209185614411573">Vysoký kontrast</translation>

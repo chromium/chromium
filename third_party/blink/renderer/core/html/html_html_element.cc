@@ -23,28 +23,29 @@
 
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/loader/appcache/application_cache_host.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/loader/appcache/application_cache_host_for_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLHtmlElement::HTMLHtmlElement(Document& document)
-    : HTMLElement(kHTMLTag, document) {}
-
-DEFINE_NODE_FACTORY(HTMLHtmlElement)
+HTMLHtmlElement::HTMLHtmlElement(Document& document)
+    : HTMLElement(html_names::kHTMLTag, document) {}
 
 bool HTMLHtmlElement::IsURLAttribute(const Attribute& attribute) const {
-  return attribute.GetName() == kManifestAttr ||
+  return attribute.GetName() == html_names::kManifestAttr ||
          HTMLElement::IsURLAttribute(attribute);
 }
 
@@ -54,6 +55,8 @@ void HTMLHtmlElement::InsertedByParser() {
     return;
 
   MaybeSetupApplicationCache();
+  if (!GetDocument().Parser())
+    return;
 
   GetDocument().Parser()->DocumentElementAvailable();
   if (GetDocument().GetFrame()) {
@@ -73,7 +76,7 @@ void HTMLHtmlElement::MaybeSetupApplicationCache() {
   if (!document_loader ||
       !GetDocument().Parser()->DocumentWasLoadedAsPartOfNavigation())
     return;
-  const AtomicString& manifest = FastGetAttribute(kManifestAttr);
+  const AtomicString& manifest = FastGetAttribute(html_names::kManifestAttr);
 
   if (RuntimeEnabledFeatures::RestrictAppCacheToSecureContextsEnabled() &&
       !GetDocument().IsSecureContext()) {
@@ -84,7 +87,8 @@ void HTMLHtmlElement::MaybeSetupApplicationCache() {
     return;
   }
 
-  ApplicationCacheHost* host = document_loader->GetApplicationCacheHost();
+  ApplicationCacheHostForFrame* host =
+      document_loader->GetApplicationCacheHost();
   DCHECK(host);
 
   if (manifest.IsEmpty())
@@ -98,6 +102,84 @@ void HTMLHtmlElement::MaybeSetupApplicationCache() {
     UseCounter::Count(GetDocument(),
                       WebFeature::kApplicationCacheInstalledButNoManifest);
   }
+}
+
+const CSSPropertyValueSet*
+HTMLHtmlElement::AdditionalPresentationAttributeStyle() {
+  if (const CSSValue* color_scheme =
+          GetDocument().GetStyleEngine().GetMetaColorSchemeValue()) {
+    DEFINE_STATIC_LOCAL(
+        Persistent<MutableCSSPropertyValueSet>, color_scheme_style,
+        (MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode)));
+    color_scheme_style->SetProperty(CSSPropertyID::kColorScheme, *color_scheme);
+    return color_scheme_style;
+  }
+  return nullptr;
+}
+
+namespace {
+
+bool NeedsLayoutStylePropagation(const ComputedStyle& layout_style,
+                                 const ComputedStyle& propagated_style) {
+  return layout_style.GetWritingMode() != propagated_style.GetWritingMode() ||
+         layout_style.Direction() != propagated_style.Direction();
+}
+
+scoped_refptr<ComputedStyle> CreateLayoutStyle(
+    const ComputedStyle& style,
+    const ComputedStyle& propagated_style) {
+  scoped_refptr<ComputedStyle> layout_style = ComputedStyle::Clone(style);
+  layout_style->SetDirection(propagated_style.Direction());
+  layout_style->SetWritingMode(propagated_style.GetWritingMode());
+  return layout_style;
+}
+
+}  // namespace
+
+scoped_refptr<const ComputedStyle> HTMLHtmlElement::LayoutStyleForElement(
+    scoped_refptr<const ComputedStyle> style) {
+  DCHECK(style);
+  DCHECK(GetDocument().InStyleRecalc());
+  if (const Element* body_element = GetDocument().body()) {
+    if (const ComputedStyle* body_style = body_element->GetComputedStyle()) {
+      if (NeedsLayoutStylePropagation(*style, *body_style))
+        return CreateLayoutStyle(*style, *body_style);
+    }
+  }
+  return style;
+}
+
+void HTMLHtmlElement::PropagateWritingModeAndDirectionFromBody() {
+  // Will be propagated in HTMLHtmlElement::AttachLayoutTree().
+  if (NeedsReattachLayoutTree())
+    return;
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object)
+    return;
+  const ComputedStyle* style = GetComputedStyle();
+  // If we have a layout object, and we are not marked for re-attachment, we are
+  // guaranteed to have a non-null ComputedStyle.
+  DCHECK(style);
+  const ComputedStyle* propagated_style = nullptr;
+  if (const Element* body = GetDocument().body())
+    propagated_style = body->GetComputedStyle();
+  if (!propagated_style)
+    propagated_style = style;
+  if (NeedsLayoutStylePropagation(layout_object->StyleRef(),
+                                  *propagated_style)) {
+    layout_object->SetStyle(CreateLayoutStyle(*style, *propagated_style));
+  }
+}
+
+void HTMLHtmlElement::AttachLayoutTree(AttachContext& context) {
+  scoped_refptr<const ComputedStyle> original_style = GetComputedStyle();
+  if (original_style)
+    SetComputedStyle(LayoutStyleForElement(original_style));
+
+  Element::AttachLayoutTree(context);
+
+  if (original_style)
+    SetComputedStyle(original_style);
 }
 
 }  // namespace blink

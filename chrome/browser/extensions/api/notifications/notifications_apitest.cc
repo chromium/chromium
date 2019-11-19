@@ -10,6 +10,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/apps/app_service/app_launch_params.h"
+#include "chrome/browser/apps/launch_service/launch_service.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper.h"
 #include "chrome/browser/extensions/api/notifications/extension_notification_display_helper_factory.h"
@@ -22,8 +24,6 @@
 #include "chrome/browser/notifications/notifier_state_tracker.h"
 #include "chrome/browser/notifications/notifier_state_tracker_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/extensions/app_launch_params.h"
-#include "chrome/browser/ui/extensions/application_launch.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/browser/notification_service.h"
@@ -205,9 +205,11 @@ class NotificationsApiTest : public extensions::ExtensionApiTest {
   }
 
   void LaunchPlatformApp(const Extension* extension) {
-    OpenApplication(AppLaunchParams(
-        browser()->profile(), extension, extensions::LAUNCH_CONTAINER_NONE,
-        WindowOpenDisposition::NEW_WINDOW, extensions::SOURCE_TEST));
+    apps::LaunchService::Get(browser()->profile())
+        ->OpenApplication(apps::AppLaunchParams(
+            extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+            WindowOpenDisposition::NEW_WINDOW,
+            apps::mojom::AppLaunchSource::kSourceTest));
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service_tester_;

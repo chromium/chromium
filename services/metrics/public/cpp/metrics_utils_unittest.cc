@@ -61,3 +61,31 @@ TEST(MetricsUtilsTest, GetLinearBucketMin) {
         << " with bucket_size: " << test.bucket_size;
   }
 }
+
+TEST(MetricsUtilsTest, GetExponentialBucketMinForUserTiming) {
+  struct {
+    int64_t expected_result;
+    int64_t sample;
+  } int_test_cases[] = {
+      // Typical positive cases.
+      {1, 1},
+      {32, 38},
+      {32, 51},
+      {64, 99},
+      {16, 25},
+      {512, 1023},
+      {1024, 1024},
+      {1024, 1025},
+      // Negative samples.
+      {0, -45},
+      // Zero samples.
+      {0, 0},
+  };
+
+  // Test int64_t sample cases.
+  for (const auto& test : int_test_cases) {
+    EXPECT_EQ(test.expected_result,
+              ukm::GetExponentialBucketMinForUserTiming(test.sample))
+        << "For sample: " << test.sample;
+  }
+}

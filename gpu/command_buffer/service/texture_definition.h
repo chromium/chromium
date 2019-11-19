@@ -101,6 +101,7 @@ class TextureDefinition {
   GLenum wrap_t_;
   GLenum usage_;
   bool immutable_;
+  bool immutable_storage_;
   bool defined_;
 
   // Only support textures with one face and one level.

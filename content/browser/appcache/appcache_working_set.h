@@ -35,15 +35,15 @@ class CONTENT_EXPORT AppCacheWorkingSet {
   void AddCache(AppCache* cache);
   void RemoveCache(AppCache* cache);
   AppCache* GetCache(int64_t id) {
-    CacheMap::iterator it = caches_.find(id);
-    return (it != caches_.end()) ? it->second : NULL;
+    auto it = caches_.find(id);
+    return (it != caches_.end()) ? it->second : nullptr;
   }
 
   void AddGroup(AppCacheGroup* group);
   void RemoveGroup(AppCacheGroup* group);
   AppCacheGroup* GetGroup(const GURL& manifest_url) {
-    GroupMap::iterator it = groups_.find(manifest_url);
-    return (it != groups_.end()) ? it->second : NULL;
+    auto it = groups_.find(manifest_url);
+    return (it != groups_.end()) ? it->second : nullptr;
   }
 
   const GroupMap* GetGroupsInOrigin(const url::Origin& origin) {
@@ -53,24 +53,21 @@ class CONTENT_EXPORT AppCacheWorkingSet {
   void AddResponseInfo(AppCacheResponseInfo* response_info);
   void RemoveResponseInfo(AppCacheResponseInfo* response_info);
   AppCacheResponseInfo* GetResponseInfo(int64_t id) {
-    ResponseInfoMap::iterator it = response_infos_.find(id);
-    return (it != response_infos_.end()) ? it->second : NULL;
+    auto it = response_infos_.find(id);
+    return (it != response_infos_.end()) ? it->second : nullptr;
   }
 
  private:
-  using CacheMap = std::unordered_map<int64_t, AppCache*>;
-  using GroupsByOriginMap = std::map<url::Origin, GroupMap>;
-  using ResponseInfoMap = std::unordered_map<int64_t, AppCacheResponseInfo*>;
-
   GroupMap* GetMutableGroupsInOrigin(const url::Origin& origin) {
-    GroupsByOriginMap::iterator it = groups_by_origin_.find(origin);
-    return (it != groups_by_origin_.end()) ? &it->second : NULL;
+    auto it = groups_by_origin_.find(origin);
+    return (it != groups_by_origin_.end()) ? &it->second : nullptr;
   }
 
-  CacheMap caches_;
+  std::unordered_map<int64_t, AppCache*> caches_;
   GroupMap groups_;
-  GroupsByOriginMap groups_by_origin_;  // origin -> (manifest -> group)
-  ResponseInfoMap response_infos_;
+  // origin -> (manifest -> group)
+  std::map<url::Origin, GroupMap> groups_by_origin_;
+  std::unordered_map<int64_t, AppCacheResponseInfo*> response_infos_;
   bool is_disabled_;
 };
 

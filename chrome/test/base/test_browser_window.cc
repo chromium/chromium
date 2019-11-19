@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/find_bar/find_bar.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -64,12 +65,16 @@ bool TestBrowserWindow::IsActive() const {
   return false;
 }
 
-bool TestBrowserWindow::IsAlwaysOnTop() const {
-  return false;
+ui::ZOrderLevel TestBrowserWindow::GetZOrderLevel() const {
+  return ui::ZOrderLevel::kNormal;
 }
 
 gfx::NativeWindow TestBrowserWindow::GetNativeWindow() const {
   return NULL;
+}
+
+bool TestBrowserWindow::IsOnCurrentWorkspace() const {
+  return true;
 }
 
 void TestBrowserWindow::SetTopControlsShownRatio(
@@ -108,6 +113,8 @@ gfx::Size TestBrowserWindow::GetContentsSize() const {
   return gfx::Size();
 }
 
+void TestBrowserWindow::SetContentsSize(const gfx::Size& size) {}
+
 bool TestBrowserWindow::IsMaximized() const {
   return false;
 }
@@ -136,11 +143,19 @@ LocationBar* TestBrowserWindow::GetLocationBar() const {
   return const_cast<TestLocationBar*>(&location_bar_);
 }
 
-PageActionIconContainer* TestBrowserWindow::GetPageActionIconContainer() {
-  return &page_action_icon_container_;
+bool TestBrowserWindow::UpdatePageActionIcon(PageActionIconType type) {
+  return false;
+}
+
+autofill::AutofillBubbleHandler* TestBrowserWindow::GetAutofillBubbleHandler() {
+  return &autofill_bubble_handler_;
 }
 
 ToolbarActionsBar* TestBrowserWindow::GetToolbarActionsBar() {
+  return nullptr;
+}
+
+ExtensionsContainer* TestBrowserWindow::GetExtensionsContainer() {
   return nullptr;
 }
 
@@ -185,18 +200,25 @@ ShowTranslateBubbleResult TestBrowserWindow::ShowTranslateBubble(
   return ShowTranslateBubbleResult::SUCCESS;
 }
 
-autofill::SaveCardBubbleView* TestBrowserWindow::ShowSaveCreditCardBubble(
+qrcode_generator::QRCodeGeneratorBubbleView*
+TestBrowserWindow::ShowQRCodeGeneratorBubble(
     content::WebContents* contents,
-    autofill::SaveCardBubbleController* controller,
-    bool user_gesture) {
+    qrcode_generator::QRCodeGeneratorBubbleController* controller,
+    const GURL& url) {
   return nullptr;
 }
 
-autofill::LocalCardMigrationBubble*
-TestBrowserWindow::ShowLocalCardMigrationBubble(
+SharingDialog* TestBrowserWindow::ShowSharingDialog(
+    content::WebContents* web_contents,
+    SharingDialogData data) {
+  return nullptr;
+}
+
+send_tab_to_self::SendTabToSelfBubbleView*
+TestBrowserWindow::ShowSendTabToSelfBubble(
     content::WebContents* contents,
-    autofill::LocalCardMigrationBubbleController* controller,
-    bool user_gesture) {
+    send_tab_to_self::SendTabToSelfBubbleController* controller,
+    bool is_user_gesture) {
   return nullptr;
 }
 
@@ -208,17 +230,13 @@ DownloadShelf* TestBrowserWindow::GetDownloadShelf() {
   return &download_shelf_;
 }
 
-FindBar* TestBrowserWindow::CreateFindBar() {
+std::unique_ptr<FindBar> TestBrowserWindow::CreateFindBar() {
   return NULL;
 }
 
 web_modal::WebContentsModalDialogHost*
     TestBrowserWindow::GetWebContentsModalDialogHost() {
   return NULL;
-}
-
-int TestBrowserWindow::GetRenderViewHeightInsetWithDetachedBookmarkBar() {
-  return 0;
 }
 
 void TestBrowserWindow::ExecuteExtensionCommand(

@@ -1,0 +1,27 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "url/mojom/url.mojom";
+
+// A mojo interface for https://wicg.github.io/web-transport/#quic-transport.
+interface QuicTransport {
+};
+
+// A mojo interface for the client of QuicTransport.
+interface QuicTransportClient {
+};
+
+// Used to create a QuicTransport connection. This is split from QuicTransport
+// so that the handshake part can be intercepted, by Chrome extensions for
+// example.
+interface QuicTransportHandshakeClient {
+  // Called when the handshake succeeds.
+  OnConnectionEstablished(pending_remote<QuicTransport> transport,
+                          pending_receiver<QuicTransportClient> client);
+
+  // Called when the handshake fails.
+  OnHandshakeFailed();
+};

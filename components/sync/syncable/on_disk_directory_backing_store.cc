@@ -23,8 +23,10 @@ enum HistogramResultEnum {
 
 OnDiskDirectoryBackingStore::OnDiskDirectoryBackingStore(
     const std::string& dir_name,
+    const base::RepeatingCallback<std::string()>& cache_guid_generator,
     const base::FilePath& backing_file_path)
-    : DirectoryBackingStore(dir_name), backing_file_path_(backing_file_path) {
+    : DirectoryBackingStore(dir_name, cache_guid_generator),
+      backing_file_path_(backing_file_path) {
   DCHECK(backing_file_path_.IsAbsolute());
 }
 
@@ -32,7 +34,6 @@ OnDiskDirectoryBackingStore::~OnDiskDirectoryBackingStore() {}
 
 DirOpenResult OnDiskDirectoryBackingStore::TryLoad(
     Directory::MetahandlesMap* handles_map,
-    JournalIndex* delete_journals,
     MetahandleSet* metahandles_to_purge,
     Directory::KernelLoadInfo* kernel_load_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -48,8 +49,6 @@ DirOpenResult OnDiskDirectoryBackingStore::TryLoad(
 
   if (!LoadEntries(handles_map, metahandles_to_purge))
     return FAILED_DATABASE_CORRUPT;
-  if (!LoadDeleteJournals(delete_journals))
-    return FAILED_DATABASE_CORRUPT;
   if (!LoadInfo(kernel_load_info))
     return FAILED_DATABASE_CORRUPT;
   if (!VerifyReferenceIntegrity(handles_map))
@@ -60,12 +59,11 @@ DirOpenResult OnDiskDirectoryBackingStore::TryLoad(
 
 DirOpenResult OnDiskDirectoryBackingStore::Load(
     Directory::MetahandlesMap* handles_map,
-    JournalIndex* delete_journals,
     MetahandleSet* metahandles_to_purge,
     Directory::KernelLoadInfo* kernel_load_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DirOpenResult result = TryLoad(handles_map, delete_journals,
-                                 metahandles_to_purge, kernel_load_info);
+  DirOpenResult result =
+      TryLoad(handles_map, metahandles_to_purge, kernel_load_info);
   if (result == OPENED_NEW || result == OPENED_EXISTING) {
     UMA_HISTOGRAM_ENUMERATION("Sync.DirectoryOpenResult", FIRST_TRY_SUCCESS,
                               RESULT_COUNT);
@@ -77,14 +75,12 @@ DirOpenResult OnDiskDirectoryBackingStore::Load(
   // The fallback: delete the current database and return a fresh one.  We can
   // fetch the user's data from the cloud.
   handles_map->clear();
-  delete_journals->clear();
 
   ResetAndCreateConnection();
 
   base::DeleteFile(backing_file_path_, false);
 
-  result = TryLoad(handles_map, delete_journals, metahandles_to_purge,
-                   kernel_load_info);
+  result = TryLoad(handles_map, metahandles_to_purge, kernel_load_info);
   if (result == OPENED_NEW || result == OPENED_EXISTING) {
     UMA_HISTOGRAM_ENUMERATION("Sync.DirectoryOpenResult", SECOND_TRY_SUCCESS,
                               RESULT_COUNT);

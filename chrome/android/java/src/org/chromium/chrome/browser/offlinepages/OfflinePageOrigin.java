@@ -13,11 +13,13 @@ import android.os.Process;
 import android.text.TextUtils;
 import android.util.Base64;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import org.chromium.base.VisibleForTesting;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabAssociatedApp;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -32,7 +34,7 @@ public class OfflinePageOrigin {
 
     /** Creates origin based on the context and tab. */
     public OfflinePageOrigin(Context context, Tab tab) {
-        this(context, tab.getAppAssociatedWith());
+        this(context, TabAssociatedApp.getAppId(tab));
     }
 
     /** Creates origin based on the context and an app name. */

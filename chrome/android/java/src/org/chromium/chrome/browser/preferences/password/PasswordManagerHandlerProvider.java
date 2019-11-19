@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.preferences.password;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 
 /**
  * A provider for PasswordManagerHandler implementations, handling the choice of the proper one

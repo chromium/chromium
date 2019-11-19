@@ -10,7 +10,6 @@
 #include "chrome/browser/content_settings/tab_specific_content_settings.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
-#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
@@ -29,9 +28,7 @@
 
 SoundContentSettingObserver::SoundContentSettingObserver(
     content::WebContents* contents)
-    : content::WebContentsObserver(contents),
-      logged_site_muted_ukm_(false),
-      observer_(this) {
+    : content::WebContentsObserver(contents), logged_site_muted_ukm_(false) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   host_content_settings_map_ =
@@ -65,8 +62,8 @@ void SoundContentSettingObserver::ReadyToCommitNavigation(
   content_settings::SettingInfo setting_info;
   std::unique_ptr<base::Value> setting =
       host_content_settings_map_->GetWebsiteSetting(
-          url, navigation_handle->GetURL(),
-          CONTENT_SETTINGS_TYPE_SOUND, std::string(), &setting_info);
+          url, navigation_handle->GetURL(), ContentSettingsType::SOUND,
+          std::string(), &setting_info);
 
   if (content_settings::ValueToContentSetting(setting.get()) !=
       CONTENT_SETTING_ALLOW) {
@@ -81,7 +78,7 @@ void SoundContentSettingObserver::ReadyToCommitNavigation(
     return;
   }
 
-  blink::mojom::AutoplayConfigurationClientAssociatedPtr client;
+  mojo::AssociatedRemote<blink::mojom::AutoplayConfigurationClient> client;
   navigation_handle->GetRenderFrameHost()
       ->GetRemoteAssociatedInterfaces()
       ->GetInterface(&client);
@@ -107,7 +104,7 @@ void SoundContentSettingObserver::OnContentSettingChanged(
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
     const std::string& resource_identifier) {
-  if (content_type != CONTENT_SETTINGS_TYPE_SOUND)
+  if (content_type != ContentSettingsType::SOUND)
     return;
 
 #if !defined(OS_ANDROID)
@@ -159,7 +156,7 @@ void SoundContentSettingObserver::MuteOrUnmuteIfNecessary() {
 ContentSetting SoundContentSettingObserver::GetCurrentContentSetting() {
   GURL url = web_contents()->GetLastCommittedURL();
   return host_content_settings_map_->GetContentSetting(
-      url, url, CONTENT_SETTINGS_TYPE_SOUND, std::string());
+      url, url, ContentSettingsType::SOUND, std::string());
 }
 
 void SoundContentSettingObserver::CheckSoundBlocked(bool is_audible) {
@@ -191,7 +188,7 @@ SoundContentSettingObserver::GetSiteMutedReason() {
   const GURL url = web_contents()->GetLastCommittedURL();
   content_settings::SettingInfo info;
   host_content_settings_map_->GetWebsiteSetting(
-      url, url, CONTENT_SETTINGS_TYPE_SOUND, std::string(), &info);
+      url, url, ContentSettingsType::SOUND, std::string(), &info);
 
   DCHECK_EQ(content_settings::SETTING_SOURCE_USER, info.source);
 

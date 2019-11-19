@@ -7,10 +7,10 @@
 
 // Registry utility functions used only by tests.
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/win/registry.h"
 
@@ -42,7 +42,7 @@ class RegistryOverrideManager {
   // Calls to these functions must be wrapped in ASSERT_NO_FATAL_FAILURE to
   // ensure that tests do not proceeed in case of failure to override.
   void OverrideRegistry(HKEY override);
-  void OverrideRegistry(HKEY override, base::string16* override_path);
+  void OverrideRegistry(HKEY override, std::wstring* override_path);
 
  private:
   friend class RegistryOverrideManagerTest;
@@ -50,24 +50,24 @@ class RegistryOverrideManager {
   // Keeps track of one override.
   class ScopedRegistryKeyOverride {
    public:
-    ScopedRegistryKeyOverride(HKEY override, const base::string16& key_path);
+    ScopedRegistryKeyOverride(HKEY override, const std::wstring& key_path);
     ~ScopedRegistryKeyOverride();
 
    private:
     HKEY override_;
-    base::string16 key_path_;
+    std::wstring key_path_;
 
     DISALLOW_COPY_AND_ASSIGN(ScopedRegistryKeyOverride);
   };
 
   // Used for testing only.
   RegistryOverrideManager(const base::Time& timestamp,
-                          const base::string16& test_key_root);
+                          const std::wstring& test_key_root);
 
   base::Time timestamp_;
-  base::string16 guid_;
+  std::wstring guid_;
 
-  base::string16 test_key_root_;
+  std::wstring test_key_root_;
   std::vector<std::unique_ptr<ScopedRegistryKeyOverride>> overrides_;
 
   DISALLOW_COPY_AND_ASSIGN(RegistryOverrideManager);
@@ -75,7 +75,7 @@ class RegistryOverrideManager {
 
 // Generates a temporary key path that will be eventually deleted
 // automatically if the process crashes.
-base::string16 GenerateTempKeyPath();
+std::wstring GenerateTempKeyPath();
 
 }  // namespace registry_util
 

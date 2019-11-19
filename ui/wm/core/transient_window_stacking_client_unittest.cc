@@ -25,7 +25,7 @@ class TransientWindowStackingClientTest : public aura::test::AuraTestBase {
 
   void SetUp() override {
     AuraTestBase::SetUp();
-    client_.reset(new TransientWindowStackingClient);
+    client_ = std::make_unique<TransientWindowStackingClient>();
     aura::client::SetWindowStackingClient(client_.get());
   }
 

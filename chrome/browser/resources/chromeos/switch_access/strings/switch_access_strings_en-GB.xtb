@@ -1,0 +1,34 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="en-GB">
+<translation id="1230503547248836149">Selection start</translation>
+<translation id="1771761307086386028">Scroll right</translation>
+<translation id="2220205454259065436">Move backward one char</translation>
+<translation id="2603828437139726540">Move forward one char</translation>
+<translation id="2654172656519784359">Move forward one word</translation>
+<translation id="309749186376891736">Move cursor</translation>
+<translation id="3943857333388298514">Paste</translation>
+<translation id="4021716437419160885">Scroll down</translation>
+<translation id="4217571870635786043">Dictation</translation>
+<translation id="4378308539633073595">Scroll forwards</translation>
+<translation id="4712898966495541134">Selection end</translation>
+<translation id="4909019435900810068">Move backward one word</translation>
+<translation id="495046168593986294">Scroll up</translation>
+<translation id="5331522683003474486">Control the device with just 1 or 2 switches.</translation>
+<translation id="5513242761114685513">Context menu</translation>
+<translation id="602001110135236999">Scroll left</translation>
+<translation id="6100239002225743044">Move up one line</translation>
+<translation id="6896758677409633944">Copy</translation>
+<translation id="6945221475159498467">Select</translation>
+<translation id="696356426651109308">Jump to beginning</translation>
+<translation id="7026338066939101231">Decrement</translation>
+<translation id="7088960765736518739">Switch access</translation>
+<translation id="7724603315864178912">Cut</translation>
+<translation id="7813616274030162878">Switch Access Menu</translation>
+<translation id="7846634333498149051">Keyboard</translation>
+<translation id="8004512796067398576">Increment</translation>
+<translation id="8123975449645947908">Scroll backwards</translation>
+<translation id="8428213095426709021">Settings</translation>
+<translation id="9080299285199342830">Jump to end</translation>
+<translation id="985654871861528815">Move down one line</translation>
+</translationbundle>

@@ -6,9 +6,15 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <algorithm>
+#include <string>
+#include <vector>
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "build/build_config.h"
+#if defined(OS_ANDROID)
+#include "base/debug/proc_maps_linux.h"
+#endif  // defined(OS_ANDROID)
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_POSIX)
@@ -218,6 +224,32 @@ TEST(PageAllocatorTest, ReadExecutePages) {
 }
 
 #endif  // defined(OS_POSIX)
+
+#if defined(OS_ANDROID)
+TEST(PageAllocatorTest, PageTagging) {
+  void* buffer = AllocPages(nullptr, kPageAllocationGranularity,
+                            kPageAllocationGranularity, PageInaccessible,
+                            PageTag::kChromium, true);
+  EXPECT_TRUE(buffer);
+
+  std::string proc_maps;
+  EXPECT_TRUE(debug::ReadProcMaps(&proc_maps));
+  std::vector<debug::MappedMemoryRegion> regions;
+  EXPECT_TRUE(debug::ParseProcMaps(proc_maps, &regions));
+
+  bool found = false;
+  for (const auto& region : regions) {
+    if (region.start == reinterpret_cast<uintptr_t>(buffer)) {
+      found = true;
+      EXPECT_EQ("[anon:chromium]", region.path);
+      break;
+    }
+  }
+
+  FreePages(buffer, kPageAllocationGranularity);
+  EXPECT_TRUE(found);
+}
+#endif  // defined(OS_ANDROID)
 
 }  // namespace base
 

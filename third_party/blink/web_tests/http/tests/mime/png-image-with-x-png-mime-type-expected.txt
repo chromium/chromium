@@ -1,2 +1,0 @@
-load-and-stall.php has MIME type image/x-png
-

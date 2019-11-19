@@ -19,15 +19,15 @@ js_library("closure_compile_externs") {
   externs_list = [
     "$externs_path/chrome_extensions.js",
     "$externs_path/mediasession.js",
-    "../../externs/audio_player_foreground.js",
-    "../../externs/platform.js",
+    "//ui/file_manager/externs/audio_player_foreground.js",
+    "//ui/file_manager/externs/platform.js",
   ]
 }
 
 js_library("audio_player") {
   deps = [
-    "../elements:audio_player",
-    "../elements:track_list",
+    "//ui/file_manager/audio_player/elements:audio_player",
+    "//ui/file_manager/audio_player/elements:track_list",
     "//ui/file_manager/base/js:app_util",
     "//ui/file_manager/base/js:filtered_volume_manager",
     "//ui/file_manager/base/js:mediasession_types",
@@ -39,10 +39,10 @@ js_library("audio_player") {
 
 js_library("background") {
   deps = [
-    "../../file_manager/background/js:app_window_wrapper",
-    "../../file_manager/background/js:background_base",
-    "../../file_manager/common/js:file_type",
-    "../../file_manager/common/js:util",
+    "//ui/file_manager/file_manager/background/js:app_window_wrapper",
+    "//ui/file_manager/file_manager/background/js:background_base",
+    "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 
@@ -50,4 +50,7 @@ js_library("error_util") {
 }
 
 js_library("metadata_worker") {
+  deps = [
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_dispatcher",
+  ]
 }

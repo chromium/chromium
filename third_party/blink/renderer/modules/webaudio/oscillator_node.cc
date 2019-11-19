@@ -37,8 +37,6 @@
 
 namespace blink {
 
-using namespace vector_math;
-
 OscillatorHandler::OscillatorHandler(AudioNode& node,
                                      float sample_rate,
                                      const String& oscillator_type,
@@ -179,11 +177,8 @@ static void ClampFrequency(float* frequency,
 
 bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
     uint32_t frames_to_process) {
-  bool is_good = frames_to_process <= phase_increments_.size() &&
-                 frames_to_process <= detune_values_.size();
-  DCHECK(is_good);
-  if (!is_good)
-    return false;
+  DCHECK_LE(frames_to_process, phase_increments_.size());
+  DCHECK_LE(frames_to_process, detune_values_.size());
 
   if (first_render_) {
     first_render_ = false;
@@ -221,15 +216,16 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
 
     // Convert from cents to rate scalar.
     float k = 1.0 / 1200;
-    Vsmul(detune_values, 1, &k, detune_values, 1, frames_to_process);
+    vector_math::Vsmul(detune_values, 1, &k, detune_values, 1,
+                       frames_to_process);
     for (unsigned i = 0; i < frames_to_process; ++i) {
       detune_values[i] = std::exp2(detune_values[i]);
     }
 
     if (has_frequency_changes) {
       // Multiply frequencies by detune scalings.
-      Vmul(detune_values, 1, phase_increments, 1, phase_increments, 1,
-           frames_to_process);
+      vector_math::Vmul(detune_values, 1, phase_increments, 1, phase_increments,
+                        1, frames_to_process);
     }
   } else {
     // Handle ordinary parameter changes if there are no scheduled
@@ -243,8 +239,8 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
     ClampFrequency(phase_increments, frames_to_process,
                    Context()->sampleRate() / 2);
     // Convert from frequency to wavetable increment.
-    Vsmul(phase_increments, 1, &final_scale, phase_increments, 1,
-          frames_to_process);
+    vector_math::Vsmul(phase_increments, 1, &final_scale, phase_increments, 1,
+                       frames_to_process);
   }
 
   return has_sample_accurate_values;
@@ -364,8 +360,6 @@ void OscillatorHandler::Process(uint32_t frames_to_process) {
   }
 
   DCHECK_LE(frames_to_process, phase_increments_.size());
-  if (frames_to_process > phase_increments_.size())
-    return;
 
   // The audio thread can't block on this lock, so we call tryLock() instead.
   MutexTryLocker try_locker(process_lock_);
@@ -512,7 +506,8 @@ OscillatorNode::OscillatorNode(BaseAudioContext& context,
       // Use musical pitch standard A440 as a default.
       frequency_(
           AudioParam::Create(context,
-                             kParamTypeOscillatorFrequency,
+                             Uuid(),
+                             AudioParamHandler::kParamTypeOscillatorFrequency,
                              440,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable,
@@ -521,7 +516,8 @@ OscillatorNode::OscillatorNode(BaseAudioContext& context,
       // Default to no detuning.
       detune_(
           AudioParam::Create(context,
-                             kParamTypeOscillatorDetune,
+                             Uuid(),
+                             AudioParamHandler::kParamTypeOscillatorDetune,
                              0,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable,
@@ -598,6 +594,18 @@ AudioParam* OscillatorNode::detune() {
 void OscillatorNode::setPeriodicWave(PeriodicWave* wave) {
   periodic_wave_ = wave;
   GetOscillatorHandler().SetPeriodicWave(wave);
+}
+
+void OscillatorNode::ReportDidCreate() {
+  GraphTracer().DidCreateAudioNode(this);
+  GraphTracer().DidCreateAudioParam(detune_);
+  GraphTracer().DidCreateAudioParam(frequency_);
+}
+
+void OscillatorNode::ReportWillBeDestroyed() {
+  GraphTracer().WillDestroyAudioParam(detune_);
+  GraphTracer().WillDestroyAudioParam(frequency_);
+  GraphTracer().WillDestroyAudioNode(this);
 }
 
 }  // namespace blink

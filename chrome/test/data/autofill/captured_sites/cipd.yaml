@@ -15,35 +15,7 @@ package: chromium/chrome/test/data/autofill/captured_sites
 description: captured sites test archives and recipes.
 install_mode: copy
 data:
-  - file: amazon
-  - file: amazon.test
-  - file: bestbuy
-  - file: bestbuy.test
-  - file: etsy
-  - file: etsy.test
-  - file: groupon
-  - file: groupon.test
-  - file: home_depot
-  - file: home_depot.test
-  - file: jet
-  - file: jet.test
-  - file: macys
-  - file: macys.test
-  - file: newegg
-  - file: newegg.test
-  - file: pottery_barn
-  - file: pottery_barn.test
-  - file: qvc
-  - file: qvc.test
-  - file: walmart
-  - file: walmart.test
-  - file: wayfair
-  - file: wayfair.test
-  - file: west_elm
-  - file: west_elm.test
-  - file: williams_sonoma
-  - file: williams_sonoma.test
-  - file: zappos
-  - file: zappos.test
-  - file: zulily
-  - file: zulily.test
+  - dir: "."
+    exclude:
+      - .*\.yaml
+      - .*\.json

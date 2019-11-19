@@ -24,14 +24,13 @@ void DumpToTracedValue(const LayoutObject& object,
   traced_value->SetString("name", object.GetName());
   if (Node* node = object.GetNode()) {
     traced_value->SetString("tag", node->nodeName());
-    if (node->IsElementNode()) {
-      Element& element = ToElement(*node);
-      if (element.HasID())
-        traced_value->SetString("htmlId", element.GetIdAttribute());
-      if (element.HasClass()) {
+    if (auto* element = DynamicTo<Element>(node)) {
+      if (element->HasID())
+        traced_value->SetString("htmlId", element->GetIdAttribute());
+      if (element->HasClass()) {
         traced_value->BeginArray("classNames");
-        for (wtf_size_t i = 0; i < element.ClassNames().size(); ++i)
-          traced_value->PushString(element.ClassNames()[i]);
+        for (wtf_size_t i = 0; i < element->ClassNames().size(); ++i)
+          traced_value->PushString(element->ClassNames()[i]);
         traced_value->EndArray();
       }
     }
@@ -42,7 +41,7 @@ void DumpToTracedValue(const LayoutObject& object,
   if (trace_geometry) {
     traced_value->SetDouble("absX", object.AbsoluteBoundingBoxRect().X());
     traced_value->SetDouble("absY", object.AbsoluteBoundingBoxRect().Y());
-    LayoutRect rect = object.DebugRect();
+    PhysicalRect rect = object.DebugRect();
     traced_value->SetDouble("relX", rect.X());
     traced_value->SetDouble("relY", rect.Y());
     traced_value->SetDouble("width", rect.Width());
@@ -72,7 +71,8 @@ void DumpToTracedValue(const LayoutObject& object,
     // Table layout might be dirty if traceGeometry is false.
     // See https://crbug.com/664271 .
     if (trace_geometry) {
-      const LayoutTableCell& c = ToLayoutTableCell(object);
+      const LayoutNGTableCellInterface& c =
+          ToInterface<LayoutNGTableCellInterface>(object);
       traced_value->SetDouble("row", c.RowIndex());
       traced_value->SetDouble("col", c.AbsoluteColumnIndex());
       if (c.ResolvedRowSpan() != 1)
@@ -111,7 +111,7 @@ void DumpToTracedValue(const LayoutObject& object,
 
 std::unique_ptr<TracedValue> TracedLayoutObject::Create(const LayoutView& view,
                                                         bool trace_geometry) {
-  std::unique_ptr<TracedValue> traced_value = TracedValue::Create();
+  auto traced_value = std::make_unique<TracedValue>();
   DumpToTracedValue(view, trace_geometry, traced_value.get());
   return traced_value;
 }

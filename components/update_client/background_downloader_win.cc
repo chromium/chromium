@@ -399,8 +399,8 @@ void CleanupJob(const ComPtr<IBackgroundCopyJob>& job) {
 BackgroundDownloader::BackgroundDownloader(
     std::unique_ptr<CrxDownloader> successor)
     : CrxDownloader(std::move(successor)),
-      com_task_runner_(base::CreateCOMSTATaskRunnerWithTraits(
-          kTaskTraitsBackgroundDownloader)),
+      com_task_runner_(
+          base::CreateCOMSTATaskRunner(kTaskTraitsBackgroundDownloader)),
       git_cookie_bits_manager_(0),
       git_cookie_job_(0) {}
 

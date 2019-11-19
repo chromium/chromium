@@ -1,59 +1,54 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
-<translation id="1326317727527857210">Accedi a Chrome per trovare le tue schede degli altri dispositivi.</translation>
+<translation id="1282031177488366470">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome</translation>
+<translation id="1682483655351012182">Sincronizza i tuoi dati di Chrome</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1816764564654397850">Informativa sulla privacy di Google Chrome</translation>
 <translation id="1863312987075920112">Se usi questa applicazione, accetti i <ph name="BEGIN_LINK_TOS" />Termini di servizio<ph name="END_LINK_TOS" /> e l'<ph name="BEGIN_LINK_PRIVACY" />Informativa sulla privacy<ph name="END_LINK_PRIVACY" /> di Chrome.</translation>
-<translation id="1984705450038014246">Sincronizza i tuoi dati di Chrome</translation>
 <translation id="2147651015520127414">Chrome ha verificato che <ph name="ISSUER" /> ha emesso il certificato del sito web.</translation>
 <translation id="2199719347983604670">Dati dalla Sincronizzazione Chrome</translation>
-<translation id="2334084861041072223">Copyright <ph name="YEAR" /> Google Inc. Tutti i diritti riservati.</translation>
-<translation id="2342981853652716282">Accedi a Chrome per trovare i tuoi preferiti, le password e altre impostazioni su tutti i tuoi dispositivi.</translation>
 <translation id="2347208864470321755">Quando questa funzione è attiva, Chrome si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="2441696206556358796">Per salvare le immagini, tocca Impostazioni e consenti a Chrome di usare le tue foto</translation>
 <translation id="2576431527583832481">Chrome è stato migliorato. È disponibile una nuova versione.</translation>
 <translation id="257708665678654955">Vuoi che Google Chrome ti proponga di tradurre le pagine di questo sito in <ph name="LANGUAGE_NAME" /> al prossimo accesso?</translation>
 <translation id="3030414234702425231">Dal momento che stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />, i dati di Chrome verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
-<translation id="3148434565183091099">Accedi a Chrome per trovare i tuoi preferiti su tutti i dispositivi.</translation>
 <translation id="3148688391461398285">Migliora la tua esperienza di Chrome tramite l'accesso alla tua posizione.</translation>
-<translation id="3167189358072330585">Il tuo account non funziona su Google Chrome. Contatta l'amministratore di dominio o utilizza un normale account Google per accedere.</translation>
+<translation id="3167189358072330585">Il tuo account non funziona su Google Chrome. Contatta l'amministratore di dominio o utilizza un normale Account Google per accedere.</translation>
 <translation id="3196546062792660320">Chrome ti fa risparmiare tempo portando i tuoi account sul Web. Puoi aggiungere o rimuovere account nelle Impostazioni.</translation>
 <translation id="3282568296779691940">Accedi a Chrome</translation>
 <translation id="3345341804167540816">Utilizza Chrome ovunque</translation>
 <translation id="384394811301901750">Google Chrome non può utilizzare la videocamera al momento</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
 <translation id="3980220367029651214">Stai per cambiare account di sincronizzazione, passando dall'account <ph name="USER_EMAIL1" /> all'account <ph name="USER_EMAIL2" />. I tuoi attuali dati di Chrome vengono gestiti da <ph name="DOMAIN" />. I dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nell'account <ph name="USER_EMAIL1" />.</translation>
 <translation id="3988789688219830639">Google Chrome non ha accesso alle tue foto o ai tuoi video. Attiva l'accesso in Impostazioni iOS &gt; Privacy &gt; Foto.</translation>
 <translation id="4099578267706723511">Aiutaci a migliorare Chrome inviando a Google statistiche sull'utilizzo e rapporti sugli arresti anomali.</translation>
 <translation id="415767770115540173">Migliora la tua esperienza di Chrome tramite l'accesso alla tua posizione.</translation>
 <translation id="424864128008805179">Uscire da Chrome?</translation>
-<translation id="447252321002412580">Contribuisci a migliorare le funzioni e le prestazioni di Chrome</translation>
+<translation id="4249068189593983585">Suggerimento per Chrome. Per vedere più opzioni sulla scheda, tocca e tieni premuto il pulsante Mostra schede della barra degli strumenti, che si trova nella parte inferiore o superiore della schermata.</translation>
 <translation id="4523886039239821078">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Disinstallali.</translation>
-<translation id="4615174829807303908">Stai per uscire da un account gestito da <ph name="SIGNOUT_MANAGED_DOMAIN" />. I dati di Chrome verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo account Google.</translation>
 <translation id="5389212809648216794">Google Chrome non può utilizzare la videocamera perché è attualmente utilizzata da un'altra applicazione</translation>
+<translation id="5621912349729388018"><ph name="BEGIN_LINK" />Leggi i Termini di servizio di Chrome aggiornati<ph name="END_LINK" />.</translation>
 <translation id="5639704535586432836">Apri impostazioni &gt; Privacy &gt; Fotocamera &gt; Google Chrome e attiva la videocamera.</translation>
 <translation id="5642200033778930880">Google Chrome non può utilizzare la videocamera in modalità Visualizzazione divisa</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5854621639439811139">Suggerimento per Chrome. Alcuni pulsanti ora si trovano nella parte inferiore della schermata, ad esempio Indietro, Avanti e Cerca.</translation>
 <translation id="6036420186814142909">Google Chrome offre funzioni che ti consentono di gestire i tuoi dati Internet e la velocità di caricamento delle pagine web.
 <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="6573431926118603307">Le schede aperte in Chrome sugli altri dispositivi verranno visualizzate qui.</translation>
 <translation id="6600954340915313787">Copiata in Chrome</translation>
-<translation id="6648150602980899529">Stai per eseguire l'accesso con un account gestito da <ph name="DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chrome. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chrome, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo account Google.</translation>
+<translation id="6648150602980899529">Stai per eseguire l'accesso con un account gestito da <ph name="DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chrome. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chrome, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>
 <translation id="6676840375528380067">Eliminare i dati di Chrome dal dispositivo?</translation>
 <translation id="690638524486313356">Termini di servizio di Google Chrome</translation>
 <translation id="7165736900384873061">Inizia a utilizzare lo scanner QR di Google Chrome</translation>
 <translation id="7172660552945675509">Suggerimento. <ph name="BEGIN_LINK" />Sposta Chrome nel dock<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome utilizza Face ID per garantire accesso autorizzato alle tue password.</translation>
 <translation id="7265369419224458312">Accedi alle schede che hai aperto sul computer direttamente qui. Apri Chrome sul computer, apri il menu e seleziona "Accedi a Chrome…".</translation>
-<translation id="728488472449859922">Attiva lo scanner QR di Google Chrome</translation>
 <translation id="7400722733683201933">Informazioni su Google Chrome</translation>
-<translation id="7437998757836447326">Esci da Chrome</translation>
 <translation id="756809126120519699">Dati di Chrome cancellati</translation>
 <translation id="7626032353295482388">Benvenuto in Chrome</translation>
+<translation id="7698568245838009292">Chrome vorrebbe accedere alla fotocamera</translation>
+<translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>
 <translation id="840168496893712993">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Prova a disinstallarli.</translation>
-<translation id="8459495907675268833">I dati selezionati sono stati rimossi da Chrome e dai dispositivi sincronizzati. Il tuo account Google potrebbe avere altre forme di cronologia di navigazione, ad esempio ricerche e attività, di altri servizi Google alla pagina history.google.com.</translation>
+<translation id="8459495907675268833">I dati selezionati sono stati rimossi da Chrome e dai dispositivi sincronizzati. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, ad esempio ricerche e attività, di altri servizi Google alla pagina history.google.com.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
-<translation id="8606668294522778825">Google Chrome potrebbe utilizzare servizi web per migliorare la tua esperienza di navigazione. Se preferisci, puoi disattivare questi servizi. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
-<translation id="96145293669295453">Suggerimento per Chrome. Per vedere più opzioni sulla scheda, tieni premuto il pulsante Mostra schede della barra degli strumenti, che si trova nella parte inferiore o superiore della schermata.</translation>
 </translationbundle>

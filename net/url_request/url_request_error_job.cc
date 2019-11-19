@@ -14,11 +14,10 @@
 
 namespace net {
 
-URLRequestErrorJob::URLRequestErrorJob(
-    URLRequest* request, NetworkDelegate* network_delegate, int error)
-    : URLRequestJob(request, network_delegate),
-      error_(error),
-      weak_factory_(this) {}
+URLRequestErrorJob::URLRequestErrorJob(URLRequest* request,
+                                       NetworkDelegate* network_delegate,
+                                       int error)
+    : URLRequestJob(request, network_delegate), error_(error) {}
 
 URLRequestErrorJob::~URLRequestErrorJob() = default;
 

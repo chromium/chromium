@@ -20,7 +20,6 @@
 
 namespace chromeos {
 
-class BaseScreenDelegate;
 class ErrorScreensHistogramHelper;
 class ScreenManager;
 
@@ -34,8 +33,8 @@ class AutoEnrollmentCheckScreen
       public BaseScreen,
       public NetworkPortalDetector::Observer {
  public:
-  AutoEnrollmentCheckScreen(BaseScreenDelegate* base_screen_delegate,
-                            AutoEnrollmentCheckScreenView* view,
+  AutoEnrollmentCheckScreen(AutoEnrollmentCheckScreenView* view,
+                            ErrorScreen* error_screen,
                             const base::RepeatingClosure& exit_callback);
   ~AutoEnrollmentCheckScreen() override;
 
@@ -83,13 +82,17 @@ class AutoEnrollmentCheckScreen
   bool UpdateCaptivePortalStatus(
       NetworkPortalDetector::CaptivePortalStatus new_captive_portal_status);
 
-  // Configures the UI to reflect |auto_enrollment_state|. Returns true if and
-  // only if a UI change has been made.
+  // Configures the UI to reflect |new_auto_enrollment_state|. Returns true if
+  // and only if a UI change has been made.
   bool UpdateAutoEnrollmentState(
-      policy::AutoEnrollmentState auto_enrollment_state);
+      policy::AutoEnrollmentState new_auto_enrollment_state);
 
   // Configures the error screen.
   void ShowErrorScreen(NetworkError::ErrorState error_state);
+
+  // Passed as a callback to the error screen when it's shown. Called when the
+  // error screen gets hidden.
+  void OnErrorScreenHidden();
 
   // Asynchronously signals completion. The owner might destroy |this| in
   // response, so no code should be run after the completion of a message loop
@@ -109,6 +112,7 @@ class AutoEnrollmentCheckScreen
   bool ShouldBlockOnServerError() const;
 
   AutoEnrollmentCheckScreenView* view_;
+  ErrorScreen* error_screen_;
   base::RepeatingClosure exit_callback_;
   AutoEnrollmentController* auto_enrollment_controller_;
 
@@ -122,7 +126,7 @@ class AutoEnrollmentCheckScreen
 
   ErrorScreen::ConnectRequestCallbackSubscription connect_request_subscription_;
 
-  base::WeakPtrFactory<AutoEnrollmentCheckScreen> weak_ptr_factory_;
+  base::WeakPtrFactory<AutoEnrollmentCheckScreen> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutoEnrollmentCheckScreen);
 };

@@ -1,0 +1,12 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+struct FullscreenOptions {
+  // Prefer that the bottom navigation bar be shown when in fullscreen
+  // mode on devices with overlay navigation bars.
+  bool prefers_navigation_bar = false;
+};
+

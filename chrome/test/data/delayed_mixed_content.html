@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<!-- Loads passive mixed content on request. -->
+<html>
+<body>
+<div id="container"></div>
+<script>
+function load_mixed() {
+  var img = document.createElement('img');
+  img.src = "http://a.test/image.jpg";
+  document.getElementById("container").appendChild(img);
+};
+</script>
+</body>
+</html>

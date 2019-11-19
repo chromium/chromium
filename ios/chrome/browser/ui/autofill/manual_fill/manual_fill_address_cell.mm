@@ -6,9 +6,9 @@
 
 #include "base/metrics/user_metrics.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_delegate.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/uicolor_manualfill.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -18,7 +18,8 @@
 @interface ManualFillAddressItem ()
 
 // The content delegate for this item.
-@property(nonatomic, weak, readonly) id<ManualFillContentDelegate> delegate;
+@property(nonatomic, weak, readonly) id<ManualFillContentInjector>
+    contentInjector;
 
 // The address/profile for this item.
 @property(nonatomic, readonly) ManualFillAddress* address;
@@ -28,10 +29,10 @@
 @implementation ManualFillAddressItem
 
 - (instancetype)initWithAddress:(ManualFillAddress*)address
-                       delegate:(id<ManualFillContentDelegate>)delegate {
+                contentInjector:(id<ManualFillContentInjector>)contentInjector {
   self = [super initWithType:kItemTypeEnumZero];
   if (self) {
-    _delegate = delegate;
+    _contentInjector = contentInjector;
     _address = address;
     self.cellClass = [ManualFillAddressCell class];
   }
@@ -41,12 +42,15 @@
 - (void)configureCell:(ManualFillAddressCell*)cell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
-  [cell setUpWithAddress:self.address delegate:self.delegate];
+  [cell setUpWithAddress:self.address contentInjector:self.contentInjector];
 }
 
 @end
 
 @interface ManualFillAddressCell ()
+
+// Separator line between cells, if needed.
+@property(nonatomic, strong) UIView* grayLine;
 
 // The label with the line1 -- line2.
 @property(nonatomic, strong) UILabel* addressLabel;
@@ -58,14 +62,8 @@
 // A button showing the address associated first name.
 @property(nonatomic, strong) UIButton* firstNameButton;
 
-// The separator label between first and middle name/initial.
-@property(nonatomic, strong) UILabel* middleNameSeparatorLabel;
-
 // A button showing the address associated middle name or initial.
 @property(nonatomic, strong) UIButton* middleNameButton;
-
-// The separator label between middle name/initial and last name.
-@property(nonatomic, strong) UILabel* lastNameSeparatorLabel;
 
 // A button showing the address associated last name.
 @property(nonatomic, strong) UIButton* lastNameButton;
@@ -82,17 +80,11 @@
 // A button showing zip code.
 @property(nonatomic, strong) UIButton* zipButton;
 
-// The separator label between zip and city.
-@property(nonatomic, strong) UILabel* citySeparatorLabel;
-
 // A button showing city.
 @property(nonatomic, strong) UIButton* cityButton;
 
 // A button showing state/province.
 @property(nonatomic, strong) UIButton* stateButton;
-
-// The separator label between state and country.
-@property(nonatomic, strong) UILabel* countrySeparatorLabel;
 
 // A button showing country.
 @property(nonatomic, strong) UIButton* countryButton;
@@ -104,7 +96,7 @@
 @property(nonatomic, strong) UIButton* emailAddressButton;
 
 // The content delegate for this item.
-@property(nonatomic, weak) id<ManualFillContentDelegate> delegate;
+@property(nonatomic, weak) id<ManualFillContentInjector> contentInjector;
 
 @end
 
@@ -130,18 +122,18 @@
   [self.countryButton setTitle:@"" forState:UIControlStateNormal];
   [self.phoneNumberButton setTitle:@"" forState:UIControlStateNormal];
   [self.emailAddressButton setTitle:@"" forState:UIControlStateNormal];
-  self.delegate = nil;
+  self.contentInjector = nil;
 }
 
 - (void)setUpWithAddress:(ManualFillAddress*)address
-                delegate:(id<ManualFillContentDelegate>)delegate {
+         contentInjector:(id<ManualFillContentInjector>)contentInjector {
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
   }
-  self.delegate = delegate;
+  self.contentInjector = contentInjector;
 
   NSMutableArray<UIView*>* verticalLeadViews = [[NSMutableArray alloc] init];
-  UIView* guide = self.contentView;
+  UIView* guide = self.grayLine;
 
   NSString* blackText = nil;
   NSString* grayText = nil;
@@ -163,7 +155,8 @@
     attributedString = [[NSMutableAttributedString alloc]
         initWithString:blackText
             attributes:@{
-              NSForegroundColorAttributeName : UIColor.blackColor,
+              NSForegroundColorAttributeName :
+                  [UIColor colorNamed:kTextPrimaryColor],
               NSFontAttributeName :
                   [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
             }];
@@ -171,7 +164,8 @@
       NSString* formattedGrayText =
           [NSString stringWithFormat:@" –– %@", grayText];
       NSDictionary* attributes = @{
-        NSForegroundColorAttributeName : UIColor.lightGrayColor,
+        NSForegroundColorAttributeName :
+            [UIColor colorNamed:kTextSecondaryColor],
         NSFontAttributeName :
             [UIFont preferredFontForTextStyle:UIFontTextStyleBody]
       };
@@ -208,13 +202,6 @@
     self.firstNameButton.hidden = YES;
   }
 
-  if (showFirstName && showMiddleName && !largeTypes) {
-    [nameLineViews addObject:self.middleNameSeparatorLabel];
-    self.middleNameSeparatorLabel.hidden = NO;
-  } else {
-    self.middleNameSeparatorLabel.hidden = YES;
-  }
-
   if (showMiddleName) {
     [self.middleNameButton setTitle:address.middleNameOrInitial
                            forState:UIControlStateNormal];
@@ -222,13 +209,6 @@
     self.middleNameButton.hidden = NO;
   } else {
     self.middleNameButton.hidden = YES;
-  }
-
-  if ((showFirstName || showMiddleName) && showLastName && !largeTypes) {
-    [nameLineViews addObject:self.lastNameSeparatorLabel];
-    self.lastNameSeparatorLabel.hidden = NO;
-  } else {
-    self.lastNameSeparatorLabel.hidden = YES;
   }
 
   if (showLastName) {
@@ -283,13 +263,6 @@
     self.zipButton.hidden = YES;
   }
 
-  if (address.zip.length && address.city.length && !largeTypes) {
-    [zipCityLineViews addObject:self.citySeparatorLabel];
-    self.citySeparatorLabel.hidden = NO;
-  } else {
-    self.citySeparatorLabel.hidden = YES;
-  }
-
   if (address.city.length) {
     [self.cityButton setTitle:address.city forState:UIControlStateNormal];
     [zipCityLineViews addObject:self.cityButton];
@@ -313,13 +286,6 @@
     self.stateButton.hidden = NO;
   } else {
     self.stateButton.hidden = YES;
-  }
-
-  if (address.state.length && address.country.length && !largeTypes) {
-    [stateCountryLineViews addObject:self.countrySeparatorLabel];
-    self.countrySeparatorLabel.hidden = NO;
-  } else {
-    self.countrySeparatorLabel.hidden = YES;
   }
 
   if (address.country.length) {
@@ -372,14 +338,16 @@
     return;
   if (largeTypes) {
     for (UIView* view in views) {
-      AppendHorizontalConstraintsForViews(self.dynamicConstraints, @[ view ],
-                                          guide);
+      AppendHorizontalConstraintsForViews(
+          self.dynamicConstraints, @[ view ], guide, kChipsHorizontalMargin,
+          AppendConstraintsHorizontalEqualOrSmallerThanGuide);
       [verticalLeadViews addObject:view];
     }
   } else {
     AppendHorizontalConstraintsForViews(
-        self.dynamicConstraints, views, guide, 0,
-        AppendConstraintsHorizontalSyncBaselines);
+        self.dynamicConstraints, views, guide, kChipsHorizontalMargin,
+        AppendConstraintsHorizontalSyncBaselines |
+            AppendConstraintsHorizontalEqualOrSmallerThanGuide);
     [verticalLeadViews addObject:views.firstObject];
   }
 }
@@ -388,8 +356,7 @@
 - (void)createViewHierarchy {
   self.selectionStyle = UITableViewCellSelectionStyleNone;
 
-  UIView* guide = self.contentView;
-  CreateGraySeparatorForContainer(guide);
+  self.grayLine = CreateGraySeparatorForContainer(self.contentView);
 
   NSMutableArray<NSLayoutConstraint*>* staticConstraints =
       [[NSMutableArray alloc] init];
@@ -397,81 +364,76 @@
   self.addressLabel = CreateLabel();
   [self.contentView addSubview:self.addressLabel];
   AppendHorizontalConstraintsForViews(staticConstraints, @[ self.addressLabel ],
-                                      guide, ButtonHorizontalMargin);
+                                      self.contentView,
+                                      kButtonHorizontalMargin);
 
-  self.firstNameButton = CreateButtonWithSelectorAndTarget(
-      @selector(userDidTapAddressInfo:), self);
+  self.firstNameButton =
+      CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.firstNameButton];
 
-  self.middleNameSeparatorLabel = CreateLabel();
-  self.middleNameSeparatorLabel.text = @"·";
-  [self.contentView addSubview:self.middleNameSeparatorLabel];
-
-  self.middleNameButton = CreateButtonWithSelectorAndTarget(
-      @selector(userDidTapAddressInfo:), self);
+  self.middleNameButton =
+      CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.middleNameButton];
 
-  self.lastNameSeparatorLabel = CreateLabel();
-  self.lastNameSeparatorLabel.text = @"·";
-  [self.contentView addSubview:self.lastNameSeparatorLabel];
-
-  self.lastNameButton = CreateButtonWithSelectorAndTarget(
-      @selector(userDidTapAddressInfo:), self);
+  self.lastNameButton =
+      CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.lastNameButton];
 
-  self.companyButton = CreateButtonWithSelectorAndTarget(
-      @selector(userDidTapAddressInfo:), self);
+  self.companyButton =
+      CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.companyButton];
-  AppendHorizontalConstraintsForViews(staticConstraints,
-                                      @[ self.companyButton ], guide);
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.companyButton ], self.grayLine,
+      kChipsHorizontalMargin,
+      AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-  self.line1Button = CreateButtonWithSelectorAndTarget(
-      @selector(userDidTapAddressInfo:), self);
+  self.line1Button =
+      CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.line1Button];
-  AppendHorizontalConstraintsForViews(staticConstraints, @[ self.line1Button ],
-                                      guide);
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.line1Button ], self.grayLine,
+      kChipsHorizontalMargin,
+      AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-  self.line2Button = CreateButtonWithSelectorAndTarget(
-      @selector(userDidTapAddressInfo:), self);
+  self.line2Button =
+      CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.line2Button];
-  AppendHorizontalConstraintsForViews(staticConstraints, @[ self.line2Button ],
-                                      guide);
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.line2Button ], self.grayLine,
+      kChipsHorizontalMargin,
+      AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-  self.zipButton = CreateButtonWithSelectorAndTarget(
-      @selector(userDidTapAddressInfo:), self);
+  self.zipButton =
+      CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.zipButton];
 
-  self.citySeparatorLabel = CreateLabel();
-  self.citySeparatorLabel.text = @"·";
-  [self.contentView addSubview:self.citySeparatorLabel];
-
-  self.cityButton = CreateButtonWithSelectorAndTarget(
-      @selector(userDidTapAddressInfo:), self);
+  self.cityButton =
+      CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.cityButton];
 
-  self.stateButton = CreateButtonWithSelectorAndTarget(
-      @selector(userDidTapAddressInfo:), self);
+  self.stateButton =
+      CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.stateButton];
 
-  self.countrySeparatorLabel = CreateLabel();
-  self.countrySeparatorLabel.text = @"·";
-  [self.contentView addSubview:self.countrySeparatorLabel];
-
-  self.countryButton = CreateButtonWithSelectorAndTarget(
-      @selector(userDidTapAddressInfo:), self);
+  self.countryButton =
+      CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.countryButton];
 
-  self.phoneNumberButton = CreateButtonWithSelectorAndTarget(
-      @selector(userDidTapAddressInfo:), self);
+  self.phoneNumberButton =
+      CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.phoneNumberButton];
-  AppendHorizontalConstraintsForViews(staticConstraints,
-                                      @[ self.phoneNumberButton ], guide);
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.phoneNumberButton ], self.grayLine,
+      kChipsHorizontalMargin,
+      AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-  self.emailAddressButton = CreateButtonWithSelectorAndTarget(
-      @selector(userDidTapAddressInfo:), self);
+  self.emailAddressButton =
+      CreateChipWithSelectorAndTarget(@selector(userDidTapAddressInfo:), self);
   [self.contentView addSubview:self.emailAddressButton];
-  AppendHorizontalConstraintsForViews(staticConstraints,
-                                      @[ self.emailAddressButton ], guide);
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.emailAddressButton ], self.grayLine,
+      kChipsHorizontalMargin,
+      AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
   // Without this set, Voice Over will read the content vertically instead of
   // horizontally.
@@ -510,9 +472,9 @@
   DCHECK(metricsAction);
   base::RecordAction(base::UserMetricsAction(metricsAction));
 
-  [self.delegate userDidPickContent:sender.titleLabel.text
-                      passwordField:NO
-                      requiresHTTPS:NO];
+  [self.contentInjector userDidPickContent:sender.titleLabel.text
+                             passwordField:NO
+                             requiresHTTPS:NO];
 }
 
 @end

@@ -13,14 +13,14 @@
 #include "base/macros.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
-#include "net/log/net_log.h"
+#include "net/quic/platform/impl/quic_chromium_clock.h"
 #include "net/quic/quic_chromium_alarm_factory.h"
 #include "net/quic/quic_chromium_connection_helper.h"
-#include "net/third_party/quic/core/crypto/quic_crypto_server_config.h"
-#include "net/third_party/quic/core/quic_config.h"
-#include "net/third_party/quic/core/quic_version_manager.h"
-#include "net/third_party/quic/platform/impl/quic_chromium_clock.h"
-#include "net/third_party/quic/tools/quic_simple_server_backend.h"
+#include "net/third_party/quiche/src/quic/core/crypto/quic_crypto_server_config.h"
+#include "net/third_party/quiche/src/quic/core/quic_config.h"
+#include "net/third_party/quiche/src/quic/core/quic_version_manager.h"
+#include "net/third_party/quiche/src/quic/tools/quic_simple_server_backend.h"
+#include "net/third_party/quiche/src/quic/tools/quic_spdy_server_base.h"
 
 namespace net {
 
@@ -36,7 +36,7 @@ namespace test {
 class QuicSimpleServerPeer;
 }  // namespace test
 
-class QuicSimpleServer {
+class QuicSimpleServer : public quic::QuicSpdyServerBase {
  public:
   QuicSimpleServer(
       std::unique_ptr<quic::ProofSource> proof_source,
@@ -45,10 +45,15 @@ class QuicSimpleServer {
       const quic::ParsedQuicVersionVector& supported_versions,
       quic::QuicSimpleServerBackend* quic_simple_server_backend);
 
-  virtual ~QuicSimpleServer();
+  ~QuicSimpleServer() override;
 
-  // Start listening on the specified address. Returns an error code.
-  int Listen(const IPEndPoint& address);
+  // QuicSpdyServerBase methods:
+  bool CreateUDPSocketAndListen(
+      const quic::QuicSocketAddress& address) override;
+  void HandleEventsForever() override;
+
+  // Start listening on the specified address. Returns true on success.
+  bool Listen(const IPEndPoint& address);
 
   // Server deletion is imminent. Start cleaning up.
   void Shutdown();
@@ -114,12 +119,9 @@ class QuicSimpleServer {
   // The source address of the current read.
   IPEndPoint client_address_;
 
-  // The log to use for the socket.
-  NetLog net_log_;
-
   quic::QuicSimpleServerBackend* quic_simple_server_backend_;
 
-  base::WeakPtrFactory<QuicSimpleServer> weak_factory_;
+  base::WeakPtrFactory<QuicSimpleServer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(QuicSimpleServer);
 };

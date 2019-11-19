@@ -11,8 +11,10 @@
 #import "base/test/ios/wait_util.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/ui/util/named_guide.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/test_web_state.h"
-#include "ios/web/public/test/test_web_thread_bundle.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
@@ -36,6 +38,12 @@ class PagePlaceholderTabHelperTest : public PlatformTest {
     web_state_view_.backgroundColor = [UIColor blueColor];
     web_state_->SetView(web_state_view_);
 
+    [scoped_key_window_.Get() addSubview:web_state_view_];
+
+    // The Content Area named guide should be available.
+    NamedGuide* guide = [[NamedGuide alloc] initWithName:kContentAreaGuide];
+    [web_state_view_ addLayoutGuide:guide];
+
     // PagePlaceholderTabHelper uses SnapshotTabHelper, so ensure it has been
     // created.
     SnapshotTabHelper::CreateForWebState(web_state_.get(),
@@ -47,7 +55,8 @@ class PagePlaceholderTabHelperTest : public PlatformTest {
     return PagePlaceholderTabHelper::FromWebState(web_state_.get());
   }
 
-  web::TestWebThreadBundle thread_bundle_;
+  web::WebTaskEnvironment task_environment_;
+  ScopedKeyWindow scoped_key_window_;
   std::unique_ptr<ios::ChromeBrowserState> browser_state_;
   std::unique_ptr<web::TestWebState> web_state_;
   UIView* web_state_view_ = nil;
@@ -71,7 +80,7 @@ TEST_F(PagePlaceholderTabHelperTest, TabShownAndPlaceholderShown) {
   EXPECT_TRUE(tab_helper()->will_add_placeholder_for_next_navigation());
   web_state_->WasShown();
   EXPECT_TRUE(tab_helper()->displaying_placeholder());
-  EXPECT_TRUE(tab_helper()->will_add_placeholder_for_next_navigation());
+  EXPECT_FALSE(tab_helper()->will_add_placeholder_for_next_navigation());
 }
 
 // Tests that placeholder is removed after WasHidden().
@@ -111,6 +120,7 @@ TEST_F(PagePlaceholderTabHelperTest, NotShownIfCancelled) {
 // Tests that placeholder is shown between DidStartNavigation/PageLoaded
 // WebStateObserver callbacks.
 TEST_F(PagePlaceholderTabHelperTest, Shown) {
+  web_state_->WasShown();
   ASSERT_FALSE(tab_helper()->will_add_placeholder_for_next_navigation());
   tab_helper()->AddPlaceholderForNextNavigation();
   ASSERT_FALSE(tab_helper()->displaying_placeholder());
@@ -125,8 +135,24 @@ TEST_F(PagePlaceholderTabHelperTest, Shown) {
   EXPECT_FALSE(tab_helper()->will_add_placeholder_for_next_navigation());
 }
 
+// Tests that placeholder is not shown if the tab is not visible at
+// DidStartNavigation
+TEST_F(PagePlaceholderTabHelperTest, NotShownIfTabNotVisible) {
+  ASSERT_FALSE(tab_helper()->will_add_placeholder_for_next_navigation());
+  tab_helper()->AddPlaceholderForNextNavigation();
+  ASSERT_FALSE(tab_helper()->displaying_placeholder());
+  EXPECT_TRUE(tab_helper()->will_add_placeholder_for_next_navigation());
+
+  web_state_->OnNavigationStarted(nullptr);
+  EXPECT_FALSE(tab_helper()->displaying_placeholder());
+  web_state_->WasShown();
+  EXPECT_TRUE(tab_helper()->displaying_placeholder());
+  EXPECT_FALSE(tab_helper()->will_add_placeholder_for_next_navigation());
+}
+
 // Tests that placeholder is removed if cancelled while presented.
 TEST_F(PagePlaceholderTabHelperTest, RemovedIfCancelledWhileShown) {
+  web_state_->WasShown();
   ASSERT_FALSE(tab_helper()->will_add_placeholder_for_next_navigation());
   tab_helper()->AddPlaceholderForNextNavigation();
   ASSERT_FALSE(tab_helper()->displaying_placeholder());
@@ -142,6 +168,7 @@ TEST_F(PagePlaceholderTabHelperTest, RemovedIfCancelledWhileShown) {
 
 // Tests that destructing WebState removes the placeholder.
 TEST_F(PagePlaceholderTabHelperTest, DestructWebStateWhenShowingPlaceholder) {
+  web_state_->WasShown();
   ASSERT_FALSE(tab_helper()->will_add_placeholder_for_next_navigation());
   tab_helper()->AddPlaceholderForNextNavigation();
   ASSERT_FALSE(tab_helper()->displaying_placeholder());

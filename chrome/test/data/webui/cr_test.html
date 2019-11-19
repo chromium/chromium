@@ -20,10 +20,7 @@ function testDefineProperty() {
 }
 
 function testDefinePropertyOnClass() {
-  function C() {}
-  C.prototype = {
-    __proto__: EventTarget.prototype
-  };
+  class C extends EventTarget {}
 
   cr.defineProperty(C, 'test');
 

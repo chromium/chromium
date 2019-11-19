@@ -1,1 +1,4 @@
 file://build/fuchsia/OWNERS
+# COMPONENT: Fuchsia
+# OS: Fuchsia
+# TEAM: cr-fuchsia@chromium.org

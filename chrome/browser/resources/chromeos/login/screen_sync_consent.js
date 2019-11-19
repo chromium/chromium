@@ -18,20 +18,10 @@ login.createScreen('SyncConsentScreen', 'sync-consent', function() {
     },
 
     /**
-     * Event handler that is invoked just before the screen is shown.
-     * @param {object} data Screen init payload.
-     */
-    onBeforeShow: function(data) {
-      Oobe.getInstance().headerHidden = true;
-      $('login-header-bar').signinUIState = SIGNIN_UI_STATE.SYNC_CONSENT;
-    },
-
-    /**
      * Event handler that is invoked just before the screen is hidden.
      */
     onBeforeHide: function() {
       this.setThrobberVisible(false /*visible*/);
-      $('login-header-bar').signinUIState = SIGNIN_UI_STATE.HIDDEN;
     },
 
     /**

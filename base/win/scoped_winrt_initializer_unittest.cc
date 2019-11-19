@@ -14,7 +14,7 @@ namespace base {
 namespace win {
 
 TEST(ScopedWinrtInitializer, BasicFunctionality) {
-  if (GetVersion() < VERSION_WIN8)
+  if (GetVersion() < Version::WIN8)
     return;
 
   AssertComApartmentType(ComApartmentType::NONE);
@@ -26,7 +26,7 @@ TEST(ScopedWinrtInitializer, BasicFunctionality) {
 }
 
 TEST(ScopedWinrtInitializer, ApartmentChangeCheck) {
-  if (GetVersion() < VERSION_WIN8)
+  if (GetVersion() < Version::WIN8)
     return;
 
   ScopedCOMInitializer com_initializer;
@@ -36,7 +36,7 @@ TEST(ScopedWinrtInitializer, ApartmentChangeCheck) {
 }
 
 TEST(ScopedWinrtInitializer, VersionCheck) {
-  if (GetVersion() >= VERSION_WIN8)
+  if (GetVersion() >= Version::WIN8)
     return;
 
   // ScopedWinrtInitializer is unsupported on versions prior to Windows 8.

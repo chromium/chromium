@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate this token with the command:
+generate_token.py http://127.0.0.1:8000 WebComponentsV0 --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial" content="Ar9dxxaQ+S9WJDVAL5PqZEtGNqgN2jeewmtzi1+9TK2oavYps7dKu36815FgbztKvcJJ2QATr2g0k0U6nQaDOAMAAABXeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiV2ViQ29tcG9uZW50c1YwIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+
+<div id="div"></div>
+
+<script src="../../../../resources/testharness.js"></script>
+<script src="../../../../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+  // From blink/public/mojom/web_feature/web_feature.mojom
+  const HTMLImportsOnReverseOriginTrials = 2847;
+  assert_false(internals.isUseCounted(document, HTMLImportsOnReverseOriginTrials));
+  div.innerHTML = "<link id='target' rel='import' href='resources/html-imports-hello.html'>"
+  const isCounted = internals.isUseCounted(document, HTMLImportsOnReverseOriginTrials);
+  assert_true(isCounted);
+}, 'Comfirm HTMLImportsOnReverseOriginTrials counter');
+</script>

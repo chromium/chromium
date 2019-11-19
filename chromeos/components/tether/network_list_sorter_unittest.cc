@@ -117,9 +117,9 @@ TEST_F(NetworkListSorterTest, Name) {
 
 TEST_F(NetworkListSorterTest, Carrier) {
   GenerateTestList();
-  NetworkAtIndex(0)->set_carrier("c");
-  NetworkAtIndex(1)->set_carrier("b");
-  NetworkAtIndex(2)->set_carrier("a");
+  NetworkAtIndex(0)->set_tether_carrier("c");
+  NetworkAtIndex(1)->set_tether_carrier("b");
+  NetworkAtIndex(2)->set_tether_carrier("a");
   SortAndVerifySortOrder(2, 1, 0);
 }
 

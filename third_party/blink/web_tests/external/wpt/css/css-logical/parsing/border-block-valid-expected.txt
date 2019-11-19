@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS e.style['border-block'] = "1px dotted red" should set the property value
+PASS e.style['border-block'] = "double" should set the property value
+PASS e.style['border-block-start'] = "green double thin" should set the property value
+PASS e.style['border-block-start'] = "green" should set the property value
+PASS e.style['border-block-end'] = "thin" should set the property value
+FAIL e.style['border-block-end'] = "calc(10px - 0.5em) dotted red" should set the property value assert_equals: serialization should be canonical expected "calc(-0.5em + 10px) dotted red" but got "calc(10px - 0.5em) dotted red"
+Harness: the test ran to completion.
+

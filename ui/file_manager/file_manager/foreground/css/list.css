@@ -29,19 +29,9 @@ grid > * {
   display: inline-block;
 }
 
-list:focus > [lead],
-grid:focus > [lead] {
-  z-index: 2;
-}
-
-list:not([disabled]) > :hover,
-grid:not([disabled]) > :hover {
-  z-index: 1;
-}
-
-list > [selected],
-grid > [selected] {
-  z-index: 2;
+html[class*='col-resize'] list,
+html[class*='col-resize'] grid {
+  overflow-y: hidden !important;
 }
 
 list > .spacer,

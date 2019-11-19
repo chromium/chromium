@@ -34,6 +34,11 @@
         var securityOrigin = event.data;
         TestRunner.addResult(`    ${eventName} : ${securityOrigin}`);
         break;
+      case 'MainSecurityOriginChanged':
+        var mainSecurityOrigin = event.data['mainSecurityOrigin'];
+        var unreachableMainSecurityOrigin = event.data['unreachableMainSecurityOrigin'];
+        TestRunner.addResult(`    ${eventName} : ${mainSecurityOrigin} ${unreachableMainSecurityOrigin}`);
+        break;
       default:
     }
   }
@@ -55,6 +60,11 @@
   TestRunner.addResult('Navigating root frame');
   TestRunner.resourceTreeModel._frameAttached('root2');
   TestRunner.resourceTreeModel._frameNavigated(createFramePayload('root2'));
+
+  TestRunner.addResult('Navigating root frame, unreachable');
+  TestRunner.resourceTreeModel._frameAttached('rootUnreachable');
+  TestRunner.resourceTreeModel._frameNavigated(createUnreachableFramePayload('rootUnreachable'));
+
   TestRunner.completeTest();
 
   function createFramePayload(id, parentId, name) {
@@ -66,6 +76,19 @@
     framePayload.url = 'http://frame/' + (name || id) + '.html';
     framePayload.securityOrigin = framePayload.url;
     framePayload.mimeType = 'text/html';
+    return framePayload;
+  }
+
+  function createUnreachableFramePayload(id, parentId, name) {
+    var framePayload = {};
+    framePayload.id = id;
+    framePayload.parentId = parentId || '';
+    framePayload.loaderId = 'loader-' + id;
+    framePayload.name = 'frame-' + id;
+    framePayload.url = 'http://frame/' + (name || id) + '.html';
+    framePayload.securityOrigin = '://';
+    framePayload.mimeType = 'text/html';
+    framePayload.unreachableUrl = framePayload.url;
     return framePayload;
   }
 })();

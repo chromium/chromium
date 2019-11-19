@@ -16,28 +16,23 @@ const service_manager::Manifest& GetContentUtilityManifest() {
       service_manager::ManifestBuilder()
           .WithServiceName(mojom::kUtilityServiceName)
           .WithDisplayName("Content (utility process)")
-          .ExposeCapability("service_manager:service_factory",
-                            std::set<const char*>{
-                                "service_manager.mojom.ServiceFactory",
-                            })
           .ExposeCapability("browser",
                             std::set<const char*>{
                                 "content.mojom.Child",
-                                "content.mojom.ChildControl",
                                 "content.mojom.ChildHistogramFetcher",
                                 "content.mojom.ChildHistogramFetcherFactory",
+                                "content.mojom.ChildProcess",
                                 "content.mojom.ResourceUsageReporter",
                                 "IPC.mojom.ChannelBootstrap",
                                 "printing.mojom.PdfToEmfConverterFactory",
                                 "printing.mojom.PdfToPwgRasterConverter",
-                                "service_manager.mojom.ServiceFactory",
                             })
           .RequireCapability("device", "device:power_monitor")
           .RequireCapability("device", "device:time_zone_monitor")
-          .RequireCapability(mojom::kBrowserServiceName, "dwrite_font_proxy")
-          .RequireCapability(mojom::kBrowserServiceName, "field_trials")
-          .RequireCapability(mojom::kBrowserServiceName, "font_cache")
-          .RequireCapability(mojom::kBrowserServiceName, "sandbox_support")
+          .RequireCapability(mojom::kSystemServiceName, "dwrite_font_proxy")
+          .RequireCapability(mojom::kSystemServiceName, "field_trials")
+          .RequireCapability(mojom::kSystemServiceName, "font_cache")
+          .RequireCapability(mojom::kSystemServiceName, "sandbox_support")
           .RequireCapability("*", "app")
           .RequireCapability("font_service", "font_service")
           .Build()

@@ -1,8 +1,0 @@
-These two lines should look same as spaces after a list marker should be ignored. There are 18 characters in each line. As they are 20px width, the total width should be 360px + a few pixels for table. If the space character after the list marker in "test" isn't ignored, the number of characters become 19 and 370px div will be overflowed. Note that this test requires Ahem font.
-XpX XpX
-	
-XpX XpX
-XpX XpX
-	
-XpX XpX
-SUCCESS

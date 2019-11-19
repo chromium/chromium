@@ -23,6 +23,7 @@ PlatformCursor ToPlatformCursor(X11CursorOzone* cursor) {
 // Gets default aura cursor bitmap/hotspot and creates a X11CursorOzone with it.
 scoped_refptr<X11CursorOzone> CreateAuraX11Cursor(CursorType type) {
   Cursor cursor(type);
+  cursor.set_device_scale_factor(1);
   SkBitmap bitmap = cursor.GetBitmap();
   gfx::Point hotspot = cursor.GetHotspot();
   if (!bitmap.isNull())
@@ -86,11 +87,18 @@ scoped_refptr<X11CursorOzone> X11CursorFactoryOzone::GetDefaultCursorInternal(
   if (type == CursorType::kNone)
     return invisible_cursor_;
 
-  // TODO(kylechar): Use predefined X cursors here instead.
   if (!default_cursors_.count(type)) {
+    // First try to load a predefined X11 cursor.
+    auto cursor =
+        base::MakeRefCounted<X11CursorOzone>(CursorCssNameFromId(type));
+    if (cursor->xcursor() != x11::None) {
+      default_cursors_[type] = cursor;
+      return cursor;
+    }
+
     // Loads the default aura cursor bitmap for cursor type. Falls back on
     // pointer cursor then invisible cursor if this fails.
-    scoped_refptr<X11CursorOzone> cursor = CreateAuraX11Cursor(type);
+    cursor = CreateAuraX11Cursor(type);
     if (!cursor.get()) {
       if (type != CursorType::kPointer) {
         cursor = GetDefaultCursorInternal(CursorType::kPointer);

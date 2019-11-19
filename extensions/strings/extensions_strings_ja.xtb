@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">画像をデコードできませんでした: <ph name="IMAGE_NAME" /></translation>
 <translation id="2350172092385603347">言語/地域機能は使用されていますが、マニフェストに default_locale が指定されていません。</translation>
 <translation id="2576842806987913196">既にこの名前の CRX ファイルが存在しています。</translation>
-<translation id="2753617847762399167">パス（絶対パスまたは '..' がある相対パス）が不適切です: <ph name="IMAGE_PATH" /></translation>
 <translation id="2785530881066938471">コンテンツ スクリプトのファイル「<ph name="RELATIVE_PATH" />」を読み込むことができませんでした。UTF-8 でエンコードされていません。</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" />（拡張機能 ID「<ph name="EXTENSION_ID" />」）は管理者によってブロックされています。<ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">パッケージをインストールできませんでした: <ph name="ERROR_CODE" /></translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">形状指定ウィンドウはサポートされていません。</translation>
 <translation id="5456409301717116725">この拡張機能には、鍵ファイル「<ph name="KEY_PATH" />」が含まれていますが、おそらくその必要性はありません。</translation>
 <translation id="5486326529110362464">秘密鍵の入力値が存在している必要があります。</translation>
-<translation id="5627523580512561598">拡張機能 <ph name="EXTENSION_NAME" /></translation>
-<translation id="5960890139610307736">ExtensionView: <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">このパソコンの管理者により、<ph name="EXTENSION_NAME" /> をインストールすることが要件として指定されています。この拡張機能はアンインストールできません。</translation>
 <translation id="6027032947578871493">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_NAME" />、シリアル番号: <ph name="SERIAL_NUMBER" />）</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" />（ベンダー: <ph name="VENDOR_ID" />）</translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">「<ph name="APP_NAME" />」が次のデバイスへのアクセスをリクエストしています:</translation>
 <translation id="657064425229075395">バックグラウンド スクリプト「<ph name="BACKGROUND_SCRIPT" />」を読み込めませんでした。</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" />、提供元 <ph name="VENDOR_NAME" />（シリアル番号 <ph name="SERIAL_NUMBER" />）</translation>
-<translation id="6731255991101203740">解凍用のディレクトリを作成できませんでした: <ph name="DIRECTORY_PATH" /></translation>
 <translation id="677806580227005219">MIME ハンドラ: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">この拡張機能は、自身により頻繁に再読み込みされています。</translation>
 <translation id="7003844668372540529">不明な商品（<ph name="PRODUCT_ID" />、ベンダー: <ph name="VENDOR_NAME" />）</translation>

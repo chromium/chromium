@@ -9,7 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
@@ -39,7 +39,7 @@ class AutoThread : base::PlatformThread::Delegate {
   static scoped_refptr<AutoThreadTaskRunner> CreateWithType(
       const char* name,
       scoped_refptr<AutoThreadTaskRunner> joiner,
-      base::MessageLoop::Type type);
+      base::MessagePumpType type);
   static scoped_refptr<AutoThreadTaskRunner> Create(
       const char* name,
       scoped_refptr<AutoThreadTaskRunner> joiner);
@@ -51,7 +51,7 @@ class AutoThread : base::PlatformThread::Delegate {
   static scoped_refptr<AutoThreadTaskRunner> CreateWithLoopAndComInitTypes(
       const char* name,
       scoped_refptr<AutoThreadTaskRunner> joiner,
-      base::MessageLoop::Type loop_type,
+      base::MessagePumpType pump_type,
       ComInitType com_init_type);
 #endif
 
@@ -71,8 +71,7 @@ class AutoThread : base::PlatformThread::Delegate {
   //
   // NOTE: You must not call this MessageLoop's Quit method directly.  The
   // thread will exit when no references to the TaskRunner remain.
-  scoped_refptr<AutoThreadTaskRunner> StartWithType(
-      base::MessageLoop::Type type);
+  scoped_refptr<AutoThreadTaskRunner> StartWithType(base::MessagePumpType type);
 
 #if defined(OS_WIN)
   // Configures the thread to initialize the specified COM apartment type.

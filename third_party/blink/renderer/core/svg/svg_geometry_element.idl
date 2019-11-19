@@ -30,12 +30,13 @@
 
 // https://svgwg.org/svg2-draft/types.html#InterfaceSVGGeometryElement
 
+[Exposed=Window]
 interface SVGGeometryElement : SVGGraphicsElement {
     [SameObject] readonly attribute SVGAnimatedNumber pathLength;
 
     // TODO(foolip): SVGPoint should be DOMPoint.
     [HighEntropy, Measure] boolean isPointInFill(SVGPoint point);
     [HighEntropy, Measure] boolean isPointInStroke(SVGPoint point);
-    [HighEntropy, Measure] float getTotalLength();
+    [HighEntropy, Measure, RaisesException] float getTotalLength();
     [HighEntropy, Measure] SVGPoint getPointAtLength(float distance);
 };

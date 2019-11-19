@@ -1,0 +1,77 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("overlays") {
+  public = [
+    "public/overlay_dismissal_callback.h",
+    "public/overlay_modality.h",
+    "public/overlay_presentation_callback.h",
+    "public/overlay_presentation_context.h",
+    "public/overlay_presentation_context_observer.h",
+    "public/overlay_presenter.h",
+    "public/overlay_presenter_observer.h",
+    "public/overlay_presenter_observer_bridge.h",
+    "public/overlay_request.h",
+    "public/overlay_request_cancel_handler.h",
+    "public/overlay_request_queue.h",
+    "public/overlay_response.h",
+    "public/overlay_user_data.h",
+  ]
+  sources = [
+    "default_overlay_request_cancel_handler.h",
+    "default_overlay_request_cancel_handler.mm",
+    "overlay_presenter_impl.h",
+    "overlay_presenter_impl.mm",
+    "overlay_presenter_observer_bridge.mm",
+    "overlay_request_cancel_handler.mm",
+    "overlay_request_impl.cc",
+    "overlay_request_impl.h",
+    "overlay_request_queue_impl.h",
+    "overlay_request_queue_impl.mm",
+    "overlay_response_impl.cc",
+    "overlay_response_impl.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  friend = [ ":unit_tests" ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/web/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "default_overlay_request_cancel_handler_unittest.mm",
+    "overlay_presenter_impl_unittest.mm",
+    "overlay_presenter_observer_bridge_unittest.mm",
+    "overlay_request_impl_unittest.cc",
+    "overlay_request_queue_impl_unittest.mm",
+    "overlay_request_unittest.cc",
+    "overlay_response_unittest.cc",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":overlays",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/web/public",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

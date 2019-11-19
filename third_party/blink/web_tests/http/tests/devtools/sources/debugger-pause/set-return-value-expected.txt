@@ -5,40 +5,40 @@ Dump current
 Expanded property: Return value
 Scope variables sidebar pane:
 Local
-    Return value: 42
-    this: undefined
     x: 42
+    this: undefined
+    Return value: 42
 WindowGlobal
     <section collapsed>
 Set return value to {a:1}
 Expanded property: Return value
 Scope variables sidebar pane:
 Local
+    x: 42
+    this: undefined
     Return value: Object
         a: 1
         __proto__: Object
-    this: undefined
-    x: 42
 WindowGlobal
     <section collapsed>
 Try to remove return value
 Expanded property: Return value
 Scope variables sidebar pane:
 Local
+    x: 42
+    this: undefined
     Return value: Object
         a: 1
         __proto__: Object
-    this: undefined
-    x: 42
 WindowGlobal
     <section collapsed>
 Set return value to 239
 Expanded property: Return value
 Scope variables sidebar pane:
 Local
-    Return value: 239
-    this: undefined
     x: 42
+    this: undefined
+    Return value: 239
 WindowGlobal
     <section collapsed>
 Script execution resumed.

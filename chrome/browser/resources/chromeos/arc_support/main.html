@@ -8,49 +8,12 @@
   <link rel="stylesheet" href="chrome://resources/css/controlled_indicator.css">
   <link rel="stylesheet" href="chrome://resources/css/overlay.css">
   <link rel="import" href="chrome://resources/html/polymer.html">
+  <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
   <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
-  <link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
+  <link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
   <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
   <custom-style>
-    <style is="custom-style" include="iron-flex iron-flex-alignment">
-      paper-button {
-        border-radius: 4px;
-        border-style: solid;
-        border-width: 2px;
-        height: 32px; /* = 28px + 2 * 2px border */
-        margin: 0;
-        padding: 0;
-      }
-      paper-button.blue {
-        border-color: transparent;
-      }
-      paper-button.white {
-        border-color: rgba(0, 0, 0, 0.1);
-      }
-      paper-button[focused] {
-        border-color: rgba(66, 133, 244, 0.4); /* #4284f4 */
-      }
-      paper-button .container {
-        align-items: center;
-        align-self: stretch;
-        border-radius: 2px;
-        display: flex;
-        font: Roboto, sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-        justify-content: center;
-        padding: 0 16px;
-        text-transform: none;
-      }
-      paper-button.white .container {
-        background-color: white;
-        color: rgba(0, 0, 0, 0.54);
-      }
-      paper-button.blue .container {
-        background-color: rgb(66, 133, 244); /* #4285f4 */
-        color: white;
-      }
-    </style>
+    <style include="iron-flex iron-flex-alignment cr-hidden-style"></style>
   </custom-style>
   <link rel="stylesheet" href="main.css">
   <link rel="stylesheet" href="progressbar.css">
@@ -142,18 +105,15 @@
       </div>
       <div class="layout horizontal center end-justified section-buttons">
         <div class="flex"></div>
-        <paper-button class="white" id="button-cancel">
-          <div class="container flex" i18n-content="buttonCancel">
-          </div>
-        </paper-button>
-        <paper-button class="blue" id="button-next">
-          <div class="container flex" i18n-content="buttonNext">
-          </div>
-        </paper-button>
-        <paper-button class="blue" id="button-agree">
-          <div class="container flex" i18n-content="buttonAgree">
-          </div>
-        </paper-button>
+        <cr-button id="button-cancel">
+          <div class="container flex" i18n-content="buttonCancel"></div>
+        </cr-button>
+        <cr-button class="action-button" id="button-next">
+          <div class="container flex" i18n-content="buttonNext"></div>
+        </cr-button>
+        <cr-button class="action-button" id="button-agree">
+          <div class="container flex" i18n-content="buttonAgree"></div>
+        </cr-button>
       </div>
     </div>
   </div>
@@ -170,10 +130,9 @@
           <webview id="active-directory-auth-view"></webview>
         </div>
         <div class="section-active-directory-auth-buttons">
-          <paper-button class="button-active-directory-auth"
+          <cr-button class="button-active-directory-auth"
               id="button-active-directory-auth-cancel"
-              i18n-content="buttonCancel">
-          </paper-button>
+              i18n-content="buttonCancel"></cr-button>
         </div>
       </div>
     </div>
@@ -209,14 +168,12 @@
       </div>
       <div class="layout horizontal center end-justified section-buttons">
         <div class="flex"></div>
-        <paper-button class="white" id="button-send-feedback">
-          <div class="container flex" i18n-content="buttonSendFeedback">
-          </div>
-        </paper-button>
-        <paper-button class="blue" id="button-retry">
-          <div class="container flex" i18n-content="buttonRetry">
-          </div>
-        </paper-button>
+        <cr-button id="button-send-feedback">
+          <div class="container flex" i18n-content="buttonSendFeedback"></div>
+        </cr-button>
+        <cr-button class="action-button" id="button-retry">
+          <div class="container flex" i18n-content="buttonRetry"></div>
+        </cr-button>
       </div>
     </div>
   </div>
@@ -235,10 +192,9 @@
       <div class="action-area">
         <div class="action-area-right">
           <div class="button-strip">
-            <paper-button class ="blue" id="overlay-close">
-              <div class="container flex" i18n-content="overlayClose">
-              </div>
-            </paper-button>
+            <cr-button class="action-button" id="overlay-close">
+              <div class="container flex" i18n-content="overlayClose"></div>
+            </cr-button>
           </div>
         </div>
       </div>

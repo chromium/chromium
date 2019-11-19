@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL %65 assert_equals: expected "%65%3B" but got "%65"
-FAIL %1B assert_equals: expected "%64%3B" but got ""
-Harness: the test ran to completion.
-

@@ -21,13 +21,13 @@ cr.define('history.history_routing_test', function() {
         assertEquals('chrome://history/', window.location.href);
         sidebar = app.$['content-side-bar'];
         toolbar = app.$['toolbar'];
-        return PolymerTest.flushTasks();
+        return test_util.flushTasks();
       });
 
       test('changing route changes active view', function() {
         assertEquals('history', app.$.content.selected);
         navigateTo('/syncedTabs');
-        return PolymerTest.flushTasks().then(function() {
+        return test_util.flushTasks().then(function() {
           assertEquals('syncedTabs', app.$.content.selected);
           assertEquals('chrome://history/syncedTabs', window.location.href);
         });
@@ -101,7 +101,7 @@ cr.define('history.history_routing_test_with_query_param', function() {
       test('search initiated on load', function(done) {
         const verifyFunction = function(info) {
           assertEquals(expectedQuery, info[0]);
-          PolymerTest.flushTasks().then(function() {
+          test_util.flushTasks().then(function() {
             assertEquals(
                 expectedQuery,
                 toolbar.$['main-toolbar'].getSearchField().getValue());

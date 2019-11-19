@@ -29,20 +29,12 @@
 
 namespace blink {
 
-RTCStatsRequestImpl* RTCStatsRequestImpl::Create(ExecutionContext* context,
-                                                 RTCPeerConnection* requester,
-                                                 V8RTCStatsCallback* callback,
-                                                 MediaStreamTrack* selector) {
-  return MakeGarbageCollected<RTCStatsRequestImpl>(context, requester, callback,
-                                                   selector);
-}
-
 RTCStatsRequestImpl::RTCStatsRequestImpl(ExecutionContext* context,
                                          RTCPeerConnection* requester,
                                          V8RTCStatsCallback* callback,
                                          MediaStreamTrack* selector)
     : ContextLifecycleObserver(context),
-      success_callback_(ToV8PersistentCallbackFunction(callback)),
+      success_callback_(callback),
       component_(selector ? selector->Component() : nullptr),
       requester_(requester) {
   DCHECK(requester_);
@@ -51,7 +43,7 @@ RTCStatsRequestImpl::RTCStatsRequestImpl(ExecutionContext* context,
 RTCStatsRequestImpl::~RTCStatsRequestImpl() = default;
 
 RTCStatsResponseBase* RTCStatsRequestImpl::CreateResponse() {
-  return RTCStatsResponse::Create();
+  return MakeGarbageCollected<RTCStatsResponse>();
 }
 
 bool RTCStatsRequestImpl::HasSelector() {

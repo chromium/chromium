@@ -16,9 +16,12 @@
 #include "content/common/content_export.h"
 #include "content/common/media/renderer_audio_output_stream_factory.mojom.h"
 #include "media/audio/audio_output_ipc.h"
-#include "media/mojo/interfaces/audio_data_pipe.mojom.h"
-#include "media/mojo/interfaces/audio_output_stream.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 
@@ -42,7 +45,7 @@ class CONTENT_EXPORT MojoAudioOutputIPC
 
   // AudioOutputIPC implementation.
   void RequestDeviceAuthorization(media::AudioOutputIPCDelegate* delegate,
-                                  int session_id,
+                                  const base::UnguessableToken& session_id,
                                   const std::string& device_id) override;
   void CreateStream(
       media::AudioOutputIPCDelegate* delegate,
@@ -50,11 +53,12 @@ class CONTENT_EXPORT MojoAudioOutputIPC
       const base::Optional<base::UnguessableToken>& processing_id) override;
   void PlayStream() override;
   void PauseStream() override;
+  void FlushStream() override;
   void CloseStream() override;
   void SetVolume(double volume) override;
 
   // media::mojom::AudioOutputStreamProviderClient implementation.
-  void Created(media::mojom::AudioOutputStreamPtr stream,
+  void Created(mojo::PendingRemote<media::mojom::AudioOutputStream> stream,
                media::mojom::ReadWriteAudioDataPipePtr data_pipe) override;
 
  private:
@@ -69,12 +73,13 @@ class CONTENT_EXPORT MojoAudioOutputIPC
   void ProviderClientBindingDisconnected(uint32_t disconnect_reason,
                                          const std::string& description);
 
-  media::mojom::AudioOutputStreamProviderRequest MakeProviderRequest();
+  mojo::PendingReceiver<media::mojom::AudioOutputStreamProvider>
+  MakeProviderReceiver();
 
   // Tries to acquire a RendererAudioOutputStreamFactory and requests device
   // authorization. On failure to aquire a factory, |callback| is destructed
   // asynchronously.
-  void DoRequestDeviceAuthorization(int session_id,
+  void DoRequestDeviceAuthorization(const base::UnguessableToken& session_id,
                                     const std::string& device_id,
                                     AuthorizationCB callback);
 
@@ -90,9 +95,9 @@ class CONTENT_EXPORT MojoAudioOutputIPC
   enum { kPaused, kPlaying } expected_state_ = kPaused;
   base::Optional<double> volume_;
 
-  mojo::Binding<media::mojom::AudioOutputStreamProviderClient> binding_;
-  media::mojom::AudioOutputStreamProviderPtr stream_provider_;
-  media::mojom::AudioOutputStreamPtr stream_;
+  mojo::Receiver<media::mojom::AudioOutputStreamProviderClient> receiver_{this};
+  mojo::Remote<media::mojom::AudioOutputStreamProvider> stream_provider_;
+  mojo::Remote<media::mojom::AudioOutputStream> stream_;
   media::AudioOutputIPCDelegate* delegate_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
@@ -100,7 +105,7 @@ class CONTENT_EXPORT MojoAudioOutputIPC
 
   // To make sure we don't send an "authorization completed" callback for a
   // stream after it's closed, we use this weak factory.
-  base::WeakPtrFactory<MojoAudioOutputIPC> weak_factory_;
+  base::WeakPtrFactory<MojoAudioOutputIPC> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MojoAudioOutputIPC);
 };

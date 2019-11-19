@@ -33,7 +33,7 @@
 
 #include "third_party/blink/renderer/core/html/imports/html_import_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/tree_node.h"
 
 namespace blink {
@@ -43,7 +43,7 @@ class HTMLImportLoader;
 
 // The superclass of HTMLImportTreeRoot and HTMLImportChild
 // This represents the import tree data structure.
-class HTMLImport : public GarbageCollectedFinalized<HTMLImport>,
+class HTMLImport : public GarbageCollected<HTMLImport>,
                    public TreeNode<HTMLImport> {
  public:
   enum SyncMode { kSync = 0, kAsync = 1 };

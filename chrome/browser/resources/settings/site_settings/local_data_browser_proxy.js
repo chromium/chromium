@@ -97,6 +97,14 @@ cr.define('settings', function() {
      * @param {string} path The path to the parent cookie.
      */
     removeCookie(path) {}
+
+    /**
+     * Removes all SameSite=None cookies, as well as storage available in
+     * third-party contexts.
+     * Note: on-tree-item-removed will not be sent.
+     * @return {!Promise} To signal completion.
+     */
+    removeAllThirdPartyCookies() {}
   }
 
   /**
@@ -141,6 +149,11 @@ cr.define('settings', function() {
     /** @override */
     removeCookie(path) {
       chrome.send('localData.removeCookie', [path]);
+    }
+
+    /** @override */
+    removeAllThirdPartyCookies() {
+      return cr.sendWithPromise('localData.removeThirdPartyCookies');
     }
   }
 

@@ -9,7 +9,6 @@
 #include "components/ntp_tiles/metrics.h"
 #include "components/ntp_tiles/ntp_tile_impression.h"
 #include "components/ntp_tiles/tile_visual_type.h"
-#include "components/rappor/rappor_service_impl.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/ui/favicon/favicon_attributes_with_payload.h"
 
@@ -46,11 +45,9 @@ void RecordNTPTileImpression(int index,
                              const FaviconAttributes* attributes,
                              base::Time data_generation_time,
                              const GURL& url) {
-  ntp_tiles::metrics::RecordTileImpression(
-      ntp_tiles::NTPTileImpression(
-          index, source, title_source, VisualTypeFromAttributes(attributes),
-          IconTypeFromAttributes(attributes), data_generation_time, url),
-      GetApplicationContext()->GetRapporServiceImpl());
+  ntp_tiles::metrics::RecordTileImpression(ntp_tiles::NTPTileImpression(
+      index, source, title_source, VisualTypeFromAttributes(attributes),
+      IconTypeFromAttributes(attributes), data_generation_time, url));
 }
 
 void RecordNTPTileClick(int index,

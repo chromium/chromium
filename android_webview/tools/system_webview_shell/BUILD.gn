@@ -24,23 +24,31 @@ android_apk("system_webview_shell_apk") {
     "apk/src/org/chromium/webview_shell/StartupTimeActivity.java",
     "apk/src/org/chromium/webview_shell/TelemetryActivity.java",
     "apk/src/org/chromium/webview_shell/TelemetryMemoryPressureActivity.java",
+    "apk/src/org/chromium/webview_shell/WebPlatformTestsActivity.java",
     "apk/src/org/chromium/webview_shell/WebViewAnimationTestActivity.java",
     "apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java",
     "apk/src/org/chromium/webview_shell/WebViewCreateDestroyActivity.java",
     "apk/src/org/chromium/webview_shell/WebViewLayoutTestActivity.java",
+    "apk/src/org/chromium/webview_shell/WebViewPackageHelper.java",
     "apk/src/org/chromium/webview_shell/WebViewThreadTestActivity.java",
     "apk/src/org/chromium/webview_shell/WebViewTracingActivity.java",
   ]
   android_manifest = "apk/AndroidManifest.xml"
+  target_sdk_version = 29
   deps = [
     ":system_webview_shell_apk_resources",
     "//base:base_java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/guava:guava_android_java",
   ]
 }
 
 android_resources("system_webview_shell_apk_resources") {
   resource_dirs = [ "apk/res" ]
   custom_package = "org.chromium.webview_shell"
+  deps = [
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+  ]
 }
 
 instrumentation_test_apk("system_webview_shell_page_cycler_apk") {
@@ -58,7 +66,6 @@ instrumentation_test_apk("system_webview_shell_page_cycler_apk") {
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/junit",
   ]
-  enable_multidex = true
 }
 
 instrumentation_test_apk("system_webview_shell_layout_test_apk") {
@@ -66,6 +73,7 @@ instrumentation_test_apk("system_webview_shell_layout_test_apk") {
   apk_under_test = ":system_webview_shell_apk"
   android_manifest = "layout_tests/AndroidManifest.xml"
   java_files = [
+    "layout_tests/src/org/chromium/webview_shell/test/WebPlatformTestsActivityTest.java",
     "layout_tests/src/org/chromium/webview_shell/test/WebViewLayoutTest.java",
     "layout_tests/src/org/chromium/webview_shell/test/WebViewThreadTest.java",
   ]

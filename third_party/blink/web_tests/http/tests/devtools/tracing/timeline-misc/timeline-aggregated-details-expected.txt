@@ -1,7 +1,5 @@
 Test timeline aggregated details.
 
-Cleared ProductRegistryImpl
-Adding entry: *.google.com
 
 
 CallTree  Group by: None
@@ -371,7 +369,7 @@ BottomUp  Group by: Domain
           Function Call: 0.600  1.000
             Other: 0.600  1.000
     Other: 260.000  300.000
-  google.com — Google: 0.215  0.215
+  google.com: 0.215  0.215
     recursive_b: 0.110  0.114
       recursive_a: 0.110  0.114
         recursive_b: 0.008  0.008
@@ -467,103 +465,7 @@ BottomUp  Group by: Subdomain
           Function Call: 0.600  1.000
             Other: 0.600  1.000
     Other: 260.000  300.000
-  www.google.com — Google: 0.215  0.215
-    recursive_b: 0.110  0.114
-      recursive_a: 0.110  0.114
-        recursive_b: 0.008  0.008
-          recursive_a: 0.008  0.008
-            Function Call: 0.008  0.008
-              Other: 0.008  0.008
-        Function Call: 0.102  0.106
-          Other: 0.102  0.114
-    recursive_a: 0.105  0.215
-      recursive_b: 0.004  0.012
-        recursive_a: 0.004  0.012
-          Function Call: 0.004  0.012
-            Other: 0.004  0.012
-      Function Call: 0.101  0.203
-        Other: 0.101  0.215
-
-CallTree  Group by: Product
-  [unattributed]: 260.000  300.000
-    Other: 260.000  300.000
-      Function Call: 17.660  40.000
-        a: 0.000  11.125
-          b: 0.000  11.125
-            c: 8.250  8.250
-            e: 0.000  2.875
-              g: 2.875  2.875
-        f: 0.000  0.125
-          l: 0.000  0.125
-            a: 0.025  0.125
-              Layout: 0.100  0.100
-        sin: 0.000  9.875
-          f: 0.000  9.875
-            l: 0.000  9.875
-              a: 9.875  9.875
-        Function Call: 0.000  1.000
-          x: 0.000  1.000
-            y: 0.600  1.000
-              z: 0.000  0.200
-                w: 0.200  0.200
-              w: 0.200  0.200
-        recursive_a: 0.101  0.215
-          recursive_b: 0.102  0.114
-            recursive_a: 0.004  0.012
-              recursive_b: 0.008  0.008
-
-BottomUp  Group by: Product
-  [unattributed]: 299.785  299.785
-    c: 8.250  8.250
-      b: 8.250  8.250
-        a: 8.250  8.250
-          Function Call: 8.250  8.250
-            Other: 8.250  8.250
-    a: 9.900  21.125
-      Function Call: 0.000  11.125
-        Other: 0.000  11.125
-      l: 9.900  10.000
-        f: 9.900  10.000
-          Function Call: 0.025  0.125
-            Other: 0.025  0.125
-          sin: 9.875  9.875
-            Function Call: 9.875  9.875
-              Other: 9.875  9.875
-    g: 2.875  2.875
-      e: 2.875  2.875
-        b: 2.875  2.875
-          a: 2.875  2.875
-            Function Call: 2.875  2.875
-              Other: 2.875  2.875
-    Layout: 0.100  0.100
-      a: 0.100  0.100
-        l: 0.100  0.100
-          f: 0.100  0.100
-            Function Call: 0.100  0.100
-              Other: 0.100  0.100
-    Function Call: 17.660  40.000
-      Other: 17.660  38.000
-      Function Call: 0.000  1.000
-        Other: 0.000  1.000
-    w: 0.400  0.400
-      z: 0.200  0.200
-        y: 0.200  0.200
-          x: 0.200  0.200
-            Function Call: 0.200  0.200
-              Function Call: 0.200  0.200
-                Other: 0.200  0.200
-      y: 0.200  0.200
-        x: 0.200  0.200
-          Function Call: 0.200  0.200
-            Function Call: 0.200  0.200
-              Other: 0.200  0.200
-    y: 0.600  1.000
-      x: 0.600  1.000
-        Function Call: 0.600  1.000
-          Function Call: 0.600  1.000
-            Other: 0.600  1.000
-    Other: 260.000  300.000
-  Google: 0.215  0.215
+  www.google.com: 0.215  0.215
     recursive_b: 0.110  0.114
       recursive_a: 0.110  0.114
         recursive_b: 0.008  0.008

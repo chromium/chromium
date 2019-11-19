@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Cross-origin test</title>
+</head>
+<body>
+<iframe src="http://localhost:8000/security/resources/agent-equality-report-to-parent.html">
+</iframe>
+<script>
+// This file should be loaded as an iframe hosted on 127.0.0.1:8000.
+
+// This test creates the following frame tree (note that 127.0.0.1 and localhost
+// are cross-origin):
+//
+// A: 127.0.0.1:8000 (this file)
+// |
+// +-- B: localhost:8000
+//
+// This page posts a message to the parent window, containing two strings
+// which correspond to the agent IDs of A and B, respectively.
+//
+// Success condition: A's agent is not the same as B's.
+
+function onMessage(evt) {
+  let agentIdB = evt.data;
+  let message = [
+    'cross-origin test',
+    internals.getDocumentAgentId(document),
+    agentIdB
+  ];
+  window.parent.postMessage(message, '*');
+}
+
+window.addEventListener('message', onMessage, {'once': true});
+</script>
+</body>
+</html>

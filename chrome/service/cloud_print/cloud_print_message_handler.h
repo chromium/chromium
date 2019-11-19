@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "chrome/common/cloud_print.mojom.h"
 #include "chrome/service/cloud_print/cloud_print_proxy.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace cloud_print {
 
@@ -19,8 +20,9 @@ class CloudPrintMessageHandler : public cloud_print::mojom::CloudPrint {
   explicit CloudPrintMessageHandler(CloudPrintProxy::Provider* proxy_provider);
   ~CloudPrintMessageHandler() override;
 
-  static void Create(CloudPrintProxy::Provider* proxy_provider,
-                     cloud_print::mojom::CloudPrintRequest request);
+  static void Create(
+      CloudPrintProxy::Provider* proxy_provider,
+      mojo::PendingReceiver<cloud_print::mojom::CloudPrint> receiver);
 
  private:
   // cloud_print::mojom::CloudPrintProxy.

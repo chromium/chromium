@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -25,8 +26,8 @@ using TableViewDetailTextItemTest = PlatformTest;
 TEST_F(TableViewDetailTextItemTest, ItemProperties) {
   NSString* text = @"Cell text";
   NSString* detailText = @"Cell detail text";
-  UIColor* textColor = [UIColor yellowColor];
-  UIColor* detailTextColor = [UIColor blueColor];
+  UIColor* textColor = UIColor.yellowColor;
+  UIColor* detailTextColor = UIColor.blueColor;
 
   TableViewDetailTextItem* item =
       [[TableViewDetailTextItem alloc] initWithType:0];
@@ -42,7 +43,7 @@ TEST_F(TableViewDetailTextItemTest, ItemProperties) {
       base::mac::ObjCCastStrict<TableViewDetailTextCell>(cell);
 
   ChromeTableViewStyler* styler = [[ChromeTableViewStyler alloc] init];
-  styler.cellTitleColor = [UIColor redColor];
+  styler.cellTitleColor = UIColor.redColor;
   ASSERT_FALSE([styler.cellTitleColor isEqual:textColor]);
   [item configureCell:cell withStyler:styler];
   EXPECT_NSEQ(text, detailCell.textLabel.text);
@@ -56,7 +57,7 @@ TEST_F(TableViewDetailTextItemTest, ItemProperties) {
 TEST_F(TableViewDetailTextItemTest, ItemPropertiesStylerColor) {
   NSString* text = @"Cell text";
   NSString* detailText = @"Cell detail text";
-  UIColor* titleColor = [UIColor blueColor];
+  UIColor* titleColor = UIColor.blueColor;
 
   TableViewDetailTextItem* item =
       [[TableViewDetailTextItem alloc] initWithType:0];
@@ -88,8 +89,6 @@ TEST_F(TableViewDetailTextItemTest, ItemPropertiesDefaultColor) {
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
   EXPECT_NSEQ(text, cell.textLabel.text);
   EXPECT_NSEQ(detailText, cell.detailTextLabel.text);
-  EXPECT_NSEQ(UIColorFromRGB(kTableViewTextLabelColorLightGrey),
-              cell.textLabel.textColor);
-  EXPECT_NSEQ(UIColorFromRGB(kTableViewSecondaryLabelLightGrayTextColor),
-              cell.detailTextLabel.textColor);
+  EXPECT_NSEQ(UIColor.cr_labelColor, cell.textLabel.textColor);
+  EXPECT_NSEQ(UIColor.cr_secondaryLabelColor, cell.detailTextLabel.textColor);
 }

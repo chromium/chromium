@@ -32,7 +32,6 @@ source_set("popup_menu_ui") {
     ":ui_constants",
     "//base",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui/image_util",
     "//ios/chrome/browser/ui/popup_menu/public/",
     "//ios/chrome/browser/ui/popup_menu/public/cells",
@@ -42,6 +41,7 @@ source_set("popup_menu_ui") {
     "//ios/chrome/browser/ui/table_view:styler",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
+    "//ios/chrome/common/ui_util",
     "//ui/base",
   ]
   libs = [

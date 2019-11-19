@@ -22,9 +22,9 @@ namespace blink {
 ScrollAnimatorCompositorCoordinator::ScrollAnimatorCompositorCoordinator()
     : element_id_(),
       run_state_(RunState::kIdle),
+      impl_only_animation_takeover_(false),
       compositor_animation_id_(0),
-      compositor_animation_group_id_(0),
-      impl_only_animation_takeover_(false) {
+      compositor_animation_group_id_(0) {
   compositor_animation_ = CompositorAnimation::Create();
   DCHECK(compositor_animation_);
   compositor_animation_->SetAnimationDelegate(this);
@@ -38,14 +38,9 @@ void ScrollAnimatorCompositorCoordinator::Dispose() {
   compositor_animation_.reset();
 }
 
-void ScrollAnimatorCompositorCoordinator::ResetAnimationIds() {
-  compositor_animation_id_ = 0;
-  compositor_animation_group_id_ = 0;
-}
-
 void ScrollAnimatorCompositorCoordinator::ResetAnimationState() {
   run_state_ = RunState::kIdle;
-  ResetAnimationIds();
+  RemoveAnimation();
 }
 
 bool ScrollAnimatorCompositorCoordinator::HasAnimationThatRequiresService()
@@ -73,7 +68,10 @@ bool ScrollAnimatorCompositorCoordinator::HasAnimationThatRequiresService()
 
 bool ScrollAnimatorCompositorCoordinator::AddAnimation(
     std::unique_ptr<CompositorKeyframeModel> keyframe_model) {
+  RemoveAnimation();
   if (compositor_animation_->IsElementAttached()) {
+    compositor_animation_id_ = keyframe_model->Id();
+    compositor_animation_group_id_ = keyframe_model->Group();
     compositor_animation_->AddKeyframeModel(std::move(keyframe_model));
     return true;
   }
@@ -81,13 +79,19 @@ bool ScrollAnimatorCompositorCoordinator::AddAnimation(
 }
 
 void ScrollAnimatorCompositorCoordinator::RemoveAnimation() {
-  if (compositor_animation_->IsElementAttached())
+  if (compositor_animation_id_) {
     compositor_animation_->RemoveKeyframeModel(compositor_animation_id_);
+    compositor_animation_id_ = 0;
+    compositor_animation_group_id_ = 0;
+  }
 }
 
 void ScrollAnimatorCompositorCoordinator::AbortAnimation() {
-  if (compositor_animation_->IsElementAttached())
+  if (compositor_animation_id_) {
     compositor_animation_->AbortKeyframeModel(compositor_animation_id_);
+    compositor_animation_id_ = 0;
+    compositor_animation_group_id_ = 0;
+  }
 }
 
 void ScrollAnimatorCompositorCoordinator::CancelAnimation() {
@@ -151,8 +155,10 @@ void ScrollAnimatorCompositorCoordinator::CompositorAnimationFinished(
   if (compositor_animation_group_id_ != group_id)
     return;
 
-  compositor_animation_id_ = 0;
-  compositor_animation_group_id_ = 0;
+  // TODO(crbug.com/992437) We should not need to remove completed animations
+  // however they are sometimes accidentally restarted if we don't explicitly
+  // remove them.
+  RemoveAnimation();
 
   switch (run_state_) {
     case RunState::kIdle:
@@ -250,8 +256,8 @@ CompositorElementId ScrollAnimatorCompositorCoordinator::GetScrollElementId()
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
     return GetScrollableArea()->GetCompositorElementId();
 
-  GraphicsLayer* layer = GetScrollableArea()->LayerForScrolling();
-  return layer ? layer->CcLayer()->element_id() : CompositorElementId();
+  cc::Layer* layer = GetScrollableArea()->LayerForScrolling();
+  return layer ? layer->element_id() : CompositorElementId();
 }
 
 void ScrollAnimatorCompositorCoordinator::UpdateImplOnlyCompositorAnimations() {

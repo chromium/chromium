@@ -2,8 +2,10 @@
 <grit-part>
   <if expr="not _google_chrome">
     <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO" file="chromium/product_logo.png" />
+    <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_WHITE" file="chromium/product_logo_white.png" />
   </if>
   <if expr="_google_chrome">
     <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO" file="google_chrome/product_logo.png" />
+  <structure type="chrome_scaled_image" name="IDR_PRODUCT_LOGO_WHITE" file="google_chrome/product_logo_white.png" />
   </if>
 </grit-part>

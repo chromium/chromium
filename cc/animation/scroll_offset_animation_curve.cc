@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/ranges.h"
 #include "cc/animation/timing_function.h"
 #include "cc/base/time_util.h"
 #include "ui/gfx/animation/tween.h"
@@ -46,7 +47,7 @@ static float MaximumDimension(const gfx::Vector2dF& delta) {
 static std::unique_ptr<TimingFunction> EaseOutWithInitialVelocity(
     double velocity) {
   // Clamp velocity to a sane value.
-  velocity = std::min(std::max(velocity, -1000.0), 1000.0);
+  velocity = base::ClampToRange(velocity, -1000.0, 1000.0);
 
   // Based on CubicBezierTimingFunction::EaseType::EASE_IN_OUT preset
   // with first control point scaled.
@@ -82,7 +83,8 @@ ScrollOffsetAnimationCurve::~ScrollOffsetAnimationCurve() = default;
 base::TimeDelta ScrollOffsetAnimationCurve::SegmentDuration(
     const gfx::Vector2dF& delta,
     DurationBehavior behavior,
-    base::TimeDelta delayed_by) {
+    base::TimeDelta delayed_by,
+    float velocity) {
   double duration = kConstantDuration;
   if (!animation_duration_for_testing_) {
     switch (behavior) {
@@ -91,15 +93,18 @@ base::TimeDelta ScrollOffsetAnimationCurve::SegmentDuration(
         break;
       case DurationBehavior::DELTA_BASED:
         duration =
-            std::min(double(std::sqrt(std::abs(MaximumDimension(delta)))),
-                     kDeltaBasedMaxDuration);
+            std::min<double>(std::sqrt(std::abs(MaximumDimension(delta))),
+                             kDeltaBasedMaxDuration);
         break;
       case DurationBehavior::INVERSE_DELTA:
-        duration = std::min(
-            std::max(kInverseDeltaOffset +
-                         std::abs(MaximumDimension(delta)) * kInverseDeltaSlope,
-                     kInverseDeltaMinDuration),
-            kInverseDeltaMaxDuration);
+        duration = kInverseDeltaOffset +
+                   std::abs(MaximumDimension(delta)) * kInverseDeltaSlope;
+        duration = base::ClampToRange(duration, kInverseDeltaMinDuration,
+                                      kInverseDeltaMaxDuration);
+        break;
+      case DurationBehavior::CONSTANT_VELOCITY:
+        duration =
+            std::abs(MaximumDimension(delta) / velocity * kDurationDivisor);
         break;
       default:
         NOTREACHED();
@@ -119,11 +124,13 @@ base::TimeDelta ScrollOffsetAnimationCurve::SegmentDuration(
 
 void ScrollOffsetAnimationCurve::SetInitialValue(
     const gfx::ScrollOffset& initial_value,
-    base::TimeDelta delayed_by) {
+    base::TimeDelta delayed_by,
+    float velocity) {
   initial_value_ = initial_value;
   has_set_initial_value_ = true;
-  total_animation_duration_ = SegmentDuration(
-      target_value_.DeltaFrom(initial_value_), duration_behavior_, delayed_by);
+  total_animation_duration_ =
+      SegmentDuration(target_value_.DeltaFrom(initial_value_),
+                      duration_behavior_, delayed_by, velocity);
 }
 
 bool ScrollOffsetAnimationCurve::HasSetInitialValue() const {
@@ -233,11 +240,11 @@ void ScrollOffsetAnimationCurve::UpdateTarget(
   gfx::Vector2dF old_delta = target_value_.DeltaFrom(initial_value_);
   gfx::Vector2dF new_delta = new_target.DeltaFrom(current_position);
 
-  // The last segement was of zero duration.
+  // The last segment was of zero duration.
   if ((total_animation_duration_ - last_retarget_).is_zero()) {
     DCHECK_EQ(t, last_retarget_);
-    total_animation_duration_ =
-        SegmentDuration(new_delta, duration_behavior_, delayed_by);
+    total_animation_duration_ = SegmentDuration(new_delta, duration_behavior_,
+                                                delayed_by, /*velocity*/ 0);
     target_value_ = new_target;
     return;
   }
@@ -250,7 +257,8 @@ void ScrollOffsetAnimationCurve::UpdateTarget(
   // segment duration. This minimizes the "rubber-band" bouncing effect when
   // old_normalized_velocity is large and new_delta is small.
   base::TimeDelta new_duration =
-      std::min(SegmentDuration(new_delta, duration_behavior_, delayed_by),
+      std::min(SegmentDuration(new_delta, duration_behavior_, delayed_by,
+                               /*velocity*/ 0),
                VelocityBasedDurationBound(old_delta, old_normalized_velocity,
                                           old_duration, new_delta));
 

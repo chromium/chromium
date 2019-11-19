@@ -44,7 +44,7 @@ public class ContentCommandLineTest {
     static final String CL_ADDED_VALUE_2 = "bozo";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         CommandLine.reset();
     }
 

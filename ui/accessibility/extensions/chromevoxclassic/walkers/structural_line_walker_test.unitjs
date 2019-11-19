@@ -1,0 +1,123 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Include test fixture.
+GEN_INCLUDE(['//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js']);
+
+/**
+ * Test fixture.
+ * @constructor
+ * @extends {ChromeVoxUnitTestBase}
+ */
+function ChromeVoxStructuralLineWalkerUnitTest() {}
+
+ChromeVoxStructuralLineWalkerUnitTest.prototype = {
+  __proto__: ChromeVoxUnitTestBase.prototype,
+
+  /** @override */
+  closureModuleDeps: [
+    'cvox.StructuralLineWalker',
+    'TestMsgs',
+  ],
+
+  /** @override */
+  setUp: function() {
+    this.loadDoc(function() {/*!
+      <a id='1' href='google.com'>Click Here</a>
+      <pre id='2'>This text will break
+        immediately here!
+        <a href='google.com'>And here!</a>
+      </p>
+      */});
+
+    Msgs = TestMsgs;
+
+    this.walker_ = new cvox.StructuralLineWalker();
+  },
+};
+
+TEST_F('ChromeVoxStructuralLineWalkerUnitTest', 'BrailleLine', function() {
+  var aLink = $('1');
+  var aLinkSel1 = this.walker_.sync(cvox.CursorSelection.fromNode(aLink));
+  assertEquals('Click Here lnk',
+               this.walker_.getBraille(aLinkSel1, aLinkSel1).text.toString());
+
+  var aPSel1 = this.walker_.next(aLinkSel1);
+  assertEquals('This text will break',
+               this.walker_.getBraille(aLinkSel1, aPSel1).text.toString());
+
+  var aPSel2 = this.walker_.next(aPSel1);
+  assertEquals('immediately here!',
+               this.walker_.getBraille(aPSel1, aPSel2).text.toString());
+
+  aLinkSel2 = this.walker_.next(aPSel2);
+  assertEquals('And here! lnk',
+               this.walker_.getBraille(aPSel2, aLinkSel2).text.toString());
+});
+
+
+/** Tests sync'ing to a line in the middle of a paragraph. */
+TEST_F('ChromeVoxStructuralLineWalkerUnitTest', 'Sync', function() {
+  var p1Sel = this.walker_.sync(
+      cvox.CursorSelection.fromNode($('2')));
+
+  // The second structural line of the paragraph.
+  var p2Sel = this.walker_.next(p1Sel);
+  assertEquals(29, p2Sel.start.index);
+  assertEquals(46, p2Sel.end.index);
+
+  // Sync should never mutate a previously synced selection.
+  assertTrue(p2Sel.equals(this.walker_.sync(p2Sel)));
+});
+
+/** Tests syncing into an element treated as a leaf by TraverseUtil. */
+TEST_F('ChromeVoxStructuralLineWalkerUnitTest', 'SyncTraverseUtil', function() {
+  this.loadDoc(function() {/*!
+    <select id='leaf'>
+      <option>apple
+      <option>orange
+    </select>
+  */});
+  var leaf = $('leaf');
+  assertEquals('leaf',
+      this.walker_.sync(cvox.CursorSelection.fromNode(leaf)).start.node.id);
+});
+
+
+/** Tests specialized name calc with listitems with prefixes. */
+TEST_F('ChromeVoxStructuralLineWalkerUnitTest', 'ListitemPrefixes', function() {
+  this.loadDoc(function() {/*!
+    <ol>
+      <li id='li_orange'>orange
+      <li id='li_apple'>apple
+      <li id='li_long'>hi broken<br>line here
+    </ol>
+  */});
+  var li1 = $('li_orange');
+  var li2 = $('li_apple');
+  var li3 = $('li_long');
+  var li1Sel = this.walker_.sync(cvox.CursorSelection.fromNode(li1));
+  var li2Sel = this.walker_.sync(cvox.CursorSelection.fromNode(li2));
+  var li3Sel = this.walker_.sync(cvox.CursorSelection.fromNode(li3));
+  var li3SelNext = this.walker_.next(li3Sel);
+
+  assertEquals('1. orange',
+               this.walker_.getDescription(li1Sel, li1Sel)[0].text);
+  assertEquals('2. apple', this.walker_.getDescription(li2Sel, li2Sel)[0].text);
+  assertEquals(
+          '3. hi broken',
+      this.walker_.getDescription(li3Sel, li3Sel)[0].text);
+  assertEquals('line here', this.walker_.getDescription(
+      li3SelNext, li3SelNext)[0].text.toString());
+
+  assertEquals('1. orange',
+               this.walker_.getBraille(li1Sel, li1Sel).text.toString());
+  assertEquals('2. apple',
+               this.walker_.getBraille(li2Sel, li2Sel).text.toString());
+  assertEquals(
+          '3. hi broken',
+      this.walker_.getBraille(li3Sel, li3Sel).text.toString());
+  assertEquals('line here',
+               this.walker_.getBraille(li3SelNext, li3SelNext).text.toString());
+});

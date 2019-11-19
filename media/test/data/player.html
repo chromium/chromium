@@ -8,21 +8,60 @@
 // <audio> or <video> player element.
 var player;
 var logs = document.getElementById('logs');
+var heartbeatCount = 0;
 
 function Log(message) {
   logs.innerHTML = message + '<br>' + logs.innerHTML;
   console.log(message);
 }
 
+function onLogEvent(e) {
+  Log('Event: ' + e.type +' video: ' + getVideoStatus(e.target));
+}
+
+function getTimeRanges(range) {
+  const result = [];
+  for (let i = 0; i < range.length; i++) {
+    result.push(`[${range.start(i)},${range.end(i)}]`);
+  }
+  return '[' + result.join(', ') + ']';
+}
+
+function getVideoStatus(video) {
+  if (video == null) {
+    return 'null';
+  }
+  const result = [];
+  result.push(`readyState: ${video.readyState}`);
+  result.push(`networkState: ${video.networkState}`);
+  result.push(`paused: ${video.paused}`);
+  result.push(`ended: ${video.ended}`);
+  result.push(`currentTime: ${video.currentTime}`);
+  result.push(`duration: ${video.duration}`);
+  result.push(`buffered: ${getTimeRanges(video.buffered)}`);
+  result.push(`played: ${getTimeRanges(video.played)}`);
+  if (video.error) {
+    result.push(`error: {${video.error.code},${video.error.message}}`);
+  }
+  if (window.internals) {
+    result.push(`suspended: ${internals.isMediaElementSuspended(video) ?
+      'true' : 'false'}`);
+  }
+  return result.join(', ');
+}
+
 // Listen for |event| from |element|, set document.title = |event| upon event.
 function InstallTitleEventHandler(element, event) {
   element.addEventListener(event, function(e) {
+    onLogEvent(e);
     document.title = event.toUpperCase();
   }, false);
 }
 
 function InstallTitleErrorEventHandler(element, error_substr) {
   element.addEventListener('error', function(e) {
+    onLogEvent(e);
+
     // Element's error attribute must be populated.
     var mediaError = element.error;
     if (mediaError == null) {
@@ -49,16 +88,22 @@ function Failed() {
 }
 
 function SeekTestStep(e) {
+  if (e) onLogEvent(e);
   player.removeEventListener('ended', SeekTestStep, false);
 
   // Test completes on the next ended event.
   InstallTitleEventHandler(player, 'ended');
 
   player.currentTime = 0.9 * player.duration;
-  player.play();
+  Log('Seeking back to ' + 0.9 * player.duration);
+  player.play().catch(function(error) {
+    Log(error);
+  });
+
 }
 
 function SeekTestTimeoutSetup() {
+  Log('timeupdate @ ' + player.currentTime);
   if (player.currentTime < 2)
     return;
 
@@ -136,14 +181,39 @@ function RunTest() {
   player.addEventListener('ended', SeekTestStep, false);
   player.addEventListener('timeupdate', SeekTestTimeoutSetup, false);
 
+  // Log events.
+  player.addEventListener('abort', onLogEvent);
+  player.addEventListener('canplay', onLogEvent);
+  player.addEventListener('canplaythrough', onLogEvent);
+  player.addEventListener('durationchange', onLogEvent);
+  player.addEventListener('emptied', onLogEvent);
+  player.addEventListener('loadeddata', onLogEvent);
+  player.addEventListener('loadedmetadata', onLogEvent);
+  player.addEventListener('loadstart', onLogEvent);
+  player.addEventListener('play', onLogEvent);
+  player.addEventListener('playing', onLogEvent);
+  player.addEventListener('progress', onLogEvent);
+  player.addEventListener('stalled', onLogEvent);
+  player.addEventListener('suspend', onLogEvent);
+  player.addEventListener('waiting', onLogEvent);
+
+  setInterval(function () {
+    Log('heartbeat #' + ++heartbeatCount +
+    ' video: ' + getVideoStatus(player));
+  }, 1000);
+
   // Ensure we percolate up any error events, and optionally verify they contain
   // the expected error substring in their message.
   InstallTitleErrorEventHandler(player, error_substr);
 
   // Starts the player.
   player.loop = loop;
+  player.preload = 'auto';
   player.src = media_url;
-  player.play();
+  Log('Starting by calling play()');
+  player.play().catch(function(error) {
+    Log(error);
+  });
 }
 </script>
 </html>

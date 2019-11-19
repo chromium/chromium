@@ -17,6 +17,8 @@
 
 #include <signal.h>
 
+#include <set>
+
 #include "base/macros.h"
 
 namespace crashpad {
@@ -114,15 +116,19 @@ class Signals {
   //!     the new action. May be `nullptr` if not needed. The same \a
   //!     old_actions object may be used for calls to both this function and
   //!     InstallTerminateHandlers().
+  //! \param[in] unhandled_signals Signal handlers will not be installed for
+  //!     signal numbers in this set. Optional.
   //!
   //! \return `true` on success. `false` on failure with a message logged.
   //!
   //! \warning This function may not be called from a signal handler because of
   //!     its use of logging. See RestoreHandlerAndReraiseSignalOnReturn()
   //!     instead.
-  static bool InstallCrashHandlers(Handler handler,
-                                   int flags,
-                                   OldActions* old_actions);
+  static bool InstallCrashHandlers(
+      Handler handler,
+      int flags,
+      OldActions* old_actions,
+      const std::set<int>* unhandled_signals = nullptr);
 
   //! \brief Installs a new signal handler for all signals associated with
   //!     termination.

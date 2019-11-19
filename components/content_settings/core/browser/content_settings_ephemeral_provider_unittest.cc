@@ -53,7 +53,7 @@ TEST_F(ContentSettingsEphemeralProviderTest, EphemeralTypeStorageAndRetrieval) {
 
   EXPECT_TRUE(provider()->SetWebsiteSetting(
       site_pattern, site_pattern, ephemeral_type(0), std::string(),
-      new base::Value(CONTENT_SETTING_ALLOW)));
+      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW)));
 
   std::unique_ptr<RuleIterator> rule_iterator =
       provider()->GetRuleIterator(ephemeral_type(0), std::string(), false);
@@ -65,7 +65,7 @@ TEST_F(ContentSettingsEphemeralProviderTest, EphemeralTypeStorageAndRetrieval) {
   // Overwrite previous value.
   EXPECT_TRUE(provider()->SetWebsiteSetting(
       site_pattern, site_pattern, ephemeral_type(0), std::string(),
-      new base::Value(CONTENT_SETTING_BLOCK)));
+      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK)));
 
   rule_iterator =
       provider()->GetRuleIterator(ephemeral_type(0), std::string(), false);
@@ -83,7 +83,7 @@ TEST_F(ContentSettingsEphemeralProviderTest, PersistentTypeRejection) {
   std::unique_ptr<base::Value> value(new base::Value(false));
   EXPECT_FALSE(provider()->SetWebsiteSetting(site_pattern, site_pattern,
                                              persistent_type(), std::string(),
-                                             value.get()));
+                                             std::move(value)));
   std::unique_ptr<RuleIterator> rule_iterator =
       provider()->GetRuleIterator(persistent_type(), std::string(), false);
   EXPECT_EQ(nullptr, rule_iterator);
@@ -99,9 +99,9 @@ TEST_F(ContentSettingsEphemeralProviderTest, LastModifiedTime) {
   provider()->SetClockForTesting(&test_clock);
   base::Time t1 = test_clock.Now();
 
-  provider()->SetWebsiteSetting(site_pattern, site_pattern, ephemeral_type(0),
-                                std::string(),
-                                new base::Value(CONTENT_SETTING_BLOCK));
+  provider()->SetWebsiteSetting(
+      site_pattern, site_pattern, ephemeral_type(0), std::string(),
+      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   base::Time last_modified = provider()->GetWebsiteSettingLastModified(
       site_pattern, site_pattern, ephemeral_type(0), std::string());
   EXPECT_EQ(t1, last_modified);
@@ -114,12 +114,12 @@ TEST_F(ContentSettingsEphemeralProviderTest, ClearAll) {
   ContentSettingsPattern site_pattern2 =
       ContentSettingsPattern::FromString("https://example2.com");
 
-  provider()->SetWebsiteSetting(site_pattern1, site_pattern1, ephemeral_type(0),
-                                std::string(),
-                                new base::Value(CONTENT_SETTING_BLOCK));
-  provider()->SetWebsiteSetting(site_pattern2, site_pattern2, ephemeral_type(0),
-                                std::string(),
-                                new base::Value(CONTENT_SETTING_ALLOW));
+  provider()->SetWebsiteSetting(
+      site_pattern1, site_pattern1, ephemeral_type(0), std::string(),
+      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+  provider()->SetWebsiteSetting(
+      site_pattern2, site_pattern2, ephemeral_type(0), std::string(),
+      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
   provider()->ClearAllContentSettingsRules(ephemeral_type(0));
   std::unique_ptr<RuleIterator> rule_iterator =
       provider()->GetRuleIterator(ephemeral_type(0), std::string(), false);
@@ -131,12 +131,12 @@ TEST_F(ContentSettingsEphemeralProviderTest, SelectiveClear) {
   ContentSettingsPattern site_pattern =
       ContentSettingsPattern::FromString("https://example.com");
 
-  provider()->SetWebsiteSetting(site_pattern, site_pattern, ephemeral_type(0),
-                                std::string(),
-                                new base::Value(CONTENT_SETTING_ALLOW));
-  provider()->SetWebsiteSetting(site_pattern, site_pattern, ephemeral_type(1),
-                                std::string(),
-                                new base::Value(CONTENT_SETTING_ALLOW));
+  provider()->SetWebsiteSetting(
+      site_pattern, site_pattern, ephemeral_type(0), std::string(),
+      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+  provider()->SetWebsiteSetting(
+      site_pattern, site_pattern, ephemeral_type(1), std::string(),
+      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
   provider()->ClearAllContentSettingsRules(ephemeral_type(0));
   std::unique_ptr<RuleIterator> rule_iterator =
       provider()->GetRuleIterator(ephemeral_type(1), std::string(), false);
@@ -148,9 +148,9 @@ TEST_F(ContentSettingsEphemeralProviderTest, StorageIsEphemeral) {
   ContentSettingsPattern site_pattern =
       ContentSettingsPattern::FromString("https://example.com");
 
-  provider()->SetWebsiteSetting(site_pattern, site_pattern, ephemeral_type(0),
-                                std::string(),
-                                new base::Value(CONTENT_SETTING_BLOCK));
+  provider()->SetWebsiteSetting(
+      site_pattern, site_pattern, ephemeral_type(0), std::string(),
+      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
   Reset();
   std::unique_ptr<RuleIterator> rule_iterator =
       provider()->GetRuleIterator(ephemeral_type(0), std::string(), false);
@@ -162,9 +162,9 @@ TEST_F(ContentSettingsEphemeralProviderTest, DeleteValueByPassingNull) {
   ContentSettingsPattern site_pattern =
       ContentSettingsPattern::FromString("https://example.com");
 
-  provider()->SetWebsiteSetting(site_pattern, site_pattern, ephemeral_type(0),
-                                std::string(),
-                                new base::Value(CONTENT_SETTING_ALLOW));
+  provider()->SetWebsiteSetting(
+      site_pattern, site_pattern, ephemeral_type(0), std::string(),
+      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
   std::unique_ptr<RuleIterator> rule_iterator =
       provider()->GetRuleIterator(ephemeral_type(0), std::string(), false);
   EXPECT_NE(nullptr, rule_iterator);

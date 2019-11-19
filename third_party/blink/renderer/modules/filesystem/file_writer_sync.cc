@@ -54,13 +54,12 @@ void FileWriterSync::write(Blob* data, ExceptionState& exception_state) {
     SetLength(position());
 }
 
-void FileWriterSync::seek(long long position, ExceptionState& exception_state) {
+void FileWriterSync::seek(int64_t position, ExceptionState& exception_state) {
   DCHECK(complete_);
   SeekInternal(position);
 }
 
-void FileWriterSync::truncate(long long offset,
-                              ExceptionState& exception_state) {
+void FileWriterSync::truncate(int64_t offset, ExceptionState& exception_state) {
   DCHECK(complete_);
   if (offset < 0) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,

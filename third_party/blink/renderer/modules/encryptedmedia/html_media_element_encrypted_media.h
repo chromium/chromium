@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_HTML_MEDIA_ELEMENT_ENCRYPTED_MEDIA_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_HTML_MEDIA_ELEMENT_ENCRYPTED_MEDIA_H_
 
-#include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_media_player_encrypted_media_client.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -14,6 +13,10 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+
+namespace media {
+enum class EmeInitDataType;
+}
 
 namespace blink {
 
@@ -24,7 +27,7 @@ class ScriptState;
 class WebContentDecryptionModule;
 
 class MODULES_EXPORT HTMLMediaElementEncryptedMedia final
-    : public GarbageCollectedFinalized<HTMLMediaElementEncryptedMedia>,
+    : public GarbageCollected<HTMLMediaElementEncryptedMedia>,
       public Supplement<HTMLMediaElement>,
       public WebMediaPlayerEncryptedMediaClient {
   USING_GARBAGE_COLLECTED_MIXIN(HTMLMediaElementEncryptedMedia);
@@ -40,7 +43,7 @@ class MODULES_EXPORT HTMLMediaElementEncryptedMedia final
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(waitingforkey, kWaitingforkey)
 
   // WebMediaPlayerEncryptedMediaClient methods
-  void Encrypted(WebEncryptedMediaInitDataType,
+  void Encrypted(media::EmeInitDataType init_data_type,
                  const unsigned char* init_data,
                  unsigned init_data_length) final;
   void DidBlockPlaybackWaitingForKey() final;

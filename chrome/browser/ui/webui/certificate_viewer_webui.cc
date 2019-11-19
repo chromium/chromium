@@ -267,7 +267,7 @@ std::string CertificateViewerDialog::GetDialogArgs() const {
 
     // Add this node to the children list for the next iteration.
     children = base::Value(base::Value::Type::LIST);
-    children.GetList().push_back(std::move(cert_node));
+    children.Append(std::move(cert_node));
     ++index;
   }
   // Set the last node as the top of the certificate hierarchy.
@@ -278,9 +278,7 @@ std::string CertificateViewerDialog::GetDialogArgs() const {
   return data;
 }
 
-void CertificateViewerDialog::OnDialogShown(
-    content::WebUI* webui,
-    content::RenderViewHost* render_view_host) {
+void CertificateViewerDialog::OnDialogShown(content::WebUI* webui) {
   webui_ = webui;
 }
 

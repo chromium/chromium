@@ -82,7 +82,6 @@ class HistoryBackendClientFakeBookmarks : public HistoryBackendClient {
   // HistoryBackendClient implementation.
   bool IsPinnedURL(const GURL& url) override;
   std::vector<URLAndTitle> GetPinnedURLs() override;
-  bool ShouldReportDatabaseError() override;
   bool IsWebSafe(const GURL& url) override;
 #if defined(OS_ANDROID)
   void OnHistoryBackendInitialized(HistoryBackend* history_backend,
@@ -113,10 +112,6 @@ bool HistoryBackendClientFakeBookmarks::IsPinnedURL(const GURL& url) {
 
 std::vector<URLAndTitle> HistoryBackendClientFakeBookmarks::GetPinnedURLs() {
   return bookmarks_->GetBookmarks();
-}
-
-bool HistoryBackendClientFakeBookmarks::ShouldReportDatabaseError() {
-  return false;
 }
 
 bool HistoryBackendClientFakeBookmarks::IsWebSafe(const GURL& url) {

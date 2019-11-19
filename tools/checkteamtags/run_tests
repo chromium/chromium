@@ -5,6 +5,8 @@
 
 """Runs all tests in all unit test modules in this directory."""
 
+from __future__ import print_function
+
 import os
 import sys
 import unittest
@@ -32,7 +34,7 @@ def main():
   script_dir = os.path.dirname(__file__)
   suite.addTests(loader.discover(start_dir=script_dir, pattern='*_test.py'))
 
-  print 'Running unit tests in %s...' % os.path.abspath(script_dir)
+  print('Running unit tests in %s...' % os.path.abspath(script_dir))
   result = unittest.TextTestRunner(verbosity=1).run(suite)
   return 0 if result.wasSuccessful() else 1
 

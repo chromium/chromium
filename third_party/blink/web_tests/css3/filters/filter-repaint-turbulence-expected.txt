@@ -1,2 +1,0 @@
-This test passes if there is no underinvalidation below and the result is a smooth, borderless square.
-

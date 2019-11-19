@@ -9,6 +9,7 @@ import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.base.ThreadUtils;
 import org.chromium.support_lib_boundary.ProxyControllerBoundaryInterface;
 
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
 /**
@@ -27,31 +28,44 @@ public class SupportLibProxyControllerAdapter implements ProxyControllerBoundary
     @Override
     public void setProxyOverride(
             String[][] proxyRules, String[] bypassRules, Runnable listener, Executor executor) {
-        String result;
         if (checkNeedsPost()) {
-            result = mRunQueue.runOnUiThreadBlocking(() -> {
-                return mProxyController.setProxyOverride(
-                        proxyRules, bypassRules, listener, executor);
+            RuntimeException exception = mRunQueue.runOnUiThreadBlocking(() -> {
+                try {
+                    mProxyController.setProxyOverride(proxyRules, bypassRules, listener, executor);
+                } catch (RuntimeException e) {
+                    return e;
+                }
+                return null;
             });
+            maybeThrowUnwrappedException(exception);
         } else {
-            result = mProxyController.setProxyOverride(proxyRules, bypassRules, listener, executor);
-        }
-        if (!result.isEmpty()) {
-            throw new IllegalArgumentException(result);
+            mProxyController.setProxyOverride(proxyRules, bypassRules, listener, executor);
         }
     }
 
     @Override
     public void clearProxyOverride(Runnable listener, Executor executor) {
-        String result;
         if (checkNeedsPost()) {
-            result = mRunQueue.runOnUiThreadBlocking(
-                    () -> { return mProxyController.clearProxyOverride(listener, executor); });
+            RuntimeException exception = mRunQueue.runOnUiThreadBlocking(() -> {
+                try {
+                    mProxyController.clearProxyOverride(listener, executor);
+                } catch (RuntimeException e) {
+                    return e;
+                }
+                return null;
+            });
+            maybeThrowUnwrappedException(exception);
         } else {
-            result = mProxyController.clearProxyOverride(listener, executor);
+            mProxyController.clearProxyOverride(listener, executor);
         }
-        if (!result.isEmpty()) {
-            throw new IllegalArgumentException(result);
+    }
+
+    private void maybeThrowUnwrappedException(RuntimeException exception) {
+        if (exception != null) {
+            Throwable cause = exception.getCause();
+            if (cause instanceof ExecutionException) cause = cause.getCause();
+            if (cause instanceof RuntimeException) throw (RuntimeException) cause;
+            throw exception;
         }
     }
 

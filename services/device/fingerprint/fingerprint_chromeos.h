@@ -11,15 +11,21 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "chromeos/dbus/biod/biod_client.h"
-#include "dbus/object_path.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/fingerprint/fingerprint_export.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
+
+namespace dbus {
+class ObjectPath;
+}
 
 namespace device {
 
 // Implementation of Fingerprint interface for ChromeOS platform.
 // This is used to connect to biod(through dbus) and perform fingerprint related
-// operations. It observes signals from biod.
+// operations. It observes signals from biod. This class requires that
+// chromeos::BiodClient has been initialized.
 class SERVICES_DEVICE_FINGERPRINT_EXPORT FingerprintChromeOS
     : public mojom::Fingerprint,
       public chromeos::BiodClient::Observer {
@@ -51,7 +57,8 @@ class SERVICES_DEVICE_FINGERPRINT_EXPORT FingerprintChromeOS
   void EndCurrentAuthSession(EndCurrentAuthSessionCallback callback) override;
   void DestroyAllRecords(DestroyAllRecordsCallback callback) override;
   void RequestType(RequestTypeCallback callback) override;
-  void AddFingerprintObserver(mojom::FingerprintObserverPtr observer) override;
+  void AddFingerprintObserver(mojo::PendingRemote<mojom::FingerprintObserver>
+                                  pending_observer) override;
 
  private:
   friend class FingerprintChromeOSTest;
@@ -86,7 +93,7 @@ class SERVICES_DEVICE_FINGERPRINT_EXPORT FingerprintChromeOS
   // Start next request of GetRecordsForUser.
   void StartNextRequest();
 
-  std::vector<mojom::FingerprintObserverPtr> observers_;
+  std::vector<mojo::Remote<mojom::FingerprintObserver>> observers_;
 
   // Saves record object path to label mapping for current GetRecordsForUser
   // request, and reset after the request is done.
@@ -104,7 +111,7 @@ class SERVICES_DEVICE_FINGERPRINT_EXPORT FingerprintChromeOS
   // Session opened by current service.
   FingerprintSession opened_session_ = FingerprintSession::NONE;
 
-  base::WeakPtrFactory<FingerprintChromeOS> weak_ptr_factory_;
+  base::WeakPtrFactory<FingerprintChromeOS> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FingerprintChromeOS);
 };

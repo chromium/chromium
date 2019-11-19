@@ -22,6 +22,8 @@ COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
 extern const char kSmsTestMessages[];
 COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
 extern const char kSystemDevMode[];
+COMPONENT_EXPORT(CHROMEOS_DBUS_CONSTANTS)
+extern const char kRegisterMaxDarkSuspendDelay[];
 
 }  // namespace switches
 }  // namespace chromeos

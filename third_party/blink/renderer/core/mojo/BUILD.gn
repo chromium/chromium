@@ -58,6 +58,6 @@ jumbo_source_set("unit_tests") {
 
 mojom("test_bindings") {
   sources = [
-    "tests/JsToCpp.mojom",
+    "tests/js_to_cpp.mojom",
   ]
 }

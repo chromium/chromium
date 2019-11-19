@@ -27,8 +27,8 @@ DesktopLinuxBrowserFrameView::~DesktopLinuxBrowserFrameView() {}
 void DesktopLinuxBrowserFrameView::Layout() {
   // Calling MaybeUpdateCachedFrameButtonImages() from Layout() is sufficient to
   // catch all cases that could update the appearance, since
-  // DesktopWindowTreeHostX11::UpdateWindowProperties() does a layout any time
-  // any properties change.
+  // DesktopWindowTreeHostPlatform::OnWindowStateChanged() does a layout any
+  // time any properties change.
   MaybeUpdateCachedFrameButtonImages();
   OpaqueBrowserFrameView::Layout();
 }

@@ -11,5 +11,5 @@ layer at (0,0) size 800x600
       LayoutBlockFlow {P} at (0,36) size 784x20
         LayoutText {#text} at (0,0) size 378x19
           text run at (0,0) width 378: "Click in the div, the caret should be on the right edge of the div."
-      LayoutBlockFlow {DIV} at (0,72) size 200x368
+      LayoutBlockFlow {DIV} at (0,72) size 200x380
 caret: position 0 of child 5 {DIV} of body

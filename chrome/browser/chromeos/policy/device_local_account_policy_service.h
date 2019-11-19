@@ -278,7 +278,7 @@ class DeviceLocalAccountPolicyService {
   // for device-local accounts.
   base::FilePath component_policy_cache_root_;
 
-  base::WeakPtrFactory<DeviceLocalAccountPolicyService> weak_factory_;
+  base::WeakPtrFactory<DeviceLocalAccountPolicyService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountPolicyService);
 };

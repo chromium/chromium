@@ -42,4 +42,6 @@ void FakeAccessibilityHelperInstance::RefreshWithExtraData(
     mojom::AccessibilityActionDataPtr action_data_ptr,
     RefreshWithExtraDataCallback callback) {}
 
+void FakeAccessibilityHelperInstance::SetCaptionStyle(
+    mojom::CaptionStylePtr style_ptr) {}
 }  // namespace arc

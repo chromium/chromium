@@ -1,0 +1,37 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option optimize_for = LITE_RUNTIME;
+
+// Note that the package name is used to build the service URL.
+package remoting.apis.v1;
+
+import "directory_messages.proto";
+
+// A set of RPC services which provide functionality for remote access hosts
+// and clients.
+service RemotingDirectoryService {
+  // RPC service which deletes a host from the directory.
+  rpc DeleteHost(DeleteHostRequest) returns (DeleteHostResponse) {}
+
+  // RPC service which returns the info for a specific host.
+  rpc GetHost(GetHostRequest) returns (GetHostResponse) {}
+
+  // RPC service which returns a list of remote hosts.
+  rpc GetHostList(GetHostListRequest) returns (GetHostListResponse) {}
+
+  // RPC service called by the remote access host to indicate online presence
+  // and update Directory info such as the signaling ID and OS info.
+  rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
+
+  // RPC service which allows adding a new host to the Directory.
+  rpc RegisterHost(RegisterHostRequest) returns (RegisterHostResponse) {}
+
+  // RPC service which provides an update token for a robot account.
+  rpc UpdateRobotToken(UpdateRobotTokenRequest)
+      returns (UpdateRobotTokenResponse) {}
+}

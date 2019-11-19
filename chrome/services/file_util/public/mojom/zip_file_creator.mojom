@@ -7,13 +7,13 @@
 
 module chrome.mojom;
 
-import "components/services/filesystem/public/interfaces/directory.mojom";
+import "components/services/filesystem/public/mojom/directory.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 
 interface ZipFileCreator {
   // OS_CHROMEOS: Create a |zip_file| from a list of source files.
-  CreateZipFile(filesystem.mojom.Directory source_dir_mojo,
+  CreateZipFile(pending_remote<filesystem.mojom.Directory> source_dir_mojo,
                 mojo_base.mojom.FilePath source_dir,
                 array<mojo_base.mojom.FilePath> source_relative_paths,
                 mojo_base.mojom.File zip_file)

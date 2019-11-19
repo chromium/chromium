@@ -35,6 +35,13 @@ struct WebContentsInfo {
   FrameInfo root_frame;
 };
 
+// Information about a currently active isolated origin, including the origin
+// itself and a |source| string that describes how the origin was added.
+struct IsolatedOriginInfo {
+  string origin;
+  string source;
+};
+
 // Interface used by chrome://process-internals to query data from the
 // browser process.
 interface ProcessInternalsHandler {
@@ -42,8 +49,14 @@ interface ProcessInternalsHandler {
   // Returns a string containing the currently active isolation modes.
   GetIsolationMode() => (string mode);
 
-  // Returns the number of isolated origins.
-  GetIsolatedOriginsSize() => (uint32 size);
+  // Returns a list of user-triggered isolated origins, which are typically
+  // saved when the user types a password into a corresponding site.  These
+  // origins apply within the current profile only, they are preserved across
+  // restarts, and they are cleared when the user clears browsing data.
+  GetUserTriggeredIsolatedOrigins() => (array<string> isolated_origins);
+
+  // Returns a list of isolated origins that apply globally in all profiles.
+  GetGloballyIsolatedOrigins() => (array<IsolatedOriginInfo> isolated_origins);
 
   // Returns an array of WebContentsInfo structs for all WebContents
   // associated with the profile in which this call is made.

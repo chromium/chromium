@@ -13,6 +13,8 @@
 #include "ui/views/widget/widget.h"
 #endif
 
+class BrowserSkiaGoldPixelDiff;
+
 // A dialog-specific subclass of TestBrowserUi, which will verify that a test
 // showed a single dialog.
 class TestBrowserDialog : public TestBrowserUi {
@@ -37,6 +39,10 @@ class TestBrowserDialog : public TestBrowserUi {
   // Widget::CanClose() and DialogDelegate::Close().
   virtual bool AlwaysCloseAsynchronously();
 
+  // Get the name of a non-dialog window that should be included in testing.
+  // VerifyUi() only considers dialog windows and windows with a matching name.
+  virtual std::string GetNonDialogName();
+
  private:
 #if defined(TOOLKIT_VIEWS)
   // Stores the current widgets in |widgets_|.
@@ -51,6 +57,9 @@ class TestBrowserDialog : public TestBrowserUi {
   // This should always be true, but some dialogs don't yet size themselves
   // properly. https://crbug.com/893292.
   bool should_verify_dialog_bounds_ = true;
+  // If this variable is set, VerifyUi will verify pixel correctness for
+  // the dialog.
+  std::unique_ptr<BrowserSkiaGoldPixelDiff> pixel_diff_;
 
   DISALLOW_COPY_AND_ASSIGN(TestBrowserDialog);
 };

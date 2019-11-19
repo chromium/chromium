@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/stl_util.h"
-#include "content/public/browser/resource_request_info.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 
 namespace extensions {
@@ -43,45 +42,43 @@ static_assert(kResourceTypesLength ==
 
 WebRequestResourceType ToWebRequestResourceType(content::ResourceType type) {
   switch (type) {
-    case content::RESOURCE_TYPE_MAIN_FRAME:
+    case content::ResourceType::kMainFrame:
+    case content::ResourceType::kNavigationPreloadMainFrame:
       return WebRequestResourceType::MAIN_FRAME;
-    case content::RESOURCE_TYPE_SUB_FRAME:
+    case content::ResourceType::kSubFrame:
+    case content::ResourceType::kNavigationPreloadSubFrame:
       return WebRequestResourceType::SUB_FRAME;
-    case content::RESOURCE_TYPE_STYLESHEET:
+    case content::ResourceType::kStylesheet:
       return WebRequestResourceType::STYLESHEET;
-    case content::RESOURCE_TYPE_SCRIPT:
+    case content::ResourceType::kScript:
       return WebRequestResourceType::SCRIPT;
-    case content::RESOURCE_TYPE_IMAGE:
+    case content::ResourceType::kImage:
       return WebRequestResourceType::IMAGE;
-    case content::RESOURCE_TYPE_FONT_RESOURCE:
+    case content::ResourceType::kFontResource:
       return WebRequestResourceType::FONT;
-    case content::RESOURCE_TYPE_SUB_RESOURCE:
+    case content::ResourceType::kSubResource:
       return WebRequestResourceType::OTHER;
-    case content::RESOURCE_TYPE_OBJECT:
+    case content::ResourceType::kObject:
       return WebRequestResourceType::OBJECT;
-    case content::RESOURCE_TYPE_MEDIA:
+    case content::ResourceType::kMedia:
       return WebRequestResourceType::MEDIA;
-    case content::RESOURCE_TYPE_WORKER:
-    case content::RESOURCE_TYPE_SHARED_WORKER:
+    case content::ResourceType::kWorker:
+    case content::ResourceType::kSharedWorker:
       return WebRequestResourceType::SCRIPT;
-    case content::RESOURCE_TYPE_PREFETCH:
+    case content::ResourceType::kPrefetch:
       return WebRequestResourceType::OTHER;
-    case content::RESOURCE_TYPE_FAVICON:
+    case content::ResourceType::kFavicon:
       return WebRequestResourceType::IMAGE;
-    case content::RESOURCE_TYPE_XHR:
+    case content::ResourceType::kXhr:
       return WebRequestResourceType::XHR;
-    case content::RESOURCE_TYPE_PING:
+    case content::ResourceType::kPing:
       return WebRequestResourceType::PING;
-    case content::RESOURCE_TYPE_SERVICE_WORKER:
+    case content::ResourceType::kServiceWorker:
       return WebRequestResourceType::SCRIPT;
-    case content::RESOURCE_TYPE_CSP_REPORT:
+    case content::ResourceType::kCspReport:
       return WebRequestResourceType::CSP_REPORT;
-    case content::RESOURCE_TYPE_PLUGIN_RESOURCE:
+    case content::ResourceType::kPluginResource:
       return WebRequestResourceType::OBJECT;
-    case content::RESOURCE_TYPE_NAVIGATION_PRELOAD:
-      return WebRequestResourceType::OTHER;
-    case content::RESOURCE_TYPE_LAST_TYPE:
-      return WebRequestResourceType::OTHER;
   }
   NOTREACHED();
   return WebRequestResourceType::OTHER;

@@ -9,12 +9,12 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_record.h"
 #include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/gpu/GrContext.h"
 
 namespace cc {
 class ImageProvider;
@@ -44,11 +44,18 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
                   sk_sp<SkColorSpace> target_color_space,
                   ImageProvider* image_provider = nullptr,
                   ContextFlushes context_flushes = ContextFlushes());
+  SkiaPaintCanvas(const SkiaPaintCanvas&) = delete;
   ~SkiaPaintCanvas() override;
+
+  SkiaPaintCanvas& operator=(const SkiaPaintCanvas&) = delete;
 
   void reset_image_provider() { image_provider_ = nullptr; }
 
   SkImageInfo imageInfo() const override;
+
+  void* accessTopLayerPixels(SkImageInfo* info,
+                             size_t* rowBytes,
+                             SkIPoint* origin = nullptr) override;
 
   void flush() override;
 
@@ -113,13 +120,12 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
   void drawTextBlob(sk_sp<SkTextBlob> blob,
                     SkScalar x,
                     SkScalar y,
-                    const PaintFlags& flags,
-                    const NodeHolder& holder) override;
+                    NodeId node_id,
+                    const PaintFlags& flags) override;
 
   void drawPicture(sk_sp<const PaintRecord> record) override;
 
   bool isClipEmpty() const override;
-  bool isClipRect() const override;
   const SkMatrix& getTotalMatrix() const override;
 
   void Annotate(AnnotationType type,
@@ -127,9 +133,9 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
                 sk_sp<SkData> data) override;
 
   // Don't shadow non-virtual helper functions.
+  using PaintCanvas::clipPath;
   using PaintCanvas::clipRect;
   using PaintCanvas::clipRRect;
-  using PaintCanvas::clipPath;
   using PaintCanvas::drawColor;
   using PaintCanvas::drawImage;
   using PaintCanvas::drawPicture;
@@ -141,19 +147,20 @@ class CC_PAINT_EXPORT SkiaPaintCanvas final : public PaintCanvas {
       PlaybackParams::CustomDataRasterCallback custom_raster_callback);
 
  private:
-  void WrapCanvasInColorSpaceXformCanvas(
-      sk_sp<SkColorSpace> target_color_space);
   void FlushAfterDrawIfNeeded();
 
+  int max_texture_size() const {
+    auto* context = canvas_->getGrContext();
+    return context ? context->maxTextureSize() : 0;
+  }
+
   SkCanvas* canvas_;
+  SkBitmap bitmap_;
   std::unique_ptr<SkCanvas> owned_;
-  std::unique_ptr<SkCanvas> color_space_xform_canvas_;
   ImageProvider* image_provider_ = nullptr;
 
   const ContextFlushes context_flushes_;
   int num_of_ops_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SkiaPaintCanvas);
 };
 
 }  // namespace cc

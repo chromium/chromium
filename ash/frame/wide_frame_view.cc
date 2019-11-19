@@ -84,7 +84,6 @@ void WideFrameView::SetCaptionButtonModel(
 
 WideFrameView::WideFrameView(views::Widget* target)
     : target_(target), widget_(std::make_unique<views::Widget>()) {
-  Shell::Get()->overview_controller()->AddObserver(this);
   display::Screen::GetScreen()->AddObserver(this);
 
   aura::Window* target_window = target->GetNativeWindow();
@@ -102,9 +101,15 @@ WideFrameView::WideFrameView(views::Widget* target)
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.opacity = views::Widget::InitParams::TRANSLUCENT_WINDOW;
 
-  widget_->Init(params);
+  widget_->Init(std::move(params));
 
   aura::Window* window = widget_->GetNativeWindow();
+  // Overview normally clips the caption container which exists on the same
+  // window. But this WideFrameView exists as a separate window, which we hide
+  // in overview using the `kHideInOverviewKey` property. However, we still want
+  // to show it in the desks mini_views.
+  window->SetProperty(kHideInOverviewKey, true);
+  window->SetProperty(kForceVisibleInMiniViewKey, true);
   window->SetEventTargeter(std::make_unique<WideFrameTargeter>(header_view()));
   set_owned_by_client();
 }
@@ -112,8 +117,6 @@ WideFrameView::WideFrameView(views::Widget* target)
 WideFrameView::~WideFrameView() {
   if (widget_)
     widget_->CloseNow();
-  if (Shell::Get()->overview_controller())
-    Shell::Get()->overview_controller()->RemoveObserver(this);
   display::Screen::GetScreen()->RemoveObserver(this);
   if (target_) {
     GetTargetHeaderView()->SetShouldPaintHeader(true);
@@ -128,7 +131,7 @@ void WideFrameView::DeleteDelegate() {
 
 void WideFrameView::Layout() {
   int onscreen_height = header_view_->GetPreferredOnScreenHeight();
-  if (onscreen_height == 0 || !visible()) {
+  if (onscreen_height == 0 || !GetVisible()) {
     header_view_->SetVisible(false);
   } else {
     const int height = header_view_->GetPreferredHeight();
@@ -142,8 +145,8 @@ void WideFrameView::OnMouseEvent(ui::MouseEvent* event) {
     if ((event->flags() & ui::EF_IS_DOUBLE_CLICK)) {
       base::RecordAction(
           base::UserMetricsAction("Caption_ClickTogglesMaximize"));
-      const wm::WMEvent wm_event(wm::WM_EVENT_TOGGLE_MAXIMIZE_CAPTION);
-      wm::GetWindowState(target_->GetNativeWindow())->OnWMEvent(&wm_event);
+      const WMEvent wm_event(WM_EVENT_TOGGLE_MAXIMIZE_CAPTION);
+      WindowState::Get(target_->GetNativeWindow())->OnWMEvent(&wm_event);
     }
     event->SetHandled();
   }
@@ -192,14 +195,6 @@ void WideFrameView::SetVisibleFraction(double visible_fraction) {
 
 std::vector<gfx::Rect> WideFrameView::GetVisibleBoundsInScreen() const {
   return header_view_->GetVisibleBoundsInScreen();
-}
-
-void WideFrameView::OnOverviewModeStarting() {
-  header_view_->SetShouldPaintHeader(false);
-}
-
-void WideFrameView::OnOverviewModeEnded() {
-  header_view_->SetShouldPaintHeader(true);
 }
 
 HeaderView* WideFrameView::GetTargetHeaderView() {

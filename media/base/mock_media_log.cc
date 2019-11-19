@@ -10,4 +10,10 @@ MockMediaLog::MockMediaLog() = default;
 
 MockMediaLog::~MockMediaLog() = default;
 
+void MockMediaLog::AddEventLocked(std::unique_ptr<MediaLogEvent> event) {
+  const auto log_string = MediaEventToLogString(*event);
+  VLOG(2) << "MediaLog: " << log_string;
+  DoAddEventLogString(log_string);
+}
+
 }  // namespace media

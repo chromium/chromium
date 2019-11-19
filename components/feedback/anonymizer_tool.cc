@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -43,20 +44,31 @@ namespace {
 // (?i) turns on case insensitivity for the remainder of the regex.
 // (?-s) turns off "dot matches newline" for the remainder of the regex.
 // (?:regex) denotes non-capturing parentheses group.
-constexpr const char* kCustomPatternsWithContext[] = {
+CustomPatternWithAlias kCustomPatternsWithContext[] = {
     // ModemManager
-    "(\\bCell ID: ')([0-9a-fA-F]+)(')",
-    "(\\bLocation area code: ')([0-9a-fA-F]+)(')",
+    {"CellID", "(\\bCell ID: ')([0-9a-fA-F]+)(')"},
+    {"LocAC", "(\\bLocation area code: ')([0-9a-fA-F]+)(')"},
 
     // wpa_supplicant
-    "(?i-s)(\\bssid[= ]')(.+)(')",
-    "(?-s)(\\bSSID - hexdump\\(len=[0-9]+\\): )(.+)()",
+    {"SSID", "(?i-s)(\\bssid[= ]')(.+)(')"},
+    {"SSIDHex", "(?-s)(\\bSSID - hexdump\\(len=[0-9]+\\): )(.+)()"},
 
     // shill
-    "(?-s)(\\[SSID=)(.+?)(\\])",
+    {"SSID", "(?-s)(\\[SSID=)(.+?)(\\])"},
 
-    // Serial numbers
-    "(?i-s)(serial\\s*(?:number)?\\s*[:=]\\s*)([0-9a-zA-Z\\-\"]+)()",
+    // Serial numbers. The actual serial number itself can include any alphanum
+    // char as well as dashes, periods, colons, slashes and unprintable ASCII
+    // chars (except newline). The second one is for a special case in
+    // edid-decode, where if we genericized it further then we would catch too
+    // many other cases that we don't want to anonymize.
+    {"Serial",
+     "(?i-s)(\\bserial\\s*_?(?:number)?['\"]?\\s*[:=]\\s*['\"]?)"
+     "([0-9a-zA-Z\\-.:\\/\\\\\\x00-\\x09\\x0B-\\x1F]+)(\\b)"},
+    {"Serial", "( Serial Number )(\\d+)(\\b)"},
+
+    // GAIA IDs
+    {"GAIA", R"xxx((\"?\bgaia_id\"?[=:]['\"])(\d+)(\b['\"]))xxx"},
+    {"GAIA", R"xxx((\{id: )(\d+)(, email:))xxx"},
 };
 
 bool MaybeUnmapAddress(net::IPAddress* addr) {
@@ -198,17 +210,18 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
 
 #define H16 NCG(HEXDIG) "{1,4}"
 #define LS32 NCG(H16 ":" H16 "|" IPV4ADDRESS)
+#define WB "\\b"
 
 #define IPV6ADDRESS NCG( \
-                                          NCG(H16 ":") "{6}" LS32 "|" \
-                                     "::" NCG(H16 ":") "{5}" LS32 "|" \
-  OPT_NCG(                      H16) "::" NCG(H16 ":") "{4}" LS32 "|" \
-  OPT_NCG( NCG(H16 ":") "{0,1}" H16) "::" NCG(H16 ":") "{3}" LS32 "|" \
-  OPT_NCG( NCG(H16 ":") "{0,2}" H16) "::" NCG(H16 ":") "{2}" LS32 "|" \
-  OPT_NCG( NCG(H16 ":") "{0,3}" H16) "::" NCG(H16 ":")       LS32 "|" \
-  OPT_NCG( NCG(H16 ":") "{0,4}" H16) "::"                    LS32 "|" \
-  OPT_NCG( NCG(H16 ":") "{0,5}" H16) "::"                    H16 "|" \
-  OPT_NCG( NCG(H16 ":") "{0,6}" H16) "::")
+                                          WB NCG(H16 ":") "{6}" LS32 WB "|" \
+                                        "::" NCG(H16 ":") "{5}" LS32 WB "|" \
+  OPT_NCG( WB                      H16) "::" NCG(H16 ":") "{4}" LS32 WB "|" \
+  OPT_NCG( WB NCG(H16 ":") "{0,1}" H16) "::" NCG(H16 ":") "{3}" LS32 WB "|" \
+  OPT_NCG( WB NCG(H16 ":") "{0,2}" H16) "::" NCG(H16 ":") "{2}" LS32 WB "|" \
+  OPT_NCG( WB NCG(H16 ":") "{0,3}" H16) "::" NCG(H16 ":")       LS32 WB "|" \
+  OPT_NCG( WB NCG(H16 ":") "{0,4}" H16) "::"                    LS32 WB "|" \
+  OPT_NCG( WB NCG(H16 ":") "{0,5}" H16) "::"                    H16  WB "|" \
+  OPT_NCG( WB NCG(H16 ":") "{0,6}" H16) "::")
 
 #define IPVFUTURE                     \
   "v" HEXDIG                          \
@@ -287,7 +300,7 @@ std::string MaybeScrubIPAddress(const std::string& addr) {
 
 // The |kCustomPatternWithoutContext| array defines further patterns to match
 // and anonymize. Each pattern consists of a single capturing group.
-CustomPatternWithoutContext kCustomPatternsWithoutContext[] = {
+CustomPatternWithAlias kCustomPatternsWithoutContext[] = {
     {"URL", "(?i)(" IRI ")"},
     // Email Addresses need to come after URLs because they can be part
     // of a query parameter.
@@ -347,13 +360,22 @@ bool FindAndConsumeAndGetSkipped(re2::StringPiece* input,
                                       base::size(args));
 }
 
+// The following MAC addresses will not be anonymized as they are not specific
+// to a device but have general meanings.
+const char* const kNonAnonymizedMacAddresses[] = {
+    "00:00:00:00:00:00",  // ARP failure result MAC.
+    "ff:ff:ff:ff:ff:ff",  // Broadcast MAC.
+};
+constexpr size_t kNumNonAnonymizedMacs = base::size(kNonAnonymizedMacAddresses);
+
 }  // namespace
 
-AnonymizerTool::AnonymizerTool()
-    : custom_patterns_with_context_(base::size(kCustomPatternsWithContext)),
-      custom_patterns_without_context_(
-          base::size(kCustomPatternsWithoutContext)) {
+AnonymizerTool::AnonymizerTool(const char* const* first_party_extension_ids)
+    : first_party_extension_ids_(first_party_extension_ids) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
+  // Identity-map these, so we don't mangle them.
+  for (const char* mac : kNonAnonymizedMacAddresses)
+    mac_addresses_[mac] = mac;
 }
 
 AnonymizerTool::~AnonymizerTool() {
@@ -366,7 +388,11 @@ std::string AnonymizerTool::Anonymize(const std::string& input) {
       << "This is an expensive operation. Do not execute this on the UI "
          "thread.";
   std::string anonymized = AnonymizeMACAddresses(input);
+  anonymized = AnonymizeAndroidAppStoragePaths(std::move(anonymized));
   anonymized = AnonymizeCustomPatterns(std::move(anonymized));
+  // Do hashes last since they may appear in URLs and they also prevent us from
+  // properly recognizing the Android storage paths.
+  anonymized = AnonymizeHashes(std::move(anonymized));
   return anonymized;
 }
 
@@ -386,14 +412,15 @@ RE2* AnonymizerTool::GetRegExp(const std::string& pattern) {
 std::string AnonymizerTool::AnonymizeMACAddresses(const std::string& input) {
   // This regular expression finds the next MAC address. It splits the data into
   // an OUI (Organizationally Unique Identifier) part and a NIC (Network
-  // Interface Controller) specific part.
+  // Interface Controller) specific part. We also match on dash and underscore
+  // because we have seen instances of both of those occurring.
 
   RE2* mac_re = GetRegExp(
-      "([0-9a-fA-F][0-9a-fA-F]:"
-      "[0-9a-fA-F][0-9a-fA-F]:"
-      "[0-9a-fA-F][0-9a-fA-F]):("
-      "[0-9a-fA-F][0-9a-fA-F]:"
-      "[0-9a-fA-F][0-9a-fA-F]:"
+      "([0-9a-fA-F][0-9a-fA-F][:\\-_]"
+      "[0-9a-fA-F][0-9a-fA-F][:\\-_]"
+      "[0-9a-fA-F][0-9a-fA-F])[:\\-_]("
+      "[0-9a-fA-F][0-9a-fA-F][:\\-_]"
+      "[0-9a-fA-F][0-9a-fA-F][:\\-_]"
       "[0-9a-fA-F][0-9a-fA-F])");
 
   std::string result;
@@ -401,21 +428,23 @@ std::string AnonymizerTool::AnonymizeMACAddresses(const std::string& input) {
 
   // Keep consuming, building up a result string as we go.
   re2::StringPiece text(input);
-  re2::StringPiece skipped;
-  re2::StringPiece pre_mac, oui, nic;
+  re2::StringPiece skipped, oui, nic;
+  static const char kMacSeparatorChars[] = "-_";
   while (FindAndConsumeAndGetSkipped(&text, *mac_re, &skipped, &oui, &nic)) {
-    // Look up the MAC address in the hash.
+    // Look up the MAC address in the hash. Force the separator to be a colon
+    // so that the same MAC with a different format will match in all cases.
     std::string oui_string = base::ToLowerASCII(oui.as_string());
+    base::ReplaceChars(oui_string, kMacSeparatorChars, ":", &oui_string);
     std::string nic_string = base::ToLowerASCII(nic.as_string());
+    base::ReplaceChars(nic_string, kMacSeparatorChars, ":", &nic_string);
     std::string mac = oui_string + ":" + nic_string;
     std::string replacement_mac = mac_addresses_[mac];
     if (replacement_mac.empty()) {
       // If not found, build up a replacement MAC address by generating a new
       // NIC part.
-      int mac_id = mac_addresses_.size();
-      replacement_mac = base::StringPrintf(
-          "%s:%02x:%02x:%02x", oui_string.c_str(), (mac_id & 0x00ff0000) >> 16,
-          (mac_id & 0x0000ff00) >> 8, (mac_id & 0x000000ff));
+      int mac_id = mac_addresses_.size() - kNumNonAnonymizedMacs;
+      replacement_mac = base::StringPrintf("[MAC OUI=%s IFACE=%d]",
+                                           oui_string.c_str(), mac_id);
       mac_addresses_[mac] = replacement_mac;
     }
 
@@ -427,26 +456,133 @@ std::string AnonymizerTool::AnonymizeMACAddresses(const std::string& input) {
   return result;
 }
 
+std::string AnonymizerTool::AnonymizeHashes(const std::string& input) {
+  // This will match hexadecimal strings from length 32 to 64 that have a word
+  // boundary at each end. We then check to make sure they are one of our valid
+  // hash lengths before replacing.
+  // NOTE: There are some occurrences in the dump data (specifically modetest)
+  // where relevant data is formatted with 32 hex chars on a line. In this case,
+  // it is preceded by at least 3 whitespace chars, so check for that and in
+  // that case do not redact.
+  RE2* hash_re = GetRegExp(R"((\s*)\b([0-9a-fA-F]{4})([0-9a-fA-F]{28,60})\b)");
+
+  std::string result;
+  result.reserve(input.size());
+
+  // Keep consuming, building up a result string as we go.
+  re2::StringPiece text(input);
+  re2::StringPiece skipped, pre_whitespace, hash_prefix, hash_suffix;
+  while (FindAndConsumeAndGetSkipped(&text, *hash_re, &skipped, &pre_whitespace,
+                                     &hash_prefix, &hash_suffix)) {
+    skipped.AppendToString(&result);
+    pre_whitespace.AppendToString(&result);
+
+    // Check if it's a valid length for our hashes or if we need to skip due to
+    // the whitespace check.
+    size_t hash_length = 4 + hash_suffix.length();
+    if ((hash_length != 32 && hash_length != 40 && hash_length != 64) ||
+        (hash_length == 32 && pre_whitespace.length() >= 3)) {
+      // This is not a hash string, skip it.
+      hash_prefix.AppendToString(&result);
+      hash_suffix.AppendToString(&result);
+      continue;
+    }
+
+    // Look up the hash value address in the map of replacements.
+    std::string hash_prefix_string =
+        base::ToLowerASCII(hash_prefix.as_string());
+    std::string hash =
+        hash_prefix_string + base::ToLowerASCII(hash_suffix.as_string());
+    std::string replacement_hash = hashes_[hash];
+    if (replacement_hash.empty()) {
+      // If not found, build up a replacement value.
+      replacement_hash = base::StringPrintf(
+          "<HASH:%s %zd>", hash_prefix_string.c_str(), hashes_.size());
+      hashes_[hash] = replacement_hash;
+    }
+
+    result += replacement_hash;
+  }
+
+  text.AppendToString(&result);
+  return result;
+}
+
+std::string AnonymizerTool::AnonymizeAndroidAppStoragePaths(
+    const std::string& input) {
+  // We only use this on Chrome OS and there's differences in the API for
+  // FilePath on Windows which prevents this from compiling, so only enable this
+  // code for Chrome OS.
+#if defined(OS_CHROMEOS)
+  std::string result;
+  result.reserve(input.size());
+
+  // This is for anonymizing 'android_app_storage' output. When the path starts
+  // either /home/root/<hash>/data/data/<package_name>/ or
+  // /home/root/<hash>/data/user_de/<number>/<package_name>/, this function will
+  // anonymize path components following <package_name>/.
+  RE2* path_re = GetRegExp(
+      "(?m)(\\t/home/root/[\\da-f]+/android-data/data/"
+      "(data|user_de/\\d+)/[^/\\n]+)("
+      "/[^\\n]+)");
+
+  // Keep consuming, building up a result string as we go.
+  re2::StringPiece text(input);
+  re2::StringPiece skipped, path_prefix, ignored, app_specific;
+  while (FindAndConsumeAndGetSkipped(&text, *path_re, &skipped, &path_prefix,
+                                     &ignored, &app_specific)) {
+    // We can record these parts as-is.
+    skipped.AppendToString(&result);
+    path_prefix.AppendToString(&result);
+
+    // |app_specific| has to be anonymized. First, convert it into components,
+    // and then anonymize each component as follows:
+    // - If the component has a non-ASCII character, change it to '*'.
+    // - Otherwise, remove all the characters in the component but the first
+    //   one.
+    // - If the original component has 2 or more bytes, add '_'.
+    const base::FilePath path(app_specific.as_string());
+    std::vector<std::string> components;
+    path.GetComponents(&components);
+    DCHECK(!components.empty());
+
+    auto it = components.begin() + 1;  // ignore the leading slash
+    for (; it != components.end(); ++it) {
+      const auto& component = *it;
+      DCHECK(!component.empty());
+      result += '/';
+      result += (base::IsStringASCII(component) ? component[0] : '*');
+      if (component.length() > 1)
+        result += '_';
+    }
+  }
+
+  text.AppendToString(&result);
+  return result;
+#else
+  return input;
+#endif  //  defined(OS_CHROMEOS)
+}
+
 std::string AnonymizerTool::AnonymizeCustomPatterns(std::string input) {
   for (size_t i = 0; i < base::size(kCustomPatternsWithContext); i++) {
     input =
-        AnonymizeCustomPatternWithContext(input, kCustomPatternsWithContext[i],
-                                          &custom_patterns_with_context_[i]);
+        AnonymizeCustomPatternWithContext(input, kCustomPatternsWithContext[i]);
   }
   for (size_t i = 0; i < base::size(kCustomPatternsWithoutContext); i++) {
     input = AnonymizeCustomPatternWithoutContext(
-        input, kCustomPatternsWithoutContext[i],
-        &custom_patterns_without_context_[i]);
+        input, kCustomPatternsWithoutContext[i]);
   }
   return input;
 }
 
 std::string AnonymizerTool::AnonymizeCustomPatternWithContext(
     const std::string& input,
-    const std::string& pattern,
-    std::map<std::string, std::string>* identifier_space) {
-  RE2* re = GetRegExp(pattern);
+    const CustomPatternWithAlias& pattern) {
+  RE2* re = GetRegExp(pattern.pattern);
   DCHECK_EQ(3, re->NumberOfCapturingGroups());
+  std::map<std::string, std::string>* identifier_space =
+      &custom_patterns_with_context_[pattern.alias];
 
   std::string result;
   result.reserve(input.size());
@@ -458,10 +594,16 @@ std::string AnonymizerTool::AnonymizeCustomPatternWithContext(
   while (FindAndConsumeAndGetSkipped(&text, *re, &skipped, &pre_matched_id,
                                      &matched_id, &post_matched_id)) {
     std::string matched_id_as_string = matched_id.as_string();
-    std::string replacement_id = (*identifier_space)[matched_id_as_string];
-    if (replacement_id.empty()) {
-      replacement_id = base::NumberToString(identifier_space->size());
+    std::string replacement_id;
+    if (identifier_space->count(matched_id_as_string) == 0) {
+      // The weird NumberToString trick is because Windows does not like
+      // to deal with %zu and a size_t in printf, nor does it support %llu.
+      replacement_id = base::StringPrintf(
+          "<%s: %s>", pattern.alias,
+          base::NumberToString(identifier_space->size() + 1).c_str());
       (*identifier_space)[matched_id_as_string] = replacement_id;
+    } else {
+      replacement_id = (*identifier_space)[matched_id_as_string];
     }
 
     skipped.AppendToString(&result);
@@ -473,19 +615,59 @@ std::string AnonymizerTool::AnonymizeCustomPatternWithContext(
   return result;
 }
 
-bool WhitelistMatchedId(re2::StringPiece matched_id) {
-  bool is_safe_chrome_resource =
-      matched_id.starts_with("chrome://resources/") &&
-      !matched_id.contains("?");
-  return is_safe_chrome_resource;
+// This takes a |url| argument and returns true if the URL is whitelisted and
+// does NOT need to be redacted, returns false otherwise.
+bool IsUrlWhitelisted(re2::StringPiece url,
+                      const char* const* first_party_extension_ids) {
+  // We do not whitelist anything with a query parameter.
+  if (url.contains("?"))
+    return false;
+
+  // Check for whitelisting of chrome:// URLs.
+  if (url.starts_with("chrome://")) {
+    // We allow everything in chrome://resources/.
+    if (url.starts_with("chrome://resources/"))
+      return true;
+
+    // We allow chrome://*/crisper.js.
+    if (url.ends_with("/crisper.js"))
+      return true;
+
+    return false;
+  }
+
+  // If the whitelist is null, then don't check it.
+  if (!first_party_extension_ids)
+    return false;
+
+  // Whitelist URLs of the format chrome-extension://<first-party-id>/*.js
+  if (!url.starts_with("chrome-extension://"))
+    return false;
+
+  // These must end with a .js extension.
+  if (!url.ends_with(".js"))
+    return false;
+
+  int i = 0;
+  const char* test_id = first_party_extension_ids[i];
+  const re2::StringPiece url_sub =
+      url.substr(sizeof("chrome-extension://") - 1);
+  while (test_id) {
+    if (url_sub.starts_with(test_id))
+      return true;
+    test_id = first_party_extension_ids[++i];
+  }
+  return false;
 }
 
 std::string AnonymizerTool::AnonymizeCustomPatternWithoutContext(
     const std::string& input,
-    const CustomPatternWithoutContext& pattern,
-    std::map<std::string, std::string>* identifier_space) {
+    const CustomPatternWithAlias& pattern) {
   RE2* re = GetRegExp(pattern.pattern);
   DCHECK_EQ(1, re->NumberOfCapturingGroups());
+
+  std::map<std::string, std::string>* identifier_space =
+      &custom_patterns_without_context_[pattern.alias];
 
   std::string result;
   result.reserve(input.size());
@@ -495,24 +677,26 @@ std::string AnonymizerTool::AnonymizeCustomPatternWithoutContext(
   re2::StringPiece skipped;
   re2::StringPiece matched_id;
   while (FindAndConsumeAndGetSkipped(&text, *re, &skipped, &matched_id)) {
-    if (WhitelistMatchedId(matched_id)) {
+    if (IsUrlWhitelisted(matched_id, first_party_extension_ids_)) {
       skipped.AppendToString(&result);
       matched_id.AppendToString(&result);
       continue;
     }
     std::string matched_id_as_string = matched_id.as_string();
-    std::string replacement_id = (*identifier_space)[matched_id_as_string];
-    if (replacement_id.empty()) {
+    std::string replacement_id;
+    if (identifier_space->count(matched_id_as_string) == 0) {
       replacement_id = MaybeScrubIPAddress(matched_id_as_string);
       if (replacement_id != matched_id_as_string) {
-        // The weird Uint64toString trick is because Windows does not like
+        // The weird NumberToString trick is because Windows does not like
         // to deal with %zu and a size_t in printf, nor does it support %llu.
         replacement_id = base::StringPrintf(
             "<%s: %s>",
             replacement_id.empty() ? pattern.alias : replacement_id.c_str(),
-            base::NumberToString(identifier_space->size()).c_str());
+            base::NumberToString(identifier_space->size() + 1).c_str());
         (*identifier_space)[matched_id_as_string] = replacement_id;
       }
+    } else {
+      replacement_id = (*identifier_space)[matched_id_as_string];
     }
 
     skipped.AppendToString(&result);
@@ -523,8 +707,10 @@ std::string AnonymizerTool::AnonymizeCustomPatternWithoutContext(
 }
 
 AnonymizerToolContainer::AnonymizerToolContainer(
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : anonymizer_(new AnonymizerTool), task_runner_(task_runner) {}
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    const char* const* first_party_extension_ids)
+    : anonymizer_(new AnonymizerTool(first_party_extension_ids)),
+      task_runner_(task_runner) {}
 
 AnonymizerToolContainer::~AnonymizerToolContainer() {
   task_runner_->DeleteSoon(FROM_HERE, std::move(anonymizer_));

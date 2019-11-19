@@ -138,7 +138,7 @@ class ResourceRequestAllowedNotifier
       network::mojom::ConnectionType::CONNECTION_UNKNOWN;
   bool connection_initialized_ = false;
 
-  base::WeakPtrFactory<ResourceRequestAllowedNotifier> weak_factory_;
+  base::WeakPtrFactory<ResourceRequestAllowedNotifier> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ResourceRequestAllowedNotifier);
 };

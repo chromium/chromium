@@ -78,14 +78,6 @@ bool ParentLocalSurfaceIdAllocator::UpdateFromChild(
   return true;
 }
 
-void ParentLocalSurfaceIdAllocator::Reset(
-    const LocalSurfaceId& local_surface_id) {
-  is_invalid_ = false;
-  current_local_surface_id_allocation_.local_surface_id_ = local_surface_id;
-  current_local_surface_id_allocation_.allocation_time_ =
-      tick_clock_->NowTicks();
-}
-
 void ParentLocalSurfaceIdAllocator::Invalidate() {
   is_invalid_ = true;
 }
@@ -95,8 +87,8 @@ void ParentLocalSurfaceIdAllocator::GenerateId() {
     return;
   is_invalid_ = false;
 
-  ++current_local_surface_id_allocation_.local_surface_id_.parent_component_
-        .sequence_number;
+  ++current_local_surface_id_allocation_.local_surface_id_
+        .parent_sequence_number_;
   current_local_surface_id_allocation_.allocation_time_ =
       tick_clock_->NowTicks();
 
@@ -132,8 +124,7 @@ bool ParentLocalSurfaceIdAllocator::HasValidLocalSurfaceIdAllocation() const {
 
 const base::UnguessableToken& ParentLocalSurfaceIdAllocator::GetEmbedToken()
     const {
-  return current_local_surface_id_allocation_.local_surface_id_
-      .parent_component_.embed_token;
+  return current_local_surface_id_allocation_.local_surface_id_.embed_token();
 }
 
 // static

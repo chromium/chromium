@@ -1,9 +1,0 @@
-# TEAM: storage-dev@chromium.org
-# COMPONENT: Blink>Storage>Quota
-
-per-file *.mojom=file://ipc/SECURITY_OWNERS
-per-file *.mojom=set noparent
-per-file *.typemap=file://ipc/SECURITY_OWNERS
-per-file *.typemap=set noparent
-per-file *_struct_traits*.*=file://ipc/SECURITY_OWNERS
-per-file *_struct_traits*.*=set noparent

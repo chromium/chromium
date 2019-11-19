@@ -1,0 +1,133 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/ui.gni")
+import("//media/gpu/args.gni")
+import("//testing/test.gni")
+import("//tools/generate_stubs/rules.gni")
+import("//ui/gl/features.gni")
+import("//ui/ozone/ozone.gni")
+
+assert(use_v4l2_codec)
+
+if (use_v4lplugin) {
+  generate_stubs("libv4l2_stubs") {
+    extra_header = "v4l2_stub_header.fragment"
+    sigs = [ "v4l2.sig" ]
+    output_name = "v4l2_stubs"
+    deps = [
+      "//base",
+    ]
+  }
+}
+
+source_set("v4l2") {
+  defines = [ "MEDIA_GPU_IMPLEMENTATION" ]
+  sources = [
+    "generic_v4l2_device.cc",
+    "generic_v4l2_device.h",
+    "v4l2_decode_surface.cc",
+    "v4l2_decode_surface.h",
+    "v4l2_decode_surface_handler.h",
+    "v4l2_device.cc",
+    "v4l2_device.h",
+    "v4l2_device_poller.cc",
+    "v4l2_device_poller.h",
+    "v4l2_h264_accelerator.cc",
+    "v4l2_h264_accelerator.h",
+    "v4l2_h264_accelerator_legacy.cc",
+    "v4l2_h264_accelerator_legacy.h",
+    "v4l2_image_processor.cc",
+    "v4l2_image_processor.h",
+    "v4l2_slice_video_decode_accelerator.cc",
+    "v4l2_slice_video_decode_accelerator.h",
+    "v4l2_slice_video_decoder.cc",
+    "v4l2_slice_video_decoder.h",
+    "v4l2_stateful_workaround.cc",
+    "v4l2_stateful_workaround.h",
+    "v4l2_vda_helpers.cc",
+    "v4l2_vda_helpers.h",
+    "v4l2_video_decode_accelerator.cc",
+    "v4l2_video_decode_accelerator.h",
+    "v4l2_video_decoder_backend.cc",
+    "v4l2_video_decoder_backend.h",
+    "v4l2_video_decoder_backend_stateless.cc",
+    "v4l2_video_decoder_backend_stateless.h",
+    "v4l2_video_encode_accelerator.cc",
+    "v4l2_video_encode_accelerator.h",
+    "v4l2_vp8_accelerator.cc",
+    "v4l2_vp8_accelerator.h",
+    "v4l2_vp8_accelerator_legacy.cc",
+    "v4l2_vp8_accelerator_legacy.h",
+    "v4l2_vp9_accelerator.cc",
+    "v4l2_vp9_accelerator.h",
+  ]
+
+  libs = [
+    "EGL",
+    "GLESv2",
+  ]
+
+  if (current_cpu == "arm") {
+    sources += [
+      "tegra_v4l2_device.cc",
+      "tegra_v4l2_device.h",
+    ]
+  }
+
+  configs += [ "//third_party/libyuv:libyuv_config" ]
+
+  public_deps = [
+    "//ui/gl",
+  ]
+
+  deps = [
+    "//base",
+    "//gpu/ipc/common",
+    "//gpu/ipc/service",
+    "//media",
+    "//media/gpu:buildflags",
+    "//media/gpu:common",
+    "//media/gpu/chromeos:common",
+    "//media/gpu/linux:common",
+    "//third_party/libyuv",
+    "//ui/gfx/geometry",
+    "//ui/ozone",
+  ]
+
+  if (use_v4lplugin) {
+    deps += [ ":libv4l2_stubs" ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "v4l2_jpeg_encode_accelerator.cc",
+      "v4l2_jpeg_encode_accelerator.h",
+      "v4l2_mjpeg_decode_accelerator.cc",
+      "v4l2_mjpeg_decode_accelerator.h",
+    ]
+
+    deps += [
+      "//components/chromeos_camera:jpeg_encode_accelerator",
+      "//components/chromeos_camera:mjpeg_decode_accelerator",
+      "//media/gpu:video_frame_mapper_common",
+      "//media/parsers",
+    ]
+  }
+}
+
+source_set("unit_test") {
+  testonly = true
+  sources = [
+    "v4l2_device_unittest.cc",
+  ]
+  deps = [
+    ":v4l2",
+    "//media:test_support",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+    "//ui/gl",
+  ]
+}

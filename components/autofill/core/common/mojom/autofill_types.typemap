@@ -1,0 +1,42 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//components/autofill/core/common/mojom/autofill_types.mojom"
+public_headers = [
+  "//components/autofill/core/common/form_data.h",
+  "//components/autofill/core/common/form_data_predictions.h",
+  "//components/autofill/core/common/form_field_data.h",
+  "//components/autofill/core/common/form_field_data_predictions.h",
+  "//components/autofill/core/common/password_form.h",
+  "//components/autofill/core/common/password_form_fill_data.h",
+  "//components/autofill/core/common/password_form_generation_data.h",
+  "//components/autofill/core/common/password_generation_util.h",
+]
+traits_headers =
+    [ "//components/autofill/core/common/mojom/autofill_types_mojom_traits.h" ]
+sources = [
+  "//components/autofill/core/common/mojom/autofill_types_mojom_traits.cc",
+]
+deps = [
+  "//base",
+  "//base:i18n",
+  "//components/autofill/core/common",
+  "//ui/gfx/geometry/mojom:mojom_traits",
+]
+
+type_mappings = [
+  "autofill.mojom.FormData=::autofill::FormData",
+  "autofill.mojom.FormDataPredictions=::autofill::FormDataPredictions",
+  "autofill.mojom.FormFieldData=::autofill::FormFieldData",
+  "autofill.mojom.FormFieldDataPredictions=::autofill::FormFieldDataPredictions",
+  "autofill.mojom.FormsPredictionsMap=::autofill::FormsPredictionsMap",
+  "autofill.mojom.ParsingResult=::autofill::ParsingResult",
+  "autofill.mojom.PasswordAndMetadata=::autofill::PasswordAndMetadata",
+  "autofill.mojom.PasswordForm=::autofill::PasswordForm",
+  "autofill.mojom.PasswordFormFieldPredictionMap=::autofill::PasswordFormFieldPredictionMap",
+  "autofill.mojom.PasswordFormFillData=::autofill::PasswordFormFillData",
+  "autofill.mojom.PasswordFormGenerationData=::autofill::PasswordFormGenerationData",
+  "autofill.mojom.PasswordGenerationUIData=::autofill::password_generation::PasswordGenerationUIData",
+  "autofill.mojom.ValueElementPair=::autofill::ValueElementPair",
+]

@@ -10,7 +10,9 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/label.h"
@@ -37,6 +39,10 @@ SettingsResetPromptDialog::SettingsResetPromptDialog(
     : browser_(nullptr), controller_(controller) {
   DCHECK(controller_);
 
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_SETTINGS_RESET_PROMPT_ACCEPT_BUTTON_LABEL));
+
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
       views::TEXT, views::TEXT));
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -44,7 +50,7 @@ SettingsResetPromptDialog::SettingsResetPromptDialog(
   views::StyledLabel* dialog_label =
       new views::StyledLabel(controller_->GetMainText(), /*listener=*/nullptr);
   dialog_label->SetTextContext(CONTEXT_BODY_TEXT_LARGE);
-  dialog_label->SetDefaultTextStyle(STYLE_SECONDARY);
+  dialog_label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
   views::StyledLabel::RangeStyleInfo url_style;
   url_style.text_style = STYLE_EMPHASIZED_SECONDARY;
   dialog_label->AddStyleRange(controller_->GetMainTextUrlRange(), url_style);
@@ -90,16 +96,6 @@ base::string16 SettingsResetPromptDialog::GetWindowTitle() const {
 }
 
 // DialogDelegate overrides.
-
-base::string16 SettingsResetPromptDialog::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  DCHECK(button == ui::DIALOG_BUTTON_OK || button == ui::DIALOG_BUTTON_CANCEL);
-  DCHECK(controller_);
-
-  if (button == ui::DIALOG_BUTTON_OK)
-    return controller_->GetButtonLabel();
-  return DialogDelegate::GetDialogButtonLabel(button);
-}
 
 bool SettingsResetPromptDialog::Accept() {
   if (controller_) {

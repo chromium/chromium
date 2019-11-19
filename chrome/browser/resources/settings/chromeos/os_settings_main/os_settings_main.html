@@ -1,0 +1,93 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_components/managed_footnote/managed_footnote.html">
+<link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/search_highlight_utils.html">
+<link rel="import" href="chrome://resources/html/promise_resolver.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="../os_about_page/os_about_page.html">
+<link rel="import" href="../os_settings_page/os_settings_page.html">
+<link rel="import" href="../../i18n_setup.html">
+<link rel="import" href="../../prefs/prefs.html">
+<link rel="import" href="../../route.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../../settings_vars_css.html">
+
+<dom-module id="os-settings-main">
+  <template>
+    <style include="cr-hidden-style settings-shared">
+      #overscroll {
+        margin-top: 64px;
+      }
+
+      .showing-subpage ~ #overscroll {
+        display: none;
+      }
+
+      #noSearchResults {
+        margin-top: 80px;
+        text-align: center;
+      }
+
+      #noSearchResults div:first-child {
+        font-size: 123%;  /* Should be 16px when 100% is 13px. */
+        margin-bottom: 10px;
+      }
+
+      managed-footnote {
+        border-top: none;
+        /* margin-bottom is needed to compensate for the next element's 21px
+         * margin at the top and 8px padding at the top. This leaves a 12px
+         * padding between this element's content and the top of the next
+         * element's text. */
+        margin-bottom: calc(-21px - 8px);
+        padding-bottom: 16px;
+        padding-top: 12px;
+        /* The next element spills over this element. This ensures the link
+         * is clickable. */
+        position: relative;
+        z-index: 1;
+      }
+    </style>
+    <div id="noSearchResults" hidden$="[[!showNoResultsFound_]]">
+      <div>$i18n{searchNoResults}</div>
+      <div>$i18nRaw{searchNoResultsHelp}</div>
+    </div>
+    <template is="dom-if"
+        if="[[showManagedHeader_(inSearchMode_, showingSubpage_,
+        showPages_.about)]]">
+      <managed-footnote show-device-info></managed-footnote>
+    </template>
+    <template is="dom-if" if="[[showPages_.settings]]">
+      <os-settings-page prefs="{{prefs}}"
+          page-visibility="[[pageVisibility]]"
+          show-android-apps="[[showAndroidApps]]"
+          show-app-management="[[showAppManagement]]"
+          show-apps="[[showApps]]"
+          show-crostini="[[showCrostini]]"
+          show-plugin-vm="[[showPluginVm]]"
+          show-reset="[[showReset]]"
+          have-play-store-app="[[havePlayStoreApp]]"
+          on-showing-section="onShowingSection_"
+          on-subpage-expand="onShowingSubpage_"
+          on-showing-main-page="onShowingMainPage_"
+          in-search-mode="[[inSearchMode_]]"
+          advanced-toggle-expanded="{{advancedToggleExpanded}}">
+      </os-settings-page>
+    </template>
+    <template is="dom-if" if="[[showPages_.about]]">
+      <os-settings-about-page role="main"
+          in-search-mode="[[inSearchMode_]]"
+          on-subpage-expand="onShowingSubpage_"
+          on-showing-main-page="onShowingMainPage_"
+          prefs="{{prefs}}"
+          show-crostini="[[showCrostini]]">
+      </os-settings-about-page>
+    </template>
+    <div id="overscroll" style="padding-bottom: [[overscroll_]]px"></div>
+  </template>
+  <script src="os_settings_main.js"></script>
+  <script src="../../search_settings.js"></script>
+</dom-module>

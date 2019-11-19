@@ -22,19 +22,19 @@ class CONTENT_EXPORT WebUIControllerFactoryRegistry
   // method on all the factories.
   std::unique_ptr<WebUIController> CreateWebUIControllerForURL(
       WebUI* web_ui,
-      const GURL& url) const override;
+      const GURL& url) override;
   WebUI::TypeID GetWebUIType(BrowserContext* browser_context,
-                             const GURL& url) const override;
+                             const GURL& url) override;
   bool UseWebUIForURL(BrowserContext* browser_context,
-                      const GURL& url) const override;
+                      const GURL& url) override;
   bool UseWebUIBindingsForURL(BrowserContext* browser_context,
-                              const GURL& url) const override;
+                              const GURL& url) override;
 
   // Returns true if the given URL can be loaded by Web UI system. This allows
   // URLs that UseWebUIForURL returns true for, and also URLs that can be loaded
   // by normal tabs such as javascript: URLs or about:hang.
   bool IsURLAcceptableForWebUI(BrowserContext* browser_context,
-                               const GURL& url) const;
+                               const GURL& url);
 
  private:
   friend struct base::DefaultSingletonTraits<WebUIControllerFactoryRegistry>;

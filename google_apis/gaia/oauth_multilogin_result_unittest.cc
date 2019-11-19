@@ -23,7 +23,7 @@ using ::testing::_;
 TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
   OAuthMultiloginResult result("");
   // SID: typical response for a domain cookie
-  // APISID: typical response for a host cookie
+  // SAPISID: typical response for a host cookie
   // SSID: not canonical cookie because of the wrong path, should not be added
   // HSID: canonical but not valid because of the wrong host value, still will
   // be parsed but domain_ field will be empty. Also it is expired.
@@ -41,21 +41,22 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
               "maxAge":63070000
             },
             {
-              "name":"APISID",
+              "name":"SAPISID",
               "value":"vAlUe2",
               "host":"google.com",
               "path":"/",
-              "isSecure":true,
-              "isHttpOnly":false,
+              "isSecure":false,
+              "isHttpOnly":true,
               "priority":"HIGH",
-              "maxAge":63070000
+              "maxAge":63070000,
+              "sameSite":"Lax"
             },
             {
               "name":"SSID",
               "value":"vAlUe3",
               "domain":".google.de",
               "path":"path",
-              "sSecure":true,
+              "isSecure":true,
               "isHttpOnly":false,
               "priority":"HIGH",
               "maxAge":63070000
@@ -65,10 +66,9 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
               "value":"vAlUe4",
               "host":".google.fr",
               "path":"/",
-              "isSecure":true,
-              "isHttpOnly":false,
               "priority":"HIGH",
-              "maxAge":0
+              "maxAge":0,
+              "sameSite":"Strict"
             }
           ]
         }
@@ -85,15 +85,16 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
   double expiration = expiration_time.ToDoubleT();
   const std::vector<CanonicalCookie> cookies = {
       CanonicalCookie("SID", "vAlUe1", ".google.ru", "/", time_now, time_now,
-                      expiration_time, true, false,
-                      net::CookieSameSite::NO_RESTRICTION,
+                      expiration_time, /*is_secure=*/true,
+                      /*is_http_only=*/false, net::CookieSameSite::UNSPECIFIED,
                       net::CookiePriority::COOKIE_PRIORITY_HIGH),
-      CanonicalCookie("APISID", "vAlUe2", "google.com", "/", time_now, time_now,
-                      expiration_time, true, false,
-                      net::CookieSameSite::NO_RESTRICTION,
+      CanonicalCookie("SAPISID", "vAlUe2", "google.com", "/", time_now,
+                      time_now, expiration_time, /*is_secure=*/false,
+                      /*is_http_only=*/true, net::CookieSameSite::LAX_MODE,
                       net::CookiePriority::COOKIE_PRIORITY_HIGH),
       CanonicalCookie("HSID", "vAlUe4", "", "/", time_now, time_now, time_now,
-                      true, false, net::CookieSameSite::NO_RESTRICTION,
+                      /*is_secure=*/true, /*is_http_only=*/true,
+                      net::CookieSameSite::STRICT_MODE,
                       net::CookiePriority::COOKIE_PRIORITY_HIGH)};
 
   EXPECT_EQ((int)result.cookies().size(), 3);
@@ -117,19 +118,19 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
                           Property(&CanonicalCookie::IsCanonical, Eq(true))));
   EXPECT_THAT(result.cookies(),
               ElementsAre(Property(&CanonicalCookie::IsHttpOnly, Eq(false)),
-                          Property(&CanonicalCookie::IsHttpOnly, Eq(false)),
-                          Property(&CanonicalCookie::IsHttpOnly, Eq(false))));
+                          Property(&CanonicalCookie::IsHttpOnly, Eq(true)),
+                          Property(&CanonicalCookie::IsHttpOnly, Eq(true))));
   EXPECT_THAT(result.cookies(),
               ElementsAre(Property(&CanonicalCookie::IsSecure, Eq(true)),
-                          Property(&CanonicalCookie::IsSecure, Eq(true)),
+                          Property(&CanonicalCookie::IsSecure, Eq(false)),
                           Property(&CanonicalCookie::IsSecure, Eq(true))));
   EXPECT_THAT(result.cookies(),
               ElementsAre(Property(&CanonicalCookie::SameSite,
-                                   Eq(net::CookieSameSite::NO_RESTRICTION)),
+                                   Eq(net::CookieSameSite::UNSPECIFIED)),
                           Property(&CanonicalCookie::SameSite,
-                                   Eq(net::CookieSameSite::NO_RESTRICTION)),
+                                   Eq(net::CookieSameSite::LAX_MODE)),
                           Property(&CanonicalCookie::SameSite,
-                                   Eq(net::CookieSameSite::NO_RESTRICTION))));
+                                   Eq(net::CookieSameSite::STRICT_MODE))));
   EXPECT_THAT(
       result.cookies(),
       ElementsAre(Property(&CanonicalCookie::Priority,
@@ -165,7 +166,7 @@ TEST(OAuthMultiloginResultTest, CreateOAuthMultiloginResultFromString) {
           ]
         }
       )");
-  EXPECT_EQ(result1.error().state(), GoogleServiceAuthError::State::NONE);
+  EXPECT_EQ(result1.status(), OAuthMultiloginResponseStatus::kOk);
   EXPECT_FALSE(result1.cookies().empty());
 
   OAuthMultiloginResult result2(R"(many_random_characters_before_newline
@@ -185,7 +186,7 @@ TEST(OAuthMultiloginResultTest, CreateOAuthMultiloginResultFromString) {
           ]
         }
       )");
-  EXPECT_EQ(result2.error().state(), GoogleServiceAuthError::State::NONE);
+  EXPECT_EQ(result2.status(), OAuthMultiloginResponseStatus::kOk);
   EXPECT_FALSE(result2.cookies().empty());
 
   OAuthMultiloginResult result3(R"())]}\'\n)]}'\n{
@@ -204,8 +205,7 @@ TEST(OAuthMultiloginResultTest, CreateOAuthMultiloginResultFromString) {
           ]
         }
       )");
-  EXPECT_EQ(result3.error().state(),
-            GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE);
+  EXPECT_EQ(result3.status(), OAuthMultiloginResponseStatus::kUnknownStatus);
 }
 
 TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
@@ -228,7 +228,7 @@ TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
         }
       )";
   OAuthMultiloginResult result1(data_error_none);
-  EXPECT_EQ(result1.error().state(), GoogleServiceAuthError::State::NONE);
+  EXPECT_EQ(result1.status(), OAuthMultiloginResponseStatus::kOk);
 
   std::string data_error_transient =
       R"(()]}'
@@ -249,7 +249,7 @@ TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
         }
       )";
   OAuthMultiloginResult result2(data_error_transient);
-  EXPECT_TRUE(result2.error().IsTransientError());
+  EXPECT_EQ(result2.status(), OAuthMultiloginResponseStatus::kRetry);
 
   // "ERROR" is a real response status that Gaia sends. This is a persistent
   // error.
@@ -272,7 +272,7 @@ TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
         }
       )";
   OAuthMultiloginResult result3(data_error_persistent);
-  EXPECT_TRUE(result3.error().IsPersistentError());
+  EXPECT_EQ(result3.status(), OAuthMultiloginResponseStatus::kError);
 
   std::string data_error_invalid_credentials =
       R"()]}'
@@ -303,10 +303,8 @@ TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
         }
       )";
   OAuthMultiloginResult result4(data_error_invalid_credentials);
-  EXPECT_EQ(result4.error().state(),
-            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS);
-  EXPECT_TRUE(result4.error().IsPersistentError());
-  EXPECT_THAT(result4.failed_accounts(), ElementsAre(Eq("account1")));
+  EXPECT_EQ(result4.status(), OAuthMultiloginResponseStatus::kInvalidTokens);
+  EXPECT_THAT(result4.failed_gaia_ids(), ElementsAre(Eq("account1")));
 
   // Unknown status.
   OAuthMultiloginResult unknown_status(R"()]}'
@@ -326,8 +324,8 @@ TEST(OAuthMultiloginResultTest, ProduceErrorFromResponseStatus) {
           ]
         }
       )");
-  EXPECT_EQ(unknown_status.error().state(),
-            GoogleServiceAuthError::State::UNEXPECTED_SERVICE_RESPONSE);
+  EXPECT_EQ(unknown_status.status(),
+            OAuthMultiloginResponseStatus::kUnknownStatus);
   EXPECT_TRUE(unknown_status.cookies().empty());
 }
 

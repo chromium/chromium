@@ -1,2 +1,0 @@
-CONSOLE ERROR: Not allowed to navigate top frame to data URL: data:text/html,<script>alert(window)</script>?
-If the POST pop-up was not blocked then there will be an ALERT containing a Window object. Otherwise, the test passes.

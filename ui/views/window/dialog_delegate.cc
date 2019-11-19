@@ -6,18 +6,22 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/buildflags.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"
+#include "ui/views/views_features.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_client_view.h"
@@ -30,14 +34,14 @@
 namespace views {
 
 ////////////////////////////////////////////////////////////////////////////////
+// DialogDelegate::Params:
+DialogDelegate::Params::Params() = default;
+DialogDelegate::Params::~Params() = default;
+
+////////////////////////////////////////////////////////////////////////////////
 // DialogDelegate:
 
-DialogDelegate::DialogDelegate()
-    : supports_custom_frame_(true),
-      // TODO(crbug.com/733040): Most subclasses assume they must set their own
-      // margins explicitly, so we set them to 0 here for now to avoid doubled
-      // margins.
-      margins_(0) {
+DialogDelegate::DialogDelegate() {
   UMA_HISTOGRAM_BOOLEAN("Dialog.DialogDelegate.Create", true);
   creation_time_ = base::TimeTicks::Now();
 }
@@ -49,8 +53,21 @@ Widget* DialogDelegate::CreateDialogWidget(WidgetDelegate* delegate,
   views::Widget* widget = new views::Widget;
   views::Widget::InitParams params =
       GetDialogWidgetInitParams(delegate, context, parent, gfx::Rect());
-  widget->Init(params);
+  widget->Init(std::move(params));
   return widget;
+}
+
+// static
+bool DialogDelegate::CanSupportCustomFrame(gfx::NativeView parent) {
+#if defined(OS_LINUX) && BUILDFLAG(ENABLE_DESKTOP_AURA)
+  // The new style doesn't support unparented dialogs on Linux desktop.
+  return parent != nullptr;
+#elif defined(OS_WIN)
+  // The new style doesn't support unparented dialogs on Windows Classic themes.
+  if (!ui::win::IsAeroGlassEnabled())
+    return parent != nullptr;
+#endif
+  return true;
 }
 
 // static
@@ -64,23 +81,16 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
   params.bounds = bounds;
   DialogDelegate* dialog = delegate->AsDialogDelegate();
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
-  // The new style doesn't support unparented dialogs on Linux desktop.
   if (dialog)
-    dialog->supports_custom_frame_ &= parent != NULL;
-#elif defined(OS_WIN)
-  // The new style doesn't support unparented dialogs on Windows Classic themes.
-  if (dialog && !ui::win::IsAeroGlassEnabled())
-    dialog->supports_custom_frame_ &= parent != NULL;
-#endif
+    dialog->params_.custom_frame &= CanSupportCustomFrame(parent);
 
-  if (!dialog || dialog->ShouldUseCustomFrame()) {
+  if (!dialog || dialog->use_custom_frame()) {
     params.opacity = Widget::InitParams::TRANSLUCENT_WINDOW;
     params.remove_standard_frame = true;
 #if !defined(OS_MACOSX)
     // Except on Mac, the bubble frame includes its own shadow; remove any
     // native shadowing. On Mac, the window server provides the shadow.
-    params.shadow_type = views::Widget::InitParams::SHADOW_TYPE_NONE;
+    params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
 #endif
   }
   params.context = context;
@@ -97,10 +107,12 @@ Widget::InitParams DialogDelegate::GetDialogWidgetInitParams(
 }
 
 int DialogDelegate::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL;
+  return params_.buttons;
 }
 
 int DialogDelegate::GetDefaultDialogButton() const {
+  if (GetParams().default_button.has_value())
+    return *GetParams().default_button;
   if (GetDialogButtons() & ui::DIALOG_BUTTON_OK)
     return ui::DIALOG_BUTTON_OK;
   if (GetDialogButtons() & ui::DIALOG_BUTTON_CANCEL)
@@ -110,6 +122,9 @@ int DialogDelegate::GetDefaultDialogButton() const {
 
 base::string16 DialogDelegate::GetDialogButtonLabel(
     ui::DialogButton button) const {
+  if (!GetParams().button_labels[button].empty())
+    return GetParams().button_labels[button];
+
   if (button == ui::DIALOG_BUTTON_OK)
     return l10n_util::GetStringUTF16(IDS_APP_OK);
   if (button == ui::DIALOG_BUTTON_CANCEL) {
@@ -125,16 +140,8 @@ bool DialogDelegate::IsDialogButtonEnabled(ui::DialogButton button) const {
   return true;
 }
 
-View* DialogDelegate::CreateExtraView() {
-  return NULL;
-}
-
-bool DialogDelegate::GetExtraViewPadding(int* padding) {
-  return false;
-}
-
-View* DialogDelegate::CreateFootnoteView() {
-  return NULL;
+std::unique_ptr<View> DialogDelegate::CreateFootnoteView() {
+  return std::move(footnote_view_);
 }
 
 bool DialogDelegate::Cancel() {
@@ -154,43 +161,26 @@ bool DialogDelegate::Close() {
   return Accept();
 }
 
-void DialogDelegate::UpdateButton(LabelButton* button, ui::DialogButton type) {
-  button->SetText(GetDialogButtonLabel(type));
-  button->SetEnabled(IsDialogButtonEnabled(type));
-  bool is_default = type == GetDefaultDialogButton();
-  if (!PlatformStyle::kDialogDefaultButtonCanBeCancel &&
-      type == ui::DIALOG_BUTTON_CANCEL) {
-    is_default = false;
-  }
-  button->SetIsDefault(is_default);
-}
-
-bool DialogDelegate::ShouldSnapFrameWidth() const {
-  return GetDialogButtons() != ui::DIALOG_BUTTON_NONE;
-}
-
-bool DialogDelegate::ShouldHaveRoundCorners() const {
-  return true;
-}
-
 View* DialogDelegate::GetInitiallyFocusedView() {
   // Focus the default button if any.
   const DialogClientView* dcv = GetDialogClientView();
+  if (!dcv)
+    return nullptr;
   int default_button = GetDefaultDialogButton();
   if (default_button == ui::DIALOG_BUTTON_NONE)
-    return NULL;
+    return nullptr;
 
   if ((default_button & GetDialogButtons()) == 0) {
     // The default button is a button we don't have.
     NOTREACHED();
-    return NULL;
+    return nullptr;
   }
 
   if (default_button & ui::DIALOG_BUTTON_OK)
     return dcv->ok_button();
   if (default_button & ui::DIALOG_BUTTON_CANCEL)
     return dcv->cancel_button();
-  return NULL;
+  return nullptr;
 }
 
 DialogDelegate* DialogDelegate::AsDialogDelegate() {
@@ -202,8 +192,9 @@ ClientView* DialogDelegate::CreateClientView(Widget* widget) {
 }
 
 NonClientFrameView* DialogDelegate::CreateNonClientFrameView(Widget* widget) {
-  if (ShouldUseCustomFrame())
+  if (use_custom_frame())
     return CreateDialogFrameView(widget);
+
   return WidgetDelegate::CreateNonClientFrameView(widget);
 }
 
@@ -219,9 +210,12 @@ NonClientFrameView* DialogDelegate::CreateDialogFrameView(Widget* widget) {
   border->set_use_theme_background_color(true);
   DialogDelegate* delegate = widget->widget_delegate()->AsDialogDelegate();
   if (delegate) {
-    if (delegate->ShouldHaveRoundCorners()) {
-      const int corner_radius = provider->GetCornerRadiusMetric(EMPHASIS_HIGH);
-      border->SetCornerRadius(corner_radius);
+    if (delegate->GetParams().round_corners) {
+      border->SetCornerRadius(
+          base::FeatureList::IsEnabled(
+              features::kEnableMDRoundedCornersOnDialogs)
+              ? provider->GetCornerRadiusMetric(views::EMPHASIS_HIGH)
+              : 2);
     }
     frame->SetFootnoteView(delegate->CreateFootnoteView());
   }
@@ -229,16 +223,58 @@ NonClientFrameView* DialogDelegate::CreateDialogFrameView(Widget* widget) {
   return frame;
 }
 
-bool DialogDelegate::ShouldUseCustomFrame() const {
-  return supports_custom_frame_;
-}
-
 const DialogClientView* DialogDelegate::GetDialogClientView() const {
+  if (!GetWidget())
+    return nullptr;
   return GetWidget()->client_view()->AsDialogClientView();
 }
 
 DialogClientView* DialogDelegate::GetDialogClientView() {
+  if (!GetWidget())
+    return nullptr;
   return GetWidget()->client_view()->AsDialogClientView();
+}
+
+BubbleFrameView* DialogDelegate::GetBubbleFrameView() const {
+  if (!use_custom_frame())
+    return nullptr;
+
+  const NonClientView* view =
+      GetWidget() ? GetWidget()->non_client_view() : nullptr;
+  return view ? static_cast<BubbleFrameView*>(view->frame_view()) : nullptr;
+}
+
+views::LabelButton* DialogDelegate::GetOkButton() {
+  DCHECK(GetWidget()) << "Don't call this before OnDialogInitialized";
+  auto* client = GetDialogClientView();
+  return client ? client->ok_button() : nullptr;
+}
+
+views::LabelButton* DialogDelegate::GetCancelButton() {
+  DCHECK(GetWidget()) << "Don't call this before OnDialogInitialized";
+  auto* client = GetDialogClientView();
+  return client ? client->cancel_button() : nullptr;
+}
+
+views::View* DialogDelegate::GetExtraView() {
+  DCHECK(GetWidget()) << "Don't call this before OnDialogInitialized";
+  auto* client = GetDialogClientView();
+  return client ? client->extra_view() : nullptr;
+}
+
+views::View* DialogDelegate::GetFootnoteViewForTesting() {
+  if (!GetWidget())
+    return footnote_view_.get();
+
+  NonClientFrameView* frame = GetWidget()->non_client_view()->frame_view();
+
+  // CreateDialogFrameView above always uses BubbleFrameView. There are
+  // subclasses that override CreateDialogFrameView, but none of them override
+  // it to create anything other than a BubbleFrameView.
+  // TODO(https://crbug.com/1011446): Make CreateDialogFrameView final, then
+  // remove this DCHECK.
+  DCHECK_EQ(frame->GetClassName(), BubbleFrameView::kViewClassName);
+  return static_cast<BubbleFrameView*>(frame)->GetFootnoteView();
 }
 
 void DialogDelegate::AddObserver(DialogObserver* observer) {
@@ -254,13 +290,33 @@ void DialogDelegate::DialogModelChanged() {
     observer.OnDialogChanged();
 }
 
+std::unique_ptr<View> DialogDelegate::DisownExtraView() {
+  return std::move(extra_view_);
+}
+
+void DialogDelegate::CancelDialog() {
+  GetDialogClientView()->CancelWindow();
+}
+
+void DialogDelegate::AcceptDialog() {
+  GetDialogClientView()->AcceptWindow();
+}
+
+void DialogDelegate::ResetViewShownTimeStampForTesting() {
+  GetDialogClientView()->ResetViewShownTimeStampForTesting();
+}
+
 DialogDelegate::~DialogDelegate() {
   UMA_HISTOGRAM_LONG_TIMES("Dialog.DialogDelegate.Duration",
                            base::TimeTicks::Now() - creation_time_);
 }
 
-ax::mojom::Role DialogDelegate::GetAccessibleWindowRole() const {
+ax::mojom::Role DialogDelegate::GetAccessibleWindowRole() {
   return ax::mojom::Role::kDialog;
+}
+
+void DialogDelegate::OnWidgetInitialized() {
+  OnDialogInitialized();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -272,7 +328,7 @@ DialogDelegateView::DialogDelegateView() {
   UMA_HISTOGRAM_BOOLEAN("Dialog.DialogDelegateView.Create", true);
 }
 
-DialogDelegateView::~DialogDelegateView() {}
+DialogDelegateView::~DialogDelegateView() = default;
 
 void DialogDelegateView::DeleteDelegate() {
   delete this;
@@ -292,8 +348,11 @@ View* DialogDelegateView::GetContentsView() {
 
 void DialogDelegateView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
-  if (details.is_add && details.child == this && GetWidget())
+  if (details.is_add && details.child == this && GetWidget() &&
+      (GetAccessibleWindowRole() == ax::mojom::Role::kAlert ||
+       GetAccessibleWindowRole() == ax::mojom::Role::kAlertDialog)) {
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  }
 }
 
 }  // namespace views

@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_STATE_OBSERVER_H_
 #define CHROME_BROWSER_CHROMEOS_LOCK_SCREEN_APPS_STATE_OBSERVER_H_
 
-#include "ash/public/interfaces/tray_action.mojom.h"
+#include "ash/public/mojom/tray_action.mojom.h"
 
 namespace lock_screen_apps {
 

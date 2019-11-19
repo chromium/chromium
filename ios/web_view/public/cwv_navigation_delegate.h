@@ -10,6 +10,8 @@
 #import "cwv_export.h"
 #import "cwv_navigation_type.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 @protocol CRIWVTranslateDelegate;
 @class CWVDownloadTask;
 @class CWVSSLStatus;
@@ -101,5 +103,7 @@ FOUNDATION_EXPORT CWV_EXPORT NSErrorUserInfoKey CWVCertStatusKey;
 - (void)webViewWebContentProcessDidTerminate:(CWVWebView*)webView;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_NAVIGATION_DELEGATE_H_

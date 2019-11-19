@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/numerics/ranges.h"
 #include "chromecast/graphics/accessibility/accessibility_cursor_ring_layer.h"
 #include "chromecast/graphics/accessibility/accessibility_focus_ring_layer.h"
 #include "chromecast/graphics/accessibility/accessibility_highlight_layer.h"
@@ -481,7 +482,7 @@ void AccessibilityFocusRingController::ComputeOpacity(
   }
 
   // Layer::SetOpacity will throw an error if we're not within 0...1.
-  opacity = std::min(std::max(opacity, 0.0f), 1.0f);
+  opacity = base::ClampToRange(opacity, 0.0f, 1.0f);
 
   animation_info->opacity = opacity;
 }

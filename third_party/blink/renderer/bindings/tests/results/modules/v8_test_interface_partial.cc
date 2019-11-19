@@ -10,6 +10,8 @@
 // clang-format off
 #include "third_party/blink/renderer/bindings/tests/results/modules/v8_test_interface_partial.h"
 
+#include <algorithm>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -22,7 +24,6 @@
 #include "third_party/blink/renderer/bindings/tests/idls/modules/test_interface_partial_3_implementation.h"
 #include "third_party/blink/renderer/bindings/tests/idls/modules/test_interface_partial_4.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
@@ -30,6 +31,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/scheduler/public/cooperative_scheduling_manager.h"
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 
 namespace blink {
@@ -98,6 +100,8 @@ static void VoidMethodPartialOverload3Method(const v8::FunctionCallbackInfo<v8::
 }
 
 static void VoidMethodPartialOverloadMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  scheduler::CooperativeSchedulingManager::Instance()->Safepoint();
+
   bool is_arity_error = false;
 
   switch (std::min(1, info.Length())) {
@@ -129,6 +133,8 @@ static void StaticVoidMethodPartialOverload2Method(const v8::FunctionCallbackInf
 }
 
 static void StaticVoidMethodPartialOverloadMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  scheduler::CooperativeSchedulingManager::Instance()->Safepoint();
+
   bool is_arity_error = false;
 
   switch (std::min(1, info.Length())) {
@@ -165,7 +171,7 @@ static void PromiseMethodPartialOverload3Method(const v8::FunctionCallbackInfo<v
   Document* document;
   document = V8Document::ToImplWithTypeCheck(info.GetIsolate(), info[0]);
   if (!document) {
-    exception_state.ThrowTypeError("parameter 1 is not of type 'Document'.");
+    exception_state.ThrowTypeError(ExceptionMessages::ArgumentNotOfType(0, "Document"));
     return;
   }
 
@@ -173,6 +179,8 @@ static void PromiseMethodPartialOverload3Method(const v8::FunctionCallbackInfo<v
 }
 
 static void PromiseMethodPartialOverloadMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  scheduler::CooperativeSchedulingManager::Instance()->Safepoint();
+
   bool is_arity_error = false;
 
   switch (std::min(1, info.Length())) {
@@ -208,6 +216,8 @@ static void StaticPromiseMethodPartialOverload2Method(const v8::FunctionCallback
 }
 
 static void StaticPromiseMethodPartialOverloadMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  scheduler::CooperativeSchedulingManager::Instance()->Safepoint();
+
   bool is_arity_error = false;
 
   switch (std::min(1, info.Length())) {
@@ -247,7 +257,7 @@ static void Partial2VoidMethod3Method(const v8::FunctionCallbackInfo<v8::Value>&
   Node* node;
   node = V8Node::ToImplWithTypeCheck(info.GetIsolate(), info[0]);
   if (!node) {
-    V8ThrowException::ThrowTypeError(info.GetIsolate(), ExceptionMessages::FailedToExecute("partial2VoidMethod", "TestInterface", "parameter 1 is not of type 'Node'."));
+    V8ThrowException::ThrowTypeError(info.GetIsolate(), ExceptionMessages::FailedToExecute("partial2VoidMethod", "TestInterface", ExceptionMessages::ArgumentNotOfType(0, "Node")));
     return;
   }
 
@@ -255,6 +265,8 @@ static void Partial2VoidMethod3Method(const v8::FunctionCallbackInfo<v8::Value>&
 }
 
 static void Partial2VoidMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  scheduler::CooperativeSchedulingManager::Instance()->Safepoint();
+
   bool is_arity_error = false;
 
   switch (std::min(1, info.Length())) {
@@ -294,7 +306,7 @@ static void PartialVoidTestEnumModulesArgMethodMethod(const v8::FunctionCallback
   arg = info[0];
   if (!arg.Prepare())
     return;
-  const char* kValidArgValues[] = {
+  const char* const kValidArgValues[] = {
       "EnumModulesValue1",
       "EnumModulesValue2",
   };
@@ -315,6 +327,8 @@ static void Partial2StaticVoidMethod2Method(const v8::FunctionCallbackInfo<v8::V
 }
 
 static void Partial2StaticVoidMethodMethod(const v8::FunctionCallbackInfo<v8::Value>& info) {
+  scheduler::CooperativeSchedulingManager::Instance()->Safepoint();
+
   bool is_arity_error = false;
 
   switch (std::min(1, info.Length())) {
@@ -518,23 +532,14 @@ void V8TestInterfacePartial::InstallOriginTrialPartialFeature(
   bool is_secure_context = (execution_context && execution_context->IsSecureContext());
   if (is_secure_context) {
     static constexpr V8DOMConfiguration::AccessorConfiguration
-    kpartial4LongAttributeConfigurations[] = {
-        { "partial4LongAttribute", V8TestInterfacePartial::Partial4LongAttributeAttributeGetterCallback, V8TestInterfacePartial::Partial4LongAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds }
+    kAccessorConfigurations[] = {
+        { "partial4LongAttribute", V8TestInterfacePartial::Partial4LongAttributeAttributeGetterCallback, V8TestInterfacePartial::Partial4LongAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnPrototype, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
+        { "partial4StaticLongAttribute", V8TestInterfacePartial::Partial4StaticLongAttributeAttributeGetterCallback, V8TestInterfacePartial::Partial4StaticLongAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInterface, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds },
     };
-    for (const auto& config : kpartial4LongAttributeConfigurations) {
-      V8DOMConfiguration::InstallAccessor(isolate, world, instance, prototype,
-                                          interface, signature, config);
-    }
-  }
-  if (is_secure_context) {
-    static constexpr V8DOMConfiguration::AccessorConfiguration
-    kpartial4StaticLongAttributeConfigurations[] = {
-        { "partial4StaticLongAttribute", V8TestInterfacePartial::Partial4StaticLongAttributeAttributeGetterCallback, V8TestInterfacePartial::Partial4StaticLongAttributeAttributeSetterCallback, V8PrivateProperty::kNoCachedAccessor, static_cast<v8::PropertyAttribute>(v8::None), V8DOMConfiguration::kOnInterface, V8DOMConfiguration::kCheckHolder, V8DOMConfiguration::kHasSideEffect, V8DOMConfiguration::kAlwaysCallGetter, V8DOMConfiguration::kAllWorlds }
-    };
-    for (const auto& config : kpartial4StaticLongAttributeConfigurations) {
-      V8DOMConfiguration::InstallAccessor(isolate, world, instance, prototype,
-                                          interface, signature, config);
-    }
+    V8DOMConfiguration::InstallAccessors(
+        isolate, world, instance, prototype, interface,
+        signature, kAccessorConfigurations,
+        base::size(kAccessorConfigurations));
   }
   static constexpr V8DOMConfiguration::ConstantConfiguration
   kPARTIAL4UNSIGNEDSHORTConfiguration = {"PARTIAL4_UNSIGNED_SHORT", V8DOMConfiguration::kConstantTypeUnsignedShort, static_cast<int>(4)};

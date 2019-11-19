@@ -2142,6 +2142,8 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
           RESTORE_STACK;
           return 1;
        }
+    } else {
+       st->nb_no_activity_frames = 0;
     }
 #endif
 
@@ -2714,6 +2716,33 @@ int opus_encoder_ctl(OpusEncoder *st, int request, ...)
             opus_val16 *value = va_arg(ap, opus_val16*);
             st->energy_masking = value;
             ret = celt_encoder_ctl(celt_enc, OPUS_SET_ENERGY_MASK(value));
+        }
+        break;
+        case OPUS_GET_IN_DTX_REQUEST:
+        {
+            opus_int32 *value = va_arg(ap, opus_int32*);
+            if (!value)
+            {
+                goto bad_arg;
+            }
+            if (st->silk_mode.useDTX && (st->prev_mode == MODE_SILK_ONLY || st->prev_mode == MODE_HYBRID)) {
+                /* DTX determined by Silk. */
+                int n;
+                void *silk_enc = (char*)st+st->silk_enc_offset;
+                *value = 1;
+                for (n=0;n<st->silk_mode.nChannelsInternal;n++) {
+                    *value = *value && ((silk_encoder*)silk_enc)->state_Fxx[n].sCmn.noSpeechCounter >= NB_SPEECH_FRAMES_BEFORE_DTX;
+                }
+            }
+#ifndef DISABLE_FLOAT_API
+            else if (st->use_dtx) {
+                /* DTX determined by Opus. */
+                *value = st->nb_no_activity_frames >= NB_SPEECH_FRAMES_BEFORE_DTX;
+            }
+#endif
+            else {
+                *value = 0;
+            }
         }
         break;
 

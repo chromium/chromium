@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCHEDULED_ACTION_H_
 
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -48,25 +47,18 @@ class ScriptValue;
 class V8Function;
 class WorkerGlobalScope;
 
-class ScheduledAction final : public GarbageCollectedFinalized<ScheduledAction>,
+class ScheduledAction final : public GarbageCollected<ScheduledAction>,
                               public NameClient {
   DISALLOW_COPY_AND_ASSIGN(ScheduledAction);
 
  public:
-  static ScheduledAction* Create(ScriptState*,
-                                 ExecutionContext* target,
-                                 V8Function* handler,
-                                 const Vector<ScriptValue>& arguments);
-  static ScheduledAction* Create(ScriptState*,
-                                 ExecutionContext* target,
-                                 const String& handler);
-
-  explicit ScheduledAction(ScriptState*,
-                           V8Function* handler,
-                           const Vector<ScriptValue>& arguments);
-  explicit ScheduledAction(ScriptState*, const String& handler);
-  // Creates an empty ScheduledAction.
-  explicit ScheduledAction(ScriptState*);
+  ScheduledAction(ScriptState*,
+                  ExecutionContext* target,
+                  V8Function* handler,
+                  const HeapVector<ScriptValue>& arguments);
+  ScheduledAction(ScriptState*,
+                  ExecutionContext* target,
+                  const String& handler);
 
   ~ScheduledAction();
 
@@ -83,8 +75,8 @@ class ScheduledAction final : public GarbageCollectedFinalized<ScheduledAction>,
   void Execute(WorkerGlobalScope*);
 
   Member<ScriptStateProtectingContext> script_state_;
-  TraceWrapperMember<V8Function> function_;
-  Vector<ScriptValue> arguments_;
+  Member<V8Function> function_;
+  HeapVector<ScriptValue> arguments_;
   String code_;
 };
 

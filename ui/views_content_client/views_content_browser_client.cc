@@ -13,18 +13,15 @@ namespace ui {
 
 ViewsContentBrowserClient::ViewsContentBrowserClient(
     ViewsContentClient* views_content_client)
-    : views_content_main_parts_(NULL),
-      views_content_client_(views_content_client) {
-}
+    : views_content_client_(views_content_client) {}
 
 ViewsContentBrowserClient::~ViewsContentBrowserClient() {
 }
 
-content::BrowserMainParts* ViewsContentBrowserClient::CreateBrowserMainParts(
+std::unique_ptr<content::BrowserMainParts>
+ViewsContentBrowserClient::CreateBrowserMainParts(
     const content::MainFunctionParams& parameters) {
-  views_content_main_parts_ =
-      ViewsContentClientMainParts::Create(parameters, views_content_client_);
-  return views_content_main_parts_;
+  return ViewsContentClientMainParts::Create(parameters, views_content_client_);
 }
 
 void ViewsContentBrowserClient::GetQuotaSettings(
@@ -33,7 +30,7 @@ void ViewsContentBrowserClient::GetQuotaSettings(
     storage::OptionalQuotaSettingsCallback callback) {
   storage::GetNominalDynamicSettings(
       partition->GetPath(), context->IsOffTheRecord(),
-      storage::GetDefaultDiskInfoHelper(), std::move(callback));
+      storage::GetDefaultDeviceInfoHelper(), std::move(callback));
 }
 
 }  // namespace ui

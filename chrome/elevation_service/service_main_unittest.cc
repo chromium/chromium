@@ -25,6 +25,13 @@ const base::FilePath TestFile(const std::string& file) {
 
 }  // namespace
 
+namespace elevation_service {
+
+void SetupMockContext();
+void TeardownMockContext();
+
+}  // namespace elevation_service
+
 class ServiceMainTest : public testing::Test {
  protected:
   ServiceMainTest() = default;
@@ -37,8 +44,9 @@ class ServiceMainTest : public testing::Test {
     HRESULT hr = service_main_->RegisterClassObject();
     if (SUCCEEDED(hr))
       class_registration_succeeded_ = true;
-
     ASSERT_HRESULT_SUCCEEDED(hr);
+
+    service_main_->ResetExitSignaled();
   }
 
   void TearDown() override {
@@ -62,6 +70,8 @@ TEST_F(ServiceMainTest, ExitSignalTest) {
   // The waitable event starts unsignaled.
   ASSERT_FALSE(service_main()->IsExitSignaled());
 
+  elevation_service::SetupMockContext();
+
   Microsoft::WRL::ComPtr<IUnknown> unknown;
   ASSERT_HRESULT_SUCCEEDED(
       ::CoCreateInstance(install_static::GetElevatorClsid(), nullptr,
@@ -76,7 +86,8 @@ TEST_F(ServiceMainTest, ExitSignalTest) {
             elevator->RunRecoveryCRXElevated(
                 TestFile("ChromeRecovery.crx3").value().c_str(),
                 L"{c49ab053-2387-4809-b188-1902648802e1}", L"57.8.0.1",
-                L"{c49ab053-2387-4809-b188-1902648802e1}", 0, &proc_handle));
+                L"{c49ab053-2387-4809-b188-1902648802e1}",
+                ::GetCurrentProcessId(), &proc_handle));
 
   // An object instance has been created upon the request, and is held by the
   // server module. Therefore, the waitable event remains unsignaled.
@@ -85,5 +96,7 @@ TEST_F(ServiceMainTest, ExitSignalTest) {
   // Release the instance object. Now that the last (and the only) instance
   // object of the module is released, the event becomes signaled.
   elevator.Reset();
+  elevation_service::TeardownMockContext();
+
   ASSERT_TRUE(service_main()->IsExitSignaled());
 }

@@ -48,7 +48,7 @@ public final class ErrorCodeConversionHelper {
     // Request was identified as a bad url by safebrowsing.
     public static final int ERROR_UNSAFE_RESOURCE = WebViewClient.ERROR_UNSAFE_RESOURCE;
 
-    static int convertErrorCode(int netError) {
+    static int convertErrorCode(@NetError int netError) {
         // Note: many NetError.Error constants don't have an obvious mapping.
         // These will be handled by the default case, ERROR_UNKNOWN.
         switch (netError) {

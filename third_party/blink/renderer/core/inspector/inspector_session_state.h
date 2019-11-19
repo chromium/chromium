@@ -7,10 +7,11 @@
 
 #include <memory>
 #include <type_traits>
-#include <vector>
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/inspector_protocol/crdtp/json.h"
 
 namespace blink {
 class InspectorAgentState;
@@ -29,7 +30,7 @@ class CORE_EXPORT InspectorSessionState {
   // that are sent back to the browser.
   // A null string for |value| indicates a deletion.
   // TODO(johannes): Lower cost of repeated updates.
-  void EnqueueUpdate(const WTF::String& key, const WTF::String& value);
+  void EnqueueUpdate(const WTF::String& key, const WebVector<uint8_t>* value);
 
   // Yields and consumes the field updates that have thus far accumulated.
   // These updates are sent back to DevToolsSession on the browser side.
@@ -45,18 +46,20 @@ class CORE_EXPORT InspectorSessionState {
 class CORE_EXPORT InspectorAgentState {
  private:
   // Trivial Helpers for converting between the value types used for the agent
-  // state fields and JSON strings used for the wire protocol. The point of
+  // state fields and CBOR byte arrays used for the wire protocol. The point of
   // these is to be able to call overloaded methods from the template
   // implementations below; they just delegate to protocol::Value parsing
   // and serialization.
-  static void EncodeToJSON(bool v, WTF::String* out);
-  static bool DecodeFromJSON(const WTF::String& in, bool* v);
-  static void EncodeToJSON(int32_t v, WTF::String* out);
-  static bool DecodeFromJSON(const WTF::String& in, int32_t* v);
-  static void EncodeToJSON(double v, WTF::String* out);
-  static bool DecodeFromJSON(const WTF::String& in, double* v);
-  static void EncodeToJSON(const WTF::String& v, WTF::String* out);
-  static bool DecodeFromJSON(const WTF::String& in, WTF::String* v);
+  static void Serialize(bool v, WebVector<uint8_t>* out);
+  static bool Deserialize(crdtp::span<uint8_t> in, bool* v);
+  static void Serialize(int32_t v, WebVector<uint8_t>* out);
+  static bool Deserialize(crdtp::span<uint8_t> in, int32_t* v);
+  static void Serialize(double v, WebVector<uint8_t>* out);
+  static bool Deserialize(crdtp::span<uint8_t> in, double* v);
+  static void Serialize(const WTF::String& v, WebVector<uint8_t>* out);
+  static bool Deserialize(crdtp::span<uint8_t> in, WTF::String* v);
+  static void Serialize(const std::vector<uint8_t>& v, WebVector<uint8_t>* out);
+  static bool Deserialize(crdtp::span<uint8_t> in, std::vector<uint8_t>* v);
 
  public:
   // A field is connected to the |agent_state|, which initializes the field
@@ -119,9 +122,9 @@ class CORE_EXPORT InspectorAgentState {
         return;
       }
       value_ = value;
-      WTF::String encoded_value;
-      EncodeToJSON(value, &encoded_value);
-      session_state_->EnqueueUpdate(prefix_key_, encoded_value);
+      WebVector<uint8_t> encoded_value;
+      Serialize(value, &encoded_value);
+      session_state_->EnqueueUpdate(prefix_key_, &encoded_value);
     }
 
     // Clears the field to its default.
@@ -129,7 +132,7 @@ class CORE_EXPORT InspectorAgentState {
       if (default_value_ == value_)
         return;
       value_ = default_value_;
-      session_state_->EnqueueUpdate(prefix_key_, WTF::String());
+      session_state_->EnqueueUpdate(prefix_key_, nullptr);
     }
 
    private:
@@ -141,8 +144,10 @@ class CORE_EXPORT InspectorAgentState {
       if (!reattach_state)
         return;
       auto it = reattach_state->entries.find(prefix_key_);
-      if (it != reattach_state->entries.end())
-        DecodeFromJSON(it->value, &value_);
+      if (it != reattach_state->entries.end()) {
+        Deserialize(crdtp::span<uint8_t>(it->value->data(), it->value->size()),
+                    &value_);
+      }
     }
 
     const ValueType default_value_;
@@ -168,10 +173,10 @@ class CORE_EXPORT InspectorAgentState {
 
     // Enumerates the keys for which values are stored in this field.
     // The order of the keys is undefined.
-    std::vector<WTF::String> Keys() const {
+    Vector<WTF::String> Keys() const {
       // TODO(johannes): It'd be nice to avoid copying; unfortunately
       // it didn't seem easy to return map_.Keys().
-      std::vector<WTF::String> keys;
+      Vector<WTF::String> keys;
       for (const WTF::String& s : map_.Keys())
         keys.push_back(s);
       return keys;
@@ -198,9 +203,9 @@ class CORE_EXPORT InspectorAgentState {
       if (it != map_.end() && it->value == value)
         return;
       map_.Set(key, value);
-      WTF::String encoded_value;
-      EncodeToJSON(value, &encoded_value);
-      session_state_->EnqueueUpdate(prefix_key_ + key, encoded_value);
+      WebVector<uint8_t> encoded_value;
+      Serialize(value, &encoded_value);
+      session_state_->EnqueueUpdate(prefix_key_ + key, &encoded_value);
     }
 
     // Clears the entry for |key|.
@@ -209,14 +214,15 @@ class CORE_EXPORT InspectorAgentState {
       if (it == map_.end())
         return;
       map_.erase(it);
-      session_state_->EnqueueUpdate(prefix_key_ + key, WTF::String());
+      session_state_->EnqueueUpdate(prefix_key_ + key, nullptr);
     }
 
     // Clears the entire field.
     void Clear() override {
       // TODO(johannes): Handle this in a single update.
-      for (const WTF::String& key : map_.Keys())
-        session_state_->EnqueueUpdate(prefix_key_ + key, WTF::String());
+      for (const WTF::String& key : map_.Keys()) {
+        session_state_->EnqueueUpdate(prefix_key_ + key, nullptr);
+      }
       map_.clear();
     }
 
@@ -235,8 +241,11 @@ class CORE_EXPORT InspectorAgentState {
           continue;
         WTF::String suffix_key = entry.key.Substring(prefix_key_.length());
         ValueType v;
-        if (DecodeFromJSON(entry.value, &v))
+        if (Deserialize(
+                crdtp::span<uint8_t>(entry.value->data(), entry.value->size()),
+                &v)) {
           map_.Set(suffix_key, v);
+        }
       }
     }
 
@@ -248,6 +257,7 @@ class CORE_EXPORT InspectorAgentState {
   using Integer = SimpleField<int32_t>;
   using Double = SimpleField<double>;
   using String = SimpleField<WTF::String>;
+  using Bytes = SimpleField<std::vector<uint8_t>>;
   using BooleanMap = MapField<bool>;
   using IntegerMap = MapField<int32_t>;
   using DoubleMap = MapField<double>;
@@ -270,7 +280,7 @@ class CORE_EXPORT InspectorAgentState {
 
  private:
   const WTF::String domain_name_;
-  std::vector<Field*> fields_;
+  Vector<Field*> fields_;
 };
 }  // namespace blink
 

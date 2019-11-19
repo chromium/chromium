@@ -13,6 +13,7 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
+#include "ui/platform_window/platform_window_base.h"
 #include "ui/platform_window/platform_window_handler/wm_drag_handler.h"
 #include "ui/platform_window/platform_window_handler/wm_drop_handler.h"
 #include "ui/views/test/views_test_base.h"
@@ -24,15 +25,17 @@
 namespace views {
 
 namespace {
-class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
+class FakePlatformWindow : public ui::PlatformWindowBase,
+                           public ui::WmDragHandler {
  public:
   FakePlatformWindow() { SetWmDragHandler(this, this); }
   ~FakePlatformWindow() override = default;
 
   // ui::PlatformWindow
-  void Show() override {}
+  void Show(bool inactive) override {}
   void Hide() override {}
   void Close() override {}
+  bool IsVisible() const override { return true; }
   void PrepareForShutdown() override {}
   void SetBounds(const gfx::Rect& bounds) override {}
   gfx::Rect GetBounds() override { return gfx::Rect(); }
@@ -45,16 +48,20 @@ class FakePlatformWindow : public ui::PlatformWindow, public ui::WmDragHandler {
   void Minimize() override {}
   void Restore() override {}
   ui::PlatformWindowState GetPlatformWindowState() const override {
-    return ui::PlatformWindowState::PLATFORM_WINDOW_STATE_NORMAL;
+    return ui::PlatformWindowState::kNormal;
   }
+  void Activate() override {}
+  void Deactivate() override {}
   void SetCursor(ui::PlatformCursor cursor) override {}
   void MoveCursorTo(const gfx::Point& location) override {}
   void ConfineCursorToBounds(const gfx::Rect& bounds) override {}
-  ui::PlatformImeController* GetPlatformImeController() override {
-    return nullptr;
-  }
   void SetRestoredBoundsInPixels(const gfx::Rect& bounds) override {}
   gfx::Rect GetRestoredBoundsInPixels() const override { return gfx::Rect(); }
+  void SetUseNativeFrame(bool use_native_frame) override {}
+  bool ShouldUseNativeFrame() const override { return false; }
+  void SetWindowIcons(const gfx::ImageSkia& window_icon,
+                      const gfx::ImageSkia& app_icon) override {}
+  void SizeConstraintsChanged() override {}
 
   // ui::WmDragHandler
   void StartDrag(const OSExchangeData& data,
@@ -147,10 +154,10 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
 
   void OnDragExited() override { ++num_exits_; }
 
-  int OnPerformDrop(const ui::DropTargetEvent& event) override {
+  int OnPerformDrop(const ui::DropTargetEvent& event,
+                    std::unique_ptr<ui::OSExchangeData> data) override {
     ++num_drops_;
-    received_data_ =
-        std::make_unique<OSExchangeData>(event.data().provider().Clone());
+    received_data_ = std::move(data);
     return destination_operation_;
   }
 
@@ -172,16 +179,16 @@ class DesktopDragDropClientOzoneTest : public ViewsTestBase {
   ~DesktopDragDropClientOzoneTest() override = default;
 
   int StartDragAndDrop(int operation) {
-    ui::OSExchangeData data;
-    data.SetString(base::ASCIIToUTF16("Test"));
+    auto data = std::make_unique<ui::OSExchangeData>();
+    data->SetString(base::ASCIIToUTF16("Test"));
     SkBitmap drag_bitmap;
     drag_bitmap.allocN32Pixels(10, 10);
     drag_bitmap.eraseARGB(0xFF, 0, 0, 0);
     gfx::ImageSkia drag_image(gfx::ImageSkia::CreateFrom1xBitmap(drag_bitmap));
-    data.provider().SetDragImage(drag_image, gfx::Vector2d());
+    data->provider().SetDragImage(drag_image, gfx::Vector2d());
 
     return client_->StartDragAndDrop(
-        data, widget_->GetNativeWindow()->GetRootWindow(),
+        std::move(data), widget_->GetNativeWindow()->GetRootWindow(),
         widget_->GetNativeWindow(), gfx::Point(), operation,
         ui::DragDropTypes::DRAG_EVENT_SOURCE_MOUSE);
   }
@@ -197,7 +204,7 @@ class DesktopDragDropClientOzoneTest : public ViewsTestBase {
     Widget::InitParams params(Widget::InitParams::TYPE_WINDOW);
     params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     params.bounds = gfx::Rect(100, 100);
-    widget_->Init(params);
+    widget_->Init(std::move(params));
     widget_->Show();
 
     // Creates FakeDragDropDelegate and set it for |window|.

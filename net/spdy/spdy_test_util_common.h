@@ -27,7 +27,7 @@
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_response_info.h"
-#include "net/http/http_server_properties_impl.h"
+#include "net/http/http_server_properties.h"
 #include "net/http/transport_security_state.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/socket/socket_test_util.h"
@@ -53,6 +53,8 @@ class CTPolicyEnforcer;
 class HashValue;
 class HostPortPair;
 class HostResolver;
+class QuicContext;
+class HttpUserAgentSettings;
 class NetLogWithSource;
 class SpdySessionKey;
 class SpdyStream;
@@ -207,15 +209,16 @@ struct SpdySessionDependencies {
   // For using a HostResolver not derived from MockHostResolverBase.
   std::unique_ptr<HostResolver> alternate_host_resolver;
   std::unique_ptr<CertVerifier> cert_verifier;
-  std::unique_ptr<ChannelIDService> channel_id_service;
   std::unique_ptr<TransportSecurityState> transport_security_state;
   std::unique_ptr<CTVerifier> cert_transparency_verifier;
   std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer;
   std::unique_ptr<ProxyResolutionService> proxy_resolution_service;
+  std::unique_ptr<HttpUserAgentSettings> http_user_agent_settings;
   std::unique_ptr<SSLConfigService> ssl_config_service;
   std::unique_ptr<MockClientSocketFactory> socket_factory;
   std::unique_ptr<HttpAuthHandlerFactory> http_auth_handler_factory;
-  std::unique_ptr<HttpServerPropertiesImpl> http_server_properties;
+  std::unique_ptr<HttpServerProperties> http_server_properties;
+  std::unique_ptr<QuicContext> quic_context;
 #if BUILDFLAG(ENABLE_REPORTING)
   std::unique_ptr<ReportingService> reporting_service;
   std::unique_ptr<NetworkErrorLoggingService> network_error_logging_service;
@@ -226,14 +229,16 @@ struct SpdySessionDependencies {
   bool enable_quic;
   bool enable_server_push_cancellation;
   size_t session_max_recv_window_size;
+  int session_max_queued_capped_frames;
   spdy::SettingsMap http2_settings;
   SpdySession::TimeFunc time_func;
   bool enable_http2_alternative_service;
   bool enable_websocket_over_http2;
   base::Optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
   NetLog* net_log;
-  bool http_09_on_non_default_ports_enabled;
   bool disable_idle_sockets_close_on_memory_pressure;
+  bool enable_early_data;
+  bool key_auth_cache_server_entries_by_network_isolation_key;
 };
 
 class SpdyURLRequestContext : public URLRequestContext {

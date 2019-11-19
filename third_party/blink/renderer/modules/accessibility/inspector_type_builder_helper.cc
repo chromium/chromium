@@ -11,8 +11,7 @@
 
 namespace blink {
 
-using namespace html_names;
-using namespace protocol::Accessibility;
+using protocol::Accessibility::AXRelatedNode;
 
 std::unique_ptr<AXProperty> CreateProperty(const String& name,
                                            std::unique_ptr<AXValue> value) {
@@ -108,10 +107,10 @@ std::unique_ptr<AXRelatedNode> RelatedNodeForAXObject(const AXObject& ax_object,
     return nullptr;
   std::unique_ptr<AXRelatedNode> related_node =
       AXRelatedNode::create().setBackendDOMNodeId(backend_node_id).build();
-  if (!node->IsElementNode())
+  auto* element = DynamicTo<Element>(node);
+  if (!element)
     return related_node;
 
-  Element* element = ToElement(node);
   String idref = element->GetIdAttribute();
   if (!idref.IsEmpty())
     related_node->setIdref(idref);
@@ -124,9 +123,8 @@ std::unique_ptr<AXRelatedNode> RelatedNodeForAXObject(const AXObject& ax_object,
 std::unique_ptr<AXValue> CreateRelatedNodeListValue(const AXObject& ax_object,
                                                     String* name,
                                                     const String& value_type) {
-  std::unique_ptr<protocol::Array<AXRelatedNode>> related_nodes =
-      protocol::Array<AXRelatedNode>::create();
-  related_nodes->addItem(RelatedNodeForAXObject(ax_object, name));
+  auto related_nodes = std::make_unique<protocol::Array<AXRelatedNode>>();
+  related_nodes->emplace_back(RelatedNodeForAXObject(ax_object, name));
   return AXValue::create()
       .setType(value_type)
       .setRelatedNodes(std::move(related_nodes))
@@ -136,14 +134,14 @@ std::unique_ptr<AXValue> CreateRelatedNodeListValue(const AXObject& ax_object,
 std::unique_ptr<AXValue> CreateRelatedNodeListValue(
     AXRelatedObjectVector& related_objects,
     const String& value_type) {
-  std::unique_ptr<protocol::Array<AXRelatedNode>> frontend_related_nodes =
-      protocol::Array<AXRelatedNode>::create();
+  auto frontend_related_nodes =
+      std::make_unique<protocol::Array<AXRelatedNode>>();
   for (unsigned i = 0; i < related_objects.size(); i++) {
     std::unique_ptr<AXRelatedNode> frontend_related_node =
         RelatedNodeForAXObject(*(related_objects[i]->object),
                                &(related_objects[i]->text));
     if (frontend_related_node)
-      frontend_related_nodes->addItem(std::move(frontend_related_node));
+      frontend_related_nodes->emplace_back(std::move(frontend_related_node));
   }
   return AXValue::create()
       .setType(value_type)
@@ -154,13 +152,12 @@ std::unique_ptr<AXValue> CreateRelatedNodeListValue(
 std::unique_ptr<AXValue> CreateRelatedNodeListValue(
     AXObject::AXObjectVector& ax_objects,
     const String& value_type) {
-  std::unique_ptr<protocol::Array<AXRelatedNode>> related_nodes =
-      protocol::Array<AXRelatedNode>::create();
+  auto related_nodes = std::make_unique<protocol::Array<AXRelatedNode>>();
   for (unsigned i = 0; i < ax_objects.size(); i++) {
     std::unique_ptr<AXRelatedNode> related_node =
         RelatedNodeForAXObject(*(ax_objects[i].Get()));
     if (related_node)
-      related_nodes->addItem(std::move(related_node));
+      related_nodes->emplace_back(std::move(related_node));
   }
   return AXValue::create()
       .setType(value_type)
@@ -169,43 +166,46 @@ std::unique_ptr<AXValue> CreateRelatedNodeListValue(
 }
 
 String ValueSourceType(ax::mojom::NameFrom name_from) {
+  namespace SourceType = protocol::Accessibility::AXValueSourceTypeEnum;
+
   switch (name_from) {
     case ax::mojom::NameFrom::kAttribute:
     case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
     case ax::mojom::NameFrom::kTitle:
     case ax::mojom::NameFrom::kValue:
-      return AXValueSourceTypeEnum::Attribute;
+      return SourceType::Attribute;
     case ax::mojom::NameFrom::kContents:
-      return AXValueSourceTypeEnum::Contents;
+      return SourceType::Contents;
     case ax::mojom::NameFrom::kPlaceholder:
-      return AXValueSourceTypeEnum::Placeholder;
+      return SourceType::Placeholder;
     case ax::mojom::NameFrom::kCaption:
     case ax::mojom::NameFrom::kRelatedElement:
-      return AXValueSourceTypeEnum::RelatedElement;
+      return SourceType::RelatedElement;
     default:
-      return AXValueSourceTypeEnum::Implicit;  // TODO(aboxhall): what to do
-                                               // here?
+      return SourceType::Implicit;  // TODO(aboxhall): what to do here?
   }
 }
 
 String NativeSourceType(AXTextFromNativeHTML native_source) {
+  namespace SourceType = protocol::Accessibility::AXValueNativeSourceTypeEnum;
+
   switch (native_source) {
     case kAXTextFromNativeHTMLFigcaption:
-      return AXValueNativeSourceTypeEnum::Figcaption;
+      return SourceType::Figcaption;
     case kAXTextFromNativeHTMLLabel:
-      return AXValueNativeSourceTypeEnum::Label;
+      return SourceType::Label;
     case kAXTextFromNativeHTMLLabelFor:
-      return AXValueNativeSourceTypeEnum::Labelfor;
+      return SourceType::Labelfor;
     case kAXTextFromNativeHTMLLabelWrapped:
-      return AXValueNativeSourceTypeEnum::Labelwrapped;
+      return SourceType::Labelwrapped;
     case kAXTextFromNativeHTMLTableCaption:
-      return AXValueNativeSourceTypeEnum::Tablecaption;
+      return SourceType::Tablecaption;
     case kAXTextFromNativeHTMLLegend:
-      return AXValueNativeSourceTypeEnum::Legend;
+      return SourceType::Legend;
     case kAXTextFromNativeHTMLTitleElement:
-      return AXValueNativeSourceTypeEnum::Title;
+      return SourceType::Title;
     default:
-      return AXValueNativeSourceTypeEnum::Other;
+      return SourceType::Other;
   }
 }
 
@@ -214,8 +214,8 @@ std::unique_ptr<AXValueSource> CreateValueSource(NameSource& name_source) {
   std::unique_ptr<AXValueSource> value_source =
       AXValueSource::create().setType(type).build();
   if (!name_source.related_objects.IsEmpty()) {
-    if (name_source.attribute == kAriaLabelledbyAttr ||
-        name_source.attribute == kAriaLabeledbyAttr) {
+    if (name_source.attribute == html_names::kAriaLabelledbyAttr ||
+        name_source.attribute == html_names::kAriaLabeledbyAttr) {
       std::unique_ptr<AXValue> attribute_value = CreateRelatedNodeListValue(
           name_source.related_objects, AXValueTypeEnum::IdrefList);
       if (!name_source.attribute_value.IsNull())

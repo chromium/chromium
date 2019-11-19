@@ -31,15 +31,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LAYOUT_UNIT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LAYOUT_UNIT_H_
 
+#include <climits>
 #include <iosfwd>
 #include <limits>
+
 #include "base/compiler_specific.h"
+#include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/saturated_arithmetic.h"
 
 namespace blink {
 
@@ -57,6 +60,30 @@ static const int kFixedPointDenominator = 1 << kLayoutUnitFractionalBits;
 const int kIntMaxForLayoutUnit = INT_MAX / kFixedPointDenominator;
 const int kIntMinForLayoutUnit = INT_MIN / kFixedPointDenominator;
 
+#if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS) && \
+    defined(COMPILER_GCC) && !defined(OS_NACL) && __OPTIMIZE__
+inline int GetMaxSaturatedSetResultForTesting() {
+  // For ARM Asm version the set function maxes out to the biggest
+  // possible integer part with the fractional part zero'd out.
+  // e.g. 0x7fffffc0.
+  return std::numeric_limits<int>::max() & ~(kFixedPointDenominator - 1);
+}
+
+inline int GetMinSaturatedSetResultForTesting() {
+  return std::numeric_limits<int>::min();
+}
+#else
+ALWAYS_INLINE int GetMaxSaturatedSetResultForTesting() {
+  // For C version the set function maxes out to max int, this differs from
+  // the ARM asm version.
+  return std::numeric_limits<int>::max();
+}
+
+ALWAYS_INLINE int GetMinSaturatedSetResultForTesting() {
+  return std::numeric_limits<int>::min();
+}
+#endif  // CPU(ARM) && COMPILER(GCC)
+
 // TODO(thakis): Remove these two lines once http://llvm.org/PR26504 is resolved
 class PLATFORM_EXPORT LayoutUnit;
 constexpr inline bool operator<(const LayoutUnit&, const LayoutUnit&);
@@ -66,21 +93,19 @@ class LayoutUnit {
 
  public:
   constexpr LayoutUnit() : value_(0) {}
-  explicit LayoutUnit(int value) { SetValue(value); }
-  explicit LayoutUnit(uint16_t value) { SetValue(value); }
-  explicit LayoutUnit(unsigned value) { SetValue(value); }
-  explicit LayoutUnit(unsigned long value) {
-    value_ = base::saturated_cast<int>(value * kFixedPointDenominator);
+  template <typename IntegerType>
+  constexpr explicit LayoutUnit(IntegerType value) {
+    if (std::is_signed<IntegerType>::value)
+      SaturatedSet(static_cast<int>(value));
+    else
+      SaturatedSet(static_cast<unsigned>(value));
   }
-  explicit LayoutUnit(unsigned long long value) {
-    value_ = base::saturated_cast<int>(value * kFixedPointDenominator);
-  }
-  explicit LayoutUnit(float value) {
-    value_ = base::saturated_cast<int>(value * kFixedPointDenominator);
-  }
-  explicit LayoutUnit(double value) {
-    value_ = base::saturated_cast<int>(value * kFixedPointDenominator);
-  }
+  constexpr explicit LayoutUnit(uint64_t value)
+      : value_(base::saturated_cast<int>(value * kFixedPointDenominator)) {}
+  constexpr explicit LayoutUnit(float value)
+      : value_(base::saturated_cast<int>(value * kFixedPointDenominator)) {}
+  constexpr explicit LayoutUnit(double value)
+      : value_(base::saturated_cast<int>(value * kFixedPointDenominator)) {}
 
   static LayoutUnit FromFloatCeil(float value) {
     LayoutUnit v;
@@ -132,13 +157,13 @@ class LayoutUnit {
   constexpr operator bool() const { return value_; }
 
   LayoutUnit operator++(int) {
-    value_ = ClampAdd(value_, kFixedPointDenominator);
+    value_ = base::ClampAdd(value_, kFixedPointDenominator);
     return *this;
   }
 
   constexpr int RawValue() const { return value_; }
   inline void SetRawValue(int value) { value_ = value; }
-  void SetRawValue(long long value) {
+  void SetRawValue(int64_t value) {
     REPORT_OVERFLOW(value > std::numeric_limits<int>::min() &&
                     value < std::numeric_limits<int>::max());
     value_ = static_cast<int>(value);
@@ -177,10 +202,13 @@ class LayoutUnit {
     return value_ > 0 ? LayoutUnit() : *this;
   }
 
+  constexpr bool HasFraction() const {
+    return RawValue() % kFixedPointDenominator;
+  }
+
   LayoutUnit Fraction() const {
-    // Add the fraction to the size (as opposed to the full location) to avoid
-    // overflows.  Compute fraction using the mod operator to preserve the sign
-    // of the value as it may affect rounding.
+    // Compute fraction using the mod operator to preserve the sign of the value
+    // as it may affect rounding.
     LayoutUnit fraction;
     fraction.SetRawValue(RawValue() % kFixedPointDenominator);
     return fraction;
@@ -242,13 +270,78 @@ class LayoutUnit {
            std::numeric_limits<int>::max() / kFixedPointDenominator;
   }
 
-  ALWAYS_INLINE void SetValue(int value) {
-    value_ = SaturatedSet<kLayoutUnitFractionalBits>(value);
+#if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS) && \
+    defined(COMPILER_GCC) && !defined(OS_NACL) && __OPTIMIZE__
+  // If we're building ARM 32-bit on GCC we replace the C++ versions with some
+  // native ARM assembly for speed.
+  inline void SaturatedSet(int value) {
+    // Figure out how many bits are left for storing the integer part of
+    // the fixed point number, and saturate our input to that
+    enum { Saturate = 32 - kLayoutUnitFractionalBits };
+
+    int result;
+
+    // The following ARM code will Saturate the passed value to the number of
+    // bits used for the whole part of the fixed point representation, then
+    // shift it up into place. This will result in the low
+    // <kLayoutUnitFractionalBits> bits all being 0's. When the value saturates
+    // this gives a different result to from the C++ case; in the C++ code a
+    // saturated value has all the low bits set to 1 (for a +ve number at
+    // least). This cannot be done rapidly in ARM ... we live with the
+    // difference, for the sake of speed.
+
+    asm("ssat %[output],%[saturate],%[value]\n\t"
+        "lsl  %[output],%[shift]"
+        : [output] "=r"(result)
+        : [value] "r"(value), [saturate] "n"(Saturate),
+          [shift] "n"(kLayoutUnitFractionalBits));
+
+    value_ = result;
   }
 
-  inline void SetValue(unsigned value) {
-    value_ = SaturatedSet<kLayoutUnitFractionalBits>(value);
+  inline void SaturatedSet(unsigned value) {
+    // Here we are being passed an unsigned value to saturate,
+    // even though the result is returned as a signed integer. The ARM
+    // instruction for unsigned saturation therefore needs to be given one
+    // less bit (i.e. the sign bit) for the saturation to work correctly; hence
+    // the '31' below.
+    enum { Saturate = 31 - kLayoutUnitFractionalBits };
+
+    // The following ARM code will Saturate the passed value to the number of
+    // bits used for the whole part of the fixed point representation, then
+    // shift it up into place. This will result in the low
+    // <kLayoutUnitFractionalBits> bits all being 0's. When the value saturates
+    // this gives a different result to from the C++ case; in the C++ code a
+    // saturated value has all the low bits set to 1. This cannot be done
+    // rapidly in ARM, so we live with the difference, for the sake of speed.
+
+    int result;
+
+    asm("usat %[output],%[saturate],%[value]\n\t"
+        "lsl  %[output],%[shift]"
+        : [output] "=r"(result)
+        : [value] "r"(value), [saturate] "n"(Saturate),
+          [shift] "n"(kLayoutUnitFractionalBits));
+
+    value_ = result;
   }
+#else
+  ALWAYS_INLINE void SaturatedSet(int value) {
+    if (value > kIntMaxForLayoutUnit)
+      value_ = std::numeric_limits<int>::max();
+    else if (value < kIntMinForLayoutUnit)
+      value_ = std::numeric_limits<int>::min();
+    else
+      value_ = static_cast<unsigned>(value) << kLayoutUnitFractionalBits;
+  }
+
+  ALWAYS_INLINE void SaturatedSet(unsigned value) {
+    if (value >= (unsigned)kIntMaxForLayoutUnit)
+      value_ = std::numeric_limits<int>::max();
+    else
+      value_ = value << kLayoutUnitFractionalBits;
+  }
+#endif  // CPU(ARM) && COMPILER(GCC)
 
   int value_;
 };
@@ -413,43 +506,13 @@ inline float operator*(const LayoutUnit& a, float b) {
   return a.ToFloat() * b;
 }
 
-inline LayoutUnit operator*(const LayoutUnit& a, int b) {
+template <typename IntegerType>
+inline LayoutUnit operator*(const LayoutUnit& a, IntegerType b) {
   return a * LayoutUnit(b);
 }
 
-inline LayoutUnit operator*(const LayoutUnit& a, uint16_t b) {
-  return a * LayoutUnit(b);
-}
-
-inline LayoutUnit operator*(const LayoutUnit& a, unsigned b) {
-  return a * LayoutUnit(b);
-}
-
-inline LayoutUnit operator*(const LayoutUnit& a, unsigned long b) {
-  return a * LayoutUnit(b);
-}
-
-inline LayoutUnit operator*(const LayoutUnit& a, unsigned long long b) {
-  return a * LayoutUnit(b);
-}
-
-inline LayoutUnit operator*(uint16_t a, const LayoutUnit& b) {
-  return LayoutUnit(a) * b;
-}
-
-inline LayoutUnit operator*(unsigned a, const LayoutUnit& b) {
-  return LayoutUnit(a) * b;
-}
-
-inline LayoutUnit operator*(unsigned long a, const LayoutUnit& b) {
-  return LayoutUnit(a) * b;
-}
-
-inline LayoutUnit operator*(unsigned long long a, const LayoutUnit& b) {
-  return LayoutUnit(a) * b;
-}
-
-inline LayoutUnit operator*(const int a, const LayoutUnit& b) {
+template <typename IntegerType>
+inline LayoutUnit operator*(IntegerType a, const LayoutUnit& b) {
   return LayoutUnit(a) * b;
 }
 
@@ -463,8 +526,8 @@ constexpr double operator*(const double a, const LayoutUnit& b) {
 
 inline LayoutUnit operator/(const LayoutUnit& a, const LayoutUnit& b) {
   LayoutUnit return_val;
-  long long raw_val = static_cast<long long>(kFixedPointDenominator) *
-                      a.RawValue() / b.RawValue();
+  int64_t raw_val = static_cast<int64_t>(kFixedPointDenominator) *
+                    a.RawValue() / b.RawValue();
   return_val.SetRawValue(base::saturated_cast<int>(raw_val));
   return return_val;
 }
@@ -477,23 +540,8 @@ constexpr double operator/(const LayoutUnit& a, double b) {
   return a.ToDouble() / b;
 }
 
-inline LayoutUnit operator/(const LayoutUnit& a, int b) {
-  return a / LayoutUnit(b);
-}
-
-inline LayoutUnit operator/(const LayoutUnit& a, uint16_t b) {
-  return a / LayoutUnit(b);
-}
-
-inline LayoutUnit operator/(const LayoutUnit& a, unsigned b) {
-  return a / LayoutUnit(b);
-}
-
-inline LayoutUnit operator/(const LayoutUnit& a, unsigned long b) {
-  return a / LayoutUnit(b);
-}
-
-inline LayoutUnit operator/(const LayoutUnit& a, unsigned long long b) {
+template <typename IntegerType>
+inline LayoutUnit operator/(const LayoutUnit& a, IntegerType b) {
   return a / LayoutUnit(b);
 }
 
@@ -505,33 +553,19 @@ constexpr double operator/(const double a, const LayoutUnit& b) {
   return a / b.ToDouble();
 }
 
-inline LayoutUnit operator/(const int a, const LayoutUnit& b) {
-  return LayoutUnit(a) / b;
-}
-
-inline LayoutUnit operator/(uint16_t a, const LayoutUnit& b) {
-  return LayoutUnit(a) / b;
-}
-
-inline LayoutUnit operator/(unsigned a, const LayoutUnit& b) {
-  return LayoutUnit(a) / b;
-}
-
-inline LayoutUnit operator/(unsigned long a, const LayoutUnit& b) {
-  return LayoutUnit(a) / b;
-}
-
-inline LayoutUnit operator/(unsigned long long a, const LayoutUnit& b) {
+template <typename IntegerType>
+inline LayoutUnit operator/(const IntegerType a, const LayoutUnit& b) {
   return LayoutUnit(a) / b;
 }
 
 ALWAYS_INLINE LayoutUnit operator+(const LayoutUnit& a, const LayoutUnit& b) {
   LayoutUnit return_val;
-  return_val.SetRawValue(ClampAdd(a.RawValue(), b.RawValue()).RawValue());
+  return_val.SetRawValue(base::ClampAdd(a.RawValue(), b.RawValue()).RawValue());
   return return_val;
 }
 
-inline LayoutUnit operator+(const LayoutUnit& a, int b) {
+template <typename IntegerType>
+inline LayoutUnit operator+(const LayoutUnit& a, IntegerType b) {
   return a + LayoutUnit(b);
 }
 
@@ -543,7 +577,8 @@ inline double operator+(const LayoutUnit& a, double b) {
   return a.ToDouble() + b;
 }
 
-inline LayoutUnit operator+(const int a, const LayoutUnit& b) {
+template <typename IntegerType>
+inline LayoutUnit operator+(const IntegerType a, const LayoutUnit& b) {
   return LayoutUnit(a) + b;
 }
 
@@ -557,15 +592,12 @@ constexpr inline double operator+(const double a, const LayoutUnit& b) {
 
 ALWAYS_INLINE LayoutUnit operator-(const LayoutUnit& a, const LayoutUnit& b) {
   LayoutUnit return_val;
-  return_val.SetRawValue(ClampSub(a.RawValue(), b.RawValue()).RawValue());
+  return_val.SetRawValue(base::ClampSub(a.RawValue(), b.RawValue()).RawValue());
   return return_val;
 }
 
-inline LayoutUnit operator-(const LayoutUnit& a, int b) {
-  return a - LayoutUnit(b);
-}
-
-inline LayoutUnit operator-(const LayoutUnit& a, unsigned b) {
+template <typename IntegerType>
+inline LayoutUnit operator-(const LayoutUnit& a, IntegerType b) {
   return a - LayoutUnit(b);
 }
 
@@ -577,7 +609,8 @@ constexpr double operator-(const LayoutUnit& a, double b) {
   return a.ToDouble() - b;
 }
 
-inline LayoutUnit operator-(const int a, const LayoutUnit& b) {
+template <typename IntegerType>
+inline LayoutUnit operator-(const IntegerType a, const LayoutUnit& b) {
   return LayoutUnit(a) - b;
 }
 
@@ -587,7 +620,7 @@ constexpr float operator-(const float a, const LayoutUnit& b) {
 
 inline LayoutUnit operator-(const LayoutUnit& a) {
   LayoutUnit return_val;
-  return_val.SetRawValue((-MakeClampedNum(a.RawValue())).RawValue());
+  return_val.SetRawValue((-base::MakeClampedNum(a.RawValue())).RawValue());
   return return_val;
 }
 
@@ -604,23 +637,25 @@ inline LayoutUnit IntMod(const LayoutUnit& a, const LayoutUnit& b) {
 // This calculates the modulo so that: a = (a / b) * b + LayoutMod(a, b).
 inline LayoutUnit LayoutMod(const LayoutUnit& a, const LayoutUnit& b) {
   LayoutUnit return_val;
-  long long raw_val =
-      (static_cast<long long>(kFixedPointDenominator) * a.RawValue()) %
+  int64_t raw_val =
+      (static_cast<int64_t>(kFixedPointDenominator) * a.RawValue()) %
       b.RawValue();
   return_val.SetRawValue(raw_val / kFixedPointDenominator);
   return return_val;
 }
 
-inline LayoutUnit LayoutMod(const LayoutUnit& a, int b) {
+template <typename IntegerType>
+inline LayoutUnit LayoutMod(const LayoutUnit& a, IntegerType b) {
   return LayoutMod(a, LayoutUnit(b));
 }
 
 inline LayoutUnit& operator+=(LayoutUnit& a, const LayoutUnit& b) {
-  a.SetRawValue(ClampAdd(a.RawValue(), b.RawValue()).RawValue());
+  a.SetRawValue(base::ClampAdd(a.RawValue(), b.RawValue()).RawValue());
   return a;
 }
 
-inline LayoutUnit& operator+=(LayoutUnit& a, int b) {
+template <typename IntegerType>
+inline LayoutUnit& operator+=(LayoutUnit& a, IntegerType b) {
   a = a + LayoutUnit(b);
   return a;
 }
@@ -635,13 +670,14 @@ inline float& operator+=(float& a, const LayoutUnit& b) {
   return a;
 }
 
-inline LayoutUnit& operator-=(LayoutUnit& a, int b) {
+template <typename IntegerType>
+inline LayoutUnit& operator-=(LayoutUnit& a, IntegerType b) {
   a = a - LayoutUnit(b);
   return a;
 }
 
 inline LayoutUnit& operator-=(LayoutUnit& a, const LayoutUnit& b) {
-  a.SetRawValue(ClampSub(a.RawValue(), b.RawValue()).RawValue());
+  a.SetRawValue(base::ClampSub(a.RawValue(), b.RawValue()).RawValue());
   return a;
 }
 

@@ -47,6 +47,31 @@ enum DownloadDangerType {
   // Download URL whitelisted by enterprise policy.
   DOWNLOAD_DANGER_TYPE_WHITELISTED_BY_POLICY = 9,
 
+  // Download is pending a more detailed verdict.
+  DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING = 10,
+
+  // Download is password protected, and should be blocked according to policy.
+  DOWNLOAD_DANGER_TYPE_BLOCKED_PASSWORD_PROTECTED = 11,
+
+  // Download is too large, and should be blocked according to policy. See the
+  // BlockLargeFileTransfer policy for details.
+  DOWNLOAD_DANGER_TYPE_BLOCKED_TOO_LARGE = 12,
+
+  // Download deep scanning identified sensitive content, and recommended
+  // warning the user.
+  DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING = 13,
+
+  // Download deep scanning identified sensitive content, and recommended
+  // blocking the file.
+  DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK = 14,
+
+  // Download deep scanning identified no problems.
+  DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_SAFE = 15,
+
+  // Download deep scanning identified a problem, but the file has already been
+  // opened by the user.
+  DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_OPENED_DANGEROUS = 16,
+
   // Memory space for histograms is determined by the max.
   // ALWAYS ADD NEW VALUES BEFORE THIS ONE.
   DOWNLOAD_DANGER_TYPE_MAX

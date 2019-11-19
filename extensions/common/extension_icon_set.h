@@ -39,18 +39,19 @@ class ExtensionIconSet {
   // Remove all icons from the set.
   void Clear();
 
-  // Add an icon path to the set. If a path for the specified size is already
-  // present, it is overwritten.
-  void Add(int size, const std::string& path);
+  // Add an icon path to the set. If a path for the specified size_in_px is
+  // already present, it is overwritten.
+  void Add(int size_in_px, const std::string& path);
 
-  // Gets path value of the icon found when searching for |size| using
+  // Gets path value of the icon found when searching for |size_in_px| using
   // |match_type|.
-  const std::string& Get(int size, MatchType match_type) const;
+  const std::string& Get(int size_in_px, MatchType match_type) const;
 
   // Returns true iff the set contains the specified path.
   bool ContainsPath(base::StringPiece path) const;
 
-  // Returns icon size if the set contains the specified path or 0 if not found.
+  // Returns icon size (in pixels) if the set contains the specified path or 0
+  // if not found.
   int GetIconSizeFromPath(base::StringPiece path) const;
 
   // Add the paths of all icons in this set into |paths|, handling the

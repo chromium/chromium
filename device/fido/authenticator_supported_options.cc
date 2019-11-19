@@ -17,7 +17,7 @@ AuthenticatorSupportedOptions& AuthenticatorSupportedOptions::operator=(
     const AuthenticatorSupportedOptions& other) = default;
 AuthenticatorSupportedOptions::~AuthenticatorSupportedOptions() = default;
 
-cbor::Value ConvertToCBOR(const AuthenticatorSupportedOptions& options) {
+cbor::Value AsCBOR(const AuthenticatorSupportedOptions& options) {
   cbor::Value::MapValue option_map;
   option_map.emplace(kResidentKeyMapKey, options.supports_resident_key);
   option_map.emplace(kUserPresenceMapKey, options.supports_user_presence);
@@ -48,6 +48,38 @@ cbor::Value ConvertToCBOR(const AuthenticatorSupportedOptions& options) {
       option_map.emplace(kClientPinMapKey, false);
       break;
     case ClientPinAvailability::kNotSupported:
+      break;
+  }
+
+  if (options.supports_credential_management) {
+    option_map.emplace(kCredentialManagementMapKey, true);
+  }
+  if (options.supports_credential_management_preview) {
+    option_map.emplace(kCredentialManagementPreviewMapKey, true);
+  }
+
+  using BioEnrollmentAvailability =
+      AuthenticatorSupportedOptions::BioEnrollmentAvailability;
+
+  switch (options.bio_enrollment_availability) {
+    case BioEnrollmentAvailability::kSupportedAndProvisioned:
+      option_map.emplace(kBioEnrollmentMapKey, true);
+      break;
+    case BioEnrollmentAvailability::kSupportedButUnprovisioned:
+      option_map.emplace(kBioEnrollmentMapKey, false);
+      break;
+    case BioEnrollmentAvailability::kNotSupported:
+      break;
+  }
+
+  switch (options.bio_enrollment_availability_preview) {
+    case BioEnrollmentAvailability::kSupportedAndProvisioned:
+      option_map.emplace(kBioEnrollmentPreviewMapKey, true);
+      break;
+    case BioEnrollmentAvailability::kSupportedButUnprovisioned:
+      option_map.emplace(kBioEnrollmentPreviewMapKey, false);
+      break;
+    case BioEnrollmentAvailability::kNotSupported:
       break;
   }
 

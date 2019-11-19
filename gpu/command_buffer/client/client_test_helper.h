@@ -19,6 +19,7 @@
 #include "gpu/command_buffer/common/gpu_memory_allocation.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
+#include "gpu/command_buffer/service/decoder_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -142,9 +143,24 @@ class MockClientGpuControl : public GpuControl {
   void GetGpuFence(uint32_t gpu_fence_id,
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
                        callback) override {}
+  MOCK_METHOD1(SetDisplayTransform, void(gfx::OverlayTransform));
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MockClientGpuControl);
+};
+
+class FakeDecoderClient : public DecoderClient {
+ public:
+  ~FakeDecoderClient() override;
+  void OnConsoleMessage(int32_t id, const std::string& message) override;
+  void CacheShader(const std::string& key, const std::string& shader) override;
+  void OnFenceSyncRelease(uint64_t release) override;
+  void OnDescheduleUntilFinished() override;
+  void OnRescheduleAfterFinished() override;
+  void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
+  void ScheduleGrContextCleanup() override;
+  void SetActiveURL(GURL url) override;
+  void HandleReturnData(base::span<const uint8_t> data) override;
 };
 
 }  // namespace gpu

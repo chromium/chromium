@@ -28,7 +28,7 @@ class DrainableIOBuffer;
 }
 
 namespace pnacl {
-typedef base::Callback<void(int)> CompletionCallback;
+typedef base::OnceCallback<void(int)> CompletionOnceCallback;
 typedef base::Callback<void(int, scoped_refptr<net::DrainableIOBuffer>)>
     GetNexeCallback;
 class PnaclTranslationCacheEntry;
@@ -44,12 +44,12 @@ class PnaclTranslationCache
   // net::ERR_IO_PENDING, |callback| will be called with a 0 argument on success
   // and <0 otherwise.
   int InitOnDisk(const base::FilePath& cache_dir,
-                 const CompletionCallback& callback);
+                 CompletionOnceCallback callback);
 
   // Initialize the translation cache in memory.  If the return value is
   // net::ERR_IO_PENDING, |callback| will be called with a 0 argument on success
   // and <0 otherwise.
-  int InitInMemory(const CompletionCallback& callback);
+  int InitInMemory(CompletionOnceCallback callback);
 
   // Store the nexe in the translation cache, and call |callback| with
   // the result. The result passed to the callback is 0 on success and
@@ -57,7 +57,7 @@ class PnaclTranslationCache
   // or cancellation.
   void StoreNexe(const std::string& key,
                  net::DrainableIOBuffer* nexe_data,
-                 const CompletionCallback& callback);
+                 CompletionOnceCallback callback);
 
   // Retrieve the nexe from the translation cache. Write the data into |nexe|
   // and call |callback|, passing a result code (0 on success and <0 otherwise),
@@ -73,8 +73,9 @@ class PnaclTranslationCache
   // Doom all entries between |initial| and |end|. If the return value is
   // net::ERR_IO_PENDING, |callback| will be invoked when the operation
   // completes.
-  int DoomEntriesBetween(base::Time initial, base::Time end,
-                         const CompletionCallback& callback);
+  int DoomEntriesBetween(base::Time initial,
+                         base::Time end,
+                         CompletionOnceCallback callback);
 
  private:
   friend class PnaclTranslationCacheEntry;
@@ -87,12 +88,12 @@ class PnaclTranslationCache
   int Init(net::CacheType,
            const base::FilePath& directory,
            int cache_size,
-           const CompletionCallback& callback);
+           CompletionOnceCallback callback);
 
   void OnCreateBackendComplete(int rv);
 
   std::unique_ptr<disk_cache::Backend> disk_cache_;
-  CompletionCallback init_callback_;
+  CompletionOnceCallback init_callback_;
   bool in_memory_;
   std::map<void*, scoped_refptr<PnaclTranslationCacheEntry> > open_entries_;
 

@@ -33,8 +33,7 @@ void DemoModeDetector::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 DemoModeDetector::DemoModeDetector()
-    : tick_clock_(base::DefaultTickClock::GetInstance()),
-      weak_ptr_factory_(this) {
+    : tick_clock_(base::DefaultTickClock::GetInstance()) {
   SetupTimeouts();
 }
 

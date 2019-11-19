@@ -22,7 +22,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
-#include "storage/browser/fileapi/external_mount_points.h"
+#include "storage/browser/file_system/external_mount_points.h"
 
 namespace chromeos {
 namespace file_system_provider {
@@ -79,8 +79,7 @@ void Registry::RememberFileSystem(
       // Only persistent subscribers should be stored in persistent storage.
       // Other ones should not be restired after a restart.
       if (subscriber_it.second.persistent) {
-        persistent_origins_value.GetList().emplace_back(
-            subscriber_it.first.spec());
+        persistent_origins_value.Append(subscriber_it.first.spec());
       }
     }
     watcher.SetKey(kPrefKeyWatcherPersistentOrigins,

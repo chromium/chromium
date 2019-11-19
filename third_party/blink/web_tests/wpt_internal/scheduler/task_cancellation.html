@@ -1,0 +1,46 @@
+<!doctype html>
+<title>Scheduling API: Task Cancellation</title>
+<link rel="author" title="Scott Haseley" href="mailto:shaseley@chromium.org">
+<link rel="help" href="https://github.com/WICG/main-thread-scheduling">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+'use strict';
+
+async_test(t => {
+  let result = '';
+  let tasks = [];
+
+  for (let i = 0; i < 5; i++) {
+    let task = scheduler.postTask(() => {
+      result += i.toString();
+    });
+    tasks.push(task);
+  }
+
+  tasks[2].cancel();
+  assert_equals(tasks[2].status, 'canceled');
+
+  scheduler.postTask(t.step_func(() => {
+    assert_equals(result, '0134');
+  }));
+
+  // Check that canceling running, completed, or canceled tasks is a no-op.
+  let task = scheduler.postTask(t.step_func_done(() => {
+    assert_equals(task.status, 'running');
+    task.cancel();
+    assert_equals(task.status, 'running');
+
+    assert_equals(tasks[2].status, 'canceled');
+    tasks[2].cancel();
+    assert_equals(tasks[2].status, 'canceled');
+
+    assert_equals(tasks[0].status, 'completed');
+    tasks[0].cancel();
+    assert_equals(tasks[0].status, 'completed');
+  }));
+
+}, 'Test canceling a task');
+
+</script>

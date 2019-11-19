@@ -15,10 +15,10 @@ public_deps = [
   "//mojo/public/cpp/base:shared_typemap_traits",
 ]
 type_mappings = [
-  "mojo_base.mojom.PlatformSharedMemoryHandle=base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle[move_only]",
-  "mojo_base.mojom.PlatformSharedMemoryRegion=base::subtle::PlatformSharedMemoryRegion[move_only]",
-  "mojo_base.mojom.PlatformSharedMemoryRegion.Mode=base::subtle::PlatformSharedMemoryRegion::Mode",
-  "mojo_base.mojom.ReadOnlySharedMemoryRegion=base::ReadOnlySharedMemoryRegion[move_only,nullable_is_same_type]",
-  "mojo_base.mojom.UnsafeSharedMemoryRegion=base::UnsafeSharedMemoryRegion[move_only,nullable_is_same_type]",
-  "mojo_base.mojom.WritableSharedMemoryRegion=base::WritableSharedMemoryRegion[move_only,nullable_is_same_type]",
+  "mojo_base.mojom.PlatformSharedMemoryHandle=::base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle[move_only]",
+  "mojo_base.mojom.PlatformSharedMemoryRegion=::base::subtle::PlatformSharedMemoryRegion[move_only]",
+  "mojo_base.mojom.PlatformSharedMemoryRegion.Mode=::base::subtle::PlatformSharedMemoryRegion::Mode",
+  "mojo_base.mojom.ReadOnlySharedMemoryRegion=::base::ReadOnlySharedMemoryRegion[move_only,nullable_is_same_type]",
+  "mojo_base.mojom.UnsafeSharedMemoryRegion=::base::UnsafeSharedMemoryRegion[move_only,nullable_is_same_type]",
+  "mojo_base.mojom.WritableSharedMemoryRegion=::base::WritableSharedMemoryRegion[move_only,nullable_is_same_type]",
 ]

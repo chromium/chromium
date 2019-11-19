@@ -1,0 +1,5 @@
+specific_include_rules = {
+  ".*test\.cc": [
+    "+base/run_loop.h",
+  ],
+}

@@ -36,29 +36,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if defined(OS_CHROMEOS)
-#include "ash/public/cpp/shell_window_ids.h"
-#include "chrome/browser/ui/ash/ash_util.h"
-#endif
-
 namespace {
-
-#if defined(OS_CHROMEOS)
-views::Widget* CreateChromeOSAppListParentedDialog(
-    views::DialogDelegateView* delegate_view) {
-  views::Widget* widget = new views::Widget;
-  views::Widget::InitParams params =
-      views::DialogDelegate::GetDialogWidgetInitParams(
-          delegate_view, nullptr /* context */, nullptr /* parent */,
-          gfx::Rect() /* bounds */);
-
-  ash_util::SetupWidgetInitParamsForContainer(
-      &params, ash::kShellWindowId_AppListContainer);
-
-  widget->Init(params);
-  return widget;
-}
-#endif
 
 ToolbarActionView* GetExtensionAnchorView(const std::string& extension_id,
                                           gfx::NativeWindow window) {
@@ -67,13 +45,13 @@ ToolbarActionView* GetExtensionAnchorView(const std::string& extension_id,
   if (!browser_view)
     return nullptr;
   DCHECK(browser_view->toolbar_button_provider());
-  BrowserActionsContainer* const browser_actions_container =
-      browser_view->toolbar_button_provider()->GetBrowserActionsContainer();
-  if (!browser_actions_container)
-    return nullptr;
+  // TODO(pbos): Pop out extensions so that they can become visible before
+  // showing the uninstall dialog.
   ToolbarActionView* const reference_view =
-      browser_actions_container->GetViewForId(extension_id);
-  return reference_view && reference_view->visible() ? reference_view : nullptr;
+      browser_view->toolbar_button_provider()->GetToolbarActionViewForId(
+          extension_id);
+  return reference_view && reference_view->GetVisible() ? reference_view
+                                                        : nullptr;
 }
 
 class ExtensionUninstallDialogDelegateView;
@@ -124,7 +102,6 @@ class ExtensionUninstallDialogDelegateView
 
  private:
   // views::DialogDelegateView:
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   bool Accept() override;
   bool Cancel() override;
   gfx::Size CalculatePreferredSize() const override;
@@ -169,14 +146,6 @@ void ExtensionUninstallDialogViews::Show() {
   if (anchor_view) {
     views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
   } else {
-#if defined(OS_CHROMEOS)
-    // On ChromeOS, the uninstall dialog can be created from the App List, so we
-    // need to attach the AppList window as the parent window.
-    if (uninstall_source() == extensions::UNINSTALL_SOURCE_APP_LIST) {
-      CreateChromeOSAppListParentedDialog(view_)->Show();
-      return;
-    }
-#endif
     constrained_window::CreateBrowserModalDialogViews(view_, parent())->Show();
   }
 }
@@ -225,9 +194,13 @@ ExtensionUninstallDialogDelegateView::ExtensionUninstallDialogDelegateView(
           skia::ImageOperations::ResizeMethod::RESIZE_GOOD,
           gfx::Size(extension_misc::EXTENSION_ICON_SMALL,
                     extension_misc::EXTENSION_ICON_SMALL))) {
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON));
+
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical, gfx::Insets(),
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
   // Add margins for the icon plus the icon-title padding so that the dialog
@@ -242,7 +215,7 @@ ExtensionUninstallDialogDelegateView::ExtensionUninstallDialogDelegateView(
         l10n_util::GetStringFUTF16(
             IDS_EXTENSION_PROMPT_UNINSTALL_TRIGGERED_BY_EXTENSION,
             base::UTF8ToUTF16(triggering_extension->name())),
-        CONTEXT_BODY_TEXT_LARGE, STYLE_SECONDARY);
+        CONTEXT_BODY_TEXT_LARGE, views::style::STYLE_SECONDARY);
     heading_->SetMultiLine(true);
     heading_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     heading_->SetAllowCharacterBreak(true);
@@ -281,15 +254,9 @@ ExtensionUninstallDialogDelegateView::~ExtensionUninstallDialogDelegateView() {
   }
 }
 
-base::string16 ExtensionUninstallDialogDelegateView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  return l10n_util::GetStringUTF16((button == ui::DIALOG_BUTTON_OK) ?
-      IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON : IDS_CANCEL);
-}
-
 bool ExtensionUninstallDialogDelegateView::Accept() {
   if (dialog_)
-    dialog_->DialogAccepted(checkbox_ && checkbox_->checked());
+    dialog_->DialogAccepted(checkbox_ && checkbox_->GetChecked());
   return true;
 }
 

@@ -31,7 +31,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/core/xml/xpath_predicate.h"
 #include "third_party/blink/renderer/core/xml/xpath_step.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

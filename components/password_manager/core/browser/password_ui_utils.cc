@@ -8,11 +8,14 @@
 #include <string>
 #include <vector>
 
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
+#include "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/url_formatter/elide_url.h"
 
 namespace password_manager {
@@ -69,6 +72,40 @@ std::string GetShownOrigin(const GURL& origin) {
 
   return result.find('.') != base::StringPiece::npos ? result.as_string()
                                                      : original;
+}
+
+void UpdatePasswordFormUsernameAndPassword(
+    const base::string16& username,
+    const base::string16& password,
+    PasswordFormManagerForUI* form_manager) {
+  const auto& pending_credentials = form_manager->GetPendingCredentials();
+  bool username_edited = pending_credentials.username_value != username;
+  bool password_changed = pending_credentials.password_value != password;
+  if (username_edited) {
+    form_manager->OnUpdateUsernameFromPrompt(username);
+    if (form_manager->GetMetricsRecorder()) {
+      form_manager->GetMetricsRecorder()->RecordDetailedUserAction(
+          password_manager::PasswordFormMetricsRecorder::DetailedUserAction::
+              kEditedUsernameInBubble);
+    }
+  }
+  if (password_changed) {
+    form_manager->OnUpdatePasswordFromPrompt(password);
+    if (form_manager->GetMetricsRecorder()) {
+      form_manager->GetMetricsRecorder()->RecordDetailedUserAction(
+          password_manager::PasswordFormMetricsRecorder::DetailedUserAction::
+              kSelectedDifferentPasswordInBubble);
+    }
+  }
+
+  // Values of this histogram are a bit mask. Only the lower two bits are used:
+  // 0001 to indicate that the user has edited the username in the password save
+  // bubble.
+  // 0010 to indicate that the user has changed the password in the
+  // password save bubble.
+  // The maximum possible value is defined by OR-ing these values.
+  UMA_HISTOGRAM_ENUMERATION("PasswordManager.EditsInSaveBubble",
+                            username_edited + 2 * password_changed, 4);
 }
 
 }  // namespace password_manager

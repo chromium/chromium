@@ -25,6 +25,11 @@ class BookmarkEntityBuilder {
 
   ~BookmarkEntityBuilder();
 
+  // Sets the ID for the bookmark to be built. The ID should be in the format
+  // returned by LoopbackServerEntity::CreateId. If this is not called, a random
+  // ID will be generated.
+  void SetId(const std::string& id);
+
   // Sets the parent ID of the bookmark to be built. If this is not called,
   // the bookmark will be included in the bookmarks bar.
   void SetParentId(const std::string& parent_id);
@@ -35,16 +40,21 @@ class BookmarkEntityBuilder {
 
   // Builds and returns a LoopbackServerEntity representing a bookmark. Returns
   // null if the entity could not be built.
-  std::unique_ptr<syncer::LoopbackServerEntity> BuildBookmark(const GURL& url);
+  std::unique_ptr<syncer::LoopbackServerEntity> BuildBookmark(
+      const GURL& url,
+      bool is_legacy = false);
 
   // Builds and returns a LoopbackServerEntity representing a bookmark folder.
   // Returns null if the entity could not be built.
-  std::unique_ptr<syncer::LoopbackServerEntity> BuildFolder();
+  std::unique_ptr<syncer::LoopbackServerEntity> BuildFolder(
+      bool is_legacy = false);
 
  private:
-  // Creates an EntitySpecifics and pre-populates its BookmarkSpecifics with
-  // the entity's title.
-  sync_pb::EntitySpecifics CreateBaseEntitySpecifics() const;
+  // Creates an EntitySpecifics and pre-populates its BookmarkSpecifics with the
+  // entity's title if |is_legacy| is false. Otherwise, it doesn't populate the
+  // title.
+  sync_pb::EntitySpecifics CreateBaseEntitySpecifics(
+      bool is_legacy = false) const;
 
   // Builds the parts of a LoopbackServerEntity common to both normal bookmarks
   // and folders.
@@ -58,6 +68,10 @@ class BookmarkEntityBuilder {
   // Information that associates the bookmark with its original client.
   const std::string originator_cache_guid_;
   const std::string originator_client_item_id_;
+
+  // The ID for the bookmark. This is only non-empty if it was explicitly set
+  // via SetId(); otherwise a random ID will be generated on demand.
+  std::string id_;
 
   // The ID of the parent bookmark folder.
   std::string parent_id_;

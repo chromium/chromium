@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/supports_user_data.h"
 
+class BrowserObserver;
 @class TabModel;
 class WebStateList;
 
@@ -38,6 +39,10 @@ class Browser : public base::SupportsUserData {
 
   // Accessor for the WebStateList.
   virtual WebStateList* GetWebStateList() const = 0;
+
+  // Adds and removes observers.
+  virtual void AddObserver(BrowserObserver* observer) = 0;
+  virtual void RemoveObserver(BrowserObserver* observer) = 0;
 
  protected:
   Browser() {}

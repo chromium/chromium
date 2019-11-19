@@ -18,7 +18,7 @@ class NodeBase(object):
     self.lineno = lineno
 
   def __eq__(self, other):
-    return type(self) == type(other)
+    return isinstance(self, other)
 
   # Make != the inverse of ==. (Subclasses shouldn't have to override this.)
   def __ne__(self, other):

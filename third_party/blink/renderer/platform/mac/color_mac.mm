@@ -28,7 +28,7 @@
 
 #import <AppKit/AppKit.h>
 
-#import "third_party/blink/renderer/platform/wtf/retain_ptr.h"
+#include "base/mac/scoped_nsobject.h"
 #import "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
 namespace blink {
@@ -41,32 +41,38 @@ NSColor* NsColor(const Color& color) {
     case 0: {
       // Need this to avoid returning nil because cachedRGBAValues will default
       // to 0.
-      DEFINE_STATIC_LOCAL(
-          RetainPtr<NSColor>, clear_color,
-          ([NSColor colorWithDeviceRed:0 green:0 blue:0 alpha:0]));
-      return clear_color.Get();
+      DEFINE_STATIC_LOCAL(base::scoped_nsobject<NSColor>, clear_color,
+                          ([[NSColor colorWithDeviceRed:0
+                                                  green:0
+                                                   blue:0
+                                                  alpha:0] retain]));
+      return clear_color;
     }
     case Color::kBlack: {
-      DEFINE_STATIC_LOCAL(
-          RetainPtr<NSColor>, black_color,
-          ([NSColor colorWithDeviceRed:0 green:0 blue:0 alpha:1]));
-      return black_color.Get();
+      DEFINE_STATIC_LOCAL(base::scoped_nsobject<NSColor>, black_color,
+                          ([[NSColor colorWithDeviceRed:0
+                                                  green:0
+                                                   blue:0
+                                                  alpha:1] retain]));
+      return black_color;
     }
     case Color::kWhite: {
-      DEFINE_STATIC_LOCAL(
-          RetainPtr<NSColor>, white_color,
-          ([NSColor colorWithDeviceRed:1 green:1 blue:1 alpha:1]));
-      return white_color.Get();
+      DEFINE_STATIC_LOCAL(base::scoped_nsobject<NSColor>, white_color,
+                          ([[NSColor colorWithDeviceRed:1
+                                                  green:1
+                                                   blue:1
+                                                  alpha:1] retain]));
+      return white_color;
     }
     default: {
       const int kCacheSize = 32;
       static unsigned cached_rgba_values[kCacheSize];
-      static RetainPtr<NSColor>* cached_colors =
-          new RetainPtr<NSColor>[kCacheSize];
+      static base::scoped_nsobject<NSColor>* cached_colors(
+          new base::scoped_nsobject<NSColor>[kCacheSize]);
 
       for (int i = 0; i != kCacheSize; ++i) {
         if (cached_rgba_values[i] == c)
-          return cached_colors[i].Get();
+          return cached_colors[i];
       }
 
       NSColor* result = [NSColor
@@ -77,7 +83,7 @@ NSColor* NsColor(const Color& color) {
 
       static int cursor;
       cached_rgba_values[cursor] = c;
-      cached_colors[cursor] = result;
+      cached_colors[cursor].reset([result retain]);
       if (++cursor == kCacheSize)
         cursor = 0;
       return result;

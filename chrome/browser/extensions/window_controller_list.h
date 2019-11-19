@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/window_controller.h"
 
-class UIThreadExtensionFunction;
+class ExtensionFunction;
 
 namespace extensions {
 
@@ -36,19 +36,19 @@ class WindowControllerList {
   // Returns a window matching the context the function was invoked in
   // using |filter|.
   WindowController* FindWindowForFunctionByIdWithFilter(
-      const UIThreadExtensionFunction* function,
+      const ExtensionFunction* function,
       int id,
       WindowController::TypeFilter filter) const;
 
   // Returns the focused or last added window matching the context the function
   // was invoked in.
   WindowController* CurrentWindowForFunction(
-      const UIThreadExtensionFunction* function) const;
+      const ExtensionFunction* function) const;
 
   // Returns the focused or last added window matching the context the function
   // was invoked in using |filter|.
   WindowController* CurrentWindowForFunctionWithFilter(
-      const UIThreadExtensionFunction* function,
+      const ExtensionFunction* function,
       WindowController::TypeFilter filter) const;
 
   const ControllerList& windows() const { return windows_; }

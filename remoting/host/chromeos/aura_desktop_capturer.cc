@@ -20,7 +20,7 @@
 namespace remoting {
 
 AuraDesktopCapturer::AuraDesktopCapturer()
-    : callback_(nullptr), desktop_window_(nullptr), weak_factory_(this) {}
+    : callback_(nullptr), desktop_window_(nullptr) {}
 
 AuraDesktopCapturer::~AuraDesktopCapturer() = default;
 

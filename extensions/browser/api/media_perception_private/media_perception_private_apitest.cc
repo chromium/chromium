@@ -6,10 +6,10 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_media_analytics_client.h"
-#include "chromeos/dbus/media_analytics_client.h"
+#include "chromeos/dbus/media_analytics/fake_media_analytics_client.h"
+#include "chromeos/dbus/media_analytics/media_analytics_client.h"
 #include "chromeos/dbus/media_perception/media_perception.pb.h"
+#include "chromeos/dbus/upstart/upstart_client.h"
 #include "extensions/browser/api/media_perception_private/media_perception_api_delegate.h"
 #include "extensions/browser/api/media_perception_private/media_perception_private_api.h"
 #include "extensions/common/api/media_perception_private.h"
@@ -19,6 +19,7 @@
 #include "extensions/shell/test/shell_apitest.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace extensions {
 
@@ -36,20 +37,22 @@ class TestMediaPerceptionAPIDelegate : public MediaPerceptionAPIDelegate {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
           base::BindOnce(
-              std::move(load_callback), true,
+              std::move(load_callback),
+              media_perception::COMPONENT_INSTALLATION_ERROR_NONE,
               base::FilePath("/run/imageloader/rtanalytics-light/1.0")));
       return;
     }
 
-    // Firing callback with false indicates that the installation of the
-    // component failed.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(load_callback), false, base::FilePath()));
+        base::BindOnce(std::move(load_callback),
+                       media_perception::COMPONENT_INSTALLATION_ERROR_NOT_FOUND,
+                       base::FilePath()));
   }
 
-  void BindDeviceFactoryProviderToVideoCaptureService(
-      video_capture::mojom::DeviceFactoryProviderPtr* provider) override {
+  void BindVideoSourceProvider(
+      mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
+      override {
     NOTIMPLEMENTED();
   }
 
@@ -58,8 +61,9 @@ class TestMediaPerceptionAPIDelegate : public MediaPerceptionAPIDelegate {
     NOTIMPLEMENTED();
   }
 
-  void ForwardMediaPerceptionRequest(
-      chromeos::media_perception::mojom::MediaPerceptionRequest request,
+  void ForwardMediaPerceptionReceiver(
+      mojo::PendingReceiver<chromeos::media_perception::mojom::MediaPerception>
+          receiver,
       content::RenderFrameHost* render_frame_host) override {
     NOTIMPLEMENTED();
   }
@@ -98,12 +102,15 @@ class MediaPerceptionPrivateApiTest : public ShellApiTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    std::unique_ptr<chromeos::DBusThreadManagerSetter> dbus_setter =
-        chromeos::DBusThreadManager::GetSetterForTesting();
-    auto media_analytics_client =
-        std::make_unique<chromeos::FakeMediaAnalyticsClient>();
-    media_analytics_client_ = media_analytics_client.get();
-    dbus_setter->SetMediaAnalyticsClient(std::move(media_analytics_client));
+    // MediaAnalyticsClient and UpstartClient are required by
+    // MediaPerceptionAPIManager.
+    chromeos::MediaAnalyticsClient::InitializeFake();
+    chromeos::UpstartClient::InitializeFake();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    chromeos::UpstartClient::Shutdown();
+    chromeos::MediaAnalyticsClient::Shutdown();
   }
 
   void SetUpOnMainThread() override {
@@ -111,9 +118,6 @@ class MediaPerceptionPrivateApiTest : public ShellApiTest {
         extensions::FeatureSessionType::KIOSK);
     ShellApiTest::SetUpOnMainThread();
   }
-
-  // Ownership is passed on to chromeos::DbusThreadManager.
-  chromeos::FakeMediaAnalyticsClient* media_analytics_client_;
 
  private:
   std::unique_ptr<base::AutoReset<extensions::FeatureSessionType>>
@@ -152,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(MediaPerceptionPrivateApiTest, GetDiagnostics) {
   mri::Diagnostics diagnostics;
   diagnostics.add_perception_sample()->mutable_frame_perception()->set_frame_id(
       1);
-  media_analytics_client_->SetDiagnostics(diagnostics);
+  chromeos::FakeMediaAnalyticsClient::Get()->SetDiagnostics(diagnostics);
 
   ASSERT_TRUE(RunAppTest("media_perception_private/diagnostics")) << message_;
 }
@@ -171,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(MediaPerceptionPrivateApiTest, MediaPerception) {
   mri::MediaPerception media_perception;
   media_perception.add_frame_perception()->set_frame_id(1);
   ASSERT_TRUE(
-      media_analytics_client_->FireMediaPerceptionEvent(media_perception));
+      chromeos::FakeMediaAnalyticsClient::Get()->FireMediaPerceptionEvent(
+          media_perception));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 

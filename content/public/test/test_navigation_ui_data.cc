@@ -8,7 +8,7 @@
 
 namespace content {
 
-std::unique_ptr<NavigationUIData> TestNavigationUIData::Clone() const {
+std::unique_ptr<NavigationUIData> TestNavigationUIData::Clone() {
   return std::make_unique<TestNavigationUIData>();
 }
 

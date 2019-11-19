@@ -9,6 +9,6 @@ specific_include_rules = {
     "+components/autofill/core/common",
     "+components/password_manager/core/browser/webdata",
     "+components/search_engines/keyword_table.h",
-    "+components/signin/core/browser/webdata",
+    "+components/signin/public/webdata",
   ],
 }

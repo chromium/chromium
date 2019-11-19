@@ -14,8 +14,8 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "chromecast/external_mojo/public/mojom/connector.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace chromecast {
@@ -27,8 +27,8 @@ class ExternalService : public external_mojo::mojom::ExternalService {
   ExternalService();
   ~ExternalService() override;
 
-  // Returns the Mojo binding for this service.
-  external_mojo::mojom::ExternalServicePtr GetBinding();
+  // Returns the Mojo receiver for this service.
+  mojo::PendingRemote<external_mojo::mojom::ExternalService> GetReceiver();
 
   // Adds an interface that users of this service may bind to. To avoid races
   // where the service is registered but interfaces cannot be bound by other
@@ -94,7 +94,7 @@ class ExternalService : public external_mojo::mojom::ExternalService {
                        mojo::ScopedMessagePipeHandle interface_pipe) override;
 
   std::map<std::string, std::unique_ptr<Binder>> binders_;
-  mojo::Binding<external_mojo::mojom::ExternalService> service_binding_;
+  mojo::Receiver<external_mojo::mojom::ExternalService> service_receiver_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 

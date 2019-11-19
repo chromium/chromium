@@ -40,9 +40,6 @@ class LayoutImageResourceStyleImage final : public LayoutImageResource {
   explicit LayoutImageResourceStyleImage(StyleImage*);
   ~LayoutImageResourceStyleImage() override;
 
-  static LayoutImageResource* Create(StyleImage* style_image) {
-    return MakeGarbageCollected<LayoutImageResourceStyleImage>(style_image);
-  }
   void Initialize(LayoutObject*) override;
   void Shutdown() override;
 

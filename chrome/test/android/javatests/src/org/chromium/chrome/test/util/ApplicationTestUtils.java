@@ -20,7 +20,6 @@ import org.junit.Assert;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.omaha.OmahaBase;
@@ -29,6 +28,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,13 +49,9 @@ public class ApplicationTestUtils {
     // TODO(jbudorick): fix deprecation warning crbug.com/537347
     @SuppressWarnings("deprecation")
     @SuppressLint("WakelockTimeout")
-    public static void setUp(Context context, boolean clearAppData) {
-        if (clearAppData) {
-            // Clear data and remove any tasks listed in Android's Overview menu between test runs.
-            clearAppData(context);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                finishAllChromeTasks(context);
-            }
+    public static void setUp(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            finishAllChromeTasks(context);
         }
 
         // Make sure the screen is on during test runs.
@@ -70,7 +66,7 @@ public class ApplicationTestUtils {
         VersionNumberGetter.setEnableUpdateDetection(false);
     }
 
-    public static void tearDown(Context context) throws Exception {
+    public static void tearDown(Context context) {
         Assert.assertNotNull("Uninitialized wake lock", sWakeLock);
         sWakeLock.release();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -81,19 +77,10 @@ public class ApplicationTestUtils {
         }
     }
 
-    /**
-     * Clear all files and folders in the Chrome application directory except 'lib'.
-     * The 'cache' directory is recreated as an empty directory.
-     * @param context Target instrumentation context.
-     */
-    public static void clearAppData(Context context) {
-        ApplicationData.clearAppData(context);
-    }
-
     // TODO(bauerb): make this function throw more specific exception and update
     // StartupLoadingMetricsTest correspondingly.
     /** Send the user to the Android home screen. */
-    public static void fireHomeScreenIntent(Context context) throws Exception {
+    public static void fireHomeScreenIntent(Context context) {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_HOME);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -102,7 +89,7 @@ public class ApplicationTestUtils {
     }
 
     /** Simulate starting Chrome from the launcher with a Main Intent. */
-    public static void launchChrome(Context context) throws Exception {
+    public static void launchChrome(Context context) {
         Intent intent = new Intent(Intent.ACTION_MAIN);
         intent.setPackage(context.getPackageName());
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
@@ -175,19 +162,20 @@ public class ApplicationTestUtils {
                     }
                 };
         try {
-            boolean alreadyDestroyed = ThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
-                @Override
-                public Boolean call() {
-                    if (ApplicationStatus.getStateForActivity(activity)
-                            == ActivityState.DESTROYED) {
-                        return true;
-                    }
-                    ApplicationStatus.registerStateListenerForActivity(
-                            activityStateListener, activity);
-                    activity.finish();
-                    return false;
-                }
-            });
+            boolean alreadyDestroyed =
+                    TestThreadUtils.runOnUiThreadBlocking(new Callable<Boolean>() {
+                        @Override
+                        public Boolean call() {
+                            if (ApplicationStatus.getStateForActivity(activity)
+                                    == ActivityState.DESTROYED) {
+                                return true;
+                            }
+                            ApplicationStatus.registerStateListenerForActivity(
+                                    activityStateListener, activity);
+                            activity.finish();
+                            return false;
+                        }
+                    });
             if (!alreadyDestroyed) {
                 callbackHelper.waitForCallback(0);
             }
@@ -199,20 +187,17 @@ public class ApplicationTestUtils {
     /** Finishes all tasks Chrome has listed in Android's Overview. */
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void finishAllChromeTasks(final Context context) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // Close all of the tasks one by one.
-                    ActivityManager activityManager =
-                            (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-                    for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
-                        task.finishAndRemoveTask();
-                    }
-                } catch (Exception e) {
-                    // Ignore any exceptions the Android framework throws so that otherwise passing
-                    // tests don't fail during tear down. See crbug.com/653731.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            try {
+                // Close all of the tasks one by one.
+                ActivityManager activityManager =
+                        (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+                for (ActivityManager.AppTask task : activityManager.getAppTasks()) {
+                    task.finishAndRemoveTask();
                 }
+            } catch (Exception e) {
+                // Ignore any exceptions the Android framework throws so that otherwise passing
+                // tests don't fail during tear down. See crbug.com/653731.
             }
         });
 
@@ -283,12 +268,12 @@ public class ApplicationTestUtils {
         ApplicationStatus.registerStateListenerForAllActivities(stateListener);
 
         try {
-            ThreadUtils.runOnUiThreadBlocking(() -> activity.recreate());
+            TestThreadUtils.runOnUiThreadBlocking(() -> activity.recreate());
             activityCallback.waitForCallback("Activity did not start as expected", 0);
             T createdActivity = activityRef.get();
             Assert.assertNotNull("Activity reference is null.", createdActivity);
             return createdActivity;
-        } catch (InterruptedException | TimeoutException e) {
+        } catch (TimeoutException e) {
             throw new RuntimeException(e);
         } finally {
             ApplicationStatus.unregisterActivityStateListener(stateListener);

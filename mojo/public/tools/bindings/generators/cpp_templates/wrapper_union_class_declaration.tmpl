@@ -1,3 +1,6 @@
+{%- set union_prefix = "%s.%s"|format(module_prefix, union.name) %}
+
+{{ kythe_annotation(union_prefix) }}
 class {{export_attribute}} {{union.name}} {
  public:
   using DataView = {{union.name}}DataView;
@@ -55,8 +58,10 @@ class {{export_attribute}} {{union.name}} {
   }
 
 {%  for field in union.fields %}
+  {{ kythe_annotation("%s.%s"|format(union_prefix, field.name)) }}
   bool is_{{field.name}}() const { return tag_ == Tag::{{field.name|upper}}; }
 
+  {{ kythe_annotation("%s.%s"|format(union_prefix, field.name)) }}
   {{field.kind|cpp_union_getter_return_type}} get_{{field.name}}() const {
     DCHECK(tag_ == Tag::{{field.name|upper}});
 {%-   if field.kind|is_object_kind or
@@ -67,6 +72,7 @@ class {{export_attribute}} {{union.name}} {
 {%-   endif %}
   }
 
+  {{ kythe_annotation("%s.%s"|format(union_prefix, field.name)) }}
   void set_{{field.name}}(
       {{field.kind|cpp_wrapper_param_type_new}} {{field.name}});
 {%- endfor %}

@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL WebAssembly module as an IndexedDB value Failed to execute 'put' on 'IDBObjectStore': #<Module> could not be cloned.
-FAIL WebAssembly module in a JavaScript object IndexedDB value Failed to execute 'put' on 'IDBObjectStore': #<Module> could not be cloned.
-FAIL WebAssembly module in an IndexedDB value with an inline key Failed to execute 'put' on 'IDBObjectStore': #<Module> could not be cloned.
-Harness: the test ran to completion.
-

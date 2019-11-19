@@ -14,7 +14,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "remoting/host/file_transfer/fake_file_chooser.h"
 #include "remoting/host/file_transfer/local_file_operations.h"
 #include "remoting/host/file_transfer/session_file_operations_handler.h"
@@ -114,21 +114,21 @@ class IpcFileOperationsTest : public testing::Test {
 
   base::FilePath TestDir();
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  // Points DIR_USER_DESKTOP at a scoped temporary directory.
   base::ScopedPathOverride scoped_path_override_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FileOperations> file_operations_;
 
   DISALLOW_COPY_AND_ASSIGN(IpcFileOperationsTest);
 };
 
 IpcFileOperationsTest::IpcFileOperationsTest()
-    : scoped_task_environment_(
-          base::test::ScopedTaskEnvironment::MainThreadType::DEFAULT,
-          base::test::ScopedTaskEnvironment::ExecutionMode::QUEUED),
-      // Points DIR_USER_DESKTOP at a scoped temporary directory.
-      scoped_path_override_(base::DIR_USER_DESKTOP),
+    : scoped_path_override_(base::DIR_USER_DESKTOP),
+      task_environment_(
+          base::test::TaskEnvironment::MainThreadType::DEFAULT,
+          base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED),
       file_operations_(std::make_unique<IpcTestBridge>(
-          scoped_task_environment_.GetMainThreadTaskRunner())) {}
+          task_environment_.GetMainThreadTaskRunner())) {}
 
 IpcFileOperationsTest::~IpcFileOperationsTest() = default;
 
@@ -150,7 +150,7 @@ TEST_F(IpcFileOperationsTest, WritesThreeChunks) {
                  open_result = std::move(result);
                }));
   ASSERT_EQ(FileOperations::kBusy, writer->state());
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_EQ(FileOperations::kReady, writer->state());
   ASSERT_TRUE(open_result);
   ASSERT_TRUE(*open_result);
@@ -162,7 +162,7 @@ TEST_F(IpcFileOperationsTest, WritesThreeChunks) {
                          write_result = std::move(result);
                        }));
     ASSERT_EQ(FileOperations::kBusy, writer->state());
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     ASSERT_EQ(FileOperations::kReady, writer->state());
     ASSERT_TRUE(write_result);
     ASSERT_TRUE(*write_result);
@@ -173,7 +173,7 @@ TEST_F(IpcFileOperationsTest, WritesThreeChunks) {
     close_result = std::move(result);
   }));
   ASSERT_EQ(FileOperations::kBusy, writer->state());
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(FileOperations::kComplete, writer->state());
 
   std::string actual_file_data;
@@ -192,7 +192,7 @@ TEST_F(IpcFileOperationsTest, DroppingCancelsRemote) {
                BindLambda([&](FileOperations::Writer::Result result) {
                  open_result = std::move(result);
                }));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_TRUE(open_result && *open_result);
 
   for (const auto& chunk : {kTestDataOne, kTestDataTwo, kTestDataThree}) {
@@ -201,12 +201,12 @@ TEST_F(IpcFileOperationsTest, DroppingCancelsRemote) {
                        BindLambda([&](FileOperations::Writer::Result result) {
                          write_result = std::move(result);
                        }));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     ASSERT_TRUE(write_result && *write_result);
   }
 
   writer.reset();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(base::IsDirectoryEmpty(TestDir()));
 }
@@ -221,7 +221,7 @@ TEST_F(IpcFileOperationsTest, CancelsWhileOperationPending) {
                BindLambda([&](FileOperations::Writer::Result result) {
                  open_result = std::move(result);
                }));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_TRUE(open_result && *open_result);
 
   base::Optional<FileOperations::Writer::Result> write_result;
@@ -232,7 +232,7 @@ TEST_F(IpcFileOperationsTest, CancelsWhileOperationPending) {
 
   EXPECT_EQ(FileOperations::kBusy, writer->state());
   writer.reset();
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 
   EXPECT_FALSE(write_result);
   EXPECT_TRUE(base::IsDirectoryEmpty(TestDir()));
@@ -255,7 +255,7 @@ TEST_F(IpcFileOperationsTest, ReadsThreeChunks) {
     open_result = std::move(result);
   }));
   ASSERT_EQ(FileOperations::kBusy, reader->state());
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(FileOperations::kReady, reader->state());
   ASSERT_TRUE(open_result);
   ASSERT_TRUE(*open_result);
@@ -268,7 +268,7 @@ TEST_F(IpcFileOperationsTest, ReadsThreeChunks) {
           read_result = std::move(result);
         }));
     ASSERT_EQ(FileOperations::kBusy, reader->state());
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     ASSERT_EQ(FileOperations::kReady, reader->state());
     ASSERT_TRUE(read_result);
     ASSERT_TRUE(*read_result);
@@ -292,7 +292,7 @@ TEST_F(IpcFileOperationsTest, ReaderHandlesEof) {
   reader->Open(BindLambda([&](FileOperations::Reader::OpenResult result) {
     open_result = std::move(result);
   }));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_TRUE(open_result && *open_result);
 
   base::Optional<FileOperations::Reader::ReadResult> read_result;
@@ -302,7 +302,7 @@ TEST_F(IpcFileOperationsTest, ReaderHandlesEof) {
       BindLambda([&](FileOperations::Reader::ReadResult result) {
         read_result = std::move(result);
       }));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_EQ(FileOperations::kReady, reader->state());
   ASSERT_TRUE(read_result);
   ASSERT_TRUE(*read_result);
@@ -313,7 +313,7 @@ TEST_F(IpcFileOperationsTest, ReaderHandlesEof) {
                     BindLambda([&](FileOperations::Reader::ReadResult result) {
                       read_result = std::move(result);
                     }));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(FileOperations::kComplete, reader->state());
   ASSERT_TRUE(read_result);
   ASSERT_TRUE(*read_result);
@@ -334,7 +334,7 @@ TEST_F(IpcFileOperationsTest, ReaderHandlesZeroSize) {
   reader->Open(BindLambda([&](FileOperations::Reader::OpenResult result) {
     open_result = std::move(result);
   }));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   ASSERT_TRUE(open_result && *open_result);
 
   base::Optional<FileOperations::Reader::ReadResult> read_result;
@@ -342,7 +342,7 @@ TEST_F(IpcFileOperationsTest, ReaderHandlesZeroSize) {
                     BindLambda([&](FileOperations::Reader::ReadResult result) {
                       read_result = std::move(result);
                     }));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(FileOperations::kComplete, reader->state());
   ASSERT_TRUE(read_result);
   ASSERT_TRUE(*read_result);
@@ -360,7 +360,7 @@ TEST_F(IpcFileOperationsTest, ReaderPropagatesError) {
   reader->Open(BindLambda([&](FileOperations::Reader::OpenResult result) {
     open_result = std::move(result);
   }));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   EXPECT_EQ(FileOperations::kFailed, reader->state());
   ASSERT_TRUE(open_result);
   ASSERT_FALSE(*open_result);

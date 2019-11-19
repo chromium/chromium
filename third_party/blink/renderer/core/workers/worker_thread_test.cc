@@ -8,18 +8,37 @@
 #include <utility>
 
 #include "base/synchronization/waitable_event.h"
+#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/inspector_task_runner.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
+#include "third_party/blink/renderer/core/inspector/worker_thread_debugger.h"
 #include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+
+// TODO(crbug.com/960985): Fix memory leaks in tests and re-enable on LSAN.
+#ifdef LEAK_SANITIZER
+#define MAYBE_TerminateFrozenScript DISABLED_TerminateFrozenScript
+#define MAYBE_NestedPauseFreeze DISABLED_NestedPauseFreeze
+#define MAYBE_TerminateWhileWorkerPausedByDebugger \
+  DISABLED_TerminateWhileWorkerPausedByDebugger
+#define MAYBE_NestedPauseFreezeNoInterrupts \
+  DISABLED_NestedPauseFreezeNoInterrupts
+#else
+#define MAYBE_TerminateFrozenScript TerminateFrozenScript
+#define MAYBE_NestedPauseFreeze NestedPauseFreeze
+#define MAYBE_TerminateWhileWorkerPausedByDebugger \
+  TerminateWhileWorkerPausedByDebugger
+#define MAYBE_NestedPauseFreezeNoInterrupts NestedPauseFreezeNoInterrupts
+#endif
 
 using testing::_;
 using testing::AtMost;
@@ -37,10 +56,8 @@ void WaitForSignalTask(WorkerThread* worker_thread,
 
   worker_thread->DebuggerTaskStarted();
   // Notify the main thread that the debugger task is waiting for the signal.
-  PostCrossThreadTask(
-      *worker_thread->GetParentExecutionContextTaskRunners()->Get(
-          TaskType::kInternalTest),
-      FROM_HERE, CrossThreadBind(&test::ExitRunLoop));
+  PostCrossThreadTask(*worker_thread->GetParentTaskRunnerForTesting(),
+                      FROM_HERE, CrossThreadBindOnce(&test::ExitRunLoop));
   waitable_event->Wait();
   worker_thread->DebuggerTaskFinished();
 }
@@ -50,6 +67,13 @@ void TerminateParentOfNestedWorker(WorkerThread* parent_thread,
   EXPECT_TRUE(IsMainThread());
   parent_thread->Terminate();
   waitable_event->Signal();
+}
+
+void PauseExecution(v8::Isolate* isolate, void* data) {
+  WorkerThread* worker_thread = static_cast<WorkerThread*>(data);
+  WorkerThreadDebugger* debugger =
+      WorkerThreadDebugger::From(worker_thread->GetIsolate());
+  debugger->PauseWorkerOnStart(worker_thread);
 }
 
 // This helper managers a child worker thread and a reporting proxy
@@ -76,9 +100,6 @@ void CreateNestedWorkerThenTerminateParent(
               DidCreateWorkerGlobalScope(_))
       .Times(1);
   EXPECT_CALL(*nested_worker_helper->reporting_proxy,
-              DidInitializeWorkerContext())
-      .Times(1);
-  EXPECT_CALL(*nested_worker_helper->reporting_proxy,
               WillEvaluateClassicScriptMock(_, _))
       .Times(1);
   EXPECT_CALL(*nested_worker_helper->reporting_proxy,
@@ -95,27 +116,23 @@ void CreateNestedWorkerThenTerminateParent(
       *nested_worker_helper->reporting_proxy);
   nested_worker_helper->worker_thread->StartWithSourceCode(
       SecurityOrigin::Create(KURL("http://fake.url/")).get(),
-      "//fake source code", ParentExecutionContextTaskRunners::Create());
+      "//fake source code");
   nested_worker_helper->worker_thread->WaitForInit();
 
   // Ask the main threat to terminate this parent thread.
   base::WaitableEvent child_waitable;
   PostCrossThreadTask(
-      *parent_thread->GetParentExecutionContextTaskRunners()->Get(
-          TaskType::kInternalTest),
-      FROM_HERE,
-      CrossThreadBind(&TerminateParentOfNestedWorker,
-                      CrossThreadUnretained(parent_thread),
-                      CrossThreadUnretained(&child_waitable)));
+      *parent_thread->GetParentTaskRunnerForTesting(), FROM_HERE,
+      CrossThreadBindOnce(&TerminateParentOfNestedWorker,
+                          CrossThreadUnretained(parent_thread),
+                          CrossThreadUnretained(&child_waitable)));
   child_waitable.Wait();
   EXPECT_EQ(ExitCode::kNotTerminated, parent_thread->GetExitCodeForTesting());
 
   parent_thread->ChildThreadStartedOnWorkerThread(
       nested_worker_helper->worker_thread.get());
-  PostCrossThreadTask(
-      *parent_thread->GetParentExecutionContextTaskRunners()->Get(
-          TaskType::kInternalTest),
-      FROM_HERE, CrossThreadBind(&test::ExitRunLoop));
+  PostCrossThreadTask(*parent_thread->GetParentTaskRunnerForTesting(),
+                      FROM_HERE, CrossThreadBindOnce(&test::ExitRunLoop));
 }
 
 void VerifyParentAndChildAreTerminated(WorkerThread* parent_thread,
@@ -150,20 +167,18 @@ class WorkerThreadTest : public testing::Test {
   void TearDown() override {}
 
   void Start() {
-    worker_thread_->StartWithSourceCode(
-        security_origin_.get(), "//fake source code",
-        ParentExecutionContextTaskRunners::Create());
+    worker_thread_->StartWithSourceCode(security_origin_.get(),
+                                        "//fake source code");
   }
 
   void StartWithSourceCodeNotToFinish() {
     // Use a JavaScript source code that makes an infinite loop so that we
     // can catch some kind of issues as a timeout.
-    worker_thread_->StartWithSourceCode(
-        security_origin_.get(), "while(true) {}",
-        ParentExecutionContextTaskRunners::Create());
+    worker_thread_->StartWithSourceCode(security_origin_.get(),
+                                        "while(true) {}");
   }
 
-  void SetForcibleTerminationDelay(TimeDelta forcible_termination_delay) {
+  void SetForcibleTerminationDelay(base::TimeDelta forcible_termination_delay) {
     worker_thread_->forcible_termination_delay_ = forcible_termination_delay;
   }
 
@@ -174,7 +189,6 @@ class WorkerThreadTest : public testing::Test {
  protected:
   void ExpectReportingCalls() {
     EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
-    EXPECT_CALL(*reporting_proxy_, DidInitializeWorkerContext()).Times(1);
     EXPECT_CALL(*reporting_proxy_, WillEvaluateClassicScriptMock(_, _))
         .Times(1);
     EXPECT_CALL(*reporting_proxy_, DidEvaluateClassicScript(true)).Times(1);
@@ -184,8 +198,6 @@ class WorkerThreadTest : public testing::Test {
 
   void ExpectReportingCallsForWorkerPossiblyTerminatedBeforeInitialization() {
     EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
-    EXPECT_CALL(*reporting_proxy_, DidInitializeWorkerContext())
-        .Times(AtMost(1));
     EXPECT_CALL(*reporting_proxy_, WillEvaluateClassicScriptMock(_, _))
         .Times(AtMost(1));
     EXPECT_CALL(*reporting_proxy_, DidEvaluateClassicScript(_))
@@ -197,7 +209,6 @@ class WorkerThreadTest : public testing::Test {
 
   void ExpectReportingCallsForWorkerForciblyTerminated() {
     EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
-    EXPECT_CALL(*reporting_proxy_, DidInitializeWorkerContext()).Times(1);
     EXPECT_CALL(*reporting_proxy_, WillEvaluateClassicScriptMock(_, _))
         .Times(1);
     EXPECT_CALL(*reporting_proxy_, DidEvaluateClassicScript(false)).Times(1);
@@ -221,16 +232,25 @@ TEST_F(WorkerThreadTest, ShouldTerminateScriptExecution) {
   MutexLocker dummy_lock(worker_thread_->mutex_);
 
   EXPECT_EQ(ThreadState::kNotStarted, worker_thread_->thread_state_);
-  EXPECT_FALSE(worker_thread_->ShouldTerminateScriptExecution());
+  EXPECT_EQ(WorkerThread::TerminationState::kTerminationUnnecessary,
+            worker_thread_->ShouldTerminateScriptExecution());
 
   worker_thread_->SetThreadState(ThreadState::kRunning);
-  EXPECT_TRUE(worker_thread_->ShouldTerminateScriptExecution());
+  EXPECT_EQ(WorkerThread::TerminationState::kTerminate,
+            worker_thread_->ShouldTerminateScriptExecution());
+
+  worker_thread_->debugger_task_counter_ = 1;
+  EXPECT_EQ(WorkerThread::TerminationState::kPostponeTerminate,
+            worker_thread_->ShouldTerminateScriptExecution());
+  worker_thread_->debugger_task_counter_ = 0;
 
   worker_thread_->SetThreadState(ThreadState::kReadyToShutdown);
-  EXPECT_FALSE(worker_thread_->ShouldTerminateScriptExecution());
+  EXPECT_EQ(WorkerThread::TerminationState::kTerminate,
+            worker_thread_->ShouldTerminateScriptExecution());
 
-  // This is necessary to satisfy DCHECK in the dtor of WorkerThread.
   worker_thread_->SetExitCode(ExitCode::kGracefullyTerminated);
+  EXPECT_EQ(WorkerThread::TerminationState::kTerminationUnnecessary,
+            worker_thread_->ShouldTerminateScriptExecution());
 }
 
 TEST_F(WorkerThreadTest, AsyncTerminate_OnIdle) {
@@ -257,7 +277,8 @@ TEST_F(WorkerThreadTest, SyncTerminate_OnIdle) {
   // idle.
   worker_thread_->WaitForInit();
 
-  WorkerThread::TerminateAllWorkersForTesting();
+  worker_thread_->TerminateForTesting();
+  worker_thread_->WaitForShutdownForTesting();
 
   // The worker thread may gracefully shut down before forcible termination
   // runs.
@@ -283,19 +304,20 @@ TEST_F(WorkerThreadTest, SyncTerminate_ImmediatelyAfterStart) {
 
   // There are two possible cases depending on timing:
   // (1) If the thread hasn't been initialized on the worker thread yet,
-  // TerminateAllWorkersForTesting() should wait for initialization and shut
-  // down the thread immediately after that.
+  // TerminateForTesting() should wait for initialization and shut down the
+  // thread immediately after that.
   // (2) If the thread has already been initialized on the worker thread,
-  // TerminateAllWorkersForTesting() should synchronously forcibly terminates
-  // the worker execution.
-  WorkerThread::TerminateAllWorkersForTesting();
+  // TerminateForTesting() should synchronously forcibly terminates the worker
+  // script execution.
+  worker_thread_->TerminateForTesting();
+  worker_thread_->WaitForShutdownForTesting();
   ExitCode exit_code = GetExitCode();
   EXPECT_TRUE(ExitCode::kGracefullyTerminated == exit_code ||
               ExitCode::kSyncForciblyTerminated == exit_code);
 }
 
 TEST_F(WorkerThreadTest, AsyncTerminate_WhileTaskIsRunning) {
-  constexpr TimeDelta kDelay = TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCallsForWorkerForciblyTerminated();
@@ -323,15 +345,15 @@ TEST_F(WorkerThreadTest, SyncTerminate_WhileTaskIsRunning) {
   StartWithSourceCodeNotToFinish();
   reporting_proxy_->WaitUntilScriptEvaluation();
 
-  // TerminateAllWorkersForTesting() synchronously terminates the worker
-  // execution.
-  WorkerThread::TerminateAllWorkersForTesting();
+  // TerminateForTesting() synchronously terminates the worker script execution.
+  worker_thread_->TerminateForTesting();
+  worker_thread_->WaitForShutdownForTesting();
   EXPECT_EQ(ExitCode::kSyncForciblyTerminated, GetExitCode());
 }
 
 TEST_F(WorkerThreadTest,
        AsyncTerminateAndThenSyncTerminate_WhileTaskIsRunning) {
-  SetForcibleTerminationDelay(TimeDelta::FromMilliseconds(10));
+  SetForcibleTerminationDelay(base::TimeDelta::FromMilliseconds(10));
 
   ExpectReportingCallsForWorkerForciblyTerminated();
   StartWithSourceCodeNotToFinish();
@@ -342,19 +364,19 @@ TEST_F(WorkerThreadTest,
   EXPECT_TRUE(IsForcibleTerminationTaskScheduled());
   EXPECT_EQ(ExitCode::kNotTerminated, GetExitCode());
 
-  // TerminateAllWorkersForTesting() should overtake the scheduled forcible
-  // termination task.
-  WorkerThread::TerminateAllWorkersForTesting();
+  // TerminateForTesting() should overtake the scheduled forcible termination
+  // task.
+  worker_thread_->TerminateForTesting();
+  worker_thread_->WaitForShutdownForTesting();
   EXPECT_FALSE(IsForcibleTerminationTaskScheduled());
   EXPECT_EQ(ExitCode::kSyncForciblyTerminated, GetExitCode());
 }
 
 TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
-  constexpr TimeDelta kDelay = TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   EXPECT_CALL(*reporting_proxy_, DidCreateWorkerGlobalScope(_)).Times(1);
-  EXPECT_CALL(*reporting_proxy_, DidInitializeWorkerContext()).Times(1);
   EXPECT_CALL(*reporting_proxy_, WillDestroyWorkerGlobalScope()).Times(1);
   EXPECT_CALL(*reporting_proxy_, DidTerminateWorkerThread()).Times(1);
 
@@ -369,10 +391,12 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
           nullptr /* web_worker_fetch_context */, headers,
           network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
           false /* starter_secure_context */,
-          CalculateHttpsState(security_origin_.get()), WorkerClients::Create(),
-          mojom::IPAddressSpace::kLocal, nullptr /* originTrialToken */,
-          base::UnguessableToken::Create(),
-          std::make_unique<WorkerSettings>(Settings::Create().get()),
+          CalculateHttpsState(security_origin_.get()),
+          MakeGarbageCollected<WorkerClients>(),
+          nullptr /* content_settings_client */,
+          network::mojom::IPAddressSpace::kLocal,
+          nullptr /* originTrialToken */, base::UnguessableToken::Create(),
+          std::make_unique<WorkerSettings>(std::make_unique<Settings>().get()),
           kV8CacheOptionsDefault, nullptr /* worklet_module_responses_map */);
 
   // Set wait_for_debugger so that the worker thread can pause
@@ -382,17 +406,16 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
 
   worker_thread_->Start(std::move(global_scope_creation_params),
                         WorkerBackingThreadStartupData::CreateDefault(),
-                        std::move(devtools_params),
-                        ParentExecutionContextTaskRunners::Create());
+                        std::move(devtools_params));
 
   // Used to wait for worker thread termination in a debugger task on the
   // worker thread.
   base::WaitableEvent waitable_event;
   PostCrossThreadTask(
       *worker_thread_->GetTaskRunner(TaskType::kInternalInspector), FROM_HERE,
-      CrossThreadBind(&WaitForSignalTask,
-                      CrossThreadUnretained(worker_thread_.get()),
-                      CrossThreadUnretained(&waitable_event)));
+      CrossThreadBindOnce(&WaitForSignalTask,
+                          CrossThreadUnretained(worker_thread_.get()),
+                          CrossThreadUnretained(&waitable_event)));
 
   // Wait for the debugger task.
   test::EnterRunLoop();
@@ -407,15 +430,14 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
   EXPECT_EQ(ExitCode::kNotTerminated, GetExitCode());
 
   // Wait until the task runs. It shouldn't terminate the script execution
-  // because of the running debugger task.
+  // because of the running debugger task but it should get reposted.
   test::RunDelayedTasks(kDelay);
-  EXPECT_FALSE(IsForcibleTerminationTaskScheduled());
-  EXPECT_EQ(ExitCode::kNotTerminated, GetExitCode());
-
-  // Forcible script termination request should also respect the running
-  // debugger task.
-  worker_thread_->EnsureScriptExecutionTerminates(
-      ExitCode::kSyncForciblyTerminated);
+  {
+    MutexLocker lock(worker_thread_->mutex_);
+    EXPECT_EQ(WorkerThread::TerminationState::kPostponeTerminate,
+              worker_thread_->ShouldTerminateScriptExecution());
+  }
+  EXPECT_TRUE(IsForcibleTerminationTaskScheduled());
   EXPECT_EQ(ExitCode::kNotTerminated, GetExitCode());
 
   // Resume the debugger task. Shutdown starts after that.
@@ -425,7 +447,7 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunningOnInitialization) {
 }
 
 TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunning) {
-  constexpr TimeDelta kDelay = TimeDelta::FromMilliseconds(10);
+  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
   SetForcibleTerminationDelay(kDelay);
 
   ExpectReportingCalls();
@@ -437,9 +459,9 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunning) {
   base::WaitableEvent waitable_event;
   PostCrossThreadTask(
       *worker_thread_->GetTaskRunner(TaskType::kInternalInspector), FROM_HERE,
-      CrossThreadBind(&WaitForSignalTask,
-                      CrossThreadUnretained(worker_thread_.get()),
-                      CrossThreadUnretained(&waitable_event)));
+      CrossThreadBindOnce(&WaitForSignalTask,
+                          CrossThreadUnretained(worker_thread_.get()),
+                          CrossThreadUnretained(&waitable_event)));
 
   // Wait for the debugger task.
   test::EnterRunLoop();
@@ -454,15 +476,14 @@ TEST_F(WorkerThreadTest, Terminate_WhileDebuggerTaskIsRunning) {
   EXPECT_EQ(ExitCode::kNotTerminated, GetExitCode());
 
   // Wait until the task runs. It shouldn't terminate the script execution
-  // because of the running debugger task.
+  // because of the running debugger task but it should get reposted.
   test::RunDelayedTasks(kDelay);
-  EXPECT_FALSE(IsForcibleTerminationTaskScheduled());
-  EXPECT_EQ(ExitCode::kNotTerminated, GetExitCode());
-
-  // Forcible script termination request should also respect the running
-  // debugger task.
-  worker_thread_->EnsureScriptExecutionTerminates(
-      ExitCode::kSyncForciblyTerminated);
+  {
+    MutexLocker lock(worker_thread_->mutex_);
+    EXPECT_EQ(WorkerThread::TerminationState::kPostponeTerminate,
+              worker_thread_->ShouldTerminateScriptExecution());
+  }
+  EXPECT_TRUE(IsForcibleTerminationTaskScheduled());
   EXPECT_EQ(ExitCode::kNotTerminated, GetExitCode());
 
   // Resume the debugger task. Shutdown starts after that.
@@ -481,18 +502,154 @@ TEST_F(WorkerThreadTest, DISABLED_TerminateWorkerWhileChildIsLoading) {
   // Create a nested worker from the worker thread.
   PostCrossThreadTask(
       *worker_thread_->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-      CrossThreadBind(&CreateNestedWorkerThenTerminateParent,
-                      CrossThreadUnretained(worker_thread_.get()),
-                      CrossThreadUnretained(&nested_worker_helper)));
+      CrossThreadBindOnce(&CreateNestedWorkerThenTerminateParent,
+                          CrossThreadUnretained(worker_thread_.get()),
+                          CrossThreadUnretained(&nested_worker_helper)));
   test::EnterRunLoop();
 
   base::WaitableEvent waitable_event;
-  worker_thread_->GetWorkerBackingThread().BackingThread().PostTask(
-      FROM_HERE, CrossThreadBind(&VerifyParentAndChildAreTerminated,
-                                 CrossThreadUnretained(worker_thread_.get()),
-                                 CrossThreadUnretained(&nested_worker_helper),
-                                 CrossThreadUnretained(&waitable_event)));
+  PostCrossThreadTask(
+      *worker_thread_->GetWorkerBackingThread().BackingThread().GetTaskRunner(),
+      FROM_HERE,
+      CrossThreadBindOnce(&VerifyParentAndChildAreTerminated,
+                          CrossThreadUnretained(worker_thread_.get()),
+                          CrossThreadUnretained(&nested_worker_helper),
+                          CrossThreadUnretained(&waitable_event)));
   waitable_event.Wait();
+}
+
+// Tests terminating a worker when debugger is paused.
+TEST_F(WorkerThreadTest, MAYBE_TerminateWhileWorkerPausedByDebugger) {
+  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  SetForcibleTerminationDelay(kDelay);
+
+  ExpectReportingCallsForWorkerForciblyTerminated();
+  StartWithSourceCodeNotToFinish();
+  reporting_proxy_->WaitUntilScriptEvaluation();
+
+  worker_thread_->GetIsolate()->RequestInterrupt(&PauseExecution,
+                                                 worker_thread_.get());
+
+  // Terminate() schedules a forcible termination task.
+  worker_thread_->Terminate();
+  EXPECT_TRUE(IsForcibleTerminationTaskScheduled());
+  EXPECT_EQ(ExitCode::kNotTerminated, GetExitCode());
+
+  test::RunDelayedTasks(kDelay);
+  worker_thread_->WaitForShutdownForTesting();
+  EXPECT_EQ(ExitCode::kAsyncForciblyTerminated, GetExitCode());
+}
+
+TEST_F(WorkerThreadTest, MAYBE_TerminateFrozenScript) {
+  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  SetForcibleTerminationDelay(kDelay);
+
+  ExpectReportingCallsForWorkerForciblyTerminated();
+  StartWithSourceCodeNotToFinish();
+  reporting_proxy_->WaitUntilScriptEvaluation();
+
+  base::WaitableEvent child_waitable;
+  PostCrossThreadTask(
+      *worker_thread_->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+      CrossThreadBindOnce(&base::WaitableEvent::Signal,
+                          CrossThreadUnretained(&child_waitable)));
+
+  // Freeze() enters a nested event loop where the kInternalTest should run.
+  worker_thread_->Freeze();
+  child_waitable.Wait();
+
+  // Terminate() schedules a forcible termination task.
+  worker_thread_->Terminate();
+  EXPECT_TRUE(IsForcibleTerminationTaskScheduled());
+  EXPECT_EQ(ExitCode::kNotTerminated, GetExitCode());
+
+  test::RunDelayedTasks(kDelay);
+  worker_thread_->WaitForShutdownForTesting();
+  EXPECT_EQ(ExitCode::kAsyncForciblyTerminated, GetExitCode());
+}
+
+TEST_F(WorkerThreadTest, MAYBE_NestedPauseFreeze) {
+  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  SetForcibleTerminationDelay(kDelay);
+
+  ExpectReportingCallsForWorkerForciblyTerminated();
+  StartWithSourceCodeNotToFinish();
+  reporting_proxy_->WaitUntilScriptEvaluation();
+
+  base::WaitableEvent child_waitable;
+  PostCrossThreadTask(
+      *worker_thread_->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+      CrossThreadBindOnce(&base::WaitableEvent::Signal,
+                          CrossThreadUnretained(&child_waitable)));
+
+  // Pause() enters a nested event loop where the kInternalTest should run.
+  worker_thread_->Pause();
+  worker_thread_->Freeze();
+  child_waitable.Wait();
+
+  // Resume Freeze.
+  worker_thread_->Resume();
+
+  // Resume Pause.
+  worker_thread_->Resume();
+
+  // Ensure an extra Resume does nothing. Since this is called from
+  // the javascript debugger API.
+  worker_thread_->Resume();
+
+  // Terminate() schedules a forcible termination task.
+  worker_thread_->Terminate();
+  EXPECT_TRUE(IsForcibleTerminationTaskScheduled());
+  EXPECT_EQ(ExitCode::kNotTerminated, GetExitCode());
+
+  test::RunDelayedTasks(kDelay);
+  worker_thread_->WaitForShutdownForTesting();
+  EXPECT_EQ(ExitCode::kAsyncForciblyTerminated, GetExitCode());
+}
+
+TEST_F(WorkerThreadTest, MAYBE_NestedPauseFreezeNoInterrupts) {
+  constexpr base::TimeDelta kDelay = base::TimeDelta::FromMilliseconds(10);
+  SetForcibleTerminationDelay(kDelay);
+
+  ExpectReportingCalls();
+  Start();
+
+  base::WaitableEvent child_waitable;
+  PostCrossThreadTask(
+      *worker_thread_->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+      CrossThreadBindOnce(&base::WaitableEvent::Signal,
+                          CrossThreadUnretained(&child_waitable)));
+
+  child_waitable.Wait();
+  base::WaitableEvent child_waitable2;
+  PostCrossThreadTask(
+      *worker_thread_->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+      CrossThreadBindOnce(&base::WaitableEvent::Signal,
+                          CrossThreadUnretained(&child_waitable2)));
+
+  // Pause() enters a nested event loop where the kInternalTest should run.
+  worker_thread_->Pause();
+  worker_thread_->Freeze();
+  child_waitable2.Wait();
+
+  // Resume for Freeze.
+  worker_thread_->Resume();
+
+  // Resume for Pause.
+  worker_thread_->Resume();
+
+  // Ensure an extra Resume does nothing. Since this is called from
+  // the javascript debugger API.
+  worker_thread_->Resume();
+
+  // Terminate() schedules a forcible termination task.
+  worker_thread_->Terminate();
+  EXPECT_TRUE(IsForcibleTerminationTaskScheduled());
+  EXPECT_EQ(ExitCode::kNotTerminated, GetExitCode());
+
+  test::RunDelayedTasks(kDelay);
+  worker_thread_->WaitForShutdownForTesting();
+  EXPECT_EQ(ExitCode::kGracefullyTerminated, GetExitCode());
 }
 
 }  // namespace blink

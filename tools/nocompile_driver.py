@@ -13,6 +13,8 @@ For more info, see:
   http://dev.chromium.org/developers/testing/no-compile-tests
 """
 
+from __future__ import print_function
+
 import StringIO
 import ast
 import os
@@ -312,10 +314,10 @@ def ExtractTestOutputAndCleanup(test):
   """
   outputs = [None, None]
   for i, stream_name in ((0, "stdout"), (1, "stderr")):
-      stream = test[stream_name]
-      stream.seek(0)
-      outputs[i] = stream.read()
-      stream.close()
+    stream = test[stream_name]
+    stream.seek(0)
+    outputs[i] = stream.read()
+    stream.close()
 
   return outputs
 
@@ -419,9 +421,8 @@ def CompleteAtLeastOneTest(executing_tests):
 
 def main():
   if len(sys.argv) < 6 or sys.argv[5] != '--':
-    print ('Usage: %s <compiler> <parallelism> <sourcefile> <resultfile> '
-           '-- <cflags...>' %
-           sys.argv[0])
+    print('Usage: %s <compiler> <parallelism> <sourcefile> <resultfile> '
+          '-- <cflags...>' % sys.argv[0])
     sys.exit(1)
 
   # Force us into the "C" locale so the compiler doesn't localize its output.
@@ -513,9 +514,9 @@ def main():
 
   resultfile.close()
   if return_code != 0:
-    print ("No-compile driver failure with return_code %d. Result log:" %
-           return_code)
-    print resultlog.getvalue()
+    print("No-compile driver failure with return_code %d. Result log:" %
+          return_code)
+    print(resultlog.getvalue())
   sys.exit(return_code)
 
 

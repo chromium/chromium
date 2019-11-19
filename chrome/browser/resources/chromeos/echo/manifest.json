@@ -41,6 +41,19 @@
     "ids": ["*"],
     "matches": [
       "*://www.google.com/*chromebook/*",
+      "*://www.google.com.au/*chromebook/*",
+      "*://www.google.ca/*chromebook/*",
+      "*://www.google.co.jp/*chromebook/*",
+      "*://www.google.co.uk/*chromebook/*",
+      "*://www.google.de/*chromebook/*",
+      "*://www.google.dk/*chromebook/*",
+      "*://www.google.fi/*chromebook/*",
+      "*://www.google.fr/*chromebook/*",
+      "*://www.google.ie/*chromebook/*",
+      "*://www.google.nl/*chromebook/*",
+      "*://www.google.no/*chromebook/*",
+      "*://www.google.co.nz/*chromebook/*",
+      "*://www.google.se/*chromebook/*",
       "*://chromebook-dot-googwebreview.appspot.com/*chromebook/*"
     ]
   }

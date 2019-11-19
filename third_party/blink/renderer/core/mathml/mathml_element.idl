@@ -1,0 +1,15 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[RuntimeEnabled=MathMLCore, Exposed=Window]
+interface MathMLElement : Element {
+    // CSS Object Model (CSSOM)
+    // https://drafts.csswg.org/cssom/#the-elementcssinlinestyle-interface
+    // TODO(crbug.com/835762): we should support ElementCSSInlineStyle.
+    [SameObject, PutForwards=cssText] readonly attribute CSSStyleDeclaration style;
+};
+
+MathMLElement includes GlobalEventHandlers;
+MathMLElement includes DocumentAndElementEventHandlers;
+MathMLElement includes HTMLOrForeignElement;

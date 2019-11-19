@@ -54,6 +54,9 @@ class AppListControllerDelegate {
   // Dismisses the view.
   virtual void DismissView() = 0;
 
+  // Gets app list window.
+  virtual aura::Window* GetAppListWindow() = 0;
+
   // Gets display ID of app list window.
   virtual int64_t GetAppListDisplayId() = 0;
 
@@ -107,7 +110,7 @@ class AppListControllerDelegate {
   static std::string AppListSourceToString(AppListSource source);
 
   // True if the user has permission to modify the given app's settings.
-  bool UserMayModifySettings(Profile* profile, const std::string& app_id);
+  bool UninstallAllowed(Profile* profile, const std::string& app_id);
 
   // Uninstall the app identified by |app_id| from |profile|.
   void UninstallApp(Profile* profile, const std::string& app_id);
@@ -148,7 +151,7 @@ class AppListControllerDelegate {
   void OnSearchStarted();
 
  private:
-  base::WeakPtrFactory<AppListControllerDelegate> weak_ptr_factory_;
+  base::WeakPtrFactory<AppListControllerDelegate> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_APP_LIST_CONTROLLER_DELEGATE_H_

@@ -52,7 +52,7 @@ class UninstallAppTask : public ExclusiveTask {
   UninstallFlag uninstall_flag_;
   int64_t app_root_tracker_id_;
 
-  base::WeakPtrFactory<UninstallAppTask> weak_ptr_factory_;
+  base::WeakPtrFactory<UninstallAppTask> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UninstallAppTask);
 };

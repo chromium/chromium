@@ -5,5 +5,9 @@ android.webkit.WebView focusable focused scrollable
 ++android.widget.Spinner role_description='pop up button' clickable focusable name='Button4'
 ++android.widget.Button role_description='button' clickable focusable name='Button5'
 ++android.widget.Button role_description='button' clickable focusable name='Complex button '
-++++android.view.View name='Complex button '
+++android.widget.ToggleButton role_description='toggle button' checkable checked clickable focusable name='Complex toggle button '
+++++android.view.View name='Complex toggle button '
+++++android.widget.EditText clickable editable_text focusable input_type=1
+++android.widget.Spinner role_description='pop up button' clickable focusable name='Complex pop up button '
+++++android.view.View name='Complex pop up button '
 ++++android.widget.EditText clickable editable_text focusable input_type=1

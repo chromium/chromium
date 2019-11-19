@@ -8,7 +8,11 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 
 namespace content {
@@ -20,28 +24,38 @@ class EmbeddedWorkerTestHelper;
 // by default the lifetime is tied to the Mojo connection.
 class FakeServiceWorker : public blink::mojom::ServiceWorker {
  public:
+  using FetchHandlerExistence = blink::mojom::FetchHandlerExistence;
+
   // |helper| must outlive this instance.
   explicit FakeServiceWorker(EmbeddedWorkerTestHelper* helper);
 
   ~FakeServiceWorker() override;
 
-  blink::mojom::ServiceWorkerHostAssociatedPtr& host() { return host_; }
+  mojo::AssociatedRemote<blink::mojom::ServiceWorkerHost>& host() {
+    return host_;
+  }
 
   EmbeddedWorkerTestHelper* helper() { return helper_; }
 
-  void Bind(blink::mojom::ServiceWorkerRequest request);
+  void Bind(mojo::PendingReceiver<blink::mojom::ServiceWorker> receiver);
 
   // Returns after InitializeGlobalScope() is called.
   void RunUntilInitializeGlobalScope();
 
   bool is_zero_idle_timer_delay() const { return is_zero_idle_timer_delay_; }
 
+  FetchHandlerExistence fetch_handler_existence() const {
+    return fetch_handler_existence_;
+  }
+
  protected:
   // blink::mojom::ServiceWorker overrides:
   void InitializeGlobalScope(
-      blink::mojom::ServiceWorkerHostAssociatedPtrInfo service_worker_host,
-      blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info)
-      override;
+      mojo::PendingAssociatedRemote<blink::mojom::ServiceWorkerHost>
+          service_worker_host,
+      blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info,
+      blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info,
+      FetchHandlerExistence fetch_handler_existence) override;
   void DispatchInstallEvent(DispatchInstallEventCallback callback) override;
   void DispatchActivateEvent(DispatchActivateEventCallback callback) override;
   void DispatchBackgroundFetchAbortEvent(
@@ -57,13 +71,13 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
       blink::mojom::BackgroundFetchRegistrationPtr registration,
       DispatchBackgroundFetchSuccessEventCallback callback) override;
   void DispatchCookieChangeEvent(
-      const net::CanonicalCookie& cookie,
-      ::network::mojom::CookieChangeCause cause,
+      const net::CookieChangeInfo& change,
       DispatchCookieChangeEventCallback callback) override;
-  void DispatchFetchEvent(
+  void DispatchFetchEventForMainResource(
       blink::mojom::DispatchFetchEventParamsPtr params,
-      blink::mojom::ServiceWorkerFetchResponseCallbackPtr response_callback,
-      DispatchFetchEventCallback callback) override;
+      mojo::PendingRemote<blink::mojom::ServiceWorkerFetchResponseCallback>
+          response_callback,
+      DispatchFetchEventForMainResourceCallback callback) override;
   void DispatchNotificationClickEvent(
       const std::string& notification_id,
       const blink::PlatformNotificationData& notification_data,
@@ -76,31 +90,42 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
       DispatchNotificationCloseEventCallback callback) override;
   void DispatchPushEvent(const base::Optional<std::string>& payload,
                          DispatchPushEventCallback callback) override;
+  void DispatchPushSubscriptionChangeEvent(
+      blink::mojom::PushSubscriptionPtr old_subscription,
+      blink::mojom::PushSubscriptionPtr new_subscription,
+      DispatchPushSubscriptionChangeEventCallback callback) override;
   void DispatchSyncEvent(const std::string& tag,
                          bool last_chance,
                          base::TimeDelta timeout,
                          DispatchSyncEventCallback callback) override;
+  void DispatchPeriodicSyncEvent(
+      const std::string& tag,
+      base::TimeDelta timeout,
+      DispatchPeriodicSyncEventCallback callback) override;
   void DispatchAbortPaymentEvent(
-      payments::mojom::PaymentHandlerResponseCallbackPtr response_callback,
+      mojo::PendingRemote<payments::mojom::PaymentHandlerResponseCallback>
+          pending_response_callback,
       DispatchAbortPaymentEventCallback callback) override;
   void DispatchCanMakePaymentEvent(
       payments::mojom::CanMakePaymentEventDataPtr event_data,
-      payments::mojom::PaymentHandlerResponseCallbackPtr response_callback,
+      mojo::PendingRemote<payments::mojom::PaymentHandlerResponseCallback>
+          pending_response_callback,
       DispatchCanMakePaymentEventCallback callback) override;
   void DispatchPaymentRequestEvent(
       payments::mojom::PaymentRequestEventDataPtr event_data,
-      payments::mojom::PaymentHandlerResponseCallbackPtr response_callback,
+      mojo::PendingRemote<payments::mojom::PaymentHandlerResponseCallback>
+          pending_response_callback,
       DispatchPaymentRequestEventCallback callback) override;
   void DispatchExtendableMessageEvent(
       blink::mojom::ExtendableMessageEventPtr event,
       DispatchExtendableMessageEventCallback callback) override;
-  void DispatchExtendableMessageEventWithCustomTimeout(
-      blink::mojom::ExtendableMessageEventPtr event,
-      base::TimeDelta timeout,
-      DispatchExtendableMessageEventWithCustomTimeoutCallback callback)
-      override;
+  void DispatchContentDeleteEvent(
+      const std::string& id,
+      DispatchContentDeleteEventCallback callback) override;
   void Ping(PingCallback callback) override;
   void SetIdleTimerDelayToZero() override;
+  void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
+                           const std::string& message) override;
 
   virtual void OnConnectionError();
 
@@ -110,11 +135,14 @@ class FakeServiceWorker : public blink::mojom::ServiceWorker {
   // |helper_| owns |this|.
   EmbeddedWorkerTestHelper* const helper_;
 
-  blink::mojom::ServiceWorkerHostAssociatedPtr host_;
+  mojo::AssociatedRemote<blink::mojom::ServiceWorkerHost> host_;
   blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration_info_;
+  blink::mojom::ServiceWorkerObjectInfoPtr service_worker_info_;
+  FetchHandlerExistence fetch_handler_existence_ =
+      FetchHandlerExistence::UNKNOWN;
   base::OnceClosure quit_closure_for_initialize_global_scope_;
 
-  mojo::Binding<blink::mojom::ServiceWorker> binding_;
+  mojo::Receiver<blink::mojom::ServiceWorker> receiver_{this};
 
   bool is_zero_idle_timer_delay_ = false;
 };

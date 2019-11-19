@@ -29,7 +29,7 @@ import org.chromium.components.location.LocationUtils;
  */
 public class LocationProviderGmsCore implements ConnectionCallbacks, OnConnectionFailedListener,
                                                 LocationListener, LocationProvider {
-    private static final String TAG = "cr_LocationProvider";
+    private static final String TAG = "LocationProvider";
 
     // Values for the LocationRequest's setInterval for normal and high accuracy, respectively.
     private static final long UPDATE_INTERVAL_MS = 1000;

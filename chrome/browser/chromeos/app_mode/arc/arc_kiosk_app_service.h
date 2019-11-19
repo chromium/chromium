@@ -9,10 +9,10 @@
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_launcher.h"
-#include "chrome/browser/chromeos/app_mode/arc/arc_kiosk_app_manager.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_manager_observer.h"
 #include "chrome/browser/chromeos/arc/kiosk/arc_kiosk_bridge.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_bridge.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -25,21 +25,22 @@ class BrowserContext;
 
 namespace chromeos {
 
+class ArcKioskAppManager;
+
 // Keeps track of ARC session state and auto-launches kiosk app when it's ready.
 // App is started when the following conditions are satisfied:
 // 1. App id is registered in ArcAppListPrefs and set to "ready" state.
 // 2. Got empty policy compliance report from Android
 // 3. App is not yet started
 // Also, the app is stopped when one of above conditions changes.
-class ArcKioskAppService
-    : public KeyedService,
-      public ArcAppListPrefs::Observer,
-      public ArcKioskAppManager::ArcKioskAppManagerObserver,
-      public arc::ArcKioskBridge::Delegate,
-      public ArcKioskAppLauncher::Delegate,
-      public ArcAppIcon::Observer,
-      public arc::ArcSessionManager::Observer,
-      public arc::ArcPolicyBridge::Observer {
+class ArcKioskAppService : public KeyedService,
+                           public ArcAppListPrefs::Observer,
+                           public KioskAppManagerObserver,
+                           public arc::ArcKioskBridge::Delegate,
+                           public ArcKioskAppLauncher::Delegate,
+                           public ArcAppIcon::Observer,
+                           public arc::ArcSessionManager::Observer,
+                           public arc::ArcPolicyBridge::Observer {
  public:
   class Delegate {
    public:
@@ -74,8 +75,8 @@ class ArcKioskAppService
   void OnTaskDestroyed(int32_t task_id) override;
   void OnPackageListInitialRefreshed() override;
 
-  // ArcKioskAppManager::Observer overrides
-  void OnArcKioskAppsChanged() override;
+  // KioskAppManagerObserver overrides
+  void OnKioskAppsSettingsChanged() override;
 
   // ArcKioskBridge::Delegate overrides
   void OnMaintenanceSessionCreated() override;

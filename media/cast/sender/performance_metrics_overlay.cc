@@ -274,7 +274,7 @@ scoped_refptr<VideoFrame> MaybeRenderPerformanceMetricsOverlay(
   // are invoked.
   frame->AddDestructionObserver(base::Bind(
       [](const VideoFrameMetadata* sent_frame_metadata,
-         const scoped_refptr<VideoFrame>& source_frame) {
+         scoped_refptr<VideoFrame> source_frame) {
         source_frame->metadata()->Clear();
         source_frame->metadata()->MergeMetadataFrom(sent_frame_metadata);
       },

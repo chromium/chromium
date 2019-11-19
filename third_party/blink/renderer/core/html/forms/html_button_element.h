@@ -32,11 +32,7 @@ class HTMLButtonElement final : public HTMLFormControlElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLButtonElement* Create(Document&);
-
   explicit HTMLButtonElement(Document&);
-
-  const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 
   void setType(const AtomicString&);
 
@@ -49,7 +45,7 @@ class HTMLButtonElement final : public HTMLFormControlElement {
 
   const AtomicString& FormControlType() const override;
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 
   // HTMLFormControlElement always creates one, but buttons don't need it.
   bool AlwaysCreateUserAgentShadowRoot() const override { return false; }
@@ -64,9 +60,8 @@ class HTMLButtonElement final : public HTMLFormControlElement {
 
   bool IsEnumeratable() const override { return true; }
   bool IsLabelable() const override { return true; }
-  bool ShouldForceLegacyLayout() const final { return true; }
+  bool TypeShouldForceLegacyLayout() const final { return true; }
   bool IsInteractiveContent() const override;
-  bool SupportsAutofocus() const override;
   bool MatchesDefaultPseudoClass() const override;
 
   bool CanBeSuccessfulSubmitButton() const override;
@@ -80,6 +75,15 @@ class HTMLButtonElement final : public HTMLFormControlElement {
 
   bool IsOptionalFormControl() const override { return true; }
   bool RecalcWillValidate() const override;
+
+  int DefaultTabIndex() const override;
+
+  // TODO(crbug.com/1013385): Remove PreDispatchEventHandler, DidPreventDefault,
+  //   and DefaultEventHandlerInternal. They are here to temporarily fix form
+  //   double-submit.
+  EventDispatchHandlingState* PreDispatchEventHandler(Event&) override;
+  void DidPreventDefault(const Event&) final;
+  void DefaultEventHandlerInternal(Event&);
 
   Type type_;
   bool is_activated_submit_;

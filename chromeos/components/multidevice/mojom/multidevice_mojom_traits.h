@@ -42,7 +42,11 @@ class StructTraits<chromeos::multidevice::mojom::RemoteDeviceDataView,
       const chromeos::multidevice::RemoteDevice& remote_device);
   static const std::string& user_id(
       const chromeos::multidevice::RemoteDevice& remote_device);
+  static const std::string& instance_id(
+      const chromeos::multidevice::RemoteDevice& remote_device);
   static const std::string& device_name(
+      const chromeos::multidevice::RemoteDevice& remote_device);
+  static const std::string& pii_free_device_name(
       const chromeos::multidevice::RemoteDevice& remote_device);
   static const std::string& persistent_symmetric_key(
       const chromeos::multidevice::RemoteDevice& remote_device);

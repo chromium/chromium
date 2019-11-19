@@ -4,29 +4,52 @@
 
 #include "ash/public/cpp/tablet_mode.h"
 
-#include "base/callback.h"
-#include "base/no_destructor.h"
+#include "base/logging.h"
 
 namespace ash {
 
 namespace {
-
-TabletMode::TabletModeCallback* GetCallback() {
-  static base::NoDestructor<TabletMode::TabletModeCallback> callback;
-  return callback.get();
+TabletMode* g_instance = nullptr;
 }
 
-}  // namespace
-
-// static
-void TabletMode::SetCallback(TabletModeCallback callback) {
-  DCHECK(GetCallback()->is_null() || callback.is_null());
-  *GetCallback() = std::move(callback);
+TabletMode* TabletMode::Get() {
+  return g_instance;
 }
 
-// static
-bool TabletMode::IsEnabled() {
-  return GetCallback()->Run();
+TabletMode::TabletMode() {
+  DCHECK_EQ(nullptr, g_instance);
+  g_instance = this;
+}
+
+TabletMode::~TabletMode() {
+  DCHECK_EQ(this, g_instance);
+  g_instance = nullptr;
+}
+
+TabletMode::Waiter::Waiter(bool enable)
+    : enable_(enable), run_loop_(base::RunLoop::Type::kNestableTasksAllowed) {
+  if (TabletMode::Get()->InTabletMode() == enable_)
+    run_loop_.Quit();
+  else
+    TabletMode::Get()->AddObserver(this);
+}
+
+TabletMode::Waiter::~Waiter() {
+  TabletMode::Get()->RemoveObserver(this);
+}
+
+void TabletMode::Waiter::Wait() {
+  run_loop_.Run();
+}
+
+void TabletMode::Waiter::OnTabletModeStarted() {
+  if (enable_)
+    run_loop_.QuitWhenIdle();
+}
+
+void TabletMode::Waiter::OnTabletModeEnded() {
+  if (!enable_)
+    run_loop_.QuitWhenIdle();
 }
 
 }  // namespace ash

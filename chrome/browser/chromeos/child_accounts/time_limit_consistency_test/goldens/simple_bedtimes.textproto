@@ -1,0 +1,68 @@
+supported_platforms: [ANDROID, CHROME_OS]
+
+# Bedtime set for 11pm to 8am, current time is 11:30pm, device should be locked.
+cases {
+  input {
+    window_limits {
+      effective_day: MONDAY
+      starts_at {
+        hour: 23
+        minute: 0
+      }
+      ends_at {
+        hour: 8
+        minute: 0
+      }
+    }
+  }
+  current_state {
+    # Monday, Jan 28th 2019 at 11:30pm
+    time_millis: 1548718200000
+    timezone: "GMT"
+  }
+  output {
+    is_locked: true
+    active_policy: FIXED_LIMIT
+    # Tuesday, Jan 29th 2019 at 8:00am
+    next_unlocking_time_millis: 1548748800000
+    next_active_policy: NO_ACTIVE_POLICY
+  }
+}
+
+# Bedtime set for 12pm to 9:30pm, current time is 9:40pm, should be unlocked.
+cases {
+  input {
+    window_limits {
+      effective_day: WEDNESDAY
+      starts_at {
+        hour: 12
+        minute: 0
+      }
+      ends_at {
+        hour: 21
+        minute: 30
+      }
+    }
+    window_limits {
+      effective_day: FRIDAY
+      starts_at {
+        hour: 15
+        minute: 0
+      }
+      ends_at {
+        hour: 5
+        minute: 30
+      }
+    }
+  }
+  current_state {
+    # Wednesday, Jan 30th 2019 at 9:40pm
+    time_millis: 1548884400000
+    timezone: "GMT"
+  }
+  output {
+    is_locked: false
+    active_policy: NO_ACTIVE_POLICY
+    next_active_policy: FIXED_LIMIT
+  }
+}

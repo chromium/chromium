@@ -68,8 +68,7 @@ bool IsValidInput(const base::StringPiece& scheme,
     //
     // TODO: Migrate "content:" and "externalfile:" to be standard schemes, and
     // remove this local scheme exception.
-    if (base::ContainsValue(GetLocalSchemes(), scheme) && host.empty() &&
-        port == 0)
+    if (base::Contains(GetLocalSchemes(), scheme) && host.empty() && port == 0)
       return true;
 
     // Otherwise, allow non-standard schemes only if the Android WebView

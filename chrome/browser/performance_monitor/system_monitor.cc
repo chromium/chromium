@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/post_task.h"
 #include "base/task_runner_util.h"
 #include "build/build_config.h"
+#include "chrome/browser/performance_monitor/system_monitor_metrics_logger.h"
 
 #if defined(OS_WIN)
 #include "chrome/browser/performance_monitor/metric_evaluator_helper_win.h"
@@ -32,31 +34,27 @@ SystemMonitor* g_system_metrics_monitor = nullptr;
 constexpr base::TimeDelta kDefaultRefreshInterval =
     base::TimeDelta::FromSeconds(2);
 
-std::unique_ptr<MetricEvaluatorsHelper> CreateMetricEvaluatorsHelper() {
-#if defined(OS_WIN)
-  MetricEvaluatorsHelper* helper = new MetricEvaluatorsHelperWin();
-#elif defined(OS_POSIX)
-  MetricEvaluatorsHelper* helper = new MetricEvaluatorsHelperPosix();
-#else
-#error Unsupported platform
-#endif
-  return base::WrapUnique(helper);
-}
+const base::Feature kSystemMonitorMetricLogger{
+    "SystemMonitorMetricLogger", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace
 
 SystemMonitor::SystemMonitor(
     std::unique_ptr<MetricEvaluatorsHelper> metric_evaluators_helper)
-    : blocking_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(),
+    : blocking_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       metric_evaluators_helper_(
           metric_evaluators_helper.release(),
           base::OnTaskRunnerDeleter(blocking_task_runner_)),
-      metric_evaluators_metadata_(CreateMetricMetadataArray()),
-      weak_factory_(this) {
+      metric_evaluators_metadata_(CreateMetricMetadataArray()) {
   DCHECK(!g_system_metrics_monitor);
   g_system_metrics_monitor = this;
+
+  if (base::FeatureList::IsEnabled(kSystemMonitorMetricLogger)) {
+    // This has to be created after initializing |g_system_metrics_monitor|.
+    metrics_logger_ = std::make_unique<SystemMonitorMetricsLogger>();
+  }
 }
 
 SystemMonitor::~SystemMonitor() {
@@ -71,8 +69,47 @@ std::unique_ptr<SystemMonitor> SystemMonitor::Create() {
 }
 
 // static
+std::unique_ptr<SystemMonitor> SystemMonitor::CreateForTesting(
+    std::unique_ptr<MetricEvaluatorsHelper> helper) {
+  DCHECK(!g_system_metrics_monitor);
+  return base::WrapUnique(new SystemMonitor(std::move(helper)));
+}
+
+// static
 SystemMonitor* SystemMonitor::Get() {
   return g_system_metrics_monitor;
+}
+
+MetricRefreshFrequencies::Builder&
+MetricRefreshFrequencies::Builder::SetFreePhysMemoryMbFrequency(
+    SamplingFrequency freq) {
+  metrics_and_frequencies_.free_phys_memory_mb_frequency = freq;
+  return *this;
+}
+
+MetricRefreshFrequencies::Builder&
+MetricRefreshFrequencies::Builder::SetDiskIdleTimePercentFrequency(
+    SamplingFrequency freq) {
+  metrics_and_frequencies_.disk_idle_time_percent_frequency = freq;
+  return *this;
+}
+
+MetricRefreshFrequencies::Builder&
+MetricRefreshFrequencies::Builder::SetSystemMetricsSamplingFrequency(
+    SamplingFrequency freq) {
+  metrics_and_frequencies_.system_metrics_sampling_frequency = freq;
+  return *this;
+}
+
+MetricRefreshFrequencies::Builder& MetricRefreshFrequencies::Builder::
+    SetChromeTotalResidentSetEstimateMbSamplingFrequency(
+        SamplingFrequency freq) {
+  metrics_and_frequencies_.chrome_total_resident_set_sampling_frequency = freq;
+  return *this;
+}
+
+MetricRefreshFrequencies MetricRefreshFrequencies::Builder::Build() {
+  return metrics_and_frequencies_;
 }
 
 SystemMonitor::SystemObserver::~SystemObserver() {
@@ -94,6 +131,11 @@ void SystemMonitor::SystemObserver::OnDiskIdleTimePercent(
 
 void SystemMonitor::SystemObserver::OnSystemMetricsStruct(
     const base::SystemMetrics& system_metrics) {
+  NOTREACHED();
+}
+
+void SystemMonitor::SystemObserver::OnChromeTotalResidentSetEstimateMb(
+    int chrome_total_resident_set_estimate) {
   NOTREACHED();
 }
 
@@ -165,6 +207,10 @@ SystemMonitor::MetricMetadataArray SystemMonitor::CreateMetricMetadataArray() {
       CREATE_METRIC_METADATA(kSystemMetricsStruct, base::SystemMetrics,
                              GetSystemMetricsStruct, OnSystemMetricsStruct,
                              system_metrics_sampling_frequency),
+      CREATE_METRIC_METADATA(kChromeTotalResidentSetEstimateMb, int,
+                             GetChromeTotalResidentSetEstimateMb,
+                             OnChromeTotalResidentSetEstimateMb,
+                             chrome_total_resident_set_sampling_frequency),
   };
 
 #undef CREATE_METRIC_METADATA
@@ -229,6 +275,19 @@ void SystemMonitor::NotifyObservers(SystemMonitor::MetricVector metrics) {
       }
     }
   }
+}
+
+// static
+std::unique_ptr<MetricEvaluatorsHelper>
+SystemMonitor::CreateMetricEvaluatorsHelper() {
+#if defined(OS_WIN)
+  MetricEvaluatorsHelper* helper = new MetricEvaluatorsHelperWin();
+#elif defined(OS_POSIX)
+  MetricEvaluatorsHelper* helper = new MetricEvaluatorsHelperPosix();
+#else
+#error Unsupported platform
+#endif
+  return base::WrapUnique(helper);
 }
 
 SystemMonitor::MetricEvaluator::MetricEvaluator(Type type) : type_(type) {}

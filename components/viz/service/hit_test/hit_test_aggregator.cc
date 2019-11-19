@@ -30,8 +30,7 @@ HitTestAggregator::HitTestAggregator(
       root_frame_sink_id_(frame_sink_id),
       initial_region_size_(initial_region_size),
       incremental_region_size_(initial_region_size),
-      max_region_size_(max_region_size),
-      weak_ptr_factory_(this) {}
+      max_region_size_(max_region_size) {}
 
 HitTestAggregator::~HitTestAggregator() = default;
 

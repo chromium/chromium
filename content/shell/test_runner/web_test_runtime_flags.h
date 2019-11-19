@@ -132,10 +132,6 @@ class TEST_RUNNER_EXPORT WebTestRuntimeFlags {
   // load callback.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(dump_resource_load_callbacks)
 
-  // If true, the test runner will output the MIME type for each resource that
-  // was loaded.
-  DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(dump_resource_response_mime_types)
-
   // If true, content_shell will dump the default navigation policy passed to
   // WebLocalFrameClient::decidePolicyForNavigation.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(dump_navigation_policy)
@@ -153,11 +149,9 @@ class TEST_RUNNER_EXPORT WebTestRuntimeFlags {
   // Desired return value of WebLocalFrameClient::runModalBeforeUnloadDialog.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(stay_on_page_after_handling_before_unload)
 
-  // Indicates if the test already tracks a top loading frame (in any of the
-  // renderer processes).  This flag is trying to prevent different renderer
-  // processes from tracking different top loading frames (i.e. main frame in
-  // one renderer and an OOPIF in another renderer).
-  DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(have_top_loading_frame)
+  // Indicates if one renderer process is in charge of tracking the loading
+  // frames. Only one can do it at a time.
+  DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(have_loading_frame)
 
   // If true, new windows can be opened via javascript or by plugins. By
   // default, set to false and can be toggled to true using

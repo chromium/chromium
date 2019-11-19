@@ -50,8 +50,9 @@ class MessageCenterTestSuite : public base::TestSuite {
 }  // namespace
 
 int main(int argc, char** argv) {
-  MessageCenterTestSuite test_suite(argc, argv);
   mojo::core::Init();
+
+  MessageCenterTestSuite test_suite(argc, argv);
 
   return base::LaunchUnitTests(argc, argv,
                                base::BindOnce(&MessageCenterTestSuite::Run,

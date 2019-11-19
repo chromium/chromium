@@ -41,10 +41,20 @@ enum AddRuleFlags {
   kRuleHasDocumentSecurityOrigin = 1,
 };
 
-enum PropertyWhitelistType {
-  kPropertyWhitelistNone,
-  kPropertyWhitelistCue,
-  kPropertyWhitelistFirstLetter,
+// Some CSS properties do not apply to certain pseudo-elements, and need to be
+// ignored when resolving styles.
+enum class ValidPropertyFilter : unsigned {
+  // All properties are valid. This is the common case.
+  kNoFilter,
+  // Defined in a ::cue pseudo-element scope. Only properties listed
+  // in https://w3c.github.io/webvtt/#the-cue-pseudo-element are valid.
+  kCue,
+  // Defined in a ::first-letter pseudo-element scope. Only properties listed in
+  // https://drafts.csswg.org/css-pseudo-4/#first-letter-styling are valid.
+  kFirstLetter,
+  // Defined in a ::marker pseudo-element scope. Only properties listed in
+  // https://drafts.csswg.org/css-pseudo-4/#marker-pseudo are valid.
+  kMarker,
 };
 
 class CSSSelector;
@@ -104,11 +114,11 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   bool HasDocumentSecurityOrigin() const {
     return has_document_security_origin_;
   }
-  PropertyWhitelistType PropertyWhitelist(
+  ValidPropertyFilter GetValidPropertyFilter(
       bool is_matching_ua_rules = false) const {
     return is_matching_ua_rules
-               ? kPropertyWhitelistNone
-               : static_cast<PropertyWhitelistType>(property_whitelist_);
+               ? ValidPropertyFilter::kNoFilter
+               : static_cast<ValidPropertyFilter>(valid_property_filter_);
   }
   // Try to balance between memory usage (there can be lots of RuleData objects)
   // and good filtering performance.
@@ -138,7 +148,7 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   unsigned specificity_ : 24;
   unsigned link_match_type_ : 2;  //  CSSSelector::LinkMatchMask
   unsigned has_document_security_origin_ : 1;
-  unsigned property_whitelist_ : 2;
+  unsigned valid_property_filter_ : 2;
   // 29 bits above
   // Use plain array instead of a Vector to minimize memory overhead.
   unsigned descendant_selector_identifier_hashes_[kMaximumIdentifierCount];
@@ -168,10 +178,8 @@ static_assert(sizeof(RuleData) == sizeof(SameSizeAsRuleData),
 // specific group are appended to the "universal" rules. The grouping is done to
 // optimize finding what rules apply to an element under consideration by
 // ElementRuleCollector::CollectMatchingRules.
-class CORE_EXPORT RuleSet : public GarbageCollectedFinalized<RuleSet> {
+class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
  public:
-  static RuleSet* Create() { return MakeGarbageCollected<RuleSet>(); }
-
   RuleSet() : rule_count_(0) {}
 
   void AddRulesFromSheet(StyleSheetContents*,
@@ -238,12 +246,11 @@ class CORE_EXPORT RuleSet : public GarbageCollectedFinalized<RuleSet> {
   const HeapVector<Member<StyleRuleFontFace>>& FontFaceRules() const {
     return font_face_rules_;
   }
-  const HeapVector<Member<StyleRuleFontFeatureValues>>& FontFeatureValuesRules()
-      const {
-    return font_feature_values_rules_;
-  }
   const HeapVector<Member<StyleRuleKeyframes>>& KeyframesRules() const {
     return keyframes_rules_;
+  }
+  const HeapVector<Member<StyleRuleProperty>>& PropertyRules() const {
+    return property_rules_;
   }
   const HeapVector<MinimalRuleData>& DeepCombinatorOrShadowPseudoRules() const {
     return deep_combinator_or_shadow_pseudo_rules_;
@@ -294,8 +301,8 @@ class CORE_EXPORT RuleSet : public GarbageCollectedFinalized<RuleSet> {
   void AddPageRule(StyleRulePage*);
   void AddViewportRule(StyleRuleViewport*);
   void AddFontFaceRule(StyleRuleFontFace*);
-  void AddFontFeatureValuesRule(StyleRuleFontFeatureValues*);
   void AddKeyframesRule(StyleRuleKeyframes*);
+  void AddPropertyRule(StyleRuleProperty*);
 
   void AddChildRules(const HeapVector<Member<StyleRuleBase>>&,
                      const MediaQueryEvaluator& medium,
@@ -307,10 +314,6 @@ class CORE_EXPORT RuleSet : public GarbageCollectedFinalized<RuleSet> {
 
   class PendingRuleMaps : public GarbageCollected<PendingRuleMaps> {
    public:
-    static PendingRuleMaps* Create() {
-      return MakeGarbageCollected<PendingRuleMaps>();
-    }
-
     PendingRuleMaps() = default;
 
     PendingRuleMap id_rules;
@@ -323,7 +326,7 @@ class CORE_EXPORT RuleSet : public GarbageCollectedFinalized<RuleSet> {
 
   PendingRuleMaps* EnsurePendingRules() {
     if (!pending_rules_)
-      pending_rules_ = PendingRuleMaps::Create();
+      pending_rules_ = MakeGarbageCollected<PendingRuleMaps>();
     return pending_rules_.Get();
   }
 
@@ -341,8 +344,8 @@ class CORE_EXPORT RuleSet : public GarbageCollectedFinalized<RuleSet> {
   RuleFeatureSet features_;
   HeapVector<Member<StyleRulePage>> page_rules_;
   HeapVector<Member<StyleRuleFontFace>> font_face_rules_;
-  HeapVector<Member<StyleRuleFontFeatureValues>> font_feature_values_rules_;
   HeapVector<Member<StyleRuleKeyframes>> keyframes_rules_;
+  HeapVector<Member<StyleRuleProperty>> property_rules_;
   HeapVector<MinimalRuleData> deep_combinator_or_shadow_pseudo_rules_;
   HeapVector<MinimalRuleData> content_pseudo_element_rules_;
   HeapVector<MinimalRuleData> slotted_pseudo_element_rules_;

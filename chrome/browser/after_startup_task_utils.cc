@@ -19,15 +19,19 @@
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/page_visibility_state.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/page_visibility_state.h"
+
+#if !defined(OS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif
 
 #if defined(OS_LINUX) && !defined(OS_CHROMEOS)
 #include "ui/views/linux_ui/linux_ui.h"
@@ -98,9 +102,9 @@ void QueueTask(std::unique_ptr<AfterStartupTask> queued_task) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     // Posted with USER_VISIBLE priority to avoid this becoming an after startup
     // task itself.
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI, base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(QueueTask, std::move(queued_task)));
+    base::PostTask(FROM_HERE,
+                   {BrowserThread::UI, base::TaskPriority::USER_VISIBLE},
+                   base::BindOnce(QueueTask, std::move(queued_task)));
     return;
   }
 
@@ -145,7 +149,7 @@ void SetBrowserStartupIsComplete() {
 // flag accordingly.
 class StartupObserver : public WebContentsObserver {
  public:
-  StartupObserver() : weak_factory_(this) {}
+  StartupObserver() {}
   ~StartupObserver() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(IsBrowserStartupComplete());
@@ -177,11 +181,19 @@ class StartupObserver : public WebContentsObserver {
       OnStartupComplete();
   }
 
+  // Starting the browser with a file download url will not result in
+  // DidFinishLoad firing, so watch for this case too. crbug.com/1006954
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (navigation_handle->IsInMainFrame() && navigation_handle->IsDownload())
+      OnStartupComplete();
+  }
+
   void WebContentsDestroyed() override { OnStartupComplete(); }
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<StartupObserver> weak_factory_;
+  base::WeakPtrFactory<StartupObserver> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StartupObserver);
 };
@@ -215,11 +227,10 @@ void StartupObserver::Start() {
   delay = base::TimeDelta::FromMinutes(kLongerDelayMins);
 #endif  // !defined(OS_ANDROID)
 
-  base::PostDelayedTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(&StartupObserver::OnFailsafeTimeout,
-                     weak_factory_.GetWeakPtr()),
-      delay);
+  base::PostDelayedTask(FROM_HERE, {BrowserThread::UI},
+                        base::BindOnce(&StartupObserver::OnFailsafeTimeout,
+                                       weak_factory_.GetWeakPtr()),
+                        delay);
 }
 
 }  // namespace

@@ -32,6 +32,16 @@ bool FakeTestTokenStorage::StoreRefreshToken(const std::string& refresh_token) {
   return refresh_token_write_succeeded_;
 }
 
+std::string FakeTestTokenStorage::FetchUserEmail() {
+  NOTIMPLEMENTED();
+  return "";
+}
+
+bool FakeTestTokenStorage::StoreUserEmail(const std::string& user_email) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 std::string FakeTestTokenStorage::FetchAccessToken() {
   NOTIMPLEMENTED();
   return "";

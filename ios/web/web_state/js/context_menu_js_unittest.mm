@@ -11,9 +11,9 @@
 
 #include "base/macros.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/js_test_util.h"
 #include "ios/web/public/test/web_test.h"
-#import "ios/web/public/web_view_creation_util.h"
 #import "ios/web/web_state/context_menu_constants.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,12 +54,28 @@ const char kTestUrl[] = "https://chromium.test/";
 // A point in the web view's coordinate space on the link returned by
 // |GetHtmlForLink()|.
 const CGPoint kPointOnLink = {5.0, 2.0};
+
 // A point in the web view's coordinate space on the image returned by
 // |GetHtmlForImage()|.
 const CGPoint kPointOnImage = {50.0, 10.0};
 // A point in the web view's coordinate space within the document bounds but not
 // on the image returned by |GetHtmlForImage()|.
 const CGPoint kPointOutsideImage = {50.0, 75.0};
+
+// A point in the web view's coordinate space on the svg link returned by
+// |GetHtmlForSvgLink()| and |GetHtmlForSvgXlink()|.
+const CGPoint kPointOnSvgLink = {50.0, 75.0};
+// A point in the web view's coordinate space within the svg element but not
+// on the svg link returned by |GetHtmlForSvgLink()| and |GetHtmlForSvgXlink()|.
+const CGPoint kPointOutsideSvgLink = {50.0, 10.0};
+
+// A point in the web view's coordinate space on the shadow DOM link returned by
+// |GetHtmlForShadowDomLink()|.
+const CGPoint kPointOnShadowDomLink = {5.0, 2.0};
+// A point in the web view's coordinate space within the shadow DOM returned by
+// |GetHtmlForShadowDomLink()| but not on the link.
+const CGPoint kPointOutsideShadowDomLink = {50.0, 75.0};
+
 // A point in the web view's coordinate space outside of the document bounds.
 const CGPoint kPointOutsideDocument = {150.0, 150.0};
 
@@ -96,9 +112,41 @@ NSString* GetHtmlForLink(NSString* href, NSString* text, NSString* style) {
       stringWithFormat:@"<a %@href=\"%@\">%@</a>", style_attribute, href, text];
 }
 
+// Returns HTML for an SVG shape which links to |href|.
+NSString* GetHtmlForSvgLink(NSString* href) {
+  NSString* svg_shape = @"<rect y=\"50\" width=\"100\" height=\"50\"/>";
+  return [NSString
+      stringWithFormat:
+          @"<svg width=\"100\" height=\"100\"><a href=\"%@\">%@</a></svg>",
+          href, svg_shape];
+}
+
+// Returns HTML for an SVG shape which links to |href| with an xlink:href.
+NSString* GetHtmlForSvgXlink(NSString* href) {
+  NSString* svg_shape = @"<rect y=\"50\" width=\"100\" height=\"50\"/>";
+  return [NSString stringWithFormat:@"<svg width=\"100\" height=\"100\"><a "
+                                    @"xlink:href=\"%@\">%@</a></svg>",
+                                    href, svg_shape];
+}
+
 // Returns HTML for a link to |href| and display text |text|.
 NSString* GetHtmlForLink(NSString* href, NSString* text) {
   return GetHtmlForLink(href, text, /*style=*/nil);
+}
+
+// Returns HTML for a shadow DOM link to |href| and display text |text|.
+NSString* GetHtmlForShadowDomLink(NSString* href, NSString* text) {
+  NSString* shadow_html = [NSString
+      stringWithFormat:@"<div style=\"height:100px;font-size:20px\">%@</div>",
+                       GetHtmlForLink(href, text)];
+  return [NSString
+      stringWithFormat:
+          @"<div id='largeDiv' style='height:100px'></div>"
+          @"<script>var shadow = "
+          @"document.getElementById('largeDiv').attachShadow({mode: 'open'});"
+          @"shadow.innerHTML = '%@';"
+          @"</script>",
+          shadow_html];
 }
 
 // Returns html for an image styled to fill the width and top 25% of its
@@ -432,6 +480,52 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfImageWithCalloutNone) {
   EXPECT_NSEQ(expected_result, result);
 }
 
+#pragma mark - SVG shape links
+
+// Tests that an SVG shape link returns details for the link.
+TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgLinkAtPoint) {
+  NSString* const link = @"file:///linky";
+  NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForSvgLink(link));
+  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+
+  id result = FindElementAtPoint(kPointOnSvgLink);
+  NSDictionary* expected_value = @{
+    kContextMenuElementRequestId : kRequestId,
+    kContextMenuElementReferrerPolicy : @"default",
+    kContextMenuElementHyperlink : link,
+  };
+  EXPECT_NSEQ(expected_value, result);
+}
+
+// Tests that an SVG shape xlink returns details for the link.
+TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgXlinkAtPoint) {
+  NSString* const link = @"file:///linky";
+  NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForSvgXlink(link));
+  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+
+  id result = FindElementAtPoint(kPointOnSvgLink);
+  NSDictionary* expected_value = @{
+    kContextMenuElementRequestId : kRequestId,
+    kContextMenuElementReferrerPolicy : @"default",
+    kContextMenuElementHyperlink : link,
+  };
+  EXPECT_NSEQ(expected_value, result);
+}
+
+// Tests that a point within an SVG element but outside a linked shape does not
+// return details for the link.
+TEST_F(ContextMenuJsFindElementAtPointTest, FindSvgLinkAtPointOutsideElement) {
+  NSString* const link = @"file:///linky";
+  NSString* html = GetHtmlForPage(/*head=*/nil, GetHtmlForSvgXlink(link));
+  ASSERT_TRUE(web::test::LoadHtml(web_view_, html, GetTestURL()));
+
+  id result = FindElementAtPoint(kPointOutsideSvgLink);
+  NSDictionary* expected_value = @{
+    kContextMenuElementRequestId : kRequestId,
+  };
+  EXPECT_NSEQ(expected_value, result);
+}
+
 #pragma mark -
 
 // Tests that a text input field prevents returning details for an image behind
@@ -505,6 +599,38 @@ TEST_F(ContextMenuJsFindElementAtPointTest, LinkOfTextFromTallPage) {
     kContextMenuElementHyperlink : link,
   };
   EXPECT_NSEQ(expected_result, result);
+}
+
+// Tests that __gCrWeb.findElementAtPoint finds a link inside shadow DOM
+// content.
+TEST_F(ContextMenuJsFindElementAtPointTest, ShadowDomLink) {
+  NSString* const link = @"http://destination/";
+  ASSERT_TRUE(web::test::LoadHtml(
+      web_view_,
+      GetHtmlForPage(/*head=*/nil, GetHtmlForShadowDomLink(link, @"link")),
+      GetTestURL()));
+
+  id result = FindElementAtPoint(kPointOnShadowDomLink);
+  NSDictionary* expected_result = @{
+    kContextMenuElementRequestId : kRequestId,
+    kContextMenuElementInnerText : @"link",
+    kContextMenuElementReferrerPolicy : @"default",
+    kContextMenuElementHyperlink : link,
+  };
+  EXPECT_NSEQ(expected_result, result);
+}
+
+// Tests that a point within shadow DOM content but not on a link does not
+// return details for the link.
+TEST_F(ContextMenuJsFindElementAtPointTest, PointOutsideShadowDomLink) {
+  NSString* const link = @"http://destination/";
+  ASSERT_TRUE(web::test::LoadHtml(
+      web_view_,
+      GetHtmlForPage(/*head=*/nil, GetHtmlForShadowDomLink(link, @"link")),
+      GetTestURL()));
+
+  id result = FindElementAtPoint(kPointOutsideShadowDomLink);
+  EXPECT_NSEQ(@{kContextMenuElementRequestId : kRequestId}, result);
 }
 
 // Tests that a callout information about a link is displayed when

@@ -28,6 +28,32 @@
   <message name="IDS_PAGE_INFO_VIEW_SOURCE_PAGE" desc="Message to display in the page info bubble when you are viewing page sources by using |View page source| option from the right click menu.">
     You're viewing the source of a web page
   </message>
+  <message name="IDS_PAGE_INFO_DEVTOOLS_PAGE" desc="Message to display in the page info bubble when the page you are on is a devtools:// page.">
+    You're viewing a developer tools page
+  </message>
+
+  <!-- Safety Tip summary strings -->
+  <message name="IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_TITLE" desc="Message to display in the page info bubble when the page you are on triggered a safety tip.">
+    Suspicious site
+  </message>
+  <message name="IDS_PAGE_INFO_SAFETY_TIP_BAD_REPUTATION_DESCRIPTION" desc="Body of message to display in the page info bubble when you are viewing a page that triggered a safety tip.">
+    This site could be fake or fraudulent. Chrome recommends leaving now.
+  </message>
+  <message name="IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK" desc="Text of link to Help Center page on safety tip page info bubble.">
+    Learn more
+  </message>
+  <message name="IDS_PAGE_INFO_SAFETY_TIP_IGNORE_BUTTON" desc="Text of button to ignore a safety tip page info bubble.">
+    Ignore
+  </message>
+  <message name="IDS_PAGE_INFO_SAFETY_TIP_LEAVE_BUTTON" desc="Text of button to leave a suspicious page shown on the safety tip page info bubble.">
+    Leave site
+  </message>
+  <message name="IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_TITLE" desc="Title of Safety Tip infobar on a domain that looks like another domain.">
+    Did you mean <ph name='LOOKALIKE_DOMAIN'>$1<ex>google.com</ex></ph>?
+  </message>
+  <message name="IDS_PAGE_INFO_SAFETY_TIP_LOOKALIKE_DESCRIPTION" desc="Body of a warning when the user visits a page that triggered a Safety Tip because the domain looked like another domain.">
+    This site's name looks similar to <ph name='LOOKALIKE_DOMAIN'>$1<ex>google.com</ex></ph>. Attackers sometimes mimic sites by making hard-to-see changes to the web address.
+  </message>
 
   <!-- Viewing file strings -->
   <message name="IDS_PAGE_INFO_FILE_PAGE" desc="Message to display in the page info bubble when the page the user has navigated to is a file:// page">
@@ -40,6 +66,9 @@
   </message>
   <message name="IDS_PAGE_INFO_MIXED_CONTENT_DETAILS" desc="A short paragraph explaining a partially insecure site to the user.">
     Attackers might be able to see the images you’re looking at on this site and trick you by modifying them.
+  </message>
+  <message name="IDS_PAGE_INFO_LEGACY_TLS_DETAILS" desc="A short paragraph explaining to the user a site that uses deprecated security configrations.">
+    This site uses an outdated security configuration, which may expose your information (for example, passwords or credit card numbers) when it is sent to this site.
   </message>
   <message name="IDS_PAGE_INFO_NOT_SECURE_DETAILS" desc="A short paragraph explaining a non-secure site to the user.">
     You should not enter any sensitive information on this site (for example, passwords or credit cards), because it could be stolen by attackers.
@@ -119,14 +148,8 @@
     <message name="IDS_PAGE_INFO_SECURITY_TAB_NOT_ENCRYPTED_CONNECTION_TEXT" desc="The text of the connection section when the connection is not encrypted.">
       Your connection to <ph name="DOMAIN">$1<ex>www.google.com</ex></ph> is not encrypted.
     </message>
-    <message name="IDS_PAGE_INFO_SECURITY_TAB_NO_REVOCATION_MECHANISM" desc="The text of the identity section when there is no certificate revocation mechanism.">
-      The certificate does not specify a mechanism to check whether it has been revoked.
-    </message>
     <message name="IDS_PAGE_INFO_SECURITY_TAB_SSL_VERSION" desc="This message gives the version of the SSL protocol used to protect the HTTPS connection.">
       The connection uses <ph name="SSL_VERSION">$1<ex>TLS 1.0</ex></ph>.
-    </message>
-    <message name="IDS_PAGE_INFO_SECURITY_TAB_UNABLE_TO_CHECK_REVOCATION" desc="The text of the identity section when we were unable to check if the certificate has been revoked.">
-      Unable to check whether the certificate has been revoked.
     </message>
     <message name="IDS_PAGE_INFO_SECURITY_TAB_UNKNOWN_PARTY" desc="The default name used when we did not find a principal name.">
       unknown name
@@ -150,8 +173,8 @@
     <message name="IDS_PAGE_INFO_PARTIAL_ADDRESS" desc="Locality with missing state as reported in the EV identity text.">
       <ph name="CITY">$1<ex>Mountain View</ex></ph>, <ph name="COUNTRY">$2<ex>US</ex></ph>
     </message>
-    <message name="IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED" desc="The text of the identity section when the page is secured with a valid EV cert.">
-      The identity of <ph name="ORGANIZATION">$1<ex>Google</ex></ph> at <ph name="LOCALITY">$2<ex>Mountain View, CA US</ex></ph> has been verified by <ph name="ISSUER">$3<ex>VeriSign</ex></ph>.
+    <message name="IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED" desc="Describes the legal entity that the current page's HTTPS certificate was issued to. Shown in the certificate area in the Page Info bubble when a HTTPS site with a valid EV certificate is loaded.">
+      Issued to: <ph name="ORGANIZATION">$1<ex>Google LLC</ex></ph> [<ph name="JURISDICTION">$2<ex>US</ex></ph>]
     </message>
 
     <!-- Certificate Viewer link -->
@@ -191,7 +214,7 @@
           Cookies <ph name="NUM_COOKIES">$1<ex>(4 in use)</ex></ph>
       </message>
       <message name="IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED" desc="The label of the counts for allowed cookies that are in use on the page. This text will be used in IDS_PAGE_INFO_COOKIES_BUTTON_TEXT.">
-        ({NUM_COOKIES, plural, =1 {1 in use} other {# in use}})
+        {NUM_COOKIES, plural, =1 {(1 in use)} other {(# in use)}}
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_TOOLTIP" desc="The text of the tooltip on IDS_PAGE_INFO_NUM_COOKIES_PARENTHESIZED.">
         Show cookies
@@ -201,6 +224,9 @@
     <!-- Permission names -->
     <message name="IDS_PAGE_INFO_TYPE_ADS" desc="The label used for the ads permission controls in the Page Info popup.">
       Ads
+    </message>
+    <message name="IDS_PAGE_INFO_TYPE_PROTECTED_MEDIA_IDENTIFIER" desc="The label used for the protected media identifier permission controls in the Page Info popup.">
+      Protected content
     </message>
     <message name="IDS_PAGE_INFO_TYPE_AUTOPLAY" desc="The label used for the autoplay permission controls in the Page Info popup.">
       Autoplay
@@ -244,8 +270,23 @@
     <message name="IDS_PAGE_INFO_TYPE_SENSORS" desc="The label used for the sensor permission controls in the Page Info popup. Title case format.">
       Motion or Light Sensors
     </message>
+    <message name="IDS_PAGE_INFO_TYPE_MOTION_SENSORS" desc="The label used for the motion sensor (accelerometer, gyroscope, magnetometer) permission controls in the Page Info popup. Title case format.">
+      Motion Sensors
+    </message>
     <message name="IDS_PAGE_INFO_TYPE_USB" desc="The label used for the USB permission controls in the Page Info popup.">
       USB devices
+    </message>
+    <message name="IDS_PAGE_INFO_TYPE_SERIAL" desc="The label used for the serial port permission controls in the Page Info popup.">
+      Serial ports
+    </message>
+    <message name="IDS_PAGE_INFO_TYPE_NATIVE_FILE_SYSTEM_WRITE" desc="The label used for the native file system write permission controls in the Page Info popup. The write permission determines whether sites are allowed to save to the original file that was selected by the user through the Native File System API.">
+      File editing
+    </message>
+    <message name="IDS_PAGE_INFO_TYPE_BLUETOOTH_SCANNING" desc="The label used for the Bluetooth scanning controls in the Page Info popup.">
+      Bluetooth scanning
+    </message>
+    <message name="IDS_PAGE_INFO_TYPE_NFC" desc="The label used for the NFC permission controls in the Page Info popup.">
+      NFC devices
     </message>
     <!-- TODO(crbug.com/716303): A few permissions are missing here. -->
 
@@ -388,6 +429,15 @@
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS" desc="A short paragraph explaining to the user that they has reuse their google password on current website.">
           You could lose access to your Google Account. Chrome recommends changing your password now. You'll be asked to sign in.
         </message>
+        <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED" desc="A short paragraph explaining to a Chrome user that they have reused their saved password on the current website.">
+          You just entered your password on a deceptive site. Chrome recommends changing your password now.
+        </message>
+        <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SYNC" desc="A short paragraph explaining to a Chrome sync user that they have reused their Google password on the current website.">
+          Chrome can help you protect your Google Account and change your password.
+        </message>
+        <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SIGNED_IN_NON_SYNC" desc="A short paragraph explaining to a non-sync user that they have reused their Google password on the current website.">
+          Chrome can help you protect your Google Account and change your password. This will notify Google about this site.
+        </message>
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_ENTERPRISE" desc="A short paragraph explaining to the user that they have reused their password on the current website.">
           You could lose access to your organization's account or experience identity theft. Chrome recommends changing your password now.
         </message>
@@ -398,6 +448,15 @@
       <if expr="not _google_chrome">
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS" desc="A short paragraph explaining to the user that they has reuse their google password on current website.">
           You could lose access to your Google Account. Chromium recommends changing your password now. You'll be asked to sign in.
+        </message>
+        <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SAVED" desc="A short paragraph explaining to a Chromium user that they have reused their saved password on the current website.">
+          You just entered your password on a deceptive site. Chromium recommends changing your password now.
+        </message>
+        <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SYNC" desc="A short paragraph explaining to a Chrome sync user that they have reused their Google password on the current website.">
+          Chromium can help you protect your Google Account and change your password.
+        </message>
+        <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_SIGNED_IN_NON_SYNC" desc="A short paragraph explaining to a non-sync user that they have reused their Google password on the current website.">
+          Chromium can help you protect your Google Account and change your password. This will notify Google about this site.
         </message>
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_DETAILS_ENTERPRISE" desc="A short paragraph explaining to the user that they have reused their password on the current website.">
           You could lose access to your organization's account or experience identity theft. Chromium recommends changing your password now.
@@ -411,6 +470,9 @@
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON" desc="In Title Case: The string used in the page info change password button.">
           Change Password
         </message>
+        <message name="IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON" desc="In Title Case: The string used in the page info protect account button.">
+          Protect Account
+        </message>
         <message name="IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON" desc="In Title Case: The string used in the page info ignore password warning button.">
           Ignore
         </message>
@@ -419,10 +481,13 @@
         <message name="IDS_PAGE_INFO_CHANGE_PASSWORD_BUTTON" desc="The string used in the page info change password button.">
           Change password
         </message>
+        <message name="IDS_PAGE_INFO_PROTECT_ACCOUNT_BUTTON" desc="The string used in the page info protect account button.">
+          Protect account
+        </message>
         <message name="IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON" desc="The string used in the page info ignore password warning button.">
           Ignore
         </message>
-      </if>
+       </if>
       <message name="IDS_PAGE_INFO_WHITELIST_PASSWORD_REUSE_BUTTON" desc="The string used in the page info whitelist password reuse button.">
         Site is legitimate
       </message>
@@ -439,9 +504,9 @@
 
   <!-- Misc site settings -->
   <message name="IDS_PAGE_INFO_VR_PRESENTING_TEXT" desc="The string used in the page info that states that an active VR presentation is in progress.">
-    VR session is active
+    VR session in progress
   </message>
   <message name="IDS_PAGE_INFO_VR_TURN_OFF_BUTTON_TEXT" desc="Label on the button that's used to turn off the VR presentation.">
-    End session
+    End
   </message>
 </grit-part>

@@ -12,7 +12,9 @@
 #include "base/memory/ref_counted.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
-#include "components/metrics/public/interfaces/call_stack_profile_collector.mojom.h"
+#include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace service_manager {
 class InterfaceProvider;
@@ -55,9 +57,11 @@ class ChildCallStackProfileCollector {
 
   // Sets the CallStackProfileCollector interface from |parent_collector|. This
   // function MUST be invoked exactly once, regardless of whether
-  // |parent_collector| is null, as it flushes pending data in either case.
+  // |parent_collector| is mojo::NullRemote(), as it flushes pending data in
+  // either case.
   void SetParentProfileCollector(
-      metrics::mojom::CallStackProfileCollectorPtr parent_collector);
+      mojo::PendingRemote<metrics::mojom::CallStackProfileCollector>
+          parent_collector);
 
   // Collects |profile| whose collection start time is |start_timestamp|.
   void Collect(base::TimeTicks start_timestamp, SampledProfile profile);
@@ -101,10 +105,11 @@ class ChildCallStackProfileCollector {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // The interface to use to collect the stack profiles provided to this
-  // object. Initially null until SetParentProfileCollector() is invoked, at
-  // which point it may either become set or remain null. If set, stacks are
-  // collected via the interface, otherwise they are ignored.
-  mojom::CallStackProfileCollectorPtr parent_collector_;
+  // object. Initially mojo::NullRemote() until SetParentProfileCollector() is
+  // invoked, at which point it may either become set or remain
+  // mojo::NullRemote(). If set, stacks are collected via the interface,
+  // otherwise they are ignored.
+  mojo::Remote<mojom::CallStackProfileCollector> parent_collector_;
 
   // Profiles being cached by this object, pending a parent interface to be
   // supplied.

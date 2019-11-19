@@ -18,6 +18,8 @@
 #include "components/update_client/update_client.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/updater/extension_cache.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace extensions {
 class KioskDelegate;
@@ -81,23 +83,17 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   bool CanExtensionCrossIncognito(
       const extensions::Extension* extension,
       content::BrowserContext* context) const override;
-  net::URLRequestJob* MaybeCreateResourceBundleRequestJob(
-      net::URLRequest* request,
-      net::NetworkDelegate* network_delegate,
-      const base::FilePath& directory_path,
-      const std::string& content_security_policy,
-      bool send_cors_header) override;
   base::FilePath GetBundleResourcePath(
       const network::ResourceRequest& request,
       const base::FilePath& extension_resources_path,
-      ComponentExtensionResourceInfo* resource_info) const override;
+      int* resource_id) const override;
   void LoadResourceFromResourceBundle(
       const network::ResourceRequest& request,
-      network::mojom::URLLoaderRequest loader,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
       const base::FilePath& resource_relative_path,
-      const ComponentExtensionResourceInfo& resource_info,
+      int resource_id,
       const std::string& content_security_policy,
-      network::mojom::URLLoaderClientPtr client,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       bool send_cors_header) override;
 
   bool AllowCrossRendererResourceLoad(const GURL& url,
@@ -112,7 +108,7 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context) override;
   void GetEarlyExtensionPrefsObservers(
       content::BrowserContext* context,
-      std::vector<ExtensionPrefsObserver*>* observers) const override;
+      std::vector<EarlyExtensionPrefsObserver*>* observers) const override;
   ProcessManagerDelegate* GetProcessManagerDelegate() const override;
   std::unique_ptr<ExtensionHostDelegate> CreateExtensionHostDelegate() override;
   bool DidVersionUpdate(content::BrowserContext* context) override;
@@ -134,8 +130,8 @@ class TestExtensionsBrowserClient : public ExtensionsBrowserClient {
   void BroadcastEventToRenderers(
       events::HistogramValue histogram_value,
       const std::string& event_name,
-      std::unique_ptr<base::ListValue> args) override;
-  net::NetLog* GetNetLog() override;
+      std::unique_ptr<base::ListValue> args,
+      bool dispatch_to_off_the_record_profiles) override;
   ExtensionCache* GetExtensionCache() override;
   bool IsBackgroundUpdateAllowed() override;
   bool IsMinBrowserVersionSupported(const std::string& min_version) override;

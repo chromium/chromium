@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/ui/payments/cells/accessibility_util.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -31,15 +31,7 @@ const CGFloat kVerticalSpacingBetweenLabels = 8;
 
 @implementation PaymentsTextItem
 
-@synthesize text = _text;
-@synthesize detailText = _detailText;
-@synthesize textColor = _textColor;
-@synthesize detailTextColor = _detailTextColor;
-@synthesize leadingImage = _leadingImage;
-@synthesize trailingImage = _trailingImage;
-@synthesize accessoryType = _accessoryType;
 @synthesize complete = _complete;
-@synthesize cellType = _cellType;
 
 #pragma mark CollectionViewItem
 
@@ -53,14 +45,14 @@ const CGFloat kVerticalSpacingBetweenLabels = 8;
 
 - (UIColor*)textColor {
   if (!_textColor) {
-    _textColor = [[MDCPalette greyPalette] tint900];
+    _textColor = [UIColor colorNamed:kTextPrimaryColor];
   }
   return _textColor;
 }
 
 - (UIColor*)detailTextColor {
   if (!_detailTextColor) {
-    _detailTextColor = [[MDCPalette greyPalette] tint900];
+    _detailTextColor = [UIColor colorNamed:kTextPrimaryColor];
   }
   return _detailTextColor;
 }
@@ -73,7 +65,9 @@ const CGFloat kVerticalSpacingBetweenLabels = 8;
   cell.detailTextLabel.text = self.detailText;
   cell.detailTextLabel.textColor = self.detailTextColor;
   cell.leadingImageView.image = self.leadingImage;
+  cell.leadingImageView.tintColor = self.leadingImageTintColor;
   cell.trailingImageView.image = self.trailingImage;
+  cell.trailingImageView.tintColor = self.trailingImageTintColor;
   cell.cellType = self.cellType;
 }
 
@@ -247,7 +241,9 @@ const CGFloat kVerticalSpacingBetweenLabels = 8;
   self.textLabel.text = nil;
   self.detailTextLabel.text = nil;
   self.leadingImageView.image = nil;
+  self.leadingImageView.tintColor = nil;
   self.trailingImageView.image = nil;
+  self.trailingImageView.tintColor = nil;
   self.cellType = PaymentsTextCellTypeNormal;
 }
 

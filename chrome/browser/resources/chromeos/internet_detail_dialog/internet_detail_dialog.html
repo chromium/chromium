@@ -10,43 +10,57 @@
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_apnlist.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_choose_mobile.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_icon.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_ip_config.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_listener_behavior.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_nameservers.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_property_list.html">
+<link rel="import" href="chrome://resources/cr_components/chromeos/network/network_property_list_mojo.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_proxy.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_shared_css.html">
 <link rel="import" href="chrome://resources/cr_components/chromeos/network/network_siminfo.html">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_network_icon.html">
-<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_types.html">
+<link rel="import" href="chrome://resources/cr_elements/chromeos/network/cr_onc_strings.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_page_host_style_css.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_indicator.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_behavior_mojo.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_network_indicator_mojo.html">
 <link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
 
-<script src="chrome://internet-detail-dialog/strings.js"></script>
+<script src="strings.js"></script>
 
 </head>
+
+<style>
+  body,
+  html {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  #content {
+    height: 100%;
+    overflow: auto;
+  }
+</style>
 
 <body>
 
 <dom-module id="internet-detail-dialog">
   <template>
-    <style include="cr-shared-style network-shared iron-flex">
-      :host {
-        @apply --cr-page-host;
-      }
-
-      cr-policy-network-indicator {
+    <style include="cr-page-host-style cr-shared-style network-shared
+        iron-flex">
+      cr-policy-network-indicator-mojo {
         margin-inline-end: 10px;
       }
 
       .section {
-        @apply(--cr-section);
+        @apply --cr-section;
         margin-bottom: 10px;
       }
 
@@ -65,6 +79,10 @@
         flex: auto;
       }
 
+      .section cr-button + cr-button {
+        margin-inline-start: 8px;
+      }
+
       .title {
         font-size: 107.69%;  /* 14px / 13px */
         font-weight: 500;
@@ -77,58 +95,55 @@
     </style>
 
     <!-- Title section: Icon + name + connection state. -->
-    <div class="section first">
+    <div id="title" class="section first">
       <div class="start layout horizontal center">
-        <cr-network-icon
+        <network-icon
             show-technology-badge="[[showTechnologyBadge_]]"
-            network-state="[[networkProperties]]">
-        </cr-network-icon>
+            network-state="[[getNetworkState_(managedProperties_)]]">
+        </network-icon>
         <div id="networkName" class="title">
-          [[getNameText_(networkProperties)]]
+          [[getNameText_(managedProperties_)]]
         </div>
         <div id="networkState" class="title"
-            connected$="[[isConnectedState_(networkProperties)]]">
-          [[getStateText_(networkProperties)]]
+            connected$="[[isConnectedState_(managedProperties_)]]">
+          [[getStateText_(managedProperties_)]]
         </div>
       </div>
-      <paper-button class="primary-button" on-tap="onConnectTap_"
-          hidden$="[[!showConnect_(networkProperties)]]"
-          disabled="[[!enableConnect_(networkProperties)]]">
-        $i18n{networkButtonConnect}
-      </paper-button>
-      <paper-button class="primary-button" on-tap="onDisconnectTap_"
-          hidden$="[[!showDisconnect_(networkProperties)]]">
-        $i18n{networkButtonDisconnect}
-      </paper-button>
+      <cr-button on-click="onForgetTap_"
+          hidden$="[[!showForget_(managedProperties_)]]">
+        $i18n{networkButtonForget}
+      </cr-button>
+      <cr-button class="action-button" on-click="onConnectDisconnectClick_"
+          hidden$="[[!showConnectDisconnect_(managedProperties_)]]"
+          disabled="[[!enableConnectDisconnect_(managedProperties_)]]">
+        [[getConnectDisconnectText_(managedProperties_)]]
+      </cr-button>
     </div>
 
     <!-- SIM Info (Cellular only). -->
-    <template is="dom-if" if="[[showCellularSim_(networkProperties)]]"
+    <template is="dom-if" if="[[showCellularSim_(managedProperties_)]]"
         restamp>
       <div class="section single-column">
-        <network-siminfo
-            editable on-siminfo-change="onNetworkPropertyChange_"
-            network-properties="[[networkProperties]]"
-            networking-private="[[networkingPrivate]]">
+        <network-siminfo device-state="[[deviceState_]]">
         </network-siminfo>
-      </div>
+      <div>
     </template>
 
     <!-- Choose Mobile Network (Cellular only) -->
     <template is="dom-if"
-        if="[[showCellularChooseNetwork_(networkProperties)]]">
+        if="[[showCellularChooseNetwork_(managedProperties_)]]">
       <div class="section single-column">
-        <network-choose-mobile networking-private="[[networkingPrivate]]"
-            network-properties="[[networkProperties]]">
+        <network-choose-mobile device-state="[[deviceState_]]"
+            managed-properties="[[managedProperties_]]">
         </network-choose-mobile>
       </div>
     </template>
 
     <!-- APN (Cellular only) -->
-    <template is="dom-if" if="[[isCellular_(networkProperties)]]">
+    <template is="dom-if" if="[[isCellular_(managedProperties_)]]">
       <div class="section single-column">
-        <network-apnlist editable on-apn-change="onNetworkPropertyChange_"
-            network-properties="[[networkProperties]]">
+        <network-apnlist editable on-apn-change="onApnChange_"
+            managed-properties="[[managedProperties_]]">
         </network-apnlist>
       </div>
     </template>
@@ -136,53 +151,61 @@
     <!-- Proxy -->
     <div class="section single-column">
       <template is="dom-if"
-          if="[[shouldShowProxyPolicyIndicator_(networkProperties)]]">
+          if="[[shouldShowProxyPolicyIndicator_(managedProperties_)]]">
         <div class="property-box">
-          <cr-policy-network-indicator
-              property="[[networkProperties.ProxySettings.Type]]">
-          </cr-policy-network-indicator>
+          <cr-policy-network-indicator-mojo
+              property="[[managedProperties_.proxySettings.type]]">
+          </cr-policy-network-indicator-mojo>
           <div>$i18n{networkProxyEnforcedPolicy}</div>
         </div>
       </template>
       <network-proxy editable use-shared-proxies
           on-proxy-change="onProxyChange_"
-          network-properties="[[networkProperties]]">
+          managed-properties="[[managedProperties_]]">
       </network-proxy>
     </div>
 
-    <template is="dom-if"
-        if="[[isRememberedOrConnected_(networkProperties)]]">
+    <template is="dom-if" if="[[isRememberedOrConnected_(managedProperties_)]]">
       <!-- IP Config -->
       <div class="section single-column">
         <network-ip-config editable on-ip-change="onIPConfigChange_"
-            network-properties="[[networkProperties]]">
+            managed-properties="[[managedProperties_]]">
         </network-ip-config>
       </div>
 
-      <!-- IP Config, Nameservers -->
+      <!-- Nameservers -->
       <div class="section single-column">
         <network-nameservers editable
             on-nameservers-change="onIPConfigChange_"
-            network-properties="[[networkProperties]]">
+            managed-properties="[[managedProperties_]]">
         </network-nameservers>
       </div>
     </template>
 
-    <!-- Other properties to show if present. -->
-    <template is="dom-if" if="[[hasInfoFields_(networkProperties)]]">
-      <div class="section single-column indented">
-        <network-property-list
-            fields="[[getInfoFields_(networkProperties)]]"
-            property-dict="[[networkProperties]]"
-            on-property-change="onNetworkPropertyChange_">
-        </network-property-list>
+    <div class="section single-column indented">
+      <!-- MAC Address. -->
+      <div class="property-box single-column two-line"
+          hidden$="[[!deviceState_.macAddress]]">
+        <div>$i18n{OncMacAddress}</div>
+        <div class="secondary">[[deviceState_.macAddress]]</div>
       </div>
-    </template>
+
+      <!-- Other properties to show if present. -->
+      <template is="dom-if" if="[[hasInfoFields_(managedProperties_)]]">
+        <network-property-list-mojo
+            fields="[[getInfoFields_(managedProperties_)]]"
+            property-dict="[[managedProperties_]]">
+        </network-property-list-mojo>
+      </template>
+    </div>
+
   </template>
   <script src="internet_detail_dialog.js"></script>
 </dom-module>
 
-<internet-detail-dialog></internet-detail-dialog>
+<div id="content">
+  <internet-detail-dialog></internet-detail-dialog>
+</div>
 
 </body>
 

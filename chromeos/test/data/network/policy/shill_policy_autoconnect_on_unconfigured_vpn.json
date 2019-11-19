@@ -14,11 +14,9 @@
     "OpenVPN.User": "abc ${LOGIN_EMAIL} def",
     "Type":"openvpn"
   },
-  "SSID": "{a3860e83-f03d-4cb1-bafa-b22c9e746950}",
   "SaveCredentials": false,
   "State": "idle",
   "Type": "vpn",
   "UIData": "{\"onc_source\":\"user_policy\"}",
-  "Visible": true,
-  "WiFi.HexSSID":"7B61333836306538332D663033642D346362312D626166612D6232326339653734363935307D"
+  "Visible": true
 }

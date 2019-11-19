@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Relative URL scope keys / should work with no prefix
+PASS Relative URL scope keys / should work with ./, ../, and / prefixes
+PASS Relative URL scope keys / should work with /s, ?s, and #s
+PASS Relative URL scope keys / should work with an empty string scope key
+PASS Relative URL scope keys / should work with / suffixes
+PASS Relative URL scope keys / should deduplicate based on URL parsing rules
+PASS Absolute URL scope keys / should accept all absolute URL scope keys, with or without fetch schemes
+FAIL Absolute URL scope keys / should parse absolute URL scope keys, ignoring unparseable ones assert_equals: expected "{\"imports\":{},\"scopes\":{\"https://base.example/path1/path2/example.org\":{},\"https://example.com/%41\":{},\"https://example.com///\":{},\"https://example.com/foo/\":{},\"https://example.net/\":{}}}" but got "{\"imports\":{},\"scopes\":{\"https://base.example/path1/path2/example.org\":{},\"https://ex%20ample.org/\":{},\"https://example.com///\":{},\"https://example.com/A\":{},\"https://example.com/foo/\":{},\"https://example.net/\":{}}}"
+FAIL Absolute URL scope keys / should ignore relative URL scope keys when the base URL is a data: URL test helper does not support data: base URLs
+Harness: the test ran to completion.
+

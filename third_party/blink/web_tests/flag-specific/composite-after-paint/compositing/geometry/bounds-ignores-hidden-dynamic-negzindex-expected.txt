@@ -1,0 +1,38 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutImage (positioned) IMG",
+      "bounds": [500, 250],
+      "backgroundColor": "#000000"
+    },
+    {
+      "name": "LayoutImage (positioned) IMG",
+      "bounds": [150, 150],
+      "backgroundColor": "#000000",
+      "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV class='indicator box'",
+      "bounds": [100, 350],
+      "backgroundColor": "#008000"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 250, 0, 1]
+      ]
+    }
+  ]
+}
+

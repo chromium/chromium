@@ -26,7 +26,6 @@ static_library("browser") {
   deps = [
     ":language_code_locator",
     "//base",
-    "//components/language/content/browser/regional_language_code_locator:regional_language_code_locator",
     "//components/language/content/browser/ulp_language_code_locator:s2langquadtree",
     "//components/language/content/browser/ulp_language_code_locator:ulp_language_code_locator",
     "//components/language/core/browser:browser",
@@ -50,7 +49,6 @@ source_set("unit_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
-    "//components/language/content/browser/regional_language_code_locator:unit_tests",
     "//components/language/content/browser/ulp_language_code_locator:ulp_language_code_locator",
     "//components/language/content/browser/ulp_language_code_locator:unit_tests",
     "//components/language/core/common",

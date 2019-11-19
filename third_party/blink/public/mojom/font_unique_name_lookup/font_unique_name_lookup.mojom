@@ -1,0 +1,31 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+
+interface FontUniqueNameLookup {
+
+  // Synchronously returns a protobuf structured lookup list of
+  // (full_font_name|postscript_name) => (font_file + ttc_index) to the
+  // renderer process as a ReadOnlySharedMemoryRegion if it is available
+  // immediately without any blocking operations. Use FontTableMatcher to
+  // perform searches in it. If it is not available without blocking operations,
+  // sync_available is false and no shared memory region is provided.
+  [Sync]
+  GetUniqueNameLookupTableIfAvailable()
+      => (bool sync_available,
+          mojo_base.mojom.ReadOnlySharedMemoryRegion? font_lookup_table);
+
+  // Asynchronously returns a protobuf structured lookup list of
+  // (full_font_name|postscript_name) => (font_file + ttc_index) to the
+  // renderer process as a ReadOnlySharedMemoryRegion. The lookup list is built
+  // on the first renderer call to retrieving this list. Use FontTableMatcher
+  // to perform searches in it. Retrieval may take up to several seconds if the
+  // table needs rebuilding on browser side.
+  GetUniqueNameLookupTable() =>
+  (mojo_base.mojom.ReadOnlySharedMemoryRegion? font_lookup_table);
+};

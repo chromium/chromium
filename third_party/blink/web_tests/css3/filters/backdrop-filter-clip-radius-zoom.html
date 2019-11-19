@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<title>Backdrop filter clipping radius with zoom</title>
+<link rel="author" title="Mason Freed" href="mailto:masonfreed@chromium.org">
+<link rel="help" href="https://drafts.fxtf.org/filter-effects-2/#BackdropFilterProperty">
+
+<!--You should see two completely filled black rectangles with rounded corners.-->
+
+<!-- TODO(978481): Convert this back to WPT test. See crbug.com/978481 for
+  an implementation in WPT that is waiting for the WPT Fuzzy Matching feature.
+-->
+
+<div id='rect1'></div>
+<div id='rect2'></div>
+
+<style>
+body {
+  zoom: 5;
+}
+div {
+  width: 100px;
+  height: 20px;
+  backdrop-filter: invert(1);
+  border: 2px dashed green;
+}
+#rect1 {
+  border-radius: 20px / 5px;
+}
+#rect2 {
+  position: relative;
+  top:5px;
+  border-radius: 4px;
+}
+p {
+    font-size: 0.2em;
+}
+</style>

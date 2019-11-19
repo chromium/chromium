@@ -9,10 +9,15 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+NSString* const kVoiceSearchInputAccessoryViewID =
+    @"kVoiceSearchInputAccessoryViewID";
 
 namespace {
 
@@ -38,12 +43,10 @@ NSArray<UIButton*>* ToolbarAssistiveKeyboardLeadingButtons(
     id<ToolbarAssistiveKeyboardDelegate> delegate) {
   UIButton* voiceSearchButton =
       ButtonWithIcon(@"keyboard_accessory_voice_search");
-  [voiceSearchButton addTarget:delegate
-                        action:@selector(keyboardAccessoryVoiceSearchTouchDown:)
-              forControlEvents:UIControlEventTouchDown];
-  SetA11yLabelAndUiAutomationName(voiceSearchButton,
-                                  IDS_IOS_KEYBOARD_ACCESSORY_VIEW_VOICE_SEARCH,
-                                  @"Voice Search");
+  NSString* accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_KEYBOARD_ACCESSORY_VIEW_VOICE_SEARCH);
+  voiceSearchButton.accessibilityLabel = accessibilityLabel;
+  voiceSearchButton.accessibilityIdentifier = kVoiceSearchInputAccessoryViewID;
   [voiceSearchButton
              addTarget:delegate
                 action:@selector(keyboardAccessoryVoiceSearchTouchUpInside:)

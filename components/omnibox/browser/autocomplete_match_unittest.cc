@@ -11,8 +11,8 @@
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -137,6 +137,11 @@ TEST(AutocompleteMatchTest, InlineTailPrefix) {
        // should prepend ellipsis, and offset remainder
        {{0, ACMatchClassification::NONE}, {2, ACMatchClassification::MATCH}},
        {{0, ACMatchClassification::NONE}, {6, ACMatchClassification::MATCH}}},
+      {"90123456",
+       "... 90123456",
+       // should prepend ellipsis
+       {},
+       {{0, ACMatchClassification::NONE}}},
   };
   for (const auto& test_case : cases) {
     AutocompleteMatch match;
@@ -373,40 +378,20 @@ TEST(AutocompleteMatchTest, Duplicates) {
   }
 }
 
-TEST(AutocompleteMatchTest, DedupeDriveURLsDisabled) {
-  DuplicateCase cases[] = {
-      // Document URLs pointing to the same document are not deduped when
-      // the feature is in its default state (off).
-      {L"docs", "https://docs.google.com/spreadsheets/d/the_doc-id/preview?x=1",
-       "https://docs.google.com/spreadsheets/d/the_doc-id/edit?x=2#y=3", false},
-  };
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(omnibox::kDedupeGoogleDriveURLs);
-
-  for (size_t i = 0; i < base::size(cases); ++i) {
-    CheckDuplicateCase(cases[i]);
-  }
-}
-
-TEST(AutocompleteMatchTest, DedupeDriveURLsEnabled) {
+TEST(AutocompleteMatchTest, DedupeDriveURLs) {
   DuplicateCase cases[] = {
       // Document URLs pointing to the same document, perhaps with different
-      // /edit points, hashes, or cgiargs, are deduped when the DedupeDrive
-      // feature is on.
+      // /edit points, hashes, or cgiargs, are deduped.
       {L"docs", "https://docs.google.com/spreadsheets/d/the_doc-id/preview?x=1",
        "https://docs.google.com/spreadsheets/d/the_doc-id/edit?x=2#y=3", true},
       {L"report", "https://drive.google.com/open?id=the-doc-id",
        "https://docs.google.com/spreadsheets/d/the-doc-id/edit?x=2#y=3", true},
-      // Similar Different URLs should not be deduped.
+      // Similar but different URLs should not be deduped.
       {L"docs", "https://docs.google.com/spreadsheets/d/the_doc-id/preview",
        "https://docs.google.com/spreadsheets/d/another_doc-id/preview", false},
       {L"report", "https://drive.google.com/open?id=the-doc-id",
        "https://drive.google.com/open?id=another-doc-id", false},
   };
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(omnibox::kDedupeGoogleDriveURLs);
 
   for (size_t i = 0; i < base::size(cases); ++i) {
     CheckDuplicateCase(cases[i]);

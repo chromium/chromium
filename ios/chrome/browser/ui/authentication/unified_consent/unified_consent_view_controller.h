@@ -9,9 +9,6 @@
 
 #include <vector>
 
-// Accessibility identifier for |-UnifiedConsentViewController.view|.
-extern NSString* const kUnifiedConsentScrollViewIdentifier;
-
 @protocol UnifiedConsentViewControllerDelegate;
 
 // UnifiedConsentViewController is a sub view controller to ask for the user

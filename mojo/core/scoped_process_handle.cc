@@ -10,6 +10,10 @@
 #include <windows.h>
 #endif
 
+#if defined(OS_FUCHSIA)
+#include <zircon/syscalls.h>
+#endif
+
 namespace mojo {
 namespace core {
 
@@ -30,7 +34,12 @@ base::ProcessHandle GetCurrentProcessHandle() {
 ScopedProcessHandle::ScopedProcessHandle() = default;
 
 ScopedProcessHandle::ScopedProcessHandle(base::ProcessHandle handle)
-    : handle_(handle) {
+#if defined(OS_FUCHSIA)
+    : process_(handle)
+#else
+    : handle_(handle)
+#endif
+{
   DCHECK_NE(handle, GetCurrentProcessHandle());
 }
 
@@ -49,8 +58,20 @@ ScopedProcessHandle ScopedProcessHandle::CloneFrom(base::ProcessHandle handle) {
                               GetCurrentProcessHandle(), &handle, 0, FALSE,
                               DUPLICATE_SAME_ACCESS);
   DCHECK(ok);
-#endif
   return ScopedProcessHandle(handle);
+#elif defined(OS_FUCHSIA)
+  base::ProcessHandle new_handle;
+  zx_status_t status =
+      zx_handle_duplicate(handle, ZX_RIGHT_SAME_RIGHTS, &new_handle);
+  if (status != ZX_OK)
+    return ScopedProcessHandle();
+  return ScopedProcessHandle(new_handle);
+#elif defined(OS_POSIX)
+  return ScopedProcessHandle(handle);
+#else
+#error "Unsupported platform."
+  return ScopedProcessHandle();
+#endif
 }
 
 ScopedProcessHandle& ScopedProcessHandle::operator=(ScopedProcessHandle&&) =
@@ -59,6 +80,8 @@ ScopedProcessHandle& ScopedProcessHandle::operator=(ScopedProcessHandle&&) =
 bool ScopedProcessHandle::is_valid() const {
 #if defined(OS_WIN)
   return handle_.IsValid();
+#elif defined(OS_FUCHSIA)
+  return process_.is_valid();
 #else
   return handle_ != base::kNullProcessHandle;
 #endif
@@ -67,6 +90,8 @@ bool ScopedProcessHandle::is_valid() const {
 base::ProcessHandle ScopedProcessHandle::get() const {
 #if defined(OS_WIN)
   return handle_.Get();
+#elif defined(OS_FUCHSIA)
+  return process_.get();
 #else
   return handle_;
 #endif
@@ -75,6 +100,8 @@ base::ProcessHandle ScopedProcessHandle::get() const {
 base::ProcessHandle ScopedProcessHandle::release() {
 #if defined(OS_WIN)
   return handle_.Take();
+#elif defined(OS_FUCHSIA)
+  return process_.release();
 #else
   return handle_;
 #endif

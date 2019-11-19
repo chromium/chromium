@@ -245,8 +245,13 @@ def _ProcessInfo(java_file, package_name, class_names, source, chromium_code):
       _CheckPathMatchesClassName(java_file, package_name, class_names[0])
 
 
+def _ShouldIncludeInJarInfo(fully_qualified_name, excluded_globs):
+  name_as_class_glob = fully_qualified_name.replace('.', '/') + '.class'
+  return not build_utils.MatchesGlob(name_as_class_glob, excluded_globs)
+
+
 def _CreateInfoFile(java_files, jar_path, chromium_code, srcjar_files,
-                    classes_dir, generated_java_dir):
+                    classes_dir, generated_java_dir, excluded_globs):
   """Writes a .jar.info file.
 
   This maps fully qualified names for classes to either the java file that they
@@ -269,7 +274,8 @@ def _CreateInfoFile(java_files, jar_path, chromium_code, srcjar_files,
     source = srcjar_files.get(java_file, java_file)
     for fully_qualified_name in _ProcessInfo(
         java_file, package_name, class_names, source, chromium_code):
-      all_info_data[fully_qualified_name] = java_file
+      if _ShouldIncludeInJarInfo(fully_qualified_name, excluded_globs):
+        all_info_data[fully_qualified_name] = java_file
   logging.info('Writing info file: %s', output_path)
   with build_utils.AtomicOutput(output_path) as f:
     jar_info_utils.WriteJarInfoFile(f, all_info_data, srcjar_files)
@@ -364,7 +370,8 @@ def _OnStaleMd5(options, javac_cmd, java_files, classpath):
 
     if save_outputs:
       _CreateInfoFile(java_files, options.jar_path, options.chromium_code,
-                      srcjar_files, classes_dir, generated_java_dir)
+                      srcjar_files, classes_dir, generated_java_dir,
+                      options.jar_info_exclude_globs)
     else:
       build_utils.Touch(options.jar_path + '.info')
 
@@ -395,14 +402,7 @@ def _ParseOptions(argv):
   parser.add_option(
       '--java-version',
       help='Java language version to use in -source and -target args to javac.')
-  parser.add_option(
-      '--full-classpath',
-      action='append',
-      help='Classpath to use when annotation processors are present.')
-  parser.add_option(
-      '--interface-classpath',
-      action='append',
-      help='Classpath to use when no annotation processors are present.')
+  parser.add_option('--classpath', action='append', help='Classpath to use.')
   parser.add_option(
       '--processors',
       action='append',
@@ -431,6 +431,9 @@ def _ParseOptions(argv):
            'files are packaged into the jar. Files should be specified in '
            'format <filename>:<path to be placed in jar>.')
   parser.add_option(
+      '--jar-info-exclude-globs',
+      help='GN list of exclude globs to filter from generated .info files.')
+  parser.add_option(
       '--chromium-code',
       type='int',
       help='Whether code being compiled should be built with stricter '
@@ -452,23 +455,12 @@ def _ParseOptions(argv):
   build_utils.CheckOptions(options, parser, required=('jar_path',))
 
   options.bootclasspath = build_utils.ParseGnList(options.bootclasspath)
-  options.full_classpath = build_utils.ParseGnList(options.full_classpath)
-  options.interface_classpath = build_utils.ParseGnList(
-      options.interface_classpath)
+  options.classpath = build_utils.ParseGnList(options.classpath)
   options.processorpath = build_utils.ParseGnList(options.processorpath)
   options.processors = build_utils.ParseGnList(options.processors)
   options.java_srcjars = build_utils.ParseGnList(options.java_srcjars)
-
-  if options.java_version == '1.8' and options.bootclasspath:
-    # Android's boot jar doesn't contain all java 8 classes.
-    # See: https://github.com/evant/gradle-retrolambda/issues/23.
-    # Get the path of the jdk folder by searching for the 'jar' executable. We
-    # cannot search for the 'javac' executable because goma provides a custom
-    # version of 'javac'.
-    jar_path = os.path.realpath(distutils.spawn.find_executable('jar'))
-    jdk_dir = os.path.dirname(os.path.dirname(jar_path))
-    rt_jar = os.path.join(jdk_dir, 'jre', 'lib', 'rt.jar')
-    options.bootclasspath.append(rt_jar)
+  options.jar_info_exclude_globs = build_utils.ParseGnList(
+      options.jar_info_exclude_globs)
 
   additional_jar_files = []
   for arg in options.additional_jar_files or []:
@@ -489,7 +481,7 @@ def _ParseOptions(argv):
 
 def main(argv):
   logging.basicConfig(
-      level=logging.INFO if os.environ.get('_JAVAC_DEBUG') else logging.WARNING,
+      level=logging.INFO if os.environ.get('JAVAC_DEBUG') else logging.WARNING,
       format='%(levelname).1s %(relativeCreated)6d %(message)s')
   colorama.init()
 
@@ -503,10 +495,7 @@ def main(argv):
   # * With javac: 17 seconds
   # * With errorprone (checks disabled): 20 seconds
   # * With errorprone (checks enabled): 30 seconds
-  if options.errorprone_path:
-    javac_path = options.errorprone_path
-  else:
-    javac_path = distutils.spawn.find_executable('javac')
+  javac_path = build_utils.JAVA_PATH + 'c'
 
   javac_cmd = [
       javac_path,
@@ -522,21 +511,24 @@ def main(argv):
   ]
 
   if options.enable_errorprone:
+    errorprone_flags = ['-Xplugin:ErrorProne']
     for warning in ERRORPRONE_WARNINGS_TO_TURN_OFF:
-      javac_cmd.append('-Xep:{}:OFF'.format(warning))
+      errorprone_flags.append('-Xep:{}:OFF'.format(warning))
     for warning in ERRORPRONE_WARNINGS_TO_ERROR:
-      javac_cmd.append('-Xep:{}:ERROR'.format(warning))
-  elif options.errorprone_path:
-    javac_cmd.append('-XepDisableAllChecks')
+      errorprone_flags.append('-Xep:{}:ERROR'.format(warning))
+    javac_cmd += ['-XDcompilePolicy=simple', ' '.join(errorprone_flags)]
 
   if options.java_version:
     javac_cmd.extend([
       '-source', options.java_version,
       '-target', options.java_version,
     ])
+  if options.java_version == '1.8':
+    # Android's boot jar doesn't contain all java 8 classes.
+    options.bootclasspath.append(build_utils.RT_JAR_PATH)
 
   if options.chromium_code:
-    javac_cmd.extend(['-Xlint:unchecked', '-Werror'])
+    javac_cmd.extend(['-Werror'])
   else:
     # XDignore.symbol.file makes javac compile against rt.jar instead of
     # ct.sym. This means that using a java internal package/class will not
@@ -549,14 +541,6 @@ def main(argv):
   if options.bootclasspath:
     javac_cmd.extend(['-bootclasspath', ':'.join(options.bootclasspath)])
 
-  # Annotation processors crash when given interface jars.
-  active_classpath = (
-      options.full_classpath
-      if options.processors else options.interface_classpath)
-  classpath = []
-  if active_classpath:
-    classpath.extend(active_classpath)
-
   if options.processorpath:
     javac_cmd.extend(['-processorpath', ':'.join(options.processorpath)])
   if options.processor_args:
@@ -565,29 +549,30 @@ def main(argv):
 
   javac_cmd.extend(options.javac_arg)
 
-  classpath_inputs = (options.bootclasspath + options.interface_classpath +
-                      options.processorpath)
+  classpath_inputs = (
+      options.bootclasspath + options.classpath + options.processorpath)
 
   # GN already knows of java_files, so listing them just make things worse when
   # they change.
   depfile_deps = [javac_path] + classpath_inputs + options.java_srcjars
   input_paths = depfile_deps + java_files
+  input_paths += [x[0] for x in options.additional_jar_files]
 
   output_paths = [
       options.jar_path,
       options.jar_path + '.info',
   ]
 
-  # List python deps in input_strings rather than input_paths since the contents
-  # of them does not change what gets written to the depsfile.
+  input_strings = javac_cmd + options.classpath + java_files
+  if options.jar_info_exclude_globs:
+    input_strings.append(options.jar_info_exclude_globs)
   build_utils.CallAndWriteDepfileIfStale(
-      lambda: _OnStaleMd5(options, javac_cmd, java_files, classpath),
+      lambda: _OnStaleMd5(options, javac_cmd, java_files, options.classpath),
       options,
       depfile_deps=depfile_deps,
       input_paths=input_paths,
-      input_strings=javac_cmd + classpath,
-      output_paths=output_paths,
-      add_pydeps=False)
+      input_strings=input_strings,
+      output_paths=output_paths)
   logging.info('Script complete: %s', __file__)
 
 

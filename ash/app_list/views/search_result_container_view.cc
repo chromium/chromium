@@ -4,13 +4,12 @@
 
 #include "ash/app_list/views/search_result_container_view.h"
 
-#include "ash/app_list/views/search_result_base_view.h"
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
-namespace app_list {
+namespace ash {
 
 SearchResultContainerView::SearchResultContainerView(
     AppListViewDelegate* view_delegate)
@@ -115,10 +114,12 @@ void SearchResultContainerView::ScheduleUpdate() {
   // When search results are added one by one, each addition generates an update
   // request. Consolidates those update requests into one Update call.
   if (!update_factory_.HasWeakPtrs()) {
+    if (delegate_)
+      delegate_->OnSearchResultContainerResultsChanging();
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&SearchResultContainerView::Update,
                                   update_factory_.GetWeakPtr()));
   }
 }
 
-}  // namespace app_list
+}  // namespace ash

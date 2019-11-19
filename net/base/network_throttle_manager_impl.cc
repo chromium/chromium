@@ -240,8 +240,8 @@ void NetworkThrottleManagerImpl::OnThrottleDestroyed(ThrottleImpl* throttle) {
       break;
   }
 
-  DCHECK(!base::ContainsValue(blocked_throttles_, throttle));
-  DCHECK(!base::ContainsValue(outstanding_throttles_, throttle));
+  DCHECK(!base::Contains(blocked_throttles_, throttle));
+  DCHECK(!base::Contains(outstanding_throttles_, throttle));
 
   // Unblock the throttles if there's some chance there's a throttle to
   // unblock.

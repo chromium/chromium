@@ -4,11 +4,13 @@
 
 module tracing.mojom;
 
-const string kPerfettoProducerName = "org.chromium.perfetto_producer";
+const string kPerfettoProducerNamePrefix = "org.chromium.perfetto_producer.";
 const string kTraceEventDataSourceName = "org.chromium.trace_event";
 const string kMetaDataSourceName = "org.chromium.trace_metadata";
 const string kSystemTraceDataSourceName = "org.chromium.trace_system";
 const string kArcTraceDataSourceName = "org.chromium.trace_arc";
+const string kSamplerProfilerSourceName = "org.chromium.sampler_profiler";
+const string kJavaHeapProfilerSourceName = "org.chromium.java_heap_profiler";
 
 // Brief description of the flow: There's a per-process ProducerClient which
 // connects to the central PerfettoService and establishes a two-way connection
@@ -71,6 +73,10 @@ struct ChromeConfig {
   // base::trace_event::TraceConfig object rather then the json encoded string
   // used currently.
   string trace_config;
+
+  // When enabled the data source is supposed to only emit fields in the output
+  // proto that are guaranteed to not contain any sensitive data.
+  bool privacy_filtering_enabled;
 };
 
 struct DataSourceConfig {
@@ -84,7 +90,9 @@ struct DataSourceConfig {
 
 struct DataSourceRegistration {
   string name;
+  bool will_notify_on_start;
   bool will_notify_on_stop;
+  bool handles_incremental_state_clear;
 };
 
 // This is implemented by the tracing service and represents the service-
@@ -96,15 +104,13 @@ interface ProducerHost {
   // 2) Patch data (i.e. apply diff) that has been previously copied into the
   //    tracing buffer (if it's not been overwritten).
   // The service is robust in terms of tolerating malformed or malicious
-  // requests.
-  CommitData(CommitDataRequest data_request);
+  // requests. The callback is run after the service has handled the commit
+  // request.
+  CommitData(CommitDataRequest data_request) => ();
 
   // Called by a ProducerClient to let the Host know it can provide a specific
   // datasource.
   RegisterDataSource(DataSourceRegistration registration_info);
-
-  // Called to let the Service know that a flush is complete.
-  NotifyFlushComplete(uint64 flush_request_id);
 
   // Called by the ProducerClient to associate a TraceWriter with a target
   // buffer, which is required to support scraping of the SMB by the service.
@@ -116,15 +122,17 @@ interface ProducerHost {
 // this interface and use the PerfettoService interface within the tracing
 // service to register itself.
 interface ProducerClient {
-    OnTracingStart(handle<shared_buffer> shared_memory);
+  OnTracingStart(handle<shared_buffer> shared_memory,
+                  uint64 shared_memory_buffer_page_size_bytes);
 
-    // Called by Perfetto (via ProducerHost) to request a data source to start
-    // logging.
-    StartDataSource(uint64 id, DataSourceConfig data_source_config);
-    // Requesting a data source to stop logging again, with the id previously
-    // sent in the StartDataSource call.
-    StopDataSource(uint64 id) => ();
-    Flush(uint64 flush_request_id, array<uint64> data_source_ids);
+  // Called by Perfetto (via ProducerHost) to request a data source to start
+  // logging.
+  StartDataSource(uint64 id, DataSourceConfig data_source_config) => ();
+  // Requesting a data source to stop logging again, with the id previously
+  // sent in the StartDataSource call.
+  StopDataSource(uint64 id) => ();
+  Flush(uint64 flush_request_id, array<uint64> data_source_ids);
+  ClearIncrementalState();
 };
 
 // This is implemented by the tracing service, and is essentially a singleton
@@ -132,18 +140,41 @@ interface ProducerClient {
 // tracing system. A client that wishes to provide tracing data when requested,
 // should implement ProducerClient for callbacks and pass along.
 interface PerfettoService {
-  ConnectToProducerHost(ProducerClient producer_client,
-                        ProducerHost& producer_host);
+  ConnectToProducerHost(pending_remote<ProducerClient> producer_client,
+                        pending_receiver<ProducerHost> producer_host_receiver);
 };
 
-// The size of a buffer that the Consumer can request Perfetto to allocate
-// and then configure specific data sources to be written into.
+// The policy for filling the trace buffer.
+enum BufferFillPolicy {
+  kUnspecified,
+  // Overwrite old chunks for new ones.
+  kRingBuffer,
+  // Discard all chunks once the buffer is full.
+  kDiscard
+};
+
 struct BufferConfig {
+  // The size of a buffer that the Consumer can request Perfetto to allocate
+  // and then configure specific data sources to be written into.
   uint32 size_kb;
+  BufferFillPolicy fill_policy;
 };
 
 struct DataSource {
   DataSourceConfig config;
+  array<string> producer_name_filter;
+};
+
+struct PerfettoBuiltinDataSource {
+  bool disable_clock_snapshotting;
+  bool disable_trace_config;
+  bool disable_system_info;
+};
+
+struct IncrementalStateConfig {
+  // If set to a value > 0, this enables periodical ClearIncrementalState
+  // messages to be sent to the producers registered for the session.
+  uint32 clear_period_ms;
 };
 
 // The configuration provided by a Consumer to the Perfetto service which
@@ -151,32 +182,90 @@ struct DataSource {
 // receive tracing data from, and how large the destination buffers should be.
 struct TraceConfig {
   array<DataSource> data_sources;
+  PerfettoBuiltinDataSource perfetto_builtin_data_source;
   array<BufferConfig> buffers;
+  IncrementalStateConfig incremental_state_config;
 
   uint32 duration_ms;
+};
+
+// The priority of the incoming EnableTracing request, used to determine
+// whether the session should take precedence over another existing session,
+// and/or whether a later session should abort the current one. Ordered in
+// ascending priority.
+enum TracingClientPriority {
+  kUnknown,
+  kBackground,
+  kUserInitiated
 };
 
 // The ConsumerHost interface is a privileged interface which is implemented
 // within the tracing service, and connected to by privileged services
 // (i.e. content_browser) to receive tracing data.
 interface ConsumerHost {
-  // Enable Perfetto tracing with the given TracingSession interface for
+  // Enable Perfetto tracing with the given TracingSessionClient interface for
   // signaling lifespan of the tracing session, and any future callbacks.
-  EnableTracing(TracingSession tracing_session, TraceConfig config);
+  // The given TracingSessionHost is used to control the tracing session and
+  // closing it will disable tracing and free the session's trace buffers.
+  // Note: Right now only a single concurrent tracing session is supported,
+  // as there's no support for multiplexing enabled trace events to multiple
+  // consumers. If a new tracing session is attempted while there's an existing
+  // one in progress, the relative priorities will be used to figure out which
+  // one to be able to (keep) tracing; if the priorities are the same, the new
+  // session will take precedence.
+  EnableTracing(pending_receiver<TracingSessionHost> tracing_session_host,
+                pending_remote<TracingSessionClient> tracing_session_client,
+                TraceConfig config,
+                TracingClientPriority priority);
+};
+
+// Represents the host side of an active tracing session. Closing this
+// will disable tracing.
+interface TracingSessionHost {
+  // Update the trace config for the active tracing session. Currently, only
+  // (additive) updates to the |producer_name_filter| of a data source are
+  // supported.
+  ChangeTraceConfig(TraceConfig config);
+
+  // Stop tracing for the active tracing session. Note that tracing may also
+  // stop without an explicit call to DisableTracing(), e.g. when a tracing
+  // duration is specified in the TraceConfig.
+  DisableTracing();
+
   // Tell Perfetto we're ready to receive data, over the given data pipe.
   // The result callback will be called when there's no more data currently
-  // available. If the TracingSession is still active after the callback,
+  // available. If the TracingSessionClient is still active after the callback,
   // another call to ReadBuffers() needs to be made to receive any new
   // tracing data.
   ReadBuffers(handle<data_pipe_producer> stream) => ();
+
+  // Request current trace buffer usage of the active session. Will be returned
+  // as percentage value between 0.0f and 1.0f. |data_loss| indicates whether
+  // any trace data is known to have been lost, e.g. because the ring buffer
+  // wrapped and data were overridden.
+  RequestBufferUsage() => (bool success, float percent_full, bool data_loss);
+
+  // Disables tracing and converts the collected trace data converted into the
+  // legacy JSON format before returning it via the data pipe. If
+  // |agent_label_filter| is not empty, only data pertaining to the specified
+  // tracing agent label (e.g. "traceEvents") will be returned.
+  //
+  // DEPRECATED: Existing usecases only; new use cases of tracing should use the
+  // streaming proto format via ReadBuffers.
+  DisableTracingAndEmitJson(string agent_label_filter,
+                            handle<data_pipe_producer> stream,
+                            bool privacy_filtering_enabled) => ();
 };
 
-// Any client connecting to ConsumerHost should implement this
-// interface which represents the lifetime of an active tracing
-// session. The ConsumerHost will disconnect it when tracing
-// is stopped, at which point the client can know that one
-// more ReadBuffers() call will receive any remaining tracing
-// data from the session (in addition to any calls it may have
-// made while the session is active, to stream out data).
-interface TracingSession {
+// Any client connecting to ConsumerHost should implement this interface which
+// represents the lifetime of an active tracing session, i.e. from the point
+// where tracing is enabled, to the point where all tracing data has been
+// received by the client.
+interface TracingSessionClient {
+  // Called when all processes have begun tracing.
+  OnTracingEnabled();
+  // Called when tracing is disabled; initiated either by a call to
+  // TracingSessionHost::DisableTracing or by the service itself if a timeout is
+  // specified in the tracing config.
+  OnTracingDisabled();
 };

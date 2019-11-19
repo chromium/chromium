@@ -1,0 +1,31 @@
+<style include="print-preview-shared md-select">
+</style>
+<print-preview-settings-section>
+  <span slot="title" id="scaling-label">$i18n{scalingLabel}</span>
+  <div slot="controls">
+    <select class="md-select" aria-labelledby="scaling-label"
+        disabled$="[[dropdownDisabled_]]" value="{{selectedValue::change}}">
+      <option value="[[ScalingValue.DEFAULT]]">
+        $i18n{optionDefaultScaling}
+      </option>
+      <option value="[[ScalingValue.FIT_TO_PAGE]]" hidden$="[[!isPdf]]">
+        $i18n{optionFitToPage}
+      </option>
+      <option value="[[ScalingValue.FIT_TO_PAPER]]" hidden$="[[!isPdf]]">
+        $i18n{optionFitToPaper}
+      </option>
+      <option value="[[ScalingValue.CUSTOM]]">
+        $i18n{optionCustomScaling}
+      </option>
+    </select>
+  </div>
+</print-preview-settings-section>
+<iron-collapse opened="[[customSelected_]]"
+    on-transitionend="onCollapseChanged_">
+  <print-preview-number-settings-section
+      max-value="200" min-value="10" default-value="100"
+      disabled$="[[inputDisabled_(dropdownDisabled_, customSelected_)]]"
+      current-value="{{currentValue_}}" input-valid="{{inputValid_}}"
+      hint-message="$i18n{scalingInstruction}">
+  </print-preview-number-settings-section>
+</iron-collapse>

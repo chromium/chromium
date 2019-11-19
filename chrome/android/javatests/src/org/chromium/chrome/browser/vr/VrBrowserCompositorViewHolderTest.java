@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.vr;
 
 import static org.chromium.chrome.test.util.ChromeRestriction.RESTRICTION_TYPE_SVR;
 
+import android.os.Build;
 import android.support.test.filters.MediumTest;
 import android.view.ViewGroup;
 
@@ -14,8 +15,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeSwitches;
@@ -24,8 +25,8 @@ import org.chromium.chrome.browser.vr.rules.ChromeTabbedActivityVrTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -34,6 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(RESTRICTION_TYPE_SVR)
+@MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP) // VR is only supported on L+.
 public class VrBrowserCompositorViewHolderTest {
     // We explicitly instantiate a rule here instead of using parameterization since this class
     // only ever runs in ChromeTabbedActivity.
@@ -43,20 +45,17 @@ public class VrBrowserCompositorViewHolderTest {
     /**
      * Verify that resizing the CompositorViewHolder does not cause the current tab to resize while
      * the CompositorViewHolder is detached from the TabModelSelector. See crbug.com/680240.
-     * @throws InterruptedException
-     * @throws TimeoutException
      */
     @Test
     @MediumTest
-    public void testResizeWithCompositorViewHolderDetached()
-            throws InterruptedException, TimeoutException {
+    public void testResizeWithCompositorViewHolderDetached() {
         final AtomicInteger oldWidth = new AtomicInteger();
         final AtomicInteger oldHeight = new AtomicInteger();
         final int testWidth = 123;
         final int testHeight = 456;
         final WebContents webContents = mVrTestRule.getWebContents();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             CompositorViewHolder compositorViewHolder =
                     (CompositorViewHolder) mVrTestRule.getActivity().findViewById(
                             R.id.compositor_view_holder);
@@ -77,7 +76,7 @@ public class VrBrowserCompositorViewHolderTest {
                     == testWidth;
         }, "CompositorViewHolder width did not match the requested layout width");
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertEquals(
                     "Viewport width changed when resizing a detached CompositorViewHolder",
                     webContents.getWidth(), oldWidth.get());

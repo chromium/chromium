@@ -14,16 +14,27 @@ $$
 
 // Analogous to GMock's built-in MockFunction, but for base::Callback instead of
 // std::function. It takes the full callback type as a parameter, so that it can
-// support both OnceCallback and RepeatingCallback.
+// support both OnceCallback and RepeatingCallback. Furthermore, this file
+// defines convenience typedefs in the form of MockOnceCallback<Signature>,
+// MockRepeatingCallback<Signature>, MockOnceClosure and MockRepeatingClosure.
 //
 // Use:
-//   using FooCallback = base::Callback<int(std::string)>;
+//   using FooCallback = base::RepeatingCallback<int(std::string)>;
 //
 //   TEST(FooTest, RunsCallbackWithBarArgument) {
 //     base::MockCallback<FooCallback> callback;
 //     EXPECT_CALL(callback, Run("bar")).WillOnce(Return(1));
 //     Foo(callback.Get());
 //   }
+//
+// Or equivalently:
+//
+//   TEST(FooTest, RunsCallbackWithBarArgument) {
+//     base::MockRepeatingCallback<int(std::string)> callback;
+//     EXPECT_CALL(callback, Run("bar")).WillOnce(Return(1));
+//     Foo(callback.Get());
+//   }
+//
 //
 // Can be used with StrictMock and NiceMock. Caller must ensure that it outlives
 // any base::Callback obtained from it.
@@ -43,19 +54,27 @@ namespace base {
 template <typename F>
 class MockCallback;
 
+template <typename Signature>
+using MockOnceCallback = MockCallback<OnceCallback<Signature>>;
+template <typename Signature>
+using MockRepeatingCallback = MockCallback<RepeatingCallback<Signature>>;
+
+using MockOnceClosure = MockCallback<OnceClosure>;
+using MockRepeatingClosure = MockCallback<RepeatingClosure>;
+
 $range i 0..MAX_ARITY
 $for i [[
 $range j 1..i
 $var run_type = [[R($for j, [[A$j]])]]
 
 template <typename R$for j [[, typename A$j]]>
-class MockCallback<Callback<$run_type>> {
+class MockCallback<RepeatingCallback<$run_type>> {
  public:
   MockCallback() = default;
   MOCK_METHOD$(i)_T(Run, $run_type);
 
-  Callback<$run_type> Get() {
-    return Bind(&MockCallback::Run, Unretained(this));
+  RepeatingCallback<$run_type> Get() {
+    return BindRepeating(&MockCallback::Run, Unretained(this));
   }
 
  private:

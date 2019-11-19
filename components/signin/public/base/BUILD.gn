@@ -1,0 +1,103 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//components/signin/features.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+buildflag_header("signin_buildflags") {
+  header = "signin_buildflags.h"
+  flags = [
+    "ENABLE_DICE_SUPPORT=$enable_dice_support",
+    "ENABLE_MIRROR=$enable_mirror",
+  ]
+}
+
+static_library("base") {
+  sources = [
+    "account_consistency_method.cc",
+    "account_consistency_method.h",
+    "avatar_icon_util.cc",
+    "avatar_icon_util.h",
+    "device_id_helper.cc",
+    "device_id_helper.h",
+    "multilogin_parameters.cc",
+    "multilogin_parameters.h",
+    "signin_client.cc",
+    "signin_client.h",
+    "signin_metrics.cc",
+    "signin_metrics.h",
+    "signin_pref_names.cc",
+    "signin_pref_names.h",
+    "signin_switches.cc",
+    "signin_switches.h",
+  ]
+  deps = [
+    "//components/prefs",
+    "//third_party/icu:icui18n",
+    "//third_party/re2",
+  ]
+  public_deps = [
+    ":signin_buildflags",
+    "//base",
+    "//components/keyed_service/core",
+    "//google_apis",
+    "//url",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//components/user_manager" ]
+  }
+}
+
+if (is_android) {
+  java_cpp_enum("signin_metrics_enum_javagen") {
+    sources = [
+      "signin_metrics.h",
+    ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "list_accounts_test_utils.cc",
+    "list_accounts_test_utils.h",
+    "test_signin_client.cc",
+    "test_signin_client.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//components/prefs",
+    "//google_apis:test_support",
+  ]
+
+  public_deps = [
+    ":base",
+    "//base",
+    "//services/network:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "avatar_icon_util_unittest.cc",
+    "device_id_helper_unittest.cc",
+    "signin_metrics_unittest.cc",
+  ]
+
+  deps = [
+    ":base",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync_preferences:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+}

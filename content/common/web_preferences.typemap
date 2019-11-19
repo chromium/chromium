@@ -6,6 +6,6 @@ mojom = "//content/common/native_types.mojom"
 public_headers = [ "//content/public/common/web_preferences.h" ]
 traits_headers = [ "//content/public/common/common_param_traits_macros.h" ]
 type_mappings = [
-  "content.mojom.V8CacheOptions=content::V8CacheOptions",
-  "content.mojom.WebPreferences=content::WebPreferences",
+  "content.mojom.V8CacheOptions=::content::V8CacheOptions",
+  "content.mojom.WebPreferences=::content::WebPreferences",
 ]

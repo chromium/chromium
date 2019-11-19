@@ -1,9 +1,9 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="cookie_info.html">
@@ -28,9 +28,8 @@
           [[getEntryDescription_(item)]]
         </cr-expand-button>
         <div class="separator"></div>
-        <paper-icon-button-light class="icon-clear">
-          <button data-id-path$="[[item.idPath]]" on-click="onRemove_"></button>
-        </paper-icon-button-light>
+        <cr-icon-button class="icon-clear" data-id-path$="[[item.idPath]]"
+            on-click="onRemove_"></cr-icon-button>
       </div>
       <iron-collapse class="list-frame vertical-list"
           opened="[[item.expanded_]]">

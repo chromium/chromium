@@ -1,0 +1,6 @@
+# Chrome OS Toolchain Team
+gbiv@chromium.org
+tcwang@chromium.org
+
+# For skia autoroller to submmit CLs
+chromium-autoroll@skia-public.iam.gserviceaccount.com

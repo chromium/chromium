@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_SYSTEM_FACTORY_PING_EMBARGO_CHECK_H_
 #define CHROMEOS_SYSTEM_FACTORY_PING_EMBARGO_CHECK_H_
 
+#include "base/component_export.h"
 #include "base/time/time.h"
-#include "chromeos/chromeos_export.h"
 
 namespace chromeos {
 namespace system {
@@ -33,8 +33,9 @@ enum class FactoryPingEmbargoState {
   kPassed
 };
 
-CHROMEOS_EXPORT FactoryPingEmbargoState
-GetFactoryPingEmbargoState(StatisticsProvider* statistics_provider);
+COMPONENT_EXPORT(CHROMEOS_SYSTEM)
+FactoryPingEmbargoState GetFactoryPingEmbargoState(
+    StatisticsProvider* statistics_provider);
 
 }  // namespace system
 }  // namespace chromeos

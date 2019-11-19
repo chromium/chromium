@@ -29,9 +29,8 @@ bool HasSyncedExtensions(Profile* profile);
 
 // Determines whether the user should be prompted to create a new
 // profile before signin.
-void CheckShouldPromptForNewProfile(
-    Profile* profile,
-    const base::Callback<void(bool)>& cb);
+void CheckShouldPromptForNewProfile(Profile* profile,
+                                    base::OnceCallback<void(bool)> cb);
 
 // Handles user input from confirmation dialog.
 class ProfileSigninConfirmationDelegate {

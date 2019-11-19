@@ -47,7 +47,7 @@ Polymer({
    *     their zoom levels.
    */
   onZoomLevelsChanged_: function(sites) {
-    this.updateList('sites_', item => `${item.origin}_${item.zoom}`, sites);
+    this.updateList('sites_', item => item.origin, sites);
     this.showNoSites_ = this.sites_.length == 0;
   },
 

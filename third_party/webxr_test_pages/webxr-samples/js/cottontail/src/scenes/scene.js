@@ -24,11 +24,13 @@ import {StatsViewer} from '../nodes/stats-viewer.js';
 import {Node} from '../core/node.js';
 import {vec3, quat} from '../math/gl-matrix.js';
 
+import '../../../../js/xrray-polyfill.js'
+
 export class WebXRView extends RenderView {
   constructor(view, pose, layer) {
     super(
       view ? view.projectionMatrix : null,
-      view ? view.viewMatrix : null,
+      view ? view.transform.inverse.matrix : null,
       (layer && view) ? layer.getViewport(view) : null,
       view ? view.eye : 'left'
     );
@@ -82,42 +84,41 @@ export class Scene extends Node {
   updateInputSources(frame, refSpace) {
     // FIXME: Check for the existence of the API first. This check should be
     // removed once the input API is part of the official spec.
-    if (!frame.session.getInputSources) {
+    if (!frame.session.inputSources) {
       return;
     }
 
-    let inputSources = frame.session.getInputSources();
+    let inputSources = frame.session.inputSources;
 
     let newHoveredNodes = [];
     let lastHoverFrame = this._hoverFrame;
     this._hoverFrame++;
 
     for (let inputSource of inputSources) {
-      let inputPose = frame.getInputPose(inputSource, refSpace);
-
-      if (!inputPose) {
-        continue;
-      }
-
       // Any time that we have a grip matrix, we'll render a controller.
-      if (inputPose.gripTransform && inputPose.gripTransform.matrix) {
-        this.inputRenderer.addController(inputPose.gripTransform.matrix);
+      if (inputSource.gripSpace) {
+        let pose = frame.getPose(inputSource.gripSpace, refSpace);
+        if (pose) {
+          this.inputRenderer.addController(pose.transform.matrix);
+        }
       }
 
-      if (inputPose.targetRay) {
+      let inputPose = frame.getPose(inputSource.targetRaySpace, refSpace);
+      if (inputPose) {
+        let targetRay = new XRRay(inputPose.transform);
         if (inputSource.targetRayMode == 'tracked-pointer') {
           // If we have a pointer matrix and the pointer origin is the users
           // hand (as opposed to their head or the screen) use it to render
           // a ray coming out of the input device to indicate the pointer
           // direction.
-          this.inputRenderer.addLaserPointer(inputPose.targetRay);
+          this.inputRenderer.addLaserPointer(targetRay);
         }
 
         // If we have a pointer matrix we can also use it to render a cursor
         // for both handheld and gaze-based input sources.
 
         // Check and see if the pointer is pointing at any selectable objects.
-        let hitResult = this.hitTest(inputPose.targetRay);
+        let hitResult = this.hitTest(targetRay);
 
         if (hitResult) {
           // Render a cursor at the intersection point.
@@ -128,23 +129,6 @@ export class Scene extends Node {
           }
           hitResult.node._hoverFrameId = this._hoverFrame;
           newHoveredNodes.push(hitResult.node);
-        } else {
-          // Statically render the cursor 1 meters down the ray since we didn't
-          // hit anything selectable.
-          let cursorDistance = 1.0;
-          let cursorPos = vec3.fromValues(
-              inputPose.targetRay.origin.x,
-              inputPose.targetRay.origin.y,
-              inputPose.targetRay.origin.z
-              );
-          vec3.add(cursorPos, cursorPos, [
-              inputPose.targetRay.direction.x * cursorDistance,
-              inputPose.targetRay.direction.y * cursorDistance,
-              inputPose.targetRay.direction.z * cursorDistance,
-              ]);
-          // let cursorPos = vec3.fromValues(0, 0, -1.0);
-          // vec3.transformMat4(cursorPos, cursorPos, inputPose.targetRay);
-          this.inputRenderer.addCursor(cursorPos);
         }
       }
     }
@@ -159,13 +143,11 @@ export class Scene extends Node {
   }
 
   handleSelect(inputSource, frame, refSpace) {
-    let inputPose = frame.getInputPose(inputSource, refSpace);
-
-    if (!inputPose) {
-      return;
+    let inputPose = frame.getPose(inputSource.targetRaySpace, refSpace);
+    if (inputPose) {
+      let targetRay = new XRRay(inputPose.transform);
+      this.handleSelectPointer(targetRay);
     }
-
-    this.handleSelectPointer(inputPose.targetRay);
   }
 
   handleSelectPointer(targetRay) {

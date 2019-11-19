@@ -32,9 +32,9 @@ PASS window.getComputedStyle(gridWithCalcCalc, '').getPropertyValue('grid-templa
 PASS window.getComputedStyle(gridWithCalcAndFixed, '').getPropertyValue('grid-template-columns') is "50% 80px"
 PASS window.getComputedStyle(gridWithCalcAndFixed, '').getPropertyValue('grid-template-rows') is "88px 25%"
 PASS window.getComputedStyle(gridWithCalcAndMinMax, '').getPropertyValue('grid-template-columns') is "calc(20% + 30px) minmax(min-content, 80px)"
-PASS window.getComputedStyle(gridWithCalcAndMinMax, '').getPropertyValue('grid-template-rows') is "minmax(25%, max-content) calc(10% + -7px)"
+PASS window.getComputedStyle(gridWithCalcAndMinMax, '').getPropertyValue('grid-template-rows') is "minmax(25%, max-content) calc(10% - 7px)"
 PASS window.getComputedStyle(gridWithCalcInsideMinMax, '').getPropertyValue('grid-template-columns') is "minmax(calc(10% + 23px), 400px) 120px"
-PASS window.getComputedStyle(gridWithCalcInsideMinMax, '').getPropertyValue('grid-template-rows') is "150px minmax(5%, calc(50% + -125px))"
+PASS window.getComputedStyle(gridWithCalcInsideMinMax, '').getPropertyValue('grid-template-rows') is "150px minmax(5%, calc(50% - 125px))"
 PASS window.getComputedStyle(gridWithAutoInsideMinMax, '').getPropertyValue('grid-template-columns') is "minmax(auto, 20px) 10%"
 PASS window.getComputedStyle(gridWithAutoInsideMinMax, '').getPropertyValue('grid-template-rows') is "max-content minmax(min-content, auto)"
 

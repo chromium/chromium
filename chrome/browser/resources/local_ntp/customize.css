@@ -1,0 +1,722 @@
+/* Copyright 2018 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+#custom-bg,
+#custom-bg-preview {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 100%;
+  left: 0;
+  margin: 0;
+  opacity: 0;
+  padding: 0;
+  position: fixed;
+  top: 0;
+  transition: opacity 700ms;
+  width: 100%;
+}
+
+#edit-bg {
+  align-items: center;
+  border-radius: 500px;
+  bottom: 16px;
+  cursor: pointer;
+  display: flex;
+  height: 32px;
+  justify-content: center;
+  min-width: 32px;
+  position: fixed;
+  right: 16px;
+  width: fit-content;
+}
+
+#edit-bg.ep-enhanced {
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, .16), 0 1px 2px rgba(0, 0, 0, .23);
+}
+
+#edit-bg:hover,
+#edit-bg:active {
+  background-color: rgba(255, 255, 255, .1);
+}
+
+#edit-bg:hover.ep-enhanced {
+  background-color: rgb(var( --GB050-rgb));
+}
+
+
+@media (prefers-color-scheme: dark) {
+  #edit-bg.ep-enhanced {
+    background-color: rgb(var(--dark-mode-dialog-rgb));
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  #edit-bg:hover.ep-enhanced {
+    background-color: rgb(50, 51, 54);
+  }
+}
+
+html[dir=rtl] #edit-bg {
+  left: 16px;
+  right: auto;
+}
+
+.non-google-page #edit-bg {
+  display: none;
+}
+
+#edit-bg-icon {
+  -webkit-mask-image: url(icons/icon_pencil.svg);
+  -webkit-mask-position-x: center;
+  -webkit-mask-position-y: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 16px;
+  background-color: rgb(255, 255, 255);
+  cursor: pointer;
+  height: 16px;
+  margin-inline-start: 0;
+  width: 16px;
+}
+
+.ep-enhanced #edit-bg-icon {
+  background-color: rgb(var(--GB600-rgb));
+}
+
+@media (prefers-color-scheme: dark) {
+  .ep-enhanced #edit-bg-icon {
+    background-color: rgb(var(--GB300-rgb));
+  }
+}
+
+#edit-bg-text {
+  color: rgb(var(--GB600-rgb));
+  display: none;
+  font-size: 14px;
+  line-height: 1;
+  padding-inline-end: 12px;
+  padding-inline-start: 8px;
+  user-select: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ep-enhanced #edit-bg-text {
+    color: rgb(var(--GB300-rgb));
+  }
+}
+
+@media (min-width: 550px) {
+  .ep-enhanced #edit-bg-icon {
+    margin-inline-start: 12px;
+  }
+
+  .ep-enhanced #edit-bg-text {
+    display: inline;
+  }
+}
+
+@media (max-height: 100px) {
+  #edit-bg {
+    display: none;
+  }
+}
+
+#edit-bg-dialog::backdrop {
+  background: transparent;
+}
+
+#edit-bg-dialog {
+  background: #fff;
+  border: none;
+  border-radius: 8px;
+  border-width: thin;
+  bottom: 44px;
+  box-shadow: 0 1px 3px 0 rgba(var(--GG800-rgb), .3),
+      0 4px 8px 3px rgba(var(--GG800-rgb), .15);
+  left: auto;
+  padding: 0;
+  position: fixed;
+  right: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #edit-bg-dialog {
+    background-color: rgb(var(--dark-mode-dialog-rgb));
+    box-shadow: var(--dark-mode-shadow);
+  }
+}
+
+#edit-bg-menu {
+  padding: 0 0 16px 0;
+  width: 325px;
+}
+
+html[dir=rtl] #edit-bg-dialog {
+  left: 16px;
+  right: auto;
+}
+
+#edit-bg-title {
+  color: rgb(var(--GG900-rgb));
+  font-size: 15px;
+  height: 30px;
+  padding: 16px 0 0 16px;
+}
+
+html[dir=rtl] #edit-bg-title {
+  padding: 16px 16px 0 0;
+}
+
+@media (prefers-color-scheme: dark) {
+  #edit-bg-title {
+    color: rgb(var(--GG200-rgb));
+  }
+}
+
+.using-mouse-nav .bg-option:focus {
+  outline: none;
+}
+
+.bg-option {
+  color: rgb(var(--GG800-rgb));
+  font-size: 13px;
+  height: 40px;
+  line-height: 40px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .bg-option {
+    color: rgb(var(--GG200-rgb));
+  }
+}
+
+.bg-option:hover {
+  background-color: rgb(var(--GG100-rgb));
+}
+
+@media (prefers-color-scheme: dark) {
+  .bg-option:hover {
+    background-color: rgb(var(--GG800-rgb));
+  }
+}
+
+.bg-option-img {
+  background-size: 24px 24px;
+  display: inline-block;
+  height: 24px;
+  line-height: normal;
+  margin: 0 0 0 16px;
+  text-align: center;
+  vertical-align: middle;
+  width: 24px;
+}
+
+html[dir=rtl] .bg-option-img {
+  margin: 0 16px 0 0;
+}
+
+.bg-option.bg-option-disabled {
+  opacity: .28;
+}
+
+@media (prefers-color-scheme: dark) {
+  .bg-option.bg-option-disabled {
+    opacity: .38;
+  }
+}
+
+.bg-option.bg-option-disabled:focus {
+  outline: none;
+}
+
+.bg-option.bg-option-disabled:hover {
+  background-color: transparent;
+}
+
+#edit-bg-default-wallpapers .bg-option-img {
+  background: url(icons/wallpapers.svg) no-repeat center;
+}
+
+#edit-bg-upload-image .bg-option-img {
+  background: rgb(var(--GG100-rgb)) url(icons/upload.svg) no-repeat center;
+  border-radius: 50%;
+}
+
+#edit-bg-divider {
+  border-bottom: 1px solid rgb(var(--GG200-rgb));
+  margin: 8px 0;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  #edit-bg-divider {
+    border-color: rgba(255, 255, 255, .1);
+  }
+}
+
+#custom-links-restore-default .bg-option-img {
+  background: rgb(var(--GG100-rgb)) url(icons/link_gray.svg) no-repeat center;
+  border-radius: 50%;
+}
+
+#edit-bg-restore-default .bg-option-img {
+  background: rgb(var(--GG100-rgb)) url(icons/chrome.svg)  no-repeat center;
+  border-radius: 50%;
+}
+
+.bg-option-text {
+  display: inline-block;
+  line-height: normal;
+  max-width: 250px;
+  overflow: hidden;
+  padding-inline-start: 16px;
+  text-align: start;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* The width here should match that used in customBackgrounds.getNextTile. */
+#bg-sel-menu {
+  background-color: #fff;
+  border: none;
+  border-radius: 8px;
+  bottom: 0;
+  box-shadow: 0 1px 3px 0 rgba(var(--GG800-rgb), .3),
+      0 4px 8px 3px rgba(var(--GG800-rgb), .15);
+  height: 400px;
+  max-height: 100vh;  /* Constrain the dialog within viewport boundaries. */
+  padding: 0;
+  position: fixed;
+  top: 0;
+  /* Suitable for 3 columns of tiles on all platforms, accounting for larger
+   * scrollbar width on Windows.*/
+  width: 517px;
+  z-index: 10000;
+}
+
+/* Prevent footer from overlapping with header at small window heights. */
+@media only screen and (max-height: 116px) {
+  #bg-sel-menu {
+    max-height: 116px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  #bg-sel-menu {
+    background-color: rgb(var(--dark-mode-dialog-rgb));
+    box-shadow: var(--dark-mode-shadow);
+  }
+}
+
+/* The width is decided by the longest text length plus 16px margin on the
+right, so that every text can stay on its row even on the smallest window */
+@media (max-width: 356px) {
+  #edit-bg-menu {
+    width: 232px;
+  }
+}
+
+#bg-sel-tiles {
+  height: 284px;
+  /* Compress the tile section in order to constrain the dialog within viewport
+   * boundaries. 116px = 284px - (header + footer height) */
+  max-height: calc(100vh - 116px);
+  overflow-y: scroll;
+  padding-inline-start: 8px;
+}
+
+#bg-sel-tiles::-webkit-scrollbar-track {
+  display: none;
+}
+
+.using-mouse-nav :focus {
+  outline: none;
+}
+
+#bg-sel-title-bar {
+  border-bottom: 1px solid rgb(var(--GG200-rgb));
+  font-size: 15px;
+  height: 51px;
+  line-height: 52px;
+  text-align: center;
+  user-select: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  #bg-sel-title-bar {
+    border-color: rgba(255, 255, 255, .1);
+  }
+}
+
+#bg-sel-back {
+  background: url(../../../../ui/webui/resources/images/icon_arrow_back.svg) no-repeat center;
+  background-size: 20px 20px;
+  display: none;
+  height: 20px;
+  outline: none;
+  position: relative;
+  width: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #bg-sel-back {
+    background: transparent;
+  }
+}
+
+/* We use ::after without content to provide the masked arrow element. */
+@media (prefers-color-scheme: dark) {
+  #bg-sel-back::after {
+    -webkit-mask-image: url(../../../../ui/webui/resources/images/icon_arrow_back.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 20px;
+    background-color: rgb(var(--GG200-rgb));
+    content: '';
+    display: block;
+    height: 20px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 20px;
+  }
+}
+
+#bg-sel-back-circle {
+  border-radius: 50%;
+  display: none;
+  height: 36px;
+  margin: 8px 8px 0 16px;
+  outline: none;
+  width: 36px;
+}
+
+#bg-sel-back-circle:active,
+#bg-sel-back-circle:focus {
+  background: rgb(var(--GG300-rgb));
+  background-position: center;
+  background-size: 36px 36px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #bg-sel-back-circle:active,
+  #bg-sel-back-circle:focus {
+    background: rgb(var(--GG800-rgb));
+  }
+}
+
+.is-col-sel #bg-sel-back {
+  display: none;
+  text-align: start;
+}
+
+.is-col-sel #bg-sel-back-circle {
+  display: none;
+  text-align: start;
+}
+
+.is-img-sel #bg-sel-back-circle {
+  display: inline-block;
+  float: left;
+  margin: 8px 0 0 8px;
+}
+
+html[dir=rtl] .is-img-sel #bg-sel-back-circle {
+  display: inline-block;
+  float: right;
+  margin: 8px 8px 0 0;
+}
+
+.is-img-sel #bg-sel-back {
+  display: inline-block;
+  float: left;
+  margin: 8px 0 0 8px;
+}
+
+html[dir=rtl] .is-img-sel #bg-sel-back {
+  float: right;
+  margin: 8px 8px 0 0;
+  transform: scaleX(-1);
+}
+
+#bg-sel-title {
+  color: rgb(var(--GG900-rgb));
+  display: inline-block;
+  height: 20px;
+  line-height: 20px;
+  margin: 8px 0 0 0;
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  #bg-sel-title {
+    color: rgb(var(--GG200-rgb));
+  }
+}
+
+.is-col-sel #bg-sel-title {
+  padding-inline-start: 0;
+  text-align: center;
+}
+
+.is-img-sel #bg-sel-title {
+  float: left;
+  margin: 16px 0 0 8px;
+}
+
+html[dir=rtl] .is-img-sel #bg-sel-title {
+  float: right;
+  margin: 16px 8px 0 0;
+  text-align: start;
+}
+
+#bg-sel-footer {
+  border-top: 1px solid rgb(var(--GG200-rgb));
+  bottom: 0;
+  color: rgb(var(--GG800-rgb));
+  height: 64px;
+  padding-inline-start: 0;
+  position: absolute;
+  text-align: end;
+  user-select: none;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  #bg-sel-footer {
+    border-color: rgba(255, 255, 255, .1);
+  }
+}
+
+.bg-sel-footer-button {
+  margin-top: 16px;
+}
+
+.bg-sel-footer-button:disabled {
+  transition: none;
+}
+
+#bg-sel-footer-done {
+  margin-inline-end: 16px;
+}
+
+#bg-sel-footer-cancel {
+  margin-inline-end: 8px;
+}
+
+.bg-sel-tile {
+  background-size: cover;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 700ms;
+  width: 100%;
+}
+
+html[dir=rtl] .bg-sel-tile-bg {
+  margin: 6px 8px 0 0;
+}
+
+.bg-sel-tile-bg {
+  background-color: rgb(var(--GG100-rgb));
+  background-size: cover;
+  display: inline-block;
+  height: 117px;
+  margin: 6px 0 0 8px;
+  position: relative;
+  /* 8px for the margin on the left */
+  width: calc(33% - 8px);
+}
+
+@media (prefers-color-scheme: dark) {
+  .bg-sel-tile-bg {
+    background-color: rgb(var(--GG900-rgb));
+  }
+}
+
+/* The width here should match that used in customBackgrounds.getTilesWide. */
+@media (max-width: 517px) {
+  #bg-sel-menu {
+    width: 352px;
+  }
+
+  .bg-sel-tile-bg {
+    /* 8px for the margin on the left */
+    width: calc(49.5% - 8px);
+  }
+}
+
+@media (max-width: 356px) {
+  #bg-sel-menu {
+    width: 188px;
+  }
+
+  .bg-sel-tile-bg {
+    /* 8px for the margin on the left */
+    width: calc(99% - 8px);
+  }
+}
+
+.bg-selected {
+  border-radius: 4px;
+}
+
+.selected-border {
+  border: 2px solid rgba(var(--GB600-rgb), .4);
+  border-radius: 4px;
+  box-sizing: border-box;
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  .selected-border {
+    border-color: rgb(var(--GB300-rgb));
+  }
+}
+
+.selected-circle {
+  background: #FFF no-repeat center;
+  border-radius: 50%;
+  height: 22px;
+  left: 66px;
+  position: absolute;
+  top: 46px;
+  width: 22px;
+}
+
+html[dir=rtl] .selected-circle {
+  left: auto;
+  right: 66px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .selected-circle {
+    background-color: rgb(var(--GG900-rgb));
+  }
+}
+
+.selected-check {
+  background: url(../../../../ui/webui/resources/images/check_circle.svg) no-repeat center;
+  background-size: 28px 28px;
+  height: 28px;
+  left: 63px;
+  position: absolute;
+  top: 43px;
+  width: 28px;
+}
+
+html[dir=rtl] .selected-check {
+  left: auto;
+  right: 63px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .selected-check {
+    background: transparent;
+  }
+}
+
+/* We use ::after without content to provide the masked check element. */
+@media (prefers-color-scheme: dark) {
+  .selected-check::after {
+    -webkit-mask-image: url(../../../../ui/webui/resources/images/check_circle.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 28px;
+    background-color: rgb(var(--GB300-rgb));
+    content: '';
+    display: block;
+    height: 28px;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 28px;
+  }
+}
+
+.bg-sel-tile-title {
+  background-color: rgba(var(--GG900-rgb), .71);
+  bottom: 0;
+  box-sizing: border-box;
+  color: #FFF;
+  display: inline-block;
+  font-size: 13px;
+  line-height: 1.6;
+  min-height: 32px;
+  overflow: hidden;
+  padding: 8px 16px;
+  position: absolute;
+  text-overflow: ellipsis;
+  user-select: none;
+  vertical-align: middle;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.bg-selected .bg-sel-tile-title {
+  width: 118px;
+}
+
+#custom-bg-attr {
+  border-radius: 8px;
+  bottom: 16px;
+  color: white;
+  font-weight: 500;
+  left: 16px;
+  padding: 8px;
+  position: fixed;
+  text-shadow: 0 0 16px rgba(0, 0, 0, .3);
+  z-index: -1;
+}
+
+html[dir=rtl] #custom-bg-attr {
+  left: auto;
+  position: fixed;
+  right: 16px;
+}
+
+#attr1,
+#attr2 {
+  clear: both;
+  color: inherit;
+  float: left;
+  font-size: 13px;
+  height: 20px;
+  line-height: 20px;
+  max-width: 50vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+[dir=rtl] #attr1,
+[dir=rtl] #attr2 {
+  float: right;
+}
+
+#custom-bg-attr #attr1 ~ #attr2 {
+  font-size: 11px;
+}
+
+#custom-bg-attr.attr-link:hover {
+  background: rgba(var(--GG900-rgb), .1);
+}
+
+#link-icon {
+  background: url(icons/link.svg);
+  background-size: 10px 10px;
+  display: inline-block;
+  height: 10px;
+  margin-inline-end: 8px;
+  vertical-align: middle;
+  width: 10px;
+}
+
+#link-icon.single-attr {
+  background-size: 16px 16px;
+  height: 18px;
+  width: 16px;
+}

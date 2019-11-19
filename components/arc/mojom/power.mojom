@@ -1,0 +1,62 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 6
+
+module arc.mojom;
+
+// Enumerates the types of wake lock the ARC instance can request from the
+// host.
+[Extensible]
+enum DisplayWakeLockType {
+  // Does not allow the screen to dim, turn off, or lock; prevents
+  // idle suspend.
+  BRIGHT = 0,
+
+  // Allows dimming the screen, but prevents it from turning off or locking.
+  // Also prevents idle suspend.
+  DIM = 1
+};
+
+// Next method ID: 4
+interface PowerHost {
+  // Acquire and release wake locks on the host side.
+  OnAcquireDisplayWakeLock@0(DisplayWakeLockType type);
+  OnReleaseDisplayWakeLock@1(DisplayWakeLockType type);
+
+  // Checks if there is a display on.
+  [MinVersion=1] IsDisplayOn@2() => (bool is_on);
+
+  // Request that the screen brightness be changed to |percent|.
+  // |percent| is of the range [0, 100]
+  [MinVersion=3] OnScreenBrightnessUpdateRequest@3(double percent);
+};
+
+// Next method ID: 7
+interface PowerInstance {
+  // DEPRECATED: Please use Init@5 instead.
+  InitDeprecated@0(PowerHost host_ptr);
+
+  // Establishes full-duplex communication with the host.
+  [MinVersion=4] Init@5(PowerHost host_ptr) => ();
+
+  // Alerts the instance to a change in interactive state.
+  [MinVersion=1] SetInteractive@1(bool enabled);
+
+  // Called when the system is about to suspend. The callback will be invoked
+  // when pre-suspend work is complete.
+  [MinVersion=2] Suspend@2() => ();
+
+  // Called when the system has just resumed.
+  [MinVersion=2] Resume@3();
+
+  // Update Android brightness settings.
+  // |percent| is of the range [0, 100]
+  [MinVersion=3] UpdateScreenBrightnessSettings@4(double percent);
+
+  // Called when the power supply information is updated.
+  // TODO(b/136427446): Rearchitect ARC power info management with more
+  // explicit data / event passing.
+  [MinVersion=5] PowerSupplyInfoChanged@6();
+};

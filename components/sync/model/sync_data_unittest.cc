@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted_memory.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/syncable/base_node.h"
@@ -27,7 +27,7 @@ const int64_t kId = 439829;
 class SyncDataTest : public testing::Test {
  protected:
   SyncDataTest() = default;
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   sync_pb::EntitySpecifics specifics;
 };
 

@@ -15,6 +15,7 @@
 #include "crazy_linker_globals.h"
 #include "crazy_linker_library_list.h"
 #include "crazy_linker_library_view.h"
+#include "crazy_linker_load_params.h"
 #include "crazy_linker_memory_mapping.h"
 #include "crazy_linker_system_linker.h"
 #include "crazy_linker_thread_data.h"
@@ -201,8 +202,8 @@ class SharedLibraryResolver : public ElfRelocations::SymbolResolver {
       return sym.address;
     }
 
-    if (lib->IsCrazy()) {
-      SharedLibrary* crazy = lib->GetCrazy();
+    const SharedLibrary* crazy = lib->GetCrazy();
+    if (crazy) {
       const ELF::Sym* entry = crazy->LookupSymbolEntry(symbol_name);
       if (entry)
         return reinterpret_cast<void*>(crazy->load_bias() + entry->st_value);
@@ -225,21 +226,22 @@ SharedLibrary::SharedLibrary() {
 
 SharedLibrary::~SharedLibrary() = default;
 
-bool SharedLibrary::Load(const char* full_path,
-                         size_t load_address,
-                         size_t file_offset,
-                         Error* error) {
+bool SharedLibrary::Load(const LoadParams& params, Error* error) {
   // First, record the path.
-  LOG("full path '%s'", full_path);
-
-  size_t full_path_len = strlen(full_path);
-  if (full_path_len >= sizeof(full_path_)) {
-    error->Format("Path too long: %s", full_path);
-    return false;
+  const char* full_path = params.library_path.c_str();
+  if (params.library_fd >= 0) {
+    snprintf(full_path_, sizeof(full_path_), "fd(%d):%s", params.library_fd,
+             full_path);
+  } else {
+    size_t full_path_len = strlen(full_path);
+    if (full_path_len >= sizeof(full_path_)) {
+      error->Format("Path too long: %s", full_path);
+      return false;
+    }
+    strlcpy(full_path_, full_path, sizeof(full_path_));
   }
-
-  strlcpy(full_path_, full_path, sizeof(full_path_));
   base_name_ = GetBaseNamePtr(full_path_);
+  LOG("full path '%s'", full_path_);
 
   // Default value of |soname_| will be |base_name_| unless overidden
   // by a DT_SONAME entry. This helps deal with broken libraries that don't
@@ -252,8 +254,7 @@ bool SharedLibrary::Load(const char* full_path,
   LOG("Loading ELF segments for %s", base_name_);
 
   {
-    ElfLoader::Result ret =
-        ElfLoader::LoadAt(full_path_, file_offset, load_address, error);
+    ElfLoader::Result ret = ElfLoader::LoadAt(params, error);
     if (!ret.IsValid() ||
         !view_.InitUnmapped(ret.load_start, ret.phdr, ret.phdr_count, error)) {
       return false;
@@ -265,6 +266,9 @@ bool SharedLibrary::Load(const char* full_path,
     }
 
     reserved_map_ = std::move(ret.reserved_mapping);
+
+    LOG("Reserved mapping %p size=0x%lx", reserved_map_.address(),
+        static_cast<unsigned long>(reserved_map_.size()));
   }
 
   if (phdr_table_get_relro_info(view_.phdr(),
@@ -378,11 +382,12 @@ bool SharedLibrary::Relocate(LibraryList* lib_list,
   return true;
 }
 
-const ELF::Sym* SharedLibrary::LookupSymbolEntry(const char* symbol_name) {
+const ELF::Sym* SharedLibrary::LookupSymbolEntry(
+    const char* symbol_name) const {
   return symbols_.LookupByName(symbol_name);
 }
 
-void* SharedLibrary::FindAddressForSymbol(const char* symbol_name) {
+void* SharedLibrary::FindAddressForSymbol(const char* symbol_name) const {
   return symbols_.LookupAddressByName(symbol_name, view_.load_bias());
 }
 

@@ -21,6 +21,21 @@
   <message name="IDS_KSV_SEARCH_BOX_ACCESSIBILITY_VALUE_WITHOUT_RESULTS" desc="Accessibility value for the search box without searched results.">
     No search result for <ph name="query">$1<ex>a</ex></ph>
   </message>
+  <message name="IDS_KSV_KEY_PERIOD_ACCESSIBILITY_NAME" desc="Accessibility Name of [.] key">
+    period
+  </message>
+  <message name="IDS_KSV_KEY_COMMA_ACCESSIBILITY_NAME" desc="Accessibility Name of [,] key">
+    comma
+  </message>
+  <message name="IDS_KSV_KEY_HYPHEN_ACCESSIBILITY_NAME" desc="Accessibility Name of [-] key">
+    hyphen
+  </message>
+  <message name="IDS_KSV_KEY_BRACKET_LEFT_ACCESSIBILITY_NAME" desc="Accessibility Name of [ key">
+    bracket left
+  </message>
+  <message name="IDS_KSV_KEY_BRACKET_RIGHT_ACCESSIBILITY_NAME" desc="Accessibility Name of ] key">
+    bracket right
+  </message>
 
   <!-- Search illustration -->
   <message name="IDS_KSV_SEARCH_NO_RESULT" desc="No search results.">
@@ -204,8 +219,8 @@
   <message name="IDS_KSV_DESCRIPTION_WINDOW_CYCLE_SNAP_RIGHT" desc="Description of the command in keyboard shortcut viewer.">
     Dock a window on the right
   </message>
-  <message name="IDS_KSV_DESCRIPTION_IDC_BOOKMARK_PAGE" desc="Description of the command in keyboard shortcut viewer.">
-    Save your current webpage as a bookmark
+  <message name="IDS_KSV_DESCRIPTION_IDC_BOOKMARK_THIS_TAB" desc="Description of the command in keyboard shortcut viewer.">
+    Save your current tab as a bookmark
   </message>
   <message name="IDS_KSV_DESCRIPTION_IDC_BOOKMARK_ALL_TABS" desc="Description of the command in keyboard shortcut viewer.">
     Save all open pages in your current window as bookmarks in a new folder
@@ -230,6 +245,9 @@
   </message>
   <message name="IDS_KSV_SHORTCUT_IDC_FIND_PREVIOUS" desc="Human readable version of the keyboard shortcut.">
     <ph name="ctrl">$1<ex>Ctrl</ex></ph><ph name="separator1">$2<ex>+</ex></ph><ph name="shift1">$3<ex>Shift</ex></ph><ph name="separator2">$4<ex>+</ex></ph><ph name="g">$5<ex>v</ex></ph> or <ph name="shift2">$6<ex>Shift</ex></ph><ph name="separator3">$7<ex>+</ex></ph><ph name="enter">$8<ex>v</ex></ph>
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_IDC_CLOSE_FIND_OR_STOP" desc="Description of the command in keyboard shortcut viewer.">
+    Close any open find window or stop the loading of your current page
   </message>
   <message name="IDS_KSV_DESCRIPTION_IDC_FOCUS_LOCATION" desc="Description of the command in keyboard shortcut viewer.">
     Focus address bar
@@ -266,9 +284,6 @@
   </message>
   <message name="IDS_KSV_DESCRIPTION_IDC_SHOW_BOOKMARK_BAR" desc="Description of the command in keyboard shortcut viewer.">
     Show or hide the bookmarks bar
-  </message>
-  <message name="IDS_KSV_DESCRIPTION_IDC_STOP" desc="Description of the command in keyboard shortcut viewer.">
-    Stop the loading of your current page
   </message>
   <message name="IDS_KSV_DESCRIPTION_IDC_ZOOM_MINUS" desc="Description of the command in keyboard shortcut viewer.">
     Zoom out on the page
@@ -582,9 +597,6 @@
   <message name="IDS_KSV_DESCRIPTION_TOGGLE_MAXIMIZED" desc="Description of the command in keyboard shortcut viewer.">
     Maximize window
   </message>
-  <message name="IDS_KSV_DESCRIPTION_WINDOW_POSITION_CENTER" desc="Description of the command in keyboard shortcut viewer.">
-    Move window to center
-  </message>
   <message name="IDS_KSV_DESCRIPTION_OPEN_CROSH" desc="Description of the command in keyboard shortcut viewer.">
     Open Crosh window
   </message>
@@ -620,5 +632,26 @@
   </message>
   <message name="IDS_KSV_SHORTCUT_IDC_SHOW_APP_MENU" desc="Description of the command in keyboard shortcut viewer.">
     <ph name="alt">$1<ex>Alt</ex></ph><ph name="separator">$2<ex>+</ex></ph><ph name="e">$3<ex>e</ex></ph> or <ph name="f">$4<ex>f</ex></ph>
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_DESKS_NEW_DESK" desc="Description of the command in keyboard shortcut viewer.">
+    Create a new desk
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_DESKS_REMOVE_CURRENT_DESK" desc="Description of the command in keyboard shortcut viewer.">
+    Remove the current desk
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_DESKS_ACTIVATE_LEFT_DESK" desc="Description of the command in keyboard shortcut viewer.">
+    Activate the desk on the left
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_DESKS_ACTIVATE_RIGHT_DESK" desc="Description of the command in keyboard shortcut viewer.">
+    Activate the desk on the right
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_DESKS_MOVE_ACTIVE_ITEM_LEFT_DESK" desc="Description of the command in keyboard shortcut viewer.">
+    Move active window to the desk on the left
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_DESKS_MOVE_ACTIVE_ITEM_RIGHT_DESK" desc="Description of the command in keyboard shortcut viewer.">
+    Move active window to the desk on the right
+  </message>
+  <message name="IDS_KSV_DESCRIPTION_OPEN_GOOGLE_ASSISTANT" desc="Description of the command in keyboard shortcut viewer.">
+    Open Google Assistant
   </message>
 </grit-part>

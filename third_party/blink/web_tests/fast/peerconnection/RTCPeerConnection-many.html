@@ -3,6 +3,7 @@
 <head>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gc.js"></script>
 </head>
 <body>
 <script>
@@ -19,16 +20,16 @@ function allocatePeerConnection() {
   peerConnections.push(new RTCPeerConnection());
 }
 
-function cleanUpPeerConnectionsAndGarbageCollect() {
+async function cleanUpPeerConnectionsAndGarbageCollect() {
   // Close all peer connections so that they may be garbage collected.
   peerConnections.forEach(pc => {
     pc.close();
   });
   peerConnections = [];
-  gc();
+  await asyncGC();
 }
 
-test(function() {
+promise_test(async function() {
   try {
     // These many peer connections should be OK to allocate.
     while (internals.peerConnectionCount() <
@@ -45,13 +46,13 @@ test(function() {
     // this test regardless of test result or unrelated tests may fail.
     let totalAllocatedPeerConnections = internals.peerConnectionCount();
     let peerConnectionsAllocatedByTest = peerConnections.length;
-    cleanUpPeerConnectionsAndGarbageCollect();
+    await cleanUpPeerConnectionsAndGarbageCollect();
     // We cannot assert there are no peer connections since other swarming tests
     // could have left peer connections in a non-closed state, but we can assert
     // that at least all |peerConnectionsAllocatedByTest| have been collected.
     assert_less_than_equal(
-        totalAllocatedPeerConnections - peerConnectionsAllocatedByTest,
-        internals.peerConnectionCount());
+      internals.peerConnectionCount(),
+      totalAllocatedPeerConnections - peerConnectionsAllocatedByTest);
   }
 }, 'Create and garbage collect many RTCPeerConnections');
 

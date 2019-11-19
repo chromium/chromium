@@ -1,10 +1,11 @@
 <link rel="import" href="../../html/polymer.html">
 
-<link rel="import" href="../hidden_style_css.html">
-<link rel="import" href="../cr_icons_css.html">
-<link rel="import" href="../shared_vars_css.html">
 <link rel="import" href="../../html/assert.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
+<link rel="import" href="../cr_container_shadow_behavior.html">
+<link rel="import" href="../cr_icon_button/cr_icon_button.html">
+<link rel="import" href="../cr_icons_css.html">
+<link rel="import" href="../hidden_style_css.html">
+<link rel="import" href="../shared_vars_css.html">
 
 <dom-module id="cr-dialog">
   <template>
@@ -22,16 +23,22 @@
         padding: 0;
         top: 50%;
         width: 512px;
+
+        /* Avoid using the mixin. Use ::part(dialog) instead.
+         * Necessary for backward compatibility with Polymer1/SDv0 (only used by
+         * OOBE). TODO(crbug.com/955194): Remove this once fixed.*/
         @apply --cr-dialog-native;
       }
 
-      :host-context([dark]) dialog {
-        --scroll-border-color: var(--google-grey-refresh-700);
-        background-color: var(--google-grey-900);
-        /* Note: the colors in linear-gradient() are intentionally the same to
-         * add a 4% white layer on top of the fully opaque background-color. */
-        background-image: linear-gradient(rgba(255, 255, 255, .04),
-                                          rgba(255, 255, 255, .04));
+      @media (prefers-color-scheme: dark) {
+        dialog {
+          --scroll-border-color: var(--google-grey-refresh-700);
+          background-color: var(--google-grey-900);
+          /* Note: the colors in linear-gradient() are intentionally the same to
+           * add a 4% white layer on top of the fully opaque background-color. */
+          background-image: linear-gradient(rgba(255, 255, 255, .04),
+                                            rgba(255, 255, 255, .04));
+        }
       }
 
       dialog[open] #content-wrapper {
@@ -40,7 +47,6 @@
         flex-direction: column;
         max-height: 100vh;
         overflow: auto;
-        @apply --cr-dialog-wrapper;
       }
 
       /* When needing to flex, force .body-container alone to shrink. */
@@ -59,31 +65,11 @@
         top: 0;
       }
 
-      /**
-       * When using mixins, avoid using padding shorthand. Using both the
-       * shorthand and top/bottom/start/end can lead to style override issues.
-       * This is only noticable when the |optimize_webui=true| build argument
-       * is used.
-       *
-       * See https://crbug.com/846254 and associated CL for more information.
-       */
       :host ::slotted([slot=body]) {
         color: var(--cr-secondary-text-color);
-        padding-bottom: 0;
-        padding-inline-end: 20px;
-        padding-inline-start: 20px;
-        padding-top: 0;
-        @apply --cr-dialog-body;
+        padding: 0 20px;
       }
 
-      /**
-       * When using mixins, avoid using padding shorthand. Using both the
-       * shorthand and top/bottom/start/end can lead to style override issues.
-       * This is only noticable when the |optimize_webui=true| build argument
-       * is used.
-       *
-       * See https://crbug.com/846254 and associated CL for more information.
-       */
       :host ::slotted([slot=title]) {
         color: var(--cr-primary-text-color);
         flex: 1;
@@ -93,17 +79,8 @@
         padding-inline-end: 20px;
         padding-inline-start: 20px;
         padding-top: 20px;
-        @apply --cr-dialog-title;
       }
 
-      /**
-       * When using mixins, avoid using padding shorthand. Using both the
-       * shorthand and top/bottom/start/end can lead to style override issues.
-       * This is only noticable when the |optimize_webui=true| build argument
-       * is used.
-       *
-       * See https://crbug.com/846254 and associated CL for more information.
-       */
       :host ::slotted([slot=button-container]) {
         display: flex;
         justify-content: flex-end;
@@ -111,7 +88,6 @@
         padding-inline-end: 16px;
         padding-inline-start: 16px;
         padding-top: 24px;
-        @apply --cr-dialog-button-container;
       }
 
       :host ::slotted([slot=footer]) {
@@ -122,30 +98,38 @@
         padding: 16px 20px;
       }
 
-      :host-context([dark]) ::slotted([slot=footer]) {
-        border-top-color: var(--cr-separator-color);
+      @media (prefers-color-scheme: dark) {
+        :host ::slotted([slot=footer]) {
+          border-top-color: var(--cr-separator-color);
+        }
       }
 
       .body-container {
-        /* Prevent layout moving when border does appear. */
-        border-bottom: 1px solid transparent;
-        border-top: 1px solid transparent;
-
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
         min-height: 1.375rem; /* Minimum reasonably usable height. */
         overflow: auto;
-
-        @apply --cr-dialog-body-container;
       }
 
-      .body-container.bottom-scrollable {
+      :host {
+        --transparent-border: 1px solid transparent;
+      }
+
+      /* Cr Dialog uses borders instead of box-shadows. */
+      #cr-container-shadow-top {
+        border-bottom: var(--cr-dialog-body-border-top,
+            var(--transparent-border));
+      }
+
+      #cr-container-shadow-bottom {
+        border-bottom: var(--cr-dialog-body-border-bottom,
+            var(--transparent-border));
+      }
+
+      #cr-container-shadow-top.has-shadow,
+      #cr-container-shadow-bottom.has-shadow {
         border-bottom: var(--scroll-border);
-      }
-
-      .body-container.top-scrollable {
-        border-top: var(--scroll-border);
       }
 
       .top-container {
@@ -160,57 +144,30 @@
         outline: none;
       }
 
-      /* TODO (rbpotter): Remove all the --cr-dialog-close-* mixins below, */
-      /* when Print Preview is updated to Material Design. */
-      #closeContainer {
-        --layout-inline: {
-          display: flex;
-        };
-
+      #close {
         align-self: flex-start;
         margin-inline-end: 4px;
         margin-top: 4px;
-
-        @apply --cr-dialog-close-image;
-      }
-
-      #closeContainer:hover {
-        @apply --cr-dialog-close-image-hover;
-      }
-
-      #closeContainer:focus-within {
-        @apply --cr-dialog-close-image-focus;
-      }
-
-      #closeContainer:active {
-        @apply --cr-dialog-close-image-active;
-      }
-
-      #closeContainer paper-ripple {
-        @apply --cr-dialog-close-ripple;
       }
     </style>
     <dialog id="dialog" on-close="onNativeDialogClose_"
-        on-cancel="onNativeDialogCancel_">
+        on-cancel="onNativeDialogCancel_" part="dialog" aria-labelledby="title">
       <!-- This wrapper is necessary, such that the "pulse" animation is not
         erroneously played when the user clicks on the outer-most scrollbar. -->
-      <div id="content-wrapper">
+      <div id="content-wrapper" part="wrapper">
         <div class="top-container">
-          <div class="title-container" tabindex="-1">
+          <div id="title" class="title-container" tabindex="-1">
             <slot name="title"></slot>
           </div>
-          <paper-icon-button-light id="closeContainer" class="icon-clear"
-              hidden$="[[!showCloseButton]]">
-            <button id="close" aria-label$="[[closeText]]"
-                on-tap="cancel" on-keypress="onCloseKeypress_">
-            </button>
-          </paper-icon-button-light>
+          <cr-icon-button id="close" class="icon-clear"
+              hidden$="[[!showCloseButton]]" aria-label$="[[closeText]]"
+              on-click="cancel" on-keypress="onCloseKeypress_">
+          </cr-icon-button>
         </div>
         <slot name="header"></slot>
-        <div class="body-container">
-          <span id="bodyTopMarker"></span>
+        <div class="body-container" id="container" show-bottom-shadow
+            part="body-container">
           <slot name="body"></slot>
-          <span id="bodyBottomMarker"></span>
         </div>
         <slot name="button-container"></slot>
         <slot name="footer"></slot>

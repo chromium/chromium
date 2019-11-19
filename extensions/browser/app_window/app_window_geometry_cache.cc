@@ -14,7 +14,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/extension.h"
 
@@ -31,8 +30,7 @@ namespace extensions {
 AppWindowGeometryCache::AppWindowGeometryCache(content::BrowserContext* context,
                                                ExtensionPrefs* prefs)
     : prefs_(prefs),
-      sync_delay_(base::TimeDelta::FromMilliseconds(kSyncTimeoutMilliseconds)),
-      extension_registry_observer_(this) {
+      sync_delay_(base::TimeDelta::FromMilliseconds(kSyncTimeoutMilliseconds)) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(context));
 }
 
@@ -56,7 +54,7 @@ void AppWindowGeometryCache::SaveGeometry(const std::string& extension_id,
   if (extension_data[window_id].bounds == bounds &&
       extension_data[window_id].window_state == window_state &&
       extension_data[window_id].screen_bounds == screen_bounds &&
-      !base::ContainsKey(unsynced_extensions_, extension_id))
+      !base::Contains(unsynced_extensions_, extension_id))
     return;
 
   base::Time now = base::Time::Now();

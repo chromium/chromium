@@ -5,13 +5,14 @@
 #include "components/optimization_guide/optimization_guide_service.h"
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/post_task.h"
 
 namespace optimization_guide {
 
 OptimizationGuideService::OptimizationGuideService(
     const scoped_refptr<base::SingleThreadTaskRunner>& ui_thread_task_runner)
-    : ui_thread_task_runner_(ui_thread_task_runner), weak_ptr_factory_(this) {
+    : ui_thread_task_runner_(ui_thread_task_runner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -54,6 +55,10 @@ void OptimizationGuideService::MaybeUpdateHintsComponentOnUIThread(
       hints_component_info_->version.CompareTo(info.version) >= 0) {
     return;
   }
+
+  base::UmaHistogramSparse(
+      "OptimizationGuide.OptimizationHintsComponent.MajorVersion",
+      info.version.components()[0]);
 
   hints_component_info_.emplace(info.version, info.path);
   for (auto& observer : observers_) {

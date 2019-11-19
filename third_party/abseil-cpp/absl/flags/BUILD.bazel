@@ -1,0 +1,384 @@
+#
+#  Copyright 2019 The Abseil Authors.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+load(
+    "//absl:copts/configure_copts.bzl",
+    "ABSL_DEFAULT_COPTS",
+    "ABSL_DEFAULT_LINKOPTS",
+    "ABSL_TEST_COPTS",
+)
+
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])  # Apache 2.0
+
+cc_library(
+    name = "internal",
+    srcs = [
+        "internal/program_name.cc",
+    ],
+    hdrs = [
+        "internal/path_util.h",
+        "internal/program_name.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        "//absl/flags:__pkg__",
+    ],
+    deps = [
+        "//absl/strings",
+        "//absl/synchronization",
+    ],
+)
+
+cc_library(
+    name = "config",
+    srcs = [
+        "usage_config.cc",
+    ],
+    hdrs = [
+        "config.h",
+        "usage_config.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":internal",
+        "//absl/base:core_headers",
+        "//absl/strings",
+        "//absl/synchronization",
+    ],
+)
+
+cc_library(
+    name = "marshalling",
+    srcs = [
+        "marshalling.cc",
+    ],
+    hdrs = [
+        "marshalling.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        "//absl/base:core_headers",
+        "//absl/strings",
+        "//absl/strings:str_format",
+    ],
+)
+
+cc_library(
+    name = "handle",
+    srcs = [
+        "internal/commandlineflag.cc",
+    ],
+    hdrs = [
+        "internal/commandlineflag.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        "//absl/flags:__pkg__",
+    ],
+    deps = [
+        ":config",
+        ":marshalling",
+        "//absl/base",
+        "//absl/base:core_headers",
+        "//absl/strings",
+        "//absl/synchronization",
+        "//absl/types:optional",
+    ],
+)
+
+cc_library(
+    name = "registry",
+    srcs = [
+        "internal/registry.cc",
+        "internal/type_erased.cc",
+    ],
+    hdrs = [
+        "internal/registry.h",
+        "internal/type_erased.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        "//absl/flags:__pkg__",
+    ],
+    deps = [
+        ":config",
+        ":handle",
+        "//absl/base",
+        "//absl/base:core_headers",
+        "//absl/base:dynamic_annotations",
+        "//absl/strings",
+        "//absl/synchronization",
+    ],
+)
+
+cc_library(
+    name = "flag",
+    srcs = [
+        "flag.cc",
+    ],
+    hdrs = [
+        "declare.h",
+        "flag.h",
+        "internal/flag.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":config",
+        ":handle",
+        ":marshalling",
+        ":registry",
+        "//absl/base",
+        "//absl/base:core_headers",
+        "//absl/strings",
+    ],
+)
+
+cc_library(
+    name = "usage_internal",
+    srcs = [
+        "internal/usage.cc",
+    ],
+    hdrs = [
+        "internal/usage.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    visibility = [
+        "//absl/flags:__pkg__",
+    ],
+    deps = [
+        ":config",
+        ":flag",
+        ":handle",
+        ":internal",
+        "//absl/strings",
+        "//absl/synchronization",
+    ],
+)
+
+cc_library(
+    name = "usage",
+    srcs = [
+        "usage.cc",
+    ],
+    hdrs = [
+        "usage.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":usage_internal",
+        "//absl/strings",
+        "//absl/synchronization",
+    ],
+)
+
+cc_library(
+    name = "parse",
+    srcs = ["parse.cc"],
+    hdrs = [
+        "internal/parse.h",
+        "parse.h",
+    ],
+    copts = ABSL_DEFAULT_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":config",
+        ":flag",
+        ":handle",
+        ":internal",
+        ":registry",
+        ":usage",
+        ":usage_internal",
+        "//absl/strings",
+        "//absl/synchronization",
+    ],
+)
+
+############################################################################
+# Unit tests in alpahabetical order.
+
+cc_test(
+    name = "commandlineflag_test",
+    size = "small",
+    srcs = [
+        "internal/commandlineflag_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":flag",
+        ":handle",
+        ":registry",
+        "//absl/memory",
+        "//absl/strings",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "config_test",
+    size = "small",
+    srcs = [
+        "config_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":config",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "flag_test",
+    size = "small",
+    srcs = [
+        "flag_test.cc",
+        "flag_test_defs.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":flag",
+        "//absl/strings",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "marshalling_test",
+    size = "small",
+    srcs = [
+        "marshalling_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":marshalling",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "path_util_test",
+    size = "small",
+    srcs = [
+        "internal/path_util_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":internal",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "parse_test",
+    size = "small",
+    srcs = [
+        "parse_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":flag",
+        ":parse",
+        "//absl/base",
+        "//absl/base:scoped_set_env",
+        "//absl/strings",
+        "//absl/types:span",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "program_name_test",
+    size = "small",
+    srcs = [
+        "internal/program_name_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":internal",
+        "//absl/strings",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "type_erased_test",
+    size = "small",
+    srcs = [
+        "internal/type_erased_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":flag",
+        ":registry",
+        "//absl/memory",
+        "//absl/strings",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "usage_config_test",
+    size = "small",
+    srcs = [
+        "usage_config_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":config",
+        ":internal",
+        "//absl/strings",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "usage_test",
+    size = "small",
+    srcs = [
+        "internal/usage_test.cc",
+    ],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":config",
+        ":flag",
+        ":internal",
+        ":parse",
+        ":usage",
+        ":usage_internal",
+        "//absl/memory",
+        "//absl/strings",
+        "@com_google_googletest//:gtest",
+    ],
+)

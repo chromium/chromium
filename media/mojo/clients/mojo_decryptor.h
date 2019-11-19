@@ -12,8 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/decryptor.h"
-#include "media/mojo/interfaces/decryptor.mojom.h"
+#include "media/mojo/mojom/decryptor.mojom.h"
 #include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 
@@ -28,7 +30,7 @@ class MojoDecryptor : public Decryptor {
  public:
   // |writer_capacity| can be used for testing. If 0, default writer capacity
   // will be used.
-  MojoDecryptor(mojom::DecryptorPtr remote_decryptor,
+  MojoDecryptor(mojo::PendingRemote<mojom::Decryptor> remote_decryptor,
                 uint32_t writer_capacity = 0);
   ~MojoDecryptor() final;
 
@@ -56,7 +58,8 @@ class MojoDecryptor : public Decryptor {
  private:
   // These are once callbacks corresponding to repeating callbacks DecryptCB,
   // DecoderInitCB, AudioDecodeCB and VideoDecodeCB. They are needed so that we
-  // can use ScopedCallbackRunner to make sure callbacks always run.
+  // can use WrapCallbackWithDefaultInvokeIfNotRun to make sure callbacks always
+  // run.
   // TODO(xhwang): Update Decryptor to use OnceCallback. The change is easy,
   // but updating tests is hard given gmock doesn't support move-only types.
   // See http://crbug.com/751838
@@ -88,7 +91,7 @@ class MojoDecryptor : public Decryptor {
 
   base::ThreadChecker thread_checker_;
 
-  mojom::DecryptorPtr remote_decryptor_;
+  mojo::Remote<mojom::Decryptor> remote_decryptor_;
 
   // Helper class to send DecoderBuffer to the |remote_decryptor_| for
   // DecryptAndDecodeAudio(), DecryptAndDecodeVideo() and Decrypt().
@@ -103,7 +106,7 @@ class MojoDecryptor : public Decryptor {
   NewKeyCB new_audio_key_cb_;
   NewKeyCB new_video_key_cb_;
 
-  base::WeakPtrFactory<MojoDecryptor> weak_factory_;
+  base::WeakPtrFactory<MojoDecryptor> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MojoDecryptor);
 };

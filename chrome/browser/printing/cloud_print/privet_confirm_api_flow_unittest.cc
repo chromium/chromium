@@ -46,7 +46,8 @@ class MockDelegate {
 TEST(PrivetConfirmApiFlowTest, Parsing) {
   StrictMock<MockDelegate> delegate;
   PrivetConfirmApiCallFlow confirmation(
-      "123", base::Bind(&MockDelegate::Callback, base::Unretained(&delegate)));
+      "123",
+      base::BindOnce(&MockDelegate::Callback, base::Unretained(&delegate)));
   EXPECT_CALL(delegate, Callback(GCDApiFlow::SUCCESS)).Times(1);
 
   base::Optional<base::Value> value =
@@ -56,12 +57,15 @@ TEST(PrivetConfirmApiFlowTest, Parsing) {
   ASSERT_TRUE(value->GetAsDictionary(&dictionary));
   confirmation.OnGCDApiFlowComplete(*dictionary);
 
+  PrivetConfirmApiCallFlow confirmation2(
+      "123",
+      base::BindOnce(&MockDelegate::Callback, base::Unretained(&delegate)));
   EXPECT_CALL(delegate, Callback(GCDApiFlow::ERROR_FROM_SERVER)).Times(1);
 
   value = base::JSONReader::Read(kFailedConfirmResponse);
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->GetAsDictionary(&dictionary));
-  confirmation.OnGCDApiFlowComplete(*dictionary);
+  confirmation2.OnGCDApiFlowComplete(*dictionary);
 }
 
 }  // namespace

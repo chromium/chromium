@@ -1,42 +1,31 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow DIV id='grandparent' class='composited'",
+      "name": "LayoutNGBlockFlow DIV id='grandparent' class='composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 2
     },
     {
-      "name": "LayoutBlockFlow DIV id='parent' class='composited'",
-      "bounds": [100, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "transform": 3
-    },
-    {
-      "name": "LayoutBlockFlow DIV id='child' class='composited'",
+      "name": "LayoutNGBlockFlow DIV id='parent' class='composited'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='child' class='composited'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 5
     }
   ],
   "transforms": [
@@ -63,6 +52,12 @@
     {
       "id": 4,
       "parent": 3,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 5,
+      "parent": 4,
       "renderingContext": 2
     }
   ]

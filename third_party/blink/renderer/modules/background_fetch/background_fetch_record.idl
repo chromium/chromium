@@ -6,7 +6,7 @@
 
 [
     Exposed=(Window,Worker),
-    OriginTrialEnabled=BackgroundFetch
+    RuntimeEnabled=BackgroundFetch
 ] interface BackgroundFetchRecord {
     readonly attribute Request request;
     [CallWith=ScriptState] readonly attribute Promise<Response> responseReady;

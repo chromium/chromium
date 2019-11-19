@@ -1,0 +1,4 @@
+file://third_party/blink/renderer/modules/mediastream/OWNERS
+
+# TEAM: webrtc-dev@chromium.org
+# COMPONENT: Blink>WebRTC

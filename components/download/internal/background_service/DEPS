@@ -1,9 +1,9 @@
 include_rules = [
   "-components/download/content",
   "-content",
+  "+components/download/internal/background_service/jni_headers",
   "+components/leveldb_proto",
   "+base",
-  "+jni",
   "+net",
   "+services/network/public",
   "+services/network/test",

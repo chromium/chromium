@@ -10,12 +10,18 @@
   <module name="SuppressionFilter">
     <property name="file" value="tools/android/checkstyle/suppressions.xml"/>
   </module>
+  <module name="SuppressWarningsFilter"/>
   <module name="TreeWalker">
+    <module name="SuppressWarningsHolder"/>
     <module name="AvoidStarImport">
       <property name="severity" value="error"/>
     </module>
     <module name="IllegalCatch">
       <property name="severity" value="info"/>
+    </module>
+    <module name="ModifierOrder">
+      <message key="mod.order" value="&quot;{0}&quot; modifier out of order with the JLS suggestions. The correct order: public protected private abstract default static final transient volatile synchronized native strictfp. See https://crbug.com/1003711 for details."/>
+      <property name="severity" value="error"/>
     </module>
     <module name="RedundantImport">
       <message key="import.redundant" value="Redundant import: {0}. Use :JavaImportOrganize (ECLIM) or Ctrl+Shift+O (Eclipse) to sort imports"/>
@@ -30,6 +36,7 @@
       <property name="severity" value="warning"/>
       <property name="tokens" value="INTERFACE_DEF, CLASS_DEF"/>
       <property name="scope" value="public"/>
+      <property name="allowedAnnotations" value="NativeMethods"/>
       <message key="javadoc.missing" value="Public classes and interfaces require JavaDoc comments."/>
     </module>
     <module name="JavadocMethod">
@@ -98,13 +105,9 @@
     <module name="NoFinalizer">
       <property name="severity" value="info"/>
     </module>
-    <module name="ImportOrder">
+    <module name="NeedBraces">
       <property name="severity" value="error"/>
-      <message key="import.ordering" value="Wrong order for {0} import. Follow the AOSP Java Code Style: https://source.android.com/setup/code-style#order-import-statements. When using Android Studio, use Ctrl+Alt+O to sort imports. A style configuration file can be found at //tools/android/android_studio/ChromiumStyle.xml."/>
-      <property name="groups" value="android, com, dalvik, junit, org, com.google.android.apps.chrome, org.chromium, java, javax"/>
-      <property name="ordered" value="true"/>
-      <property name="option" value="top"/>
-      <property name="separated" value="true"/>
+      <property name="allowSingleLineStatement" value="true"/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="id" value="StringBufferCheck"/>
@@ -133,6 +136,21 @@
       <property name="format" value="ConcurrentHashMap"/>
       <property name="ignoreComments" value="true"/>
       <property name="message" value="ConcurrentHashMap has a bug on some Android versions. Use Collections.synchronizedMap() instead (crbug.com/905903)."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="StrictModeContextIgnoredCheck"/>
+      <property name="severity" value="error"/>
+      <property name="format" value="try .*StrictModeContext (?!ignored).*="/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Please name the StrictModeContext variable &quot;ignored&quot; (crbug.com/767058#c4)."/>
+    </module>
+    <module name="RegexpSinglelineJava">
+      <!-- Tests are also allowed to use System.exit if need be, please add dirs to tools/android/checkstyle/suppressions.xml -->
+      <property name="id" value="SystemExitCheck"/>
+      <property name="severity" value="error"/>
+      <property name="format" value="System\.exit\("/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="Throw an exception instead of calling System#exit (crbug.com/1000651)."/>
     </module>
   </module>
 </module>

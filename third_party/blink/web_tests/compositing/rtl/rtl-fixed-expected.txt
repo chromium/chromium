@@ -1,24 +1,13 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FF0000"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FF0000"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='positioned layer'",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='positioned layer'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",

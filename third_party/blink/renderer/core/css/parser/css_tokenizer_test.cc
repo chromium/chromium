@@ -15,7 +15,7 @@ namespace blink {
 #define TEST_TOKENS(string, ...)     \
   {                                  \
     String s = string;               \
-    SCOPED_TRACE(s.Ascii().data());  \
+    SCOPED_TRACE(s);                 \
     TestTokens(string, __VA_ARGS__); \
   }
 
@@ -133,7 +133,7 @@ static CSSParserToken Percentage(NumericValueType type, double value) {
 // WTF::Partitions::initialize() multiple times.
 #define DEFINE_TOKEN(name, argument)                       \
   static CSSParserToken& name() {                          \
-    WTF::Partitions::Initialize(nullptr);                  \
+    WTF::Partitions::Initialize();                         \
     DEFINE_STATIC_LOCAL(CSSParserToken, name, (argument)); \
     return name;                                           \
   }

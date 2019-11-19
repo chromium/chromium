@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/ref_counted.h"
 #include "cc/layers/texture_layer.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
@@ -135,6 +136,9 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
     }
   };
 
+  using ContextProviderRef = base::RefCountedData<
+      std::unique_ptr<blink::WebGraphicsContext3DProvider>>;
+
   // Functions for parsing plugin parameters.
   Primitive ParsePrimitive(const blink::WebString& string);
   void ParseColor(const blink::WebString& string, uint8_t color[3]);
@@ -159,15 +163,19 @@ class TestPlugin : public blink::WebPlugin, public cc::TextureLayerClient {
       cc::SharedBitmapIdRegistration registration,
       const gpu::SyncToken& sync_token,
       bool lost);
+  static void ReleaseSharedImage(
+      scoped_refptr<ContextProviderRef> context_provider,
+      const gpu::Mailbox& mailbox,
+      const gpu::SyncToken& sync_token,
+      bool lost);
 
   WebTestDelegate* delegate_;
   blink::WebPluginContainer* container_;
   blink::WebLocalFrame* web_local_frame_;
 
   blink::WebRect rect_;
-  std::unique_ptr<blink::WebGraphicsContext3DProvider> context_provider_;
+  scoped_refptr<ContextProviderRef> context_provider_;
   gpu::gles2::GLES2Interface* gl_;
-  GLuint color_texture_;
   gpu::Mailbox mailbox_;
   gpu::SyncToken sync_token_;
   scoped_refptr<cc::CrossThreadSharedBitmap> shared_bitmap_;

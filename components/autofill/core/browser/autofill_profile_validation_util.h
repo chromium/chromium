@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PROFILE_VALIDATION_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_PROFILE_VALIDATION_UTIL_H_
 
-#include "components/autofill/core/browser/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "third_party/libaddressinput/chromium/chrome_address_validator.h"
 
 namespace autofill {

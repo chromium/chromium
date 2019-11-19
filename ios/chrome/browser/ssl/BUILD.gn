@@ -11,16 +11,14 @@ source_set("ssl") {
     "captive_portal_metrics.h",
     "captive_portal_metrics_tab_helper.h",
     "captive_portal_metrics_tab_helper.mm",
-    "insecure_input_tab_helper.h",
-    "insecure_input_tab_helper.mm",
     "ios_captive_portal_blocking_page.h",
     "ios_captive_portal_blocking_page.mm",
-    "ios_security_state_tab_helper.h",
-    "ios_security_state_tab_helper.mm",
     "ios_ssl_blocking_page.h",
     "ios_ssl_blocking_page.mm",
     "ios_ssl_error_handler.h",
     "ios_ssl_error_handler.mm",
+    "ios_ssl_error_tab_helper.h",
+    "ios_ssl_error_tab_helper.mm",
   ]
   deps = [
     ":feature_flags",
@@ -39,7 +37,9 @@ source_set("ssl") {
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/util",
     "//ios/public/provider/chrome/browser",
-    "//ios/web",
+    "//ios/web/common",
+    "//ios/web/public",
+    "//ios/web/public/security",
     "//net",
     "//ui/base",
     "//url",
@@ -62,8 +62,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "ios_captive_portal_blocking_page_unittest.mm",
-    "ios_security_state_tab_helper_unittest.mm",
     "ios_ssl_error_handler_unittest.mm",
+    "ios_ssl_error_tab_helper_unittest.mm",
   ]
   deps = [
     ":feature_flags",
@@ -71,8 +71,10 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/security_state/core",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/interstitials",
     "//ios/chrome/browser/web:test_support",
     "//ios/web",
+    "//ios/web/public/security",
     "//ios/web/public/test",
     "//net",
     "//net:test_support",

@@ -1,83 +1,92 @@
 <!DOCTYPE HTML>
 <html>
 <head>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 </head>
 <body id="a">
 <script>
+test(() => {
+  assert_equals(document.getElementById("a"), document.body);
+  assert_equals(document.body.id, "a");
+  assert_equals(document.body.getAttributeNode("id").value, "a");
+}, "Test that different ways of changing an element's id all work properly, 1. Check id after parsing");
 
-description("Test that different ways of changing an element's id all work properly.");
+test(() => {
+  document.body.getAttributeNode("id").value = "b";
+  assert_equals(document.getElementById("a"), null);
+  assert_equals(document.getElementById("b"), document.body);
+  assert_equals(document.body.getAttributeNode("id").value, "b");
+}, "Test that different ways of changing an element's id all work properly, 2. Change Attr.value");
 
-debug("\n1. Check id after parsing.");
-shouldBe('document.getElementById("a")', 'document.body');
-shouldBe('document.body.id', '"a"');
-shouldBe('document.body.getAttributeNode("id").value', '"a"');
+test(() => {
+  document.body.id = "c";
+  assert_equals(document.getElementById("b"), null);
+  assert_equals(document.getElementById("c"), document.body);
+  assert_equals(document.body.getAttributeNode("id").value, "c");
+}, "Test that different ways of changing an element's id all work properly, 3. Change HTMLElement.id");
 
-debug("\n2. Change Attr.value.");
-document.body.getAttributeNode("id").value = "b";
-shouldBe('document.getElementById("a")', 'null');
-shouldBe('document.getElementById("b")', 'document.body');
-shouldBe('document.body.getAttributeNode("id").value', '"b"');
+test(() => {
+  document.body.setAttribute("id", "d");
+  assert_equals(document.getElementById("c"), null);
+  assert_equals(document.getElementById("d"), document.body);
+  assert_equals(document.body.getAttributeNode("id").value, "d");
+}, "Test that different ways of changing an element's id all work properly, 4. Change id attribute via setAttribute()");
 
-debug("\n3. Change HTMLElement.id.");
-document.body.id = "c";
-shouldBe('document.getElementById("b")', 'null');
-shouldBe('document.getElementById("c")', 'document.body');
-shouldBe('document.body.getAttributeNode("id").value', '"c"');
+test(() => {
+  document.body.setAttributeNS(null, "id", "e");
+  assert_equals(document.getElementById("d"), null);
+  assert_equals(document.getElementById("e"), document.body);
+  assert_equals(document.body.getAttributeNode("id").value, "e");
+}, "Test that different ways of changing an element's id all work properly, 5. Change id attribute via setAttributeNS()");
 
-debug("\n4. Change id attribute via setAttribute().");
-document.body.setAttribute("id", "d");
-shouldBe('document.getElementById("c")', 'null');
-shouldBe('document.getElementById("d")', 'document.body');
-shouldBe('document.body.getAttributeNode("id").value', '"d"');
+test(() => {
+  var attrNode = document.body.getAttributeNode("id");
+  document.body.getAttributeNode("id").nodeValue = "f";
+  assert_equals(document.getElementById("e"), null);
+  assert_equals(document.getElementById("f"), document.body);
+  assert_equals(document.body.id, "f");
+  assert_equals(document.body.getAttribute("id"), "f");
+  assert_equals(attrNode.value, "f");
+}, "Test that different ways of changing an element's id all work properly, 6. Change Attr.nodeValue");
 
-debug("\n5. Change id attribute via setAttributeNS().");
-document.body.setAttributeNS(null, "id", "e");
-shouldBe('document.getElementById("d")', 'null');
-shouldBe('document.getElementById("e")', 'document.body');
-shouldBe('document.body.getAttributeNode("id").value', '"e"');
+test(() => {
+  var attrNode = document.body.getAttributeNode("id");
+  attrNode.value = "hi";
+  assert_equals(document.getElementById("i"), null);
+  assert_equals(document.getElementById("hi"), document.body);
+  assert_equals(document.body.id, "hi");
+  assert_equals(document.body.getAttribute("id"), "hi");
+  assert_equals(attrNode.value, "hi");
+}, "Test that different ways of changing an element's id all work properly, 12. Chnaging Attr.value");
 
-var attrNode = document.body.getAttributeNode("id");
+test(() => {
+  var attrNode = document.body.getAttributeNode("id");
+  document.body.removeAttributeNode(attrNode);
+  assert_equals(document.body.id, "");
+  assert_equals(document.getElementById("mn"), null);
+  assert_equals(document.body.getAttribute("id"), null);
+  assert_equals(document.body.getAttributeNode("id"), null);
+}, "Test that different ways of changing an element's id all work properly, 21. Remove an Attr node");
 
-debug("\n6. Change Attr.nodeValue.");
-document.body.getAttributeNode("id").nodeValue = "f";
-shouldBe('document.getElementById("e")', 'null');
-shouldBe('document.getElementById("f")', 'document.body');
-shouldBe('document.body.id', '"f"');
-shouldBe('document.body.getAttribute("id")', '"f"');
-shouldBe('attrNode.value', '"f"');
+test(() => {
+  var attrNode = document.createAttribute("id");
+  attrNode.value = "o";
+  document.body.setAttributeNode(attrNode);
+  assert_equals(document.getElementById("o"), document.body);
+  assert_equals(document.body.id, "o");
+  assert_equals(document.body.getAttribute("id"), "o");
+}, "Test that different ways of changing an element's id all work properly, 22. Add an Attr node");
 
-debug("\n12. Chnaging Attr.value.");
-attrNode.value = "hi";
-shouldBe('document.getElementById("i")', 'null');
-shouldBe('document.getElementById("hi")', 'document.body');
-shouldBe('document.body.id', '"hi"');
-shouldBe('document.body.getAttribute("id")', '"hi"');
-shouldBe('attrNode.value', '"hi"');
-
-debug("\n21. Remove an Attr node.");
-document.body.removeAttributeNode(attrNode);
-shouldBe('document.body.id', '""');
-shouldBe('document.getElementById("mn")', 'null');
-shouldBe('document.body.getAttribute("id")', 'null');
-shouldBe('document.body.getAttributeNode("id")', 'null');
-
-debug("\n22. Add an Attr node.");
-var attrNode = document.createAttribute("id");
-attrNode.value = "o";
-document.body.setAttributeNode(attrNode);
-shouldBe('document.getElementById("o")', 'document.body');
-shouldBe('document.body.id', '"o"');
-shouldBe('document.body.getAttribute("id")', '"o"');
-
-debug("\n23. Add an Attr node over an existing one.");
-var attrNode = document.createAttribute("id");
-attrNode.value = "p";
-document.body.setAttributeNode(attrNode);
-shouldBe('document.getElementById("o")', 'null');
-shouldBe('document.getElementById("p")', 'document.body');
-shouldBe('document.body.id', '"p"');
-shouldBe('document.body.getAttribute("id")', '"p"');
+test(() => {
+  var attrNode = document.createAttribute("id");
+  attrNode.value = "p";
+  document.body.setAttributeNode(attrNode);
+  assert_equals(document.getElementById("o"), null);
+  assert_equals(document.getElementById("p"), document.body);
+  assert_equals(document.body.id, "p");
+  assert_equals(document.body.getAttribute("id"), "p");
+}, "Test that different ways of changing an element's id all work properly, 23. Add an Attr node over an existing one");
 </script>
 </body>
 </html>

@@ -16,10 +16,10 @@ layer at (0,0) size 800x600
           LayoutBR {BR} at (0,0) size 0x0
           LayoutText {#text} at (0,27) size 158x27
             text run at (0,27) width 158: "Fix for this bug: "
-          LayoutInline {A} at (0,0) size 257x27 [color=#0000EE]
+          LayoutInline {A} at (158,27) size 257x27 [color=#0000EE]
             LayoutText {#text} at (158,27) size 257x27
               text run at (158,27) width 257: "<rdar://problem/3977962>"
-          LayoutText {#text} at (415,27) size 737x55
+          LayoutText {#text} at (0,27) size 737x55
             text run at (415,27) width 322: " font loses bold style after pasting"
             text run at (0,55) width 379: "next to existing text and pressing return"
         LayoutBlockFlow {DIV} at (14,113) size 756x110

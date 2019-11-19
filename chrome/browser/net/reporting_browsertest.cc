@@ -21,6 +21,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/reporting/reporting_policy.h"
@@ -176,7 +177,8 @@ IN_PROC_BROWSER_TEST_F(ReportingBrowserTest, TestReportingHeadersProcessed) {
 }
 
 // These tests intentionally crash a render process, and so fail ASan tests.
-#if defined(ADDRESS_SANITIZER)
+// Flaky timeouts on Win7 Tests (dbg)(1); see https://crbug.com/985255.
+#if defined(ADDRESS_SANITIZER) || (defined(OS_WIN) && !defined(NDEBUG))
 #define MAYBE_CrashReport DISABLED_CrashReport
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
 #else
@@ -202,6 +204,7 @@ IN_PROC_BROWSER_TEST_F(ReportingBrowserTest, MAYBE_CrashReport) {
   navigation_observer.Wait();
 
   // Simulate a crash on the page.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
   contents->GetController().LoadURL(GURL(content::kChromeUICrashURL),
                                     content::Referrer(),
                                     ui::PAGE_TRANSITION_TYPED, std::string());
@@ -241,6 +244,7 @@ IN_PROC_BROWSER_TEST_F(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
   navigation_observer.Wait();
 
   // Simulate the page being killed due to being unresponsive.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
   contents->GetMainFrame()->GetProcess()->Shutdown(content::RESULT_CODE_HUNG);
 
   upload_response()->WaitForRequest();

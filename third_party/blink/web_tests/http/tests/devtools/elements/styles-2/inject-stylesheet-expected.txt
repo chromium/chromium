@@ -2,25 +2,25 @@ Tests that injected user stylesheets are reflected in the Styles pane.
 
 Main frame style:
 background-attachment: scroll;
-    initial - #main <style>…</style>
+    initial - #main <style>
 background-clip: border-box;
-    initial - #main <style>…</style>
+    initial - #main <style>
 background-color: rgb(0, 0, 255);
-    blue - #main <style>…</style>
+    blue - #main <style>
 background-image: none;
-    initial - #main <style>…</style>
+    initial - #main <style>
 background-origin: padding-box;
-    initial - #main <style>…</style>
+    initial - #main <style>
 background-position-x: 0%;
-    initial - #main <style>…</style>
+    initial - #main <style>
 background-position-y: 0%;
-    initial - #main <style>…</style>
+    initial - #main <style>
 background-repeat-x: ;
-    initial - #main <style>…</style>
+    initial - #main <style>
 background-repeat-y: ;
-    initial - #main <style>…</style>
+    initial - #main <style>
 background-size: auto;
-    initial - #main <style>…</style>
+    initial - #main <style>
 border-bottom-style: solid;
     solid - #main injected stylesheet
 border-left-style: solid;
@@ -40,7 +40,7 @@ display: block;
 element.style { ()
 
 [expanded] 
-#main { (<style>…</style>)
+#main { (<style>)
     background: blue;
         background-image: initial;
         background-position-x: initial;
@@ -133,7 +133,7 @@ element.style { ()
         background-color: red;
 
 [expanded] 
-body { (inject-styleshe…me-data.html:4 -> inject-stylesheet-iframe-data.html:4:9)
+body { (inject-styl…data.html:4 -> inject-stylesheet-iframe-data.html:4:9)
 /-- overloaded --/     background: green;
     /-- overloaded --/     background-image: initial;
     /-- overloaded --/     background-position-x: initial;

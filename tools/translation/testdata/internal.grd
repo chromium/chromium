@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<grit latest_public_release="1" current_release="1">
+  <release seq="1">
+    <!-- Part file below doesn't exist intetionally as it shouldn't be checked. -->
+    <part file="internal_part.grdp" />
+  </release>
+</grit>

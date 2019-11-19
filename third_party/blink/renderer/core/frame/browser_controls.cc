@@ -17,7 +17,8 @@ BrowserControls::BrowserControls(const Page& page)
     : page_(&page),
       top_height_(0),
       bottom_height_(0),
-      shown_ratio_(0),
+      top_shown_ratio_(0),
+      bottom_shown_ratio_(0),
       baseline_content_offset_(0),
       accumulated_scroll_delta_(0),
       shrink_viewport_(false),
@@ -56,10 +57,10 @@ FloatSize BrowserControls::ScrollBy(FloatSize pending_delta) {
   float new_content_offset =
       baseline_content_offset_ - accumulated_scroll_delta_;
 
-  SetShownRatio(new_content_offset / height);
+  SetShownRatio(new_content_offset / height, new_content_offset / height);
 
   // Reset baseline when controls are fully visible
-  if (shown_ratio_ == 1)
+  if (top_shown_ratio_ == 1 && bottom_shown_ratio_ == 1)
     ResetBaseline();
 
   // Clamp and use the expected content offset so that we don't return
@@ -85,21 +86,22 @@ float BrowserControls::UnreportedSizeAdjustment() {
 }
 
 float BrowserControls::ContentOffset() {
-  return shown_ratio_ * top_height_;
+  return top_shown_ratio_ * top_height_;
 }
 
 float BrowserControls::BottomContentOffset() {
-  return shown_ratio_ * bottom_height_;
+  return bottom_shown_ratio_ * bottom_height_;
 }
 
-void BrowserControls::SetShownRatio(float shown_ratio) {
-  shown_ratio = std::min(shown_ratio, 1.f);
-  shown_ratio = std::max(shown_ratio, 0.f);
+void BrowserControls::SetShownRatio(float top_ratio, float bottom_ratio) {
+  top_ratio = clampTo(top_ratio, 0.f, 1.f);
+  bottom_ratio = clampTo(bottom_ratio, 0.f, 1.f);
 
-  if (shown_ratio_ == shown_ratio)
+  if (top_shown_ratio_ == top_ratio && bottom_shown_ratio_ == bottom_ratio)
     return;
 
-  shown_ratio_ = shown_ratio;
+  top_shown_ratio_ = top_ratio;
+  bottom_shown_ratio_ = bottom_ratio;
   page_->GetChromeClient().DidUpdateBrowserControls();
 }
 

@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -118,7 +118,7 @@ TEST(StrJoin, APIExamples) {
 
   {
     // A std::map, which is a collection of std::pair<>s.
-    std::map<std::string, int> m = { {"a", 1}, {"b", 2}, {"c", 3} };
+    std::map<std::string, int> m = {{"a", 1}, {"b", 2}, {"c", 3}};
     EXPECT_EQ("a=1,b=2,c=3", absl::StrJoin(m, ",", absl::PairFormatter("=")));
   }
 
@@ -140,7 +140,8 @@ TEST(StrJoin, APIExamples) {
   }
 
   {
-    // A range of 1 element gives a std::string with that element but no separator.
+    // A range of 1 element gives a std::string with that element but no
+    // separator.
     std::vector<std::string> v = {"foo"};
     EXPECT_EQ("foo", absl::StrJoin(v, "-"));
   }
@@ -173,9 +174,10 @@ TEST(StrJoin, APIExamples) {
 TEST(StrJoin, CustomFormatter) {
   std::vector<std::string> v{"One", "Two", "Three"};
   {
-    std::string joined = absl::StrJoin(v, "", [](std::string* out, const std::string& in) {
-      absl::StrAppend(out, "(", in, ")");
-    });
+    std::string joined =
+        absl::StrJoin(v, "", [](std::string* out, const std::string& in) {
+          absl::StrAppend(out, "(", in, ")");
+        });
     EXPECT_EQ("(One)(Two)(Three)", joined);
   }
   {

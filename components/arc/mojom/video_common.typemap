@@ -1,0 +1,46 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//components/arc/mojom/video_common.mojom"
+public_headers = [
+  "//components/arc/video_accelerator/decoder_buffer.h",
+  "//components/arc/video_accelerator/video_frame_plane.h",
+  "//media/base/color_plane_layout.h",
+  "//media/base/decode_status.h",
+  "//media/base/video_codecs.h",
+  "//media/base/video_frame.h",
+  "//media/base/video_types.h",
+  "//ui/gfx/geometry/size.h",
+]
+
+public_deps = [
+  "//components/arc/video_accelerator:common",
+  "//media",
+]
+
+traits_headers = [ "//components/arc/mojom/video_accelerator_mojom_traits.h" ]
+
+sources = [
+  "//components/arc/mojom/video_accelerator_mojom_traits.cc",
+  "//components/arc/mojom/video_accelerator_mojom_traits.h",
+]
+
+deps = [
+  "//ui/gfx/geometry",
+]
+
+type_mappings = [
+  "arc.mojom.DecoderBuffer=arc::DecoderBuffer[move_only]",
+  "arc.mojom.DecodeStatus=media::DecodeStatus",
+  "arc.mojom.ColorPlaneLayout=media::ColorPlaneLayout",
+  "arc.mojom.Size=gfx::Size",
+  "arc.mojom.VideoCodecProfile=media::VideoCodecProfile",
+  "arc.mojom.VideoFrame=scoped_refptr<media::VideoFrame>[nullable_is_same_type]",
+
+  # media::VideoFrameLayout doesn't have default constructor, so we cannot
+  # convert directly.
+  "arc.mojom.VideoFrameLayout=std::unique_ptr<media::VideoFrameLayout>[move_only,nullable_is_same_type]",
+  "arc.mojom.VideoFramePlane=arc::VideoFramePlane[move_only]",
+  "arc.mojom.VideoPixelFormat=media::VideoPixelFormat",
+]

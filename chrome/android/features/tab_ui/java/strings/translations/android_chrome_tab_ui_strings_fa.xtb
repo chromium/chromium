@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fa">
+<translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> مورد از برگه‌هایتان اخیراً استفاده نشده‌اند. آن‌ها را می‌بندید؟</translation>
+<translation id="1181037720776840403">حذف</translation>
+<translation id="125153950246128346">برای دیدن برگه دیگر ضربه بزنید</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> برگه}one{<ph name="TABS_COUNT_MANY" /> برگه}other{<ph name="TABS_COUNT_MANY" /> برگه}}</translation>
+<translation id="257674075312929031">گروه</translation>
+<translation id="2613747923081026172">ایجاد گروه</translation>
+<translation id="2671423594960767771">هم‌رسانی گروه</translation>
+<translation id="2977480621796371840">برداشتن از گروه</translation>
+<translation id="4212246570487010370">ادامه مرور</translation>
+<translation id="4648718555153979859">برگه‌هایتان اینجا باهم گروه‌بندی می‌شوند</translation>
+<translation id="5007392906805964215">مرور</translation>
+<translation id="5073204694187207510">پنهان کردن شبکه تمام‌صفحه</translation>
+<translation id="5082793167783849073">با ایجاد گروه، صفحه‌ها را سریع مقایسه کنید. برای شروع، پیوندی را لمس کنید و نگه دارید.</translation>
+<translation id="5580090775658607195"><ph name="TAB_COUNT" /> برگه گروه‌بندی شد</translation>
+<translation id="5792534911093536736">برگه‌های بیشتر</translation>
+<translation id="58326064309361797">برای گروه‌بندی برگه‌ها، آن‌ها را بکشید</translation>
+<translation id="6040143037577758943">بستن</translation>
+<translation id="6193448654517602979">انتخاب برگه‌ها</translation>
+<translation id="6615455863669487791">به من نشان بده</translation>
+<translation id="6840760312327750441">برای ایجاد برگه‌های گروهی، برگه‌ای را لمس کنید و نگه‌دارید. سپس آن را به برگه‌ای دیگر بکشید.</translation>
+<translation id="7151209024774799310">برداشتن برگه‌ها از گروه</translation>
+<translation id="7559245342362162951">نمایش برگه‌های گروه در شبکه تمام‌صفحه</translation>
+<translation id="9150694013019234766">جابه‌جایی بین برگه‌ها در گروه برگه شما واقع در نزدیک پایین صفحه‌نمایش</translation>
+<translation id="9169594135889675189">افزودن برگه جدید به گروه</translation>
+<translation id="959682366969460160">سازمان‌دهی شوید</translation>
+</translationbundle>

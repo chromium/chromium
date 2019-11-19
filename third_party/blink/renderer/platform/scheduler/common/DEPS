@@ -1,6 +1,15 @@
 specific_include_rules = {
+ "idle_helper.h": [
+  "+base/task/task_observer.h",
+ ],
  "scheduler_helper.cc": [
   "+base/task/sequence_manager/sequence_manager_impl.h",
+ ],
+ "scheduler_helper_unittest.cc": [
+  "+base/task/task_observer.h",
+ ],
+ "web_thread_scheduler.cc": [
+  "+base/message_loop/message_pump_type.h",
  ],
 }
 

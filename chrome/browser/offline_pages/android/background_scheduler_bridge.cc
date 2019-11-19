@@ -7,6 +7,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "chrome/android/chrome_jni_headers/BackgroundSchedulerBridge_jni.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service_factory.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
@@ -15,7 +16,6 @@
 #include "components/offline_pages/core/background/device_conditions.h"
 #include "components/offline_pages/core/background/offliner.h"
 #include "components/offline_pages/core/background/request_coordinator.h"
-#include "jni/BackgroundSchedulerBridge_jni.h"
 
 using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;

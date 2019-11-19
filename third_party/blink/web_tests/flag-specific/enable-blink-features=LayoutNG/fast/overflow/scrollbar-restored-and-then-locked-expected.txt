@@ -1,9 +1,0 @@
-Test for bug 29431 [Qt] REGRESSION:(r50665) QWebFrame::setScrollBarPolicy(Qt::Vertical,Qt::ScrollBarAlwaysOff) has no effect.
-
-This test ensures the correctness of two scrollbar behaviour:
-
-This tests that after setting 'overflow' on the document element to 'hidden' and back to 'visible', scrollbars appear as necessary.
-After explicitly setting a scrollbar policy different than 'auto', WebCore honors that until it is unset.
-
-PASS
-FAIL: Scrollbar did appear after turning it off

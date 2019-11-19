@@ -56,19 +56,23 @@ blink_modules_sources("webdatabase") {
     "sql_transaction_state.h",
     "sql_transaction_state_machine.cc",
     "sql_transaction_state_machine.h",
+    "sqlite/sandboxed_vfs.cc",
+    "sqlite/sandboxed_vfs.h",
+    "sqlite/sandboxed_vfs_file.cc",
+    "sqlite/sandboxed_vfs_file.h",
     "sqlite/sql_log.h",
     "sqlite/sql_value.cc",
     "sqlite/sql_value.h",
     "sqlite/sqlite_authorizer.cc",
     "sqlite/sqlite_database.cc",
     "sqlite/sqlite_database.h",
-    "sqlite/sqlite_file_system.cc",
-    "sqlite/sqlite_file_system.h",
     "sqlite/sqlite_statement.cc",
     "sqlite/sqlite_statement.h",
     "sqlite/sqlite_transaction.cc",
     "sqlite/sqlite_transaction.h",
     "storage_log.h",
+    "web_database_host.cc",
+    "web_database_host.h",
     "web_database_impl.cc",
     "web_database_impl.h",
   ]
@@ -77,13 +81,4 @@ blink_modules_sources("webdatabase") {
     "//sql",
     "//third_party/sqlite",
   ]
-
-  if (is_win) {
-    sources += [ "sqlite/sqlite_file_system_win.cc" ]
-  } else if (is_posix || is_fuchsia) {
-    sources += [ "sqlite/sqlite_file_system_posix.cc" ]
-  }
-
-  # Expose chromium_sqlite3_* functions from Chromium's patched SQLite.
-  defines = [ "CHROMIUM_SQLITE_INTERNALS" ]  # So that sqlite3.h is not included without this set.
 }

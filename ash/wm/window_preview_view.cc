@@ -4,7 +4,10 @@
 
 #include "ash/wm/window_preview_view.h"
 
+#include "ash/wm/window_mirror_view_pip.h"
+#include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
+#include "ash/wm/window_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/window.h"
@@ -15,7 +18,6 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
-namespace wm {
 
 WindowPreviewView::WindowPreviewView(aura::Window* window,
                                      bool trilinear_filtering_on_init)
@@ -24,15 +26,13 @@ WindowPreviewView::WindowPreviewView(aura::Window* window,
   DCHECK(window);
   aura::client::GetTransientWindowClient()->AddObserver(this);
 
-  for (auto* window : GetTransientTreeIterator(window_)) {
-    if (window->type() == aura::client::WINDOW_TYPE_POPUP)
-      continue;
-
+  for (auto* window : GetTransientTreeIterator(window_))
     AddWindow(window);
-  }
 }
 
 WindowPreviewView::~WindowPreviewView() {
+  for (auto* window : unparented_transient_children_)
+    window->RemoveObserver(this);
   for (auto entry : mirror_views_)
     entry.first->RemoveObserver(this);
   aura::client::GetTransientWindowClient()->RemoveObserver(this);
@@ -73,12 +73,11 @@ void WindowPreviewView::Layout() {
                        local_bounds.height() / union_rect.height());
   for (auto entry : mirror_views_) {
     const gfx::Rect bounds = entry.first->GetBoundsInScreen();
-    const int top_inset = entry.first->GetProperty(aura::client::kTopViewInset);
     gfx::Rect mirror_bounds;
     mirror_bounds.set_x(
         gfx::ToRoundedInt((bounds.x() - union_origin.x()) * scale.x()));
-    mirror_bounds.set_y(gfx::ToRoundedInt(
-        (bounds.y() + top_inset - union_origin.y()) * scale.y()));
+    mirror_bounds.set_y(
+        gfx::ToRoundedInt((bounds.y() - union_origin.y()) * scale.y()));
     mirror_bounds.set_width(gfx::ToRoundedInt(bounds.width() * scale.x()));
     mirror_bounds.set_height(gfx::ToRoundedInt(bounds.height() * scale.y()));
     entry.second->SetBoundsRect(mirror_bounds);
@@ -91,6 +90,12 @@ void WindowPreviewView::OnTransientChildWindowAdded(
   aura::Window* root = ::wm::GetTransientRoot(window_);
   if (!::wm::HasTransientAncestor(parent, root) && parent != root)
     return;
+
+  if (!transient_child->parent()) {
+    transient_child->AddObserver(this);
+    unparented_transient_children_.emplace(transient_child);
+    return;
+  }
 
   AddWindow(transient_child);
 }
@@ -109,17 +114,45 @@ void WindowPreviewView::OnWindowDestroying(aura::Window* window) {
   RemoveWindow(window);
 }
 
+void WindowPreviewView::OnWindowParentChanged(aura::Window* window,
+                                              aura::Window* parent) {
+  if (!unparented_transient_children_.contains(window))
+    return;
+
+  DCHECK(parent);
+  unparented_transient_children_.erase(window);
+  window->RemoveObserver(this);
+  AddWindow(window);
+}
+
 void WindowPreviewView::AddWindow(aura::Window* window) {
   DCHECK(!mirror_views_.contains(window));
+  DCHECK(!unparented_transient_children_.contains(window));
+  DCHECK(!window->HasObserver(this));
 
-  window->AddObserver(this);
+  if (window->type() == aura::client::WINDOW_TYPE_POPUP)
+    return;
+
+  if (!window->HasObserver(this))
+    window->AddObserver(this);
+
   auto* mirror_view =
-      new WindowMirrorView(window, trilinear_filtering_on_init_);
+      window_util::IsArcPipWindow(window)
+          ? new WindowMirrorViewPip(window, trilinear_filtering_on_init_)
+          : new WindowMirrorView(window, trilinear_filtering_on_init_);
   mirror_views_[window] = mirror_view;
   AddChildView(mirror_view);
 }
 
 void WindowPreviewView::RemoveWindow(aura::Window* window) {
+  auto iter = unparented_transient_children_.find(window);
+  if (iter != unparented_transient_children_.end()) {
+    unparented_transient_children_.erase(iter);
+    window->RemoveObserver(this);
+    DCHECK(!mirror_views_.count(window));
+    return;
+  }
+
   auto it = mirror_views_.find(window);
   if (it == mirror_views_.end())
     return;
@@ -130,15 +163,10 @@ void WindowPreviewView::RemoveWindow(aura::Window* window) {
 }
 
 gfx::RectF WindowPreviewView::GetUnionRect() const {
-  gfx::RectF bounds;
-  for (auto entry : mirror_views_) {
-    gfx::RectF entry_bounds(entry.first->GetBoundsInScreen());
-    entry_bounds.Inset(0, entry.first->GetProperty(aura::client::kTopViewInset),
-                       0, 0);
-    bounds.Union(entry_bounds);
-  }
-  return bounds;
+  gfx::Rect bounds;
+  for (auto entry : mirror_views_)
+    bounds.Union(entry.first->GetBoundsInScreen());
+  return gfx::RectF(bounds);
 }
 
-}  // namespace wm
 }  // namespace ash

@@ -1,8 +1,6 @@
 spec: https://w3c.github.io/resource-timing/
 suggested_reviewers:
-  - haoxli
   - plehegar
   - zqzhang
   - igrigorik
-  - toddreifsteck
   - yoavweiss

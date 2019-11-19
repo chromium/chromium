@@ -30,7 +30,9 @@
 
 // https://dom.spec.whatwg.org/#interface-mutationrecord
 
-interface MutationRecord {
+[
+    Exposed=Window
+] interface MutationRecord {
     readonly attribute DOMString type;
     readonly attribute Node target;
     [SameObject] readonly attribute NodeList addedNodes;

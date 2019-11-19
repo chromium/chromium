@@ -6,4 +6,5 @@
     ImplementedAs=ServiceWorkerGlobalScopeSync
 ] partial interface ServiceWorkerGlobalScope {
     attribute EventHandler onsync;
+    [RuntimeEnabled=PeriodicBackgroundSync] attribute EventHandler onperiodicsync;
 };

@@ -18,9 +18,12 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -34,10 +37,12 @@
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/history_url_provider.h"
 #include "components/omnibox/browser/keyword_provider.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/browser/local_history_zero_suggest_provider.h"
+#include "components/omnibox/browser/on_device_head_provider.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/shortcuts_provider.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -69,9 +74,8 @@ void AutocompleteMatchToAssistedQuery(
   // enter one of SEARCH_SUGGEST or NAVSUGGEST.
   if (provider) {
     if (provider->type() == AutocompleteProvider::TYPE_ZERO_SUGGEST &&
-        (match != AutocompleteMatchType::SEARCH_SUGGEST_PERSONALIZED)) {
-      DCHECK((match == AutocompleteMatchType::SEARCH_SUGGEST) ||
-             (match == AutocompleteMatchType::NAVSUGGEST));
+        (match == AutocompleteMatchType::SEARCH_SUGGEST ||
+         match == AutocompleteMatchType::NAVSUGGEST)) {
       // We abuse this subtype and use it to for zero-suggest suggestions that
       // aren't personalized by the server. That is, it indicates either
       // client-side most-likely URL suggestions or server-side suggestions
@@ -190,15 +194,6 @@ void AppendAvailableAutocompletion(size_t type,
     base::StringAppendF(autocompletions, "l%d", count);
 }
 
-// Returns whether the autocompletion is trivial enough that we consider it
-// an autocompletion for which the omnibox autocompletion code did not add
-// any value.
-bool IsTrivialAutocompletion(const AutocompleteMatch& match) {
-  return match.type == AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED ||
-      match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
-      match.type == AutocompleteMatchType::SEARCH_OTHER_ENGINE;
-}
-
 // Whether this autocomplete match type supports custom descriptions.
 bool AutocompleteMatchHasCustomDescription(const AutocompleteMatch& match) {
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP &&
@@ -222,6 +217,7 @@ AutocompleteController::AutocompleteController(
       keyword_provider_(nullptr),
       search_provider_(nullptr),
       zero_suggest_provider_(nullptr),
+      on_device_head_provider_(nullptr),
       stop_timer_duration_(OmniboxFieldTrial::StopTimerFieldTrialDuration()),
       done_(true),
       in_start_(false),
@@ -269,14 +265,23 @@ AutocompleteController::AutocompleteController(
   if (provider_types & AutocompleteProvider::TYPE_SHORTCUTS)
     providers_.push_back(new ShortcutsProvider(provider_client_.get()));
   if (provider_types & AutocompleteProvider::TYPE_ZERO_SUGGEST) {
-    zero_suggest_provider_ = ZeroSuggestProvider::Create(
-        provider_client_.get(), history_url_provider_, this);
+    zero_suggest_provider_ =
+        ZeroSuggestProvider::Create(provider_client_.get(), this);
     if (zero_suggest_provider_)
       providers_.push_back(zero_suggest_provider_);
+  }
+  if (provider_types & AutocompleteProvider::TYPE_ZERO_SUGGEST_LOCAL_HISTORY) {
+    providers_.push_back(
+        LocalHistoryZeroSuggestProvider::Create(provider_client_.get(), this));
   }
   if (provider_types & AutocompleteProvider::TYPE_DOCUMENT) {
     document_provider_ = DocumentProvider::Create(provider_client_.get(), this);
     providers_.push_back(document_provider_);
+  }
+  if (provider_types & AutocompleteProvider::TYPE_ON_DEVICE_HEAD) {
+    on_device_head_provider_ =
+        OnDeviceHeadProvider::Create(provider_client_.get(), this);
+    providers_.push_back(on_device_head_provider_);
   }
   if (provider_types & AutocompleteProvider::TYPE_CLIPBOARD) {
 #if !defined(OS_IOS)
@@ -369,8 +374,13 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
         name, 1, 1000, 50, base::Histogram::kUmaTargetedHistogramFlag);
     counter->Add(static_cast<int>((end_time - start_time).InMilliseconds()));
   }
-  in_start_ = false;
+  base::UmaHistogramBoolean("Omnibox.Start.WantAsyncMatches",
+                            input.want_asynchronous_matches());
+
+  // This will usually set |done_| to false, unless all of the providers are
+  // are finished after the synchronous pass we just completed.
   CheckIfDone();
+
   // The second true forces saying the default match has changed.
   // This triggers the edit model to update things such as the inline
   // autocomplete state.  In particular, if the user has typed a key
@@ -385,6 +395,8 @@ void AutocompleteController::Start(const AutocompleteInput& input) {
   // cleared or changed.  Even if the default match hasn't changed, we
   // need the edit model to update the display.
   UpdateResult(false, true);
+
+  in_start_ = false;
 
   // Omnibox has dependencies that may be lazily initialized. This metric will
   // help tracking regression on the first use.
@@ -428,6 +440,11 @@ void AutocompleteController::Stop(bool clear_result) {
 void AutocompleteController::DeleteMatch(const AutocompleteMatch& match) {
   DCHECK(match.SupportsDeletion());
 
+  // This formula combines provider and result type into a single enum as
+  // defined in OmniboxProviderAndResultType in enums.xml.
+  auto combined_type = match.provider->AsOmniboxEventProviderType() * 100 +
+                       match.AsOmniboxEventResultType();
+
   // Delete duplicate matches attached to the main match first.
   for (auto it(match.duplicate_matches.begin());
        it != match.duplicate_matches.end(); ++it) {
@@ -435,8 +452,14 @@ void AutocompleteController::DeleteMatch(const AutocompleteMatch& match) {
       it->provider->DeleteMatch(*it);
   }
 
-  if (match.deletable)
+  if (match.deletable) {
+    // This histogram is defined in the internal histograms.xml. This is because
+    // the vast majority of OmniboxProviderAndResultType histograms are
+    // generated by internal tools, and we wish to keep them together.
+    base::UmaHistogramSparse("Omnibox.SuggestionDeleted.ProviderAndResultType",
+                             combined_type);
     match.provider->DeleteMatch(match);
+  }
 
   OnProviderUpdate(true);
 
@@ -453,10 +476,20 @@ void AutocompleteController::ExpireCopiedEntries() {
 }
 
 void AutocompleteController::OnProviderUpdate(bool updated_matches) {
+  // Providers should only call this method during the asynchronous pass.
+  // There's no reason to call this during the synchronous pass, since we
+  // perform these operations anyways after all providers are started.
+  //
+  // This is not a DCHECK, because in the unusual case that a provider calls an
+  // asynchronous method, and that method early exits by calling the callback
+  // immediately, it's not necessarily a programmer error. We should just no-op.
+  if (in_start_)
+    return;
+
   CheckIfDone();
   // Multiple providers may provide synchronous results, so we only update the
   // results if we're not in Start().
-  if (!in_start_ && (updated_matches || done_))
+  if (updated_matches || done_)
     UpdateResult(false, false);
 }
 
@@ -522,25 +555,24 @@ void AutocompleteController::UpdateResult(
     bool regenerate_result,
     bool force_notify_default_match_changed) {
   TRACE_EVENT0("omnibox", "AutocompleteController::UpdateResult");
-  const bool last_default_was_valid = result_.default_match() != result_.end();
-  // The following three variables are only set and used if
-  // |last_default_was_valid|.
-  base::string16 last_default_fill_into_edit, last_default_keyword,
-      last_default_associated_keyword;
-  if (last_default_was_valid) {
-    last_default_fill_into_edit = result_.default_match()->fill_into_edit;
-    last_default_keyword = result_.default_match()->keyword;
-    if (result_.default_match()->associated_keyword) {
+
+  base::Optional<AutocompleteMatch> last_default_match;
+  base::string16 last_default_associated_keyword;
+  if (result_.default_match() != result_.end()) {
+    last_default_match = *result_.default_match();
+    if (last_default_match->associated_keyword) {
       last_default_associated_keyword =
-          result_.default_match()->associated_keyword->keyword;
+          last_default_match->associated_keyword->keyword;
     }
   }
+
+  const auto last_result_for_logging = result_.GetMatchDedupComparators();
 
   if (regenerate_result)
     result_.Reset();
 
-  AutocompleteResult last_result;
-  last_result.Swap(&result_);
+  AutocompleteResult old_matches_to_reuse;
+  old_matches_to_reuse.Swap(&result_);
 
   for (Providers::const_iterator i(providers_.begin());
        i != providers_.end(); ++i)
@@ -549,11 +581,17 @@ void AutocompleteController::UpdateResult(
   if (OmniboxFieldTrial::IsPedalSuggestionsEnabled())
     result_.AppendDedicatedPedalMatches(provider_client_.get(), input_);
 
-  // Sort the matches and trim to a small number of "best" matches.
-  result_.SortAndCull(input_, template_url_service_);
-
   if (OmniboxFieldTrial::IsTabSwitchSuggestionsEnabled())
     result_.ConvertOpenTabMatches(provider_client_.get(), &input_);
+
+  // Sort the matches and trim to a small number of "best" matches.
+  const AutocompleteMatch* preserve_default_match = nullptr;
+  if (!in_start_ && last_default_match &&
+      base::FeatureList::IsEnabled(
+          omnibox::kOmniboxPreserveDefaultMatchAgainstAsyncUpdate)) {
+    preserve_default_match = &last_default_match.value();
+  }
+  result_.SortAndCull(input_, template_url_service_, preserve_default_match);
 
   // Need to validate before invoking CopyOldMatches as the old matches are not
   // valid against the current input.
@@ -564,7 +602,14 @@ void AutocompleteController::UpdateResult(
   if (!done_) {
     // This conditional needs to match the conditional in Start that invokes
     // StartExpireTimer.
-    result_.CopyOldMatches(input_, &last_result, template_url_service_);
+    result_.TransferOldMatches(input_, &old_matches_to_reuse,
+                               template_url_service_);
+  }
+
+  // Log metrics for how many matches are asynchronously changed.
+  if (!in_start_) {
+    AutocompleteResult::LogAsynchronousUpdateMetrics(last_result_for_logging,
+                                                     result_);
   }
 
   UpdateKeywordDescriptions(&result_);
@@ -590,12 +635,12 @@ void AutocompleteController::UpdateResult(
   // even though the fill into edit hasn't changed (see SearchProvider
   // for one case of this).
   const bool notify_default_match =
-      (last_default_was_valid != default_is_valid) ||
-      (last_default_was_valid &&
+      (last_default_match.has_value() != default_is_valid) ||
+      (last_default_match &&
        ((result_.default_match()->fill_into_edit !=
-          last_default_fill_into_edit) ||
+         last_default_match->fill_into_edit) ||
         (default_associated_keyword != last_default_associated_keyword) ||
-        (result_.default_match()->keyword != last_default_keyword)));
+        (result_.default_match()->keyword != last_default_match->keyword)));
   if (notify_default_match)
     last_time_default_match_changed_ = base::TimeTicks::Now();
 
@@ -628,6 +673,10 @@ void AutocompleteController::UpdateAssociatedKeywords(
     // available.
     if (!exact_keyword.empty() && !keywords.count(exact_keyword)) {
       keywords.insert(exact_keyword);
+      // If the match has an answer, it will look strange to try to display
+      // it along with a keyword hint. Prefer the keyword hint, and revert
+      // to a typical search.
+      match->answer.reset();
       match->associated_keyword.reset(new AutocompleteMatch(
           keyword_provider_->CreateVerbatimMatch(exact_keyword,
                                                  exact_keyword, input_)));
@@ -653,9 +702,6 @@ void AutocompleteController::UpdateAssociatedKeywords(
 
 void AutocompleteController::UpdateKeywordDescriptions(
     AutocompleteResult* result) {
-  bool show_suffix_on_all_search_suggestions = base::FeatureList::IsEnabled(
-      omnibox::kUIExperimentShowSuffixOnAllSearchSuggestions);
-
   base::string16 last_keyword;
   for (auto i(result->begin()); i != result->end(); ++i) {
     if (AutocompleteMatch::IsSearchType(i->type)) {
@@ -664,7 +710,8 @@ void AutocompleteController::UpdateKeywordDescriptions(
       i->description.clear();
       i->description_class.clear();
       DCHECK(!i->keyword.empty());
-      if (i->keyword != last_keyword || show_suffix_on_all_search_suggestions) {
+      if (i->keyword != last_keyword &&
+          !ShouldCurbKeywordDescriptions(i->keyword)) {
         const TemplateURL* template_url =
             i->GetTemplateURL(template_url_service_, false);
         if (template_url) {
@@ -724,7 +771,7 @@ void AutocompleteController::UpdateAssistedQueryStats(
       continue;
     std::string selected_index;
     // Prevent trivial suggestions from getting credit for being selected.
-    if (!IsTrivialAutocompletion(*match))
+    if (!match->IsTrivialAutocompletion())
       selected_index = base::StringPrintf("%" PRIuS, index);
     match->search_terms_args->assisted_query_stats =
         base::StringPrintf("chrome.%s.%s",
@@ -788,6 +835,12 @@ void AutocompleteController::StopHelper(bool clear_result,
     // touch the edit... this is all a mess and should be cleaned up :(
     NotifyChanged(false);
   }
+}
+
+bool AutocompleteController::ShouldCurbKeywordDescriptions(
+    const base::string16& keyword) {
+  return AutocompleteProvider::InExplicitExperimentalKeywordMode(input_,
+                                                                 keyword);
 }
 
 bool AutocompleteController::OnMemoryDump(

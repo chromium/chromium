@@ -22,23 +22,23 @@ CSS.registerProperty({
 
 test(() => {
   let value = CSSStyleValue.parse('--tf', 'translateX(0px)');
-  assert_equals(value.constructor, CSSStyleValue);
-}, 'Result of CSSStyleValue.parse for <transform-function> is a direct CSSStyleValue');
+  assert_true(value instanceof CSSUnparsedValue);
+}, 'Result of CSSStyleValue.parse for <transform-function> is a CSSUnparsedValue');
 
 test(() => {
   target.style = '--tf: translateX(0px)';
   let value = target.attributeStyleMap.get('--tf');
-  assert_equals(value.constructor, CSSStyleValue);
+  assert_true(value instanceof CSSUnparsedValue);
   target.style = '';
-}, 'Result of attributeStyleMap.get for <transform-function> is a direct CSSStyleValue');
+}, 'Result of attributeStyleMap.get for <transform-function> is a CSSUnparsedValue');
 
 test(() => {
   style.textContent = '#target { --tf: translateX(0px); }';
   let styleMap = style.sheet.rules[0].styleMap;
   let value = styleMap.get('--tf');
-  assert_equals(value.constructor, CSSStyleValue);
+  assert_true(value instanceof CSSUnparsedValue);
   style.textContent = '';
-}, 'Result of styleMap.get for <transform-function> is a direct CSSStyleValue');
+}, 'Result of styleMap.get for <transform-function> is a CSSUnparsedValue');
 
 test(() => {
   let value = target.computedStyleMap().get('--tf');

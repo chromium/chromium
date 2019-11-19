@@ -23,6 +23,9 @@ class LocaleDetailedView : public TrayDetailedView {
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
 
+  // views::View:
+  const char* GetClassName() const override;
+
  private:
   void CreateItems();
 

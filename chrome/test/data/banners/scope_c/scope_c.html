@@ -1,0 +1,8 @@
+<head>
+  <title>Service worker scope is narrower than manifest scope</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <script>
+  navigator.serviceWorker.register('/banners/service_worker.js',
+                                   {scope: '/banners/scope_c/'});
+  </script>
+</head>

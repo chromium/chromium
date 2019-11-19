@@ -13,15 +13,8 @@ import "url/mojom/origin.mojom";
 // TODO(mek): If more than just DOMStorage related interfaces get added this
 // should probably move to some other directory.
 interface StoragePartitionService {
-  // TODO(dmurph): Change this back to non-sync after the cause of the renderer
-  // hang is discovered. http://crbug.com/927534
-  [Sync]
   OpenLocalStorage(url.mojom.Origin origin,
-                   StorageArea& area) => ();
-
-  // TODO(dmurph): Change this back to non-sync after the cause of the renderer
-  // hang is discovered. http://crbug.com/927534
-  [Sync]
+                   pending_receiver<StorageArea> area);
   OpenSessionStorage(string namespace_id,
-                     SessionStorageNamespace& session_namespace) => ();
+                     pending_receiver<SessionStorageNamespace> session_namespace);
 };

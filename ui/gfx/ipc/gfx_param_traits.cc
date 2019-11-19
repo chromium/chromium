@@ -68,8 +68,10 @@ void ParamTraits<gfx::ScopedRefCountedIOSurfaceMachPort>::Log(
 void ParamTraits<gfx::SelectionBound>::Write(base::Pickle* m,
                                              const param_type& p) {
   WriteParam(m, static_cast<uint32_t>(p.type()));
-  WriteParam(m, p.edge_top());
-  WriteParam(m, p.edge_bottom());
+  WriteParam(m, p.edge_start());
+  WriteParam(m, p.edge_end());
+  WriteParam(m, p.visible_edge_start());
+  WriteParam(m, p.visible_edge_end());
   WriteParam(m, p.visible());
 }
 
@@ -77,18 +79,24 @@ bool ParamTraits<gfx::SelectionBound>::Read(const base::Pickle* m,
                                             base::PickleIterator* iter,
                                             param_type* r) {
   gfx::SelectionBound::Type type;
-  gfx::PointF edge_top;
-  gfx::PointF edge_bottom;
+  gfx::PointF edge_start;
+  gfx::PointF edge_end;
+  gfx::PointF visible_edge_start;
+  gfx::PointF visible_edge_end;
   bool visible = false;
 
-  if (!ReadParam(m, iter, &type) || !ReadParam(m, iter, &edge_top) ||
-      !ReadParam(m, iter, &edge_bottom) || !ReadParam(m, iter, &visible)) {
+  if (!ReadParam(m, iter, &type) || !ReadParam(m, iter, &edge_start) ||
+      !ReadParam(m, iter, &edge_end) ||
+      !ReadParam(m, iter, &visible_edge_start) ||
+      !ReadParam(m, iter, &visible_edge_end) || !ReadParam(m, iter, &visible)) {
     return false;
   }
 
   r->set_type(type);
-  r->SetEdgeTop(edge_top);
-  r->SetEdgeBottom(edge_bottom);
+  r->SetEdgeStart(edge_start);
+  r->SetEdgeEnd(edge_end);
+  r->SetVisibleEdgeStart(visible_edge_start);
+  r->SetVisibleEdgeEnd(visible_edge_end);
   r->set_visible(visible);
   return true;
 }
@@ -98,9 +106,13 @@ void ParamTraits<gfx::SelectionBound>::Log(const param_type& p,
   l->append("gfx::SelectionBound(");
   LogParam(static_cast<uint32_t>(p.type()), l);
   l->append(", ");
-  LogParam(p.edge_top(), l);
+  LogParam(p.edge_start(), l);
   l->append(", ");
-  LogParam(p.edge_bottom(), l);
+  LogParam(p.edge_end(), l);
+  l->append(", ");
+  LogParam(p.visible_edge_start(), l);
+  l->append(", ");
+  LogParam(p.visible_edge_end(), l);
   l->append(", ");
   LogParam(p.visible(), l);
   l->append(")");

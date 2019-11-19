@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-import android.app.Activity;
-
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.share.ShareParams;
 import org.chromium.chrome.browser.tab.Tab;
@@ -19,14 +17,12 @@ import java.util.List;
  */
 public class GetPagesByNamespaceForLivePageSharingCallback
         implements Callback<List<OfflinePageItem>> {
-    private Activity mActivity;
     private Tab mTab;
     private Callback<ShareParams> mShareCallback;
     private OfflinePageBridge mBridge;
 
-    public GetPagesByNamespaceForLivePageSharingCallback(Activity activity, Tab tab,
-            final Callback<ShareParams> shareCallback, OfflinePageBridge bridge) {
-        mActivity = activity;
+    public GetPagesByNamespaceForLivePageSharingCallback(
+            Tab tab, final Callback<ShareParams> shareCallback, OfflinePageBridge bridge) {
         mTab = tab;
         mShareCallback = shareCallback;
         mBridge = bridge;
@@ -38,7 +34,7 @@ public class GetPagesByNamespaceForLivePageSharingCallback
         // it directly.
         for (OfflinePageItem item : items) {
             if (item.getUrl().equals(mTab.getUrl())) {
-                OfflinePageUtils.sharePublishedPage(item, mActivity, mShareCallback);
+                OfflinePageUtils.sharePublishedPage(item, mTab.getWindowAndroid(), mShareCallback);
                 return;
             }
         }
@@ -47,6 +43,6 @@ public class GetPagesByNamespaceForLivePageSharingCallback
         mBridge.savePage(mTab.getWebContents(),
                 new ClientId(OfflinePageBridge.LIVE_PAGE_SHARING_NAMESPACE,
                         Integer.toString(mTab.getId())),
-                new SavePageAndShareCallback(mActivity, mShareCallback, mBridge));
+                new SavePageAndShareCallback(mTab.getWindowAndroid(), mShareCallback, mBridge));
     }
 }

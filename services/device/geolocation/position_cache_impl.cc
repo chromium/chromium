@@ -81,6 +81,10 @@ const mojom::Geoposition* PositionCacheImpl::FindPosition(
   return it == data_.end() ? nullptr : (it->position());
 }
 
+size_t PositionCacheImpl::GetPositionCacheSize() const {
+  return data_.size();
+}
+
 const mojom::Geoposition& PositionCacheImpl::GetLastUsedNetworkPosition()
     const {
   return last_used_position_;

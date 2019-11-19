@@ -40,8 +40,6 @@ class HTMLShadowElement final : public V0InsertionPoint {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLShadowElement);
-
   explicit HTMLShadowElement(Document&);
   ~HTMLShadowElement() override;
 };

@@ -24,7 +24,8 @@ public class PreviewsInfoBar extends ConfirmInfoBar {
 
     private PreviewsInfoBar(
             int iconDrawbleId, String message, String linkText, String timestampText) {
-        super(iconDrawbleId, null, message, linkText, null, null);
+        super(iconDrawbleId, R.color.infobar_icon_drawable_color, null, message, linkText, null,
+                null);
         mTimestampText = timestampText;
     }
 

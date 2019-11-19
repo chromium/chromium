@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-h1,-h2,-h3,-h4,-h5,-and-h6-elements
-[HTMLConstructor]
-interface HTMLHeadingElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLHeadingElement : HTMLElement {
     // obsolete members
     // https://html.spec.whatwg.org/C/#HTMLHeadingElement-partial
     [CEReactions, Reflect] attribute DOMString align;

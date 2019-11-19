@@ -14,7 +14,7 @@
 
 class Profile;
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -33,7 +33,7 @@ class ProfileInfoWatcher : public ProfileAttributesStorage::Observer {
   void OnProfileAuthInfoChanged(const base::FilePath& profile_path) override;
 
   // Gets the IdentityManager for |profile_|.
-  identity::IdentityManager* GetIdentityManager() const;
+  signin::IdentityManager* GetIdentityManager() const;
 
   // Runs |callback_| when a profile changes. No-ops if |GetIdentityManager()|
   // returns nullptr.

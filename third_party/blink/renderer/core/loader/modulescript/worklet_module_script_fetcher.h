@@ -23,7 +23,7 @@ class ResourceFetcher;
 // WorkletModuleResponsesMap, or defers to ModuleScriptFetcher and
 // stores the result in WorkletModuleResponsesMap on fetch completion.
 class CORE_EXPORT WorkletModuleScriptFetcher final
-    : public GarbageCollectedFinalized<WorkletModuleScriptFetcher>,
+    : public GarbageCollected<WorkletModuleScriptFetcher>,
       public ModuleScriptFetcher {
   USING_GARBAGE_COLLECTED_MIXIN(WorkletModuleScriptFetcher);
 
@@ -33,6 +33,7 @@ class CORE_EXPORT WorkletModuleScriptFetcher final
   // Implements ModuleScriptFetcher.
   void Fetch(FetchParameters&,
              ResourceFetcher*,
+             const Modulator* modulator_for_built_in_modules,
              ModuleGraphLevel,
              ModuleScriptFetcher::Client*) override;
 

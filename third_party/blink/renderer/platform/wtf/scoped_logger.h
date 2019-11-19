@@ -8,6 +8,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {
@@ -28,6 +29,8 @@ namespace WTF {
 // code. Please do not remove it.
 //
 class WTF_EXPORT ScopedLogger {
+  DISALLOW_NEW();
+
  public:
   // The first message is passed to the constructor.  Additional messages for
   // the same scope can be added with log(). If condition is false, produce no

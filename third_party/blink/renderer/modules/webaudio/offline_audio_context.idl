@@ -25,6 +25,7 @@
 
 // See https://webaudio.github.io/web-audio-api/#OfflineAudioContext
 [
+    Exposed=Window,
     Constructor(unsigned long numberOfChannels, unsigned long numberOfFrames, float sampleRate),
     Constructor(OfflineAudioContextOptions options),
     ConstructorCallWith=ExecutionContext,

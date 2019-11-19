@@ -1225,38 +1225,6 @@ void Cronet_RequestFinishedInfo_finished_reason_set(
   self->finished_reason = finished_reason;
 }
 
-void Cronet_RequestFinishedInfo_response_info_set(
-    Cronet_RequestFinishedInfoPtr self,
-    const Cronet_UrlResponseInfoPtr response_info) {
-  DCHECK(self);
-  self->response_info.reset();
-  if (response_info != nullptr)
-    self->response_info.emplace(*response_info);
-}
-void Cronet_RequestFinishedInfo_response_info_move(
-    Cronet_RequestFinishedInfoPtr self,
-    Cronet_UrlResponseInfoPtr response_info) {
-  DCHECK(self);
-  self->response_info.reset();
-  if (response_info != nullptr)
-    self->response_info.emplace(std::move(*response_info));
-}
-
-void Cronet_RequestFinishedInfo_error_set(Cronet_RequestFinishedInfoPtr self,
-                                          const Cronet_ErrorPtr error) {
-  DCHECK(self);
-  self->error.reset();
-  if (error != nullptr)
-    self->error.emplace(*error);
-}
-void Cronet_RequestFinishedInfo_error_move(Cronet_RequestFinishedInfoPtr self,
-                                           Cronet_ErrorPtr error) {
-  DCHECK(self);
-  self->error.reset();
-  if (error != nullptr)
-    self->error.emplace(std::move(*error));
-}
-
 // Struct Cronet_RequestFinishedInfo getters.
 Cronet_MetricsPtr Cronet_RequestFinishedInfo_metrics_get(
     const Cronet_RequestFinishedInfoPtr self) {
@@ -1289,20 +1257,4 @@ Cronet_RequestFinishedInfo_finished_reason_get(
     const Cronet_RequestFinishedInfoPtr self) {
   DCHECK(self);
   return self->finished_reason;
-}
-
-Cronet_UrlResponseInfoPtr Cronet_RequestFinishedInfo_response_info_get(
-    const Cronet_RequestFinishedInfoPtr self) {
-  DCHECK(self);
-  if (self->response_info == base::nullopt)
-    return nullptr;
-  return &self->response_info.value();
-}
-
-Cronet_ErrorPtr Cronet_RequestFinishedInfo_error_get(
-    const Cronet_RequestFinishedInfoPtr self) {
-  DCHECK(self);
-  if (self->error == base::nullopt)
-    return nullptr;
-  return &self->error.value();
 }

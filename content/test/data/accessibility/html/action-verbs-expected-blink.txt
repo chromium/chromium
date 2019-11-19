@@ -1,40 +1,43 @@
 rootWebArea name='Action verbs'
-++genericContainer
-++++staticText name='Generic div'
-++++++inlineTextBox name='Generic div'
-++heading name='Heading' hierarchicalLevel=1
-++++staticText name='Heading'
-++++++inlineTextBox name='Heading'
-++button name='Button' defaultActionVerb=press
-++link name='Link' defaultActionVerb=jump
-++++staticText name='Link' defaultActionVerb=clickAncestor
-++++++inlineTextBox name='Link'
-++textField defaultActionVerb=activate
+++genericContainer ignored
 ++++genericContainer
-++searchBox defaultActionVerb=activate
-++++genericContainer
-++textField multiline defaultActionVerb=activate
-++++genericContainer
-++textField defaultActionVerb=activate
-++checkBox defaultActionVerb=check checkedState=false
-++checkBox defaultActionVerb=uncheck checkedState=true
-++radioButton defaultActionVerb=check checkedState=false
-++switch name='ARIA Switch' defaultActionVerb=check checkedState=false
-++details
-++++disclosureTriangle collapsed name='Summary' defaultActionVerb=press
-++++++staticText name='Summary'
-++++++++inlineTextBox name='Summary'
-++popUpButton collapsed value='Pop-up button' defaultActionVerb=open haspopup=menu
-++++menuListPopup invisible
-++++++menuListOption name='Pop-up button' defaultActionVerb=select selected=true
-++genericContainer defaultActionVerb=click
-++++staticText name='Div with click handler' defaultActionVerb=clickAncestor
-++++++inlineTextBox name='Div with click handler'
-++group defaultActionVerb=click
-++++paragraph defaultActionVerb=clickAncestor
-++++++staticText name='Paragraph with click handler on parent' defaultActionVerb=clickAncestor
-++++++++inlineTextBox name='Paragraph with click handler on parent'
-++menu
-++++menuItem name='Menu item 1' defaultActionVerb=select
-++++menuItemCheckBox name='Menu item 2' defaultActionVerb=uncheck checkedState=true
-++++menuItemRadio name='Menu item 3' defaultActionVerb=check checkedState=false
+++++++staticText name='Generic div'
+++++++++inlineTextBox name='Generic div'
+++++heading name='Heading' hierarchicalLevel=1
+++++++staticText name='Heading'
+++++++++inlineTextBox name='Heading'
+++++button name='Button' defaultActionVerb=press
+++++++staticText name='Button'
+++++++++inlineTextBox name='Button'
+++++link name='Link' defaultActionVerb=jump
+++++++staticText name='Link' defaultActionVerb=clickAncestor
+++++++++inlineTextBox name='Link'
+++++textField defaultActionVerb=activate
+++++++genericContainer
+++++searchBox defaultActionVerb=activate
+++++++genericContainer
+++++textField multiline defaultActionVerb=activate
+++++++genericContainer
+++++textField defaultActionVerb=activate
+++++checkBox defaultActionVerb=check checkedState=false
+++++checkBox defaultActionVerb=uncheck checkedState=true
+++++radioButton defaultActionVerb=check checkedState=false
+++++switch name='ARIA Switch' defaultActionVerb=check checkedState=false
+++++details
+++++++disclosureTriangle collapsed name='Summary' defaultActionVerb=press
+++++++++staticText name='Summary'
+++++++++++inlineTextBox name='Summary'
+++++popUpButton collapsed value='Pop-up button' defaultActionVerb=open haspopup=menu
+++++++menuListPopup invisible
+++++++++menuListOption name='Pop-up button' defaultActionVerb=select selected=true
+++++genericContainer defaultActionVerb=click
+++++++staticText name='Div with click handler' defaultActionVerb=clickAncestor
+++++++++inlineTextBox name='Div with click handler'
+++++group defaultActionVerb=click
+++++++paragraph defaultActionVerb=clickAncestor
+++++++++staticText name='Paragraph with click handler on parent' defaultActionVerb=clickAncestor
+++++++++++inlineTextBox name='Paragraph with click handler on parent'
+++++menu
+++++++menuItem name='Menu item 1' defaultActionVerb=select
+++++++menuItemCheckBox name='Menu item 2' defaultActionVerb=uncheck checkedState=true
+++++++menuItemRadio name='Menu item 3' defaultActionVerb=check checkedState=false

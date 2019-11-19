@@ -1,0 +1,41 @@
+<!--
+@WAIT-FOR:Done
+@NO_CHILDREN_DUMP
+This is a regression test for a bug that caused a crash when a node inside 
+editable text was modified and had a sibling removed in the same update. The 
+actual test output is not interesting, all that matters is that it correctly 
+waits for "Done" to appear in the accessibility tree and doesn't generate an 
+invalid tree update in the process.
+-->
+<script>
+  function go() {
+
+    // To reproduce the testcase we need to dirty an element and cause its 
+    // parent (who is observing OnNodeChanged) to have an incorrect cached child
+    // count. This needs to be done in a single ax_tree update.
+
+    // dirty child, this needs to be sent in the same update as the node removal
+    document.getElementById('child').setAttribute("max", "bar");
+    document.getElementById('child').removeChild(document.getElementById('grandChild'));
+
+    // "remove" element. Deleting the element using removeChild doesn't create 
+    // the same failing update pattern
+    document.getElementById('to-be-removed').outerText = "";
+
+    // This needs to be in a seperate update, test only, not related to regression
+    setTimeout(() => {
+      document.body.setAttribute("aria-label", "Done");
+    }, 20);
+  }
+</script>
+
+<body onload="go();" contentEditable="true" aria-label="@NO_CHILDREN_DUMP">
+  <div id='to-be-removed'></div>
+  <div id='child' aria-hidden="false">
+    <div id='grandChild' aria-hidden="false"></div>
+  </div>
+
+  <div aria-hidden="false">
+    <!-- <audio src='foo'></audio> -->
+  </div>
+</body>

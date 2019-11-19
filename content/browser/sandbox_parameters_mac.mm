@@ -7,12 +7,15 @@
 #include <unistd.h>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
+#include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
+#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -20,15 +23,24 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/plugin_service.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/pepper_plugin_info.h"
+#include "ppapi/buildflags/buildflags.h"
 #include "sandbox/mac/seatbelt_exec.h"
 #include "services/service_manager/sandbox/mac/sandbox_mac.h"
+#include "services/service_manager/sandbox/sandbox_type.h"
 #include "services/service_manager/sandbox/switches.h"
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "content/public/common/pepper_plugin_info.h"
+#endif
 
 namespace content {
 
 namespace {
+
+// Set by SetNetworkTestCertsDirectoryForTesting().
+base::NoDestructor<base::Optional<base::FilePath>> g_network_test_certs_dir;
 
 // Produce the OS version as an integer "1010", etc. and pass that to the
 // profile. The profile converts the string back to a number and can do
@@ -45,8 +57,35 @@ std::string GetOSVersion() {
   return std::to_string(final_os_version);
 }
 
-}  // namespace
+// Retrieves the users shared darwin dirs and adds it to the profile.
+void AddDarwinDirs(sandbox::SeatbeltExecClient* client) {
+  char dir_path[PATH_MAX + 1];
 
+  size_t rv = confstr(_CS_DARWIN_USER_CACHE_DIR, dir_path, sizeof(dir_path));
+  PCHECK(rv != 0);
+  CHECK(client->SetParameter(
+      "DARWIN_USER_CACHE_DIR",
+      service_manager::SandboxMac::GetCanonicalPath(base::FilePath(dir_path))
+          .value()));
+
+  rv = confstr(_CS_DARWIN_USER_DIR, dir_path, sizeof(dir_path));
+  PCHECK(rv != 0);
+  CHECK(client->SetParameter(
+      "DARWIN_USER_DIR",
+      service_manager::SandboxMac::GetCanonicalPath(base::FilePath(dir_path))
+          .value()));
+
+  rv = confstr(_CS_DARWIN_USER_TEMP_DIR, dir_path, sizeof(dir_path));
+  PCHECK(rv != 0);
+  CHECK(client->SetParameter(
+      "DARWIN_USER_TEMP_DIR",
+      service_manager::SandboxMac::GetCanonicalPath(base::FilePath(dir_path))
+          .value()));
+}
+
+// All of the below functions populate the |client| with the parameters that the
+// sandbox needs to resolve information that cannot be known at build time, such
+// as the user's home directory.
 void SetupCommonSandboxParameters(sandbox::SeatbeltExecClient* client) {
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
@@ -95,22 +134,19 @@ void SetupCommonSandboxParameters(sandbox::SeatbeltExecClient* client) {
       service_manager::SandboxMac::GetCanonicalPath(base::GetHomeDir()).value();
   CHECK(client->SetParameter(
       service_manager::SandboxMac::kSandboxHomedirAsLiteral, homedir));
+
+  CHECK(client->SetBooleanParameter(
+      "FILTER_SYSCALLS",
+      base::FeatureList::IsEnabled(features::kMacSyscallSandbox)));
 }
 
 void SetupNetworkSandboxParameters(sandbox::SeatbeltExecClient* client) {
   SetupCommonSandboxParameters(client);
 
-  char dir_path[PATH_MAX + 1];
-
-  size_t rv = confstr(_CS_DARWIN_USER_CACHE_DIR, dir_path, sizeof(dir_path));
-  PCHECK(rv != 0);
-  CHECK(client->SetParameter(
-      "DARWIN_USER_CACHE_DIR",
-      service_manager::SandboxMac::GetCanonicalPath(base::FilePath(dir_path))
-          .value()));
-
   std::vector<base::FilePath> storage_paths =
       GetContentClient()->browser()->GetNetworkContextsParentDirectory();
+
+  AddDarwinDirs(client);
 
   CHECK(client->SetParameter("NETWORK_SERVICE_STORAGE_PATHS_COUNT",
                              base::NumberToString(storage_paths.size())));
@@ -121,8 +157,16 @@ void SetupNetworkSandboxParameters(sandbox::SeatbeltExecClient* client) {
         base::StringPrintf("NETWORK_SERVICE_STORAGE_PATH_%zu", i);
     CHECK(client->SetParameter(param_name, path.value())) << param_name;
   }
+
+  if (g_network_test_certs_dir->has_value()) {
+    CHECK(client->SetParameter("NETWORK_SERVICE_TEST_CERTS_DIR",
+                               service_manager::SandboxMac::GetCanonicalPath(
+                                   **g_network_test_certs_dir)
+                                   .value()));
+  }
 }
 
+#if BUILDFLAG(ENABLE_PLUGINS)
 void SetupPPAPISandboxParameters(sandbox::SeatbeltExecClient* client) {
   SetupCommonSandboxParameters(client);
 
@@ -147,6 +191,7 @@ void SetupPPAPISandboxParameters(sandbox::SeatbeltExecClient* client) {
   // to n+1 more than the plugins added.
   CHECK(index <= 5);
 }
+#endif
 
 void SetupCDMSandboxParameters(sandbox::SeatbeltExecClient* client) {
   SetupCommonSandboxParameters(client);
@@ -163,6 +208,46 @@ void SetupCDMSandboxParameters(sandbox::SeatbeltExecClient* client) {
 void SetupUtilitySandboxParameters(sandbox::SeatbeltExecClient* client,
                                    const base::CommandLine& command_line) {
   SetupCommonSandboxParameters(client);
+}
+
+}  // namespace
+
+void SetupSandboxParameters(service_manager::SandboxType sandbox_type,
+                            const base::CommandLine& command_line,
+                            sandbox::SeatbeltExecClient* client) {
+  switch (sandbox_type) {
+    case service_manager::SANDBOX_TYPE_AUDIO:
+    case service_manager::SANDBOX_TYPE_NACL_LOADER:
+    case service_manager::SANDBOX_TYPE_PDF_COMPOSITOR:
+    case service_manager::SANDBOX_TYPE_RENDERER:
+      SetupCommonSandboxParameters(client);
+      break;
+    case service_manager::SANDBOX_TYPE_GPU:
+      SetupCommonSandboxParameters(client);
+      AddDarwinDirs(client);
+      break;
+    case service_manager::SANDBOX_TYPE_CDM:
+      SetupCDMSandboxParameters(client);
+      break;
+    case service_manager::SANDBOX_TYPE_NETWORK:
+      SetupNetworkSandboxParameters(client);
+      break;
+#if BUILDFLAG(ENABLE_PLUGINS)
+    case service_manager::SANDBOX_TYPE_PPAPI:
+      SetupPPAPISandboxParameters(client);
+      break;
+#endif
+    case service_manager::SANDBOX_TYPE_PROFILING:
+    case service_manager::SANDBOX_TYPE_UTILITY:
+      SetupUtilitySandboxParameters(client, command_line);
+      break;
+    default:
+      CHECK(false) << "Unhandled parameters for sandbox_type " << sandbox_type;
+  }
+}
+
+void SetNetworkTestCertsDirectoryForTesting(const base::FilePath& path) {
+  g_network_test_certs_dir->emplace(path);
 }
 
 }  // namespace content

@@ -6,15 +6,16 @@
 
 #include "base/base64.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/crx_file/id_util.h"
 #include "crypto/sha2.h"
+#include "extensions/common/constants.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace web_app {
 
-std::string GenerateApplicationNameFromURL(const GURL& url) {
-  return base::StrCat({url.host_piece(), "_", url.path_piece()});
-}
+namespace {
 
 // The following string is used to build the directory name for
 // shortcuts to chrome applications (the kind which are installed
@@ -22,12 +23,27 @@ std::string GenerateApplicationNameFromURL(const GURL& url) {
 // for the name of this directory.  Hosts can't include an underscore.
 // By starting this string with an underscore, we ensure that there
 // are no naming conflicts.
-static const char kCrxAppPrefix[] = "_crx_";
+const char kCrxAppPrefix[] = "_crx_";
+
+const char kFocusModePrefix[] = "_focus_";
+int64_t focus_mode_counter = 0;
+
+}  // namespace
+
+std::string GenerateApplicationNameFromURL(const GURL& url) {
+  return base::StrCat({url.host_piece(), "_", url.path_piece()});
+}
 
 std::string GenerateApplicationNameFromAppId(const AppId& app_id) {
   std::string t(kCrxAppPrefix);
   t.append(app_id);
   return t;
+}
+
+// TODO(crbug.com/943194): Move this method to Focus Mode specific file.
+// TODO(crbug.com/943653): Use site's manifest scope as window grouping key.
+std::string GenerateApplicationNameForFocusMode() {
+  return kFocusModePrefix + base::NumberToString(focus_mode_counter++);
 }
 
 AppId GetAppIdFromApplicationName(const std::string& app_name) {
@@ -65,8 +81,16 @@ std::string GenerateAppKeyFromURL(const GURL& url) {
 bool IsValidWebAppUrl(const GURL& app_url) {
   if (app_url.is_empty() || app_url.inner_url())
     return false;
+  // kExtensionScheme is defined in extensions/common:common_constants. It's ok
+  // to depend on it.
+  return app_url.SchemeIs(url::kHttpScheme) ||
+         app_url.SchemeIs(url::kHttpsScheme) ||
+         app_url.SchemeIs(extensions::kExtensionScheme);
+}
 
-  return app_url.SchemeIsHTTPOrHTTPS();
+bool IsValidExtensionUrl(const GURL& app_url) {
+  return !app_url.is_empty() && !app_url.inner_url() &&
+         app_url.SchemeIs(extensions::kExtensionScheme);
 }
 
 }  // namespace web_app

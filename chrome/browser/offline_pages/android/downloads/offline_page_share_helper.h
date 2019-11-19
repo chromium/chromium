@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_OFFLINE_PAGES_ANDROID_DOWNLOADS_OFFLINE_PAGE_SHARE_HELPER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
@@ -35,12 +36,12 @@ class OfflinePageShareHelper {
   void GetShareInfo(const ContentId& id, ResultCallback result_cb);
 
  private:
-  void OnPageGetForShare(const OfflinePageItem* page);
+  void OnPageGetForShare(const std::vector<OfflinePageItem>& pages);
 
   void AcquireFileAccessPermission();
   void OnFileAccessPermissionDone(bool granted);
 
-  void OnPageGetForPublish(const OfflinePageItem* page);
+  void OnPageGetForPublish(const std::vector<OfflinePageItem>& pages);
   void OnPagePublished(const base::FilePath& file_path, SavePageResult result);
 
   void NotifyCompletion(ShareResult result,
@@ -52,7 +53,7 @@ class OfflinePageShareHelper {
   ResultCallback result_cb_;
   ContentId content_id_;
 
-  base::WeakPtrFactory<OfflinePageShareHelper> weak_ptr_factory_;
+  base::WeakPtrFactory<OfflinePageShareHelper> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(OfflinePageShareHelper);
 };

@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/string_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
 namespace blink {
@@ -46,7 +46,8 @@ TextDecoder* TextDecoder::Create(const String& label,
       label.StripWhiteSpace(&encoding::IsASCIIWhiteSpace));
   // The replacement encoding is not valid, but the Encoding API also
   // rejects aliases of the replacement encoding.
-  if (!encoding.IsValid() || !strcasecmp(encoding.GetName(), "replacement")) {
+  if (!encoding.IsValid() ||
+      WTF::EqualIgnoringASCIICase(encoding.GetName(), "replacement")) {
     exception_state.ThrowRangeError("The encoding label provided ('" + label +
                                     "') is invalid.");
     return nullptr;
@@ -90,7 +91,7 @@ String TextDecoder::decode(const BufferSource& input,
   DCHECK(input.IsArrayBuffer());
   const char* start =
       static_cast<const char*>(input.GetAsArrayBuffer()->Data());
-  uint32_t length = input.GetAsArrayBuffer()->ByteLength();
+  uint32_t length = input.GetAsArrayBuffer()->DeprecatedByteLengthAsUnsigned();
   return decode(start, length, options, exception_state);
 }
 

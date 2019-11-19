@@ -35,6 +35,8 @@ class TEST_RUNNER_EXPORT AccessibilityController {
   bool ShouldLogAccessibilityEvents();
   void NotificationReceived(const blink::WebAXObject& target,
                             const std::string& notification_name);
+  void PostNotification(const blink::WebAXObject& target,
+                        const std::string& notification_name);
 
  private:
   friend class AccessibilityControllerBindings;
@@ -65,7 +67,7 @@ class TEST_RUNNER_EXPORT AccessibilityController {
 
   std::unique_ptr<blink::WebAXContext> ax_context_;
 
-  base::WeakPtrFactory<AccessibilityController> weak_factory_;
+  base::WeakPtrFactory<AccessibilityController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityController);
 };

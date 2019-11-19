@@ -11,7 +11,8 @@
 
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "third_party/blink/public/platform/modules/insecure_input/insecure_input_service.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/mojom/insecure_input/insecure_input_service.mojom.h"
 
 namespace content {
 class WebContents;
@@ -37,8 +38,9 @@ class InsecureSensitiveInputDriverFactory
 
   // Finds or creates a factory for the |web_contents| and creates an
   // |InsecureSensitiveInputDriver| for the target |render_frame_host|.
-  static void BindDriver(blink::mojom::InsecureInputServiceRequest request,
-                         content::RenderFrameHost* render_frame_host);
+  static void BindDriver(
+      content::RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::InsecureInputService> receiver);
 
   // Creates a |InsecureSensitiveInputDriver| for the specified
   // |render_frame_host| and adds it to the |frame_driver_map_|.

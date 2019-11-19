@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
@@ -29,6 +30,7 @@ class KeywordProvider;
 class SearchProvider;
 class TemplateURLService;
 class ZeroSuggestProvider;
+class OnDeviceHeadProvider;
 
 // The AutocompleteController is the center of the autocomplete system.  A
 // class creates an instance of the controller, which in turn creates a set of
@@ -57,8 +59,10 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // |provider_types| is a bitmap containing AutocompleteProvider::Type values
   // that will (potentially, depending on platform, flags, etc.) be
-  // instantiated. |template_url_service| is used to create URLs from the
-  // autocomplete results.
+  // instantiated. |provider_client| is passed to all those providers, and
+  // is used to get access to the template URL service. |delegate| is a
+  // proxy for UI elements which need to be notified when the results get
+  // updated.
   AutocompleteController(
       std::unique_ptr<AutocompleteProviderClient> provider_client,
       AutocompleteControllerDelegate* delegate,
@@ -134,6 +138,7 @@ class AutocompleteController : public AutocompleteProviderListener,
   KeywordProvider* keyword_provider() const { return keyword_provider_; }
   SearchProvider* search_provider() const { return search_provider_; }
 
+  const AutocompleteInput& input() const { return input_; }
   const AutocompleteResult& result() const { return result_; }
   bool done() const { return done_; }
   const Providers& providers() const { return providers_; }
@@ -147,13 +152,23 @@ class AutocompleteController : public AutocompleteProviderListener,
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest,
                            RedundantKeywordsIgnoredInResult);
   FRIEND_TEST_ALL_PREFIXES(AutocompleteProviderTest, UpdateAssistedQueryStats);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupContentsViewTest,
+                           EmitTextChangedAccessibilityEvent);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewTest, DoesNotUpdateAutocompleteOnBlur);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, CloseOmniboxPopupOnTextDrag);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, FriendlyAccessibleLabel);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, AccessiblePopup);
   FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsTest, MaintainCursorAfterFocusCycle);
+#if defined(OS_WIN)
+  FRIEND_TEST_ALL_PREFIXES(OmniboxViewViewsUIATest, AccessibleOmnibox);
+#endif  // OS_WIN
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest, SetSelectedLine);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest,
+                           SetSelectedLineWithNoDefaultMatches);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest, TestFocusFixing);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupModelTest, PopupPositionChanging);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupContentsViewTest,
+                           EmitSelectedChildrenChangedAccessibilityEvent);
 
   // Updates |result_| to reflect the current provider state and fires
   // notifications.  If |regenerate_result| then we clear the result
@@ -204,6 +219,11 @@ class AutocompleteController : public AutocompleteProviderListener,
   void StopHelper(bool clear_result,
                   bool due_to_user_inactivity);
 
+  // Helper for UpdateKeywordDescriptions(). Returns whether curbing the keyword
+  // descriptions is enabled, and whether there is enough input to guarantee
+  // that the Omnibox is in keyword mode.
+  bool ShouldCurbKeywordDescriptions(const base::string16& keyword);
+
   // MemoryDumpProvider:
   bool OnMemoryDump(
       const base::trace_event::MemoryDumpArgs& args,
@@ -226,6 +246,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   SearchProvider* search_provider_;
 
   ZeroSuggestProvider* zero_suggest_provider_;
+
+  OnDeviceHeadProvider* on_device_head_provider_;
 
   // Input passed to Start.
   AutocompleteInput input_;
@@ -263,7 +285,8 @@ class AutocompleteController : public AutocompleteProviderListener,
   bool done_;
 
   // Are we in Start()? This is used to avoid updating |result_| and sending
-  // notifications until Start() has been invoked on all providers.
+  // notifications until Start() has been invoked on all providers. When this
+  // boolean is true, we are definitely within the synchronous pass.
   bool in_start_;
 
   // Indicate whether it is the first query since startup.

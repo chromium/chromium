@@ -17,7 +17,7 @@ class ScriptState;
 class ServiceWorkerRegistration;
 
 class PaymentAppServiceWorkerRegistration final
-    : public GarbageCollectedFinalized<PaymentAppServiceWorkerRegistration>,
+    : public GarbageCollected<PaymentAppServiceWorkerRegistration>,
       public Supplement<ServiceWorkerRegistration> {
   USING_GARBAGE_COLLECTED_MIXIN(PaymentAppServiceWorkerRegistration);
 

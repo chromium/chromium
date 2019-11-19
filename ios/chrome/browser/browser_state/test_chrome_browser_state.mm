@@ -44,12 +44,11 @@
 #include "ios/chrome/browser/history/web_history_service_factory.h"
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #include "ios/chrome/browser/prefs/ios_chrome_pref_service_factory.h"
-#include "ios/chrome/browser/sync/glue/sync_start_util.h"
 #include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
-#include "ios/chrome/browser/web_data_service_factory.h"
+#include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/web/public/web_task_traits.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
 #include "net/url_request/url_request_test_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -76,7 +75,7 @@ std::unique_ptr<KeyedService> BuildBookmarkModel(web::BrowserState* context) {
   bookmark_model->Load(
       browser_state->GetPrefs(), browser_state->GetStatePath(),
       browser_state->GetIOTaskRunner(),
-      base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::UI}));
+      base::CreateSingleThreadTaskRunner({web::WebThread::UI}));
   ios::BookmarkUndoServiceFactory::GetForBrowserState(browser_state)
       ->Start(bookmark_model.get());
   return bookmark_model;
@@ -86,8 +85,7 @@ std::unique_ptr<KeyedService> BuildWebDataService(web::BrowserState* context) {
   const base::FilePath& browser_state_path = context->GetStatePath();
   return std::make_unique<WebDataServiceWrapper>(
       browser_state_path, GetApplicationContext()->GetApplicationLocale(),
-      base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::UI}),
-      ios::sync_start_util::GetFlareForSyncableService(browser_state_path),
+      base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
       base::DoNothing());
 }
 
@@ -137,8 +135,9 @@ TestChromeBrowserState::TestChromeBrowserState(
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     TestingFactories testing_factories,
     RefcountedTestingFactories refcounted_testing_factories)
-    : ChromeBrowserState(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+    : ChromeBrowserState(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       state_path_(path),
       prefs_(std::move(prefs)),
       testing_prefs_(nullptr),
@@ -156,15 +155,28 @@ TestChromeBrowserState::TestChromeBrowserState(
 }
 
 TestChromeBrowserState::~TestChromeBrowserState() {
+  // Allows blocking in this scope for testing.
+  base::ScopedAllowBlockingForTesting allow_bocking;
+
   // If this TestChromeBrowserState owns an incognito TestChromeBrowserState,
   // tear it down first.
   otr_browser_state_.reset();
 
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
+  // The destructor of temp_dir_ will perform IO, so it needs to be deleted
+  // here while |allow_bocking| is still in scope. Keeps the same logic as
+  // ScopedTempDir::~ScopedTempDir().
+  if (temp_dir_.IsValid()) {
+    ignore_result(temp_dir_.Delete());
+  }
 }
 
 void TestChromeBrowserState::Init() {
+  // Allows blocking in this scope so directory manipulation can happen in this
+  // scope for testing.
+  base::ScopedAllowBlockingForTesting allow_bocking;
+
   // If threads have been initialized, we should be on the UI thread.
   DCHECK(!web::WebThread::IsThreadInitialized(web::WebThread::UI) ||
          web::WebThread::CurrentlyOn(web::WebThread::UI));
@@ -177,8 +189,6 @@ void TestChromeBrowserState::Init() {
 
   if (!base::PathExists(state_path_))
     base::CreateDirectory(state_path_);
-
-  BrowserState::Initialize(this, GetStatePath());
 
   // Normally this would happen during browser startup, but for tests we need to
   // trigger creation of BrowserState-related services.
@@ -207,7 +217,7 @@ void TestChromeBrowserState::Init() {
         static_cast<user_prefs::PrefRegistrySyncable*>(
             prefs_->DeprecatedGetPrefRegistry());
     BrowserStateDependencyManager::GetInstance()
-        ->RegisterBrowserStatePrefsForServices(this, pref_registry);
+        ->RegisterBrowserStatePrefsForServices(pref_registry);
   }
 
   BrowserStateDependencyManager::GetInstance()
@@ -284,13 +294,7 @@ void TestChromeBrowserState::ClearNetworkingHistorySince(
 net::URLRequestContextGetter* TestChromeBrowserState::CreateRequestContext(
     ProtocolHandlerMap* protocol_handlers) {
   return new net::TestURLRequestContextGetter(
-      base::CreateSingleThreadTaskRunnerWithTraits({web::WebThread::IO}));
-}
-
-net::URLRequestContextGetter*
-TestChromeBrowserState::CreateIsolatedRequestContext(
-    const base::FilePath& partition_path) {
-  return nullptr;
+      base::CreateSingleThreadTaskRunner({web::WebThread::IO}));
 }
 
 void TestChromeBrowserState::CreateWebDataService() {

@@ -5,9 +5,11 @@
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
@@ -15,8 +17,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -26,7 +29,9 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/webui/app_launcher_login_handler.h"
 #include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
+#include "chrome/browser/ui/webui/ntp/cookie_controls_handler.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -34,15 +39,19 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/content_settings/core/common/features.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/google/core/common/google_util.h"
+#include "components/policy/core/common/policy_service.h"
+#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_process_host.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
@@ -51,6 +60,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/native_theme/native_theme.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
@@ -131,6 +141,15 @@ std::string GetNewTabBackgroundTilingCSS(
   return ThemeProperties::TilingToString(repeat_mode);
 }
 
+std::string ReplaceTemplateExpressions(
+    const scoped_refptr<base::RefCountedMemory>& bytes,
+    const ui::TemplateReplacements& replacements) {
+  return ui::ReplaceTemplateExpressions(
+      base::StringPiece(reinterpret_cast<const char*>(bytes->front()),
+                        bytes->size()),
+      replacements);
+}
+
 }  // namespace
 
 NTPResourceCache::NTPResourceCache(Profile* profile)
@@ -147,9 +166,19 @@ NTPResourceCache::NTPResourceCache(Profile* profile)
   profile_pref_change_registrar_.Add(bookmarks::prefs::kShowBookmarkBar,
                                      callback);
   profile_pref_change_registrar_.Add(prefs::kNtpShownPage, callback);
-  profile_pref_change_registrar_.Add(prefs::kSignInPromoShowNTPBubble,
-                                     callback);
   profile_pref_change_registrar_.Add(prefs::kHideWebStoreIcon, callback);
+  profile_pref_change_registrar_.Add(prefs::kCookieControlsMode, callback);
+  profile_pref_change_registrar_.Add(prefs::kBlockThirdPartyCookies, callback);
+
+  theme_observer_.Add(ui::NativeTheme::GetInstanceForNativeUi());
+
+  policy_change_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
+      profile->GetProfilePolicyConnector()->policy_service(),
+      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
+  policy_change_registrar_->Observe(
+      policy::key::kBlockThirdPartyCookies,
+      base::BindRepeating(&NTPResourceCache::OnPolicyChanged,
+                          base::Unretained(this)));
 }
 
 NTPResourceCache::~NTPResourceCache() {}
@@ -230,6 +259,11 @@ void NTPResourceCache::Observe(int type,
   Invalidate();
 }
 
+void NTPResourceCache::OnNativeThemeUpdated(ui::NativeTheme* updated_theme) {
+  DCHECK_EQ(updated_theme, ui::NativeTheme::GetInstanceForNativeUi());
+  Invalidate();
+}
+
 void NTPResourceCache::OnPreferenceChanged() {
   // A change occurred to one of the preferences we care about, so flush the
   // cache.
@@ -244,6 +278,7 @@ void NTPResourceCache::Invalidate() {
   new_tab_html_ = nullptr;
   new_tab_incognito_css_ = nullptr;
   new_tab_css_ = nullptr;
+  new_tab_guest_html_ = nullptr;
 }
 
 void NTPResourceCache::CreateNewTabIncognitoHTML() {
@@ -267,6 +302,27 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_NOT_SAVED);
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
   replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_TAB_TITLE);
+  replacements["hideCookieControls"] =
+      CookieControlsHandler::ShouldHideCookieControlsUI(profile_) ? "hidden"
+                                                                  : "";
+  replacements["cookieControlsTitle"] =
+      l10n_util::GetStringUTF8(IDS_SETTINGS_SITE_SETTINGS_THIRD_PARTY_COOKIE);
+  replacements["cookieControlsDescription"] = l10n_util::GetStringUTF8(
+      IDS_SETTINGS_SITE_SETTINGS_THIRD_PARTY_COOKIE_SUBLABEL);
+  // Ensure passing off-the-record profile; |profile_| might not be incognito.
+  DCHECK(profile_->HasOffTheRecordProfile());
+  replacements["cookieControlsToggleChecked"] =
+      CookieControlsHandler::GetToggleCheckedValue(
+          profile_->GetOffTheRecordProfile())
+          ? "checked"
+          : "";
+  replacements["hideTooltipIcon"] =
+      CookieControlsHandler::ShouldEnforceCookieControls(profile_) ? ""
+                                                                   : "hidden";
+  replacements["cookieControlsTooltipText"] = l10n_util::GetStringFUTF8(
+      IDS_NEW_TAB_OTR_COOKIE_CONTROLS_CONTROLLED_TOOLTIP_TEXT,
+      l10n_util::GetStringUTF16(IDS_SETTINGS_SITE_SETTINGS_THIRD_PARTY_COOKIE),
+      l10n_util::GetStringUTF16(IDS_SETTINGS_SITE_SETTINGS_COOKIES));
 
   const ui::ThemeProvider& tp =
       ThemeService::GetThemeProviderForProfile(profile_);
@@ -276,12 +332,13 @@ void NTPResourceCache::CreateNewTabIncognitoHTML() {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &replacements);
 
-  static const base::StringPiece incognito_tab_html(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-          IDR_INCOGNITO_TAB_HTML));
+  static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
+      incognito_tab_html(
+          ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
+              IDR_INCOGNITO_TAB_HTML));
 
   std::string full_html =
-      ui::ReplaceTemplateExpressions(incognito_tab_html, replacements);
+      ReplaceTemplateExpressions(*incognito_tab_html, replacements);
 
   new_tab_incognito_html_ = base::RefCountedString::TakeString(&full_html);
 }
@@ -291,13 +348,13 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
   localized_strings.SetString("title",
       l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
   const char* guest_tab_link = kLearnMoreGuestSessionUrl;
-  int guest_tab_ids = IDR_GUEST_TAB_HTML;
+  int guest_tab_idr = IDR_GUEST_TAB_HTML;
   int guest_tab_description_ids = IDS_NEW_TAB_GUEST_SESSION_DESCRIPTION;
   int guest_tab_heading_ids = IDS_NEW_TAB_GUEST_SESSION_HEADING;
   int guest_tab_link_ids = IDS_LEARN_MORE;
 
 #if defined(OS_CHROMEOS)
-  guest_tab_ids = IDR_GUEST_SESSION_TAB_HTML;
+  guest_tab_idr = IDR_GUEST_SESSION_TAB_HTML;
 
   policy::BrowserPolicyConnectorChromeOS* connector =
       g_browser_process->platform_part()->browser_policy_connector_chromeos();
@@ -341,14 +398,14 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
   const std::string& app_locale = g_browser_process->GetApplicationLocale();
   webui::SetLoadTimeDataDefaults(app_locale, &localized_strings);
 
-  static const base::StringPiece guest_tab_html(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-          guest_tab_ids));
-
+  static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
+      guest_tab_html(
+          ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
+              guest_tab_idr));
   ui::TemplateReplacements replacements;
   ui::TemplateReplacementsFromDictionaryValue(localized_strings, &replacements);
   std::string full_html =
-      ui::ReplaceTemplateExpressions(guest_tab_html, replacements);
+      ReplaceTemplateExpressions(*guest_tab_html, replacements);
 
   new_tab_guest_html_ = base::RefCountedString::TakeString(&full_html);
 }
@@ -391,6 +448,8 @@ void NTPResourceCache::CreateNewTabHTML() {
                            GetLocalizedString(IDS_APP_CONTEXT_MENU_SHOW_INFO));
   load_time_data.SetString("appcreateshortcut",
                            GetLocalizedString(IDS_NEW_TAB_APP_CREATE_SHORTCUT));
+  load_time_data.SetString("appinstalllocally",
+                           GetLocalizedString(IDS_NEW_TAB_APP_INSTALL_LOCALLY));
   load_time_data.SetString("appDefaultPageName",
                            GetLocalizedString(IDS_APP_DEFAULT_PAGE_NAME));
   load_time_data.SetString(
@@ -439,17 +498,10 @@ void NTPResourceCache::CreateNewTabHTML() {
   load_time_data.SetBoolean("showWebStoreIcon",
                             !prefs->GetBoolean(prefs::kHideWebStoreIcon));
 
-  load_time_data.SetBoolean("enableNewBookmarkApps",
-                            extensions::util::IsNewBookmarkAppsEnabled());
-
-  load_time_data.SetBoolean("canHostedAppsOpenInWindows",
-                            extensions::util::CanHostedAppsOpenInWindows());
-
   load_time_data.SetBoolean("canShowAppInfoDialog",
                             CanShowAppInfoDialog());
 
   AppLauncherHandler::GetLocalizedValues(profile_, &load_time_data);
-  AppLauncherLoginHandler::GetLocalizedValues(profile_, &load_time_data);
 
   webui::SetLoadTimeDataDefaults(app_locale, &load_time_data);
 
@@ -461,12 +513,15 @@ void NTPResourceCache::CreateNewTabHTML() {
       "isUserSignedIn",
       IdentityManagerFactory::GetForProfile(profile_)->HasPrimaryAccount());
 
-  // Load the new tab page appropriate for this build.
-  base::StringPiece new_tab_html(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-          IDR_NEW_TAB_4_HTML));
-  std::string full_html =
-      webui::GetI18nTemplateHtml(new_tab_html, &load_time_data);
+  // Load the new tab page template and localize it.
+  static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
+      new_tab_html(
+          ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
+              IDR_NEW_TAB_4_HTML));
+  std::string full_html = webui::GetI18nTemplateHtml(
+      base::StringPiece(reinterpret_cast<const char*>((*new_tab_html)->front()),
+                        (*new_tab_html)->size()),
+      &load_time_data);
   new_tab_html_ = base::RefCountedString::TakeString(&full_html);
 }
 
@@ -489,13 +544,14 @@ void NTPResourceCache::CreateNewTabIncognitoCSS() {
   substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(tp);
 
   // Get our template.
-  static const base::StringPiece new_tab_theme_css(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-          IDR_NEW_INCOGNITO_TAB_THEME_CSS));
+  static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
+      new_tab_theme_css(
+          ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
+              IDR_NEW_INCOGNITO_TAB_THEME_CSS));
 
   // Create the string from our template and the replacements.
   std::string full_css =
-      ui::ReplaceTemplateExpressions(new_tab_theme_css, substitutions);
+      ReplaceTemplateExpressions(*new_tab_theme_css, substitutions);
 
   new_tab_incognito_css_ = base::RefCountedString::TakeString(&full_css);
 }
@@ -537,6 +593,8 @@ void NTPResourceCache::CreateNewTabCSS() {
   // Colors.
   substitutions["colorBackground"] =
       color_utils::SkColorToRgbaString(color_background);
+  substitutions["colorLink"] = color_utils::SkColorToRgbString(
+      GetThemeColor(tp, ThemeProperties::COLOR_NTP_LINK));
   substitutions["backgroundBarDetached"] = GetNewTabBackgroundCSS(tp, false);
   substitutions["backgroundBarAttached"] = GetNewTabBackgroundCSS(tp, true);
   substitutions["backgroundTiling"] = GetNewTabBackgroundTilingCSS(tp);
@@ -565,12 +623,18 @@ void NTPResourceCache::CreateNewTabCSS() {
       tp.HasCustomImage(IDR_THEME_NTP_ATTRIBUTION) ? "inline" : "none";
 
   // Get our template.
-  static const base::StringPiece new_tab_theme_css(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-          IDR_NEW_TAB_4_THEME_CSS));
+  static const base::NoDestructor<scoped_refptr<base::RefCountedMemory>>
+      new_tab_theme_css(
+          ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
+              IDR_NEW_TAB_4_THEME_CSS));
 
   // Create the string from our template and the replacements.
   std::string css_string =
-      ui::ReplaceTemplateExpressions(new_tab_theme_css, substitutions);
+      ReplaceTemplateExpressions(*new_tab_theme_css, substitutions);
   new_tab_css_ = base::RefCountedString::TakeString(&css_string);
+}
+
+void NTPResourceCache::OnPolicyChanged(const base::Value* previous,
+                                       const base::Value* current) {
+  new_tab_incognito_html_ = nullptr;
 }

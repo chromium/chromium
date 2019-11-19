@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
+
+import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+<canvas />
+
+<script>
+// In the spec, this behavior is not required, and this test will eventually
+// add AR which is not yet supported by the spec, so this is internal only for now
+// If the test API is updated to make guarantees about the blend mode that the hardware
+// requires, the test could be moved at that time.
+let immersiveTestName = "environmentBlendMode is correct for a VR device in immersive";
+let nonImmersiveTestName = "environmentBlendMode is correct for a VR device in non-immersive";
+
+let fakeDeviceInitParams = TRACKED_IMMERSIVE_DEVICE;
+
+let testFunction = function(session, fakeDeviceController, t) {
+  t.step(() => {
+    assert_equals(session.environmentBlendMode, 'opaque');
+  });
+};
+
+xr_session_promise_test(
+  immersiveTestName, testFunction, fakeDeviceInitParams, 'immersive-vr');
+
+xr_session_promise_test(
+  nonImmersiveTestName, testFunction, fakeDeviceInitParams, 'inline');
+
+// TODO(https://crbug.com/828321): Enable once session options for AR are in place.
+/*xr_session_promise_test("environmentBlendMode is correct for an AR device",
+ (session, fakeDeviceController, t) => {
+  t.step(() => {
+    assert_equals(session.environmentBlendMode, 'alpha-blend');
+  });
+}, fakeDevices["FakeARPhone"], [
+    { ar: true, outputContext: getOutputContext() }
+]);*/
+
+</script>

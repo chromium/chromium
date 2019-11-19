@@ -80,7 +80,7 @@ class AffiliationBackend : public FacetManagerHost,
   void GetAffiliationsAndBranding(
       const FacetURI& facet_uri,
       StrategyOnCacheMiss cache_miss_strategy,
-      const AffiliationService::ResultCallback& callback,
+      AffiliationService::ResultCallback callback,
       const scoped_refptr<base::TaskRunner>& callback_task_runner);
   void Prefetch(const FacetURI& facet_uri, const base::Time& keep_fresh_until);
   void CancelPrefetch(const FacetURI& facet_uri,
@@ -160,7 +160,7 @@ class AffiliationBackend : public FacetManagerHost,
   std::unordered_map<FacetURI, std::unique_ptr<FacetManager>, FacetURIHash>
       facet_managers_;
 
-  base::WeakPtrFactory<AffiliationBackend> weak_ptr_factory_;
+  base::WeakPtrFactory<AffiliationBackend> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AffiliationBackend);
 };

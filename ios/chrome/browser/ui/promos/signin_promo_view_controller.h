@@ -10,9 +10,7 @@
 #import "ios/chrome/browser/ui/authentication/chrome_signin_view_controller.h"
 
 @protocol ApplicationCommands;
-namespace ios {
-class ChromeBrowserState;
-}
+class Browser;
 
 // Key in the UserDefaults to record the version of the application when the
 // SSO Recall promo has been displayed.
@@ -37,9 +35,9 @@ extern NSString* kSigninPromoViewDisplayCountKey;
 // YES if this promo should be shown for |browserState|
 + (BOOL)shouldBePresentedForBrowserState:(ios::ChromeBrowserState*)browserState;
 
-// Designated initializer.  |browserState| must not be nil.
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-                          dispatcher:(id<ApplicationCommands>)dispatcher;
+// Designated initializer.  |browser| must not be nil.
+- (instancetype)initWithBrowser:(Browser*)browser
+                     dispatcher:(id<ApplicationCommands>)dispatcher;
 
 // Records in user defaults:
 //   + the Chromium current version.

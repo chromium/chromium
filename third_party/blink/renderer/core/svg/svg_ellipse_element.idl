@@ -25,6 +25,7 @@
 
 // https://svgwg.org/svg2-draft/shapes.html#InterfaceSVGEllipseElement
 
+[Exposed=Window]
 interface SVGEllipseElement : SVGGeometryElement {
     [MeasureAs=SVG1DOMShape] readonly attribute SVGAnimatedLength cx;
     [MeasureAs=SVG1DOMShape] readonly attribute SVGAnimatedLength cy;

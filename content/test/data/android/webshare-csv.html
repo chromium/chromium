@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Web Share</title>
+        <script>
+            function initiate_share() {
+                if (navigator.share === undefined) {
+                    window.document.title = 'Fail: navigator.share === undefined';
+                    return;
+                }
+
+                // Test standard MIME type "text/csv",
+                // and also "text/comma-separated-values".
+                const first = new File(['1,2'],
+                                       'first.csv',
+                                       {type: 'text/csv'});
+                const second = new File(['1,2,3\n4,5,6\n'],
+                                        'second.csv',
+                                        {type: 'text/comma-separated-values'});
+                const data = {files: [first, second]};
+                navigator.share(data).then(() => {
+                    window.document.title = 'Success';
+                }).catch(e => {
+                    window.document.title = 'Fail: ' + e;
+                });
+            }
+
+            window.addEventListener('load', () => {
+                window.addEventListener('click', initiate_share);
+            });
+        </script>
+    </head>
+    <body>
+    </body>
+</html>

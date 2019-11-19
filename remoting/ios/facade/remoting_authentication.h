@@ -32,6 +32,7 @@ typedef void (^AccessTokenCallback)(RemotingAuthenticationStatus status,
 // management and currently active user. It will make sure the user object is
 // saved to the keychain correctly and loaded on startup. It also is the entry
 // point for gaining access to an auth token for authrized calls.
+// TODO(yuweih): Refactor and rewrite this class in C++.
 @protocol RemotingAuthentication<NSObject>
 
 // Fetches an Access Token and passes it back to the callback if the user is
@@ -42,6 +43,9 @@ typedef void (^AccessTokenCallback)(RemotingAuthenticationStatus status,
 
 // Forget the current user.
 - (void)logout;
+
+// Invalidates the cached access token.
+- (void)invalidateCache;
 
 // Returns the currently logged in user or nil.
 @property(strong, nonatomic, readonly) UserInfo* user;

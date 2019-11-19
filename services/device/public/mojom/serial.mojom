@@ -20,15 +20,12 @@ struct SerialPortInfo {
 enum SerialSendError {
   NONE,
   DISCONNECTED,
-  PENDING,
-  TIMEOUT,
   SYSTEM_ERROR,
 };
 
 enum SerialReceiveError {
   NONE,
   DISCONNECTED,
-  TIMEOUT,
   DEVICE_LOST,
   BREAK,
   FRAME_ERROR,
@@ -75,10 +72,15 @@ struct SerialConnectionInfo {
 };
 
 struct SerialHostControlSignals {
+  // DTR (Data Terminal Ready)
   bool dtr;
   bool has_dtr = false;
+  // RTS (Request to Send)
   bool rts;
   bool has_rts = false;
+  // BRK (Break)
+  bool brk;
+  bool has_brk = false;
 };
 
 struct SerialPortControlSignals {
@@ -91,30 +93,32 @@ struct SerialPortControlSignals {
 // Discovers and enumerates serial devices available to the host.
 interface SerialPortManager {
   GetDevices() => (array<SerialPortInfo> devices);
-  GetPort(mojo_base.mojom.UnguessableToken token, SerialPort& port_request);
+
+  // Creates a SerialPort instance attached to the port represented by |token|.
+  // When the pipe passed in |port_receiver| is closed the optional pipe passed
+  // in |watcher| will also be closed.
+  GetPort(mojo_base.mojom.UnguessableToken token,
+          pending_receiver<SerialPort> port_receiver,
+          pending_remote<SerialPortConnectionWatcher>? watcher);
 };
 
 // Performs asynchronous I/O on serial devices.
 interface SerialPort {
   // Initiates an Open of the device then returns result.
   Open(SerialConnectionOptions options,
+       handle<data_pipe_consumer> in_stream,
        handle<data_pipe_producer> out_stream,
-       associated SerialPortClient client) => (bool success);
+       pending_remote<SerialPortClient> client) => (bool success);
 
-  // Performs a Write operation then returns written data and the result.
-  // Note that the Write may succeed partially, means that even if |error|
-  // indicates an error other than NONE, |bytes_written| bytes have already been
-  // written although it may be <= size of |data|. Behavior is undefined if this
-  // is called while a Write is already pending.
-  Write(array<uint8> data) => (uint32 bytes_written, SerialSendError error);
+  // Try to clear existing send error and reconnect the data pipe for send.
+  // This is supposed to be called after SerialPortClient#OnSendError is
+  // notified.
+  ClearSendError(handle<data_pipe_consumer> consumer);
 
   // Try to clear existing read error and reconnect the data pipe for read.
   // This is supposed to be called after SerialPortClient#OnReadError is
   // notified.
   ClearReadError(handle<data_pipe_producer> producer);
-
-  // Attempts to cancel a pending write operation.
-  CancelWrite(SerialSendError reason);
 
   // Flushes input and output buffers.
   Flush() => (bool success);
@@ -122,7 +126,7 @@ interface SerialPort {
   // Reads current control signals (DCD, CTS, etc.).
   GetControlSignals() => (SerialPortControlSignals signals);
 
-  // Sets one or more control signals (DTR and/or RTS) and returns result.
+  // Sets one or more control signals and returns result.
   SetControlSignals(SerialHostControlSignals signals) => (bool success);
 
   // Performs platform-specific port configuration and returns result.
@@ -131,15 +135,15 @@ interface SerialPort {
   // Performs a platform-specific port configuration query and returns got info.
   GetPortInfo() => (SerialConnectionInfo info);
 
-  // Initiates a BREAK signal. Places the transmission line in a break state
-  // until the |ClearBreak| is called.
-  SetBreak() => (bool success);
-
-  // Terminates the BREAK signal. Places the transmission line in a nonbreak
-  // state.
-  ClearBreak() => (bool success);
+  // Closes the connection created by Open(). Once this returns no more data
+  // will be sent or received on |in_stream| or |out_stream|.
+  Close() => ();
 };
 
 interface SerialPortClient {
   OnReadError(SerialReceiveError error);
+  OnSendError(SerialSendError error);
+};
+
+interface SerialPortConnectionWatcher {
 };

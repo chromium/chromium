@@ -7,7 +7,7 @@
 #include <limits>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -149,7 +149,7 @@ scoped_refptr<base::SingleThreadTaskRunner> TaskService::GetTaskRunner(
 #if defined(OS_WIN)
     threads_[thread]->init_com_with_mta(true);
 #elif defined(OS_MACOSX)
-    options.message_loop_type = base::MessageLoop::TYPE_UI;
+    options.message_pump_type = base::MessagePumpType::UI;
 #endif
     threads_[thread]->StartWithOptions(options);
   }

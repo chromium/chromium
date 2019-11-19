@@ -24,7 +24,9 @@ class Simple : public wayland::clients::ClientBase {
     uint32_t num_frames_presented = 0;
   };
 
-  void Run(int frames, PresentationFeedback* feedback = nullptr);
+  void Run(int frames,
+           const bool log_vsync_timing_updates = false,
+           PresentationFeedback* feedback = nullptr);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(Simple);

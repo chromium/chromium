@@ -4,6 +4,7 @@
 
 #include "base/big_endian.h"
 
+#include "base/numerics/checked_math.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -57,6 +58,29 @@ bool BigEndianReader::ReadU32(uint32_t* value) {
 
 bool BigEndianReader::ReadU64(uint64_t* value) {
   return Read(value);
+}
+
+template <typename T>
+bool BigEndianReader::ReadLengthPrefixed(base::StringPiece* out) {
+  T t_len;
+  if (!Read(&t_len))
+    return false;
+  size_t len = strict_cast<size_t>(t_len);
+  const char* original_ptr = ptr_;
+  if (!Skip(len)) {
+    ptr_ -= sizeof(T);
+    return false;
+  }
+  *out = base::StringPiece(original_ptr, len);
+  return true;
+}
+
+bool BigEndianReader::ReadU8LengthPrefixed(base::StringPiece* out) {
+  return ReadLengthPrefixed<uint8_t>(out);
+}
+
+bool BigEndianReader::ReadU16LengthPrefixed(base::StringPiece* out) {
+  return ReadLengthPrefixed<uint16_t>(out);
 }
 
 BigEndianWriter::BigEndianWriter(char* buf, size_t len)

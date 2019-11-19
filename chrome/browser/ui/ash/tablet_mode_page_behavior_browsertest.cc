@@ -3,14 +3,16 @@
 // found in the LICENSE file.
 
 #include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/tablet_mode.h"
+#include "ash/public/cpp/test/shell_test_api.h"
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
-#include "chrome/browser/ui/ash/tablet_mode_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -39,13 +41,11 @@ class TabletModePageBehaviorTest : public InProcessBrowserTest {
   }
 
   void ToggleTabletMode() {
-    auto* tablet_mode_client = TabletModeClient::Get();
-    tablet_mode_client->OnTabletModeToggled(
-        !tablet_mode_client->tablet_mode_enabled());
+    ash::ShellTestApi().SetTabletModeEnabledForTest(!GetTabletModeEnabled());
   }
 
   bool GetTabletModeEnabled() const {
-    return TabletModeClient::Get()->tablet_mode_enabled();
+    return ash::TabletMode::Get()->InTabletMode();
   }
 
   content::WebContents* GetActiveWebContents(Browser* browser) const {
@@ -115,14 +115,13 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeInternalPages) {
-  constexpr char kSettingsUrl[] = "chrome://settings/";
-  AddTabAtIndexToBrowser(browser(), 0, GURL(kSettingsUrl),
+  AddTabAtIndexToBrowser(browser(), 0, GURL(chrome::kChromeUIVersionURL),
                          ui::PAGE_TRANSITION_LINK,
                          false /* check_navigation_success */);
   auto* web_contents = GetActiveWebContents(browser());
   ASSERT_TRUE(web_contents);
   EXPECT_STREQ(web_contents->GetLastCommittedURL().spec().c_str(),
-               kSettingsUrl);
+               chrome::kChromeUIVersionURL);
 
   // Now enable tablet mode, and expect that this internal page's web prefs
   // remain unaffected as if tablet mode is off.
@@ -142,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(TabletModePageBehaviorTest, ExcludeHostedApps) {
   Browser* browser = new Browser(params);
   AddBlankTabAndShow(browser);
 
-  ASSERT_TRUE(browser->is_app());
+  ASSERT_TRUE(browser->is_type_app());
   auto* web_contents = GetActiveWebContents(browser);
   ASSERT_TRUE(web_contents);
 

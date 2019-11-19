@@ -131,7 +131,7 @@ void OomInterventionDecider::OnPrefInitialized(bool success) {
   if (delegate_->WasLastShutdownClean())
     return;
 
-  const base::Value::ListStorage& declined_list =
+  base::span<const base::Value> declined_list =
       prefs_->GetList(kDeclinedHostList)->GetList();
   if (declined_list.size() > 0) {
     const std::string& last_declined =
@@ -142,7 +142,7 @@ void OomInterventionDecider::OnPrefInitialized(bool success) {
 }
 
 bool OomInterventionDecider::IsOptedOut(const std::string& host) const {
-  const base::Value::ListStorage& blacklist =
+  base::span<const base::Value> blacklist =
       prefs_->GetList(kBlacklist)->GetList();
   if (blacklist.size() >= kMaxBlacklistSize)
     return true;

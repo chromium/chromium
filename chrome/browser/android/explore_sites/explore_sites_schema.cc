@@ -13,6 +13,9 @@ namespace explore_sites {
 constexpr int ExploreSitesSchema::kCurrentVersion;
 constexpr int ExploreSitesSchema::kCompatibleVersion;
 
+const char ExploreSitesSchema::kCurrentCatalogKey[] = "current_catalog";
+const char ExploreSitesSchema::kDownloadingCatalogKey[] = "downloading_catalog";
+
 // Schema versions changelog:
 // * 1: Initial version.
 // * 2: Version with ntp shown count.
@@ -154,6 +157,21 @@ bool ExploreSitesSchema::CreateOrUpgradeIfNeeded(sql::Database* db) {
     current_version = MigrateFrom1To2(db, &meta_table);
 
   return current_version == kCurrentVersion;
+}
+
+// static
+std::pair<std::string, std::string> ExploreSitesSchema::GetVersionTokens(
+    sql::Database* db) {
+  sql::MetaTable meta_table;
+  if (!InitMetaTable(db, &meta_table))
+    return std::make_pair("", "");
+
+  std::string current_version_token, downloading_version_token;
+
+  meta_table.GetValue(kCurrentCatalogKey, &current_version_token);
+  meta_table.GetValue(kDownloadingCatalogKey, &downloading_version_token);
+
+  return std::make_pair(current_version_token, downloading_version_token);
 }
 
 }  // namespace explore_sites

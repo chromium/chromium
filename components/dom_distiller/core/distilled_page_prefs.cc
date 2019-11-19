@@ -17,20 +17,18 @@
 namespace dom_distiller {
 
 DistilledPagePrefs::DistilledPagePrefs(PrefService* pref_service)
-    : pref_service_(pref_service), weak_ptr_factory_(this) {
-}
+    : pref_service_(pref_service) {}
 
-DistilledPagePrefs::~DistilledPagePrefs() {
-}
+DistilledPagePrefs::~DistilledPagePrefs() {}
 
 // static
 void DistilledPagePrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
-      prefs::kTheme, DistilledPagePrefs::LIGHT,
+      prefs::kTheme, DistilledPagePrefs::THEME_LIGHT,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(
-      prefs::kFont, DistilledPagePrefs::SANS_SERIF,
+      prefs::kFont, DistilledPagePrefs::FONT_FAMILY_SANS_SERIF,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterDoublePref(prefs::kFontScale, 1.0);
   registry->RegisterBooleanPref(
@@ -49,11 +47,12 @@ void DistilledPagePrefs::SetFontFamily(
 
 DistilledPagePrefs::FontFamily DistilledPagePrefs::GetFontFamily() {
   int font_family = pref_service_->GetInteger(prefs::kFont);
-  if (font_family < 0 || font_family >= DistilledPagePrefs::FONT_FAMILY_COUNT) {
+  if (font_family < 0 ||
+      font_family >= DistilledPagePrefs::FONT_FAMILY_NUM_ENTRIES) {
     // Persisted data was incorrect, trying to clean it up by storing the
     // default.
-    SetFontFamily(DistilledPagePrefs::SANS_SERIF);
-    return DistilledPagePrefs::SANS_SERIF;
+    SetFontFamily(DistilledPagePrefs::FONT_FAMILY_SANS_SERIF);
+    return DistilledPagePrefs::FONT_FAMILY_SANS_SERIF;
   }
   return static_cast<FontFamily>(font_family);
 }
@@ -67,11 +66,11 @@ void DistilledPagePrefs::SetTheme(DistilledPagePrefs::Theme new_theme) {
 
 DistilledPagePrefs::Theme DistilledPagePrefs::GetTheme() {
   int theme = pref_service_->GetInteger(prefs::kTheme);
-  if (theme < 0 || theme >= DistilledPagePrefs::THEME_COUNT) {
+  if (theme < 0 || theme >= DistilledPagePrefs::THEME_NUM_ENTRIES) {
     // Persisted data was incorrect, trying to clean it up by storing the
     // default.
-    SetTheme(DistilledPagePrefs::LIGHT);
-    return DistilledPagePrefs::LIGHT;
+    SetTheme(DistilledPagePrefs::THEME_LIGHT);
+    return DistilledPagePrefs::THEME_LIGHT;
   }
   return static_cast<Theme>(theme);
 }
@@ -114,8 +113,7 @@ void DistilledPagePrefs::NotifyOnChangeTheme(
     observer.OnChangeTheme(new_theme);
 }
 
-void DistilledPagePrefs::NotifyOnChangeFontScaling(
-    float scaling) {
+void DistilledPagePrefs::NotifyOnChangeFontScaling(float scaling) {
   for (Observer& observer : observers_)
     observer.OnChangeFontScaling(scaling);
 }

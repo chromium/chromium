@@ -11,7 +11,6 @@ mojom("common") {
 
   public_deps = [
     "//mojo/public/mojom/base",
-    "//services/network/public/mojom:mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 }

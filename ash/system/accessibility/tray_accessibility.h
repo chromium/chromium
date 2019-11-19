@@ -42,6 +42,9 @@ class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
 
   void OnAccessibilityStatusChanged();
 
+  // views::View
+  const char* GetClassName() const override;
+
  private:
   friend class ::ash::TrayAccessibilityLoginScreenTest;
   friend class ::ash::TrayAccessibilityTest;
@@ -71,6 +74,7 @@ class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
   HoverHighlightView* large_cursor_view_ = nullptr;
   HoverHighlightView* autoclick_view_ = nullptr;
   HoverHighlightView* virtual_keyboard_view_ = nullptr;
+  HoverHighlightView* switch_access_view_ = nullptr;
   HoverHighlightView* mono_audio_view_ = nullptr;
   HoverHighlightView* caret_highlight_view_ = nullptr;
   HoverHighlightView* highlight_mouse_cursor_view_ = nullptr;
@@ -89,6 +93,7 @@ class ASH_EXPORT AccessibilityDetailedView : public TrayDetailedView {
   bool large_cursor_enabled_ = false;
   bool autoclick_enabled_ = false;
   bool virtual_keyboard_enabled_ = false;
+  bool switch_access_enabled_ = false;
   bool mono_audio_enabled_ = false;
   bool caret_highlight_enabled_ = false;
   bool highlight_mouse_cursor_enabled_ = false;

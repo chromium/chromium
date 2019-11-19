@@ -31,7 +31,7 @@ bool KeyboardHookBase::ShouldCaptureKeyEvent(DomCode dom_code) const {
   if (dom_code == DomCode::NONE)
     return false;
 
-  return !dom_codes_ || base::ContainsKey(dom_codes_.value(), dom_code);
+  return !dom_codes_ || base::Contains(dom_codes_.value(), dom_code);
 }
 
 void KeyboardHookBase::ForwardCapturedKeyEvent(KeyEvent* event) {

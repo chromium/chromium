@@ -1,11 +1,12 @@
 include_rules = [
+  "+chrome/android/features/media_router/jni_headers",
   "+media/audio",
   "+media/base",
   "+media/cast",
   "+media/cdm/cdm_proxy.h",
   "+media/cdm/supported_cdm_versions.h",
   "+media/media_buildflags.h",
-  "+media/mojo/interfaces",
+  "+media/mojo/mojom",
   # safe_dial_device_description_parser_unittest.cc needs DataDecoderService.
   "+services/data_decoder/data_decoder_service.h",
   "+services/data_decoder/public",
@@ -15,5 +16,8 @@ include_rules = [
 specific_include_rules = {
   "cast_remoting_connector\.cc": [
     "+chrome/browser/ui/views/media_router/media_remoting_dialog_view.h",
+  ],
+  "output_protection_proxy\.h": [
+    "+ash/display/output_protection_delegate.h",
   ],
 }

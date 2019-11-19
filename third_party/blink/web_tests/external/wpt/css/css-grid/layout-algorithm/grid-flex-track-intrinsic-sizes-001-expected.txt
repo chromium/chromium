@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+PASS 'grid' with: grid-template-columns: 0fr; and grid-template-rows: 0fr;
+PASS 'grid' with: grid-template-columns: 1fr; and grid-template-rows: 1fr;
+PASS 'grid' with: grid-template-columns: 2fr; and grid-template-rows: 2fr;
+PASS 'grid' with: grid-template-columns: minmax(0, 0fr); and grid-template-rows: minmax(0, 0fr);
+PASS 'grid' with: grid-template-columns: minmax(0, .5fr); and grid-template-rows: minmax(0, .5fr);
+PASS 'grid' with: grid-template-columns: minmax(0, 1fr); and grid-template-rows: minmax(0, 1fr);
+PASS 'grid' with: grid-template-columns: minmax(0, 2fr); and grid-template-rows: minmax(0, 2fr);
+PASS 'grid' with: grid-template-columns: minmax(75px, 1fr); and grid-template-rows: minmax(75px, 1fr);
+FAIL 'grid' with: grid-template-columns: 0fr 0fr; and grid-template-rows: 0fr 0fr; assert_in_array: gridTemplateColumns value "0px 0px" not in array ["50px 50px"]
+FAIL 'grid' with: grid-template-columns: 0fr 1fr; and grid-template-rows: 0fr 1fr; assert_in_array: gridTemplateColumns value "0px 50px" not in array ["0px 100px"]
+FAIL 'grid' with: grid-template-columns: 1fr 0fr; and grid-template-rows: 1fr 0fr; assert_in_array: gridTemplateColumns value "50px 0px" not in array ["100px 0px"]
+FAIL 'grid' with: grid-template-columns: 1fr 1fr; and grid-template-rows: 1fr 1fr; assert_in_array: gridTemplateColumns value "25px 25px" not in array ["50px 50px"]
+FAIL 'grid' with: grid-template-columns: 1fr 3fr; and grid-template-rows: 1fr 3fr; assert_in_array: gridTemplateColumns value "12.5px 37.5px" not in array ["25px 75px"]
+FAIL 'grid' with: grid-template-columns: 0fr 0fr 1fr; and grid-template-rows: 0fr 0fr 1fr; assert_in_array: gridTemplateColumns value "0px 0px 50px" not in array ["50px 50px 0px"]
+PASS 'grid' with: grid-template-columns: minmax(0, 0fr) minmax(0, 0fr); and grid-template-rows: minmax(0, 0fr) minmax(0, 0fr);
+PASS 'grid' with: grid-template-columns: minmax(0, 0fr) minmax(0, 1fr); and grid-template-rows: minmax(0, 0fr) minmax(0, 1fr);
+PASS 'grid' with: grid-template-columns: minmax(15px, 0fr) minmax(0, 1fr); and grid-template-rows: minmax(15px, 0fr) minmax(0, 1fr);
+PASS 'grid' with: grid-template-columns: minmax(20px, 1fr) minmax(0, 1fr); and grid-template-rows: minmax(20px, 1fr) minmax(0, 1fr);
+PASS 'grid' with: grid-template-columns: minmax(30px, 1fr) minmax(0, 1fr); and grid-template-rows: minmax(30px, 1fr) minmax(0, 1fr);
+FAIL 'grid' with: grid-template-columns: 0fr minmax(0, 0fr); and grid-template-rows: 0fr minmax(0, 0fr); assert_in_array: gridTemplateColumns value "0px 0px" not in array ["100px 0px"]
+FAIL 'grid' with: grid-template-columns: 0fr minmax(0, 1fr); and grid-template-rows: 0fr minmax(0, 1fr); assert_in_array: gridTemplateColumns value "0px 50px" not in array ["100px 0px"]
+FAIL 'grid' with: grid-template-columns: 1fr minmax(0, 1fr); and grid-template-rows: 1fr minmax(0, 1fr); assert_in_array: gridTemplateColumns value "25px 25px" not in array ["100px 0px"]
+FAIL 'grid' with: grid-template-columns: 1fr minmax(25px, 1fr); and grid-template-rows: 1fr minmax(25px, 1fr); assert_in_array: gridTemplateColumns value "25px 25px" not in array ["75px 25px"]
+FAIL 'grid' with: grid-template-columns: 0fr auto; and grid-template-rows: 0fr auto; assert_in_array: gridTemplateColumns value "0px 50px" not in array ["100px 0px"]
+FAIL 'grid' with: grid-template-columns: 1fr auto; and grid-template-rows: 1fr auto; assert_in_array: gridTemplateColumns value "50px 0px" not in array ["100px 0px"]
+FAIL 'grid' with: grid-template-columns: 1fr max-content; and grid-template-rows: 1fr max-content; assert_in_array: gridTemplateColumns value "50px 0px" not in array ["100px 0px"]
+FAIL 'grid' with: grid-template-columns: minmax(0, 0fr) auto; and grid-template-rows: minmax(0, 0fr) auto; assert_in_array: gridTemplateColumns value "0px 50px" not in array ["0px 100px"]
+FAIL 'grid' with: grid-template-columns: minmax(0, 1fr) auto; and grid-template-rows: minmax(0, 1fr) auto; assert_in_array: gridTemplateColumns value "50px 0px" not in array ["0px 100px"]
+FAIL 'grid' with: grid-template-columns: minmax(25px, 0fr) auto; and grid-template-rows: minmax(25px, 0fr) auto; assert_in_array: gridTemplateColumns value "25px 25px" not in array ["25px 75px"]
+FAIL 'grid' with: grid-template-columns: minmax(25px, 1fr) auto; and grid-template-rows: minmax(25px, 1fr) auto; assert_in_array: gridTemplateColumns value "50px 0px" not in array ["25px 75px"]
+Harness: the test ran to completion.
+

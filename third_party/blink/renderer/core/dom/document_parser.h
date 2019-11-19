@@ -37,9 +37,8 @@ class DocumentParserClient;
 class ScriptableDocumentParser;
 class TextResourceDecoder;
 
-class CORE_EXPORT DocumentParser
-    : public GarbageCollectedFinalized<DocumentParser>,
-      public NameClient {
+class CORE_EXPORT DocumentParser : public GarbageCollected<DocumentParser>,
+                                   public NameClient {
  public:
   virtual ~DocumentParser();
   virtual void Trace(Visitor*);

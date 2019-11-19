@@ -7,7 +7,7 @@ include_rules = [
   "+cc/output/filter_operations.h",
   "+cc/test",
   "+cc/trees/animation_options.h",
-  "+cc/trees/element_id.h",
+  "+cc/trees/animation_effect_timings.h",
   "+cc/trees/mutator_host.h",
   "+cc/trees/mutator_host_client.h",
   "+cc/trees/property_animation_state.h",

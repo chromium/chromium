@@ -71,8 +71,8 @@ void ContentSettingsObserverBridge::OnContentSettingChanged(
   ContentSettingsType settingID = settings_details.type();
   // Unfortunately, because the ContentSettingsPolicyProvider doesn't publish
   // the specific content setting on policy updates, we must refresh on every
-  // CONTENT_SETTINGS_TYPE_DEFAULT notification.
-  if (settingID != CONTENT_SETTINGS_TYPE_DEFAULT &&
+  // ContentSettingsType::DEFAULT notification.
+  if (settingID != ContentSettingsType::DEFAULT &&
       settingID != setting_.settingID) {
     return;
   }

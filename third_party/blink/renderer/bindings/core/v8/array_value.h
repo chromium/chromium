@@ -27,7 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_ARRAY_VALUE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "v8/include/v8.h"
 

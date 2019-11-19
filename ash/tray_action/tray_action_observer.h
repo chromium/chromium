@@ -6,7 +6,7 @@
 #define ASH_TRAY_ACTION_TRAY_ACTION_OBSERVER_H_
 
 #include "ash/ash_export.h"
-#include "ash/public/interfaces/tray_action.mojom.h"
+#include "ash/public/mojom/tray_action.mojom.h"
 
 namespace ash {
 

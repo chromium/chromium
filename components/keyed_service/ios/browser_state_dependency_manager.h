@@ -33,11 +33,7 @@ class KEYED_SERVICE_EXPORT BrowserStateDependencyManager
   static BrowserStateDependencyManager* GetInstance();
 
   // Registers context-specific preferences for all services via |registry|.
-  // |context| should be the BrowserState containing |registry| and is used as
-  // a key to prevent multiple registrations on the same BrowserState in
-  // tests.
   void RegisterBrowserStatePrefsForServices(
-      web::BrowserState* context,
       user_prefs::PrefRegistrySyncable* registry);
 
   // Called by each BrowserState to alert us of its creation. Service that

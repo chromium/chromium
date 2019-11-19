@@ -37,21 +37,22 @@ import android.webkit.WebViewClient;
 import com.android.webview.chromium.WebViewDelegateFactory.WebViewDelegate;
 
 import org.chromium.android_webview.AwConsoleMessage;
-import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient;
 import org.chromium.android_webview.AwContentsClientBridge;
 import org.chromium.android_webview.AwGeolocationPermissions;
+import org.chromium.android_webview.AwHistogramRecorder;
 import org.chromium.android_webview.AwHttpAuthHandler;
 import org.chromium.android_webview.AwRenderProcessGoneDetail;
 import org.chromium.android_webview.AwWebResourceResponse;
 import org.chromium.android_webview.JsPromptResultReceiver;
 import org.chromium.android_webview.JsResultReceiver;
-import org.chromium.android_webview.ScopedSysTraceEvent;
 import org.chromium.android_webview.permission.AwPermissionRequest;
 import org.chromium.android_webview.permission.Resource;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.ScopedSysTraceEvent;
 import org.chromium.base.task.PostTask;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -311,6 +312,10 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             TraceEvent.begin("WebViewContentsClientAdapter.onLoadResource");
             if (TRACE) Log.i(TAG, "onLoadResource=" + url);
             mWebViewClient.onLoadResource(mWebView, url);
+
+            // Record UMA for onLoadResource.
+            AwHistogramRecorder.recordCallbackInvocation(
+                    AwHistogramRecorder.WebViewCallbackType.ON_LOAD_RESOURCE);
         } finally {
             TraceEvent.end("WebViewContentsClientAdapter.onLoadResource");
         }
@@ -408,6 +413,11 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             TraceEvent.begin("WebViewContentsClientAdapter.onPageStarted");
             if (TRACE) Log.i(TAG, "onPageStarted=" + url);
             mWebViewClient.onPageStarted(mWebView, url, mWebView.getFavicon());
+
+            // Record UMA for onPageStarted.
+            AwHistogramRecorder.recordCallbackInvocation(
+                    AwHistogramRecorder.WebViewCallbackType.ON_PAGE_STARTED);
+
         } finally {
             TraceEvent.end("WebViewContentsClientAdapter.onPageStarted");
         }
@@ -422,6 +432,10 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             TraceEvent.begin("WebViewContentsClientAdapter.onPageFinished");
             if (TRACE) Log.i(TAG, "onPageFinished=" + url);
             mWebViewClient.onPageFinished(mWebView, url);
+
+            // Record UMA for onPageFinished.
+            AwHistogramRecorder.recordCallbackInvocation(
+                    AwHistogramRecorder.WebViewCallbackType.ON_PAGE_FINISHED);
 
             // See b/8208948
             // This fakes an onNewPicture callback after onPageFinished to allow
@@ -706,7 +720,7 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
             String message, String url) {
         // Note we must unwrap the Context here due to JsDialogHelper only using instanceof to
         // check if a Context is an Activity.
-        Context activityContext = AwContents.activityFromContext(mContext);
+        Context activityContext = ContextUtils.activityFromContext(mContext);
         if (activityContext == null) {
             Log.w(TAG, "Unable to create JsDialog without an Activity");
             return false;

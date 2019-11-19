@@ -35,7 +35,7 @@
 #include "base/files/file.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -63,7 +63,7 @@ class FileMetadata {
 
   // The length of the file in bytes.
   // The value -1 means that the length is not set.
-  long long length;
+  int64_t length;
 
   enum Type { kTypeUnknown = 0, kTypeFile, kTypeDirectory };
 
@@ -71,7 +71,7 @@ class FileMetadata {
   String platform_path;
 };
 
-PLATFORM_EXPORT bool GetFileSize(const String&, long long& result);
+PLATFORM_EXPORT bool GetFileSize(const String&, int64_t& result);
 PLATFORM_EXPORT bool GetFileModificationTime(const String&, double& result);
 PLATFORM_EXPORT bool GetFileMetadata(const String&, FileMetadata&);
 PLATFORM_EXPORT KURL FilePathToURL(const String&);

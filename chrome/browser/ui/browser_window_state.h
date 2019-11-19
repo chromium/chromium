@@ -16,7 +16,7 @@ class Browser;
 namespace base {
 class CommandLine;
 class DictionaryValue;
-}
+}  // namespace base
 
 namespace gfx {
 class Rect;

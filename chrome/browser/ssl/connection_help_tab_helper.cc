@@ -6,9 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/ssl/ssl_blocking_page.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/url_constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -35,26 +34,15 @@ void MaybeRedirectToBundledHelp(content::WebContents* web_contents) {
 
 ConnectionHelpTabHelper::~ConnectionHelpTabHelper() {}
 
-void ConnectionHelpTabHelper::DidAttachInterstitialPage() {
-  if (web_contents()->GetURL().EqualsIgnoringRef(GetHelpCenterURL()) ||
-      web_contents()->GetURL().EqualsIgnoringRef(GURL(kSymantecSupportUrl))) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "SSL.CertificateErrorHelpCenterVisited",
-        ConnectionHelpTabHelper::LearnMoreClickResult::kFailedWithInterstitial,
-        ConnectionHelpTabHelper::LearnMoreClickResult::kLearnMoreResultCount);
-    MaybeRedirectToBundledHelp(web_contents());
-  }
-}
-
 void ConnectionHelpTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->IsInMainFrame() &&
       (web_contents()->GetURL().EqualsIgnoringRef(GetHelpCenterURL()) ||
-       web_contents()->GetURL().EqualsIgnoringRef(GURL(kSymantecSupportUrl)))) {
+       web_contents()->GetURL().EqualsIgnoringRef(
+           GURL(chrome::kSymantecSupportUrl)))) {
     LearnMoreClickResult histogram_value;
     if (navigation_handle->IsErrorPage()) {
-      if (base::FeatureList::IsEnabled(features::kSSLCommittedInterstitials) &&
-          net::IsCertificateError(navigation_handle->GetNetErrorCode())) {
+      if (net::IsCertificateError(navigation_handle->GetNetErrorCode())) {
         // When committed interstitials are enabled, DidAttachInterstitialPage
         // does not get called, so check if this navigation resulted in an SSL
         // error.

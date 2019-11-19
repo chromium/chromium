@@ -1,0 +1,17 @@
+This test verifies the style info overlaid on an inspected node.
+
+empty-div{
+  "padding": "0px",
+  "margin": "0px",
+  "background-color": "#0000FFFF"
+}
+div-with-text{
+  "color": "#FF0000FF",
+  "font-family": "<font-family value>",
+  "font-size": "20px",
+  "line-height": "normal",
+  "padding": "0px",
+  "margin": "0px",
+  "background-color": "#0000FFFF"
+}
+

@@ -5,15 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PREVIEWS_RESOURCE_LOADING_HINTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PREVIEWS_RESOURCE_LOADING_HINTS_H_
 
-#include <vector>
-
 #include "base/feature_list.h"
+#include "third_party/blink/public/platform/web_loading_hints_provider.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace ukm {
 class UkmRecorder;
@@ -27,17 +27,21 @@ class KURL;
 // PreviewsResourceLoadingHints stores the resource loading hints that apply to
 // a single document.
 class CORE_EXPORT PreviewsResourceLoadingHints final
-    : public GarbageCollectedFinalized<PreviewsResourceLoadingHints> {
+    : public GarbageCollected<PreviewsResourceLoadingHints> {
  public:
   static PreviewsResourceLoadingHints* Create(
       ExecutionContext& execution_context,
       int64_t ukm_source_id,
-      const std::vector<WTF::String>& subresource_patterns_to_block);
+      const WebVector<WebString>& subresource_patterns_to_block);
+
+  static PreviewsResourceLoadingHints* CreateFromLoadingHintsProvider(
+      ExecutionContext& execution_context,
+      std::unique_ptr<WebLoadingHintsProvider> loading_hints_provider);
 
   PreviewsResourceLoadingHints(
       ExecutionContext* execution_context,
       int64_t ukm_source_id,
-      const std::vector<WTF::String>& subresource_patterns_to_block);
+      const WebVector<WebString>& subresource_patterns_to_block);
   ~PreviewsResourceLoadingHints();
 
   // Returns true if load of resource with type |type|, URL |resource_url|
@@ -63,23 +67,22 @@ class CORE_EXPORT PreviewsResourceLoadingHints final
 
   // |subresource_patterns_to_block_| is a collection of subresource patterns
   // for resources whose loading should be blocked. Each pattern is a
-  // WTF::String. If a subresource URL contains any of the strings specified in
+  // WebString. If a subresource URL contains any of the strings specified in
   // |subresource_patterns_to_block_|, then that subresource's loading could
   // be blocked.
-  const std::vector<WTF::String> subresource_patterns_to_block_;
+  const WebVector<WebString> subresource_patterns_to_block_;
 
   // True if resource blocking hints should apply to resource of a given type.
-  bool block_resource_type_[static_cast<int>(ResourceType::kLast) + 1] = {
+  bool block_resource_type_[static_cast<int>(ResourceType::kMaxValue) + 1] = {
       false};
 
   // |subresource_patterns_to_block_usage_| records whether the pattern located
   // at the same index in |subresource_patterns_to_block_| was ever blocked.
-  mutable std::vector<bool> subresource_patterns_to_block_usage_;
+  mutable Vector<bool> subresource_patterns_to_block_usage_;
 
   // |blocked_resource_load_priority_counts_| records the total number of
   // resources blocked at each ResourceLoadPriority.
-  mutable std::array<int, static_cast<int>(ResourceLoadPriority::kHighest) + 1>
-      blocked_resource_load_priority_counts_;
+  mutable Vector<int> blocked_resource_load_priority_counts_;
 };
 
 }  // namespace blink

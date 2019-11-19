@@ -44,9 +44,6 @@ class RemoteSuggestion {
                                          int remote_category_id,
                                          const base::Time& fetch_date);
 
-  static std::unique_ptr<RemoteSuggestion>
-  CreateFromContextualSuggestionsDictionary(const base::DictionaryValue& dict);
-
   // Creates an RemoteSuggestion from a protocol buffer. Returns a null pointer
   // if the protocol buffer doesn't correspond to a valid suggestion.
   static std::unique_ptr<RemoteSuggestion> CreateFromProto(
@@ -96,8 +93,7 @@ class RemoteSuggestion {
 
   // If this suggestion has all the data we need to show a full card to the user
   bool is_complete() const {
-    return !id().empty() && !title().empty() && !snippet().empty() &&
-           salient_image_url().is_valid() && !publish_date().is_null() &&
+    return !id().empty() && !title().empty() && !publish_date().is_null() &&
            !expiry_date().is_null() && !publisher_name().empty();
   }
 

@@ -47,8 +47,7 @@ base::string16 GenerateUniqueFolderName(BookmarkModel* model,
   // Build a set containing the bookmark bar folder names.
   std::set<base::string16> existing_folder_names;
   const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
-  for (int i = 0; i < bookmark_bar->child_count(); ++i) {
-    const BookmarkNode* node = bookmark_bar->GetChild(i);
+  for (const auto& node : bookmark_bar->children()) {
     if (node->is_folder())
       existing_folder_names.insert(node->GetTitle());
   }
@@ -128,7 +127,7 @@ void ProfileWriter::AddBookmarks(
   // If the bookmark bar is currently empty, we should import directly to it.
   // Otherwise, we should import everything to a subfolder.
   const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
-  bool import_to_top_level = bookmark_bar->empty();
+  bool import_to_top_level = bookmark_bar->children().empty();
 
   // Reorder bookmarks so that the toolbar entries come first.
   std::vector<ImportedBookmarkEntry> toolbar_bookmarks;
@@ -170,9 +169,8 @@ void ProfileWriter::AddBookmarks(
       if (!top_level_folder) {
         base::string16 name =
             GenerateUniqueFolderName(model,top_level_folder_name);
-        top_level_folder = model->AddFolder(bookmark_bar,
-                                            bookmark_bar->child_count(),
-                                            name);
+        top_level_folder = model->AddFolder(
+            bookmark_bar, bookmark_bar->children().size(), name);
       }
       parent = top_level_folder;
     }
@@ -189,29 +187,23 @@ void ProfileWriter::AddBookmarks(
         continue;
       }
 
-      const BookmarkNode* child = NULL;
-      for (int index = 0; index < parent->child_count(); ++index) {
-        const BookmarkNode* node = parent->GetChild(index);
-        if (node->is_folder() && node->GetTitle() == *folder_name) {
-          child = node;
-          break;
-        }
-      }
-      if (!child)
-        child = model->AddFolder(parent, parent->child_count(), *folder_name);
-      parent = child;
+      const auto it = std::find_if(
+          parent->children().cbegin(), parent->children().cend(),
+          [folder_name](const auto& node) {
+            return node->is_folder() && node->GetTitle() == *folder_name;
+          });
+      parent = (it == parent->children().cend())
+                   ? model->AddFolder(parent, parent->children().size(),
+                                      *folder_name)
+                   : it->get();
     }
 
     folders_added_to.insert(parent);
     if (bookmark->is_folder) {
-      model->AddFolder(parent, parent->child_count(), bookmark->title);
+      model->AddFolder(parent, parent->children().size(), bookmark->title);
     } else {
-      model->AddURLWithCreationTimeAndMetaInfo(parent,
-                                               parent->child_count(),
-                                               bookmark->title,
-                                               bookmark->url,
-                                               bookmark->creation_time,
-                                               NULL);
+      model->AddURL(parent, parent->children().size(), bookmark->title,
+                    bookmark->url, nullptr, bookmark->creation_time);
     }
   }
 

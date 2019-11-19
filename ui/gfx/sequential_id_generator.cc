@@ -39,8 +39,8 @@ uint32_t SequentialIDGenerator::GetGeneratedID(uint32_t number) {
     return find->second;
 
   int id = GetNextAvailableID();
-  number_to_id_.insert(std::make_pair(number, id));
-  id_to_number_.insert(std::make_pair(id, number));
+  number_to_id_.emplace(number, id);
+  id_to_number_.emplace(id, number);
   return id;
 }
 
@@ -52,6 +52,13 @@ void SequentialIDGenerator::ReleaseNumber(uint32_t number) {
   if (number_to_id_.count(number) > 0U) {
     UpdateNextAvailableIDAfterRelease(number_to_id_[number]);
     Remove(number, &number_to_id_, &id_to_number_);
+  }
+}
+
+void SequentialIDGenerator::ReleaseID(uint32_t id) {
+  if (id_to_number_.count(id) > 0U) {
+    UpdateNextAvailableIDAfterRelease(id);
+    Remove(id_to_number_[id], &number_to_id_, &id_to_number_);
   }
 }
 

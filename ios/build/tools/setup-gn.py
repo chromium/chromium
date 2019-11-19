@@ -95,7 +95,7 @@ class GnGenerator(object):
     args.append(('enable_stripping', 'enable_dsyms'))
     args.append(('is_official_build', self._config == 'Official'))
     args.append(('is_chrome_branded', 'is_official_build'))
-    args.append(('use_xcode_clang', 'is_official_build'))
+    args.append(('use_xcode_clang', 'false'))
     args.append(('use_clang_coverage', self._config == 'Coverage'))
     args.append(('is_component_build', False))
 

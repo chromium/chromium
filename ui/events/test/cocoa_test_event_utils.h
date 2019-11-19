@@ -82,10 +82,10 @@ NSEvent* KeyEventWithModifierOnly(unsigned short key_code,
                                   NSUInteger modifiers);
 
 // Returns a mouse enter event.
-NSEvent* EnterEvent();
+NSEvent* EnterEvent(NSPoint point = NSZeroPoint, NSWindow* window = nil);
 
 // Returns a mouse exit event.
-NSEvent* ExitEvent();
+NSEvent* ExitEvent(NSPoint point = NSZeroPoint, NSWindow* window = nil);
 
 // Return an "other" event with the given type.
 NSEvent* OtherEventWithType(NSEventType event_type);

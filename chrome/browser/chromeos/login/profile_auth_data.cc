@@ -22,23 +22,27 @@ namespace chromeos {
 
 namespace {
 
-// Callback that receives the key for from_partition's saved HttpAuthCache.
-void OnTargetHttpAuthCacheSaved(base::RepeatingClosure completion_callback,
-                                content::StoragePartition* to_partition,
-                                const base::UnguessableToken& cache_key) {
-  to_partition->GetNetworkContext()->LoadHttpAuthCache(cache_key,
-                                                       completion_callback);
+// Callback that receives the key for from_partition's saved http auth cache
+// proxy entries.
+void OnTargetHttpAuthCacheProxyEntriesSaved(
+    base::RepeatingClosure completion_callback,
+    content::StoragePartition* to_partition,
+    const base::UnguessableToken& cache_key) {
+  to_partition->GetNetworkContext()->LoadHttpAuthCacheProxyEntries(
+      cache_key, completion_callback);
 }
 
-// Starts tranferring |from_partition|'s HttpAuthCache into |to_partition|.
-void TransferHttpAuthCache(base::RepeatingClosure completion_callback,
-                           content::StoragePartition* from_partition,
-                           content::StoragePartition* to_partition) {
+// Starts tranferring |from_partition|'s http auth cache's proxy entries into
+// |to_partition|.
+void TransferHttpAuthCacheProxyEntries(
+    base::RepeatingClosure completion_callback,
+    content::StoragePartition* from_partition,
+    content::StoragePartition* to_partition) {
   // |to_partition| will outlive the call to |completion_callback|.
   // See ProfileAuthData::Transfer.
-  from_partition->GetNetworkContext()->SaveHttpAuthCache(
-      base::BindOnce(&OnTargetHttpAuthCacheSaved, completion_callback,
-                     base::Unretained(to_partition)));
+  from_partition->GetNetworkContext()->SaveHttpAuthCacheProxyEntries(
+      base::BindOnce(&OnTargetHttpAuthCacheProxyEntriesSaved,
+                     completion_callback, base::Unretained(to_partition)));
 }
 
 // Given a |cookie| set during login, returns true if the cookie may have been
@@ -57,7 +61,8 @@ bool IsGAIACookie(const net::CanonicalCookie& cookie) {
                                          google_util::ALLOW_NON_STANDARD_PORTS);
 }
 
-void OnCookieSet(base::RepeatingClosure completion_callback, bool result) {
+void OnCookieSet(base::RepeatingClosure completion_callback,
+                 net::CanonicalCookie::CookieInclusionStatus status) {
   completion_callback.Run();
 }
 
@@ -79,9 +84,14 @@ void ImportCookies(base::RepeatingClosure completion_callback,
   for (const auto& cookie : cookies) {
     // Assume secure_source - since the cookies are being restored from
     // another store, they have already gone through the strict secure check.
+    // Likewise for permitting same-site marked cookies.
     DCHECK(cookie.IsCanonical());
+    net::CookieOptions options;
+    options.set_include_httponly();
+    options.set_same_site_cookie_context(
+        net::CookieOptions::SameSiteCookieContext::SAME_SITE_STRICT);
     cookie_manager->SetCanonicalCookie(
-        cookie, "https", true /*modify_http_only*/,
+        cookie, "https", options,
         base::BindOnce(&OnCookieSet, cookie_completion_callback));
   }
 }
@@ -181,10 +191,11 @@ void ProfileAuthData::Transfer(
   base::RepeatingClosure task_completion_callback =
       base::BarrierClosure(2, std::move(completion_callback));
 
-  // Transfer the proxy auth cache from |from_context| to |to_context|. If
-  // the user was required to authenticate with a proxy during login, this
+  // Transfer the proxy auth cache entries from |from_context| to |to_context|.
+  // If the user was required to authenticate with a proxy during login, this
   // authentication information will be transferred into the user's session.
-  TransferHttpAuthCache(task_completion_callback, from_partition, to_partition);
+  TransferHttpAuthCacheProxyEntries(task_completion_callback, from_partition,
+                                    to_partition);
 
   TransferCookies(task_completion_callback, from_partition, to_partition,
                   transfer_auth_cookies_on_first_login,

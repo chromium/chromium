@@ -24,9 +24,12 @@
 #include "chrome/test/chromedriver/chrome/ui_events.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 #include "chrome/test/chromedriver/command_listener.h"
+#include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/key_converter.h"
 #include "chrome/test/chromedriver/session.h"
 #include "third_party/zlib/google/zip.h"
+
+const char kWindowHandlePrefix[] = "CDwindow-";
 
 std::string GenerateId() {
   uint64_t msb = base::RandUint64();
@@ -44,8 +47,10 @@ Status FlattenStringArray(const base::ListValue* src, base::string16* dest) {
       return Status(kUnknownError, "keys should be a string");
     for (size_t j = 0; j < keys_list_part.size(); ++j) {
       if (CBU16_IS_SURROGATE(keys_list_part[j])) {
-        return Status(kUnknownError,
-                      "ChromeDriver only supports characters in the BMP");
+        return Status(
+            kUnknownError,
+            base::StringPrintf("%s only supports characters in the BMP",
+                               kChromeDriverProductShortName));
       }
     }
     keys.append(keys_list_part);
@@ -71,7 +76,7 @@ Status SendKeysOnWindow(
       keys, release_modifiers, &sticky_modifiers_tmp, &events);
   if (status.IsError())
     return status;
-  status = web_view->DispatchKeyEvents(events);
+  status = web_view->DispatchKeyEvents(events, false);
   if (status.IsOk())
     *sticky_modifiers = sticky_modifiers_tmp;
   return status;
@@ -546,4 +551,18 @@ bool SetSafeInt(base::DictionaryValue* dict,
     return dict->SetInteger(path, in_value_64);
   else
     return dict->SetDouble(path, in_value_64);
+}
+
+std::string WebViewIdToWindowHandle(const std::string& web_view_id) {
+  return kWindowHandlePrefix + web_view_id;
+}
+
+bool WindowHandleToWebViewId(const std::string& window_handle,
+                             std::string* web_view_id) {
+  if (!base::StartsWith(window_handle, kWindowHandlePrefix,
+                        base::CompareCase::SENSITIVE)) {
+    return false;
+  }
+  *web_view_id = window_handle.substr(sizeof(kWindowHandlePrefix) - 1);
+  return true;
 }

@@ -1,0 +1,56 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Build Liblouis library
+#
+# This target is used to build and assemble Liblouis braille translator.
+#
+# Variables:
+#   dest_dir: destination path for all translator files
+#   deps: private linked dependencies
+#   testonly: a target must only be used for testing
+template("liblouis_library") {
+  assert(defined(invoker.dest_dir), "Must define dest_dir")
+  forward_variables_from(invoker, [ "dest_dir" ])
+
+  tables_json_target_name = "${target_name}_tables_json"
+  wasm_target_name = "${target_name}_wasm"
+  final_target_name = target_name
+
+  copy(tables_json_target_name) {
+    forward_variables_from(invoker, [ "testonly" ])
+    visibility = [ ":$final_target_name" ]
+    sources = [
+      "//third_party/liblouis/tables.json",
+    ]
+    outputs = [
+      "$dest_dir/{{source_file_part}}",
+    ]
+  }
+
+  copy(wasm_target_name) {
+    forward_variables_from(invoker, [ "testonly" ])
+    visibility = [ ":$final_target_name" ]
+    sources = [
+      "//third_party/liblouis/wasm/liblouis_wasm.data",
+      "//third_party/liblouis/wasm/liblouis_wasm.js",
+      "//third_party/liblouis/wasm/liblouis_wasm.wasm",
+      "//third_party/liblouis/wasm/liblouis_wrapper.js",
+    ]
+    outputs = [
+      "$dest_dir/{{source_file_part}}",
+    ]
+  }
+
+  group(target_name) {
+    forward_variables_from(invoker, [ "testonly" ])
+    deps = [
+      ":$tables_json_target_name",
+      ":$wasm_target_name",
+    ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+  }
+}

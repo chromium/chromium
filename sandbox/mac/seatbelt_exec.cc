@@ -59,6 +59,10 @@ bool ReadOrWrite(int fd,
     if (transacted_bytes < 0) {
       logging::PError("%s failed", Traits::kNameString);
       return false;
+    } else if (transacted_bytes == 0) {
+      // A short read from the sender, perhaps the sender process died.
+      logging::Error("%s failed", Traits::kNameString);
+      return false;
     }
 
     bytes_to_transact -= transacted_bytes;

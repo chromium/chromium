@@ -28,8 +28,7 @@ bool MapContainsValue(const std::map<T, U>& map, U value) {
 
 }  // namespace
 
-OfflineContentAggregator::OfflineContentAggregator()
-    : weak_ptr_factory_(this) {}
+OfflineContentAggregator::OfflineContentAggregator() {}
 
 OfflineContentAggregator::~OfflineContentAggregator() = default;
 
@@ -195,6 +194,7 @@ void OfflineContentAggregator::OnGetAllItemsDone(
 }
 
 void OfflineContentAggregator::GetVisualsForItem(const ContentId& id,
+                                                 GetVisualsOptions options,
                                                  VisualsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = providers_.find(id.name_space);
@@ -205,7 +205,7 @@ void OfflineContentAggregator::GetVisualsForItem(const ContentId& id,
     return;
   }
 
-  it->second->GetVisualsForItem(id, std::move(callback));
+  it->second->GetVisualsForItem(id, options, std::move(callback));
 }
 
 void OfflineContentAggregator::GetShareInfoForItem(const ContentId& id,
@@ -219,6 +219,19 @@ void OfflineContentAggregator::GetShareInfoForItem(const ContentId& id,
   }
 
   it->second->GetShareInfoForItem(id, std::move(callback));
+}
+
+void OfflineContentAggregator::RenameItem(const ContentId& id,
+                                          const std::string& name,
+                                          RenameCallback callback) {
+  auto it = providers_.find(id.name_space);
+  if (it == providers_.end()) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), RenameResult::FAILURE_UNAVAILABLE));
+    return;
+  }
+  it->second->RenameItem(id, name, std::move(callback));
 }
 
 void OfflineContentAggregator::AddObserver(
@@ -253,10 +266,12 @@ void OfflineContentAggregator::OnItemRemoved(const ContentId& id) {
     observer.OnItemRemoved(id);
 }
 
-void OfflineContentAggregator::OnItemUpdated(const OfflineItem& item) {
+void OfflineContentAggregator::OnItemUpdated(
+    const OfflineItem& item,
+    const base::Optional<UpdateDelta>& update_delta) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_)
-    observer.OnItemUpdated(item);
+    observer.OnItemUpdated(item, update_delta);
 }
 
 }  // namespace offline_items_collection

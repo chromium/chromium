@@ -20,9 +20,9 @@ source_set("events") {
   ]
   deps = [
     "//base",
-    "//chromeos",
+    "//chromeos/constants",
     "//device/udev_linux",
-    "//ui/base/ime",
+    "//ui/base/ime/chromeos",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/events/devices",

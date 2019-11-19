@@ -125,17 +125,6 @@ std::string GetStringPropertyFromObject(v8::Local<v8::Object> object,
                                         v8::Local<v8::Context> context,
                                         base::StringPiece key);
 
-// User activation mock for test: sets transient activation state on
-// construction, resets on destruction.
-class ScopedTestUserActivation {
- public:
-  ScopedTestUserActivation();
-  ~ScopedTestUserActivation();
-};
-
-// Returns current transient activation mock state.
-bool GetTestUserActivationState(v8::Local<v8::Context>);
-
 }  // extensions
 
 #endif  // EXTENSIONS_RENDERER_BINDINGS_API_BINDING_TEST_UTIL_H_

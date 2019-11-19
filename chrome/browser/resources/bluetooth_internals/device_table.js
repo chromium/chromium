@@ -7,7 +7,7 @@
  */
 
 cr.define('device_table', function() {
-  var COLUMNS = {
+  const COLUMNS = {
     NAME: 0,
     ADDRESS: 1,
     RSSI: 2,
@@ -23,7 +23,7 @@ cr.define('device_table', function() {
    * @constructor
    * @extends {HTMLTableElement}
    */
-  var DeviceTable = cr.ui.define(function() {
+  const DeviceTable = cr.ui.define(function() {
     /** @private {?Array<bluetooth.mojom.DeviceInfo>} */
     this.devices_ = null;
 
@@ -80,7 +80,7 @@ cr.define('device_table', function() {
      * @private
      */
     handleForgetClick_: function(index) {
-      var event = new CustomEvent('forgetpressed', {
+      const event = new CustomEvent('forgetpressed', {
         bubbles: true,
         detail: {
           address: this.devices_.item(index).address,
@@ -104,7 +104,7 @@ cr.define('device_table', function() {
      * @private
      */
     handleInspectClick_: function(index) {
-      var event = new CustomEvent('inspectpressed', {
+      const event = new CustomEvent('inspectpressed', {
         bubbles: true,
         detail: {
           address: this.devices_.item(index).address,
@@ -135,10 +135,10 @@ cr.define('device_table', function() {
      * @private
      */
     insertRow_: function(device, index) {
-      var row = this.body_.insertRow(index);
+      const row = this.body_.insertRow(index);
       row.id = device.address;
 
-      for (var i = 0; i < this.headers_.length; i++) {
+      for (let i = 0; i < this.headers_.length; i++) {
         // Skip the LINKS column. It has no data-field attribute.
         if (i === COLUMNS.LINKS) {
           continue;
@@ -147,16 +147,16 @@ cr.define('device_table', function() {
       }
 
       // Make two extra cells for the inspect link and connect errors.
-      var inspectCell = row.insertCell();
+      const inspectCell = row.insertCell();
 
-      var inspectLink = document.createElement('a', 'action-link');
+      const inspectLink = document.createElement('a', 'action-link');
       inspectLink.textContent = 'Inspect';
       inspectCell.appendChild(inspectLink);
       inspectLink.addEventListener('click', function() {
         this.handleInspectClick_(row.sectionRowIndex);
       }.bind(this));
 
-      var forgetLink = document.createElement('a', 'action-link');
+      const forgetLink = document.createElement('a', 'action-link');
       forgetLink.textContent = 'Forget';
       inspectCell.appendChild(forgetLink);
       forgetLink.addEventListener('click', function() {
@@ -176,7 +176,7 @@ cr.define('device_table', function() {
       this.body_ = this.tBodies[0];
       this.body_.classList.add('table-body');
 
-      for (var i = 0; i < this.devices_.length; i++) {
+      for (let i = 0; i < this.devices_.length; i++) {
         this.insertRow_(this.devices_.item(i), null);
       }
     },
@@ -188,12 +188,12 @@ cr.define('device_table', function() {
      * @private
      */
     updateRow_: function(device, index) {
-      var row = this.body_.rows[index];
+      const row = this.body_.rows[index];
       assert(row, 'Row ' + index + ' is not in the table.');
 
       row.classList.toggle('removed', device.removed);
 
-      var forgetLink = row.cells[COLUMNS.LINKS].children[1];
+      const forgetLink = row.cells[COLUMNS.LINKS].children[1];
 
       if (this.inspectionMap_.has(device)) {
         forgetLink.disabled = !this.inspectionMap_.get(device);
@@ -202,19 +202,19 @@ cr.define('device_table', function() {
       }
 
       // Update the properties based on the header field path.
-      for (var i = 0; i < this.headers_.length; i++) {
+      for (let i = 0; i < this.headers_.length; i++) {
         // Skip the LINKS column. It has no data-field attribute.
         if (i === COLUMNS.LINKS) {
           continue;
         }
 
-        var header = this.headers_[i];
-        var propName = header.dataset.field;
+        const header = this.headers_[i];
+        const propName = header.dataset.field;
 
-        var parts = propName.split('.');
-        var obj = device;
+        const parts = propName.split('.');
+        let obj = device;
         while (obj != null && parts.length > 0) {
-          var part = parts.shift();
+          const part = parts.shift();
           obj = obj[part];
         }
 
@@ -222,7 +222,7 @@ cr.define('device_table', function() {
           obj = obj ? 'Connected' : 'Not Connected';
         }
 
-        var cell = row.cells[i];
+        const cell = row.cells[i];
         cell.textContent = obj == null ? 'Unknown' : obj;
         cell.dataset.label = header.textContent;
       }

@@ -10,8 +10,8 @@ layer at (0,0) size 800x600
           text run at (0,0) width 308: "This tests paragraphBoundary selection navigation. "
           text run at (308,0) width 476: "The caret should be at the end of the paragraph below, just after the select box."
       LayoutBlockFlow {DIV} at (0,36) size 784x20
-        LayoutMenuList {SELECT} at (0,0) size 29x20 [bgcolor=#FFFFFF] [border: (1px solid #A9A9A9)]
-          LayoutBlockFlow (anonymous) at (1,1) size 27x18
+        LayoutMenuList {SELECT} at (0,0) size 31x20 [bgcolor=#FFFFFF] [border: (1px solid #A9A9A9)]
+          LayoutBlockFlow (anonymous) at (1,1) size 29x18
             LayoutText (anonymous) at (4,1) size 7x16
               text run at (4,1) width 7: "1"
 caret: position 1 of child 0 {SELECT} of child 2 {DIV} of body

@@ -17,6 +17,7 @@
 #include "media/formats/mp4/avc.h"
 #include "media/formats/mp4/bitstream_converter.h"
 #include "media/formats/mp4/box_definitions.h"
+#include "media/formats/mp4/nalu_test_helper.h"
 #include "media/video/h264_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,53 +33,6 @@ static const uint8_t kExpected[] = {0x00, 0x00, 0x00, 0x01, 0x01,
 static const uint8_t kExpectedParamSets[] = {
     0x00, 0x00, 0x00, 0x01, 0x67, 0x12, 0x00, 0x00, 0x00, 0x01,
     0x67, 0x34, 0x00, 0x00, 0x00, 0x01, 0x68, 0x56, 0x78};
-
-static H264NALU::Type StringToNALUType(const std::string& name) {
-  if (name == "P")
-    return H264NALU::kNonIDRSlice;
-
-  if (name == "I")
-    return H264NALU::kIDRSlice;
-
-  if (name == "SDA")
-    return H264NALU::kSliceDataA;
-
-  if (name == "SDB")
-    return H264NALU::kSliceDataB;
-
-  if (name == "SDC")
-    return H264NALU::kSliceDataC;
-
-  if (name == "SEI")
-    return H264NALU::kSEIMessage;
-
-  if (name == "SPS")
-    return H264NALU::kSPS;
-
-  if (name == "SPSExt")
-    return H264NALU::kSPSExt;
-
-  if (name == "PPS")
-    return H264NALU::kPPS;
-
-  if (name == "AUD")
-    return H264NALU::kAUD;
-
-  if (name == "EOSeq")
-    return H264NALU::kEOSeq;
-
-  if (name == "EOStr")
-    return H264NALU::kEOStream;
-
-  if (name == "FILL")
-    return H264NALU::kFiller;
-
-  if (name == "R14")
-    return H264NALU::kReserved14;
-
-  CHECK(false) << "Unexpected name: " << name;
-  return H264NALU::kUnspecified;
-}
 
 static std::string NALUTypeToString(int type) {
   switch (type) {
@@ -123,77 +77,6 @@ static std::string NALUTypeToString(int type) {
   };
 
   return "UnsupportedType";
-}
-
-static void WriteStartCodeAndNALUType(std::vector<uint8_t>* buffer,
-                                      const std::string& nal_unit_type) {
-  buffer->push_back(0x00);
-  buffer->push_back(0x00);
-  buffer->push_back(0x00);
-  buffer->push_back(0x01);
-  buffer->push_back(StringToNALUType(nal_unit_type));
-}
-
-// Input string should be one or more NALU types separated with spaces or
-// commas. NALU grouped together and separated by commas are placed into the
-// same subsample, NALU groups separated by spaces are placed into separate
-// subsamples.
-// For example: input string "SPS PPS I" produces Annex B buffer containing
-// SPS, PPS and I NALUs, each in a separate subsample. While input string
-// "SPS,PPS I" produces Annex B buffer where the first subsample contains SPS
-// and PPS NALUs and the second subsample contains the I-slice NALU.
-// The output buffer will contain a valid-looking Annex B (it's valid-looking in
-// the sense that it has start codes and correct NALU types, but the actual NALU
-// payload is junk).
-static void StringToAnnexB(const std::string& str,
-                           std::vector<uint8_t>* buffer,
-                           std::vector<SubsampleEntry>* subsamples) {
-  DCHECK(!str.empty());
-
-  std::vector<std::string> subsample_specs = base::SplitString(
-      str, " ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  EXPECT_GT(subsample_specs.size(), 0u);
-
-  buffer->clear();
-  for (size_t i = 0; i < subsample_specs.size(); ++i) {
-    SubsampleEntry entry;
-    size_t start = buffer->size();
-
-    std::vector<std::string> subsample_nalus = base::SplitString(
-        subsample_specs[i], ",", base::KEEP_WHITESPACE,
-        base::SPLIT_WANT_NONEMPTY);
-    EXPECT_GT(subsample_nalus.size(), 0u);
-    for (size_t j = 0; j < subsample_nalus.size(); ++j) {
-      WriteStartCodeAndNALUType(buffer, subsample_nalus[j]);
-
-      // Write junk for the payload since the current code doesn't
-      // actually look at it.
-      buffer->push_back(0x32);
-      buffer->push_back(0x12);
-      buffer->push_back(0x67);
-    }
-
-    entry.clear_bytes = buffer->size() - start;
-
-    if (subsamples) {
-      // Simulate the encrypted bits containing something that looks
-      // like a SPS NALU.
-      WriteStartCodeAndNALUType(buffer, "SPS");
-    }
-
-    entry.cypher_bytes = buffer->size() - start - entry.clear_bytes;
-
-    if (subsamples) {
-      subsamples->push_back(entry);
-    }
-  }
-}
-
-// Helper to compare two results of AVC::Analyze().
-static bool AnalysesMatch(const BitstreamConverter::AnalysisResult& r1,
-                          const BitstreamConverter::AnalysisResult& r2) {
-  return r1.is_conformant == r2.is_conformant &&
-         r1.is_keyframe == r2.is_keyframe;
 }
 
 // Helper output operator, for debugging/testability.
@@ -391,7 +274,7 @@ TEST_F(AVCConversionTest, StringConversionFunctions) {
       "AUD SPS SPSExt SPS PPS SEI SEI R14 I P FILL EOSeq EOStr";
   std::vector<uint8_t> buf;
   std::vector<SubsampleEntry> subsamples;
-  StringToAnnexB(str, &buf, &subsamples);
+  AvcStringToAnnexB(str, &buf, &subsamples);
 
   BitstreamConverter::AnalysisResult expected;
   expected.is_conformant = true;
@@ -439,7 +322,7 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
   for (size_t i = 0; i < base::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
-    StringToAnnexB(test_cases[i].case_string, &buf, NULL);
+    AvcStringToAnnexB(test_cases[i].case_string, &buf, NULL);
 
     BitstreamConverter::AnalysisResult expected;
     expected.is_conformant = true;
@@ -487,7 +370,7 @@ TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
   for (size_t i = 0; i < base::size(test_cases); ++i) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
-    StringToAnnexB(test_cases[i].case_string, &buf, NULL);
+    AvcStringToAnnexB(test_cases[i].case_string, &buf, NULL);
     expected.is_keyframe = test_cases[i].is_keyframe;
     EXPECT_PRED2(AnalysesMatch,
                  AVC::AnalyzeAnnexB(buf.data(), buf.size(), subsamples),
@@ -536,7 +419,7 @@ TEST_F(AVCConversionTest, InsertParamSetsAnnexB) {
     std::vector<uint8_t> buf;
     std::vector<SubsampleEntry> subsamples;
 
-    StringToAnnexB(test_cases[i].input, &buf, &subsamples);
+    AvcStringToAnnexB(test_cases[i].input, &buf, &subsamples);
 
     EXPECT_TRUE(AVC::InsertParamSetsAnnexB(avc_config, &buf, &subsamples))
         << "'" << test_cases[i].input << "' insert failed.";

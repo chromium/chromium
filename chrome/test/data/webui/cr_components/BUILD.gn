@@ -1,0 +1,10 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/js_modulizer.gni")
+
+js_modulizer("modulize") {
+  input_files = [ "managed_footnote_test.js" ]
+  namespace_rewrites = [ "cr.isChromeOS|isChromeOS" ]
+}

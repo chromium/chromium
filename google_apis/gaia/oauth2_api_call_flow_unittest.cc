@@ -10,8 +10,8 @@
 #include <string>
 #include <utility>
 
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -22,6 +22,7 @@
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,11 +55,11 @@ class MockApiCallFlow : public OAuth2ApiCallFlow {
   MOCK_METHOD0(CreateApiCallUrl, GURL());
   MOCK_METHOD0(CreateApiCallBody, std::string());
   MOCK_METHOD2(ProcessApiCallSuccess,
-               void(const network::ResourceResponseHead* head,
+               void(const network::mojom::URLResponseHead* head,
                     std::unique_ptr<std::string> body));
   MOCK_METHOD3(ProcessApiCallFailure,
                void(int net_error,
-                    const network::ResourceResponseHead* head,
+                    const network::mojom::URLResponseHead* head,
                     std::unique_ptr<std::string> body));
   MOCK_METHOD1(ProcessNewAccessToken, void(const std::string& access_token));
   MOCK_METHOD1(ProcessMintAccessTokenFailure,
@@ -85,10 +86,10 @@ class OAuth2ApiCallFlowTest : public testing::Test {
                       const std::string& body) {
     net::Error error = fetch_succeeds ? net::OK : net::ERR_FAILED;
 
-    network::ResourceResponseHead http_head =
-        network::CreateResourceResponseHead(response_code);
+    auto http_head = network::CreateURLResponseHead(response_code);
     test_url_loader_factory_.AddResponse(
-        url, http_head, body, network::URLLoaderCompletionStatus(error));
+        url, std::move(http_head), body,
+        network::URLLoaderCompletionStatus(error));
   }
 
   void SetupApiCall(bool succeeds, net::HttpStatusCode status) {
@@ -100,7 +101,7 @@ class OAuth2ApiCallFlowTest : public testing::Test {
     AddFetchResult(url, succeeds, status, std::string());
   }
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;
   StrictMock<MockApiCallFlow> flow_;

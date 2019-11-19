@@ -3,9 +3,11 @@
 # found in the LICENSE file.
 
 # To create CIPD package run the following command.
-# cipd create --pkg-def cipd.yaml -tag version:3.3.0-beta01-5013011-cr0
+# cipd create --pkg-def cipd.yaml
 package: chromium/third_party/android_build_tools/aapt2
 description: Android SDK tool to build App Bundles
+# TODO(https://crbug.com/977242): Remove this and go back to symlinks once
+# swarming isolation works properly with symlinks.
+install_mode: copy
 data:
   - file: aapt2
-  - file: lib64/libc++.so

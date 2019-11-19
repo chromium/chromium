@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/audio/audio_system_test_util.h"
 #include "media/audio/mock_audio_manager.h"
 #include "media/audio/test_audio_thread.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/audio/in_process_audio_manager_accessor.h"
 #include "services/audio/public/cpp/audio_system_to_service_adapter.h"
 #include "services/audio/public/cpp/fake_system_info.h"
@@ -15,13 +14,11 @@
 #include "services/audio/public/mojom/constants.mojom.h"
 #include "services/audio/service.h"
 #include "services/audio/test/service_lifetime_test_template.h"
-#include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_binding.h"
 #include "services/service_manager/public/cpp/test/test_service_manager.h"
 #include "services/service_manager/public/mojom/constants.mojom.h"
-#include "services/service_manager/public/mojom/service_factory.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::Exactly;
@@ -29,8 +26,7 @@ using testing::Invoke;
 
 namespace audio {
 
-class ServiceTestHelper : public service_manager::Service,
-                          public service_manager::mojom::ServiceFactory {
+class ServiceTestHelper : public service_manager::Service {
  public:
   class AudioThreadContext
       : public base::RefCountedThreadSafe<AudioThreadContext> {
@@ -53,8 +49,7 @@ class ServiceTestHelper : public service_manager::Service,
       service_ = std::make_unique<audio::Service>(
           std::make_unique<InProcessAudioManagerAccessor>(audio_manager_),
           service_quit_timeout_, false /* device_notifications_enabled */,
-          std::make_unique<service_manager::BinderRegistry>(),
-          std::move(request));
+          std::make_unique<service_manager::BinderMap>(), std::move(request));
       service_->set_termination_closure(base::BindOnce(
           &AudioThreadContext::QuitOnAudioThread, base::Unretained(this)));
     }
@@ -81,11 +76,7 @@ class ServiceTestHelper : public service_manager::Service,
       : service_binding_(this, std::move(request)),
         audio_manager_(audio_manager),
         audio_thread_context_(
-            new AudioThreadContext(audio_manager, service_quit_timeout)) {
-    registry_.AddInterface<service_manager::mojom::ServiceFactory>(
-        base::BindRepeating(&ServiceTestHelper::Create,
-                            base::Unretained(this)));
-  }
+            new AudioThreadContext(audio_manager, service_quit_timeout)) {}
 
   ~ServiceTestHelper() override {
     // Ensure that the AudioThreadContext is destroyed on the correct thread by
@@ -100,30 +91,21 @@ class ServiceTestHelper : public service_manager::Service,
   }
 
  protected:
-  void OnBindInterface(const service_manager::BindSourceInfo& source_info,
-                       const std::string& interface_name,
-                       mojo::ScopedMessagePipeHandle interface_pipe) override {
-    registry_.BindInterface(interface_name, std::move(interface_pipe));
-  }
-
-  void Create(service_manager::mojom::ServiceFactoryRequest request) {
-    service_factory_bindings_.AddBinding(this, std::move(request));
-  }
-
-  // service_manager::mojom::ServiceFactory:
-  void CreateService(
-      service_manager::mojom::ServiceRequest request,
-      const std::string& name,
-      service_manager::mojom::PIDReceiverPtr pid_receiver) override {
-    if (name == mojom::kServiceName)
-      audio_thread_context_->CreateServiceOnAudioThread(std::move(request));
+  // service_manager::Service:
+  void CreatePackagedServiceInstance(
+      const std::string& service_name,
+      mojo::PendingReceiver<service_manager::mojom::Service> receiver,
+      CreatePackagedServiceInstanceCallback callback) override {
+    if (service_name == mojom::kServiceName) {
+      audio_thread_context_->CreateServiceOnAudioThread(std::move(receiver));
+      std::move(callback).Run(base::GetCurrentProcId());
+    } else {
+      std::move(callback).Run(base::nullopt);
+    }
   }
 
  private:
   service_manager::ServiceBinding service_binding_;
-  service_manager::BinderRegistry registry_;
-  mojo::BindingSet<service_manager::mojom::ServiceFactory>
-      service_factory_bindings_;
   media::AudioManager* const audio_manager_;
   scoped_refptr<AudioThreadContext> audio_thread_context_;
 
@@ -145,14 +127,12 @@ class InProcessServiceTest : public testing::Test {
       : test_service_manager_(
             {service_manager::ManifestBuilder()
                  .WithServiceName(kTestServiceName)
-                 .ExposeCapability(
-                     "service_manager:service_factory",
-                     service_manager::Manifest::InterfaceList<
-                         service_manager::mojom::ServiceFactory>())
                  .RequireCapability(mojom::kServiceName, "info")
                  .RequireCapability(service_manager::mojom::kServiceName,
                                     "service_manager:service_manager")
-                 .PackageService(GetManifest())
+                 .PackageService(
+                     GetManifest(service_manager::Manifest::ExecutionMode ::
+                                     kInProcessBuiltin))
                  .Build()}),
         audio_manager_(
             std::make_unique<media::TestAudioThread>(use_audio_thread)),
@@ -191,7 +171,7 @@ class InProcessServiceTest : public testing::Test {
   media::AudioSystem* audio_system() { return audio_system_.get(); }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   service_manager::TestServiceManager test_service_manager_;
   media::MockAudioManager audio_manager_;
   std::unique_ptr<ServiceTestHelper> helper_;

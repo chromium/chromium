@@ -15,7 +15,7 @@ namespace blink {
 // DocumentParserTiming is responsible for tracking parser-related timings for a
 // given document.
 class DocumentParserTiming final
-    : public GarbageCollectedFinalized<DocumentParserTiming>,
+    : public GarbageCollected<DocumentParserTiming>,
       public Supplement<Document> {
   USING_GARBAGE_COLLECTED_MIXIN(DocumentParserTiming);
 
@@ -51,7 +51,7 @@ class DocumentParserTiming final
   // called multiple times, once for each time the parser yields on a script
   // load.
   void RecordParserBlockedOnScriptLoadDuration(
-      TimeDelta duration,
+      base::TimeDelta duration,
       bool script_inserted_via_document_write);
 
   // Record a duration of time that the parser spent executing a script.
@@ -59,19 +59,18 @@ class DocumentParserTiming final
   // was inserted via document.write. This may be called multiple times, once
   // for each time the parser executes a script.
   void RecordParserBlockedOnScriptExecutionDuration(
-      TimeDelta duration,
+      base::TimeDelta duration,
       bool script_inserted_via_document_write);
 
   // The getters below return monotonically-increasing time, or zero if the
-  // given parser event has not yet occurred.  See the comments for
-  // MonotonicallyIncreasingTime in platform/wtf/time.h for additional details.
+  // given parser event has not yet occurred.
 
-  TimeTicks ParserStart() const { return parser_start_; }
-  TimeTicks ParserStop() const { return parser_stop_; }
+  base::TimeTicks ParserStart() const { return parser_start_; }
+  base::TimeTicks ParserStop() const { return parser_stop_; }
 
   // Returns the sum of all blocking script load durations reported via
   // recordParseBlockedOnScriptLoadDuration.
-  TimeDelta ParserBlockedOnScriptLoadDuration() const {
+  base::TimeDelta ParserBlockedOnScriptLoadDuration() const {
     return parser_blocked_on_script_load_duration_;
   }
 
@@ -79,13 +78,13 @@ class DocumentParserTiming final
   // document.write reported via recordParseBlockedOnScriptLoadDuration. Note
   // that some uncommon cases are not currently covered by this method. See
   // crbug/600711 for details.
-  TimeDelta ParserBlockedOnScriptLoadFromDocumentWriteDuration() const {
+  base::TimeDelta ParserBlockedOnScriptLoadFromDocumentWriteDuration() const {
     return parser_blocked_on_script_load_from_document_write_duration_;
   }
 
   // Returns the sum of all script execution durations reported via
   // recordParseBlockedOnScriptExecutionDuration.
-  TimeDelta ParserBlockedOnScriptExecutionDuration() const {
+  base::TimeDelta ParserBlockedOnScriptExecutionDuration() const {
     return parser_blocked_on_script_execution_duration_;
   }
 
@@ -93,7 +92,8 @@ class DocumentParserTiming final
   // document.write reported via recordParseBlockedOnScriptExecutionDuration.
   // Note that some uncommon cases are not currently covered by this method. See
   // crbug/600711 for details.
-  TimeDelta ParserBlockedOnScriptExecutionFromDocumentWriteDuration() const {
+  base::TimeDelta ParserBlockedOnScriptExecutionFromDocumentWriteDuration()
+      const {
     return parser_blocked_on_script_execution_from_document_write_duration_;
   }
 
@@ -102,12 +102,13 @@ class DocumentParserTiming final
  private:
   void NotifyDocumentParserTimingChanged();
 
-  TimeTicks parser_start_;
-  TimeTicks parser_stop_;
-  TimeDelta parser_blocked_on_script_load_duration_;
-  TimeDelta parser_blocked_on_script_load_from_document_write_duration_;
-  TimeDelta parser_blocked_on_script_execution_duration_;
-  TimeDelta parser_blocked_on_script_execution_from_document_write_duration_;
+  base::TimeTicks parser_start_;
+  base::TimeTicks parser_stop_;
+  base::TimeDelta parser_blocked_on_script_load_duration_;
+  base::TimeDelta parser_blocked_on_script_load_from_document_write_duration_;
+  base::TimeDelta parser_blocked_on_script_execution_duration_;
+  base::TimeDelta
+      parser_blocked_on_script_execution_from_document_write_duration_;
   bool parser_detached_ = false;
   DISALLOW_COPY_AND_ASSIGN(DocumentParserTiming);
 };

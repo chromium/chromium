@@ -9,6 +9,8 @@
 
 #import "cwv_export.h"
 
+NS_ASSUME_NONNULL_BEGIN
+
 // Preferences for user settings. The preferences are stored on the local
 // storage.
 CWV_EXPORT
@@ -29,5 +31,7 @@ CWV_EXPORT
 - (void)resetTranslationSettings;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif  // IOS_WEB_VIEW_PUBLIC_CWV_PREFERENCES_H_

@@ -23,15 +23,11 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using crypto::SHA256HashString;
-
 namespace extensions {
 
 namespace {
 
-using namespace api::cryptotoken_private;
-
-bool GetSingleBooleanResult(UIThreadExtensionFunction* function, bool* result) {
+bool GetSingleBooleanResult(ExtensionFunction* function, bool* result) {
   const base::ListValue* result_list = function->GetResultList();
   if (!result_list) {
     ADD_FAILURE() << "Function has no result list.";
@@ -83,8 +79,8 @@ class CryptoTokenPrivateApiTest : public extensions::ExtensionApiUnittest {
     function->set_has_callback(true);
 
     auto args = std::make_unique<base::Value>(base::Value::Type::LIST);
-    args->GetList().emplace_back(
-        base::Value::BlobStorage(app_id.begin(), app_id.end()));
+    args->Append(
+        base::Value(base::Value::BlobStorage(app_id.begin(), app_id.end())));
 
     if (!extension_function_test_utils::RunFunction(
             function.get(), base::ListValue::From(std::move(args)), browser(),
@@ -133,9 +129,9 @@ TEST_F(CryptoTokenPrivateApiTest, CanOriginAssertAppId) {
 
 TEST_F(CryptoTokenPrivateApiTest, IsAppIdHashInEnterpriseContext) {
   const std::string example_com("https://example.com/");
-  const std::string example_com_hash(SHA256HashString(example_com));
-  const std::string rp_id_hash(SHA256HashString("example.com"));
-  const std::string foo_com_hash(SHA256HashString("https://foo.com/"));
+  const std::string example_com_hash(crypto::SHA256HashString(example_com));
+  const std::string rp_id_hash(crypto::SHA256HashString("example.com"));
+  const std::string foo_com_hash(crypto::SHA256HashString("https://foo.com/"));
 
   bool result;
   ASSERT_TRUE(GetAppIdHashInEnterpriseContext(example_com_hash, &result));
@@ -210,7 +206,7 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
     dict.emplace("tabId", std::make_unique<base::Value>(tab_id_));
     dict.emplace("origin", std::make_unique<base::Value>(app_id));
     auto args = std::make_unique<base::Value>(base::Value::Type::LIST);
-    args->GetList().emplace_back(std::move(dict));
+    args->Append(base::Value(std::move(dict)));
     auto args_list = base::ListValue::From(std::move(args));
 
     extension_function_test_utils::RunFunction(

@@ -8,6 +8,7 @@
 #include "base/debug/leak_annotations.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/current_module.h"
+#include "build/branding_buildflags.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "chrome/credential_provider/gaiacp/gcp_crash_reporter_client.h"
 #include "chrome/credential_provider/gaiacp/gcp_crash_reporting_utils.h"
@@ -87,9 +88,7 @@ void ConfigureGcpCrashReporting(const base::CommandLine& command_line) {
       process_type.empty(), "GCPW DLL", "", dll_main_cmd_line.GetProgram(),
       {base::UTF16ToUTF8(dll_main_cmd_line.GetArgs()[0])});
 
-#if defined(GOOGLE_CHROME_BUILD)
   SetCommonCrashKeys(command_line);
-#endif  // defined(GOOGLE_CHROME_BUILD)
 }
 
 }  // namespace credential_provider

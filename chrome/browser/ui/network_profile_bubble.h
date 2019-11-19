@@ -23,27 +23,27 @@ class PrefRegistrySyncable;
 class NetworkProfileBubble {
  public:
   enum MetricNetworkedProfileCheck {
-   // Check was suppressed by command line flag.
-   METRIC_CHECK_SUPPRESSED,
-   // WTSQuerySessionInformation call failed.
-   METRIC_CHECK_FAILED,
-   // File access in profile dir failed.
-   METRIC_CHECK_IO_FAILED,
+    // Check was suppressed by command line flag.
+    METRIC_CHECK_SUPPRESSED,
+    // WTSQuerySessionInformation call failed.
+    METRIC_CHECK_FAILED,
+    // File access in profile dir failed.
+    METRIC_CHECK_IO_FAILED,
 
-   // Profile on a network share detected.
-   METRIC_PROFILE_ON_NETWORK,
-   // Profile not on a network share detected.
-   METRIC_PROFILE_NOT_ON_NETWORK,
+    // Profile on a network share detected.
+    METRIC_PROFILE_ON_NETWORK,
+    // Profile not on a network share detected.
+    METRIC_PROFILE_NOT_ON_NETWORK,
 
-   // Check was suppressed because of remote session.
-   METRIC_REMOTE_SESSION,
+    // Check was suppressed because of remote session.
+    METRIC_REMOTE_SESSION,
 
-   // User has clicked learn more on the notification bubble.
-   METRIC_LEARN_MORE_CLICKED,
-   // User has clicked OK on the notification bubble.
-   METRIC_ACKNOWLEDGED,
+    // User has clicked learn more on the notification bubble.
+    METRIC_LEARN_MORE_CLICKED,
+    // User has clicked OK on the notification bubble.
+    METRIC_ACKNOWLEDGED,
 
-   METRIC_NETWORKED_PROFILE_CHECK_SIZE  // Must be the last.
+    METRIC_NETWORKED_PROFILE_CHECK_SIZE  // Must be the last.
   };
 
   // Returns true if the check for network located profile should be done. This

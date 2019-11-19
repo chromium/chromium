@@ -1,11 +1,12 @@
 rootWebArea
-++genericContainer editable multiline richlyEditable value='Editable text/Non-editable text' editableRoot=true
-++++paragraph editable richlyEditable
-++++++staticText editable richlyEditable name='Editable text/'
-++++++++inlineTextBox name='Editable text/'
-++++paragraph
-++++++staticText name='Non-editable text'
-++++++++inlineTextBox name='Non-editable text'
-++genericContainer editable richlyEditable
-++++staticText editable richlyEditable name='Fake-editable'
-++++++inlineTextBox name='Fake-editable'
+++genericContainer ignored
+++++genericContainer editable multiline richlyEditable value='Editable text/Non-editable text' editableRoot=true
+++++++paragraph editable richlyEditable
+++++++++staticText editable richlyEditable name='Editable text/'
+++++++++++inlineTextBox name='Editable text/'
+++++++paragraph
+++++++++staticText name='Non-editable text'
+++++++++++inlineTextBox name='Non-editable text'
+++++genericContainer editable richlyEditable
+++++++staticText editable richlyEditable name='Fake-editable'
+++++++++inlineTextBox name='Fake-editable'

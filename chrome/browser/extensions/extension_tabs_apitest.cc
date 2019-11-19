@@ -221,6 +221,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabsOnCreated) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_created")) << message_;
 }
 
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, LazyBackgroundTabsOnCreated) {
+  ASSERT_TRUE(RunExtensionTest("tabs/lazy_background_on_created")) << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabsOnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_updated")) << message_;
 }

@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@
 
 #ifdef ABSL_HAVE_STD_STRING_VIEW
 
-#include <string_view>
+#include <string_view>  // IWYU pragma: export
 
 namespace absl {
 using std::string_view;
@@ -50,6 +50,7 @@ using std::string_view;
 
 #include "absl/base/internal/throw_delegate.h"
 #include "absl/base/macros.h"
+#include "absl/base/optimization.h"
 #include "absl/base/port.h"
 
 namespace absl {
@@ -100,7 +101,6 @@ namespace absl {
 // A `string_view` may represent a whole string or just part of a string. For
 // example, when splitting a string, `std::vector<absl::string_view>` is a
 // natural data type for the output.
-//
 //
 // When constructed from a source which is nul-terminated, the `string_view`
 // itself will not include the nul-terminator unless a specific size (including
@@ -173,19 +173,9 @@ class string_view {
   // Implicit constructor of a `string_view` from nul-terminated `str`. When
   // accepting possibly null strings, use `absl::NullSafeStringView(str)`
   // instead (see below).
-#if ABSL_HAVE_BUILTIN(__builtin_strlen) || \
-    (defined(__GNUC__) && !defined(__clang__))
-  // GCC has __builtin_strlen according to
-  // https://gcc.gnu.org/onlinedocs/gcc-4.7.0/gcc/Other-Builtins.html, but
-  // ABSL_HAVE_BUILTIN doesn't detect that, so we use the extra checks above.
-  // __builtin_strlen is constexpr.
   constexpr string_view(const char* str)  // NOLINT(runtime/explicit)
       : ptr_(str),
-        length_(CheckLengthInternal(str ? __builtin_strlen(str) : 0)) {}
-#else
-  constexpr string_view(const char* str)  // NOLINT(runtime/explicit)
-      : ptr_(str), length_(CheckLengthInternal(str ? strlen(str) : 0)) {}
-#endif
+        length_(str ? CheckLengthInternal(StrlenInternal(str)) : 0) {}
 
   // Implicit constructor of a `string_view` from a `const char*` and length.
   constexpr string_view(const char* data, size_type len)
@@ -277,7 +267,7 @@ class string_view {
   // Checks if the `string_view` is empty (refers to no characters).
   constexpr bool empty() const noexcept { return length_ == 0; }
 
-  // std::string:view::operator[]
+  // string_view::operator[]
   //
   // Returns the ith element of an `string_view` using the array operator.
   // Note that this operator does not perform any bounds checking.
@@ -345,7 +335,17 @@ class string_view {
   //
   // Copies the contents of the `string_view` at offset `pos` and length `n`
   // into `buf`.
-  size_type copy(char* buf, size_type n, size_type pos = 0) const;
+  size_type copy(char* buf, size_type n, size_type pos = 0) const {
+    if (ABSL_PREDICT_FALSE(pos > length_)) {
+      base_internal::ThrowStdOutOfRange("absl::string_view::copy");
+    }
+    size_type rlen = (std::min)(length_ - pos, n);
+    if (rlen > 0) {
+      const char* start = ptr_ + pos;
+      std::copy(start, start + rlen, buf);
+    }
+    return rlen;
+  }
 
   // string_view::substr()
   //
@@ -496,6 +496,24 @@ class string_view {
     return ABSL_ASSERT(len <= kMaxSize), len;
   }
 
+  static constexpr size_type StrlenInternal(const char* str) {
+#if defined(_MSC_VER) && _MSC_VER >= 1910 && !defined(__clang__)
+    // MSVC 2017+ can evaluate this at compile-time.
+    const char* begin = str;
+    while (*str != '\0') ++str;
+    return str - begin;
+#elif ABSL_HAVE_BUILTIN(__builtin_strlen) || \
+    (defined(__GNUC__) && !defined(__clang__))
+    // GCC has __builtin_strlen according to
+    // https://gcc.gnu.org/onlinedocs/gcc-4.7.0/gcc/Other-Builtins.html, but
+    // ABSL_HAVE_BUILTIN doesn't detect that, so we use the extra checks above.
+    // __builtin_strlen is constexpr.
+    return __builtin_strlen(str);
+#else
+    return str ? strlen(str) : 0;
+#endif
+  }
+
   const char* ptr_;
   size_type length_;
 };
@@ -508,6 +526,7 @@ inline bool operator==(string_view x, string_view y) noexcept {
   if (len != y.size()) {
     return false;
   }
+
   return x.data() == y.data() || len <= 0 ||
          memcmp(x.data(), y.data(), len) == 0;
 }

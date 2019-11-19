@@ -4,9 +4,13 @@
 # found in the LICENSE file.
 
 import collections
+import os
+import sys
 import unittest
 
-import build_utils # pylint: disable=W0403
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir)))
+from util import build_utils
 
 _DEPS = collections.OrderedDict()
 _DEPS['a'] = []

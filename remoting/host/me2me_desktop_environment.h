@@ -33,7 +33,6 @@ class Me2MeDesktopEnvironment : public BasicDesktopEnvironment {
       scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      ui::SystemInputInjectorFactory* system_input_injector_factory,
       base::WeakPtr<ClientSessionControl> client_session_control,
       const DesktopEnvironmentOptions& options);
 
@@ -63,8 +62,7 @@ class Me2MeDesktopEnvironmentFactory : public BasicDesktopEnvironmentFactory {
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-      ui::SystemInputInjectorFactory* system_input_injector_factory);
+      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
   ~Me2MeDesktopEnvironmentFactory() override;
 
   // DesktopEnvironmentFactory interface.

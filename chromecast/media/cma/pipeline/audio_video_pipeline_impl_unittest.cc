@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/media/base/decrypt_context_impl.h"
 #include "chromecast/media/cdm/cast_cdm_context.h"
@@ -27,6 +27,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::AtLeast;
 using testing::Invoke;
 using testing::NiceMock;
 using testing::Return;
@@ -75,7 +76,7 @@ class CastCdmContextForTest : public CastCdmContext {
 
   std::unique_ptr<DecryptContextImpl> GetDecryptContext(
       const std::string& key_id,
-      const EncryptionScheme& encryption_scheme) override {
+      EncryptionScheme encryption_scheme) override {
     if (license_installed_) {
       return std::unique_ptr<DecryptContextImpl>(
           new DecryptContextImpl(KEY_SYSTEM_CLEAR_KEY));
@@ -136,7 +137,7 @@ class PipelineHelper {
       ::media::AudioDecoderConfig audio_config(
           ::media::kCodecMP3, ::media::kSampleFormatS16,
           ::media::CHANNEL_LAYOUT_STEREO, 44100, ::media::EmptyExtraData(),
-          ::media::Unencrypted());
+          ::media::EncryptionScheme::kUnencrypted);
       AvPipelineClient client;
       client.eos_cb = base::Bind(&PipelineHelper::OnEos, base::Unretained(this),
                                  STREAM_AUDIO);
@@ -154,9 +155,9 @@ class PipelineHelper {
       std::vector<::media::VideoDecoderConfig> video_configs;
       video_configs.push_back(::media::VideoDecoderConfig(
           ::media::kCodecH264, ::media::H264PROFILE_MAIN,
-          ::media::PIXEL_FORMAT_I420, ::media::VideoColorSpace(),
-          ::media::VIDEO_ROTATION_0, gfx::Size(640, 480),
-          gfx::Rect(0, 0, 640, 480), gfx::Size(640, 480),
+          ::media::VideoDecoderConfig::AlphaMode::kIsOpaque,
+          ::media::VideoColorSpace(), ::media::kNoTransformation,
+          gfx::Size(640, 480), gfx::Rect(0, 0, 640, 480), gfx::Size(640, 480),
           ::media::EmptyExtraData(), ::media::EncryptionScheme()));
       VideoPipelineClient client;
       client.av_pipeline_client.eos_cb = base::Bind(
@@ -176,7 +177,9 @@ class PipelineHelper {
   void SetPipelineStartExpectations() {
     // The pipeline will be paused first, for the initial data buffering. Then
     // it will be resumed, once enough data is buffered to start playback.
-    EXPECT_CALL(*pipeline_backend_, GetCurrentPts());
+    // When starting media pipeline, GetCurrentPts will be called every
+    // kTimeUpdateInterval(250ms).
+    EXPECT_CALL(*pipeline_backend_, GetCurrentPts()).Times(AtLeast(1));
     EXPECT_CALL(*pipeline_backend_, Pause());
     EXPECT_CALL(*pipeline_backend_, SetPlaybackRate(1.0f));
     EXPECT_CALL(*pipeline_backend_, Resume());
@@ -286,7 +289,7 @@ class AudioVideoPipelineImplTest
     pipeline_helper_->Setup();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PipelineHelper> pipeline_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioVideoPipelineImplTest);
@@ -308,7 +311,7 @@ TEST_P(AudioVideoPipelineImplTest, Play) {
   base::Closure verify_task =
       base::Bind(&VerifyPlay, base::Unretained(pipeline_helper_.get()));
   pipeline_helper_->SetPipelineStartExpectations();
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&PipelineHelper::Start,
                      base::Unretained(pipeline_helper_.get()), verify_task));
@@ -333,11 +336,11 @@ TEST_P(AudioVideoPipelineImplTest, Flush) {
   base::Closure verify_task =
       base::Bind(&VerifyFlush, base::Unretained(pipeline_helper_.get()));
   pipeline_helper_->SetPipelineStartFlushExpectations();
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&PipelineHelper::Start,
                                 base::Unretained(pipeline_helper_.get()),
                                 base::Bind(&VerifyNotReached)));
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&PipelineHelper::Flush,
                      base::Unretained(pipeline_helper_.get()), verify_task));
@@ -353,7 +356,7 @@ TEST_P(AudioVideoPipelineImplTest, FullCycle) {
                  base::Unretained(pipeline_helper_.get()), stop_task);
 
   pipeline_helper_->SetPipelineStartExpectations();
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&PipelineHelper::Start,
                      base::Unretained(pipeline_helper_.get()), eos_cb));
@@ -380,7 +383,7 @@ class EncryptedAVPipelineImplTest : public ::testing::Test {
     pipeline_helper_->Setup();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<PipelineHelper> pipeline_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(EncryptedAVPipelineImplTest);
@@ -390,14 +393,14 @@ class EncryptedAVPipelineImplTest : public ::testing::Test {
 TEST_F(EncryptedAVPipelineImplTest, SetCdmWithLicenseBeforeStart) {
   base::Closure verify_task =
       base::Bind(&VerifyPlay, base::Unretained(pipeline_helper_.get()));
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&PipelineHelper::SetCdm,
                                 base::Unretained(pipeline_helper_.get())));
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&PipelineHelper::SetCdmLicenseInstalled,
                                 base::Unretained(pipeline_helper_.get())));
   pipeline_helper_->SetPipelineStartExpectations();
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&PipelineHelper::Start,
                      base::Unretained(pipeline_helper_.get()), verify_task));
@@ -409,16 +412,16 @@ TEST_F(EncryptedAVPipelineImplTest, SetCdmWithLicenseAfterStart) {
   base::Closure verify_task =
       base::Bind(&VerifyPlay, base::Unretained(pipeline_helper_.get()));
   pipeline_helper_->SetPipelineStartExpectations();
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&PipelineHelper::Start,
                      base::Unretained(pipeline_helper_.get()), verify_task));
 
-  scoped_task_environment_.RunUntilIdle();
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.RunUntilIdle();
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&PipelineHelper::SetCdmLicenseInstalled,
                                 base::Unretained(pipeline_helper_.get())));
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&PipelineHelper::SetCdm,
                                 base::Unretained(pipeline_helper_.get())));
   base::RunLoop().Run();
@@ -429,16 +432,16 @@ TEST_F(EncryptedAVPipelineImplTest, SetCdmAndInstallLicenseAfterStart) {
   base::Closure verify_task =
       base::Bind(&VerifyPlay, base::Unretained(pipeline_helper_.get()));
   pipeline_helper_->SetPipelineStartExpectations();
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(&PipelineHelper::Start,
                      base::Unretained(pipeline_helper_.get()), verify_task));
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&PipelineHelper::SetCdm,
                                 base::Unretained(pipeline_helper_.get())));
 
-  scoped_task_environment_.RunUntilIdle();
-  scoped_task_environment_.GetMainThreadTaskRunner()->PostTask(
+  task_environment_.RunUntilIdle();
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&PipelineHelper::SetCdmLicenseInstalled,
                                 base::Unretained(pipeline_helper_.get())));
   base::RunLoop().Run();

@@ -116,7 +116,7 @@ $ gn gen out/Default --args='is_chromecast=true'
   The default will be a debug component build matching the current host
   operating system and CPU.
 * For more info on GN, run `gn help` on the command line or read the
-  [quick start guide](../tools/gn/docs/quick_start.md).
+  [quick start guide](https://gn.googlesource.com/gn/+/master/docs/quick_start.md).
 
 ### <a name="faster-builds"></a>Faster builds
 

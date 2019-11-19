@@ -6,10 +6,11 @@ package org.chromium.chrome.browser.searchwidget;
 
 import android.content.Context;
 import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -79,6 +80,8 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
 
     /** Called when the SearchActivity has finished initialization. */
     void onDeferredStartup(boolean isVoiceSearchIntent) {
+        getAutocompleteCoordinator().prefetchZeroSuggestResults();
+
         if (mVoiceRecognitionHandler != null) {
             SearchWidgetProvider.updateCachedVoiceSearchAvailability(
                     mVoiceRecognitionHandler.isVoiceSearchEnabled());
@@ -89,8 +92,10 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         mPendingSearchPromoDecision = false;
         getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
                 mPendingSearchPromoDecision);
-        if (!TextUtils.isEmpty(mUrlCoordinator.getTextWithAutocomplete())) {
-            mAutocompleteCoordinator.onTextChangedForAutocomplete();
+        String textWithAutocomplete = mUrlCoordinator.getTextWithAutocomplete();
+        if (!TextUtils.isEmpty(textWithAutocomplete)) {
+            mAutocompleteCoordinator.onTextChanged(
+                    mUrlCoordinator.getTextWithoutAutocomplete(), textWithAutocomplete);
         }
 
         if (mPendingBeginQuery) {

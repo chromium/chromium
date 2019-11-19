@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "components/image_fetcher/core/image_decoder.h"
 #include "components/image_fetcher/core/image_fetcher_types.h"
+#include "ui/gfx/image/image.h"
 
 namespace gfx {
 class Size;
@@ -20,19 +21,21 @@ namespace image_fetcher {
 class FakeImageDecoder : public image_fetcher::ImageDecoder {
  public:
   FakeImageDecoder();
+  FakeImageDecoder(const FakeImageDecoder& other);
   ~FakeImageDecoder() override;
 
-  void DecodeImage(
-      const std::string& image_data,
-      const gfx::Size& desired_image_frame_size,
-      const image_fetcher::ImageDecodedCallback& callback) override;
+  void DecodeImage(const std::string& image_data,
+                   const gfx::Size& desired_image_frame_size,
+                   image_fetcher::ImageDecodedCallback callback) override;
   void SetEnabled(bool enabled);
   void SetBeforeImageDecoded(const base::RepeatingClosure& callback);
   void SetDecodingValid(bool valid);
+  void SetDecodedImage(const gfx::Image& image);
 
  private:
   bool enabled_;
   bool valid_;
+  gfx::Image decoded_image_;
   base::RepeatingClosure before_image_decoded_;
 };
 

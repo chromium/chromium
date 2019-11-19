@@ -48,11 +48,11 @@ import v8_types
 import v8_utilities
 from v8_utilities import (cpp_name_or_partial, capitalize, cpp_name, has_extended_attribute,
                           has_extended_attribute_value, scoped_name, strip_suffix,
-                          uncapitalize, extended_attribute_value_as_list, is_unforgeable,
-                          is_legacy_interface_type_checking)
+                          uncapitalize, extended_attribute_value_as_list, is_unforgeable)
+from blinkbuild.name_style_converter import NameStyleConverter
 
 
-def attribute_context(interface, attribute, interfaces):
+def attribute_context(interface, attribute, interfaces, component_info):
     """Creates a Jinja template context for an attribute of an interface.
 
     Args:
@@ -60,6 +60,7 @@ def attribute_context(interface, attribute, interfaces):
         attribute: An attribute to create the context for
         interfaces: A dict which maps an interface name to the definition
             which can be referred if needed
+        component_info: A dict containing component wide information
 
     Returns:
         A Jinja template context for |attribute|
@@ -83,10 +84,11 @@ def attribute_context(interface, attribute, interfaces):
     if is_check_security_for_receiver or is_check_security_for_return_value:
         includes.add('bindings/core/v8/binding_security.h')
     if is_check_security_for_return_value:
-        includes.add('core/frame/use_counter.h')
+        includes.add('core/frame/web_feature.h')
+        includes.add('platform/instrumentation/use_counter.h')
     # [CrossOrigin]
     if has_extended_attribute_value(attribute, 'CrossOrigin', 'Setter'):
-        includes.add('platform/bindings/v8_cross_origin_setter_info.h')
+        includes.add('platform/bindings/v8_cross_origin_callback_info.h')
     # [Constructor]
     # TODO(yukishiino): Constructors are much like methods although constructors
     # are not methods.  Constructors must be data-type properties, and we can
@@ -99,6 +101,12 @@ def attribute_context(interface, attribute, interfaces):
     # [CustomElementCallbacks], [Reflect]
     is_custom_element_callbacks = 'CustomElementCallbacks' in extended_attributes
     is_reflect = 'Reflect' in extended_attributes
+    # [ReflectOnly]
+    reflect_only = extended_attribute_value_as_list(attribute, 'ReflectOnly')
+    if reflect_only:
+        reflect_only = map(
+            lambda v: cpp_content_attribute_value_name(interface, v),
+            reflect_only)
     if is_custom_element_callbacks or is_reflect:
         includes.add('core/html/custom/v0_custom_element_processing_stack.h')
     # [PerWorldBindings]
@@ -108,17 +116,49 @@ def attribute_context(interface, attribute, interfaces):
     is_save_same_object = (
         'SameObject' in attribute.extended_attributes and
         'SaveSameObject' in attribute.extended_attributes)
-    if is_save_same_object:
-        includes.add('platform/bindings/v8_private_property.h')
-
-    cached_attribute_validation_method = extended_attributes.get('CachedAttribute')
-    keep_alive_for_gc = is_keep_alive_for_gc(interface, attribute)
-    if cached_attribute_validation_method or keep_alive_for_gc:
-        includes.add('platform/bindings/v8_private_property.h')
 
     # [CachedAccessor]
     is_cached_accessor = 'CachedAccessor' in extended_attributes
-    if is_cached_accessor:
+
+    # [LenientSetter]
+    is_lenient_setter = 'LenientSetter' in extended_attributes
+
+    # [CachedAttribute]
+    cached_attribute_validation_method = extended_attributes.get('CachedAttribute')
+
+    keep_alive_for_gc = is_keep_alive_for_gc(interface, attribute)
+
+    does_generate_getter = (
+        not has_custom_getter(attribute) and
+        not constructor_type
+    )
+    does_generate_setter = (
+        has_setter(interface, attribute) and
+        not (has_custom_setter(attribute) or is_lenient_setter)
+    )
+
+    use_private_property_in_getter = (
+        does_generate_getter and (
+            cached_attribute_validation_method or
+            is_save_same_object or
+            keep_alive_for_gc
+        )
+    )
+    use_private_property_in_setter = (
+        does_generate_setter and
+        cached_attribute_validation_method
+    )
+    private_property_is_shared_between_getter_and_setter = (
+        use_private_property_in_getter and
+        use_private_property_in_setter
+    )
+
+    does_use_private_property = (
+        use_private_property_in_getter or
+        use_private_property_in_setter or
+        is_cached_accessor
+    )
+    if does_use_private_property:
         includes.add('platform/bindings/v8_private_property.h')
 
     # [LogActivity]
@@ -136,10 +176,13 @@ def attribute_context(interface, attribute, interfaces):
         (constructor_type and not (measure_as or deprecate_as)) or \
         (str(idl_type) == 'Window' and attribute.name in ('frames', 'self', 'window'))
 
+    runtime_features = component_info['runtime_enabled_features']
+
     context = {
         'activity_logging_world_list_for_getter': v8_utilities.activity_logging_world_list(attribute, 'Getter'),  # [ActivityLogging]
         'activity_logging_world_list_for_setter': v8_utilities.activity_logging_world_list(attribute, 'Setter'),  # [ActivityLogging]
         'activity_logging_world_check': v8_utilities.activity_logging_world_check(attribute),  # [ActivityLogging]
+        'cached_accessor_name': '%s%sCachedAccessor' % (interface.name, attribute.name.capitalize()),
         'cached_attribute_validation_method': cached_attribute_validation_method,
         'camel_case_name': NameStyleConverter(attribute.name).to_upper_camel_case(),
         'constructor_type': constructor_type,
@@ -147,8 +190,9 @@ def attribute_context(interface, attribute, interfaces):
         'cpp_name': cpp_name(attribute),
         'cpp_type': idl_type.cpp_type,
         'cpp_type_initializer': idl_type.cpp_type_initializer,
-        'high_entropy': high_entropy,
         'deprecate_as': deprecate_as,
+        'does_generate_getter': does_generate_getter,
+        'does_generate_setter': does_generate_setter,
         'enum_type': idl_type.enum_type,
         'enum_values': idl_type.enum_values,
         'exposed_test': v8_utilities.exposed(attribute, interface),  # [Exposed]
@@ -161,6 +205,7 @@ def attribute_context(interface, attribute, interfaces):
         'has_custom_setter': has_custom_setter(attribute),
         'has_promise_type': idl_type.name == 'Promise',
         'has_setter': has_setter(interface, attribute),
+        'high_entropy': high_entropy,
         'idl_type': str(idl_type),
         'is_cached_accessor': is_cached_accessor,
         'is_call_with_execution_context': has_extended_attribute_value(attribute, 'CallWith', 'ExecutionContext'),
@@ -176,7 +221,7 @@ def attribute_context(interface, attribute, interfaces):
             extended_attributes['RaisesException'] in (None, 'Getter'),
         'is_keep_alive_for_gc': keep_alive_for_gc,
         'is_lazy_data_attribute': is_lazy_data_attribute,
-        'is_lenient_setter': 'LenientSetter' in extended_attributes,
+        'is_lenient_setter': is_lenient_setter,
         'is_lenient_this': 'LenientThis' in extended_attributes,
         'is_nullable': idl_type.is_nullable,
         'is_explicit_nullable': idl_type.is_explicit_nullable,
@@ -192,21 +237,26 @@ def attribute_context(interface, attribute, interfaces):
         'is_static': attribute.is_static,
         'is_url': 'URL' in extended_attributes,
         'is_unforgeable': is_unforgeable(attribute),
+        'measure_as': measure_as,
+        'name': attribute.name,
         'on_instance': v8_utilities.on_instance(interface, attribute),
         'on_interface': v8_utilities.on_interface(interface, attribute),
         'on_prototype': v8_utilities.on_prototype(interface, attribute),
-        'origin_trial_feature_name': v8_utilities.origin_trial_feature_name(attribute),  # [OriginTrialEnabled]
-        'use_output_parameter_for_result': idl_type.use_output_parameter_for_result,
-        'measure_as': measure_as,
-        'name': attribute.name,
+        'origin_trial_feature_name':
+            v8_utilities.origin_trial_feature_name(attribute, runtime_features),  # [RuntimeEnabled] for origin trial
+        'private_property_is_shared_between_getter_and_setter': private_property_is_shared_between_getter_and_setter,
         'property_attributes': property_attributes(interface, attribute),
-        'reflect_empty': extended_attributes.get('ReflectEmpty'),
-        'reflect_invalid': extended_attributes.get('ReflectInvalid', ''),
-        'reflect_missing': extended_attributes.get('ReflectMissing'),
-        'reflect_only': extended_attribute_value_as_list(attribute, 'ReflectOnly'),
-        'runtime_enabled_feature_name': v8_utilities.runtime_enabled_feature_name(attribute),  # [RuntimeEnabled]
+        'reflect_empty': cpp_content_attribute_value_name(
+            interface, extended_attributes.get('ReflectEmpty')),
+        'reflect_invalid': cpp_content_attribute_value_name(
+            interface, extended_attributes.get('ReflectInvalid', '')),
+        'reflect_missing': cpp_content_attribute_value_name(
+            interface, extended_attributes.get('ReflectMissing')),
+        'reflect_only': reflect_only,
+        'runtime_enabled_feature_name':
+            v8_utilities.runtime_enabled_feature_name(attribute, runtime_features),  # [RuntimeEnabled] if not in origin trial
         'secure_context_test': v8_utilities.secure_context(attribute, interface),  # [SecureContext]
-        'cached_accessor_name': '%s%sCachedAccessor' % (interface.name, attribute.name.capitalize()),
+        'use_output_parameter_for_result': idl_type.use_output_parameter_for_result,
         'world_suffixes': (
             ['', 'ForMainWorld']
             if 'PerWorldBindings' in extended_attributes
@@ -373,6 +423,7 @@ CONTENT_ATTRIBUTE_GETTER_NAMES = {
     'boolean': 'FastHasAttribute',
     'long': 'GetIntegralAttribute',
     'unsigned long': 'GetUnsignedIntegralAttribute',
+    'Element': 'GetElementAttribute',
 }
 
 
@@ -396,6 +447,9 @@ def getter_base_name(interface, attribute, arguments):
         return CONTENT_ATTRIBUTE_GETTER_NAMES[base_idl_type]
     if 'URL' in attribute.extended_attributes:
         return 'GetURLAttribute'
+    idl_type = attribute.idl_type
+    if idl_type.is_frozen_array:
+        return 'Get%sArrayAttribute' % idl_type.element_type
     return 'FastGetAttribute'
 
 
@@ -461,10 +515,22 @@ def setter_context(interface, attribute, interfaces, context):
     is_setter_raises_exception = (
         'RaisesException' in extended_attributes and
         extended_attributes['RaisesException'] in [None, 'Setter'])
-    # [LegacyInterfaceTypeChecking]
-    has_type_checking_interface = (
-        not is_legacy_interface_type_checking(interface, attribute) and
-        idl_type.is_wrapper_type)
+
+    has_type_checking_interface = idl_type.is_wrapper_type
+
+    use_common_reflection_setter = False
+    # Enable use_common_reflection_setter if
+    #  * extended_attributes is [CEReactions, Reflect] or
+    #    [CEReactions, Reflect, RuntimeEnabled],
+    #  * the type is boolean, DOMString, or DOMString?, and
+    #  * the interface inherits from 'Element'.
+    if ('Reflect' in extended_attributes and
+            'CEReactions' in extended_attributes and
+            str(idl_type) in ('boolean', 'DOMString', 'DOMString?') and
+            inherits_interface(interface.name, 'Element')):
+        if (len(extended_attributes) == 2 or
+                (len(extended_attributes) == 3 and 'RuntimeEnabled' in extended_attributes)):
+            use_common_reflection_setter = True
 
     context.update({
         'has_setter_exception_state':
@@ -476,6 +542,7 @@ def setter_context(interface, attribute, interfaces, context):
         'is_setter_call_with_script_state': has_extended_attribute_value(
             attribute, 'SetterCallWith', 'ScriptState'),
         'is_setter_raises_exception': is_setter_raises_exception,
+        'use_common_reflection_setter': use_common_reflection_setter,
         'v8_value_to_local_cpp_value': idl_type.v8_value_to_local_cpp_value(
             extended_attributes, 'v8_value', 'cpp_value'),
     })
@@ -519,6 +586,18 @@ def setter_expression(interface, attribute, context):
         arguments.append('is_null')
     if context['is_setter_raises_exception']:
         arguments.append('exception_state')
+    if context['use_common_reflection_setter']:
+        attr_name = scoped_content_attribute_name(interface, attribute)
+        if idl_type.base_type == 'boolean':
+            setter_name = 'V8SetReflectedBooleanAttribute'
+            arguments = ['info', '"%s"' % interface.name,
+                         '"%s"' % attribute.name, attr_name]
+        elif idl_type.base_type == 'DOMString':
+            if idl_type.is_nullable:
+                setter_name = 'V8SetReflectedNullableDOMStringAttribute'
+            else:
+                setter_name = 'V8SetReflectedDOMStringAttribute'
+            arguments = ['info', attr_name]
 
     return '%s(%s)' % (setter_name, ', '.join(arguments))
 
@@ -527,6 +606,7 @@ CONTENT_ATTRIBUTE_SETTER_NAMES = {
     'boolean': 'SetBooleanAttribute',
     'long': 'SetIntegralAttribute',
     'unsigned long': 'SetUnsignedIntegralAttribute',
+    'Element': 'SetElementAttribute',
 }
 
 
@@ -538,6 +618,9 @@ def setter_base_name(interface, attribute, arguments):
     base_idl_type = attribute.idl_type.base_type
     if base_idl_type in CONTENT_ATTRIBUTE_SETTER_NAMES:
         return CONTENT_ATTRIBUTE_SETTER_NAMES[base_idl_type]
+    idl_type = attribute.idl_type
+    if idl_type.is_frozen_array:
+        return 'Set%sArrayAttribute' % idl_type.element_type
     return 'setAttribute'
 
 
@@ -551,6 +634,15 @@ def scoped_content_attribute_name(interface, attribute):
         namespace = 'html_names'
         includes.add('core/html_names.h')
     return '%s::%sAttr' % (namespace, symbol_name)
+
+
+def cpp_content_attribute_value_name(interface, value):
+    if value == '':
+        return 'g_empty_atom'
+    if not value:
+        return value
+    includes.add('core/keywords.h')
+    return 'keywords::' + NameStyleConverter(value).to_enum_value()
 
 
 ################################################################################

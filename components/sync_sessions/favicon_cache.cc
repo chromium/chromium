@@ -11,7 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "components/favicon/core/favicon_service.h"
-#include "components/history/core/browser/history_service.h"
+#include "components/sync/model/sync_change_processor.h"
 #include "components/sync/model/time.h"
 #include "components/sync/protocol/favicon_image_specifics.pb.h"
 #include "components/sync/protocol/favicon_tracking_specifics.pb.h"
@@ -225,15 +225,25 @@ FaviconCache::FaviconCache(favicon::FaviconService* favicon_service,
                            history::HistoryService* history_service,
                            int max_sync_favicon_limit)
     : favicon_service_(favicon_service),
-      max_sync_favicon_limit_(max_sync_favicon_limit),
-      history_service_observer_(this),
-      weak_ptr_factory_(this) {
+      history_service_(history_service),
+      max_sync_favicon_limit_(max_sync_favicon_limit) {
   if (history_service)
     history_service_observer_.Add(history_service);
   DVLOG(1) << "Setting favicon limit to " << max_sync_favicon_limit;
 }
 
 FaviconCache::~FaviconCache() {}
+
+void FaviconCache::WaitUntilReadyToSync(base::OnceClosure done) {
+  // |history_service_| can be null in tests. In that case, no point in waiting.
+  if (!history_service_ || history_service_->backend_loaded()) {
+    std::move(done).Run();
+  } else {
+    // Wait until HistoryService's backend loads, reported via
+    // OnHistoryServiceLoaded().
+    wait_until_ready_to_sync_cb_.push_back(std::move(done));
+  }
+}
 
 syncer::SyncMergeResult FaviconCache::MergeDataAndStartSyncing(
     syncer::ModelType type,
@@ -467,37 +477,47 @@ void FaviconCache::OnFaviconVisited(const GURL& page_url,
                    syncer::SyncChange::ACTION_ADD));
 }
 
-bool FaviconCache::GetSyncedFaviconForFaviconURL(
-    const GURL& favicon_url,
-    scoped_refptr<base::RefCountedMemory>* favicon_png) const {
+favicon_base::FaviconRawBitmapResult
+FaviconCache::GetSyncedFaviconForFaviconURL(const GURL& favicon_url) const {
   if (!favicon_url.is_valid())
-    return false;
+    return favicon_base::FaviconRawBitmapResult();
   auto iter = synced_favicons_.find(favicon_url);
 
   UMA_HISTOGRAM_BOOLEAN("Sync.FaviconCacheLookupSucceeded",
                         iter != synced_favicons_.end());
   if (iter == synced_favicons_.end())
-    return false;
+    return favicon_base::FaviconRawBitmapResult();
 
   // TODO(zea): support getting other resolutions.
   if (!iter->second->bitmap_data[SIZE_16].bitmap_data.get())
-    return false;
+    return favicon_base::FaviconRawBitmapResult();
 
-  *favicon_png = iter->second->bitmap_data[SIZE_16].bitmap_data;
-  return true;
+  favicon_base::FaviconRawBitmapResult sync_bitmap_result;
+  // Size is at most 16x16.
+  sync_bitmap_result.pixel_size = gfx::Size(16, 16);
+  sync_bitmap_result.icon_type = favicon_base::IconType::kFavicon;
+  sync_bitmap_result.icon_url = favicon_url;
+  sync_bitmap_result.bitmap_data =
+      iter->second->bitmap_data[SIZE_16].bitmap_data;
+  return sync_bitmap_result;
 }
 
-bool FaviconCache::GetSyncedFaviconForPageURL(
-    const GURL& page_url,
-    scoped_refptr<base::RefCountedMemory>* favicon_png) const {
+favicon_base::FaviconRawBitmapResult FaviconCache::GetSyncedFaviconForPageURL(
+    const GURL& page_url) const {
   if (!page_url.is_valid())
-    return false;
+    return favicon_base::FaviconRawBitmapResult();
+  GURL icon_url = GetIconUrlForPageUrl(page_url);
+  if (icon_url.is_empty())
+    return favicon_base::FaviconRawBitmapResult();
+
+  return GetSyncedFaviconForFaviconURL(icon_url);
+}
+
+GURL FaviconCache::GetIconUrlForPageUrl(const GURL& page_url) const {
   auto iter = page_favicon_map_.find(page_url);
-
   if (iter == page_favicon_map_.end())
-    return false;
-
-  return GetSyncedFaviconForFaviconURL(iter->second, favicon_png);
+    return GURL();
+  return iter->second;
 }
 
 void FaviconCache::UpdateMappingsFromForeignTab(const sync_pb::SessionTab& tab,
@@ -1013,6 +1033,18 @@ void FaviconCache::OnURLsDeleted(history::HistoryService* history_service,
     favicon_tracking_sync_processor_->ProcessSyncChanges(FROM_HERE,
                                                          tracking_deletions);
   }
+}
+
+void FaviconCache::OnHistoryServiceLoaded(
+    history::HistoryService* history_service) {
+  // Make a copy before iterating over, in case triggering the callback has side
+  // effects.
+  std::vector<base::OnceClosure> callbacks =
+      std::move(wait_until_ready_to_sync_cb_);
+  wait_until_ready_to_sync_cb_.clear();
+
+  for (auto& cb : callbacks)
+    std::move(cb).Run();
 }
 
 }  // namespace sync_sessions

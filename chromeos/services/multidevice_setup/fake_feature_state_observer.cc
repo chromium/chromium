@@ -12,11 +12,11 @@ FakeFeatureStateObserver::FakeFeatureStateObserver() = default;
 
 FakeFeatureStateObserver::~FakeFeatureStateObserver() = default;
 
-mojom::FeatureStateObserverPtr
-FakeFeatureStateObserver::GenerateInterfacePtr() {
-  mojom::FeatureStateObserverPtr interface_ptr;
-  bindings_.AddBinding(this, mojo::MakeRequest(&interface_ptr));
-  return interface_ptr;
+mojo::PendingRemote<mojom::FeatureStateObserver>
+FakeFeatureStateObserver::GenerateRemote() {
+  mojo::PendingRemote<mojom::FeatureStateObserver> remote;
+  receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+  return remote;
 }
 
 void FakeFeatureStateObserver::OnFeatureStatesChanged(

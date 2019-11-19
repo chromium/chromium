@@ -28,7 +28,7 @@ class ChromeKeyboardWebContentsTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     chrome_keyboard_controller_client_ =
-        ChromeKeyboardControllerClient::CreateForTest(nullptr /* connector */);
+        ChromeKeyboardControllerClient::CreateForTest();
   }
 
   void TearDown() override {

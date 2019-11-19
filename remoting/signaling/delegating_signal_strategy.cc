@@ -21,8 +21,7 @@ DelegatingSignalStrategy::DelegatingSignalStrategy(
     : local_address_(local_address),
       delegate_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       client_task_runner_(client_task_runner),
-      send_iq_callback_(send_iq_callback),
-      weak_factory_(this) {
+      send_iq_callback_(send_iq_callback) {
   incoming_iq_callback_ =
       base::BindRepeating(&OnIncomingMessageFromDelegate,
                           weak_factory_.GetWeakPtr(), client_task_runner_);

@@ -12,6 +12,7 @@ import android.util.SparseArray;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.resources.ResourceLoader.ResourceLoaderCallback;
@@ -122,30 +123,39 @@ public class ResourceManager implements ResourceLoaderCallback {
      * @param resId   The id of the Android resource.
      * @return The corresponding {@link LayoutResource}.
      */
-    public LayoutResource getResource(int resType, int resId) {
+    public LayoutResource getResource(@AndroidResourceType int resType, int resId) {
         SparseArray<LayoutResource> bucket = mLoadedResources.get(resType);
         return bucket != null ? bucket.get(resId) : null;
     }
 
     @SuppressWarnings("cast")
     @Override
-    public void onResourceLoaded(int resType, int resId, Resource resource) {
-        if (resource == null || resource.getBitmap() == null) return;
+    public void onResourceLoaded(@AndroidResourceType int resType, int resId, Resource resource) {
+        if (resource == null) return;
+        Bitmap bitmap = resource.getBitmap();
+        if (bitmap == null) return;
 
         saveMetadataForLoadedResource(resType, resId, resource);
 
         if (mNativeResourceManagerPtr == 0) return;
 
-        nativeOnResourceReady(mNativeResourceManagerPtr, resType, resId, resource.getBitmap(),
-                resource.createNativeResource());
+        ResourceManagerJni.get().onResourceReady(mNativeResourceManagerPtr, ResourceManager.this,
+                resType, resId, bitmap, resource.getBitmapSize().width(),
+                resource.getBitmapSize().height(), resource.createNativeResource());
     }
 
     @Override
-    public void onResourceUnregistered(int resType, int resId) {
-        // Only remove dynamic bitmaps that were unregistered.
-        if (resType != AndroidResourceType.DYNAMIC_BITMAP) return;
+    public void onResourceUnregistered(@AndroidResourceType int resType, int resId) {
+        // Only remove dynamic resources that were unregistered.
+        if (resType != AndroidResourceType.DYNAMIC_BITMAP
+                && resType != AndroidResourceType.DYNAMIC) {
+            return;
+        }
 
-        nativeRemoveResource(mNativeResourceManagerPtr, resType, resId);
+        if (mNativeResourceManagerPtr == 0) return;
+
+        ResourceManagerJni.get().removeResource(
+                mNativeResourceManagerPtr, ResourceManager.this, resType, resId);
     }
 
     /**
@@ -153,10 +163,12 @@ public class ResourceManager implements ResourceLoaderCallback {
      */
     public void clearTintedResourceCache() {
         if (mNativeResourceManagerPtr == 0) return;
-        nativeClearTintedResourceCache(mNativeResourceManagerPtr);
+        ResourceManagerJni.get().clearTintedResourceCache(
+                mNativeResourceManagerPtr, ResourceManager.this);
     }
 
-    private void saveMetadataForLoadedResource(int resType, int resId, Resource resource) {
+    private void saveMetadataForLoadedResource(
+            @AndroidResourceType int resType, int resId, Resource resource) {
         SparseArray<LayoutResource> bucket = mLoadedResources.get(resType);
         if (bucket == null) {
             bucket = new SparseArray<LayoutResource>();
@@ -192,9 +204,12 @@ public class ResourceManager implements ResourceLoaderCallback {
         mResourceLoaders.put(loader.getResourceType(), loader);
     }
 
-    private native void nativeOnResourceReady(long nativeResourceManagerImpl, int resType,
-            int resId, Bitmap bitmap, long nativeResource);
-    private native void nativeRemoveResource(long nativeResourceManagerImpl, int resType,
-            int resId);
-    private native void nativeClearTintedResourceCache(long nativeResourceManagerImpl);
+    @NativeMethods
+    interface Natives {
+        void onResourceReady(long nativeResourceManagerImpl, ResourceManager caller, int resType,
+                int resId, Bitmap bitmap, int width, int height, long nativeResource);
+        void removeResource(
+                long nativeResourceManagerImpl, ResourceManager caller, int resType, int resId);
+        void clearTintedResourceCache(long nativeResourceManagerImpl, ResourceManager caller);
+    }
 }

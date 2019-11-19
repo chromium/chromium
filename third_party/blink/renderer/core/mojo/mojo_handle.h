@@ -31,8 +31,6 @@ class CORE_EXPORT MojoHandle final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static MojoHandle* Create(mojo::ScopedHandle);
-
   explicit MojoHandle(mojo::ScopedHandle);
 
   mojo::ScopedHandle TakeHandle();

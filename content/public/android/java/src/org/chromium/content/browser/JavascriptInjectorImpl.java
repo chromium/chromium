@@ -9,6 +9,7 @@ import android.util.Pair;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
 import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.JavascriptInjector;
@@ -45,7 +46,8 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     }
 
     public JavascriptInjectorImpl(WebContents webContents) {
-        mNativePtr = nativeInit(webContents, mRetainedObjects);
+        mNativePtr = JavascriptInjectorImplJni.get().init(
+                JavascriptInjectorImpl.this, webContents, mRetainedObjects);
     }
 
     @CalledByNative
@@ -60,7 +62,9 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
 
     @Override
     public void setAllowInspection(boolean allow) {
-        if (mNativePtr != 0) nativeSetAllowInspection(mNativePtr, allow);
+        if (mNativePtr != 0)
+            JavascriptInjectorImplJni.get().setAllowInspection(
+                    mNativePtr, JavascriptInjectorImpl.this, allow);
     }
 
     @Override
@@ -68,19 +72,27 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
             Object object, String name, Class<? extends Annotation> requiredAnnotation) {
         if (mNativePtr != 0 && object != null) {
             mInjectedObjects.put(name, new Pair<Object, Class>(object, requiredAnnotation));
-            nativeAddInterface(mNativePtr, object, name, requiredAnnotation);
+            JavascriptInjectorImplJni.get().addInterface(
+                    mNativePtr, JavascriptInjectorImpl.this, object, name, requiredAnnotation);
         }
     }
 
     @Override
     public void removeInterface(String name) {
         mInjectedObjects.remove(name);
-        if (mNativePtr != 0) nativeRemoveInterface(mNativePtr, name);
+        if (mNativePtr != 0)
+            JavascriptInjectorImplJni.get().removeInterface(
+                    mNativePtr, JavascriptInjectorImpl.this, name);
     }
 
-    private native long nativeInit(WebContents webContents, Object retainedObjects);
-    private native void nativeSetAllowInspection(long nativeJavascriptInjector, boolean allow);
-    private native void nativeAddInterface(
-            long nativeJavascriptInjector, Object object, String name, Class requiredAnnotation);
-    private native void nativeRemoveInterface(long nativeJavascriptInjector, String name);
+    @NativeMethods
+    interface Natives {
+        long init(JavascriptInjectorImpl caller, WebContents webContents, Object retainedObjects);
+        void setAllowInspection(
+                long nativeJavascriptInjector, JavascriptInjectorImpl caller, boolean allow);
+        void addInterface(long nativeJavascriptInjector, JavascriptInjectorImpl caller,
+                Object object, String name, Class requiredAnnotation);
+        void removeInterface(
+                long nativeJavascriptInjector, JavascriptInjectorImpl caller, String name);
+    }
 }

@@ -23,9 +23,12 @@
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "media/base/audio_parameters.h"
-#include "media/mojo/interfaces/audio_data_pipe.mojom.h"
-#include "media/mojo/interfaces/audio_input_stream.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "media/mojo/mojom/audio_input_stream.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/input_controller.h"
 #include "services/audio/input_sync_writer.h"
 #include "services/audio/loopback_coordinator.h"
@@ -60,16 +63,17 @@ class LoopbackStream : public media::mojom::AudioInputStream,
       base::OnceCallback<void(media::mojom::ReadOnlyAudioDataPipePtr)>;
   using BindingLostCallback = base::OnceCallback<void(LoopbackStream*)>;
 
-  LoopbackStream(CreatedCallback created_callback,
-                 BindingLostCallback binding_lost_callback,
-                 scoped_refptr<base::SequencedTaskRunner> flow_task_runner,
-                 media::mojom::AudioInputStreamRequest request,
-                 media::mojom::AudioInputStreamClientPtr client,
-                 media::mojom::AudioInputStreamObserverPtr observer,
-                 const media::AudioParameters& params,
-                 uint32_t shared_memory_count,
-                 LoopbackCoordinator* coordinator,
-                 const base::UnguessableToken& group_id);
+  LoopbackStream(
+      CreatedCallback created_callback,
+      BindingLostCallback binding_lost_callback,
+      scoped_refptr<base::SequencedTaskRunner> flow_task_runner,
+      mojo::PendingReceiver<media::mojom::AudioInputStream> receiver,
+      mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
+      mojo::PendingRemote<media::mojom::AudioInputStreamObserver> observer,
+      const media::AudioParameters& params,
+      uint32_t shared_memory_count,
+      LoopbackCoordinator* coordinator,
+      const base::UnguessableToken& group_id);
 
   ~LoopbackStream() final;
 
@@ -98,13 +102,6 @@ class LoopbackStream : public media::mojom::AudioInputStream,
   // are cases where requests to amplify are made by specifying values higher
   // than 1.0.
   static constexpr double kMaxVolume = 2.0;
-
-  // The amount of time in the past from which to capture the audio. The audio
-  // recorded from each LoopbackGroupMember is being generated with a target
-  // playout time in the near future (usually 1 to 20 ms). To avoid underflow,
-  // LoopbackStream fetches the audio from a position in the recent past.
-  static constexpr base::TimeDelta kCaptureDelay =
-      base::TimeDelta::FromMilliseconds(20);
 
  private:
   // Drives all audio flows, re-mixing the audio from multiple SnooperNodes into
@@ -201,6 +198,14 @@ class LoopbackStream : public media::mojom::AudioInputStream,
     int64_t frames_elapsed_ = 0;
     base::TimeTicks next_generate_time_;
 
+    // The amount of time in the past from which to capture the audio. The audio
+    // recorded from each SnooperNode input is being generated with a target
+    // playout time in the near future (usually 1 to 20 ms). To avoid underflow,
+    // audio is always fetched from a safe position in the recent past.
+    //
+    // This is updated to match the SnooperNode whose recording is most delayed.
+    base::TimeDelta capture_delay_;
+
     // Used to transfer the audio from each SnooperNode and mix them into a
     // single audio signal. |transfer_bus_| is only allocated when first needed,
     // but |mix_bus_| is allocated in the constructor because it is always
@@ -220,15 +225,15 @@ class LoopbackStream : public media::mojom::AudioInputStream,
   // Reports a fatal error to the client, and then runs the BindingLostCallback.
   void OnError();
 
-  // Run when any of |binding_|, |client_|, or |observer_| are closed. This
+  // Run when any of |receiver_|, |client_|, or |observer_| are closed. This
   // callback is generally used to automatically terminate this LoopbackStream.
   BindingLostCallback binding_lost_callback_;
 
   // Mojo bindings. If any of these is closed, the LoopbackStream will call
   // OnError(), which will run the |binding_lost_callback_|.
-  mojo::Binding<media::mojom::AudioInputStream> binding_;
-  media::mojom::AudioInputStreamClientPtr client_;
-  media::mojom::AudioInputStreamObserverPtr observer_;
+  mojo::Receiver<media::mojom::AudioInputStream> receiver_;
+  mojo::Remote<media::mojom::AudioInputStreamClient> client_;
+  mojo::Remote<media::mojom::AudioInputStreamObserver> observer_;
 
   // Used for identifying group members and snooping on their audio data flow.
   LoopbackCoordinator* const coordinator_;
@@ -246,7 +251,7 @@ class LoopbackStream : public media::mojom::AudioInputStream,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<LoopbackStream> weak_factory_;
+  base::WeakPtrFactory<LoopbackStream> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LoopbackStream);
 };

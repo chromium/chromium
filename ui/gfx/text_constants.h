@@ -10,9 +10,10 @@ namespace gfx {
 // TODO(msw): Distinguish between logical character stops and glyph stops?
 // TODO(msw): Merge with base::i18n::BreakIterator::BreakType.
 enum BreakType {
-  CHARACTER_BREAK = 0, // Stop cursor movement on neighboring characters.
-  WORD_BREAK,          // Stop cursor movement on nearest word boundaries.
-  LINE_BREAK,          // Stop cursor movement on line ends as shown on screen.
+  CHARACTER_BREAK = 0,  // Stop cursor movement on neighboring characters.
+  WORD_BREAK,           // Stop cursor movement on nearest word boundaries.
+  LINE_BREAK,           // Stop cursor movement on line ends as shown on screen.
+  FIELD_BREAK,          // Stop cursor movement on text ends.
 };
 
 // Specifies the selection behavior for a move/move-and-select command. For
@@ -62,6 +63,13 @@ enum HorizontalAlignment {
   ALIGN_CENTER,   // Align the text's center with that of its display area.
   ALIGN_RIGHT,    // Align the text's right edge with that of its display area.
   ALIGN_TO_HEAD,  // Align the text to its first strong character's direction.
+};
+
+// Vertical text alignment modes for multiline text.
+enum VerticalAlignment {
+  ALIGN_TOP = 0,  // Align the text's top edge with that of its display area.
+  ALIGN_MIDDLE,   // Align the text's center with that of its display area.
+  ALIGN_BOTTOM,   // Align the text's bottom edge with that of its display area.
 };
 
 // The directionality modes used to determine the base text direction.

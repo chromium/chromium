@@ -19,8 +19,7 @@
 
 namespace content {
 
-class BackgroundFetchContext;
-class RenderProcessHost;
+struct ServiceWorkerVersionInfo;
 
 class CONTENT_EXPORT BackgroundFetchServiceImpl
     : public blink::mojom::BackgroundFetchService {
@@ -29,18 +28,16 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
       scoped_refptr<BackgroundFetchContext> background_fetch_context,
       url::Origin origin,
       int render_frame_tree_node_id,
-      ResourceRequestInfo::WebContentsGetter wc_getter);
+      WebContents::Getter wc_getter);
   ~BackgroundFetchServiceImpl() override;
 
   static void CreateForWorker(
-      blink::mojom::BackgroundFetchServiceRequest request,
-      RenderProcessHost* render_process_host,
-      const url::Origin& origin);
+      const ServiceWorkerVersionInfo& info,
+      mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver);
 
   static void CreateForFrame(
-      RenderProcessHost* render_process_host,
-      int render_frame_id,
-      blink::mojom::BackgroundFetchServiceRequest request);
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver);
 
   // blink::mojom::BackgroundFetchService implementation.
   void Fetch(int64_t service_worker_registration_id,
@@ -51,39 +48,19 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
              blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
              FetchCallback callback) override;
   void GetIconDisplaySize(GetIconDisplaySizeCallback callback) override;
-  void MatchRequests(int64_t service_worker_registration_id,
-                     const std::string& developer_id,
-                     const std::string& unique_id,
-                     blink::mojom::FetchAPIRequestPtr request_to_match,
-                     blink::mojom::CacheQueryOptionsPtr cache_query_options,
-                     bool match_all,
-                     MatchRequestsCallback callback) override;
-  void UpdateUI(int64_t service_worker_registration_id,
-                const std::string& developer_id,
-                const std::string& unique_id,
-                const base::Optional<std::string>& title,
-                const SkBitmap& icon,
-                UpdateUICallback callback) override;
-  void Abort(int64_t service_worker_registration_id,
-             const std::string& developer_id,
-             const std::string& unique_id,
-             AbortCallback callback) override;
   void GetRegistration(int64_t service_worker_registration_id,
                        const std::string& developer_id,
                        GetRegistrationCallback callback) override;
   void GetDeveloperIds(int64_t service_worker_registration_id,
                        GetDeveloperIdsCallback callback) override;
-  void AddRegistrationObserver(
-      const std::string& unique_id,
-      blink::mojom::BackgroundFetchRegistrationObserverPtr observer) override;
 
  private:
-  static void CreateOnIoThread(
+  static void CreateOnCoreThread(
       scoped_refptr<BackgroundFetchContext> background_fetch_context,
       url::Origin origin,
       int render_frame_tree_node_id,
-      ResourceRequestInfo::WebContentsGetter wc_getter,
-      blink::mojom::BackgroundFetchServiceRequest request);
+      WebContents::Getter wc_getter,
+      mojo::PendingReceiver<blink::mojom::BackgroundFetchService> receiver);
 
   // Validates and returns whether the |developer_id|, |unique_id|, |requests|
   // and |title| respectively have valid values. The renderer will be flagged
@@ -92,7 +69,6 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
   bool ValidateUniqueId(const std::string& unique_id) WARN_UNUSED_RESULT;
   bool ValidateRequests(const std::vector<blink::mojom::FetchAPIRequestPtr>&
                             requests) WARN_UNUSED_RESULT;
-  bool ValidateTitle(const std::string& title) WARN_UNUSED_RESULT;
 
   // The Background Fetch context on which operations will be dispatched.
   scoped_refptr<BackgroundFetchContext> background_fetch_context_;
@@ -100,7 +76,7 @@ class CONTENT_EXPORT BackgroundFetchServiceImpl
   const url::Origin origin_;
 
   int render_frame_tree_node_id_;
-  ResourceRequestInfo::WebContentsGetter wc_getter_;
+  WebContents::Getter wc_getter_;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchServiceImpl);
 };

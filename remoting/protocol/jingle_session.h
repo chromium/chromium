@@ -15,7 +15,6 @@
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "crypto/rsa_private_key.h"
-#include "net/base/completion_callback.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/datagram_channel_factory.h"
 #include "remoting/protocol/jingle_messages.h"
@@ -183,7 +182,7 @@ class JingleSession : public Session {
   // The SessionPlugins attached to this session.
   std::vector<SessionPlugin*> plugins_;
 
-  base::WeakPtrFactory<JingleSession> weak_factory_;
+  base::WeakPtrFactory<JingleSession> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(JingleSession);
 };

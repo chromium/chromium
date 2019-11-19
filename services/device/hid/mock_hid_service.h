@@ -26,7 +26,7 @@ class MockHidService : public HidService {
  private:
   base::WeakPtr<HidService> GetWeakPtr() override;
 
-  base::WeakPtrFactory<MockHidService> weak_factory_;
+  base::WeakPtrFactory<MockHidService> weak_factory_{this};
 };
 
 }  // namespace device

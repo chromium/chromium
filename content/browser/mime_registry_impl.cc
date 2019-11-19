@@ -6,7 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/mime_util.h"
 
 namespace content {
@@ -17,9 +17,9 @@ MimeRegistryImpl::~MimeRegistryImpl() = default;
 
 // static
 void MimeRegistryImpl::Create(
-    blink::mojom::MimeRegistryRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<MimeRegistryImpl>(),
-                          std::move(request));
+    mojo::PendingReceiver<blink::mojom::MimeRegistry> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<MimeRegistryImpl>(),
+                              std::move(receiver));
 }
 
 void MimeRegistryImpl::GetMimeTypeFromExtension(

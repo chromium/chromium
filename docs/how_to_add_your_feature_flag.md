@@ -14,7 +14,7 @@ For example, if you want to use the flag in src/content, you should add a base::
 If you want to use the flag in blink, you should also read
 [Runtime Enable Features](https://www.chromium.org/blink/runtime-enabled-features).
 
-You can refer to [this CL](https://chromium-review.googlesource.com/c/554510/)
+You can refer to [this CL](https://chromium-review.googlesource.com/c/554510/) and [this document](https://chromium.googlesource.com/chromium/src/+/HEAD/content/child/InitializeBlinkFeatures.md)
 to see
 
 1. where to add the base::Feature
@@ -22,11 +22,7 @@ to see
 [[2](https://chromium-review.googlesource.com/c/554510/8/content/public/common/content_features.h)]
 2. how to use it
 [[1](https://chromium-review.googlesource.com/c/554510/8/content/common/service_worker/service_worker_utils.cc#153)]
-3. how to wire the base::Feature to WebRuntimeFeatures
-[[1](https://chromium-review.googlesource.com/c/554510/8/content/child/runtime_features.cc)]
-[[2](https://chromium-review.googlesource.com/c/554510/8/third_party/blink/public/platform/web_runtime_features.h)]
-[[3](https://chromium-review.googlesource.com/c/554510/third_party/blink/Source/platform/exported/web_runtime_features.cc)]
-[[4](https://chromium-review.googlesource.com/c/554510/8/third_party/blink/renderer/platform/runtime_enabled_features.json5)]
+3. how to wire your new base::Feature to a blink runtime feature[[1](https://chromium.googlesource.com/chromium/src/+/HEAD/content/child/InitializeBlinkFeatures.md)]
 4. how to use it in blink
 [[1](https://chromium-review.googlesource.com/c/554510/8/third_party/blnk/renderere/core/workers/worker_thread.cc)]
 

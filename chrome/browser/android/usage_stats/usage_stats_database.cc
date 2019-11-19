@@ -13,15 +13,17 @@
 #include "base/task/post_task.h"
 #include "chrome/browser/android/usage_stats/website_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/leveldb_proto/content/proto_database_provider_factory.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "content/public/browser/storage_partition.h"
 
 namespace usage_stats {
 
 using leveldb_proto::ProtoDatabaseProvider;
-using leveldb_proto::ProtoDatabaseProviderFactory;
 
 const char kNamespace[] = "UsageStats";
+const char kEventsDbName[] = "Events";
+const char kSuspensionsDbName[] = "Suspensions";
+const char kTokensDbName[] = "Tokens";
 
 const char kKeySeparator[] = "_";
 
@@ -33,33 +35,33 @@ const char kUnixTimeFormat[] = "%011d";
 UsageStatsDatabase::UsageStatsDatabase(Profile* profile)
     : website_event_db_initialized_(false),
       suspension_db_initialized_(false),
-      token_mapping_db_initialized_(false),
-      weak_ptr_factory_(this) {
+      token_mapping_db_initialized_(false) {
   ProtoDatabaseProvider* db_provider =
-      ProtoDatabaseProviderFactory::GetForBrowserContext(profile);
+      content::BrowserContext::GetDefaultStoragePartition(profile)
+          ->GetProtoDatabaseProvider();
 
   base::FilePath usage_stats_dir = profile->GetPath().Append(kNamespace);
 
   scoped_refptr<base::SequencedTaskRunner> db_task_runner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                       base::TaskPriority::BEST_EFFORT});
 
   website_event_db_ = db_provider->GetDB<WebsiteEvent>(
-      leveldb_proto::ProtoDbType::USAGE_STATS_WEBSITE_EVENT, usage_stats_dir,
-      db_task_runner);
+      leveldb_proto::ProtoDbType::USAGE_STATS_WEBSITE_EVENT,
+      usage_stats_dir.Append(kEventsDbName), db_task_runner);
 
   suspension_db_ = db_provider->GetDB<Suspension>(
-      leveldb_proto::ProtoDbType::USAGE_STATS_SUSPENSION, usage_stats_dir,
-      db_task_runner);
+      leveldb_proto::ProtoDbType::USAGE_STATS_SUSPENSION,
+      usage_stats_dir.Append(kSuspensionsDbName), db_task_runner);
 
   token_mapping_db_ = db_provider->GetDB<TokenMapping>(
-      leveldb_proto::ProtoDbType::USAGE_STATS_TOKEN_MAPPING, usage_stats_dir,
-      db_task_runner);
+      leveldb_proto::ProtoDbType::USAGE_STATS_TOKEN_MAPPING,
+      usage_stats_dir.Append(kTokensDbName), db_task_runner);
 
   InitializeDBs();
+  ExpireEvents(base::Time::NowFromSystemTime());
 }
 
-// Used for testing.
 UsageStatsDatabase::UsageStatsDatabase(
     std::unique_ptr<ProtoDatabase<WebsiteEvent>> website_event_db,
     std::unique_ptr<ProtoDatabase<Suspension>> suspension_db,
@@ -69,8 +71,7 @@ UsageStatsDatabase::UsageStatsDatabase(
       token_mapping_db_(std::move(token_mapping_db)),
       website_event_db_initialized_(false),
       suspension_db_initialized_(false),
-      token_mapping_db_initialized_(false),
-      weak_ptr_factory_(this) {
+      token_mapping_db_initialized_(false) {
   InitializeDBs();
 }
 
@@ -93,12 +94,13 @@ UsageStatsDatabase::Error ToError(bool isSuccess) {
                    : UsageStatsDatabase::Error::kUnknownError;
 }
 
-std::string CreateWebsiteEventKey(int64_t seconds, const std::string& fqdn) {
-  // Zero-pad the Unix time in seconds since epoch. Allows ascending timestamps
+std::string CreateWebsiteEventKey(int64_t seconds_since_unix_epoch,
+                                  const std::string& fqdn) {
+  // Zero-pad |seconds_since_unix_epoch|. Allows ascending timestamps
   // to sort lexicographically, supporting efficient range queries by key.
   char unixTime[kUnixTimeDigits + 1];
-  ssize_t printed =
-      base::strings::SafeSPrintf(unixTime, kUnixTimeFormat, seconds);
+  ssize_t printed = base::strings::SafeSPrintf(unixTime, kUnixTimeFormat,
+                                               seconds_since_unix_epoch);
   DCHECK(printed == kUnixTimeDigits);
 
   // Create the key from the time and fqdn (example: 01548276551_foo.com).
@@ -110,16 +112,15 @@ std::string CreateWebsiteEventKey(int64_t seconds, const std::string& fqdn) {
 void UsageStatsDatabase::InitializeDBs() {
   // Asynchronously initialize databases.
   website_event_db_->Init(
-      kNamespace, base::BindOnce(&UsageStatsDatabase::OnWebsiteEventInitDone,
-                                 weak_ptr_factory_.GetWeakPtr(), true));
+      base::BindOnce(&UsageStatsDatabase::OnWebsiteEventInitDone,
+                     weak_ptr_factory_.GetWeakPtr(), true));
 
-  suspension_db_->Init(kNamespace,
-                       base::BindOnce(&UsageStatsDatabase::OnSuspensionInitDone,
+  suspension_db_->Init(base::BindOnce(&UsageStatsDatabase::OnSuspensionInitDone,
                                       weak_ptr_factory_.GetWeakPtr(), true));
 
   token_mapping_db_->Init(
-      kNamespace, base::BindOnce(&UsageStatsDatabase::OnTokenMappingInitDone,
-                                 weak_ptr_factory_.GetWeakPtr(), true));
+      base::BindOnce(&UsageStatsDatabase::OnTokenMappingInitDone,
+                     weak_ptr_factory_.GetWeakPtr(), true));
 }
 
 void UsageStatsDatabase::GetAllEvents(EventsCallback callback) {
@@ -137,24 +138,25 @@ void UsageStatsDatabase::GetAllEvents(EventsCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void UsageStatsDatabase::QueryEventsInRange(int64_t start,
-                                            int64_t end,
+void UsageStatsDatabase::QueryEventsInRange(base::Time startTime,
+                                            base::Time endTime,
                                             EventsCallback callback) {
   // Defer execution if database is uninitialized.
   if (!website_event_db_initialized_) {
     website_event_db_callbacks_.emplace(base::BindOnce(
         &UsageStatsDatabase::QueryEventsInRange, weak_ptr_factory_.GetWeakPtr(),
-        start, end, std::move(callback)));
+        startTime, endTime, std::move(callback)));
     return;
   }
 
-  // Load all WebsiteEvents where the timestamp is
-  // in the specified range. Function accepts a half-open range [start, end) as
-  // input, but the database operates on fully-closed ranges. Because the
-  // timestamps are represented by integers, [start, end) is equivalent to
-  // [start, end - 1].
+  // Load all WebsiteEvents where the timestamp is in the specified range.
+  // Function accepts a half-open range [startTime, endTime) as input, but the
+  // database operates on fully-closed ranges. Because the timestamps are
+  // represented by integers, [startTime, endTime) is equivalent to  [startTime,
+  // endTime - 1].
   website_event_db_->LoadKeysAndEntriesInRange(
-      CreateWebsiteEventKey(start, ""), CreateWebsiteEventKey(end - 1, ""),
+      CreateWebsiteEventKey(startTime.ToDoubleT(), ""),
+      CreateWebsiteEventKey(endTime.ToDoubleT() - 1, ""),
       base::BindOnce(&UsageStatsDatabase::OnLoadEntriesForQueryEventsInRange,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -203,14 +205,16 @@ void UsageStatsDatabase::DeleteAllEvents(StatusCallback callback) {
       base::BindOnce(&UsageStatsDatabase::OnUpdateEntries,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
-void UsageStatsDatabase::DeleteEventsInRange(int64_t start,
-                                             int64_t end,
+
+void UsageStatsDatabase::DeleteEventsInRange(base::Time startTime,
+                                             base::Time endTime,
                                              StatusCallback callback) {
   // Defer execution if database is uninitialized.
   if (!website_event_db_initialized_) {
-    website_event_db_callbacks_.emplace(base::BindOnce(
-        &UsageStatsDatabase::DeleteEventsInRange,
-        weak_ptr_factory_.GetWeakPtr(), start, end, std::move(callback)));
+    website_event_db_callbacks_.emplace(
+        base::BindOnce(&UsageStatsDatabase::DeleteEventsInRange,
+                       weak_ptr_factory_.GetWeakPtr(), startTime, endTime,
+                       std::move(callback)));
     return;
   }
 
@@ -218,13 +222,14 @@ void UsageStatsDatabase::DeleteEventsInRange(int64_t start,
   // function, we should consolidate these two proto_db_ calls into a single
   // call.
 
-  // Load all keys where the timestamp is in the specified range, passing a
-  // callback to delete those entries. Function accepts a half-open range
-  // [start, end) as input, but the database operates on fully-closed ranges.
-  // Because the timestamps are represented by integers, [start, end) is
-  // equivalent to [start, end - 1].
+  // Load all WebsiteEvents where the timestamp is in the specified range.
+  // Function accepts a half-open range [startTime, endTime) as input, but the
+  // database operates on fully-closed ranges. Because the timestamps are
+  // represented by integers, [startTime, endTime) is equivalent to  [startTime,
+  // endTime - 1].
   website_event_db_->LoadKeysAndEntriesInRange(
-      CreateWebsiteEventKey(start, ""), CreateWebsiteEventKey(end - 1, ""),
+      CreateWebsiteEventKey(startTime.ToDoubleT(), ""),
+      CreateWebsiteEventKey(endTime.ToDoubleT() - 1, ""),
       base::BindOnce(&UsageStatsDatabase::OnLoadEntriesForDeleteEventsInRange,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -247,6 +252,15 @@ void UsageStatsDatabase::DeleteEventsWithMatchingDomains(
       base::BindRepeating(&KeyContainsDomainFilter, std::move(domains)),
       base::BindOnce(&UsageStatsDatabase::OnUpdateEntries,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void UsageStatsDatabase::ExpireEvents(base::Time now) {
+  base::Time seven_days_ago =
+      now - base::TimeDelta::FromDays(EXPIRY_THRESHOLD_DAYS);
+  DeleteEventsInRange(
+      base::Time::FromDoubleT(1), seven_days_ago,
+      base::BindOnce(&UsageStatsDatabase::OnWebsiteEventExpiryDone,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void UsageStatsDatabase::GetAllSuspensions(SuspensionsCallback callback) {
@@ -355,7 +369,6 @@ void UsageStatsDatabase::OnWebsiteEventInitDone(
     if (retry) {
       // Retry unsuccessful initialization.
       website_event_db_->Init(
-          kNamespace,
           base::BindOnce(&UsageStatsDatabase::OnWebsiteEventInitDone,
                          weak_ptr_factory_.GetWeakPtr(), false));
     }
@@ -378,8 +391,8 @@ void UsageStatsDatabase::OnSuspensionInitDone(
     if (retry) {
       // Retry unsuccessful initialization.
       suspension_db_->Init(
-          kNamespace, base::BindOnce(&UsageStatsDatabase::OnSuspensionInitDone,
-                                     weak_ptr_factory_.GetWeakPtr(), false));
+          base::BindOnce(&UsageStatsDatabase::OnSuspensionInitDone,
+                         weak_ptr_factory_.GetWeakPtr(), false));
     }
     return;
   }
@@ -401,7 +414,6 @@ void UsageStatsDatabase::OnTokenMappingInitDone(
     if (retry) {
       // Retry unsuccessful initialization.
       token_mapping_db_->Init(
-          kNamespace,
           base::BindOnce(&UsageStatsDatabase::OnTokenMappingInitDone,
                          weak_ptr_factory_.GetWeakPtr(), false));
     }
@@ -414,6 +426,8 @@ void UsageStatsDatabase::OnTokenMappingInitDone(
     token_mapping_db_callbacks_.pop();
   }
 }
+
+void UsageStatsDatabase::OnWebsiteEventExpiryDone(Error error) {}
 
 void UsageStatsDatabase::OnUpdateEntries(StatusCallback callback,
                                          bool isSuccess) {

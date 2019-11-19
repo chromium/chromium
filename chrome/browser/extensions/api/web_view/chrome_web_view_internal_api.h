@@ -17,7 +17,7 @@
 namespace extensions {
 
 class ChromeWebViewInternalContextMenusCreateFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("chromeWebViewInternal.contextMenusCreate",
                              WEBVIEWINTERNAL_CONTEXTMENUSCREATE)
@@ -26,7 +26,7 @@ class ChromeWebViewInternalContextMenusCreateFunction
  protected:
   ~ChromeWebViewInternalContextMenusCreateFunction() override {}
 
-  // UIThreadExtensionFunction implementation.
+  // ExtensionFunction implementation.
   ResponseAction Run() override;
 
  private:
@@ -34,7 +34,7 @@ class ChromeWebViewInternalContextMenusCreateFunction
 };
 
 class ChromeWebViewInternalContextMenusUpdateFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("chromeWebViewInternal.contextMenusUpdate",
                              WEBVIEWINTERNAL_CONTEXTMENUSUPDATE)
@@ -43,7 +43,7 @@ class ChromeWebViewInternalContextMenusUpdateFunction
  protected:
   ~ChromeWebViewInternalContextMenusUpdateFunction() override {}
 
-  // UIThreadExtensionFunction implementation.
+  // ExtensionFunction implementation.
   ResponseAction Run() override;
 
  private:
@@ -51,7 +51,7 @@ class ChromeWebViewInternalContextMenusUpdateFunction
 };
 
 class ChromeWebViewInternalContextMenusRemoveFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("chromeWebViewInternal.contextMenusRemove",
                              WEBVIEWINTERNAL_CONTEXTMENUSREMOVE)
@@ -60,7 +60,7 @@ class ChromeWebViewInternalContextMenusRemoveFunction
  protected:
   ~ChromeWebViewInternalContextMenusRemoveFunction() override {}
 
-  // UIThreadExtensionFunction implementation.
+  // ExtensionFunction implementation.
   ResponseAction Run() override;
 
  private:
@@ -68,7 +68,7 @@ class ChromeWebViewInternalContextMenusRemoveFunction
 };
 
 class ChromeWebViewInternalContextMenusRemoveAllFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("chromeWebViewInternal.contextMenusRemoveAll",
                              WEBVIEWINTERNAL_CONTEXTMENUSREMOVEALL)
@@ -77,7 +77,7 @@ class ChromeWebViewInternalContextMenusRemoveAllFunction
  protected:
   ~ChromeWebViewInternalContextMenusRemoveAllFunction() override {}
 
-  // UIThreadExtensionFunction implementation.
+  // ExtensionFunction implementation.
   ResponseAction Run() override;
 
  private:

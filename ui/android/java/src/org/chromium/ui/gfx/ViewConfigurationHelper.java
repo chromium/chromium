@@ -13,6 +13,7 @@ import android.view.ViewConfiguration;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.ui.R;
 
 /**
@@ -66,8 +67,9 @@ public class ViewConfigurationHelper {
         mViewConfiguration = configuration;
         mDensity = ContextUtils.getApplicationContext().getResources().getDisplayMetrics().density;
         assert mDensity > 0;
-        nativeUpdateSharedViewConfiguration(getMaximumFlingVelocity(), getMinimumFlingVelocity(),
-                getTouchSlop(), getDoubleTapSlop(), getMinScalingSpan());
+        ViewConfigurationHelperJni.get().updateSharedViewConfiguration(ViewConfigurationHelper.this,
+                getMaximumFlingVelocity(), getMinimumFlingVelocity(), getTouchSlop(),
+                getDoubleTapSlop(), getMinScalingSpan());
     }
 
     @CalledByNative
@@ -139,6 +141,10 @@ public class ViewConfigurationHelper {
         return viewConfigurationHelper;
     }
 
-    private native void nativeUpdateSharedViewConfiguration(float maximumFlingVelocity,
-            float minimumFlingVelocity, float touchSlop, float doubleTapSlop, float minScalingSpan);
+    @NativeMethods
+    interface Natives {
+        void updateSharedViewConfiguration(ViewConfigurationHelper caller,
+                float maximumFlingVelocity, float minimumFlingVelocity, float touchSlop,
+                float doubleTapSlop, float minScalingSpan);
+    }
 }

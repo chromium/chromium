@@ -24,7 +24,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_ATTRIBUTE_MUTATION_SCOPE_H_
 
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {

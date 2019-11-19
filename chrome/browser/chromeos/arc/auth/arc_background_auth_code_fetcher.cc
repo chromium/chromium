@@ -13,6 +13,8 @@
 #include "base/values.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "components/account_id/account_id.h"
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/url_constants.h"
@@ -21,8 +23,6 @@
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/url_request_context_getter.h"
-#include "services/identity/public/cpp/access_token_fetcher.h"
-#include "services/identity/public/cpp/access_token_info.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -59,8 +59,7 @@ ArcBackgroundAuthCodeFetcher::ArcBackgroundAuthCodeFetcher(
       profile_(profile),
       context_(profile_, account_id),
       initial_signin_(initial_signin),
-      is_primary_account_(is_primary_account),
-      weak_ptr_factory_(this) {}
+      is_primary_account_(is_primary_account) {}
 
 ArcBackgroundAuthCodeFetcher::~ArcBackgroundAuthCodeFetcher() = default;
 
@@ -87,7 +86,7 @@ void ArcBackgroundAuthCodeFetcher::OnPrepared(bool success) {
 
 void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
     GoogleServiceAuthError error,
-    identity::AccessTokenInfo token_info) {
+    signin::AccessTokenInfo token_info) {
   ResetFetchers();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
@@ -132,8 +131,8 @@ void ArcBackgroundAuthCodeFetcher::OnAccessTokenFetchComplete(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(kAuthTokenExchangeEndPoint);
   resource_request->load_flags =
-      net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE |
-      net::LOAD_DO_NOT_SEND_COOKIES | net::LOAD_DO_NOT_SAVE_COOKIES;
+      net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = "POST";
   resource_request->headers.SetHeader(kGetAuthCodeKey, kGetAuthCodeValue);
   simple_url_loader_ = network::SimpleURLLoader::Create(

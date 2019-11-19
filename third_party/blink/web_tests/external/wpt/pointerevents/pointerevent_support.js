@@ -252,3 +252,112 @@ function setup_pointerevent_test(testName, supportedPointerTypes) {
 function checkPointerEventType(event) {
     assert_equals(event.pointerType, expectedPointerType, "pointerType should be the same as the requested device.");
 }
+
+function touchScrollInTarget(target, direction) {
+    var x_delta = 0;
+    var y_delta = 0;
+    if (direction == "down") {
+        x_delta = 0;
+        y_delta = -10;
+    } else if (direction == "up") {
+        x_delta = 0;
+        y_delta = 10;
+    } else if (direction == "right") {
+        x_delta = -10;
+        y_delta = 0;
+    } else if (direction == "left") {
+        x_delta = 10;
+        y_delta = 0;
+    } else {
+        throw("scroll direction '" + direction + "' is not expected, direction should be 'down', 'up', 'left' or 'right'");
+    }
+    return new test_driver.Actions()
+                   .addPointer("touchPointer1", "touch")
+                   .pointerMove(0, 0, {origin: target})
+                   .pointerDown()
+                   .pointerMove(x_delta, y_delta, {origin: target})
+                   .pointerMove(2 * x_delta, 2 * y_delta, {origin: target})
+                   .pointerMove(3 * x_delta, 3 * y_delta, {origin: target})
+                   .pointerMove(4 * x_delta, 4 * y_delta, {origin: target})
+                   .pointerMove(5 * x_delta, 5 * y_delta, {origin: target})
+                   .pointerMove(6 * x_delta, 6 * y_delta, {origin: target})
+                   .pause(100)
+                   .pointerUp()
+                   .send();
+}
+
+function clickInTarget(pointerType, target) {
+    var pointerId = pointerType + "Pointer1";
+    return new test_driver.Actions()
+                   .addPointer(pointerId, pointerType)
+                   .pointerMove(0, 0, {origin: target})
+                   .pointerDown()
+                   .pointerUp()
+                   .send();
+}
+
+function pointerDragInTarget(pointerType, target, direction) {
+    var x_delta = 0;
+    var y_delta = 0;
+    if (direction == "down") {
+        x_delta = 0;
+        y_delta = 10;
+    } else if (direction == "up") {
+        x_delta = 0;
+        y_delta = -10;
+    } else if (direction == "right") {
+        x_delta = 10;
+        y_delta = 0;
+    } else if (direction == "left") {
+        x_delta = -10;
+        y_delta = 0;
+    } else {
+        throw("drag direction '" + direction + "' is not expected, direction should be 'down', 'up', 'left' or 'right'");
+    }
+    var pointerId = pointerType + "Pointer1";
+    return new test_driver.Actions()
+                   .addPointer(pointerId, pointerType)
+                   .pointerMove(0, 0, {origin: target})
+                   .pointerDown()
+                   .pointerMove(x_delta, y_delta, {origin: target})
+                   .pointerMove(2 * x_delta, 2 * y_delta, {origin: target})
+                   .pointerMove(3 * x_delta, 3 * y_delta, {origin: target})
+                   .pointerUp()
+                   .send();
+}
+
+function pointerHoverInTarget(pointerType, target, direction) {
+    var x_delta = 0;
+    var y_delta = 0;
+    if (direction == "down") {
+        x_delta = 0;
+        y_delta = 10;
+    } else if (direction == "up") {
+        x_delta = 0;
+        y_delta = -10;
+    } else if (direction == "right") {
+        x_delta = 10;
+        y_delta = 0;
+    } else if (direction == "left") {
+        x_delta = -10;
+        y_delta = 0;
+    } else {
+        throw("drag direction '" + direction + "' is not expected, direction should be 'down', 'up', 'left' or 'right'");
+    }
+    var pointerId = pointerType + "Pointer1";
+    return new test_driver.Actions()
+                   .addPointer(pointerId, pointerType)
+                   .pointerMove(0, 0, {origin: target})
+                   .pointerMove(x_delta, y_delta, {origin: target})
+                   .pointerMove(2 * x_delta, 2 * y_delta, {origin: target})
+                   .pointerMove(3 * x_delta, 3 * y_delta, {origin: target})
+                   .send();
+}
+
+function moveToDocument(pointerType) {
+    var pointerId = pointerType + "Pointer1";
+    return new test_driver.Actions()
+                   .addPointer(pointerId, pointerType)
+                   .pointerMove(0, 0)
+                   .send();
+}

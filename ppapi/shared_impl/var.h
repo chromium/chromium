@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/host_resource.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
@@ -169,14 +169,15 @@ class PPAPI_SHARED_EXPORT ArrayBufferVar : public Var {
 
   // Creates a new shared memory region, and copies the data in the
   // ArrayBufferVar into it. On the plugin side, host_shm_handle_id will be set
-  // to some value that is not -1. On the host side, plugin_shm_handle will be
-  // set to a valid SharedMemoryHandle.
+  // to some value that is not -1. On the host side, plugin_shm_region will be
+  // set to a valid UnsafeSharedMemoryRegion.
   //
   // Returns true if creating the shared memory (and copying) is successful,
   // false otherwise.
-  virtual bool CopyToNewShmem(PP_Instance instance,
-                              int* host_shm_handle_id,
-                              base::SharedMemoryHandle* plugin_shm_handle) = 0;
+  virtual bool CopyToNewShmem(
+      PP_Instance instance,
+      int* host_shm_handle_id,
+      base::UnsafeSharedMemoryRegion* plugin_shm_region) = 0;
 
   // Var override.
   ArrayBufferVar* AsArrayBufferVar() override;

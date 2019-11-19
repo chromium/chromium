@@ -6,10 +6,9 @@
 
 #include "chrome/installer/setup/setup_util.h"
 
-#include <windows.h>
-
 #include <objbase.h>
 #include <stddef.h>
+#include <windows.h>
 #include <wtsapi32.h>
 
 #include <algorithm>
@@ -38,7 +37,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "base/win/registry.h"
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
@@ -96,6 +97,43 @@ void RemoveLegacyIExecuteCommandKey(const InstallerState& installer_state) {
   }
 }
 
+// Remove the registration of profile statistics. This used to be reported to
+// Omaha, but no more.
+void RemoveProfileStatistics(const InstallerState& installer_state) {
+  const HKEY root = installer_state.root_key();
+  bool found = false;
+  bool deleted = true;
+  if (installer_state.system_install()) {
+    for (base::string16 key : {L"_NumAccounts", L"_NumSignedIn"}) {
+      base::string16 path(install_static::GetClientStateMediumKeyPath() +
+                          L"\\" + key);
+      if (base::win::RegKey(root, path.c_str(),
+                            KEY_QUERY_VALUE | KEY_WOW64_32KEY)
+              .Valid()) {
+        found = true;
+        if (!InstallUtil::DeleteRegistryKey(root, path, KEY_WOW64_32KEY))
+          deleted = false;
+      }
+    }
+  } else {
+    base::win::RegKey client_state;
+    if (client_state.Open(root, install_static::GetClientStateKeyPath().c_str(),
+                          KEY_QUERY_VALUE | KEY_SET_VALUE | KEY_WOW64_32KEY) ==
+        ERROR_SUCCESS) {
+      for (const base::char16* value : {STRING16_LITERAL("_NumAccounts"),
+                                        STRING16_LITERAL("_NumSignedIn"})) {
+          if (!client_state.HasValue(value))
+            continue;
+          found = true;
+          if (client_state.DeleteValue(value) != ERROR_SUCCESS)
+            deleted = false;
+        }
+    }
+  }
+  if (found)
+    UMA_HISTOGRAM_BOOLEAN("Setup.Install.RemoveProfileStatistics", deleted);
+}
+
 // "The binaries" once referred to the on-disk footprint of Chrome and/or Chrome
 // Frame when the products were configured to share such on-disk bits. Support
 // for this mode of install was dropped from ToT in December 2016. Remove any
@@ -118,7 +156,7 @@ void RemoveBinariesVersionKey(const InstallerState& installer_state) {
 // from an old multi-install GCF.
 void RemoveMultiChromeFrame(const InstallerState& installer_state) {
 // There never was a "Chromium Frame".
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // To maximize cleanup, unconditionally delete GCF's Clients and ClientState
   // keys unless single-install GCF is present. This condition is satisfied if
   // both keys exist, Clients\pv contains a value, and
@@ -192,12 +230,12 @@ void RemoveMultiChromeFrame(const InstallerState& installer_state) {
                                                                : ALL_FAILED));
   UMA_HISTOGRAM_ENUMERATION("Setup.Install.MultiChromeFrameRemoved", result,
                             NUM_RESULTS);
-#endif  // GOOGLE_CHROME_BUILD
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 void RemoveAppLauncherVersionKey(const InstallerState& installer_state) {
 // The app launcher was only registered for Google Chrome.
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   static constexpr wchar_t kLauncherGuid[] =
       L"{FDA71E6F-AC4C-4a00-8B70-9958A68906BF}";
 
@@ -210,12 +248,12 @@ void RemoveAppLauncherVersionKey(const InstallerState& installer_state) {
     UMA_HISTOGRAM_BOOLEAN("Setup.Install.DeleteAppLauncherClientsKey",
                           succeeded);
   }
-#endif  // GOOGLE_CHROME_BUILD
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 void RemoveAppHostExe(const InstallerState& installer_state) {
 // The app host was only installed for Google Chrome.
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   base::FilePath app_host(
       installer_state.target_path().Append(FILE_PATH_LITERAL("app_host.exe")));
 
@@ -223,12 +261,12 @@ void RemoveAppHostExe(const InstallerState& installer_state) {
     const bool succeeded = base::DeleteFile(app_host, false);
     UMA_HISTOGRAM_BOOLEAN("Setup.Install.DeleteAppHost", succeeded);
   }
-#endif  // GOOGLE_CHROME_BUILD
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 void RemoveLegacyChromeAppCommands(const InstallerState& installer_state) {
 // These app commands were only registered for Google Chrome.
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   base::string16 path(GetCommandKey(L"install-extension"));
 
   if (base::win::RegKey(installer_state.root_key(), path.c_str(),
@@ -239,7 +277,7 @@ void RemoveLegacyChromeAppCommands(const InstallerState& installer_state) {
     UMA_HISTOGRAM_BOOLEAN("Setup.Install.DeleteInstallExtensionCommand",
                           succeeded);
   }
-#endif  // GOOGLE_CHROME_BUILD
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 }  // namespace
@@ -663,8 +701,8 @@ int GetInstallAge(const InstallerState& installer_state) {
 }
 
 void RecordUnPackMetrics(UnPackStatus unpack_status,
-                         int32_t status,
-                         DWORD lzma_result,
+                         base::Optional<int32_t> ntstatus,
+                         base::Optional<DWORD> error_code,
                          UnPackConsumer consumer) {
   std::string consumer_name = "";
 
@@ -687,11 +725,16 @@ void RecordUnPackMetrics(UnPackStatus unpack_status,
       std::string(std::string(kUnPackStatusMetricsName) + "_" + consumer_name),
       unpack_status, UNPACK_STATUS_COUNT);
 
-  base::UmaHistogramSparse(
-      std::string(kUnPackResultMetricsName) + "_" + consumer_name, lzma_result);
-
-  base::UmaHistogramSparse(
-      std::string(kUnPackNTSTATUSMetricsName) + "_" + consumer_name, status);
+  if (error_code.has_value()) {
+    base::UmaHistogramSparse(
+        std::string(kUnPackResultMetricsName) + "_" + consumer_name,
+        *error_code);
+  }
+  if (ntstatus.has_value()) {
+    base::UmaHistogramSparse(
+        std::string(kUnPackNTSTATUSMetricsName) + "_" + consumer_name,
+        *ntstatus);
+  }
 }
 
 void RegisterEventLogProvider(const base::FilePath& install_directory,
@@ -769,6 +812,7 @@ void DoLegacyCleanups(const InstallerState& installer_state,
 
   // Cleanups that apply to any install mode.
   RemoveLegacyIExecuteCommandKey(installer_state);
+  RemoveProfileStatistics(installer_state);
 
   // The cleanups below only apply to normal Chrome, not side-by-side (canary).
   if (!install_static::InstallDetails::Get().is_primary_mode())
@@ -874,8 +918,7 @@ base::FilePath GetElevationServicePath(const base::FilePath& target_path,
 }
 
 base::string16 GetElevationServiceGuid(base::StringPiece16 prefix) {
-  base::string16 result =
-      InstallUtil::String16FromGUID(install_static::GetElevatorClsid());
+  auto result = base::win::String16FromGUID(install_static::GetElevatorClsid());
   result.insert(0, prefix.data(), prefix.size());
   return result;
 }
@@ -889,8 +932,7 @@ base::string16 GetElevationServiceAppidRegistryPath() {
 }
 
 base::string16 GetElevationServiceIid(base::StringPiece16 prefix) {
-  base::string16 result =
-      InstallUtil::String16FromGUID(install_static::GetElevatorIid());
+  auto result = base::win::String16FromGUID(install_static::GetElevatorIid());
   result.insert(0, prefix.data(), prefix.size());
   return result;
 }

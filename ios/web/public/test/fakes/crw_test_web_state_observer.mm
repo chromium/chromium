@@ -6,8 +6,8 @@
 
 #include <memory>
 
-#import "ios/web/public/web_state/navigation_context.h"
-#import "ios/web/web_state/navigation_context_impl.h"
+#import "ios/web/navigation/navigation_context_impl.h"
+#import "ios/web/public/navigation/navigation_context.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

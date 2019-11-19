@@ -67,7 +67,7 @@ class NonBlockingPushClient : public PushClient {
 
   base::ObserverList<PushClientObserver>::Unchecked observers_;
 
-  base::WeakPtrFactory<NonBlockingPushClient> weak_ptr_factory_;
+  base::WeakPtrFactory<NonBlockingPushClient> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NonBlockingPushClient);
 };

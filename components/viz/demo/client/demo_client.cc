@@ -20,29 +20,30 @@ DemoClient::DemoClient(const viz::FrameSinkId& frame_sink_id,
     : thread_(frame_sink_id.ToString()),
       frame_sink_id_(frame_sink_id),
       local_surface_id_(local_surface_id),
-      bounds_(bounds),
-      binding_(this) {
+      bounds_(bounds) {
   CHECK(thread_.Start());
 }
 
 DemoClient::~DemoClient() = default;
 
 void DemoClient::Initialize(
-    viz::mojom::CompositorFrameSinkClientRequest request,
-    viz::mojom::CompositorFrameSinkAssociatedPtrInfo sink_info) {
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient> receiver,
+    mojo::PendingAssociatedRemote<viz::mojom::CompositorFrameSink>
+        sink_remote) {
   thread_.task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DemoClient::InitializeOnThread, base::Unretained(this),
-                     std::move(request), std::move(sink_info), nullptr));
+      FROM_HERE, base::BindOnce(&DemoClient::InitializeOnThread,
+                                base::Unretained(this), std::move(receiver),
+                                std::move(sink_remote), mojo::NullRemote()));
 }
 
 void DemoClient::Initialize(
-    viz::mojom::CompositorFrameSinkClientRequest request,
-    viz::mojom::CompositorFrameSinkPtrInfo sink_info) {
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient> receiver,
+    mojo::PendingRemote<viz::mojom::CompositorFrameSink> sink_remote) {
   thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&DemoClient::InitializeOnThread, base::Unretained(this),
-                     std::move(request), nullptr, std::move(sink_info)));
+                     std::move(receiver), mojo::NullAssociatedRemote(),
+                     std::move(sink_remote)));
 }
 
 viz::LocalSurfaceIdAllocation DemoClient::Embed(
@@ -105,6 +106,7 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
         transform,
         /*quad_layer_rect=*/child_bounds,
         /*visible_quad_layer_rect=*/child_bounds,
+        /*rounded_corner_bounds=*/gfx::RRectF(),
         /*clip_rect=*/gfx::Rect(),
         /*is_clipped=*/false, /*are_contents_opaque=*/false, /*opacity=*/1.f,
         /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
@@ -130,6 +132,7 @@ viz::CompositorFrame DemoClient::CreateFrame(const viz::BeginFrameArgs& args) {
       gfx::Transform(),
       /*quad_layer_rect=*/output_rect,
       /*visible_quad_layer_rect=*/output_rect,
+      /*rounded_corner_bounds=*/gfx::RRectF(),
       /*clip_rect=*/gfx::Rect(),
       /*is_clipped=*/false, /*are_contents_opaque=*/false, /*opacity=*/1.f,
       /*blend_mode=*/SkBlendMode::kSrcOver, /*sorting_context_id=*/0);
@@ -151,14 +154,15 @@ viz::mojom::CompositorFrameSink* DemoClient::GetPtr() {
 }
 
 void DemoClient::InitializeOnThread(
-    viz::mojom::CompositorFrameSinkClientRequest request,
-    viz::mojom::CompositorFrameSinkAssociatedPtrInfo associated_sink_info,
-    viz::mojom::CompositorFrameSinkPtrInfo sink_info) {
-  binding_.Bind(std::move(request));
-  if (associated_sink_info)
-    associated_sink_.Bind(std::move(associated_sink_info));
+    mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient> receiver,
+    mojo::PendingAssociatedRemote<viz::mojom::CompositorFrameSink>
+        associated_sink_remote,
+    mojo::PendingRemote<viz::mojom::CompositorFrameSink> sink_remote) {
+  receiver_.Bind(std::move(receiver));
+  if (associated_sink_remote)
+    associated_sink_.Bind(std::move(associated_sink_remote));
   else
-    sink_.Bind(std::move(sink_info));
+    sink_.Bind(std::move(sink_remote));
   // Request for begin-frames.
   GetPtr()->SetNeedsBeginFrame(true);
 }
@@ -170,7 +174,7 @@ void DemoClient::DidReceiveCompositorFrameAck(
 
 void DemoClient::OnBeginFrame(
     const viz::BeginFrameArgs& args,
-    const base::flat_map<uint32_t, gfx::PresentationFeedback>& feedbacks) {
+    const viz::FrameTimingDetailsMap& timing_details) {
   // Generate a new compositor-frame for each begin-frame. This demo client
   // generates and submits the compositor-frame immediately. But it is possible
   // for the client to delay sending the compositor-frame. |args| includes the

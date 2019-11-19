@@ -65,7 +65,6 @@ TEST_F(DomDistillerRequestViewTest, TestTitleEscaped) {
                 Not(HasSubstr(has_special_chars)));
     handle.ClearJavaScriptBuffer();
   }
-
 }
 
 TEST_F(DomDistillerRequestViewTest, TestTitleNeverEmpty) {

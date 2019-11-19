@@ -8,6 +8,7 @@
 #include <linux/if.h>
 #include <stdint.h>
 #include <sys/ioctl.h>
+#include <utility>
 
 #include "base/bind_helpers.h"
 #include "base/files/scoped_file.h"
@@ -26,9 +27,7 @@ namespace {
 // Some kernel functions such as wireless_send_event and rtnetlink_ifinfo_prep
 // may send spurious messages over rtnetlink. RTM_NEWLINK messages where
 // ifi_change == 0 and rta_type == IFLA_WIRELESS should be ignored.
-bool IgnoreWirelessChange(const struct nlmsghdr* header,
-                          const struct ifinfomsg* msg) {
-  size_t length = IFLA_PAYLOAD(header);
+bool IgnoreWirelessChange(const struct ifinfomsg* msg, int length) {
   for (const struct rtattr* attr = IFLA_RTA(msg); RTA_OK(attr, length);
        attr = RTA_NEXT(attr, length)) {
     if (attr->rta_type == IFLA_WIRELESS && msg->ifi_change == 0)
@@ -39,13 +38,20 @@ bool IgnoreWirelessChange(const struct nlmsghdr* header,
 
 // Retrieves address from NETLINK address message.
 // Sets |really_deprecated| for IPv6 addresses with preferred lifetimes of 0.
+// Precondition: |header| must already be validated with NLMSG_OK.
 bool GetAddress(const struct nlmsghdr* header,
+                int header_length,
                 IPAddress* out,
                 bool* really_deprecated) {
   if (really_deprecated)
     *really_deprecated = false;
+
+  // Extract the message and update |header_length| to be the number of
+  // remaining bytes.
   const struct ifaddrmsg* msg =
       reinterpret_cast<struct ifaddrmsg*>(NLMSG_DATA(header));
+  header_length -= NLMSG_HDRLEN;
+
   size_t address_length = 0;
   switch (msg->ifa_family) {
     case AF_INET:
@@ -64,18 +70,27 @@ bool GetAddress(const struct nlmsghdr* header,
   // have the IFA_LOCAL attribute.
   uint8_t* address = NULL;
   uint8_t* local = NULL;
-  size_t length = IFA_PAYLOAD(header);
+  int length = IFA_PAYLOAD(header);
+  if (length > header_length) {
+    LOG(ERROR) << "ifaddrmsg length exceeds bounds";
+    return false;
+  }
   for (const struct rtattr* attr =
            reinterpret_cast<const struct rtattr*>(IFA_RTA(msg));
-       RTA_OK(attr, length);
-       attr = RTA_NEXT(attr, length)) {
+       RTA_OK(attr, length); attr = RTA_NEXT(attr, length)) {
     switch (attr->rta_type) {
       case IFA_ADDRESS:
-        DCHECK_GE(RTA_PAYLOAD(attr), address_length);
+        if (RTA_PAYLOAD(attr) < address_length) {
+          LOG(ERROR) << "attr does not have enough bytes to read an address";
+          return false;
+        }
         address = reinterpret_cast<uint8_t*>(RTA_DATA(attr));
         break;
       case IFA_LOCAL:
-        DCHECK_GE(RTA_PAYLOAD(attr), address_length);
+        if (RTA_PAYLOAD(attr) < address_length) {
+          LOG(ERROR) << "attr does not have enough bytes to read an address";
+          return false;
+        }
         local = reinterpret_cast<uint8_t*>(RTA_DATA(attr));
         break;
       case IFA_CACHEINFO: {
@@ -94,6 +109,16 @@ bool GetAddress(const struct nlmsghdr* header,
     return false;
   *out = IPAddress(address, address_length);
   return true;
+}
+
+// SafelyCastNetlinkMsgData<T> performs a bounds check before casting |header|'s
+// data to a |T*|. When the bounds check fails, returns nullptr.
+template <typename T>
+T* SafelyCastNetlinkMsgData(const struct nlmsghdr* header, int length) {
+  DCHECK(NLMSG_OK(header, static_cast<__u32>(length)));
+  if (length <= 0 || static_cast<size_t>(length) < NLMSG_HDRLEN + sizeof(T))
+    return nullptr;
+  return reinterpret_cast<T*>(NLMSG_DATA(header));
 }
 
 }  // namespace
@@ -118,7 +143,6 @@ AddressTrackerLinux::AddressTrackerLinux()
       address_callback_(base::DoNothing()),
       link_callback_(base::DoNothing()),
       tunnel_callback_(base::DoNothing()),
-      watcher_(FROM_HERE),
       ignored_interfaces_(),
       connection_type_initialized_(false),
       connection_type_initialized_cv_(&connection_type_lock_),
@@ -135,7 +159,6 @@ AddressTrackerLinux::AddressTrackerLinux(
       address_callback_(address_callback),
       link_callback_(link_callback),
       tunnel_callback_(tunnel_callback),
-      watcher_(FROM_HERE),
       ignored_interfaces_(ignored_interfaces),
       connection_type_initialized_(false),
       connection_type_initialized_cv_(&connection_type_lock_),
@@ -146,9 +169,7 @@ AddressTrackerLinux::AddressTrackerLinux(
   DCHECK(!link_callback.is_null());
 }
 
-AddressTrackerLinux::~AddressTrackerLinux() {
-  watcher_.StopWatchingFileDescriptor();
-}
+AddressTrackerLinux::~AddressTrackerLinux() = default;
 
 void AddressTrackerLinux::Init() {
   netlink_fd_.reset(socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE));
@@ -230,19 +251,15 @@ void AddressTrackerLinux::Init() {
   }
 
   if (tracking_) {
-    rv = base::MessageLoopCurrentForIO::Get()->WatchFileDescriptor(
-        netlink_fd_.get(), true, base::MessagePumpForIO::WATCH_READ, &watcher_,
-        this);
-    if (rv < 0) {
-      PLOG(ERROR) << "Could not watch NETLINK socket";
-      AbortAndForceOnline();
-      return;
-    }
+    watcher_ = base::FileDescriptorWatcher::WatchReadable(
+        netlink_fd_.get(),
+        base::BindRepeating(&AddressTrackerLinux::OnFileCanReadWithoutBlocking,
+                            base::Unretained(this)));
   }
 }
 
 void AddressTrackerLinux::AbortAndForceOnline() {
-  watcher_.StopWatchingFileDescriptor();
+  watcher_.reset();
   netlink_fd_.reset();
   AddressTrackerAutoLock lock(*this, connection_type_lock_);
   current_connection_type_ = NetworkChangeNotifier::CONNECTION_UNKNOWN;
@@ -321,31 +338,40 @@ void AddressTrackerLinux::ReadMessages(bool* address_changed,
     UpdateCurrentConnectionType();
 }
 
-void AddressTrackerLinux::HandleMessage(char* buffer,
-                                        size_t length,
+void AddressTrackerLinux::HandleMessage(const char* buffer,
+                                        int length,
                                         bool* address_changed,
                                         bool* link_changed,
                                         bool* tunnel_changed) {
   DCHECK(buffer);
-  for (struct nlmsghdr* header = reinterpret_cast<struct nlmsghdr*>(buffer);
-       NLMSG_OK(header, length);
+  // Note that NLMSG_NEXT decrements |length| to reflect the number of bytes
+  // remaining in |buffer|.
+  for (const struct nlmsghdr* header =
+           reinterpret_cast<const struct nlmsghdr*>(buffer);
+       length >= 0 && NLMSG_OK(header, static_cast<__u32>(length));
        header = NLMSG_NEXT(header, length)) {
+    // The |header| pointer should never precede |buffer|.
+    DCHECK_LE(buffer, reinterpret_cast<const char*>(header));
     switch (header->nlmsg_type) {
       case NLMSG_DONE:
         return;
       case NLMSG_ERROR: {
         const struct nlmsgerr* msg =
-            reinterpret_cast<struct nlmsgerr*>(NLMSG_DATA(header));
+            SafelyCastNetlinkMsgData<struct nlmsgerr>(header, length);
+        if (msg == nullptr)
+          return;
         LOG(ERROR) << "Unexpected netlink error " << msg->error << ".";
       } return;
       case RTM_NEWADDR: {
         IPAddress address;
         bool really_deprecated;
         struct ifaddrmsg* msg =
-            reinterpret_cast<struct ifaddrmsg*>(NLMSG_DATA(header));
+            SafelyCastNetlinkMsgData<struct ifaddrmsg>(header, length);
+        if (msg == nullptr)
+          return;
         if (IsInterfaceIgnored(msg->ifa_index))
           break;
-        if (GetAddress(header, &address, &really_deprecated)) {
+        if (GetAddress(header, length, &address, &really_deprecated)) {
           AddressTrackerAutoLock lock(*this, address_map_lock_);
           // Routers may frequently (every few seconds) output the IPv6 ULA
           // prefix which can cause the linux kernel to frequently output two
@@ -371,10 +397,12 @@ void AddressTrackerLinux::HandleMessage(char* buffer,
       case RTM_DELADDR: {
         IPAddress address;
         const struct ifaddrmsg* msg =
-            reinterpret_cast<struct ifaddrmsg*>(NLMSG_DATA(header));
+            SafelyCastNetlinkMsgData<struct ifaddrmsg>(header, length);
+        if (msg == nullptr)
+          return;
         if (IsInterfaceIgnored(msg->ifa_index))
           break;
-        if (GetAddress(header, &address, NULL)) {
+        if (GetAddress(header, length, &address, nullptr)) {
           AddressTrackerAutoLock lock(*this, address_map_lock_);
           if (address_map_.erase(address))
             *address_changed = true;
@@ -382,10 +410,12 @@ void AddressTrackerLinux::HandleMessage(char* buffer,
       } break;
       case RTM_NEWLINK: {
         const struct ifinfomsg* msg =
-            reinterpret_cast<struct ifinfomsg*>(NLMSG_DATA(header));
+            SafelyCastNetlinkMsgData<struct ifinfomsg>(header, length);
+        if (msg == nullptr)
+          return;
         if (IsInterfaceIgnored(msg->ifi_index))
           break;
-        if (IgnoreWirelessChange(header, msg)) {
+        if (IgnoreWirelessChange(msg, IFLA_PAYLOAD(header))) {
           VLOG(2) << "Ignoring RTM_NEWLINK message";
           break;
         }
@@ -408,7 +438,9 @@ void AddressTrackerLinux::HandleMessage(char* buffer,
       } break;
       case RTM_DELLINK: {
         const struct ifinfomsg* msg =
-            reinterpret_cast<struct ifinfomsg*>(NLMSG_DATA(header));
+            SafelyCastNetlinkMsgData<struct ifinfomsg>(header, length);
+        if (msg == nullptr)
+          return;
         if (IsInterfaceIgnored(msg->ifi_index))
           break;
         AddressTrackerAutoLock lock(*this, online_links_lock_);
@@ -424,8 +456,7 @@ void AddressTrackerLinux::HandleMessage(char* buffer,
   }
 }
 
-void AddressTrackerLinux::OnFileCanReadWithoutBlocking(int fd) {
-  DCHECK_EQ(netlink_fd_.get(), fd);
+void AddressTrackerLinux::OnFileCanReadWithoutBlocking() {
   bool address_changed;
   bool link_changed;
   bool tunnel_changed;
@@ -437,8 +468,6 @@ void AddressTrackerLinux::OnFileCanReadWithoutBlocking(int fd) {
   if (tunnel_changed)
     tunnel_callback_.Run();
 }
-
-void AddressTrackerLinux::OnFileCanWriteWithoutBlocking(int /* fd */) {}
 
 bool AddressTrackerLinux::IsTunnelInterface(int interface_index) const {
   char buf[IFNAMSIZ] = {0};
@@ -479,8 +508,7 @@ void AddressTrackerLinux::UpdateCurrentConnectionType() {
   current_connection_type_ = type;
 }
 
-int AddressTrackerLinux::GetThreadsWaitingForConnectionTypeInitForTesting()
-{
+int AddressTrackerLinux::GetThreadsWaitingForConnectionTypeInitForTesting() {
   AddressTrackerAutoLock lock(*this, connection_type_lock_);
   return threads_waiting_for_connection_type_initialization_;
 }

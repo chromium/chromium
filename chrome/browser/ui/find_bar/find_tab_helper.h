@@ -7,17 +7,22 @@
 
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/find_bar/find_notification_details.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/range/range.h"
+
+class FindResultObserver;
+enum class FindOnPageSelectionAction;
 
 // Per-tab find manager. Handles dealing with the life cycle of find sessions.
 class FindTabHelper : public content::WebContentsObserver,
                       public content::WebContentsUserData<FindTabHelper> {
  public:
   ~FindTabHelper() override;
+
+  void AddObserver(FindResultObserver* observer);
+  void RemoveObserver(FindResultObserver* observer);
 
   // Starts the Find operation by calling StartFinding on the Tab. This function
   // can be called from the outside as a result of hot-keys, so it uses the
@@ -31,7 +36,7 @@ class FindTabHelper : public content::WebContentsObserver,
                     bool run_synchronously_for_testing = false);
 
   // Stops the current Find operation.
-  void StopFinding(FindBarController::SelectionAction selection_action);
+  void StopFinding(FindOnPageSelectionAction selection_action);
 
   // When the user commits to a search query or jumps from one result
   // to the next, move accessibility focus to the next find result.
@@ -149,6 +154,8 @@ class FindTabHelper : public content::WebContentsObserver,
   // matches, the find selection rectangle, etc. The UI can access this
   // information to build its presentation.
   FindNotificationDetails last_search_result_;
+
+  base::ObserverList<FindResultObserver> observers_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

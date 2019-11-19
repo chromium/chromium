@@ -16,6 +16,8 @@ tail -f perry.log
 You might want to run it in `screen` as it'll take a while.
 """
 
+from __future__ import print_function
+
 import argparse
 import os
 import multiprocessing
@@ -69,7 +71,7 @@ def _CheckForFailure(data):
 
 def _PrintStatus(i, total, failed):
   status = '%d of %d tested (%d failures)' % (i+1, total, failed)
-  print '\r%s%s' % (status, '\x1B[K'),
+  print('\r%s%s' % (status, '\x1B[K'), end=' ')
   sys.stdout.flush()
 
 
@@ -77,7 +79,7 @@ def main():
   parser = argparse.ArgumentParser(description="Find failing pairs of tests.")
   parser.add_argument('binary', help='Path to gtest binary or wrapper script.')
   args = parser.parse_args()
-  print 'Getting test list...'
+  print('Getting test list...')
   all_tests = _GetTestList(args.binary)
   permuted = [(args.binary, x, y) for x in all_tests for y in all_tests]
 
@@ -87,8 +89,8 @@ def main():
   for i, result in enumerate(pool.imap_unordered(
       _CheckForFailure, permuted, 1)):
     if result:
-      print '\n--gtest_filter=%s:%s failed\n\n%s\n\n' % (
-          result[0], result[1], result[2])
+      print('\n--gtest_filter=%s:%s failed\n\n%s\n\n' % (result[0], result[1],
+                                                         result[2]))
       failed.append(result)
     _PrintStatus(i, total_count, len(failed))
 
@@ -96,9 +98,9 @@ def main():
   pool.join()
 
   if failed:
-    print 'Failed pairs:'
+    print('Failed pairs:')
     for f in failed:
-      print f[0], f[1]
+      print(f[0], f[1])
 
   return 0
 

@@ -237,6 +237,11 @@ __gCrWeb.common.getFavicons = function() {
  * @return {boolean} Whether the two URLs have the same origin.
  */
 __gCrWeb.common.isSameOrigin = function(url_one, url_two) {
+  if (!url_one || !url_two) {
+    // Attempting to create URL representations of an empty string throws an
+    // exception.
+    return false;
+  }
   return new URL(url_one).origin == new URL(url_two).origin;
 };
 

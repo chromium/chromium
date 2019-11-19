@@ -139,8 +139,7 @@ TCPSocketPosix::TCPSocketPosix(
     : socket_performance_watcher_(std::move(socket_performance_watcher)),
       logging_multiple_connect_attempts_(false),
       net_log_(NetLogWithSource::Make(net_log, NetLogSourceType::SOCKET)) {
-  net_log_.BeginEvent(NetLogEventType::SOCKET_ALIVE,
-                      source.ToEventParametersCallback());
+  net_log_.BeginEventReferencingSource(NetLogEventType::SOCKET_ALIVE, source);
 }
 
 TCPSocketPosix::~TCPSocketPosix() {
@@ -233,7 +232,7 @@ int TCPSocketPosix::Connect(const IPEndPoint& address,
     LogConnectBegin(AddressList(address));
 
   net_log_.BeginEvent(NetLogEventType::TCP_CONNECT_ATTEMPT,
-                      CreateNetLogIPEndPointCallback(&address));
+                      [&] { return CreateNetLogIPEndPointParams(&address); });
 
   SockaddrStorage storage;
   if (!address.ToSockAddr(storage.addr, &storage.addr_len))
@@ -485,7 +484,7 @@ int TCPSocketPosix::HandleAcceptCompleted(
 
   if (rv == OK) {
     net_log_.EndEvent(NetLogEventType::TCP_ACCEPT,
-                      CreateNetLogIPEndPointCallback(address));
+                      [&] { return CreateNetLogIPEndPointParams(address); });
   } else {
     net_log_.EndEventWithNetErrorCode(NetLogEventType::TCP_ACCEPT, rv);
   }
@@ -519,8 +518,8 @@ void TCPSocketPosix::ConnectCompleted(CompletionOnceCallback callback, int rv) {
 int TCPSocketPosix::HandleConnectCompleted(int rv) {
   // Log the end of this attempt (and any OS error it threw).
   if (rv != OK) {
-    net_log_.EndEvent(NetLogEventType::TCP_CONNECT_ATTEMPT,
-                      NetLog::IntCallback("os_error", errno));
+    net_log_.EndEventWithIntParams(NetLogEventType::TCP_CONNECT_ATTEMPT,
+                                   "os_error", errno);
     tag_ = SocketTag();
   } else {
     net_log_.EndEvent(NetLogEventType::TCP_CONNECT_ATTEMPT);
@@ -539,7 +538,7 @@ int TCPSocketPosix::HandleConnectCompleted(int rv) {
 
 void TCPSocketPosix::LogConnectBegin(const AddressList& addresses) const {
   net_log_.BeginEvent(NetLogEventType::TCP_CONNECT,
-                      addresses.CreateNetLogCallback());
+                      [&] { return addresses.NetLogParams(); });
 }
 
 void TCPSocketPosix::LogConnectEnd(int net_error) const {
@@ -557,9 +556,9 @@ void TCPSocketPosix::LogConnectEnd(int net_error) const {
     return;
   }
 
-  net_log_.EndEvent(
-      NetLogEventType::TCP_CONNECT,
-      CreateNetLogSourceAddressCallback(storage.addr, storage.addr_len));
+  net_log_.EndEvent(NetLogEventType::TCP_CONNECT, [&] {
+    return CreateNetLogSourceAddressParams(storage.addr, storage.addr_len);
+  });
 }
 
 void TCPSocketPosix::ReadCompleted(const scoped_refptr<IOBuffer>& buf,
@@ -598,8 +597,7 @@ int TCPSocketPosix::HandleReadCompleted(IOBuffer* buf, int rv) {
 
 void TCPSocketPosix::HandleReadCompletedHelper(int rv) {
   if (rv < 0) {
-    net_log_.AddEvent(NetLogEventType::SOCKET_READ_ERROR,
-                      CreateNetLogSocketErrorCallback(rv, errno));
+    NetLogSocketError(net_log_, NetLogEventType::SOCKET_READ_ERROR, rv, errno);
   }
 }
 
@@ -612,8 +610,7 @@ void TCPSocketPosix::WriteCompleted(const scoped_refptr<IOBuffer>& buf,
 
 int TCPSocketPosix::HandleWriteCompleted(IOBuffer* buf, int rv) {
   if (rv < 0) {
-    net_log_.AddEvent(NetLogEventType::SOCKET_WRITE_ERROR,
-                      CreateNetLogSocketErrorCallback(rv, errno));
+    NetLogSocketError(net_log_, NetLogEventType::SOCKET_WRITE_ERROR, rv, errno);
     return rv;
   }
 

@@ -1,0 +1,53 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/test.gni")
+
+source_set("common") {
+  sources = [
+    "page_end_reason.h",
+    "page_load_metrics_constants.h",
+    "page_load_metrics_util.cc",
+    "page_load_metrics_util.h",
+    "page_load_timing.cc",
+    "page_load_timing.h",
+  ]
+  deps = [
+    ":page_load_metrics_mojom",
+    "//base",
+    "//net",
+    "//third_party/blink/public:blink_headers",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/page_load_metrics_test_util.cc",
+    "test/page_load_metrics_test_util.h",
+    "test/weak_mock_timer.cc",
+    "test/weak_mock_timer.h",
+  ]
+  deps = [
+    ":common",
+    ":page_load_metrics_mojom",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+mojom("page_load_metrics_mojom") {
+  sources = [
+    "page_load_metrics.mojom",
+  ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
+    "//url/mojom:url_mojom_origin",
+  ]
+}

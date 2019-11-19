@@ -130,7 +130,7 @@ void UpdateCheckerImpl::CheckForUpdates(
   ids_checked_ = ids_checked;
   update_check_callback_ = std::move(update_check_callback);
 
-  base::PostTaskWithTraitsAndReply(
+  base::PostTaskAndReply(
       FROM_HERE, kTaskTraits,
       base::BindOnce(&UpdateCheckerImpl::ReadUpdaterStateAttributes,
                      base::Unretained(this)),

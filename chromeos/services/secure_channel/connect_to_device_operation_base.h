@@ -43,8 +43,7 @@ class ConnectToDeviceOperationBase
                                                     connection_priority),
         device_id_pair_(device_id_pair),
         task_runner_(task_runner),
-        pending_connection_attempt_priority_(connection_priority),
-        weak_ptr_factory_(this) {
+        pending_connection_attempt_priority_(connection_priority) {
     // Attempt a connection; however, post this as a task to be run after the
     // constructor is finished. This ensures that the derived type is fully
     // constructed before a virtual function is invoked.
@@ -108,7 +107,7 @@ class ConnectToDeviceOperationBase
   const DeviceIdPair& device_id_pair_;
   scoped_refptr<base::TaskRunner> task_runner_;
   base::Optional<ConnectionPriority> pending_connection_attempt_priority_;
-  base::WeakPtrFactory<ConnectToDeviceOperationBase> weak_ptr_factory_;
+  base::WeakPtrFactory<ConnectToDeviceOperationBase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ConnectToDeviceOperationBase);
 };

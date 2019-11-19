@@ -222,5 +222,5 @@ that is not so trusting of its own cache.
 
 [1]: https://chromium.googlesource.com/infra/luci/luci-go/+/master/cipd/
 [2]: /docs/adding_to_third_party.md
-[3]: https://chromium.googlesource.com/infra/luci/luci-go/+/master/cipd/client/cipd/local/pkgdef.go
+[3]: https://chromium.googlesource.com/infra/luci/luci-go/+/master/cipd/client/cipd/builder/pkgdef.go
 [4]: https://chrome-infra-auth.appspot.com/auth/groups/project-chromium-cipd-owners

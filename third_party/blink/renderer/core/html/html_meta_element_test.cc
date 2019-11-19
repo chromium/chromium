@@ -5,22 +5,37 @@
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
+#include "third_party/blink/renderer/core/css/media_query_list.h"
+#include "third_party/blink/renderer/core/css/media_query_matcher.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
-class HTMLMetaElementTest : public PageTestBase {
+class HTMLMetaElementTest : public PageTestBase,
+                            private ScopedDisplayCutoutAPIForTest,
+                            private ScopedMetaColorSchemeForTest,
+                            private ScopedMediaQueryPrefersColorSchemeForTest,
+                            private ScopedCSSColorSchemeForTest {
  public:
+  HTMLMetaElementTest()
+      : ScopedDisplayCutoutAPIForTest(true),
+        ScopedMetaColorSchemeForTest(true),
+        ScopedMediaQueryPrefersColorSchemeForTest(true),
+        ScopedCSSColorSchemeForTest(true) {}
   void SetUp() override {
     PageTestBase::SetUp();
-
-    RuntimeEnabledFeatures::SetDisplayCutoutAPIEnabled(true);
     GetDocument().GetSettings()->SetViewportMetaEnabled(true);
   }
 
@@ -33,21 +48,24 @@ class HTMLMetaElementTest : public PageTestBase {
   }
 
  protected:
-  HTMLMetaElement* CreateSupportedColorSchemesMeta(
-      const AtomicString& content) {
-    HTMLMetaElement* meta = HTMLMetaElement::Create(GetDocument());
-    meta->setAttribute(html_names::kNameAttr, "supported-color-schemes");
+  HTMLMetaElement* CreateColorSchemeMeta(const AtomicString& content) {
+    auto* meta = MakeGarbageCollected<HTMLMetaElement>(GetDocument());
+    meta->setAttribute(html_names::kNameAttr, "color-scheme");
     meta->setAttribute(html_names::kContentAttr, content);
     return meta;
   }
 
-  void SetSupportedColorSchemes(const AtomicString& content) {
-    GetDocument().head()->AppendChild(CreateSupportedColorSchemesMeta(content));
+  void SetColorScheme(const AtomicString& content) {
+    auto* meta = To<HTMLMetaElement>(GetDocument().head()->firstChild());
+    ASSERT_TRUE(meta);
+    meta->setAttribute(html_names::kContentAttr, content);
   }
 
-  bool SupportsColorScheme(ColorScheme scheme) const {
-    return GetDocument().GetStyleEngine().GetSupportedColorSchemes().Contains(
-        scheme);
+  void ExpectComputedColorScheme(const String& expected) const {
+    auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(
+        GetDocument().documentElement());
+    EXPECT_EQ(expected,
+              computed->GetPropertyValue(CSSPropertyID::kColorScheme));
   }
 
  private:
@@ -81,108 +99,156 @@ TEST_F(HTMLMetaElementTest, ViewportFit_Invalid) {
             LoadTestPageAndReturnViewportFit("invalid"));
 }
 
-TEST_F(HTMLMetaElementTest, SupportedColorSchemesProcessing_LastWins) {
+TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_FirstWins) {
   GetDocument().head()->SetInnerHTMLFromString(R"HTML(
-    <meta name="supported-color-schemes" content="dark">
-    <meta name="supported-color-schemes" content="light">
+    <meta name="color-scheme" content="dark">
+    <meta name="color-scheme" content="light">
   )HTML");
 
-  EXPECT_TRUE(SupportsColorScheme(ColorScheme::kLight));
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kDark));
+  ExpectComputedColorScheme("dark");
 }
 
-TEST_F(HTMLMetaElementTest, SupportedColorSchemesProcessing_Remove) {
+TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_Remove) {
   GetDocument().head()->SetInnerHTMLFromString(R"HTML(
-    <meta name="supported-color-schemes" content="dark">
-    <meta id="last-meta" name="supported-color-schemes" content="light">
+    <meta id="first-meta" name="color-scheme" content="dark">
+    <meta name="color-scheme" content="light">
   )HTML");
 
-  GetDocument().getElementById("last-meta")->remove();
+  ExpectComputedColorScheme("dark");
 
-  EXPECT_TRUE(SupportsColorScheme(ColorScheme::kLight));
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kDark));
+  GetDocument().getElementById("first-meta")->remove();
+
+  ExpectComputedColorScheme("light");
 }
 
-TEST_F(HTMLMetaElementTest, SupportedColorSchemesProcessing_InsertBefore) {
+TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_InsertBefore) {
   GetDocument().head()->SetInnerHTMLFromString(R"HTML(
-    <meta name="supported-color-schemes" content="dark">
+    <meta name="color-scheme" content="dark">
   )HTML");
+
+  ExpectComputedColorScheme("dark");
 
   Element* head = GetDocument().head();
-  head->insertBefore(CreateSupportedColorSchemesMeta("light"),
-                     head->firstChild());
+  head->insertBefore(CreateColorSchemeMeta("light"), head->firstChild());
 
-  EXPECT_TRUE(SupportsColorScheme(ColorScheme::kLight));
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kDark));
+  ExpectComputedColorScheme("light");
 }
 
-TEST_F(HTMLMetaElementTest, SupportedColorSchemesProcessing_AppendChild) {
+TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_AppendChild) {
   GetDocument().head()->SetInnerHTMLFromString(R"HTML(
-    <meta name="supported-color-schemes" content="dark">
+    <meta name="color-scheme" content="dark">
   )HTML");
 
-  GetDocument().head()->AppendChild(CreateSupportedColorSchemesMeta("light"));
+  ExpectComputedColorScheme("dark");
 
-  EXPECT_TRUE(SupportsColorScheme(ColorScheme::kLight));
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kDark));
+  GetDocument().head()->AppendChild(CreateColorSchemeMeta("light"));
+
+  ExpectComputedColorScheme("dark");
 }
 
-TEST_F(HTMLMetaElementTest, SupportedColorSchemesProcessing_SetAttribute) {
+TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_SetAttribute) {
   GetDocument().head()->SetInnerHTMLFromString(R"HTML(
-    <meta id="meta" name="supported-color-schemes" content="dark">
+    <meta id="meta" name="color-scheme" content="dark">
   )HTML");
+
+  ExpectComputedColorScheme("dark");
 
   GetDocument().getElementById("meta")->setAttribute(html_names::kContentAttr,
                                                      "light");
 
-  EXPECT_TRUE(SupportsColorScheme(ColorScheme::kLight));
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kDark));
+  ExpectComputedColorScheme("light");
 }
 
-TEST_F(HTMLMetaElementTest, SupportedColorSchemesProcessing_RemoveAttribute) {
+TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveContentAttribute) {
   GetDocument().head()->SetInnerHTMLFromString(R"HTML(
-    <meta id="meta" name="supported-color-schemes" content="dark">
+    <meta id="meta" name="color-scheme" content="dark">
   )HTML");
+
+  ExpectComputedColorScheme("dark");
 
   GetDocument().getElementById("meta")->removeAttribute(
       html_names::kContentAttr);
 
-  EXPECT_TRUE(SupportsColorScheme(ColorScheme::kDark));
+  ExpectComputedColorScheme("normal");
 }
 
-TEST_F(HTMLMetaElementTest, SupportedColorSchemesParsing) {
-  SetSupportedColorSchemes("");
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kLight));
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kDark));
+TEST_F(HTMLMetaElementTest, ColorSchemeProcessing_RemoveNameAttribute) {
+  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+    <meta id="meta" name="color-scheme" content="dark">
+  )HTML");
 
-  SetSupportedColorSchemes("light");
-  EXPECT_TRUE(SupportsColorScheme(ColorScheme::kLight));
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kDark));
+  ExpectComputedColorScheme("dark");
 
-  SetSupportedColorSchemes("dark");
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kLight));
-  EXPECT_TRUE(SupportsColorScheme(ColorScheme::kDark));
+  GetDocument().getElementById("meta")->removeAttribute(html_names::kNameAttr);
 
-  SetSupportedColorSchemes("light dark");
-  EXPECT_TRUE(SupportsColorScheme(ColorScheme::kLight));
-  EXPECT_TRUE(SupportsColorScheme(ColorScheme::kDark));
+  ExpectComputedColorScheme("normal");
+}
 
-  SetSupportedColorSchemes("light,dark");
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kLight));
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kDark));
+TEST_F(HTMLMetaElementTest, ColorSchemeParsing) {
+  GetDocument().head()->AppendChild(CreateColorSchemeMeta(""));
 
-  SetSupportedColorSchemes("light,");
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kLight));
+  SetColorScheme("");
+  ExpectComputedColorScheme("normal");
 
-  SetSupportedColorSchemes(",light");
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kLight));
+  SetColorScheme("normal");
+  ExpectComputedColorScheme("normal");
 
-  SetSupportedColorSchemes(", light");
-  EXPECT_TRUE(SupportsColorScheme(ColorScheme::kLight));
+  SetColorScheme("light");
+  ExpectComputedColorScheme("light");
 
-  SetSupportedColorSchemes("light, dark");
-  EXPECT_FALSE(SupportsColorScheme(ColorScheme::kLight));
-  EXPECT_TRUE(SupportsColorScheme(ColorScheme::kDark));
+  SetColorScheme("dark");
+  ExpectComputedColorScheme("dark");
+
+  SetColorScheme("light dark");
+  ExpectComputedColorScheme("light dark");
+
+  SetColorScheme(" BLUE  light   ");
+  ExpectComputedColorScheme("BLUE light");
+
+  SetColorScheme("light,dark");
+  ExpectComputedColorScheme("normal");
+
+  SetColorScheme("light,");
+  ExpectComputedColorScheme("normal");
+
+  SetColorScheme(",light");
+  ExpectComputedColorScheme("normal");
+
+  SetColorScheme(", light");
+  ExpectComputedColorScheme("normal");
+
+  SetColorScheme("light, dark");
+  ExpectComputedColorScheme("normal");
+}
+
+TEST_F(HTMLMetaElementTest, ColorSchemeForcedDarkeningAndMQ) {
+  ColorSchemeHelper color_scheme_helper;
+  color_scheme_helper.SetPreferredColorScheme(GetDocument(),
+                                              PreferredColorScheme::kDark);
+
+  auto* media_query = GetDocument().GetMediaQueryMatcher().MatchMedia(
+      "(prefers-color-scheme: dark)");
+  EXPECT_TRUE(media_query->matches());
+  GetDocument().GetSettings()->SetForceDarkModeEnabled(true);
+  EXPECT_FALSE(media_query->matches());
+
+  GetDocument().head()->AppendChild(CreateColorSchemeMeta("light"));
+  EXPECT_FALSE(media_query->matches());
+
+  SetColorScheme("dark");
+  EXPECT_TRUE(media_query->matches());
+
+  SetColorScheme("light dark");
+  EXPECT_TRUE(media_query->matches());
+}
+
+TEST_F(HTMLMetaElementTest, ReferrerPolicyWithoutContent) {
+  GetDocument().head()->SetInnerHTMLFromString(R"HTML(
+    <meta name="referrer" content="strict-origin">
+    <meta name="referrer" >
+  )HTML");
+  EXPECT_EQ(network::mojom::ReferrerPolicy::kStrictOrigin,
+            GetDocument().GetReferrerPolicy());
 }
 
 }  // namespace blink

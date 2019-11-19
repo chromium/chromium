@@ -56,7 +56,7 @@ class ChromeNativeAppWindowViewsWin : public ChromeNativeAppWindowViewsAura {
   // Whether the InitParams indicated that this window should be translucent.
   bool is_translucent_;
 
-  base::WeakPtrFactory<ChromeNativeAppWindowViewsWin> weak_ptr_factory_;
+  base::WeakPtrFactory<ChromeNativeAppWindowViewsWin> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeNativeAppWindowViewsWin);
 };

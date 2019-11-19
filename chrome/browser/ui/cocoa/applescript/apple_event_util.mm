@@ -11,7 +11,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -96,6 +95,16 @@ NSAppleEventDescriptor* ValueToAppleEventDescriptor(const base::Value* value) {
       }
       break;
     }
+
+    // TODO(crbug.com/859477): Remove after root cause is found.
+    case base::Value::Type::DEAD:
+      CHECK(false);
+      break;
+
+    // TODO(crbug.com/859477): Remove after root cause is found.
+    default:
+      CHECK(false);
+      break;
   }
 
   return descriptor;
@@ -103,10 +112,6 @@ NSAppleEventDescriptor* ValueToAppleEventDescriptor(const base::Value* value) {
 
 bool IsJavaScriptEnabledForProfile(Profile* profile) {
   DCHECK(profile);
-  if (!base::FeatureList::IsEnabled(
-          features::kAppleScriptExecuteJavaScriptMenuItem))
-    return YES;
-
   PrefService* prefs = profile->GetPrefs();
   return prefs->GetBoolean(prefs::kAllowJavascriptAppleEvents);
 }

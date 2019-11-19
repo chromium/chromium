@@ -10,7 +10,7 @@
  * Launches the PaymentRequest UI that request a payer name and offers free
  * shipping worldwide.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     var request = new PaymentRequest(
         [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],

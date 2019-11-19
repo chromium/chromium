@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.native_page;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -16,7 +16,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 public interface NativePageNavigationDelegate {
     /** @return Whether context menus should allow the option to open a link in incognito. */
     default boolean isOpenInIncognitoEnabled() {
-        return PrefServiceBridge.getInstance().isIncognitoModeEnabled();
+        return IncognitoUtils.isIncognitoModeEnabled();
     }
 
     /** @return Whether context menus should allow the option to open a link in a new window. */

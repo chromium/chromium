@@ -15,6 +15,8 @@
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
+#include "content/grit/content_resources.h"
+#include "content/grit/content_resources_map.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -41,25 +43,17 @@ namespace content {
 
 namespace {
 
-struct IdrGzipped {
-  int idr;
-  bool gzipped;
-};
-using ResourcesMap = std::unordered_map<std::string, IdrGzipped>;
+using ResourcesMap = std::unordered_map<std::string, int>;
 
 #if defined(OS_CHROMEOS)
 const char kPolymerHtml[] = "polymer/v1_0/polymer/polymer.html";
 const char kPolymerJs[] = "polymer/v1_0/polymer/polymer-extracted.js";
 const char kPolymer2Html[] = "polymer/v1_0/polymer2/polymer.html";
 const char kPolymer2Js[] = "polymer/v1_0/polymer2/polymer-extracted.js";
-const char kHtmlImportsJs[] = "polymer/v1_0/html-imports/html-imports.min.js";
-const char kHtmlImportsV0Js[] =
-    "polymer/v1_0/html-imports-v0/html-imports.min.js";
 
 // Utility for determining if both Polymer 1 and Polymer 2 are needed.
 bool UsingMultiplePolymerVersions() {
-  return base::FeatureList::IsEnabled(features::kWebUIPolymer2) &&
-         base::FeatureList::IsEnabled(features::kWebUIPolymer2Exceptions);
+  return base::FeatureList::IsEnabled(features::kWebUIPolymer2Exceptions);
 }
 #endif  // defined(OS_CHROMEOS)
 
@@ -69,41 +63,70 @@ const std::map<std::string, std::string> CreatePathPrefixAliasesMap() {
   std::map<std::string, std::string> aliases = {
       {"../../../third_party/polymer/v1_0/components-chromium/",
        "polymer/v1_0/"},
+      {"../../../third_party/polymer/v3_0/components-chromium/",
+       "polymer/v3_0/"},
       {"../../../third_party/web-animations-js/sources/",
        "polymer/v1_0/web-animations-js/"},
       {"../../views/resources/default_100_percent/common/", "images/apps/"},
       {"../../views/resources/default_200_percent/common/", "images/2x/apps/"},
       {"../../webui/resources/cr_components/", "cr_components/"},
       {"../../webui/resources/cr_elements/", "cr_elements/"},
+      {"@out_folder@/gen/ui/webui/resources/", ""},
   };
 
 #if defined(OS_CHROMEOS)
+  // Add lottie library for Chrome OS.
+  aliases["../../../third_party/lottie/"] = "lottie/";
+
   if (UsingMultiplePolymerVersions())
     return aliases;
 #endif  // defined(OS_CHROMEOS)
 
 #if !defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kWebUIPolymer2)) {
-    aliases["../../../third_party/polymer/v1_0/components-chromium/polymer2/"] =
-        "polymer/v1_0/polymer/";
-  } else {
-    aliases
-        ["../../../third_party/polymer/v1_0/components-chromium/"
-         "html-imports-v0/"] = "polymer/v1_0/html-imports/";
-  }
+  aliases["../../../third_party/polymer/v1_0/components-chromium/polymer2/"] =
+      "polymer/v1_0/polymer/";
 #endif  // !defined(OS_ANDROID)
   return aliases;
 }
 
+const std::map<int, std::string> CreateContentResourceIdToAliasMap() {
+  return std::map<int, std::string>{
+      {IDR_ORIGIN_MOJO_HTML, "mojo/url/mojom/origin.mojom.html"},
+      {IDR_ORIGIN_MOJO_JS, "mojo/url/mojom/origin.mojom-lite.js"},
+      {IDR_UNGUESSABLE_TOKEN_MOJO_HTML,
+       "mojo/mojo/public/mojom/base/unguessable_token.mojom.html"},
+      {IDR_UNGUESSABLE_TOKEN_MOJO_JS,
+       "mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js"},
+      {IDR_URL_MOJO_HTML, "mojo/url/mojom/url.mojom.html"},
+      {IDR_URL_MOJO_JS, "mojo/url/mojom/url.mojom-lite.js"},
+      {IDR_VULKAN_INFO_MOJO_JS, "gpu/ipc/common/vulkan_info.mojom-lite.js"},
+      {IDR_VULKAN_TYPES_MOJO_JS, "gpu/ipc/common/vulkan_types.mojom-lite.js"},
+  };
+}
+
 const std::map<int, std::string> CreateMojoResourceIdToAliasMap() {
   return std::map<int, std::string> {
-    {IDR_MOJO_MOJO_BINDINGS_JS, "js/mojo_bindings.js"},
-        {IDR_MOJO_MOJO_BINDINGS_LITE_JS, "js/mojo_bindings_lite.js"},
-        {IDR_MOJO_BIG_BUFFER_MOJOM_LITE_JS, "js/big_buffer.mojom-lite.js"},
-        {IDR_MOJO_FILE_MOJOM_LITE_JS, "js/file.mojom-lite.js"},
-        {IDR_MOJO_STRING16_MOJOM_LITE_JS, "js/string16.mojom-lite.js"},
+    {IDR_MOJO_MOJO_BINDINGS_LITE_HTML,
+     "mojo/mojo/public/js/mojo_bindings_lite.html"},
+        {IDR_MOJO_MOJO_BINDINGS_LITE_JS,
+         "mojo/mojo/public/js/mojo_bindings_lite.js"},
+        {IDR_MOJO_BIG_BUFFER_MOJOM_HTML,
+         "mojo/mojo/public/mojom/base/big_buffer.mojom.html"},
+        {IDR_MOJO_BIG_BUFFER_MOJOM_LITE_JS,
+         "mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js"},
+        {IDR_MOJO_FILE_MOJOM_HTML,
+         "mojo/mojo/public/mojom/base/file.mojom.html"},
+        {IDR_MOJO_FILE_MOJOM_LITE_JS,
+         "mojo/mojo/public/mojom/base/file.mojom-lite.js"},
+        {IDR_MOJO_STRING16_MOJOM_HTML,
+         "mojo/mojo/public/mojom/base/string16.mojom.html"},
+        {IDR_MOJO_STRING16_MOJOM_LITE_JS,
+         "mojo/mojo/public/mojom/base/string16.mojom-lite.js"},
 #if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
-        {IDR_MOJO_TIME_MOJOM_LITE_JS, "js/time.mojom-lite.js"},
+        {IDR_MOJO_TIME_MOJOM_HTML,
+         "mojo/mojo/public/mojom/base/time.mojom.html"},
+        {IDR_MOJO_TIME_MOJOM_LITE_JS,
+         "mojo/mojo/public/mojom/base/time.mojom-lite.js"},
 #endif  // defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
   };
 }
@@ -111,14 +134,48 @@ const std::map<int, std::string> CreateMojoResourceIdToAliasMap() {
 #if defined(OS_CHROMEOS)
 const std::map<int, std::string> CreateChromeosMojoResourceIdToAliasMap() {
   return std::map<int, std::string>{
+      {IDR_CELLULAR_SETUP_MOJOM_HTML,
+       "mojo/chromeos/services/cellular_setup/public/mojom/"
+       "cellular_setup.mojom.html"},
+      {IDR_CELLULAR_SETUP_MOJOM_LITE_JS,
+       "mojo/chromeos/services/cellular_setup/public/mojom/"
+       "cellular_setup.mojom-lite.js"},
+      {IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_HTML,
+       "mojo/chromeos/services/device_sync/public/mojom/"
+       "device_sync.mojom.html"},
       {IDR_MULTIDEVICE_DEVICE_SYNC_MOJOM_LITE_JS,
-       "js/chromeos/device_sync.mojom-lite.js"},
+       "mojo/chromeos/services/device_sync/public/mojom/"
+       "device_sync.mojom-lite.js"},
+      {IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_HTML,
+       "mojo/chromeos/services/multidevice_setup/public/mojom/"
+       "multidevice_setup.mojom.html"},
       {IDR_MULTIDEVICE_MULTIDEVICE_SETUP_MOJOM_LITE_JS,
-       "js/chromeos/multidevice_setup.mojom-lite.js"},
+       "mojo/chromeos/services/multidevice_setup/public/mojom/"
+       "multidevice_setup.mojom-lite.js"},
+      {IDR_MULTIDEVICE_MULTIDEVICE_SETUP_CONSTANTS_MOJOM_HTML,
+       "mojo/chromeos/services/multidevice_setup/public/mojom/"
+       "constants.mojom.html"},
       {IDR_MULTIDEVICE_MULTIDEVICE_SETUP_CONSTANTS_MOJOM_LITE_JS,
-       "js/chromeos/multidevice_setup_constants.mojom-lite.js"},
+       "mojo/chromeos/services/multidevice_setup/public/mojom/"
+       "constants.mojom-lite.js"},
+      {IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_HTML,
+       "mojo/chromeos/components/multidevice/mojom/"
+       "multidevice_types.mojom.html"},
       {IDR_MULTIDEVICE_MULTIDEVICE_TYPES_MOJOM_LITE_JS,
-       "js/chromeos/multidevice_types.mojom-lite.js"},
+       "mojo/chromeos/components/multidevice/mojom/"
+       "multidevice_types.mojom-lite.js"},
+      {IDR_NETWORK_CONFIG_MOJOM_HTML,
+       "mojo/chromeos/services/network_config/public/mojom/"
+       "cros_network_config.mojom.html"},
+      {IDR_NETWORK_CONFIG_MOJOM_LITE_JS,
+       "mojo/chromeos/services/network_config/public/mojom/"
+       "cros_network_config.mojom-lite.js"},
+      {IDR_IP_ADDRESS_MOJOM_HTML,
+       "mojo/services/network/public/mojom/"
+       "ip_address.mojom.html"},
+      {IDR_IP_ADDRESS_MOJOM_LITE_JS,
+       "mojo/services/network/public/mojom/"
+       "ip_address.mojom-lite.js"},
   };
 }
 #endif  // !defined(OS_CHROMEOS)
@@ -130,27 +187,10 @@ bool ShouldIgnore(std::string resource) {
     return false;
 #endif  // defined(OS_CHROMEOS)
 
-  if (base::FeatureList::IsEnabled(features::kWebUIPolymer2) &&
-      (base::StartsWith(
-           resource,
-           "../../../third_party/polymer/v1_0/components-chromium/polymer/",
-           base::CompareCase::SENSITIVE) ||
-       base::StartsWith(resource,
-                        "../../../third_party/polymer/v1_0/components-chromium/"
-                        "html-imports-v0/",
-                        base::CompareCase::SENSITIVE))) {
-    return true;
-  }
-
-  if (!base::FeatureList::IsEnabled(features::kWebUIPolymer2) &&
-      (base::StartsWith(
-           resource,
-           "../../../third_party/polymer/v1_0/components-chromium/polymer2/",
-           base::CompareCase::SENSITIVE) ||
-       base::StartsWith(resource,
-                        "../../../third_party/polymer/v1_0/components-chromium/"
-                        "html-imports/",
-                        base::CompareCase::SENSITIVE))) {
+  if (base::StartsWith(
+          resource,
+          "../../../third_party/polymer/v1_0/components-chromium/polymer/",
+          base::CompareCase::SENSITIVE)) {
     return true;
   }
 
@@ -160,10 +200,8 @@ bool ShouldIgnore(std::string resource) {
 
 void AddResource(const std::string& path,
                  int resource_id,
-                 bool gzipped,
                  ResourcesMap* resources_map) {
-  IdrGzipped idr_gzipped = {resource_id, gzipped};
-  if (!resources_map->insert(std::make_pair(path, idr_gzipped)).second)
+  if (!resources_map->insert(std::make_pair(path, resource_id)).second)
     NOTREACHED() << "Redefinition of '" << path << "'";
 }
 
@@ -179,14 +217,14 @@ void AddResourcesToMap(ResourcesMap* resources_map) {
       continue;
 #endif  // !defined(OS_ANDROID)
 
-    AddResource(resource.name, resource.value, resource.gzipped, resources_map);
+    AddResource(resource.name, resource.value, resources_map);
 
     for (auto it = aliases.begin(); it != aliases.end(); ++it) {
       if (base::StartsWith(resource.name, it->first,
                            base::CompareCase::SENSITIVE)) {
         std::string resource_name(resource.name);
         AddResource(it->second + resource_name.substr(it->first.length()),
-                    resource.value, resource.gzipped, resources_map);
+                    resource.value, resources_map);
       }
     }
   }
@@ -197,7 +235,7 @@ void AddResourcesToMap(ResourcesMap* resources_map) {
 // alias. Note that resources which do not have an alias will not be added.
 void AddAliasedResourcesToMap(
     const std::map<int, std::string>& resource_aliases,
-    const GzippedGritResourceMap resources[],
+    const GritResourceMap resources[],
     size_t resources_size,
     ResourcesMap* resources_map) {
   for (size_t i = 0; i < resources_size; ++i) {
@@ -207,13 +245,15 @@ void AddAliasedResourcesToMap(
     if (it == resource_aliases.end())
       continue;
 
-    AddResource(it->second, resource.value, resource.gzipped, resources_map);
+    AddResource(it->second, resource.value, resources_map);
   }
 }
 
 const ResourcesMap* CreateResourcesMap() {
   ResourcesMap* result = new ResourcesMap();
   AddResourcesToMap(result);
+  AddAliasedResourcesToMap(CreateContentResourceIdToAliasMap(),
+                           kContentResources, kContentResourcesSize, result);
   AddAliasedResourcesToMap(CreateMojoResourceIdToAliasMap(),
                            kMojoBindingsResources, kMojoBindingsResourcesSize,
                            result);
@@ -233,7 +273,7 @@ const ResourcesMap& GetResourcesMap() {
 int GetIdrForPath(const std::string& path) {
   const ResourcesMap& resources_map = GetResourcesMap();
   auto it = resources_map.find(path);
-  return it != resources_map.end() ? it->second.idr : -1;
+  return it != resources_map.end() ? it->second : -1;
 }
 
 }  // namespace
@@ -244,27 +284,23 @@ SharedResourcesDataSource::SharedResourcesDataSource() {
 SharedResourcesDataSource::~SharedResourcesDataSource() {
 }
 
-std::string SharedResourcesDataSource::GetSource() const {
+std::string SharedResourcesDataSource::GetSource() {
   return kChromeUIResourcesHost;
 }
 
 void SharedResourcesDataSource::StartDataRequest(
-    const std::string& path,
-    const ResourceRequestInfo::WebContentsGetter& wc_getter,
+    const GURL& url,
+    const WebContents::Getter& wc_getter,
     const URLDataSource::GotDataCallback& callback) {
+  const std::string path = URLDataSource::URLToRequestPath(url);
   std::string updated_path = path;
 #if defined(OS_CHROMEOS)
   // If this is a Polymer request and multiple Polymer versions are enabled,
   // return the Polymer 2 path unless the request is from the
   // |disabled_polymer2_host_|.
-  if ((path == kPolymerHtml || path == kPolymerJs || path == kHtmlImportsJs) &&
-      UsingMultiplePolymerVersions()) {
-    bool polymer2 = !IsPolymer2DisabledForPage(wc_getter);
-    if (polymer2 && (path == kPolymerHtml || path == kPolymerJs)) {
-      updated_path = path == kPolymerHtml ? kPolymer2Html : kPolymer2Js;
-    } else if (!polymer2 && path == kHtmlImportsJs) {
-      updated_path = kHtmlImportsV0Js;
-    }
+  if ((path == kPolymerHtml || path == kPolymerJs) &&
+      UsingMultiplePolymerVersions() && !IsPolymer2DisabledForPage(wc_getter)) {
+    updated_path = path == kPolymerHtml ? kPolymer2Html : kPolymer2Js;
   }
 #endif  // defined(OS_CHROMEOS)
 
@@ -282,17 +318,16 @@ void SharedResourcesDataSource::StartDataRequest(
     bytes = GetContentClient()->GetDataResourceBytes(idr);
   }
 
-  callback.Run(bytes.get());
+  callback.Run(std::move(bytes));
 }
 
-bool SharedResourcesDataSource::AllowCaching() const {
+bool SharedResourcesDataSource::AllowCaching() {
   // Should not be cached to reflect dynamically-generated contents that may
   // depend on the current locale.
   return false;
 }
 
-std::string SharedResourcesDataSource::GetMimeType(
-    const std::string& path) const {
+std::string SharedResourcesDataSource::GetMimeType(const std::string& path) {
   if (path.empty())
     return "text/html";
 
@@ -332,20 +367,19 @@ std::string SharedResourcesDataSource::GetMimeType(
   return "text/plain";
 }
 
-bool SharedResourcesDataSource::ShouldServeMimeTypeAsContentTypeHeader() const {
+bool SharedResourcesDataSource::ShouldServeMimeTypeAsContentTypeHeader() {
   return true;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-SharedResourcesDataSource::TaskRunnerForRequestPath(
-    const std::string& path) const {
+SharedResourcesDataSource::TaskRunnerForRequestPath(const std::string& path) {
   // Since WebContentsGetter can only be run on the UI thread, always return
   // a task runner if we need to choose between Polymer resources based on the
   // WebContents that is requesting the resource.
   // TODO (rbpotter): Remove this once the OOBE Polymer 2 migration is complete.
 #if defined(OS_CHROMEOS)
   if (UsingMultiplePolymerVersions())
-    return base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI});
+    return base::CreateSingleThreadTaskRunner({BrowserThread::UI});
 #endif  // defined(OS_CHROMEOS)
 
   int idr = GetIdrForPath(path);
@@ -353,15 +387,14 @@ SharedResourcesDataSource::TaskRunnerForRequestPath(
       idr == IDR_WEBUI_CSS_TEXT_DEFAULTS_MD) {
     // Use UI thread to load CSS since its construction touches non-thread-safe
     // gfx::Font names in ui::ResourceBundle.
-    return base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI});
+    return base::CreateSingleThreadTaskRunner({BrowserThread::UI});
   }
 
   return nullptr;
 }
 
-std::string
-SharedResourcesDataSource::GetAccessControlAllowOriginForOrigin(
-    const std::string& origin) const {
+std::string SharedResourcesDataSource::GetAccessControlAllowOriginForOrigin(
+    const std::string& origin) {
   // For now we give access only for "chrome://*" origins.
   // According to CORS spec, Access-Control-Allow-Origin header doesn't support
   // wildcards, so we need to set its value explicitly by passing the |origin|
@@ -375,12 +408,6 @@ SharedResourcesDataSource::GetAccessControlAllowOriginForOrigin(
   return origin;
 }
 
-bool SharedResourcesDataSource::IsGzipped(const std::string& path) const {
-  auto it = GetResourcesMap().find(path);
-  DCHECK(it != GetResourcesMap().end()) << "missing shared resource: " << path;
-  return it != GetResourcesMap().end() ? it->second.gzipped : false;
-}
-
 #if defined(OS_CHROMEOS)
 void SharedResourcesDataSource::DisablePolymer2ForHost(
     const std::string& host) {
@@ -388,9 +415,13 @@ void SharedResourcesDataSource::DisablePolymer2ForHost(
   disabled_polymer2_host_ = host;
 }
 
+std::string SharedResourcesDataSource::GetContentSecurityPolicyWorkerSrc() {
+  return "worker-src blob: 'self';";
+}
+
 // Returns true if the WebContents making the request has disabled Polymer 2.
 bool SharedResourcesDataSource::IsPolymer2DisabledForPage(
-    const ResourceRequestInfo::WebContentsGetter& wc_getter) {
+    const WebContents::Getter& wc_getter) {
   // Return false in these cases, which sometimes occur in tests.
   if (!wc_getter)
     return false;

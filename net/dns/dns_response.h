@@ -76,7 +76,7 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
   DnsRecordParser(const void* packet, size_t length, size_t offset);
 
   // Returns |true| if initialized.
-  bool IsValid() const { return packet_ != NULL; }
+  bool IsValid() const { return packet_ != nullptr; }
 
   // Returns |true| if no more bytes remain in the packet.
   bool AtEnd() const { return cur_ == packet_ + length_; }

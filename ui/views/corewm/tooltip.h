@@ -23,7 +23,7 @@ namespace corewm {
 // Tooltip is used by TooltipController.
 class VIEWS_EXPORT Tooltip {
  public:
-  virtual ~Tooltip() {}
+  virtual ~Tooltip() = default;
 
   // Returns the max width of the tooltip when shown at the specified location.
   virtual int GetMaxWidth(const gfx::Point& location) const = 0;

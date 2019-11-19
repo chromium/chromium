@@ -5,42 +5,53 @@
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/platform/web_keyboard_event.h"
 #include "third_party/blink/renderer/core/exported/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "ui/events/keycodes/dom/dom_key.h"
 
 namespace blink {
 
 class SpatialNavigationTest : public RenderingTest {
  public:
   SpatialNavigationTest()
-      : RenderingTest(SingleChildLocalFrameClient::Create()) {}
+      : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
 
-  LayoutRect TopOfVisualViewport() {
-    LayoutRect visual_viewport = RootViewport(&GetFrame());
+  PhysicalRect TopOfVisualViewport() {
+    PhysicalRect visual_viewport = RootViewport(&GetFrame());
+    visual_viewport.SetY(visual_viewport.Y() - 1);
     visual_viewport.SetHeight(LayoutUnit(0));
     return visual_viewport;
   }
 
-  LayoutRect BottomOfVisualViewport() {
-    LayoutRect visual_viewport = RootViewport(&GetFrame());
-    visual_viewport.SetY(visual_viewport.MaxY());
+  PhysicalRect BottomOfVisualViewport() {
+    PhysicalRect visual_viewport = RootViewport(&GetFrame());
+    visual_viewport.SetY(visual_viewport.Bottom() + 1);
     visual_viewport.SetHeight(LayoutUnit(0));
     return visual_viewport;
   }
 
-  LayoutRect LeftSideOfVisualViewport() {
-    LayoutRect visual_viewport = RootViewport(&GetFrame());
+  PhysicalRect LeftSideOfVisualViewport() {
+    PhysicalRect visual_viewport = RootViewport(&GetFrame());
+    visual_viewport.SetX(visual_viewport.X() - 1);
     visual_viewport.SetWidth(LayoutUnit(0));
     return visual_viewport;
   }
 
-  LayoutRect RightSideOfVisualViewport() {
-    LayoutRect visual_viewport = RootViewport(&GetFrame());
-    visual_viewport.SetX(visual_viewport.MaxX());
+  PhysicalRect RightSideOfVisualViewport() {
+    PhysicalRect visual_viewport = RootViewport(&GetFrame());
+    visual_viewport.SetX(visual_viewport.Right() + 1);
     visual_viewport.SetWidth(LayoutUnit(0));
     return visual_viewport;
   }
@@ -73,11 +84,11 @@ TEST_F(SpatialNavigationTest, RootFramesVisualViewport) {
   visual_viewport.SetLocation(FloatPoint(200, 200));
 
   LocalFrameView* root_frame_view = GetFrame().LocalFrameRoot().View();
-  const LayoutRect roots_visible_doc_rect(
+  const PhysicalRect roots_visible_doc_rect(
       root_frame_view->GetScrollableArea()->VisibleContentRect());
   // Convert the root frame's visible rect from document space -> frame space.
   // For the root frame, frame space == root frame space, obviously.
-  LayoutRect viewport_rect_of_root_frame =
+  PhysicalRect viewport_rect_of_root_frame =
       root_frame_view->DocumentToFrame(roots_visible_doc_rect);
 
   EXPECT_EQ(viewport_rect_of_root_frame, RootViewport(&GetFrame()));
@@ -180,11 +191,11 @@ TEST_F(SpatialNavigationTest, ZooomPutsElementOffScreen) {
 }
 
 TEST_F(SpatialNavigationTest, RootViewportRespectsVisibleSize) {
-  EXPECT_EQ(RootViewport(&GetFrame()), LayoutRect(0, 0, 800, 600));
+  EXPECT_EQ(RootViewport(&GetFrame()), PhysicalRect(0, 0, 800, 600));
 
   VisualViewport& visual_viewport = GetFrame().GetPage()->GetVisualViewport();
   visual_viewport.SetSize({123, 123});
-  EXPECT_EQ(RootViewport(&GetFrame()), LayoutRect(0, 0, 123, 123));
+  EXPECT_EQ(RootViewport(&GetFrame()), PhysicalRect(0, 0, 123, 123));
 }
 
 TEST_F(SpatialNavigationTest, StartAtVisibleFocusedElement) {
@@ -193,7 +204,7 @@ TEST_F(SpatialNavigationTest, StartAtVisibleFocusedElement) {
 
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), b,
                          SpatialNavigationDirection::kDown),
-            NodeRectInRootFrame(b, true));
+            NodeRectInRootFrame(b));
 }
 
 TEST_F(SpatialNavigationTest, StartAtVisibleFocusedScroller) {
@@ -215,7 +226,7 @@ TEST_F(SpatialNavigationTest, StartAtVisibleFocusedScroller) {
   Element* scroller = GetDocument().getElementById("scroller");
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), scroller,
                          SpatialNavigationDirection::kDown),
-            NodeRectInRootFrame(scroller, true));
+            NodeRectInRootFrame(scroller));
 }
 
 TEST_F(SpatialNavigationTest, StartAtVisibleFocusedIframe) {
@@ -236,11 +247,11 @@ TEST_F(SpatialNavigationTest, StartAtVisibleFocusedIframe) {
   Element* iframe = GetDocument().getElementById("iframe");
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), iframe,
                          SpatialNavigationDirection::kDown),
-            NodeRectInRootFrame(iframe, true));
+            NodeRectInRootFrame(iframe));
 }
 
 TEST_F(SpatialNavigationTest, StartAtTopWhenGoingDownwardsWithoutFocus) {
-  EXPECT_EQ(LayoutRect(0, 0, 111, 0),
+  EXPECT_EQ(PhysicalRect(0, -1, 111, 0),
             SearchOrigin({0, 0, 111, 222}, nullptr,
                          SpatialNavigationDirection::kDown));
 
@@ -251,7 +262,7 @@ TEST_F(SpatialNavigationTest, StartAtTopWhenGoingDownwardsWithoutFocus) {
 
 TEST_F(SpatialNavigationTest, StartAtBottomWhenGoingUpwardsWithoutFocus) {
   EXPECT_EQ(
-      LayoutRect(0, 222, 111, 0),
+      PhysicalRect(0, 222 + 1, 111, 0),
       SearchOrigin({0, 0, 111, 222}, nullptr, SpatialNavigationDirection::kUp));
 
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), nullptr,
@@ -260,7 +271,7 @@ TEST_F(SpatialNavigationTest, StartAtBottomWhenGoingUpwardsWithoutFocus) {
 }
 
 TEST_F(SpatialNavigationTest, StartAtLeftSideWhenGoingEastWithoutFocus) {
-  EXPECT_EQ(LayoutRect(0, 0, 0, 222),
+  EXPECT_EQ(PhysicalRect(-1, 0, 0, 222),
             SearchOrigin({0, 0, 111, 222}, nullptr,
                          SpatialNavigationDirection::kRight));
 
@@ -270,7 +281,7 @@ TEST_F(SpatialNavigationTest, StartAtLeftSideWhenGoingEastWithoutFocus) {
 }
 
 TEST_F(SpatialNavigationTest, StartAtRightSideWhenGoingWestWithoutFocus) {
-  EXPECT_EQ(LayoutRect(111, 0, 0, 222),
+  EXPECT_EQ(PhysicalRect(111 + 1, 0, 0, 222),
             SearchOrigin({0, 0, 111, 222}, nullptr,
                          SpatialNavigationDirection::kLeft));
 
@@ -312,7 +323,7 @@ TEST_F(SpatialNavigationTest, StartAtContainersEdge) {
 
   Element* b = GetDocument().getElementById("b");
   const Element* container = GetDocument().getElementById("container");
-  const LayoutRect container_box = NodeRectInRootFrame(container, true);
+  const PhysicalRect container_box = NodeRectInRootFrame(container);
 
   // TODO(crbug.com/889840):
   // VisibleBoundsInVisualViewport does not (yet) take div-clipping into
@@ -323,30 +334,32 @@ TEST_F(SpatialNavigationTest, StartAtContainersEdge) {
   EXPECT_TRUE(IsOffscreen(b));
 
   // Go down.
-  LayoutRect container_top_edge = container_box;
+  PhysicalRect container_top_edge = container_box;
   container_top_edge.SetHeight(LayoutUnit(0));
+  container_top_edge.SetY(container_top_edge.Y() - 1);
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), b,
                          SpatialNavigationDirection::kDown),
             container_top_edge);
 
   // Go up.
-  LayoutRect container_bottom_edge = container_box;
-  container_bottom_edge.SetY(container_bottom_edge.MaxX());
+  PhysicalRect container_bottom_edge = container_box;
   container_bottom_edge.SetHeight(LayoutUnit(0));
+  container_bottom_edge.SetY(container_bottom_edge.Right() + 1);
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), b,
                          SpatialNavigationDirection::kUp),
             container_bottom_edge);
 
   // Go right.
-  LayoutRect container_leftmost_edge = container_box;
+  PhysicalRect container_leftmost_edge = container_box;
   container_leftmost_edge.SetWidth(LayoutUnit(0));
+  container_leftmost_edge.SetX(container_leftmost_edge.X() - 1);
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), b,
                          SpatialNavigationDirection::kRight),
             container_leftmost_edge);
 
   // Go left.
-  LayoutRect container_rightmost_edge = container_box;
-  container_rightmost_edge.SetX(container_bottom_edge.MaxX());
+  PhysicalRect container_rightmost_edge = container_box;
+  container_rightmost_edge.SetX(container_bottom_edge.Right() + 1);
   container_rightmost_edge.SetWidth(LayoutUnit(0));
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), b,
                          SpatialNavigationDirection::kLeft),
@@ -428,7 +441,7 @@ TEST_F(SpatialNavigationTest, PartiallyVisible) {
 
   EXPECT_FALSE(IsOffscreen(b));  // <button> is not completely offscreen.
 
-  LayoutRect button_in_root_frame = NodeRectInRootFrame(b, true);
+  PhysicalRect button_in_root_frame = NodeRectInRootFrame(b);
 
   EXPECT_EQ(SearchOrigin(RootViewport(&GetFrame()), b,
                          SpatialNavigationDirection::kUp),
@@ -437,7 +450,7 @@ TEST_F(SpatialNavigationTest, PartiallyVisible) {
   // Do some scrolling.
   ScrollableArea* root_scroller = GetDocument().View()->GetScrollableArea();
   root_scroller->SetScrollOffset(ScrollOffset(0, 600), kProgrammaticScroll);
-  LayoutRect button_after_scroll = NodeRectInRootFrame(b, true);
+  PhysicalRect button_after_scroll = NodeRectInRootFrame(b);
   ASSERT_NE(button_in_root_frame,
             button_after_scroll);  // As we scrolled, the
                                    // <button>'s position in
@@ -554,7 +567,7 @@ TEST_F(SpatialNavigationTest, PartiallyVisibleIFrame) {
   EXPECT_TRUE(IsOffscreen(child_element));         // Completely offscreen.
   EXPECT_FALSE(IsOffscreen(enclosing_container));  // Partially visible.
 
-  LayoutRect iframe = NodeRectInRootFrame(enclosing_container, true);
+  PhysicalRect iframe = NodeRectInRootFrame(enclosing_container);
 
   // When searching downwards we start at activeElement's
   // container's (here: the iframe's) topmost visible edge.
@@ -586,12 +599,12 @@ TEST_F(SpatialNavigationTest, PartiallyVisibleIFrame) {
 }
 
 TEST_F(SpatialNavigationTest, BottomOfPinchedViewport) {
-  LayoutRect origin = SearchOrigin(RootViewport(&GetFrame()), nullptr,
-                                   SpatialNavigationDirection::kUp);
+  PhysicalRect origin = SearchOrigin(RootViewport(&GetFrame()), nullptr,
+                                     SpatialNavigationDirection::kUp);
   EXPECT_EQ(origin.Height(), 0);
   EXPECT_EQ(origin.Width(), GetFrame().View()->Width());
   EXPECT_EQ(origin.X(), 0);
-  EXPECT_EQ(origin.Y(), GetFrame().View()->Height());
+  EXPECT_EQ(origin.Y(), GetFrame().View()->Height() + 1);
   EXPECT_EQ(origin, BottomOfVisualViewport());
 
   // Now, test SearchOrigin with a pinched viewport.
@@ -603,17 +616,17 @@ TEST_F(SpatialNavigationTest, BottomOfPinchedViewport) {
   EXPECT_EQ(origin.Height(), 0);
   EXPECT_LT(origin.Width(), GetFrame().View()->Width());
   EXPECT_GT(origin.X(), 0);
-  EXPECT_LT(origin.Y(), GetFrame().View()->Height());
+  EXPECT_LT(origin.Y(), GetFrame().View()->Height() + 1);
   EXPECT_EQ(origin, BottomOfVisualViewport());
 }
 
 TEST_F(SpatialNavigationTest, TopOfPinchedViewport) {
-  LayoutRect origin = SearchOrigin(RootViewport(&GetFrame()), nullptr,
-                                   SpatialNavigationDirection::kDown);
+  PhysicalRect origin = SearchOrigin(RootViewport(&GetFrame()), nullptr,
+                                     SpatialNavigationDirection::kDown);
   EXPECT_EQ(origin.Height(), 0);
   EXPECT_EQ(origin.Width(), GetFrame().View()->Width());
   EXPECT_EQ(origin.X(), 0);
-  EXPECT_EQ(origin.Y(), 0);
+  EXPECT_EQ(origin.Y(), -1);
   EXPECT_EQ(origin, TopOfVisualViewport());
 
   // Now, test SearchOrigin with a pinched viewport.
@@ -625,7 +638,7 @@ TEST_F(SpatialNavigationTest, TopOfPinchedViewport) {
   EXPECT_EQ(origin.Height(), 0);
   EXPECT_LT(origin.Width(), GetFrame().View()->Width());
   EXPECT_GT(origin.X(), 0);
-  EXPECT_GT(origin.Y(), 0);
+  EXPECT_GT(origin.Y(), -1);
   EXPECT_EQ(origin, TopOfVisualViewport());
 }
 
@@ -651,6 +664,126 @@ TEST_F(SpatialNavigationTest, HasRemoteFrame) {
   webview->MainFrameImpl()->FirstChild()->Swap(
       frame_test_helpers::CreateRemote());
   EXPECT_TRUE(HasRemoteFrame(iframe));
+}
+
+class SpatialNavigationWithFocuslessModeTest
+    : public SpatialNavigationTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  SpatialNavigationWithFocuslessModeTest() : use_focusless_mode_(GetParam()) {}
+
+  void SetUp() override {
+    SpatialNavigationTest::SetUp();
+    GetDocument().GetSettings()->SetSpatialNavigationEnabled(true);
+  }
+
+ private:
+  ScopedFocuslessSpatialNavigationForTest use_focusless_mode_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         SpatialNavigationWithFocuslessModeTest,
+                         ::testing::Bool());
+
+TEST_P(SpatialNavigationWithFocuslessModeTest, PressEnterKeyActiveElement) {
+  SetBodyInnerHTML("<button id='b'>hello</button>");
+
+  Element* b = GetDocument().getElementById("b");
+
+  // Move interest to button.
+  WebKeyboardEvent arrow_down{WebInputEvent::kRawKeyDown,
+                              WebInputEvent::kNoModifiers,
+                              WebInputEvent::GetStaticTimeStampForTests()};
+  arrow_down.dom_key = ui::DomKey::ARROW_DOWN;
+  GetDocument().GetFrame()->GetEventHandler().KeyEvent(arrow_down);
+
+  arrow_down.SetType(WebInputEvent::kKeyUp);
+  GetDocument().GetFrame()->GetEventHandler().KeyEvent(arrow_down);
+
+  EXPECT_FALSE(b->IsActive());
+
+  // Enter key down add :active state to element.
+  WebKeyboardEvent enter{WebInputEvent::kRawKeyDown,
+                         WebInputEvent::kNoModifiers,
+                         WebInputEvent::GetStaticTimeStampForTests()};
+  enter.dom_key = ui::DomKey::ENTER;
+  GetDocument().GetFrame()->GetEventHandler().KeyEvent(enter);
+  EXPECT_TRUE(b->IsActive());
+
+  // Enter key up remove :active state to element.
+  enter.SetType(WebInputEvent::kKeyUp);
+  GetDocument().GetFrame()->GetEventHandler().KeyEvent(enter);
+  EXPECT_FALSE(b->IsActive());
+}
+
+class FocuslessSpatialNavigationSimTest : public SimTest {
+ public:
+  FocuslessSpatialNavigationSimTest() : use_focusless_mode_(true) {}
+
+  void SetUp() override {
+    SimTest::SetUp();
+    WebView().GetPage()->GetSettings().SetSpatialNavigationEnabled(true);
+  }
+
+  void SimulateKeyPress(int dom_key) {
+    WebKeyboardEvent event{WebInputEvent::kRawKeyDown,
+                           WebInputEvent::kNoModifiers,
+                           WebInputEvent::GetStaticTimeStampForTests()};
+    event.dom_key = dom_key;
+    WebView().MainFrameWidget()->HandleInputEvent(
+        WebCoalescedInputEvent(event));
+
+    if (dom_key == ui::DomKey::ENTER) {
+      event.SetType(WebInputEvent::kChar);
+      WebView().MainFrameWidget()->HandleInputEvent(
+          WebCoalescedInputEvent(event));
+    }
+
+    event.SetType(WebInputEvent::kKeyUp);
+    WebView().MainFrameWidget()->HandleInputEvent(
+        WebCoalescedInputEvent(event));
+  }
+
+  ScopedFocuslessSpatialNavigationForTest use_focusless_mode_;
+};
+
+// Tests that opening a <select> popup works by pressing enter from
+// "interested" mode, without being focused.
+TEST_F(FocuslessSpatialNavigationSimTest, OpenSelectPopup) {
+  // This test requires PagePopup since we're testing opening the <select> drop
+  // down so skip this test on platforms (i.e. Android) that don't use this.
+  if (!RuntimeEnabledFeatures::PagePopupEnabled())
+    return;
+
+  WebView().MainFrameWidget()->Resize(WebSize(800, 600));
+  WebView().MainFrameWidget()->SetFocus(true);
+  WebView().SetIsActive(true);
+
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+          <!DOCTYPE html>
+          <select id="target">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+          </select>
+      )HTML");
+  Compositor().BeginFrame();
+
+  auto* select = To<HTMLSelectElement>(GetDocument().getElementById("target"));
+  SimulateKeyPress(ui::DomKey::ARROW_DOWN);
+
+  SpatialNavigationController& spat_nav_controller =
+      GetDocument().GetPage()->GetSpatialNavigationController();
+
+  ASSERT_EQ(select, spat_nav_controller.GetInterestedElement());
+  ASSERT_NE(select, GetDocument().ActiveElement());
+  ASSERT_FALSE(select->PopupIsVisible());
+
+  // The enter key should cause the popup to open.
+  SimulateKeyPress(ui::DomKey::ENTER);
+  EXPECT_TRUE(select->PopupIsVisible());
 }
 
 }  // namespace blink

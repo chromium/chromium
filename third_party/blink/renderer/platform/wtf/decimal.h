@@ -33,15 +33,11 @@
 
 #include <cstdint>
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-namespace decimal_private {
-class SpecialValueHandler;
-}
 
 // This class represents decimal base floating point number.
 //
@@ -63,7 +59,6 @@ class WTF_EXPORT Decimal {
     DISALLOW_NEW();
     // For accessing FormatClass.
     friend class Decimal;
-    friend class decimal_private::SpecialValueHandler;
 
    public:
     EncodedData(Sign, int exponent, uint64_t coefficient);

@@ -1,3 +1,0 @@
-crbug.com/831541 inspector-protocol/css/css-collect-class-names.js [ Pass Failure ]
-crbug.com/865348 http/tests/navigation/navigation-interrupted-by-fragment.html [ Pass Timeout ]
-crbug.com/865348 virtual/outofblink-cors/http/tests/navigation/navigation-interrupted-by-fragment.html [ Pass Timeout ]

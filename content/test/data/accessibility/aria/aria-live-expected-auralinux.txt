@@ -1,0 +1,5 @@
+[document web]
+++[marquee] container-atomic:false container-busy:false container-live:off container-relevant:additions text live:off
+++[marquee] container-atomic:false container-busy:false container-live:polite container-relevant:additions text live:polite
+++[marquee] container-atomic:false container-busy:false container-live:assertive container-relevant:additions text live:assertive
+++[alert] container-atomic:true container-busy:false container-live:assertive container-relevant:additions text live:assertive

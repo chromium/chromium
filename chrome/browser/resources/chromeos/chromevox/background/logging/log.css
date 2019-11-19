@@ -1,0 +1,82 @@
+/* Copyright 2018 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0;
+}
+
+h1 {
+  background: rgb(247, 152, 58);
+  color: white;
+  display: block;
+  font-size: 16px;
+  height: 56px;
+  line-height: 56px;
+  text-align: center;
+  width: 100%;
+}
+
+/* Log Filters */
+#logFilters {
+  margin: 5px;
+}
+
+#logFilters label {
+  vertical-align: middle;
+}
+
+#logFilters input {
+  margin-buttom: 1px;
+  vertical-align: middle;
+}
+
+/* Log */
+
+#logList {
+  border: 1px solid rgb(220, 220, 220);
+  flex: 1 1 100%;
+  font-size: 12px;
+  margin: 5px;
+  overflow: auto;
+  padding: 10px;
+}
+
+#logList p {
+  font-family: monospace;
+  line-height: 20px;
+  margin: 2px;
+}
+
+#logList pre {
+  font-family: monospace;
+  line-height: 20px;
+  margin-inline-start: 205px;
+}
+
+/* Log tags */
+
+.log-type-tag {
+  border: 1px solid;
+  border-radius: 2px;
+  float: left;
+  height: 14px;
+  margin-inline-end: 5px;
+  margin-top: 2px;
+  padding: 0 4px 2px 4px;
+  width: 75px;
+}
+
+.log-time-tag {
+  border: 1px solid;
+  border-radius: 2px;
+  float: left;
+  height: 14px;
+  margin-inline-end: 5px;
+  margin-top: 2px;
+  padding: 0 4px 2px 4px;
+  width: 100px;
+}

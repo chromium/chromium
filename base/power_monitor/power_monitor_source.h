@@ -30,14 +30,6 @@ class BASE_EXPORT PowerMonitorSource {
   // Is the computer currently on battery power. Can be called on any thread.
   bool IsOnBatteryPower();
 
-  // Called by PowerMonitor just before PowerMonitor destroys both itself and
-  // this instance). After return from this call it is no longer safe for
-  // subclasses to call into PowerMonitor (e.g., via PowerMonitor::Get(). Hence,
-  // subclasses should take any necessary actions here to ensure that after
-  // return from this invocation they will no longer make any calls on
-  // PowerMonitor.
-  virtual void Shutdown() = 0;
-
  protected:
   friend class PowerMonitorTest;
 

@@ -7,27 +7,33 @@
 
 #include "cc/cc_export.h"
 #include "cc/paint/image_provider.h"
+#include "cc/paint/paint_worklet_input.h"
 
 namespace cc {
-class PaintWorkletImageCache;
-class PaintWorkletInput;
 
-// PaintWorkletImageProvider is a bridge between PaintWorkletImageCache and its
-// rasterization.
+// PaintWorkletImageProvider is a storage class for PaintWorklets and their
+// painted content for use during rasterisation.
+//
+// PaintWorklet-based images are not painted at Blink Paint time; instead a
+// placeholder PaintWorkletInput is put in place and the painting is done later
+// from the cc-impl thread. By the time raster happens the resultant PaintRecord
+// is available, and this class provides the lookup from input to record.
 class CC_EXPORT PaintWorkletImageProvider {
  public:
-  explicit PaintWorkletImageProvider(PaintWorkletImageCache* cache);
+  explicit PaintWorkletImageProvider(PaintWorkletRecordMap records);
+  PaintWorkletImageProvider(const PaintWorkletImageProvider&) = delete;
+  PaintWorkletImageProvider(PaintWorkletImageProvider&& other);
   ~PaintWorkletImageProvider();
 
-  PaintWorkletImageProvider(PaintWorkletImageProvider&& other);
+  PaintWorkletImageProvider& operator=(const PaintWorkletImageProvider&) =
+      delete;
   PaintWorkletImageProvider& operator=(PaintWorkletImageProvider&& other);
 
-  ImageProvider::ScopedResult GetPaintRecordResult(PaintWorkletInput* input);
+  ImageProvider::ScopedResult GetPaintRecordResult(
+      scoped_refptr<PaintWorkletInput> input);
 
  private:
-  PaintWorkletImageCache* cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintWorkletImageProvider);
+  PaintWorkletRecordMap records_;
 };
 
 }  // namespace cc

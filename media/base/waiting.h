@@ -20,9 +20,15 @@ namespace media {
 // https://www.w3.org/TR/html5/semantics-embedded-content.html#eventdef-media-waiting
 
 enum class WaitingReason {
+  // The playback cannot start because "Media Data May Contain Encrypted Blocks"
+  // and no CDM is available. The playback will start after a CDM is set. See
+  // https://www.w3.org/TR/encrypted-media/#media-may-contain-encrypted-blocks
+  kNoCdm,
+
   // The playback cannot proceed because some decryption key is not available.
   // This could happen when the license exchange is delayed or failed. The
   // playback will resume after the decryption key becomes available.
+  // See https://www.w3.org/TR/encrypted-media/#encrypted-block-encountered
   kNoDecryptionKey,
 
   // The playback cannot proceed because the decoder has lost its state, e.g.

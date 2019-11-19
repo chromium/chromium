@@ -217,6 +217,10 @@ class COMPONENT_EXPORT(URL) GURL {
   // about:blank/#foo.
   bool IsAboutBlank() const;
 
+  // Returns true when the url is of the form about:srcdoc, about:srcdoc?foo or
+  // about:srcdoc/#foo.
+  bool IsAboutSrcdoc() const;
+
   // Returns true if the given parameter (should be lower-case ASCII to match
   // the canonicalized scheme) is the scheme for this URL. Do not include a
   // colon.
@@ -382,6 +386,9 @@ class COMPONENT_EXPORT(URL) GURL {
   // parameter, and query portions of the URL. It is guaranteed to be ASCII.
   std::string PathForRequest() const;
 
+  // Returns the same characters as PathForRequest(), avoiding a copy.
+  base::StringPiece PathForRequestPiece() const;
+
   // Returns the host, excluding the square brackets surrounding IPv6 address
   // literals. This can be useful for passing to getaddrinfo().
   std::string HostNoBrackets() const;
@@ -444,6 +451,9 @@ class COMPONENT_EXPORT(URL) GURL {
                      bool trim_path_end);
 
   void InitializeFromCanonicalSpec();
+
+  // Helper used by IsAboutBlank and IsAboutSrcdoc.
+  bool IsAboutUrl(base::StringPiece allowed_path) const;
 
   // Returns the substring of the input identified by the given component.
   std::string ComponentString(const url::Component& comp) const {

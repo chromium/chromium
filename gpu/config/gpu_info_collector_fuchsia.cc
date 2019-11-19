@@ -8,18 +8,16 @@
 
 namespace gpu {
 
-bool CollectContextGraphicsInfo(GPUInfo* gpu_info,
-                                const GpuPreferences& gpu_preferences) {
+bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
   DCHECK(gpu_info);
 
   TRACE_EVENT0("gpu", "gpu_info_collector::CollectGraphicsInfo");
 
-  return CollectGraphicsInfoGL(gpu_info, gpu_preferences);
+  return CollectGraphicsInfoGL(gpu_info);
 }
 
 bool CollectBasicGraphicsInfo(GPUInfo* gpu_info) {
-  // TODO(crbug.com/707031): Implement this.
-  NOTIMPLEMENTED();
+  // TODO(https://crbug.com/950587): Implement this.
   return false;
 }
 

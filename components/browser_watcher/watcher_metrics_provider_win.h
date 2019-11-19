@@ -65,7 +65,7 @@ class WatcherMetricsProviderWin : public metrics::MetricsProvider {
   // registry if metrics reporting is disabled.
   scoped_refptr<base::TaskRunner> task_runner_;
 
-  base::WeakPtrFactory<WatcherMetricsProviderWin> weak_ptr_factory_;
+  base::WeakPtrFactory<WatcherMetricsProviderWin> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WatcherMetricsProviderWin);
 };

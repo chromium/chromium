@@ -49,7 +49,7 @@ syncable::Id FindLocalIdToUpdate(syncable::BaseTransaction* trans,
 UpdateAttemptResponse AttemptToUpdateEntry(
     syncable::WriteTransaction* const trans,
     syncable::MutableEntry* const entry,
-    Cryptographer* cryptographer);
+    const Cryptographer* cryptographer);
 
 // Returns the most accurate position information available in this update.  It
 // prefers to use the unique_position() field, but will fall back to using the

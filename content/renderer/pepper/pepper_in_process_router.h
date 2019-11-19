@@ -99,7 +99,7 @@ class PepperInProcessRouter {
   // Reply result of the pending sync message.
   bool reply_result_;
 
-  base::WeakPtrFactory<PepperInProcessRouter> weak_factory_;
+  base::WeakPtrFactory<PepperInProcessRouter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PepperInProcessRouter);
 };

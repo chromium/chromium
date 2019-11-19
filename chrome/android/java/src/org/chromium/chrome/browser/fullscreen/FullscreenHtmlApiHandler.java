@@ -8,10 +8,10 @@ import static android.view.View.SYSTEM_UI_FLAG_FULLSCREEN;
 import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
 import static android.view.View.SYSTEM_UI_FLAG_LOW_PROFILE;
 
+import android.app.Activity;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.Nullable;
 import android.support.v4.util.ObjectsCompat;
 import android.view.Gravity;
 import android.view.View;
@@ -19,7 +19,10 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.widget.Toast;
@@ -163,7 +166,7 @@ public class FullscreenHtmlApiHandler {
                     }
                     systemUiVisibility &= ~SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
                     contentView.setSystemUiVisibility(systemUiVisibility);
-                    fullscreenHtmlApiHandler.mWindow.clearFlags(
+                    fullscreenHtmlApiHandler.clearWindowFlags(
                             WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
                     break;
                 }
@@ -240,7 +243,7 @@ public class FullscreenHtmlApiHandler {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
             systemUiVisibility &= ~SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
             systemUiVisibility = applyExitFullscreenUIFlags(systemUiVisibility);
-            mWindow.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            clearWindowFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
         } else {
             systemUiVisibility &= ~SYSTEM_UI_FLAG_LOW_PROFILE;
             mWindow.addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
@@ -285,11 +288,18 @@ public class FullscreenHtmlApiHandler {
                     == SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN) {
                 systemUiVisibility = applyEnterFullscreenUIFlags(systemUiVisibility);
             } else {
+                Activity activity = tab.getActivity();
+                boolean isMultiWindow = MultiWindowUtils.getInstance().isLegacyMultiWindow(activity)
+                        || MultiWindowUtils.getInstance().isInMultiWindowMode(activity);
+
                 // To avoid a double layout that is caused by the system when just hiding
                 // the status bar set the status bar as translucent immediately. This cause
-                // it not to take up space so the layout is stable. (See crbug.com/935015)
-                if (mFullscreenOptions != null && mFullscreenOptions.showNavigationBar()) {
-                    mWindow.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                // it not to take up space so the layout is stable. (See crbug.com/935015). Do
+                // not do this in multi-window mode since that mode forces the status bar
+                // to always be visible.
+                if (mFullscreenOptions != null && mFullscreenOptions.showNavigationBar()
+                        && !isMultiWindow) {
+                    setWindowFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
                 }
                 systemUiVisibility |= SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
             }
@@ -420,5 +430,29 @@ public class FullscreenHtmlApiHandler {
             maskOffFlags |= View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         }
         return systemUiVisibility & ~maskOffFlags;
+    }
+
+    /*
+     * Clears the current window attributes to not contain windowFlags. This
+     * is slightly different that mWindow.clearFlags which then sets a
+     * forced window attribute on the Window object that cannot be cleared.
+     */
+    private void clearWindowFlags(int windowFlags) {
+        final WindowManager.LayoutParams attrs = mWindow.getAttributes();
+        if ((attrs.flags & windowFlags) != 0) {
+            attrs.flags &= ~windowFlags;
+            mWindow.setAttributes(attrs);
+        }
+    }
+
+    /*
+     * Sets the current window attributes to contain windowFlags. This
+     * is slightly different that mWindow.setFlags which then sets a
+     * forced window attribute on the Window object that cannot be cleared.
+     */
+    private void setWindowFlags(int windowFlags) {
+        final WindowManager.LayoutParams attrs = mWindow.getAttributes();
+        attrs.flags |= windowFlags;
+        mWindow.setAttributes(attrs);
     }
 }

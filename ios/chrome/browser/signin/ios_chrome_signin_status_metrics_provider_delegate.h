@@ -26,12 +26,12 @@ class IOSChromeSigninStatusMetricsProviderDelegate
   // SigninStatusMetricsProviderDelegate implementation.
   void Initialize() override;
   AccountsStatus GetStatusOfAllAccounts() override;
-  std::vector<identity::IdentityManager*> GetIdentityManagersForAllAccounts()
+  std::vector<signin::IdentityManager*> GetIdentityManagersForAllAccounts()
       override;
 
   // IdentityManagerFactoryObserver implementation.
-  void IdentityManagerCreated(identity::IdentityManager* manager) override;
-  void IdentityManagerShutdown(identity::IdentityManager* manager) override;
+  void IdentityManagerCreated(signin::IdentityManager* manager) override;
+  void IdentityManagerShutdown(signin::IdentityManager* manager) override;
 
   // Returns the loaded ChromeBrowserState instances.
   std::vector<ios::ChromeBrowserState*> GetLoadedChromeBrowserStates();

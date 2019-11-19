@@ -1,0 +1,40 @@
+<!--
+@WIN-ALLOW:caret_offset*
+@WIN-ALLOW:n_selections*
+@WIN-ALLOW:selection_start*
+@WIN-ALLOW:selection_end*
+@BLINK-ALLOW:editable*
+@BLINK-ALLOW:richlyEditable*
+@BLINK-ALLOW:*textSel*
+@BLINK-ALLOW:id*
+@AURALINUX-ALLOW:editable
+@AURALINUX-ALLOW:multi-line
+@AURALINUX-ALLOW:caret_offset*
+@AURALINUX-ALLOW:selection_start*
+@AURALINUX-ALLOW:selection_end*
+@WAIT-FOR:Done
+-->
+
+<body>
+  <div>
+    <div> before selection</div>
+    <div id='hidden-before' aria-hidden="true">
+      Some ignored text
+    </div>
+    <div>this text is not ignored</div>
+    <div id='hidden-after' aria-hidden="true">this text is ignored</div>
+    <div> after selection</div>
+  </div>
+</body>
+
+<script>
+  var selection = window.getSelection();
+  var selectionRange = document.createRange();
+  var hidden_before = document.getElementById('hidden-before')
+  var hidden_after = document.getElementById('hidden-after')
+  selectionRange.setStart(hidden_before.firstChild, 20);
+  selectionRange.setEnd(hidden_after.firstChild, 8);
+  selection.removeAllRanges();
+  selection.addRange(selectionRange);
+  document.body.appendChild(document.createTextNode("Done"));
+</script>

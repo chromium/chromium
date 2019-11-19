@@ -5,28 +5,30 @@
 package org.chromium.chrome.browser.toolbar.top;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.View;
-import android.widget.ImageButton;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.toolbar.TabCountProvider;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
-import org.chromium.chrome.browser.util.AccessibilityUtil;
+import org.chromium.ui.widget.ChromeImageButton;
+import org.chromium.ui.widget.Toast;
 
 /**
  * A button displaying the number of open tabs. Clicking the button toggles the tab switcher view.
  * TODO(twellington): Replace with TabSwitcherButtonCoordinator so code can be shared with bottom
  *                    toolbar.
  */
-public class ToggleTabStackButton extends ImageButton implements TabCountProvider.TabCountObserver,
-                                                                 View.OnClickListener,
-                                                                 View.OnLongClickListener {
+public class ToggleTabStackButton
+        extends ChromeImageButton implements TabCountProvider.TabCountObserver,
+                                             View.OnClickListener, View.OnLongClickListener {
     private TabSwitcherDrawable mTabSwitcherButtonDrawable;
     private TabSwitcherDrawable mTabSwitcherButtonDrawableLight;
     private TabCountProvider mTabCountProvider;
     private OnClickListener mTabSwitcherListener;
+    private OnLongClickListener mTabSwitcherLongClickListener;
 
     public ToggleTabStackButton(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -58,6 +60,16 @@ public class ToggleTabStackButton extends ImageButton implements TabCountProvide
      */
     void setOnTabSwitcherClickHandler(OnClickListener listener) {
         mTabSwitcherListener = listener;
+    }
+
+    /**
+     * Sets the OnLongClickListern that will be notified when the TabSwitcher button is long
+     *         pressed.
+     * @param listener The callback that will be notified when the TabSwitcher button is long
+     *         pressed.
+     */
+    void setOnTabSwitcherLongClickHandler(OnLongClickListener listener) {
+        mTabSwitcherLongClickListener = listener;
     }
 
     /**
@@ -97,7 +109,12 @@ public class ToggleTabStackButton extends ImageButton implements TabCountProvide
 
     @Override
     public boolean onLongClick(View v) {
-        CharSequence description = getResources().getString(org.chromium.chrome.R.string.open_tabs);
-        return AccessibilityUtil.showAccessibilityToast(getContext(), v, description);
+        if (mTabSwitcherLongClickListener != null && isLongClickable()) {
+            return mTabSwitcherLongClickListener.onLongClick(v);
+        } else {
+            CharSequence description =
+                    getResources().getString(org.chromium.chrome.R.string.open_tabs);
+            return Toast.showAnchoredToast(getContext(), v, description);
+        }
     }
 }

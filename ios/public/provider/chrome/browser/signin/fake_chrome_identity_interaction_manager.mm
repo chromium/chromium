@@ -13,6 +13,8 @@
 #error "This file requires ARC support."
 #endif
 
+NSString* kFakeAddAccountViewIdentifier = @"FakeAddAccountViewIdentifier";
+
 @interface FakeAddAccountViewController : UIViewController {
   __weak FakeChromeIdentityInteractionManager* _manager;
   UIButton* _cancelButton;
@@ -57,6 +59,7 @@
 
   // Obnoxious color, this is a test screen.
   self.view.backgroundColor = [UIColor magentaColor];
+  self.view.accessibilityIdentifier = kFakeAddAccountViewIdentifier;
 
   _signInButton = [UIButton buttonWithType:UIButtonTypeCustom];
   [_signInButton setTitle:@"Sign in" forState:UIControlStateNormal];

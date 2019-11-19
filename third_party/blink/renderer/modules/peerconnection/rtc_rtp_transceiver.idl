@@ -19,4 +19,5 @@ interface RTCRtpTransceiver {
     readonly attribute boolean stopped;
     [Measure, RaisesException=Setter] attribute RTCRtpTransceiverDirection direction;
     readonly attribute RTCRtpTransceiverDirection? currentDirection;
+    [RaisesException] void setCodecPreferences(sequence<RTCRtpCodecCapability> codecs);
 };

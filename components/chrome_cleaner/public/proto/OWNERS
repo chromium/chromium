@@ -1,0 +1,7 @@
+# Require security review on .proto file changes since they define an IPC
+# interface.
+per-file *.proto=set noparent
+per-file *.proto=file://ipc/SECURITY_OWNERS
+
+# TEAM: security-dev@chromium.org
+# COMPONENT: UI>Browser>Preferences>Protector

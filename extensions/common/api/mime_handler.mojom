@@ -33,11 +33,6 @@ interface MimeHandlerService {
   // Returns information about the stream associated with this service instance.
   // If the stream has been aborted, |stream_info| will be null.
   GetStreamInfo() => (StreamInfo? stream_info);
-
-  // Aborts the stream associated with this service instance. This is an
-  // idempotent operation.
-  AbortStream() => ();
-
 };
 
 // Provides a mime handler guest with control over beforeunload event handling

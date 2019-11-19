@@ -4,6 +4,8 @@
 
 #include "net/socket/fuzzed_datagram_client_socket.h"
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <algorithm>
 #include <string>
 
@@ -11,7 +13,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_piece.h"
-#include "base/test/fuzzed_data_provider.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_address.h"
@@ -29,8 +30,8 @@ const Error kWriteErrors[] = {ERR_FAILED, ERR_ADDRESS_UNREACHABLE,
                               ERR_MSG_TOO_BIG};
 
 FuzzedDatagramClientSocket::FuzzedDatagramClientSocket(
-    base::FuzzedDataProvider* data_provider)
-    : data_provider_(data_provider), weak_factory_(this) {}
+    FuzzedDataProvider* data_provider)
+    : data_provider_(data_provider) {}
 
 FuzzedDatagramClientSocket::~FuzzedDatagramClientSocket() = default;
 

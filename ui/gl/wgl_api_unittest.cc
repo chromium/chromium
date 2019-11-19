@@ -38,7 +38,7 @@ class WGLApiTest : public testing::Test {
   }
 
   void InitializeAPI(const char* disabled_extensions) {
-    api_.reset(new RealWGLApi());
+    api_ = std::make_unique<RealWGLApi>();
     g_current_wgl_context = api_.get();
     api_->Initialize(&g_driver_wgl);
     if (disabled_extensions) {

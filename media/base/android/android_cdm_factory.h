@@ -53,7 +53,7 @@ class MEDIA_EXPORT AndroidCdmFactory : public CdmFactory {
       std::pair<std::unique_ptr<MediaDrmBridgeFactory>, CdmCreatedCB>;
   base::flat_map<uint32_t, PendingCreation> pending_creations_;
 
-  base::WeakPtrFactory<AndroidCdmFactory> weak_factory_;
+  base::WeakPtrFactory<AndroidCdmFactory> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AndroidCdmFactory);
 };

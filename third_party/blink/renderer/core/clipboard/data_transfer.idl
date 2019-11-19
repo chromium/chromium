@@ -29,7 +29,8 @@
 // https://html.spec.whatwg.org/C/#the-datatransfer-interface
 
 [
-    Constructor
+    Constructor,
+    Exposed=Window
 ] interface DataTransfer {
     attribute DOMString dropEffect;
     attribute DOMString effectAllowed;

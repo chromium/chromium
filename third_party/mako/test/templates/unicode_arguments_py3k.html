@@ -1,0 +1,10 @@
+# coding: utf-8
+
+<%def name="my_def(x)">
+    x is: ${x}
+</%def>
+
+${my_def('drôle de petite voix m’a réveillé')}
+<%self:my_def x='drôle de petite voix m’a réveillé'/>
+<%self:my_def x="${'drôle de petite voix m’a réveillé'}"/>
+<%call expr="my_def('drôle de petite voix m’a réveillé')"/>

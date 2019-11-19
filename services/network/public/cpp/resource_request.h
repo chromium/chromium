@@ -12,64 +12,79 @@
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/unguessable_token.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "services/network/public/mojom/request_context_frame_type.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace network {
 
-// Typemapped to network.mojom::URLRequest, see comments there for details of
-// each field.
+// Typemapped to network.mojom.URLRequest in url_loader.mojom.
+//
 // Note: Please revise EqualsForTesting accordingly on any updates to this
 // struct.
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
+  // Typemapped to network.mojom.TrustedUrlRequestParams, see comments there
+  // for details of each field.
+  //
+  // TODO(mmenke):  There are likely other fields that should be moved into this
+  // class.
+  struct COMPONENT_EXPORT(NETWORK_CPP_BASE) TrustedParams {
+    TrustedParams();
+    ~TrustedParams();
+
+    bool operator==(const TrustedParams& other) const;
+
+    net::NetworkIsolationKey network_isolation_key;
+    mojom::UpdateNetworkIsolationKeyOnRedirect
+        update_network_isolation_key_on_redirect =
+            network::mojom::UpdateNetworkIsolationKeyOnRedirect::kDoNotUpdate;
+    bool disable_secure_dns = false;
+  };
+
   ResourceRequest();
   ResourceRequest(const ResourceRequest& request);
   ~ResourceRequest();
 
   bool EqualsForTesting(const ResourceRequest& request) const;
+  bool SendsCookies() const;
+  bool SavesCookies() const;
 
+  // See comments in network.mojom.URLRequest in url_loader.mojom for details
+  // of each field.
   std::string method = "GET";
   GURL url;
   GURL site_for_cookies;
-  base::Optional<url::Origin> top_frame_origin;
   bool attach_same_site_cookies = false;
   bool update_first_party_url_on_redirect = false;
   base::Optional<url::Origin> request_initiator;
+  base::Optional<url::Origin> isolated_world_origin;
   GURL referrer;
   net::URLRequest::ReferrerPolicy referrer_policy =
       net::URLRequest::NEVER_CLEAR_REFERRER;
-  bool is_prerendering = false;
   net::HttpRequestHeaders headers;
   net::HttpRequestHeaders cors_exempt_headers;
   int load_flags = 0;
-  bool allow_credentials = true;
-  int plugin_child_id = -1;
   int resource_type = 0;
   net::RequestPriority priority = net::IDLE;
-  int appcache_host_id = 0;
   bool should_reset_appcache = false;
   bool is_external_request = false;
   mojom::CorsPreflightPolicy cors_preflight_policy =
       mojom::CorsPreflightPolicy::kConsiderPreflight;
-  int service_worker_provider_id = -1;
   bool originated_from_service_worker = false;
   bool skip_service_worker = false;
-  mojom::FetchRequestMode fetch_request_mode = mojom::FetchRequestMode::kNoCors;
-  mojom::FetchCredentialsMode fetch_credentials_mode =
-      mojom::FetchCredentialsMode::kInclude;
-  mojom::FetchRedirectMode fetch_redirect_mode =
-      mojom::FetchRedirectMode::kFollow;
+  bool corb_detachable = false;
+  bool corb_excluded = false;
+  mojom::RequestMode mode = mojom::RequestMode::kNoCors;
+  mojom::CredentialsMode credentials_mode = mojom::CredentialsMode::kInclude;
+  mojom::RedirectMode redirect_mode = mojom::RedirectMode::kFollow;
   std::string fetch_integrity;
   int fetch_request_context_type = 0;
-  mojom::RequestContextFrameType fetch_frame_type =
-      mojom::RequestContextFrameType::kAuxiliary;
   scoped_refptr<ResourceRequestBody> request_body;
   bool keepalive = false;
   bool has_user_gesture = false;
@@ -79,10 +94,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   int render_frame_id = MSG_ROUTING_NONE;
   bool is_main_frame = false;
   int transition_type = 0;
-  bool allow_download = false;
   bool report_raw_headers = false;
   int previews_state = 0;
-  bool initiated_in_secure_context = false;
   bool upgrade_if_insecure = false;
   bool is_revalidating = false;
   base::Optional<base::UnguessableToken> throttling_profile_id;
@@ -90,6 +103,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   net::HttpRequestHeaders custom_proxy_post_cache_headers;
   bool custom_proxy_use_alternate_proxy_list = false;
   base::Optional<base::UnguessableToken> fetch_window_id;
+  base::Optional<std::string> devtools_request_id;
+  bool is_signed_exchange_prefetch_cache_enabled = false;
+  bool obey_origin_policy = false;
+  base::Optional<base::UnguessableToken> recursive_prefetch_token;
+  base::Optional<TrustedParams> trusted_params;
 };
 
 }  // namespace network

@@ -11,7 +11,6 @@
 #include "chrome/browser/chromeos/android_sms/connection_manager.h"
 #include "chrome/browser/chromeos/android_sms/fcm_connection_establisher.h"
 #include "chrome/browser/chromeos/android_sms/pairing_lost_notifier.h"
-#include "chrome/browser/chromeos/android_sms/streaming_connection_establisher.h"
 #include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -40,6 +39,7 @@ AndroidSmsService::AndroidSmsService(
       android_sms_app_manager_(std::make_unique<AndroidSmsAppManagerImpl>(
           profile_,
           andoid_sms_app_setup_controller_.get(),
+          profile_->GetPrefs(),
           app_list_syncable_service)),
       android_sms_pairing_state_tracker_(
           std::make_unique<AndroidSmsPairingStateTrackerImpl>(
@@ -75,13 +75,8 @@ void AndroidSmsService::OnSessionStateChanged() {
     return;
 
   std::unique_ptr<ConnectionEstablisher> connection_establisher;
-  if (base::FeatureList::IsEnabled(features::kEnableMessagesWebPush)) {
-    connection_establisher = std::make_unique<FcmConnectionEstablisher>(
-        std::make_unique<base::OneShotTimer>());
-  } else {
-    connection_establisher = std::make_unique<StreamingConnectionEstablisher>(
-        base::DefaultClock::GetInstance());
-  }
+  connection_establisher = std::make_unique<FcmConnectionEstablisher>(
+      std::make_unique<base::OneShotTimer>());
 
   connection_manager_ = std::make_unique<ConnectionManager>(
       std::move(connection_establisher), profile_,

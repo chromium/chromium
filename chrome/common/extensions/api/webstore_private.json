@@ -74,6 +74,35 @@
         "id": "WebGlStatus",
         "type": "string",
         "enum": ["webgl_allowed", "webgl_blocked"]
+      },
+      {
+        "id": "ExtensionInstallStatus",
+        "type": "string",
+        "enum" : [{
+          "name": "can_request",
+          "description": "The extension install request feature is enabled and the extension can be requested."
+        }, {
+          "name": "request_pending",
+          "description": "The extension install request has been sent and is waiting to be reviewed."
+        }, {
+          "name": "blocked_by_policy",
+          "description": "The extension cannot be installed due to enterprise policy."
+        }, {
+          "name": "installable",
+          "description": "The extension can be installed."
+        }, {
+          "name": "enabled",
+          "description": "The extension has been installed already and it's enabled."
+        }, {
+          "name": "disabled",
+          "description": "The extension has been installed already but it's disabled."
+        }, {
+          "name": "terminated",
+          "description": "The extension has been installed already but it's terminated."
+        }, {
+          "name": "blacklisted",
+          "description": "The extension has been blacklisted."
+        }]
       }
     ],
     "functions": [
@@ -349,6 +378,24 @@
             "type": "function",
             "parameters": [
               { "name": "referrerChain", "type": "string" }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "getExtensionStatus",
+        "description": "Returns the install status of the extension.",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "string",
+            "description": "The id of the extension"
+          },
+          {
+            "name": "callback",
+            "type": "function",
+            "parameters": [
+              { "name": "status", "$ref": "ExtensionInstallStatus" }
             ]
           }
         ]

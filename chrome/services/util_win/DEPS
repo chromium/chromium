@@ -1,6 +1,6 @@
 include_rules = [
-  "+chrome/browser/conflicts/module_info_util_win.h",
-  "+chrome/browser/conflicts/module_info_win.h",
+  "+chrome/browser/win/conflicts/module_info.h",
+  "+chrome/browser/win/conflicts/module_info_util.h",
   "+chrome/installer/util/install_util.h",
   "+content/public/utility/utility_thread.h",
   "+third_party/metrics_proto/system_profile.pb.h",

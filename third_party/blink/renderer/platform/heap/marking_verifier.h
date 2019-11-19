@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_MARKING_VERIFIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_MARKING_VERIFIER_H_
 
-#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/heap_page.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
@@ -15,69 +13,35 @@ namespace blink {
 class MarkingVerifier final : public Visitor {
  public:
   explicit MarkingVerifier(ThreadState* state) : Visitor(state) {}
-  ~MarkingVerifier() override {}
+  ~MarkingVerifier() override = default;
 
-  void VerifyObject(HeapObjectHeader* header) {
-    // Verify only non-free marked objects.
-    if (header->IsFree() || !header->IsMarked())
-      return;
+  void VerifyObject(HeapObjectHeader* header);
 
-    const GCInfo* info =
-        GCInfoTable::Get().GCInfoFromIndex(header->GcInfoIndex());
-    const bool can_verify =
-        !info->has_v_table || blink::VTableInitialized(header->Payload());
-    if (can_verify) {
-      CHECK(header->IsValid());
-      info->trace(this, header->Payload());
-    }
-  }
-
-  void Visit(void* object, TraceDescriptor desc) final {
-    CHECK(object);
-    VerifyChild(desc.base_object_payload);
-  }
-
+  void Visit(void* object, TraceDescriptor desc) final;
   void VisitWeak(void* object,
-                 void** object_slot,
+                 void* object_weak_ref,
                  TraceDescriptor desc,
-                 WeakCallback callback) final {
-    CHECK(object);
-    VerifyChild(desc.base_object_payload);
-  }
+                 WeakCallback callback) final;
 
-  // Unused overrides.
-  void VisitBackingStoreStrongly(void*, void**, TraceDescriptor) final {}
+  void VisitBackingStoreStrongly(void*, void**, TraceDescriptor) final;
+
   void VisitBackingStoreWeakly(void*,
                                void**,
                                TraceDescriptor,
+                               TraceDescriptor,
                                WeakCallback,
-                               void*) final {}
+                               void*) final;
+
+  // Unused overrides.
   void VisitBackingStoreOnly(void*, void**) final {}
-  void RegisterBackingStoreCallback(void**, MovingObjectCallback, void*) final {
-  }
-  void RegisterWeakCallback(void*, WeakCallback) final {}
+  void RegisterBackingStoreCallback(void*, MovingObjectCallback) final {}
+  void RegisterWeakCallback(WeakCallback, void*) final {}
   void Visit(const TraceWrapperV8Reference<v8::Value>&) final {}
-  void VisitWithWrappers(void*, TraceDescriptor) final {}
 
  private:
-  void VerifyChild(void* base_object_payload) {
-    // The following check ensures that an object is currently not under
-    // construction. All verifier runs are assumed to be run outside of mixin
-    // construction. Consequently, the following cases can lead to a failing
-    // check:
-    // 1. The garbage collector ignoring no-GC scopes for mixin construction.
-    // 2. Missing macro USING_GARBAGE_COLLECTED_MIXIN for users of
-    //    GarbageCollectedMixin.
-    CHECK(base_object_payload);
-    HeapObjectHeader* child_header =
-        HeapObjectHeader::FromPayload(base_object_payload);
-    // These checks ensure that any children reachable from marked parents are
-    // also marked. If you hit these checks then marking is in an inconsistent
-    // state meaning that there are unmarked objects reachable from marked
-    // ones.
-    CHECK(child_header);
-    CHECK(child_header->IsMarked());
-  }
+  void VerifyChild(void* object, void* base_object_payload);
+
+  HeapObjectHeader* parent_ = nullptr;
 };
 
 }  // namespace blink

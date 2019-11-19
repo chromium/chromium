@@ -8,7 +8,8 @@
 #include "base/macros.h"
 #include "chrome/browser/android/explore_sites/explore_sites_service.h"
 #include "chrome/browser/ui/webui/explore_sites_internals/explore_sites_internals.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 class Profile;
 
@@ -19,7 +20,8 @@ class ExploreSitesInternalsPageHandler
     : public explore_sites_internals::mojom::PageHandler {
  public:
   ExploreSitesInternalsPageHandler(
-      explore_sites_internals::mojom::PageHandlerRequest request,
+      mojo::PendingReceiver<explore_sites_internals::mojom::PageHandler>
+          receiver,
       ExploreSitesService* explore_sites_service,
       Profile* profile);
   ~ExploreSitesInternalsPageHandler() override;
@@ -33,7 +35,7 @@ class ExploreSitesInternalsPageHandler
                            OverrideCountryCodeCallback) override;
   void ForceNetworkRequest(ForceNetworkRequestCallback) override;
 
-  mojo::Binding<explore_sites_internals::mojom::PageHandler> binding_;
+  mojo::Receiver<explore_sites_internals::mojom::PageHandler> receiver_;
   ExploreSitesService* explore_sites_service_;
   Profile* profile_;
 

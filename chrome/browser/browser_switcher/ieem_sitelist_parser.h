@@ -17,13 +17,11 @@ class ParsedXml {
  public:
   ParsedXml();
   ParsedXml(ParsedXml&&);
-  ParsedXml(std::vector<std::string>&& sitelist,
-            std::vector<std::string>&& greylist,
+  ParsedXml(std::vector<std::string>&& rules,
             base::Optional<std::string>&& error);
   ~ParsedXml();
 
-  std::vector<std::string> sitelist;
-  std::vector<std::string> greylist;
+  std::vector<std::string> rules;
   base::Optional<std::string> error;
 
  private:

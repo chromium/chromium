@@ -29,8 +29,7 @@
   const bazTreeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('--baz');
   bazTreeElement.startEditing(bazTreeElement.valueElement);
   bazTreeElement.valueElement.textContent = 'blue';
-  bazTreeElement.kickFreeFlowStyleEditForTest();
-  await ElementsTestRunner.waitForStyleAppliedPromise();
+  await bazTreeElement.kickFreeFlowStyleEditForTest();
 
   TestRunner.addResult('After css Variable editing:' );
   dumpSwatches();

@@ -8,13 +8,15 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 TEST(TextTrackListTest, InvalidateTrackIndexes) {
   // Create and fill the list
-  TextTrackList* list = TextTrackList::Create(
-      HTMLVideoElement::Create(DummyPageHolder::Create()->GetDocument()));
+  auto* list = MakeGarbageCollected<TextTrackList>(
+      MakeGarbageCollected<HTMLVideoElement>(
+          std::make_unique<DummyPageHolder>()->GetDocument()));
   const size_t kNumTextTracks = 4;
   TextTrack* text_tracks[kNumTextTracks];
   for (size_t i = 0; i < kNumTextTracks; ++i) {

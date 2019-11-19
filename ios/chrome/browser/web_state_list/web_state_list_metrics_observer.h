@@ -13,8 +13,12 @@ class WebStateListMetricsObserver : public WebStateListObserver {
   WebStateListMetricsObserver();
   ~WebStateListMetricsObserver() override;
 
-  void ResetSessionMetrics();
   void RecordSessionMetrics();
+
+  // TODO(crbug.com/1010164): Don't define these methods here. Instead implement
+  // SessionRestorationObserver methods.
+  void WillStartSessionRestoration();
+  void SessionRestorationFinished();
 
   // WebStateListObserver implementation.
   void WebStateInsertedAt(WebStateList* web_state_list,
@@ -35,6 +39,10 @@ class WebStateListMetricsObserver : public WebStateListObserver {
   int inserted_web_state_counter_;
   int detached_web_state_counter_;
   int activated_web_state_counter_;
+  bool metric_collection_paused_;
+
+  // Reset metrics counters.
+  void ResetSessionMetrics();
 
   DISALLOW_COPY_AND_ASSIGN(WebStateListMetricsObserver);
 };

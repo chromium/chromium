@@ -4,7 +4,7 @@
 
 from telemetry import story
 from telemetry import page
-from contrib.vr_benchmarks import (shared_android_vr_page_state as vr_state)
+from contrib.vr_benchmarks import (shared_vr_page_state as vr_state)
 from contrib.vr_benchmarks.vr_story_set import VrStorySet
 
 class WebVrWprPage(page.Page):
@@ -27,7 +27,7 @@ class WebVrWprPage(page.Page):
         page_set=page_set,
         name=name,
         extra_browser_args=extra_browser_args,
-        shared_page_state_class=vr_state.SharedAndroidVrPageState)
+        shared_page_state_class=vr_state.SharedVrPageStateFactory)
     self._shared_page_state = None
     self._interaction_function = interaction_function
 
@@ -36,7 +36,8 @@ class WebVrWprPage(page.Page):
       self._interaction_function(action_runner, self.recording_wpr)
 
     action_runner.MeasureMemory(True)
-    action_runner.Navigate("about:blank")
+    if self._shared_page_state.ShouldNavigateToBlankPageBeforeFinishing():
+      action_runner.Navigate("about:blank")
 
   def Run(self, shared_state):
     self._shared_page_state = shared_state

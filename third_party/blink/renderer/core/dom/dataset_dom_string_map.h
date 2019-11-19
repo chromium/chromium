@@ -35,10 +35,6 @@ class ExceptionState;
 
 class DatasetDOMStringMap final : public DOMStringMap {
  public:
-  static DatasetDOMStringMap* Create(Element* element) {
-    return MakeGarbageCollected<DatasetDOMStringMap>(element);
-  }
-
   explicit DatasetDOMStringMap(Element* element) : element_(element) {}
 
   void GetNames(Vector<String>&) override;

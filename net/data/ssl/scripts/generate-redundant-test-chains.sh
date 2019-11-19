@@ -135,12 +135,15 @@ CA_COMMON_NAME="B CA" \
     -out out/A.pem \
     -config redundant-ca.cnf
 
+# EmbeddedTestServer only supports PKCS#8 format.
+try openssl pkcs8 -topk8 -nocrypt -in out/A.key -out out/A-pkcs8.key
+
 echo Create redundant-server-chain.pem
-try /bin/sh -c "cat out/A.key out/A.pem out/B.pem out/C.pem out/D.pem \
+try /bin/sh -c "cat out/A-pkcs8.key out/A.pem out/B.pem out/C.pem out/D.pem \
     > ../certificates/redundant-server-chain.pem"
 
 echo Create redundant-validated-chain.pem
-try /bin/sh -c "cat out/A.key out/A.pem out/B.pem out/C2.pem \
+try /bin/sh -c "cat out/A-pkcs8.key out/A.pem out/B.pem out/C2.pem \
   > ../certificates/redundant-validated-chain.pem"
 
 echo Create redundant-validated-chain-root.pem

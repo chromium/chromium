@@ -9,8 +9,8 @@
 namespace views {
 namespace test {
 
-TestLayoutProvider::TestLayoutProvider() {}
-TestLayoutProvider::~TestLayoutProvider() {}
+TestLayoutProvider::TestLayoutProvider() = default;
+TestLayoutProvider::~TestLayoutProvider() = default;
 
 void TestLayoutProvider::SetDistanceMetric(int metric, int value) {
   distance_metrics_[metric] = value;
@@ -42,9 +42,8 @@ int TestLayoutProvider::GetSnappedDialogWidth(int min_width) const {
 
 const gfx::FontList& TestLayoutProvider::GetFont(int context, int style) const {
   auto it = fonts_.find({context, style});
-  return it != fonts_.end()
-             ? it->second
-             : DefaultTypographyProvider::GetFont(context, style);
+  return it != fonts_.end() ? it->second
+                            : TypographyProvider::GetFont(context, style);
 }
 
 }  // namespace test

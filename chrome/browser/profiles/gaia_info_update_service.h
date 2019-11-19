@@ -14,7 +14,7 @@
 #include "chrome/browser/profiles/profile_downloader.h"
 #include "chrome/browser/profiles/profile_downloader_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class Profile;
 class ProfileDownloader;
@@ -23,7 +23,7 @@ class ProfileDownloader;
 // The results are saved in the profile info cache.
 class GAIAInfoUpdateService : public KeyedService,
                               public ProfileDownloaderDelegate,
-                              public identity::IdentityManager::Observer {
+                              public signin::IdentityManager::Observer {
  public:
   explicit GAIAInfoUpdateService(Profile* profile);
   ~GAIAInfoUpdateService() override;
@@ -37,7 +37,8 @@ class GAIAInfoUpdateService : public KeyedService,
   // ProfileDownloaderDelegate:
   bool NeedsProfilePicture() const override;
   int GetDesiredImageSideLength() const override;
-  Profile* GetBrowserProfile() override;
+  signin::IdentityManager* GetIdentityManager() override;
+  network::mojom::URLLoaderFactory* GetURLLoaderFactory() override;
   std::string GetCachedPictureURL() const override;
   bool IsPreSignin() const override;
   void OnProfileDownloadSuccess(ProfileDownloader* downloader) override;
@@ -54,11 +55,14 @@ class GAIAInfoUpdateService : public KeyedService,
   void OnUsernameChanged(const std::string& username);
   void ScheduleNextUpdate();
 
-  // Overridden from identity::IdentityManager::Observer:
+  // Overridden from signin::IdentityManager::Observer:
   void OnPrimaryAccountSet(
       const CoreAccountInfo& primary_account_info) override;
   void OnPrimaryAccountCleared(
       const CoreAccountInfo& previous_primary_account_info) override;
+  void OnUnconsentedPrimaryAccountChanged(
+      const CoreAccountInfo& unconsented_primary_account_info) override;
+  void OnRefreshTokensLoaded() override;
 
   Profile* profile_;
   std::unique_ptr<ProfileDownloader> profile_image_downloader_;

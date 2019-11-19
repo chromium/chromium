@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_ADAPTERS_P2P_QUIC_TRANSPORT_STATS_H_
 
 #include "base/time/time.h"
-#include "net/third_party/quic/core/quic_connection_stats.h"
+#include "net/third_party/quiche/src/quic/core/quic_connection_stats.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
@@ -17,7 +17,7 @@ namespace blink {
 // Currently QUIC does not have stats at the stream level.
 struct MODULES_EXPORT P2PQuicTransportStats {
   P2PQuicTransportStats();
-  // Note: The following stats are ignored form the QuicConnectionStats:
+  // Note: The following stats are ignored from the QuicConnectionStats:
   //       -packets_spuriously_retransmitted
   //       -bytes_spuriously_retransmitted
   //       -slowstart_packets_sent
@@ -30,9 +30,7 @@ struct MODULES_EXPORT P2PQuicTransportStats {
   //       -max_time_reordering_us
   //       -tcp_loss_events
   //       -connection_creation_time
-  explicit P2PQuicTransportStats(const quic::QuicConnectionStats& stats,
-                                 uint32_t num_outgoing_streams_created,
-                                 uint32_t num_incoming_streams_created);
+  explicit P2PQuicTransportStats(const quic::QuicConnectionStats& stats);
   ~P2PQuicTransportStats() = default;
 
   base::TimeTicks timestamp;
@@ -42,8 +40,6 @@ struct MODULES_EXPORT P2PQuicTransportStats {
   // |stream_bytes_sent| does not include retransmissions.
   uint64_t stream_bytes_sent = 0;
   uint64_t stream_bytes_received = 0;
-  uint32_t num_outgoing_streams_created = 0;
-  uint32_t num_incoming_streams_created = 0;
 
   // These include version negotiation and public reset packets.
   //
@@ -74,6 +70,11 @@ struct MODULES_EXPORT P2PQuicTransportStats {
   uint64_t blocked_frames_sent = 0;
   // Number of connectivity probing packets received by this connection.
   uint64_t connectivity_probing_packets_received = 0;
+
+  // The following are stats not taken directly from QuicConnectionStats:
+  uint32_t num_outgoing_streams_created = 0;
+  uint32_t num_incoming_streams_created = 0;
+  uint32_t num_datagrams_lost = 0;
 };
 }  // namespace blink
 

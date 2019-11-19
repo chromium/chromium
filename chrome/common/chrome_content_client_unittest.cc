@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -103,7 +104,7 @@ TEST(ChromeContentClientTest, AdditionalSchemes) {
 
   EXPECT_TRUE(content::IsOriginSecure(GURL("chrome-native://newtab/")));
 
-  GURL chrome_url("chrome://dummyurl");
+  GURL chrome_url(content::GetWebUIURL("dummyurl"));
   EXPECT_TRUE(content::IsOriginSecure(chrome_url));
   EXPECT_FALSE(content::OriginCanAccessServiceWorkers(chrome_url));
   EXPECT_TRUE(

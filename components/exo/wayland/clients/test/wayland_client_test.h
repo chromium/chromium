@@ -7,27 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "components/exo/wayland/clients/test/wayland_client_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-class AshTestHelper;
-}  // namespace ash
-
-namespace base {
-class ScopedTempDir;
-class WaitableEvent;
-}  // namespace base
-
 namespace exo {
-namespace wayland {
-class Server;
-}
-
-class Display;
-class WMHelper;
 
 class WaylandClientTest : public testing::Test {
  public:
@@ -43,18 +26,7 @@ class WaylandClientTest : public testing::Test {
   void TearDown() override;
 
  private:
-  class WaylandWatcher;
-
-  void SetUpOnUIThread(base::WaitableEvent* event);
-  void TearDownOnUIThread(base::WaitableEvent* event);
-
-  // Below objects can only be accessed from UI thread.
-  std::unique_ptr<base::ScopedTempDir> xdg_temp_dir_;
-  std::unique_ptr<ash::AshTestHelper> ash_test_helper_;
-  std::unique_ptr<WMHelper> wm_helper_;
-  std::unique_ptr<Display> display_;
-  std::unique_ptr<wayland::Server> wayland_server_;
-  std::unique_ptr<WaylandWatcher> wayland_watcher_;
+  WaylandClientTestHelper test_helper_;
 
   DISALLOW_COPY_AND_ASSIGN(WaylandClientTest);
 };

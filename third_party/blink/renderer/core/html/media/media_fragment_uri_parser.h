@@ -27,8 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_MEDIA_MEDIA_FRAGMENT_URI_PARSER_H_
 
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -68,7 +67,7 @@ class MediaFragmentURIParser final {
   TimeFormat time_format_;
   double start_time_;
   double end_time_;
-  Vector<std::pair<CString, CString>> fragments_;
+  Vector<std::pair<std::string, std::string>> fragments_;
 };
 
 }  // namespace blink

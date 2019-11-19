@@ -6,7 +6,6 @@
 
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_client.h"
@@ -25,23 +24,18 @@ MenuPreTargetHandlerAura::MenuPreTargetHandlerAura(MenuController* controller,
                                                    Widget* owner)
     : controller_(controller), root_(GetOwnerRootWindow(owner)) {
   if (root_) {
-    aura_env_ = root_->env();
     wm::GetActivationClient(root_)->AddObserver(this);
     root_->AddObserver(this);
   } else {
     // This should only happen in cases like when context menus are shown for
-    // Windows OS system tray items and there is no parent window. This should
-    // not be hit on Chrome OS, where Window Service clients need to install a
-    // pre-target handler on the aura::Env associated with their app window.
-    DCHECK(!features::IsUsingWindowService())
-        << "MenuPreTargetHandlerAura may not work correctly without an owner.";
-    aura_env_ = aura::Env::GetInstance();
+    // Windows OS system tray items and there is no parent window.
   }
-  aura_env_->AddPreTargetHandler(this, ui::EventTarget::Priority::kSystem);
+  aura::Env::GetInstance()->AddPreTargetHandler(
+      this, ui::EventTarget::Priority::kSystem);
 }
 
 MenuPreTargetHandlerAura::~MenuPreTargetHandlerAura() {
-  aura_env_->RemovePreTargetHandler(this);
+  aura::Env::GetInstance()->RemovePreTargetHandler(this);
   Cleanup();
 }
 
@@ -50,7 +44,7 @@ void MenuPreTargetHandlerAura::OnWindowActivated(
     aura::Window* gained_active,
     aura::Window* lost_active) {
   if (!controller_->drag_in_progress())
-    controller_->CancelAll();
+    controller_->Cancel(MenuController::ExitType::kAll);
 }
 
 void MenuPreTargetHandlerAura::OnWindowDestroying(aura::Window* window) {
@@ -58,7 +52,7 @@ void MenuPreTargetHandlerAura::OnWindowDestroying(aura::Window* window) {
 }
 
 void MenuPreTargetHandlerAura::OnCancelMode(ui::CancelModeEvent* event) {
-  controller_->CancelAll();
+  controller_->Cancel(MenuController::ExitType::kAll);
 }
 
 void MenuPreTargetHandlerAura::OnKeyEvent(ui::KeyEvent* event) {

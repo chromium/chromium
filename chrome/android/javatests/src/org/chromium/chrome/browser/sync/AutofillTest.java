@@ -56,13 +56,16 @@ public class AutofillTest {
     // A container to store autofill profile information for data verification.
     private static class Autofill {
         public final String id;
+        public final String clientTagHash;
         public final String street;
         public final String city;
         public final String state;
         public final String zip;
 
-        public Autofill(String id, String street, String city, String state, String zip) {
+        public Autofill(String id, String clientTagHash, String street, String city, String state,
+                String zip) {
             this.id = id;
+            this.clientTagHash = clientTagHash;
             this.street = street;
             this.city = city;
             this.state = state;
@@ -141,7 +144,7 @@ public class AutofillTest {
 
         // Delete on server, sync, and verify deleted locally.
         Autofill autofill = getClientAutofillProfiles().get(0);
-        mSyncTestRule.getFakeServerHelper().deleteEntity(autofill.id);
+        mSyncTestRule.getFakeServerHelper().deleteEntity(autofill.id, autofill.clientTagHash);
         SyncTestUtil.triggerSync();
         waitForClientAutofillProfileCount(0);
     }
@@ -173,8 +176,8 @@ public class AutofillTest {
 
     private void addServerAutofillProfile(EntitySpecifics specifics) {
         mSyncTestRule.getFakeServerHelper().injectUniqueClientEntity(
-                specifics.getAutofillProfile().getAddressHomeLine1() /* nonUniqueName */,
-                specifics.getAutofillProfile().getAddressHomeLine1() /* clientTag */, specifics);
+                specifics.getAutofillProfile().getGuid() /* nonUniqueName */,
+                specifics.getAutofillProfile().getGuid() /* clientTag */, specifics);
     }
 
     private List<Autofill> getClientAutofillProfiles() throws JSONException {
@@ -184,11 +187,18 @@ public class AutofillTest {
         for (Pair<String, JSONObject> entity : entities) {
             String id = entity.first;
             JSONObject profile = entity.second;
+            String clientTagHash = "";
+            if (profile.has("metadata")) {
+                JSONObject metadata = profile.getJSONObject("metadata");
+                if (metadata.has("client_tag_hash")) {
+                    clientTagHash = metadata.getString("client_tag_hash");
+                }
+            }
             String street = profile.getString("address_home_line1");
             String city = profile.getString("address_home_city");
             String state = profile.getString("address_home_state");
             String zip = profile.getString("address_home_zip");
-            autofills.add(new Autofill(id, street, city, state, zip));
+            autofills.add(new Autofill(id, clientTagHash, street, city, state, zip));
         }
         return autofills;
     }

@@ -10,7 +10,9 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "mojo/public/cpp/bindings/strong_binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/proxy_resolving_client_socket_factory.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
@@ -33,15 +35,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingSocketFactoryMojo
       const GURL& url,
       mojom::ProxyResolvingSocketOptionsPtr options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      mojom::ProxyResolvingSocketRequest request,
-      mojom::SocketObserverPtr observer,
+      mojo::PendingReceiver<mojom::ProxyResolvingSocket> receiver,
+      mojo::PendingRemote<mojom::SocketObserver> observer,
       CreateProxyResolvingSocketCallback callback) override;
 
  private:
   ProxyResolvingClientSocketFactory factory_impl_;
   TLSSocketFactory tls_socket_factory_;
-  mojo::StrongBindingSet<mojom::ProxyResolvingSocket>
-      proxy_resolving_socket_bindings_;
+  mojo::UniqueReceiverSet<mojom::ProxyResolvingSocket>
+      proxy_resolving_socket_receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(ProxyResolvingSocketFactoryMojo);
 };

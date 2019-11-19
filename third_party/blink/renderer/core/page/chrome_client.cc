@@ -22,6 +22,8 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 
 #include <algorithm>
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/platform/web_prescient_networking.h"
 #include "third_party/blink/public/platform/web_screen_info.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -30,12 +32,12 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
-#include "third_party/blink/renderer/core/loader/network_hints_interface.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -49,7 +51,7 @@ void ChromeClient::InstallSupplements(LocalFrame& frame) {
 
 void ChromeClient::SetWindowRectWithAdjustment(const IntRect& pending_rect,
                                                LocalFrame& frame) {
-  IntRect screen = GetScreenInfo().available_rect;
+  IntRect screen = GetScreenInfo(frame).available_rect;
   IntRect window = pending_rect;
 
   IntSize minimum_size = MinimumWindowSize();
@@ -57,25 +59,44 @@ void ChromeClient::SetWindowRectWithAdjustment(const IntRect& pending_rect,
   // Let size 0 pass through, since that indicates default size, not minimum
   // size.
   if (window.Width()) {
-    window.SetWidth(std::min(std::max(minimum_size.Width(), window.Width()),
-                             screen.Width()));
+    int width = std::max(minimum_size.Width(), window.Width());
+    // If the Window Placement experiment is enabled, the window could be placed
+    // on another screen, and so it should not be limited by the current screen.
+    // This relies on the embedder clamping bounds to the target screen for now.
+    // TODO(http://crbug.com/897300): Implement multi-screen clamping in Blink.
+    if (!RuntimeEnabledFeatures::WindowPlacementEnabled())
+      width = std::min(width, screen.Width());
+    window.SetWidth(width);
     size_for_constraining_move.SetWidth(window.Width());
   }
   if (window.Height()) {
-    window.SetHeight(std::min(std::max(minimum_size.Height(), window.Height()),
-                              screen.Height()));
+    int height = std::max(minimum_size.Height(), window.Height());
+    // If the Window Placement experiment is enabled, the window could be placed
+    // on another screen, and so it should not be limited by the current screen.
+    // This relies on the embedder clamping bounds to the target screen for now.
+    // TODO(http://crbug.com/897300): Implement multi-screen clamping in Blink.
+    if (!RuntimeEnabledFeatures::WindowPlacementEnabled())
+      height = std::min(height, screen.Height());
+    window.SetHeight(height);
     size_for_constraining_move.SetHeight(window.Height());
   }
 
-  // Constrain the window position within the valid screen area.
-  window.SetX(
-      std::max(screen.X(),
-               std::min(window.X(),
-                        screen.MaxX() - size_for_constraining_move.Width())));
-  window.SetY(
-      std::max(screen.Y(),
-               std::min(window.Y(),
-                        screen.MaxY() - size_for_constraining_move.Height())));
+  // If the Window Placement experiment is enabled, the window could be placed
+  // on another screen, and so it should not be limited by the current screen.
+  // This relies on the embedder clamping bounds to the target screen for now.
+  // TODO(http://crbug.com/897300): Implement multi-screen clamping in Blink.
+  if (!RuntimeEnabledFeatures::WindowPlacementEnabled()) {
+    // Constrain the window position within the valid screen area.
+    window.SetX(
+        std::max(screen.X(),
+                 std::min(window.X(),
+                          screen.MaxX() - size_for_constraining_move.Width())));
+    window.SetY(std::max(
+        screen.Y(),
+        std::min(window.Y(),
+                 screen.MaxY() - size_for_constraining_move.Height())));
+  }
+
   SetWindowRect(window, frame);
 }
 
@@ -101,9 +122,9 @@ bool ChromeClient::CanOpenUIElementIfDuringPageDismissal(
 Page* ChromeClient::CreateWindow(
     LocalFrame* frame,
     const FrameLoadRequest& r,
+    const AtomicString& frame_name,
     const WebWindowFeatures& features,
-    NavigationPolicy navigation_policy,
-    SandboxFlags sandbox_flags,
+    WebSandboxFlags sandbox_flags,
     const FeaturePolicy::FeatureState& opener_feature_state,
     const SessionStorageNamespaceId& session_storage_namespace_id) {
   if (!CanOpenUIElementIfDuringPageDismissal(
@@ -111,8 +132,8 @@ Page* ChromeClient::CreateWindow(
     return nullptr;
   }
 
-  return CreateWindowDelegate(frame, r, features, navigation_policy,
-                              sandbox_flags, opener_feature_state,
+  return CreateWindowDelegate(frame, r, frame_name, features, sandbox_flags,
+                              opener_feature_state,
                               session_storage_namespace_id);
 }
 
@@ -184,8 +205,11 @@ void ChromeClient::MouseDidMoveOverElement(LocalFrame& frame,
                                            const HitTestResult& result) {
   if (!result.GetScrollbar() && result.InnerNode() &&
       result.InnerNode()->GetDocument().IsDNSPrefetchEnabled()) {
-    NetworkHintsInterfaceImpl().DnsPrefetchHost(
-        result.AbsoluteLinkURL().Host());
+    WebPrescientNetworking* web_prescient_networking =
+        Platform::Current()->PrescientNetworking();
+    if (web_prescient_networking) {
+      web_prescient_networking->PrefetchDNS(result.AbsoluteLinkURL().Host());
+    }
   }
 
   ShowMouseOverURL(result);
@@ -206,17 +230,15 @@ void ChromeClient::SetToolTip(LocalFrame& frame,
   // Lastly, some elements provide default tooltip strings.  e.g. <input
   // type="file" multiple> shows a tooltip for the selected filenames.
   if (tool_tip.IsNull()) {
-    if (Node* node = result.InnerNode()) {
-      if (node->IsElementNode()) {
-        tool_tip = ToElement(node)->DefaultToolTip();
+    if (auto* element = DynamicTo<Element>(result.InnerNode())) {
+      tool_tip = element->DefaultToolTip();
 
-        // FIXME: We should obtain text direction of tooltip from
-        // ChromeClient or platform. As of October 2011, all client
-        // implementations don't use text direction information for
-        // ChromeClient::setToolTip. We'll work on tooltip text
-        // direction during bidi cleanup in form inputs.
-        tool_tip_direction = TextDirection::kLtr;
-      }
+      // FIXME: We should obtain text direction of tooltip from
+      // ChromeClient or platform. As of October 2011, all client
+      // implementations don't use text direction information for
+      // ChromeClient::setToolTip. We'll work on tooltip text
+      // direction during bidi cleanup in form inputs.
+      tool_tip_direction = TextDirection::kLtr;
     }
   }
 
@@ -253,11 +275,12 @@ bool ChromeClient::Print(LocalFrame* frame) {
     return false;
   }
 
-  if (frame->GetDocument()->IsSandboxed(kSandboxModals)) {
+  if (frame->GetDocument()->IsSandboxed(WebSandboxFlags::kModals)) {
     UseCounter::Count(frame->GetDocument(),
                       WebFeature::kDialogInSandboxedContext);
     frame->Console().AddMessage(ConsoleMessage::Create(
-        kSecurityMessageSource, mojom::ConsoleMessageLevel::kError,
+        mojom::ConsoleMessageSource::kSecurity,
+        mojom::ConsoleMessageLevel::kError,
         "Ignored call to 'print()'. The document is sandboxed, and the "
         "'allow-modals' keyword is not set."));
     return false;

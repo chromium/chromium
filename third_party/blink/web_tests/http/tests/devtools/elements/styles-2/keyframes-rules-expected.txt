@@ -9,7 +9,7 @@ element.style { ()
     background-color: white;
 
 [expanded] 
-* { (<style>…</style>)
+* { (<style>)
 /-- overloaded --/     background-color: papayawhip;
 
 [expanded] 

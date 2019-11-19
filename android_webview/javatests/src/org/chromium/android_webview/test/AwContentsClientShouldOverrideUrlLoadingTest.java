@@ -75,30 +75,29 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mWebServer.shutdown();
     }
 
-    private void standardSetup() throws Throwable {
+    private void standardSetup() {
         setupWithProvidedContentsClient(new TestAwContentsClient());
         mShouldOverrideUrlLoadingHelper = mContentsClient.getShouldOverrideUrlLoadingHelper();
     }
 
-    private void setupWithProvidedContentsClient(TestAwContentsClient contentsClient)
-            throws Throwable {
+    private void setupWithProvidedContentsClient(TestAwContentsClient contentsClient) {
         mContentsClient = contentsClient;
         mTestContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(contentsClient);
         mAwContents = mTestContainerView.getAwContents();
     }
 
-    private void clickOnLinkUsingJs() throws Throwable {
+    private void clickOnLinkUsingJs() {
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
         JSUtils.clickOnLinkUsingJs(InstrumentationRegistry.getInstrumentation(), mAwContents,
                 mContentsClient.getOnEvaluateJavaScriptResultHelper(), "link");
     }
 
     // Since this value is read on the UI thread, it's simpler to set it there too.
-    void setShouldOverrideUrlLoadingReturnValueOnUiThread(final boolean value) throws Throwable {
+    void setShouldOverrideUrlLoadingReturnValueOnUiThread(final boolean value) {
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
                 () -> mShouldOverrideUrlLoadingHelper.setShouldOverrideUrlLoadingReturnValue(
                         value));
@@ -1084,7 +1083,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         verifyShouldOverrideUrlLoadingInPopup(popupPath, popupPath + "/");
     }
 
-    private final static String BAD_SCHEME = "badscheme://";
+    private static final String BAD_SCHEME = "badscheme://";
 
     // AwContentsClient handling an invalid network scheme
     private static class BadSchemeClient extends TestAwContentsClient {
@@ -1189,7 +1188,7 @@ public class AwContentsClientShouldOverrideUrlLoadingTest {
         return popupShouldOverrideUrlLoadingHelper;
     }
 
-    private void pollTitleAs(final String title, final AwContents awContents) throws Exception {
+    private void pollTitleAs(final String title, final AwContents awContents) {
         AwActivityTestRule.pollInstrumentationThread(
                 () -> title.equals(mActivityTestRule.getTitleOnUiThread(awContents)));
     }

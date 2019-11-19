@@ -1,0 +1,27 @@
+<!--
+@BLINK-ALLOW:offscreen
+-->
+<div>
+  <div id="locked" rendersubtree="invisible skip-viewport-activation">
+    <div>child</div>
+    <div id="nested" rendersubtree="invisible skip-viewport-activation">nested locked element!</div>
+    <div id="nonActivatable" rendersubtree="invisible skip-activation">nested non activatable locked element</div>
+    <!--
+      TODO(rakina): Make display:none, visibility:hidden, aria-hidden nodes
+      in locked subtrees get ignored for accessibility/marked invisible.
+    -->
+    <div style="display:none;">display:none text</div>
+    <ul role="presentation">
+      <li>role=presentation item</li>
+    </ul>
+    <div style="visibility:hidden;">visibility:hidden text</div>
+    <div aria-hidden="true">aria-hidden text</div>
+  </div>
+</div>
+
+<script>
+  // Force layout, then commit everything.
+  locked.removeAttribute("rendersubtree");
+  nested.removeAttribute("rendersubtree");
+  nonActivatable.removeAttribute("rendersubtree");
+</script>

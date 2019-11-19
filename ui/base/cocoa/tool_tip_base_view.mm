@@ -146,8 +146,15 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
 
 // Sends a fake NSMouseEntered event to the view for its current tracking rect.
 - (void)_sendToolTipMouseEntered {
-  // Nothing matters except window, trackingNumber, and userData.
   int windowNumber = [[self window] windowNumber];
+
+  // Only send a fake mouse enter if the mouse is actually over the window,
+  // versus over a window which overlaps it (see http://crbug.com/883269).
+  if ([NSWindow windowNumberAtPoint:[NSEvent mouseLocation]
+          belowWindowWithWindowNumber:0] != windowNumber)
+    return;
+
+  // Nothing matters except window, trackingNumber, and userData.
   NSTimeInterval eventTime = [[NSApp currentEvent] timestamp];
   NSEvent* fakeEvent = [NSEvent enterExitEventWithType:NSMouseEntered
                                               location:NSZeroPoint

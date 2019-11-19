@@ -29,7 +29,7 @@
 #include <memory>
 #include <utility>
 
-#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_insecure_request_policy.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -73,7 +73,7 @@ class SecurityPolicyViolationEventInit;
 class SourceLocation;
 enum class ResourceType : uint8_t;
 
-typedef int SandboxFlags;
+using SandboxFlags = WebSandboxFlags;
 typedef HeapVector<Member<CSPDirectiveList>> CSPDirectiveListVector;
 typedef HeapVector<Member<ConsoleMessage>> ConsoleMessageVector;
 typedef std::pair<String, ContentSecurityPolicyHeaderType> CSPHeaderAndType;
@@ -97,7 +97,6 @@ class CORE_EXPORT ContentSecurityPolicyDelegate : public GarbageCollectedMixin {
 
   // Directives support.
   virtual void SetSandboxFlags(SandboxFlags) = 0;
-  virtual void SetAddressSpace(mojom::IPAddressSpace) = 0;
   virtual void SetRequireTrustedTypes() = 0;
   virtual void AddInsecureRequestPolicy(WebInsecureRequestPolicy) = 0;
 
@@ -129,8 +128,8 @@ class CORE_EXPORT ContentSecurityPolicyDelegate : public GarbageCollectedMixin {
       const blink::WebVector<WebContentSecurityPolicy>&) = 0;
 };
 
-class CORE_EXPORT ContentSecurityPolicy
-    : public GarbageCollectedFinalized<ContentSecurityPolicy> {
+class CORE_EXPORT ContentSecurityPolicy final
+    : public GarbageCollected<ContentSecurityPolicy> {
  public:
   enum ExceptionStatus { kWillThrowException, kWillNotThrowException };
 
@@ -138,19 +137,27 @@ class CORE_EXPORT ContentSecurityPolicy
   // https://w3c.github.io/webappsec-csp/#violation-resource. By the time we
   // generate a report, we're guaranteed that the value isn't 'null', so we
   // don't need that state in this enum.
+  //
+  // Trusted Types violation's 'resource' values are defined in
+  // https://wicg.github.io/trusted-types/dist/spec/#csp-violation-object-hdr.
   enum ViolationType {
     kInlineViolation,
     kEvalViolation,
     kURLViolation,
-    kTrustedTypesViolation
+    kTrustedTypesSinkViolation,
+    kTrustedTypesPolicyViolation
   };
 
+  // The |type| argument given to inline checks, e.g.:
+  // https://w3c.github.io/webappsec-csp/#should-block-inline
+  // Its possible values are listed in:
+  // https://w3c.github.io/webappsec-csp/#effective-directive-for-inline-check
   enum class InlineType {
-    kJavaScriptURL,
-    kInlineEventHandler,
-    kInlineScriptElement,
-    kInlineStyleAttribute,
-    kInlineStyleElement
+    kNavigation,
+    kScript,
+    kScriptAttribute,
+    kStyle,
+    kStyleAttribute
   };
 
   enum class DirectiveType {
@@ -181,7 +188,6 @@ class CORE_EXPORT ContentSecurityPolicy
     kStyleSrc,
     kStyleSrcAttr,
     kStyleSrcElem,
-    kTreatAsPublicAddress,
     kUndefined,
     kUpgradeInsecureRequests,
     kWorkerSrc,
@@ -203,14 +209,11 @@ class CORE_EXPORT ContentSecurityPolicy
 
   static const size_t kMaxSampleLength = 40;
 
-  static ContentSecurityPolicy* Create() {
-    return MakeGarbageCollected<ContentSecurityPolicy>();
-  }
-
   ContentSecurityPolicy();
   ~ContentSecurityPolicy();
   void Trace(blink::Visitor*);
 
+  bool IsBound();
   void BindToDelegate(ContentSecurityPolicyDelegate&);
   void SetupSelf(const SecurityOrigin&);
   void SetupSelf(const ContentSecurityPolicy&);
@@ -233,12 +236,10 @@ class CORE_EXPORT ContentSecurityPolicy
   // exception in the event of a violation. When the caller will throw
   // an exception, ContentSecurityPolicy does not log a violation
   // message to the console because it would be redundant.
-  bool AllowEval(ScriptState*,
-                 SecurityViolationReportingPolicy,
+  bool AllowEval(SecurityViolationReportingPolicy,
                  ExceptionStatus,
                  const String& script_content) const;
-  bool AllowWasmEval(ScriptState*,
-                     SecurityViolationReportingPolicy,
+  bool AllowWasmEval(SecurityViolationReportingPolicy,
                      ExceptionStatus,
                      const String& script_content) const;
   bool AllowPluginType(const String& type,
@@ -283,7 +284,8 @@ class CORE_EXPORT ContentSecurityPolicy
       CheckHeaderType = CheckHeaderType::kCheckAll) const;
   bool AllowWorkerContextFromSource(const KURL&) const;
 
-  bool AllowTrustedTypePolicy(const String& policy_name) const;
+  bool AllowTrustedTypePolicy(const String& policy_name,
+                              bool is_duplicate) const;
 
   // Passing 'String()' into the |nonce| arguments in the following methods
   // represents an unnonced resource load.
@@ -339,7 +341,8 @@ class CORE_EXPORT ContentSecurityPolicy
 
   // Determine whether to enforce the assignment failure. Also handle reporting.
   // Returns whether enforcing Trusted Types CSP directives are present.
-  bool AllowTrustedTypeAssignmentFailure(const String& message) const;
+  bool AllowTrustedTypeAssignmentFailure(const String& message,
+                                         const String& sample = String()) const;
 
   void UsesScriptHashAlgorithms(uint8_t content_security_policy_hash_algorithm);
   void UsesStyleHashAlgorithms(uint8_t content_security_policy_hash_algorithm);
@@ -410,7 +413,6 @@ class CORE_EXPORT ContentSecurityPolicy
   const KURL FallbackUrlForPlugin() const;
 
   void EnforceSandboxFlags(SandboxFlags);
-  void TreatAsPublicAddress();
   void RequireTrustedTypes();
   bool IsRequireTrustedTypes() const { return require_trusted_types_; }
   String EvalDisabledErrorMessage() const;
@@ -562,7 +564,6 @@ class CORE_EXPORT ContentSecurityPolicy
 
   // State flags used to configure the environment after parsing a policy.
   SandboxFlags sandbox_mask_;
-  bool treat_as_public_address_;
   bool require_trusted_types_;
   String disable_eval_error_message_;
   WebInsecureRequestPolicy insecure_request_policy_;

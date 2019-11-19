@@ -12,9 +12,8 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_manager_client.h"
-#include "chromeos/dbus/shill_service_client.h"
+#include "chromeos/dbus/shill/shill_manager_client.h"
+#include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_connection_handler.h"
@@ -118,8 +117,7 @@ AutoConnectHandler::AutoConnectHandler()
       client_certs_resolved_(false),
       applied_autoconnect_policy_(false),
       connect_to_best_services_after_scan_(false),
-      auto_connect_reasons_(0),
-      weak_ptr_factory_(this) {}
+      auto_connect_reasons_(0) {}
 
 AutoConnectHandler::~AutoConnectHandler() {
   if (LoginState::IsInitialized())
@@ -260,6 +258,8 @@ void AutoConnectHandler::NotifyAutoConnectInitiatedForTest(
 }
 
 void AutoConnectHandler::NotifyAutoConnectInitiated(int auto_connect_reasons) {
+  NET_LOG(EVENT) << "AutoConnectInitiated ["
+                 << AutoConnectReasonsToString(auto_connect_reasons_) << "]";
   for (auto& observer : observer_list_)
     observer.OnAutoConnectedInitiated(auto_connect_reasons);
 }
@@ -401,7 +401,7 @@ void AutoConnectHandler::CallShillConnectToBestServices() {
   NET_LOG(EVENT) << "ConnectToBestServices ["
                  << AutoConnectReasonsToString(auto_connect_reasons_) << "]";
 
-  DBusThreadManager::Get()->GetShillManagerClient()->ConnectToBestServices(
+  ShillManagerClient::Get()->ConnectToBestServices(
       base::Bind(&AutoConnectHandler::NotifyAutoConnectInitiated,
                  weak_ptr_factory_.GetWeakPtr(), auto_connect_reasons_),
       base::Bind(&network_handler::ShillErrorCallbackFunction,

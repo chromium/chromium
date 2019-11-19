@@ -89,7 +89,7 @@ void MultiplexedChannelImpl::PerformAddClientToChannel(
 
   auto proxy = SingleClientMessageProxyImpl::Factory::Get()->BuildInstance(
       this /* delegate */, std::move(client_connection_parameters));
-  DCHECK(!base::ContainsKey(id_to_proxy_map_, proxy->GetProxyId()));
+  DCHECK(!base::Contains(id_to_proxy_map_, proxy->GetProxyId()));
   id_to_proxy_map_[proxy->GetProxyId()] = std::move(proxy);
 }
 

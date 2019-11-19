@@ -5,6 +5,8 @@
 #ifndef NET_BASE_NETWORK_CHANGE_NOTIFIER_FACTORY_H_
 #define NET_BASE_NETWORK_CHANGE_NOTIFIER_FACTORY_H_
 
+#include <memory>
+
 #include "net/base/net_export.h"
 
 namespace net {
@@ -16,7 +18,7 @@ class NET_EXPORT NetworkChangeNotifierFactory {
  public:
   NetworkChangeNotifierFactory() {}
   virtual ~NetworkChangeNotifierFactory() {}
-  virtual NetworkChangeNotifier* CreateInstance() = 0;
+  virtual std::unique_ptr<NetworkChangeNotifier> CreateInstance() = 0;
 };
 
 }  // namespace net

@@ -31,8 +31,12 @@ class ImageDataStoreDisk : public ImageDataStore {
   // ImageDataStorage:
   void Initialize(base::OnceClosure callback) override;
   bool IsInitialized() override;
-  void SaveImage(const std::string& key, std::string data) override;
-  void LoadImage(const std::string& key, ImageDataCallback callback) override;
+  void SaveImage(const std::string& key,
+                 std::string data,
+                 bool needs_transcoding) override;
+  void LoadImage(const std::string& key,
+                 bool needs_transcoding,
+                 ImageDataCallback callback) override;
   void DeleteImage(const std::string& key) override;
   void GetAllKeys(KeysCallback callback) override;
 
@@ -40,6 +44,11 @@ class ImageDataStoreDisk : public ImageDataStore {
   // Called after the store has been initialized in a task runner.
   void OnInitializationComplete(base::OnceClosure callback,
                                 InitializationStatus initialization_status);
+
+  // Called when data is loaded from disk.
+  void OnImageLoaded(bool needs_transcoding,
+                     ImageDataCallback callback,
+                     std::string data);
 
   // Set to be INITIALIZED if a directory exists, or can be created under
   // |storage_path|. If initialization fails, there's no need to retry.
@@ -51,7 +60,7 @@ class ImageDataStoreDisk : public ImageDataStore {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<ImageDataStoreDisk> weak_ptr_factory_;
+  base::WeakPtrFactory<ImageDataStoreDisk> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ImageDataStoreDisk);
 };

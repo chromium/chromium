@@ -8,6 +8,7 @@
 
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace password_manager {
 
@@ -22,12 +23,21 @@ bool StubPasswordManagerClient::PromptUserToSaveOrUpdatePassword(
   return false;
 }
 
+bool StubPasswordManagerClient::ShowOnboarding(
+    std::unique_ptr<PasswordFormManagerForUI> form_to_save) {
+  return false;
+}
+
 void StubPasswordManagerClient::ShowManualFallbackForSaving(
     std::unique_ptr<PasswordFormManagerForUI> form_to_save,
     bool has_generated_password,
     bool update_password) {}
 
 void StubPasswordManagerClient::HideManualFallbackForSaving() {}
+
+void StubPasswordManagerClient::FocusedInputChanged(
+    password_manager::PasswordManagerDriver* driver,
+    autofill::mojom::FocusedFieldType focused_field_type) {}
 
 bool StubPasswordManagerClient::PromptUserToChooseCredentials(
     std::vector<std::unique_ptr<autofill::PasswordForm>> local_forms,
@@ -55,7 +65,11 @@ PrefService* StubPasswordManagerClient::GetPrefs() const {
   return nullptr;
 }
 
-PasswordStore* StubPasswordManagerClient::GetPasswordStore() const {
+PasswordStore* StubPasswordManagerClient::GetProfilePasswordStore() const {
+  return nullptr;
+}
+
+PasswordStore* StubPasswordManagerClient::GetAccountPasswordStore() const {
   return nullptr;
 }
 
@@ -68,25 +82,43 @@ const CredentialsFilter* StubPasswordManagerClient::GetStoreResultFilter()
   return &credentials_filter_;
 }
 
-const LogManager* StubPasswordManagerClient::GetLogManager() const {
+const autofill::LogManager* StubPasswordManagerClient::GetLogManager() const {
   return &log_manager_;
 }
 
-#if defined(SAFE_BROWSING_DB_LOCAL)
+const PasswordFeatureManager*
+StubPasswordManagerClient::GetPasswordFeatureManager() const {
+  return &password_feature_manager_;
+}
+
+const MockPasswordFeatureManager*
+StubPasswordManagerClient::GetMockPasswordFeatureManager() const {
+  return &password_feature_manager_;
+}
+
+#if defined(ON_FOCUS_PING_ENABLED) || \
+    defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
 safe_browsing::PasswordProtectionService*
 StubPasswordManagerClient::GetPasswordProtectionService() const {
   return nullptr;
 }
+#endif
 
+#if defined(ON_FOCUS_PING_ENABLED)
 void StubPasswordManagerClient::CheckSafeBrowsingReputation(
     const GURL& form_action,
     const GURL& frame_url) {}
+#endif
 
+#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
 void StubPasswordManagerClient::CheckProtectedPasswordEntry(
     metrics_util::PasswordType reused_password_type,
+    const std::string& username,
     const std::vector<std::string>& matching_domains,
     bool password_field_exists) {}
+#endif
 
+#if defined(SYNC_PASSWORD_REUSE_WARNING_ENABLED)
 void StubPasswordManagerClient::LogPasswordReuseDetectedEvent() {}
 #endif
 
@@ -100,6 +132,27 @@ StubPasswordManagerClient::GetMetricsRecorder() {
     metrics_recorder_.emplace(GetUkmSourceId(), GetMainFrameURL());
   }
   return base::OptionalOrNullptr(metrics_recorder_);
+}
+
+signin::IdentityManager* StubPasswordManagerClient::GetIdentityManager() {
+  return nullptr;
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+StubPasswordManagerClient::GetURLLoaderFactory() {
+  return nullptr;
+}
+
+bool StubPasswordManagerClient::IsIsolationForPasswordSitesEnabled() const {
+  return false;
+}
+
+bool StubPasswordManagerClient::IsNewTabPage() const {
+  return false;
+}
+
+FieldInfoManager* StubPasswordManagerClient::GetFieldInfoManager() const {
+  return nullptr;
 }
 
 }  // namespace password_manager

@@ -52,7 +52,7 @@ PointerDetails GetMousePointerDetailsFromNative(
       static_cast<const ui::MouseEvent*>(native_event);
   DCHECK(event->IsMouseEvent() || event->IsScrollEvent());
   PointerDetails pointer_detail = event->pointer_details();
-  pointer_detail.id = MouseEvent::kMousePointerId;
+  pointer_detail.id = kPointerIdMouse;
   return pointer_detail;
 }
 
@@ -86,8 +86,6 @@ PlatformEvent CopyNativeEvent(const PlatformEvent& event) {
 }
 
 void ReleaseCopiedNativeEvent(const PlatformEvent& event) {}
-
-void ClearTouchIdIfReleased(const PlatformEvent& xev) {}
 
 // TODO(687724): Will remove all GetTouchId functions.
 int GetTouchId(const PlatformEvent& native_event) {

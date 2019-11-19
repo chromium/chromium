@@ -47,36 +47,44 @@ TEST(CertVerifierTest, RequestParamsComparators) {
       {
           // Test for basic equivalence.
           CertVerifier::RequestParams(ok_cert, "www.example.test", 0,
-                                      std::string()),
+                                      /*ocsp_response=*/std::string(),
+                                      /*sct_list=*/std::string()),
           CertVerifier::RequestParams(ok_cert, "www.example.test", 0,
-                                      std::string()),
+                                      /*ocsp_response=*/std::string(),
+                                      /*sct_list=*/std::string()),
           true,
       },
       {
           // Test that different certificates but with the same CA and for
           // the same host are different validation keys.
           CertVerifier::RequestParams(ok_cert, "www.example.test", 0,
-                                      std::string()),
+                                      /*ocsp_response=*/std::string(),
+                                      /*sct_list=*/std::string()),
           CertVerifier::RequestParams(expired_cert, "www.example.test", 0,
-                                      std::string()),
+                                      /*ocsp_response=*/std::string(),
+                                      /*sct_list=*/std::string()),
           false,
       },
       {
           // Test that the same EE certificate for the same host, but with
           // different chains are different validation keys.
           CertVerifier::RequestParams(ok_cert, "www.example.test", 0,
-                                      std::string()),
+                                      /*ocsp_response=*/std::string(),
+                                      /*sct_list=*/std::string()),
           CertVerifier::RequestParams(combined_cert, "www.example.test", 0,
-                                      std::string()),
+                                      /*ocsp_response=*/std::string(),
+                                      /*sct_list=*/std::string()),
           false,
       },
       {
           // The same certificate, with the same chain, but for different
           // hosts are different validation keys.
           CertVerifier::RequestParams(ok_cert, "www1.example.test", 0,
-                                      std::string()),
+                                      /*ocsp_response=*/std::string(),
+                                      /*sct_list=*/std::string()),
           CertVerifier::RequestParams(ok_cert, "www2.example.test", 0,
-                                      std::string()),
+                                      /*ocsp_response=*/std::string(),
+                                      /*sct_list=*/std::string()),
           false,
       },
       {
@@ -84,17 +92,32 @@ TEST(CertVerifierTest, RequestParamsComparators) {
           // are different validation keys.
           CertVerifier::RequestParams(
               ok_cert, "www.example.test",
-              CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES, std::string()),
+              CertVerifier::VERIFY_DISABLE_NETWORK_FETCHES,
+              /*ocsp_response=*/std::string(),
+              /*sct_list=*/std::string()),
           CertVerifier::RequestParams(ok_cert, "www.example.test", 0,
-                                      std::string()),
+                                      /*ocsp_response=*/std::string(),
+                                      /*sct_list=*/std::string()),
           false,
       },
       {
           // Different OCSP responses.
           CertVerifier::RequestParams(ok_cert, "www.example.test", 0,
-                                      "ocsp response"),
+                                      "ocsp response",
+                                      /*sct_list=*/std::string()),
           CertVerifier::RequestParams(ok_cert, "www.example.test", 0,
-                                      std::string()),
+                                      /*ocsp_response=*/std::string(),
+                                      /*sct_list=*/std::string()),
+          false,
+      },
+      {
+          // Different SignedCertificateTimestampList.
+          CertVerifier::RequestParams(ok_cert, "www.example.test", 0,
+                                      /*ocsp_response=*/std::string(),
+                                      "sct list"),
+          CertVerifier::RequestParams(ok_cert, "www.example.test", 0,
+                                      /*ocsp_response=*/std::string(),
+                                      /*sct_list=*/std::string()),
           false,
       },
   };

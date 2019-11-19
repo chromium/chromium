@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<link rel="help" href="https://svgwg.org/svg2-draft/types.html#__svg__SVGGeometryElement__getTotalLength"/>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+  <rect id="rectTest" style="display:none" x="30" y="30" width="10" height="10"></rect>
+  <circle id="circleTest" style="display:none" cx="50" cy="50" r="5" />
+</svg>
+<script>
+  test(function() {
+    assert_throws("InvalidStateError", function() { rectTest.getTotalLength(); });
+  });
+  test(function() {
+    assert_throws("InvalidStateError", function() { circleTest.getTotalLength(); });
+  });
+</script>

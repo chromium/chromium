@@ -11,7 +11,6 @@
 #include "content/public/common/resource_type.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "services/network/public/mojom/request_context_frame_type.mojom.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 #include "third_party/blink/public/platform/web_mixed_content_context_type.h"
@@ -35,23 +34,8 @@ net::HttpRequestHeaders GetWebURLRequestHeaders(
 std::string GetWebURLRequestHeadersAsString(
     const blink::WebURLRequest& request);
 
-int GetLoadFlagsForWebURLRequest(const blink::WebURLRequest& request);
-
 // Takes a ResourceRequestBody and converts into WebHTTPBody.
 blink::WebHTTPBody GetWebHTTPBodyForRequestBody(
-    const network::ResourceRequestBody& input);
-
-// Takes a ResourceRequestBody with additional |blob_ptrs| which corresponds to
-// each Blob entries, and converts into WebHTTPBody.
-// TODO(kinuko): Remove this once Network Service is shipped.
-blink::WebHTTPBody GetWebHTTPBodyForRequestBodyWithBlobPtrs(
-    const network::ResourceRequestBody& input,
-    std::vector<blink::mojom::BlobPtrInfo> blob_ptrs);
-
-// Takes a ResourceRequestBody and gets blob pointers for Blob entries.
-// Used only in non-NetworkService cases but with S13nServiceWorker.
-// TODO(kinuko): Remove this once Network Service is shipped.
-std::vector<blink::mojom::BlobPtrInfo> GetBlobPtrsForRequestBody(
     const network::ResourceRequestBody& input);
 
 // Takes a WebHTTPBody and converts into a ResourceRequestBody.

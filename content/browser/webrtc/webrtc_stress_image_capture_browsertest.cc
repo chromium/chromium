@@ -65,6 +65,7 @@ class WebRtcImageCaptureStressBrowserTest
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    embedded_test_server()->StartAcceptingConnections();
     UsingRealWebcam_WebRtcWebcamBrowserTest::SetUp();
   }
 
@@ -72,7 +73,7 @@ class WebRtcImageCaptureStressBrowserTest
   // skipped or it works as intended, or false otherwise.
   virtual bool RunImageCaptureTestCase(const std::string& command) {
     GURL url(embedded_test_server()->GetURL(kImageCaptureStressHtmlFile));
-    NavigateToURL(shell(), url);
+    EXPECT_TRUE(NavigateToURL(shell(), url));
 
     if (!IsWebcamAvailableOnSystem(shell()->web_contents())) {
       LOG(WARNING) << "No video device; skipping test...";
@@ -96,7 +97,6 @@ class WebRtcImageCaptureStressBrowserTest
 
 IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureStressBrowserTest,
                        MANUAL_Take10Photos) {
-  embedded_test_server()->StartAcceptingConnections();
   ASSERT_TRUE(RunImageCaptureTestCase("testTake10PhotosSucceeds()"));
 }
 

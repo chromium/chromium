@@ -1,0 +1,7 @@
+document
+++group
+++++checkbox Name='Checkbox1' Toggle.ToggleState='Off'
+++++checkbox Name='Checkbox2' Toggle.ToggleState='On'
+++menu Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++checkbox Name='Checkbox3' Toggle.ToggleState='On'
+++++checkbox Name='Checkbox4' Toggle.ToggleState='Indeterminate'

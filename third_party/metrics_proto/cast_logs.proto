@@ -9,8 +9,7 @@ option optimize_for = LITE_RUNTIME;
 option java_outer_classname = "CastLogsProtos";
 option java_package = "org.chromium.components.metrics";
 
-package metrics;  // Cast-enabled device specific log data included in
-                  // ChromeUserMetricsExtension.
+package metrics;  // Cast-enabled device specific log data included in ChromeUserMetricsExtension.
 
 // Next tag: 7
 message CastLogsProto {
@@ -18,7 +17,7 @@ message CastLogsProto {
   // Next tag: 7
   message CastDeviceInfo {
     // The product type of Cast device sent from Cast-enabled devices.
-    // Next tag: 8
+    // Next tag: 10
     enum CastProductType {
       CAST_PRODUCT_TYPE_UNKNOWN = 0;
       CAST_PRODUCT_TYPE_CHROMECAST = 1;
@@ -28,6 +27,8 @@ message CastLogsProto {
       CAST_PRODUCT_TYPE_ASSISTANT = 5;
       CAST_PRODUCT_TYPE_ANDROID_THINGS = 6;
       CAST_PRODUCT_TYPE_CHROME_OS = 7;
+      CAST_PRODUCT_TYPE_FUCHSIA_OS = 8;
+      CAST_PRODUCT_TYPE_LITE = 9;
     }
     optional CastProductType type = 1;
 
@@ -163,7 +164,7 @@ message CastLogsProto {
   repeated CastConnectionInfo cast_connection_info = 2;
 
   // Stores Cast-enabled device specific events with a various context data.
-  // Next tag: 22
+  // Next tag: 23
   message CastEventProto {
     // The name of the action, hashed by same logic used to hash user action
     // event and histogram.
@@ -229,6 +230,9 @@ message CastLogsProto {
 
     // Optional value to log ui version.
     optional string ui_version = 20;
+
+    // Optional field to log SELINUX audit detail.
+    optional string selinux_audit_detail = 22;
   }
   repeated CastEventProto cast_event = 3;
 

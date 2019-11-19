@@ -317,12 +317,6 @@ Status DeriveKey(const blink::WebCryptoAlgorithm& algorithm,
                    import_algorithm, extractable, usages, derived_key);
 }
 
-std::unique_ptr<blink::WebCryptoDigestor> CreateDigestor(
-    blink::WebCryptoAlgorithmId algorithm) {
-  crypto::EnsureOpenSSLInit();
-  return CreateDigestorImplementation(algorithm);
-}
-
 bool SerializeKeyForClone(const blink::WebCryptoKey& key,
                           blink::WebVector<uint8_t>* key_data) {
   const AlgorithmImplementation* impl = nullptr;

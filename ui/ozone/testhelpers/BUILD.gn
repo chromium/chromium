@@ -1,0 +1,15 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("mock_gesture_properties_service") {
+  testonly = true
+  sources = [
+    "mock_gesture_properties_service.h",
+  ]
+  public_deps = [
+    "//testing/gmock",
+    "//third_party/googletest:gmock",
+    "//ui/ozone/public/mojom:gesture_properties_service",
+  ]
+}

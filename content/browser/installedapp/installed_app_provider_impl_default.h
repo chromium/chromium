@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "third_party/blink/public/platform/modules/installedapp/installed_app_provider.mojom.h"
-#include "third_party/blink/public/platform/modules/installedapp/related_application.mojom.h"
+#include "third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.h"
+#include "third_party/blink/public/mojom/installedapp/related_application.mojom.h"
 
 namespace content {
 
@@ -27,7 +27,7 @@ class InstalledAppProviderImplDefault
       FilterInstalledAppsCallback callback) override;
 
   static void Create(
-      mojo::InterfaceRequest<blink::mojom::InstalledAppProvider> request);
+      mojo::PendingReceiver<blink::mojom::InstalledAppProvider> receiver);
 };
 
 }  // namespace content

@@ -90,6 +90,14 @@ int ExUtilInitCommandLineArguments(int argc, const char* argv[],
   if (argc == 1 && argv[0][0] != '-') {
     char* cur;
     const char sep[] = " \t\r\n\f\v";
+
+#if defined(_WIN32) && defined(_UNICODE)
+    fprintf(stderr,
+            "Error: Reading arguments from a file is a feature unavailable "
+            "with Unicode binaries.\n");
+    return 0;
+#endif
+
     if (!ExUtilReadFileToWebPData(argv[0], &args->argv_data_)) {
       return 0;
     }

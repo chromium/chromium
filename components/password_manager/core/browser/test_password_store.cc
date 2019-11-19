@@ -48,20 +48,36 @@ TestPasswordStore::CreateBackgroundTaskRunner() const {
 }
 
 PasswordStoreChangeList TestPasswordStore::AddLoginImpl(
-    const autofill::PasswordForm& form) {
+    const autofill::PasswordForm& form,
+    AddLoginError* error) {
   PasswordStoreChangeList changes;
-  stored_passwords_[form.signon_realm].push_back(form);
-  changes.push_back(PasswordStoreChange(PasswordStoreChange::ADD, form));
+  auto& passwords_for_signon_realm = stored_passwords_[form.signon_realm];
+  auto iter = std::find_if(
+      passwords_for_signon_realm.begin(), passwords_for_signon_realm.end(),
+      [&form](const auto& password) {
+        return ArePasswordFormUniqueKeysEqual(form, password);
+      });
+
+  if (iter != passwords_for_signon_realm.end()) {
+    changes.emplace_back(PasswordStoreChange::REMOVE, *iter);
+    changes.emplace_back(PasswordStoreChange::ADD, form);
+    *iter = form;
+    return changes;
+  }
+
+  changes.emplace_back(PasswordStoreChange::ADD, form);
+  passwords_for_signon_realm.push_back(form);
   return changes;
 }
 
 PasswordStoreChangeList TestPasswordStore::UpdateLoginImpl(
-    const autofill::PasswordForm& form) {
+    const autofill::PasswordForm& form,
+    UpdateLoginError* error) {
   PasswordStoreChangeList changes;
   std::vector<autofill::PasswordForm>& forms =
       stored_passwords_[form.signon_realm];
   for (auto it = forms.begin(); it != forms.end(); ++it) {
-    if (ArePasswordFormUniqueKeyEqual(form, *it)) {
+    if (ArePasswordFormUniqueKeysEqual(form, *it)) {
       *it = form;
       changes.push_back(PasswordStoreChange(PasswordStoreChange::UPDATE, form));
     }
@@ -76,7 +92,7 @@ PasswordStoreChangeList TestPasswordStore::RemoveLoginImpl(
       stored_passwords_[form.signon_realm];
   auto it = forms.begin();
   while (it != forms.end()) {
-    if (ArePasswordFormUniqueKeyEqual(form, *it)) {
+    if (ArePasswordFormUniqueKeysEqual(form, *it)) {
       it = forms.erase(it);
       changes.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE, form));
     } else {
@@ -97,13 +113,13 @@ TestPasswordStore::FillMatchingLogins(const FormDigest& form) {
     const bool realm_psl_matches =
         IsPublicSuffixDomainMatch(elements.first, form.signon_realm);
     if (realm_matches || realm_psl_matches ||
-        (form.scheme == autofill::PasswordForm::SCHEME_HTML &&
+        (form.scheme == autofill::PasswordForm::Scheme::kHtml &&
          password_manager::IsFederatedRealm(elements.first, form.origin))) {
       const bool is_psl = !realm_matches && realm_psl_matches;
       for (const auto& stored_form : elements.second) {
         // Repeat the condition above with an additional check for origin.
         if (realm_matches || realm_psl_matches ||
-            (form.scheme == autofill::PasswordForm::SCHEME_HTML &&
+            (form.scheme == autofill::PasswordForm::Scheme::kHtml &&
              stored_form.origin.GetOrigin() == form.origin.GetOrigin() &&
              password_manager::IsFederatedRealm(stored_form.signon_realm,
                                                 form.origin))) {
@@ -112,6 +128,20 @@ TestPasswordStore::FillMatchingLogins(const FormDigest& form) {
           matched_forms.back()->is_public_suffix_match = is_psl;
         }
       }
+    }
+  }
+  return matched_forms;
+}
+
+std::vector<std::unique_ptr<autofill::PasswordForm>>
+TestPasswordStore::FillMatchingLoginsByPassword(
+    const base::string16& plain_text_password) {
+  std::vector<std::unique_ptr<autofill::PasswordForm>> matched_forms;
+  for (const auto& elements : stored_passwords_) {
+    for (const auto& password_form : elements.second) {
+      if (password_form.password_value == plain_text_password)
+        matched_forms.push_back(
+            std::make_unique<autofill::PasswordForm>(password_form));
     }
   }
   return matched_forms;
@@ -143,16 +173,6 @@ DatabaseCleanupResult TestPasswordStore::DeleteUndecryptableLogins() {
   return DatabaseCleanupResult::kSuccess;
 }
 
-std::vector<std::unique_ptr<autofill::PasswordForm>>
-TestPasswordStore::FillLoginsForSameOrganizationName(
-    const std::string& signon_realm) {
-  // Note: To keep TestPasswordStore simple, and because no tests currently
-  // require anything more complex, this is a simplistic implementation which
-  // assumes that that the signon_realm is a serialised URL.
-  return FillMatchingLogins(FormDigest(autofill::PasswordForm::SCHEME_HTML,
-                                       signon_realm, GURL(signon_realm)));
-}
-
 std::vector<InteractionsStats> TestPasswordStore::GetSiteStatsImpl(
     const GURL& origin_domain) {
   return std::vector<InteractionsStats>();
@@ -172,13 +192,6 @@ PasswordStoreChangeList TestPasswordStore::RemoveLoginsByURLAndTimeImpl(
 }
 
 PasswordStoreChangeList TestPasswordStore::RemoveLoginsCreatedBetweenImpl(
-    base::Time begin,
-    base::Time end) {
-  NOTIMPLEMENTED();
-  return PasswordStoreChangeList();
-}
-
-PasswordStoreChangeList TestPasswordStore::RemoveLoginsSyncedBetweenImpl(
     base::Time begin,
     base::Time end) {
   NOTIMPLEMENTED();
@@ -212,9 +225,48 @@ std::vector<InteractionsStats> TestPasswordStore::GetAllSiteStatsImpl() {
   return std::vector<InteractionsStats>();
 }
 
+void TestPasswordStore::AddCompromisedCredentialsImpl(
+    const CompromisedCredentials& stats) {
+  NOTIMPLEMENTED();
+}
+
+void TestPasswordStore::RemoveCompromisedCredentialsImpl(
+    const GURL& url,
+    const base::string16& username) {
+  NOTIMPLEMENTED();
+}
+
+std::vector<CompromisedCredentials>
+TestPasswordStore::GetAllCompromisedCredentialsImpl() {
+  NOTIMPLEMENTED();
+  return std::vector<CompromisedCredentials>();
+}
+
+void TestPasswordStore::RemoveCompromisedCredentialsByUrlAndTimeImpl(
+    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+    base::Time remove_begin,
+    base::Time remove_end) {
+  NOTIMPLEMENTED();
+}
+
+void TestPasswordStore::AddFieldInfoImpl(const FieldInfo& field_info) {
+  NOTIMPLEMENTED();
+}
+std::vector<FieldInfo> TestPasswordStore::GetAllFieldInfoImpl() {
+  NOTIMPLEMENTED();
+  return std::vector<FieldInfo>();
+}
+
+void TestPasswordStore::RemoveFieldInfoByTimeImpl(base::Time remove_begin,
+                                                  base::Time remove_end) {
+  NOTIMPLEMENTED();
+}
+
 bool TestPasswordStore::BeginTransaction() {
   return true;
 }
+
+void TestPasswordStore::RollbackTransaction() {}
 
 bool TestPasswordStore::CommitTransaction() {
   return true;
@@ -235,6 +287,15 @@ PasswordStoreChangeList TestPasswordStore::RemoveLoginByPrimaryKeySync(
 PasswordStoreSync::MetadataStore* TestPasswordStore::GetMetadataStore() {
   NOTIMPLEMENTED();
   return nullptr;
+}
+
+bool TestPasswordStore::IsAccountStore() const {
+  return false;
+}
+
+bool TestPasswordStore::DeleteAndRecreateDatabaseFile() {
+  NOTIMPLEMENTED();
+  return false;
 }
 
 }  // namespace password_manager

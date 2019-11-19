@@ -16,9 +16,9 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
-#include "components/sync/base/hash_util.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/time.h"
-#include "components/sync/device_info/device_info.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
@@ -49,7 +49,7 @@ std::unique_ptr<syncer::EntityData> MoveToEntityData(
     const std::string& client_name,
     SessionSpecifics* specifics) {
   auto entity_data = std::make_unique<syncer::EntityData>();
-  entity_data->non_unique_name = client_name;
+  entity_data->name = client_name;
   entity_data->specifics.mutable_session()->Swap(specifics);
   return entity_data;
 }
@@ -111,8 +111,7 @@ SessionSyncBridge::SessionSyncBridge(
           sessions_client->GetLocalSessionEventRouter()),
       favicon_cache_(sessions_client->GetFaviconService(),
                      sessions_client->GetHistoryService(),
-                     kMaxSyncFavicons),
-      weak_ptr_factory_(this) {
+                     kMaxSyncFavicons) {
   DCHECK(sessions_client_);
   DCHECK(local_session_event_router_);
 }
@@ -192,13 +191,13 @@ base::Optional<syncer::ModelError> SessionSyncBridge::ApplySyncChanges(
   // information is ignored (local wins).
   std::unique_ptr<SessionStore::WriteBatch> batch =
       CreateSessionStoreWriteBatch();
-  for (const syncer::EntityChange& change : entity_changes) {
-    switch (change.type()) {
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
+    switch (change->type()) {
       case syncer::EntityChange::ACTION_DELETE:
         // Deletions are all or nothing (since we only ever delete entire
         // sessions). Therefore we don't care if it's a tab node or meta node,
         // and just ensure we've disassociated.
-        if (store_->StorageKeyMatchesLocalSession(change.storage_key())) {
+        if (store_->StorageKeyMatchesLocalSession(change->storage_key())) {
           // Another client has attempted to delete our local data (possibly by
           // error or a clock is inaccurate). Just ignore the deletion for now.
           DLOG(WARNING) << "Local session data deleted. Ignoring until next "
@@ -211,7 +210,7 @@ base::Optional<syncer::ModelError> SessionSyncBridge::ApplySyncChanges(
           // these deletions, simply delete all local sync metadata (untrack).
           for (const std::string& deleted_storage_key :
                batch->DeleteForeignEntityAndUpdateTracker(
-                   change.storage_key())) {
+                   change->storage_key())) {
             change_processor()->UntrackEntityForStorageKey(deleted_storage_key);
             metadata_change_list->ClearMetadata(deleted_storage_key);
           }
@@ -219,9 +218,9 @@ base::Optional<syncer::ModelError> SessionSyncBridge::ApplySyncChanges(
         break;
       case syncer::EntityChange::ACTION_ADD:
       case syncer::EntityChange::ACTION_UPDATE: {
-        const SessionSpecifics& specifics = change.data().specifics.session();
+        const SessionSpecifics& specifics = change->data().specifics.session();
 
-        if (store_->StorageKeyMatchesLocalSession(change.storage_key())) {
+        if (store_->StorageKeyMatchesLocalSession(change->storage_key())) {
           // We should only ever receive a change to our own machine's session
           // info if encryption was turned on. In that case, the data is still
           // the same, so we can ignore.
@@ -235,16 +234,16 @@ base::Optional<syncer::ModelError> SessionSyncBridge::ApplySyncChanges(
         }
 
         // Guaranteed by the processor.
-        DCHECK_EQ(change.data().client_tag_hash,
-                  GenerateSyncableHash(syncer::SESSIONS,
-                                       SessionStore::GetClientTag(specifics)));
+        DCHECK_EQ(change->data().client_tag_hash,
+                  syncer::ClientTagHash::FromUnhashed(
+                      syncer::SESSIONS, SessionStore::GetClientTag(specifics)));
 
-        batch->PutAndUpdateTracker(specifics, change.data().modification_time);
+        batch->PutAndUpdateTracker(specifics, change->data().modification_time);
         // If a favicon or favicon urls are present, load the URLs and visit
         // times into the in-memory favicon cache.
         if (specifics.has_tab()) {
           favicon_cache_.UpdateMappingsFromForeignTab(
-              specifics.tab(), change.data().modification_time);
+              specifics.tab(), change->data().modification_time);
         }
         break;
       }
@@ -298,6 +297,16 @@ void SessionSyncBridge::ApplyStopSyncChanges(
   local_session_event_router_->Stop();
   if (delete_metadata_change_list) {
     store_->DeleteAllDataAndMetadata();
+
+    // Ensure that we clear on-demand favicons that were downloaded using user
+    // synced history data, especially by HistoryUiFaviconRequestHandler. We do
+    // it upon disabling of sessions sync to have symmetry with the condition
+    // checked inside that layer to allow downloads (sessions sync enabled).
+    history::HistoryService* history_service =
+        sessions_client_->GetHistoryService();
+    if (history_service) {
+      history_service->ClearAllOnDemandFavicons();
+    }
   }
   syncing_.reset();
 }
@@ -358,17 +367,9 @@ void SessionSyncBridge::OnSyncStarting(
     return;
   }
 
-  const syncer::DeviceInfo* device_info =
-      sessions_client_->GetLocalDeviceInfo();
-
-  // DeviceInfo must be available by the time sync starts, because there's no
-  // task posting involved in the sessions controller.
-  DCHECK(device_info);
-  DCHECK_EQ(device_info->guid(), request.cache_guid);
-
   // Open the store and read state from disk if it exists.
   SessionStore::Open(
-      *device_info,
+      request.cache_guid,
       base::BindRepeating(&FaviconCache::UpdateMappingsFromForeignTab,
                           favicon_cache_.GetWeakPtr()),
       sessions_client_,

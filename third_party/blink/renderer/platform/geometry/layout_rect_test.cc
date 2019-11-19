@@ -182,4 +182,105 @@ TEST(LayoutRectTest, EnclosedIntRect) {
             EnclosedIntRect(fractional_negpos_rect3));
 }
 
+TEST(LayoutRectTest, EdgesOnPixelBoundaries) {
+  EXPECT_TRUE(LayoutRect().EdgesOnPixelBoundaries());
+  EXPECT_TRUE(
+      LayoutRect(LayoutUnit(1), LayoutUnit(1), LayoutUnit(1), LayoutUnit(1))
+          .EdgesOnPixelBoundaries());
+  EXPECT_TRUE(
+      LayoutRect(LayoutUnit(1), LayoutUnit(-1), LayoutUnit(1), LayoutUnit(1))
+          .EdgesOnPixelBoundaries());
+  EXPECT_TRUE(
+      LayoutRect(LayoutUnit(-1), LayoutUnit(10), LayoutUnit(10), LayoutUnit(0))
+          .EdgesOnPixelBoundaries());
+  EXPECT_TRUE(
+      LayoutRect(LayoutUnit(-5), LayoutUnit(-7), LayoutUnit(10), LayoutUnit(7))
+          .EdgesOnPixelBoundaries());
+  EXPECT_TRUE(
+      LayoutRect(LayoutUnit(10), LayoutUnit(5), LayoutUnit(-2), LayoutUnit(-3))
+          .EdgesOnPixelBoundaries());
+  EXPECT_TRUE(
+      LayoutRect(LayoutUnit(1.0f), LayoutUnit(5), LayoutUnit(10), LayoutUnit(3))
+          .EdgesOnPixelBoundaries());
+
+  EXPECT_FALSE(
+      LayoutRect(LayoutUnit(9.3f), LayoutUnit(5), LayoutUnit(10), LayoutUnit(3))
+          .EdgesOnPixelBoundaries());
+  EXPECT_FALSE(
+      LayoutRect(LayoutUnit(0.5f), LayoutUnit(5), LayoutUnit(10), LayoutUnit(3))
+          .EdgesOnPixelBoundaries());
+  EXPECT_FALSE(LayoutRect(LayoutUnit(-0.5f), LayoutUnit(-5), LayoutUnit(10),
+                          LayoutUnit(3))
+                   .EdgesOnPixelBoundaries());
+  EXPECT_FALSE(LayoutRect(LayoutUnit(-0.5f), LayoutUnit(-2), LayoutUnit(10),
+                          LayoutUnit(3))
+                   .EdgesOnPixelBoundaries());
+  EXPECT_FALSE(LayoutRect(LayoutUnit(-0.5f), LayoutUnit(5.1f), LayoutUnit(10),
+                          LayoutUnit(3))
+                   .EdgesOnPixelBoundaries());
+  EXPECT_FALSE(
+      LayoutRect(LayoutUnit(3), LayoutUnit(5.1f), LayoutUnit(10), LayoutUnit(3))
+          .EdgesOnPixelBoundaries());
+  EXPECT_FALSE(
+      LayoutRect(LayoutUnit(3), LayoutUnit(5), LayoutUnit(10.2f), LayoutUnit(3))
+          .EdgesOnPixelBoundaries());
+  EXPECT_FALSE(
+      LayoutRect(LayoutUnit(3), LayoutUnit(5), LayoutUnit(10), LayoutUnit(0.3f))
+          .EdgesOnPixelBoundaries());
+}
+
+TEST(LayoutRectTest, ExpandEdgesToPixelBoundaries) {
+  LayoutUnit small;
+  small.SetRawValue(1);
+  LayoutRect small_dimensions_rect(LayoutUnit(42.5f), LayoutUnit(84.5f), small,
+                                   small);
+  small_dimensions_rect.ExpandEdgesToPixelBoundaries();
+  EXPECT_EQ(LayoutRect(IntRect(42, 84, 1, 1)), small_dimensions_rect);
+
+  LayoutRect integral_rect(IntRect(100, 150, 200, 350));
+  integral_rect.ExpandEdgesToPixelBoundaries();
+  EXPECT_EQ(LayoutRect(IntRect(100, 150, 200, 350)), integral_rect);
+
+  LayoutRect fractional_pos_rect(LayoutUnit(100.6f), LayoutUnit(150.8f),
+                                 LayoutUnit(200), LayoutUnit(350));
+  fractional_pos_rect.ExpandEdgesToPixelBoundaries();
+  EXPECT_EQ(LayoutRect(IntRect(100, 150, 201, 351)), fractional_pos_rect);
+
+  LayoutRect fractional_dimensions_rect(LayoutUnit(100), LayoutUnit(150),
+                                        LayoutUnit(200.6f), LayoutUnit(350.4f));
+  fractional_dimensions_rect.ExpandEdgesToPixelBoundaries();
+  EXPECT_EQ(LayoutRect(IntRect(100, 150, 201, 351)),
+            fractional_dimensions_rect);
+
+  LayoutRect fractional_both_rect1(LayoutUnit(100.6f), LayoutUnit(150.8f),
+                                   LayoutUnit(200.4f), LayoutUnit(350.2f));
+  fractional_both_rect1.ExpandEdgesToPixelBoundaries();
+  EXPECT_EQ(LayoutRect(IntRect(100, 150, 201, 351)), fractional_both_rect1);
+
+  LayoutRect fractional_both_rect2(LayoutUnit(100.5f), LayoutUnit(150.7f),
+                                   LayoutUnit(200.3f), LayoutUnit(350.3f));
+  fractional_both_rect2.ExpandEdgesToPixelBoundaries();
+  EXPECT_EQ(LayoutRect(IntRect(100, 150, 201, 351)), fractional_both_rect2);
+
+  LayoutRect fractional_both_rect3(LayoutUnit(100.3f), LayoutUnit(150.2f),
+                                   LayoutUnit(200.8f), LayoutUnit(350.9f));
+  fractional_both_rect3.ExpandEdgesToPixelBoundaries();
+  EXPECT_EQ(LayoutRect(IntRect(100, 150, 202, 352)), fractional_both_rect3);
+
+  LayoutRect fractional_negpos_rect1(LayoutUnit(-100.4f), LayoutUnit(-150.8f),
+                                     LayoutUnit(200), LayoutUnit(350));
+  fractional_negpos_rect1.ExpandEdgesToPixelBoundaries();
+  EXPECT_EQ(LayoutRect(IntRect(-101, -151, 201, 351)), fractional_negpos_rect1);
+
+  LayoutRect fractional_negpos_rect2(LayoutUnit(-100.5f), LayoutUnit(-150.7f),
+                                     LayoutUnit(199.4f), LayoutUnit(350.3f));
+  fractional_negpos_rect2.ExpandEdgesToPixelBoundaries();
+  EXPECT_EQ(LayoutRect(IntRect(-101, -151, 200, 351)), fractional_negpos_rect2);
+
+  LayoutRect fractional_negpos_rect3(LayoutUnit(-100.3f), LayoutUnit(-150.2f),
+                                     LayoutUnit(199.6f), LayoutUnit(350.3f));
+  fractional_negpos_rect3.ExpandEdgesToPixelBoundaries();
+  EXPECT_EQ(LayoutRect(IntRect(-101, -151, 201, 352)), fractional_negpos_rect3);
+}
+
 }  // namespace blink

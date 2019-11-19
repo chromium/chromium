@@ -1,0 +1,50 @@
+# tags: [ linux win ]
+# tags: [ mesa_eq_18.1 ]
+# results: [ Failure RetryOnFailure ]
+crbug.com/123 [ linux mesa_eq_18.1 ] abc.html [ Failure ]
+crbug.com/123 [ win mesa_eq_18.1 ] abc.html [ RetryOnFailure ]
+
+# tags: [ mesa_ne_18.1 mesa_eq_18.1 ]
+# results: [ Failure RetryOnFailure ]
+crbug.com/123 [ mesa_ne_18.1 ] abc.html [ Failure ]
+crbug.com/123 [ mesa_eq_18.1 ] abc.html [ RetryOnFailure ]
+
+# tags: [ mesa_eq_18.1 mesa_gt_18.1 ]
+# results: [ Failure RetryOnFailure ]
+crbug.com/123 [ mesa_eq_18.1 ] abc.html [ Failure ]
+crbug.com/123 [ mesa_gt_18.1 ] abc.html [ RetryOnFailure ]
+
+# tags: [ mesa_eq_18.1 mesa_ge_18.2 ]
+# results: [ Failure RetryOnFailure ]
+crbug.com/123 [ mesa_eq_18.1 ] abc.html [ Failure ]
+crbug.com/123 [ mesa_ge_18.2 ] abc.html [ RetryOnFailure ]
+
+# tags: [ mesa_eq_18.1 mesa_lt_18.1 ]
+# results: [ Failure RetryOnFailure ]
+crbug.com/123 [ mesa_eq_18.1 ] abc.html [ Failure ]
+crbug.com/123 [ mesa_lt_18.1 ] abc.html [ RetryOnFailure ]
+
+# tags: [ mesa_eq_18.1 mesa_le_18.0 ]
+# results: [ Failure RetryOnFailure ]
+crbug.com/123 [ mesa_eq_18.1 ] abc.html [ Failure ]
+crbug.com/123 [ mesa_le_18.0 ] abc.html [ RetryOnFailure ]
+
+# tags: [ mesa_lt_18.1 mesa_gt_18.1 ]
+# results: [ Failure RetryOnFailure ]
+crbug.com/123 [ mesa_lt_18.1 ] abc.html [ Failure ]
+crbug.com/123 [ mesa_gt_18.1 ] abc.html [ RetryOnFailure ]
+
+# tags: [ mesa_lt_18.1 mesa_ge_18.2 ]
+# results: [ Failure RetryOnFailure ]
+crbug.com/123 [ mesa_lt_18.1 ] abc.html [ Failure ]
+crbug.com/123 [ mesa_ge_18.2 ] abc.html [ RetryOnFailure ]
+
+# tags: [ mesa_le_18.1 mesa_gt_18.1 ]
+# results: [ Failure RetryOnFailure ]
+crbug.com/123 [ mesa_le_18.1 ] abc.html [ Failure ]
+crbug.com/123 [ mesa_gt_18.1 ] abc.html [ RetryOnFailure ]
+
+# tags: [ mesa_le_18.1 mesa_ge_18.2 ]
+# results: [ Failure RetryOnFailure ]
+crbug.com/123 [ mesa_le_18.1 ] abc.html [ Failure ]
+crbug.com/123 [ mesa_ge_18.2 ] abc.html [ RetryOnFailure ]

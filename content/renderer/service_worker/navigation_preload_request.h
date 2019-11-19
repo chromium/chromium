@@ -9,8 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/dispatch_fetch_event_params.mojom.h"
@@ -18,6 +17,8 @@
 #include "url/gurl.h"
 
 namespace content {
+
+class ServiceWorkerContextClient;
 
 // The URLLoaderClient for receiving a navigation preload response. It reports
 // the response back to ServiceWorkerContextClient.
@@ -28,7 +29,7 @@ class NavigationPreloadRequest final : public network::mojom::URLLoaderClient {
  public:
   // |owner| must outlive |this|.
   NavigationPreloadRequest(
-      base::WeakPtr<ServiceWorkerContextClient> owner,
+      ServiceWorkerContextClient* owner,
       int fetch_event_id,
       const GURL& url,
       blink::mojom::FetchEventPreloadHandlePtr preload_handle);
@@ -36,14 +37,14 @@ class NavigationPreloadRequest final : public network::mojom::URLLoaderClient {
 
   // network::mojom::URLLoaderClient:
   void OnReceiveResponse(
-      const network::ResourceResponseHead& response_head) override;
+      network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
-      const network::ResourceResponseHead& response_head) override;
+      network::mojom::URLResponseHeadPtr response_head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback ack_callback) override;
-  void OnReceiveCachedMetadata(const std::vector<uint8_t>& data) override;
+  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
@@ -54,15 +55,12 @@ class NavigationPreloadRequest final : public network::mojom::URLLoaderClient {
   void ReportErrorToOwner(const std::string& message,
                           const std::string& unsanitized_message);
 
-  // TODO(crbug.com/907311): This is just a WeakPtr to do a CHECK that the owner
-  // really outlives this, as we've been getting related crashes. Change this to
-  // a raw pointer when the bug is fixed.
-  base::WeakPtr<ServiceWorkerContextClient> owner_;
+  ServiceWorkerContextClient* owner_;
 
   const int fetch_event_id_;
   const GURL url_;
   network::mojom::URLLoaderPtr url_loader_;
-  mojo::Binding<network::mojom::URLLoaderClient> binding_;
+  mojo::Receiver<network::mojom::URLLoaderClient> receiver_;
 
   std::unique_ptr<blink::WebURLResponse> response_;
   mojo::ScopedDataPipeConsumerHandle body_;

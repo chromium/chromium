@@ -30,7 +30,7 @@ public class UserAgentTest {
     private AwContents mAwContents;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mContentsClient = new TestAwContentsClient();
         mAwContents = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient)
                               .getAwContents();

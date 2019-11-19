@@ -21,6 +21,7 @@
 #include "chrome/browser/chromeos/power/power_data_collector.h"
 #include "chrome/browser/chromeos/power/process_data_collector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/localized_string.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,8 +32,6 @@
 namespace chromeos {
 
 namespace {
-
-const char kStringsJsFile[] = "strings.js";
 
 const char kRequestBatteryChargeDataCallback[] = "requestBatteryChargeData";
 const char kOnRequestBatteryChargeDataFunction[] =
@@ -230,45 +229,36 @@ PowerUI::PowerUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   content::WebUIDataSource* html =
       content::WebUIDataSource::Create(chrome::kChromeUIPowerHost);
 
-  html->AddLocalizedString("titleText", IDS_ABOUT_POWER_TITLE);
-  html->AddLocalizedString("showButton", IDS_ABOUT_POWER_SHOW_BUTTON);
-  html->AddLocalizedString("hideButton", IDS_ABOUT_POWER_HIDE_BUTTON);
-  html->AddLocalizedString("reloadButton", IDS_ABOUT_POWER_RELOAD_BUTTON);
-  html->AddLocalizedString("notEnoughDataAvailableYet",
-                           IDS_ABOUT_POWER_NOT_ENOUGH_DATA);
-  html->AddLocalizedString("systemSuspended",
-                           IDS_ABOUT_POWER_SYSTEM_SUSPENDED);
-  html->AddLocalizedString("invalidData", IDS_ABOUT_POWER_INVALID);
-  html->AddLocalizedString("offlineText", IDS_ABOUT_POWER_OFFLINE);
+  static constexpr LocalizedString kStrings[] = {
+      {"titleText", IDS_ABOUT_POWER_TITLE},
+      {"showButton", IDS_ABOUT_POWER_SHOW_BUTTON},
+      {"hideButton", IDS_ABOUT_POWER_HIDE_BUTTON},
+      {"reloadButton", IDS_ABOUT_POWER_RELOAD_BUTTON},
+      {"notEnoughDataAvailableYet", IDS_ABOUT_POWER_NOT_ENOUGH_DATA},
+      {"systemSuspended", IDS_ABOUT_POWER_SYSTEM_SUSPENDED},
+      {"invalidData", IDS_ABOUT_POWER_INVALID},
+      {"offlineText", IDS_ABOUT_POWER_OFFLINE},
+      {"batteryChargeSectionTitle",
+       IDS_ABOUT_POWER_BATTERY_CHARGE_SECTION_TITLE},
+      {"batteryChargePercentageHeader",
+       IDS_ABOUT_POWER_BATTERY_CHARGE_PERCENTAGE_HEADER},
+      {"batteryDischargeRateHeader",
+       IDS_ABOUT_POWER_BATTERY_DISCHARGE_RATE_HEADER},
+      {"dischargeRateLegendText", IDS_ABOUT_POWER_DISCHARGE_RATE_LEGEND_TEXT},
+      {"movingAverageLegendText", IDS_ABOUT_POWER_MOVING_AVERAGE_LEGEND_TEXT},
+      {"binnedAverageLegendText", IDS_ABOUT_POWER_BINNED_AVERAGE_LEGEND_TEXT},
+      {"averageOverText", IDS_ABOUT_POWER_AVERAGE_OVER_TEXT},
+      {"samplesText", IDS_ABOUT_POWER_AVERAGE_SAMPLES_TEXT},
+      {"cpuIdleSectionTitle", IDS_ABOUT_POWER_CPU_IDLE_SECTION_TITLE},
+      {"idleStateOccupancyPercentageHeader",
+       IDS_ABOUT_POWER_CPU_IDLE_STATE_OCCUPANCY_PERCENTAGE},
+      {"cpuFreqSectionTitle", IDS_ABOUT_POWER_CPU_FREQ_SECTION_TITLE},
+      {"frequencyStateOccupancyPercentageHeader",
+       IDS_ABOUT_POWER_CPU_FREQ_STATE_OCCUPANCY_PERCENTAGE},
+  };
+  AddLocalizedStringsBulk(html, kStrings, base::size(kStrings));
 
-  html->AddLocalizedString("batteryChargeSectionTitle",
-                           IDS_ABOUT_POWER_BATTERY_CHARGE_SECTION_TITLE);
-  html->AddLocalizedString("batteryChargePercentageHeader",
-                           IDS_ABOUT_POWER_BATTERY_CHARGE_PERCENTAGE_HEADER);
-  html->AddLocalizedString("batteryDischargeRateHeader",
-                           IDS_ABOUT_POWER_BATTERY_DISCHARGE_RATE_HEADER);
-  html->AddLocalizedString("dischargeRateLegendText",
-                           IDS_ABOUT_POWER_DISCHARGE_RATE_LEGEND_TEXT);
-  html->AddLocalizedString("movingAverageLegendText",
-                           IDS_ABOUT_POWER_MOVING_AVERAGE_LEGEND_TEXT);
-  html->AddLocalizedString("binnedAverageLegendText",
-                           IDS_ABOUT_POWER_BINNED_AVERAGE_LEGEND_TEXT);
-  html->AddLocalizedString("averageOverText",
-                           IDS_ABOUT_POWER_AVERAGE_OVER_TEXT);
-  html->AddLocalizedString("samplesText",
-                           IDS_ABOUT_POWER_AVERAGE_SAMPLES_TEXT);
-
-  html->AddLocalizedString("cpuIdleSectionTitle",
-                           IDS_ABOUT_POWER_CPU_IDLE_SECTION_TITLE);
-  html->AddLocalizedString("idleStateOccupancyPercentageHeader",
-                           IDS_ABOUT_POWER_CPU_IDLE_STATE_OCCUPANCY_PERCENTAGE);
-
-  html->AddLocalizedString("cpuFreqSectionTitle",
-                           IDS_ABOUT_POWER_CPU_FREQ_SECTION_TITLE);
-  html->AddLocalizedString("frequencyStateOccupancyPercentageHeader",
-                           IDS_ABOUT_POWER_CPU_FREQ_STATE_OCCUPANCY_PERCENTAGE);
-
-  html->SetJsonPath(kStringsJsFile);
+  html->UseStringsJs();
 
   html->AddResourcePath("power.css", IDR_ABOUT_POWER_CSS);
   html->AddResourcePath("power.js", IDR_ABOUT_POWER_JS);

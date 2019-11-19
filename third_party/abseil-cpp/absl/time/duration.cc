@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -48,6 +48,10 @@
 //     rep_lo_ : ~0U
 //
 // Arithmetic overflows/underflows to +/- infinity and saturates.
+
+#if defined(_MSC_VER)
+#include <winsock2.h>  // for timeval
+#endif
 
 #include <algorithm>
 #include <cassert>
@@ -749,9 +753,9 @@ void AppendNumberUnit(std::string* out, double n, DisplayUnit unit) {
 
 }  // namespace
 
-// From Go's doc at http://golang.org/pkg/time/#Duration.String
+// From Go's doc at https://golang.org/pkg/time/#Duration.String
 //   [FormatDuration] returns a string representing the duration in the
-//   form "72h3m0.5s".  Leading zero units are omitted.  As a special
+//   form "72h3m0.5s". Leading zero units are omitted.  As a special
 //   case, durations less than one second format use a smaller unit
 //   (milli-, micro-, or nanoseconds) to ensure that the leading digit
 //   is non-zero.  The zero duration formats as 0, with no unit.
@@ -855,8 +859,8 @@ bool ConsumeDurationUnit(const char** start, Duration* unit) {
 
 }  // namespace
 
-// From Go's doc at http://golang.org/pkg/time/#ParseDuration
-//   [ParseDuration] parses a duration string.  A duration string is
+// From Go's doc at https://golang.org/pkg/time/#ParseDuration
+//   [ParseDuration] parses a duration string. A duration string is
 //   a possibly signed sequence of decimal numbers, each with optional
 //   fraction and a unit suffix, such as "300ms", "-1.5h" or "2h45m".
 //   Valid time units are "ns", "us" "ms", "s", "m", "h".
@@ -901,6 +905,7 @@ bool ParseDuration(const std::string& dur_string, Duration* d) {
   *d = dur;
   return true;
 }
+
 bool ParseFlag(const std::string& text, Duration* dst, std::string* ) {
   return ParseDuration(text, dst);
 }

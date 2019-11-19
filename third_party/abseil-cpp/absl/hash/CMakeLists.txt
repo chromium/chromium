@@ -5,7 +5,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#      https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,6 +43,8 @@ absl_cc_library(
     hash_testing
   HDRS
     "hash_testing.h"
+  COPTS
+    ${ABSL_TEST_COPTS}
   DEPS
     absl::spy_hash_state
     absl::meta
@@ -56,7 +58,9 @@ absl_cc_test(
   NAME
     hash_test
   SRCS
-   "hash_test.cc"
+    "hash_test.cc"
+  COPTS
+    ${ABSL_TEST_COPTS}
   DEPS
     absl::hash
     absl::hash_testing

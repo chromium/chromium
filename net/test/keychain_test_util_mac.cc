@@ -91,8 +91,8 @@ base::ScopedCFTypeRef<SecIdentityRef> ImportCertAndKeyToKeychain(
     return base::ScopedCFTypeRef<SecIdentityRef>();
   bssl::UniquePtr<uint8_t> scoped_encoded(encoded);
 
-  base::ScopedCFTypeRef<CFDataRef> encoded_ref(CFDataCreateWithBytesNoCopy(
-      kCFAllocatorDefault, encoded, encoded_len, kCFAllocatorNull));
+  base::ScopedCFTypeRef<CFDataRef> encoded_ref(
+      CFDataCreate(kCFAllocatorDefault, encoded, encoded_len));
   SecExternalFormat format = kSecFormatOpenSSL;
   SecExternalItemType item_type = kSecItemTypePrivateKey;
   if (noErr != SecItemImport(encoded_ref, nullptr, &format, &item_type, 0,

@@ -22,80 +22,84 @@ void PaymentAppContextImpl::Init(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if DCHECK_IS_ON()
-  DCHECK(!did_shutdown_on_io_.IsSet());
+  DCHECK(!did_shutdown_on_core_.IsSet());
 #endif
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&PaymentAppContextImpl::CreatePaymentAppDatabaseOnIO, this,
-                     service_worker_context));
+  RunOrPostTaskOnThread(
+      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
+      base::BindOnce(
+          &PaymentAppContextImpl::CreatePaymentAppDatabaseOnCoreThread, this,
+          service_worker_context));
 }
 
 void PaymentAppContextImpl::Shutdown() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Schedule a ShutdownOnIO() callback that holds a reference to |this| on the
-  // IO thread. When the last reference to |this| is released, |this| is
-  // automatically scheduled for deletion on the UI thread (see
+  // Schedule a ShutdownOnCoreThread() callback that holds a reference to |this|
+  // on the core thread. When the last reference to |this| is released, |this|
+  // is automatically scheduled for deletion on the UI thread (see
   // content::BrowserThread::DeleteOnUIThread in the header file).
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&PaymentAppContextImpl::ShutdownOnIO, this));
+  RunOrPostTaskOnThread(
+      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
+      base::BindOnce(&PaymentAppContextImpl::ShutdownOnCoreThread, this));
 }
 
-void PaymentAppContextImpl::CreatePaymentManager(
-    payments::mojom::PaymentManagerRequest request) {
+void PaymentAppContextImpl::CreatePaymentManagerForOrigin(
+    const url::Origin& origin,
+    mojo::PendingReceiver<payments::mojom::PaymentManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&PaymentAppContextImpl::CreatePaymentManagerOnIO, this,
-                     std::move(request)));
+  RunOrPostTaskOnThread(
+      FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
+      base::BindOnce(
+          &PaymentAppContextImpl::CreatePaymentManagerForOriginOnCoreThread,
+          this, origin, std::move(receiver)));
 }
 
 void PaymentAppContextImpl::PaymentManagerHadConnectionError(
     PaymentManager* payment_manager) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(base::ContainsKey(payment_managers_, payment_manager));
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK(base::Contains(payment_managers_, payment_manager));
 
   payment_managers_.erase(payment_manager);
 }
 
 PaymentAppDatabase* PaymentAppContextImpl::payment_app_database() const {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   return payment_app_database_.get();
 }
 
 PaymentAppContextImpl::~PaymentAppContextImpl() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 #if DCHECK_IS_ON()
-  DCHECK(did_shutdown_on_io_.IsSet());
+  DCHECK(did_shutdown_on_core_.IsSet());
 #endif
 }
 
-void PaymentAppContextImpl::CreatePaymentAppDatabaseOnIO(
+void PaymentAppContextImpl::CreatePaymentAppDatabaseOnCoreThread(
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   payment_app_database_ =
       std::make_unique<PaymentAppDatabase>(service_worker_context);
 }
 
-void PaymentAppContextImpl::CreatePaymentManagerOnIO(
-    mojo::InterfaceRequest<payments::mojom::PaymentManager> request) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+void PaymentAppContextImpl::CreatePaymentManagerForOriginOnCoreThread(
+    const url::Origin& origin,
+    mojo::PendingReceiver<payments::mojom::PaymentManager> receiver) {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
   auto payment_manager =
-      std::make_unique<PaymentManager>(this, std::move(request));
+      std::make_unique<PaymentManager>(this, origin, std::move(receiver));
   payment_managers_[payment_manager.get()] = std::move(payment_manager);
 }
 
-void PaymentAppContextImpl::ShutdownOnIO() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+void PaymentAppContextImpl::ShutdownOnCoreThread() {
+  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
 
   payment_managers_.clear();
   payment_app_database_.reset();
 
 #if DCHECK_IS_ON()
-  did_shutdown_on_io_.Set();
+  did_shutdown_on_core_.Set();
 #endif
 }
 

@@ -9,17 +9,12 @@
 
 #include <memory>
 
-#include "base/cancelable_callback.h"
 #include "base/macros.h"
-#include "ui/display/display_change_notifier.h"
+#include "ui/base/x/x11_display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/views/linux_ui/device_scale_factor_observer.h"
 #include "ui/views/views_export.h"
-
-typedef unsigned long XID;
-typedef XID Window;
-typedef struct _XDisplay Display;
 
 namespace views {
 class DesktopScreenX11Test;
@@ -28,14 +23,18 @@ namespace test {
 class DesktopScreenX11TestApi;
 }
 
-// Our singleton screen implementation that talks to xrandr.
+// Screen implementation that talks to XRandR
 class VIEWS_EXPORT DesktopScreenX11 : public display::Screen,
                                       public ui::PlatformEventDispatcher,
+                                      public ui::XDisplayManager::Delegate,
                                       public views::DeviceScaleFactorObserver {
  public:
   DesktopScreenX11();
-
   ~DesktopScreenX11() override;
+
+  // Fetches display list using XRandR. Must be called explicitly as actual
+  // fetching might not be desirable in some scenarios (e.g: unit tests)
+  void Init();
 
   // Overridden from display::Screen:
   gfx::Point GetCursorScreenPoint() override;
@@ -66,43 +65,11 @@ class VIEWS_EXPORT DesktopScreenX11 : public display::Screen,
   friend class DesktopScreenX11Test;
   friend class test::DesktopScreenX11TestApi;
 
-  // Constructor used in tests.
-  DesktopScreenX11(const std::vector<display::Display>& test_displays);
+  // ui::XDisplayManager::Delegate
+  void OnXDisplayListUpdated() override;
+  float GetXDisplayScaleFactor() override;
 
-  // Removes |delayed_configuration_task_| from the task queue (if
-  // it's in the queue) and adds it back at the end of the queue.
-  void RestartDelayedConfigurationTask();
-
-  // Updates |displays_| with the latest XRandR info.
-  void UpdateDisplays();
-
-  // Updates |displays_| from |displays| and sets FontRenderParams's scale
-  // factor.
-  void SetDisplaysInternal(const std::vector<display::Display>& displays);
-
-  ::Display* xdisplay_;
-  ::Window x_root_window_;
-
-  // XRandR version. MAJOR * 100 + MINOR. Zero if no xrandr is present.
-  const int xrandr_version_;
-
-  // The base of the event numbers used to represent XRandr events used in
-  // decoding events regarding output add/remove.
-  int xrandr_event_base_ = 0;
-
-  // The display objects we present to chrome.
-  std::vector<display::Display> displays_;
-
-  // The index into displays_ that represents the primary display.
-  int64_t primary_display_index_ = 0;
-
-  // The task to delay configuring outputs.  We delay updating the
-  // display so we can coalesce events.
-  base::CancelableCallback<void()> delayed_configuration_task_;
-
-  display::DisplayChangeNotifier change_notifier_;
-
-  base::WeakPtrFactory<DesktopScreenX11> weak_factory_;
+  std::unique_ptr<ui::XDisplayManager> x11_display_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(DesktopScreenX11);
 };

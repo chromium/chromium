@@ -5,16 +5,15 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_EXTENSION_TOOLBAR_MENU_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_EXTENSION_TOOLBAR_MENU_VIEW_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_bar_observer.h"
+#include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "ui/views/controls/scroll_view.h"
 
 class AppMenu;
-class AppMenuButton;
 class Browser;
 class BrowserActionsContainer;
 
@@ -32,6 +31,8 @@ class ExtensionToolbarMenuView : public AppMenuButtonObserver,
                                  public ToolbarActionsBarObserver {
  public:
   ExtensionToolbarMenuView(Browser* browser, views::MenuItemView* menu_item);
+  ExtensionToolbarMenuView(const ExtensionToolbarMenuView&) = delete;
+  ExtensionToolbarMenuView& operator=(const ExtensionToolbarMenuView&) = delete;
   ~ExtensionToolbarMenuView() override;
 
   BrowserActionsContainer* container_for_testing() {
@@ -45,7 +46,6 @@ class ExtensionToolbarMenuView : public AppMenuButtonObserver,
  protected:
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
-  int GetHeightForWidth(int width) const override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
@@ -62,8 +62,9 @@ class ExtensionToolbarMenuView : public AppMenuButtonObserver,
   // Updates our margins and invalidates layout.
   void UpdateMargins();
 
-  // Returns the padding before the BrowserActionsContainer in the menu.
-  int start_padding() const;
+  // The padding before and after the BrowserActionsContainer in the menu.
+  int GetStartPadding() const;
+  int GetEndPadding() const;
 
   // The associated browser.
   Browser* const browser_;
@@ -86,8 +87,6 @@ class ExtensionToolbarMenuView : public AppMenuButtonObserver,
       app_menu_button_observer_{this};
 
   base::WeakPtrFactory<ExtensionToolbarMenuView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionToolbarMenuView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_EXTENSION_TOOLBAR_MENU_VIEW_H_

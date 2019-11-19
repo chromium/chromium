@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/task_environment.h"
 #include "net/url_request/test_url_fetcher_factory.h"
 #include "remoting/test/host_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -193,16 +193,14 @@ class HostListFetcherTest : public ::testing::Test {
                        net::URLRequestStatus::Status status);
 
  private:
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   net::FakeURLFetcherFactory url_fetcher_factory_;
-  std::unique_ptr<base::MessageLoopForIO> message_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(HostListFetcherTest);
 };
 
 void HostListFetcherTest::SetUp() {
-  DCHECK(!message_loop_);
-  message_loop_.reset(new base::MessageLoopForIO);
-
   SetFakeResponse(GURL(kHostListProdRequestUrl),
                   kHostListEmptyResponse, net::HTTP_NOT_FOUND,
                   net::URLRequestStatus::FAILED);

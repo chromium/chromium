@@ -16,6 +16,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 namespace content {
@@ -25,7 +26,6 @@ class BrowserContext;
 namespace extensions {
 
 class ExtensionPrefs;
-class ExtensionRegistry;
 
 class InstallTracker : public KeyedService,
                        public content::NotificationObserver,
@@ -92,7 +92,7 @@ class InstallTracker : public KeyedService,
   content::NotificationRegistrar registrar_;
   PrefChangeRegistrar pref_change_registrar_;
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InstallTracker);
 };

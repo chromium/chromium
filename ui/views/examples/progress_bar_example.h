@@ -27,10 +27,10 @@ class VIEWS_EXAMPLES_EXPORT ProgressBarExample : public ExampleBase,
   // ButtonListener:
   void ButtonPressed(Button* button, const ui::Event& event) override;
 
-  Button* minus_button_;
-  Button* plus_button_;
-  ProgressBar* progress_bar_;
-  double current_percent_;
+  Button* minus_button_ = nullptr;
+  Button* plus_button_ = nullptr;
+  ProgressBar* progress_bar_ = nullptr;
+  double current_percent_ = 0.0;
 
   DISALLOW_COPY_AND_ASSIGN(ProgressBarExample);
 };

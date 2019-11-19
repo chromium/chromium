@@ -36,6 +36,9 @@ class DelegatingProvider final : public MetricsProvider {
   bool HasIndependentMetrics() override;
   void ProvideSystemProfileMetrics(
       SystemProfileProto* system_profile_proto) override;
+  void ProvideSystemProfileMetricsWithLogCreationTime(
+      base::TimeTicks log_creation_time,
+      SystemProfileProto* system_profile_proto) override;
   bool HasPreviousSessionData() override;
   void ProvidePreviousSessionData(
       ChromeUserMetricsExtension* uma_proto) override;

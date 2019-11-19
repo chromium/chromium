@@ -9,22 +9,31 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
-#include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/timer/timer.h"
-#include "base/trace_event/trace_config.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/public/browser/background_tracing_manager.h"
+#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 
 namespace base {
-class RefCountedString;
+template <typename T>
+class NoDestructor;
 }  // namespace base
 
+namespace tracing {
+namespace mojom {
+class BackgroundTracingAgent;
+}  // namespace mojom
+}  // namespace tracing
+
 namespace content {
+namespace mojom {
+class ChildProcess;
+}  // namespace mojom
 
 class BackgroundTracingRule;
-class TraceMessageFilter;
+class BackgroundTracingActiveScenario;
 class TracingDelegate;
 
 class BackgroundTracingManagerImpl : public BackgroundTracingManager {
@@ -49,127 +58,123 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
     virtual ~EnabledStateObserver() = default;
   };
 
-  class TraceMessageFilterObserver {
+  class AgentObserver {
    public:
-    virtual void OnTraceMessageFilterAdded(TraceMessageFilter* filter) = 0;
-    virtual void OnTraceMessageFilterRemoved(TraceMessageFilter* filter) = 0;
+    virtual void OnAgentAdded(
+        tracing::mojom::BackgroundTracingAgent* agent) = 0;
+    virtual void OnAgentRemoved(
+        tracing::mojom::BackgroundTracingAgent* agent) = 0;
   };
 
+  // These values are used for a histogram. Do not reorder.
+  enum class Metrics {
+    SCENARIO_ACTIVATION_REQUESTED = 0,
+    SCENARIO_ACTIVATED_SUCCESSFULLY = 1,
+    RECORDING_ENABLED = 2,
+    PREEMPTIVE_TRIGGERED = 3,
+    REACTIVE_TRIGGERED = 4,
+    FINALIZATION_ALLOWED = 5,
+    FINALIZATION_DISALLOWED = 6,
+    FINALIZATION_STARTED = 7,
+    OBSOLETE_FINALIZATION_COMPLETE = 8,
+    SCENARIO_ACTION_FAILED_LOWRES_CLOCK = 9,
+    UPLOAD_FAILED = 10,
+    UPLOAD_SUCCEEDED = 11,
+    STARTUP_SCENARIO_TRIGGERED = 12,
+    LARGE_UPLOAD_WAITING_TO_RETRY = 13,
+    SYSTEM_TRIGGERED = 14,
+    NUMBER_OF_BACKGROUND_TRACING_METRICS,
+  };
+  static void RecordMetric(Metrics metric);
+
   CONTENT_EXPORT static BackgroundTracingManagerImpl* GetInstance();
+
+  // Callable from any thread.
+  static void ActivateForProcess(int child_process_id,
+                                 mojom::ChildProcess* child_process);
 
   bool SetActiveScenario(std::unique_ptr<BackgroundTracingConfig>,
                          ReceiveCallback,
                          DataFiltering data_filtering) override;
-  void WhenIdle(IdleCallback idle_callback) override;
+  void AbortScenario();
+  bool HasActiveScenario() override;
 
+  // Named triggers
   void TriggerNamedEvent(TriggerHandle, StartedFinalizingCallback) override;
   TriggerHandle RegisterTriggerType(const char* trigger_name) override;
+  std::string GetTriggerNameFromHandle(TriggerHandle handle) const;
 
   void OnHistogramTrigger(const std::string& histogram_name);
 
   void OnRuleTriggered(const BackgroundTracingRule* triggered_rule,
                        StartedFinalizingCallback callback);
-  CONTENT_EXPORT void AbortScenario() override;
-  bool HasActiveScenario() override;
-
-  void OnStartTracingDone(BackgroundTracingConfigImpl::CategoryPreset preset);
+  bool HasTraceToUpload() override;
+  std::string GetLatestTraceToUpload() override;
+  void SetTraceToUpload(std::unique_ptr<std::string> trace_data);
 
   // Add/remove EnabledStateObserver.
   CONTENT_EXPORT void AddEnabledStateObserver(EnabledStateObserver* observer);
   CONTENT_EXPORT void RemoveEnabledStateObserver(
       EnabledStateObserver* observer);
 
-  // Add/remove TraceMessageFilter{Observer}.
-  void AddTraceMessageFilter(TraceMessageFilter* trace_message_filter);
-  void RemoveTraceMessageFilter(TraceMessageFilter* trace_message_filter);
-  void AddTraceMessageFilterObserver(TraceMessageFilterObserver* observer);
-  void RemoveTraceMessageFilterObserver(TraceMessageFilterObserver* observer);
+  // Add/remove Agent{Observer}.
+  void AddAgent(tracing::mojom::BackgroundTracingAgent* agent);
+  void RemoveAgent(tracing::mojom::BackgroundTracingAgent* agent);
+  void AddAgentObserver(AgentObserver* observer);
+  void RemoveAgentObserver(AgentObserver* observer);
 
   void AddMetadataGeneratorFunction();
 
+  bool IsAllowedFinalization() const;
+
+  // Called by BackgroundTracingActiveScenario
+  void OnStartTracingDone(BackgroundTracingConfigImpl::CategoryPreset preset);
+
   // For tests
-  void InvalidateTriggerHandlesForTesting() override;
-  CONTENT_EXPORT void SetRuleTriggeredCallbackForTesting(
-      const base::Closure& callback);
-  void FireTimerForTesting() override;
+  CONTENT_EXPORT BackgroundTracingActiveScenario* GetActiveScenarioForTesting();
+  CONTENT_EXPORT void InvalidateTriggerHandlesForTesting();
   CONTENT_EXPORT bool IsTracingForTesting();
-  CONTENT_EXPORT bool requires_anonymized_data_for_testing() const {
-    return requires_anonymized_data_;
-  }
+  void WhenIdle(IdleCallback idle_callback) override;
+  CONTENT_EXPORT void AbortScenarioForTesting() override;
+  CONTENT_EXPORT void SetTraceToUploadForTesting(
+      std::unique_ptr<std::string> trace_data) override;
 
  private:
+  friend class base::NoDestructor<BackgroundTracingManagerImpl>;
+
   BackgroundTracingManagerImpl();
   ~BackgroundTracingManagerImpl() override;
 
-  void StartTracing(BackgroundTracingConfigImpl::CategoryPreset,
-                    base::trace_event::TraceRecordMode);
-  void StartTracingIfConfigNeedsIt();
-  void OnFinalizeStarted(base::Closure started_finalizing_closure,
-                         std::unique_ptr<const base::DictionaryValue> metadata,
-                         base::RefCountedString*);
-  void OnFinalizeComplete(bool success);
-  void BeginFinalizing(StartedFinalizingCallback);
   void ValidateStartupScenario();
-
-  std::unique_ptr<base::DictionaryValue> GenerateMetadataDict();
-
-  bool IsAllowedFinalization() const;
-  std::string GetTriggerNameFromHandle(TriggerHandle handle) const;
-  bool IsTriggerHandleValid(TriggerHandle handle) const;
-
-  BackgroundTracingRule* GetRuleAbleToTriggerTracing(
-      TriggerHandle handle) const;
   bool IsSupportedConfig(BackgroundTracingConfigImpl* config);
+  std::unique_ptr<base::DictionaryValue> GenerateMetadataDict();
+  void GenerateMetadataProto(
+      perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
+      bool privacy_filtering_enabled);
+  bool IsTriggerHandleValid(TriggerHandle handle) const;
+  void OnScenarioAborted();
+  static void AddPendingAgentConstructor(base::OnceClosure constructor);
+  void MaybeConstructPendingAgents();
 
-  base::trace_event::TraceConfig GetConfigForCategoryPreset(
-      BackgroundTracingConfigImpl::CategoryPreset,
-      base::trace_event::TraceRecordMode) const;
-
-  void OnAbortScenarioReceived(
-      std::unique_ptr<const base::DictionaryValue> metadata,
-      base::RefCountedString* trace_str);
-
-  class TracingTimer {
-   public:
-    explicit TracingTimer(StartedFinalizingCallback);
-    ~TracingTimer();
-
-    void StartTimer(int seconds);
-    void CancelTimer();
-    void FireTimerForTesting();
-
-   private:
-    void TracingTimerFired();
-
-    base::OneShotTimer tracing_timer_;
-    StartedFinalizingCallback callback_;
-  };
+  std::unique_ptr<BackgroundTracingActiveScenario> active_scenario_;
 
   std::unique_ptr<TracingDelegate> delegate_;
-  std::unique_ptr<const content::BackgroundTracingConfigImpl> config_;
   std::map<TriggerHandle, std::string> trigger_handles_;
-  std::unique_ptr<TracingTimer> tracing_timer_;
-  ReceiveCallback receive_callback_;
-  std::unique_ptr<base::DictionaryValue> last_triggered_rule_;
-  bool is_gathering_;
-  bool is_tracing_;
-  bool requires_anonymized_data_;
   int trigger_handle_ids_;
 
-  TriggerHandle triggered_named_event_handle_;
-
-  // There is no need to use base::ObserverList to store observers because we
-  // only access |background_tracing_observers_| and
-  // |trace_message_filter_observers_| from the UI thread.
+  // Note, these sets are not mutated during iteration so it is okay to not use
+  // base::ObserverList.
   std::set<EnabledStateObserver*> background_tracing_observers_;
-  std::set<scoped_refptr<TraceMessageFilter>> trace_message_filters_;
-  std::set<TraceMessageFilterObserver*> trace_message_filter_observers_;
+  std::set<tracing::mojom::BackgroundTracingAgent*> agents_;
+  std::set<AgentObserver*> agent_observers_;
+
+  std::vector<base::OnceClosure> pending_agent_constructors_;
 
   IdleCallback idle_callback_;
-  base::Closure tracing_enabled_callback_for_testing_;
-  base::Closure rule_triggered_callback_for_testing_;
+  base::RepeatingClosure tracing_enabled_callback_for_testing_;
 
-  friend struct base::LazyInstanceTraitsBase<BackgroundTracingManagerImpl>;
+  // This field contains serialized trace log proto.
+  std::string trace_to_upload_;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundTracingManagerImpl);
 };

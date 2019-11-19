@@ -1,0 +1,51 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+
+component("system") {
+  output_name = "chromeos_system"
+  defines = [ "IS_CHROMEOS_SYSTEM_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/constants",
+  ]
+  sources = [
+    "cpu_temperature_reader.cc",
+    "cpu_temperature_reader.h",
+    "devicemode.cc",
+    "devicemode.h",
+    "factory_ping_embargo_check.cc",
+    "factory_ping_embargo_check.h",
+    "kiosk_oem_manifest_parser.cc",
+    "kiosk_oem_manifest_parser.h",
+
+    # Used when running mash, both on Linux and on real devices.
+    "fake_statistics_provider.cc",
+    "fake_statistics_provider.h",
+    "name_value_pairs_parser.cc",
+    "name_value_pairs_parser.h",
+    "scheduler_configuration_manager_base.cc",
+    "scheduler_configuration_manager_base.h",
+    "statistics_provider.cc",
+    "statistics_provider.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":system",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos:test_utils",
+    "//testing/gtest",
+  ]
+  sources = [
+    "cpu_temperature_reader_unittest.cc",
+    "factory_ping_embargo_check_unittest.cc",
+    "kiosk_oem_manifest_parser_unittest.cc",
+    "name_value_pairs_parser_unittest.cc",
+  ]
+}

@@ -9,8 +9,8 @@
 #include <windows.h>
 #include <wrl/client.h>
 
+#include "base/component_export.h"
 #include "base/macros.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 
 namespace ui {
 class TextInputClient;
@@ -26,7 +26,7 @@ class TextInputClient;
 // of text inputting and current focused TextInputClient.
 //
 // All methods in this class must be used in UI thread.
-class UI_BASE_IME_EXPORT TSFBridge {
+class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFBridge {
  public:
   virtual ~TSFBridge();
 
@@ -82,11 +82,25 @@ class UI_BASE_IME_EXPORT TSFBridge {
   // Remove InputMethodDelegate instance from TSFTextStore when not in focus.
   virtual void RemoveInputMethodDelegate() = 0;
 
+  // Returns whether the system's input language is CJK.
+  virtual bool IsInputLanguageCJK() = 0;
+
   // Obtains current thread manager.
   virtual Microsoft::WRL::ComPtr<ITfThreadMgr> GetThreadManager() = 0;
 
   // Returns the focused text input client.
   virtual TextInputClient* GetFocusedTextInputClient() const = 0;
+
+  // Sets the input panel policy in TSFTextStore so that input service
+  // could invoke the software input panel (SIP) on Windows.
+  // input_panel_policy_manual equals to false would make the SIP policy
+  // to automatic meaning TSF would raise/dismiss the SIP based on TSFTextStore
+  // focus and other heuristics that input service have added on Windows to
+  // provide a consistent behavior across all apps on Windows.
+  // input_panel_policy_manual equals to true would make the SIP policy to
+  // manual meaning TSF wouldn't raise/dismiss the SIP automatically. This is
+  // used to control the SIP behavior based on user interaction with the page.
+  virtual void SetInputPanelPolicy(bool input_panel_policy_manual) = 0;
 
  protected:
   // Uses GetInstance() instead.

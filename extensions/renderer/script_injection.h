@@ -30,7 +30,6 @@ template <class T> class Local;
 }
 
 namespace extensions {
-class AsyncScriptsRunInfo;
 struct ScriptsRunInfo;
 
 // A script wrapper which is aware of whether or not it is allowed to execute,
@@ -69,7 +68,6 @@ class ScriptInjection {
   InjectionResult TryToInject(
       UserScript::RunLocation current_location,
       ScriptsRunInfo* scripts_run_info,
-      scoped_refptr<AsyncScriptsRunInfo> async_run_info,
       const CompletionCallback& async_completion_callback);
 
   // Called when permission for the given injection has been granted.
@@ -100,13 +98,11 @@ class ScriptInjection {
 
   // Injects the script. Returns INJECTION_FINISHED if injection has finished,
   // otherwise INJECTION_BLOCKED.
-  InjectionResult Inject(ScriptsRunInfo* scripts_run_info,
-                         scoped_refptr<AsyncScriptsRunInfo> async_run_info);
+  InjectionResult Inject(ScriptsRunInfo* scripts_run_info);
 
   // Inject any JS scripts into the frame for the injection.
   void InjectJs(std::set<std::string>* executing_scripts,
-                size_t* num_injected_js_scripts,
-                scoped_refptr<AsyncScriptsRunInfo> async_run_info);
+                size_t* num_injected_js_scripts);
 
   // Inject any CSS source into the frame for the injection.
   void InjectCss(std::set<std::string>* injected_stylesheets,
@@ -150,7 +146,7 @@ class ScriptInjection {
   // A helper class to hold the render frame and watch for its deletion.
   std::unique_ptr<FrameWatcher> frame_watcher_;
 
-  base::WeakPtrFactory<ScriptInjection> weak_ptr_factory_;
+  base::WeakPtrFactory<ScriptInjection> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ScriptInjection);
 };

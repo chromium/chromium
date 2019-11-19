@@ -3,10 +3,21 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<!-- Note: If a synced pref is added/removed from this file, the method
+     |GetSyncedServicePrefNames| in
+     chrome/browser/unified_consent/unified_consent_service_factory.cc has to be
+     updated accordingly. -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <org.chromium.chrome.browser.preferences.SignInPreference
+    <PreferenceCategory
+        android:key="user_category"
+        android:title="@string/user"/>
+    <org.chromium.chrome.browser.preferences.sync.SignInPreference
         android:key="sign_in"
         android:title="@string/sign_in_to_chrome"/>
+
+    <org.chromium.chrome.browser.preferences.ChromeBasePreference
+        android:key="manage_your_google_account"
+        android:title="@string/manage_your_google_account"/>
 
     <PreferenceCategory
         android:key="sync_category"
@@ -14,8 +25,11 @@
 
         <Preference
             android:key="sync_error_card"
+            android:layout="@layout/account_management_account_row"/>
+        <Preference
+            android:key="sync_disabled_by_administrator"
             android:layout="@layout/account_management_account_row"
-            android:title="@string/sync_error_card_title"/>
+            android:title="@string/sync_is_disabled_by_administrator"/>
         <org.chromium.chrome.browser.preferences.ChromeSwitchPreference
             android:key="sync_requested"
             android:title="@string/sync_switch_title"
@@ -24,7 +38,7 @@
         <org.chromium.chrome.browser.preferences.ChromeBasePreference
             android:key="manage_sync"
             android:title="@string/manage_sync_title"
-            android:fragment="org.chromium.chrome.browser.preferences.ManageSyncPreferences"/>
+            android:fragment="org.chromium.chrome.browser.preferences.sync.ManageSyncPreferences"/>
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -65,9 +79,5 @@
             android:key="contextual_search"
             android:title="@string/contextual_search_title"
             android:fragment="org.chromium.chrome.browser.preferences.privacy.ContextualSearchPreferenceFragment"/>
-        <Preference
-            android:key="contextual_suggestions"
-            android:title="@string/prefs_contextual_suggestions"
-            android:fragment="org.chromium.chrome.browser.preferences.ContextualSuggestionsPreference"/>
     </PreferenceCategory>
 </PreferenceScreen>

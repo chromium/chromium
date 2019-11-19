@@ -15,6 +15,7 @@ config("components_download_implementation") {
 
 component("public") {
   sources = [
+    "all_download_event_notifier.h",
     "auto_resumption_handler.cc",
     "auto_resumption_handler.h",
     "base_file.h",
@@ -39,7 +40,6 @@ component("public") {
     "download_job.h",
     "download_job_factory.h",
     "download_path_reservation_tracker.h",
-    "download_request_handle_interface.h",
     "download_response_handler.h",
     "download_save_info.cc",
     "download_save_info.h",
@@ -48,8 +48,6 @@ component("public") {
     "download_stats.h",
     "download_task_runner.h",
     "download_ukm_helper.h",
-    "download_url_loader_factory_getter.h",
-    "download_url_loader_factory_getter_impl.h",
     "download_url_parameters.cc",
     "download_url_parameters.h",
     "download_utils.h",
@@ -57,26 +55,33 @@ component("public") {
     "input_stream.cc",
     "input_stream.h",
     "parallel_download_configs.h",
+    "quarantine_connection.h",
     "rate_estimator.h",
     "resume_mode.h",
+    "simple_download_manager.h",
+    "simple_download_manager_coordinator.h",
     "stream_handle_input_stream.h",
     "url_download_handler_factory.h",
     "url_download_request_handle.h",
+    "url_loader_factory_provider.h",
   ]
 
   configs += [ ":components_download_implementation" ]
 
   public_deps = [
     ":interfaces",
+    "//base",
     "//components/download/network",
     "//components/download/public/background_service:public",
+    "//components/services/quarantine/public/mojom",
+    "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
   ]
 
   deps = [
-    "//base",
     "//components/download/database",
     "//components/download/internal/common:internal",
+    "//components/services/quarantine:quarantine",
     "//crypto",
     "//net",
     "//services/metrics/public/cpp:metrics_cpp",
@@ -97,7 +102,7 @@ if (is_android) {
 
     deps = [
       "//base:base_java",
-      "//third_party/android_deps:android_support_annotations_java",
+      "//third_party/android_deps:androidx_annotation_annotation_java",
     ]
   }
 
@@ -131,12 +136,16 @@ source_set("test_support") {
     "mock_download_item_impl.h",
     "mock_input_stream.cc",
     "mock_input_stream.h",
+    "mock_simple_download_manager.cc",
+    "mock_simple_download_manager.h",
   ]
 
   public_deps = [
     ":public",
     "//base",
+    "//components/download/database",
     "//net",
+    "//services/service_manager/public/cpp:cpp",
     "//testing/gmock",
     "//url",
   ]

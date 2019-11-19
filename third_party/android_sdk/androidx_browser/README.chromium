@@ -1,0 +1,28 @@
+Name: AndroidX Browser
+Short Name: AndroidX Browser
+URL: https://chromium.googlesource.com/external/gob/android/platform/frameworks/support/browser
+Version: 226da6c0dfb265404d3a67305802ab70a9ca6c80
+License: Apache 2.0
+Security Critical: yes
+License Android Compatible: yes
+
+Description:
+This is a copy of the files from androidx.browser to be used in Chromium.
+This covers Custom Tabs and Trusted Web Activities. The original code (not the
+Chromium hosted modified copy) can be found at:
+https://android.googlesource.com/platform/frameworks/support/+/androidx-master-dev/browser/
+
+Local Modifications:
+Since Chromium does not yet rely on AndroidX (it still relies on the Android
+Support Library), various parts of androidx.browser have been omitted:
+- Browser Actions, which rely on androidx.concurrent.futures.ResolvableFuture.
+  Chromium has dropped support for Browser Actions so we don't need this code.
+- Tests, which rely on androidx.testutils.PollingCheck. New development on
+  the code in androidx.browser should happen in the AndroidX repository
+  (and will be automatically copied to the Chromium one).
+
+In addition, we don't compile with the included AndroidManifest.xml because
+in the AndroidX the minSdkVersion is set in build.gradle. Chromium's tooling
+can't read this and expects the minSdkVersion to be present in the manifest
+(which conversely Android's tooling complains about). If we omit the
+AndroidManifest, Chromium's tooling chooses a sensible default.

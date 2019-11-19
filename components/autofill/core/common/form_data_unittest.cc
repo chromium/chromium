@@ -24,7 +24,7 @@ void SerializeInVersion1Format(const FormData& form_data,
   pickle->WriteString16(form_data.name);
   base::string16 method(base::ASCIIToUTF16("POST"));
   pickle->WriteString16(method);
-  pickle->WriteString(form_data.origin.spec());
+  pickle->WriteString(form_data.url.spec());
   pickle->WriteString(form_data.action.spec());
   pickle->WriteBool(true);  // Used to be |user_submitted|, which was removed.
   pickle->WriteInt(static_cast<int>(form_data.fields.size()));
@@ -37,7 +37,7 @@ void SerializeInVersion2Format(const FormData& form_data,
                                base::Pickle* pickle) {
   pickle->WriteInt(2);
   pickle->WriteString16(form_data.name);
-  pickle->WriteString(form_data.origin.spec());
+  pickle->WriteString(form_data.url.spec());
   pickle->WriteString(form_data.action.spec());
   pickle->WriteBool(true);  // Used to be |user_submitted|, which was removed.
   pickle->WriteInt(static_cast<int>(form_data.fields.size()));
@@ -50,7 +50,7 @@ void SerializeInVersion3Format(const FormData& form_data,
                                base::Pickle* pickle) {
   pickle->WriteInt(3);
   pickle->WriteString16(form_data.name);
-  pickle->WriteString(form_data.origin.spec());
+  pickle->WriteString(form_data.url.spec());
   pickle->WriteString(form_data.action.spec());
   pickle->WriteBool(true);  // Used to be |user_submitted|, which was removed.
   pickle->WriteInt(static_cast<int>(form_data.fields.size()));
@@ -64,7 +64,7 @@ void SerializeInVersion4Format(const FormData& form_data,
                                base::Pickle* pickle) {
   pickle->WriteInt(4);
   pickle->WriteString16(form_data.name);
-  pickle->WriteString(form_data.origin.spec());
+  pickle->WriteString(form_data.url.spec());
   pickle->WriteString(form_data.action.spec());
   pickle->WriteInt(static_cast<int>(form_data.fields.size()));
   for (size_t i = 0; i < form_data.fields.size(); ++i) {
@@ -77,7 +77,7 @@ void SerializeInVersion5Format(const FormData& form_data,
                                base::Pickle* pickle) {
   pickle->WriteInt(5);
   pickle->WriteString16(form_data.name);
-  pickle->WriteString(form_data.origin.spec());
+  pickle->WriteString(form_data.url.spec());
   pickle->WriteString(form_data.action.spec());
   pickle->WriteInt(static_cast<int>(form_data.fields.size()));
   for (size_t i = 0; i < form_data.fields.size(); ++i) {
@@ -91,7 +91,7 @@ void SerializeInVersion6Format(const FormData& form_data,
                                base::Pickle* pickle) {
   pickle->WriteInt(6);
   pickle->WriteString16(form_data.name);
-  pickle->WriteString(form_data.origin.spec());
+  pickle->WriteString(form_data.url.spec());
   pickle->WriteString(form_data.action.spec());
   pickle->WriteInt(static_cast<int>(form_data.fields.size()));
   for (size_t i = 0; i < form_data.fields.size(); ++i) {
@@ -106,7 +106,7 @@ void SerializeInVersion6Format(const FormData& form_data,
 // (no version number).
 void SerializeIncorrectFormat(const FormData& form_data, base::Pickle* pickle) {
   pickle->WriteString16(form_data.name);
-  pickle->WriteString(form_data.origin.spec());
+  pickle->WriteString(form_data.url.spec());
   pickle->WriteString(form_data.action.spec());
   pickle->WriteBool(true);  // Used to be |user_submitted|, which was removed.
   pickle->WriteInt(static_cast<int>(form_data.fields.size()));
@@ -117,11 +117,11 @@ void SerializeIncorrectFormat(const FormData& form_data, base::Pickle* pickle) {
 
 void FillInDummyFormData(FormData* data) {
   data->name = base::ASCIIToUTF16("name");
-  data->origin = GURL("https://example.com");
+  data->url = GURL("https://example.com");
   data->action = GURL("https://example.com/action");
   data->main_frame_origin =
       url::Origin::Create(GURL("https://origin-example.com"));
-  data->is_form_tag = true;  // Default value.
+  data->is_form_tag = true;            // Default value.
   data->is_formless_checkout = false;  // Default value.
 
   FormFieldData field_data;
@@ -132,7 +132,7 @@ void FillInDummyFormData(FormData* data) {
   field_data.autocomplete_attribute = "off";
   field_data.max_length = 200;
   field_data.is_autofilled = true;
-  field_data.check_status = FormFieldData::CheckStatus::CHECKED;
+  field_data.check_status = FormFieldData::CheckStatus::kChecked;
   field_data.is_focusable = true;
   field_data.should_autocomplete = false;
   field_data.text_direction = base::i18n::RIGHT_TO_LEFT;
@@ -162,20 +162,6 @@ TEST(FormDataTest, SerializeAndDeserialize) {
   base::PickleIterator iter(pickle);
   FormData actual;
   EXPECT_TRUE(DeserializeFormData(&iter, &actual));
-
-  EXPECT_TRUE(actual.SameFormAs(data));
-}
-
-TEST(FormDataTest, SerializeAndDeserializeInStrings) {
-  FormData data;
-  FillInDummyFormData(&data);
-  data.is_form_tag = false;
-
-  std::string serialized_data;
-  SerializeFormDataToBase64String(data, &serialized_data);
-
-  FormData actual;
-  EXPECT_TRUE(DeserializeFormDataFromBase64String(serialized_data, &actual));
 
   EXPECT_TRUE(actual.SameFormAs(data));
 }

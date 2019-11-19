@@ -20,7 +20,7 @@ TEST(ScopedHistogramTimer, TwoTimersOneScope) {
 // - integral types
 // - unscoped enums
 // - scoped enums
-TEST(HistogramMacro, IntegralPsuedoEnumeration) {
+TEST(HistogramMacro, IntegralPseudoEnumeration) {
   UMA_HISTOGRAM_ENUMERATION("Test.FauxEnumeration", 1, 1000);
 }
 
@@ -52,6 +52,22 @@ TEST(HistogramMacro, ScopedEnumeration) {
   };
   UMA_HISTOGRAM_ENUMERATION("Test.ScopedEnumeration2", TestEnum2::SECOND_VALUE,
                             TestEnum2::MAX_ENTRIES);
+}
+
+// Compile tests for UMA_HISTOGRAM_ENUMERATION when the value type is:
+// - a const reference to an enum
+// - a non-const reference to an enum
+TEST(HistogramMacro, EnumerationConstRef) {
+  enum class TestEnum { kValue, kMaxValue = kValue };
+  const TestEnum& value_ref = TestEnum::kValue;
+  UMA_HISTOGRAM_ENUMERATION("Test.ScopedEnumeration3", value_ref);
+}
+
+TEST(HistogramMacro, EnumerationNonConstRef) {
+  enum class TestEnum { kValue, kMaxValue = kValue };
+  TestEnum value = TestEnum::kValue;
+  TestEnum& value_ref = value;
+  UMA_HISTOGRAM_ENUMERATION("Test.ScopedEnumeration4", value_ref);
 }
 
 }  // namespace base

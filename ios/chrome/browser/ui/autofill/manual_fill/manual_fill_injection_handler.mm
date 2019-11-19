@@ -13,7 +13,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
-#include "components/autofill/ios/browser/autofill_switches.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/js_suggestion_manager.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
@@ -23,11 +22,11 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/form_observer_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
-#include "ios/web/public/web_state/web_frame.h"
-#include "ios/web/public/web_state/web_frame_util.h"
-#include "ios/web/public/web_state/web_frames_manager.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#include "ios/web/public/js_messaging/web_frame_util.h"
+#include "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/web_state.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
 
@@ -69,9 +68,6 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
 // The last seen focused element identifier.
 @property(nonatomic, assign) std::string lastFocusedElementIdentifier;
 
-// The form name of the last seen focused element.
-@property(nonatomic, assign) std::string lastFocusedFormName;
-
 // The view controller this object was initialized with.
 @property(weak, nonatomic, nullable, readonly)
     UIViewController* baseViewController;
@@ -97,7 +93,7 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
   return self;
 }
 
-#pragma mark - ManualFillContentDelegate
+#pragma mark - ManualFillContentInjector
 
 - (BOOL)canUserInjectInPasswordField:(BOOL)passwordField
                        requiresHTTPS:(BOOL)requiresHTTPS {
@@ -125,15 +121,6 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
   }
 }
 
-- (void)generateAndOfferPassword {
-  if (![self isLastFocusedElementPasswordField])
-    return;
-  web::WebState* webState = self.webStateList->GetActiveWebState();
-  PasswordTabHelper::FromWebState(webState)->GenerateAndOfferPassword(
-      base::SysUTF8ToNSString(self.lastFocusedFormName),
-      base::SysUTF8ToNSString(self.lastFocusedElementIdentifier), nil);
-}
-
 #pragma mark - FormActivityObserver
 
 - (void)webState:(web::WebState*)webState
@@ -146,14 +133,11 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
       autofill::IsContextSecureForWebState(webState);
   self.lastFocusedElementPasswordField = params.field_type == "password";
   self.lastFocusedElementIdentifier = params.field_identifier;
-  self.lastFocusedFormName = params.form_name;
-  if (autofill::switches::IsAutofillIFrameMessagingEnabled()) {
-    DCHECK(frame);
-    self.lastFocusedElementFrameIdentifier = frame->GetFrameId();
-    const GURL frameSecureOrigin = frame->GetSecurityOrigin();
-    if (!frameSecureOrigin.SchemeIsCryptographic()) {
-      self.lastFocusedElementSecure = NO;
-    }
+  DCHECK(frame);
+  self.lastFocusedElementFrameIdentifier = frame->GetFrameId();
+  const GURL frameSecureOrigin = frame->GetSecurityOrigin();
+  if (!frameSecureOrigin.SchemeIsCryptographic()) {
+    self.lastFocusedElementSecure = NO;
   }
 }
 
@@ -172,7 +156,7 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
       [self.injectionReceiver instanceOfClass:[JsSuggestionManager class]]);
   web::WebState* webState = self.webStateList->GetActiveWebState();
   if (webState) {
-    [manager setWebFramesManager:web::WebFramesManager::FromWebState(webState)];
+    [manager setWebFramesManager:webState->GetWebFramesManager()];
   }
   return manager;
 }
@@ -181,41 +165,28 @@ const int64_t kJavaScriptExecutionTimeoutInSeconds = 1;
 
 // Injects the passed string to the active field and jumps to the next field.
 - (void)fillLastSelectedFieldWithString:(NSString*)string {
-  if (autofill::switches::IsAutofillIFrameMessagingEnabled()) {
-    web::WebState* activeWebState = self.webStateList->GetActiveWebState();
-    if (!activeWebState) {
-      return;
-    }
-    web::WebFrame* activeWebFrame = web::GetWebFrameWithId(
-        activeWebState, self.lastFocusedElementFrameIdentifier);
-    if (!activeWebFrame || !activeWebFrame->CanCallJavaScriptFunction()) {
-      return;
-    }
-
-    base::DictionaryValue data = base::DictionaryValue();
-    data.SetString("identifier", self.lastFocusedElementIdentifier);
-    data.SetString("value", base::SysNSStringToUTF16(string));
-    std::vector<base::Value> parameters;
-    parameters.push_back(std::move(data));
-
-    activeWebFrame->CallJavaScriptFunction(
-        "autofill.fillActiveFormField", parameters,
-        base::BindOnce(^(const base::Value*) {
-          [self jumpToNextField];
-        }),
-        base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
+  web::WebState* activeWebState = self.webStateList->GetActiveWebState();
+  if (!activeWebState) {
     return;
   }
-  // Frame messaging is disabled, use the old injection reciever.
-  NSString* javaScriptQuery =
-      [NSString stringWithFormat:
-                    @"__gCrWeb.fill.setInputElementValue(\"%@\", "
-                    @"document.activeElement);",
-                    string];
-  [self.injectionReceiver executeJavaScript:javaScriptQuery
-                          completionHandler:^(id, NSError*) {
-                            [self jumpToNextField];
-                          }];
+  web::WebFrame* activeWebFrame = web::GetWebFrameWithId(
+      activeWebState, self.lastFocusedElementFrameIdentifier);
+  if (!activeWebFrame || !activeWebFrame->CanCallJavaScriptFunction()) {
+    return;
+  }
+
+  base::DictionaryValue data = base::DictionaryValue();
+  data.SetString("identifier", self.lastFocusedElementIdentifier);
+  data.SetString("value", base::SysNSStringToUTF16(string));
+  std::vector<base::Value> parameters;
+  parameters.push_back(std::move(data));
+
+  activeWebFrame->CallJavaScriptFunction(
+      "autofill.fillActiveFormField", parameters,
+      base::BindOnce(^(const base::Value*) {
+        [self jumpToNextField];
+      }),
+      base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
 }
 
 // Attempts to jump to the next field in the current form.

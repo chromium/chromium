@@ -19,10 +19,10 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_host_observer.h"
@@ -47,14 +47,15 @@ class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    PowerManagerClient::Initialize();
+    PowerManagerClient::InitializeFake();
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
-    extension_event_observer_ = std::make_unique<ExtensionEventObserver>();
-    test_api_ = extension_event_observer_->CreateTestApi();
 
     // Must be called from ::testing::Test::SetUp.
     ASSERT_TRUE(profile_manager_->SetUp());
+
+    extension_event_observer_ = std::make_unique<ExtensionEventObserver>();
+    test_api_ = extension_event_observer_->CreateTestApi();
 
     const char kUserProfile[] = "profile1@example.com";
     const AccountId account_id(AccountId::FromUserEmail(kUserProfile));
@@ -62,9 +63,8 @@ class ExtensionEventObserverTest : public ChromeRenderViewHostTestHarness {
     fake_user_manager_->LoginUser(account_id);
     profile_ =
         profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
-
-    profile_manager_->SetLoggedIn(true);
   }
+
   void TearDown() override {
     extension_event_observer_.reset();
     profile_ = NULL;
@@ -142,22 +142,22 @@ TEST_F(ExtensionEventObserverTest, BasicSuspendAndDarkSuspend) {
       power_manager::SuspendImminent_Reason_OTHER);
   EXPECT_EQ(
       1,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   EXPECT_TRUE(test_api_->MaybeRunSuspendReadinessCallback());
   EXPECT_EQ(
       0,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   FakePowerManagerClient::Get()->SendDarkSuspendImminent();
   EXPECT_EQ(
       1,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   EXPECT_TRUE(test_api_->MaybeRunSuspendReadinessCallback());
   EXPECT_EQ(
       0,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 }
 
 // Tests that the ExtensionEventObserver properly handles a canceled suspend
@@ -167,7 +167,7 @@ TEST_F(ExtensionEventObserverTest, CanceledSuspend) {
       power_manager::SuspendImminent_Reason_OTHER);
   EXPECT_EQ(
       1,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   FakePowerManagerClient::Get()->SendSuspendDone();
   EXPECT_FALSE(test_api_->MaybeRunSuspendReadinessCallback());
@@ -193,12 +193,12 @@ TEST_F(ExtensionEventObserverTest, PushMessagesDelaySuspend) {
   EXPECT_TRUE(test_api_->MaybeRunSuspendReadinessCallback());
   EXPECT_EQ(
       1,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   extension_event_observer_->OnBackgroundEventAcked(host, kSuspendPushId);
   EXPECT_EQ(
       0,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   // Now test receiving the suspend attempt before the push message.
   const int kDarkSuspendPushId = 56674;
@@ -209,12 +209,12 @@ TEST_F(ExtensionEventObserverTest, PushMessagesDelaySuspend) {
   EXPECT_TRUE(test_api_->MaybeRunSuspendReadinessCallback());
   EXPECT_EQ(
       1,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   extension_event_observer_->OnBackgroundEventAcked(host, kDarkSuspendPushId);
   EXPECT_EQ(
       0,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   // Test that non-push messages do not delay the suspend.
   const int kNonPushId = 5687;
@@ -225,7 +225,7 @@ TEST_F(ExtensionEventObserverTest, PushMessagesDelaySuspend) {
   EXPECT_TRUE(test_api_->MaybeRunSuspendReadinessCallback());
   EXPECT_EQ(
       0,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 }
 
 // Tests that messages sent for apps that don't use GCM are ignored.
@@ -241,7 +241,7 @@ TEST_F(ExtensionEventObserverTest, IgnoresNonGCMApps) {
   EXPECT_TRUE(test_api_->MaybeRunSuspendReadinessCallback());
   EXPECT_EQ(
       0,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 }
 
 // Tests that network requests started by an app while it is processing a push
@@ -263,7 +263,7 @@ TEST_F(ExtensionEventObserverTest, NetworkRequestsMayDelaySuspend) {
   EXPECT_TRUE(test_api_->MaybeRunSuspendReadinessCallback());
   EXPECT_EQ(
       0,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   // Test that network requests started while a push message is pending delay
   // the suspend even after the push message has been acked.
@@ -276,18 +276,18 @@ TEST_F(ExtensionEventObserverTest, NetworkRequestsMayDelaySuspend) {
   EXPECT_TRUE(test_api_->MaybeRunSuspendReadinessCallback());
   EXPECT_EQ(
       1,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   extension_event_observer_->OnNetworkRequestStarted(host, kNetworkRequestId);
   extension_event_observer_->OnBackgroundEventAcked(host, kPushMessageId);
   EXPECT_EQ(
       1,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   extension_event_observer_->OnNetworkRequestDone(host, kNetworkRequestId);
   EXPECT_EQ(
       0,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 }
 
 // Tests that any outstanding push messages or network requests for an
@@ -320,7 +320,7 @@ TEST_F(ExtensionEventObserverTest, DeletedExtensionHostDoesNotBlockSuspend) {
   EXPECT_TRUE(test_api_->MaybeRunSuspendReadinessCallback());
   EXPECT_EQ(
       0,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 }
 
 // Tests that the ExtensionEventObserver does not delay suspend attempts when it
@@ -341,20 +341,20 @@ TEST_F(ExtensionEventObserverTest, DoesNotDelaySuspendWhenDisabled) {
       power_manager::SuspendImminent_Reason_OTHER);
   EXPECT_EQ(
       1,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   extension_event_observer_->SetShouldDelaySuspend(false);
   EXPECT_FALSE(test_api_->MaybeRunSuspendReadinessCallback());
   EXPECT_EQ(
       0,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 
   // Test that the ExtensionEventObserver does not delay suspend attempts when
   // it is disabled.
   FakePowerManagerClient::Get()->SendDarkSuspendImminent();
   EXPECT_EQ(
       0,
-      FakePowerManagerClient::Get()->GetNumPendingSuspendReadinessCallbacks());
+      FakePowerManagerClient::Get()->num_pending_suspend_readiness_callbacks());
 }
 
 }  // namespace chromeos

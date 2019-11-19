@@ -14,7 +14,6 @@
 #endif
 
 #include "base/stl_util.h"
-#include "chrome/browser/media/router/data_decoder_util.h"
 #include "chrome/browser/media/router/discovery/dial/device_description_fetcher.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_device_description_parser.h"
 #include "chrome/browser/media/router/media_router_metrics.h"
@@ -80,12 +79,9 @@ ParsingError ValidateParsedDeviceDescription(
 }  // namespace
 
 DeviceDescriptionService::DeviceDescriptionService(
-    DataDecoder* data_decoder,
     const DeviceDescriptionParseSuccessCallback& success_cb,
     const DeviceDescriptionParseErrorCallback& error_cb)
-    : success_cb_(success_cb),
-      error_cb_(error_cb),
-      device_description_parser_(data_decoder) {}
+    : success_cb_(success_cb), error_cb_(error_cb) {}
 
 DeviceDescriptionService::~DeviceDescriptionService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

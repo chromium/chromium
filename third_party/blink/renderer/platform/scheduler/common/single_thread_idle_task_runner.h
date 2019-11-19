@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SINGLE_THREAD_IDLE_TASK_RUNNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SINGLE_THREAD_IDLE_TASK_RUNNER_H_
 
-#include <map>
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
@@ -15,7 +13,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace base {
 namespace trace_event {
@@ -44,7 +42,7 @@ class SingleThreadIdleTaskRunner
   using IdleTask = base::OnceCallback<void(base::TimeTicks)>;
 
   // Used to request idle task deadlines and signal posting of idle tasks.
-  class BLINK_PLATFORM_EXPORT Delegate {
+  class PLATFORM_EXPORT Delegate {
    public:
     Delegate();
     virtual ~Delegate();
@@ -109,7 +107,7 @@ class SingleThreadIdleTaskRunner
   Delegate* delegate_;                              // NOT OWNED
   base::trace_event::BlameContext* blame_context_;  // Not owned.
   base::WeakPtr<SingleThreadIdleTaskRunner> weak_scheduler_ptr_;
-  base::WeakPtrFactory<SingleThreadIdleTaskRunner> weak_factory_;
+  base::WeakPtrFactory<SingleThreadIdleTaskRunner> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(SingleThreadIdleTaskRunner);
 };
 

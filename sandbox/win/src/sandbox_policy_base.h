@@ -12,13 +12,13 @@
 
 #include <list>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
-#include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/app_container_profile_base.h"
 #include "sandbox/win/src/crosscall_server.h"
@@ -32,6 +32,7 @@
 namespace sandbox {
 
 class LowLevelPolicy;
+class PolicyDiagnostic;
 class TargetProcess;
 struct PolicyGlobal;
 
@@ -49,7 +50,7 @@ class PolicyBase final : public TargetPolicy {
   JobLevel GetJobLevel() const override;
   ResultCode SetJobMemoryLimit(size_t memory_limit) override;
   ResultCode SetAlternateDesktop(bool alternate_winstation) override;
-  base::string16 GetAlternateDesktop() const override;
+  std::wstring GetAlternateDesktop() const override;
   ResultCode CreateAlternateDesktop(bool alternate_winstation) override;
   void DestroyAlternateDesktop() override;
   ResultCode SetIntegrityLevel(IntegrityLevel integrity_level) override;
@@ -68,8 +69,8 @@ class PolicyBase final : public TargetPolicy {
                      Semantics semantics,
                      const wchar_t* pattern) override;
   ResultCode AddDllToUnload(const wchar_t* dll_name) override;
-  ResultCode AddKernelObjectToClose(const base::char16* handle_type,
-                                    const base::char16* handle_name) override;
+  ResultCode AddKernelObjectToClose(const wchar_t* handle_type,
+                                    const wchar_t* handle_name) override;
   void AddHandleToShare(HANDLE handle) override;
   void SetLockdownDefaultDacl() override;
   void SetEnableOPMRedirection() override;
@@ -104,7 +105,7 @@ class PolicyBase final : public TargetPolicy {
   // with the job.
   bool OnJobEmpty(HANDLE job);
 
-  EvalResult EvalPolicy(int service, CountedParameterSetBase* params);
+  EvalResult EvalPolicy(IpcTag service, CountedParameterSetBase* params);
 
   HANDLE GetStdoutHandle();
   HANDLE GetStderrHandle();
@@ -113,6 +114,8 @@ class PolicyBase final : public TargetPolicy {
   const base::HandlesToInheritVector& GetHandlesBeingShared();
 
  private:
+  // Allow PolicyInfo to snapshot PolicyBase for diagnostics.
+  friend class PolicyDiagnostic;
   ~PolicyBase();
 
   // Sets up interceptions for a new target.
@@ -156,7 +159,7 @@ class PolicyBase final : public TargetPolicy {
   // Memory structure that stores the low level policy.
   PolicyGlobal* policy_;
   // The list of dlls to unload in the target process.
-  std::vector<base::string16> blacklisted_dlls_;
+  std::vector<std::wstring> blocklisted_dlls_;
   // This is a map of handle-types to names that we need to close in the
   // target process. A null set means we need to close all handles of the
   // given type.

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "net/reporting/reporting_cache.h"
-#include "net/reporting/reporting_client.h"
+#include "net/reporting/reporting_context.h"
 #include "net/reporting/reporting_report.h"
 #include "net/reporting/reporting_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -46,11 +46,9 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
                        tick_clock()->NowTicks(), 0);
   }
 
-  void SetClient(const url::Origin& origin, const GURL& endpoint) {
-    cache()->SetClient(
-        origin, endpoint, ReportingClient::Subdomains::EXCLUDE, kGroup_,
-        tick_clock()->NowTicks() + base::TimeDelta::FromDays(7),
-        ReportingClient::kDefaultPriority, ReportingClient::kDefaultWeight);
+  void SetEndpoint(const url::Origin& origin, const GURL& endpoint) {
+    SetEndpointInCache(origin, kGroup_, endpoint,
+                       base::Time::Now() + base::TimeDelta::FromDays(7));
   }
 
   static bool HostIs(std::string host, const GURL& url) {
@@ -61,12 +59,6 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
     std::vector<const ReportingReport*> reports;
     cache()->GetReports(&reports);
     return reports.size();
-  }
-
-  size_t client_count() {
-    std::vector<const ReportingClient*> clients;
-    cache()->GetClients(&clients);
-    return clients.size();
   }
 
   const GURL kUrl1_ = GURL("https://origin1/path");
@@ -83,64 +75,64 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveNothing) {
   AddReport(kUrl1_);
   AddReport(kUrl2_);
 
-  SetClient(kOrigin1_, kEndpoint_);
-  SetClient(kOrigin2_, kEndpoint_);
+  SetEndpoint(kOrigin1_, kEndpoint_);
+  SetEndpoint(kOrigin2_, kEndpoint_);
 
   RemoveBrowsingData(/* remove_reports= */ false, /* remove_clients= */ false,
                      /* host= */ "");
   EXPECT_EQ(2u, report_count());
-  EXPECT_EQ(2u, client_count());
+  EXPECT_EQ(2u, cache()->GetEndpointCount());
 }
 
 TEST_F(ReportingBrowsingDataRemoverTest, RemoveAllReports) {
   AddReport(kUrl1_);
   AddReport(kUrl2_);
 
-  SetClient(kOrigin1_, kEndpoint_);
-  SetClient(kOrigin2_, kEndpoint_);
+  SetEndpoint(kOrigin1_, kEndpoint_);
+  SetEndpoint(kOrigin2_, kEndpoint_);
 
   RemoveBrowsingData(/* remove_reports= */ true, /* remove_clients= */ false,
                      /* host= */ "");
   EXPECT_EQ(0u, report_count());
-  EXPECT_EQ(2u, client_count());
+  EXPECT_EQ(2u, cache()->GetEndpointCount());
 }
 
 TEST_F(ReportingBrowsingDataRemoverTest, RemoveAllClients) {
   AddReport(kUrl1_);
   AddReport(kUrl2_);
 
-  SetClient(kOrigin1_, kEndpoint_);
-  SetClient(kOrigin2_, kEndpoint_);
+  SetEndpoint(kOrigin1_, kEndpoint_);
+  SetEndpoint(kOrigin2_, kEndpoint_);
 
   RemoveBrowsingData(/* remove_reports= */ false, /* remove_clients= */ true,
                      /* host= */ "");
   EXPECT_EQ(2u, report_count());
-  EXPECT_EQ(0u, client_count());
+  EXPECT_EQ(0u, cache()->GetEndpointCount());
 }
 
 TEST_F(ReportingBrowsingDataRemoverTest, RemoveAllReportsAndClients) {
   AddReport(kUrl1_);
   AddReport(kUrl2_);
 
-  SetClient(kOrigin1_, kEndpoint_);
-  SetClient(kOrigin2_, kEndpoint_);
+  SetEndpoint(kOrigin1_, kEndpoint_);
+  SetEndpoint(kOrigin2_, kEndpoint_);
 
   RemoveBrowsingData(/* remove_reports= */ true, /* remove_clients= */ true,
                      /* host= */ "");
   EXPECT_EQ(0u, report_count());
-  EXPECT_EQ(0u, client_count());
+  EXPECT_EQ(0u, cache()->GetEndpointCount());
 }
 
 TEST_F(ReportingBrowsingDataRemoverTest, RemoveSomeReports) {
   AddReport(kUrl1_);
   AddReport(kUrl2_);
 
-  SetClient(kOrigin1_, kEndpoint_);
-  SetClient(kOrigin2_, kEndpoint_);
+  SetEndpoint(kOrigin1_, kEndpoint_);
+  SetEndpoint(kOrigin2_, kEndpoint_);
 
   RemoveBrowsingData(/* remove_reports= */ true, /* remove_clients= */ false,
                      /* host= */ kUrl1_.host());
-  EXPECT_EQ(2u, client_count());
+  EXPECT_EQ(2u, cache()->GetEndpointCount());
 
   std::vector<const ReportingReport*> reports;
   cache()->GetReports(&reports);
@@ -152,14 +144,14 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveSomeClients) {
   AddReport(kUrl1_);
   AddReport(kUrl2_);
 
-  SetClient(kOrigin1_, kEndpoint_);
-  SetClient(kOrigin2_, kEndpoint_);
+  SetEndpoint(kOrigin1_, kEndpoint_);
+  SetEndpoint(kOrigin2_, kEndpoint_);
 
   RemoveBrowsingData(/* remove_reports= */ false, /* remove_clients= */ true,
                      /* host= */ kUrl1_.host());
   EXPECT_EQ(2u, report_count());
-  EXPECT_FALSE(FindClientInCache(cache(), kOrigin1_, kEndpoint_) != nullptr);
-  EXPECT_TRUE(FindClientInCache(cache(), kOrigin2_, kEndpoint_) != nullptr);
+  EXPECT_FALSE(FindEndpointInCache(kOrigin1_, kGroup_, kEndpoint_));
+  EXPECT_TRUE(FindEndpointInCache(kOrigin2_, kGroup_, kEndpoint_));
 }
 
 }  // namespace

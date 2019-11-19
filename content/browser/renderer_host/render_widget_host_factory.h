@@ -6,10 +6,12 @@
 #define CONTENT_BROWSER_RENDERER_HOST_RENDER_WIDGET_HOST_FACTORY_H_
 
 #include <stdint.h>
+#include <memory>
 
 #include "base/macros.h"
 #include "content/common/content_export.h"
 #include "content/common/widget.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace content {
 class RenderProcessHost;
@@ -24,11 +26,12 @@ class RenderWidgetHostFactory {
   // Creates a RenderWidgetHostImpl using the currently registered factory, or
   // the default one if no factory is registered. Ownership of the returned
   // pointer will be passed to the caller.
-  static RenderWidgetHostImpl* Create(RenderWidgetHostDelegate* delegate,
-                                      RenderProcessHost* process,
-                                      int32_t routing_id,
-                                      mojom::WidgetPtr widget_interface,
-                                      bool hidden);
+  static std::unique_ptr<RenderWidgetHostImpl> Create(
+      RenderWidgetHostDelegate* delegate,
+      RenderProcessHost* process,
+      int32_t routing_id,
+      mojo::PendingRemote<mojom::Widget> widget_interface,
+      bool hidden);
 
   // Returns true if there is currently a globally-registered factory.
   static bool has_factory() { return !!factory_; }
@@ -39,11 +42,11 @@ class RenderWidgetHostFactory {
 
   // You can derive from this class and specify an implementation for this
   // function to create a different kind of RenderWidgetHostImpl for testing.
-  virtual RenderWidgetHostImpl* CreateRenderWidgetHost(
+  virtual std::unique_ptr<RenderWidgetHostImpl> CreateRenderWidgetHost(
       RenderWidgetHostDelegate* delegate,
       RenderProcessHost* process,
       int32_t routing_id,
-      mojom::WidgetPtr widget_interface,
+      mojo::PendingRemote<mojom::Widget> widget_interface,
       bool hidden) = 0;
 
   // Registers your factory to be called when new RenderWidgetHostImpls are

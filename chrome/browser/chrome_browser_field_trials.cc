@@ -10,22 +10,23 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/field_trial.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
 #include "chrome/browser/metrics/chrome_metrics_services_manager_client.h"
-#include "chrome/browser/metrics/persistent_histograms.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/persistent_histograms.h"
 #include "components/ukm/ukm_recorder_impl.h"
 #include "components/version_info/version_info.h"
 
 #if defined(OS_ANDROID)
-#include "base/android/library_loader/library_loader_hooks.h"
-#include "base/android/reached_code_profiler.h"
+#include "chrome/browser/android/feature_utilities.h"
 #include "chrome/browser/chrome_browser_field_trials_mobile.h"
 #else
 #include "chrome/browser/chrome_browser_field_trials_desktop.h"
@@ -55,7 +56,10 @@ void CreateFallbackUkmSamplingTrialIfNeeded(base::FeatureList* feature_list) {
 
 }  // namespace
 
-ChromeBrowserFieldTrials::ChromeBrowserFieldTrials() {}
+ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
+    : local_state_(local_state) {
+  DCHECK(local_state_);
+}
 
 ChromeBrowserFieldTrials::~ChromeBrowserFieldTrials() {
 }
@@ -90,32 +94,21 @@ void ChromeBrowserFieldTrials::SetupFeatureControllingFieldTrials(
 
 void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
 #if defined(OS_ANDROID)
-  static constexpr char kEnabledGroup[] = "Enabled";
-  static constexpr char kDisabledGroup[] = "Disabled";
-
-  static constexpr char kOrderfileOptimizationTrial[] =
-      "AndroidOrderfileOptimization";
-  if (base::android::IsUsingOrderfileOptimization()) {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        kOrderfileOptimizationTrial, kEnabledGroup);
-  } else {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        kOrderfileOptimizationTrial, kDisabledGroup);
-  }
-
   static constexpr char kReachedCodeProfilerTrial[] =
-      "ReachedCodeProfilerSynthetic";
-  if (base::android::IsReachedCodeProfilerEnabled()) {
+      "ReachedCodeProfilerSynthetic2";
+  std::string reached_code_profiler_group =
+      chrome::android::GetReachedCodeProfilerTrialGroup();
+  if (!reached_code_profiler_group.empty()) {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        kReachedCodeProfilerTrial, kEnabledGroup);
-  } else {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        kReachedCodeProfilerTrial, kDisabledGroup);
+        kReachedCodeProfilerTrial, reached_code_profiler_group);
   }
 #endif  // defined(OS_ANDROID)
 }
 
 void ChromeBrowserFieldTrials::InstantiateDynamicTrials() {
   // Persistent histograms must be enabled as soon as possible.
-  InstantiatePersistentHistograms();
+  base::FilePath metrics_dir;
+  if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
+    InstantiatePersistentHistograms(metrics_dir);
+  }
 }

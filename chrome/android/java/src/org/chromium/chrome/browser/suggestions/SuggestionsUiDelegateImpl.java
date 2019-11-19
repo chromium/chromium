@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.suggestions;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.chrome.browser.native_page.NativePageHost;

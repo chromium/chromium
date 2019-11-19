@@ -4,14 +4,19 @@
 
 #include "chromeos/services/assistant/platform/audio_input_provider_impl.h"
 
+#include "chromeos/services/assistant/public/features.h"
+
 namespace chromeos {
 namespace assistant {
 
 AudioInputProviderImpl::AudioInputProviderImpl(
-    service_manager::Connector* connector,
-    const std::string& input_device_id,
-    const std::string& hotword_device_id)
-    : audio_input_(connector, input_device_id, hotword_device_id) {}
+    mojom::Client* client,
+    PowerManagerClient* power_manager_client,
+    CrasAudioHandler* cras_audio_handler)
+    : audio_input_(client,
+                   power_manager_client,
+                   cras_audio_handler,
+                   /*input_device_id=*/std::string()) {}
 
 AudioInputProviderImpl::~AudioInputProviderImpl() = default;
 
@@ -20,7 +25,9 @@ AudioInputImpl& AudioInputProviderImpl::GetAudioInput() {
 }
 
 int64_t AudioInputProviderImpl::GetCurrentAudioTime() {
-  // TODO(xiaohuic): see if we can support real timestamp.
+  if (features::IsAudioEraserEnabled())
+    return base::TimeTicks::Now().since_origin().InMicroseconds();
+
   return 0;
 }
 
@@ -38,6 +45,10 @@ void AudioInputProviderImpl::SetDeviceId(const std::string& device_id) {
 
 void AudioInputProviderImpl::SetHotwordDeviceId(const std::string& device_id) {
   audio_input_.SetHotwordDeviceId(device_id);
+}
+
+void AudioInputProviderImpl::SetDspHotwordLocale(std::string pref_locale) {
+  audio_input_.SetDspHotwordLocale(pref_locale);
 }
 
 }  // namespace assistant

@@ -5,14 +5,16 @@
 
 '''Unit tests for grit.tclib'''
 
+from __future__ import print_function
 
 import sys
 import os.path
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 
-import types
 import unittest
+
+import six
 
 from grit import tclib
 
@@ -25,14 +27,14 @@ class TclibUnittest(unittest.TestCase):
     msg = tclib.Message(text=u'Hello Earthlings',
                         description='Greetings\n\t      message')
     self.failUnlessEqual(msg.GetPresentableContent(), 'Hello Earthlings')
-    self.failUnless(isinstance(msg.GetPresentableContent(), types.StringTypes))
+    self.failUnless(isinstance(msg.GetPresentableContent(), six.string_types))
     self.failUnlessEqual(msg.GetDescription(), 'Greetings message')
 
   def testGetAttr(self):
     msg = tclib.Message()
     msg.AppendText(u'Hello')  # Tests __getattr__
     self.failUnless(msg.GetPresentableContent() == 'Hello')
-    self.failUnless(isinstance(msg.GetPresentableContent(), types.StringTypes))
+    self.failUnless(isinstance(msg.GetPresentableContent(), six.string_types))
 
   def testAll(self):
     text = u'Howdie USERNAME'
@@ -42,7 +44,7 @@ class TclibUnittest(unittest.TestCase):
 
     trans = tclib.Translation(text=text, placeholders=phs)
     self.failUnless(trans.GetPresentableContent() == 'Howdie USERNAME')
-    self.failUnless(isinstance(trans.GetPresentableContent(), types.StringTypes))
+    self.failUnless(isinstance(trans.GetPresentableContent(), six.string_types))
 
   def testUnicodeReturn(self):
     text = u'\u00fe'
@@ -64,7 +66,7 @@ class TclibUnittest(unittest.TestCase):
     transl = tclib.Translation(text=msg.GetPresentableContent(),
                                placeholders=msg.GetPlaceholders())
     content = transl.GetContent()
-    self.failUnless(isinstance(content[3], types.UnicodeType))
+    self.failUnless(isinstance(content[3], six.string_types))
 
   def testFingerprint(self):
     # This has Windows line endings.  That is on purpose.
@@ -129,7 +131,7 @@ class TclibUnittest(unittest.TestCase):
       'AddinMenus=notegdsplugin.dll\r\n'
       '\r\n'
       'If the notesgdsplugin.dll file is not in the application directory\r\n'
-      '(e.g., C:\Program Files\Lotus\Notes) after Google Desktop \r\n'
+      r'(e.g., C:\Program Files\Lotus\Notes) after Google Desktop \r\n'
       'installation, it is likely that Notes was not installed correctly. \r\n'
       '\r\n'
       'Only local databases can be indexed.  If they can be determined, \r\n'
@@ -154,7 +156,7 @@ class TclibUnittest(unittest.TestCase):
       'you can get to the preferences, add the following line to your \r\n'
       'notes.ini file:\r\n'
       'GDSNoIndexHistory=1\r\n')
-    self.failUnless(id == '3138901326664699350')
+    self.assertEqual(id, '7660964495923572726')
 
   def testPlaceholderNameChecking(self):
     try:

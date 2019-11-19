@@ -19,7 +19,7 @@
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
-#include "components/password_manager/core/browser/password_manager.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -49,9 +49,8 @@ const char kEnterpriseURL[] = "https://enterprise.test/";
 
 class FakePasswordManagerClient : public StubPasswordManagerClient {
  public:
-  FakePasswordManagerClient()
-      : password_store_(new testing::NiceMock<MockPasswordStore>),
-        is_incognito_(false) {
+  explicit FakePasswordManagerClient(signin::IdentityManager* identity_manager)
+      : identity_manager_(identity_manager) {
 #if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
     // Initializes and configures prefs.
     prefs_ = std::make_unique<TestingPrefServiceSimple>();
@@ -71,8 +70,11 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
   const GURL& GetLastCommittedEntryURL() const override {
     return last_committed_entry_url_;
   }
-  MockPasswordStore* GetPasswordStore() const override {
+  MockPasswordStore* GetProfilePasswordStore() const override {
     return password_store_.get();
+  }
+  signin::IdentityManager* GetIdentityManager() override {
+    return identity_manager_;
   }
 
   void set_last_committed_entry_url(const char* url_spec) {
@@ -89,8 +91,10 @@ class FakePasswordManagerClient : public StubPasswordManagerClient {
 
  private:
   GURL last_committed_entry_url_;
-  scoped_refptr<testing::NiceMock<MockPasswordStore>> password_store_;
-  bool is_incognito_;
+  scoped_refptr<testing::NiceMock<MockPasswordStore>> password_store_ =
+      new testing::NiceMock<MockPasswordStore>;
+  bool is_incognito_ = false;
+  signin::IdentityManager* identity_manager_;
 #if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
 #endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
@@ -106,20 +110,17 @@ class CredentialsFilterTest : public SyncUsernameTestBase {
   enum class LoginState { NEW, EXISTING };
 
   CredentialsFilterTest()
-      : password_manager_(&client_),
+      : client_(identity_manager()),
         pending_(SimpleGaiaForm("user@gmail.com")),
-        form_manager_(&password_manager_,
-                      &client_,
+        form_manager_(&client_,
                       driver_.AsWeakPtr(),
-                      pending_,
+                      pending_.form_data,
+                      &fetcher_,
                       std::make_unique<StubFormSaver>(),
-                      &fetcher_),
+                      nullptr /* metrics_recorder */),
         filter_(&client_,
                 base::BindRepeating(&SyncUsernameTestBase::sync_service,
-                                    base::Unretained(this)),
-                base::BindRepeating(&SyncUsernameTestBase::identity_manager,
                                     base::Unretained(this))) {
-    form_manager_.Init(nullptr);
     fetcher_.Fetch();
   }
 
@@ -131,14 +132,14 @@ class CredentialsFilterTest : public SyncUsernameTestBase {
     if (login_state == LoginState::EXISTING) {
       matches.push_back(&pending_);
     }
-    fetcher_.SetNonFederated(matches, 0u);
+    fetcher_.SetNonFederated(matches);
+    fetcher_.NotifyFetchCompleted();
 
-    form_manager_.ProvisionallySave(pending_);
+    form_manager_.ProvisionallySave(pending_.form_data, &driver_, nullptr);
   }
 
  protected:
   FakePasswordManagerClient client_;
-  PasswordManager password_manager_;
   StubPasswordManagerDriver driver_;
   PasswordForm pending_;
   FakeFormFetcher fetcher_;
@@ -219,7 +220,7 @@ TEST_F(CredentialsFilterTest, ShouldSave_SyncCredential) {
 
 TEST_F(CredentialsFilterTest, ShouldSave_SignIn_Form) {
   PasswordForm form = SimpleGaiaForm("user@example.org");
-  form.is_gaia_with_skip_save_password_form = true;
+  form.form_data.is_gaia_with_skip_save_password_form = true;
 
   SetSyncingPasswords(false);
   EXPECT_FALSE(filter_.ShouldSave(form));

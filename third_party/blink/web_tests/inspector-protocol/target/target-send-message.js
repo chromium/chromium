@@ -7,7 +7,11 @@
     window.worker.postMessage(1);
   `);
 
-  dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: false});
+  // TODO(johannes): We plan to retire the non-flattened mode, in which
+  // case there's no need for this test. Or if we do want to keep it, it should
+  // use child sessions. See also crbug.com/991325.
+  dp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: false,
+                           flatten: false});
   let {params:{sessionId}} = await dp.Target.onceAttachedToTarget();
 
   let p = dp.Target.onceReceivedMessageFromTarget();

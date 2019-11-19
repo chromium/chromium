@@ -217,7 +217,7 @@ bool EsParserAdts::ParseFromEsQueue() {
         CalculateSubsamplesForAdtsFrame(adts_frame, &subsamples);
         stream_parser_buffer->set_decrypt_config(
             std::make_unique<DecryptConfig>(
-                base_decrypt_config->encryption_mode(),
+                base_decrypt_config->encryption_scheme(),
                 base_decrypt_config->key_id(), base_decrypt_config->iv(),
                 subsamples, EncryptionPattern()));
       }
@@ -260,11 +260,10 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8_t* adts_header,
   const int extended_samples_per_second =
       sbr_in_mimetype_ ? std::min(2 * orig_sample_rate, 48000)
                        : orig_sample_rate;
-  EncryptionScheme scheme = Unencrypted();
+  EncryptionScheme scheme = EncryptionScheme::kUnencrypted;
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
   if (use_hls_sample_aes_) {
-    scheme = EncryptionScheme(EncryptionScheme::CIPHER_MODE_AES_CBC,
-                              EncryptionPattern());
+    scheme = EncryptionScheme::kCbcs;
   }
 #endif
   AudioDecoderConfig audio_decoder_config(

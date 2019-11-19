@@ -11,8 +11,6 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/values.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/shill_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
@@ -45,7 +43,6 @@ using chromeos::NetworkCertificateHandler;
 using chromeos::NetworkHandler;
 using chromeos::NetworkStateHandler;
 using chromeos::NetworkTypePattern;
-using chromeos::ShillManagerClient;
 using extensions::NetworkingPrivateDelegate;
 
 namespace private_api = extensions::api::networking_private;
@@ -125,6 +122,9 @@ void AppendDeviceState(
       state = private_api::DEVICE_STATE_TYPE_UNINITIALIZED;
       break;
     case NetworkStateHandler::TECHNOLOGY_AVAILABLE:
+      state = private_api::DEVICE_STATE_TYPE_DISABLED;
+      break;
+    case NetworkStateHandler::TECHNOLOGY_DISABLING:
       state = private_api::DEVICE_STATE_TYPE_DISABLED;
       break;
     case NetworkStateHandler::TECHNOLOGY_UNINITIALIZED:
@@ -245,7 +245,7 @@ namespace extensions {
 
 NetworkingPrivateChromeOS::NetworkingPrivateChromeOS(
     content::BrowserContext* browser_context)
-    : browser_context_(browser_context), weak_ptr_factory_(this) {}
+    : browser_context_(browser_context) {}
 
 NetworkingPrivateChromeOS::~NetworkingPrivateChromeOS() {}
 
@@ -518,33 +518,9 @@ void NetworkingPrivateChromeOS::StartActivate(
     return;
   }
 
-  std::string carrier(specified_carrier);
-  if (carrier.empty()) {
-    const chromeos::DeviceState* device =
-        GetStateHandler()->GetDeviceState(network->device_path());
-    if (device)
-      carrier = device->carrier();
-  }
-  if (carrier != shill::kCarrierSprint) {
-    // Only Sprint is directly activated. For other carriers, show the
-    // account details page.
-    if (ui_delegate())
-      ui_delegate()->ShowAccountDetails(guid);
-    success_callback.Run();
-    return;
-  }
-
-  if (!network->RequiresActivation()) {
-    // If no activation is required, show the account details page.
-    if (ui_delegate())
-      ui_delegate()->ShowAccountDetails(guid);
-    success_callback.Run();
-    return;
-  }
-
-  NetworkHandler::Get()->network_activation_handler()->Activate(
-      network->path(), carrier, success_callback,
-      base::Bind(&NetworkHandlerFailureCallback, failure_callback));
+  if (ui_delegate())
+    ui_delegate()->ShowAccountDetails(guid);
+  success_callback.Run();
 }
 
 void NetworkingPrivateChromeOS::SetWifiTDLSEnabledState(
@@ -681,8 +657,6 @@ NetworkingPrivateChromeOS::GetEnabledNetworkTypes() {
     network_list->AppendString(::onc::network_type::kEthernet);
   if (state_handler->IsTechnologyEnabled(NetworkTypePattern::WiFi()))
     network_list->AppendString(::onc::network_type::kWiFi);
-  if (state_handler->IsTechnologyEnabled(NetworkTypePattern::Wimax()))
-    network_list->AppendString(::onc::network_type::kWimax);
   if (state_handler->IsTechnologyEnabled(NetworkTypePattern::Cellular()))
     network_list->AppendString(::onc::network_type::kCellular);
 
@@ -705,11 +679,11 @@ NetworkingPrivateChromeOS::GetDeviceStateList() {
 
   // For any technologies that we do not have a DeviceState entry for, append
   // an entry if the technology is available.
-  const char* technology_types[] = {
-      ::onc::network_type::kEthernet, ::onc::network_type::kWiFi,
-      ::onc::network_type::kWimax, ::onc::network_type::kCellular};
+  const char* technology_types[] = {::onc::network_type::kEthernet,
+                                    ::onc::network_type::kWiFi,
+                                    ::onc::network_type::kCellular};
   for (const char* technology : technology_types) {
-    if (base::ContainsKey(technologies_found, technology))
+    if (base::Contains(technologies_found, technology))
       continue;
     AppendDeviceState(technology, nullptr /* device */,
                       device_state_list.get());

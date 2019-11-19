@@ -41,6 +41,7 @@
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -58,7 +59,7 @@ LocalFrame& InsertCommands::TargetFrame(LocalFrame& frame, Event* event) {
 bool InsertCommands::ExecuteInsertFragment(LocalFrame& frame,
                                            DocumentFragment* fragment) {
   DCHECK(frame.GetDocument());
-  return ReplaceSelectionCommand::Create(
+  return MakeGarbageCollected<ReplaceSelectionCommand>(
              *frame.GetDocument(), fragment,
              ReplaceSelectionCommand::kPreventNesting,
              InputEvent::InputType::kNone)
@@ -91,7 +92,7 @@ bool InsertCommands::ExecuteInsertHorizontalRule(LocalFrame& frame,
                                                  EditorCommandSource,
                                                  const String& value) {
   DCHECK(frame.GetDocument());
-  HTMLHRElement* const rule = HTMLHRElement::Create(*frame.GetDocument());
+  auto* const rule = MakeGarbageCollected<HTMLHRElement>(*frame.GetDocument());
   if (!value.IsEmpty())
     rule->SetIdAttribute(AtomicString(value));
   return ExecuteInsertElement(frame, rule);
@@ -111,10 +112,10 @@ bool InsertCommands::ExecuteInsertImage(LocalFrame& frame,
                                         EditorCommandSource,
                                         const String& value) {
   DCHECK(frame.GetDocument());
-  HTMLImageElement* const image =
-      HTMLImageElement::Create(*frame.GetDocument());
+  auto* const image =
+      MakeGarbageCollected<HTMLImageElement>(*frame.GetDocument());
   if (!value.IsEmpty())
-    image->SetSrc(value);
+    image->setAttribute(html_names::kSrcAttr, AtomicString(value));
   return ExecuteInsertElement(frame, image);
 }
 
@@ -164,8 +165,8 @@ bool InsertCommands::ExecuteInsertOrderedList(LocalFrame& frame,
                                               EditorCommandSource,
                                               const String&) {
   DCHECK(frame.GetDocument());
-  return InsertListCommand::Create(*frame.GetDocument(),
-                                   InsertListCommand::kOrderedList)
+  return MakeGarbageCollected<InsertListCommand>(
+             *frame.GetDocument(), InsertListCommand::kOrderedList)
       ->Apply();
 }
 
@@ -200,8 +201,8 @@ bool InsertCommands::ExecuteInsertUnorderedList(LocalFrame& frame,
                                                 EditorCommandSource,
                                                 const String&) {
   DCHECK(frame.GetDocument());
-  return InsertListCommand::Create(*frame.GetDocument(),
-                                   InsertListCommand::kUnorderedList)
+  return MakeGarbageCollected<InsertListCommand>(
+             *frame.GetDocument(), InsertListCommand::kUnorderedList)
       ->Apply();
 }
 

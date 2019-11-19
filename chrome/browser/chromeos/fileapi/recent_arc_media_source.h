@@ -57,7 +57,7 @@ class RecentArcMediaSource : public RecentSource {
   int num_inflight_roots_ = 0;
   std::vector<RecentFile> files_;
 
-  base::WeakPtrFactory<RecentArcMediaSource> weak_ptr_factory_;
+  base::WeakPtrFactory<RecentArcMediaSource> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RecentArcMediaSource);
 };

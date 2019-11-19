@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/crw_navigation_item_storage.h"
+#import "ios/web/public/session/crw_navigation_item_storage.h"
 
 #import <Foundation/Foundation.h>
 #include <stdint.h>
@@ -12,7 +12,7 @@
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_item_storage_test_util.h"
-#include "ios/web/public/referrer.h"
+#include "ios/web/public/navigation/referrer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -52,7 +52,13 @@ class CRWNavigationItemStorageTest : public PlatformTest {
 // Tests that unarchiving CRWNavigationItemStorage data results in an equivalent
 // storage.
 TEST_F(CRWNavigationItemStorageTest, EncodeDecode) {
-  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:item_storage()];
-  id decoded = [NSKeyedUnarchiver unarchiveObjectWithData:data];
+  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:item_storage()
+                                       requiringSecureCoding:NO
+                                                       error:nil];
+
+  NSKeyedUnarchiver* unarchiver =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
+  unarchiver.requiresSecureCoding = NO;
+  id decoded = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
   EXPECT_TRUE(web::ItemStoragesAreEqual(item_storage(), decoded));
 }

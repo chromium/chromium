@@ -5,39 +5,34 @@
 package org.chromium.chrome.browser.preferences.languages;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Color;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.RecyclerView.ViewHolder;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.TextUtils;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityManager;
+import android.view.accessibility.AccessibilityManager.AccessibilityStateChangeListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.chromium.base.ApiCompatibilityUtils;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.ListMenuButton;
+import org.chromium.chrome.browser.ui.widget.ListMenuButton;
+import org.chromium.chrome.browser.ui.widget.dragreorder.DragReorderableListAdapter;
+import org.chromium.chrome.browser.ui.widget.dragreorder.DragStateDelegate;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * BaseAdapter for {@link RecyclerView}. It manages languages to list there.
  */
-public class LanguageListBaseAdapter
-        extends RecyclerView.Adapter<LanguageListBaseAdapter.LanguageRowViewHolder> {
-    private static final int ANIMATION_DELAY_MS = 100;
-
+public class LanguageListBaseAdapter extends DragReorderableListAdapter<LanguageItem> {
     /**
      * Listener used to respond to click event on a language item.
      */
@@ -58,18 +53,18 @@ public class LanguageListBaseAdapter
         LanguageRowViewHolder(View view) {
             super(view);
 
-            mTitle = (TextView) view.findViewById(R.id.title);
-            mDescription = (TextView) view.findViewById(R.id.description);
+            mTitle = view.findViewById(R.id.title);
+            mDescription = view.findViewById(R.id.description);
 
             mStartIcon = view.findViewById(R.id.icon_view);
-            mMoreButton = (ListMenuButton) view.findViewById(R.id.more);
+            mMoreButton = view.findViewById(R.id.more);
         }
 
         /**
          * Update the current {@link LanguageRowViewHolder} with basic language info.
          * @param item A {@link LanguageItem} with the language details.
          */
-        private void updateLanguageInfo(LanguageItem item) {
+        protected void updateLanguageInfo(LanguageItem item) {
             mTitle.setText(item.getDisplayName());
 
             // Avoid duplicate display names.
@@ -82,7 +77,7 @@ public class LanguageListBaseAdapter
 
             mMoreButton.setContentDescriptionContext(item.getDisplayName());
 
-            // The default visibility for the views below is GONE.
+            // The more button will become visible if setMenuButtonDelegate is called.
             mStartIcon.setVisibility(View.GONE);
             mMoreButton.setVisibility(View.GONE);
         }
@@ -118,64 +113,61 @@ public class LanguageListBaseAdapter
         }
     }
 
-    private final int mDraggedBackgroundColor;
-    private final float mDraggedElevation;
+    /**
+     * Keeps track of whether drag is enabled / active for language preference lists.
+     */
+    private class LanguageDragStateDelegate implements DragStateDelegate {
+        private AccessibilityManager mA11yManager;
+        private AccessibilityStateChangeListener mA11yListener;
+        private boolean mA11yEnabled;
 
-    private boolean mDragEnabled;
-    private ItemTouchHelper mItemTouchHelper;
-    private List<LanguageItem> mLanguageList;
+        public LanguageDragStateDelegate() {
+            mA11yManager =
+                    (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
+            mA11yEnabled = mA11yManager.isEnabled();
+            mA11yListener = enabled -> {
+                mA11yEnabled = enabled;
+                notifyDataSetChanged();
+            };
+            mA11yManager.addAccessibilityStateChangeListener(mA11yListener);
+        }
 
-    protected Context mContext;
+        // DragStateDelegate implementation
+        @Override
+        public boolean getDragEnabled() {
+            return !mA11yEnabled;
+        }
+
+        @Override
+        public boolean getDragActive() {
+            return getDragEnabled();
+        }
+
+        @Override
+        public void setA11yStateForTesting(boolean a11yEnabled) {
+            mA11yManager.removeAccessibilityStateChangeListener(mA11yListener);
+            mA11yListener = null;
+            mA11yManager = null;
+            mA11yEnabled = a11yEnabled;
+        }
+    }
 
     LanguageListBaseAdapter(Context context) {
-        mContext = context;
-        mLanguageList = new ArrayList<>();
-
-        Resources resource = context.getResources();
-        mDraggedBackgroundColor =
-                ApiCompatibilityUtils.getColor(resource, R.color.pref_dragged_row_background);
-        mDraggedElevation = resource.getDimension(R.dimen.pref_languages_item_dragged_elevation);
-    }
-
-    @Override
-    public LanguageRowViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View row = LayoutInflater.from(parent.getContext())
-                           .inflate(R.layout.accept_languages_item, parent, false);
-        return new LanguageRowViewHolder(row);
-    }
-
-    @Override
-    public void onBindViewHolder(LanguageRowViewHolder holder, int position) {
-        holder.updateLanguageInfo(mLanguageList.get(position));
-    }
-
-    @Override
-    public int getItemCount() {
-        return mLanguageList.size();
-    }
-
-    LanguageItem getItemByPosition(int position) {
-        return mLanguageList.get(position);
-    }
-
-    void reload(List<LanguageItem> languageList) {
-        mLanguageList.clear();
-        mLanguageList.addAll(languageList);
-        notifyDataSetChanged();
+        super(context);
+        setDragStateDelegate(new LanguageDragStateDelegate());
     }
 
     /**
      * Show a drag indicator at the start of the row if applicable.
      *
      * @param holder The LanguageRowViewHolder of the row.
-     * @param indicatorResId The identifier of the drawable resource for the indicator.
      */
-    void showDragIndicatorInRow(LanguageRowViewHolder holder, @DrawableRes int indicatorResId) {
+    void showDragIndicatorInRow(LanguageRowViewHolder holder) {
         // Quit if it's not applicable.
-        if (getItemCount() <= 1 || !mDragEnabled) return;
+        if (getItemCount() <= 1 || !mDragStateDelegate.getDragEnabled()) return;
 
         assert mItemTouchHelper != null;
-        holder.setStartIcon(indicatorResId);
+        holder.setStartIcon(R.drawable.ic_drag_handle_grey600_24dp);
         holder.mStartIcon.setOnTouchListener((v, event) -> {
             if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
                 mItemTouchHelper.startDrag(holder);
@@ -184,112 +176,46 @@ public class LanguageListBaseAdapter
         });
     }
 
-    /**
-     * Enables drag & drop interaction on the given RecyclerView.
-     * @param recyclerView The RecyclerView you want to drag from.
-     */
-    void enableDrag(RecyclerView recyclerView) {
-        mDragEnabled = true;
+    @Override
+    public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+        View row = LayoutInflater.from(viewGroup.getContext())
+                           .inflate(R.layout.accept_languages_item, viewGroup, false);
+        return new LanguageRowViewHolder(row);
+    }
 
-        if (mItemTouchHelper == null) {
-            ItemTouchHelper.Callback touchHelperCallBack = new ItemTouchHelper.Callback() {
+    @Override
+    public void onBindViewHolder(ViewHolder viewHolder, int i) {
+        ((LanguageRowViewHolder) viewHolder).updateLanguageInfo(mElements.get(i));
+    }
 
-                // The dragged language info during a single drag operation.
-                // The first is its start postion when it's dragged, the second is its language
-                // code.
-                @Nullable
-                private Pair<Integer, String> mDraggedLanguage;
-
-                @Override
-                public int getMovementFlags(RecyclerView recyclerView, ViewHolder viewHolder) {
-                    return makeMovementFlags(
-                            ItemTouchHelper.UP | ItemTouchHelper.DOWN, 0 /* swipe flags */);
-                }
-
-                @Override
-                public boolean onMove(
-                        RecyclerView recyclerView, ViewHolder current, ViewHolder target) {
-                    int from = current.getAdapterPosition();
-                    int to = target.getAdapterPosition();
-                    if (from == to) return false;
-
-                    Collections.swap(mLanguageList, from, to);
-                    notifyItemMoved(from, to);
-                    return true;
-                }
-
-                @Override
-                public void onSelectedChanged(ViewHolder viewHolder, int actionState) {
-                    super.onSelectedChanged(viewHolder, actionState);
-                    if (actionState == ItemTouchHelper.ACTION_STATE_DRAG) {
-                        // mDraggedLanguage should be cleaned up before.
-                        assert mDraggedLanguage == null;
-                        int start = viewHolder.getAdapterPosition();
-                        mDraggedLanguage = Pair.create(start, getItemByPosition(start).getCode());
-
-                        updateVisualState(true, viewHolder.itemView);
-                    }
-                }
-
-                @Override
-                public void clearView(RecyclerView recyclerView, ViewHolder viewHolder) {
-                    super.clearView(recyclerView, viewHolder);
-
-                    // Commit the postion change for the dragged language when it's dropped.
-                    if (mDraggedLanguage != null) {
-                        LanguagesManager.getInstance().moveLanguagePosition(mDraggedLanguage.second,
-                                viewHolder.getAdapterPosition() - mDraggedLanguage.first, false);
-                        mDraggedLanguage = null;
-                    }
-
-                    updateVisualState(false, viewHolder.itemView);
-                }
-
-                @Override
-                public boolean isLongPressDragEnabled() {
-                    return true;
-                }
-
-                @Override
-                public boolean isItemViewSwipeEnabled() {
-                    return false;
-                }
-
-                @Override
-                public void onSwiped(ViewHolder viewHolder, int direction) {
-                    // no-op
-                }
-
-                private void updateVisualState(boolean dragged, View view) {
-                    ViewCompat.animate(view)
-                            .translationZ(dragged ? mDraggedElevation : 0)
-                            .withEndAction(()
-                                                   -> view.setBackgroundColor(dragged
-                                                                   ? mDraggedBackgroundColor
-                                                                   : Color.TRANSPARENT))
-                            .setDuration(ANIMATION_DELAY_MS)
-                            .start();
-                }
-            };
-
-            mItemTouchHelper = new ItemTouchHelper(touchHelperCallBack);
+    @Override
+    protected void setOrder(List<LanguageItem> order) {
+        String[] codes = new String[order.size()];
+        for (int i = 0; i < order.size(); i++) {
+            codes[i] = order.get(i).getCode();
         }
-        mItemTouchHelper.attachToRecyclerView(recyclerView);
+        LanguagesManager.getInstance().setOrder(codes, false);
+        notifyDataSetChanged();
     }
 
     /**
-     * Disables drag & drop interaction.
-     * @param recyclerView The RecyclerView you want to drag from.
+     * Sets the displayed languages (not the order of the user's preferred languages;
+     * see setOrder above).
+     *
+     * @param languages The language items to show.
      */
-    void disableDrag() {
-        mDragEnabled = false;
-        if (mItemTouchHelper != null) mItemTouchHelper.attachToRecyclerView(null);
+    void setDisplayedLanguages(List<LanguageItem> languages) {
+        mElements = new ArrayList<>(languages);
+        notifyDataSetChanged();
     }
 
-    /**
-     * Returns whether the drag & drop is enabled.
-     */
-    boolean isDragEnabled() {
-        return mDragEnabled;
+    @Override
+    protected boolean isActivelyDraggable(ViewHolder viewHolder) {
+        return isPassivelyDraggable(viewHolder);
+    }
+
+    @Override
+    protected boolean isPassivelyDraggable(ViewHolder viewHolder) {
+        return viewHolder instanceof LanguageRowViewHolder;
     }
 }

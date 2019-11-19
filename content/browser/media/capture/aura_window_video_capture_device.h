@@ -13,6 +13,7 @@
 #include "content/browser/media/capture/frame_sink_video_capture_device.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace aura {
 class Window;
@@ -37,7 +38,8 @@ class CONTENT_EXPORT AuraWindowVideoCaptureDevice
   // LameWindowCapturerChromeOS for window capture where compositor frame sinks
   // are not present. See class comments for LameWindowCapturerChromeOS for
   // further details.
-  void CreateCapturer(viz::mojom::FrameSinkVideoCapturerRequest request) final;
+  void CreateCapturer(
+      mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver) final;
 #endif
 
  private:

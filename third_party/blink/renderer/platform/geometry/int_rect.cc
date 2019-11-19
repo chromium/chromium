@@ -31,15 +31,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-#include "third_party/skia/include/core/SkRect.h"
-#include "ui/gfx/geometry/rect.h"
 
 #include <algorithm>
 
 namespace blink {
-
-IntRect::IntRect(const gfx::Rect& rect)
-    : location_(rect.x(), rect.y()), size_(rect.width(), rect.height()) {}
 
 void IntRect::ShiftXEdgeTo(int edge) {
   int delta = edge - X();
@@ -151,22 +146,6 @@ IntSize IntRect::DifferenceToPoint(const IntPoint& point) const {
   return IntSize(xdistance, ydistance);
 }
 
-IntRect::operator SkIRect() const {
-  SkIRect rect = {X(), Y(), MaxX(), MaxY()};
-  return rect;
-}
-
-IntRect::operator SkRect() const {
-  SkRect rect;
-  rect.set(SkIntToScalar(X()), SkIntToScalar(Y()), SkIntToScalar(MaxX()),
-           SkIntToScalar(MaxY()));
-  return rect;
-}
-
-IntRect::operator gfx::Rect() const {
-  return gfx::Rect(X(), Y(), Width(), Height());
-}
-
 IntRect UnionRect(const Vector<IntRect>& rects) {
   IntRect result;
 
@@ -193,8 +172,8 @@ std::ostream& operator<<(std::ostream& ostream, const IntRect& rect) {
 }
 
 String IntRect::ToString() const {
-  return String::Format("%s %s", Location().ToString().Ascii().data(),
-                        Size().ToString().Ascii().data());
+  return String::Format("%s %s", Location().ToString().Ascii().c_str(),
+                        Size().ToString().Ascii().c_str());
 }
 
 bool IntRect::IsValid() const {

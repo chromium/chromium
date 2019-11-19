@@ -7,8 +7,13 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol InfobarModalPositioner;
+
 // PresentationController for the ModalInfobar.
 @interface InfobarModalPresentationController : UIPresentationController
+
+// Delegate used to position the ModalInfobar.
+@property(nonatomic, assign) id<InfobarModalPositioner> modalPositioner;
 
 @end
 

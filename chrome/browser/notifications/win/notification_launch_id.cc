@@ -132,7 +132,7 @@ NotificationLaunchId::NotificationLaunchId(const std::string& input) {
   origin_url_ = GURL(tokens[4]);
 
   notification_id_.clear();
-  // Notification IDs is the rest of the string (delimeters not stripped off).
+  // Notification IDs is the rest of the string (delimiters not stripped off).
   const size_t kMinVectorSize = 5;
   for (size_t i = kMinVectorSize; i < tokens.size(); ++i) {
     if (i > kMinVectorSize)
@@ -145,7 +145,7 @@ NotificationLaunchId::NotificationLaunchId(const std::string& input) {
 }
 
 std::string NotificationLaunchId::Serialize() const {
-  // The pipe was chosen as delimeter because it is invalid for directory paths
+  // The pipe was chosen as delimiter because it is invalid for directory paths
   // and unsafe for origins -- and should therefore be encoded (as per
   // http://www.ietf.org/rfc/rfc1738.txt).
   std::string prefix;

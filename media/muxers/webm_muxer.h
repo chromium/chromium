@@ -72,12 +72,12 @@ class MEDIA_EXPORT WebmMuxer : public mkvmuxer::IMkvWriter {
   // |encoded_alpha| represents the encode output of alpha channel when
   // available, can be nullptr otherwise.
   bool OnEncodedVideo(const VideoParameters& params,
-                      std::unique_ptr<std::string> encoded_data,
-                      std::unique_ptr<std::string> encoded_alpha,
+                      std::string encoded_data,
+                      std::string encoded_alpha,
                       base::TimeTicks timestamp,
                       bool is_key_frame);
   bool OnEncodedAudio(const media::AudioParameters& params,
-                      std::unique_ptr<std::string> encoded_data,
+                      std::string encoded_data,
                       base::TimeTicks timestamp);
 
   void Pause();
@@ -105,8 +105,8 @@ class MEDIA_EXPORT WebmMuxer : public mkvmuxer::IMkvWriter {
                           mkvmuxer::int64 position) override;
 
   // Helper to simplify saving frames. Returns true on success.
-  bool AddFrame(std::unique_ptr<std::string> encoded_data,
-                std::unique_ptr<std::string> encoded_alpha_data,
+  bool AddFrame(const std::string& encoded_data,
+                const std::string& encoded_alpha_data,
                 uint8_t track_index,
                 base::TimeDelta timestamp,
                 bool is_key_frame);
@@ -151,14 +151,14 @@ class MEDIA_EXPORT WebmMuxer : public mkvmuxer::IMkvWriter {
   // Hold on to all encoded video frames to dump them with and when audio is
   // received, if expected, since WebM headers can only be written once.
   struct EncodedVideoFrame {
-    EncodedVideoFrame(std::unique_ptr<std::string> data,
-                      std::unique_ptr<std::string> alpha_data,
+    EncodedVideoFrame(std::string data,
+                      std::string alpha_data,
                       base::TimeTicks timestamp,
                       bool is_keyframe);
     ~EncodedVideoFrame();
 
-    std::unique_ptr<std::string> data;
-    std::unique_ptr<std::string> alpha_data;
+    std::string data;
+    std::string alpha_data;
     base::TimeTicks timestamp;
     bool is_keyframe;
 

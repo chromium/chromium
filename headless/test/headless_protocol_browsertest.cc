@@ -10,11 +10,9 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -192,27 +190,30 @@ class HeadlessProtocolBrowserTest
   std::string script_name_;
 };
 
+// TODO(crbug.com/867447): The whole test suite is extremely flaky on Win dbg.
+#if defined(OS_WIN) && !defined(NDEBUG)
+#define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)                        \
+  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTest, DISABLED_##TEST_NAME) { \
+    test_folder_ = "/protocol/";                                              \
+    script_name_ = SCRIPT_NAME;                                               \
+    RunTest();                                                                \
+  }
+#else
 #define HEADLESS_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)             \
   IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTest, TEST_NAME) { \
     test_folder_ = "/protocol/";                                   \
     script_name_ = SCRIPT_NAME;                                    \
     RunTest();                                                     \
   }
-
-#define LAYOUT_PROTOCOL_TEST(TEST_NAME, SCRIPT_NAME)               \
-  IN_PROC_BROWSER_TEST_F(HeadlessProtocolBrowserTest, TEST_NAME) { \
-    test_folder_ = "/";                                            \
-    script_name_ = SCRIPT_NAME;                                    \
-    RunTest();                                                     \
-  }
+#endif
 
 // Headless-specific tests
 HEADLESS_PROTOCOL_TEST(VirtualTimeBasics, "emulation/virtual-time-basics.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeInterrupt,
                        "emulation/virtual-time-interrupt.js")
 
-// Flaky on Linux. TODO(crbug.com/930717): Re-enable.
-#if defined(OS_LINUX)
+// Flaky on Linux, Mac & Win. TODO(crbug.com/930717): Re-enable.
+#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_WIN)
 #define MAYBE_VirtualTimeCrossProcessNavigation \
   DISABLED_VirtualTimeCrossProcessNavigation
 #else
@@ -243,10 +244,12 @@ HEADLESS_PROTOCOL_TEST(VirtualTimeFetchStream,
                        "emulation/virtual-time-fetch-stream.js")
 HEADLESS_PROTOCOL_TEST(VirtualTimeDialogWhileLoading,
                        "emulation/virtual-time-dialog-while-loading.js")
-
-// Flaky Test crbug.com/859382
-HEADLESS_PROTOCOL_TEST(DISABLED_VirtualTimeHistoryNavigation,
+HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigation,
                        "emulation/virtual-time-history-navigation.js")
+HEADLESS_PROTOCOL_TEST(VirtualTimeHistoryNavigationSameDoc,
+                       "emulation/virtual-time-history-navigation-same-doc.js")
+HEADLESS_PROTOCOL_TEST(VirtualTimeFetchKeepalive,
+                       "emulation/virtual-time-fetch-keepalive.js")
 
 // http://crbug.com/633321
 #if defined(OS_ANDROID)
@@ -262,6 +265,9 @@ HEADLESS_PROTOCOL_TEST(MAYBE_VirtualTimeTimerSuspend,
                        "emulation/virtual-time-timer-suspended.js")
 #undef MAYBE_VirtualTimeTimerOrder
 #undef MAYBE_VirtualTimeTimerSuspend
+
+HEADLESS_PROTOCOL_TEST(HeadlessSessionBasicsTest,
+                       "sessions/headless-session-basics.js")
 
 class HeadlessProtocolCompositorBrowserTest
     : public HeadlessProtocolBrowserTest {
@@ -293,24 +299,16 @@ class HeadlessProtocolCompositorBrowserTest
     for (auto* compositor_switch : compositor_switches) {
       command_line->AppendSwitch(compositor_switch);
     }
-
-    // In surface synchronization, child surface IDs are allocated by
-    // parents and new CompositorFrames only activate once all their child
-    // surfaces exist. In --run-all-compositor-stages-before-draw mode, this
-    // means that child surface initialization and resize fully propagates
-    // within a single BeginFrame.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kEnableSurfaceSynchronization);
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // BeginFrameControl is not supported on MacOS yet, see: https://cs.chromium.org
 // chromium/src/headless/lib/browser/protocol/target_handler.cc?
 // rcl=5811aa08e60ba5ac7622f029163213cfbdb682f7&l=32
-#if defined(OS_MACOSX)
+// TODO(crbug.com/954398): Suite is timeout-flaky on Windows.
+// TODO(crbug.com/1020046): Suite is flaky on TSan Linux.
+#if defined(OS_MACOSX) || defined(OS_WIN) || \
+    (defined(OS_LINUX) && defined(THREAD_SANITIZER))
 #define HEADLESS_PROTOCOL_COMPOSITOR_TEST(TEST_NAME, SCRIPT_NAME) \
   IN_PROC_BROWSER_TEST_F(HeadlessProtocolCompositorBrowserTest,   \
                          DISABLED_##TEST_NAME) {                  \
@@ -332,8 +330,20 @@ HEADLESS_PROTOCOL_COMPOSITOR_TEST(CompositorBasicRaf,
 HEADLESS_PROTOCOL_COMPOSITOR_TEST(
     CompositorImageAnimation,
     "emulation/compositor-image-animation-test.js")
-HEADLESS_PROTOCOL_COMPOSITOR_TEST(CompositorCssAnimation,
+
+// Flaky on Linux. TODO(crbug.com/986027): Re-enable.
+#if defined(OS_LINUX)
+#define MAYBE_CompositorCssAnimation DISABLED_CompositorCssAnimation
+#else
+#define MAYBE_CompositorCssAnimation CompositorCssAnimation
+#endif
+HEADLESS_PROTOCOL_COMPOSITOR_TEST(MAYBE_CompositorCssAnimation,
                                   "emulation/compositor-css-animation-test.js")
+HEADLESS_PROTOCOL_COMPOSITOR_TEST(
+    VirtualTimeCancelClientRedirect,
+    "emulation/virtual-time-cancel-client-redirect.js")
+HEADLESS_PROTOCOL_COMPOSITOR_TEST(DoubleBeginFrame,
+                                  "emulation/double-begin-frame.js")
 HEADLESS_PROTOCOL_COMPOSITOR_TEST(VirtualTimeControllerTest,
                                   "helpers/virtual-time-controller-test.js")
 HEADLESS_PROTOCOL_COMPOSITOR_TEST(RendererHelloWorld,
@@ -415,5 +425,8 @@ HEADLESS_PROTOCOL_COMPOSITOR_TEST(RendererFrameLoadEvents,
 HEADLESS_PROTOCOL_COMPOSITOR_TEST(RendererCssUrlFilter,
                                   "sanity/renderer-css-url-filter.js")
 HEADLESS_PROTOCOL_COMPOSITOR_TEST(RendererCanvas, "sanity/renderer-canvas.js")
+
+HEADLESS_PROTOCOL_COMPOSITOR_TEST(RendererOpacityAnimation,
+                                  "sanity/renderer-opacity-animation.js")
 
 }  // namespace headless

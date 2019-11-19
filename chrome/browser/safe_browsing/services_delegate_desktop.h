@@ -8,13 +8,11 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/client_side_detection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/incident_reporting/resource_request_detector.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
-#include "components/safe_browsing/password_protection/password_protection_service.h"
 
 namespace safe_browsing {
 
@@ -67,14 +65,9 @@ class ServicesDelegateDesktop : public ServicesDelegate {
   IncidentReportingService* CreateIncidentReportingService();
   ResourceRequestDetector* CreateResourceRequestDetector();
 
-  void CreatePasswordProtectionService(Profile* profile) override;
-  void RemovePasswordProtectionService(Profile* profile) override;
-  PasswordProtectionService* GetPasswordProtectionService(
-      Profile* profile) const override;
-
-  void CreateTelemetryService(Profile* profile) override;
-  void RemoveTelemetryService() override;
-  TelemetryService* GetTelemetryService() const override;
+  void CreateBinaryUploadService(Profile* profile) override;
+  void RemoveBinaryUploadService(Profile* profile) override;
+  BinaryUploadService* GetBinaryUploadService(Profile* profile) const override;
 
   std::string GetSafetyNetId() const override;
 
@@ -83,9 +76,6 @@ class ServicesDelegateDesktop : public ServicesDelegate {
   std::unique_ptr<IncidentReportingService> incident_service_;
   std::unique_ptr<ResourceRequestDetector> resource_request_detector_;
 
-  SafeBrowsingService* const safe_browsing_service_;
-  ServicesDelegate::ServicesCreator* const services_creator_;
-
   // The database manager that handles the database checking and update logic
   // Accessed on both UI and IO thread.
   scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
@@ -93,11 +83,10 @@ class ServicesDelegateDesktop : public ServicesDelegate {
   // Has the database_manager been set for tests?
   bool database_manager_set_for_tests_ = false;
 
-  // Tracks existing Profiles, and their corresponding
-  // ChromePasswordProtectionService instances.
-  // Accessed on UI thread.
-  std::map<Profile*, std::unique_ptr<ChromePasswordProtectionService>>
-      password_protection_service_map_;
+  // Tracks existing Profiles, and their corresponding BinaryUploadService
+  // instances. Accessed on UI thread.
+  std::map<Profile*, std::unique_ptr<BinaryUploadService>>
+      binary_upload_service_map_;
 
   DISALLOW_COPY_AND_ASSIGN(ServicesDelegateDesktop);
 };

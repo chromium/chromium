@@ -48,6 +48,7 @@ const char kTitleKey[] = "title";
 const char kToIndexKey[] = "toIndex";
 const char kTopKey[] = "top";
 const char kUrlKey[] = "url";
+const char kPendingUrlKey[] = "pendingUrl";
 const char kWindowClosing[] = "isWindowClosing";
 const char kWidthKey[] = "width";
 const char kWindowIdKey[] = "windowId";

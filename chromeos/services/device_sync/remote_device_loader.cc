@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/base64url.h"
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
@@ -96,8 +95,7 @@ RemoteDeviceLoader::RemoteDeviceLoader(
     : remaining_devices_(device_info_list),
       user_id_(user_id),
       user_private_key_(user_private_key),
-      secure_message_delegate_(std::move(secure_message_delegate)),
-      weak_ptr_factory_(this) {}
+      secure_message_delegate_(std::move(secure_message_delegate)) {}
 
 RemoteDeviceLoader::~RemoteDeviceLoader() {}
 
@@ -142,8 +140,11 @@ void RemoteDeviceLoader::OnPSKDerived(
         multidevice::FromCryptAuthSeed(cryptauth_beacon_seed));
   }
 
+  // Because RemoteDeviceLoader does not handle devices using v2 DeviceSync, no
+  // Instance ID is present.
   multidevice::RemoteDevice remote_device(
-      user_id_, device.friendly_device_name(), device.public_key(), psk,
+      user_id_, std::string() /* instance_id */, device.friendly_device_name(),
+      device.no_pii_device_name(), device.public_key(), psk,
       device.last_update_time_millis(), GetSoftwareFeatureToStateMap(device),
       multidevice_beacon_seeds);
 

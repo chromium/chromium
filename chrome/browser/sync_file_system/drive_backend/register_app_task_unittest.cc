@@ -27,8 +27,9 @@
 #include "chrome/browser/sync_file_system/sync_file_system_test_util.h"
 #include "components/drive/drive_uploader.h"
 #include "components/drive/service/fake_drive_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "google_apis/drive/drive_api_parser.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -56,7 +57,8 @@ class RegisterAppTaskTest : public testing::Test {
         new drive::FakeDriveService);
     std::unique_ptr<drive::DriveUploaderInterface> drive_uploader(
         new drive::DriveUploader(fake_drive_service.get(),
-                                 base::ThreadTaskRunnerHandle::Get(), nullptr));
+                                 base::ThreadTaskRunnerHandle::Get(),
+                                 mojo::NullRemote()));
 
     fake_drive_service_helper_.reset(new FakeDriveServiceHelper(
         fake_drive_service.get(), drive_uploader.get(),
@@ -266,7 +268,7 @@ class RegisterAppTaskTest : public testing::Test {
   int64_t next_file_id_;
   int64_t next_tracker_id_;
 
-  content::TestBrowserThreadBundle browser_threads_;
+  content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir database_dir_;
 
   std::unique_ptr<SyncEngineContext> context_;

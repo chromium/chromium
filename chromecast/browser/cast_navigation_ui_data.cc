@@ -48,7 +48,7 @@ std::string CastNavigationUIData::GetSessionIdForWebContents(
 CastNavigationUIData::CastNavigationUIData(const std::string& session_id)
     : session_id_(session_id) {}
 
-std::unique_ptr<content::NavigationUIData> CastNavigationUIData::Clone() const {
+std::unique_ptr<content::NavigationUIData> CastNavigationUIData::Clone() {
   return std::make_unique<CastNavigationUIData>(session_id_);
 }
 

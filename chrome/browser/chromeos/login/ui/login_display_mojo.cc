@@ -4,10 +4,15 @@
 
 #include "chrome/browser/chromeos/login/ui/login_display_mojo.h"
 
-#include "ash/public/interfaces/login_user_info.mojom.h"
+#include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/login_screen_model.h"
+#include "ash/public/cpp/login_types.h"
 #include "base/bind.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/chromeos/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
 #include "chrome/browser/chromeos/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/chromeos/login/screens/chrome_user_selection_screen.h"
@@ -15,9 +20,13 @@
 #include "chrome/browser/chromeos/login/ui/login_display_host_mojo.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/ui/ash/login_screen_client.h"
+#include "chrome/browser/ui/webui/chromeos/login/enable_adb_sideloading_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/enable_debugging_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/kiosk_autolaunch_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/reset_screen_handler.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/session_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/notification_service.h"
@@ -27,8 +36,7 @@
 
 namespace chromeos {
 
-LoginDisplayMojo::LoginDisplayMojo(LoginDisplayHostMojo* host)
-    : host_(host), weak_factory_(this) {
+LoginDisplayMojo::LoginDisplayMojo(LoginDisplayHostMojo* host) : host_(host) {
   user_manager::UserManager::Get()->AddObserver(this);
 }
 
@@ -40,6 +48,14 @@ void LoginDisplayMojo::UpdatePinKeyboardState(const AccountId& account_id) {
   quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
       account_id, base::BindOnce(&LoginDisplayMojo::OnPinCanAuthenticate,
                                  weak_factory_.GetWeakPtr(), account_id));
+}
+
+void LoginDisplayMojo::UpdateChallengeResponseAuthAvailability(
+    const AccountId& account_id) {
+  const bool enable_challenge_response =
+      ChallengeResponseAuthKeysLoader::CanAuthenticateUser(account_id);
+  ash::LoginScreen::Get()->GetModel()->SetChallengeResponseAuthEnabledForUser(
+      account_id, enable_challenge_response);
 }
 
 void LoginDisplayMojo::ClearAndEnablePassword() {}
@@ -54,41 +70,65 @@ void LoginDisplayMojo::Init(const user_manager::UserList& filtered_users,
   // ExistingUserController::DeviceSettingsChanged and others may initialize the
   // login screen multiple times. Views-login only supports initialization once.
   if (!initialized_) {
-    // Load the login screen.
     client->SetDelegate(host_);
-    client->login_screen()->ShowLoginScreen(base::BindOnce([](bool did_show) {
-      CHECK(did_show);
-
-      // login-prompt-visible is recorded and tracked to verify boot performance
-      // does not regress. Autotests may also depend on it (ie,
-      // login_SameSessionTwice).
-      VLOG(1) << "Emitting login-prompt-visible";
-      chromeos::DBusThreadManager::Get()
-          ->GetSessionManagerClient()
-          ->EmitLoginPromptVisible();
-
-      content::NotificationService::current()->Notify(
-          chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-          content::NotificationService::AllSources(),
-          content::NotificationService::NoDetails());
-    }));
+    ash::LoginScreen::Get()->ShowLoginScreen();
   }
 
   UserSelectionScreen* user_selection_screen = host_->user_selection_screen();
   user_selection_screen->Init(filtered_users);
-  client->login_screen()->SetUserList(
-      user_selection_screen->UpdateAndReturnUserListForMojo());
-  client->login_screen()->SetAllowLoginAsGuest(show_guest);
+  ash::LoginScreen::Get()->GetModel()->SetUserList(
+      user_selection_screen->UpdateAndReturnUserListForAsh());
+  ash::LoginScreen::Get()->SetAllowLoginAsGuest(show_guest);
   user_selection_screen->SetUsersLoaded(true /*loaded*/);
 
-  // Enable pin for any users who can use it.
   if (user_manager::UserManager::IsInitialized()) {
+    // Enable pin and challenge-response authentication for any users who can
+    // use them.
     for (const user_manager::User* user : filtered_users) {
       UpdatePinKeyboardState(user->GetAccountId());
+      UpdateChallengeResponseAuthAvailability(user->GetAccountId());
     }
   }
 
-  initialized_ = true;
+  if (!initialized_) {
+    initialized_ = true;
+
+    // login-prompt-visible is recorded and tracked to verify boot performance
+    // does not regress. Autotests may also depend on it (ie,
+    // login_SameSessionTwice).
+    VLOG(1) << "Emitting login-prompt-visible";
+    SessionManagerClient::Get()->EmitLoginPromptVisible();
+
+    content::NotificationService::current()->Notify(
+        chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
+        content::NotificationService::AllSources(),
+        content::NotificationService::NoDetails());
+
+    // If there no available users exist, delay showing the dialogs until after
+    // GAIA dialog is shown (GAIA dialog will check these local state values,
+    // too). Login UI will show GAIA dialog if no user are registered, which
+    // might hide any UI shown here.
+    if (filtered_users.empty())
+      return;
+
+    // Check whether factory reset or debugging feature have been requested in
+    // prior session, and start reset or enable debugging wizard as needed.
+    // This has to happen after login-prompt-visible, as some reset dialog
+    // features (TPM firmware update) depend on system services running, which
+    // is in turn blocked on the 'login-prompt-visible' signal.
+    PrefService* local_state = g_browser_process->local_state();
+    if (local_state->GetBoolean(prefs::kFactoryResetRequested)) {
+      host_->StartWizard(ResetView::kScreenId);
+    } else if (local_state->GetBoolean(prefs::kDebuggingFeaturesRequested)) {
+      host_->StartWizard(EnableDebuggingScreenView::kScreenId);
+    } else if (local_state->GetBoolean(prefs::kEnableAdbSideloadingRequested)) {
+      host_->StartWizard(EnableAdbSideloadingScreenView::kScreenId);
+    } else if (!KioskAppManager::Get()->GetAutoLaunchApp().empty() &&
+               KioskAppManager::Get()->IsAutoLaunchRequested()) {
+      VLOG(0) << "Showing auto-launch warning";
+      host_->StartWizard(KioskAutolaunchScreenView::kScreenId);
+    }
+  }
 }
 
 void LoginDisplayMojo::OnPreferencesChanged() {
@@ -130,15 +170,8 @@ void LoginDisplayMojo::ShowError(int error_msg_id,
       error_msg_id != IDS_LOGIN_ERROR_OWNER_KEY_LOST &&
       error_msg_id != IDS_LOGIN_ERROR_OWNER_REQUIRED &&
       error_msg_id != IDS_LOGIN_ERROR_GOOGLE_ACCOUNT_NOT_ALLOWED) {
-    // Display a warning if Caps Lock is on.
     input_method::InputMethodManager* ime_manager =
         input_method::InputMethodManager::Get();
-    if (ime_manager->GetImeKeyboard()->CapsLockIsEnabled()) {
-      // TODO(ivankr): use a format string instead of concatenation.
-      error_text +=
-          "\n" + l10n_util::GetStringUTF8(IDS_LOGIN_ERROR_CAPS_LOCK_HINT);
-    }
-
     // Display a hint to switch keyboards if there are other active input
     // methods.
     if (ime_manager->GetActiveIMEState()->GetNumActiveInputMethods() > 1) {
@@ -170,10 +203,6 @@ void LoginDisplayMojo::ShowSigninUI(const std::string& email) {
 
 void LoginDisplayMojo::ShowWhitelistCheckFailedError() {
   host_->ShowWhitelistCheckFailedError();
-}
-
-void LoginDisplayMojo::ShowUnrecoverableCrypthomeErrorDialog() {
-  host_->ShowUnrecoverableCrypthomeErrorDialog();
 }
 
 void LoginDisplayMojo::Login(const UserContext& user_context,
@@ -272,15 +301,15 @@ void LoginDisplayMojo::CheckUserStatus(const AccountId& account_id) {
 }
 
 void LoginDisplayMojo::OnUserImageChanged(const user_manager::User& user) {
-  LoginScreenClient::Get()->login_screen()->SetAvatarForUser(
+  ash::LoginScreen::Get()->GetModel()->SetAvatarForUser(
       user.GetAccountId(),
-      UserSelectionScreen::BuildMojoUserAvatarForUser(&user));
+      UserSelectionScreen::BuildAshUserAvatarForUser(user));
 }
 
 void LoginDisplayMojo::OnPinCanAuthenticate(const AccountId& account_id,
                                             bool can_authenticate) {
-  LoginScreenClient::Get()->login_screen()->SetPinEnabledForUser(
-      account_id, can_authenticate);
+  ash::LoginScreen::Get()->GetModel()->SetPinEnabledForUser(account_id,
+                                                            can_authenticate);
 }
 
 }  // namespace chromeos

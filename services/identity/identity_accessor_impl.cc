@@ -8,97 +8,57 @@
 
 #include "base/bind.h"
 #include "base/time/time.h"
-#include "components/signin/core/browser/account_tracker_service.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "services/identity/public/mojom/account.mojom.h"
+#include "services/identity/public/cpp/account_state.h"
 
 namespace identity {
 
-IdentityAccessorImpl::AccessTokenRequest::AccessTokenRequest(
-    const std::string& account_id,
-    const ScopeSet& scopes,
-    const std::string& consumer_id,
+void IdentityAccessorImpl::OnTokenRequestCompleted(
+    base::UnguessableToken callback_id,
+    scoped_refptr<base::RefCountedData<bool>> is_callback_done,
     GetAccessTokenCallback consumer_callback,
-    ProfileOAuth2TokenService* token_service,
-    IdentityAccessorImpl* manager)
-    : OAuth2TokenService::Consumer(consumer_id),
-      token_service_(token_service),
-      consumer_callback_(std::move(consumer_callback)),
-      manager_(manager) {
-  token_service_request_ =
-      token_service_->StartRequest(account_id, scopes, this);
-}
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
+  if (error.state() == GoogleServiceAuthError::NONE) {
+    std::move(consumer_callback)
+        .Run(access_token_info.token, access_token_info.expiration_time, error);
+  } else {
+    std::move(consumer_callback).Run(base::nullopt, base::Time(), error);
+  }
 
-IdentityAccessorImpl::AccessTokenRequest::~AccessTokenRequest() = default;
-
-void IdentityAccessorImpl::AccessTokenRequest::OnGetTokenSuccess(
-    const OAuth2TokenService::Request* request,
-    const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
-  OnRequestCompleted(request, token_response.access_token,
-                     token_response.expiration_time,
-                     GoogleServiceAuthError::AuthErrorNone());
-}
-
-void IdentityAccessorImpl::AccessTokenRequest::OnGetTokenFailure(
-    const OAuth2TokenService::Request* request,
-    const GoogleServiceAuthError& error) {
-  OnRequestCompleted(request, base::nullopt, base::Time(), error);
-}
-
-void IdentityAccessorImpl::AccessTokenRequest::OnRequestCompleted(
-    const OAuth2TokenService::Request* request,
-    const base::Optional<std::string>& access_token,
-    base::Time expiration_time,
-    const GoogleServiceAuthError& error) {
-  std::move(consumer_callback_).Run(access_token, expiration_time, error);
-
-  // Causes |this| to be deleted.
-  manager_->AccessTokenRequestCompleted(this);
-}
-
-// static
-void IdentityAccessorImpl::Create(mojom::IdentityAccessorRequest request,
-                                  IdentityManager* identity_manager,
-                                  AccountTrackerService* account_tracker,
-                                  ProfileOAuth2TokenService* token_service) {
-  new IdentityAccessorImpl(std::move(request), identity_manager,
-                           account_tracker, token_service);
+  is_callback_done->data = true;
+  access_token_fetchers_.erase(callback_id);
 }
 
 IdentityAccessorImpl::IdentityAccessorImpl(
-    mojom::IdentityAccessorRequest request,
-    IdentityManager* identity_manager,
-    AccountTrackerService* account_tracker,
-    ProfileOAuth2TokenService* token_service)
-    : binding_(this, std::move(request)),
-      identity_manager_(identity_manager),
-      account_tracker_(account_tracker),
-      token_service_(token_service) {
-  binding_.set_connection_error_handler(base::BindRepeating(
-      &IdentityAccessorImpl::OnConnectionError, base::Unretained(this)));
-
+    signin::IdentityManager* identity_manager)
+    : identity_manager_(identity_manager) {
   identity_manager_->AddObserver(this);
 }
 
 IdentityAccessorImpl::~IdentityAccessorImpl() {
   identity_manager_->RemoveObserver(this);
-  binding_.Close();
 }
 
 void IdentityAccessorImpl::GetPrimaryAccountInfo(
     GetPrimaryAccountInfoCallback callback) {
-  AccountInfo account_info = identity_manager_->GetPrimaryAccountInfo();
+  CoreAccountInfo account_info = identity_manager_->GetPrimaryAccountInfo();
   AccountState account_state = GetStateOfAccount(account_info);
-  std::move(callback).Run(account_info, account_state);
+  std::move(callback).Run(account_info.account_id, account_info.gaia,
+                          account_info.email, account_state);
 }
 
 void IdentityAccessorImpl::GetPrimaryAccountWhenAvailable(
     GetPrimaryAccountWhenAvailableCallback callback) {
-  AccountInfo account_info = identity_manager_->GetPrimaryAccountInfo();
+  CoreAccountInfo account_info = identity_manager_->GetPrimaryAccountInfo();
   AccountState account_state = GetStateOfAccount(account_info);
 
   if (!account_state.has_refresh_token ||
-      token_service_->RefreshTokenHasError(account_info.account_id)) {
+      identity_manager_->GetErrorStateOfRefreshTokenForAccount(
+          account_info.account_id) != GoogleServiceAuthError::AuthErrorNone()) {
     primary_account_available_callbacks_.push_back(std::move(callback));
     return;
   }
@@ -106,28 +66,31 @@ void IdentityAccessorImpl::GetPrimaryAccountWhenAvailable(
   DCHECK(!account_info.account_id.empty());
   DCHECK(!account_info.email.empty());
   DCHECK(!account_info.gaia.empty());
-  std::move(callback).Run(account_info, account_state);
+  std::move(callback).Run(account_info.account_id, account_info.gaia,
+                          account_info.email, account_state);
 }
 
-void IdentityAccessorImpl::GetAccountInfoFromGaiaId(
-    const std::string& gaia_id,
-    GetAccountInfoFromGaiaIdCallback callback) {
-  AccountInfo account_info = account_tracker_->FindAccountInfoByGaiaId(gaia_id);
-  AccountState account_state = GetStateOfAccount(account_info);
-  std::move(callback).Run(account_info, account_state);
-}
-
-void IdentityAccessorImpl::GetAccessToken(const std::string& account_id,
+void IdentityAccessorImpl::GetAccessToken(const CoreAccountId& account_id,
                                           const ScopeSet& scopes,
                                           const std::string& consumer_id,
                                           GetAccessTokenCallback callback) {
-  std::unique_ptr<AccessTokenRequest> access_token_request =
-      std::make_unique<AccessTokenRequest>(account_id, scopes, consumer_id,
-                                           std::move(callback), token_service_,
-                                           this);
+  base::UnguessableToken callback_id = base::UnguessableToken::Create();
+  auto is_callback_done =
+      base::MakeRefCounted<base::RefCountedData<bool>>(false);
 
-  access_token_requests_[access_token_request.get()] =
-      std::move(access_token_request);
+  std::unique_ptr<signin::AccessTokenFetcher> fetcher =
+      identity_manager_->CreateAccessTokenFetcherForAccount(
+          account_id, consumer_id, scopes,
+          base::BindOnce(&IdentityAccessorImpl::OnTokenRequestCompleted,
+                         base::Unretained(this), callback_id, is_callback_done,
+                         std::move(callback)),
+          signin::AccessTokenFetcher::Mode::kImmediate);
+
+  // If our callback hasn't already been run, hold on to the AccessTokenFetcher
+  // so it won't be cleaned up until the request is done.
+  if (!is_callback_done->data) {
+    access_token_fetchers_[callback_id] = std::move(fetcher);
+  }
 }
 
 void IdentityAccessorImpl::OnRefreshTokenUpdatedForAccount(
@@ -140,42 +103,41 @@ void IdentityAccessorImpl::OnPrimaryAccountSet(
   OnAccountStateChange(primary_account_info.account_id);
 }
 
-void IdentityAccessorImpl::OnAccountStateChange(const std::string& account_id) {
-  AccountInfo account_info = account_tracker_->GetAccountInfo(account_id);
-  AccountState account_state = GetStateOfAccount(account_info);
+void IdentityAccessorImpl::OnAccountStateChange(
+    const CoreAccountId& account_id) {
+  base::Optional<AccountInfo> account_info =
+      identity_manager_
+          ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
+              account_id);
+  if (account_info.has_value()) {
+    AccountState account_state = GetStateOfAccount(account_info.value());
 
-  // Check whether the primary account is available and notify any waiting
-  // consumers if so.
-  if (account_state.is_primary_account && account_state.has_refresh_token &&
-      !token_service_->RefreshTokenHasError(account_info.account_id)) {
-    DCHECK(!account_info.account_id.empty());
-    DCHECK(!account_info.email.empty());
-    DCHECK(!account_info.gaia.empty());
+    // Check whether the primary account is available and notify any waiting
+    // consumers if so.
+    if (account_state.is_primary_account &&
+        !identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+            account_info->account_id)) {
+      DCHECK(!account_info->account_id.empty());
+      DCHECK(!account_info->email.empty());
+      DCHECK(!account_info->gaia.empty());
 
-    for (auto&& callback : primary_account_available_callbacks_) {
-      std::move(callback).Run(account_info, account_state);
+      for (auto&& callback : primary_account_available_callbacks_) {
+        std::move(callback).Run(account_info->account_id, account_info->gaia,
+                                account_info->email, account_state);
+      }
+      primary_account_available_callbacks_.clear();
     }
-    primary_account_available_callbacks_.clear();
   }
 }
 
-void IdentityAccessorImpl::AccessTokenRequestCompleted(
-    AccessTokenRequest* request) {
-  access_token_requests_.erase(request);
-}
-
 AccountState IdentityAccessorImpl::GetStateOfAccount(
-    const AccountInfo& account_info) {
+    const CoreAccountInfo& account_info) {
   AccountState account_state;
   account_state.has_refresh_token =
-      token_service_->RefreshTokenIsAvailable(account_info.account_id);
+      identity_manager_->HasAccountWithRefreshToken(account_info.account_id);
   account_state.is_primary_account =
       (account_info.account_id == identity_manager_->GetPrimaryAccountId());
   return account_state;
-}
-
-void IdentityAccessorImpl::OnConnectionError() {
-  delete this;
 }
 
 }  // namespace identity

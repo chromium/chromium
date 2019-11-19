@@ -11,7 +11,7 @@
 class PasswordGenerationPopupObserver {
  public:
   virtual void OnPopupShown(
-      PasswordGenerationPopupController::GenerationState state) = 0;
+      PasswordGenerationPopupController::GenerationUIState state) = 0;
   virtual void OnPopupHidden() = 0;
 };
 

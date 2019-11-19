@@ -25,14 +25,12 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromecast/browser/cast_browser_process.h"
-#include "chromecast/browser/cast_web_view.h"
-#include "chromecast/browser/cast_web_view_factory.h"
+#include "chromecast/browser/cast_web_contents.h"
 #include "chromecast/browser/extensions/api/tabs/tabs_constants.h"
 #include "chromecast/service/cast_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
-#include "content/public/common/page_zoom.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_zoom_request_client.h"
 #include "extensions/common/api/extension_types.h"
@@ -43,6 +41,7 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/message_bundle.h"
 #include "extensions/common/permissions/permissions_data.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/models/list_selection_model.h"
 #include "ui/base/ui_base_types.h"
 
@@ -54,8 +53,7 @@ using content::Referrer;
 using content::WebContents;
 using zoom::ZoomController;
 
-using chromecast::ActiveWebview;
-using chromecast::CastWebView;
+using chromecast::CastWebContents;
 
 namespace extensions {
 
@@ -110,13 +108,14 @@ std::unique_ptr<api::tabs::MutedInfo> CreateMutedInfo(
   return info;
 }
 
-std::unique_ptr<api::tabs::Tab> CreateTabObject(const ActiveWebview* webview,
-                                                const Extension* extension,
-                                                int tab_index) {
-  WebContents* contents = webview->web_view->web_contents();
+std::unique_ptr<api::tabs::Tab> CreateTabObject(
+    const CastWebContents* cast_web_contents,
+    const Extension* extension,
+    int tab_index) {
+  WebContents* contents = cast_web_contents->web_contents();
   bool is_loading = contents->IsLoading();
   auto tab_object = std::make_unique<api::tabs::Tab>();
-  tab_object->id = std::make_unique<int>(webview->id);
+  tab_object->id = std::make_unique<int>(cast_web_contents->tab_id());
   tab_object->index = tab_index;
   tab_object->window_id = kCastWindowId;
   tab_object->status = std::make_unique<std::string>(
@@ -142,33 +141,31 @@ std::unique_ptr<api::tabs::Tab> CreateTabObject(const ActiveWebview* webview,
 }
 
 std::unique_ptr<base::ListValue> CreateTabList(
-    const std::vector<ActiveWebview>& webviews,
+    const std::vector<CastWebContents*>& webviews,
     const Extension* extension) {
   std::unique_ptr<base::ListValue> tab_list(new base::ListValue());
   for (size_t i = 0; i < webviews.size(); i++) {
-    tab_list->Append(CreateTabObject(&webviews[i], extension, i)->ToValue());
+    tab_list->Append(CreateTabObject(webviews[i], extension, i)->ToValue());
   }
   return tab_list;
 }
 
-const std::vector<ActiveWebview>& GetTabList() {
-  return chromecast::shell::CastBrowserProcess::GetInstance()
-      ->web_view_factory()
-      ->active_webviews();
+const std::vector<CastWebContents*>& GetTabList() {
+  return chromecast::CastWebContents::GetAll();
 }
 
 int GetActiveWebContentsIndex() {
   return 0;
 }
 
-const ActiveWebview* GetWebViewForIndex(int index) {
+const CastWebContents* GetWebViewForIndex(int index) {
   auto& tabs = GetTabList();
   if (index >= 0 && index < static_cast<int>(tabs.size()))
-    return &tabs[index];
+    return tabs[index];
   return nullptr;
 }
 
-const ActiveWebview* GetWebViewForTab(int tab_id, int* tab_index = nullptr) {
+const CastWebContents* GetWebViewForTab(int tab_id, int* tab_index = nullptr) {
   if (tab_id == -1) {
     // Return the active tab
     int index = GetActiveWebContentsIndex();
@@ -179,10 +176,10 @@ const ActiveWebview* GetWebViewForTab(int tab_id, int* tab_index = nullptr) {
 
   auto& tabs = GetTabList();
   for (size_t i = 0; i < tabs.size(); i++) {
-    if (tabs[i].id == tab_id) {
+    if (tabs[i]->tab_id() == tab_id) {
       if (tab_index)
         *tab_index = static_cast<int>(i);
-      return &tabs[i];
+      return tabs[i];
     }
   }
   return nullptr;
@@ -192,8 +189,8 @@ std::unique_ptr<api::tabs::Tab> CreateTabObject(WebContents* contents,
                                                 const Extension* extension) {
   auto& tabs = GetTabList();
   for (size_t i = 0; i < tabs.size(); i++) {
-    if (tabs[i].web_view->web_contents() == contents) {
-      return CreateTabObject(&tabs[i], extension, static_cast<int>(i));
+    if (tabs[i]->web_contents() == contents) {
+      return CreateTabObject(tabs[i], extension, static_cast<int>(i));
     }
   }
 
@@ -201,9 +198,9 @@ std::unique_ptr<api::tabs::Tab> CreateTabObject(WebContents* contents,
 }
 
 int GetActiveWebContentsID() {
-  const ActiveWebview* webview =
+  const CastWebContents* contents =
       GetWebViewForIndex(GetActiveWebContentsIndex());
-  return webview ? webview->id : -1;
+  return contents ? contents->tab_id() : -1;
 }
 
 int GetID(const std::unique_ptr<int>& id) {
@@ -378,7 +375,7 @@ ExtensionFunction::ResponseAction TabsGetSelectedFunction::Run() {
   }
 
   int index = GetActiveWebContentsIndex();
-  const ActiveWebview* contents = GetWebViewForIndex(index);
+  const CastWebContents* contents = GetWebViewForIndex(index);
   if (!contents)
     return RespondNow(Error(keys::kNoSelectedTabError));
   return RespondNow(ArgumentList(tabs::Get::Results::Create(
@@ -463,7 +460,7 @@ ExtensionFunction::ResponseAction TabsGetFunction::Run() {
   int tab_id = params->tab_id;
 
   int tab_index;
-  const ActiveWebview* contents = GetWebViewForTab(tab_id, &tab_index);
+  const CastWebContents* contents = GetWebViewForTab(tab_id, &tab_index);
   if (!contents) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         keys::kTabNotFoundError, base::NumberToString(tab_id))));
@@ -479,10 +476,10 @@ ExtensionFunction::ResponseAction TabsGetCurrentFunction::Run() {
   // Return the caller, if it's a tab. If not the result isn't an error but an
   // empty tab (hence returning true).
   int index = GetActiveWebContentsIndex();
-  const ActiveWebview* active = GetWebViewForIndex(index);
+  const CastWebContents* active = GetWebViewForIndex(index);
   WebContents* caller_contents = GetSenderWebContents();
   std::unique_ptr<base::ListValue> results;
-  if (caller_contents && caller_contents == active->web_view->web_contents()) {
+  if (caller_contents && caller_contents == active->web_contents()) {
     results = tabs::Get::Results::Create(
         *CreateTabObject(active, extension(), index));
   }
@@ -508,7 +505,7 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
   ui::ListSelectionModel selection;
   std::string error;
 
-  const std::vector<ActiveWebview>& tabs = GetTabList();
+  const std::vector<CastWebContents*>& tabs = GetTabList();
 
   if (params->highlight_info.tabs.as_integers) {
     std::vector<int>& tab_indices = *params->highlight_info.tabs.as_integers;
@@ -538,11 +535,12 @@ ExtensionFunction::ResponseAction TabsHighlightFunction::Run() {
       browser_context(), extension(), ExtensionTabUtil::kPopulateTabs)));
 }
 
-bool TabsHighlightFunction::HighlightTab(const std::vector<ActiveWebview>& tabs,
-                                         ui::ListSelectionModel* selection,
-                                         int* active_index,
-                                         int index,
-                                         std::string* error) {
+bool TabsHighlightFunction::HighlightTab(
+    const std::vector<CastWebContents*>& tabs,
+    ui::ListSelectionModel* selection,
+    int* active_index,
+    int index,
+    std::string* error) {
   // Make sure the index is in range.
   if (index >= 0 && index < static_cast<int>(tabs.size())) {
     *error = ErrorUtils::FormatErrorMessage(keys::kTabIndexNotFoundError,
@@ -566,12 +564,12 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   int tab_id = GetID(params->tab_id);
-  const ActiveWebview* contents = GetWebViewForTab(tab_id);
+  const CastWebContents* contents = GetWebViewForTab(tab_id);
   if (!contents) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         keys::kTabNotFoundError, base::NumberToString(tab_id))));
   }
-  web_contents_ = contents->web_view->web_contents();
+  web_contents_ = contents->web_contents();
 
   // Navigate the tab to a new location if the url is different.
   bool is_async = false;
@@ -694,13 +692,13 @@ ExtensionFunction::ResponseAction TabsReloadFunction::Run() {
   }
 
   int tab_id = GetID(params->tab_id);
-  const ActiveWebview* contents = GetWebViewForTab(tab_id);
+  const CastWebContents* contents = GetWebViewForTab(tab_id);
   if (!contents) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         keys::kTabNotFoundError, base::NumberToString(tab_id))));
   }
 
-  contents->web_view->web_contents()->GetController().Reload(
+  contents->web_contents()->GetController().Reload(
       bypass_cache ? content::ReloadType::BYPASSING_CACHE
                    : content::ReloadType::NORMAL,
       true);
@@ -763,10 +761,14 @@ ExecuteCodeFunction::InitResult ExecuteCodeInTabFunction::Init() {
 }
 
 bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
-  const ActiveWebview* webview = GetWebViewForTab(execute_tab_id_);
+  const CastWebContents* webview = GetWebViewForTab(execute_tab_id_);
+  if (!webview) {
+    *error = ErrorUtils::FormatErrorMessage(
+        keys::kTabIndexNotFoundError, base::NumberToString(execute_tab_id_));
+    return false;
+  }
 
-  CHECK(webview);
-  content::WebContents* contents = webview->web_view->web_contents();
+  content::WebContents* contents = webview->web_contents();
 
   int frame_id = details_->frame_id ? *details_->frame_id
                                     : ExtensionApiFrameIdMap::kTopFrameId;
@@ -815,7 +817,7 @@ bool ExecuteCodeInTabFunction::CanExecuteScriptOnPage(std::string* error) {
 
 ScriptExecutor* ExecuteCodeInTabFunction::GetScriptExecutor(
     std::string* error) {
-  const ActiveWebview* contents = GetWebViewForTab(execute_tab_id_);
+  const CastWebContents* contents = GetWebViewForTab(execute_tab_id_);
 
   if (!contents)
     return nullptr;
@@ -847,23 +849,24 @@ ExtensionFunction::ResponseAction TabsSetZoomFunction::Run() {
   std::string error;
 
   int tab_id = GetID(params->tab_id);
-  const ActiveWebview* contents = GetWebViewForTab(tab_id);
+  const CastWebContents* contents = GetWebViewForTab(tab_id);
   if (!contents) {
     error = ErrorUtils::FormatErrorMessage(keys::kTabNotFoundError,
                                            base::NumberToString(tab_id));
     return RespondNow(Error(error));
   }
 
-  WebContents* web_contents = contents->web_view->web_contents();
+  WebContents* web_contents = contents->web_contents();
   GURL url(web_contents->GetVisibleURL());
   if (extension()->permissions_data()->IsRestrictedUrl(url, &error))
     return RespondNow(Error(error));
 
   ZoomController* zoom_controller =
       ZoomController::FromWebContents(web_contents);
-  double zoom_level = params->zoom_factor > 0
-                          ? content::ZoomFactorToZoomLevel(params->zoom_factor)
-                          : zoom_controller->GetDefaultZoomLevel();
+  double zoom_level =
+      params->zoom_factor > 0
+          ? blink::PageZoomFactorToZoomLevel(params->zoom_factor)
+          : zoom_controller->GetDefaultZoomLevel();
 
   scoped_refptr<ExtensionZoomRequestClient> client(
       new ExtensionZoomRequestClient(extension()));
@@ -881,16 +884,16 @@ ExtensionFunction::ResponseAction TabsGetZoomFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   int tab_id = GetID(params->tab_id);
-  const ActiveWebview* contents = GetWebViewForTab(tab_id);
+  const CastWebContents* contents = GetWebViewForTab(tab_id);
   if (!contents) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         keys::kTabNotFoundError, base::NumberToString(tab_id))));
   }
 
-  WebContents* web_contents = contents->web_view->web_contents();
+  WebContents* web_contents = contents->web_contents();
   double zoom_level =
       ZoomController::FromWebContents(web_contents)->GetZoomLevel();
-  double zoom_factor = content::ZoomLevelToZoomFactor(zoom_level);
+  double zoom_factor = blink::PageZoomLevelToZoomFactor(zoom_level);
   return RespondNow(ArgumentList(tabs::GetZoom::Results::Create(zoom_factor)));
 }
 
@@ -902,13 +905,13 @@ ExtensionFunction::ResponseAction TabsSetZoomSettingsFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   int tab_id = GetID(params->tab_id);
-  const ActiveWebview* contents = GetWebViewForTab(tab_id);
+  const CastWebContents* contents = GetWebViewForTab(tab_id);
   if (!contents) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         keys::kTabNotFoundError, base::NumberToString(tab_id))));
   }
 
-  WebContents* web_contents = contents->web_view->web_contents();
+  WebContents* web_contents = contents->web_contents();
   GURL url(web_contents->GetVisibleURL());
   std::string error;
   if (extension()->permissions_data()->IsRestrictedUrl(url, &error))
@@ -955,21 +958,22 @@ ExtensionFunction::ResponseAction TabsGetZoomSettingsFunction::Run() {
   std::string error;
 
   int tab_id = GetID(params->tab_id);
-  const ActiveWebview* contents = GetWebViewForTab(tab_id);
+  const CastWebContents* contents = GetWebViewForTab(tab_id);
   if (!contents) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         keys::kTabNotFoundError, base::NumberToString(tab_id))));
   }
 
-  WebContents* web_contents = contents->web_view->web_contents();
+  WebContents* web_contents = contents->web_contents();
   ZoomController* zoom_controller =
       ZoomController::FromWebContents(web_contents);
 
   ZoomController::ZoomMode zoom_mode = zoom_controller->zoom_mode();
   api::tabs::ZoomSettings zoom_settings;
   ZoomModeToZoomSettings(zoom_mode, &zoom_settings);
-  zoom_settings.default_zoom_factor.reset(new double(
-      content::ZoomLevelToZoomFactor(zoom_controller->GetDefaultZoomLevel())));
+  zoom_settings.default_zoom_factor.reset(
+      new double(blink::PageZoomLevelToZoomFactor(
+          zoom_controller->GetDefaultZoomLevel())));
 
   return RespondNow(
       ArgumentList(api::tabs::GetZoomSettings::Results::Create(zoom_settings)));

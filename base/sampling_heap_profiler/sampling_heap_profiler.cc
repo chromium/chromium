@@ -17,7 +17,6 @@
 #include "base/no_destructor.h"
 #include "base/partition_alloc_buildflags.h"
 #include "base/sampling_heap_profiler/lock_free_address_hash_set.h"
-#include "base/threading/thread_id_name_manager.h"
 #include "base/threading/thread_local_storage.h"
 #include "base/trace_event/heap_profiler_allocation_context_tracker.h"
 #include "build/build_config.h"
@@ -94,7 +93,10 @@ SamplingHeapProfiler::Sample::Sample(const Sample&) = default;
 SamplingHeapProfiler::Sample::~Sample() = default;
 
 SamplingHeapProfiler::SamplingHeapProfiler() = default;
-SamplingHeapProfiler::~SamplingHeapProfiler() = default;
+SamplingHeapProfiler::~SamplingHeapProfiler() {
+  if (record_thread_names_)
+    base::ThreadIdNameManager::GetInstance()->RemoveObserver(this);
+}
 
 uint32_t SamplingHeapProfiler::Start() {
 #if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
@@ -105,12 +107,18 @@ uint32_t SamplingHeapProfiler::Start() {
     return 0;
   }
 #endif
-  PoissonAllocationSampler::Get()->AddSamplesObserver(this);
+
+  AutoLock lock(start_stop_mutex_);
+  if (!running_sessions_++)
+    PoissonAllocationSampler::Get()->AddSamplesObserver(this);
   return last_sample_ordinal_;
 }
 
 void SamplingHeapProfiler::Stop() {
-  PoissonAllocationSampler::Get()->RemoveSamplesObserver(this);
+  AutoLock lock(start_stop_mutex_);
+  DCHECK_GT(running_sessions_, 0);
+  if (!--running_sessions_)
+    PoissonAllocationSampler::Get()->RemoveSamplesObserver(this);
 }
 
 void SamplingHeapProfiler::SetSamplingInterval(size_t sampling_interval) {
@@ -118,10 +126,13 @@ void SamplingHeapProfiler::SetSamplingInterval(size_t sampling_interval) {
 }
 
 void SamplingHeapProfiler::SetRecordThreadNames(bool value) {
+  if (record_thread_names_ == value)
+    return;
   record_thread_names_ = value;
   if (value) {
-    base::ThreadIdNameManager::GetInstance()->InstallSetNameCallback(
-        base::BindRepeating(IgnoreResult(&UpdateAndGetThreadName)));
+    base::ThreadIdNameManager::GetInstance()->AddObserver(this);
+  } else {
+    base::ThreadIdNameManager::GetInstance()->RemoveObserver(this);
   }
 }
 
@@ -134,13 +145,8 @@ const char* SamplingHeapProfiler::CachedThreadName() {
 void** SamplingHeapProfiler::CaptureStackTrace(void** frames,
                                                size_t max_entries,
                                                size_t* count) {
-  // Skip 5 top frames related to the profiler itself, e.g.:
-  //   base::debug::CollectStackTrace
-  //   heap_profiling::CaptureStackTrace
-  //   heap_profiling::RecordAndSendAlloc
-  //   SamplingProfilerWrapper::SampleAdded
-  //   sampling_heap_profiler::PoissonAllocationSampler::DoRecordAlloc
-  size_t skip_frames = 5;
+  // Skip top frames as they correspond to the profiler itself.
+  size_t skip_frames = 3;
 #if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
     defined(OFFICIAL_BUILD)
   size_t frame_count =
@@ -168,8 +174,11 @@ void SamplingHeapProfiler::SampleAdded(
     size_t total,
     PoissonAllocationSampler::AllocatorType type,
     const char* context) {
+  // CaptureStack and allocation context tracking may use TLS.
+  // Bail out if it has been destroyed.
+  if (UNLIKELY(base::ThreadLocalStorage::HasBeenDestroyed()))
+    return;
   DCHECK(PoissonAllocationSampler::ScopedMuteThreadSamples::IsMuted());
-  AutoLock lock(mutex_);
   Sample sample(size, total, ++last_sample_ordinal_);
   sample.allocator = type;
   using CaptureMode = trace_event::AllocationContextTracker::CaptureMode;
@@ -181,15 +190,13 @@ void SamplingHeapProfiler::SampleAdded(
   } else {
     CaptureNativeStack(context, &sample);
   }
+  AutoLock lock(mutex_);
   RecordString(sample.context);
   samples_.emplace(address, std::move(sample));
 }
 
 void SamplingHeapProfiler::CaptureMixedStack(const char* context,
                                              Sample* sample) {
-  // Allocation context is tracked in TLS. Return nothing if TLS was destroyed.
-  if (UNLIKELY(base::ThreadLocalStorage::HasBeenDestroyed()))
-    return;
   auto* tracker =
       trace_event::AllocationContextTracker::GetInstanceForCurrentThread();
   if (!tracker)
@@ -203,6 +210,8 @@ void SamplingHeapProfiler::CaptureMixedStack(const char* context,
   CHECK_LE(backtrace.frame_count, kMaxStackEntries);
   std::vector<void*> stack;
   stack.reserve(backtrace.frame_count);
+
+  AutoLock lock(mutex_);  // Needed for RecordString call.
   for (int i = base::checked_cast<int>(backtrace.frame_count) - 1; i >= 0;
        --i) {
     const base::trace_event::StackFrame& frame = backtrace.frames[i];
@@ -228,10 +237,6 @@ void SamplingHeapProfiler::CaptureNativeStack(const char* context,
 
   if (record_thread_names_)
     sample->thread_name = CachedThreadName();
-
-  // Task context require access to TLS.
-  if (UNLIKELY(base::ThreadLocalStorage::HasBeenDestroyed()))
-    return;
 
   if (!context) {
     const auto* tracker =
@@ -284,6 +289,10 @@ void SamplingHeapProfiler::Init() {
 SamplingHeapProfiler* SamplingHeapProfiler::Get() {
   static NoDestructor<SamplingHeapProfiler> instance;
   return instance.get();
+}
+
+void SamplingHeapProfiler::OnThreadNameChanged(const char* name) {
+  UpdateAndGetThreadName(name);
 }
 
 }  // namespace base

@@ -505,6 +505,183 @@ TEST_F(ParseCrlDistributionPointsTest, FullnameAsDirname) {
   ASSERT_EQ(0u, dp1.uris.size());
 }
 
+bool ParseAuthorityKeyIdentifierTestData(
+    const char* file_name,
+    std::string* backing_bytes,
+    ParsedAuthorityKeyIdentifier* authority_key_identifier) {
+  // Read the test file.
+  const PemBlockMapping mappings[] = {
+      {"AUTHORITY_KEY_IDENTIFIER", backing_bytes},
+  };
+  std::string test_file_path =
+      std::string(
+          "net/data/parse_certificate_unittest/authority_key_identifier/") +
+      file_name;
+  EXPECT_TRUE(ReadTestDataFromPemFile(test_file_path, mappings));
+
+  return ParseAuthorityKeyIdentifier(der::Input(backing_bytes),
+                                     authority_key_identifier);
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, EmptyInput) {
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  EXPECT_FALSE(
+      ParseAuthorityKeyIdentifier(der::Input(), &authority_key_identifier));
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, EmptySequence) {
+  std::string backing_bytes;
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  // TODO(mattm): should this be an error? RFC 5280 doesn't explicitly say it.
+  ASSERT_TRUE(ParseAuthorityKeyIdentifierTestData(
+      "empty_sequence.pem", &backing_bytes, &authority_key_identifier));
+
+  EXPECT_FALSE(authority_key_identifier.key_identifier);
+  EXPECT_FALSE(authority_key_identifier.authority_cert_issuer);
+  EXPECT_FALSE(authority_key_identifier.authority_cert_serial_number);
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, KeyIdentifier) {
+  std::string backing_bytes;
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  ASSERT_TRUE(ParseAuthorityKeyIdentifierTestData(
+      "key_identifier.pem", &backing_bytes, &authority_key_identifier));
+
+  ASSERT_TRUE(authority_key_identifier.key_identifier);
+  const uint8_t kExpectedValue[] = {0xDE, 0xAD, 0xB0, 0x0F};
+  EXPECT_EQ(der::Input(kExpectedValue),
+            authority_key_identifier.key_identifier);
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, IssuerAndSerial) {
+  std::string backing_bytes;
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  ASSERT_TRUE(ParseAuthorityKeyIdentifierTestData(
+      "issuer_and_serial.pem", &backing_bytes, &authority_key_identifier));
+
+  EXPECT_FALSE(authority_key_identifier.key_identifier);
+
+  ASSERT_TRUE(authority_key_identifier.authority_cert_issuer);
+  const uint8_t kExpectedIssuer[] = {0xa4, 0x11, 0x30, 0x0f, 0x31, 0x0d, 0x30,
+                                     0x0b, 0x06, 0x03, 0x55, 0x04, 0x03, 0x0c,
+                                     0x04, 0x52, 0x6f, 0x6f, 0x74};
+  EXPECT_EQ(der::Input(kExpectedIssuer),
+            authority_key_identifier.authority_cert_issuer);
+
+  ASSERT_TRUE(authority_key_identifier.authority_cert_serial_number);
+  const uint8_t kExpectedSerial[] = {0x27, 0x4F};
+  EXPECT_EQ(der::Input(kExpectedSerial),
+            authority_key_identifier.authority_cert_serial_number);
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, KeyIdentifierAndIssuerAndSerial) {
+  std::string backing_bytes;
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  ASSERT_TRUE(ParseAuthorityKeyIdentifierTestData(
+      "key_identifier_and_issuer_and_serial.pem", &backing_bytes,
+      &authority_key_identifier));
+
+  ASSERT_TRUE(authority_key_identifier.key_identifier);
+  const uint8_t kExpectedValue[] = {0xDE, 0xAD, 0xB0, 0x0F};
+  EXPECT_EQ(der::Input(kExpectedValue),
+            authority_key_identifier.key_identifier);
+
+  ASSERT_TRUE(authority_key_identifier.authority_cert_issuer);
+  const uint8_t kExpectedIssuer[] = {0xa4, 0x11, 0x30, 0x0f, 0x31, 0x0d, 0x30,
+                                     0x0b, 0x06, 0x03, 0x55, 0x04, 0x03, 0x0c,
+                                     0x04, 0x52, 0x6f, 0x6f, 0x74};
+  EXPECT_EQ(der::Input(kExpectedIssuer),
+            authority_key_identifier.authority_cert_issuer);
+
+  ASSERT_TRUE(authority_key_identifier.authority_cert_serial_number);
+  const uint8_t kExpectedSerial[] = {0x27, 0x4F};
+  EXPECT_EQ(der::Input(kExpectedSerial),
+            authority_key_identifier.authority_cert_serial_number);
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, IssuerOnly) {
+  std::string backing_bytes;
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  EXPECT_FALSE(ParseAuthorityKeyIdentifierTestData(
+      "issuer_only.pem", &backing_bytes, &authority_key_identifier));
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, SerialOnly) {
+  std::string backing_bytes;
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  EXPECT_FALSE(ParseAuthorityKeyIdentifierTestData(
+      "serial_only.pem", &backing_bytes, &authority_key_identifier));
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, InvalidContents) {
+  std::string backing_bytes;
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  EXPECT_FALSE(ParseAuthorityKeyIdentifierTestData(
+      "invalid_contents.pem", &backing_bytes, &authority_key_identifier));
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, InvalidKeyIdentifier) {
+  std::string backing_bytes;
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  EXPECT_FALSE(ParseAuthorityKeyIdentifierTestData(
+      "invalid_key_identifier.pem", &backing_bytes, &authority_key_identifier));
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, InvalidIssuer) {
+  std::string backing_bytes;
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  EXPECT_FALSE(ParseAuthorityKeyIdentifierTestData(
+      "invalid_issuer.pem", &backing_bytes, &authority_key_identifier));
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, InvalidSerial) {
+  std::string backing_bytes;
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  EXPECT_FALSE(ParseAuthorityKeyIdentifierTestData(
+      "invalid_serial.pem", &backing_bytes, &authority_key_identifier));
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, ExtraContentsAfterIssuerAndSerial) {
+  std::string backing_bytes;
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  EXPECT_FALSE(ParseAuthorityKeyIdentifierTestData(
+      "extra_contents_after_issuer_and_serial.pem", &backing_bytes,
+      &authority_key_identifier));
+}
+
+TEST(ParseAuthorityKeyIdentifierTest, ExtraContentsAfterExtensionSequence) {
+  std::string backing_bytes;
+  ParsedAuthorityKeyIdentifier authority_key_identifier;
+  EXPECT_FALSE(ParseAuthorityKeyIdentifierTestData(
+      "extra_contents_after_extension_sequence.pem", &backing_bytes,
+      &authority_key_identifier));
+}
+
+TEST(ParseSubjectKeyIdentifierTest, EmptyInput) {
+  der::Input subject_key_identifier;
+  EXPECT_FALSE(
+      ParseSubjectKeyIdentifier(der::Input(), &subject_key_identifier));
+}
+
+TEST(ParseSubjectKeyIdentifierTest, Valid) {
+  // OCTET_STRING {`abcd`}
+  const uint8_t kInput[] = {0x04, 0x02, 0xab, 0xcd};
+  const uint8_t kExpected[] = {0xab, 0xcd};
+  der::Input subject_key_identifier;
+  EXPECT_TRUE(
+      ParseSubjectKeyIdentifier(der::Input(kInput), &subject_key_identifier));
+  EXPECT_EQ(der::Input(kExpected), subject_key_identifier);
+}
+
+TEST(ParseSubjectKeyIdentifierTest, ExtraData) {
+  // OCTET_STRING {`abcd`}
+  // NULL
+  const uint8_t kInput[] = {0x04, 0x02, 0xab, 0xcd, 0x05};
+  der::Input subject_key_identifier;
+  EXPECT_FALSE(
+      ParseSubjectKeyIdentifier(der::Input(kInput), &subject_key_identifier));
+}
+
 }  // namespace
 
 }  // namespace net

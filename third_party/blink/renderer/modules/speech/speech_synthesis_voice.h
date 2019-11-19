@@ -26,9 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_SYNTHESIS_VOICE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_SYNTHESIS_VOICE_H_
 
+#include "third_party/blink/public/mojom/speech/speech_synthesis.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/speech/platform_speech_synthesis_voice.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -39,23 +39,20 @@ class SpeechSynthesisVoice final : public ScriptWrappable {
 
  public:
   static SpeechSynthesisVoice* Create(
-      scoped_refptr<PlatformSpeechSynthesisVoice>);
+      mojom::blink::SpeechSynthesisVoicePtr mojom_voice);
 
-  explicit SpeechSynthesisVoice(scoped_refptr<PlatformSpeechSynthesisVoice>);
+  explicit SpeechSynthesisVoice(
+      mojom::blink::SpeechSynthesisVoicePtr mojom_voice);
   ~SpeechSynthesisVoice() override;
 
-  const String& voiceURI() const { return platform_voice_->VoiceURI(); }
-  const String& name() const { return platform_voice_->GetName(); }
-  const String& lang() const { return platform_voice_->Lang(); }
-  bool localService() const { return platform_voice_->LocalService(); }
-  bool isDefault() const { return platform_voice_->IsDefault(); }
-
-  PlatformSpeechSynthesisVoice* PlatformVoice() const {
-    return platform_voice_.get();
-  }
+  const String& voiceURI() const { return mojom_voice_->voice_uri; }
+  const String& name() const { return mojom_voice_->name; }
+  const String& lang() const { return mojom_voice_->lang; }
+  bool localService() const { return mojom_voice_->is_local_service; }
+  bool isDefault() const { return mojom_voice_->is_default; }
 
  private:
-  scoped_refptr<PlatformSpeechSynthesisVoice> platform_voice_;
+  mojom::blink::SpeechSynthesisVoicePtr mojom_voice_;
 };
 
 }  // namespace blink

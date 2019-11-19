@@ -31,7 +31,7 @@ class GetVersionTask : public Task {
 
   ExploreSitesStore* store_;  // outlives this class.
   base::OnceCallback<void(std::string)> callback_;
-  base::WeakPtrFactory<GetVersionTask> weak_ptr_factory_;
+  base::WeakPtrFactory<GetVersionTask> weak_ptr_factory_{this};
 };
 
 }  // namespace explore_sites

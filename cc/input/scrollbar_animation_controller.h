@@ -169,7 +169,7 @@ class CC_EXPORT ScrollbarAnimationController {
   std::unique_ptr<SingleScrollbarAnimationControllerThinning>
       horizontal_controller_;
 
-  base::WeakPtrFactory<ScrollbarAnimationController> weak_factory_;
+  base::WeakPtrFactory<ScrollbarAnimationController> weak_factory_{this};
 };
 
 }  // namespace cc

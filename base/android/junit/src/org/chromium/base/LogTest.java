@@ -66,11 +66,11 @@ public class LogTest {
         assertEquals(t, logs.get(logs.size() - 1).throwable);
         assertEquals("Bar", logs.get(logs.size() - 1).msg);
 
-        // The throwable can be both added to the message itself and printed out
-        Log.i("Foo", "Bar %s", t);
+        // messageTemplate include %xx, print out normally.
+        Log.i("Foo", "search?q=%E6%B5%8B%E8%AF%95", t);
         logs = ShadowLog.getLogs();
         assertEquals(t, logs.get(logs.size() - 1).throwable);
-        assertEquals("Bar MyThrowable", logs.get(logs.size() - 1).msg);
+        assertEquals("search?q=%E6%B5%8B%E8%AF%95", logs.get(logs.size() - 1).msg);
 
         // Non throwable are properly identified
         Log.i("Foo", "Bar %s", t, "Baz");
@@ -79,9 +79,9 @@ public class LogTest {
         assertEquals("Bar MyThrowable", logs.get(logs.size() - 1).msg);
 
         // The last throwable is the one used that is going to be printed out
-        Log.i("Foo", "Bar %s %s", t, t2);
+        Log.i("Foo", "Bar %s", t, t2);
         logs = ShadowLog.getLogs();
         assertEquals(t2, logs.get(logs.size() - 1).throwable);
-        assertEquals("Bar MyThrowable MyOtherThrowable", logs.get(logs.size() - 1).msg);
+        assertEquals("Bar MyThrowable", logs.get(logs.size() - 1).msg);
     }
 }

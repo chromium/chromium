@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.preferences.website;
 
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.ContentSettingsType;
 
@@ -29,13 +29,14 @@ public class PermissionInfo implements Serializable {
         int GEOLOCATION = 2;
         int MICROPHONE = 3;
         int MIDI = 4;
-        int NOTIFICATION = 5;
-        int PROTECTED_MEDIA_IDENTIFIER = 6;
-        int SENSORS = 7;
+        int NFC = 5;
+        int NOTIFICATION = 6;
+        int PROTECTED_MEDIA_IDENTIFIER = 7;
+        int SENSORS = 8;
         /**
          * Number of handled permissions used for example inside for loops.
          */
-        int NUM_ENTRIES = 8;
+        int NUM_ENTRIES = 9;
     }
 
     private final boolean mIsIncognito;
@@ -76,28 +77,31 @@ public class PermissionInfo implements Serializable {
     public @ContentSettingValues @Nullable Integer getContentSetting() {
         switch (mType) {
             case Type.CAMERA:
-                return WebsitePreferenceBridge.nativeGetCameraSettingForOrigin(
+                return WebsitePreferenceBridgeJni.get().getCameraSettingForOrigin(
                         mOrigin, getEmbedderSafe(), mIsIncognito);
             case Type.CLIPBOARD:
-                return WebsitePreferenceBridge.nativeGetClipboardSettingForOrigin(
+                return WebsitePreferenceBridgeJni.get().getClipboardSettingForOrigin(
                         mOrigin, mIsIncognito);
             case Type.GEOLOCATION:
-                return WebsitePreferenceBridge.nativeGetGeolocationSettingForOrigin(
+                return WebsitePreferenceBridgeJni.get().getGeolocationSettingForOrigin(
                         mOrigin, getEmbedderSafe(), mIsIncognito);
             case Type.MICROPHONE:
-                return WebsitePreferenceBridge.nativeGetMicrophoneSettingForOrigin(
+                return WebsitePreferenceBridgeJni.get().getMicrophoneSettingForOrigin(
                         mOrigin, getEmbedderSafe(), mIsIncognito);
             case Type.MIDI:
-                return WebsitePreferenceBridge.nativeGetMidiSettingForOrigin(
+                return WebsitePreferenceBridgeJni.get().getMidiSettingForOrigin(
+                        mOrigin, getEmbedderSafe(), mIsIncognito);
+            case Type.NFC:
+                return WebsitePreferenceBridgeJni.get().getNfcSettingForOrigin(
                         mOrigin, getEmbedderSafe(), mIsIncognito);
             case Type.NOTIFICATION:
-                return WebsitePreferenceBridge.nativeGetNotificationSettingForOrigin(
+                return WebsitePreferenceBridgeJni.get().getNotificationSettingForOrigin(
                         mOrigin, mIsIncognito);
             case Type.PROTECTED_MEDIA_IDENTIFIER:
-                return WebsitePreferenceBridge.nativeGetProtectedMediaIdentifierSettingForOrigin(
+                return WebsitePreferenceBridgeJni.get().getProtectedMediaIdentifierSettingForOrigin(
                         mOrigin, getEmbedderSafe(), mIsIncognito);
             case Type.SENSORS:
-                return WebsitePreferenceBridge.nativeGetSensorsSettingForOrigin(
+                return WebsitePreferenceBridgeJni.get().getSensorsSettingForOrigin(
                         mOrigin, getEmbedderSafe(), mIsIncognito);
             default:
                 assert false;
@@ -111,35 +115,39 @@ public class PermissionInfo implements Serializable {
     public void setContentSetting(@ContentSettingValues int value) {
         switch (mType) {
             case Type.CAMERA:
-                WebsitePreferenceBridge.nativeSetCameraSettingForOrigin(
+                WebsitePreferenceBridgeJni.get().setCameraSettingForOrigin(
                         mOrigin, value, mIsIncognito);
                 break;
             case Type.CLIPBOARD:
-                WebsitePreferenceBridge.nativeSetClipboardSettingForOrigin(
+                WebsitePreferenceBridgeJni.get().setClipboardSettingForOrigin(
                         mOrigin, value, mIsIncognito);
                 break;
             case Type.GEOLOCATION:
-                WebsitePreferenceBridge.nativeSetGeolocationSettingForOrigin(
+                WebsitePreferenceBridgeJni.get().setGeolocationSettingForOrigin(
                         mOrigin, getEmbedderSafe(), value, mIsIncognito);
                 break;
             case Type.MICROPHONE:
-                WebsitePreferenceBridge.nativeSetMicrophoneSettingForOrigin(
+                WebsitePreferenceBridgeJni.get().setMicrophoneSettingForOrigin(
                         mOrigin, value, mIsIncognito);
                 break;
             case Type.MIDI:
-                WebsitePreferenceBridge.nativeSetMidiSettingForOrigin(
+                WebsitePreferenceBridgeJni.get().setMidiSettingForOrigin(
+                        mOrigin, getEmbedderSafe(), value, mIsIncognito);
+                break;
+            case Type.NFC:
+                WebsitePreferenceBridgeJni.get().setNfcSettingForOrigin(
                         mOrigin, getEmbedderSafe(), value, mIsIncognito);
                 break;
             case Type.NOTIFICATION:
-                WebsitePreferenceBridge.nativeSetNotificationSettingForOrigin(
+                WebsitePreferenceBridgeJni.get().setNotificationSettingForOrigin(
                         mOrigin, value, mIsIncognito);
                 break;
             case Type.PROTECTED_MEDIA_IDENTIFIER:
-                WebsitePreferenceBridge.nativeSetProtectedMediaIdentifierSettingForOrigin(
+                WebsitePreferenceBridgeJni.get().setProtectedMediaIdentifierSettingForOrigin(
                         mOrigin, getEmbedderSafe(), value, mIsIncognito);
                 break;
             case Type.SENSORS:
-                WebsitePreferenceBridge.nativeSetSensorsSettingForOrigin(
+                WebsitePreferenceBridgeJni.get().setSensorsSettingForOrigin(
                         mOrigin, getEmbedderSafe(), value, mIsIncognito);
                 break;
             default:
@@ -150,24 +158,26 @@ public class PermissionInfo implements Serializable {
     public static @ContentSettingsType int getContentSettingsType(@Type int type) {
         switch (type) {
             case Type.CAMERA:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA;
+                return ContentSettingsType.MEDIASTREAM_CAMERA;
             case Type.CLIPBOARD:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_CLIPBOARD_READ;
+                return ContentSettingsType.CLIPBOARD_READ;
             case Type.GEOLOCATION:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_GEOLOCATION;
+                return ContentSettingsType.GEOLOCATION;
             case Type.MICROPHONE:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC;
+                return ContentSettingsType.MEDIASTREAM_MIC;
             case Type.MIDI:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_MIDI_SYSEX;
+                return ContentSettingsType.MIDI_SYSEX;
+            case Type.NFC:
+                return ContentSettingsType.NFC;
             case Type.NOTIFICATION:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_NOTIFICATIONS;
+                return ContentSettingsType.NOTIFICATIONS;
             case Type.PROTECTED_MEDIA_IDENTIFIER:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER;
+                return ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER;
             case Type.SENSORS:
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_SENSORS;
+                return ContentSettingsType.SENSORS;
             default:
                 assert false;
-                return ContentSettingsType.CONTENT_SETTINGS_TYPE_DEFAULT;
+                return ContentSettingsType.DEFAULT;
         }
     }
 }

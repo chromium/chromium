@@ -1,10 +1,10 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_row_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
 <link rel="import" href="../site_favicon.html">
@@ -70,29 +70,20 @@
               </span>
             </div>
           </div>
-          <paper-icon-button-light id="expandIcon" class="icon-expand-more"
-              hidden$="[[!grouped_(siteGroup)]]">
-            <button aria-label$="[[displayName_]]"
-                aria-describedby="displayName" focus-row-control
-                focus-type="expand">
-            </button>
-          </paper-icon-button-light>
-          <paper-icon-button-light class="subpage-arrow"
-              hidden$="[[grouped_(siteGroup)]]">
-            <button aria-label$="[[displayName_]]"
-                aria-describedby="displayName"
-                focus-row-control focus-type="show-detail">
-            </button>
-          </paper-icon-button-light>
+          <cr-icon-button id="expandIcon" class="icon-expand-more"
+              hidden$="[[!grouped_(siteGroup)]]" aria-label$="[[displayName_]]"
+              aria-describedby="displayName" focus-row-control
+              focus-type="expand"></cr-icon-button>
+          <cr-icon-button class="subpage-arrow"
+              hidden$="[[grouped_(siteGroup)]]" aria-label$="[[displayName_]]"
+              aria-describedby="displayName"
+              focus-row-control focus-type="show-detail"></cr-icon-button>
         </div>
         <div class="row-aligned" hidden$="[[!grouped_(siteGroup)]]">
           <div class="separator"></div>
-          <paper-icon-button-light class="icon-more-vert">
-            <button id="overflowMenuButton" title="$i18n{moreActions}"
-                on-click="showOverflowMenu_" focus-row-control
-                focus-type="more-actions">
-            </button>
-          </paper-icon-button-light>
+          <cr-icon-button class="icon-more-vert" id="overflowMenuButton"
+              title="$i18n{moreActions}" on-click="showOverflowMenu_"
+              focus-row-control focus-type="more-actions"></cr-icon-button>
         </div>
       </div>
 
@@ -132,11 +123,10 @@
                         [[originCookiesItem_(cookiesNum_.*, index)]]
                     </span>
                   </div>
-                  <paper-icon-button-light class="subpage-arrow">
-                    <button aria-labelledby$="originSiteRepresentation"
-                        focus-row-control focus-type="detailed-sites">
-                    </button>
-                  </paper-icon-button-light>
+                  <cr-icon-button class="subpage-arrow"
+                      aria-labelledby$="originSiteRepresentation"
+                      focus-row-control focus-type="detailed-sites">
+                  </cr-icon-button>
                 </div>
               </template>
             </div>

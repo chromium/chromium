@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src='../../resources/gesture-util.js'></script>
+<style>
+  body, html {
+    margin: 0;
+  }
+
+  #scroller {
+    position: absolute;
+    clip: rect(0, 1000px, 1000px, 0);
+    width: 300px;
+    height: 300px;
+    overflow: auto;
+  }
+
+  #spacer {
+    height: 1000px;
+  }
+
+  #topbox {
+    height: 5px;
+    width: 100%;
+    background-color: green;
+  }
+</style>
+<script>
+  window.onload = async () => {
+    await waitForCompositorCommit();
+
+    const scroller = document.getElementById('scroller');
+
+    promise_test(async () => {
+      // Scroll the scroller an arbitrary amount. Because of the position:
+      // absolute clip, the scroller isn't yet composited.
+      {
+        const delta = 300;
+        const location = elementCenter(scroller);
+        await smoothScroll(delta,
+                           location.x,
+                           location.y,
+                           GestureSourceType.TOUCH_INPUT,
+                           'down',
+                           SPEED_INSTANT);
+      }
+
+      // Removing position:absolute and clip should cause the scroller to
+      // become composited.
+      scroller.style.position = 'static';
+      scroller.style.clip = 'unset';
+      scroller.style.willChange = 'transform';
+
+      // Scroll down a little more, this time we should be scrolling on the
+      // compositor. Ensure the scroll offset was correctly propagated when the
+      // compositing layer was created.
+      {
+        const delta = 200;
+        const location = elementCenter(scroller);
+        await smoothScroll(delta,
+                           location.x,
+                           location.y,
+                           GestureSourceType.TOUCH_INPUT,
+                           'down',
+                           SPEED_INSTANT);
+      }
+
+      assert_equals(scroller.scrollTop, 500,
+                    "Total scroll must be sum of both scrolls");
+    }, 'Scroll uncomposited, composite, scroll composited maintains correct ' +
+       'scroll offset');
+
+  };
+</script>
+<div id="scroller">
+  <div id="topbox"></div>
+  <div id="spacer"></div>
+</div>

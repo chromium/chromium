@@ -78,6 +78,7 @@ class ChromeBrowsingDataRemoverDelegate
     DATA_TYPE_HOSTED_APP_DATA_TEST_ONLY = DATA_TYPE_EMBEDDER_BEGIN << 8,
     DATA_TYPE_CONTENT_SETTINGS = DATA_TYPE_EMBEDDER_BEGIN << 9,
     DATA_TYPE_BOOKMARKS = DATA_TYPE_EMBEDDER_BEGIN << 10,
+    DATA_TYPE_ISOLATED_ORIGINS = DATA_TYPE_EMBEDDER_BEGIN << 11,
 
     // Group datatypes.
 
@@ -92,7 +93,7 @@ class ChromeBrowsingDataRemoverDelegate
         DATA_TYPE_WEB_APP_DATA |
 #endif
         DATA_TYPE_SITE_USAGE_DATA | DATA_TYPE_DURABLE_PERMISSION |
-        DATA_TYPE_EXTERNAL_PROTOCOL_DATA,
+        DATA_TYPE_EXTERNAL_PROTOCOL_DATA | DATA_TYPE_ISOLATED_ORIGINS,
 
     // Datatypes protected by Important Sites.
     IMPORTANT_SITES_DATA_TYPES =
@@ -160,15 +161,14 @@ class ChromeBrowsingDataRemoverDelegate
 
   // BrowsingDataRemoverDelegate:
   content::BrowsingDataRemoverDelegate::EmbedderOriginTypeMatcher
-  GetOriginTypeMatcher() const override;
-  bool MayRemoveDownloadHistory() const override;
-  void RemoveEmbedderData(
-      const base::Time& delete_begin,
-      const base::Time& delete_end,
-      int remove_mask,
-      const content::BrowsingDataFilterBuilder& filter_builder,
-      int origin_type_mask,
-      base::OnceClosure callback) override;
+  GetOriginTypeMatcher() override;
+  bool MayRemoveDownloadHistory() override;
+  void RemoveEmbedderData(const base::Time& delete_begin,
+                          const base::Time& delete_end,
+                          int remove_mask,
+                          content::BrowsingDataFilterBuilder* filter_builder,
+                          int origin_type_mask,
+                          base::OnceClosure callback) override;
 
 #if defined(OS_ANDROID)
   void OverrideWebappRegistryForTesting(
@@ -182,7 +182,7 @@ class ChromeBrowsingDataRemoverDelegate
 #endif
 
   using DomainReliabilityClearer = base::RepeatingCallback<void(
-      const content::BrowsingDataFilterBuilder& filter_builder,
+      content::BrowsingDataFilterBuilder* filter_builder,
       network::mojom::NetworkContext_DomainReliabilityClearMode,
       network::mojom::NetworkContext::ClearDomainReliabilityCallback)>;
   void OverrideDomainReliabilityClearerForTesting(
@@ -192,6 +192,8 @@ class ChromeBrowsingDataRemoverDelegate
   using WebRtcEventLogManager = webrtc_event_logging::WebRtcEventLogManager;
 
   // For debugging purposes. Please add new deletion tasks at the end.
+  // This enum is recorded in a histogram, so don't change or reuse ids.
+  // Entries must also be added to ChromeBrowsingDataRemoverTasks in enums.xml.
   enum class TracingDataType {
     kSynchronous = 1,
     kHistory = 2,
@@ -224,6 +226,10 @@ class ChromeBrowsingDataRemoverDelegate
     kHostCache = 29,
     kTpmAttestationKeys = 30,
     kStrikes = 31,
+    kLeakedCredentials = 32,  // deprecated
+    kFieldInfo = 33,
+    kCompromisedCredentials = 34,
+    kMaxValue = kCompromisedCredentials,
   };
 
   // Called by CreateTaskCompletionClosure().
@@ -243,6 +249,9 @@ class ChromeBrowsingDataRemoverDelegate
   // happen when the connection is closed while an interface call is made.
   base::OnceClosure CreateTaskCompletionClosureForMojo(
       TracingDataType data_type);
+
+  // Records unfinished tasks from |pending_sub_tasks_| after a delay.
+  void RecordUnfinishedSubTasks();
 
   // Callback for when TemplateURLService has finished loading. Clears the data,
   // clears the respective waiting flag, and invokes NotifyIfDone.
@@ -287,8 +296,12 @@ class ChromeBrowsingDataRemoverDelegate
   // Completion callback to call when all data are deleted.
   base::OnceClosure callback_;
 
-  // Keeps track of number of tasks to be completed.
-  int num_pending_tasks_ = 0;
+  // Records which tasks of a deletion are currently active.
+  std::set<TracingDataType> pending_sub_tasks_;
+
+  // Fires after some time to track slow tasks. Cancelled when all tasks
+  // are finished.
+  base::CancelableClosure slow_pending_tasks_closure_;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Used to delete plugin data.
@@ -317,7 +330,8 @@ class ChromeBrowsingDataRemoverDelegate
   std::unique_ptr<WebappRegistry> webapp_registry_;
 #endif
 
-  base::WeakPtrFactory<ChromeBrowsingDataRemoverDelegate> weak_ptr_factory_;
+  base::WeakPtrFactory<ChromeBrowsingDataRemoverDelegate> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowsingDataRemoverDelegate);
 };

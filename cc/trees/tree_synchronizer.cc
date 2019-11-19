@@ -41,14 +41,14 @@ static bool LayerHasValidPropertyTreeIndices(LayerImpl* layer) {
 }
 
 static bool LayerWillPushProperties(LayerTreeHost* host, Layer* layer) {
-  return base::ContainsKey(host->LayersThatShouldPushProperties(), layer);
+  return base::Contains(host->LayersThatShouldPushProperties(), layer);
 }
 
 static bool LayerWillPushProperties(LayerTreeImpl* tree, LayerImpl* layer) {
-  return base::ContainsKey(tree->LayersThatShouldPushProperties(), layer) ||
+  return base::Contains(tree->LayersThatShouldPushProperties(), layer) ||
          // TODO(crbug.com/303943): Stop always pushing PictureLayerImpl
          // properties.
-         base::ContainsValue(tree->picture_layers(), layer);
+         base::Contains(tree->picture_layers(), layer);
 }
 #endif
 
@@ -68,7 +68,7 @@ template <typename LayerTreeType>
 void PushLayerList(OwnedLayerImplMap* old_layers,
                    LayerTreeType* host,
                    LayerTreeImpl* tree_impl) {
-  tree_impl->ClearLayerList();
+  DCHECK(tree_impl->LayerListIsEmpty());
   for (auto* layer : *host) {
     std::unique_ptr<LayerImpl> layer_impl(
         ReuseOrCreateLayerImpl(old_layers, layer, tree_impl));
@@ -82,29 +82,9 @@ void PushLayerList(OwnedLayerImplMap* old_layers,
            LayerWillPushProperties(host, layer));
 #endif
 
-    tree_impl->AddToLayerList(layer_impl.get());
     tree_impl->AddLayer(std::move(layer_impl));
   }
   tree_impl->OnCanDrawStateChangedForTree();
-}
-
-template <typename LayerTreeType>
-void PushElementsInPropertyTreesTo(LayerTreeType* host,
-                                   LayerTreeImpl* tree_impl) {
-  for (auto id_iter = tree_impl->elements_in_property_trees().begin();
-       id_iter != tree_impl->elements_in_property_trees().end();) {
-    const auto& id = *(id_iter++);
-    if (!host->elements_in_property_trees().count(id))
-      tree_impl->RemoveFromElementLayerList(id);
-  }
-
-  for (const auto& id : host->elements_in_property_trees()) {
-    if (!tree_impl->IsElementInLayerList(id)) {
-      // TODO(flackr): We should expose adding element ids without a
-      // layer pointer.
-      tree_impl->AddToElementLayerList(id, nullptr);
-    }
-  }
 }
 
 template <typename LayerTreeType>
@@ -114,21 +94,15 @@ void SynchronizeTreesInternal(LayerTreeType* source_tree,
   DCHECK(tree_impl);
 
   TRACE_EVENT0("cc", "TreeSynchronizer::SynchronizeTrees");
-  std::unique_ptr<OwnedLayerImplList> old_layers(tree_impl->DetachLayers());
+  OwnedLayerImplList old_layers = tree_impl->DetachLayers();
 
   OwnedLayerImplMap old_layer_map;
-  for (auto& it : *old_layers) {
+  for (auto& it : old_layers) {
     DCHECK(it);
     old_layer_map[it->id()] = std::move(it);
   }
 
   PushLayerList(&old_layer_map, source_tree, tree_impl);
-
-  for (int id : property_trees->effect_tree.mask_layer_ids()) {
-    std::unique_ptr<LayerImpl> layer_impl(ReuseOrCreateLayerImpl(
-        &old_layer_map, source_tree->LayerById(id), tree_impl));
-    tree_impl->AddLayer(std::move(layer_impl));
-  }
 }
 
 }  // namespace
@@ -168,8 +142,9 @@ static void PushLayerPropertiesInternal(Iterator source_layers_begin,
       bool host_set_on_source = source_layer->layer_tree_host() == host_tree;
 
       bool source_found_by_iterator = false;
-      for (auto it = host_tree->begin(); it != host_tree->end(); ++it) {
-        if (*it == source_layer) {
+      for (auto host_tree_it = host_tree->begin();
+           host_tree_it != host_tree->end(); ++it) {
+        if (*host_tree_it == source_layer) {
           source_found_by_iterator = true;
           break;
         }
@@ -220,8 +195,6 @@ void TreeSynchronizer::PushLayerProperties(LayerTreeImpl* pending_tree,
   PushLayerPropertiesInternal(layers.begin(), layers.end(), active_tree);
   PushLayerPropertiesInternal(picture_layers.begin(), picture_layers.end(),
                               active_tree);
-  if (pending_tree->settings().use_layer_lists)
-    PushElementsInPropertyTreesTo(pending_tree, active_tree);
   pending_tree->ClearLayersThatShouldPushProperties();
 }
 
@@ -232,10 +205,6 @@ void TreeSynchronizer::PushLayerProperties(LayerTreeHost* host_tree,
                "layer_count", layers.size());
   PushLayerPropertiesInternal(layers.begin(), layers.end(), host_tree,
                               impl_tree);
-  // When using layer lists, we may not have layers for all property tree
-  // node ids and need to synchronize the registered id list.
-  if (host_tree->IsUsingLayerLists())
-    PushElementsInPropertyTreesTo(host_tree, impl_tree);
   host_tree->ClearLayersThatShouldPushProperties();
 }
 

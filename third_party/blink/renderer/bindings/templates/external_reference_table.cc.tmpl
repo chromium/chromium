@@ -58,9 +58,6 @@ const intptr_t* {{class}}::GetTable() {
     {%       endif%}
     {%     endfor %}
     {%   endfor %}{# method #}
-    {%   if interface.has_origin_safe_method_setter %}
-    reinterpret_cast<intptr_t>({{v8_class}}::{{interface.name}}OriginSafeMethodSetterCallback),
-    {%   endif %}
     {%   if interface.has_cross_origin_named_getter %}
     reinterpret_cast<intptr_t>({{v8_class}}::CrossOriginNamedGetter),
     {%   endif %}

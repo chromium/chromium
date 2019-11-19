@@ -1,24 +1,13 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow DIV id='target1'",
+          "object": "LayoutNGBlockFlow DIV id='target1'",
           "rect": [18, 10, 60, 40],
           "reason": "background"
         }
@@ -327,14 +316,13 @@
       ]
     },
     {
-      "name": "LayoutBlockFlow DIV id='target2'",
-      "position": [18, 60],
+      "name": "LayoutNGBlockFlow DIV id='target2'",
       "bounds": [60, 40],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow DIV id='target2'",
+          "object": "LayoutNGBlockFlow DIV id='target2'",
           "rect": [0, 0, 60, 40],
           "reason": "background"
         }
@@ -640,17 +628,17 @@
           "oldPixel": "#0000FF",
           "newPixel": "#008000"
         }
-      ]
+      ],
+      "transform": 1
     },
     {
-      "name": "LayoutBlockFlow DIV",
-      "position": [8, 110],
+      "name": "LayoutNGBlockFlow DIV",
       "bounds": [150, 150],
       "contentsOpaque": true,
       "backgroundColor": "#FFFF00",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow (relative positioned) DIV id='target3'",
+          "object": "LayoutNGBlockFlow (relative positioned) DIV id='target3'",
           "rect": [40, 70, 60, 40],
           "reason": "background"
         }
@@ -956,26 +944,20 @@
           "oldPixel": "#0000FF",
           "newPixel": "#008000"
         }
-      ]
+      ],
+      "transform": 2
     },
     {
-      "name": "LayoutBlockFlow DIV id='scroller'",
-      "position": [8, 260],
-      "bounds": [150, 150]
-    },
-    {
-      "name": "Scrolling Layer",
-      "position": [8, 260],
-      "bounds": [135, 135],
-      "drawsContent": false
+      "name": "LayoutNGBlockFlow DIV id='scroller'",
+      "bounds": [150, 150],
+      "transform": 3
     },
     {
       "name": "Scrolling Contents Layer",
-      "position": [8, 260],
       "bounds": [4000, 20060],
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow (relative positioned) DIV id='target4'",
+          "object": "LayoutNGBlockFlow (relative positioned) DIV id='target4'",
           "rect": [40, 10010, 60, 40],
           "reason": "background"
         }
@@ -1282,30 +1264,25 @@
           "newPixel": "#008000"
         }
       ],
-      "transform": 1
+      "transform": 4
     },
     {
-      "name": "Overflow Controls Host Layer",
-      "position": [8, 260],
-      "bounds": [150, 150],
-      "drawsContent": false
-    },
-    {
-      "name": "Horizontal Scrollbar Layer",
-      "position": [8, 395],
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 135],
       "bounds": [135, 15],
-      "drawsContent": false
+      "transform": 3
     },
     {
-      "name": "Vertical Scrollbar Layer",
-      "position": [143, 260],
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [135, 0],
       "bounds": [15, 135],
-      "drawsContent": false
+      "transform": 3
     },
     {
       "name": "Scroll Corner Layer",
-      "position": [143, 395],
-      "bounds": [15, 15]
+      "position": [135, 135],
+      "bounds": [15, 15],
+      "transform": 3
     }
   ],
   "transforms": [
@@ -1315,9 +1292,36 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
+        [18, 60, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 110, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 260, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
         [-50, -9950, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }

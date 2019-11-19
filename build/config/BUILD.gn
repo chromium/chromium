@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/allocator.gni")
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromecast_build.gni")
@@ -21,6 +20,9 @@ import("//build/config/pch.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/toolchain/goma.gni")
+if (is_android) {
+  import("//build/config/android/abi.gni")
+}
 
 declare_args() {
   # When set (the default) enables C++ iterator debugging in debug builds.
@@ -92,14 +94,8 @@ config("feature_flags") {
   if (use_x11) {
     defines += [ "USE_X11=1" ]
   }
-  if (use_allocator != "tcmalloc") {
-    defines += [ "NO_TCMALLOC" ]
-  }
   if (is_asan || is_hwasan || is_lsan || is_tsan || is_msan) {
-    defines += [
-      "MEMORY_TOOL_REPLACES_ALLOCATOR",
-      "MEMORY_SANITIZER_INITIAL_SIZE",
-    ]
+    defines += [ "MEMORY_TOOL_REPLACES_ALLOCATOR" ]
   }
   if (is_asan) {
     defines += [ "ADDRESS_SANITIZER" ]
@@ -111,7 +107,6 @@ config("feature_flags") {
     defines += [
       "THREAD_SANITIZER",
       "DYNAMIC_ANNOTATIONS_EXTERNAL_IMPL=1",
-      "WTF_USE_DYNAMIC_ANNOTATIONS_NOIMPL=1",
     ]
   }
   if (is_msan) {
@@ -120,20 +115,13 @@ config("feature_flags") {
   if (is_ubsan || is_ubsan_null || is_ubsan_vptr || is_ubsan_security) {
     defines += [ "UNDEFINED_SANITIZER" ]
   }
-  if (safe_browsing_mode == 1) {
-    defines += [ "FULL_SAFE_BROWSING" ]
-    defines += [ "SAFE_BROWSING_CSD" ]
-    defines += [ "SAFE_BROWSING_DB_LOCAL" ]
-  } else if (safe_browsing_mode == 2) {
-    defines += [ "SAFE_BROWSING_DB_REMOTE" ]
-  }
   if (is_official_build) {
     defines += [ "OFFICIAL_BUILD" ]
   }
+
   if (is_chrome_branded) {
+    # TODO(thakis): Remove this in favor of build/branding_buildflags.h.
     defines += [ "GOOGLE_CHROME_BUILD" ]
-  } else {
-    defines += [ "CHROMIUM_BUILD" ]
   }
 
   # ==============================================
@@ -149,7 +137,6 @@ config("debug") {
   defines = [
     "_DEBUG",
     "DYNAMIC_ANNOTATIONS_ENABLED=1",
-    "WTF_USE_DYNAMIC_ANNOTATIONS=1",
   ]
 
   if (is_nacl) {
@@ -157,7 +144,7 @@ config("debug") {
   }
 
   if (is_win) {
-    if (!enable_iterator_debugging) {
+    if (!enable_iterator_debugging && !use_custom_libcxx) {
       # Iterator debugging is enabled by default by the compiler on debug
       # builds, and we have to tell it to turn it off.
       defines += [ "_HAS_ITERATOR_DEBUGGING=0" ]
@@ -175,10 +162,7 @@ config("release") {
 
   # Sanitizers.
   if (is_tsan) {
-    defines += [
-      "DYNAMIC_ANNOTATIONS_ENABLED=1",
-      "WTF_USE_DYNAMIC_ANNOTATIONS=1",
-    ]
+    defines += [ "DYNAMIC_ANNOTATIONS_ENABLED=1" ]
   } else {
     defines += [ "NVALGRIND" ]
     if (!is_nacl) {
@@ -270,8 +254,15 @@ config("default_libs") {
   }
 }
 
-# Only //build/config/BUILDCONFIG.gn should reference this.
 group("common_deps") {
+  visibility = [
+    ":executable_deps",
+    ":loadable_module_deps",
+    ":shared_library_deps",
+  ]
+
+  # WARNING: This group is a dependency of **every executable and shared
+  # library**.  Please be careful adding new dependencies here.
   public_deps = []
 
   if (using_sanitizer) {
@@ -299,6 +290,7 @@ group("common_deps") {
   }
 }
 
+# Only the executable template in BUILDCONFIG.gn should reference this.
 group("executable_deps") {
   public_deps = [
     ":common_deps",
@@ -308,12 +300,14 @@ group("executable_deps") {
   }
 }
 
+# Only the loadable_module template in BUILDCONFIG.gn should reference this.
 group("loadable_module_deps") {
   public_deps = [
     ":common_deps",
   ]
 }
 
+# Only the shared_library template in BUILDCONFIG.gn should reference this.
 group("shared_library_deps") {
   public_deps = [
     ":common_deps",
@@ -336,9 +330,6 @@ config("executable_config") {
 
   if (is_win) {
     configs += _windows_linker_configs
-
-    # Currently only turn on linker CFI for executables.
-    configs += [ "//build/config/win:cfi_linker" ]
   } else if (is_mac) {
     configs += [ "//build/config/mac:mac_dynamic_flags" ]
   } else if (is_ios) {

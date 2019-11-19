@@ -1,0 +1,47 @@
+\berpeldange\s+\-\s+lez\s+\-\s+bous\b	erpeldange
+\bhostert\s+niederanven\b	hostert
+\bgoebelsmuehle\b	goebelsmuhle
+\bbuederscheid\b	buderscheid
+\bschwebsingen\b	schwebsange
+\brammeldange\b	rameldange
+\bcul\s+de\s+sac\b	cds
+\bcul\-de\-sac\b	cds
+\bgeyershaff\b	geyershof
+\blexembourg\b	lu
+\bluxembourg\b	lu
+\brond\-point\b	rdpt
+\bboulevard\b	boul
+\bcarrefour\b	carref
+\bcroissant\b	crois
+\bdiversion\b	divers
+\bechangeur\b	ech
+\besplanade\b	esp
+\bluxemburg\b	lu
+\bpromenade\b	prom
+\bcapellen\b	cap
+\bterrasse\b	tsse
+\bcircuit\b	circt
+\bimpasse\b	imp
+\bplateau\b	plat
+\bsentier\b	sent
+\bstrasse\b	str
+\bavenue\b	av
+\bcenter\b	c
+\bcentre\b	c
+\bchemin\b	ch
+\bpointe\b	pte
+\bruelle\b	rle
+\bcarre\b	car
+\bcourt\b	crt
+\bdrive\b	dr
+\bpoint\b	pt
+\broute\b	rte
+\bespl\b	esp
+\bave\b	av
+\bctr\b	c
+\bdes\b	
+\blux\b	lu
+\brue\b	r
+\bde\b	
+\bdu\b	
+\bd\b	

@@ -1,58 +1,53 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <style type="text/css">
-    .target {
-      position: relative;
-      height: 100px;
-      width: 100px;
-      background-color: red;
-      margin-bottom: 10px;
-    }
-    .animated {
-      animation: test 1s linear;
-      animation: test 1s linear;
-    }
-    #negative-delay {
-      animation-delay: -500ms;
-      animation-delay: -500ms;
-    }
-    #zero-delay {
-      animation-delay: 0ms;
-      animation-delay: 0ms;
-    }
-    #positive-delay {
-      animation-delay: 500ms;
-      animation-delay: 500ms;
-    }
-    @keyframes test {
-        from { left: 100px; }
-        to   { left: 300px; }
-    }
-    @keyframes test {
-        from { left: 100px; }
-        to   { left: 300px; }
-    }
-  </style>
-  <script type="text/javascript">
-    if (window.testRunner) {
-      testRunner.dumpAsText();
-      testRunner.waitUntilDone();
-    }
-
-    var immediate = true;
-    onload = function() {
-      requestAnimationFrame(function(t) {
-        ['negative-delay', 'zero-delay', 'positive-delay'].forEach(function(id) {
-          var target = document.getElementById(id);
-          target.addEventListener('animationstart', onStartEventFired);
-          target.classList.add('animated');
-        });
-        requestAnimationFrame(function() {
-          immediate = false;
-        });
+<style type="text/css">
+  .target {
+    position: relative;
+    height: 100px;
+    width: 100px;
+    background-color: red;
+    margin-bottom: 10px;
+  }
+  .animated {
+    animation: test 1s linear;
+    animation: test 1s linear;
+  }
+  #negative-delay {
+    animation-delay: -500ms;
+    animation-delay: -500ms;
+  }
+  #zero-delay {
+    animation-delay: 0ms;
+    animation-delay: 0ms;
+  }
+  #positive-delay {
+    animation-delay: 500ms;
+    animation-delay: 500ms;
+  }
+  @keyframes test {
+    from { left: 100px; }
+    to   { left: 300px; }
+  }
+  @keyframes test {
+    from { left: 100px; }
+    to   { left: 300px; }
+  }
+</style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script type="text/javascript">
+async_test(t => {
+  var immediate = true;
+  window.addEventListener("load", t.step_func(() => {
+    requestAnimationFrame(t.step_func(() => {
+      ['negative-delay', 'zero-delay', 'positive-delay'].forEach((id) => {
+        var target = document.getElementById(id);
+        target.addEventListener('animationstart', onStartEventFired);
+        target.classList.add('animated');
       });
-    };
+      requestAnimationFrame(t.step_func(() => {
+        immediate = false;
+      }));
+    }));
 
     function log(message) {
       var div = document.createElement('div');
@@ -64,17 +59,14 @@
       var id = e.target.id;
       var pass = immediate || id == 'positive-delay';
       log((pass ? 'PASS' : 'FAIL') + ': ' + id + ': Start event ' + (immediate ? 'fired' : 'did not fire') + ' immediately');
-      if (id === 'positive-delay' && window.testRunner) {
-        testRunner.notifyDone();
+      assert_true(pass, 'Start event should be fired');
+      if (id === 'positive-delay') {
+        t.done();
       }
     }
-  </script>
-</head>
-<body>
-  <p>Tests that the start event is fired at the correct time with different start delays.</p>
-  <div class="target" id="negative-delay"></div>
-  <div class="target" id="zero-delay"></div>
-  <div class="target" id="positive-delay"></div>
-  <div id="result"></div>
-</body>
-</html>
+  }));
+}, "Tests that the start event is fired at the correct time with different start delays");
+</script>
+<div class="target" id="negative-delay"></div>
+<div class="target" id="zero-delay"></div>
+<div class="target" id="positive-delay"></div>

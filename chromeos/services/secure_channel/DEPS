@@ -3,5 +3,4 @@ include_rules = [
   "+components/cryptauth",
   "+device/bluetooth",
   "+mojo/public",
-  "+services/service_manager/public",
 ]

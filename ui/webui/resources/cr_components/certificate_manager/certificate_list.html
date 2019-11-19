@@ -1,5 +1,6 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
@@ -18,18 +19,23 @@
         min-height: 48px;
         padding: 0 20px;
       }
+
+      /* TODO(aee): add platform conditional after crbug/964506 is fixed. */
+      #importAndBind {
+        margin-inline-start: 8px;
+      }
     </style>
     <div class="button-box">
       <span class="flex">
           [[getDescription_(certificateType, certificates)]]</span>
-      <paper-button id="import" on-tap="onImportTap_"
+      <cr-button id="import" on-click="onImportTap_"
           hidden="[[!canImport_(certificateType, importAllowed, isKiosk_)]]">
-        [[i18n('certificateManagerImport')]]</paper-button>
+        [[i18n('certificateManagerImport')]]</cr-button>
 <if expr="chromeos">
-      <paper-button id="importAndBind" on-tap="onImportAndBindTap_"
+      <cr-button id="importAndBind" on-click="onImportAndBindTap_"
           hidden="[[!canImportAndBind_(certificateType, importAllowed,
                  isGuest_)]]">
-        [[i18n('certificateManagerImportAndBind')]]</paper-button>
+        [[i18n('certificateManagerImportAndBind')]]</cr-button>
 </if>
     </div>
     <template is="dom-repeat" items="[[certificates]]">

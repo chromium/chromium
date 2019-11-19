@@ -34,8 +34,6 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable_visitor.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -56,10 +54,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   USING_GARBAGE_COLLECTED_MIXIN(ShadowRoot);
 
  public:
-  static ShadowRoot* Create(Document& document, ShadowRootType type) {
-    return MakeGarbageCollected<ShadowRoot>(document, type);
-  }
-
   ShadowRoot(Document&, ShadowRootType);
 
   // Disambiguate between Node and TreeScope hierarchies; TreeScope's
@@ -73,7 +67,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
 
   Element& host() const {
     DCHECK(ParentOrShadowHostNode());
-    return *ToElement(ParentOrShadowHostNode());
+    return *To<Element>(ParentOrShadowHostNode());
   }
   ShadowRootType GetType() const { return static_cast<ShadowRootType>(type_); }
   String mode() const {
@@ -187,7 +181,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   }
   void Distribute();
 
-  TraceWrapperMember<StyleSheetList> style_sheet_list_;
+  Member<StyleSheetList> style_sheet_list_;
   Member<SlotAssignment> slot_assignment_;
   Member<ShadowRootV0> shadow_root_v0_;
   unsigned child_shadow_root_count_ : 16;
@@ -216,9 +210,10 @@ inline void ShadowRoot::DistributeIfNeeded() {
 }
 
 inline ShadowRoot* Node::GetShadowRoot() const {
-  if (!IsElementNode())
+  auto* this_element = DynamicTo<Element>(this);
+  if (!this_element)
     return nullptr;
-  return ToElement(this)->GetShadowRoot();
+  return this_element->GetShadowRoot();
 }
 
 inline ShadowRoot* Element::ShadowRootIfV1() const {

@@ -1,0 +1,12 @@
+<body>
+PASS if no crash.
+<iframe id="i" src="resources/xml-with-xsl-transform.xml"></iframe>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+setTimeout(function() {
+  i.contentDocument.appendChild(document.createElement("iframe"));
+}, 20);
+</script>
+</body>

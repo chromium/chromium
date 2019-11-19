@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -1874,11 +1874,7 @@ class ServerRunner(testserver_base.TestServerRunner):
       my_data_dir = self.options.data_dir
     else:
       # Create the default path to our data dir, relative to the exe dir.
-      my_data_dir = os.path.join(BASE_DIR, "..", "..", "..", "..",
-                                 "test", "data")
-
-      #TODO(ibrar): Must use Find* funtion defined in google\tools
-      #i.e my_data_dir = FindUpward(my_data_dir, "test", "data")
+      my_data_dir = os.path.join(BASE_DIR, "..", "..", "data")
 
     return my_data_dir
 

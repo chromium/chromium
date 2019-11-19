@@ -1,0 +1,13 @@
+    <style include="cr-hidden-style"></style>
+    <cr-dialog id="dialog" no-cancel>
+      <div slot="title">[[strings.annotationFormWarningTitle]]</div>
+      <div slot="body">[[strings.annotationFormWarningDetail]]</div>
+      <div slot="button-container">
+        <cr-button class="cancel-button" on-click="onCancel">
+          [[strings.annotationFormWarningKeepEditing]]
+        </cr-button>
+        <cr-button class="action-button" on-click="onAction">
+          [[strings.annotationFormWarningDiscard]]
+        </cr-button>
+      </div>
+    </cr-dialog>

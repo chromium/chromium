@@ -59,8 +59,7 @@ void RegisteredEventListener::Trace(Visitor* visitor) {
 }
 
 AddEventListenerOptionsResolved* RegisteredEventListener::Options() const {
-  AddEventListenerOptionsResolved* result =
-      AddEventListenerOptionsResolved::Create();
+  auto* result = MakeGarbageCollected<AddEventListenerOptionsResolved>();
   result->setCapture(use_capture_);
   result->setPassive(passive_);
   result->SetPassiveForcedForDocumentTarget(
@@ -85,24 +84,14 @@ bool RegisteredEventListener::Matches(
 }
 
 bool RegisteredEventListener::ShouldFire(const Event& event) const {
-  if (RuntimeEnabledFeatures::
-          CallCaptureListenersAtCapturePhaseAtShadowHostsEnabled()) {
-    if (event.FireOnlyCaptureListenersAtTarget()) {
-      DCHECK_EQ(event.eventPhase(), Event::kAtTarget);
-      return Capture();
-    }
-    if (event.FireOnlyNonCaptureListenersAtTarget()) {
-      DCHECK_EQ(event.eventPhase(), Event::kAtTarget);
-      return !Capture();
-    }
-    if (event.eventPhase() == Event::kCapturingPhase)
-      return Capture();
-    if (event.eventPhase() == Event::kBubblingPhase)
-      return !Capture();
-    return true;
+  if (event.FireOnlyCaptureListenersAtTarget()) {
+    DCHECK_EQ(event.eventPhase(), Event::kAtTarget);
+    return Capture();
   }
-  DCHECK(!event.FireOnlyCaptureListenersAtTarget());
-  DCHECK(!event.FireOnlyNonCaptureListenersAtTarget());
+  if (event.FireOnlyNonCaptureListenersAtTarget()) {
+    DCHECK_EQ(event.eventPhase(), Event::kAtTarget);
+    return !Capture();
+  }
   if (event.eventPhase() == Event::kCapturingPhase)
     return Capture();
   if (event.eventPhase() == Event::kBubblingPhase)

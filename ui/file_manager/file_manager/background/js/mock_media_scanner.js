@@ -5,266 +5,262 @@
 /**
  * importer.MediaScanner and importer.ScanResult test double.
  *
- * @constructor
- * @struct
  * @implements {importer.MediaScanner}
  */
-function TestMediaScanner() {
-  /** @private {!Array<!importer.ScanResult>} */
-  this.scans_ = [];
+class TestMediaScanner {
+  constructor() {
+    /** @private {!Array<!importer.ScanResult>} */
+    this.scans_ = [];
 
-  /**
-   * List of file entries found while scanning.
-   * @type {!Array<!FileEntry>}
-   */
-  this.fileEntries = [];
+    /**
+     * List of file entries found while scanning.
+     * @type {!Array<!FileEntry>}
+     */
+    this.fileEntries = [];
 
-  /**
-   * List of duplicate file entries found while scanning.
-   * @type {!Array<!FileEntry>}
-   */
-  this.duplicateFileEntries = [];
+    /**
+     * List of duplicate file entries found while scanning.
+     * @type {!Array<!FileEntry>}
+     */
+    this.duplicateFileEntries = [];
 
-  /**
-   * List of scan observers.
-   * @private {!Array<!importer.ScanObserver>}
-   */
-  this.observers = [];
+    /**
+     * List of scan observers.
+     * @private {!Array<!importer.ScanObserver>}
+     */
+    this.observers = [];
 
-  /** @private {number} */
-  this.totalBytes = 100;
+    /** @private {number} */
+    this.totalBytes = 100;
 
-  /** @private {number} */
-  this.scanDuration = 100;
-}
-
-/** @override */
-TestMediaScanner.prototype.scanDirectory = function(directory, mode) {
-  const scan = new TestScanResult(this.fileEntries);
-  scan.totalBytes = this.totalBytes;
-  scan.scanDuration = this.scanDuration;
-  this.scans_.push(scan);
-  return scan;
-};
-
-/** @override */
-TestMediaScanner.prototype.scanFiles = function(entries, mode) {
-  const scan = new TestScanResult(this.fileEntries);
-  scan.totalBytes = this.totalBytes;
-  scan.scanDuration = this.scanDuration;
-  this.scans_.push(scan);
-  return scan;
-};
-
-/** @override */
-TestMediaScanner.prototype.addObserver = function(observer) {
-  this.observers.push(observer);
-};
-
-/** @override */
-TestMediaScanner.prototype.removeObserver = function(observer) {
-  const index = this.observers.indexOf(observer);
-  if (index !== -1) {
-    this.observers.splice(index, 1);
-  } else {
-    console.warn('Ignoring request to remove unregistered observer');
+    /** @private {number} */
+    this.scanDuration = 100;
   }
-};
 
-/**
- * Finalizes all previously started scans.
- */
-TestMediaScanner.prototype.finalizeScans = function() {
-  this.scans_.forEach(this.finalize.bind(this));
-};
+  /** @override */
+  scanDirectory(directory, mode) {
+    const scan = new TestScanResult(this.fileEntries);
+    scan.totalBytes = this.totalBytes;
+    scan.scanDuration = this.scanDuration;
+    this.scans_.push(scan);
+    return scan;
+  }
 
-/**
- * Notifies observers that the most recently started scan has been updated.
- */
-TestMediaScanner.prototype.update = function() {
-  assertTrue(this.scans_.length > 0);
-  const scan = this.scans_[this.scans_.length - 1];
-  this.observers.forEach(
-      observer => {
-        observer(importer.ScanEvent.UPDATED, scan);
-      });
-};
+  /** @override */
+  scanFiles(entries, mode) {
+    const scan = new TestScanResult(this.fileEntries);
+    scan.totalBytes = this.totalBytes;
+    scan.scanDuration = this.scanDuration;
+    this.scans_.push(scan);
+    return scan;
+  }
 
-/**
- * Notifies observers that a scan has finished.
- * @param {!importer.ScanResult} scan
- */
-TestMediaScanner.prototype.finalize = function(scan) {
-  // Note the |scan| has {!TestScanResult} type in test, and needs a
-  // finalize() call before being notified to scan observers.
-  /** @type {!TestScanResult} */ (scan).finalize();
+  /** @override */
+  addObserver(observer) {
+    this.observers.push(observer);
+  }
 
-  this.observers.forEach(observer => {
-    observer(importer.ScanEvent.FINALIZED, scan);
-  });
-};
+  /** @override */
+  removeObserver(observer) {
+    const index = this.observers.indexOf(observer);
+    if (index !== -1) {
+      this.observers.splice(index, 1);
+    } else {
+      console.warn('Ignoring request to remove unregistered observer');
+    }
+  }
 
-/**
- * @param {number} expected
- */
-TestMediaScanner.prototype.assertScanCount = function(expected) {
-  assertEquals(expected, this.scans_.length);
-};
+  /**
+   * Finalizes all previously started scans.
+   */
+  finalizeScans() {
+    this.scans_.forEach(this.finalize.bind(this));
+  }
 
-/**
- * Asserts that the last scan was canceled. Fails if no
- *     scan exists.
- */
-TestMediaScanner.prototype.assertLastScanCanceled = function() {
-  assertTrue(this.scans_.length > 0);
-  assertTrue(this.scans_[this.scans_.length - 1].canceled());
-};
+  /**
+   * Notifies observers that the most recently started scan has been updated.
+   */
+  update() {
+    assertTrue(this.scans_.length > 0);
+    const scan = this.scans_[this.scans_.length - 1];
+    this.observers.forEach(observer => {
+      observer(importer.ScanEvent.UPDATED, scan);
+    });
+  }
+
+  /**
+   * Notifies observers that a scan has finished.
+   * @param {!importer.ScanResult} scan
+   */
+  finalize(scan) {
+    // Note the |scan| has {!TestScanResult} type in test, and needs a
+    // finalize() call before being notified to scan observers.
+    /** @type {!TestScanResult} */ (scan).finalize();
+
+    this.observers.forEach(observer => {
+      observer(importer.ScanEvent.FINALIZED, scan);
+    });
+  }
+
+  /**
+   * @param {number} expected
+   */
+  assertScanCount(expected) {
+    assertEquals(expected, this.scans_.length);
+  }
+
+  /**
+   * Asserts that the last scan was canceled. Fails if no
+   *     scan exists.
+   */
+  assertLastScanCanceled() {
+    assertTrue(this.scans_.length > 0);
+    assertTrue(this.scans_[this.scans_.length - 1].canceled());
+  }
+}
 
 /**
  * importer.MediaScanner and importer.ScanResult test double.
  *
- * @constructor
- * @struct
  * @implements {importer.ScanResult}
- *
- * @param {!Array<!FileEntry>} fileEntries
  */
-function TestScanResult(fileEntries) {
-  /** @private {number} */
-  this.scanId_ = ++TestScanResult.lastId_;
-
+class TestScanResult {
   /**
-   * List of file entries found while scanning.
-   * @type {!Array<!FileEntry>}
+   * @param {!Array<!FileEntry>} fileEntries
    */
-  this.fileEntries = fileEntries.slice();
+  constructor(fileEntries) {
+    /** @private {number} */
+    this.scanId_ = ++TestScanResult.lastId_;
 
-  /**
-   * List of duplicate file entries found while scanning.
-   * @type {!Array<!FileEntry>}
-   */
-  this.duplicateFileEntries = [];
+    /**
+     * List of file entries found while scanning.
+     * @type {!Array<!FileEntry>}
+     */
+    this.fileEntries = fileEntries.slice();
 
-  /** @type {number} */
-  this.totalBytes = 100;
+    /**
+     * List of duplicate file entries found while scanning.
+     * @type {!Array<!FileEntry>}
+     */
+    this.duplicateFileEntries = [];
 
-  /** @type {number} */
-  this.scanDuration = 100;
+    /** @type {number} */
+    this.totalBytes = 100;
 
-  /** @type {function(*)} */
-  this.resolveResult_;
+    /** @type {number} */
+    this.scanDuration = 100;
 
-  /** @type {function()} */
-  this.rejectResult_;
+    /** @type {function(*)} */
+    this.resolveResult_;
 
-  /** @type {boolean} */
-  this.settled_ = false;
+    /** @type {function()} */
+    this.rejectResult_;
 
-  /** @private {boolean} */
-  this.canceled_ = false;
+    /** @type {boolean} */
+    this.settled_ = false;
 
-  /** @type {!Promise<!importer.ScanResult>} */
-  this.whenFinal_ = new Promise(
-      (resolve, reject) => {
-        this.resolveResult_ = result => {
-          this.settled_ = true;
-          resolve(result);
-        };
-        this.rejectResult_ = () => {
-          this.settled_ = true;
-          reject();
-        };
-      });
+    /** @private {boolean} */
+    this.canceled_ = false;
+
+    /** @type {!Promise<!importer.ScanResult>} */
+    this.whenFinal_ = new Promise((resolve, reject) => {
+      this.resolveResult_ = result => {
+        this.settled_ = true;
+        resolve(result);
+      };
+      this.rejectResult_ = () => {
+        this.settled_ = true;
+        reject();
+      };
+    });
+  }
+
+  /** @return {string} */
+  get name() {
+    return 'TestScanResult(' + this.scanId_ + ')';
+  }
+
+  /** @override */
+  isFinal() {
+    return this.settled_;
+  }
+
+  /** @override */
+  cancel() {
+    this.canceled_ = true;
+  }
+
+  /** @override */
+  canceled() {
+    return this.canceled_;
+  }
+
+  /** @override */
+  setCandidateCount() {
+    console.warn('setCandidateCount: not implemented');
+  }
+
+  /** @override */
+  onCandidatesProcessed() {
+    console.warn('onCandidatesProcessed: not implemented');
+  }
+
+  /** @override */
+  getFileEntries() {
+    return this.fileEntries;
+  }
+
+  /** @override */
+  getDuplicateFileEntries() {
+    return this.duplicateFileEntries;
+  }
+
+  /** @override */
+  whenFinal() {
+    return this.whenFinal_;
+  }
+
+  /** @override */
+  getStatistics() {
+    const duplicates = {};
+    duplicates[importer.Disposition.CONTENT_DUPLICATE] = 0;
+    duplicates[importer.Disposition.HISTORY_DUPLICATE] = 0;
+    duplicates[importer.Disposition.SCAN_DUPLICATE] = 0;
+    return /** @type {importer.ScanResult.Statistics} */ ({
+      scanDuration: this.scanDuration,
+      newFileCount: this.fileEntries.length,
+      duplicates: duplicates,
+      sizeBytes: this.totalBytes
+    });
+  }
+
+  finalize() {
+    return this.resolveResult_(this);
+  }
 }
 
 /** @private {number} */
 TestScanResult.lastId_ = 0;
 
-/** @struct */
-TestScanResult.prototype = {
-  /** @return {string} */
-  get name() {
-    return 'TestScanResult(' + this.scanId_ + ')';
-  }
-};
-
-/** @override */
-TestScanResult.prototype.isFinal = function() {
-  return this.settled_;
-};
-
-/** @override */
-TestScanResult.prototype.cancel = function() {
-  this.canceled_ = true;
-};
-
-/** @override */
-TestScanResult.prototype.canceled = function() {
-  return this.canceled_;
-};
-
-/** @override */
-TestScanResult.prototype.setCandidateCount = () => {
-  console.warn('setCandidateCount: not implemented');
-};
-
-/** @override */
-TestScanResult.prototype.onCandidatesProcessed = () => {
-  console.warn('onCandidatesProcessed: not implemented');
-};
-
-/** @override */
-TestScanResult.prototype.getFileEntries = function() {
-  return this.fileEntries;
-};
-
-/** @override */
-TestScanResult.prototype.getDuplicateFileEntries = function() {
-  return this.duplicateFileEntries;
-};
-
-/** @override */
-TestScanResult.prototype.whenFinal = function() {
-  return this.whenFinal_;
-};
-
-/** @override */
-TestScanResult.prototype.getStatistics = function() {
-  const duplicates = {};
-  duplicates[importer.Disposition.CONTENT_DUPLICATE] = 0;
-  duplicates[importer.Disposition.HISTORY_DUPLICATE] = 0;
-  duplicates[importer.Disposition.SCAN_DUPLICATE] = 0;
-  return /** @type {importer.ScanResult.Statistics} */ ({
-    scanDuration: this.scanDuration,
-    newFileCount: this.fileEntries.length,
-    duplicates: duplicates,
-    sizeBytes: this.totalBytes
-  });
-};
-
-TestScanResult.prototype.finalize = function() {
-  return this.resolveResult_(this);
-};
-
 /**
- * @constructor
  * @implements {importer.DirectoryWatcher}
  */
-function TestDirectoryWatcher(callback) {
-  /**
-   * @public {function()}
-   * @const
-   */
-  this.callback = callback;
+class TestDirectoryWatcher {
+  constructor(callback) {
+    /**
+     * @public {function()}
+     * @const
+     */
+    this.callback = callback;
+
+    /**
+     * @public {boolean}
+     */
+    this.triggered = false;
+  }
 
   /**
-   * @public {boolean}
+   * @override
    */
-  this.triggered = false;
+  addDirectory() {}
 }
-
-/**
- * @override
- */
-TestDirectoryWatcher.prototype.addDirectory = () => {
-};

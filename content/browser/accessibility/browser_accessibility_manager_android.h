@@ -70,7 +70,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   bool OnHoverEvent(const ui::MotionEventAndroid& event);
 
   // BrowserAccessibilityManager overrides.
-  BrowserAccessibility* GetFocus() override;
+  BrowserAccessibility* GetFocus() const override;
   void SendLocationChangeEvents(
       const std::vector<AccessibilityHostMsg_LocationChangeParams>& params)
       override;

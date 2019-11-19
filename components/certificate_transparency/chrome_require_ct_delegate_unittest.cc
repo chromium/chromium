@@ -10,7 +10,7 @@
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_message_loop.h"
 #include "base/values.h"
 #include "components/certificate_transparency/pref_names.h"
@@ -39,8 +39,8 @@ class ChromeRequireCTDelegateTest : public ::testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_{
-      base::test::ScopedTaskEnvironment::MainThreadType::IO};
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   scoped_refptr<net::X509Certificate> cert_;
   net::HashValueVector hashes_;
 };

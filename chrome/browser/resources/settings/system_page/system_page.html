@@ -1,8 +1,8 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../controls/extension_controlled_indicator.html">
 <link rel="import" href="../controls/settings_toggle_button.html">
 <link rel="import" href="../lifetime_browser_proxy.html">
@@ -24,18 +24,28 @@
         label="$i18n{hardwareAccelerationLabel}">
       <template is="dom-if" if="[[shouldShowRestart_(
           prefs.hardware_acceleration_mode.enabled.value)]]">
-        <paper-button on-click="onRestartTap_" slot="more-actions">
+        <cr-button on-click="onRestartTap_" slot="more-actions">
           $i18n{restart}
-        </paper-button>
+        </cr-button>
       </template>
     </settings-toggle-button>
+
     <div id="proxy" class="settings-box" on-click="onProxyTap_"
-        actionable$="[[!isProxyEnforcedByPolicy_]]">
-      <div class="start">$i18n{proxySettingsLabel}</div>
-      <paper-icon-button-light class="icon-external"
-          hidden$="[[isProxyEnforcedByPolicy_]]">
-        <button aria-label="$i18n{proxySettingsLabel}"></button>
-      </paper-icon-button-light>
+        actionable$="[[isProxyDefault_]]">
+      <div class="start settings-box-text" hidden$="[[!isProxyDefault_]]">
+        $i18n{proxySettingsLabel}
+      </div>
+      <div class="start settings-box-text"
+          hidden$="[[!prefs.proxy.extensionId]]">
+        $i18n{proxySettingsExtensionLabel}
+      </div>
+      <div class="start settings-box-text"
+          hidden$="[[!isProxyEnforcedByPolicy_]]">
+        $i18n{proxySettingsPolicyLabel}
+      </div>
+      <cr-icon-button class="icon-external"
+          hidden$="[[isProxyEnforcedByPolicy_]]"
+          aria-label="$i18n{proxySettingsLabel}"></cr-icon-button>
       <template is="dom-if" if="[[isProxyEnforcedByPolicy_]]">
         <cr-policy-pref-indicator pref="[[prefs.proxy]]"
             icon-aria-label="$i18n{proxySettingsLabel}">

@@ -124,6 +124,8 @@ class BASE_EXPORT BuildInfo {
 
   bool is_at_least_q() const { return is_at_least_q_; }
 
+  bool is_debug_android() const { return is_debug_android_; }
+
  private:
   friend struct BuildInfoSingletonTraits;
 
@@ -157,6 +159,7 @@ class BASE_EXPORT BuildInfo {
   // Not needed by breakpad.
   const std::string extracted_file_suffix_;
   const bool is_at_least_q_;
+  const bool is_debug_android_;
 
   DISALLOW_COPY_AND_ASSIGN(BuildInfo);
 };

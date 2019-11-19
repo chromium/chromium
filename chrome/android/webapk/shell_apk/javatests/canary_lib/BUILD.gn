@@ -5,12 +5,12 @@
 import("//build/config/android/rules.gni")
 
 android_library("canary_lib_java") {
-  dex_path = "$target_gen_dir/canary.dex"
+  dex_path = "$target_out_dir/canary.dex"
   java_files = [ "src/org/chromium/webapk/shell_apk/test/canary/Canary.java" ]
 }
 
 android_library("canary_lib2_java") {
-  dex_path = "$target_gen_dir/canary2.dex"
+  dex_path = "$target_out_dir/canary2.dex"
   java_files = [ "src/org/chromium/webapk/shell_apk/test/canary/Canary2.java" ]
 }
 
@@ -19,7 +19,7 @@ android_library("canary_lib2_java") {
 
 android_assets("canary_dex_assets") {
   sources = [
-    "$target_gen_dir/canary.dex",
+    "$target_out_dir/canary.dex",
   ]
   disable_compression = true
   deps = [
@@ -29,7 +29,7 @@ android_assets("canary_dex_assets") {
 
 android_assets("canary_dex2_assets") {
   sources = [
-    "$target_gen_dir/canary2.dex",
+    "$target_out_dir/canary2.dex",
   ]
   disable_compression = true
   deps = [

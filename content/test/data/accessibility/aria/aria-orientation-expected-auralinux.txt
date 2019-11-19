@@ -1,0 +1,37 @@
+[document web]
+++[combo box]
+++[combo box] horizontal
+++[combo box] vertical
+++[list box] vertical
+++[list box] horizontal
+++[list box] vertical
+++[menu] vertical
+++[menu] horizontal
+++[menu] vertical
+++[menu bar] horizontal
+++[menu bar] horizontal
+++[menu bar] vertical
+++[panel]
+++[panel] horizontal
+++[panel] vertical
+++[scroll bar] vertical current=50.000000 minimum=0.000000 maximum=100.000000
+++[scroll bar] horizontal current=50.000000 minimum=0.000000 maximum=100.000000
+++[scroll bar] vertical current=50.000000 minimum=0.000000 maximum=100.000000
+++[slider] horizontal current=50.000000 minimum=0.000000 maximum=100.000000
+++[slider] horizontal current=50.000000 minimum=0.000000 maximum=100.000000
+++[slider] vertical current=50.000000 minimum=0.000000 maximum=100.000000
+++[separator] horizontal
+++[separator] horizontal
+++[separator] vertical
+++[page tab list] horizontal
+++[page tab list] horizontal
+++[page tab list] vertical
+++[tool bar] horizontal
+++[tool bar] horizontal
+++[tool bar] vertical
+++[tree] vertical
+++[tree] horizontal
+++[tree] vertical
+++[tree table] cols=0 headers=(NONE); rows=0 headers=(NONE); caption=false; spans=(all: 1x1)
+++[tree table] horizontal cols=0 headers=(NONE); rows=0 headers=(NONE); caption=false; spans=(all: 1x1)
+++[tree table] vertical cols=0 headers=(NONE); rows=0 headers=(NONE); caption=false; spans=(all: 1x1)

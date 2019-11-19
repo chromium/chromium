@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/audio/audio_debug_recording_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,7 +114,7 @@ class AudioDebugRecordingManagerUnderTest : public AudioDebugRecordingManager {
 class AudioDebugRecordingManagerTest : public ::testing::Test {
  public:
   AudioDebugRecordingManagerTest()
-      : manager_(scoped_task_environment_.GetMainThreadTaskRunner()) {}
+      : manager_(task_environment_.GetMainThreadTaskRunner()) {}
 
   ~AudioDebugRecordingManagerTest() override = default;
 
@@ -127,7 +127,7 @@ class AudioDebugRecordingManagerTest : public ::testing::Test {
 
  protected:
   // The test task environment.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   AudioDebugRecordingManagerUnderTest manager_;
 

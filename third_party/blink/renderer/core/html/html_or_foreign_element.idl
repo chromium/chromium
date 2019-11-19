@@ -1,0 +1,17 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://html.spec.whatwg.org/multipage/dom.html#htmlorsvgelement
+// TODO(rwlbuis): update link after HTMLOrSVGElement to HTMLOrForeignElement renaming:
+// https://github.com/whatwg/html/issues/4702
+interface mixin HTMLOrForeignElement {
+  [SameObject, PerWorldBindings] readonly attribute DOMStringMap dataset;
+  [CEReactions] attribute DOMString nonce;
+
+  [CEReactions, Reflect] attribute boolean autofocus;
+  [Affects=Nothing, CEReactions, CustomElementCallbacks] attribute long tabIndex;
+  void focus(optional FocusOptions options);
+  void blur();
+};
+

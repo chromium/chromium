@@ -9,7 +9,7 @@ evalURL.js:5 Uncaught Error: Exception in eval:with sourceURL
 b @ evalURL.js:5
 a @ evalURL.js:10
 evalSource @ evalURL.js:13
-(anonymous) @ evalURL.js:14
+eval @ evalURL.js:14
 setTimeout (async)
 doEvalWithSourceURL @ VM:30
 (anonymous) @ console-uncaught-exception-in-eval.js:40
@@ -22,7 +22,7 @@ VM:5 Uncaught Error: Exception in eval:anonymous
 b @ VM:5
 a @ VM:10
 evalSource @ VM:13
-(anonymous) @ VM:14
+eval @ VM:14
 setTimeout (async)
 doAnonymousEvalWith @ VM:36
 (anonymous) @ console-uncaught-exception-in-eval.js:43

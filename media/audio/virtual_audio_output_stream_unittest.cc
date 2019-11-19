@@ -34,7 +34,7 @@ class MockVirtualAudioInputStream : public VirtualAudioInputStream {
       : VirtualAudioInputStream(
             kParams,
             worker_task_runner,
-            base::Bind(&base::DeletePointer<VirtualAudioInputStream>)) {}
+            base::BindOnce(&base::DeletePointer<VirtualAudioInputStream>)) {}
   ~MockVirtualAudioInputStream() override = default;
 
   MOCK_METHOD2(AddInputProvider,
@@ -92,9 +92,8 @@ TEST_F(VirtualAudioOutputStreamTest, StartStopStartStop) {
                      base::Unretained(input_stream)));
 
   VirtualAudioOutputStream* const output_stream = new VirtualAudioOutputStream(
-      kParams,
-      input_stream,
-      base::Bind(&base::DeletePointer<VirtualAudioOutputStream>));
+      kParams, input_stream,
+      base::BindOnce(&base::DeletePointer<VirtualAudioOutputStream>));
 
   EXPECT_CALL(*input_stream, AddInputProvider(output_stream, _)).Times(kCycles);
   EXPECT_CALL(*input_stream, RemoveInputProvider(output_stream, _))

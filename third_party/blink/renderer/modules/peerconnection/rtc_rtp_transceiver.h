@@ -7,8 +7,10 @@
 
 #include "base/optional.h"
 #include "third_party/blink/public/platform/web_rtc_rtp_transceiver.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_codec_capability.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transceiver_init.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -33,7 +35,7 @@ class RTCRtpTransceiver final : public ScriptWrappable {
                     RTCRtpSender*,
                     RTCRtpReceiver*);
 
-  // rtc_rtp_transciever.idl
+  // rtc_rtp_transceiver.idl
   String mid() const;
   RTCRtpSender* sender() const;
   RTCRtpReceiver* receiver() const;
@@ -42,6 +44,9 @@ class RTCRtpTransceiver final : public ScriptWrappable {
   String direction() const;
   void setDirection(String direction, ExceptionState&);
   String currentDirection() const;
+  void setCodecPreferences(
+      const HeapVector<Member<RTCRtpCodecCapability>>& codecs,
+      ExceptionState& exception_state);
 
   // Updates the transceiver attributes by fetching values from
   // |web_transceiver_|. This is made an explicit operation (rather than

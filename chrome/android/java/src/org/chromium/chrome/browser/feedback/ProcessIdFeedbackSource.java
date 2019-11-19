@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.feedback;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.util.HashMap;
@@ -42,14 +43,15 @@ public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
     // AsyncFeedbackSource implementation.
     @Override
     public void start(final Runnable callback) {
-        nativeStart(this);
+        ProcessIdFeedbackSourceJni.get().start(this);
     }
 
     @CalledByNative
     private void prepareCompleted(long nativeSource) {
         mProcessMap = new HashMap<>();
         for (Map.Entry<String, Integer> entry : PROCESS_TYPES.entrySet()) {
-            long[] pids = nativeGetProcessIdsForType(nativeSource, entry.getValue());
+            long[] pids = ProcessIdFeedbackSourceJni.get().getProcessIdsForType(
+                    nativeSource, ProcessIdFeedbackSource.this, entry.getValue());
             if (pids.length == 0) continue;
             StringBuilder spids = new StringBuilder();
             for (long pid : pids) {
@@ -58,7 +60,8 @@ public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
             }
             mProcessMap.put(processTypeToFeedbackKey(entry.getKey()), spids.toString());
         }
-        mProcessMap.put(processTypeToFeedbackKey("browser"), Long.toString(nativeGetCurrentPid()));
+        mProcessMap.put(processTypeToFeedbackKey("browser"),
+                Long.toString(ProcessIdFeedbackSourceJni.get().getCurrentPid()));
         mIsReady = true;
     }
 
@@ -72,8 +75,11 @@ public class ProcessIdFeedbackSource implements AsyncFeedbackSource {
         return mProcessMap;
     }
 
-    private static native long nativeGetCurrentPid();
-    private static native void nativeStart(ProcessIdFeedbackSource source);
-    private native long[] nativeGetProcessIdsForType(
-            long nativeProcessIdFeedbackSource, int processType);
+    @NativeMethods
+    interface Natives {
+        long getCurrentPid();
+        void start(ProcessIdFeedbackSource source);
+        long[] getProcessIdsForType(long nativeProcessIdFeedbackSource,
+                ProcessIdFeedbackSource caller, int processType);
+    }
 }

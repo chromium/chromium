@@ -43,11 +43,6 @@ class BookmarkManagerPrivateEventRouter
   // bookmarks::BaseBookmarkModelObserver:
   void BookmarkModelChanged() override;
   void BookmarkModelBeingDeleted(bookmarks::BookmarkModel* model) override;
-  void OnWillChangeBookmarkMetaInfo(
-      bookmarks::BookmarkModel* model,
-      const bookmarks::BookmarkNode* node) override;
-  void BookmarkMetaInfoChanged(bookmarks::BookmarkModel* model,
-                               const bookmarks::BookmarkNode* node) override;
 
  private:
   // Helper to actually dispatch an event to extension listeners.
@@ -243,84 +238,6 @@ class BookmarkManagerPrivateGetSubtreeFunction
   bool RunOnReady() override;
 };
 
-class BookmarkManagerPrivateCanEditFunction
-    : public extensions::BookmarksFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.canEdit",
-                             BOOKMARKMANAGERPRIVATE_CANEDIT)
-
- protected:
-  ~BookmarkManagerPrivateCanEditFunction() override {}
-
-  // ExtensionFunction:
-  bool RunOnReady() override;
-};
-
-class BookmarkManagerPrivateRecordLaunchFunction
-    : public extensions::BookmarksFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.recordLaunch",
-                             BOOKMARKMANAGERPRIVATE_RECORDLAUNCH)
-
- protected:
-  ~BookmarkManagerPrivateRecordLaunchFunction() override {}
-
-  // ExtensionFunction:
-  bool RunOnReady() override;
-};
-
-class BookmarkManagerPrivateCreateWithMetaInfoFunction
-    : public extensions::BookmarksFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.createWithMetaInfo",
-                             BOOKMARKMANAGERPRIVATE_CREATEWITHMETAINFO)
-
- protected:
-  ~BookmarkManagerPrivateCreateWithMetaInfoFunction() override {}
-
-  // ExtensionFunction:
-  bool RunOnReady() override;
-};
-
-class BookmarkManagerPrivateGetMetaInfoFunction
-    : public extensions::BookmarksFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.getMetaInfo",
-                             BOOKMARKMANAGERPRIVATE_GETMETAINFO)
-
- protected:
-  ~BookmarkManagerPrivateGetMetaInfoFunction() override {}
-
-  // ExtensionFunction:
-  bool RunOnReady() override;
-};
-
-class BookmarkManagerPrivateSetMetaInfoFunction
-    : public extensions::BookmarksFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.setMetaInfo",
-                             BOOKMARKMANAGERPRIVATE_SETMETAINFO)
-
- protected:
-  ~BookmarkManagerPrivateSetMetaInfoFunction() override {}
-
-  // ExtensionFunction:
-  bool RunOnReady() override;
-};
-
-class BookmarkManagerPrivateUpdateMetaInfoFunction
-    : public extensions::BookmarksFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.updateMetaInfo",
-                             BOOKMARKMANAGERPRIVATE_UPDATEMETAINFO)
-
- protected:
-  ~BookmarkManagerPrivateUpdateMetaInfoFunction() override {}
-
-  // ExtensionFunction:
-  bool RunOnReady() override;
-};
-
 class BookmarkManagerPrivateRemoveTreesFunction
     : public extensions::BookmarksFunction {
  public:
@@ -355,32 +272,6 @@ class BookmarkManagerPrivateRedoFunction
 
  protected:
   ~BookmarkManagerPrivateRedoFunction() override {}
-
-  // ExtensionFunction:
-  bool RunOnReady() override;
-};
-
-class BookmarkManagerPrivateGetUndoInfoFunction
-    : public extensions::BookmarksFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.getUndoInfo",
-                             BOOKMARKMANAGERPRIVATE_UNDOINFO)
-
- protected:
-  ~BookmarkManagerPrivateGetUndoInfoFunction() override {}
-
-  // ExtensionFunction:
-  bool RunOnReady() override;
-};
-
-class BookmarkManagerPrivateGetRedoInfoFunction
-    : public extensions::BookmarksFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.getRedoInfo",
-                             BOOKMARKMANAGERPRIVATE_REDOINFO)
-
- protected:
-  ~BookmarkManagerPrivateGetRedoInfoFunction() override {}
 
   // ExtensionFunction:
   bool RunOnReady() override;

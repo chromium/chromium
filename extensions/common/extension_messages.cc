@@ -139,10 +139,7 @@ bool ParamTraits<URLPattern>::Read(const base::Pickle* m,
   // schemes after parsing the pattern. Update these method calls once we can
   // ignore scheme validation with URLPattern parse options. crbug.com/90544
   p->SetValidSchemes(URLPattern::SCHEME_ALL);
-  // Allow effective TLD wildcarding since this check is only needed on initial
-  // creation of URLPattern and not as part of deserialization.
-  URLPattern::ParseResult result =
-      p->Parse(spec, URLPattern::ALLOW_WILDCARD_FOR_EFFECTIVE_TLD);
+  URLPattern::ParseResult result = p->Parse(spec);
   p->SetValidSchemes(valid_schemes);
   return URLPattern::ParseResult::kSuccess == result;
 }

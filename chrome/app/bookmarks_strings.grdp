@@ -358,8 +358,17 @@
   <message name="IDS_BOOKMARK_MANAGER_MENU_ADD_FOLDER" desc="Title of the bookmark toolbar dropdown menu item that adds a new folder.">
     Add new folder
   </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_CUT" desc="Title of the bookmark dropdown menu item that cuts one or more bookmarks.">
+    Cut
+  </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_COPY" desc="Title of the bookmark dropdown menu item that copies one or more bookmarks.">
+    Copy
+  </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_COPY_URL" desc="Title of the bookmark dropdown menu item that copies the url of the bookmark.">
     Copy URL
+  </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_PASTE" desc="Title of the bookmark dropdown menu item that pastes one or more bookmarks.">
+    Paste
   </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_EXPORT" desc="Title of the bookmark toolbar dropdown menu item that exports bookmarks.">
     Export bookmarks
@@ -403,6 +412,9 @@
   <message name="IDS_BOOKMARK_MANAGER_MORE_ACTIONS_AX_LABEL" desc="Spoken text for the button in the bookmark manager which shows an action menu for a bookmark, with actions like 'Edit' or 'Delete'">
     More actions for <ph name="BOOKMARK_NAME">$1<ex>Bookmark X</ex></ph>
   </message>
+  <message name="IDS_BOOKMARK_MANAGER_MORE_ACTIONS_MULTI_AX_LABEL" desc="Spoken text for the button in the bookmark manager which shows an action menu for multiple selected bookmarks, with actions like 'Cut' or 'Delete'">
+    More actions for selected items
+  </message>
   <message name="IDS_BOOKMARK_MANAGER_OPEN_DIALOG_TITLE" desc="Title of the dialog confirming whether a large number of bookmarks should be opened.">
     Open selected items
   </message>
@@ -414,12 +426,6 @@
   </message>
   <message name="IDS_BOOKMARK_MANAGER_SIDEBAR_AX_LABEL" desc="Message announced by screenreaders for the bookmark manager sidebar.">
     Bookmark folder tree
-  </message>
-  <message name="IDS_BOOKMARK_MANAGER_SIDEBAR_NODE_COLLAPSE_AX_LABEL" desc="Message announced by screenreaders for button to collapse a folder in the bookmark manager sidebar.">
-    Collapse <ph name="FOLDER_NAME">$1<ex>Recipes</ex></ph>
-  </message>
-  <message name="IDS_BOOKMARK_MANAGER_SIDEBAR_NODE_EXPAND_AX_LABEL" desc="Message announced by screenreaders for button to expand a folder in the bookmark manager sidebar.">
-    Expand <ph name="FOLDER_NAME">$1<ex>Recipes</ex></ph>
   </message>
   <message name="IDS_BOOKMARK_MANAGER_TOAST_FOLDER_SORTED" desc="Label displayed in toast popup message when a folder's children are sorted.">
     Folder sorted
@@ -450,30 +456,30 @@
     &amp;Bookmarks
   </message>
   <if expr="not use_titlecase">
-    <message name="IDS_BOOKMARK_THIS_PAGE" desc="Title of the menu item that bookmarks the current page.">
-      Bookmark this page...
+    <message name="IDS_BOOKMARK_THIS_TAB" desc="Title of the menu item that bookmarks the current tab.">
+      Bookmark this tab...
     </message>
   </if>
   <if expr="use_titlecase">
-    <message name="IDS_BOOKMARK_THIS_PAGE" desc="In Title Case: Title of the menu item that bookmarks the current page.">
-      Bookmark This Page...
+    <message name="IDS_BOOKMARK_THIS_TAB" desc="In Title Case: Title of the menu item that bookmarks the current tab.">
+      Bookmark This Tab...
     </message>
   </if>
   <if expr="not use_titlecase">
-    <message name="IDS_BOOKMARK_OPEN_PAGES" desc="Title of the menu item that bookmarks all the pages opened in this window.">
-      Bookmark open pages...
+    <message name="IDS_BOOKMARK_ALL_TABS" desc="Title of the menu item that bookmarks all the tabs opened in this window.">
+      Bookmark all tabs...
     </message>
   </if>
   <if expr="use_titlecase">
-    <message name="IDS_BOOKMARK_OPEN_PAGES" desc="In Title Case: Title of the menu item that bookmarks all the pages opened in this window.">
-      Bookmark Open Pages...
+    <message name="IDS_BOOKMARK_ALL_TABS" desc="In Title Case: Title of the menu item that bookmarks all the tabs opened in this window.">
+      Bookmark All Tabs...
     </message>
   </if>
   <!-- End of Bookmarks Menu (in the Main Menu) strings. -->
 
   <!-- Begin of Bookmark Star button strings. -->
-  <message name="IDS_TOOLTIP_STARRED" desc="The tooltip shown when you hover the star button in the right side of the location bar and the current page is bookmarked.">
-    Edit bookmark for this page
+  <message name="IDS_TOOLTIP_STARRED" desc="The tooltip shown when you hover the star button in the right side of the location bar and the current tab is bookmarked.">
+    Edit bookmark for this tab
   </message>
   <!-- End of Bookmark Star button strings. -->
 

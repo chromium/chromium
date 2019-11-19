@@ -49,12 +49,12 @@ class MediaStreamDescriptor;
 class UserMediaController;
 
 class MODULES_EXPORT UserMediaRequest final
-    : public GarbageCollectedFinalized<UserMediaRequest>,
+    : public GarbageCollected<UserMediaRequest>,
       public ContextLifecycleObserver {
   USING_GARBAGE_COLLECTED_MIXIN(UserMediaRequest);
 
  public:
-  class Callbacks : public GarbageCollectedFinalized<Callbacks> {
+  class Callbacks : public GarbageCollected<Callbacks> {
    public:
     virtual ~Callbacks() = default;
 
@@ -130,6 +130,7 @@ class MODULES_EXPORT UserMediaRequest final
   Member<UserMediaController> controller_;
 
   Member<Callbacks> callbacks_;
+  bool is_resolved_ = false;
 };
 
 }  // namespace blink

@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <style>
   body {
-    transform: translateZ(0);
+    will-change: transform;
   }
   #container {
     height: 300px;
     width: 300px;
     background-color: green;
-    transform: translateZ(0);
+    will-change: transform;
   }
 
   #parent {
@@ -25,7 +25,7 @@
     height: 200px;
     z-index: -2;
     background-color: red;
-    transform: translateZ(0);
+    will-change: transform;
   }
 </style>
 <body>

@@ -196,4 +196,21 @@ WebURLLoadTiming::operator scoped_refptr<ResourceLoadTiming>() const {
   return private_.Get();
 }
 
+WebURLLoadTiming WebURLLoadTiming::DeepCopy() const {
+  return private_->DeepCopy();
+}
+
+bool WebURLLoadTiming::operator==(const WebURLLoadTiming& other) const {
+  return *private_ == *other.private_;
+}
+
 }  // namespace blink
+
+namespace WTF {
+
+CrossThreadCopier<blink::WebURLLoadTiming>::Type CrossThreadCopier<
+    blink::WebURLLoadTiming>::Copy(const blink::WebURLLoadTiming& timing) {
+  return timing.DeepCopy();
+}
+
+}  // namespace WTF

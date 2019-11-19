@@ -148,6 +148,10 @@ static const char* g_ui_element_name_strings[] = {
     "kContentRepositionHitPlane",
     "kContentRepositionVisibilityToggle",
     "kWebXrExternalPromptNotification",
+    "kUsbConnectedIndicator",
+    "kWebXrUsbConnectedIndicator",
+    "kMidiConnectedIndicator",
+    "kWebXrMidiConnectedIndicator",
 };
 
 static_assert(

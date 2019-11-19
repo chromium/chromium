@@ -1,2 +1,0 @@
-This tests that calling somewindow.open performs the frame name lookup in the context of somewindow and not the window running the script.
-SUCCESS - did not replace window contents

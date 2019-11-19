@@ -11,17 +11,17 @@ class ImageLoaderJsTest : public FileManagerJsTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, ImageLoaderClientTest) {
-  RunGeneratedTest("/image_loader_client_unittest.html");
+  RunTestURL("image_loader_client_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, CacheTest) {
-  RunGeneratedTest("/cache_unittest.html");
+  RunTestURL("cache_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, ImageLoaderTest) {
-  RunGeneratedTest("/image_loader_unittest.html");
+  RunTestURL("image_loader_unittest_gen.html");
 }
 
 IN_PROC_BROWSER_TEST_F(ImageLoaderJsTest, PiexLoaderTest) {
-  RunGeneratedTest("/piex_loader_unittest.html");
+  RunTestURL("piex_loader_unittest_gen.html");
 }

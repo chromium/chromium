@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<title>Mojo shared buffer tests</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+
+let kBufferSize = 32;
+
+test(() => {
+  let {result, handle} = Mojo.createSharedBuffer(kBufferSize);
+  assert_equals(result, Mojo.RESULT_OK);
+  assert_true(handle instanceof MojoHandle);
+}, "Create shared buffer");
+
+test(() => {
+  let {handle} = Mojo.createSharedBuffer(kBufferSize);
+  let {result, buffer} = handle.mapBuffer(0, kBufferSize);
+  assert_equals(result, Mojo.RESULT_OK);
+  assert_true(buffer instanceof ArrayBuffer);
+}, "Map shared buffer");
+
+test(() => {
+  let {handle: handle0} = Mojo.createSharedBuffer(kBufferSize);
+  let {result, handle: handle1} = handle0.duplicateBufferHandle();
+  assert_equals(result, Mojo.RESULT_OK);
+  assert_true(handle1 instanceof MojoHandle);
+  assert_not_equals(handle1, handle0);
+}, "Duplicate RW shared buffer handle");
+
+test(() => {
+  let {handle: handle0} = Mojo.createSharedBuffer(kBufferSize);
+  let {result, handle: handle1} = handle0.duplicateBufferHandle({readOnly: true});
+  assert_equals(result, Mojo.RESULT_OK);
+  assert_true(handle1 instanceof MojoHandle);
+  assert_not_equals(handle1, handle0);
+}, "Duplicate RO shared buffer handle");
+
+test(() => {
+  let {handle: handle0} = Mojo.createSharedBuffer(kBufferSize);
+  let {buffer: buffer0} = handle0.mapBuffer(0, kBufferSize);
+  let array0 = new Uint8Array(buffer0);
+
+  let {handle: handle1} = handle0.duplicateBufferHandle({readOnly: true});
+  let {buffer: buffer1} = handle1.mapBuffer(0, kBufferSize);
+  let array1 = new Uint8Array(buffer1);
+
+  assert_not_equals(buffer1, buffer0);
+  for (let i = 0; i < kBufferSize; ++i) {
+    array0[i] = i;
+    assert_equals(array1[i], i);
+  }
+}, "Read from RO shared buffer handle");
+
+test(() => {
+  let {handle: handle0} = Mojo.createSharedBuffer(kBufferSize);
+  let {buffer: buffer0} = handle0.mapBuffer(0, kBufferSize);
+  let array0 = new Uint8Array(buffer0);
+
+  let {handle: handle1} = handle0.duplicateBufferHandle();
+  let {buffer: buffer1} = handle1.mapBuffer(0, kBufferSize);
+  let array1 = new Uint8Array(buffer1);
+
+  assert_not_equals(buffer1, buffer0);
+  for (let i = 0; i < kBufferSize; ++i) {
+    array1[i] = i;
+    assert_equals(array0[i], i);
+  }
+}, "Write to RW shared buffer handle");
+
+</script>

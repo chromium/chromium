@@ -34,12 +34,11 @@
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_item.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_manager.h"
-#import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_collection_view_controller.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/time_range_selector_table_view_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
 
@@ -47,55 +46,8 @@
 #error "This file requires ARC support."
 #endif
 
-namespace {
-
-using OnBrowsingDataRemovedBlock = void (^)(BrowsingDataRemoveMask mask);
-
-// BrowsingDataRemoverObserverWrapper observes a BrowsingDataRemover and
-// invokes a block when browsing data removal completes.
-class BrowsingDataRemoverObserverWrapper : public BrowsingDataRemoverObserver {
- public:
-  explicit BrowsingDataRemoverObserverWrapper(
-      OnBrowsingDataRemovedBlock on_browsing_data_removed_block);
-  ~BrowsingDataRemoverObserverWrapper() override;
-
-  // BrowsingDataRemoverObserver implementation.
-  void OnBrowsingDataRemoved(BrowsingDataRemover* remover,
-                             BrowsingDataRemoveMask mask) override;
-
- private:
-  OnBrowsingDataRemovedBlock on_browsing_data_removed_block_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverObserverWrapper);
-};
-
-BrowsingDataRemoverObserverWrapper::BrowsingDataRemoverObserverWrapper(
-    OnBrowsingDataRemovedBlock on_browsing_data_removed_block)
-    : on_browsing_data_removed_block_(on_browsing_data_removed_block) {
-  DCHECK(on_browsing_data_removed_block_);
-}
-
-BrowsingDataRemoverObserverWrapper::~BrowsingDataRemoverObserverWrapper() =
-    default;
-
-void BrowsingDataRemoverObserverWrapper::OnBrowsingDataRemoved(
-    BrowsingDataRemover* remover,
-    BrowsingDataRemoveMask mask) {
-  on_browsing_data_removed_block_(mask);
-}
-
-}  // namespace
-
 @interface ClearBrowsingDataCollectionViewController () {
   ios::ChromeBrowserState* _browserState;  // weak
-
-  // Observer for browsing data removal events and associated ScopedObserver
-  // used to track registration with BrowsingDataRemover. They both may be
-  // null if the new Clear Browser Data UI is disabled.
-  std::unique_ptr<BrowsingDataRemoverObserver> observer_;
-  std::unique_ptr<
-      ScopedObserver<BrowsingDataRemover, BrowsingDataRemoverObserver>>
-      scoped_observer_;
 }
 
 // TODO(crbug.com/850699): remove direct dependency and replace with
@@ -110,9 +62,6 @@ void BrowsingDataRemoverObserverWrapper::OnBrowsingDataRemoved(
 @property(nonatomic, strong)
     ChromeActivityOverlayCoordinator* chromeActivityOverlayCoordinator;
 
-// Restarts the counters for data types specified in the mask.
-- (void)restartCounters:(BrowsingDataRemoveMask)mask;
-
 @end
 
 @implementation ClearBrowsingDataCollectionViewController
@@ -122,6 +71,14 @@ void BrowsingDataRemoverObserverWrapper::OnBrowsingDataRemoved(
 #pragma mark Initialization
 
 - (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
+  ClearBrowsingDataManager* manager = [[ClearBrowsingDataManager alloc]
+      initWithBrowserState:browserState
+                  listType:ClearBrowsingDataListType::kListTypeCollectionView];
+  return [self initWithBrowserState:browserState manager:manager];
+}
+
+- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
+                             manager:(ClearBrowsingDataManager*)manager {
   DCHECK(browserState);
   UICollectionViewLayout* layout = [[MDCCollectionViewFlowLayout alloc] init];
   self = [super initWithLayout:layout
@@ -130,32 +87,13 @@ void BrowsingDataRemoverObserverWrapper::OnBrowsingDataRemoved(
     self.accessibilityTraits |= UIAccessibilityTraitButton;
 
     _browserState = browserState;
-    _dataManager = [[ClearBrowsingDataManager alloc]
-        initWithBrowserState:browserState
-                    listType:ClearBrowsingDataListType::
-                                 kListTypeCollectionView];
+    _dataManager = manager;
     _dataManager.linkDelegate = self;
     _dataManager.consumer = self;
 
     self.title = l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
     self.collectionViewAccessibilityIdentifier =
-        kClearBrowsingDataCollectionViewAccessibilityIdentifier;
-
-    if (IsNewClearBrowsingDataUIEnabled()) {
-      __weak ClearBrowsingDataCollectionViewController* weakSelf = self;
-      observer_ = std::make_unique<BrowsingDataRemoverObserverWrapper>(
-          ^(BrowsingDataRemoveMask mask) {
-            [weakSelf restartCounters:mask];
-          });
-
-      scoped_observer_ = std::make_unique<
-          ScopedObserver<BrowsingDataRemover, BrowsingDataRemoverObserver>>(
-          observer_.get());
-      scoped_observer_->Add(
-          BrowsingDataRemoverFactory::GetForBrowserState(browserState));
-    }
-
-    [self restartCounters:BrowsingDataRemoveMask::REMOVE_ALL];
+        kClearBrowsingDataViewAccessibilityIdentifier;
   }
   return self;
 }
@@ -164,6 +102,11 @@ void BrowsingDataRemoverObserverWrapper::OnBrowsingDataRemoved(
   [super viewDidLoad];
 
   [self loadModel];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [self.dataManager restartCounters:BrowsingDataRemoveMask::REMOVE_ALL];
 }
 
 #pragma mark CollectionViewController
@@ -179,28 +122,6 @@ void BrowsingDataRemoverObserverWrapper::OnBrowsingDataRemoved(
   [self reconfigureCellsForItems:@[ item ]];
 
   // Relayout the cells to adapt to the new contents height.
-  [self.collectionView.collectionViewLayout invalidateLayout];
-}
-
-- (void)updateCounter:(NSInteger)itemType detailText:(NSString*)detailText {
-  CollectionViewModel* model = self.collectionViewModel;
-  if (!model)
-    return;
-
-  NSIndexPath* indexPath =
-      [model indexPathForItemType:itemType
-                sectionIdentifier:SectionIdentifierDataTypes];
-
-  ClearBrowsingDataItem* clearDataItem =
-      base::mac::ObjCCastStrict<ClearBrowsingDataItem>(
-          [model itemAtIndexPath:indexPath]);
-
-  // Do nothing if the text has not changed.
-  if ([detailText isEqualToString:clearDataItem.detailText])
-    return;
-
-  clearDataItem.detailText = detailText;
-  [self reconfigureCellsForItems:@[ clearDataItem ]];
   [self.collectionView.collectionViewLayout invalidateLayout];
 }
 
@@ -287,9 +208,8 @@ void BrowsingDataRemoverObserverWrapper::OnBrowsingDataRemoved(
   switch (itemType) {
     case ItemTypeTimeRange: {
       UIViewController* controller =
-          [[TimeRangeSelectorCollectionViewController alloc]
-              initWithPrefs:_browserState->GetPrefs()
-                   delegate:self.dataManager];
+          [[TimeRangeSelectorTableViewController alloc]
+              initWithPrefs:_browserState->GetPrefs()];
       [self.navigationController pushViewController:controller animated:YES];
       break;
     }
@@ -306,17 +226,9 @@ void BrowsingDataRemoverObserverWrapper::OnBrowsingDataRemoved(
       if (clearDataItem.accessoryType == MDCCollectionViewCellAccessoryNone) {
         clearDataItem.accessoryType = MDCCollectionViewCellAccessoryCheckmark;
         _browserState->GetPrefs()->SetBoolean(clearDataItem.prefName, true);
-        if (itemType == ItemTypeDataTypeCookiesSiteData &&
-            IsNewClearBrowsingDataUIEnabled()) {
-          [self updateCounter:itemType
-                   detailText:l10n_util::GetNSString(IDS_DEL_COOKIES_COUNTER)];
-        }
       } else {
         clearDataItem.accessoryType = MDCCollectionViewCellAccessoryNone;
         _browserState->GetPrefs()->SetBoolean(clearDataItem.prefName, false);
-        if (IsNewClearBrowsingDataUIEnabled()) {
-          [self updateCounter:itemType detailText:@""];
-        }
       }
       [self reconfigureCellsForItems:@[ clearDataItem ]];
       break;
@@ -361,42 +273,6 @@ void BrowsingDataRemoverObserverWrapper::OnBrowsingDataRemoved(
   OpenNewTabCommand* openMyActivityCommand =
       [OpenNewTabCommand commandWithURLFromChrome:GURL(kGoogleMyAccountURL)];
   [self.dispatcher closeSettingsUIAndOpenURL:openMyActivityCommand];
-}
-
-- (void)restartCounters:(BrowsingDataRemoveMask)mask {
-  CollectionViewModel* model = self.collectionViewModel;
-  if (!self.collectionViewModel)
-    return;
-
-  if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
-    NSIndexPath* indexPath = [self.collectionViewModel
-        indexPathForItemType:ItemTypeDataTypeBrowsingHistory
-           sectionIdentifier:SectionIdentifierDataTypes];
-    ClearBrowsingDataItem* historyItem =
-        base::mac::ObjCCastStrict<ClearBrowsingDataItem>(
-            [model itemAtIndexPath:indexPath]);
-    [historyItem restartCounter];
-  }
-
-  if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_PASSWORDS)) {
-    NSIndexPath* indexPath = [self.collectionViewModel
-        indexPathForItemType:ItemTypeDataTypeSavedPasswords
-           sectionIdentifier:SectionIdentifierDataTypes];
-    ClearBrowsingDataItem* passwordsItem =
-        base::mac::ObjCCastStrict<ClearBrowsingDataItem>(
-            [model itemAtIndexPath:indexPath]);
-    [passwordsItem restartCounter];
-  }
-
-  if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_FORM_DATA)) {
-    NSIndexPath* indexPath = [self.collectionViewModel
-        indexPathForItemType:ItemTypeDataTypeAutofill
-           sectionIdentifier:SectionIdentifierDataTypes];
-    ClearBrowsingDataItem* autofillItem =
-        base::mac::ObjCCastStrict<ClearBrowsingDataItem>(
-            [model itemAtIndexPath:indexPath]);
-    [autofillItem restartCounter];
-  }
 }
 
 #pragma mark MDCCollectionViewStylingDelegate

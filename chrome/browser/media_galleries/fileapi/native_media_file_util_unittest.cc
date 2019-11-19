@@ -22,16 +22,16 @@
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "storage/browser/blob/shareable_file_reference.h"
-#include "storage/browser/fileapi/external_mount_points.h"
-#include "storage/browser/fileapi/file_system_backend.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_operation_runner.h"
-#include "storage/browser/fileapi/file_system_url.h"
-#include "storage/browser/fileapi/isolated_context.h"
-#include "storage/browser/fileapi/native_file_util.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_backend.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/browser/file_system/isolated_context.h"
+#include "storage/browser/file_system/native_file_util.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "storage/browser/test/test_file_system_options.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,23 +54,23 @@ struct FilteringTestCase {
 };
 
 const FilteringTestCase kFilteringTestCases[] = {
-  // Directory should always be visible.
-  { FPL("hoge"), true, true, false, NULL },
-  { FPL("fuga.jpg"), true, true, false, NULL },
-  { FPL("piyo.txt"), true, true, false, NULL },
-  { FPL("moga.cod"), true, true, false, NULL },
+    // Directory should always be visible.
+    {FPL("hoge"), true, true, false, NULL},
+    {FPL("fuga.jpg"), true, true, false, NULL},
+    {FPL("piyo.txt"), true, true, false, NULL},
+    {FPL("moga.cod"), true, true, false, NULL},
 
-  // File should be visible if it's a supported media file.
-  // File without extension.
-  { FPL("foo"), false, false, false, "abc" },
-  // Supported media file.
-  { FPL("bar.jpg"), false, true, true, "\xFF\xD8\xFF" },
-  // Unsupported masquerading file.
-  { FPL("sna.jpg"), false, true, false, "abc" },
-  // Non-media file.
-  { FPL("baz.txt"), false, false, false, "abc" },
-  // Unsupported media file.
-  { FPL("foobar.cod"), false, false, false, "abc" },
+    // File should be visible if it's a supported media file.
+    // File without extension.
+    {FPL("foo"), false, false, false, "abc"},
+    // Supported media file.
+    {FPL("bar.jpg"), false, true, true, "\xFF\xD8\xFF"},
+    // Unsupported masquerading file.
+    {FPL("sna.jpg"), false, true, false, "abc"},
+    // Non-media file.
+    {FPL("baz.txt"), false, false, false, "abc"},
+    // Unsupported media file.
+    {FPL("foobar.cod"), false, false, false, "abc"},
 };
 
 void ExpectEqHelper(const std::string& test_name,
@@ -134,25 +134,19 @@ class NativeMediaFileUtilTest : public testing::Test {
         std::make_unique<MediaFileSystemBackend>(data_dir_.GetPath()));
 
     file_system_context_ = new storage::FileSystemContext(
-        base::CreateSingleThreadTaskRunnerWithTraits(
-            {content::BrowserThread::IO})
-            .get(),
+        base::CreateSingleThreadTaskRunner({content::BrowserThread::IO}).get(),
         base::SequencedTaskRunnerHandle::Get().get(),
         storage::ExternalMountPoints::CreateRefCounted().get(),
         storage_policy.get(), NULL, std::move(additional_providers),
         std::vector<storage::URLRequestAutoMountHandler>(), data_dir_.GetPath(),
         content::CreateAllowFileAccessOptions());
 
-    filesystem_id_ = isolated_context()->RegisterFileSystemForPath(
+    filesystem_ = isolated_context()->RegisterFileSystemForPath(
         storage::kFileSystemTypeNativeMedia, std::string(), root_path(), NULL);
-
-    isolated_context()->AddReference(filesystem_id_);
+    filesystem_id_ = filesystem_.id();
   }
 
-  void TearDown() override {
-    isolated_context()->RemoveReference(filesystem_id_);
-    file_system_context_ = NULL;
-  }
+  void TearDown() override { file_system_context_.reset(); }
 
  protected:
   storage::FileSystemContext* file_system_context() {
@@ -161,8 +155,7 @@ class NativeMediaFileUtilTest : public testing::Test {
 
   FileSystemURL CreateURL(const base::FilePath::CharType* test_case_path) {
     return file_system_context_->CreateCrackedFileSystemURL(
-        origin(),
-        storage::kFileSystemTypeIsolated,
+        origin(), storage::kFileSystemTypeIsolated,
         GetVirtualPath(test_case_path));
   }
 
@@ -176,14 +169,12 @@ class NativeMediaFileUtilTest : public testing::Test {
 
   base::FilePath GetVirtualPath(
       const base::FilePath::CharType* test_case_path) {
-    return base::FilePath::FromUTF8Unsafe(filesystem_id_).
-               Append(FPL("Media Directory")).
-               Append(base::FilePath(test_case_path));
+    return base::FilePath::FromUTF8Unsafe(filesystem_id_)
+        .Append(FPL("Media Directory"))
+        .Append(base::FilePath(test_case_path));
   }
 
-  GURL origin() {
-    return GURL("http://example.com");
-  }
+  GURL origin() { return GURL("http://example.com"); }
 
   storage::FileSystemType type() { return storage::kFileSystemTypeNativeMedia; }
 
@@ -191,13 +182,14 @@ class NativeMediaFileUtilTest : public testing::Test {
     return file_system_context_->operation_runner();
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
  private:
   base::ScopedTempDir data_dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
 
   std::string filesystem_id_;
+  storage::IsolatedContext::ScopedFSHandle filesystem_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeMediaFileUtilTest);
 };
@@ -209,10 +201,9 @@ TEST_F(NativeMediaFileUtilTest, DirectoryExistsAndFileExistsFiltering) {
   for (size_t i = 0; i < base::size(kFilteringTestCases); ++i) {
     FileSystemURL url = CreateURL(kFilteringTestCases[i].path);
 
-    base::File::Error expectation =
-        kFilteringTestCases[i].visible ?
-        base::File::FILE_OK :
-        base::File::FILE_ERROR_NOT_FOUND;
+    base::File::Error expectation = kFilteringTestCases[i].visible
+                                        ? base::File::FILE_OK
+                                        : base::File::FILE_ERROR_NOT_FOUND;
 
     std::string test_name =
         base::StringPrintf("DirectoryExistsAndFileExistsFiltering %" PRIuS, i);
@@ -260,10 +251,9 @@ TEST_F(NativeMediaFileUtilTest, CreateDirectoryFiltering) {
         std::string test_name = base::StringPrintf(
             "CreateFileAndCreateDirectoryFiltering run %d, test %" PRIuS,
             loop_count, i);
-        base::File::Error expectation =
-            kFilteringTestCases[i].visible ?
-            base::File::FILE_OK :
-            base::File::FILE_ERROR_SECURITY;
+        base::File::Error expectation = kFilteringTestCases[i].visible
+                                            ? base::File::FILE_OK
+                                            : base::File::FILE_ERROR_SECURITY;
         operation_runner()->CreateDirectory(
             url, false, false,
             base::Bind(&ExpectEqHelper, test_name, expectation));
@@ -349,10 +339,9 @@ TEST_F(NativeMediaFileUtilTest, CopyDestFiltering) {
         // handled above.
         // If the destination path does not exist and is not visible, then
         // creating it would be a security violation.
-        expectation =
-            kFilteringTestCases[i].visible ?
-            base::File::FILE_OK :
-            base::File::FILE_ERROR_SECURITY;
+        expectation = kFilteringTestCases[i].visible
+                          ? base::File::FILE_OK
+                          : base::File::FILE_ERROR_SECURITY;
       } else {
         if (!kFilteringTestCases[i].visible) {
           // If the destination path exist and is not visible, then to the copy
@@ -407,9 +396,7 @@ TEST_F(NativeMediaFileUtilTest, MoveSourceFiltering) {
         expectation = base::File::FILE_ERROR_INVALID_OPERATION;
       }
       operation_runner()->Move(
-          url,
-          dest_url,
-          storage::FileSystemOperation::OPTION_NONE,
+          url, dest_url, storage::FileSystemOperation::OPTION_NONE,
           base::Bind(&ExpectEqHelper, test_name, expectation));
       content::RunAllTasksUntilIdle();
     }
@@ -454,10 +441,9 @@ TEST_F(NativeMediaFileUtilTest, MoveDestFiltering) {
         // handled above.
         // If the destination path does not exist and is not visible, then
         // creating it would be a security violation.
-        expectation =
-            kFilteringTestCases[i].visible ?
-            base::File::FILE_OK :
-            base::File::FILE_ERROR_SECURITY;
+        expectation = kFilteringTestCases[i].visible
+                          ? base::File::FILE_OK
+                          : base::File::FILE_ERROR_SECURITY;
       } else {
         if (!kFilteringTestCases[i].visible) {
           // If the destination path exist and is not visible, then to the move
@@ -473,9 +459,7 @@ TEST_F(NativeMediaFileUtilTest, MoveDestFiltering) {
         }
       }
       operation_runner()->Move(
-          src_url,
-          url,
-          storage::FileSystemOperation::OPTION_NONE,
+          src_url, url, storage::FileSystemOperation::OPTION_NONE,
           base::Bind(&ExpectEqHelper, test_name, expectation));
       content::RunAllTasksUntilIdle();
     }
@@ -560,8 +544,8 @@ TEST_F(NativeMediaFileUtilTest, CreateSnapshot) {
     else
       expected_error = base::File::FILE_ERROR_SECURITY;
     error = base::File::FILE_ERROR_FAILED;
-    operation_runner()->CreateSnapshotFile(url,
-        base::Bind(CreateSnapshotCallback, &error));
+    operation_runner()->CreateSnapshotFile(
+        url, base::Bind(CreateSnapshotCallback, &error));
     content::RunAllTasksUntilIdle();
     ASSERT_EQ(expected_error, error);
   }

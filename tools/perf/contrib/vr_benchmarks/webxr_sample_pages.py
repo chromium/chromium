@@ -24,8 +24,10 @@ class WebXrSamplePage(XrSamplePage):
     action_runner.MeasureMemory(True)
     # We don't want to be in VR or on a page with a WebGL canvas at the end of
     # the test, as this generates unnecessary heat while the trace data is being
-    # processed, so navigate to a blank page.
-    action_runner.Navigate("about:blank")
+    # processed, so navigate to a blank page if we're on a platform that cares
+    # about the heat generation.
+    if self._shared_page_state.ShouldNavigateToBlankPageBeforeFinishing():
+      action_runner.Navigate("about:blank")
 
 
 class WebXrSamplePageSet(VrStorySet):

@@ -21,7 +21,7 @@
         document.write("This test does not work in manual mode.");
     } else {
         testRunner.dumpAsText();
-        internals.updateLayoutIgnorePendingStylesheetsAndRunPostLayoutTasks();
+        internals.updateLayoutAndRunPostLayoutTasks();
 
         // Scroll so the plugin is 100px down the page
         window.scroll(0, 400);

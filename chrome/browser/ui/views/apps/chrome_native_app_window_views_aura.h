@@ -33,7 +33,7 @@ class ChromeNativeAppWindowViewsAura : public ChromeNativeAppWindowViews {
 
   // ui::BaseWindow implementation.
   ui::WindowShowState GetRestoredState() const override;
-  bool IsAlwaysOnTop() const override;
+  ui::ZOrderLevel GetZOrderLevel() const override;
 
   // NativeAppWindow implementation.
   void UpdateShape(std::unique_ptr<ShapeRects> rects) override;

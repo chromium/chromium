@@ -87,6 +87,13 @@
           console.log({a:1, b:2, c:3, d:4, e:5});
 
           console.log({null:null, undef:undefined, regexp: \/^[regexp]$\/g, bool: false});
+
+          class IHavePrivateProperties {
+              #privateProperty1 = 1;
+              #privateProperty2 = 2;
+              regularProperty = 3;
+          }
+          console.log(new IHavePrivateProperties)
   `);
 
   ConsoleTestRunner.dumpConsoleMessages();

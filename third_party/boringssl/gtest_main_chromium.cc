@@ -26,5 +26,5 @@ int main(int argc, char** argv) {
   BoringSSLTestSuite test_suite(argc, argv);
   return base::LaunchUnitTests(
       argc, argv,
-      base::Bind(&BoringSSLTestSuite::Run, base::Unretained(&test_suite)));
+      base::BindOnce(&BoringSSLTestSuite::Run, base::Unretained(&test_suite)));
 }

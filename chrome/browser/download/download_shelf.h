@@ -45,16 +45,8 @@ class DownloadShelf {
 
   // Download progress animations ----------------------------------------------
 
-  enum {
-    // Progress animation timer period, in milliseconds.
-    kProgressRateMs = 30,
-
-    // Size of the space used for the progress indicator.
-    kProgressIndicatorSize = 25,
-
-    // x/y offset for the file type icon.
-    kFiletypeIconOffset = (kProgressIndicatorSize - 16) / 2
-  };
+  // Size of the space used for the progress indicator.
+  static constexpr int kProgressIndicatorSize = 25;
 
   DownloadShelf();
   virtual ~DownloadShelf();
@@ -136,7 +128,7 @@ class DownloadShelf {
 
   bool should_show_on_unhide_;
   bool is_hidden_;
-  base::WeakPtrFactory<DownloadShelf> weak_ptr_factory_;
+  base::WeakPtrFactory<DownloadShelf> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_H_

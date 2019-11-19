@@ -45,14 +45,6 @@ class SVGTransformListTearOff final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SVGTransformListTearOff* Create(
-      SVGTransformList* target,
-      SVGAnimatedPropertyBase* binding,
-      PropertyIsAnimValType property_is_anim_val) {
-    return MakeGarbageCollected<SVGTransformListTearOff>(target, binding,
-                                                         property_is_anim_val);
-  }
-
   SVGTransformListTearOff(SVGTransformList*,
                           SVGAnimatedPropertyBase* binding,
                           PropertyIsAnimValType);

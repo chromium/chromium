@@ -41,6 +41,9 @@ class ChromeFeatureListCreator {
   // what was used when creating field trials.
   void SetApplicationLocale(const std::string& locale);
 
+  // Overrides cached UI strings on the resource bundle once it is initialized.
+  void OverrideCachedUIStrings();
+
   // Gets the MetricsServicesManagerClient* used in this class.
   metrics_services_manager::MetricsServicesManagerClient*
   GetMetricsServicesManagerClient();

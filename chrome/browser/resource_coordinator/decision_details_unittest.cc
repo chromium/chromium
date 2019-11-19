@@ -90,17 +90,16 @@ TEST(DecisionDetailsTest, DecisionDetails) {
   // Adding a second failure reason doesn't change anything, but the failure
   // strings should grow.
   expected_failure_strings.push_back(
-      ToString(DecisionFailureReason::LIFECYCLES_FEATURE_POLICY_OPT_OUT));
-  EXPECT_FALSE(details.AddReason(
-      DecisionFailureReason::LIFECYCLES_FEATURE_POLICY_OPT_OUT));
+      ToString(DecisionFailureReason::ORIGIN_TRIAL_OPT_OUT));
+  EXPECT_FALSE(details.AddReason(DecisionFailureReason::ORIGIN_TRIAL_OPT_OUT));
   EXPECT_EQ(2u, details.reasons().size());
   EXPECT_FALSE(details.IsPositive());
   EXPECT_EQ(DecisionFailureReason::GLOBAL_BLACKLIST, details.FailureReason());
   EXPECT_EQ(DecisionDetails::Reason(DecisionFailureReason::GLOBAL_BLACKLIST),
             details.reasons()[0]);
-  EXPECT_EQ(DecisionDetails::Reason(
-                DecisionFailureReason::LIFECYCLES_FEATURE_POLICY_OPT_OUT),
-            details.reasons()[1]);
+  EXPECT_EQ(
+      DecisionDetails::Reason(DecisionFailureReason::ORIGIN_TRIAL_OPT_OUT),
+      details.reasons()[1]);
   EXPECT_EQ(expected_failure_strings, details.GetFailureReasonStrings());
   EXPECT_FALSE(details.toggled());
 
@@ -112,9 +111,9 @@ TEST(DecisionDetailsTest, DecisionDetails) {
   EXPECT_EQ(DecisionFailureReason::GLOBAL_BLACKLIST, details.FailureReason());
   EXPECT_EQ(DecisionDetails::Reason(DecisionFailureReason::GLOBAL_BLACKLIST),
             details.reasons()[0]);
-  EXPECT_EQ(DecisionDetails::Reason(
-                DecisionFailureReason::LIFECYCLES_FEATURE_POLICY_OPT_OUT),
-            details.reasons()[1]);
+  EXPECT_EQ(
+      DecisionDetails::Reason(DecisionFailureReason::ORIGIN_TRIAL_OPT_OUT),
+      details.reasons()[1]);
   EXPECT_EQ(DecisionDetails::Reason(DecisionSuccessReason::GLOBAL_WHITELIST),
             details.reasons()[2]);
   EXPECT_EQ(expected_failure_strings, details.GetFailureReasonStrings());
@@ -131,9 +130,9 @@ TEST(DecisionDetailsTest, DecisionDetails) {
   EXPECT_EQ(DecisionFailureReason::GLOBAL_BLACKLIST, details.FailureReason());
   EXPECT_EQ(DecisionDetails::Reason(DecisionFailureReason::GLOBAL_BLACKLIST),
             details.reasons()[0]);
-  EXPECT_EQ(DecisionDetails::Reason(
-                DecisionFailureReason::LIFECYCLES_FEATURE_POLICY_OPT_OUT),
-            details.reasons()[1]);
+  EXPECT_EQ(
+      DecisionDetails::Reason(DecisionFailureReason::ORIGIN_TRIAL_OPT_OUT),
+      details.reasons()[1]);
   EXPECT_EQ(DecisionDetails::Reason(DecisionSuccessReason::GLOBAL_WHITELIST),
             details.reasons()[2]);
   EXPECT_EQ(DecisionDetails::Reason(DecisionFailureReason::HEURISTIC_AUDIO),
@@ -179,8 +178,8 @@ TEST(DecisionDetailsTest, TabManagerLifecycleStateChangeUkm) {
   // single success reason.
   EXPECT_FALSE(details.AddReason(
       DecisionFailureReason::LIFECYCLES_ENTERPRISE_POLICY_OPT_OUT));
-  EXPECT_FALSE(details.AddReason(
-      DecisionFailureReason::LIFECYCLES_FEATURE_POLICY_OPT_OUT));
+  EXPECT_FALSE(details.AddReason(DecisionFailureReason::ORIGIN_TRIAL_OPT_OUT));
+  EXPECT_FALSE(details.AddReason(DecisionFailureReason::ORIGIN_TRIAL_UNKNOWN));
   EXPECT_FALSE(details.AddReason(DecisionFailureReason::GLOBAL_BLACKLIST));
   EXPECT_FALSE(details.AddReason(DecisionFailureReason::HEURISTIC_AUDIO));
   EXPECT_FALSE(details.AddReason(DecisionFailureReason::HEURISTIC_FAVICON));
@@ -205,8 +204,9 @@ TEST(DecisionDetailsTest, TabManagerLifecycleStateChangeUkm) {
       details.AddReason(DecisionFailureReason::LIVE_STATE_DEVTOOLS_OPEN));
   EXPECT_FALSE(
       details.AddReason(DecisionFailureReason::LIVE_STATE_DESKTOP_CAPTURE));
-  EXPECT_TRUE(details.AddReason(
-      DecisionSuccessReason::LIFECYCLES_FEATURE_POLICY_OPT_IN));
+  EXPECT_FALSE(
+      details.AddReason(DecisionFailureReason::LIVE_STATE_USING_BLUETOOTH));
+  EXPECT_TRUE(details.AddReason(DecisionSuccessReason::ORIGIN_TRIAL_OPT_IN));
 
   // Dump the data to a UKM builder.
   ukm::TestUkmRecorder ukm_recorder;
@@ -222,8 +222,10 @@ TEST(DecisionDetailsTest, TabManagerLifecycleStateChangeUkm) {
   auto* entry = entries[0];
   ukm_recorder.ExpectEntryMetric(
       entry, ukm_builder.kFailureLifecyclesEnterprisePolicyOptOutName, 1);
-  ukm_recorder.ExpectEntryMetric(
-      entry, ukm_builder.kFailureLifecyclesFeaturePolicyOptOutName, 1);
+  ukm_recorder.ExpectEntryMetric(entry,
+                                 ukm_builder.kFailureOriginTrialOptOutName, 1);
+  ukm_recorder.ExpectEntryMetric(entry,
+                                 ukm_builder.kFailureOriginTrialUnknownName, 1);
   ukm_recorder.ExpectEntryMetric(entry, ukm_builder.kFailureGlobalBlacklistName,
                                  1);
   ukm_recorder.ExpectEntryMetric(entry, ukm_builder.kFailureHeuristicAudioName,
@@ -258,8 +260,10 @@ TEST(DecisionDetailsTest, TabManagerLifecycleStateChangeUkm) {
       entry, ukm_builder.kFailureLiveStateDevToolsOpenName, 1);
   ukm_recorder.ExpectEntryMetric(
       entry, ukm_builder.kFailureLiveStateDesktopCaptureName, 1);
+  ukm_recorder.ExpectEntryMetric(
+      entry, ukm_builder.kFailureLiveStateUsingBluetoothName, 1);
   EXPECT_FALSE(ukm_recorder.EntryHasMetric(
-      entry, ukm_builder.kSuccessLifecyclesFeaturePolicyOptInName));
+      entry, ukm_builder.kSuccessOriginTrialOptInName));
   EXPECT_FALSE(ukm_recorder.EntryHasMetric(
       entry, ukm_builder.kSuccessGlobalWhitelistName));
 }

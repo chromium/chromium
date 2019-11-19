@@ -18,8 +18,10 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-progress-element
-[HTMLConstructor]
-interface HTMLProgressElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLProgressElement : HTMLElement {
     [CEReactions] attribute double value;
     [CEReactions] attribute double max;
     readonly attribute double position;

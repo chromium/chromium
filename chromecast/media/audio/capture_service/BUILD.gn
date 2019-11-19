@@ -1,0 +1,64 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//chromecast/chromecast.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//testing/test.gni")
+
+cast_source_set("common") {
+  sources = [
+    "constants.h",
+  ]
+}
+
+cast_source_set("receiver") {
+  sources = [
+    "capture_service_receiver.cc",
+    "capture_service_receiver.h",
+    "message_parsing_util.cc",
+    "message_parsing_util.h",
+  ]
+
+  public_deps = [
+    ":common",
+  ]
+
+  deps = [
+    "//base",
+    "//chromecast/base",
+    "//chromecast/media/audio:audio_buildflags",
+    "//chromecast/net:small_message_socket",
+    "//media",
+    "//net",
+  ]
+}
+
+cast_source_set("unittests") {
+  testonly = true
+  sources = [
+    "capture_service_receiver_unittest.cc",
+    "message_parsing_util_unittest.cc",
+  ]
+
+  deps = [
+    ":receiver",
+    "//base",
+    "//base/test:test_support",
+    "//chromecast/media/audio:test_support",
+    "//chromecast/net:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}
+
+fuzzer_test("message_parsing_fuzzer") {
+  sources = [
+    "message_parsing_fuzzer.cc",
+  ]
+  deps = [
+    ":receiver",
+    "//base",
+  ]
+}

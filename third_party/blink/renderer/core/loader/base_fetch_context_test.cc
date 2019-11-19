@@ -32,11 +32,13 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
 #include "third_party/blink/renderer/core/script/fetch_client_settings_object_impl.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/scheduler/test/fake_task_runner.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
@@ -45,8 +47,9 @@ namespace blink {
 
 class MockBaseFetchContext final : public BaseFetchContext {
  public:
-  explicit MockBaseFetchContext(ExecutionContext* execution_context)
-      : execution_context_(execution_context) {}
+  MockBaseFetchContext(const DetachableResourceFetcherProperties& properties,
+                       ExecutionContext* execution_context)
+      : BaseFetchContext(properties), execution_context_(execution_context) {}
   ~MockBaseFetchContext() override = default;
 
   // BaseFetchContext overrides:
@@ -81,7 +84,6 @@ class MockBaseFetchContext final : public BaseFetchContext {
   }
   bool ShouldBlockFetchByMixedContentCheck(
       mojom::RequestContextType,
-      network::mojom::RequestContextFrameType,
       ResourceRequest::RedirectStatus,
       const KURL&,
       SecurityViolationReportingPolicy) const override {
@@ -118,15 +120,17 @@ class BaseFetchContextTest : public testing::Test {
     execution_context_ = MakeGarbageCollected<NullExecutionContext>();
     static_cast<NullExecutionContext*>(execution_context_.Get())
         ->SetUpSecurityContext();
-    fetch_context_ =
-        MakeGarbageCollected<MockBaseFetchContext>(execution_context_);
     resource_fetcher_properties_ =
         MakeGarbageCollected<TestResourceFetcherProperties>(
             *MakeGarbageCollected<FetchClientSettingsObjectImpl>(
                 *execution_context_));
+    auto& properties = resource_fetcher_properties_->MakeDetachable();
+    fetch_context_ = MakeGarbageCollected<MockBaseFetchContext>(
+        properties, execution_context_);
     resource_fetcher_ = MakeGarbageCollected<ResourceFetcher>(
-        ResourceFetcherInit(*resource_fetcher_properties_, fetch_context_,
-                            base::MakeRefCounted<scheduler::FakeTaskRunner>()));
+        ResourceFetcherInit(properties, fetch_context_,
+                            base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                            MakeGarbageCollected<TestLoaderFactory>()));
   }
 
   const FetchClientSettingsObject& GetFetchClientSettingsObject() const {
@@ -141,122 +145,6 @@ class BaseFetchContextTest : public testing::Test {
   Persistent<ResourceFetcher> resource_fetcher_;
   Persistent<TestResourceFetcherProperties> resource_fetcher_properties_;
 };
-
-TEST_F(BaseFetchContextTest, SetIsExternalRequestForPublicContext) {
-  EXPECT_EQ(mojom::IPAddressSpace::kPublic,
-            execution_context_->GetSecurityContext().AddressSpace());
-
-  struct TestCase {
-    const char* url;
-    bool is_external_expectation;
-  } cases[] = {
-      {"data:text/html,whatever", false},  {"file:///etc/passwd", false},
-      {"blob:http://example.com/", false},
-
-      {"http://example.com/", false},      {"https://example.com/", false},
-
-      {"http://192.168.1.1:8000/", true},  {"http://10.1.1.1:8000/", true},
-
-      {"http://localhost/", true},         {"http://127.0.0.1/", true},
-      {"http://127.0.0.1:8000/", true}};
-  {
-    ScopedCorsRFC1918ForTest cors_rfc1918(false);
-    for (const auto& test : cases) {
-      SCOPED_TRACE(test.url);
-      ResourceRequest sub_request(test.url);
-      fetch_context_->AddAdditionalRequestHeaders(sub_request);
-      EXPECT_FALSE(sub_request.IsExternalRequest());
-    }
-  }
-
-  {
-    ScopedCorsRFC1918ForTest cors_rfc1918(true);
-    for (const auto& test : cases) {
-      SCOPED_TRACE(test.url);
-      ResourceRequest sub_request(test.url);
-      fetch_context_->AddAdditionalRequestHeaders(sub_request);
-      EXPECT_EQ(test.is_external_expectation, sub_request.IsExternalRequest());
-    }
-  }
-}
-
-TEST_F(BaseFetchContextTest, SetIsExternalRequestForPrivateContext) {
-  execution_context_->GetSecurityContext().SetAddressSpace(
-      mojom::IPAddressSpace::kPrivate);
-  EXPECT_EQ(mojom::IPAddressSpace::kPrivate,
-            execution_context_->GetSecurityContext().AddressSpace());
-
-  struct TestCase {
-    const char* url;
-    bool is_external_expectation;
-  } cases[] = {
-      {"data:text/html,whatever", false},  {"file:///etc/passwd", false},
-      {"blob:http://example.com/", false},
-
-      {"http://example.com/", false},      {"https://example.com/", false},
-
-      {"http://192.168.1.1:8000/", false}, {"http://10.1.1.1:8000/", false},
-
-      {"http://localhost/", true},         {"http://127.0.0.1/", true},
-      {"http://127.0.0.1:8000/", true}};
-  {
-    ScopedCorsRFC1918ForTest cors_rfc1918(false);
-    for (const auto& test : cases) {
-      SCOPED_TRACE(test.url);
-      ResourceRequest sub_request(test.url);
-      fetch_context_->AddAdditionalRequestHeaders(sub_request);
-      EXPECT_FALSE(sub_request.IsExternalRequest());
-    }
-  }
-
-  {
-    ScopedCorsRFC1918ForTest cors_rfc1918(true);
-    for (const auto& test : cases) {
-      SCOPED_TRACE(test.url);
-      ResourceRequest sub_request(test.url);
-      fetch_context_->AddAdditionalRequestHeaders(sub_request);
-      EXPECT_EQ(test.is_external_expectation, sub_request.IsExternalRequest());
-    }
-  }
-}
-
-TEST_F(BaseFetchContextTest, SetIsExternalRequestForLocalContext) {
-  execution_context_->GetSecurityContext().SetAddressSpace(
-      mojom::IPAddressSpace::kLocal);
-  EXPECT_EQ(mojom::IPAddressSpace::kLocal,
-            execution_context_->GetSecurityContext().AddressSpace());
-
-  struct TestCase {
-    const char* url;
-    bool is_external_expectation;
-  } cases[] = {
-      {"data:text/html,whatever", false},  {"file:///etc/passwd", false},
-      {"blob:http://example.com/", false},
-
-      {"http://example.com/", false},      {"https://example.com/", false},
-
-      {"http://192.168.1.1:8000/", false}, {"http://10.1.1.1:8000/", false},
-
-      {"http://localhost/", false},        {"http://127.0.0.1/", false},
-      {"http://127.0.0.1:8000/", false}};
-  {
-    ScopedCorsRFC1918ForTest cors_rfc1918(false);
-    for (const auto& test : cases) {
-      ResourceRequest sub_request(test.url);
-      fetch_context_->AddAdditionalRequestHeaders(sub_request);
-      EXPECT_FALSE(sub_request.IsExternalRequest());
-    }
-  }
-
-  {
-    ScopedCorsRFC1918ForTest cors_rfc1918(true);
-    for (const auto& test : cases) {
-      ResourceRequest sub_request(test.url);
-      fetch_context_->AddAdditionalRequestHeaders(sub_request);
-      EXPECT_EQ(test.is_external_expectation, sub_request.IsExternalRequest());
-    }
-  }
-}
 
 // Tests that CanRequest() checks the enforced CSP headers.
 TEST_F(BaseFetchContextTest, CanRequest) {
@@ -273,8 +161,6 @@ TEST_F(BaseFetchContextTest, CanRequest) {
   ResourceRequest resource_request(url);
   resource_request.SetRequestContext(mojom::RequestContextType::SCRIPT);
   resource_request.SetRequestorOrigin(GetSecurityOrigin());
-  resource_request.SetFetchCredentialsMode(
-      network::mojom::FetchCredentialsMode::kOmit);
 
   ResourceLoaderOptions options;
 

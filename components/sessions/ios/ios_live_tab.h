@@ -9,9 +9,9 @@
 #include "base/supports_user_data.h"
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/ios/ios_serialized_navigation_builder.h"
-#include "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/web_state.h"
 
-namespace content {
+namespace web {
 class NavigationManager;
 }
 
@@ -52,7 +52,7 @@ class SESSIONS_EXPORT IOSLiveTab : public LiveTab,
   web::WebState* web_state_;
 
   // Needed to return an empty string in GetUserAgentOverride().
-  static std::string user_agent_override_;
+  std::string user_agent_override_;
 
   DISALLOW_COPY_AND_ASSIGN(IOSLiveTab);
 };

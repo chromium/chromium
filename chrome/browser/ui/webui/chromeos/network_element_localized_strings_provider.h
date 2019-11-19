@@ -17,7 +17,7 @@ namespace chromeos {
 namespace network_element {
 
 // Adds the strings needed for network elements to |html_source|. String ids
-// correspond to ids in ui/webui/resources/cr_elements/chromeos/network/.
+// correspond to ids in ui/webui/resources/cr_components/chromeos/network/.
 void AddLocalizedStrings(content::WebUIDataSource* html_source);
 
 // Same as AddLocalizedStrings but for a LocalizedValuesBuilder.

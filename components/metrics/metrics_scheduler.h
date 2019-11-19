@@ -17,7 +17,8 @@ class MetricsScheduler {
  public:
   // Creates MetricsScheduler object with the given |task_callback|
   // callback to call when a task should happen.
-  explicit MetricsScheduler(const base::Closure& task_callback);
+  MetricsScheduler(const base::Closure& task_callback,
+                   bool fast_startup_for_testing);
   virtual ~MetricsScheduler();
 
   // Starts scheduling uploads. This in a no-op if the scheduler is already

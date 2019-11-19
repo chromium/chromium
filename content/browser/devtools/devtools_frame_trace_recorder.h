@@ -5,14 +5,12 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_FRAME_TRACE_RECORDER_H_
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_FRAME_TRACE_RECORDER_H_
 
-#include <memory>
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
-namespace viz {
-class CompositorFrameMetadata;
+namespace cc {
+class RenderFrameMetadata;
 }
 
 namespace content {
@@ -26,13 +24,10 @@ class DevToolsFrameTraceRecorder {
 
   void OnSynchronousSwapCompositorFrame(
       RenderFrameHostImpl* host,
-      const viz::CompositorFrameMetadata& frame_metadata);
-
-  static constexpr int kMaximumNumberOfScreenshots = 450;
+      const cc::RenderFrameMetadata& metadata);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DevToolsFrameTraceRecorder);
-  std::unique_ptr<viz::CompositorFrameMetadata> last_metadata_;
 };
 
 }  // namespace content

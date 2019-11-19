@@ -1,0 +1,35 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+  {
+    "namespace": "commandLinePrivate",
+    "description": "none",
+    "functions": [
+      {
+        "name": "hasSwitch",
+        "type": "function",
+        "description": "Returns whether a switch is specified on the command line when launching Chrome.",
+        "parameters": [
+          {
+            "name": "name",
+            "type": "string",
+            "description": "The name of a command line switch, without leading \"--\", such as \"enable-experimental-extension-apis\"."
+          },
+          {
+            "name": "callback",
+            "type": "function",
+            "parameters": [
+              {
+                "name": "result",
+                "type": "boolean",
+                "description": "Whether the switch is specified on the command line."
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

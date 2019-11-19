@@ -25,7 +25,7 @@ PASS pushState must be able to set location.pathname
 PASS pushState must be able to set absolute URLs to the same host
 PASS pushState must not be able to use a function as data
 PASS pushState must not be able to use a DOM node as data
-PASS pushState must not be able to use an error object as data
+PASS pushState must be able to use an error object as data
 PASS security errors are expected to be thrown in the context of the document that owns the history object (2)
 PASS pushState must be able to make structured clones of complex objects
 PASS history.state should also reference a clone of the original object

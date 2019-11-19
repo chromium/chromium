@@ -50,6 +50,7 @@ class MockTransferBuffer : public TransferBufferInterface {
   unsigned int GetFreeSize() const override;
   unsigned int GetFragmentedFreeSize() const override;
   void ShrinkLastBlock(unsigned int new_size) override;
+  unsigned int GetMaxSize() const override;
 
   uint32_t MaxTransferBufferSize();
   unsigned int RoundToAlignment(unsigned int size);

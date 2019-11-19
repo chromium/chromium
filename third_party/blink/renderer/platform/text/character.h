@@ -31,13 +31,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_CHARACTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TEXT_CHARACTER_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/character_property.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -77,25 +78,22 @@ class PLATFORM_EXPORT Character {
     return c < 0x1100 ? false : IsHangulSlow(c);
   }
 
-  static unsigned ExpansionOpportunityCount(const LChar*,
-                                            unsigned length,
+  static unsigned ExpansionOpportunityCount(base::span<const LChar>,
                                             TextDirection,
                                             bool& is_after_expansion,
                                             const TextJustify);
-  static unsigned ExpansionOpportunityCount(const UChar*,
-                                            unsigned length,
+  static unsigned ExpansionOpportunityCount(base::span<const UChar>,
                                             TextDirection,
                                             bool& is_after_expansion,
                                             const TextJustify);
   static unsigned ExpansionOpportunityCount(const TextRun& run,
                                             bool& is_after_expansion) {
     if (run.Is8Bit())
-      return ExpansionOpportunityCount(run.Characters8(), run.length(),
-                                       run.Direction(), is_after_expansion,
+      return ExpansionOpportunityCount(run.Span8(), run.Direction(),
+                                       is_after_expansion,
                                        run.GetTextJustify());
-    return ExpansionOpportunityCount(run.Characters16(), run.length(),
-                                     run.Direction(), is_after_expansion,
-                                     run.GetTextJustify());
+    return ExpansionOpportunityCount(run.Span16(), run.Direction(),
+                                     is_after_expansion, run.GetTextJustify());
   }
 
   static bool IsUprightInMixedVertical(UChar32 character);
@@ -149,7 +147,9 @@ class PLATFORM_EXPORT Character {
   static bool IsEmojiTextDefault(UChar32);
   static bool IsEmojiEmojiDefault(UChar32);
   static bool IsEmojiModifierBase(UChar32);
-  static bool IsEmojiKeycapBase(UChar32);
+  static inline bool IsEmojiKeycapBase(UChar32 ch) {
+    return (ch >= '0' && ch <= '9') || ch == '#' || ch == '*';
+  }
   static bool IsRegionalIndicator(UChar32);
   static bool IsModifier(UChar32 c) { return c >= 0x1F3FB && c <= 0x1F3FF; }
   // http://www.unicode.org/reports/tr51/proposed.html#flag-emoji-tag-sequences

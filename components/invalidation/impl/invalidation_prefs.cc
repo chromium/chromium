@@ -19,7 +19,12 @@ const char kInvalidatorInvalidationState[] = "invalidator.invalidation_state";
 const char kInvalidatorSavedInvalidations[] = "invalidator.saved_invalidations";
 
 // The prefference for storing client ID for the invalidator.
-const char kFCMInvalidationClientIDCache[] = "fcm.invalidation.client_id_cache";
+const char kFCMInvalidationClientIDCacheDeprecated[] =
+    "fcm.invalidation.client_id_cache";
+
+// The preference for storing client ID for the invalidator, keyed by sender ID.
+const char kInvalidationClientIDCache[] =
+    "invalidation.per_sender_client_id_cache";
 
 }  // namespace prefs
 }  // namespace invalidation

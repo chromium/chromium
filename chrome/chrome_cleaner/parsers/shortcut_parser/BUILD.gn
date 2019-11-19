@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Nothing outside //chrome/chrome_cleaner can depend on these targets.
+visibility = [ "//chrome/chrome_cleaner/*" ]
+
 static_library("sandboxed_lnk_parser_test_util") {
   sources = [
     "sandboxed_lnk_parser_test_util.cc",
@@ -9,8 +12,8 @@ static_library("sandboxed_lnk_parser_test_util") {
   ]
 
   deps = [
-    "//base:base",
-    "//chrome/chrome_cleaner/interfaces:parser_interface",
+    "//base",
+    "//chrome/chrome_cleaner/mojom:parser_interface",
     "//chrome/chrome_cleaner/os:common_os",
     "//chrome/chrome_cleaner/parsers/shortcut_parser/target:lnk_parser",
   ]

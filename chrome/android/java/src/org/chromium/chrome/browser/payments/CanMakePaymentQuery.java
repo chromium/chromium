@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.payments;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentMethodData;
 
@@ -27,7 +28,8 @@ public class CanMakePaymentQuery {
      */
     public static boolean canQuery(WebContents webContents, String topLevelOrigin,
             String frameOrigin, Map<String, PaymentMethodData> query, boolean perMethodQuota) {
-        return nativeCanQuery(webContents, topLevelOrigin, frameOrigin, query, perMethodQuota);
+        return CanMakePaymentQueryJni.get().canQuery(
+                webContents, topLevelOrigin, frameOrigin, query, perMethodQuota);
     }
 
     @CalledByNative
@@ -44,6 +46,9 @@ public class CanMakePaymentQuery {
 
     private CanMakePaymentQuery() {} // Do not instantiate.
 
-    private static native boolean nativeCanQuery(WebContents webContents, String topLevelOrigin,
-            String frameOrigin, Map<String, PaymentMethodData> query, boolean perMethodQuota);
+    @NativeMethods
+    interface Natives {
+        boolean canQuery(WebContents webContents, String topLevelOrigin, String frameOrigin,
+                Map<String, PaymentMethodData> query, boolean perMethodQuota);
+    }
 }

@@ -78,7 +78,7 @@ class FakeSession : public Session {
 
   std::vector<std::unique_ptr<jingle_xmpp::XmlElement>> attachments_;
 
-  base::WeakPtrFactory<FakeSession> weak_factory_;
+  base::WeakPtrFactory<FakeSession> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeSession);
 };

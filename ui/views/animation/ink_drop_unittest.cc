@@ -27,7 +27,7 @@ enum InkDropType { INK_DROP_STUB, INK_DROP_IMPL };
 class InkDropTest : public testing::TestWithParam<testing::tuple<InkDropType>> {
  public:
   InkDropTest();
-  ~InkDropTest();
+  ~InkDropTest() override;
 
  protected:
   // A dummy InkDropHost required to create an InkDrop.
@@ -49,26 +49,27 @@ class InkDropTest : public testing::TestWithParam<testing::tuple<InkDropType>> {
 };
 
 InkDropTest::InkDropTest() : ink_drop_(nullptr) {
-  zero_duration_mode_.reset(new ui::ScopedAnimationDurationScaleMode(
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION));
+  zero_duration_mode_ = std::make_unique<ui::ScopedAnimationDurationScaleMode>(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   switch (GetInkDropType()) {
     case INK_DROP_STUB:
-      ink_drop_.reset(new InkDropStub());
+      ink_drop_ = std::make_unique<InkDropStub>();
       break;
     case INK_DROP_IMPL:
-      ink_drop_.reset(new InkDropImpl(&test_ink_drop_host_, gfx::Size()));
+      ink_drop_ =
+          std::make_unique<InkDropImpl>(&test_ink_drop_host_, gfx::Size());
       // The Timer's used by the InkDropImpl class require a
       // base::ThreadTaskRunnerHandle instance.
       scoped_refptr<base::TestMockTimeTaskRunner> task_runner(
           new base::TestMockTimeTaskRunner);
-      thread_task_runner_handle_.reset(
-          new base::ThreadTaskRunnerHandle(task_runner));
+      thread_task_runner_handle_ =
+          std::make_unique<base::ThreadTaskRunnerHandle>(task_runner);
       break;
   }
 }
 
-InkDropTest::~InkDropTest() {}
+InkDropTest::~InkDropTest() = default;
 
 InkDropType InkDropTest::GetInkDropType() const {
   return testing::get<0>(GetParam());

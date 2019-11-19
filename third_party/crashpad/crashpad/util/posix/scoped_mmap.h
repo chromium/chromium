@@ -91,6 +91,11 @@ class ScopedMmap {
   }
 
   //! \brief Returns the size of the memory-mapped region.
+  //!
+  //! This is the value originally passed to ResetAddrLen() or ResetMmap(), or
+  //! after Reset(), `0`. It may not be a round number of pages. Providing the
+  //! passed-in value is intended to ease tracking the intended lengths of
+  //! memory-mapped regions backed by files whose sizes are not whole pages.
   size_t len() const { return len_; }
 
  private:

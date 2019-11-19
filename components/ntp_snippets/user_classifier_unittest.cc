@@ -9,13 +9,13 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
 #include "components/ntp_snippets/features.h"
 #include "components/ntp_snippets/ntp_snippets_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/variations/variations_params_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -83,11 +83,11 @@ TEST_F(UserClassifierTest,
 TEST_F(UserClassifierTest,
        ShouldBecomeActiveSuggestionsConsumerByClickingOftenWithDecreasedParam) {
   // Increase the param to one half.
-  variations::testing::VariationParamsManager variation_params(
-      kArticleSuggestionsFeature.name,
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kArticleSuggestionsFeature,
       {{"user_classifier_active_consumer_clicks_at_least_once_per_hours",
-        "36"}},
-      {kArticleSuggestionsFeature.name});
+        "36"}});
   UserClassifier* user_classifier = CreateUserClassifier();
 
   // After two clicks still only an active user.
@@ -121,10 +121,10 @@ TEST_F(UserClassifierTest, ShouldBecomeRareNtpUserByNoActivity) {
 TEST_F(UserClassifierTest,
        ShouldBecomeRareNtpUserByNoActivityWithDecreasedParam) {
   // Decrease the param to one half.
-  variations::testing::VariationParamsManager variation_params(
-      kArticleSuggestionsFeature.name,
-      {{"user_classifier_rare_user_opens_ntp_at_most_once_per_hours", "48"}},
-      {kArticleSuggestionsFeature.name});
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kArticleSuggestionsFeature,
+      {{"user_classifier_rare_user_opens_ntp_at_most_once_per_hours", "48"}});
   UserClassifier* user_classifier = CreateUserClassifier();
 
   // After one days of waiting still an active user.
@@ -223,9 +223,9 @@ TEST_P(UserClassifierMetricTest,
        ShouldIgnoreSubsequentEventsWithIncreasedLimit) {
   UserClassifier::Metric metric = GetParam().first;
   // Increase the min_hours to 1.0, i.e. 60 minutes.
-  variations::testing::VariationParamsManager variation_params(
-      kArticleSuggestionsFeature.name, {{"user_classifier_min_hours", "1.0"}},
-      {kArticleSuggestionsFeature.name});
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kArticleSuggestionsFeature, {{"user_classifier_min_hours", "1.0"}});
   UserClassifier* user_classifier = CreateUserClassifier();
 
   // The initial event
@@ -270,9 +270,9 @@ TEST_P(UserClassifierMetricTest,
        ShouldCapDelayBetweenEventsWithDecreasedLimit) {
   UserClassifier::Metric metric = GetParam().first;
   // Decrease the max_hours to 72, i.e. 3 days.
-  variations::testing::VariationParamsManager variation_params(
-      kArticleSuggestionsFeature.name, {{"user_classifier_max_hours", "72"}},
-      {kArticleSuggestionsFeature.name});
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kArticleSuggestionsFeature, {{"user_classifier_max_hours", "72"}});
   UserClassifier* user_classifier = CreateUserClassifier();
 
   // The initial event

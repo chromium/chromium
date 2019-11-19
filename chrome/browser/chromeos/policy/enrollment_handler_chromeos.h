@@ -17,8 +17,8 @@
 #include "chrome/browser/chromeos/policy/device_cloud_policy_initializer.h"
 #include "chrome/browser/chromeos/policy/device_cloud_policy_validator.h"
 #include "chrome/browser/chromeos/policy/enrollment_config.h"
-#include "chromeos/dbus/attestation_constants.h"
-#include "chromeos/dbus/auth_policy_client.h"
+#include "chromeos/dbus/auth_policy/auth_policy_client.h"
+#include "chromeos/dbus/constants/attestation_constants.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -236,15 +236,10 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
   EnrollmentConfig enrollment_config_;
   std::unique_ptr<policy::DMAuth> dm_auth_;
   std::string client_id_;
-  std::string requisition_;
   std::string sub_organization_;
+  std::unique_ptr<CloudPolicyClient::RegistrationParameters> register_params_;
   EnrollmentCallback completion_callback_;
   AvailableLicensesCallback available_licenses_callback_;
-  enterprise_management::LicenseType::LicenseTypeEnum license_type_ =
-      enterprise_management::LicenseType::UNDEFINED;
-
-  // The current state key provided by |state_keys_broker_|.
-  std::string current_state_key_;
 
   // The device mode as received in the registration request.
   DeviceMode device_mode_ = DEVICE_MODE_NOT_SET;
@@ -268,7 +263,7 @@ class EnrollmentHandlerChromeOS : public CloudPolicyClient::Observer,
   // initialization.
   int lockbox_init_duration_ = 0;
 
-  base::WeakPtrFactory<EnrollmentHandlerChromeOS> weak_ptr_factory_;
+  base::WeakPtrFactory<EnrollmentHandlerChromeOS> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(EnrollmentHandlerChromeOS);
 };

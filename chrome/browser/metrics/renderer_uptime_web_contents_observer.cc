@@ -30,8 +30,11 @@ RendererUptimeWebContentsObserver::CreateForWebContents(
 }
 
 void RendererUptimeWebContentsObserver::DocumentAvailableInMainFrame() {
-  RendererUptimeTracker::Get()->OnLoadInMainFrame(
-      web_contents()->GetMainFrame()->GetProcess()->GetID());
+  // RendererUptimeTracker can be null in unittests.
+  if (RendererUptimeTracker* tracker = RendererUptimeTracker::Get()) {
+    tracker->OnLoadInMainFrame(
+        web_contents()->GetMainFrame()->GetProcess()->GetID());
+  }
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(RendererUptimeWebContentsObserver)

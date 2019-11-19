@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL e.style['baseline-shift'] = "5" should not set the property value assert_equals: expected "" but got "5"
+PASS e.style['baseline-shift'] = "-10px 20%" should not set the property value
+PASS e.style['baseline-shift'] = "calc(2em + 3ex), 0" should not set the property value
+PASS e.style['baseline-shift'] = "sub super" should not set the property value
+PASS e.style['baseline-shift'] = "20px sub" should not set the property value
+Harness: the test ran to completion.
+

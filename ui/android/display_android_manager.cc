@@ -9,8 +9,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/stl_util.h"
-#include "jni/DisplayAndroidManager_jni.h"
 #include "ui/android/screen_android.h"
+#include "ui/android/ui_android_jni_headers/DisplayAndroidManager_jni.h"
 #include "ui/android/window_android.h"
 #include "ui/display/display.h"
 #include "ui/gfx/icc_profile.h"
@@ -21,18 +21,20 @@ using base::android::AttachCurrentThread;
 using display::Display;
 using display::DisplayList;
 
-void SetScreenAndroid() {
+void SetScreenAndroid(bool use_display_wide_color_gamut) {
   // Do not override existing Screen.
   DCHECK_EQ(display::Screen::GetScreen(), nullptr);
 
-  DisplayAndroidManager* manager = new DisplayAndroidManager();
+  DisplayAndroidManager* manager =
+      new DisplayAndroidManager(use_display_wide_color_gamut);
   display::Screen::SetScreenInstance(manager);
 
   JNIEnv* env = AttachCurrentThread();
   Java_DisplayAndroidManager_onNativeSideCreated(env, (jlong)manager);
 }
 
-DisplayAndroidManager::DisplayAndroidManager() {}
+DisplayAndroidManager::DisplayAndroidManager(bool use_display_wide_color_gamut)
+    : use_display_wide_color_gamut_(use_display_wide_color_gamut) {}
 
 DisplayAndroidManager::~DisplayAndroidManager() {}
 
@@ -78,11 +80,11 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
                                             bool isWideColorGamut) {
   if (!Display::HasForceDeviceScaleFactor())
     display->set_device_scale_factor(dipScale);
-  if (!Display::HasForceDisplayColorProfile()) {
-    // TODO(ccameron): Use CreateDisplayP3D65 if isWideColorGamut is true, once
-    // the feature is ready to use.
-    display->set_color_space(gfx::ColorSpace::CreateSRGB());
-  }
+    if (isWideColorGamut) {
+      display->set_color_space(gfx::ColorSpace::CreateDisplayP3D65());
+    } else {
+      display->set_color_space(gfx::ColorSpace::CreateSRGB());
+    }
 
   display->set_size_in_pixels(size_in_pixels);
   display->SetRotationAsDegree(rotationDegrees);
@@ -110,7 +112,8 @@ void DisplayAndroidManager::UpdateDisplay(
 
   display::Display display(sdkDisplayId, bounds_in_dip);
   DoUpdateDisplay(&display, bounds_in_pixels.size(), dipScale, rotationDegrees,
-                  bitsPerPixel, bitsPerComponent, isWideColorGamut);
+                  bitsPerPixel, bitsPerComponent,
+                  isWideColorGamut && use_display_wide_color_gamut_);
   ProcessDisplayChanged(display, sdkDisplayId == primary_display_id_);
 }
 

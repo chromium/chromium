@@ -14,10 +14,6 @@
 #include "content/public/common/main_function_params.h"
 #include "content/shell/browser/shell_browser_context.h"
 
-namespace net {
-class NetLog;
-}
-
 namespace content {
 
 class ShellBrowserMainParts : public BrowserMainParts {
@@ -41,8 +37,6 @@ class ShellBrowserMainParts : public BrowserMainParts {
     return off_the_record_browser_context_.get();
   }
 
-  net::NetLog* net_log() { return net_log_.get(); }
-
  protected:
   virtual void InitializeBrowserContexts();
   virtual void InitializeMessageLoopContext();
@@ -56,7 +50,6 @@ class ShellBrowserMainParts : public BrowserMainParts {
 
  private:
 
-  std::unique_ptr<net::NetLog> net_log_;
   std::unique_ptr<ShellBrowserContext> browser_context_;
   std::unique_ptr<ShellBrowserContext> off_the_record_browser_context_;
 

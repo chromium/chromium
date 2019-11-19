@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 #include <algorithm>
@@ -18,12 +18,8 @@ namespace blink {
 
 // Represents the key ID and associated status.
 class MediaKeyStatusMap::MapEntry final
-    : public GarbageCollectedFinalized<MediaKeyStatusMap::MapEntry> {
+    : public GarbageCollected<MediaKeyStatusMap::MapEntry> {
  public:
-  static MapEntry* Create(WebData key_id, const String& status) {
-    return MakeGarbageCollected<MapEntry>(key_id, status);
-  }
-
   MapEntry(WebData key_id, const String& status)
       : key_id_(DOMArrayBuffer::Create(scoped_refptr<SharedBuffer>(key_id))),
         status_(status) {}
@@ -49,15 +45,15 @@ class MediaKeyStatusMap::MapEntry final
       return b->KeyId();
 
     // Compare the bytes.
-    int result =
-        memcmp(a->KeyId()->Data(), b->KeyId()->Data(),
-               std::min(a->KeyId()->ByteLength(), b->KeyId()->ByteLength()));
+    int result = memcmp(a->KeyId()->Data(), b->KeyId()->Data(),
+                        std::min(a->KeyId()->ByteLengthAsSizeT(),
+                                 b->KeyId()->ByteLengthAsSizeT()));
     if (result != 0)
       return result < 0;
 
     // KeyIds are equal to the shared length, so the shorter string is <.
-    DCHECK_NE(a->KeyId()->ByteLength(), b->KeyId()->ByteLength());
-    return a->KeyId()->ByteLength() < b->KeyId()->ByteLength();
+    DCHECK_NE(a->KeyId()->ByteLengthAsSizeT(), b->KeyId()->ByteLengthAsSizeT());
+    return a->KeyId()->ByteLengthAsSizeT() < b->KeyId()->ByteLengthAsSizeT();
   }
 
   virtual void Trace(blink::Visitor* visitor) { visitor->Trace(key_id_); }
@@ -108,7 +104,7 @@ void MediaKeyStatusMap::Clear() {
 
 void MediaKeyStatusMap::AddEntry(WebData key_id, const String& status) {
   // Insert new entry into sorted list.
-  MapEntry* entry = MapEntry::Create(key_id, status);
+  auto* entry = MakeGarbageCollected<MapEntry>(key_id, status);
   uint32_t index = 0;
   while (index < entries_.size() &&
          MapEntry::CompareLessThan(entries_[index], entry))
@@ -141,8 +137,10 @@ bool MediaKeyStatusMap::has(const ArrayBufferOrArrayBufferView& key_id) {
 ScriptValue MediaKeyStatusMap::get(ScriptState* script_state,
                                    const ArrayBufferOrArrayBufferView& key_id) {
   uint32_t index = IndexOf(key_id);
-  if (index >= entries_.size())
-    return ScriptValue(script_state, v8::Undefined(script_state->GetIsolate()));
+  if (index >= entries_.size()) {
+    return ScriptValue(script_state->GetIsolate(),
+                       v8::Undefined(script_state->GetIsolate()));
+  }
   return ScriptValue::From(script_state, at(index).Status());
 }
 

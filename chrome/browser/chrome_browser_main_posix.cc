@@ -114,8 +114,8 @@ void ExitHandler::OnSessionRestoreDone(int /* num_tabs */) {
     // At this point the message loop may not be running (meaning we haven't
     // gotten through browser startup, but are close). Post the task to at which
     // point the message loop is running.
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             base::BindOnce(&ExitHandler::Exit));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(&ExitHandler::Exit));
     delete this;
   }
 }
@@ -136,9 +136,8 @@ void ExitHandler::Exit() {
 
 ChromeBrowserMainPartsPosix::ChromeBrowserMainPartsPosix(
     const content::MainFunctionParams& parameters,
-    ChromeFeatureListCreator* chrome_feature_list_creator)
-    : ChromeBrowserMainParts(parameters,
-                             chrome_feature_list_creator) {}
+    StartupData* startup_data)
+    : ChromeBrowserMainParts(parameters, startup_data) {}
 
 int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
   const int result = ChromeBrowserMainParts::PreEarlyInitialization();
@@ -161,7 +160,7 @@ void ChromeBrowserMainPartsPosix::PostMainMessageLoopStart() {
   // Exit in response to SIGINT, SIGTERM, etc.
   InstallShutdownSignalHandlers(
       base::BindOnce(&ExitHandler::ExitWhenPossibleOnUIThread),
-      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI}));
+      base::CreateSingleThreadTaskRunner({BrowserThread::UI}));
 }
 
 void ChromeBrowserMainPartsPosix::ShowMissingLocaleMessageBox() {

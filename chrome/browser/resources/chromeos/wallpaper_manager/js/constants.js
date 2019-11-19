@@ -55,6 +55,23 @@
   AccessLocalImagesInfoKey: 'images-info-key',
 
   /**
+   * Key to access the last used language in JSON returned by
+   * AccessLocalImagesInfoKey.
+   */
+  LastUsedLocalImageMappingKey: 'last-used-local-image-mapping',
+
+  /**
+   * Key to access the last used language in JSON returned by
+   * AccessLocalImagesInfoKey.
+   */
+  LastUsedLanguageKey: 'last-used-language-key',
+
+  /**
+   * Key to access the last used wallpaper image info in chrome.storage.local.
+   */
+  AccessLastUsedImageInfoKey: 'last-used-image-info-key',
+
+  /**
    * Wallpaper sources enum.
    */
   WallpaperSourceEnum: {

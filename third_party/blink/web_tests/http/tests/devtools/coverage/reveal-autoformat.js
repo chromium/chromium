@@ -11,7 +11,7 @@
   await TestRunner.addStylesheetTag('resources/decorations-after-inplace-formatter.css');
   await TestRunner.addStylesheetTag('resources/long-mangled.css');
 
-  CoverageTestRunner.startCoverage();
+  await CoverageTestRunner.startCoverage();
   await TestRunner.evaluateInPagePromise('performActions()');
   await CoverageTestRunner.stopCoverage();
   var node = CoverageTestRunner.findCoverageNodeForURL('long-mangled.css');

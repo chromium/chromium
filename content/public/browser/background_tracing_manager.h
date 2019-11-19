@@ -6,7 +6,9 @@
 #define CONTENT_PUBLIC_BROWSER_BACKGROUND_TRACING_MANAGER_H_
 
 #include <memory>
+#include <string>
 
+#include "base/strings/string_piece.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
@@ -33,7 +35,7 @@ class BackgroundTracingManager {
   //
   // void Upload(const scoped_refptr<base::RefCountedString>& data,
   //             FinishedProcessingCallback done_callback) {
-  //   base::PostTaskWithTraitsAndReply(
+  //   base::PostTaskAndReply(
   //       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
   //       base::BindOnce(&DoUploadInBackground, data),
   //       std::move(done_callback));
@@ -41,8 +43,7 @@ class BackgroundTracingManager {
   //
   using FinishedProcessingCallback = base::OnceCallback<void(bool success)>;
   using ReceiveCallback =
-      base::RepeatingCallback<void(const scoped_refptr<base::RefCountedString>&,
-                                   std::unique_ptr<const base::DictionaryValue>,
+      base::RepeatingCallback<void(std::unique_ptr<std::string>,
                                    FinishedProcessingCallback)>;
 
   // Set the triggering rules for when to start recording.
@@ -90,10 +91,19 @@ class BackgroundTracingManager {
 
   virtual bool HasActiveScenario() = 0;
 
+  // Returns true whether a trace is ready to be uploaded.
+  virtual bool HasTraceToUpload() = 0;
+
+  // Returns the latest trace created for uploading in a serialized proto of
+  // message type perfetto::Trace.
+  // TODO(ssid): This should also return the trigger for the trace along with
+  // the serialized trace proto.
+  virtual std::string GetLatestTraceToUpload() = 0;
+
   // For tests
-  virtual void AbortScenario() = 0;
-  virtual void InvalidateTriggerHandlesForTesting() = 0;
-  virtual void FireTimerForTesting() = 0;
+  virtual void AbortScenarioForTesting() = 0;
+  virtual void SetTraceToUploadForTesting(
+      std::unique_ptr<std::string> trace_data) = 0;
 
  protected:
   virtual ~BackgroundTracingManager() {}

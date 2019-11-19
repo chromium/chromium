@@ -12,9 +12,11 @@
 #include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "extensions/common/extension_l10n_util.h"
 #include "extensions/common/extension_paths.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace extensions {
@@ -43,8 +45,9 @@ base::Value LoadManifestFile(const base::FilePath& manifest_path,
       std::string::npos) {
     base::DictionaryValue* manifest_dictionary = nullptr;
     manifest->GetAsDictionary(&manifest_dictionary);
-    extension_l10n_util::LocalizeExtension(extension_path, manifest_dictionary,
-                                           error);
+    extension_l10n_util::LocalizeExtension(
+        extension_path, manifest_dictionary,
+        extension_l10n_util::GzippedMessagesPermission::kDisallow, error);
   }
 
   return base::Value(std::move(*manifest));
@@ -134,7 +137,7 @@ scoped_refptr<Extension> ManifestTest::LoadAndExpectSuccess(
   scoped_refptr<Extension> extension =
       LoadExtension(manifest, &error, location, flags);
   EXPECT_TRUE(extension.get()) << manifest.name();
-  EXPECT_EQ("", error) << manifest.name();
+  EXPECT_EQ(std::string(), error) << manifest.name();
   return extension;
 }
 
@@ -154,7 +157,7 @@ scoped_refptr<Extension> ManifestTest::LoadAndExpectWarning(
   scoped_refptr<Extension> extension =
       LoadExtension(manifest, &error, location, flags);
   EXPECT_TRUE(extension.get()) << manifest.name();
-  EXPECT_EQ("", error) << manifest.name();
+  EXPECT_EQ(std::string(), error) << manifest.name();
   EXPECT_EQ(1u, extension->install_warnings().size());
   EXPECT_EQ(expected_warning, extension->install_warnings()[0].message);
   return extension;
@@ -167,6 +170,28 @@ scoped_refptr<Extension> ManifestTest::LoadAndExpectWarning(
     int flags) {
   return LoadAndExpectWarning(
       ManifestData(manifest_name), expected_warning, location, flags);
+}
+
+scoped_refptr<Extension> ManifestTest::LoadAndExpectWarnings(
+    char const* manifest_name,
+    const std::vector<std::string>& expected_warnings,
+    extensions::Manifest::Location location,
+    int flags) {
+  std::string error;
+  scoped_refptr<Extension> extension =
+      LoadExtension(ManifestData(manifest_name), &error, location, flags);
+  EXPECT_TRUE(extension.get()) << manifest_name;
+  EXPECT_EQ(std::string(), error) << manifest_name;
+
+  std::vector<std::string> warning_messages;
+  warning_messages.reserve(extension->install_warnings().size());
+  for (const auto& warning : extension->install_warnings()) {
+    warning_messages.push_back(warning.message);
+  }
+
+  EXPECT_THAT(warning_messages,
+              testing::UnorderedElementsAreArray(expected_warnings));
+  return extension;
 }
 
 void ManifestTest::VerifyExpectedError(
@@ -246,6 +271,9 @@ void ManifestTest::RunTestcases(const Testcase* testcases,
 
 void ManifestTest::RunTestcase(const Testcase& testcase,
                                         ExpectType type) {
+  SCOPED_TRACE(base::StringPrintf("Testing file '%s'",
+                                  testcase.manifest_filename_.c_str()));
+
   switch (type) {
     case EXPECT_TYPE_ERROR:
       LoadAndExpectError(testcase.manifest_filename_.c_str(),

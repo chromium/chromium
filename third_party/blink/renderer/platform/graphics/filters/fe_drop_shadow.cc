@@ -43,17 +43,6 @@ FEDropShadow::FEDropShadow(Filter* filter,
       shadow_color_(shadow_color),
       shadow_opacity_(shadow_opacity) {}
 
-FEDropShadow* FEDropShadow::Create(Filter* filter,
-                                   float std_x,
-                                   float std_y,
-                                   float dx,
-                                   float dy,
-                                   const Color& shadow_color,
-                                   float shadow_opacity) {
-  return MakeGarbageCollected<FEDropShadow>(filter, std_x, std_y, dx, dy,
-                                            shadow_color, shadow_opacity);
-}
-
 FloatRect FEDropShadow::MapEffect(const FloatSize& std_deviation,
                                   const FloatPoint& offset,
                                   const FloatRect& rect) {

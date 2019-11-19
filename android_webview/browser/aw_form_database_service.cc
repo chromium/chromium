@@ -38,8 +38,8 @@ AwFormDatabaseService::AwFormDatabaseService(const base::FilePath path)
   // TODO(pkasting): http://crbug.com/740773 This should likely be sequenced,
   // not single-threaded; it's also possible these objects can each use their
   // own sequences instead of sharing this one.
-  auto db_task_runner = base::CreateSingleThreadTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+  auto db_task_runner = base::CreateSingleThreadTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
   web_database_ = new WebDatabaseService(path.Append(kWebDataFilename),
                                          ui_task_runner, db_task_runner);

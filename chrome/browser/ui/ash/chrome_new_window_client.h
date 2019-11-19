@@ -5,14 +5,22 @@
 #ifndef CHROME_BROWSER_UI_ASH_CHROME_NEW_WINDOW_CLIENT_H_
 #define CHROME_BROWSER_UI_ASH_CHROME_NEW_WINDOW_CLIENT_H_
 
+#include <map>
 #include <memory>
+#include <string>
 
-#include "ash/public/interfaces/arc_custom_tab.mojom.h"
-#include "ash/public/interfaces/new_window.mojom.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/macros.h"
+#include "components/arc/intent_helper/control_camera_app_delegate.h"
 #include "components/arc/intent_helper/open_url_delegate.h"
 #include "mojo/public/cpp/bindings/associated_binding.h"
 #include "url/gurl.h"
+
+namespace arc {
+namespace mojom {
+enum class ChromePage;
+}
+}  // namespace arc
 
 namespace content {
 class WebContents;
@@ -20,15 +28,16 @@ class WebContents;
 
 // Handles opening new tabs and windows on behalf of ash (over mojo) and the
 // ARC bridge (via a delegate in the browser process).
-class ChromeNewWindowClient : public ash::mojom::NewWindowClient,
-                              public arc::OpenUrlDelegate {
+class ChromeNewWindowClient : public ash::NewWindowDelegate,
+                              public arc::OpenUrlDelegate,
+                              public arc::ControlCameraAppDelegate {
  public:
   ChromeNewWindowClient();
   ~ChromeNewWindowClient() override;
 
   static ChromeNewWindowClient* Get();
 
-  // Overridden from ash::mojom::NewWindowClient:
+  // Overridden from ash::NewWindowDelegate:
   void NewTab() override;
   void NewTabWithUrl(const GURL& url, bool from_user_interaction) override;
   void NewWindow(bool incognito) override;
@@ -49,6 +58,12 @@ class ChromeNewWindowClient : public ash::mojom::NewWindowClient,
       int32_t surface_id,
       int32_t top_margin,
       arc::mojom::IntentHelperHost::OnOpenCustomTabCallback callback) override;
+  void OpenChromePageFromArc(arc::mojom::ChromePage page) override;
+
+  // arc::ControlCameraAppDelegate:
+  void LaunchCameraApp(const std::string& queries) override;
+  void CloseCameraApp() override;
+  bool IsCameraAppEnabled() override;
 
  private:
   class TabRestoreHelper;
@@ -63,12 +78,11 @@ class ChromeNewWindowClient : public ash::mojom::NewWindowClient,
 
   std::unique_ptr<TabRestoreHelper> tab_restore_helper_;
 
-  ash::mojom::NewWindowControllerPtr new_window_controller_;
+  const std::map<arc::mojom::ChromePage, std::string> os_settings_pages_;
 
-  ash::mojom::ArcCustomTabControllerPtr arc_custom_tab_controller_;
+  const std::map<arc::mojom::ChromePage, std::string> browser_settings_pages_;
 
-  // Binds this object to the client interface.
-  mojo::AssociatedBinding<ash::mojom::NewWindowClient> binding_;
+  const std::map<arc::mojom::ChromePage, std::string> about_pages_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeNewWindowClient);
 };

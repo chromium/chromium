@@ -1,14 +1,14 @@
 Name: WebP image encoder/decoder
 Short Name: libwebp
 URL: http://developers.google.com/speed/webp
-Version: v1.0.2
+Version: v1.0.3
 License: BSD
 License File: LICENSE
 Security Critical: Yes
 
 Description:
 Source archive:
-  https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.0.2.tar.gz
+  https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.0.3.tar.gz
 
 WebP is an image format that does both lossy and lossless compression of
 digital photographic images. WebP consists of a codec based on VP8, that Google
@@ -23,4 +23,5 @@ Local changes:
    (crbug.com/654974)
  * Pulled in fuzzers from OSS-Fuzz
    https://github.com/google/oss-fuzz/tree/master/projects/libwebp
- * Revert 9cf9841b libwebp: Unicode command tools on Windows
+ * cherry-pick af650c0b Fix a Wxor-used-as-pow false positive
+ * cherry-pick 0e48d889 bugfix: last alpha rows were incorrectly decoded

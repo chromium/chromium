@@ -25,6 +25,10 @@ enum Process {
   SANDBOX_HELPER_PROCESS = 6;
   PPAPI_PLUGIN_PROCESS = 7;
   PPAPI_BROKER_PROCESS = 8;
+  // A Chrome process not identified by any other enum. Defined for the benefit
+  // of Chrome OS. Do not use for the Chrome sampling profiler; define a new
+  // enum instead.
+  OTHER_PROCESS = 9;
 }
 
 // Chrome thread. This list is not exhaustive.
@@ -49,6 +53,24 @@ enum Thread {
 
   // Compositor thread (can be in both renderer and gpu processes).
   COMPOSITOR_THREAD = 11;
+
+  // Task scheduler thread.
+  SCHEDULER_WORKER_THREAD = 13;
+
+  COMPOSITOR_TILE_WORKER_THREAD = 14;
+
+  SERVICE_WORKER_THREAD = 15;
+
+  // Thread pool thread (in renderer process).
+  THREAD_POOL_THREAD = 16;
+
+  // GPU memory thread (in renderer process).
+  GPU_MEMORY_THREAD = 17;
+
+  // A Chrome thread not identified by any other enum. Defined for the benefit
+  // of Chrome OS. Do not use for the Chrome sampling profiler; define a new
+  // enum instead.
+  OTHER_THREAD = 12;
 }
 
 // Process phases, or where in the lifetime of the process it is such as

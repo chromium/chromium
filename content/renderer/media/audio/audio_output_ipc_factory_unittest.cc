@@ -9,12 +9,13 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "media/audio/audio_output_ipc.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,19 +31,20 @@ const int kRenderFrameId = 0;
 
 std::unique_ptr<base::Thread> MakeIOThread() {
   auto io_thread = std::make_unique<base::Thread>("test IO thread");
-  base::Thread::Options thread_options(base::MessageLoop::TYPE_IO, 0);
+  base::Thread::Options thread_options(base::MessagePumpType::IO, 0);
   CHECK(io_thread->StartWithOptions(thread_options));
   return io_thread;
 }
 
 class FakeRemoteFactory : public mojom::RendererAudioOutputStreamFactory {
  public:
-  FakeRemoteFactory() : binding_(this) {}
+  FakeRemoteFactory() = default;
   ~FakeRemoteFactory() override {}
 
   void RequestDeviceAuthorization(
-      media::mojom::AudioOutputStreamProviderRequest stream_provider,
-      int32_t session_id,
+      mojo::PendingReceiver<media::mojom::AudioOutputStreamProvider>
+          stream_provider,
+      const base::Optional<base::UnguessableToken>& session_id,
       const std::string& device_id,
       RequestDeviceAuthorizationCallback callback) override {
     std::move(callback).Run(
@@ -57,14 +59,14 @@ class FakeRemoteFactory : public mojom::RendererAudioOutputStreamFactory {
   }
 
   void Bind(mojo::ScopedMessagePipeHandle handle) {
-    EXPECT_FALSE(binding_.is_bound());
-    binding_.Bind(
-        mojo::InterfaceRequest<mojom::RendererAudioOutputStreamFactory>(
+    EXPECT_FALSE(receiver_.is_bound());
+    receiver_.Bind(
+        mojo::PendingReceiver<mojom::RendererAudioOutputStreamFactory>(
             std::move(handle)));
   }
 
  private:
-  mojo::Binding<mojom::RendererAudioOutputStreamFactory> binding_;
+  mojo::Receiver<mojom::RendererAudioOutputStreamFactory> receiver_{this};
   base::OnceClosure on_called_;
 };
 
@@ -88,7 +90,8 @@ class AudioOutputIPCFactoryTest : public testing::Test {
 
   void RequestAuthorizationOnIOThread(
       std::unique_ptr<media::AudioOutputIPC> output_ipc) {
-    output_ipc->RequestDeviceAuthorization(&fake_delegate, 0, "");
+    output_ipc->RequestDeviceAuthorization(&fake_delegate,
+                                           base::UnguessableToken(), "");
 
     output_ipc->CloseStream();
   }
@@ -99,8 +102,8 @@ class AudioOutputIPCFactoryTest : public testing::Test {
 
 TEST_F(AudioOutputIPCFactoryTest, CallFactoryFromIOThread) {
   // This test makes sure that AudioOutputIPCFactory correctly binds the
-  // RendererAudioOutputStreamFactoryPtr to the IO thread.
-  base::test::ScopedTaskEnvironment task_environment;
+  // RendererAudioOutputStreamFactory to the IO thread.
+  base::test::SingleThreadTaskEnvironment task_environment;
   base::RunLoop run_loop;
   auto io_thread = MakeIOThread();
 
@@ -138,7 +141,7 @@ TEST_F(AudioOutputIPCFactoryTest, CallFactoryFromIOThread) {
 
 TEST_F(AudioOutputIPCFactoryTest, SeveralFactories) {
   // This test simulates having several frames being created and destructed.
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   auto io_thread = MakeIOThread();
   const int n_factories = 5;
 
@@ -198,7 +201,7 @@ TEST_F(AudioOutputIPCFactoryTest, SeveralFactories) {
 TEST_F(AudioOutputIPCFactoryTest, RegisterDeregisterBackToBack_Deregisters) {
   // This test makes sure that calling Register... followed by Deregister...
   // correctly sequences the registration before the deregistration.
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::SingleThreadTaskEnvironment task_environment;
   auto io_thread = MakeIOThread();
 
   FakeRemoteFactory remote_factory;

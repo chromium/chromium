@@ -8,6 +8,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/login/login_handler.h"
+#include "chrome/browser/ui/login/login_tab_helper.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "net/base/auth.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -111,29 +114,38 @@ base::string16 ExpectedAuthority(bool is_proxy, const char* prefix) {
   return str;
 }
 
+class LoginHandlerWithWebContentsTest : public ChromeRenderViewHostTestHarness {
+ public:
+  LoginHandlerWithWebContentsTest() {}
+  ~LoginHandlerWithWebContentsTest() override {}
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(LoginHandlerWithWebContentsTest);
+};
+
 }  // namespace
 
 TEST(LoginHandlerTest, DialogStringsAndRealm) {
-  scoped_refptr<net::AuthChallengeInfo> auth_info = new net::AuthChallengeInfo;
   for (const auto& test_case : kTestCases) {
+    net::AuthChallengeInfo auth_info;
     GURL request_url(test_case.request_url);
-    auth_info->is_proxy = test_case.auth_info.target_type == PROXY;
-    auth_info->scheme = test_case.auth_info.scheme;
-    auth_info->realm = test_case.auth_info.realm;
-    auth_info->challenger = url::Origin::Create(
+    auth_info.is_proxy = test_case.auth_info.target_type == PROXY;
+    auth_info.scheme = test_case.auth_info.scheme;
+    auth_info.realm = test_case.auth_info.realm;
+    auth_info.challenger = url::Origin::Create(
         test_case.auth_info.challenger ? GURL(test_case.auth_info.challenger)
                                        : request_url);
 
     SCOPED_TRACE(::testing::Message()
                  << "request_url:" << test_case.request_url
-                 << " auth_info: { is_proxy:" << auth_info->is_proxy
-                 << " scheme:'" << auth_info->scheme << "' realm:'"
-                 << auth_info->realm << "' challenger:'"
-                 << auth_info->challenger.Serialize() << "' }");
+                 << " auth_info: { is_proxy:" << auth_info.is_proxy
+                 << " scheme:'" << auth_info.scheme << "' realm:'"
+                 << auth_info.realm << "' challenger:'"
+                 << auth_info.challenger.Serialize() << "' }");
     base::string16 authority;
     base::string16 explanation;
 
-    LoginHandler::GetDialogStrings(request_url, *auth_info, &authority,
+    LoginHandler::GetDialogStrings(request_url, auth_info, &authority,
                                    &explanation);
     EXPECT_EQ(ExpectedAuthority(test_case.auth_info.target_type == PROXY,
                                 test_case.expected.authority),
@@ -142,6 +154,18 @@ TEST(LoginHandlerTest, DialogStringsAndRealm) {
                  base::UTF16ToASCII(explanation).c_str());
 
     EXPECT_STREQ(test_case.expected.signon_realm,
-                 LoginHandler::GetSignonRealm(request_url, *auth_info).c_str());
+                 LoginHandler::GetSignonRealm(request_url, auth_info).c_str());
   }
+}
+
+// Tests that LoginTabHelper does not crash if
+// WillProcessMainFrameUnauthorizedResponse() is called when there is no pending
+// entry. Regression test for https://crbug.com/1015787.
+TEST_F(LoginHandlerWithWebContentsTest, NoPendingEntryDoesNotCrash) {
+  LoginTabHelper::CreateForWebContents(web_contents());
+  LoginTabHelper* helper = LoginTabHelper::FromWebContents(web_contents());
+  content::MockNavigationHandle handle;
+  content::NavigationThrottle::ThrottleCheckResult result =
+      helper->WillProcessMainFrameUnauthorizedResponse(&handle);
+  EXPECT_EQ(content::NavigationThrottle::CANCEL, result.action());
 }

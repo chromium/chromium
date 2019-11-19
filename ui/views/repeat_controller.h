@@ -23,8 +23,7 @@ namespace views {
 ///////////////////////////////////////////////////////////////////////////////
 class RepeatController {
  public:
-  // The RepeatController takes ownership of this callback object.
-  explicit RepeatController(const base::Closure& callback);
+  explicit RepeatController(base::RepeatingClosure callback);
   virtual ~RepeatController();
 
   // Start repeating.
@@ -42,7 +41,7 @@ class RepeatController {
   // The current timer.
   base::OneShotTimer timer_;
 
-  base::Closure callback_;
+  base::RepeatingClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(RepeatController);
 };

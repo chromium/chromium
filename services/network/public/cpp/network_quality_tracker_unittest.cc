@@ -9,9 +9,10 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "services/network/network_service.h"
@@ -166,13 +167,11 @@ class TestRTTAndThroughputEstimatesObserver
 
 class NetworkQualityTrackerTest : public testing::Test {
  public:
-  NetworkQualityTrackerTest() {
-    network::mojom::NetworkServicePtr network_service_ptr;
-    network::mojom::NetworkServiceRequest network_service_request =
-        mojo::MakeRequest(&network_service_ptr);
-    network_service_ =
-        network::NetworkService::Create(std::move(network_service_request),
-                                        /*netlog=*/nullptr);
+  NetworkQualityTrackerTest()
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+    mojo::PendingRemote<network::mojom::NetworkService> network_service_remote;
+    network_service_ = network::NetworkService::Create(
+        network_service_remote.InitWithNewPipeAndPassReceiver());
     tracker_ = std::make_unique<NetworkQualityTracker>(
         base::BindRepeating(&NetworkQualityTrackerTest::mojom_network_service,
                             base::Unretained(this)));
@@ -209,7 +208,7 @@ class NetworkQualityTrackerTest : public testing::Test {
     return network_service_.get();
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<network::NetworkService> network_service_;
   std::unique_ptr<NetworkQualityTracker> tracker_;
   std::unique_ptr<TestEffectiveConnectionTypeObserver> ect_observer_;

@@ -15,9 +15,12 @@
 namespace gpu {
 
 #if defined(OS_ANDROID)
-GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(gfx::AcceleratedWidget widget,
-                                                jobject j_surface)
-    : widget(widget) {
+GpuSurfaceTracker::SurfaceRecord::SurfaceRecord(
+    gfx::AcceleratedWidget widget,
+    jobject j_surface,
+    bool can_be_used_with_surface_control)
+    : widget(widget),
+      can_be_used_with_surface_control(can_be_used_with_surface_control) {
   // TODO(liberato): It would be nice to assert |surface != nullptr|, but we
   // can't.  in_process_context_factory.cc (for tests) actually calls us without
   // a Surface from java.  Presumably, nobody uses it.  crbug.com/712717 .
@@ -64,7 +67,8 @@ void GpuSurfaceTracker::RemoveSurface(gpu::SurfaceHandle surface_handle) {
 }
 
 gfx::AcceleratedWidget GpuSurfaceTracker::AcquireNativeWidget(
-    gpu::SurfaceHandle surface_handle) {
+    gpu::SurfaceHandle surface_handle,
+    bool* can_be_used_with_surface_control) {
   base::AutoLock lock(surface_map_lock_);
   SurfaceMap::iterator it = surface_map_.find(surface_handle);
   if (it == surface_map_.end())
@@ -73,6 +77,8 @@ gfx::AcceleratedWidget GpuSurfaceTracker::AcquireNativeWidget(
 #if defined(OS_ANDROID)
   if (it->second.widget != gfx::kNullAcceleratedWidget)
     ANativeWindow_acquire(it->second.widget);
+  *can_be_used_with_surface_control =
+      it->second.can_be_used_with_surface_control;
 #endif  // defined(OS_ANDROID)
 
   return it->second.widget;
@@ -80,7 +86,8 @@ gfx::AcceleratedWidget GpuSurfaceTracker::AcquireNativeWidget(
 
 #if defined(OS_ANDROID)
 gl::ScopedJavaSurface GpuSurfaceTracker::AcquireJavaSurface(
-    gpu::SurfaceHandle surface_handle) {
+    gpu::SurfaceHandle surface_handle,
+    bool* can_be_used_with_surface_control) {
   base::AutoLock lock(surface_map_lock_);
   SurfaceMap::const_iterator it = surface_map_.find(surface_handle);
   if (it == surface_map_.end())
@@ -88,6 +95,9 @@ gl::ScopedJavaSurface GpuSurfaceTracker::AcquireJavaSurface(
 
   const gl::ScopedJavaSurface& j_surface = it->second.surface;
   DCHECK(j_surface.IsValid());
+
+  *can_be_used_with_surface_control =
+      it->second.can_be_used_with_surface_control;
   return gl::ScopedJavaSurface::AcquireExternalSurface(
       j_surface.j_surface().obj());
 }

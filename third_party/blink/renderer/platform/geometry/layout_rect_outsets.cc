@@ -57,9 +57,9 @@ std::ostream& operator<<(std::ostream& ostream,
 
 String LayoutRectOutsets::ToString() const {
   return String::Format(
-      "top %s; right %s; bottom %s; left %s", Top().ToString().Ascii().data(),
-      Right().ToString().Ascii().data(), Bottom().ToString().Ascii().data(),
-      Left().ToString().Ascii().data());
+      "top %s; right %s; bottom %s; left %s", Top().ToString().Ascii().c_str(),
+      Right().ToString().Ascii().c_str(), Bottom().ToString().Ascii().c_str(),
+      Left().ToString().Ascii().c_str());
 }
 
 }  // namespace blink

@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 <select id="menulist">
   <option>Random Transformer</option>
   <optgroup>
@@ -16,7 +15,7 @@
   </optgroup>
 </select>
 <script>
-test_after_layout_and_paint(function(t)
+test(function(t)
 {
     var axMenuList = accessibilityController.accessibleElementById("menulist");
     assert_equals(axMenuList.role, "AXRole: AXPopUpButton");

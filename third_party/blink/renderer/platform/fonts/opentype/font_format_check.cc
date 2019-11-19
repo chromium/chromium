@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
 
-#include "SkTypeface.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 
 // Include HarfBuzz to have a cross-platform way to retrieve table tags without
 // having to rely on the platform being able to instantiate this font format.

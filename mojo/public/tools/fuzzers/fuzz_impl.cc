@@ -4,11 +4,12 @@
 
 #include <utility>
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/tools/fuzzers/fuzz.mojom.h"
 #include "mojo/public/tools/fuzzers/fuzz_impl.h"
 
-FuzzImpl::FuzzImpl(fuzz::mojom::FuzzInterfaceRequest request)
-    : binding_(this, std::move(request)) {}
+FuzzImpl::FuzzImpl(mojo::PendingReceiver<fuzz::mojom::FuzzInterface> receiver)
+    : receiver_(this, std::move(receiver)) {}
 
 FuzzImpl::~FuzzImpl() {}
 
@@ -38,8 +39,8 @@ void FuzzImpl::FuzzArgsSyncResp(fuzz::mojom::FuzzStructPtr a,
 }
 
 void FuzzImpl::FuzzAssociated(
-    fuzz::mojom::FuzzDummyInterfaceAssociatedRequest req) {
-  associated_bindings_.AddBinding(this, std::move(req));
+    mojo::PendingAssociatedReceiver<fuzz::mojom::FuzzDummyInterface> receiver) {
+  associated_receivers_.Add(this, std::move(receiver));
 }
 
 void FuzzImpl::Ping() {}

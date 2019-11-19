@@ -1,0 +1,20 @@
+# Created from RulebasedImeTest.Persian
+engine_id: FA
+key_events {
+  code: KEY_A
+  shift: false
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: KEY_V
+  shift: true
+  altgr: false
+  caps_lock: false
+}
+key_events {
+  code: SPACE
+  shift: true
+  altgr: false
+  caps_lock: false
+}

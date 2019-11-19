@@ -9,15 +9,14 @@
 #include "base/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/win/registry.h"
+#include "chrome/chrome_elf/chrome_elf_constants.h"
+#include "chrome/chrome_elf/dll_hash/dll_hash.h"
+#include "chrome/chrome_elf/third_party_dlls/public_api.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/install_static/install_util.h"
-#include "chrome_elf/blacklist/blacklist.h"
-#include "chrome_elf/chrome_elf_constants.h"
-#include "chrome_elf/dll_hash/dll_hash.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -28,10 +27,6 @@ const char kBrowserBlacklistTrialName[] = "BrowserBlacklist";
 const char kBrowserBlacklistTrialDisabledGroupName[] = "NoBlacklist";
 
 namespace {
-
-// How long to wait, in seconds, before reporting for the second (and last
-// time), what dlls were blocked from the browser process.
-const int kBlacklistReportingDelaySec = 600;
 
 // This enum is used to define the buckets for an enumerated UMA histogram.
 // Hence,
@@ -63,32 +58,9 @@ enum BlacklistSetupEventType {
 };
 
 void RecordBlacklistSetupEvent(BlacklistSetupEventType blacklist_setup_event) {
-  UMA_HISTOGRAM_ENUMERATION("Blacklist.Setup",
-                            blacklist_setup_event,
-                            BLACKLIST_SETUP_EVENT_MAX);
-}
-
-// Report which DLLs were prevented from being loaded.
-void ReportSuccessfulBlocks() {
-  // Figure out how many dlls were blocked.
-  int num_blocked_dlls = 0;
-  blacklist::SuccessfullyBlocked(NULL, &num_blocked_dlls);
-
-  if (num_blocked_dlls == 0)
-    return;
-
-  // Now retrieve the list of blocked dlls.
-  std::vector<const wchar_t*> blocked_dlls(num_blocked_dlls);
-  blacklist::SuccessfullyBlocked(&blocked_dlls[0], &num_blocked_dlls);
-
-  // Send up the hashes of the blocked dlls via UMA.
-  for (size_t i = 0; i < blocked_dlls.size(); ++i) {
-    std::string dll_name_utf8;
-    base::WideToUTF8(blocked_dlls[i], wcslen(blocked_dlls[i]), &dll_name_utf8);
-    int uma_hash = DllNameToHash(dll_name_utf8);
-
-    base::UmaHistogramSparse("Blacklist.Blocked", uma_hash);
-  }
+  base::UmaHistogramEnumeration("ChromeElf.Beacon.SetupStatus",
+                                blacklist_setup_event,
+                                BLACKLIST_SETUP_EVENT_MAX);
 }
 
 base::string16 GetBeaconRegistryPath() {
@@ -107,17 +79,6 @@ void InitializeChromeElf() {
   } else {
     BrowserBlacklistBeaconSetup();
   }
-
-  // Report all successful blacklist interceptions.
-  ReportSuccessfulBlocks();
-
-  // Schedule another task to report all successful interceptions later.
-  // This time delay should be long enough to catch any dlls that attempt to
-  // inject after Chrome has started up.
-  base::PostDelayedTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&ReportSuccessfulBlocks),
-      base::TimeDelta::FromSeconds(kBlacklistReportingDelaySec));
 
   // Make sure the early finch emergency "off switch" for
   // sandbox::MITIGATION_EXTENSION_POINT_DISABLE is set properly in reg.
@@ -155,7 +116,7 @@ void BrowserBlacklistBeaconSetup() {
 
   if (blacklist_state == blacklist::BLACKLIST_ENABLED) {
     // The blacklist setup didn't crash, so we report if it was enabled or not.
-    if (blacklist::IsBlacklistInitialized()) {
+    if (IsThirdPartyInitialized()) {
       RecordBlacklistSetupEvent(BLACKLIST_SETUP_RAN_SUCCESSFULLY);
     } else {
       // The only way for the blacklist to be enabled, but not fully
@@ -169,7 +130,8 @@ void BrowserBlacklistBeaconSetup() {
     DWORD attempt_count = 0;
     blacklist_registry_key.ReadValueDW(blacklist::kBeaconAttemptCount,
                                        &attempt_count);
-    UMA_HISTOGRAM_COUNTS_100("Blacklist.RetryAttempts.Success", attempt_count);
+    base::UmaHistogramCounts100("ChromeElf.Beacon.RetryAttemptsBeforeSuccess",
+                                attempt_count);
   } else if (blacklist_state == blacklist::BLACKLIST_SETUP_FAILED) {
     // We can set the state to disabled without checking that the maximum number
     // of attempts was exceeded because blacklist.cc has already done this.

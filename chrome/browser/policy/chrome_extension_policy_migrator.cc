@@ -3,7 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/policy/chrome_extension_policy_migrator.h"
+
+#include "base/strings/utf_string_conversions.h"
+#include "components/strings/grit/components_strings.h"
 #include "extensions/common/hashed_extension_id.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace policy {
 
@@ -43,10 +47,14 @@ void ChromeExtensionPolicyMigrator::CopyPoliciesIfUnset(
       if (!chrome_map.Get(migration.new_name)) {
         auto new_entry = entry->DeepCopy();
         migration.transform.Run(new_entry.value.get());
+        new_entry.AddError(
+            l10n_util::GetStringFUTF8(IDS_POLICY_MIGRATED_NEW_POLICY,
+                                      base::UTF8ToUTF16(migration.old_name)));
         chrome_map.Set(migration.new_name, std::move(new_entry));
       }
-      // TODO(crbug/869958): Mark the old policy as deprecated for
-      // chrome://policy.
+      entry->AddError(
+          l10n_util::GetStringFUTF8(IDS_POLICY_MIGRATED_OLD_POLICY,
+                                    base::UTF8ToUTF16(migration.new_name)));
     }
   }
 }

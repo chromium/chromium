@@ -10,7 +10,7 @@
 # for creating Windows .rc and .h files.  These are the only parts needed by
 # the Chrome build process.
 
-import exceptions
+from __future__ import print_function
 
 from grit.extern import FP
 
@@ -41,12 +41,14 @@ def GenerateMessageId(message, meaning=''):
     else:
       fp = fp2 + (fp << 1)
   # To avoid negative ids we strip the high-order bit
-  return str(fp & 0x7fffffffffffffffL)
+  return str(fp & 0x7fffffffffffffff)
 
 # -------------------------------------------------------------------------
 # The MessageTranslationError class is used to signal tclib-specific errors.
 
-class MessageTranslationError(exceptions.Exception):
+
+class MessageTranslationError(Exception):
+
   def __init__(self, args = ''):
     self.args = args
 
@@ -122,16 +124,16 @@ class BaseMessage(object):
   # Append a placeholder to the message
   def AppendPlaceholder(self, placeholder):
     if not isinstance(placeholder, Placeholder):
-      raise MessageTranslationError, ("Invalid message placeholder %s in "
-                                      "message %s" % (placeholder, self.GetId()))
+      raise MessageTranslationError("Invalid message placeholder %s in "
+                                    "message %s" % (placeholder, self.GetId()))
     # Are there other placeholders with the same presentation?
     # If so, they need to be the same.
     for other in self.GetPlaceholders():
       if placeholder.GetPresentation() == other.GetPresentation():
         if not placeholder.EqualTo(other):
-          raise MessageTranslationError, \
-                "Conflicting declarations of %s within message" % \
-                placeholder.GetPresentation()
+          raise MessageTranslationError(
+              "Conflicting declarations of %s within message" %
+              placeholder.GetPresentation())
     # update placeholder list
     dup = 0
     for item in self.__content:
@@ -204,9 +206,9 @@ class BaseMessage(object):
         if source_msg:
           ph = source_msg.GetPlaceholder(item.GetPresentation())
           if not ph:
-            raise MessageTranslationError, \
-                  "Placeholder %s doesn't exist in message: %s" % \
-                  (item.GetPresentation(), source_msg);
+            raise MessageTranslationError(
+                "Placeholder %s doesn't exist in message: %s" %
+                (item.GetPresentation(), source_msg))
           original_content += ph.GetOriginal()
         else:
           original_content += item.GetOriginal()
@@ -442,7 +444,7 @@ class Message(BaseMessage):
       is_hidden : 0 or 1 - if the message should be hidden, 0 otherwise
     """
     if is_hidden not in [0, 1]:
-      raise  MessageTranslationError, "is_hidden must be 0 or 1, got %s"
+      raise MessageTranslationError("is_hidden must be 0 or 1, got %s")
     self.__is_hidden = is_hidden
 
   def IsHidden(self):

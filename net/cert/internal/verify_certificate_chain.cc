@@ -817,7 +817,9 @@ void PathVerifier::BasicCertificateProcessing(
   // (RFC 5280 section 6.1.3 step a.2)
   VerifyTimeValidity(cert, time, errors);
 
-  // TODO(eroman): Check revocation (RFC 5280 section 6.1.3 step a.3)
+  // RFC 5280 section 6.1.3 step a.3 calls for checking the certificate's
+  // revocation status here. In this implementation revocation checking is
+  // implemented separately from path validation.
 
   // Verify the certificate's issuer name matches the issuing certificate's
   // subject name. (RFC 5280 section 6.1.3 step a.4)

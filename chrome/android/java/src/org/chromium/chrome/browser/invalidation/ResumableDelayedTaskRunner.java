@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.invalidation;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 /**
  * Runner which can be paused. When the runner is paused, the execution of its

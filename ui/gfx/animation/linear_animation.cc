@@ -9,6 +9,7 @@
 
 #include <algorithm>
 
+#include "base/numerics/ranges.h"
 #include "ui/gfx/animation/animation_container.h"
 #include "ui/gfx/animation/animation_delegate.h"
 
@@ -46,7 +47,7 @@ double LinearAnimation::GetCurrentValue() const {
 }
 
 void LinearAnimation::SetCurrentValue(double new_value) {
-  new_value = std::max(0.0, std::min(1.0, new_value));
+  new_value = base::ClampToRange(new_value, 0.0, 1.0);
   base::TimeDelta time_delta = base::TimeDelta::FromMicroseconds(
       static_cast<int64_t>(duration_.InMicroseconds() * (new_value - state_)));
   SetStartTime(start_time() - time_delta);

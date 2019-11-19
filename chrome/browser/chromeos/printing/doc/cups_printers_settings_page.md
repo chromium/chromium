@@ -100,6 +100,7 @@ Message Name                        | Function
 `getPrinterPpdManufacturerAndModel` | `HandleGetPrinterPpdManufacturerAndModel`
 `addDiscoveredPrinter`              | `HandleAddDiscoveredPrinter`
 `cancelPrinterSetup`                | `HandleSetUpCancel`
+`getEulaUrl`                        | `HandleGetEulaUrl`
 
 ## Javascript Listeners
 

@@ -13,9 +13,9 @@
 #include "components/keyed_service/core/keyed_service.h"
 
 KeyedServiceFactory::KeyedServiceFactory(const char* name,
-                                         DependencyManager* manager)
-    : KeyedServiceBaseFactory(name, manager) {
-}
+                                         DependencyManager* manager,
+                                         Type type)
+    : KeyedServiceBaseFactory(name, manager, type) {}
 
 KeyedServiceFactory::~KeyedServiceFactory() {
   DCHECK(mapping_.empty());
@@ -40,15 +40,13 @@ void KeyedServiceFactory::SetTestingFactory(void* context,
 
 KeyedService* KeyedServiceFactory::SetTestingFactoryAndUse(
     void* context,
-    void* side_parameter,
     TestingFactory testing_factory) {
   DCHECK(testing_factory);
   SetTestingFactory(context, std::move(testing_factory));
-  return GetServiceForContext(context, side_parameter, true);
+  return GetServiceForContext(context, true);
 }
 
 KeyedService* KeyedServiceFactory::GetServiceForContext(void* context,
-                                                        void* side_parameter,
                                                         bool create) {
   TRACE_EVENT1("browser,startup", "KeyedServiceFactory::GetServiceForContext",
                "service_name", name());
@@ -76,7 +74,7 @@ KeyedService* KeyedServiceFactory::GetServiceForContext(void* context,
       service = factory_iterator->second.Run(context);
     }
   } else {
-    service = BuildServiceInstanceFor(context, side_parameter);
+    service = BuildServiceInstanceFor(context);
   }
 
   return Associate(context, std::move(service));
@@ -85,7 +83,7 @@ KeyedService* KeyedServiceFactory::GetServiceForContext(void* context,
 KeyedService* KeyedServiceFactory::Associate(
     void* context,
     std::unique_ptr<KeyedService> service) {
-  DCHECK(!base::ContainsKey(mapping_, context));
+  DCHECK(!base::Contains(mapping_, context));
   auto iterator = mapping_.emplace(context, std::move(service)).first;
   return iterator->second.get();
 }
@@ -119,5 +117,5 @@ void KeyedServiceFactory::SetEmptyTestingFactory(void* context) {
 }
 
 bool KeyedServiceFactory::HasTestingFactory(void* context) {
-  return base::ContainsKey(testing_factories_, context);
+  return base::Contains(testing_factories_, context);
 }

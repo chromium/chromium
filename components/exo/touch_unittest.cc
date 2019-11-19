@@ -9,6 +9,9 @@
 #include "ash/wm/window_positioner.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "components/exo/buffer.h"
+#include "components/exo/data_source.h"
+#include "components/exo/data_source_delegate.h"
+#include "components/exo/seat.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface.h"
 #include "components/exo/test/exo_test_base.h"
@@ -52,9 +55,26 @@ class MockTouchStylusDelegate : public TouchStylusDelegate {
   MOCK_METHOD3(OnTouchTilt, void(base::TimeTicks, int, const gfx::Vector2dF&));
 };
 
+class TestDataSourceDelegate : public DataSourceDelegate {
+ public:
+  TestDataSourceDelegate() {}
+
+  // Overridden from DataSourceDelegate:
+  void OnDataSourceDestroying(DataSource* device) override {}
+  void OnTarget(const base::Optional<std::string>& mime_type) override {}
+  void OnSend(const std::string& mime_type, base::ScopedFD fd) override {}
+  void OnCancelled() override {}
+  void OnDndDropPerformed() override {}
+  void OnDndFinished() override {}
+  void OnAction(DndAction dnd_action) override {}
+
+  DISALLOW_COPY_AND_ASSIGN(TestDataSourceDelegate);
+};
+
 TEST_F(TouchTest, OnTouchDown) {
   MockTouchDelegate delegate;
-  std::unique_ptr<Touch> touch(new Touch(&delegate));
+  Seat seat;
+  std::unique_ptr<Touch> touch(new Touch(&delegate, &seat));
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
 
   auto bottom_window = exo_test_helper()->CreateWindow(10, 10, false);
@@ -89,7 +109,8 @@ TEST_F(TouchTest, OnTouchUp) {
   auto window = exo_test_helper()->CreateWindow(10, 10, false);
 
   MockTouchDelegate delegate;
-  std::unique_ptr<Touch> touch(new Touch(&delegate));
+  Seat seat;
+  std::unique_ptr<Touch> touch(new Touch(&delegate, &seat));
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
 
   EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
@@ -119,7 +140,8 @@ TEST_F(TouchTest, OnTouchMotion) {
   auto window = exo_test_helper()->CreateWindow(10, 10, false);
 
   MockTouchDelegate delegate;
-  std::unique_ptr<Touch> touch(new Touch(&delegate));
+  Seat seat;
+  std::unique_ptr<Touch> touch(new Touch(&delegate, &seat));
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
 
   EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
@@ -154,7 +176,8 @@ TEST_F(TouchTest, OnTouchShape) {
   auto window = exo_test_helper()->CreateWindow(10, 10, false);
 
   MockTouchDelegate delegate;
-  std::unique_ptr<Touch> touch(new Touch(&delegate));
+  Seat seat;
+  std::unique_ptr<Touch> touch(new Touch(&delegate, &seat));
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
 
   EXPECT_CALL(delegate, CanAcceptTouchEventsForSurface(window.surface()))
@@ -191,7 +214,8 @@ TEST_F(TouchTest, OnTouchCancel) {
   auto window = exo_test_helper()->CreateWindow(10, 10, false);
 
   MockTouchDelegate delegate;
-  std::unique_ptr<Touch> touch(new Touch(&delegate));
+  Seat seat;
+  std::unique_ptr<Touch> touch(new Touch(&delegate, &seat));
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
 
   EXPECT_CALL(delegate, OnTouchShape(testing::_, testing::_, testing::_))
@@ -223,7 +247,8 @@ TEST_F(TouchTest, IgnoreTouchEventDuringModal) {
   auto modal = exo_test_helper()->CreateWindow(5, 5, true);
 
   MockTouchDelegate delegate;
-  std::unique_ptr<Touch> touch(new Touch(&delegate));
+  Seat seat;
+  std::unique_ptr<Touch> touch(new Touch(&delegate, &seat));
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
 
   // Make the window modal.
@@ -295,7 +320,8 @@ TEST_F(TouchTest, OnTouchTool) {
 
   MockTouchDelegate delegate;
   MockTouchStylusDelegate stylus_delegate;
-  std::unique_ptr<Touch> touch(new Touch(&delegate));
+  Seat seat;
+  std::unique_ptr<Touch> touch(new Touch(&delegate, &seat));
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
   touch->SetStylusDelegate(&stylus_delegate);
 
@@ -329,7 +355,8 @@ TEST_F(TouchTest, OnTouchForce) {
 
   MockTouchDelegate delegate;
   MockTouchStylusDelegate stylus_delegate;
-  std::unique_ptr<Touch> touch(new Touch(&delegate));
+  Seat seat;
+  std::unique_ptr<Touch> touch(new Touch(&delegate, &seat));
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
   touch->SetStylusDelegate(&stylus_delegate);
 
@@ -365,7 +392,8 @@ TEST_F(TouchTest, OnTouchTilt) {
 
   MockTouchDelegate delegate;
   MockTouchStylusDelegate stylus_delegate;
-  std::unique_ptr<Touch> touch(new Touch(&delegate));
+  Seat seat;
+  std::unique_ptr<Touch> touch(new Touch(&delegate, &seat));
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
   touch->SetStylusDelegate(&stylus_delegate);
 
@@ -394,6 +422,43 @@ TEST_F(TouchTest, OnTouchTilt) {
   generator.ReleaseTouch();
 
   EXPECT_CALL(delegate, OnTouchDestroying(touch.get()));
+  touch.reset();
+}
+
+TEST_F(TouchTest, DragDropAbort) {
+  Seat seat;
+  MockTouchDelegate touch_delegate;
+  std::unique_ptr<Touch> touch(new Touch(&touch_delegate, &seat));
+  TestDataSourceDelegate data_source_delegate;
+  DataSource source(&data_source_delegate);
+  Surface origin, icon;
+
+  // Make origin into a real window so the touch can click it
+  ShellSurface shell_surface(&origin);
+  Buffer buffer(exo_test_helper()->CreateGpuMemoryBuffer(gfx::Size(10, 10)));
+  origin.Attach(&buffer);
+  origin.Commit();
+
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  EXPECT_CALL(touch_delegate, CanAcceptTouchEventsForSurface(&origin))
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(touch_delegate, OnTouchFrame()).Times(2);
+  generator.MoveTouch(origin.window()->GetBoundsInScreen().origin());
+
+  seat.StartDrag(&source, &origin, &icon,
+                 ui::DragDropTypes::DragEventSource::DRAG_EVENT_SOURCE_MOUSE);
+  EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
+
+  EXPECT_CALL(touch_delegate, OnTouchDown).Times(1);
+  EXPECT_CALL(touch_delegate, OnTouchUp).Times(1);
+  EXPECT_CALL(touch_delegate, OnTouchShape).Times(1);
+  generator.PressTouch();
+  EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
+  generator.ReleaseTouch();
+  EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());
+
+  EXPECT_CALL(touch_delegate, OnTouchDestroying(touch.get()));
   touch.reset();
 }
 

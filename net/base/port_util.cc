@@ -72,8 +72,8 @@ const int kRestrictedPorts[] = {
     548,     // AFP (Apple Filing Protocol)
     556,     // remotefs
     563,     // nntp+ssl
-    587,     // stmp?
-    601,     // ??
+    587,     // smtp (rfc6409)
+    601,     // syslog-conn (rfc3195)
     636,     // ldap+ssl
     993,     // ldap+ssl
     995,     // pop3+ssl
@@ -107,7 +107,7 @@ bool IsWellKnownPort(int port) {
   return port >= 0 && port < 1024;
 }
 
-bool IsPortAllowedForScheme(int port, const std::string& url_scheme) {
+bool IsPortAllowedForScheme(int port, base::StringPiece url_scheme) {
   // Reject invalid ports.
   if (!IsPortValid(port))
     return false;
@@ -116,7 +116,7 @@ bool IsPortAllowedForScheme(int port, const std::string& url_scheme) {
   if (g_explicitly_allowed_ports.Get().count(port) > 0)
     return true;
 
-  // FTP requests have an extra set of whitelisted schemes.
+  // FTP requests have an extra set of allowed schemes.
   if (base::LowerCaseEqualsASCII(url_scheme, url::kFtpScheme)) {
     for (int allowed_ftp_port : kAllowedFtpPorts) {
       if (allowed_ftp_port == port)

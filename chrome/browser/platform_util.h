@@ -13,6 +13,7 @@
 #include "chrome/common/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
 
+class Browser;
 class GURL;
 class Profile;
 
@@ -40,9 +41,6 @@ enum OpenOperationResult {
 enum OpenItemType {
   OPEN_FILE,
   OPEN_FOLDER,
-#if defined(OS_LINUX)
-  SHOW_ITEM_IN_FOLDER
-#endif
 };
 
 // Callback used with OpenFile and OpenFolder.
@@ -105,6 +103,11 @@ bool IsVisible(gfx::NativeView view);
 // the feature is supported and enabled, and false otherwise.
 bool IsSwipeTrackingFromScrollEventsEnabled();
 #endif
+
+// Returns true if the given browser window is in locked fullscreen mode
+// (a special type of fullscreen where the user is locked into one browser
+// window).
+bool IsBrowserLockedFullscreen(const Browser* browser);
 
 }  // namespace platform_util
 

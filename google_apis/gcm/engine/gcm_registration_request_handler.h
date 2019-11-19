@@ -19,9 +19,7 @@ class GCM_EXPORT GCMRegistrationRequestHandler :
 
   // RegistrationRequest::RequestHandler overrides:
   void BuildRequestBody(std::string* body) override;
-  void ReportUMAs(RegistrationRequest::Status status,
-                  int retry_count,
-                  base::TimeDelta complete_time) override;
+  void ReportUMAs(RegistrationRequest::Status status) override;
 
  private:
   std::string senders_;

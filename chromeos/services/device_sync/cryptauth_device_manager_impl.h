@@ -12,6 +12,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chromeos/services/device_sync/cryptauth_device_manager.h"
+#include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/cryptauth_gcm_manager.h"
 #include "chromeos/services/device_sync/network_request_error.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
@@ -88,7 +89,9 @@ class CryptAuthDeviceManagerImpl : public CryptAuthDeviceManager,
 
  private:
   // CryptAuthGCMManager::Observer:
-  void OnResyncMessage() override;
+  void OnResyncMessage(
+      const base::Optional<std::string>& session_id,
+      const base::Optional<CryptAuthFeatureType>& feature_type) override;
 
   // Updates |unlock_keys_| by fetching the list stored in |pref_service_|.
   void UpdateUnlockKeysFromPrefs();
@@ -130,7 +133,7 @@ class CryptAuthDeviceManagerImpl : public CryptAuthDeviceManager,
   // instance will be created for each individual attempt.
   std::unique_ptr<CryptAuthClient> cryptauth_client_;
 
-  base::WeakPtrFactory<CryptAuthDeviceManagerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<CryptAuthDeviceManagerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceManagerImpl);
 };

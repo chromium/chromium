@@ -86,10 +86,6 @@ TouchEventContext& TreeScopeEventContext::EnsureTouchEventContext() {
   return *touch_event_context_;
 }
 
-TreeScopeEventContext* TreeScopeEventContext::Create(TreeScope& tree_scope) {
-  return MakeGarbageCollected<TreeScopeEventContext>(tree_scope);
-}
-
 TreeScopeEventContext::TreeScopeEventContext(TreeScope& tree_scope)
     : tree_scope_(tree_scope),
       containing_closed_shadow_tree_(nullptr),

@@ -12,35 +12,11 @@ import "url/mojom/url.mojom";
 // Identity Service client library, move all comments from the C++ header
 // to here, and have the C++ header reference this file for documentation
 // rather than the other way around.
-struct Captcha {
-  string token;
-  url.mojom.Url audio_url;
-  url.mojom.Url image_url;
-  url.mojom.Url unlock_url;
-  // TODO(blundell): Change this to be a Size (from geometry.mojom) once
-  // google_service_auth_error.* becomes part of the Identity Service client
-  // library.
-  int32 image_width;
-  int32 image_height;
-};
-
-struct SecondFactor {
-  string token;
-  string prompt_text;
-  string alternate_text;
-  // TODO(blundell): Change this to be unsigned once
-  // google_service_auth_error.* becomes part of the Identity Service client
-  // library.
-  int32 field_length;
-};
-
 struct GoogleServiceAuthError {
   // Must correspond to a value in the C++ GoogleServiceAuthError::State enum.
   // TODO(blundell): Move the enum into mojom once google_service_auth_error.*
   // becomes part of the Identity Service client library.
   int32 state;
-  Captcha captcha;
-  SecondFactor second_factor;
   int32 network_error;
   string error_message;
 };

@@ -164,7 +164,7 @@ class PlatformHandleTest : public testing::Test,
 #if defined(OS_FUCHSIA)
             handle.GetHandle().get()
 #elif defined(OS_MACOSX) && !defined(OS_IOS)
-            handle.GetMachPort().get()
+            handle.GetMachSendRight().get()
 #endif
                 );
     auto generic_region = base::subtle::PlatformSharedMemoryRegion::Take(

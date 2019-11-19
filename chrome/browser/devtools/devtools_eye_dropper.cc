@@ -21,6 +21,7 @@
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_input_event.h"
 #include "third_party/blink/public/platform/web_mouse_event.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -35,8 +36,7 @@ DevToolsEyeDropper::DevToolsEyeDropper(content::WebContents* web_contents,
       callback_(callback),
       last_cursor_x_(-1),
       last_cursor_y_(-1),
-      host_(nullptr),
-      weak_factory_(this) {
+      host_(nullptr) {
   mouse_event_callback_ =
       base::Bind(&DevToolsEyeDropper::HandleMouseEvent, base::Unretained(this));
   content::RenderViewHost* rvh = web_contents->GetRenderViewHost();
@@ -81,7 +81,7 @@ void DevToolsEyeDropper::DetachFromHost() {
     return;
   host_->RemoveMouseEventCallback(mouse_event_callback_);
   content::CursorInfo cursor_info;
-  cursor_info.type = blink::WebCursorInfo::kTypePointer;
+  cursor_info.type = ui::CursorType::kPointer;
   host_->SetCursor(cursor_info);
   video_capturer_.reset();
   host_ = nullptr;
@@ -255,7 +255,7 @@ void DevToolsEyeDropper::UpdateCursor() {
   canvas.drawCircle(kCursorSize / 2, kCursorSize / 2, kDiameter / 2, paint);
 
   content::CursorInfo cursor_info;
-  cursor_info.type = blink::WebCursorInfo::kTypeCustom;
+  cursor_info.type = ui::CursorType::kCustom;
   cursor_info.image_scale_factor = device_scale_factor;
   cursor_info.custom_image = result;
   cursor_info.hotspot = gfx::Point(kHotspotOffset * device_scale_factor,
@@ -267,7 +267,8 @@ void DevToolsEyeDropper::OnFrameCaptured(
     base::ReadOnlySharedMemoryRegion data,
     ::media::mojom::VideoFrameInfoPtr info,
     const gfx::Rect& content_rect,
-    viz::mojom::FrameSinkVideoConsumerFrameCallbacksPtr callbacks) {
+    mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+        callbacks) {
   gfx::Size view_size = host_->GetView()->GetViewBounds().size();
   if (view_size != content_rect.size()) {
     video_capturer_->SetResolutionConstraints(view_size, view_size, true);
@@ -275,8 +276,11 @@ void DevToolsEyeDropper::OnFrameCaptured(
     return;
   }
 
+  mojo::Remote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+      callbacks_remote(std::move(callbacks));
+
   if (!data.IsValid()) {
-    callbacks->Done();
+    callbacks_remote->Done();
     return;
   }
   base::ReadOnlySharedMemoryMapping mapping = data.Map();
@@ -306,7 +310,8 @@ void DevToolsEyeDropper::OnFrameCaptured(
     base::ReadOnlySharedMemoryMapping mapping;
     // Prevents FrameSinkVideoCapturer from recycling the shared memory that
     // backs |frame_|.
-    viz::mojom::FrameSinkVideoConsumerFrameCallbacksPtr releaser;
+    mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
+        releaser;
   };
   frame_.installPixels(
       SkImageInfo::MakeN32(content_rect.width(), content_rect.height(),
@@ -318,7 +323,7 @@ void DevToolsEyeDropper::OnFrameCaptured(
       [](void* addr, void* context) {
         delete static_cast<FramePinner*>(context);
       },
-      new FramePinner{std::move(mapping), std::move(callbacks)});
+      new FramePinner{std::move(mapping), callbacks_remote.Unbind()});
   frame_.setImmutable();
 
   UpdateCursor();

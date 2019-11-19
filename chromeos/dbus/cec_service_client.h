@@ -10,7 +10,6 @@
 
 #include "base/macros.h"
 #include "chromeos/dbus/dbus_client.h"
-#include "chromeos/dbus/dbus_client_implementation_type.h"
 #include "chromeos/dbus/dbus_method_call_status.h"
 
 namespace chromeos {
@@ -50,8 +49,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) CecServiceClient : public DBusClient {
       base::OnceCallback<void(const std::vector<PowerState>&)>;
 
   // For normal usage, access the singleton via DBusThreadManager::Get().
-  static std::unique_ptr<CecServiceClient> Create(
-      DBusClientImplementationType type);
+  static std::unique_ptr<CecServiceClient> Create();
 
   // Puts all connected HDMI CEC capable displays into stand-by mode. The effect
   // of calling this method is on a best effort basis, no guarantees of displays

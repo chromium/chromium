@@ -39,5 +39,9 @@
         "string_header": "headless/lib/browser/protocol/base_string_adapter.h",
         "export_macro": "HEADLESS_EXPORT",
         "export_header": "headless/public/headless_export.h"
+    },
+
+    "crdtp": {
+        "namespace": "crdtp"
     }
 }

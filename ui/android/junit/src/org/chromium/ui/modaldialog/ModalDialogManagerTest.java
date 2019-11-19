@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -48,11 +49,15 @@ public class ModalDialogManagerTest {
     private ModalDialogManager mModalDialogManager;
     private List<PropertyModel> mDialogModels = new ArrayList<>();
 
+    @Mock
+    private ModalDialogManagerObserver mObserver;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mModalDialogManager = new ModalDialogManager(mAppModalPresenter, ModalDialogType.APP);
         mModalDialogManager.registerPresenter(mTabModalPresenter, ModalDialogType.TAB);
+        mModalDialogManager.addObserver(mObserver);
 
         for (int i = 0; i < MAX_DIALOGS; ++i) {
             ModalDialogProperties.Controller controller = new ModalDialogProperties.Controller() {
@@ -67,6 +72,23 @@ public class ModalDialogManagerTest {
                                       .with(ModalDialogProperties.CONTROLLER, spy(controller))
                                       .build());
         }
+    }
+
+    /** Tests that the events on the {@link ModalDialogManagerObserver} are called correctly. */
+    @Test
+    @Feature({"ModalDialogManagerObserver"})
+    public void testModalDialogObserver() {
+        // Show two dialogs and make sure show is only called on one until it is hidden.
+        verify(mObserver, times(0)).onDialogShown(mDialogModels.get(0));
+        mModalDialogManager.showDialog(mDialogModels.get(0), ModalDialogType.APP);
+        mModalDialogManager.showDialog(mDialogModels.get(1), ModalDialogType.APP);
+        verify(mObserver, times(1)).onDialogShown(mDialogModels.get(0));
+        verify(mObserver, times(0)).onDialogShown(mDialogModels.get(1));
+
+        verify(mObserver, times(0)).onDialogHidden(mDialogModels.get(0));
+        mModalDialogManager.dismissDialog(mDialogModels.get(0), ModalDialogType.APP);
+        verify(mObserver, times(1)).onDialogHidden(mDialogModels.get(0));
+        verify(mObserver, times(1)).onDialogShown(mDialogModels.get(1));
     }
 
     /** Tests showing a dialog when no dialog is currently showing. */
@@ -347,12 +369,12 @@ public class ModalDialogManagerTest {
         mModalDialogManager.showDialog(mDialogModels.get(2), ModalDialogType.TAB);
 
         // Suspend all tab modal dialogs.
-        mModalDialogManager.suspendType(ModalDialogType.TAB);
+        int token = mModalDialogManager.suspendType(ModalDialogType.TAB);
         assertFalse(mModalDialogManager.isShowing());
         assertEquals(3, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
 
         // Resume tab modal dialogs.
-        mModalDialogManager.resumeType(ModalDialogType.TAB);
+        mModalDialogManager.resumeType(ModalDialogType.TAB, token);
         assertEquals(mDialogModels.get(0), mModalDialogManager.getCurrentDialogForTest());
         assertEquals(2, mModalDialogManager.getPendingDialogsForTest(ModalDialogType.TAB).size());
     }

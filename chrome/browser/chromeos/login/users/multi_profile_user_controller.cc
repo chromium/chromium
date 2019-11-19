@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/public/cpp/login_types.h"
 #include "base/bind.h"
 #include "chrome/browser/chromeos/login/users/multi_profile_user_controller_delegate.h"
 #include "chrome/browser/chromeos/policy/policy_cert_service.h"
@@ -75,10 +76,10 @@ void MultiProfileUserController::RegisterProfilePrefs(
                                kBehaviorUnrestricted);
   registry->RegisterBooleanPref(
       prefs::kMultiProfileNeverShowIntro, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kMultiProfileWarningShowDismissed, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+      user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 }
 
 // static
@@ -122,17 +123,17 @@ MultiProfileUserController::GetPrimaryUserPolicy() {
 }
 
 // static
-ash::mojom::MultiProfileUserBehavior
+ash::MultiProfileUserBehavior
 MultiProfileUserController::UserBehaviorStringToEnum(
     const std::string& behavior) {
   if (behavior == kBehaviorPrimaryOnly)
-    return ash::mojom::MultiProfileUserBehavior::PRIMARY_ONLY;
+    return ash::MultiProfileUserBehavior::PRIMARY_ONLY;
   if (behavior == kBehaviorNotAllowed)
-    return ash::mojom::MultiProfileUserBehavior::NOT_ALLOWED;
+    return ash::MultiProfileUserBehavior::NOT_ALLOWED;
   if (behavior == kBehaviorOwnerPrimaryOnly)
-    return ash::mojom::MultiProfileUserBehavior::OWNER_PRIMARY_ONLY;
+    return ash::MultiProfileUserBehavior::OWNER_PRIMARY_ONLY;
 
-  return ash::mojom::MultiProfileUserBehavior::UNRESTRICTED;
+  return ash::MultiProfileUserBehavior::UNRESTRICTED;
 }
 
 bool MultiProfileUserController::IsUserAllowedInSession(

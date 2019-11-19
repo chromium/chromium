@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/webidl2/lib/webidl2.js"></script>
+<script src="/resources/idlharness.js"></script>
+<script type="module">
+import { StdSwitchElement } from 'std:elements/switch';
+
+const DEPS = ['html', 'SVG', 'cssom', 'touch-events', 'uievents', 'dom', 'xhr'];
+
+// WebIDL and idlharness.js are not capable of interfaces in a module.
+const SWITCH_IDL = `
+[Exposed=Window,
+ Constructor()]
+interface StdSwitchElement : HTMLElement {
+  [CEReactions] attribute boolean defaultOn;
+  [CEReactions] attribute boolean on;
+
+  [CEReactions] attribute boolean disabled;
+  readonly attribute HTMLFormElement? form;
+  [CEReactions] attribute DOMString name;
+  readonly attribute DOMString type;
+
+  readonly attribute boolean willValidate;
+  readonly attribute ValidityState validity;
+  readonly attribute DOMString validationMessage;
+  boolean checkValidity();
+  boolean reportValidity();
+  void setCustomValidity(DOMString error);
+
+  readonly attribute NodeList labels;
+};`;
+
+Object.defineProperty(window, 'StdSwitchElement', {
+  configurable: true,
+  enumerable: false,
+  value: StdSwitchElement,
+  writable: true,
+});
+
+promise_test(async () => {
+  let idlArray = new IdlArray();
+  let dependentIdls = await Promise.all(DEPS.map(spec => { return fetch_spec(spec); }));
+  idlArray.add_idls(SWITCH_IDL);
+  for (let dep of dependentIdls) {
+    idlArray.add_dependency_idls(dep);
+  }
+  idlArray.add_objects({StdSwitchElement: ['document.createElement("std-switch")']});
+  idlArray.test();
+});
+</script>

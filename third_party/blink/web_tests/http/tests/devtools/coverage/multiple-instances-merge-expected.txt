@@ -1,8 +1,8 @@
 Tests the coverage list view after finishing recording in the Coverage view.
 
-.../devtools/coverage/resources/coverage.js JS used: 396 unused: 172 total: 568
+.../devtools/coverage/resources/coverage.js JS (per block) used: 396 unused: 172 total: 568
 .../devtools/coverage/resources/highlight-in-source.css CSS used: 90 unused: 119 total: 209
-.../devtools/coverage/resources/subframe.html JS used: 74 unused: 0 total: 74
+.../devtools/coverage/resources/subframe.html JS (per block) used: 74 unused: 0 total: 74
 0: + body {
 1: +     background-color: lightblue;
 2: + }

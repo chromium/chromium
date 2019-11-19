@@ -35,7 +35,7 @@ class MEDIA_EXPORT AudioDecoderConfig {
                      ChannelLayout channel_layout,
                      int samples_per_second,
                      const std::vector<uint8_t>& extra_data,
-                     const EncryptionScheme& encryption_scheme);
+                     EncryptionScheme encryption_scheme);
 
   AudioDecoderConfig(const AudioDecoderConfig& other);
 
@@ -47,7 +47,7 @@ class MEDIA_EXPORT AudioDecoderConfig {
                   ChannelLayout channel_layout,
                   int samples_per_second,
                   const std::vector<uint8_t>& extra_data,
-                  const EncryptionScheme& encryption_scheme,
+                  EncryptionScheme encryption_scheme,
                   base::TimeDelta seek_preroll,
                   int codec_delay);
 
@@ -83,12 +83,12 @@ class MEDIA_EXPORT AudioDecoderConfig {
   // Whether the audio stream is potentially encrypted.
   // Note that in a potentially encrypted audio stream, individual buffers
   // can be encrypted or not encrypted.
-  bool is_encrypted() const { return encryption_scheme_.is_encrypted(); }
+  bool is_encrypted() const {
+    return encryption_scheme_ != EncryptionScheme::kUnencrypted;
+  }
 
   // Encryption scheme used for encrypted buffers.
-  const EncryptionScheme& encryption_scheme() const {
-    return encryption_scheme_;
-  }
+  EncryptionScheme encryption_scheme() const { return encryption_scheme_; }
 
   // Sets the config to be encrypted or not encrypted manually. This can be
   // useful for decryptors that decrypts an encrypted stream to a clear stream.
@@ -119,7 +119,7 @@ class MEDIA_EXPORT AudioDecoderConfig {
   int samples_per_second_ = 0;
   int bytes_per_frame_ = 0;
   std::vector<uint8_t> extra_data_;
-  EncryptionScheme encryption_scheme_;
+  EncryptionScheme encryption_scheme_ = EncryptionScheme::kUnencrypted;
 
   // Layout and count of the *stream* being decoded.
   ChannelLayout channel_layout_ = CHANNEL_LAYOUT_UNSUPPORTED;

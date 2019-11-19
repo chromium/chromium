@@ -16,34 +16,10 @@
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/simple_thread.h"
-#include "services/service_manager/connect_params.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/service_manager.h"
 
-#if !defined(OS_IOS)
-#include "services/service_manager/service_process_launcher.h"
-#include "services/service_manager/service_process_launcher_factory.h"
-#endif
-
 namespace service_manager {
-
-namespace {
-
-#if !defined(OS_IOS)
-// Used to ensure we only init once.
-class ServiceProcessLauncherFactoryImpl : public ServiceProcessLauncherFactory {
- public:
-  ServiceProcessLauncherFactoryImpl() = default;
-
- private:
-  std::unique_ptr<ServiceProcessLauncher> Create(
-      const base::FilePath& service_path) override {
-    return std::make_unique<ServiceProcessLauncher>(nullptr, service_path);
-  }
-};
-#endif
-
-}  // namespace
 
 BackgroundServiceManager::BackgroundServiceManager(
     const std::vector<Manifest>& manifests)
@@ -69,27 +45,20 @@ BackgroundServiceManager::~BackgroundServiceManager() {
 
 void BackgroundServiceManager::RegisterService(
     const Identity& identity,
-    mojom::ServicePtr service,
-    mojom::PIDReceiverRequest pid_receiver_request) {
-  mojom::ServicePtrInfo service_info = service.PassInterface();
+    mojo::PendingRemote<mojom::Service> service,
+    mojo::PendingReceiver<mojom::ProcessMetadata> metadata_receiver) {
   background_thread_.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
           &BackgroundServiceManager::RegisterServiceOnBackgroundThread,
-          base::Unretained(this), identity, base::Passed(&service_info),
-          base::Passed(&pid_receiver_request)));
+          base::Unretained(this), identity, std::move(service),
+          std::move(metadata_receiver)));
 }
 
 void BackgroundServiceManager::InitializeOnBackgroundThread(
     const std::vector<Manifest>& manifests) {
-  std::unique_ptr<ServiceProcessLauncherFactory> process_launcher_factory;
-#if !defined(OS_IOS)
-  process_launcher_factory =
-      std::make_unique<ServiceProcessLauncherFactoryImpl>();
-#endif
-
   service_manager_ = std::make_unique<ServiceManager>(
-      std::move(process_launcher_factory), manifests);
+      manifests, ServiceManager::ServiceExecutablePolicy::kSupported);
 }
 
 void BackgroundServiceManager::ShutDownOnBackgroundThread(
@@ -100,12 +69,10 @@ void BackgroundServiceManager::ShutDownOnBackgroundThread(
 
 void BackgroundServiceManager::RegisterServiceOnBackgroundThread(
     const Identity& identity,
-    mojom::ServicePtrInfo service_info,
-    mojom::PIDReceiverRequest pid_receiver_request) {
-  mojom::ServicePtr service;
-  service.Bind(std::move(service_info));
+    mojo::PendingRemote<mojom::Service> service,
+    mojo::PendingReceiver<mojom::ProcessMetadata> metadata_receiver) {
   service_manager_->RegisterService(identity, std::move(service),
-                                    std::move(pid_receiver_request));
+                                    std::move(metadata_receiver));
 }
 
 }  // namespace service_manager

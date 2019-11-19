@@ -15,7 +15,7 @@
 #include "device/bluetooth/bluetooth_service_record_win.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
 #include "device/bluetooth/bluetooth_task_manager_win.h"
-#include "device/bluetooth/bluetooth_uuid.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -88,8 +88,8 @@ TEST_F(BluetoothDeviceWinTest, GetUUIDs) {
   BluetoothDevice::UUIDSet uuids = device_->GetUUIDs();
 
   EXPECT_EQ(2u, uuids.size());
-  EXPECT_TRUE(base::ContainsKey(uuids, kTestAudioSdpUuid));
-  EXPECT_TRUE(base::ContainsKey(uuids, kTestVideoSdpUuid));
+  EXPECT_TRUE(base::Contains(uuids, kTestAudioSdpUuid));
+  EXPECT_TRUE(base::Contains(uuids, kTestVideoSdpUuid));
 
   uuids = empty_device_->GetUUIDs();
   EXPECT_EQ(0u, uuids.size());

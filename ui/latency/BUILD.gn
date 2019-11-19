@@ -7,6 +7,8 @@ import("//testing/test.gni")
 
 jumbo_source_set("latency") {
   sources = [
+    "average_lag_tracker.cc",
+    "average_lag_tracker.h",
     "fixed_point.cc",
     "fixed_point.h",
     "frame_metrics.cc",
@@ -49,6 +51,7 @@ jumbo_source_set("test_support") {
 
 test("latency_unittests") {
   sources = [
+    "average_lag_tracker_unittest.cc",
     "fixed_point_unittest.cc",
     "frame_metrics_test_common.cc",
     "frame_metrics_test_common.h",
@@ -72,14 +75,14 @@ test("latency_unittests") {
   if (!is_ios) {
     sources += [
       "ipc/latency_info_param_traits_unittest.cc",
-      "mojo/struct_traits_unittest.cc",
+      "mojom/mojom_traits_unittest.cc",
     ]
     deps += [
       "//ipc:test_support",
       "//mojo/public/cpp/bindings",
       "//ui/gfx/ipc/geometry",
       "//ui/latency/ipc",
-      "//ui/latency/mojo:test_interfaces",
+      "//ui/latency/mojom:test_interfaces",
     ]
   }
 }

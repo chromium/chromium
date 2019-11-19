@@ -9,12 +9,14 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Build;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeClassQualifiedName;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForM;
 
 import java.util.ArrayList;
@@ -309,8 +311,8 @@ public class NetworkChangeNotifier {
 
     private void notifyObserversOfConnectionTypeChange(int newConnectionType, long defaultNetId) {
         for (Long nativeChangeNotifier : mNativeChangeNotifiers) {
-            nativeNotifyConnectionTypeChanged(
-                    nativeChangeNotifier, newConnectionType, defaultNetId);
+            NetworkChangeNotifierJni.get().notifyConnectionTypeChanged(nativeChangeNotifier,
+                    NetworkChangeNotifier.this, newConnectionType, defaultNetId);
         }
         for (ConnectionTypeObserver observer : mConnectionTypeObservers) {
             observer.onConnectionTypeChanged(newConnectionType);
@@ -322,7 +324,8 @@ public class NetworkChangeNotifier {
      */
     void notifyObserversOfConnectionSubtypeChange(int connectionSubtype) {
         for (Long nativeChangeNotifier : mNativeChangeNotifiers) {
-            nativeNotifyMaxBandwidthChanged(nativeChangeNotifier, connectionSubtype);
+            NetworkChangeNotifierJni.get().notifyMaxBandwidthChanged(
+                    nativeChangeNotifier, NetworkChangeNotifier.this, connectionSubtype);
         }
     }
 
@@ -331,7 +334,8 @@ public class NetworkChangeNotifier {
      */
     void notifyObserversOfNetworkConnect(long netId, int connectionType) {
         for (Long nativeChangeNotifier : mNativeChangeNotifiers) {
-            nativeNotifyOfNetworkConnect(nativeChangeNotifier, netId, connectionType);
+            NetworkChangeNotifierJni.get().notifyOfNetworkConnect(
+                    nativeChangeNotifier, NetworkChangeNotifier.this, netId, connectionType);
         }
     }
 
@@ -340,7 +344,8 @@ public class NetworkChangeNotifier {
      */
     void notifyObserversOfNetworkSoonToDisconnect(long netId) {
         for (Long nativeChangeNotifier : mNativeChangeNotifiers) {
-            nativeNotifyOfNetworkSoonToDisconnect(nativeChangeNotifier, netId);
+            NetworkChangeNotifierJni.get().notifyOfNetworkSoonToDisconnect(
+                    nativeChangeNotifier, NetworkChangeNotifier.this, netId);
         }
     }
 
@@ -349,7 +354,8 @@ public class NetworkChangeNotifier {
      */
     void notifyObserversOfNetworkDisconnect(long netId) {
         for (Long nativeChangeNotifier : mNativeChangeNotifiers) {
-            nativeNotifyOfNetworkDisconnect(nativeChangeNotifier, netId);
+            NetworkChangeNotifierJni.get().notifyOfNetworkDisconnect(
+                    nativeChangeNotifier, NetworkChangeNotifier.this, netId);
         }
     }
 
@@ -361,7 +367,8 @@ public class NetworkChangeNotifier {
      */
     void notifyObserversToPurgeActiveNetworkList(long[] activeNetIds) {
         for (Long nativeChangeNotifier : mNativeChangeNotifiers) {
-            nativeNotifyPurgeActiveNetworkList(nativeChangeNotifier, activeNetIds);
+            NetworkChangeNotifierJni.get().notifyPurgeActiveNetworkList(
+                    nativeChangeNotifier, NetworkChangeNotifier.this, activeNetIds);
         }
     }
 
@@ -410,26 +417,6 @@ public class NetworkChangeNotifier {
         return getInstance().isProcessBoundToNetworkInternal();
     }
 
-    @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
-    private native void nativeNotifyConnectionTypeChanged(
-            long nativePtr, int newConnectionType, long defaultNetId);
-
-    @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
-    private native void nativeNotifyMaxBandwidthChanged(long nativePtr, int subType);
-
-    @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
-    private native void nativeNotifyOfNetworkConnect(
-            long nativePtr, long netId, int connectionType);
-
-    @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
-    private native void nativeNotifyOfNetworkSoonToDisconnect(long nativePtr, long netId);
-
-    @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
-    private native void nativeNotifyOfNetworkDisconnect(long nativePtr, long netId);
-
-    @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
-    private native void nativeNotifyPurgeActiveNetworkList(long nativePtr, long[] activeNetIds);
-
     // For testing only.
     public static NetworkChangeNotifierAutoDetect getAutoDetectorForTest() {
         return getInstance().mAutoDetector;
@@ -441,5 +428,30 @@ public class NetworkChangeNotifier {
     public static boolean isOnline() {
         int connectionType = getInstance().getCurrentConnectionType();
         return connectionType != ConnectionType.CONNECTION_NONE;
+    }
+
+    @NativeMethods
+    interface Natives {
+        @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
+        void notifyConnectionTypeChanged(long nativePtr, NetworkChangeNotifier caller,
+                int newConnectionType, long defaultNetId);
+
+        @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
+        void notifyMaxBandwidthChanged(long nativePtr, NetworkChangeNotifier caller, int subType);
+
+        @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
+        void notifyOfNetworkConnect(
+                long nativePtr, NetworkChangeNotifier caller, long netId, int connectionType);
+
+        @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
+        void notifyOfNetworkSoonToDisconnect(
+                long nativePtr, NetworkChangeNotifier caller, long netId);
+
+        @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
+        void notifyOfNetworkDisconnect(long nativePtr, NetworkChangeNotifier caller, long netId);
+
+        @NativeClassQualifiedName("NetworkChangeNotifierDelegateAndroid")
+        void notifyPurgeActiveNetworkList(
+                long nativePtr, NetworkChangeNotifier caller, long[] activeNetIds);
     }
 }

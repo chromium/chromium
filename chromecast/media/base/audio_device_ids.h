@@ -15,6 +15,8 @@ extern const char kPlatformAudioDeviceId[];
 
 extern const char kAlarmAudioDeviceId[];
 
+extern const char kNoDelayDeviceId[];
+
 // TODO(kmackay|bshaya) Remove this, just use
 // ::media::AudioDeviceDescription::kCommunicationsDeviceId.
 extern const char kTtsAudioDeviceId[];

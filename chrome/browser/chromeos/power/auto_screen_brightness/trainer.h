@@ -19,6 +19,8 @@ struct TrainingDataPoint {
   base::TimeTicks sample_time;
 };
 
+struct TrainingResult;
+
 // Interface to train an on-device adaptive brightness curve.
 // User should call |HasValidConfiguration| first. If it returns true, then user
 // should call |SetInitialCurves| before calling other methods.
@@ -51,10 +53,10 @@ class Trainer {
   // called.
   virtual MonotoneCubicSpline GetCurrentCurve() const = 0;
 
-  // Updates current curve stored in trainer with |data|. This function should
-  // only be called after |SetInitialCurves|.
-  virtual MonotoneCubicSpline Train(
-      const std::vector<TrainingDataPoint>& data) = 0;
+  // Possibly updates current curve stored in trainer with |data|, and returns
+  // training result.
+  // This function should only be called after |SetInitialCurves|.
+  virtual TrainingResult Train(const std::vector<TrainingDataPoint>& data) = 0;
 };
 
 }  // namespace auto_screen_brightness

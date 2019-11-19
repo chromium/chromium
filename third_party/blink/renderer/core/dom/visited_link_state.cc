@@ -45,14 +45,14 @@ static inline const AtomicString& LinkAttribute(const Element& element) {
   if (element.IsHTMLElement())
     return element.FastGetAttribute(html_names::kHrefAttr);
   DCHECK(element.IsSVGElement());
-  return SVGURIReference::LegacyHrefString(ToSVGElement(element));
+  return SVGURIReference::LegacyHrefString(To<SVGElement>(element));
 }
 
 static inline LinkHash LinkHashForElement(
     const Element& element,
     const AtomicString& attribute = AtomicString()) {
   DCHECK(attribute.IsNull() || LinkAttribute(element) == attribute);
-  if (auto* anchor = ToHTMLAnchorElementOrNull(element))
+  if (auto* anchor = DynamicTo<HTMLAnchorElement>(element))
     return anchor->VisitedLinkHash();
   return VisitedLinkHash(
       element.GetDocument().BaseURL(),
@@ -67,12 +67,13 @@ static void InvalidateStyleForAllLinksRecursively(
     bool invalidate_visited_link_hashes) {
   for (Node& node : NodeTraversal::StartsAt(root_node)) {
     if (node.IsLink()) {
-      if (invalidate_visited_link_hashes && IsHTMLAnchorElement(node))
-        ToHTMLAnchorElement(node).InvalidateCachedVisitedLinkHash();
-      ToElement(node).PseudoStateChanged(CSSSelector::kPseudoLink);
-      ToElement(node).PseudoStateChanged(CSSSelector::kPseudoVisited);
-      ToElement(node).PseudoStateChanged(CSSSelector::kPseudoWebkitAnyLink);
-      ToElement(node).PseudoStateChanged(CSSSelector::kPseudoAnyLink);
+      auto* html_anchor_element = DynamicTo<HTMLAnchorElement>(node);
+      if (invalidate_visited_link_hashes && html_anchor_element)
+        html_anchor_element->InvalidateCachedVisitedLinkHash();
+      To<Element>(node).PseudoStateChanged(CSSSelector::kPseudoLink);
+      To<Element>(node).PseudoStateChanged(CSSSelector::kPseudoVisited);
+      To<Element>(node).PseudoStateChanged(CSSSelector::kPseudoWebkitAnyLink);
+      To<Element>(node).PseudoStateChanged(CSSSelector::kPseudoAnyLink);
     }
     if (ShadowRoot* root = node.GetShadowRoot()) {
       InvalidateStyleForAllLinksRecursively(*root,
@@ -91,11 +92,11 @@ void VisitedLinkState::InvalidateStyleForAllLinks(
 static void InvalidateStyleForLinkRecursively(Node& root_node,
                                               LinkHash link_hash) {
   for (Node& node : NodeTraversal::StartsAt(root_node)) {
-    if (node.IsLink() && LinkHashForElement(ToElement(node)) == link_hash) {
-      ToElement(node).PseudoStateChanged(CSSSelector::kPseudoLink);
-      ToElement(node).PseudoStateChanged(CSSSelector::kPseudoVisited);
-      ToElement(node).PseudoStateChanged(CSSSelector::kPseudoWebkitAnyLink);
-      ToElement(node).PseudoStateChanged(CSSSelector::kPseudoAnyLink);
+    if (node.IsLink() && LinkHashForElement(To<Element>(node)) == link_hash) {
+      To<Element>(node).PseudoStateChanged(CSSSelector::kPseudoLink);
+      To<Element>(node).PseudoStateChanged(CSSSelector::kPseudoVisited);
+      To<Element>(node).PseudoStateChanged(CSSSelector::kPseudoWebkitAnyLink);
+      To<Element>(node).PseudoStateChanged(CSSSelector::kPseudoAnyLink);
     }
     if (ShadowRoot* root = node.GetShadowRoot())
       InvalidateStyleForLinkRecursively(*root, link_hash);

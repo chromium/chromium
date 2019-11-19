@@ -22,7 +22,7 @@ bool DWriteRasterizerSupport::IsDWriteFactory2Available() {
     // If we were unable to get a IDWriteFactory2, check that we are actually on
     // a Windows version where we allow it. Windows 8.1 and up should have the
     // IDWritefactory2 available.
-    CHECK_LT(base::win::GetVersion(), base::win::VERSION_WIN8_1);
+    CHECK_LT(base::win::GetVersion(), base::win::Version::WIN8_1);
   }
   return factory2.Get();
 }

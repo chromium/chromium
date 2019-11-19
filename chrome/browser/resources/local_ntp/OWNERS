@@ -1,11 +1,5 @@
+file://components/search/OWNERS
 fserb@chromium.org
-kmilka@chromium.org
-kristipark@chromium.org
-mathp@chromium.org
-ramyan@chromium.org
-treib@chromium.org
-
-per-file local_ntp_resources.grd=file://components/search/OWNERS
 
 # TEAM: ntp-dev@chromium.org
 # COMPONENT: UI>Browser>NewTabPage

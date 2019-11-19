@@ -120,6 +120,10 @@ class AudioWorkletNode final : public AudioNode,
 
   void Trace(blink::Visitor*) override;
 
+  // InspectorHelperMixin
+  void ReportDidCreate() final;
+  void ReportWillBeDestroyed() final;
+
  private:
   scoped_refptr<AudioWorkletHandler> GetWorkletHandler() const;
 

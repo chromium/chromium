@@ -147,7 +147,7 @@ class ReadingListModelImpl : public ReadingListModel,
   bool has_unseen_;
   bool loaded_;
 
-  base::WeakPtrFactory<ReadingListModelImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ReadingListModelImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ReadingListModelImpl);
 };

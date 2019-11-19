@@ -9,6 +9,10 @@
 
 #if defined(COMPILER_MSVC)
 
+#if !defined(__clang__)
+#error "Only clang-cl is supported on Windows, see https://crbug.com/988071"
+#endif
+
 // Macros for suppressing and disabling warnings on MSVC.
 //
 // Warning numbers are enumerated at:
@@ -236,6 +240,24 @@
 #else
 // See https://en.cppreference.com/w/c/language/function_definition#func
 #define PRETTY_FUNCTION __func__
+#endif
+
+#if !defined(CPU_ARM_NEON)
+#if defined(__arm__)
+#if !defined(__ARMEB__) && !defined(__ARM_EABI__) && !defined(__EABI__) && \
+    !defined(__VFP_FP__) && !defined(_WIN32_WCE) && !defined(ANDROID)
+#error Chromium does not support middle endian architecture
+#endif
+#if defined(__ARM_NEON__)
+#define CPU_ARM_NEON 1
+#endif
+#endif  // defined(__arm__)
+#endif  // !defined(CPU_ARM_NEON)
+
+#if !defined(HAVE_MIPS_MSA_INTRINSICS)
+#if defined(__mips_msa) && defined(__mips_isa_rev) && (__mips_isa_rev >= 5)
+#define HAVE_MIPS_MSA_INTRINSICS 1
+#endif
 #endif
 
 #endif  // BASE_COMPILER_SPECIFIC_H_

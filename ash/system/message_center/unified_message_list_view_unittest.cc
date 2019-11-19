@@ -4,11 +4,15 @@
 
 #include "ash/system/message_center/unified_message_list_view.h"
 
+#include "ash/public/cpp/ash_features.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/views/message_view.h"
 #include "ui/message_center/views/notification_view_md.h"
@@ -24,7 +28,11 @@ namespace {
 class TestNotificationView : public message_center::NotificationViewMD {
  public:
   TestNotificationView(const message_center::Notification& notification)
-      : NotificationViewMD(notification) {}
+      : NotificationViewMD(notification) {
+    layer()->GetAnimator()->set_preemption_strategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+  }
+
   ~TestNotificationView() override = default;
 
   // message_center::NotificationViewMD:
@@ -53,7 +61,18 @@ class TestUnifiedMessageListView : public UnifiedMessageListView {
   ~TestUnifiedMessageListView() override = default;
 
   void set_stacked_notification_count(int stacked_notification_count) {
-    stacked_notification_count_ = stacked_notification_count;
+    stacked_notifications_.clear();
+    for (int i = 0; i < stacked_notification_count; i++) {
+      std::string id = base::NumberToString(0);
+      auto notification = std::make_unique<Notification>(
+          message_center::NOTIFICATION_TYPE_BASE_FORMAT, id,
+          base::UTF8ToUTF16("test title"), base::UTF8ToUTF16("test message"),
+          gfx::Image(), base::string16() /* display_source */, GURL(),
+          message_center::NotifierId(), message_center::RichNotificationData(),
+          new message_center::NotificationDelegate());
+
+      stacked_notifications_.push_back(notification.get());
+    }
   }
 
   // UnifiedMessageListView:
@@ -64,12 +83,13 @@ class TestUnifiedMessageListView : public UnifiedMessageListView {
     return view;
   }
 
-  int GetStackedNotificationCount() const override {
-    return stacked_notification_count_;
+  std::vector<message_center::Notification*> GetStackedNotifications()
+      const override {
+    return stacked_notifications_;
   }
 
  private:
-  int stacked_notification_count_ = 0;
+  std::vector<message_center::Notification*> stacked_notifications_;
 
   DISALLOW_COPY_AND_ASSIGN(TestUnifiedMessageListView);
 };
@@ -85,7 +105,7 @@ class UnifiedMessageListViewTest : public AshTestBase,
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    model_ = std::make_unique<UnifiedSystemTrayModel>();
+    model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
   }
 
   void TearDown() override {
@@ -115,6 +135,12 @@ class UnifiedMessageListViewTest : public AshTestBase,
     return id;
   }
 
+  void OffsetNotificationTimestamp(const std::string& id,
+                                   const int milliseconds) {
+    MessageCenter::Get()->FindVisibleNotificationById(id)->set_timestamp(
+        base::Time::Now() - base::TimeDelta::FromMilliseconds(milliseconds));
+  }
+
   void CreateMessageListView() {
     message_list_view_ =
         std::make_unique<TestUnifiedMessageListView>(model_.get());
@@ -126,14 +152,16 @@ class UnifiedMessageListViewTest : public AshTestBase,
 
   void DestroyMessageListView() { message_list_view_.reset(); }
 
-  TestNotificationView* GetMessageViewAt(int index) const {
+  TestNotificationView* GetMessageViewAt(size_t index) const {
     return static_cast<TestNotificationView*>(
-        message_list_view()->child_at(index)->child_at(1));
+        message_list_view()->children()[index]->children()[1]);
   }
 
-  gfx::Rect GetMessageViewBounds(int index) const {
-    return message_list_view()->child_at(index)->bounds();
+  gfx::Rect GetMessageViewBounds(size_t index) const {
+    return message_list_view()->children()[index]->bounds();
   }
+
+  void FinishSlideOutAnimation() { base::RunLoop().RunUntilIdle(); }
 
   void AnimateToMiddle() {
     EXPECT_TRUE(IsAnimating());
@@ -143,7 +171,6 @@ class UnifiedMessageListViewTest : public AshTestBase,
   }
 
   void AnimateToEnd() {
-    EXPECT_TRUE(IsAnimating());
     message_list_view()->animation_->End();
   }
 
@@ -154,13 +181,15 @@ class UnifiedMessageListViewTest : public AshTestBase,
 
   bool IsAnimating() { return message_list_view()->animation_->is_animating(); }
 
-  int GetMessageViewCount() { return message_list_view()->child_count(); }
-
   TestUnifiedMessageListView* message_list_view() const {
     return message_list_view_.get();
   }
 
   int size_changed_count() const { return size_changed_count_; }
+
+  ui::LayerAnimator* LayerAnimatorAt(int i) {
+    return GetMessageViewAt(i)->layer()->GetAnimator();
+  }
 
  private:
   int id_ = 0;
@@ -178,7 +207,7 @@ TEST_F(UnifiedMessageListViewTest, Open) {
   auto id2 = AddNotification();
   CreateMessageListView();
 
-  EXPECT_EQ(3, message_list_view()->child_count());
+  EXPECT_EQ(3u, message_list_view()->children().size());
   EXPECT_EQ(id0, GetMessageViewAt(0)->notification_id());
   EXPECT_EQ(id1, GetMessageViewAt(1)->notification_id());
   EXPECT_EQ(id2, GetMessageViewAt(2)->notification_id());
@@ -190,7 +219,7 @@ TEST_F(UnifiedMessageListViewTest, Open) {
   EXPECT_EQ(GetMessageViewBounds(0).bottom(), GetMessageViewBounds(1).y());
   EXPECT_EQ(GetMessageViewBounds(1).bottom(), GetMessageViewBounds(2).y());
 
-  EXPECT_EQ(kUnifiedTrayCornerRadius, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(0, GetMessageViewAt(0)->top_radius());
   EXPECT_EQ(0, GetMessageViewAt(1)->top_radius());
   EXPECT_EQ(0, GetMessageViewAt(2)->top_radius());
 
@@ -207,7 +236,7 @@ TEST_F(UnifiedMessageListViewTest, AddNotifications) {
 
   auto id0 = AddNotification();
   EXPECT_EQ(1, size_changed_count());
-  EXPECT_EQ(1, message_list_view()->child_count());
+  EXPECT_EQ(1u, message_list_view()->children().size());
   EXPECT_EQ(id0, GetMessageViewAt(0)->notification_id());
 
   EXPECT_EQ(kUnifiedTrayCornerRadius, GetMessageViewAt(0)->top_radius());
@@ -220,7 +249,7 @@ TEST_F(UnifiedMessageListViewTest, AddNotifications) {
 
   auto id1 = AddNotification();
   EXPECT_EQ(2, size_changed_count());
-  EXPECT_EQ(2, message_list_view()->child_count());
+  EXPECT_EQ(2u, message_list_view()->children().size());
   EXPECT_EQ(id1, GetMessageViewAt(1)->notification_id());
 
   EXPECT_LT(previous_height, message_list_view()->GetPreferredSize().height());
@@ -229,7 +258,8 @@ TEST_F(UnifiedMessageListViewTest, AddNotifications) {
   EXPECT_EQ(previous_bounds, GetMessageViewBounds(0));
   EXPECT_EQ(GetMessageViewBounds(0).bottom(), GetMessageViewBounds(1).y());
 
-  EXPECT_EQ(kUnifiedTrayCornerRadius, GetMessageViewAt(0)->top_radius());
+  // The top radius is zero because the stacking bar is shown.
+  EXPECT_EQ(0, GetMessageViewAt(0)->top_radius());
   EXPECT_EQ(0, GetMessageViewAt(1)->top_radius());
 
   EXPECT_EQ(0, GetMessageViewAt(0)->bottom_radius());
@@ -243,13 +273,15 @@ TEST_F(UnifiedMessageListViewTest, RemoveNotification) {
   CreateMessageListView();
   int previous_height = message_list_view()->GetPreferredSize().height();
 
-  EXPECT_EQ(kUnifiedTrayCornerRadius, GetMessageViewAt(0)->top_radius());
+  EXPECT_EQ(2u, message_list_view()->children().size());
+  EXPECT_EQ(0, GetMessageViewAt(0)->top_radius());
   EXPECT_EQ(0, GetMessageViewAt(0)->bottom_radius());
 
   gfx::Rect previous_bounds = GetMessageViewBounds(0);
   MessageCenter::Get()->RemoveNotification(id0, true /* by_user */);
+  FinishSlideOutAnimation();
   AnimateUntilIdle();
-  EXPECT_EQ(3, size_changed_count());
+  EXPECT_EQ(1u, message_list_view()->children().size());
   EXPECT_EQ(previous_bounds.y(), GetMessageViewBounds(0).y());
   EXPECT_LT(0, message_list_view()->GetPreferredSize().height());
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
@@ -258,8 +290,9 @@ TEST_F(UnifiedMessageListViewTest, RemoveNotification) {
   EXPECT_EQ(kUnifiedTrayCornerRadius, GetMessageViewAt(0)->bottom_radius());
 
   MessageCenter::Get()->RemoveNotification(id1, true /* by_user */);
+  FinishSlideOutAnimation();
   AnimateUntilIdle();
-  EXPECT_EQ(6, size_changed_count());
+  EXPECT_EQ(0u, message_list_view()->children().size());
   EXPECT_EQ(0, message_list_view()->GetPreferredSize().height());
 }
 
@@ -297,36 +330,29 @@ TEST_F(UnifiedMessageListViewTest, RemovingNotificationAnimation) {
   gfx::Rect bounds1 = GetMessageViewBounds(1);
 
   MessageCenter::Get()->RemoveNotification(id1, true /* by_user */);
-  AnimateToMiddle();
-  gfx::Rect slided_bounds = GetMessageViewBounds(1);
-  EXPECT_LT(bounds1.x(), slided_bounds.x());
+  FinishSlideOutAnimation();
   AnimateToEnd();
-
-  AnimateToMiddle();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
   previous_height = message_list_view()->GetPreferredSize().height();
-  AnimateToEnd();
   // Now it lost separator border.
   bounds1.Inset(gfx::Insets(0, 0, 1, 0));
   EXPECT_EQ(bounds0, GetMessageViewBounds(0));
   EXPECT_EQ(bounds1, GetMessageViewBounds(1));
 
   MessageCenter::Get()->RemoveNotification(id2, true /* by_user */);
+  FinishSlideOutAnimation();
   AnimateToEnd();
-  AnimateToMiddle();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
   previous_height = message_list_view()->GetPreferredSize().height();
-  AnimateToEnd();
   // Now it lost separator border.
   bounds0.Inset(gfx::Insets(0, 0, 1, 0));
   EXPECT_EQ(bounds0, GetMessageViewBounds(0));
 
   MessageCenter::Get()->RemoveNotification(id0, true /* by_user */);
+  FinishSlideOutAnimation();
   AnimateToEnd();
-  AnimateToMiddle();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
   previous_height = message_list_view()->GetPreferredSize().height();
-  AnimateToEnd();
 
   EXPECT_EQ(0, message_list_view()->GetPreferredSize().height());
 }
@@ -337,6 +363,7 @@ TEST_F(UnifiedMessageListViewTest, ResetAnimation) {
   CreateMessageListView();
 
   MessageCenter::Get()->RemoveNotification(id0, true /* by_user */);
+  FinishSlideOutAnimation();
   EXPECT_TRUE(IsAnimating());
   AnimateToMiddle();
 
@@ -344,7 +371,7 @@ TEST_F(UnifiedMessageListViewTest, ResetAnimation) {
   auto id2 = AddNotification();
   EXPECT_FALSE(IsAnimating());
 
-  EXPECT_EQ(2, GetMessageViewCount());
+  EXPECT_EQ(2u, message_list_view()->children().size());
   EXPECT_EQ(id1, GetMessageViewAt(0)->notification_id());
   EXPECT_EQ(id2, GetMessageViewAt(1)->notification_id());
 }
@@ -394,7 +421,7 @@ TEST_F(UnifiedMessageListViewTest, ClearAllWithOnlyVisibleNotifications) {
   AddNotification();
   CreateMessageListView();
 
-  EXPECT_EQ(2, message_list_view()->child_count());
+  EXPECT_EQ(2u, message_list_view()->children().size());
   int previous_height = message_list_view()->GetPreferredSize().height();
   gfx::Rect previous_bounds = GetMessageViewBounds(0);
 
@@ -404,7 +431,7 @@ TEST_F(UnifiedMessageListViewTest, ClearAllWithOnlyVisibleNotifications) {
   EXPECT_EQ(previous_height, message_list_view()->GetPreferredSize().height());
 
   AnimateToEnd();
-  EXPECT_EQ(1, message_list_view()->child_count());
+  EXPECT_EQ(1u, message_list_view()->children().size());
   EXPECT_EQ(previous_height, message_list_view()->GetPreferredSize().height());
 
   previous_bounds = GetMessageViewBounds(0);
@@ -416,7 +443,7 @@ TEST_F(UnifiedMessageListViewTest, ClearAllWithOnlyVisibleNotifications) {
   AnimateToEnd();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
   previous_height = message_list_view()->GetPreferredSize().height();
-  EXPECT_EQ(0, message_list_view()->child_count());
+  EXPECT_EQ(0u, message_list_view()->children().size());
 
   AnimateToMiddle();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
@@ -436,10 +463,10 @@ TEST_F(UnifiedMessageListViewTest, ClearAllWithStackingNotifications) {
   AddNotification();
   CreateMessageListView();
   message_list_view()->set_stacked_notification_count(2);
-  EXPECT_EQ(3, message_list_view()->child_count());
+  EXPECT_EQ(3u, message_list_view()->children().size());
 
   message_list_view()->ClearAllWithAnimation();
-  EXPECT_EQ(2, message_list_view()->child_count());
+  EXPECT_EQ(2u, message_list_view()->children().size());
 
   message_list_view()->set_stacked_notification_count(1);
   int previous_height = message_list_view()->GetPreferredSize().height();
@@ -448,20 +475,20 @@ TEST_F(UnifiedMessageListViewTest, ClearAllWithStackingNotifications) {
   EXPECT_EQ(previous_height, message_list_view()->GetPreferredSize().height());
   EXPECT_EQ(previous_bounds, GetMessageViewBounds(1));
   AnimateToEnd();
-  EXPECT_EQ(1, message_list_view()->child_count());
+  EXPECT_EQ(1u, message_list_view()->children().size());
 
   message_list_view()->set_stacked_notification_count(0);
   previous_height = message_list_view()->GetPreferredSize().height();
   AnimateToMiddle();
   EXPECT_EQ(previous_height, message_list_view()->GetPreferredSize().height());
   AnimateToEnd();
-  EXPECT_EQ(1, message_list_view()->child_count());
+  EXPECT_EQ(1u, message_list_view()->children().size());
 
   previous_bounds = GetMessageViewBounds(0);
   AnimateToMiddle();
   EXPECT_LT(previous_bounds.x(), GetMessageViewBounds(0).x());
   AnimateToEnd();
-  EXPECT_EQ(0, message_list_view()->child_count());
+  EXPECT_EQ(0u, message_list_view()->children().size());
 
   previous_height = message_list_view()->GetPreferredSize().height();
   AnimateToMiddle();
@@ -469,7 +496,7 @@ TEST_F(UnifiedMessageListViewTest, ClearAllWithStackingNotifications) {
   previous_height = message_list_view()->GetPreferredSize().height();
 
   AnimateToEnd();
-  EXPECT_EQ(0, message_list_view()->child_count());
+  EXPECT_EQ(0u, message_list_view()->children().size());
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
   EXPECT_EQ(0, message_list_view()->GetPreferredSize().height());
 
@@ -511,7 +538,73 @@ TEST_F(UnifiedMessageListViewTest, ClearAllWithPinnedNotifications) {
 
   message_list_view()->ClearAllWithAnimation();
   AnimateUntilIdle();
-  EXPECT_EQ(1, message_list_view()->child_count());
+  EXPECT_EQ(1u, message_list_view()->children().size());
+}
+
+TEST_F(UnifiedMessageListViewTest, UserSwipesAwayNotification) {
+  // Show message list with two notifications.
+  AddNotification();
+  auto id1 = AddNotification();
+  CreateMessageListView();
+
+  // Start swiping the notification away.
+  GetMessageViewAt(1)->OnSlideStarted();
+  GetMessageViewAt(1)->OnSlideChanged(true);
+  EXPECT_EQ(2u, MessageCenter::Get()->GetVisibleNotifications().size());
+  EXPECT_EQ(2u, message_list_view()->children().size());
+
+  // Swiping away the notification should remove it both in the MessageCenter
+  // and the MessageListView.
+  MessageCenter::Get()->RemoveNotification(id1, true /* by_user */);
+  FinishSlideOutAnimation();
+  EXPECT_EQ(1u, MessageCenter::Get()->GetVisibleNotifications().size());
+  EXPECT_EQ(1u, message_list_view()->children().size());
+
+  // The next and only animation should be the move down animation.
+  int previous_height = message_list_view()->GetPreferredSize().height();
+  AnimateToEnd();
+  EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
+  EXPECT_FALSE(message_list_view()->IsAnimating());
+}
+
+TEST_F(UnifiedMessageListViewTest, InitInSortedOrder) {
+  // MessageViews should be ordered, from top down: [ id1, id2, id0 ].
+  auto id0 = AddNotification(true /* pinned */);
+  OffsetNotificationTimestamp(id0, 2000 /* milliseconds */);
+  auto id1 = AddNotification();
+  OffsetNotificationTimestamp(id1, 1000 /* milliseconds */);
+  auto id2 = AddNotification();
+  CreateMessageListView();
+
+  EXPECT_EQ(3u, message_list_view()->children().size());
+  EXPECT_EQ(id1, GetMessageViewAt(0)->notification_id());
+  EXPECT_EQ(id2, GetMessageViewAt(1)->notification_id());
+  EXPECT_EQ(id0, GetMessageViewAt(2)->notification_id());
+}
+
+TEST_F(UnifiedMessageListViewTest, NotificationAddedInSortedOrder) {
+  auto id0 = AddNotification(true /* pinned */);
+  OffsetNotificationTimestamp(id0, 3000 /* milliseconds */);
+  auto id1 = AddNotification();
+  OffsetNotificationTimestamp(id1, 2000 /* milliseconds */);
+  auto id2 = AddNotification();
+  OffsetNotificationTimestamp(id2, 1000 /* milliseconds */);
+  CreateMessageListView();
+
+  // New pinned notification should be added to the end.
+  auto id3 = AddNotification(true /* pinned */);
+  EXPECT_EQ(4u, message_list_view()->children().size());
+  EXPECT_EQ(id3, GetMessageViewAt(3)->notification_id());
+
+  // New non-pinned notification should be added before pinned notifications.
+  auto id4 = AddNotification();
+  EXPECT_EQ(5u, message_list_view()->children().size());
+
+  EXPECT_EQ(id1, GetMessageViewAt(0)->notification_id());
+  EXPECT_EQ(id2, GetMessageViewAt(1)->notification_id());
+  EXPECT_EQ(id4, GetMessageViewAt(2)->notification_id());
+  EXPECT_EQ(id0, GetMessageViewAt(3)->notification_id());
+  EXPECT_EQ(id3, GetMessageViewAt(4)->notification_id());
 }
 
 }  // namespace ash

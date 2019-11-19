@@ -30,8 +30,8 @@ class RemoteDeviceRefTest : public testing::Test {
     std::vector<BeaconSeed> beacon_seeds({BeaconSeed(), BeaconSeed()});
 
     remote_device_ = std::make_shared<RemoteDevice>(
-        "user_id", "name", "public_key", "persistent_symmetric_key",
-        42000 /* last_update_time_millis */,
+        "user_id", "instance_id", "name", "pii_free_name", "public_key",
+        "persistent_symmetric_key", 42000 /* last_update_time_millis */,
         software_feature_to_state_map /* software_features */,
         beacon_seeds /* beacon_seeds */);
   }
@@ -45,7 +45,9 @@ TEST_F(RemoteDeviceRefTest, TestFields) {
   RemoteDeviceRef remote_device_ref(remote_device_);
 
   EXPECT_EQ(remote_device_->user_id, remote_device_ref.user_id());
+  EXPECT_EQ(remote_device_->instance_id, remote_device_ref.instance_id());
   EXPECT_EQ(remote_device_->name, remote_device_ref.name());
+  EXPECT_EQ(remote_device_->pii_free_name, remote_device_ref.pii_free_name());
   EXPECT_EQ(remote_device_->public_key, remote_device_ref.public_key());
   EXPECT_EQ(remote_device_->persistent_symmetric_key,
             remote_device_ref.persistent_symmetric_key());

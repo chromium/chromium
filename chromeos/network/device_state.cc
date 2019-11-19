@@ -17,14 +17,7 @@
 namespace chromeos {
 
 DeviceState::DeviceState(const std::string& path)
-    : ManagedState(MANAGED_TYPE_DEVICE, path),
-      allow_roaming_(false),
-      provider_requires_roaming_(false),
-      support_network_scan_(false),
-      scanning_(false),
-      sim_retries_left_(0),
-      sim_present_(true),
-      eap_authentication_completed_(false) {}
+    : ManagedState(MANAGED_TYPE_DEVICE, path) {}
 
 DeviceState::~DeviceState() = default;
 
@@ -37,6 +30,8 @@ bool DeviceState::PropertyChanged(const std::string& key,
     return true;
   if (key == shill::kAddressProperty) {
     return GetStringValue(key, value, &mac_address_);
+  } else if (key == shill::kInterfaceProperty) {
+    return GetStringValue(key, value, &interface_);
   } else if (key == shill::kScanningProperty) {
     return GetBooleanValue(key, value, &scanning_);
   } else if (key == shill::kSupportNetworkScanProperty) {
@@ -62,8 +57,6 @@ bool DeviceState::PropertyChanged(const std::string& key,
     country_code_ = country_code ? country_code->GetString() : "";
   } else if (key == shill::kTechnologyFamilyProperty) {
     return GetStringValue(key, value, &technology_family_);
-  } else if (key == shill::kCarrierProperty) {
-    return GetStringValue(key, value, &carrier_);
   } else if (key == shill::kFoundNetworksProperty) {
     const base::ListValue* list = nullptr;
     if (!value.GetAsList(&list))
@@ -117,6 +110,12 @@ bool DeviceState::PropertyChanged(const std::string& key,
     // calls to IPConfigPropertiesChanged.
     ip_configs_.Clear();
     return false;  // No actual state change.
+  } else if (key == shill::kLinkUpProperty) {
+    return GetBooleanValue(key, value, &link_up_);
+  } else if (key == shill::kDeviceBusTypeProperty) {
+    return GetStringValue(key, value, &device_bus_type_);
+  } else if (key == shill::kUsbEthernetMacAddressSourceProperty) {
+    return GetStringValue(key, value, &mac_address_source_);
   }
   return false;
 }

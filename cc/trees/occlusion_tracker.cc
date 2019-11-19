@@ -196,8 +196,7 @@ void OcclusionTracker::FinishedRenderTarget(
 
   // If the occlusion within the surface can not be applied to things outside of
   // the surface's subtree, then clear the occlusion here so it won't be used.
-  if (finished_target_surface->HasMask() ||
-      finished_target_surface->HasMaskingContributingSurface() ||
+  if (finished_target_surface->HasMaskingContributingSurface() ||
       finished_target_surface->draw_opacity() < 1 ||
       !finished_target_surface->UsesDefaultBlendMode() ||
       target_is_only_for_copy_request_or_force_render_surface ||
@@ -339,6 +338,9 @@ void OcclusionTracker::MarkOccludedBehindLayer(const LayerImpl* layer) {
     return;
 
   if (layer->Is3dSorted())
+    return;
+
+  if (!layer->draw_properties().rounded_corner_bounds.IsEmpty())
     return;
 
   SimpleEnclosedRegion opaque_layer_region = layer->VisibleOpaqueRegion();

@@ -36,37 +36,43 @@ class ContentSettingsRegistryTest : public testing::Test {
 TEST_F(ContentSettingsRegistryTest, GetPlatformDependent) {
 #if defined(OS_IOS)
   // Javascript shouldn't be registered on iOS.
-  EXPECT_FALSE(registry()->Get(CONTENT_SETTINGS_TYPE_JAVASCRIPT));
+  EXPECT_FALSE(registry()->Get(ContentSettingsType::JAVASCRIPT));
 #endif
 
 #if defined(OS_IOS) || defined(OS_ANDROID)
   // Images shouldn't be registered on mobile.
-  EXPECT_FALSE(registry()->Get(CONTENT_SETTINGS_TYPE_IMAGES));
+  EXPECT_FALSE(registry()->Get(ContentSettingsType::IMAGES));
 #endif
 
 // Protected media identifier only get registered on android and chromeos.
 #if defined(ANDROID) || defined(OS_CHROMEOS)
-  EXPECT_TRUE(
-      registry()->Get(CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER));
+  EXPECT_TRUE(registry()->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER));
 #else
   EXPECT_FALSE(
-      registry()->Get(CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER));
+      registry()->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER));
+#endif
+
+// NFC only get registered on android.
+#if defined(ANDROID)
+  EXPECT_TRUE(registry()->Get(ContentSettingsType::NFC));
+#else
+  EXPECT_FALSE(registry()->Get(ContentSettingsType::NFC));
 #endif
 
   // Cookies is registered on all platforms.
-  EXPECT_TRUE(registry()->Get(CONTENT_SETTINGS_TYPE_COOKIES));
+  EXPECT_TRUE(registry()->Get(ContentSettingsType::COOKIES));
 }
 
 TEST_F(ContentSettingsRegistryTest, Properties) {
   // The cookies type should be registered.
   const ContentSettingsInfo* info =
-      registry()->Get(CONTENT_SETTINGS_TYPE_COOKIES);
+      registry()->Get(ContentSettingsType::COOKIES);
   ASSERT_TRUE(info);
 
   // Check that the whitelisted types are correct.
   std::vector<std::string> expected_whitelist;
   expected_whitelist.push_back("chrome");
-  expected_whitelist.push_back("chrome-devtools");
+  expected_whitelist.push_back("devtools");
   EXPECT_EQ(expected_whitelist, info->whitelisted_schemes());
 
   // Check the other properties are populated correctly.
@@ -96,7 +102,7 @@ TEST_F(ContentSettingsRegistryTest, Properties) {
 #endif
 
   // Check the WebsiteSettingsInfo is registered correctly.
-  EXPECT_EQ(website_settings_registry()->Get(CONTENT_SETTINGS_TYPE_COOKIES),
+  EXPECT_EQ(website_settings_registry()->Get(ContentSettingsType::COOKIES),
             website_settings_info);
 }
 
@@ -107,10 +113,10 @@ TEST_F(ContentSettingsRegistryTest, Iteration) {
   for (const ContentSettingsInfo* info : *registry()) {
     ContentSettingsType type = info->website_settings_info()->type();
     EXPECT_EQ(registry()->Get(type), info);
-    if (type == CONTENT_SETTINGS_TYPE_PLUGINS) {
+    if (type == ContentSettingsType::PLUGINS) {
       EXPECT_FALSE(plugins_found);
       plugins_found = true;
-    } else if (type == CONTENT_SETTINGS_TYPE_COOKIES) {
+    } else if (type == ContentSettingsType::COOKIES) {
       EXPECT_FALSE(cookies_found);
       cookies_found = true;
     }
@@ -132,10 +138,12 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
   // disable features like popup blocking, download blocking or ad blocking.
   // They do not allow access to user data.
   const ContentSettingsType whitelist[] = {
-      CONTENT_SETTINGS_TYPE_POPUPS,               //
-      CONTENT_SETTINGS_TYPE_AUTOMATIC_DOWNLOADS,  //
-      CONTENT_SETTINGS_TYPE_ADS,                  //
-      CONTENT_SETTINGS_TYPE_DURABLE_STORAGE,
+      ContentSettingsType::PLUGINS,              //
+      ContentSettingsType::POPUPS,               //
+      ContentSettingsType::AUTOMATIC_DOWNLOADS,  //
+      ContentSettingsType::ADS,                  //
+      ContentSettingsType::DURABLE_STORAGE,      //
+      ContentSettingsType::LEGACY_COOKIE_ACCESS,
   };
 
   for (const ContentSettingsInfo* info : *registry()) {
@@ -152,26 +160,26 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
     }
     if (info->incognito_behavior() ==
             ContentSettingsInfo::INHERIT_IN_INCOGNITO &&
-        !base::ContainsValue(whitelist, info->website_settings_info()->type()))
+        !base::Contains(whitelist, info->website_settings_info()->type()))
       FAIL() << "Content setting not whitelisted.";
   }
 }
 
 TEST_F(ContentSettingsRegistryTest, IsDefaultSettingValid) {
   const ContentSettingsInfo* info =
-      registry()->Get(CONTENT_SETTINGS_TYPE_COOKIES);
+      registry()->Get(ContentSettingsType::COOKIES);
   EXPECT_TRUE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 
 #if !defined(OS_IOS)
-  info = registry()->Get(CONTENT_SETTINGS_TYPE_MEDIASTREAM_MIC);
+  info = registry()->Get(ContentSettingsType::MEDIASTREAM_MIC);
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 
-  info = registry()->Get(CONTENT_SETTINGS_TYPE_MEDIASTREAM_CAMERA);
+  info = registry()->Get(ContentSettingsType::MEDIASTREAM_CAMERA);
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 #endif
 
 #if defined(OS_CHROMEOS)
-  info = registry()->Get(CONTENT_SETTINGS_TYPE_PROTECTED_MEDIA_IDENTIFIER);
+  info = registry()->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 #endif
 }
@@ -183,16 +191,16 @@ TEST_F(ContentSettingsRegistryTest, GetInitialDefaultSetting) {
 // There is no default-ask content setting on iOS, so skip testing it there.
 #if !defined(OS_IOS)
   const ContentSettingsInfo* notifications =
-      registry()->Get(CONTENT_SETTINGS_TYPE_NOTIFICATIONS);
+      registry()->Get(ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(CONTENT_SETTING_ASK, notifications->GetInitialDefaultSetting());
 #endif
 
   const ContentSettingsInfo* cookies =
-      registry()->Get(CONTENT_SETTINGS_TYPE_COOKIES);
+      registry()->Get(ContentSettingsType::COOKIES);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, cookies->GetInitialDefaultSetting());
 
   const ContentSettingsInfo* popups =
-      registry()->Get(CONTENT_SETTINGS_TYPE_POPUPS);
+      registry()->Get(ContentSettingsType::POPUPS);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, popups->GetInitialDefaultSetting());
 }
 

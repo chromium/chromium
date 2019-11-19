@@ -33,12 +33,11 @@ constexpr base::TimeDelta kCrosvmMetricsInterval =
 }  // namespace
 
 CrosvmMetrics::CrosvmMetrics()
-    : task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    : task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
-      page_size_(sysconf(_SC_PAGESIZE)),
-      weak_ptr_factory_(this) {
-}
+      page_size_(sysconf(_SC_PAGESIZE)) {}
 
 CrosvmMetrics::~CrosvmMetrics() = default;
 

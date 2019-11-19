@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/tabs/tab_parenting_observer.h"
 
-#include "ios/chrome/browser/tab_parenting_global_observer.h"
+#include "ios/chrome/browser/tabs/tab_parenting_global_observer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

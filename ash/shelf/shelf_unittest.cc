@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/overflow_button.h"
 #include "ash/shelf/shelf.h"
@@ -17,6 +18,8 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "components/session_manager/session_manager_types.h"
 #include "mojo/public/cpp/bindings/associated_binding.h"
 
@@ -101,13 +104,18 @@ TEST_F(ShelfTest, CheckHoverAfterMenu) {
 }
 
 TEST_F(ShelfTest, ShowOverflowBubble) {
+  // No overflow bubble when scrollable shelf enabled.
+  // TODO(https://crbug.com/1002576): revisit when scrollable shelf is launched.
+  if (chromeos::switches::ShouldShowScrollableShelf())
+    return;
+
   ShelfWidget* shelf_widget = GetPrimaryShelf()->shelf_widget();
 
   // Add app buttons until overflow occurs.
   ShelfItem item;
   item.type = TYPE_APP;
   item.status = STATUS_RUNNING;
-  while (!shelf_view()->GetOverflowButton()->visible()) {
+  while (!shelf_view()->GetOverflowButton()->GetVisible()) {
     item.id = ShelfID(base::NumberToString(shelf_model()->item_count()));
     shelf_model()->Add(item);
     ASSERT_LT(shelf_model()->item_count(), 10000);
@@ -115,7 +123,7 @@ TEST_F(ShelfTest, ShowOverflowBubble) {
 
   // Shows overflow bubble.
   test_api()->ShowOverflowBubble();
-  EXPECT_TRUE(shelf_widget->IsShowingOverflowBubble());
+  EXPECT_TRUE(shelf_widget->hotseat_widget()->IsShowingOverflowBubble());
 
   // Remove one of the first items in the main shelf view.
   ASSERT_GT(shelf_model()->item_count(), 2);
@@ -123,7 +131,7 @@ TEST_F(ShelfTest, ShowOverflowBubble) {
 
   // Waits for all transitions to finish and there should be no crash.
   test_api()->RunMessageLoopUntilAnimationsDone();
-  EXPECT_FALSE(shelf_widget->IsShowingOverflowBubble());
+  EXPECT_FALSE(shelf_widget->hotseat_widget()->IsShowingOverflowBubble());
 }
 
 // Tests if shelf is hidden on secondary display after the primary display is
@@ -143,6 +151,32 @@ TEST_F(ShelfTest, ShelfHiddenOnScreenOnSecondaryDisplay) {
     EXPECT_EQ(SHELF_VISIBLE, GetPrimaryShelf()->GetVisibilityState());
     EXPECT_EQ(SHELF_HIDDEN, GetSecondaryShelf()->GetVisibilityState());
   }
+}
+
+using NoSessionShelfTest = NoSessionAshTestBase;
+
+// Regression test for crash in Shelf::SetAlignment(). https://crbug.com/937495
+TEST_F(NoSessionShelfTest, SetAlignmentDuringDisplayDisconnect) {
+  UpdateDisplay("1024x768,800x600");
+  base::RunLoop().RunUntilIdle();
+
+  // The task indirectly triggers Shelf::SetAlignment() via a SessionObserver.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](TestSessionControllerClient* session) {
+            session->SetSessionState(session_manager::SessionState::ACTIVE);
+          },
+          GetSessionControllerClient()));
+
+  // Remove the secondary display.
+  UpdateDisplay("1280x1024");
+
+  // The session activation task runs before the RootWindowController and the
+  // Shelf are deleted.
+  base::RunLoop().RunUntilIdle();
+
+  // No crash.
 }
 
 }  // namespace

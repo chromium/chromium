@@ -16,6 +16,9 @@ TEST(GoogleServiceAuthErrorTest, State) {
   for (GoogleServiceAuthError::State i = GoogleServiceAuthError::NONE;
        i < GoogleServiceAuthError::NUM_STATES;
        i = GoogleServiceAuthError::State(i + 1)) {
+    if (!GoogleServiceAuthError::IsValid(i))
+      continue;
+
     GoogleServiceAuthError error(i);
     EXPECT_EQ(i, error.state());
     EXPECT_TRUE(error.error_message().empty());

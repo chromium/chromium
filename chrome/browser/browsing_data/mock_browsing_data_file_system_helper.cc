@@ -7,12 +7,16 @@
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/storage_partition.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
 MockBrowsingDataFileSystemHelper::MockBrowsingDataFileSystemHelper(
-    Profile* profile) {
-}
+    Profile* profile)
+    : BrowsingDataFileSystemHelper(
+          content::BrowserContext::GetDefaultStoragePartition(profile)
+              ->GetFileSystemContext()) {}
 
 MockBrowsingDataFileSystemHelper::~MockBrowsingDataFileSystemHelper() {
 }
@@ -26,7 +30,7 @@ void MockBrowsingDataFileSystemHelper::StartFetching(FetchCallback callback) {
 void MockBrowsingDataFileSystemHelper::DeleteFileSystemOrigin(
     const url::Origin& origin) {
   std::string key = origin.Serialize();
-  ASSERT_TRUE(base::ContainsKey(file_systems_, key));
+  ASSERT_TRUE(base::Contains(file_systems_, key));
   last_deleted_origin_ = origin;
   file_systems_[key] = false;
 }

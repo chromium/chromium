@@ -11,8 +11,9 @@
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/nqe/effective_connection_type.h"
 #include "net/nqe/effective_connection_type_observer.h"
 #include "net/nqe/rtt_throughput_estimates_observer.h"
@@ -40,13 +41,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkQualityEstimatorManager
 
   ~NetworkQualityEstimatorManager() override;
 
-  // Binds a NetworkQualityEstimatorManager request to this object. Mojo
+  // Binds a NetworkQualityEstimatorManager receiver to this object. Mojo
   // messages coming through the associated pipe will be served by this object.
-  void AddRequest(mojom::NetworkQualityEstimatorManagerRequest request);
+  void AddReceiver(
+      mojo::PendingReceiver<mojom::NetworkQualityEstimatorManager> receiver);
 
   // mojom::NetworkQualityEstimatorManager implementation:
   void RequestNotifications(
-      mojom::NetworkQualityEstimatorManagerClientPtr client_ptr) override;
+      mojo::PendingRemote<mojom::NetworkQualityEstimatorManagerClient> client)
+      override;
 
   net::NetworkQualityEstimator* GetNetworkQualityEstimator() const;
 
@@ -61,8 +64,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkQualityEstimatorManager
       int32_t downstream_throughput_kbps) override;
 
   std::unique_ptr<net::NetworkQualityEstimator> network_quality_estimator_;
-  mojo::BindingSet<mojom::NetworkQualityEstimatorManager> bindings_;
-  mojo::InterfacePtrSet<mojom::NetworkQualityEstimatorManagerClient> clients_;
+  mojo::ReceiverSet<mojom::NetworkQualityEstimatorManager> receivers_;
+  mojo::RemoteSet<mojom::NetworkQualityEstimatorManagerClient> clients_;
   net::EffectiveConnectionType effective_connection_type_;
   base::TimeDelta http_rtt_;
   base::TimeDelta transport_rtt_;

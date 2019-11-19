@@ -10,7 +10,7 @@
 #include "base/guid.h"
 #include "base/memory/ptr_util.h"
 
-namespace app_list {
+namespace ash {
 
 AppListItemList::AppListItemList() = default;
 
@@ -48,7 +48,7 @@ bool AppListItemList::FindItemIndex(const std::string& id, size_t* index) {
 void AppListItemList::MoveItem(size_t from_index, size_t to_index) {
   DCHECK_LT(from_index, item_count());
   DCHECK_LT(to_index, item_count());
-  if (from_index == to_index)
+  if (from_index == to_index || item_count() == 1)
     return;
 
   auto target_item = std::move(app_list_items_[from_index]);
@@ -304,4 +304,4 @@ void AppListItemList::FixItemPosition(size_t index) {
     observer.OnListItemMoved(index, index, item);
 }
 
-}  // namespace app_list
+}  // namespace ash

@@ -103,6 +103,88 @@ TEST(EncodeValuesTest, EncodeTimeAfterTimeTMax) {
   EXPECT_EQ(0, generalized_time.seconds);
 }
 
+TEST(EncodeValuesTest, GeneralizedTimeToTime) {
+  GeneralizedTime generalized_time;
+  generalized_time.year = 2016;
+  generalized_time.month = 6;
+  generalized_time.day = 24;
+  generalized_time.hours = 17;
+  generalized_time.minutes = 4;
+  generalized_time.seconds = 54;
+  base::Time time;
+  ASSERT_TRUE(GeneralizedTimeToTime(generalized_time, &time));
+  EXPECT_EQ(base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1466787894),
+            time);
+}
+
+TEST(EncodeValuesTest, GeneralizedTimeToTimeBeforeWindowsEpoch) {
+  base::Time::Exploded exploded;
+  exploded.year = 1570;
+  exploded.month = 1;
+  exploded.day_of_week = 5;
+  exploded.day_of_month = 1;
+  exploded.hour = 0;
+  exploded.minute = 0;
+  exploded.second = 0;
+  exploded.millisecond = 0;
+
+  base::Time expected_time;
+  bool platform_can_represent_time =
+      base::Time::FromUTCExploded(exploded, &expected_time);
+
+  GeneralizedTime generalized_time;
+  generalized_time.year = exploded.year;
+  generalized_time.month = exploded.month;
+  generalized_time.day = exploded.day_of_month;
+  generalized_time.hours = exploded.hour;
+  generalized_time.minutes = exploded.minute;
+  generalized_time.seconds = exploded.second;
+  base::Time time;
+  ASSERT_TRUE(GeneralizedTimeToTime(generalized_time, &time));
+  if (platform_can_represent_time)
+    EXPECT_EQ(expected_time, time);
+  else
+    EXPECT_EQ(base::Time::Min(), time);
+
+  generalized_time.day = 0;  // Invalid day of month.
+  // Should fail even if outside range platform can represent.
+  EXPECT_FALSE(GeneralizedTimeToTime(generalized_time, &time));
+}
+
+TEST(EncodeValuesTest, GeneralizedTimeToTimeAfter32BitPosixMaxYear) {
+  base::Time::Exploded exploded;
+  exploded.year = 2039;
+  exploded.month = 1;
+  exploded.day_of_week = 6;
+  exploded.day_of_month = 1;
+  exploded.hour = 0;
+  exploded.minute = 0;
+  exploded.second = 0;
+  exploded.millisecond = 0;
+
+  base::Time expected_time;
+  bool platform_can_represent_time =
+      base::Time::FromUTCExploded(exploded, &expected_time);
+
+  GeneralizedTime generalized_time;
+  generalized_time.year = exploded.year;
+  generalized_time.month = exploded.month;
+  generalized_time.day = exploded.day_of_month;
+  generalized_time.hours = exploded.hour;
+  generalized_time.minutes = exploded.minute;
+  generalized_time.seconds = exploded.second;
+  base::Time time;
+  ASSERT_TRUE(GeneralizedTimeToTime(generalized_time, &time));
+  if (platform_can_represent_time)
+    EXPECT_EQ(expected_time, time);
+  else
+    EXPECT_EQ(base::Time::Max(), time);
+
+  generalized_time.day = 0;  // Invalid day of month.
+  // Should fail even if outside range platform can represent.
+  EXPECT_FALSE(GeneralizedTimeToTime(generalized_time, &time));
+}
+
 TEST(EncodeValuesTest, EncodeGeneralizedTime) {
   GeneralizedTime time;
   time.year = 2014;

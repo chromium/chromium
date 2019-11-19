@@ -7,8 +7,8 @@ import("//build/config/nacl/config.gni")
 import("//ipc/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
-import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
 buildflag_header("ipc_buildflags") {
   header = "ipc_buildflags.h"
@@ -88,6 +88,7 @@ component("ipc") {
     ":mojom",
     ":native_handle_type_converters",
     ":param_traits",
+    "//base/util/type_safety",
     "//mojo/public/cpp/base",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
@@ -102,16 +103,6 @@ component("ipc") {
   deps = [
     "//base",
   ]
-
-  # TODO(https://crbug.com/916130): AFDO causes a substantial size increase in
-  # nacl_helper that originates from here. This is apparently due to some
-  # mixture of inlining, CFI, and (potentially) speculative devirtualization.
-  # Work around that by locally disabling AFDO.
-  #
-  # nacl_helper is only available on Linux.
-  if (is_linux) {
-    configs -= [ "//build/config/compiler:afdo" ]
-  }
 
   if (enable_ipc_fuzzer) {
     public_configs = [ "//tools/ipc_fuzzer:ipc_fuzzer_config" ]
@@ -156,8 +147,6 @@ component("message_support") {
     sources += [
       "handle_attachment_fuchsia.cc",
       "handle_attachment_fuchsia.h",
-      "handle_fuchsia.cc",
-      "handle_fuchsia.h",
     ]
   }
 

@@ -11,9 +11,11 @@
 
 #include "base/strings/string16.h"
 #include "base/win/scoped_handle.h"
-#include "chrome/chrome_cleaner/interfaces/parser_interface.mojom.h"
+#include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"
 
 namespace chrome_cleaner {
+
+struct ParsedLnkFile;
 
 namespace internal {
 
@@ -60,6 +62,9 @@ const LnkHeader* ParseLnkHeader(std::vector<BYTE>* file_buffer);
 LnkInfoPartialHeader* LocateAndParseLnkInfoPartialHeader(
     std::vector<BYTE>* file_buffer,
     DWORD* output_offset);
+
+mojom::LnkParsingResult ParseLnkBytes(std::vector<BYTE> file_buffer,
+                                      ParsedLnkFile* parsed_shortcut);
 
 }  // namespace internal
 

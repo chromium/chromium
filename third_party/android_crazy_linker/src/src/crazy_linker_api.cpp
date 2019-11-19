@@ -32,6 +32,9 @@ using crazy::LibraryView;
 
 struct crazy_context_t {
   size_t load_address = 0;
+  int library_fd = -1;
+  size_t reserved_size = 0;
+  bool reserved_load_fallback = false;
   Error error;
 };
 
@@ -40,12 +43,6 @@ struct crazy_context_t {
 //
 
 extern "C" {
-
-void crazy_set_sdk_build_version(int sdk_build_version) {
-  // NOTE: This must be called before creating the Globals instance,
-  // so do not use Globals::Get() or a ScopedLockedGlobals instance here.
-  Globals::sdk_build_version = sdk_build_version;
-}
 
 crazy_context_t* crazy_context_create() {
   return new crazy_context_t();
@@ -64,10 +61,28 @@ void crazy_context_clear_error(crazy_context_t* context) {
 void crazy_context_set_load_address(crazy_context_t* context,
                                     size_t load_address) {
   context->load_address = load_address;
+  context->reserved_load_fallback = true;
 }
 
 size_t crazy_context_get_load_address(crazy_context_t* context) {
   return context->load_address;
+}
+
+void crazy_context_set_library_fd(crazy_context_t* context, int fd) {
+  context->library_fd = fd;
+}
+
+int crazy_context_get_library_fd(crazy_context_t* context) {
+  return context->library_fd;
+}
+
+void crazy_context_set_reserved_map(crazy_context_t* context,
+                                    uintptr_t reserved_address,
+                                    size_t reserved_size,
+                                    bool load_fallback) {
+  context->load_address = reserved_address;
+  context->reserved_size = reserved_size;
+  context->reserved_load_fallback = load_fallback;
 }
 
 void crazy_context_destroy(crazy_context_t* context) {
@@ -115,9 +130,35 @@ crazy_status_t crazy_library_open(crazy_library_t** library,
                                   const char* lib_name,
                                   crazy_context_t* context) {
   ScopedLockedGlobals globals;
-  LibraryView* view = globals->libraries()->LoadLibrary(
-      lib_name, context->load_address, globals->search_path_list(),
-      &context->error);
+  crazy::LibraryList* libs = globals->libraries();
+  crazy::LoadParams params;
+  params.wanted_address = context->load_address;
+  params.reserved_size = context->reserved_size;
+  params.reserved_load_fallback = context->reserved_load_fallback;
+  crazy::Expected<LibraryView*> found =
+      libs->FindAndCheckLoadedLibrary(lib_name, params, &context->error);
+  if (!found.has_value())
+    return CRAZY_STATUS_FAILURE;
+
+  LibraryView* view = found.value();
+  if (!view) {
+    if (context->library_fd >= 0) {
+      params.library_path = lib_name;
+      params.library_fd = context->library_fd;
+    } else {
+      if (!libs->LocateLibraryFile(lib_name, *globals->search_path_list(),
+                                   &params, &context->error)) {
+        return CRAZY_STATUS_FAILURE;
+      }
+    }
+    view = libs->LoadLibraryInternal(params, &context->error);
+
+    // Cleanup context.
+    context->library_fd = -1;
+    context->load_address = 0;
+    context->reserved_size = 0;
+    context->reserved_load_fallback = false;
+  }
 
   if (!view)
     return CRAZY_STATUS_FAILURE;

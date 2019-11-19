@@ -8,7 +8,7 @@
 # The header version of the hash.
 "mi-sha256=QkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkJCQkI\\ "
 
-# base::FuzzedDataProvider separator.
+# FuzzedDataProvider separator.
 "\\ "
 
 # Use a 16-byte record size if you don't have better ideas.

@@ -8,17 +8,18 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "net/base/load_states.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_response_info.h"
+#include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/next_proto.h"
 #include "net/spdy/spdy_session_key.h"
+#include "net/spdy/spdy_session_pool.h"
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_info.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
@@ -83,9 +84,12 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
     // |used_ssl_config| indicates the actual SSL configuration used for this
     // stream, since the HttpStreamRequest may have modified the configuration
     // during stream processing.
+    // |used_proxy_info| indicates the actual ProxyInfo used for this stream,
+    // since the HttpStreamRequest performs the proxy resolution.
     virtual void OnStreamFailed(int status,
                                 const NetErrorDetails& net_error_details,
-                                const SSLConfig& used_ssl_config) = 0;
+                                const SSLConfig& used_ssl_config,
+                                const ProxyInfo& used_proxy_info) = 0;
 
     // Called when we have a certificate error for the request.
     // |used_ssl_config| indicates the actual SSL configuration used for this
@@ -125,24 +129,6 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
     virtual void OnNeedsClientAuth(const SSLConfig& used_ssl_config,
                                    SSLCertRequestInfo* cert_info) = 0;
 
-    // This is the failure of the CONNECT request through an HTTPS proxy due to
-    // a 302 redirect. Headers can be read from |response_info|, while the body
-    // can be read from |stream|.
-    //
-    // |used_ssl_config| indicates the actual SSL configuration used for this
-    // stream, since the HttpStreamRequest may have modified the configuration
-    // during stream processing.
-    //
-    // |used_proxy_info| indicates the actual ProxyInfo used for this stream,
-    // since the HttpStreamRequest performs the proxy resolution.
-    //
-    // Ownership of |stream| is transferred to the delegate.
-    virtual void OnHttpsProxyTunnelResponseRedirect(
-        const HttpResponseInfo& response_info,
-        const SSLConfig& used_ssl_config,
-        const ProxyInfo& used_proxy_info,
-        std::unique_ptr<HttpStream> stream) = 0;
-
     // Called when finding all QUIC alternative services are marked broken for
     // the origin in this request which advertises supporting QUIC.
     virtual void OnQuicBroken() = 0;
@@ -164,18 +150,6 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
 
     // Called when the priority of transaction changes.
     virtual void SetPriority(RequestPriority priority) = 0;
-
-    // Called when SpdySessionPool notifies the Request
-    // that it can be served on a SpdySession created by another Request,
-    // therefore the Jobs can be destroyed.
-    virtual void OnStreamReadyOnPooledConnection(
-        const SSLConfig& used_ssl_config,
-        const ProxyInfo& proxy_info,
-        std::unique_ptr<HttpStream> stream) = 0;
-    virtual void OnBidirectionalStreamImplReadyOnPooledConnection(
-        const SSLConfig& used_ssl_config,
-        const ProxyInfo& used_proxy_info,
-        std::unique_ptr<BidirectionalStreamImpl> stream) = 0;
   };
 
   // Request will notify |job_controller| when it's destructed.
@@ -209,16 +183,6 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
   // layer in an attached Job for this stream request.
   void AddConnectionAttempts(const ConnectionAttempts& attempts);
 
-  // Called when a stream becomes available on a connection that was not created
-  // by this request.
-  void OnStreamReadyOnPooledConnection(const SSLConfig& used_ssl_config,
-                                       const ProxyInfo& used_proxy_info,
-                                       std::unique_ptr<HttpStream> stream);
-  void OnBidirectionalStreamImplReadyOnPooledConnection(
-      const SSLConfig& used_ssl_config,
-      const ProxyInfo& used_proxy_info,
-      std::unique_ptr<BidirectionalStreamImpl> stream);
-
   // Returns the LoadState for the request.
   LoadState GetLoadState() const;
 
@@ -244,20 +208,6 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
 
   const NetLogWithSource& net_log() const { return net_log_; }
 
-  // Called when the |helper_| determines the appropriate |spdy_session_key|
-  // for the Request. Note that this does not mean that SPDY is necessarily
-  // supported for this SpdySessionKey, since we may need to wait for NPN to
-  // complete before knowing if SPDY is available.
-  void SetSpdySessionKey(const SpdySessionKey& spdy_session_key) {
-    spdy_session_key_ = spdy_session_key;
-  }
-  bool HasSpdySessionKey() const { return spdy_session_key_.has_value(); }
-  const SpdySessionKey& GetSpdySessionKey() const {
-    DCHECK(HasSpdySessionKey());
-    return spdy_session_key_.value();
-  }
-  void ResetSpdySessionKey() { spdy_session_key_.reset(); }
-
   StreamType stream_type() const { return stream_type_; }
 
   bool completed() const { return completed_; }
@@ -271,8 +221,6 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
   WebSocketHandshakeStreamBase::CreateHelper* const
       websocket_handshake_stream_create_helper_;
   const NetLogWithSource net_log_;
-
-  base::Optional<SpdySessionKey> spdy_session_key_;
 
   bool completed_;
   bool was_alpn_negotiated_;

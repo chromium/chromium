@@ -5,16 +5,19 @@
 #include "chrome/browser/ui/views/feature_promos/feature_promo_bubble_view.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/feature_promos/feature_promo_bubble_timeout.h"
 #include "components/variations/variations_associated_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/event_monitor.h"
@@ -39,34 +42,39 @@ constexpr gfx::Insets kBubbleContentsInsets(12, 16);
 FeaturePromoBubbleView::FeaturePromoBubbleView(
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow,
+    ActivationAction activation_action,
     int string_specifier,
-    ActivationAction activation_action)
-    : FeaturePromoBubbleView(anchor_view,
-                             gfx::Rect(),
-                             arrow,
-                             string_specifier,
-                             activation_action) {}
-
-FeaturePromoBubbleView::FeaturePromoBubbleView(const gfx::Rect& anchor_rect,
-                                               views::BubbleBorder::Arrow arrow,
-                                               int string_specifier)
-    : FeaturePromoBubbleView(nullptr,
-                             anchor_rect,
-                             arrow,
-                             string_specifier,
-                             ActivationAction::ACTIVATE) {}
-
-FeaturePromoBubbleView::FeaturePromoBubbleView(
-    views::View* anchor_view,
-    const gfx::Rect& anchor_rect,
-    views::BubbleBorder::Arrow arrow,
-    int string_specifier,
-    ActivationAction activation_action)
+    base::Optional<int> screenreader_string_specifier,
+    base::Optional<ui::Accelerator> feature_accelerator,
+    std::unique_ptr<FeaturePromoBubbleTimeout> feature_promo_bubble_timeout)
     : BubbleDialogDelegateView(anchor_view, arrow),
-      activation_action_(activation_action) {
+      activation_action_(activation_action),
+      feature_promo_bubble_timeout_(std::move(feature_promo_bubble_timeout)) {
+  DCHECK(anchor_view);
   UseCompactMargins();
-  if (!anchor_view)
-    SetAnchorRect(anchor_rect);
+
+  // If the timeout was not explicitly specified, use the default values.
+  if (!feature_promo_bubble_timeout_) {
+    feature_promo_bubble_timeout_ =
+        std::make_unique<FeaturePromoBubbleTimeout>(kDelayDefault, kDelayShort);
+  }
+
+  const base::string16 body_text = l10n_util::GetStringUTF16(string_specifier);
+
+  // Feature promos are purely informational. We can skip reading the UI
+  // elements inside the bubble and just have the information announced when the
+  // bubble shows. To do so, we change the a11y tree to make this a leaf node
+  // and set the name to the message we want to announce.
+  GetViewAccessibility().OverrideIsLeaf(true);
+  if (!screenreader_string_specifier) {
+    accessible_name_ = body_text;
+  } else if (feature_accelerator) {
+    accessible_name_ = l10n_util::GetStringFUTF16(
+        *screenreader_string_specifier, feature_accelerator->GetShortcutText());
+  } else {
+    accessible_name_ =
+        l10n_util::GetStringUTF16(*screenreader_string_specifier);
+  }
 
   // We get the theme provider from the anchor view since our widget hasn't been
   // created yet.
@@ -79,14 +87,14 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
       ThemeProperties::COLOR_FEATURE_PROMO_BUBBLE_TEXT);
 
   auto box_layout = std::make_unique<views::BoxLayout>(
-      views::BoxLayout::kVertical, kBubbleContentsInsets, 0);
+      views::BoxLayout::Orientation::kVertical, kBubbleContentsInsets, 0);
   box_layout->set_main_axis_alignment(
-      views::BoxLayout::MAIN_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::MainAxisAlignment::kCenter);
   box_layout->set_cross_axis_alignment(
-      views::BoxLayout::CROSS_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::CrossAxisAlignment::kCenter);
   SetLayoutManager(std::move(box_layout));
 
-  auto* label = new views::Label(l10n_util::GetStringUTF16(string_specifier));
+  auto* label = new views::Label(body_text);
   label->SetBackgroundColor(background_color);
   label->SetEnabledColor(text_color);
   AddChildView(label);
@@ -98,17 +106,17 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
 
   set_margins(gfx::Insets());
   set_title_margins(gfx::Insets());
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_NONE);
 
   set_color(background_color);
 
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
-  GetBubbleFrameView()->bubble_border()->SetCornerRadius(
+  GetBubbleFrameView()->SetCornerRadius(
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_HIGH));
 
   widget->Show();
-  if (activation_action == ActivationAction::ACTIVATE)
-    StartAutoCloseTimer(kDelayDefault);
+  feature_promo_bubble_timeout_->OnBubbleShown(this);
 }
 
 FeaturePromoBubbleView::~FeaturePromoBubbleView() = default;
@@ -117,18 +125,19 @@ FeaturePromoBubbleView::~FeaturePromoBubbleView() = default;
 FeaturePromoBubbleView* FeaturePromoBubbleView::CreateOwned(
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow,
+    ActivationAction activation_action,
     int string_specifier,
-    ActivationAction activation_action) {
-  return new FeaturePromoBubbleView(anchor_view, arrow, string_specifier,
-                                    activation_action);
+    base::Optional<int> screenreader_string_specifier,
+    base::Optional<ui::Accelerator> feature_accelerator,
+    std::unique_ptr<FeaturePromoBubbleTimeout> feature_promo_bubble_timeout) {
+  return new FeaturePromoBubbleView(
+      anchor_view, arrow, activation_action, string_specifier,
+      screenreader_string_specifier, feature_accelerator,
+      std::move(feature_promo_bubble_timeout));
 }
 
 void FeaturePromoBubbleView::CloseBubble() {
   GetWidget()->Close();
-}
-
-int FeaturePromoBubbleView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_NONE;
 }
 
 bool FeaturePromoBubbleView::OnMousePressed(const ui::MouseEvent& event) {
@@ -138,11 +147,11 @@ bool FeaturePromoBubbleView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void FeaturePromoBubbleView::OnMouseEntered(const ui::MouseEvent& event) {
-  timer_.Stop();
+  feature_promo_bubble_timeout_->OnMouseEntered();
 }
 
 void FeaturePromoBubbleView::OnMouseExited(const ui::MouseEvent& event) {
-  StartAutoCloseTimer(kDelayShort);
+  feature_promo_bubble_timeout_->OnMouseExited();
 }
 
 gfx::Rect FeaturePromoBubbleView::GetBubbleBounds() {
@@ -156,8 +165,12 @@ gfx::Rect FeaturePromoBubbleView::GetBubbleBounds() {
   return bounds;
 }
 
-void FeaturePromoBubbleView::StartAutoCloseTimer(
-    base::TimeDelta auto_close_duration) {
-  timer_.Start(FROM_HERE, auto_close_duration, this,
-               &FeaturePromoBubbleView::CloseBubble);
+ax::mojom::Role FeaturePromoBubbleView::GetAccessibleWindowRole() {
+  // Since we don't have any controls for the user to interact with (we're just
+  // an information bubble), override our role to kAlert.
+  return ax::mojom::Role::kAlert;
+}
+
+base::string16 FeaturePromoBubbleView::GetAccessibleWindowTitle() const {
+  return accessible_name_;
 }

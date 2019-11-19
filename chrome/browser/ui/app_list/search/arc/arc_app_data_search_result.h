@@ -9,10 +9,11 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "components/arc/common/app.mojom.h"
+#include "components/arc/mojom/app.mojom.h"
 
 class AppListControllerDelegate;
 
@@ -31,6 +32,7 @@ class ArcAppDataSearchResult : public ChromeSearchResult {
   // ChromeSearchResult:
   void GetContextMenuModel(GetMenuModelCallback callback) override;
   void Open(int event_flags) override;
+  ash::SearchResultType GetSearchResultType() const override;
 
  private:
   const std::string& launch_intent_uri() const {
@@ -48,7 +50,7 @@ class ArcAppDataSearchResult : public ChromeSearchResult {
 
   AppListControllerDelegate* const list_controller_;  // Owned by AppListClient.
 
-  base::WeakPtrFactory<ArcAppDataSearchResult> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcAppDataSearchResult> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcAppDataSearchResult);
 };

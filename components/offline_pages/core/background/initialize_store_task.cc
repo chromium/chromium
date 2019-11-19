@@ -15,8 +15,7 @@ InitializeStoreTask::InitializeStoreTask(
     RequestQueueStore::InitializeCallback callback)
     : store_(store),
       reset_attempts_left_(kRestartAttemptsMaximum),
-      callback_(std::move(callback)),
-      weak_ptr_factory_(this) {}
+      callback_(std::move(callback)) {}
 
 InitializeStoreTask::~InitializeStoreTask() {}
 

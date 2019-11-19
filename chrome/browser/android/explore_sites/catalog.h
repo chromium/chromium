@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_EXPLORE_SITES_CATALOG_H_
 #define CHROME_BROWSER_ANDROID_EXPLORE_SITES_CATALOG_H_
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -12,7 +13,7 @@
 #include "url/gurl.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace explore_sites {
@@ -34,7 +35,7 @@ class NTPCatalog {
   };
 
   // The NTPCatalog does not take ownership of |json|.
-  static std::unique_ptr<NTPCatalog> create(const base::DictionaryValue* json);
+  static std::unique_ptr<NTPCatalog> create(const base::Value& json);
 
   explicit NTPCatalog(const std::vector<Category>& category_list);
   ~NTPCatalog();

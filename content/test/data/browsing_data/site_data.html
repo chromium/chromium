@@ -9,8 +9,13 @@
     domAutomationController.send(false);
   }
 
+  function isHttps_() {
+    return location.protocol === 'https:';
+  }
+
   function setCookie() {
-    document.cookie = 'foo=bar; Max-Age=1000';
+    const samesite_none_secure = '; SameSite=None; Secure';
+    document.cookie = 'foo=bar; Max-Age=1000' + (isHttps_() ? samesite_none_secure : '');
     success_();
   }
 
@@ -19,7 +24,8 @@
   }
 
   function setSessionCookie() {
-    document.cookie = 'bar=session';
+    const samesite_none_secure = '; SameSite=None; Secure';
+    document.cookie = 'bar=session' + (isHttps_() ? samesite_none_secure : '');
     success_();
   }
 
@@ -33,7 +39,11 @@
   }
 
   function hasLocalStorage() {
-    domAutomationController.send(localStorage.getItem('foo') == 'bar');
+    try {
+      domAutomationController.send(localStorage.getItem('foo') == 'bar');
+    } catch (e) {
+      failure_();
+    }
   }
 
   function setSessionStorage() {
@@ -42,7 +52,11 @@
   }
 
   function hasSessionStorage() {
-    domAutomationController.send(sessionStorage.getItem('foo') == 'bar');
+    try {
+      domAutomationController.send(sessionStorage.getItem('foo') == 'bar');
+    } catch (e) {
+      failure_();
+    }
   }
 
   function setServiceWorker() {
@@ -54,7 +68,7 @@
   function hasServiceWorker() {
     navigator.serviceWorker.getRegistrations().then(function (registrations) {
       domAutomationController.send(registrations.length > 0);
-    });
+    }).catch(failure_);
   }
 
   function setCacheStorage() {
@@ -68,13 +82,13 @@
       cache.keys().then(function (keys) {
         domAutomationController.send(keys.length > 0);
       });
-    });
+    }).catch(failure_);
   }
 
   function openFile_(name, options, callback, error) {
     window.webkitRequestFileSystem(TEMPORARY, 1024, function (fs) {
       fs.root.getFile(name, options, callback, error);
-    });
+    }, error);
   }
 
   function setFileSystem() {
@@ -94,13 +108,18 @@
   }
 
   function hasWebSql() {
-    var db = openDatabase('testdb', '1.0', 'a test db', 1024);
+    try {
+      var db = openDatabase('testdb', '1.0', 'a test db', 1024);
+    } catch (e) {
+      return failure_();
+    }
+    var num_results;
     db.transaction(function (tx) {
       tx.executeSql('CREATE TABLE IF NOT EXISTS foo (text)');
       tx.executeSql('SELECT * FROM foo', [], function (tx, results) {
-        domAutomationController.send(results.rows.length > 0);
+        num_results = results.rows.length;
       });
-    });
+    }, null, function() { domAutomationController.send(num_results > 0); });
   }
 
   function setIndexedDb() {
@@ -112,6 +131,7 @@
       open.result.close();
       success_();
     }
+    open.onerror = failure_;
   }
 
   function hasIndexedDb() {
@@ -121,6 +141,7 @@
       open.result.close();
       domAutomationController.send(hasStore);
     }
+    open.onerror = failure_;
   }
 
   function setHistory() {
@@ -132,6 +153,50 @@
     domAutomationController.send(history.length > 1);
   }
 
+  let sharedWorker; // Global variable to keep worker alive.
+  function connectSharedWorker() {
+    return new Promise((resolve, reject) => {
+      sharedWorker = new SharedWorker("shared_worker.js");
+      sharedWorker.onerror = reject;
+      sharedWorker.port.onmessage = resolve;
+      sharedWorker.port.start();
+    });
+  }
+
+  function setSharedWorker() {
+    connectSharedWorker().then(() => {
+      sharedWorker.port.postMessage({ "value": "foo" });
+      success_();
+    }).catch(failure_);
+  }
+
+  async function hasSharedWorker() {
+    connectSharedWorker().then(() => {
+      sharedWorker.port.onmessage = e => {
+        domAutomationController.send(e.data.value === "foo");
+      };
+      sharedWorker.port.postMessage({});
+    }).catch(failure_);
+  }
+
+  let lock;
+  function setWebLock() {
+    navigator.locks.request("foo", l => {
+      lock = new Promise((res, rej) => { });
+      // Now lock will be held while |lock| exists.
+      success_();
+      return lock;
+    }).catch(failure_);
+  }
+
+  function hasWebLock() {
+    navigator.locks.query().then(locks => {
+      if (locks.held.length)
+        domAutomationController.send(locks.held[0].name === "foo");
+      else
+        failure_();
+    }).catch(failure_);
+  }
 </script>
 
 <body>

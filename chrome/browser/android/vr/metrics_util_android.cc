@@ -84,10 +84,4 @@ device::VrViewerType MetricsUtilAndroid::GetVrViewerType(
   }
 }
 
-// static
-void MetricsUtilAndroid::LogXrRenderPathUsed(XRRenderPath path) {
-  UMA_HISTOGRAM_ENUMERATION("XR.WebXR.RenderPath.Used", path,
-                            XRRenderPath::kCount);
-}
-
 }  // namespace vr

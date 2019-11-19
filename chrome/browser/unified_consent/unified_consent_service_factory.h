@@ -18,8 +18,8 @@ class UnifiedConsentServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
   // Returns the instance of UnifiedConsentService associated with |profile|
   // (creating one if none exists). Returns nullptr if this profile cannot have
-  // a UnifiedConsentService (e.g. UnifiedConsent is not enabled for |profile|
-  // or |profile| is incognito).
+  // a UnifiedConsentService (e.g. sync is disabled for |profile| or
+  // |profile| is incognito).
   static unified_consent::UnifiedConsentService* GetForProfile(
       Profile* profile);
 

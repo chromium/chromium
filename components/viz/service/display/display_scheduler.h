@@ -31,7 +31,7 @@ class VIZ_SERVICE_EXPORT DisplaySchedulerClient {
   virtual bool SurfaceHasUnackedFrame(const SurfaceId& surface_id) const = 0;
   virtual bool SurfaceDamaged(const SurfaceId& surface_id,
                               const BeginFrameAck& ack) = 0;
-  virtual void SurfaceDiscarded(const SurfaceId& surface_id) = 0;
+  virtual void SurfaceDestroyed(const SurfaceId& surface_id) = 0;
   virtual void DidFinishFrame(const BeginFrameAck& ack) = 0;
 };
 
@@ -43,6 +43,8 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public BeginFrameObserverBase,
                    int max_pending_swaps,
                    bool wait_for_all_surfaces_before_draw = false);
   ~DisplayScheduler() override;
+
+  int pending_swaps() const { return pending_swaps_; }
 
   void SetClient(DisplaySchedulerClient* client);
 
@@ -80,12 +82,13 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public BeginFrameObserverBase,
   void OnFirstSurfaceActivation(const SurfaceInfo& surface_info) override;
   void OnSurfaceActivated(const SurfaceId& surface_id,
                           base::Optional<base::TimeDelta> duration) override;
-  void OnSurfaceDestroyed(const SurfaceId& surface_id) override;
+  void OnSurfaceMarkedForDestruction(const SurfaceId& surface_id) override;
   bool OnSurfaceDamaged(const SurfaceId& surface_id,
                         const BeginFrameAck& ack) override;
-  void OnSurfaceDiscarded(const SurfaceId& surface_id) override;
+  void OnSurfaceDestroyed(const SurfaceId& surface_id) override;
   void OnSurfaceDamageExpected(const SurfaceId& surface_id,
                                const BeginFrameArgs& args) override;
+  void set_needs_draw() { needs_draw_ = true; }
 
  protected:
   // These values inidicate how a response to the BeginFrame should be
@@ -163,7 +166,7 @@ class VIZ_SERVICE_EXPORT DisplayScheduler : public BeginFrameObserverBase,
 
   SurfaceId root_surface_id_;
 
-  base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_;
+  base::WeakPtrFactory<DisplayScheduler> weak_ptr_factory_{this};
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DisplayScheduler);

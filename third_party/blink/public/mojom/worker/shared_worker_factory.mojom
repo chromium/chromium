@@ -5,8 +5,8 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
-import "services/network/public/mojom/url_loader_factory.mojom";
 import "services/service_manager/public/mojom/interface_provider.mojom";
+import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/renderer_preference_watcher.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
@@ -33,60 +33,45 @@ interface SharedWorkerFactory {
   // |interface_provider| instead of receiving plumbing it here.
   CreateSharedWorker(
       SharedWorkerInfo info,
+      string user_agent,
       bool pause_on_start,
       mojo_base.mojom.UnguessableToken devtools_worker_token,
       RendererPreferences renderer_preferences,
-      RendererPreferenceWatcher& preference_watcher_request,
-      WorkerContentSettingsProxy content_settings,
+      pending_receiver<RendererPreferenceWatcher> preference_watcher_receiver,
+      pending_remote<WorkerContentSettingsProxy> content_settings,
 
-      // S13nServiceWorker:
-      // The info about the service worker host in the browser process that
-      // provides support for this shared worker to be a service worker client.
-      // Null when S13nServiceWorker is disabled.
-      ServiceWorkerProviderInfoForWorker? service_worker_provider_info,
+      // The info about the service worker provider in the browser process that
+      // provides support for this worker to be a service worker client.
+      //
+      // This is null if the shared worker cannot be a service
+      // worker client, because for example, the worker's URL is
+      // not http(s) or another service worker supported scheme.
+      ServiceWorkerProviderInfoForClient? service_worker_provider_info,
 
-      // NetworkService:
       // The ID of the AppCacheHost in the browser process that serves resources
-      // for this shared worker. This is kAppCacheNoHostId when NetworkService
-      // is disabled or AppCache doesn't serve resources for this shared worker.
-      int32 appcache_host_id,
+      // for this shared worker. This is not specified when AppCache doesn't
+      // serve resources for this shared worker.
+      mojo_base.mojom.UnguessableToken? appcache_host_id,
 
-      // S13nServiceWorker (non-NetworkService):
-      // The URLLoaderFactory to use to request the shared worker's script
-      // (just the main script resource; importScripts() should go through the
-      // usual loader or the controller service worker if appropriate).
-      //
-      // This is only non-null when S13nServiceWorker is enabled but
-      // NetworkService is disabled.
-      //
-      // TODO(leonhsl): It doesn't really need to be associated. Make it
-      // non-associated and update
-      // ServiceWorkerNetworkProviderForWorker::script_loader_factory_
-      // as well.
-      associated network.mojom.URLLoaderFactory? main_script_loader_factory,
+      // Used for passing the main script pre-requested by the browser process
+      // and its redirect information.
+      WorkerMainScriptLoadParams main_script_load_params,
 
-      // NetworkService (PlzWorker):
-      // Used for passing a main script pre-requested by the browser process and
-      // its redirect information.
-      WorkerMainScriptLoadParams? main_script_load_params,
+      // Used for loading subresources. This also supports non-network URLs like
+      // chrome-extension:// URLs.
+      URLLoaderFactoryBundle subresource_loader_factories,
 
-      // NetworkService:
-      // When the Network Service is enabled, |subresource_loader_factories|
-      // may also be provided a means for the shared worker to load
-      // subresources where applicable. For example, this allows the shared
-      // worker to load chrome-extension:// URLs which the renderer's default
-      // loader factory can't load.
-      URLLoaderFactoryBundle? subresource_loader_factories,
-
-      // NetworkService (PlzWorker):
-      // Used for setting ServiceWorkerContainer#controller. This is null when
-      // NetworkService is disabled or there're no controller service worker.
-      //
-      // In S13nServiceWorker, the controller is sent via
-      // ServiceWorkerContainer.SetController().
+      // Used to make fetches from the worker go through the controller service
+      // worker. This is null when there're no controller service worker.
       ControllerServiceWorkerInfo? controller_info,
 
-      SharedWorkerHost host,
-      SharedWorker& shared_worker,
-      service_manager.mojom.InterfaceProvider interface_provider);
+      pending_remote<SharedWorkerHost> host,
+      pending_receiver<SharedWorker> shared_worker,
+
+      // TODO(crbug.com/990845): remove when no longer used.
+      service_manager.mojom.InterfaceProvider interface_provider,
+
+      // BrowserInterfaceBroker for providing browser interfaces.
+      pending_remote<blink.mojom.BrowserInterfaceBroker>
+        browser_interface_broker);
 };

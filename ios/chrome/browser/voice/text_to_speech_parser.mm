@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/voice/text_to_speech_parser.h"
 
+#include "base/base64.h"
 #include "base/logging.h"
-#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
-#import "ios/web/public/web_state/web_state.h"
-#import "third_party/google_toolbox_for_mac/src/Foundation/GTMStringEncoding.h"
+#include "base/strings/sys_string_conversions.h"
+#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -88,14 +89,18 @@ NSData* ExtractVoiceSearchAudioDataFromPageHTML(NSString* page_html) {
   NSRange search_range =
       NSMakeRange(raw_base64_encoded_audio_string.length - search_range_length,
                   search_range_length);
-  NSString* base64_encoded_audio_string = [raw_base64_encoded_audio_string
-      stringByReplacingOccurrencesOfString:kTrailingEqualEncoding
-                                withString:@"="
-                                   options:0
-                                     range:search_range];
+  const std::string base64_encoded_audio_string =
+      base::SysNSStringToUTF8([raw_base64_encoded_audio_string
+          stringByReplacingOccurrencesOfString:kTrailingEqualEncoding
+                                    withString:@"="
+                                       options:0
+                                         range:search_range]);
 
-  GTMStringEncoding* base64 = [GTMStringEncoding rfc4648Base64StringEncoding];
-  return [base64 decode:base64_encoded_audio_string error:nullptr];
+  std::string decoded_data;
+  if (!base::Base64Decode(base64_encoded_audio_string, &decoded_data))
+    return nil;
+
+  return [NSData dataWithBytes:decoded_data.c_str() length:decoded_data.size()];
 }
 
 void ExtractVoiceSearchAudioDataFromWebState(

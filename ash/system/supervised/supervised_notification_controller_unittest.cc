@@ -4,7 +4,7 @@
 
 #include "ash/system/supervised/supervised_notification_controller.h"
 
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -47,7 +47,7 @@ message_center::Notification* SupervisedNotificationControllerTest::GetPopup() {
 // Verifies that when a supervised user logs in that a warning notification is
 // shown and ash does not crash.
 TEST_F(SupervisedNotificationControllerTest, SupervisedUserHasNotification) {
-  SessionController* session = Shell::Get()->session_controller();
+  SessionControllerImpl* session = Shell::Get()->session_controller();
   ASSERT_EQ(LoginStatus::NOT_LOGGED_IN, session->login_status());
   ASSERT_FALSE(session->IsActiveUserSessionStarted());
 
@@ -66,8 +66,8 @@ TEST_F(SupervisedNotificationControllerTest, SupervisedUserHasNotification) {
 
   // Update the user session with the custodian data (which happens after the
   // profile loads).
-  mojom::UserSessionPtr user_session = session->GetUserSession(0)->Clone();
-  user_session->custodian_email = custodian_email;
+  UserSession user_session = *session->GetUserSession(0);
+  user_session.custodian_email = custodian_email;
   session->UpdateUserSession(std::move(user_session));
 
   // Notification is shown.
@@ -79,8 +79,8 @@ TEST_F(SupervisedNotificationControllerTest, SupervisedUserHasNotification) {
             notification->message().find(UTF8ToUTF16(custodian_email)));
 
   // Update the user session with new custodian data.
-  user_session = session->GetUserSession(0)->Clone();
-  user_session->custodian_email = custodian_email2;
+  user_session = *session->GetUserSession(0);
+  user_session.custodian_email = custodian_email2;
   session->UpdateUserSession(std::move(user_session));
 
   // Notification is shown with updated message.

@@ -24,7 +24,7 @@ class TextPainterTest : public RenderingTest {
  public:
   TextPainterTest()
       : layout_text_(nullptr),
-        paint_controller_(PaintController::Create()),
+        paint_controller_(std::make_unique<PaintController>()),
         context_(*paint_controller_) {}
 
  protected:
@@ -57,7 +57,8 @@ class TextPainterTest : public RenderingTest {
 };
 
 TEST_F(TextPainterTest, TextPaintingStyle_Simple) {
-  GetDocument().body()->SetInlineStyleProperty(CSSPropertyColor, CSSValueBlue);
+  GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kColor,
+                                               CSSValueID::kBlue);
   UpdateAllLifecyclePhasesForTest();
 
   TextPaintStyle text_style = TextPainter::TextPaintingStyle(
@@ -71,16 +72,16 @@ TEST_F(TextPainterTest, TextPaintingStyle_Simple) {
 }
 
 TEST_F(TextPainterTest, TextPaintingStyle_AllProperties) {
-  GetDocument().body()->SetInlineStyleProperty(CSSPropertyWebkitTextFillColor,
-                                               CSSValueRed);
-  GetDocument().body()->SetInlineStyleProperty(CSSPropertyWebkitTextStrokeColor,
-                                               CSSValueLime);
   GetDocument().body()->SetInlineStyleProperty(
-      CSSPropertyWebkitTextEmphasisColor, CSSValueBlue);
+      CSSPropertyID::kWebkitTextFillColor, CSSValueID::kRed);
   GetDocument().body()->SetInlineStyleProperty(
-      CSSPropertyWebkitTextStrokeWidth, 4,
+      CSSPropertyID::kWebkitTextStrokeColor, CSSValueID::kLime);
+  GetDocument().body()->SetInlineStyleProperty(
+      CSSPropertyID::kWebkitTextEmphasisColor, CSSValueID::kBlue);
+  GetDocument().body()->SetInlineStyleProperty(
+      CSSPropertyID::kWebkitTextStrokeWidth, 4,
       CSSPrimitiveValue::UnitType::kPixels);
-  GetDocument().body()->SetInlineStyleProperty(CSSPropertyTextShadow,
+  GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kTextShadow,
                                                "1px 2px 3px yellow");
   UpdateAllLifecyclePhasesForTest();
 
@@ -101,16 +102,16 @@ TEST_F(TextPainterTest, TextPaintingStyle_AllProperties) {
 }
 
 TEST_F(TextPainterTest, TextPaintingStyle_UsesTextAsClip) {
-  GetDocument().body()->SetInlineStyleProperty(CSSPropertyWebkitTextFillColor,
-                                               CSSValueRed);
-  GetDocument().body()->SetInlineStyleProperty(CSSPropertyWebkitTextStrokeColor,
-                                               CSSValueLime);
   GetDocument().body()->SetInlineStyleProperty(
-      CSSPropertyWebkitTextEmphasisColor, CSSValueBlue);
+      CSSPropertyID::kWebkitTextFillColor, CSSValueID::kRed);
   GetDocument().body()->SetInlineStyleProperty(
-      CSSPropertyWebkitTextStrokeWidth, 4,
+      CSSPropertyID::kWebkitTextStrokeColor, CSSValueID::kLime);
+  GetDocument().body()->SetInlineStyleProperty(
+      CSSPropertyID::kWebkitTextEmphasisColor, CSSValueID::kBlue);
+  GetDocument().body()->SetInlineStyleProperty(
+      CSSPropertyID::kWebkitTextStrokeWidth, 4,
       CSSPrimitiveValue::UnitType::kPixels);
-  GetDocument().body()->SetInlineStyleProperty(CSSPropertyTextShadow,
+  GetDocument().body()->SetInlineStyleProperty(CSSPropertyID::kTextShadow,
                                                "1px 2px 3px yellow");
   UpdateAllLifecyclePhasesForTest();
 
@@ -126,14 +127,14 @@ TEST_F(TextPainterTest, TextPaintingStyle_UsesTextAsClip) {
 
 TEST_F(TextPainterTest,
        TextPaintingStyle_ForceBackgroundToWhite_NoAdjustmentNeeded) {
-  GetDocument().body()->SetInlineStyleProperty(CSSPropertyWebkitTextFillColor,
-                                               CSSValueRed);
-  GetDocument().body()->SetInlineStyleProperty(CSSPropertyWebkitTextStrokeColor,
-                                               CSSValueLime);
   GetDocument().body()->SetInlineStyleProperty(
-      CSSPropertyWebkitTextEmphasisColor, CSSValueBlue);
+      CSSPropertyID::kWebkitTextFillColor, CSSValueID::kRed);
   GetDocument().body()->SetInlineStyleProperty(
-      CSSPropertyWebkitPrintColorAdjust, CSSValueEconomy);
+      CSSPropertyID::kWebkitTextStrokeColor, CSSValueID::kLime);
+  GetDocument().body()->SetInlineStyleProperty(
+      CSSPropertyID::kWebkitTextEmphasisColor, CSSValueID::kBlue);
+  GetDocument().body()->SetInlineStyleProperty(
+      CSSPropertyID::kWebkitPrintColorAdjust, CSSValueID::kEconomy);
   GetDocument().GetSettings()->SetShouldPrintBackgrounds(false);
   FloatSize page_size(500, 800);
   GetFrame().StartPrinting(page_size, page_size, 1);
@@ -151,14 +152,14 @@ TEST_F(TextPainterTest,
 }
 
 TEST_F(TextPainterTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
-  GetDocument().body()->SetInlineStyleProperty(CSSPropertyWebkitTextFillColor,
-                                               "rgb(255, 220, 220)");
-  GetDocument().body()->SetInlineStyleProperty(CSSPropertyWebkitTextStrokeColor,
-                                               "rgb(220, 255, 220)");
   GetDocument().body()->SetInlineStyleProperty(
-      CSSPropertyWebkitTextEmphasisColor, "rgb(220, 220, 255)");
+      CSSPropertyID::kWebkitTextFillColor, "rgb(255, 220, 220)");
   GetDocument().body()->SetInlineStyleProperty(
-      CSSPropertyWebkitPrintColorAdjust, CSSValueEconomy);
+      CSSPropertyID::kWebkitTextStrokeColor, "rgb(220, 255, 220)");
+  GetDocument().body()->SetInlineStyleProperty(
+      CSSPropertyID::kWebkitTextEmphasisColor, "rgb(220, 220, 255)");
+  GetDocument().body()->SetInlineStyleProperty(
+      CSSPropertyID::kWebkitPrintColorAdjust, CSSValueID::kEconomy);
   GetDocument().GetSettings()->SetShouldPrintBackgrounds(false);
   FloatSize page_size(500, 800);
   GetFrame().StartPrinting(page_size, page_size, 1);

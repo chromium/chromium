@@ -46,7 +46,7 @@ class RequirementsChecker : public PreloadCheck {
   ResultCallback callback_;
   Errors errors_;
 
-  base::WeakPtrFactory<RequirementsChecker> weak_ptr_factory_;
+  base::WeakPtrFactory<RequirementsChecker> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RequirementsChecker);
 };

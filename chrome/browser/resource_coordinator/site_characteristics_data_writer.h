@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_SITE_CHARACTERISTICS_DATA_WRITER_H_
 
 #include "base/time/time.h"
-#include "chrome/browser/resource_coordinator/site_characteristics_tab_visibility.h"
+#include "chrome/browser/performance_manager/persistence/site_data/tab_visibility.h"
 
 namespace resource_coordinator {
 
@@ -21,7 +21,8 @@ class SiteCharacteristicsDataWriter {
   virtual void NotifySiteUnloaded() = 0;
 
   // Records visibility change events.
-  virtual void NotifySiteVisibilityChanged(TabVisibility visibility) = 0;
+  virtual void NotifySiteVisibilityChanged(
+      performance_manager::TabVisibility visibility) = 0;
 
   // Records feature usage.
   virtual void NotifyUpdatesFaviconInBackground() = 0;

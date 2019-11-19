@@ -28,7 +28,6 @@
 #include "extensions/common/extension_id.h"
 
 class BackgroundModeOptimizer;
-class BackgroundTrigger;
 class Browser;
 class PrefRegistrySimple;
 class Profile;
@@ -50,9 +49,9 @@ using CommandIdHandlerVector = std::vector<base::RepeatingClosure>;
 // are no open browser windows.
 //
 // Chrome enters background mode whenever there is an application with the
-// "background" permission installed, or a "trigger" that requires Chrome to be
-// running. This class monitors the set of installed/loaded extensions to ensure
-// that Chrome enters/exits background mode at the appropriate time.
+// "background" permission installed. This class monitors the set of
+// installed/loaded extensions to ensure that Chrome enters/exits background
+// mode at the appropriate time.
 //
 // When Chrome is in background mode, it will continue running even after the
 // last browser window is closed, until the user explicitly exits the app.
@@ -109,14 +108,9 @@ class BackgroundModeManager : public content::NotificationObserver,
   // For testing purposes.
   size_t NumberOfBackgroundModeData();
 
-  // Registers |trigger| as a reason for enabling background mode. Does not
-  // take ownership of |trigger|.
-  void RegisterTrigger(const Profile* profile,
-                       BackgroundTrigger* trigger,
-                       bool should_notify_user);
-
-  // Unregisters |trigger| as a reason for enabling background mode.
-  void UnregisterTrigger(const Profile* profile, BackgroundTrigger* trigger);
+  int client_installed_notifications_for_test() {
+    return client_installed_notifications_;
+  }
 
  private:
   friend class AppBackgroundPageApiTest;
@@ -145,10 +139,6 @@ class BackgroundModeManager : public content::NotificationObserver,
                            ProfileAttributesStorageObserver);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
                            DeleteBackgroundProfile);
-  FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
-                           TriggerRegisterUnregister);
-  FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
-                           TriggerRegisterWhileDisabled);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerWithExtensionsTest,
                            BackgroundMenuGeneration);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerWithExtensionsTest,
@@ -158,12 +148,8 @@ class BackgroundModeManager : public content::NotificationObserver,
   FRIEND_TEST_ALL_PREFIXES(BackgroundAppBrowserTest,
                            ReloadBackgroundApp);
 
-  // A pending trigger may be registered later. The boolean indicates whether
-  // the user should be notified when it is registered.
-  using PendingTriggerData = std::map<BackgroundTrigger*, bool>;
-
   // Manages the background clients and menu items for a single profile. A
-  // client can be a trigger or an extension.
+  // client is an extension.
   class BackgroundModeData : public StatusIconMenuModel::Delegate {
    public:
     BackgroundModeData(Profile* profile,
@@ -182,8 +168,7 @@ class BackgroundModeManager : public content::NotificationObserver,
     // Browser window.
     Browser* GetBrowserWindow();
 
-    // Returns if this profile has background clients. A client can be a trigger
-    // or an extension.
+    // Returns if this profile has background clients. A client is an extension.
     bool HasBackgroundClient() const;
 
     // Builds the profile specific parts of the menu. The menu passed in may
@@ -209,28 +194,6 @@ class BackgroundModeManager : public content::NotificationObserver,
     // the last call to GetNewBackgroundApps()).
     std::set<const extensions::Extension*> GetNewBackgroundApps();
 
-    // Adds a pending |trigger| as a reason to enable background mode. A pending
-    // trigger does not activate background mode, but may be registered later by
-    // RegisterPendingTriggers. Does not take ownership of |trigger|.
-    void AddPendingTrigger(BackgroundTrigger* trigger, bool should_notify_user);
-
-    // Takes ownership of the pending trigger data.
-    PendingTriggerData TakePendingTriggerData();
-
-    // If there are pending triggers.
-    bool HasPendingTrigger() const;
-
-    // Registers |trigger| as a reason to enable background mode. Does not take
-    // ownership of |trigger|. Idempotent.
-    void RegisterTrigger(BackgroundTrigger* trigger);
-
-    // Removes |trigger| from the registered and pending triggers. Idempotent.
-    void UnregisterTrigger(BackgroundTrigger* trigger);
-
-    // Checks whether |trigger| is already registered or stored as a pending
-    // trigger.
-    bool HasTrigger(BackgroundTrigger* trigger);
-
    private:
     // The cached list of BackgroundApplications.
     std::unique_ptr<BackgroundApplicationListModel> applications_;
@@ -251,14 +214,6 @@ class BackgroundModeManager : public content::NotificationObserver,
     // good about tracking changes to the background permission around
     // extension reloads, and will sometimes report spurious permission changes.
     std::set<extensions::ExtensionId> current_extensions_;
-
-    // This class does not own the triggers. If a trigger does not outlive this
-    // class it must be unregistered before destruction.
-    PendingTriggerData pending_trigger_data_;
-
-    // This class does not own the triggers. If a trigger does not outlive this
-    // class it must be unregistered before destruction.
-    std::set<BackgroundTrigger*> registered_triggers_;
   };
 
   using BackgroundModeInfoMap =
@@ -367,16 +322,12 @@ class BackgroundModeManager : public content::NotificationObserver,
   void EnableBackgroundMode();
 
   // Returns if any profile on the system has a background client.
-  // A client can be a trigger or an extension.
-  // (virtual to allow overriding in unit tests)
+  // A client is an extension. (virtual to allow overriding in unit tests)
   virtual bool HasBackgroundClient() const;
 
-  // Returns if there are background clients for a profile. A client can be a
-  // trigger or an extension.
+  // Returns if there are background clients for a profile. A client is an
+  // extension.
   virtual bool HasBackgroundClientForProfile(const Profile* profile) const;
-
-  // Returns if the system has any pending triggers, for all profiles.
-  bool HasPendingTrigger() const;
 
   // Returns true if we should be in background mode.
   bool ShouldBeInBackgroundMode() const;
@@ -448,6 +399,10 @@ class BackgroundModeManager : public content::NotificationObserver,
   // app).
   bool keep_alive_for_test_ = false;
 
+  // Tracks the number of "background app installed" notifications shown to the
+  // user. Used for testing.
+  int client_installed_notifications_ = 0;
+
   // Set to true when background mode is suspended.
   bool background_mode_suspended_ = false;
 
@@ -455,7 +410,7 @@ class BackgroundModeManager : public content::NotificationObserver,
   // require file system or registry access.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<BackgroundModeManager> weak_factory_;
+  base::WeakPtrFactory<BackgroundModeManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundModeManager);
 };

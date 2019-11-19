@@ -9,17 +9,21 @@
 #include <utility>
 
 #include "base/component_export.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/request_priority.h"
+#include "net/url_request/url_request_job.h"
 #include "services/network/public/cpp/data_element.h"
+#include "services/network/public/cpp/network_isolation_key_mojom_traits.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
-#include "services/network/public/mojom/chunked_data_pipe_getter.mojom-shared.h"
+#include "services/network/public/mojom/chunked_data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-shared.h"
 
@@ -45,6 +49,28 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
+    StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
+                 network::ResourceRequest::TrustedParams> {
+  static const net::NetworkIsolationKey& network_isolation_key(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    return trusted_params.network_isolation_key;
+  }
+  static network::mojom::UpdateNetworkIsolationKeyOnRedirect
+  update_network_isolation_key_on_redirect(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    return trusted_params.update_network_isolation_key_on_redirect;
+  }
+  static bool disable_secure_dns(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    return trusted_params.disable_secure_dns;
+  }
+
+  static bool Read(network::mojom::TrustedUrlRequestParamsDataView data,
+                   network::ResourceRequest::TrustedParams* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     StructTraits<network::mojom::URLRequestDataView, network::ResourceRequest> {
   static const std::string& method(const network::ResourceRequest& request) {
     return request.method;
@@ -54,10 +80,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   }
   static const GURL& site_for_cookies(const network::ResourceRequest& request) {
     return request.site_for_cookies;
-  }
-  static const base::Optional<url::Origin>& top_frame_origin(
-      const network::ResourceRequest& request) {
-    return request.top_frame_origin;
   }
   static bool attach_same_site_cookies(
       const network::ResourceRequest& request) {
@@ -71,15 +93,35 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.request_initiator;
   }
+  static const base::Optional<url::Origin>& isolated_world_origin(
+      const network::ResourceRequest& request) {
+    return request.isolated_world_origin;
+  }
   static const GURL& referrer(const network::ResourceRequest& request) {
+    // TODO(crbug.com/912680, crbug.com/1020592): Move this back to
+    // NetworkServiceNetworkDelegate when the current cause of referrer
+    // mismatches is found.
+    if (request.referrer != net::URLRequestJob::ComputeReferrerForPolicy(
+                                request.referrer_policy, request.referrer,
+                                request.request_initiator, request.url)) {
+      // Record information to help debug issues like http://crbug.com/422871.
+      if (request.url.SchemeIsHTTPOrHTTPS()) {
+        auto referrer_policy = request.referrer_policy;
+        base::debug::Alias(&referrer_policy);
+        DEBUG_ALIAS_FOR_GURL(target_buf, request.url);
+        DEBUG_ALIAS_FOR_GURL(referrer_buf, request.referrer);
+        DEBUG_ALIAS_FOR_GURL(
+            initiator_buf,
+            request.request_initiator.value_or(url::Origin()).GetURL())
+        base::debug::DumpWithoutCrashing();
+      }
+    }
+
     return request.referrer;
   }
   static net::URLRequest::ReferrerPolicy referrer_policy(
       const network::ResourceRequest& request) {
     return request.referrer_policy;
-  }
-  static bool is_prerendering(const network::ResourceRequest& request) {
-    return request.is_prerendering;
   }
   static const net::HttpRequestHeaders& headers(
       const network::ResourceRequest& request) {
@@ -92,21 +134,12 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static int32_t load_flags(const network::ResourceRequest& request) {
     return request.load_flags;
   }
-  static bool allow_credentials(const network::ResourceRequest& request) {
-    return request.allow_credentials;
-  }
-  static int32_t plugin_child_id(const network::ResourceRequest& request) {
-    return request.plugin_child_id;
-  }
   static int32_t resource_type(const network::ResourceRequest& request) {
     return request.resource_type;
   }
   static net::RequestPriority priority(
       const network::ResourceRequest& request) {
     return request.priority;
-  }
-  static int32_t appcache_host_id(const network::ResourceRequest& request) {
-    return request.appcache_host_id;
   }
   static bool should_reset_appcache(const network::ResourceRequest& request) {
     return request.should_reset_appcache;
@@ -118,10 +151,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.cors_preflight_policy;
   }
-  static int32_t service_worker_provider_id(
-      const network::ResourceRequest& request) {
-    return request.service_worker_provider_id;
-  }
   static bool originated_from_service_worker(
       const network::ResourceRequest& request) {
     return request.originated_from_service_worker;
@@ -129,17 +158,23 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static bool skip_service_worker(const network::ResourceRequest& request) {
     return request.skip_service_worker;
   }
-  static network::mojom::FetchRequestMode fetch_request_mode(
-      const network::ResourceRequest& request) {
-    return request.fetch_request_mode;
+  static bool corb_detachable(const network::ResourceRequest& request) {
+    return request.corb_detachable;
   }
-  static network::mojom::FetchCredentialsMode fetch_credentials_mode(
-      const network::ResourceRequest& request) {
-    return request.fetch_credentials_mode;
+  static bool corb_excluded(const network::ResourceRequest& request) {
+    return request.corb_excluded;
   }
-  static network::mojom::FetchRedirectMode fetch_redirect_mode(
+  static network::mojom::RequestMode mode(
       const network::ResourceRequest& request) {
-    return request.fetch_redirect_mode;
+    return request.mode;
+  }
+  static network::mojom::CredentialsMode credentials_mode(
+      const network::ResourceRequest& request) {
+    return request.credentials_mode;
+  }
+  static network::mojom::RedirectMode redirect_mode(
+      const network::ResourceRequest& request) {
+    return request.redirect_mode;
   }
   static const std::string& fetch_integrity(
       const network::ResourceRequest& request) {
@@ -148,10 +183,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static int32_t fetch_request_context_type(
       const network::ResourceRequest& request) {
     return request.fetch_request_context_type;
-  }
-  static network::mojom::RequestContextFrameType fetch_frame_type(
-      const network::ResourceRequest& request) {
-    return request.fetch_frame_type;
   }
   static const scoped_refptr<network::ResourceRequestBody>& request_body(
       const network::ResourceRequest& request) {
@@ -181,18 +212,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static int32_t transition_type(const network::ResourceRequest& request) {
     return request.transition_type;
   }
-  static bool allow_download(const network::ResourceRequest& request) {
-    return request.allow_download;
-  }
   static bool report_raw_headers(const network::ResourceRequest& request) {
     return request.report_raw_headers;
   }
   static int32_t previews_state(const network::ResourceRequest& request) {
     return request.previews_state;
-  }
-  static bool initiated_in_secure_context(
-      const network::ResourceRequest& request) {
-    return request.initiated_in_secure_context;
   }
   static bool upgrade_if_insecure(const network::ResourceRequest& request) {
     return request.upgrade_if_insecure;
@@ -219,6 +243,25 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const base::Optional<base::UnguessableToken>& fetch_window_id(
       const network::ResourceRequest& request) {
     return request.fetch_window_id;
+  }
+  static const base::Optional<std::string>& devtools_request_id(
+      const network::ResourceRequest& request) {
+    return request.devtools_request_id;
+  }
+  static bool is_signed_exchange_prefetch_cache_enabled(
+      const network::ResourceRequest& request) {
+    return request.is_signed_exchange_prefetch_cache_enabled;
+  }
+  static bool obey_origin_policy(const network::ResourceRequest& request) {
+    return request.obey_origin_policy;
+  }
+  static const base::Optional<network::ResourceRequest::TrustedParams>&
+  trusted_params(const network::ResourceRequest& request) {
+    return request.trusted_params;
+  }
+  static const base::Optional<base::UnguessableToken>& recursive_prefetch_token(
+      const network::ResourceRequest& request) {
+    return request.recursive_prefetch_token;
   }
 
   static bool Read(network::mojom::URLRequestDataView data,
@@ -263,14 +306,12 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::DataElement& element) {
     return element.type_;
   }
-  static base::span<const uint8_t> buf(const network::DataElement& element) {
+  static std::vector<uint8_t> buf(const network::DataElement& element) {
     if (element.bytes_) {
-      return base::make_span(reinterpret_cast<const uint8_t*>(element.bytes_),
-                             element.length_);
+      return std::vector<uint8_t>(element.bytes_,
+                                  element.bytes_ + element.length_);
     }
-    return base::make_span(
-        reinterpret_cast<const uint8_t*>(element.buf_.data()),
-        element.buf_.size());
+    return std::move(element.buf_);
   }
   static const base::FilePath& path(const network::DataElement& element) {
     return element.path_;
@@ -281,16 +322,16 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
   static const std::string& blob_uuid(const network::DataElement& element) {
     return element.blob_uuid_;
   }
-  static network::mojom::DataPipeGetterPtrInfo data_pipe_getter(
+  static mojo::PendingRemote<network::mojom::DataPipeGetter> data_pipe_getter(
       const network::DataElement& element) {
     if (element.type_ != network::mojom::DataElementType::kDataPipe)
-      return nullptr;
-    return element.CloneDataPipeGetter().PassInterface();
+      return mojo::NullRemote();
+    return element.CloneDataPipeGetter();
   }
-  static network::mojom::ChunkedDataPipeGetterPtrInfo chunked_data_pipe_getter(
-      const network::DataElement& element) {
+  static mojo::PendingRemote<network::mojom::ChunkedDataPipeGetter>
+  chunked_data_pipe_getter(const network::DataElement& element) {
     if (element.type_ != network::mojom::DataElementType::kChunkedDataPipe)
-      return nullptr;
+      return mojo::NullRemote();
     return const_cast<network::DataElement&>(element)
         .ReleaseChunkedDataPipeGetter();
   }

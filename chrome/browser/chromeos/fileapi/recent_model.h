@@ -20,7 +20,7 @@
 #include "chrome/browser/chromeos/fileapi/recent_file.h"
 #include "chrome/browser/chromeos/fileapi/recent_source.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 class GURL;
 class Profile;
@@ -111,7 +111,7 @@ class RecentModel : public KeyedService {
   std::priority_queue<RecentFile, std::vector<RecentFile>, RecentFileComparator>
       intermediate_files_;
 
-  base::WeakPtrFactory<RecentModel> weak_ptr_factory_;
+  base::WeakPtrFactory<RecentModel> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RecentModel);
 };

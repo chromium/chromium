@@ -23,13 +23,9 @@
 namespace content {
 
 // Tests of the blob: URL scheme.
-class BlobUrlBrowserTest : public ContentBrowserTest,
-                           public testing::WithParamInterface<bool> {
+class BlobUrlBrowserTest : public ContentBrowserTest {
  public:
-  BlobUrlBrowserTest() {
-    if (GetParam())
-      scoped_feature_list_.InitAndEnableFeature(blink::features::kMojoBlobURLs);
-  }
+  BlobUrlBrowserTest() = default;
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -38,17 +34,13 @@ class BlobUrlBrowserTest : public ContentBrowserTest,
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-
   DISALLOW_COPY_AND_ASSIGN(BlobUrlBrowserTest);
 };
 
-INSTANTIATE_TEST_SUITE_P(_, BlobUrlBrowserTest, ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(BlobUrlBrowserTest, LinkToUniqueOriginBlob) {
+IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, LinkToUniqueOriginBlob) {
   // Use a data URL to obtain a test page in a unique origin. The page
   // contains a link to a "blob:null/SOME-GUID-STRING" URL.
-  NavigateToURL(
+  EXPECT_TRUE(NavigateToURL(
       shell(),
       GURL("data:text/html,<body><script>"
            "var link = document.body.appendChild(document.createElement('a'));"
@@ -56,7 +48,7 @@ IN_PROC_BROWSER_TEST_P(BlobUrlBrowserTest, LinkToUniqueOriginBlob) {
            "link.href = URL.createObjectURL(new Blob(['potato']));"
            "link.target = '_blank';"
            "link.id = 'click_me';"
-           "</script></body>"));
+           "</script></body>")));
 
   // Click the link.
   ShellAddedObserver new_shell_observer;
@@ -79,11 +71,11 @@ IN_PROC_BROWSER_TEST_P(BlobUrlBrowserTest, LinkToUniqueOriginBlob) {
   EXPECT_EQ("null potato", page_content);
 }
 
-IN_PROC_BROWSER_TEST_P(BlobUrlBrowserTest, LinkToSameOriginBlob) {
+IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, LinkToSameOriginBlob) {
   // Using an http page, click a link that opens a popup to a same-origin blob.
   GURL url = embedded_test_server()->GetURL("chromium.org", "/title1.html");
   url::Origin origin = url::Origin::Create(url);
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 
   ShellAddedObserver new_shell_observer;
   EXPECT_TRUE(ExecuteScript(
@@ -111,12 +103,12 @@ IN_PROC_BROWSER_TEST_P(BlobUrlBrowserTest, LinkToSameOriginBlob) {
 }
 
 // Regression test for https://crbug.com/646278
-IN_PROC_BROWSER_TEST_P(BlobUrlBrowserTest, LinkToSameOriginBlobWithAuthority) {
+IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, LinkToSameOriginBlobWithAuthority) {
   // Using an http page, click a link that opens a popup to a same-origin blob
   // that has a spoofy authority section applied. This should be blocked.
   GURL url = embedded_test_server()->GetURL("chromium.org", "/title1.html");
   url::Origin origin = url::Origin::Create(url);
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 
   ShellAddedObserver new_shell_observer;
   EXPECT_TRUE(ExecuteScript(
@@ -149,12 +141,12 @@ IN_PROC_BROWSER_TEST_P(BlobUrlBrowserTest, LinkToSameOriginBlobWithAuthority) {
 }
 
 // Regression test for https://crbug.com/646278
-IN_PROC_BROWSER_TEST_P(BlobUrlBrowserTest, ReplaceStateToAddAuthorityToBlob) {
+IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, ReplaceStateToAddAuthorityToBlob) {
   // history.replaceState from a validly loaded blob URL shouldn't allow adding
   // an authority to the inner URL, which would be spoofy.
   GURL url = embedded_test_server()->GetURL("chromium.org", "/title1.html");
   url::Origin origin = url::Origin::Create(url);
-  NavigateToURL(shell(), url);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 
   ShellAddedObserver new_shell_observer;
   EXPECT_TRUE(ExecuteScript(

@@ -6,44 +6,63 @@
 #define FUCHSIA_RUNNERS_COMMON_WEB_CONTENT_RUNNER_H_
 
 #include <fuchsia/sys/cpp/fidl.h>
+#include <fuchsia/web/cpp/fidl.h>
 #include <memory>
 #include <set>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/fuchsia/scoped_service_binding.h"
-#include "base/fuchsia/service_directory.h"
 #include "base/macros.h"
-#include "fuchsia/fidl/chromium/web/cpp/fidl.h"
+#include "base/optional.h"
 
 class WebComponent;
 
 // sys::Runner that instantiates components hosting standard web content.
 class WebContentRunner : public fuchsia::sys::Runner {
  public:
+  using CreateContextCallback = base::OnceCallback<fuchsia::web::ContextPtr()>;
+
   // Creates and returns a web.Context with a default path and parameters,
   // and with access to the same services as this Runner. The returned binding
   // is configured to exit this process on error.
-  static chromium::web::ContextPtr CreateDefaultWebContext();
+  static fuchsia::web::ContextPtr CreateDefaultWebContext(
+      fuchsia::web::ContextFeatureFlags features);
 
-  // |service_directory|: ServiceDirectory into which this Runner will be
+  // Creates and returns a web.Context built with |create_params|.
+  // The returned binding is configured to exit this process on error.
+  static fuchsia::web::ContextPtr CreateWebContext(
+      fuchsia::web::CreateContextParams create_params);
+
+  // Returns a CreateContextParams that can be used as a base for creating a
+  // web.Context with a custom configuration.
+  // An incognito web.Context will be created if |data_directory| is unbound.
+  static fuchsia::web::CreateContextParams BuildCreateContextParams(
+      fidl::InterfaceHandle<fuchsia::io::Directory> data_directory,
+      fuchsia::web::ContextFeatureFlags features);
+
+  // |outgoing_directory|: OutgoingDirectory into which this Runner will be
   //   published. |on_idle_closure| will be invoked when the final client of the
   //   published service disconnects, even if one or more Components are still
   //   active.
-  // |content|: Context (e.g. persisted profile storage) under which all web
-  //   content launched through this Runner instance will be run.
-  // |on_idle_closure|: A callback which is invoked when the WebContentRunner
-  //   has entered an idle state and may be safely torn down.
-  WebContentRunner(base::fuchsia::ServiceDirectory* service_directory,
-                   chromium::web::ContextPtr context,
-                   base::OnceClosure on_idle_closure);
+  // |create_context_callback|: A callback that, when invoked, connects a
+  //    fuchsia.web.Context under which all web content launched through this
+  //    Runner instance will be run.
+  WebContentRunner(sys::OutgoingDirectory* outgoing_directory,
+                   CreateContextCallback create_context_callback);
+
+  // Alternative constructor for unpublished Runners.
+  explicit WebContentRunner(fuchsia::web::ContextPtr context);
+
   ~WebContentRunner() override;
 
-  chromium::web::Context* context() { return context_.get(); }
+  // Gets a pointer to this runner's Context, creating one if needed.
+  fuchsia::web::Context* GetContext();
 
   // Used by WebComponent instances to signal that the ComponentController
   // channel was dropped, and therefore the component should be destroyed.
-  void DestroyComponent(WebComponent* component);
+  virtual void DestroyComponent(WebComponent* component);
 
   // fuchsia::sys::Runner implementation.
   void StartComponent(fuchsia::sys::Package package,
@@ -52,28 +71,33 @@ class WebContentRunner : public fuchsia::sys::Runner {
                           controller_request) override;
 
   // Used by tests to asynchronously access the first WebComponent.
-  void GetWebComponentForTest(base::OnceCallback<void(WebComponent*)> callback);
+  void SetWebComponentCreatedCallbackForTest(
+      base::RepeatingCallback<void(WebComponent*)> callback);
 
- protected:
   // Registers a WebComponent, or specialization, with this Runner.
   void RegisterComponent(std::unique_ptr<WebComponent> component);
 
- private:
-  void RunOnIdleClosureIfValid();
+ protected:
+  base::RepeatingCallback<void(WebComponent*)>
+  web_component_created_callback_for_test() const {
+    return web_component_created_callback_for_test_;
+  }
 
-  chromium::web::ContextPtr context_;
+ private:
+  // If set, invoked whenever a WebComponent is created.
+  base::RepeatingCallback<void(WebComponent*)>
+      web_component_created_callback_for_test_;
+
+  CreateContextCallback create_context_callback_;
+
+  fuchsia::web::ContextPtr context_;
   std::set<std::unique_ptr<WebComponent>, base::UniquePtrComparator>
       components_;
 
   // Publishes this Runner into the service directory specified at construction.
-  base::fuchsia::ScopedServiceBinding<fuchsia::sys::Runner> service_binding_;
-
-  // Run when no components remain, or the last |service_binding_| client
-  // disconnects, to quit the Runner.
-  base::OnceClosure on_idle_closure_;
-
-  // Test-only callback for GetWebComponentForTest.
-  base::OnceCallback<void(WebComponent*)> web_component_test_callback_;
+  // This is not set for child runner instances.
+  base::Optional<base::fuchsia::ScopedServiceBinding<fuchsia::sys::Runner>>
+      service_binding_;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentRunner);
 };

@@ -24,10 +24,10 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
-#include "storage/browser/fileapi/external_mount_points.h"
-#include "storage/browser/fileapi/isolated_context.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/isolated_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
@@ -81,7 +81,7 @@ class FileSystemProviderMountPathUtilTest : public testing::Test {
         FakeExtensionProvider::Create(kExtensionId));
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* profile_;  // Owned by TestingProfileManager.
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
@@ -211,15 +211,13 @@ TEST_F(FileSystemProviderMountPathUtilTest, Parser_IsolatedURL) {
   // Create an isolated URL for the original one.
   storage::IsolatedContext* const isolated_context =
       storage::IsolatedContext::GetInstance();
-  const std::string isolated_file_system_id =
+  const storage::IsolatedContext::ScopedFSHandle isolated_file_system =
       isolated_context->RegisterFileSystemForPath(
-          storage::kFileSystemTypeProvided,
-          url.filesystem_id(),
-          url.path(),
+          storage::kFileSystemTypeProvided, url.filesystem_id(), url.path(),
           NULL);
 
   const base::FilePath isolated_virtual_path =
-      isolated_context->CreateVirtualRootPath(isolated_file_system_id)
+      isolated_context->CreateVirtualRootPath(isolated_file_system.id())
           .Append(kFilePath.BaseName().value());
 
   const storage::FileSystemURL isolated_url =

@@ -32,10 +32,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FILEAPI_BLOB_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view_or_blob_or_usv_string.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/core/fileapi/url_registry.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
+#include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -55,15 +58,14 @@ class CORE_EXPORT Blob : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static Blob* Create(ExecutionContext*, ExceptionState&) {
+  static Blob* Create(ExecutionContext*) {
     return MakeGarbageCollected<Blob>(BlobDataHandle::Create());
   }
 
   static Blob* Create(
       ExecutionContext*,
       const HeapVector<ArrayBufferOrArrayBufferViewOrBlobOrUSVString>&,
-      const BlobPropertyBag*,
-      ExceptionState&);
+      const BlobPropertyBag*);
 
   static Blob* Create(scoped_refptr<BlobDataHandle> blob_data_handle) {
     return MakeGarbageCollected<Blob>(std::move(blob_data_handle));
@@ -76,28 +78,31 @@ class CORE_EXPORT Blob : public ScriptWrappable,
   explicit Blob(scoped_refptr<BlobDataHandle>);
   ~Blob() override;
 
-  virtual unsigned long long size() const { return blob_data_handle_->size(); }
-  virtual Blob* slice(long long start,
-                      long long end,
+  virtual uint64_t size() const { return blob_data_handle_->size(); }
+  virtual Blob* slice(int64_t start,
+                      int64_t end,
                       const String& content_type,
                       ExceptionState&) const;
 
   // To allow ExceptionState to be passed in last, manually enumerate the
   // optional argument overloads.
   Blob* slice(ExceptionState& exception_state) const {
-    return slice(0, std::numeric_limits<long long>::max(), String(),
+    return slice(0, std::numeric_limits<int64_t>::max(), String(),
                  exception_state);
   }
-  Blob* slice(long long start, ExceptionState& exception_state) const {
-    return slice(start, std::numeric_limits<long long>::max(), String(),
+  Blob* slice(int64_t start, ExceptionState& exception_state) const {
+    return slice(start, std::numeric_limits<int64_t>::max(), String(),
                  exception_state);
   }
-  Blob* slice(long long start,
-              long long end,
+  Blob* slice(int64_t start,
+              int64_t end,
               ExceptionState& exception_state) const {
     return slice(start, end, String(), exception_state);
   }
 
+  ReadableStream* stream(ScriptState* script_state) const;
+  ScriptPromise text(ScriptState* script_state);
+  ScriptPromise arrayBuffer(ScriptState* script_state);
   String type() const { return blob_data_handle_->GetType(); }
   String Uuid() const { return blob_data_handle_->Uuid(); }
   scoped_refptr<BlobDataHandle> GetBlobDataHandle() const {
@@ -113,7 +118,9 @@ class CORE_EXPORT Blob : public ScriptWrappable,
 
   // URLRegistrable to support PublicURLs.
   URLRegistry& Registry() const final;
-  mojom::blink::BlobPtr AsMojoBlob() final;
+  bool IsMojoBlob() final;
+  void CloneMojoBlob(mojo::PendingReceiver<mojom::blink::Blob>) final;
+  mojo::PendingRemote<mojom::blink::Blob> AsMojoBlob();
 
   // ImageBitmapSource implementation
   bool IsBlob() const override { return true; }
@@ -123,9 +130,7 @@ class CORE_EXPORT Blob : public ScriptWrappable,
       BlobData*,
       const HeapVector<ArrayBufferOrArrayBufferViewOrBlobOrUSVString>& parts,
       bool normalize_line_endings_to_native);
-  static void ClampSliceOffsets(long long size,
-                                long long& start,
-                                long long& end);
+  static void ClampSliceOffsets(uint64_t size, int64_t& start, int64_t& end);
 
   // Called by the Blob and File constructors when processing the 'type'
   // option per the FileAPI standard. Returns "" if |type| contains any
@@ -134,6 +139,10 @@ class CORE_EXPORT Blob : public ScriptWrappable,
 
  private:
   Blob() = delete;
+  // Helper called by text() and arrayBuffer(). The operations only differ by
+  // 1 line, depending on the read_type.
+  ScriptPromise ReadBlobInternal(ScriptState* script_state,
+                                 FileReaderLoader::ReadType read_type);
 
   scoped_refptr<BlobDataHandle> blob_data_handle_;
 };

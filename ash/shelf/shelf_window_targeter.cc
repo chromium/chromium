@@ -4,12 +4,12 @@
 
 #include "ash/shelf/shelf_window_targeter.h"
 
-#include "ash/public/cpp/session_types.h"
+#include "ash/public/cpp/session/session_types.h"
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_constants.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ui/aura/window.h"
@@ -82,13 +82,15 @@ void ShelfWindowTargeter::WillChangeVisibilityState(
   if (new_state == SHELF_VISIBLE) {
     // Let clicks at the very top of the shelf through so windows can be
     // resized with the bottom-right corner and bottom edge.
-    mouse_insets =
-        GetInsetsForAlignment(kWorkspaceAreaVisibleInset, shelf_->alignment());
+    mouse_insets = GetInsetsForAlignment(
+        ShelfConfig::Get()->workspace_area_visible_inset(),
+        shelf_->alignment());
   } else if (new_state == SHELF_AUTO_HIDE) {
     // Extend the touch hit target out a bit to allow users to drag shelf out
     // while hidden.
-    touch_insets = GetInsetsForAlignment(-kWorkspaceAreaAutoHideInset,
-                                         shelf_->alignment());
+    touch_insets = GetInsetsForAlignment(
+        -ShelfConfig::Get()->workspace_area_auto_hide_inset(),
+        shelf_->alignment());
   }
 
   SetInsets(mouse_insets, touch_insets);

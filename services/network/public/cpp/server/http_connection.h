@@ -10,6 +10,8 @@
 
 #include "base/macros.h"
 #include "base/optional.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
@@ -25,7 +27,7 @@ class WebSocket;
 class HttpConnection {
  public:
   HttpConnection(int id,
-                 mojom::TCPConnectedSocketPtr socket,
+                 mojo::PendingRemote<mojom::TCPConnectedSocket> socket,
                  mojo::ScopedDataPipeConsumerHandle socket_receive_handle,
                  mojo::ScopedDataPipeProducerHandle socket_send_handle,
                  const net::IPEndPoint& peer_addr);
@@ -57,7 +59,7 @@ class HttpConnection {
 
  private:
   const int id_;
-  const mojom::TCPConnectedSocketPtr socket_;
+  const mojo::Remote<mojom::TCPConnectedSocket> socket_;
 
   // Stores data that has been read from the server but not yet parsed into an
   // HTTP request.

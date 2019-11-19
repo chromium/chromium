@@ -7,6 +7,7 @@
 #include <map>
 #include <string>
 
+#include "base/guid.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -22,17 +23,47 @@ const base::char16 kInvalidChars[] = {
   0
 };
 
+std::string PermanentNodeTypeToGuid(BookmarkNode::Type type) {
+  switch (type) {
+    case BookmarkNode::BOOKMARK_BAR:
+      return BookmarkNode::kBookmarkBarNodeGuid;
+    case BookmarkNode::OTHER_NODE:
+      return BookmarkNode::kOtherBookmarksNodeGuid;
+    case BookmarkNode::MOBILE:
+      return BookmarkNode::kMobileBookmarksNodeGuid;
+    case BookmarkNode::FOLDER:
+      return BookmarkNode::kManagedNodeGuid;
+    case BookmarkNode::URL:
+      NOTREACHED();
+      return std::string();
+  }
+  NOTREACHED();
+  return std::string();
+}
+
 }  // namespace
 
 // BookmarkNode ---------------------------------------------------------------
 
 // static
 const int64_t BookmarkNode::kInvalidSyncTransactionVersion = -1;
+const char BookmarkNode::kRootNodeGuid[] =
+    "00000000-0000-4000-A000-000000000001";
+const char BookmarkNode::kBookmarkBarNodeGuid[] =
+    "00000000-0000-4000-A000-000000000002";
+const char BookmarkNode::kOtherBookmarksNodeGuid[] =
+    "00000000-0000-4000-A000-000000000003";
+const char BookmarkNode::kMobileBookmarksNodeGuid[] =
+    "00000000-0000-4000-A000-000000000004";
+const char BookmarkNode::kManagedNodeGuid[] =
+    "00000000-0000-4000-A000-000000000005";
 
-BookmarkNode::BookmarkNode(const GURL& url) : BookmarkNode(0, url, false) {}
+std::string BookmarkNode::RootNodeGuid() {
+  return BookmarkNode::kRootNodeGuid;
+}
 
-BookmarkNode::BookmarkNode(int64_t id, const GURL& url)
-    : BookmarkNode(id, url, false) {}
+BookmarkNode::BookmarkNode(int64_t id, const std::string& guid, const GURL& url)
+    : BookmarkNode(id, guid, url, url.is_empty() ? FOLDER : URL, false) {}
 
 BookmarkNode::~BookmarkNode() = default;
 
@@ -107,13 +138,21 @@ const GURL& BookmarkNode::GetTitledUrlNodeUrl() const {
   return url_;
 }
 
-BookmarkNode::BookmarkNode(int64_t id, const GURL& url, bool is_permanent_node)
+BookmarkNode::BookmarkNode(int64_t id,
+                           const std::string& guid,
+                           const GURL& url,
+                           Type type,
+                           bool is_permanent_node)
     : id_(id),
+      guid_(guid),
       url_(url),
-      type_(url_.is_empty() ? FOLDER : URL),
+      type_(type),
       date_added_(base::Time::Now()),
       favicon_type_(favicon_base::IconType::kInvalid),
-      is_permanent_node_(is_permanent_node) {}
+      is_permanent_node_(is_permanent_node) {
+  DCHECK((type == URL) != url.is_empty());
+  DCHECK(base::IsValidGUID(guid));
+}
 
 void BookmarkNode::InvalidateFavicon() {
   icon_url_.reset();
@@ -124,13 +163,15 @@ void BookmarkNode::InvalidateFavicon() {
 
 // BookmarkPermanentNode -------------------------------------------------------
 
-BookmarkPermanentNode::BookmarkPermanentNode(int64_t id)
-    : BookmarkNode(id, GURL(), true) {}
+BookmarkPermanentNode::BookmarkPermanentNode(int64_t id, Type type)
+    : BookmarkNode(id, PermanentNodeTypeToGuid(type), GURL(), type, true) {
+  DCHECK(type != URL);
+}
 
 BookmarkPermanentNode::~BookmarkPermanentNode() = default;
 
 bool BookmarkPermanentNode::IsVisible() const {
-  return visible_ || !empty();
+  return visible_ || !children().empty();
 }
 
 }  // namespace bookmarks

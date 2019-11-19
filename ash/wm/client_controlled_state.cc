@@ -11,7 +11,6 @@
 #include "ash/screen_util.h"
 #include "ash/shell.h"
 #include "ash/wm/screen_pinning_controller.h"
-#include "ash/wm/window_parenting_utils.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_state_delegate.h"
@@ -25,7 +24,6 @@
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
-namespace wm {
 
 namespace {
 // |kMinimumOnScreenArea + 1| is used to avoid adjusting loop.
@@ -43,10 +41,13 @@ void ClientControlledState::AdjustBoundsForMinimumWindowVisibility(
 }
 
 ClientControlledState::ClientControlledState(std::unique_ptr<Delegate> delegate)
-    : BaseState(mojom::WindowStateType::DEFAULT),
-      delegate_(std::move(delegate)) {}
+    : BaseState(WindowStateType::kDefault), delegate_(std::move(delegate)) {}
 
 ClientControlledState::~ClientControlledState() = default;
+
+void ClientControlledState::ResetDelegate() {
+  delegate_.reset();
+}
 
 void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
                                                    const WMEvent* event) {
@@ -61,9 +62,9 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
         Shell::Get()->screen_pinning_controller()->IsPinned()) {
       return;
     }
-    mojom::WindowStateType next_state_type = GetStateForTransitionEvent(event);
+    WindowStateType next_state_type = GetStateForTransitionEvent(event);
     delegate_->HandleWindowStateRequest(window_state, next_state_type);
-    mojom::WindowStateType old_state_type = state_type_;
+    WindowStateType old_state_type = state_type_;
 
     bool was_pinned = window_state->IsPinned();
     bool was_trusted_pinned = window_state->IsTrustedPinned();
@@ -86,7 +87,7 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
     case WM_EVENT_FULLSCREEN: {
       // Reset window state
       window_state->UpdateWindowPropertiesFromStateType();
-      mojom::WindowStateType next_state = GetStateForTransitionEvent(event);
+      WindowStateType next_state = GetStateForTransitionEvent(event);
       VLOG(1) << "Processing State Transtion: event=" << event->type()
               << ", state=" << state_type_ << ", next_state=" << next_state;
       // Then ask delegate to handle the window state change.
@@ -98,19 +99,19 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
       if (window_state->CanSnap()) {
         // Get the desired window bounds for the snap state.
         gfx::Rect bounds = GetSnappedWindowBoundsInParent(
-            window_state->window(),
-            event->type() == WM_EVENT_SNAP_LEFT
-                ? mojom::WindowStateType::LEFT_SNAPPED
-                : mojom::WindowStateType::RIGHT_SNAPPED);
+            window_state->window(), event->type() == WM_EVENT_SNAP_LEFT
+                                        ? WindowStateType::kLeftSnapped
+                                        : WindowStateType::kRightSnapped);
         window_state->set_bounds_changed_by_user(true);
 
         window_state->UpdateWindowPropertiesFromStateType();
-        mojom::WindowStateType next_state = GetStateForTransitionEvent(event);
+        WindowStateType next_state = GetStateForTransitionEvent(event);
         VLOG(1) << "Processing State Transtion: event=" << event->type()
                 << ", state=" << state_type_ << ", next_state=" << next_state;
 
         // Then ask delegate to set the desired bounds for the snap state.
-        delegate_->HandleBoundsRequest(window_state, next_state, bounds);
+        delegate_->HandleBoundsRequest(window_state, next_state, bounds,
+                                       window_state->GetDisplay().id());
       }
       break;
     }
@@ -130,9 +131,24 @@ void ClientControlledState::DetachState(WindowState* window_state) {}
 
 void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
                                                   const WMEvent* event) {
+  if (!delegate_)
+    return;
   // Client is responsible for adjusting bounds after workspace bounds change.
-
-  if (event->type() == WM_EVENT_ADDED_TO_WORKSPACE) {
+  if (window_state->IsSnapped()) {
+    gfx::Rect bounds = GetSnappedWindowBoundsInParent(
+        window_state->window(), window_state->GetStateType());
+    // Then ask delegate to set the desired bounds for the snap state.
+    delegate_->HandleBoundsRequest(window_state, window_state->GetStateType(),
+                                   bounds, window_state->GetDisplay().id());
+  } else if (event->type() == WM_EVENT_DISPLAY_BOUNDS_CHANGED) {
+    // Explicitly handle the primary change because it can change the display id
+    // with no bounds change.
+    if (event->AsDisplayMetricsChangedWMEvent()->primary_changed()) {
+      const gfx::Rect bounds = window_state->window()->bounds();
+      delegate_->HandleBoundsRequest(window_state, window_state->GetStateType(),
+                                     bounds, window_state->GetDisplay().id());
+    }
+  } else if (event->type() == WM_EVENT_ADDED_TO_WORKSPACE) {
     aura::Window* window = window_state->window();
     gfx::Rect bounds = window->bounds();
     AdjustBoundsForMinimumWindowVisibility(window->GetRootWindow()->bounds(),
@@ -150,7 +166,7 @@ void ClientControlledState::HandleCompoundEvents(WindowState* window_state,
   switch (event->type()) {
     case WM_EVENT_TOGGLE_MAXIMIZE_CAPTION:
       if (window_state->IsFullscreen()) {
-        const wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+        const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
         window_state->OnWMEvent(&event);
       } else if (window_state->IsMaximized()) {
         window_state->Restore();
@@ -161,7 +177,7 @@ void ClientControlledState::HandleCompoundEvents(WindowState* window_state,
       break;
     case WM_EVENT_TOGGLE_MAXIMIZE:
       if (window_state->IsFullscreen()) {
-        const wm::WMEvent event(wm::WM_EVENT_TOGGLE_FULLSCREEN);
+        const WMEvent event(WM_EVENT_TOGGLE_FULLSCREEN);
         window_state->OnWMEvent(&event);
       } else if (window_state->IsMaximized()) {
         window_state->Restore();
@@ -194,7 +210,8 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
     return;
   switch (event->type()) {
     case WM_EVENT_SET_BOUNDS: {
-      const auto* set_bounds_event = static_cast<const SetBoundsEvent*>(event);
+      const auto* set_bounds_event =
+          static_cast<const SetBoundsWMEvent*>(event);
       const gfx::Rect& bounds = set_bounds_event->requested_bounds();
       if (set_bounds_locally_) {
         switch (next_bounds_change_animation_type_) {
@@ -210,11 +227,36 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
             break;
         }
         next_bounds_change_animation_type_ = kAnimationNone;
+
+        // For PIP, restore bounds is used to specify the ideal position.
+        // Usually this value is set in completeDrag, but for the initial
+        // position, we need to set it here.
+        if (window_state->IsPip() &&
+            window_state->GetRestoreBoundsInParent().IsEmpty())
+          window_state->SetRestoreBoundsInParent(bounds);
+
       } else if (!window_state->IsPinned()) {
         // TODO(oshima): Define behavior for pinned app.
         bounds_change_animation_duration_ = set_bounds_event->duration();
-        delegate_->HandleBoundsRequest(window_state,
-                                       window_state->GetStateType(), bounds);
+        int64_t display_id = set_bounds_event->display_id();
+        auto* window = window_state->window();
+        if (display_id == display::kInvalidDisplayId) {
+          display_id = display::Screen::GetScreen()
+                           ->GetDisplayNearestWindow(window)
+                           .id();
+        }
+#if DCHECK_IS_ON()
+        gfx::Rect bounds_in_display(bounds);
+        // The coordinates of the WindowState's parent must be same as display
+        // coordinates. The following code is only to verify this condition.
+        const aura::Window* root = window->GetRootWindow();
+        aura::Window::ConvertRectToTarget(window->parent(), root,
+                                          &bounds_in_display);
+        DCHECK_EQ(bounds_in_display.x(), bounds.x());
+        DCHECK_EQ(bounds_in_display.y(), bounds.y());
+#endif
+        delegate_->HandleBoundsRequest(
+            window_state, window_state->GetStateType(), bounds, display_id);
       }
       break;
     }
@@ -227,17 +269,16 @@ void ClientControlledState::HandleBoundsEvents(WindowState* window_state,
 }
 
 void ClientControlledState::OnWindowDestroying(WindowState* window_state) {
-  delegate_.reset();
+  ResetDelegate();
 }
 
-bool ClientControlledState::EnterNextState(
-    WindowState* window_state,
-    mojom::WindowStateType next_state_type) {
+bool ClientControlledState::EnterNextState(WindowState* window_state,
+                                           WindowStateType next_state_type) {
   // Do nothing if  we're already in the same state, or delegate has already
   // been deleted.
   if (state_type_ == next_state_type || !delegate_)
     return false;
-  mojom::WindowStateType previous_state_type = state_type_;
+  WindowStateType previous_state_type = state_type_;
   state_type_ = next_state_type;
 
   window_state->UpdateWindowPropertiesFromStateType();
@@ -252,10 +293,10 @@ bool ClientControlledState::EnterNextState(
 
   window_state->NotifyPostStateTypeChange(previous_state_type);
 
-  if (next_state_type == mojom::WindowStateType::PINNED ||
-      previous_state_type == mojom::WindowStateType::PINNED ||
-      next_state_type == mojom::WindowStateType::TRUSTED_PINNED ||
-      previous_state_type == mojom::WindowStateType::TRUSTED_PINNED) {
+  if (next_state_type == WindowStateType::kPinned ||
+      previous_state_type == WindowStateType::kPinned ||
+      next_state_type == WindowStateType::kTrustedPinned ||
+      previous_state_type == WindowStateType::kTrustedPinned) {
     Shell::Get()->screen_pinning_controller()->SetPinnedWindow(
         window_state->window());
   }
@@ -263,5 +304,4 @@ bool ClientControlledState::EnterNextState(
   return true;
 }
 
-}  // namespace wm
 }  // namespace ash

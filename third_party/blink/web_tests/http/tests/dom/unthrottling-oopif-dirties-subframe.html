@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<style>
+.spacer {
+  height: 2000px;
+}
+</style>
+
+<div class="spacer"></div>
+<iframe id="iframe" src="http://localhost:8000/dom/resources/unthrottling-oopif-dirties-subframe-frame.html"></iframe>
+
+<script>
+async_test(t => {
+  let iframe = document.getElementById("iframe");
+  iframe.addEventListener("load", evt => {
+    // rAF+timeout to make sure the iframe has been notified that it's throttled.
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        document.scrollingElement.scrollTop = 10000;
+        // rAF+timeout to wait for the unthrottling notification to be sent to the iframe.
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            // Ask the iframe to rAF and respond.
+            iframe.contentWindow.postMessage("", "*");
+          });
+        });
+      });
+    });
+  });
+  self.addEventListener("message", evt => {
+    t.step(() => {
+      assert_not_equals(evt.data, "TIMEOUT", "rAF never ran in iframe; did it get unthrottled?");
+      assert_equals(evt.data, "SUCCESS", "Unknown failure.");
+    });
+    t.done();
+  });
+});
+</script>

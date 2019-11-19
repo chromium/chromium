@@ -1,0 +1,87 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/html/list_property_update_behavior.html">
+<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
+<link rel="import" href="cups_printer_types.html">
+<link rel="import" href="cups_printers_browser_proxy.html">
+<link rel="import" href="cups_printers_entry_list_behavior.html">
+<link rel="import" href="cups_printers_entry.html">
+<link rel="import" href="../settings_shared_css.html">
+
+<dom-module id="settings-cups-saved-printers">
+  <template>
+    <style include="cups-printer-shared iron-flex iron-flex-alignment
+        iron-flex-factors">
+      :host {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #no-search-results {
+        margin-bottom: 20px;
+      }
+
+      /** Height of iron list row entry. */
+      #show-more-container {
+        min-height: var(--settings-row-min-height);
+      }
+
+      /** Border line that is the same size as a list entry's border. */
+      #show-more-line-separator {
+        border-bottom: var(--cr-separator-line);
+        left: 60px;
+        position: relative;
+        right: 20px;
+        width: 596px;
+      }
+
+      #show-more-icon {
+        --cr-icon-button-margin-end: 0;
+      }
+
+      #show-more-text {
+        flex: 1;
+      }
+    </style>
+
+    <cr-action-menu role-description="$i18n{menu}">
+      <button id="editButton" class="dropdown-item" on-click="onEditTap_">
+        $i18n{editPrinter}
+      </button>
+      <button id="removeButton" class="dropdown-item" on-click="onRemoveTap_">
+        $i18n{removePrinter}
+      </button>
+    </cr-action-menu>
+
+    <iron-list class="list-frame vertical-list flex-auto" id="printerEntryList"
+        items="[[filteredPrinters_]]">
+      <template>
+        <settings-cups-printers-entry printer-entry="[[item]]">
+        </settings-cups-printers-entry>
+      </template>
+    </iron-list>
+    <template is="dom-if" id="show-more-button-section"
+        if="[[shouldPrinterListBeCollapsed_(searchTerm, savedPrinters.*,
+            newPrinters_.*, hasShowMoreBeenTapped_)]]" restamp>
+      <div id="show-more-line-separator"></div>
+      <div class="list-frame layout horizontal" id="show-more-container">
+        <div id="show-more-text">$i18n{showMorePrinters}</div>
+        <cr-icon-button class="action-button" id="show-more-icon"
+            iron-icon="cr:expand-more"
+            on-click="onShowMoreTap_"
+            title=$i18n{showMorePrinters}>
+        </cr-icon-button>
+      </div>
+    </template>
+
+    <div id="no-search-results"
+        hidden="[[!showNoSearchResultsMessage_(searchTerm,
+            filteredPrinters_.*)]]">
+      $i18n{noSearchResults}
+    </div>
+  </template>
+  <script src="cups_saved_printers.js"></script>
+</dom-module>

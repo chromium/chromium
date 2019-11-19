@@ -1,0 +1,10 @@
+    <style include="cr-hidden-style"></style>
+    <cr-dialog id="dialog" no-cancel>
+      <div slot="title">[[strings.errorDialogTitle]]</div>
+      <div slot="body">[[strings.pageLoadFailed]]</div>
+      <div slot="button-container" hidden$="[[!reloadFn]]">
+        <cr-button class="action-button" on-click="reload">
+          [[strings.pageReload]]
+        </cr-button>
+      </div>
+    </cr-dialog>

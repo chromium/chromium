@@ -15,10 +15,12 @@
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/security_state/core/security_state.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/common/origin_util.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -30,6 +32,8 @@
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
+
+using metrics::OmniboxEventProto;
 
 LocationBarModelImpl::LocationBarModelImpl(LocationBarModelDelegate* delegate,
                                            size_t max_url_display_chars)
@@ -71,6 +75,8 @@ base::string16 LocationBarModelImpl::GetURLForDisplay() const {
 
 base::string16 LocationBarModelImpl::GetFormattedURL(
     url_formatter::FormatUrlTypes format_types) const {
+  if (!ShouldDisplayURL())
+    return base::string16{};
   GURL url(GetURL());
   // Note that we can't unescape spaces here, because if the user copies this
   // and pastes it into another program, that program may think the URL ends at
@@ -92,18 +98,17 @@ base::string16 LocationBarModelImpl::GetFormattedURL(
 
 GURL LocationBarModelImpl::GetURL() const {
   GURL url;
-  return delegate_->GetURL(&url) ? url : GURL(url::kAboutBlankURL);
+  return (ShouldDisplayURL() && delegate_->GetURL(&url))
+             ? url
+             : GURL(url::kAboutBlankURL);
 }
 
-security_state::SecurityLevel LocationBarModelImpl::GetSecurityLevel(
-    bool ignore_editing) const {
-  // When editing or empty, assume no security style.
-  if ((input_in_progress() && !ignore_editing) || !ShouldDisplayURL())
+security_state::SecurityLevel LocationBarModelImpl::GetSecurityLevel() const {
+  // When empty, assume no security style.
+  if (!ShouldDisplayURL())
     return security_state::NONE;
 
-  security_state::SecurityInfo info;
-  delegate_->GetSecurityInfo(&info);
-  return info.security_level;
+  return delegate_->GetSecurityLevel();
 }
 
 bool LocationBarModelImpl::GetDisplaySearchTerms(base::string16* search_terms) {
@@ -113,11 +118,12 @@ bool LocationBarModelImpl::GetDisplaySearchTerms(base::string16* search_terms) {
 
   // Only show the search terms if the site is secure. However, make an
   // exception before the security state is initialized to prevent a UI flicker.
-  security_state::SecurityInfo info;
-  delegate_->GetSecurityInfo(&info);
-  if (info.connection_info_initialized &&
-      info.security_level != security_state::SecurityLevel::SECURE &&
-      info.security_level != security_state::SecurityLevel::EV_SECURE) {
+  std::unique_ptr<security_state::VisibleSecurityState> visible_security_state =
+      delegate_->GetVisibleSecurityState();
+  security_state::SecurityLevel security_level = delegate_->GetSecurityLevel();
+  if (visible_security_state->connection_info_initialized &&
+      security_level != security_state::SecurityLevel::SECURE &&
+      security_level != security_state::SecurityLevel::EV_SECURE) {
     return false;
   }
 
@@ -131,6 +137,46 @@ bool LocationBarModelImpl::GetDisplaySearchTerms(base::string16* search_terms) {
   return true;
 }
 
+OmniboxEventProto::PageClassification
+LocationBarModelImpl::GetPageClassification(OmniboxFocusSource focus_source) {
+  // We may be unable to fetch the current URL during startup or shutdown when
+  // the omnibox exists but there is no attached page.
+  GURL gurl;
+  if (!delegate_->GetURL(&gurl))
+    return OmniboxEventProto::OTHER;
+
+  if (focus_source == OmniboxFocusSource::SEARCH_BUTTON)
+    return OmniboxEventProto::SEARCH_BUTTON_AS_STARTING_FOCUS;
+  if (delegate_->IsInstantNTP()) {
+    // Note that we treat OMNIBOX as the source if focus_source_ is INVALID,
+    // i.e., if input isn't actually in progress.
+    return (focus_source == OmniboxFocusSource::FAKEBOX)
+               ? OmniboxEventProto::INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS
+               : OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS;
+  }
+  if (!gurl.is_valid())
+    return OmniboxEventProto::INVALID_SPEC;
+  if (delegate_->IsNewTabPage(gurl))
+    return OmniboxEventProto::NTP;
+  if (gurl.spec() == url::kAboutBlankURL)
+    return OmniboxEventProto::BLANK;
+  if (delegate_->IsHomePage(gurl))
+    return OmniboxEventProto::HOME_PAGE;
+
+  TemplateURLService* template_url_service = delegate_->GetTemplateURLService();
+  if (template_url_service &&
+      template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+          gurl)) {
+    return GetDisplaySearchTerms(nullptr)
+               ? OmniboxEventProto::
+                     SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT
+               : OmniboxEventProto::
+                     SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT;
+  }
+
+  return OmniboxEventProto::OTHER;
+}
+
 const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
 #if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
   auto* const icon_override = delegate_->GetVectorIconOverride();
@@ -140,9 +186,26 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
   if (IsOfflinePage())
     return omnibox::kOfflinePinIcon;
 
-  switch (GetSecurityLevel(true /* ignore_editing */)) {
+  GURL url = GetURL();
+  security_state::SecurityLevel security_level = GetSecurityLevel();
+  switch (security_level) {
     case security_state::NONE:
-    case security_state::HTTP_SHOW_WARNING:
+      // Show a danger triangle icon on HTTPS pages with passive mixed content
+      // when kMarkHttpAsParameterDangerWarning is enabled.
+      if (security_state::ShouldDowngradeNeutralStyling(
+              security_level, url,
+              base::BindRepeating(&content::IsOriginSecure))) {
+        return omnibox::kNotSecureWarningIcon;
+      }
+      return omnibox::kHttpIcon;
+    case security_state::WARNING:
+      // When kMarkHttpAsParameterDangerWarning is enabled, show a danger
+      // triangle icon unless the page has a non-HTTPS secure origin.
+      if (security_state::ShouldDowngradeNeutralStyling(
+              security_level, url,
+              base::BindRepeating(&content::IsOriginSecure))) {
+        return omnibox::kNotSecureWarningIcon;
+      }
       return omnibox::kHttpIcon;
     case security_state::EV_SECURE:
     case security_state::SECURE:
@@ -150,7 +213,7 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
     case security_state::SECURE_WITH_POLICY_INSTALLED_CERT:
       return vector_icons::kBusinessIcon;
     case security_state::DANGEROUS:
-      return omnibox::kHttpsInvalidIcon;
+      return omnibox::kNotSecureWarningIcon;
     case security_state::SECURITY_LEVEL_COUNT:
       NOTREACHED();
       return omnibox::kHttpIcon;
@@ -164,67 +227,47 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
 #endif
 }
 
-base::string16 LocationBarModelImpl::GetEVCertName() const {
-  if (GetSecurityLevel(false) != security_state::EV_SECURE)
-    return base::string16();
-
-  // Note: cert is guaranteed non-NULL or the security level would be NONE.
-  scoped_refptr<net::X509Certificate> cert = delegate_->GetCertificate();
-  DCHECK(cert);
-
-  // EV are required to have an organization name and country.
-  DCHECK(!cert->subject().organization_names.empty());
-  DCHECK(!cert->subject().country_name.empty());
-  return l10n_util::GetStringFUTF16(
-      IDS_SECURE_CONNECTION_EV,
-      base::UTF8ToUTF16(cert->subject().organization_names[0]),
-      base::UTF8ToUTF16(cert->subject().country_name));
-}
-
 LocationBarModelImpl::SecureChipText LocationBarModelImpl::GetSecureChipText()
     const {
   // Note that displayed text (the first output) will be implicitly used as the
   // accessibility text unless no display text has been specified.
 
-  // Security UI study (https://crbug.com/803501): Change EV/Secure text.
-  const std::string securityUIStudyParam =
-      base::FeatureList::IsEnabled(omnibox::kSimplifyHttpsIndicator)
-          ? base::GetFieldTrialParamValueByFeature(
-                omnibox::kSimplifyHttpsIndicator,
-                OmniboxFieldTrial::kSimplifyHttpsIndicatorParameterName)
-          : std::string();
-
   if (IsOfflinePage())
     return SecureChipText(l10n_util::GetStringUTF16(IDS_OFFLINE_VERBOSE_STATE));
 
-  switch (GetSecurityLevel(false)) {
-    case security_state::HTTP_SHOW_WARNING:
+  switch (GetSecurityLevel()) {
+    case security_state::WARNING:
       return SecureChipText(
           l10n_util::GetStringUTF16(IDS_NOT_SECURE_VERBOSE_STATE));
-    case security_state::EV_SECURE:
-      if (securityUIStudyParam ==
-          OmniboxFieldTrial::kSimplifyHttpsIndicatorParameterEvToSecure)
-        return SecureChipText(
-            l10n_util::GetStringUTF16(IDS_SECURE_VERBOSE_STATE));
-      if (securityUIStudyParam ==
-          OmniboxFieldTrial::kSimplifyHttpsIndicatorParameterBothToLock)
+    case security_state::EV_SECURE: {
+      if (base::FeatureList::IsEnabled(omnibox::kSimplifyHttpsIndicator)) {
         return SecureChipText(base::string16(), l10n_util::GetStringUTF16(
                                                     IDS_SECURE_VERBOSE_STATE));
-      return SecureChipText(GetEVCertName());
+      }
+
+      // Note: Cert is guaranteed non-NULL or the security level would be NONE.
+      scoped_refptr<net::X509Certificate> cert = delegate_->GetCertificate();
+      DCHECK(cert);
+
+      // EV are required to have an organization name and country.
+      DCHECK(!cert->subject().organization_names.empty());
+      DCHECK(!cert->subject().country_name.empty());
+
+      return SecureChipText(l10n_util::GetStringFUTF16(
+          IDS_SECURE_CONNECTION_EV,
+          base::UTF8ToUTF16(cert->subject().organization_names[0]),
+          base::UTF8ToUTF16(cert->subject().country_name)));
+    }
     case security_state::SECURE:
-      if (securityUIStudyParam !=
-          OmniboxFieldTrial::kSimplifyHttpsIndicatorParameterKeepSecureChip)
-        return SecureChipText(base::string16(), l10n_util::GetStringUTF16(
-                                                    IDS_SECURE_VERBOSE_STATE));
-      return SecureChipText(
-          l10n_util::GetStringUTF16(IDS_SECURE_VERBOSE_STATE));
+      return SecureChipText(base::string16(), l10n_util::GetStringUTF16(
+                                                  IDS_SECURE_VERBOSE_STATE));
     case security_state::DANGEROUS: {
-      security_state::SecurityInfo security_info;
-      delegate_->GetSecurityInfo(&security_info);
+      std::unique_ptr<security_state::VisibleSecurityState>
+          visible_security_state = delegate_->GetVisibleSecurityState();
 
       // Don't show any text in the security indicator for sites on the billing
       // interstitial list.
-      if (security_info.malicious_content_status ==
+      if (visible_security_state->malicious_content_status ==
           security_state::MALICIOUS_CONTENT_STATUS_BILLING) {
 #if defined(OS_IOS)
         // On iOS, we never expect this status, because there are no billing
@@ -234,8 +277,9 @@ LocationBarModelImpl::SecureChipText LocationBarModelImpl::GetSecureChipText()
         return SecureChipText(base::string16());
       }
 
-      bool fails_malware_check = security_info.malicious_content_status !=
-                                 security_state::MALICIOUS_CONTENT_STATUS_NONE;
+      bool fails_malware_check =
+          visible_security_state->malicious_content_status !=
+          security_state::MALICIOUS_CONTENT_STATUS_NONE;
       return SecureChipText(l10n_util::GetStringUTF16(
           fails_malware_check ? IDS_DANGEROUS_VERBOSE_STATE
                               : IDS_NOT_SECURE_VERBOSE_STATE));

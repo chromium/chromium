@@ -43,9 +43,7 @@ class StyleResolverStats {
   USING_FAST_MALLOC(StyleResolverStats);
 
  public:
-  static std::unique_ptr<StyleResolverStats> Create() {
-    return base::WrapUnique(new StyleResolverStats);
-  }
+  StyleResolverStats() { Reset(); }
 
   void Reset();
   std::unique_ptr<TracedValue> ToTracedValue() const;
@@ -65,9 +63,6 @@ class StyleResolverStats {
   unsigned base_styles_used;
   unsigned independent_inherited_styles_propagated;
   unsigned custom_properties_applied;
-
- private:
-  StyleResolverStats() { Reset(); }
 };
 
 #define INCREMENT_STYLE_STATS_COUNTER(styleEngine, counter, n) \

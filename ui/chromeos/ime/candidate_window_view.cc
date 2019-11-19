@@ -10,10 +10,6 @@
 
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "mojo/public/cpp/bindings/type_converter.h"
-#include "services/ws/public/cpp/property_type_converters.h"
-#include "services/ws/public/mojom/window_manager.mojom.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/chromeos/ime/candidate_view.h"
 #include "ui/chromeos/ime/candidate_window_constants.h"
 #include "ui/display/display.h"
@@ -25,6 +21,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -155,7 +152,7 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent,
       was_candidate_window_open_(false),
       window_shell_id_(window_shell_id) {
   SetCanActivate(false);
-  DCHECK(parent || features::IsUsingWindowService());
+  DCHECK(parent);
   set_parent_window(parent);
   set_margins(gfx::Insets());
 
@@ -163,8 +160,8 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent,
       1, GetNativeTheme()->GetSystemColor(
              ui::NativeTheme::kColorId_MenuBorderColor)));
 
-  SetLayoutManager(
-      std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical));
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
   auxiliary_text_ = new InformationTextArea(gfx::ALIGN_RIGHT, 0);
   preedit_ = new InformationTextArea(gfx::ALIGN_LEFT, kMinPreeditAreaWidth);
   candidate_area_ = new views::View;
@@ -177,16 +174,16 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent,
     AddChildView(candidate_area_);
     AddChildView(auxiliary_text_);
     auxiliary_text_->SetBorderFromPosition(InformationTextArea::TOP);
-    candidate_area_->SetLayoutManager(
-        std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical));
+    candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kVertical));
   } else {
     AddChildView(preedit_);
     AddChildView(auxiliary_text_);
     AddChildView(candidate_area_);
     auxiliary_text_->SetAlignment(gfx::ALIGN_LEFT);
     auxiliary_text_->SetBorderFromPosition(InformationTextArea::BOTTOM);
-    candidate_area_->SetLayoutManager(
-        std::make_unique<views::BoxLayout>(views::BoxLayout::kHorizontal));
+    candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+        views::BoxLayout::Orientation::kHorizontal));
   }
 }
 
@@ -201,13 +198,13 @@ views::Widget* CandidateWindowView::InitWidget() {
 
   GetBubbleFrameView()->SetBubbleBorder(
       std::make_unique<CandidateWindowBorder>());
-  GetBubbleFrameView()->OnNativeThemeChanged(widget->GetNativeTheme());
+  GetBubbleFrameView()->OnThemeChanged();
   return widget;
 }
 
 void CandidateWindowView::UpdateVisibility() {
-  if (candidate_area_->visible() || auxiliary_text_->visible() ||
-      preedit_->visible()) {
+  if (candidate_area_->GetVisible() || auxiliary_text_->GetVisible() ||
+      preedit_->GetVisible()) {
     SizeToContents();
   } else {
     GetWidget()->Close();
@@ -251,14 +248,14 @@ void CandidateWindowView::UpdateCandidates(
         ReorderChildView(auxiliary_text_, -1);
         auxiliary_text_->SetAlignment(gfx::ALIGN_RIGHT);
         auxiliary_text_->SetBorderFromPosition(InformationTextArea::TOP);
-        candidate_area_->SetLayoutManager(
-            std::make_unique<views::BoxLayout>(views::BoxLayout::kVertical));
+        candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kVertical));
       } else {
         ReorderChildView(auxiliary_text_, 1);
         auxiliary_text_->SetAlignment(gfx::ALIGN_LEFT);
         auxiliary_text_->SetBorderFromPosition(InformationTextArea::BOTTOM);
-        candidate_area_->SetLayoutManager(
-            std::make_unique<views::BoxLayout>(views::BoxLayout::kHorizontal));
+        candidate_area_->SetLayoutManager(std::make_unique<views::BoxLayout>(
+            views::BoxLayout::Orientation::kHorizontal));
       }
     }
 
@@ -309,12 +306,14 @@ void CandidateWindowView::UpdateCandidates(
         view->SetWidths(max_shortcut_width, max_candidate_width);
     }
 
-    CandidateWindowBorder* border = static_cast<CandidateWindowBorder*>(
-        GetBubbleFrameView()->bubble_border());
+    std::unique_ptr<CandidateWindowBorder> border =
+        std::make_unique<CandidateWindowBorder>();
     if (new_candidate_window.orientation() == ui::CandidateWindow::VERTICAL)
       border->set_offset(max_shortcut_width);
     else
       border->set_offset(0);
+    GetBubbleFrameView()->SetBubbleBorder(std::move(border));
+    GetBubbleFrameView()->OnThemeChanged();
   }
   // Update the current candidate window. We'll use candidate_window_ from here.
   // Note that SelectCandidateAt() uses candidate_window_.
@@ -404,18 +403,6 @@ const char* CandidateWindowView::GetClassName() const {
 
 int CandidateWindowView::GetDialogButtons() const {
   return ui::DIALOG_BUTTON_NONE;
-}
-
-void CandidateWindowView::OnBeforeBubbleWidgetInit(
-    views::Widget::InitParams* params,
-    views::Widget* widget) const {
-  using ws::mojom::WindowManager;
-  params->mus_properties[WindowManager::kContainerId_InitProperty] =
-      mojo::ConvertTo<std::vector<uint8_t>>(
-          static_cast<int32_t>(window_shell_id_));
-  params->mus_properties[WindowManager::kDisplayId_InitProperty] =
-      mojo::ConvertTo<std::vector<uint8_t>>(
-          display::Screen::GetScreen()->GetDisplayForNewWindows().id());
 }
 
 void CandidateWindowView::ButtonPressed(views::Button* sender,

@@ -62,11 +62,10 @@ class ComputedHashes {
     std::unique_ptr<base::ListValue> file_list_;
   };
 
-  // Computes the SHA256 hash of each |block_size| chunk in |contents|, placing
-  // the results into |hashes|.
-  static void ComputeHashesForContent(const std::string& contents,
-                                      size_t block_size,
-                                      std::vector<std::string>* hashes);
+  // Returns the SHA256 hash of each |block_size| chunk in |contents|.
+  static std::vector<std::string> GetHashesForContent(
+      const std::string& contents,
+      size_t block_size);
 };
 
 }  // namespace extensions

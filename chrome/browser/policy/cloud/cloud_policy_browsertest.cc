@@ -23,8 +23,6 @@
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/cloud/cloud_policy_test_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector_factory.h"
-#include "chrome/browser/policy/test/local_policy_test_server.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -50,6 +48,7 @@
 #include "components/policy/proto/chrome_settings.pb.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/policy/test_support/local_policy_test_server.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
@@ -61,19 +60,17 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/policy/user_policy_manager_factory_chromeos.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
-#include "chromeos/dbus/cryptohome_client.h"
+#include "chromeos/dbus/cryptohome/cryptohome_client.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_names.h"
 #else
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/policy/cloud/user_cloud_policy_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/identity_test_utils.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
 using testing::AnyNumber;
@@ -211,8 +208,7 @@ class CloudPolicyTest : public InProcessBrowserTest,
 
 #if defined(OS_CHROMEOS)
     UserCloudPolicyManagerChromeOS* policy_manager =
-        UserPolicyManagerFactoryChromeOS::GetCloudPolicyManagerForProfile(
-            browser()->profile());
+        browser()->profile()->GetUserCloudPolicyManagerChromeOS();
     ASSERT_TRUE(policy_manager);
 #else
     // Mock a signed-in user. This is used by the UserCloudPolicyStore to pass
@@ -220,11 +216,10 @@ class CloudPolicyTest : public InProcessBrowserTest,
     auto* identity_manager =
         IdentityManagerFactory::GetForProfile(browser()->profile());
     ASSERT_TRUE(identity_manager);
-    identity::SetPrimaryAccount(identity_manager, GetTestUser());
+    signin::SetPrimaryAccount(identity_manager, GetTestUser());
 
     UserCloudPolicyManager* policy_manager =
-        UserCloudPolicyManagerFactory::GetForBrowserContext(
-            browser()->profile());
+        browser()->profile()->GetUserCloudPolicyManager();
     ASSERT_TRUE(policy_manager);
     policy_manager->Connect(
         g_browser_process->local_state(),
@@ -256,18 +251,16 @@ class CloudPolicyTest : public InProcessBrowserTest,
     // Give a bogus OAuth token to the |policy_manager|. This should make its
     // CloudPolicyClient fetch the DMToken.
     ASSERT_FALSE(policy_manager->core()->client()->is_registered());
-    em::DeviceRegisterRequest::Type registration_type =
+    CloudPolicyClient::RegistrationParameters parameters(
 #if defined(OS_CHROMEOS)
-        em::DeviceRegisterRequest::USER;
+        em::DeviceRegisterRequest::USER,
 #else
-        em::DeviceRegisterRequest::BROWSER;
+        em::DeviceRegisterRequest::BROWSER,
 #endif
+        em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION);
     policy_manager->core()->client()->Register(
-        registration_type, em::DeviceRegisterRequest::FLAVOR_USER_REGISTRATION,
-        em::DeviceRegisterRequest::LIFETIME_INDEFINITE,
-        em::LicenseType::UNDEFINED, "oauth_token_unused" /* oauth_token */,
-        std::string() /* client_id */, std::string() /* requisition */,
-        std::string() /* current_state_key */);
+        parameters, std::string() /* client_id */,
+        "oauth_token_unused" /* oauth_token */);
     run_loop.Run();
     Mock::VerifyAndClearExpectations(&observer);
     policy_manager->core()->client()->RemoveObserver(&observer);
@@ -294,8 +287,7 @@ class CloudPolicyTest : public InProcessBrowserTest,
 
   PolicyService* GetPolicyService() {
     ProfilePolicyConnector* profile_connector =
-        ProfilePolicyConnectorFactory::GetForBrowserContext(
-            browser()->profile());
+        browser()->profile()->GetProfilePolicyConnector();
     return profile_connector->policy_service();
   }
 

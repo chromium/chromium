@@ -42,6 +42,7 @@ enum StatusCode {
   kForbidden = 103,
   kTabCrashed,
   kTargetDetached,
+  kUnexpectedAlertOpen_Keep,
 };
 
 // Represents a WebDriver status, which may be an error or ok.
@@ -69,5 +70,9 @@ class Status {
   std::string msg_;
   std::string stack_trace_;
 };
+
+// Returns the standard error code string associated with a StatusCode, as
+// defined by W3C (https://w3c.github.io/webdriver/#dfn-error-code).
+const char* StatusCodeToString(StatusCode code);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_STATUS_H_

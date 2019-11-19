@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/gesture_detection/gesture_event_data.h"
 #include "ui/events/gesture_detection/gesture_listeners.h"
 #include "ui/events/gesture_detection/motion_event.h"
@@ -125,7 +126,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
 
     const MotionEvent::Action action = event.GetAction();
     if (action == MotionEvent::Action::DOWN) {
-      current_down_time_ = event.GetEventTime();
+      current_down_action_event_time_ = event.GetEventTime();
       current_longpress_time_ = base::TimeTicks();
       ignore_single_tap_ = false;
       scroll_event_sent_ = false;
@@ -145,7 +146,14 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
       // |Fling()| will have already signalled an end to touch-scrolling.
       if (scroll_event_sent_)
         Send(CreateGesture(ET_GESTURE_SCROLL_END, event));
-      current_down_time_ = base::TimeTicks();
+
+      // If this was the last pointer that was canceled or lifted reset the
+      // |current_down_action_event_time_| to indicate no sequence is going on.
+      if (action != MotionEvent::Action::CANCEL ||
+          !GestureConfiguration::GetInstance()
+               ->single_pointer_cancel_enabled() ||
+          event.GetPointerCount() == 1)
+        current_down_action_event_time_ = base::TimeTicks();
     } else if (action == MotionEvent::Action::MOVE) {
       if (!show_press_event_sent_ && !scroll_event_sent_) {
         max_diameter_before_show_press_ =
@@ -157,10 +165,12 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   void Send(GestureEventData gesture) {
     DCHECK(!gesture.time.is_null());
     // The only valid events that should be sent without an active touch
-    // sequence are SHOW_PRESS and TAP, potentially triggered by the double-tap
-    // delay timing out.
-    DCHECK(!current_down_time_.is_null() || gesture.type() == ET_GESTURE_TAP ||
+    // sequence are SHOW_PRESS, TAP and TAP_CANCEL, potentially triggered by
+    // the double-tap delay timing out or being cancelled.
+    DCHECK(!current_down_action_event_time_.is_null() ||
+           gesture.type() == ET_GESTURE_TAP ||
            gesture.type() == ET_GESTURE_SHOW_PRESS ||
+           gesture.type() == ET_GESTURE_TAP_CANCEL ||
            gesture.type() == ET_GESTURE_BEGIN ||
            gesture.type() == ET_GESTURE_END);
 
@@ -438,6 +448,10 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     return true;
   }
 
+  void OnTapCancel(const MotionEvent& e) override {
+    Send(CreateGesture(ET_GESTURE_TAP_CANCEL, e));
+  }
+
   void OnShowPress(const MotionEvent& e) override {
     GestureEventDetails show_press_details(ET_GESTURE_SHOW_PRESS);
     show_press_details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
@@ -453,7 +467,7 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
     // OnSingleTapUp() in this case. This assumes singleTapUp
     // gets always called before singleTapConfirmed.
     if (!ignore_single_tap_) {
-      if (e.GetEventTime() - current_down_time_ >
+      if (e.GetEventTime() - current_down_action_event_time_ >
           config_.gesture_detector_config.double_tap_timeout) {
         return OnSingleTapImpl(e, tap_count);
       } else if (!IsDoubleTapEnabled()) {
@@ -733,7 +747,9 @@ class GestureProvider::GestureListenerImpl : public ScaleGestureListener,
   ScaleGestureDetector scale_gesture_detector_;
   SnapScrollController snap_scroll_controller_;
 
-  base::TimeTicks current_down_time_;
+  // Keeps track of the event time of the first down action in current touch
+  // sequence.
+  base::TimeTicks current_down_action_event_time_;
 
   // Keeps track of the current GESTURE_LONG_PRESS event. If a context menu is
   // opened after a GESTURE_LONG_PRESS, this is used to insert a
@@ -783,7 +799,7 @@ GestureProvider::GestureProvider(const Config& config,
          !config.max_gesture_bounds_length ||
          config.min_gesture_bounds_length <= config.max_gesture_bounds_length);
   TRACE_EVENT0("input", "GestureProvider::InitGestureDetectors");
-  gesture_listener_.reset(new GestureListenerImpl(config, client));
+  gesture_listener_ = std::make_unique<GestureListenerImpl>(config, client);
   UpdateDoubleTapDetectionSupport();
 }
 
@@ -901,7 +917,11 @@ void GestureProvider::OnTouchEventHandlingEnd(const MotionEvent& event) {
         gesture_listener_->Send(
             gesture_listener_->CreateGesture(ET_GESTURE_END, event));
 
-      current_down_event_.reset();
+      if (event.GetAction() != MotionEvent::Action::CANCEL ||
+          !GestureConfiguration::GetInstance()
+               ->single_pointer_cancel_enabled() ||
+          event.GetPointerCount() == 1)
+        current_down_event_.reset();
 
       UpdateDoubleTapDetectionSupport();
       break;

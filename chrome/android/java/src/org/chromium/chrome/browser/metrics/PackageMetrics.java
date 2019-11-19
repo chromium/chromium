@@ -66,7 +66,7 @@ public class PackageMetrics {
                     pmd.codeSize += storageStats.getAppBytes();
                     pmd.dataSize += (storageStats.getDataBytes() - storageStats.getCacheBytes());
                     pmd.cacheSize += storageStats.getCacheBytes();
-                } catch (IOException | NameNotFoundException ex) {
+                } catch (IOException | NameNotFoundException | SecurityException ex) {
                     Log.e(TAG, "Error calling into queryStatsForPackage", ex);
                 }
             }

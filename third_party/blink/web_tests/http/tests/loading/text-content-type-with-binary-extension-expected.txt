@@ -2,6 +2,7 @@ main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
 frame "iframe" - didReceiveTitle: 
+frame "iframe" - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources/binaryData.sitx', http method GET
 frame "iframe" - DidStartNavigation
 main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame

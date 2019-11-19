@@ -102,21 +102,21 @@ void TestInterfaces::ConfigureForTestWithURL(const blink::WebURL& test_url,
   // execute the same code regardless of the protocol mode, e.g. for ease of
   // debugging a web test issue.
   if (!protocol_mode)
-    test_runner_->setShouldDumpAsLayout(true);
+    test_runner_->SetShouldDumpAsLayout(true);
 
   // For http/tests/loading/, which is served via httpd and becomes /loading/.
   if (spec.find("/loading/") != std::string::npos)
-    test_runner_->setShouldDumpFrameLoadCallbacks(true);
+    test_runner_->SetShouldDumpFrameLoadCallbacks(true);
   if (spec.find("/dumpAsText/") != std::string::npos) {
-    test_runner_->setShouldDumpAsText(true);
-    test_runner_->setShouldGeneratePixelResults(false);
+    test_runner_->SetShouldDumpAsText(true);
+    test_runner_->SetShouldGeneratePixelResults(false);
   }
   test_runner_->SetV8CacheDisabled(is_devtools_test);
 
   if (spec.find("/viewsource/") != std::string::npos) {
-    test_runner_->setShouldEnableViewSource(true);
-    test_runner_->setShouldGeneratePixelResults(false);
-    test_runner_->setShouldDumpAsMarkup(true);
+    test_runner_->SetShouldEnableViewSource(true);
+    test_runner_->SetShouldGeneratePixelResults(false);
+    test_runner_->SetShouldDumpAsMarkup(true);
   }
   if (spec.find("/external/wpt/") != std::string::npos ||
       spec.find("/external/csswg-test/") != std::string::npos ||
@@ -137,9 +137,6 @@ void TestInterfaces::WindowClosed(WebViewTestProxy* proxy) {
     return;
   }
   window_list_.erase(pos);
-
-  if (proxy->webview() == main_view_)
-    SetMainView(nullptr);
 }
 
 TestRunner* TestInterfaces::GetTestRunner() {
@@ -152,14 +149,6 @@ WebTestDelegate* TestInterfaces::GetDelegate() {
 
 const std::vector<WebViewTestProxy*>& TestInterfaces::GetWindowList() {
   return window_list_;
-}
-
-blink::WebThemeEngine* TestInterfaces::GetThemeEngine() {
-  if (!test_runner_->UseMockTheme())
-    return nullptr;
-  if (!theme_engine_.get())
-    theme_engine_.reset(new MockWebThemeEngine());
-  return theme_engine_.get();
 }
 
 }  // namespace test_runner

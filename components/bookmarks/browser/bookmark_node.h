@@ -45,13 +45,18 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   typedef std::map<std::string, std::string> MetaInfoMap;
 
   static const int64_t kInvalidSyncTransactionVersion;
+  static const char kRootNodeGuid[];
+  static const char kBookmarkBarNodeGuid[];
+  static const char kOtherBookmarksNodeGuid[];
+  static const char kMobileBookmarksNodeGuid[];
+  static const char kManagedNodeGuid[];
 
-  // Creates a new node with an id of 0 and |url|.
-  explicit BookmarkNode(const GURL& url);
-  // Creates a new node with |id| and |url|.
-  BookmarkNode(int64_t id, const GURL& url);
+  // Creates a new node with |id|, |guid| and |url|.
+  BookmarkNode(int64_t id, const std::string& guid, const GURL& url);
 
   ~BookmarkNode() override;
+
+  static std::string RootNodeGuid();
 
   // Returns true if the node is a BookmarkPermanentNode (which does not include
   // the root).
@@ -68,6 +73,12 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   int64_t id() const { return id_; }
   void set_id(int64_t id) { id_ = id; }
 
+  // Returns the GUID for this node.
+  // For bookmark nodes that are managed by the bookmark model, the GUIDs are
+  // persisted across sessions and stable throughout the lifetime of the
+  // bookmark.
+  const std::string& guid() const { return guid_; }
+
   const GURL& url() const { return url_; }
   void set_url(const GURL& url) { url_ = url; }
 
@@ -76,7 +87,6 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   const GURL* icon_url() const { return icon_url_ ? icon_url_.get() : nullptr; }
 
   Type type() const { return type_; }
-  void set_type(Type type) { type_ = type; }
 
   // Returns the time the node was added.
   const base::Time& date_added() const { return date_added_; }
@@ -128,7 +138,11 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   // HistoryContentsProvider.
 
  protected:
-  BookmarkNode(int64_t id, const GURL& url, bool is_permanent_node);
+  BookmarkNode(int64_t id,
+               const std::string& guid,
+               const GURL& url,
+               Type type,
+               bool is_permanent_node);
 
  private:
   friend class BookmarkModel;
@@ -163,12 +177,19 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
   // The unique identifier for this node.
   int64_t id_;
 
+  // The GUID for this node. A BookmarkNode GUID is immutable and differs from
+  // the |id_| in that it is consistent across different clients and
+  // stable throughout the lifetime of the bookmark, with the exception of nodes
+  // added to the Managed Bookmarks folder, whose GUIDs are re-assigned at
+  // start-up every time.
+  const std::string guid_;
+
   // The URL of this node. BookmarkModel maintains maps off this URL, so changes
   // to the URL must be done through the BookmarkModel.
   GURL url_;
 
   // The type of this node. See enum above.
-  Type type_;
+  const Type type_;
 
   // Date of when this node was created.
   base::Time date_added_;
@@ -210,7 +231,7 @@ class BookmarkNode : public ui::TreeNode<BookmarkNode>, public TitledUrlNode {
 // Node used for the permanent folders (excluding the root).
 class BookmarkPermanentNode : public BookmarkNode {
  public:
-  explicit BookmarkPermanentNode(int64_t id);
+  BookmarkPermanentNode(int64_t id, Type type);
   ~BookmarkPermanentNode() override;
 
   // WARNING: this code is used for other projects. Contact noyau@ for details.

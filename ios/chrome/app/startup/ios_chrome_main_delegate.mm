@@ -5,6 +5,7 @@
 #include "ios/chrome/app/startup/ios_chrome_main_delegate.h"
 
 #include "base/logging.h"
+#include "components/component_updater/component_updater_paths.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 
@@ -24,6 +25,12 @@ void IOSChromeMainDelegate::BasicStartupComplete() {
 
   // Initialize the Chrome path provider.
   ios::RegisterPathProvider();
+
+  // Register the component updater path provider.
+  // Bundled components are not supported on ios, so DIR_USER_DATA is passed
+  // for all three arguments.
+  component_updater::RegisterPathProvider(
+      ios::DIR_USER_DATA, ios::DIR_USER_DATA, ios::DIR_USER_DATA);
 
   // Upstream wires up log file handling here based on flags; for now that's
   // not supported, and this is called just to handle vlog levels and patterns.

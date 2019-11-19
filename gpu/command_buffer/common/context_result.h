@@ -13,6 +13,8 @@ namespace gpu {
 // steps which bubble up to the final result. If any fatal error occurs, the
 // entire result should be fatal - as any attempt to retry is expected to get
 // the same fatal result.
+// Note: This enum is used to back an UMA histogram. Therefore these values
+// should never be reordered, renumbered, or reused.
 enum class ContextResult {
   // The context was created and initialized successfully.
   kSuccess,
@@ -25,7 +27,9 @@ enum class ContextResult {
   // An error occurred using the gpu::SurfaceHandle. Only retry with a new
   // SurfaceHandle; treat as kFatalFailure otherwise.
   kSurfaceFailure,
-  kLastContextResult = kSurfaceFailure
+  kLastContextResult = kSurfaceFailure,
+  // To use the two-arg version of the UMA_HISTOGRAM_ENUMERATION macro.
+  kMaxValue = kSurfaceFailure
 };
 
 GPU_EXPORT bool IsFatalOrSurfaceFailure(ContextResult result);

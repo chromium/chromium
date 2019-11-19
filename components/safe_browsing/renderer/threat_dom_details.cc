@@ -56,12 +56,19 @@ class TagNameIs {
 void GetDefaultTagAndAttributeList(
     std::vector<TagAndAttributesItem>* tag_and_attributes_list) {
   tag_and_attributes_list->clear();
-
+  // These entries must be sorted by tag name.
+  bool should_capture_js =
+      base::FeatureList::IsEnabled(kCaptureInlineJavascriptForGoogleAds);
+  if (should_capture_js)
+    tag_and_attributes_list->push_back(TagAndAttributesItem("a", {"onclick"}));
   // These entries must be sorted by tag name.
   // These tags are related to identifying Google ads.
   tag_and_attributes_list->push_back(
       TagAndAttributesItem("div", {"data-google-query-id", "id"}));
   tag_and_attributes_list->push_back(TagAndAttributesItem("iframe", {"id"}));
+  if (should_capture_js)
+    tag_and_attributes_list->push_back(
+        TagAndAttributesItem("img", {"onclick"}));
 }
 
 void ParseTagAndAttributeParams(
@@ -153,7 +160,6 @@ void HandleElement(
   child_node->url = child_url;
   child_node->tag_name = element.TagName().Utf8();
   child_node->parent = summary_node->url;
-
   // The body of an iframe may be in a different renderer. Look up the routing
   // ID of the local or remote frame and store it with the iframe node. If this
   // element is not a frame then the result of the lookup will be null.
@@ -162,7 +168,10 @@ void HandleElement(
     child_node->child_frame_routing_id =
         content::RenderFrame::GetRoutingIdForWebFrame(subframe);
   }
-
+  if (base::FeatureList::IsEnabled(kCaptureInlineJavascriptForGoogleAds) &&
+      child_node->tag_name == "SCRIPT") {
+    child_node->inner_html = element.TextContent().Utf8();
+  }
   // Populate the element's attributes, but only collect the ones that are
   // configured in the finch study.
   const auto& tag_attribute_iter = std::find_if(
@@ -226,7 +235,10 @@ bool ShouldHandleElement(
       element.HasAttribute("src")) {
     return true;
   }
-
+  if (base::FeatureList::IsEnabled(kCaptureInlineJavascriptForGoogleAds) &&
+      element.HasHTMLTagName("script")) {
+    return true;
+  }
   std::string tag_name_lower = base::ToLowerASCII(element.TagName().Ascii());
   const auto& tag_attribute_iter =
       std::find_if(tag_and_attributes_list.begin(),
@@ -272,9 +284,9 @@ ThreatDOMDetails* ThreatDOMDetails::Create(
   return new ThreatDOMDetails(render_frame, registry);
 }
 
-void ThreatDOMDetails::OnThreatReporterRequest(
-    mojom::ThreatReporterRequest request) {
-  threat_reporter_bindings_.AddBinding(this, std::move(request));
+void ThreatDOMDetails::OnThreatReporterReceiver(
+    mojo::PendingReceiver<mojom::ThreatReporter> receiver) {
+  threat_reporter_receivers_.Add(this, std::move(receiver));
 }
 
 ThreatDOMDetails::ThreatDOMDetails(content::RenderFrame* render_frame,
@@ -284,7 +296,7 @@ ThreatDOMDetails::ThreatDOMDetails(content::RenderFrame* render_frame,
   // Base::Unretained() is safe here because both the registry and the
   // ThreatDOMDetails are scoped to the same render frame.
   registry->AddInterface(base::BindRepeating(
-      &ThreatDOMDetails::OnThreatReporterRequest, base::Unretained(this)));
+      &ThreatDOMDetails::OnThreatReporterReceiver, base::Unretained(this)));
 }
 
 ThreatDOMDetails::~ThreatDOMDetails() {}
@@ -315,20 +327,16 @@ void ThreatDOMDetails::ExtractResources(
   ElementToNodeMap element_to_node_map;
   blink::WebElementCollection elements = document.All();
   blink::WebElement element = elements.FirstItem();
-  bool max_nodes_exceeded = false;
   for (; !element.IsNull(); element = elements.NextItem()) {
     if (ShouldHandleElement(element, tag_and_attributes_list_)) {
       HandleElement(element, tag_and_attributes_list_, details_node.get(),
                     resources, &element_to_node_map);
       if (resources->size() >= kMaxNodes) {
         // We have reached kMaxNodes, exit early.
-        max_nodes_exceeded = true;
         break;
       }
     }
   }
-  UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.ThreatReport.MaxNodesExceededInFrame",
-                        max_nodes_exceeded);
   resources->push_back(std::move(details_node));
 }
 

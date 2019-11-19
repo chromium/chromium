@@ -10,23 +10,24 @@
 #include "base/macros.h"
 #include "components/prefs/pref_service.h"
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.signin
 // Broad categorization of signin type from investigation.
 enum class InvestigatedScenario : int {
   // First signin and should not be warned. As little friction as possible
   // should get between the user and signing in.
-  UPGRADE_LOW_RISK = 0,
-  // First signin but should be warned. There is a reason to believe this signin
-  // may not be what the user wanted.
-  UPGRADE_HIGH_RISK,
+  kFirstSignIn = 0,
+  // Was never used (see crbug.com/983183, crbug.com/572754).
+  kDeprecatedUpgradeHighRisk = 1,
   // Relogging with the same account.
-  SAME_ACCOUNT,
+  kSameAccount = 2,
   // User is switching accounts, can be very dangerous depending on the amount
   // of local syncable data.
-  DIFFERENT_ACCOUNT,
+  kDifferentAccount = 3,
   // Always the last enumerated type.
-  HISTOGRAM_COUNT,
+  kMaxValue = kDifferentAccount,
 };
 
 // Performs various checks with the current account being used to login in and
@@ -63,12 +64,6 @@ class SigninInvestigator {
   // In this case, we fallback to using last_email. This equality check is
   // slightly more strict than the version AccountId defines as == operator.
   bool AreAccountsEqualWithFallback();
-
-  // Determines if the current upgrade signin is high risk or not. Reasons for
-  // being high risk may include things like this profile/device may be shared
-  // among multiple people, or there may be old syncable data created by other
-  // users that do not currently use the profile/device.
-  bool IsUpgradeHighRisk();
 
   std::string current_email_;
   std::string current_id_;

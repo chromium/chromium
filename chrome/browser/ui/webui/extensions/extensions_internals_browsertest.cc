@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
@@ -30,7 +31,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsInternalsTest,
   ASSERT_TRUE(extension);
 
   // First, check that navigation succeeds.
-  GURL navigation_url("chrome://extensions-internals");
+  GURL navigation_url(
+      content::GetWebUIURL(chrome::kChromeUIExtensionsInternalsHost));
   ui_test_utils::NavigateToURL(browser(), navigation_url);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

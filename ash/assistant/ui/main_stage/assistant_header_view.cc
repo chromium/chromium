@@ -10,7 +10,7 @@
 #include "ash/assistant/model/assistant_query.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
-#include "ash/assistant/ui/logo_view/base_logo_view.h"
+#include "ash/assistant/ui/logo_view/logo_view.h"
 #include "ash/assistant/util/animation_util.h"
 #include "ash/assistant/util/assistant_util.h"
 #include "base/time/time.h"
@@ -77,12 +77,12 @@ void AssistantHeaderView::InitLayout() {
       gfx::Insets(0, 0, kSpacingDip, 0)));
 
   layout_manager_->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::CROSS_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Molecule icon.
-  molecule_icon_ = BaseLogoView::Create();
+  molecule_icon_ = LogoView::Create();
   molecule_icon_->SetPreferredSize(gfx::Size(kIconSizeDip, kIconSizeDip));
-  molecule_icon_->SetState(BaseLogoView::State::kMoleculeWavy,
+  molecule_icon_->SetState(LogoView::State::kMoleculeWavy,
                            /*animate=*/false);
 
   // The molecule icon will be animated on its own layer.
@@ -93,7 +93,7 @@ void AssistantHeaderView::InitLayout() {
 }
 
 void AssistantHeaderView::OnResponseChanged(
-    const std::shared_ptr<AssistantResponse>& response) {
+    const scoped_refptr<AssistantResponse>& response) {
   // We only handle the first response when animating the molecule icon. For
   // all subsequent responses the molecule icon remains unchanged.
   if (!is_first_response_)

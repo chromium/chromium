@@ -4,15 +4,16 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import android.support.annotation.IntDef;
 import android.text.format.DateUtils;
 import android.util.Pair;
+
+import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
+import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
 import org.chromium.components.sync.AndroidSyncSettings;
 
 import java.lang.annotation.Retention;
@@ -1348,17 +1349,6 @@ public class ContextualSearchUma {
     }
 
     /**
-     * Logs that the conditions are right to force the translation one-box, and whether it
-     * was actually forced or not.
-     * @param didForceTranslate Whether the translation onebox was forced.
-     */
-    public static void logTranslateOnebox(boolean didForceTranslate) {
-        int code = didForceTranslate ? ForceTranslate.DID_FORCE : ForceTranslate.WOULD_FORCE;
-        RecordHistogram.recordEnumeratedHistogram(
-                "Search.ContextualSearchShouldTranslate", code, ForceTranslate.NUM_ENTRIES);
-    }
-
-    /**
      * Logs that whether or not the conditions are met to perform a translation.
      * @param isConditionMet Whether the translation conditions were met.
      */
@@ -1441,6 +1431,22 @@ public class ContextualSearchUma {
                 "Search.ContextualSearchQuickActions.Clicked."
                         + getLabelForQuickActionCategory(quickActionCategory),
                  wasClicked);
+    }
+
+    /**
+     * Logs the primary CoCa {@link CardTag} for searches where the panel contents was seen,
+     * including {@codeCardTag.CT_NONE} when no card or tag, and {@codeCardTag.CT_OTHER} when it's
+     * one we do not recognize.
+     * @param wasSearchContentViewSeen Whether the panel was seen.
+     * @param cardTagEnum The primary CoCa card Tag for the result seen.
+     */
+    public static void logCardTagSeen(boolean wasSearchContentViewSeen, @CardTag int cardTagEnum) {
+        if (wasSearchContentViewSeen) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Search.ContextualSearch.CardTagSeen", cardTagEnum, CardTag.NUM_ENTRIES);
+        }
+        RecordHistogram.recordEnumeratedHistogram(
+                "Search.ContextualSearch.CardTag", cardTagEnum, CardTag.NUM_ENTRIES);
     }
 
     /**
@@ -1576,10 +1582,9 @@ public class ContextualSearchUma {
      * @return The code for the Contextual Search preference.
      */
     private static int getPreferenceValue() {
-        PrefServiceBridge preferences = PrefServiceBridge.getInstance();
-        if (preferences.isContextualSearchUninitialized()) {
+        if (ContextualSearchManager.isContextualSearchUninitialized()) {
             return Preference.UNINITIALIZED;
-        } else if (preferences.isContextualSearchDisabled()) {
+        } else if (ContextualSearchManager.isContextualSearchDisabled()) {
             return Preference.DISABLED;
         }
         return Preference.ENABLED;

@@ -96,12 +96,12 @@ class SysInfoDelegate : public SessionRestorePolicy::Delegate {
 SessionRestorePolicy::SessionRestorePolicy()
     : policy_enabled_(true),
       delegate_(SysInfoDelegate::Get()),
-      simultaneous_tab_loads_(CalculateSimultaneousTabLoads()),
-      weak_factory_(this) {}
+      simultaneous_tab_loads_(CalculateSimultaneousTabLoads()) {}
 
 SessionRestorePolicy::~SessionRestorePolicy() {
   // Record the number of tabs involved in the session restore that use
   // background communications mechanisms.
+  DCHECK_GE(tabs_used_in_bg_, tabs_used_in_bg_restored_);
   UMA_HISTOGRAM_COUNTS_100("SessionRestore.BackgroundUseCaseTabCount.Total",
                            tabs_used_in_bg_);
   UMA_HISTOGRAM_COUNTS_100("SessionRestore.BackgroundUseCaseTabCount.Restored",
@@ -109,7 +109,7 @@ SessionRestorePolicy::~SessionRestorePolicy() {
 }
 
 float SessionRestorePolicy::AddTabForScoring(content::WebContents* contents) {
-  DCHECK(!base::ContainsKey(tab_data_, contents));
+  DCHECK(!base::Contains(tab_data_, contents));
 
   // When the first tab is added keep track of a 'now' time. This ensures that
   // the scoring function returns consistent values over the lifetime of the
@@ -242,11 +242,8 @@ bool SessionRestorePolicy::ShouldLoad(content::WebContents* contents) const {
   // because they are only used very sporadically, but it is important that they
   // are loaded because if not loaded the user can miss important messages.
   bool enforce_site_engagement_score = true;
-  if (base::FeatureList::IsEnabled(
-          features::kSessionRestorePrioritizesBackgroundUseCases) &&
-      tab_data.used_in_bg) {
+  if (tab_data.used_in_bg)
     enforce_site_engagement_score = false;
-  }
 
   // Enforce a minimum site engagement score if applicable.
   if (enforce_site_engagement_score &&
@@ -265,8 +262,7 @@ SessionRestorePolicy::SessionRestorePolicy(bool policy_enabled,
                                            const Delegate* delegate)
     : policy_enabled_(policy_enabled),
       delegate_(delegate),
-      simultaneous_tab_loads_(CalculateSimultaneousTabLoads()),
-      weak_factory_(this) {}
+      simultaneous_tab_loads_(CalculateSimultaneousTabLoads()) {}
 
 // static
 size_t SessionRestorePolicy::CalculateSimultaneousTabLoads(
@@ -307,7 +303,8 @@ size_t SessionRestorePolicy::CalculateSimultaneousTabLoads() const {
 
 // static
 void SessionRestorePolicy::SetUsedInBg(TabData* tab_data) {
-  static const SiteFeatureUsage kInUse = SiteFeatureUsage::kSiteFeatureInUse;
+  static const performance_manager::SiteFeatureUsage kInUse =
+      performance_manager::SiteFeatureUsage::kSiteFeatureInUse;
   auto& reader = tab_data->reader;
   DCHECK(reader->DataLoaded());
 
@@ -357,8 +354,10 @@ void SessionRestorePolicy::NotifyAllTabsScored() {
   // can be canceled as conditions change.
   if (notification_state_ != NotificationState::kEnRoute)
     return;
-  notify_tab_score_changed_callback_.Run(nullptr, 0.0);
   notification_state_ = NotificationState::kDelivered;
+  // This callback can indirectly cause our parent to release us, so make it the
+  // last thing we do to avoid a use after free. crbug.com/946863
+  notify_tab_score_changed_callback_.Run(nullptr, 0.0);
 }
 
 void SessionRestorePolicy::OnDataLoaded(content::WebContents* contents) {
@@ -388,30 +387,13 @@ bool SessionRestorePolicy::RescoreTabAfterDataLoaded(
 bool SessionRestorePolicy::ScoreTab(TabData* tab_data) {
   float score = 0.0f;
 
-  if (base::FeatureList::IsEnabled(
-          features::kSessionRestorePrioritizesBackgroundUseCases)) {
-    // Give higher priorities to tabs used in the background, and lowest
-    // priority to internal tabs. Apps and pinned tabs are simply treated as
-    // normal tabs.
-    if (tab_data->used_in_bg) {
-      score = 2;
-    } else if (!tab_data->is_internal) {
-      score = 1;
-    }
-  } else {
-    // Replicate the logic of the existing ordering mechanism:
-    // - apps
-    // - pinned tabs
-    // - normal tabs
-    // - internal tabs
-    // Within each category, restore newest tab first.
-    if (tab_data->is_app) {
-      score = 3;
-    } else if (tab_data->is_pinned) {
-      score = 2;
-    } else if (!tab_data->is_internal) {
-      score = 1;
-    }
+  // Give higher priorities to tabs used in the background, and lowest
+  // priority to internal tabs. Apps and pinned tabs are simply treated as
+  // normal tabs.
+  if (tab_data->used_in_bg) {
+    score = 2;
+  } else if (!tab_data->is_internal) {
+    score = 1;
   }
 
   // Refine the score using the age of the tab. More recently used tabs have

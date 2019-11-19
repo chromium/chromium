@@ -62,6 +62,11 @@ COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
 AccountIdentifier CreateAccountIdentifierFromIdentification(
     const Identification& id);
 
+// Look up known user for the given AccountIdentifier and return its AccountId.
+COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME)
+AccountId GetAccountIdFromAccountIdentifier(
+    const AccountIdentifier& account_identifier);
+
 // Definition of the key (e.g. password) for the cryptohome.
 // It contains authorization data along with extra parameters like permissions
 // associated with this key.

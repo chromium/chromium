@@ -12,6 +12,7 @@
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -33,17 +34,20 @@ class WebApkIconHasher {
   // the image cannot not be downloaded in time (e.g. 404 HTTP error code).
   static void DownloadAndComputeMurmur2Hash(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      const url::Origin& request_initiator,
       const GURL& icon_url,
       const Murmur2HashCallback& callback);
 
   static void DownloadAndComputeMurmur2HashWithTimeout(
       network::mojom::URLLoaderFactory* url_loader_factory,
+      const url::Origin& request_initiator,
       const GURL& icon_url,
       int timeout_ms,
       const Murmur2HashCallback& callback);
 
  private:
   WebApkIconHasher(network::mojom::URLLoaderFactory* url_loader_factory,
+                   const url::Origin& request_initiator,
                    const GURL& icon_url,
                    int timeout_ms,
                    const Murmur2HashCallback& callback);

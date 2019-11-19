@@ -34,8 +34,11 @@ namespace blink {
 // Calculates the accuracy for evaluating a timing function for an animation
 // with the specified duration.
 inline double AccuracyForDuration(double duration) {
-  double accuracy = 1.0 / (200.0 * duration);
   double default_epsilon = gfx::CubicBezier::GetDefaultEpsilon();
+  if (duration == 0) {
+    return default_epsilon;
+  }
+  double accuracy = 1.0 / (200.0 * duration);
   // Avoid min()/max() from std here in the header, because that would require
   // inclusion of <algorithm>, which is slow to compile.
   return accuracy > default_epsilon ? accuracy : default_epsilon;

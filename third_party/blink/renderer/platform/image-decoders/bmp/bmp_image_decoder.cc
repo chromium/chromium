@@ -98,21 +98,17 @@ bool BMPImageDecoder::DecodeHelper(bool only_size) {
 bool BMPImageDecoder::ProcessFileHeader(size_t& img_data_offset) {
   // Read file header.
   DCHECK(!decoded_offset_);
-  if (data_->size() < kSizeOfFileHeader)
-    return false;
-
-  char buffer[kSizeOfFileHeader];
   FastSharedBufferReader fast_reader(data_);
-  const char* file_header =
-      fast_reader.GetConsecutiveData(0, kSizeOfFileHeader, buffer);
-  const uint16_t file_type =
-      (file_header[0] << 8) | static_cast<uint8_t>(file_header[1]);
-  img_data_offset = BMPImageReader::ReadUint32(&file_header[10]);
-  decoded_offset_ = kSizeOfFileHeader;
+  char buffer[kSizeOfFileHeader];
+  const char* file_header;
+  uint16_t file_type;
+  if (!GetFileType(fast_reader, buffer, file_header, file_type))
+    return false;
 
   // See if this is a bitmap filetype we understand.
   enum {
-    BMAP = 0x424D,  // "BM"
+    BMAP = 0x424D,         // "BM"
+    BITMAPARRAY = 0x4241,  // "BA"
     // The following additional OS/2 2.x header values (see
     // http://www.fileformat.info/format/os2bmp/egff.htm ) aren't widely
     // decoded, and are unlikely to be in much use.
@@ -121,10 +117,32 @@ bool BMPImageDecoder::ProcessFileHeader(size_t& img_data_offset) {
     POINTER = 0x5054,  // "PT"
     COLORICON = 0x4349,  // "CI"
     COLORPOINTER = 0x4350,  // "CP"
-    BITMAPARRAY = 0x4241,  // "BA"
     */
   };
-  return (file_type == BMAP) || SetFailed();
+  if (file_type == BITMAPARRAY) {
+    // Skip initial 14-byte header, try to read the first entry as a BMAP.
+    decoded_offset_ += kSizeOfFileHeader;
+    if (!GetFileType(fast_reader, buffer, file_header, file_type))
+      return false;
+  }
+  if (file_type != BMAP)
+    return SetFailed();
+
+  img_data_offset = BMPImageReader::ReadUint32(&file_header[10]);
+  decoded_offset_ += kSizeOfFileHeader;
+  return true;
+}
+
+bool BMPImageDecoder::GetFileType(const FastSharedBufferReader& fast_reader,
+                                  char* buffer,
+                                  const char*& file_header,
+                                  uint16_t& file_type) const {
+  if (data_->size() - decoded_offset_ < kSizeOfFileHeader)
+    return false;
+  file_header = fast_reader.GetConsecutiveData(decoded_offset_,
+                                               kSizeOfFileHeader, buffer);
+  file_type = (file_header[0] << 8) | static_cast<uint8_t>(file_header[1]);
+  return true;
 }
 
 }  // namespace blink

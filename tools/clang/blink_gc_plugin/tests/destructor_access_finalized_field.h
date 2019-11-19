@@ -27,19 +27,19 @@ private:
     Member<HeapObject> m_obj;
 };
 
-class HeapObject : public GarbageCollectedFinalized<HeapObject> {
-public:
-    ~HeapObject();
-    void Trace(Visitor*);
-    bool foo() { return true; }
-    void bar(HeapObject*) { }
-private:
-    RefPtr<Other> m_ref;
-    Member<HeapObject> m_obj;
-    Vector<Member<HeapObject> > m_objs;
-    PartOther m_part;
-};
+class HeapObject : public GarbageCollected<HeapObject> {
+ public:
+  ~HeapObject();
+  void Trace(Visitor*);
+  bool foo() { return true; }
+  void bar(HeapObject*) {}
 
+ private:
+  RefPtr<Other> m_ref;
+  Member<HeapObject> m_obj;
+  Vector<Member<HeapObject>> m_objs;
+  PartOther m_part;
+};
 }
 
 #endif

@@ -12,7 +12,7 @@
 #include "base/strings/string16.h"
 #include "ui/gfx/range/range.h"
 
-namespace app_list {
+namespace ash {
 
 class TokenizedString;
 
@@ -49,6 +49,6 @@ class ASH_PUBLIC_EXPORT TokenizedStringMatch {
   DISALLOW_COPY_AND_ASSIGN(TokenizedStringMatch);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_APP_LIST_TOKENIZED_STRING_MATCH_H_

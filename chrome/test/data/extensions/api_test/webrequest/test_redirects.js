@@ -115,9 +115,9 @@ chrome.test.getConfig(function(config) {
       chrome.webRequest.onHeadersReceived.addListener(listener,
           {urls: [url]}, onHeadersReceivedExtraInfoSpec);
 
-      // The page should be redirected to redirectURL, but not to the non web
-      // accessible URL.
-      assertRedirectSucceeds(url, redirectURL, function() {
+      // The page should be redirected to the non web accessible URL, but this
+      // URL will not load.
+      assertRedirectSucceeds(url, getURLNonWebAccessible(), function() {
         chrome.webRequest.onHeadersReceived.removeListener(listener);
       });
     },
@@ -208,9 +208,9 @@ chrome.test.getConfig(function(config) {
       chrome.webRequest.onBeforeRequest.addListener(listener,
           {urls: [url]}, ['blocking']);
 
-      // The page should be redirected to redirectURL, but not to the non web
-      // accessible URL.
-      assertRedirectSucceeds(url, redirectURL, function() {
+      // The page should be redirected to the non web accessible URL, but this
+      // URL will not load.
+      assertRedirectSucceeds(url, getURLNonWebAccessible(), function() {
         chrome.webRequest.onBeforeRequest.removeListener(listener);
       });
     },
@@ -224,8 +224,9 @@ chrome.test.getConfig(function(config) {
     },
 
     function redirectToNonWebAccessibleUrlWithServerRedirect() {
-      assertRedirectFails(
-          getServerURL('server-redirect?' + getURLNonWebAccessible()));
+      assertRedirectSucceeds(
+          getServerURL('server-redirect?' + getURLNonWebAccessible()),
+          getURLNonWebAccessible());
     },
 
     function redirectToWebAccessibleUrlWithServerRedirect() {

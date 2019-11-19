@@ -38,8 +38,6 @@ enum ColorMatrixType {
 
 class PLATFORM_EXPORT FEColorMatrix final : public FilterEffect {
  public:
-  static FEColorMatrix* Create(Filter*, ColorMatrixType, const Vector<float>&);
-
   FEColorMatrix(Filter*, ColorMatrixType, const Vector<float>&);
 
   ColorMatrixType GetType() const;

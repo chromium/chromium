@@ -166,7 +166,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   // The registered callbacks will be fired on |task_runner_|. The caller
   // should make sure that the callbacks are posted to the correct thread.
   // TODO(xhwang): Move this up to be close to RegisterPlayer().
-  void SetMediaCryptoReadyCB(const MediaCryptoReadyCB& media_crypto_ready_cb);
+  void SetMediaCryptoReadyCB(MediaCryptoReadyCB media_crypto_ready_cb);
 
   // All the OnXxx functions below are called from Java. The implementation must
   // only do minimal work and then post tasks to avoid reentrancy issues.
@@ -353,7 +353,7 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
   MediaCryptoContextImpl media_crypto_context_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<MediaDrmBridge> weak_factory_;
+  base::WeakPtrFactory<MediaDrmBridge> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaDrmBridge);
 };

@@ -9,7 +9,7 @@
 #include "base/bind_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "media/base/audio_latency.h"
 #include "media/base/audio_renderer_mixer.h"
 #include "media/base/audio_renderer_mixer_input.h"
@@ -53,7 +53,7 @@ class AudioRendererMixerInputTest : public testing::Test,
     mixer_input_ = new AudioRendererMixerInput(this, kRenderFrameId, device_id,
                                                AudioLatency::LATENCY_PLAYBACK);
     mixer_input_->GetOutputDeviceInfoAsync(base::DoNothing());
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
   }
 
   AudioRendererMixer* GetMixer(int owner_id,
@@ -109,7 +109,7 @@ class AudioRendererMixerInputTest : public testing::Test,
  protected:
   ~AudioRendererMixerInputTest() override = default;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   AudioParameters audio_parameters_;
   std::unique_ptr<AudioRendererMixer> mixers_[2];
   scoped_refptr<AudioRendererMixerInput> mixer_input_;
@@ -166,7 +166,7 @@ TEST_F(AudioRendererMixerInputTest, StartAfterStop) {
   mixer_input_->Stop();
 
   mixer_input_->GetOutputDeviceInfoAsync(base::DoNothing());
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   mixer_input_->Start();
   mixer_input_->Stop();
 }
@@ -178,7 +178,7 @@ TEST_F(AudioRendererMixerInputTest, InitializeAfterStop) {
   mixer_input_->Stop();
 
   mixer_input_->GetOutputDeviceInfoAsync(base::DoNothing());
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   mixer_input_->Initialize(audio_parameters_, fake_callback_.get());
   mixer_input_->Stop();
 }
@@ -363,7 +363,7 @@ TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceDuringGODIA) {
     EXPECT_CALL(*this, OnDeviceInfoReceived(_))
         .WillOnce(testing::SaveArg<0>(&info));
     EXPECT_CALL(*this, SwitchCallbackCalled(OUTPUT_DEVICE_STATUS_OK));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     EXPECT_EQ(kExpectedStatus, info.device_status());
     EXPECT_EQ(kDefaultDeviceId, info.device_id());
   }
@@ -394,7 +394,7 @@ TEST_F(AudioRendererMixerInputTest, GODIADuringSwitchOutputDevice) {
     constexpr auto kExpectedStatus = OUTPUT_DEVICE_STATUS_OK;
     EXPECT_CALL(*this, OnDeviceInfoReceived(_))
         .WillOnce(testing::SaveArg<0>(&info));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     EXPECT_EQ(kExpectedStatus, info.device_status());
     EXPECT_EQ(kAnotherDeviceId, info.device_id());
   }
@@ -426,7 +426,7 @@ TEST_F(AudioRendererMixerInputTest, GODIADuringSwitchOutputDeviceWhichFails) {
     constexpr auto kExpectedStatus = OUTPUT_DEVICE_STATUS_OK;
     EXPECT_CALL(*this, OnDeviceInfoReceived(_))
         .WillOnce(testing::SaveArg<0>(&info));
-    scoped_task_environment_.RunUntilIdle();
+    task_environment_.RunUntilIdle();
     EXPECT_EQ(kExpectedStatus, info.device_status());
     EXPECT_EQ(kDefaultDeviceId, info.device_id());
   }

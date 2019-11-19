@@ -32,16 +32,16 @@ suite('SiteListEntry', function() {
     assertTrue(!!prefIndicator);
     const icon = prefIndicator.$$('cr-tooltip-icon');
     const paperTooltip = icon.$$('paper-tooltip');
-    const tooltip = paperTooltip.$.tooltip;
     // Never shown since site-list will show a common tooltip.
-    assertEquals('none', tooltip.computedStyleMap().get('display').value);
+    assertEquals('none', paperTooltip.computedStyleMap().get('display').value);
     assertFalse(paperTooltip._showing);
     const wait = test_util.eventToPromise('show-tooltip', document);
     icon.$.indicator.dispatchEvent(
         new MouseEvent('mouseenter', {bubbles: true, composed: true}));
     return wait.then(() => {
       assertTrue(paperTooltip._showing);
-      assertEquals('none', tooltip.computedStyleMap().get('display').value);
+      assertEquals(
+          'none', paperTooltip.computedStyleMap().get('display').value);
     });
   });
 
@@ -61,7 +61,6 @@ suite('SiteListEntry', function() {
   }
 
   test('not valid origin does not go to site details page', function() {
-    loadTimeData.overrideValues({enableSiteSettings: true});
     browserProxy.setIsOriginValid(false);
     testElement.model = {
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
@@ -85,7 +84,6 @@ suite('SiteListEntry', function() {
   });
 
   test('valid origin goes to site details page', function() {
-    loadTimeData.overrideValues({enableSiteSettings: true});
     browserProxy.setIsOriginValid(true);
     testElement.model = {
       controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,

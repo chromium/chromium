@@ -48,8 +48,8 @@ void BrowsingDataSharedWorkerHelper::StartFetching(FetchCallback callback) {
   // We always return an empty list, as there are no "persistent" shared
   // workers.
   std::list<SharedWorkerInfo> result;
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                           base::BindOnce(std::move(callback), result));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(std::move(callback), result));
 }
 void BrowsingDataSharedWorkerHelper::DeleteSharedWorker(
     const GURL& worker,
@@ -104,8 +104,8 @@ void CannedBrowsingDataSharedWorkerHelper::StartFetching(
   std::list<SharedWorkerInfo> result;
   for (auto& it : pending_shared_worker_info_)
     result.push_back(it);
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                           base::BindOnce(std::move(callback), result));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(std::move(callback), result));
 }
 
 void CannedBrowsingDataSharedWorkerHelper::DeleteSharedWorker(

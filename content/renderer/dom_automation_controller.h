@@ -56,7 +56,7 @@ class DomAutomationController : public gin::Wrappable<DomAutomationController>,
   // RenderFrameObserver
   void OnDestruct() override;
   void DidCreateScriptContext(v8::Local<v8::Context> context,
-                              int world_id) override;
+                              int32_t world_id) override;
 
   DISALLOW_COPY_AND_ASSIGN(DomAutomationController);
 };

@@ -68,7 +68,11 @@ function fakeDeviceInitToDeviceInfo(guid, init) {
     var configInfo = {
       configurationValue: config.configurationValue,
       configurationName: stringToMojoString16(config.configurationName),
-      interfaces: []
+      selfPowered: false,
+      remoteWakeup: false,
+      maximumPower: 0,
+      interfaces: [],
+      extraData: new Uint8Array()
     };
     config.interfaces.forEach(iface => {
       var interfaceInfo = {
@@ -82,12 +86,17 @@ function fakeDeviceInitToDeviceInfo(guid, init) {
           subclassCode: alternate.interfaceSubclass,
           protocolCode: alternate.interfaceProtocol,
           interfaceName: stringToMojoString16(alternate.interfaceName),
-          endpoints: []
+          endpoints: [],
+          extraData: new Uint8Array()
         };
         alternate.endpoints.forEach(endpoint => {
           var endpointInfo = {
             endpointNumber: endpoint.endpointNumber,
             packetSize: endpoint.packetSize,
+            synchronizationType: device.mojom.UsbSynchronizationType.NONE,
+            usageType: device.mojom.UsbUsageType.DATA,
+            pollingInterval: 0,
+            extraData: new Uint8Array()
           };
           switch (endpoint.direction) {
           case "in":
@@ -232,23 +241,39 @@ class FakeDevice {
     return Promise.resolve({ success: true });
   }
 
-  controlTransferIn(params, length, timeout) {
+  async controlTransferIn(params, length, timeout) {
     assert_true(this.opened_);
-    assert_false(this.currentConfiguration_ == null, 'device configured');
-    return Promise.resolve({
+
+    if ((params.recipient == device.mojom.UsbControlTransferRecipient.INTERFACE ||
+         params.recipient == device.mojom.UsbControlTransferRecipient.ENDPOINT) &&
+        this.currentConfiguration_ == null) {
+      return {
+        status: device.mojom.UsbTransferStatus.PERMISSION_DENIED,
+      };
+    }
+
+    return {
       status: device.mojom.UsbTransferStatus.OK,
       data: [length >> 8, length & 0xff, params.request, params.value >> 8,
              params.value & 0xff, params.index >> 8, params.index & 0xff]
-    });
+    };
   }
 
-  controlTransferOut(params, data, timeout) {
+  async controlTransferOut(params, data, timeout) {
     assert_true(this.opened_);
-    assert_false(this.currentConfiguration_ == null, 'device configured');
-    return Promise.resolve({
+
+    if ((params.recipient == device.mojom.UsbControlTransferRecipient.INTERFACE ||
+         params.recipient == device.mojom.UsbControlTransferRecipient.ENDPOINT) &&
+        this.currentConfiguration_ == null) {
+      return {
+        status: device.mojom.UsbTransferStatus.PERMISSION_DENIED,
+      };
+    }
+
+    return {
       status: device.mojom.UsbTransferStatus.OK,
       bytesWritten: data.byteLength
-    });
+    };
   }
 
   genericTransferIn(endpointNumber, length, timeout) {
@@ -451,7 +476,7 @@ class USBTest {
 
     internal.webUsbService = new FakeWebUsbService();
     internal.webUsbServiceInterceptor =
-        new MojoInterfaceInterceptor(blink.mojom.WebUsbService.name);
+        new MojoInterfaceInterceptor(blink.mojom.WebUsbService.name, "context", true);
     internal.webUsbServiceInterceptor.oninterfacerequest =
         e => internal.webUsbService.addBinding(e.handle);
     internal.webUsbServiceInterceptor.start();

@@ -74,7 +74,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementWinrt
   std::unique_ptr<PendingCallbacks> pending_register_callbacks_;
   std::unique_ptr<PendingCallbacks> pending_unregister_callbacks_;
 
-  base::WeakPtrFactory<BluetoothAdvertisementWinrt> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothAdvertisementWinrt> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothAdvertisementWinrt);
 };

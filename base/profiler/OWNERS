@@ -1,5 +1,2 @@
-# Stack sampling profiler
-per-file native_stack_sampler*=wittman@chromium.org
-per-file stack_sampling_profiler*=wittman@chromium.org
-per-file test_support_library*=wittman@chromium.org
-per-file win32_stack_frame_unwinder*=wittman@chromium.org
+wittman@chromium.org
+charliea@chromium.org

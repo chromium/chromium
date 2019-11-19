@@ -8,9 +8,8 @@
 #include <deque>
 
 #include "base/component_export.h"
-#include "base/containers/mru_cache.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/proxy_delegate.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
@@ -24,14 +23,15 @@ namespace network {
 
 // NetworkServiceProxyDelegate is used to support the custom proxy
 // configuration, which can be set in
-// NetworkContextParams.custom_proxy_config_client_request.
+// NetworkContextParams.custom_proxy_config_client_receiver.
 class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
     : public net::ProxyDelegate,
       public mojom::CustomProxyConfigClient {
  public:
   explicit NetworkServiceProxyDelegate(
       mojom::CustomProxyConfigPtr initial_config,
-      mojom::CustomProxyConfigClientRequest config_client_request);
+      mojo::PendingReceiver<mojom::CustomProxyConfigClient>
+          config_client_receiver);
   ~NetworkServiceProxyDelegate() override;
 
   void SetProxyResolutionService(
@@ -70,13 +70,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   // or a previous config.
   bool MayHaveProxiedURL(const GURL& url) const;
 
-  // Whether the |url| with current |proxy_info| is eligible to be proxied.
+  // Whether the HTTP |method| with current |proxy_info| is eligible to be
+  // proxied.
   bool EligibleForProxy(const net::ProxyInfo& proxy_info,
-                        const GURL& url,
                         const std::string& method) const;
 
-  // Get the proxy rules that apply to |url|.
-  net::ProxyConfig::ProxyRules GetProxyRulesForURL(const GURL& url) const;
+  // Fills the alternative proxy config in |result| if applicable.
+  void GetAlternativeProxy(const net::ProxyRetryInfoMap& proxy_retry_info,
+                           net::ProxyInfo* result);
 
   // mojom::CustomProxyConfigClient implementation:
   void OnCustomProxyConfigUpdated(
@@ -87,9 +88,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   void ClearBadProxiesCache() override;
 
   mojom::CustomProxyConfigPtr proxy_config_;
-  mojo::Binding<mojom::CustomProxyConfigClient> binding_;
+  mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;
 
-  base::MRUCache<std::string, bool> should_use_alternate_proxy_list_cache_;
+  // Cache of URLs for which the usage of custom proxy results
+  // in redirect loops. A container is used here since it's possible that
+  // at any given time, there are multiple URLs that result in redirect loops
+  // when fetched via the custom proxy.
+  std::deque<GURL> redirect_loop_cache_;
 
   // We keep track of a limited number of previous configs so we can determine
   // if a request used a custom proxy if the config happened to change during

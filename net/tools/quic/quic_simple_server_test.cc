@@ -5,15 +5,15 @@
 #include "net/tools/quic/quic_simple_server.h"
 
 #include "base/stl_util.h"
-#include "net/third_party/quic/core/crypto/quic_random.h"
-#include "net/third_party/quic/core/quic_crypto_stream.h"
-#include "net/third_party/quic/core/quic_utils.h"
-#include "net/third_party/quic/core/tls_server_handshaker.h"
-#include "net/third_party/quic/platform/api/quic_test.h"
-#include "net/third_party/quic/test_tools/crypto_test_utils.h"
-#include "net/third_party/quic/test_tools/mock_quic_dispatcher.h"
-#include "net/third_party/quic/test_tools/quic_test_utils.h"
-#include "net/third_party/quic/tools/quic_memory_cache_backend.h"
+#include "net/quic/address_utils.h"
+#include "net/third_party/quiche/src/quic/core/crypto/quic_random.h"
+#include "net/third_party/quiche/src/quic/core/quic_crypto_stream.h"
+#include "net/third_party/quiche/src/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_test.h"
+#include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
+#include "net/third_party/quiche/src/quic/test_tools/mock_quic_dispatcher.h"
+#include "net/third_party/quiche/src/quic/test_tools/quic_test_utils.h"
+#include "net/third_party/quiche/src/quic/tools/quic_memory_cache_backend.h"
 #include "net/tools/quic/quic_simple_server_session_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,8 +29,7 @@ class QuicChromeServerDispatchPacketTest : public QuicTest {
       : crypto_config_("blah",
                        quic::QuicRandom::GetInstance(),
                        quic::test::crypto_test_utils::ProofSourceForTesting(),
-                       quic::KeyExchangeSource::Default(),
-                       quic::TlsServerHandshaker::CreateSslCtx()),
+                       quic::KeyExchangeSource::Default()),
         version_manager_(quic::AllSupportedVersions()),
         dispatcher_(&config_,
                     &crypto_config_,
@@ -48,10 +47,8 @@ class QuicChromeServerDispatchPacketTest : public QuicTest {
 
   void DispatchPacket(const quic::QuicReceivedPacket& packet) {
     IPEndPoint client_addr, server_addr;
-    dispatcher_.ProcessPacket(
-        quic::QuicSocketAddress(quic::QuicSocketAddressImpl(server_addr)),
-        quic::QuicSocketAddress(quic::QuicSocketAddressImpl(client_addr)),
-        packet);
+    dispatcher_.ProcessPacket(ToQuicSocketAddress(server_addr),
+                              ToQuicSocketAddress(client_addr), packet);
   }
 
  protected:

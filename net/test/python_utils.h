@@ -5,21 +5,19 @@
 #ifndef NET_TEST_PYTHON_UTILS_H_
 #define NET_TEST_PYTHON_UTILS_H_
 
+#include <vector>
+
 #include "base/compiler_specific.h"
+#include "base/environment.h"
 
 namespace base {
 class CommandLine;
 class FilePath;
 }
 
-// This is the python path variable name.
-extern const char kPythonPathEnv[];
-
-// Clears the python path, this is useful for test hermeticity.
-void ClearPythonPath();
-
-// Appends the dir to python path environment variable.
-void AppendToPythonPath(const base::FilePath& dir);
+// Modifies |map| to use the specified Python path.
+void SetPythonPathInEnvironment(const std::vector<base::FilePath>& python_path,
+                                base::EnvironmentMap* map);
 
 // Return the location of the compiler-generated python protobuf.
 bool GetPyProtoPath(base::FilePath* dir);

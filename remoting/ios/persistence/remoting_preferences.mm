@@ -18,6 +18,9 @@ static NSString* const kHostSettingsKey = @"kHostSettingsKey";
 static NSString* const kFlagKey = @"kFlagKey";
 
 RemotingFlag const RemotingFlagUseWebRTC = @"UseWebRTC";
+RemotingFlag const RemotingFlagLastSeenNotificationMessageId =
+    @"LastSeenNotificationMessageId";
+RemotingFlag const RemotingFlagNotificationUiState = @"NotificationUiState";
 
 static NSString* KeyWithPrefix(NSString* prefix, NSString* key) {
   return [NSString stringWithFormat:@"%@-%@", prefix, key];
@@ -53,8 +56,12 @@ static NSString* KeyWithPrefix(NSString* prefix, NSString* key) {
 - (HostSettings*)settingsForHost:(NSString*)hostId {
   NSData* encodedSettings =
       [_defaults objectForKey:KeyWithPrefix(kHostSettingsKey, hostId)];
+  NSKeyedUnarchiver* unarchiver =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:encodedSettings
+                                                  error:nil];
+  unarchiver.requiresSecureCoding = NO;
   HostSettings* settings =
-      [NSKeyedUnarchiver unarchiveObjectWithData:encodedSettings];
+      [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
   if (settings == nil) {
     settings = [[HostSettings alloc] init];
     settings.hostId = hostId;
@@ -67,7 +74,9 @@ static NSString* KeyWithPrefix(NSString* prefix, NSString* key) {
   NSString* key = KeyWithPrefix(kHostSettingsKey, hostId);
   if (settings) {
     NSData* encodedSettings =
-        [NSKeyedArchiver archivedDataWithRootObject:settings];
+        [NSKeyedArchiver archivedDataWithRootObject:settings
+                              requiringSecureCoding:NO
+                                              error:nil];
     [_defaults setObject:encodedSettings forKey:key];
   } else {
     return [_defaults removeObjectForKey:key];

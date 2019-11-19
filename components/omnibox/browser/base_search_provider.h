@@ -48,14 +48,50 @@ class BaseSearchProvider : public AutocompleteProvider {
   // Returns a simpler AutocompleteMatch suitable for persistence like in
   // ShortcutsDatabase.  This wrapper function uses a number of default values
   // that may or may not be appropriate for your needs.
-  // NOTE: Use with care. Most likely you want the other CreateSearchSuggestion
-  // with protected access.
+  // NOTE: Use with care. Most likely you want the other CreateSearchSuggestion.
   static AutocompleteMatch CreateSearchSuggestion(
       const base::string16& suggestion,
       AutocompleteMatchType::Type type,
       bool from_keyword_provider,
       const TemplateURL* template_url,
       const SearchTermsData& search_terms_data);
+
+  // Returns an AutocompleteMatch with the given |autocomplete_provider|
+  // for the search |suggestion|, which represents a search via |template_url|.
+  // If |template_url| is NULL, returns a match with an invalid destination URL.
+  //
+  // |input| is the original user input. Text in the input is used to highlight
+  // portions of the match contents to distinguish locally-typed text from
+  // suggested text.
+  //
+  // |input| is also necessary for various other details, like whether we should
+  // allow inline autocompletion and what the transition type should be.
+  // |in_keyword_mode| helps guarantee a non-keyword suggestion does not
+  // appear as the default match when the user is in keyword mode.
+  // |accepted_suggestion| is used to generate Assisted Query Stats.
+  // |append_extra_query_params_from_command_line| should be set if
+  // |template_url| is the default search engine, so the destination URL will
+  // contain any command-line-specified query params.
+  static AutocompleteMatch CreateSearchSuggestion(
+      AutocompleteProvider* autocomplete_provider,
+      const AutocompleteInput& input,
+      const bool in_keyword_mode,
+      const SearchSuggestionParser::SuggestResult& suggestion,
+      const TemplateURL* template_url,
+      const SearchTermsData& search_terms_data,
+      int accepted_suggestion,
+      bool append_extra_query_params_from_command_line);
+
+  // A helper function to convert result from on device providers to
+  // AutocompleteMatch instance.
+  static AutocompleteMatch CreateOnDeviceSearchSuggestion(
+      AutocompleteProvider* autocomplete_provider,
+      const AutocompleteInput& input,
+      const base::string16& suggestion,
+      int relevance,
+      const TemplateURL* template_url,
+      const SearchTermsData& search_terms_data,
+      int accepted_suggestion);
 
   // Appends specific suggest client based on page |page_classification| to
   // the additional query params of |search_terms_args| only for Google template
@@ -65,6 +101,10 @@ class BaseSearchProvider : public AutocompleteProvider {
       const SearchTermsData& search_terms_data,
       metrics::OmniboxEventProto::PageClassification page_classification,
       TemplateURLRef::SearchTermsArgs* search_terms_args);
+
+  // Returns whether the provided classification indicates some sort of NTP.
+  static bool IsNTPPage(
+      metrics::OmniboxEventProto::PageClassification classification);
 
   // AutocompleteProvider:
   void DeleteMatch(const AutocompleteMatch& match) override;
@@ -102,36 +142,6 @@ class BaseSearchProvider : public AutocompleteProvider {
   typedef std::vector<std::unique_ptr<SuggestionDeletionHandler>>
       SuggestionDeletionHandlers;
 
-  // Returns whether the provided classification indicates some sort of NTP.
-  static bool IsNTPPage(
-      metrics::OmniboxEventProto::PageClassification classification);
-
-  // Returns an AutocompleteMatch with the given |autocomplete_provider|
-  // for the search |suggestion|, which represents a search via |template_url|.
-  // If |template_url| is NULL, returns a match with an invalid destination URL.
-  //
-  // |input| is the original user input. Text in the input is used to highlight
-  // portions of the match contents to distinguish locally-typed text from
-  // suggested text.
-  //
-  // |input| is also necessary for various other details, like whether we should
-  // allow inline autocompletion and what the transition type should be.
-  // |in_keyword_mode| helps guarantee a non-keyword suggestion does not
-  // appear as the default match when the user is in keyword mode.
-  // |accepted_suggestion| is used to generate Assisted Query Stats.
-  // |append_extra_query_params_from_command_line| should be set if
-  // |template_url| is the default search engine, so the destination URL will
-  // contain any command-line-specified query params.
-  static AutocompleteMatch CreateSearchSuggestion(
-      AutocompleteProvider* autocomplete_provider,
-      const AutocompleteInput& input,
-      const bool in_keyword_mode,
-      const SearchSuggestionParser::SuggestResult& suggestion,
-      const TemplateURL* template_url,
-      const SearchTermsData& search_terms_data,
-      int accepted_suggestion,
-      bool append_extra_query_params_from_command_line);
-
   // Returns the appropriate value for the fill_into_edit field of an
   // AutcompleteMatch. The result consists of the suggestion text from
   // |suggest_result|, optionally prepended by the keyword from |template_url|
@@ -140,6 +150,9 @@ class BaseSearchProvider : public AutocompleteProvider {
       const SearchSuggestionParser::SuggestResult& suggest_result,
       const TemplateURL* template_url);
 
+  // Callers should pass |sending_search_terms| as true if user input is being
+  // sent along with the |current_page_url|.
+  //
   // Returns whether we can send the URL of the current page in any suggest
   // requests.  Doing this requires that all the following hold:
   // * The suggest request is sent over HTTPS.  This avoids leaking the current
@@ -150,20 +163,24 @@ class BaseSearchProvider : public AutocompleteProvider {
   //   providers to see this data someday, but for now this has only been
   //   implemented for Google.
   // * The user is not on the NTP.
-  // * The current URL is HTTP, or HTTPS with the same domain as the suggest
-  //   server.  Non-HTTP[S] URLs (e.g. FTP/file URLs) may contain sensitive
-  //   information.  HTTPS URLs may also contain sensitive information, but if
-  //   they're on the same domain as the suggest server, then the relevant
-  //   entity could have already seen/logged this data.
-  // * The user consented to sending URLs of current page to Google and have
-  //   them associated with their Google account.
+  // * The current URL is HTTP or HTTPS.
+  // * Either one of:
+  //   * The user consented to sending URLs of current page to Google and have
+  //     them associated with their Google account.
+  //   * The suggest endpoint and current page URL are same-origin and
+  //     |sending_search_terms| is false. Same-origin suggest endpoints could
+  //     have already logged the current page URL when the user accessed it, but
+  //     Chrome still shouldn't leak the association between typed search terms
+  //     and which tab the user is looking at. On-focus suggest requests never
+  //     send search terms.
   static bool CanSendURL(
       const GURL& current_page_url,
       const GURL& suggest_url,
       const TemplateURL* template_url,
       metrics::OmniboxEventProto::PageClassification page_classification,
       const SearchTermsData& search_terms_data,
-      AutocompleteProviderClient* client);
+      AutocompleteProviderClient* client,
+      bool sending_search_terms);
 
   // If the |deletion_url| is valid, then set |match.deletable| to true and
   // save the |deletion_url| into the |match|'s additional info under

@@ -45,14 +45,14 @@ class WMStateWaiter : public X11PropertyChangeWaiter {
         hint_(hint),
         wait_till_set_(wait_till_set) {}
 
-  ~WMStateWaiter() override {}
+  ~WMStateWaiter() override = default;
 
  private:
   // X11PropertyChangeWaiter:
   bool ShouldKeepOnWaiting(const ui::PlatformEvent& event) override {
     std::vector<Atom> hints;
     if (ui::GetAtomArrayProperty(xwindow(), "_NET_WM_STATE", &hints))
-      return base::ContainsValue(hints, gfx::GetAtom(hint_)) != wait_till_set_;
+      return base::Contains(hints, gfx::GetAtom(hint_)) != wait_till_set_;
     return true;
   }
 
@@ -68,10 +68,9 @@ class WMStateWaiter : public X11PropertyChangeWaiter {
 // A NonClientFrameView with a window mask with the bottom right corner cut out.
 class ShapedNonClientFrameView : public NonClientFrameView {
  public:
-  ShapedNonClientFrameView() {
-  }
+  ShapedNonClientFrameView() = default;
 
-  ~ShapedNonClientFrameView() override {}
+  ~ShapedNonClientFrameView() override = default;
 
   // NonClientFrameView:
   gfx::Rect GetBoundsForClientView() const override { return bounds(); }
@@ -102,16 +101,25 @@ class ShapedNonClientFrameView : public NonClientFrameView {
   void UpdateWindowTitle() override {}
   void SizeConstraintsChanged() override {}
 
+  bool GetAndResetLayoutRequest() {
+    bool layout_requested = layout_requested_;
+    layout_requested_ = false;
+    return layout_requested;
+  }
+
  private:
+  void Layout() override { layout_requested_ = true; }
+
+  bool layout_requested_ = false;
+
   DISALLOW_COPY_AND_ASSIGN(ShapedNonClientFrameView);
 };
 
 class ShapedWidgetDelegate : public WidgetDelegateView {
  public:
-  ShapedWidgetDelegate() {
-  }
+  ShapedWidgetDelegate() = default;
 
-  ~ShapedWidgetDelegate() override {}
+  ~ShapedWidgetDelegate() override = default;
 
   // WidgetDelegateView:
   NonClientFrameView* CreateNonClientFrameView(Widget* widget) override {
@@ -130,7 +138,7 @@ std::unique_ptr<Widget> CreateWidget(WidgetDelegate* delegate) {
   params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.remove_standard_frame = true;
   params.bounds = gfx::Rect(100, 100, 100, 100);
-  widget->Init(params);
+  widget->Init(std::move(params));
   return widget;
 }
 
@@ -145,7 +153,7 @@ std::vector<gfx::Rect> GetShapeRects(XID xid) {
   std::vector<gfx::Rect> shape_vector;
   for (int i = 0; i < shape_rects_size; ++i) {
     const XRectangle& rect = shape_rects[i];
-    shape_vector.push_back(gfx::Rect(rect.x, rect.y, rect.width, rect.height));
+    shape_vector.emplace_back(rect.x, rect.y, rect.width, rect.height);
   }
   return shape_vector;
 }
@@ -155,17 +163,9 @@ bool ShapeRectContainsPoint(const std::vector<gfx::Rect>& shape_rects,
                             int x,
                             int y) {
   gfx::Point point(x, y);
-  for (size_t i = 0; i < shape_rects.size(); ++i) {
-    if (shape_rects[i].Contains(point))
-      return true;
-  }
-  return false;
-}
-
-// Flush the message loop.
-void RunAllPendingInMessageLoop() {
-  base::RunLoop run_loop;
-  run_loop.RunUntilIdle();
+  return std::any_of(
+      shape_rects.cbegin(), shape_rects.cend(),
+      [&point](const auto& rect) { return rect.Contains(point); });
 }
 
 }  // namespace
@@ -174,7 +174,7 @@ class DesktopWindowTreeHostX11Test : public ViewsTestBase {
  public:
   DesktopWindowTreeHostX11Test()
       : event_source_(ui::PlatformEventSource::GetInstance()) {}
-  ~DesktopWindowTreeHostX11Test() override {}
+  ~DesktopWindowTreeHostX11Test() override = default;
 
   void SetUp() override {
     set_native_widget_type(NativeWidgetType::kDesktop);
@@ -259,7 +259,7 @@ TEST_F(DesktopWindowTreeHostX11Test, DISABLED_Shape) {
     }
 
     // Ensure that the task which is posted when a window is resized is run.
-    RunAllPendingInMessageLoop();
+    base::RunLoop().RunUntilIdle();
 
     // xvfb does not support Xrandr so we cannot check the maximized window's
     // bounds.
@@ -268,12 +268,10 @@ TEST_F(DesktopWindowTreeHostX11Test, DISABLED_Shape) {
 
     shape_rects = GetShapeRects(xid1);
     ASSERT_FALSE(shape_rects.empty());
-    EXPECT_TRUE(ShapeRectContainsPoint(shape_rects,
-                                       maximized_bounds.width() - 1,
-                                       5));
-    EXPECT_TRUE(ShapeRectContainsPoint(shape_rects,
-                                       maximized_bounds.width() - 1,
-                                       15));
+    EXPECT_TRUE(
+        ShapeRectContainsPoint(shape_rects, maximized_bounds.width() - 1, 5));
+    EXPECT_TRUE(
+        ShapeRectContainsPoint(shape_rects, maximized_bounds.width() - 1, 15));
   }
 
   // 2) Test setting the window shape via Widget::SetShape().
@@ -306,7 +304,7 @@ TEST_F(DesktopWindowTreeHostX11Test, DISABLED_Shape) {
 
   // Setting the shape to NULL resets the shape back to the entire
   // window bounds.
-  widget2->SetShape(NULL);
+  widget2->SetShape(nullptr);
   shape_rects = GetShapeRects(xid2);
   ASSERT_FALSE(shape_rects.empty());
   EXPECT_TRUE(ShapeRectContainsPoint(shape_rects, 5, 5));
@@ -316,13 +314,16 @@ TEST_F(DesktopWindowTreeHostX11Test, DISABLED_Shape) {
   EXPECT_FALSE(ShapeRectContainsPoint(shape_rects, 500, 500));
 }
 
-// Test that the widget ignores changes in fullscreen state initiated by the
+// Test that the widget reacts on changes in fullscreen state initiated by the
 // window manager (e.g. via a window manager accelerator key).
 TEST_F(DesktopWindowTreeHostX11Test, WindowManagerTogglesFullscreen) {
   if (!ui::WmSupportsHint(gfx::GetAtom("_NET_WM_STATE_FULLSCREEN")))
     return;
 
   std::unique_ptr<Widget> widget = CreateWidget(new ShapedWidgetDelegate());
+  auto* non_client_view = static_cast<ShapedNonClientFrameView*>(
+      widget->non_client_view()->frame_view());
+  ASSERT_TRUE(non_client_view);
   XID xid = widget->GetNativeWindow()->GetHost()->GetAcceleratedWidget();
   widget->Show();
   ui::X11EventSource::GetInstance()->DispatchXEvents();
@@ -335,8 +336,14 @@ TEST_F(DesktopWindowTreeHostX11Test, WindowManagerTogglesFullscreen) {
   }
   EXPECT_TRUE(widget->IsFullscreen());
 
+  // After the fullscreen state has been set, there must be a relayout request
+  EXPECT_TRUE(non_client_view->GetAndResetLayoutRequest());
+
+  // Ensure there is not request before we proceed.
+  EXPECT_FALSE(non_client_view->GetAndResetLayoutRequest());
+
   // Emulate the window manager exiting fullscreen via a window manager
-  // accelerator key. It should not affect the widget's fullscreen state.
+  // accelerator key. It should affect the widget's fullscreen state.
   {
     Display* display = gfx::GetXDisplay();
 
@@ -357,14 +364,13 @@ TEST_F(DesktopWindowTreeHostX11Test, WindowManagerTogglesFullscreen) {
     WMStateWaiter waiter(xid, "_NET_WM_STATE_FULLSCREEN", false);
     waiter.Wait();
   }
-  EXPECT_TRUE(widget->IsFullscreen());
-
-  // Calling Widget::SetFullscreen(false) should clear the widget's fullscreen
-  // state and clean things up.
-  widget->SetFullscreen(false);
   EXPECT_FALSE(widget->IsFullscreen());
   EXPECT_EQ(initial_bounds.ToString(),
             widget->GetWindowBoundsInScreen().ToString());
+
+  // Even though the unfullscreen request came from the window manager, we must
+  // still react and relayout.
+  EXPECT_TRUE(non_client_view->GetAndResetLayoutRequest());
 }
 
 // Tests that the minimization information is propagated to the content window.
@@ -372,7 +378,7 @@ TEST_F(DesktopWindowTreeHostX11Test, ToggleMinimizePropogateToContentWindow) {
   Widget widget;
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  widget.Init(params);
+  widget.Init(std::move(params));
   widget.Show();
   ui::X11EventSource::GetInstance()->DispatchXEvents();
 
@@ -381,7 +387,7 @@ TEST_F(DesktopWindowTreeHostX11Test, ToggleMinimizePropogateToContentWindow) {
 
   // Minimize by sending _NET_WM_STATE_HIDDEN
   {
-    std::vector< ::Atom> atom_list;
+    std::vector<::Atom> atom_list;
     atom_list.push_back(gfx::GetAtom("_NET_WM_STATE_HIDDEN"));
     ui::SetAtomArrayProperty(xid, "_NET_WM_STATE", "ATOM", atom_list);
 
@@ -404,7 +410,7 @@ TEST_F(DesktopWindowTreeHostX11Test, ToggleMinimizePropogateToContentWindow) {
 
   // Show from minimized by sending _NET_WM_STATE_FOCUSED
   {
-    std::vector< ::Atom> atom_list;
+    std::vector<::Atom> atom_list;
     atom_list.push_back(gfx::GetAtom("_NET_WM_STATE_FOCUSED"));
     ui::SetAtomArrayProperty(xid, "_NET_WM_STATE", "ATOM", atom_list);
 
@@ -431,7 +437,7 @@ TEST_F(DesktopWindowTreeHostX11Test, ChildWindowDestructionDuringTearDown) {
   Widget::InitParams parent_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW);
   parent_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  parent_widget.Init(parent_params);
+  parent_widget.Init(std::move(parent_params));
   parent_widget.Show();
   ui::X11EventSource::GetInstance()->DispatchXEvents();
 
@@ -440,7 +446,7 @@ TEST_F(DesktopWindowTreeHostX11Test, ChildWindowDestructionDuringTearDown) {
       CreateParams(Widget::InitParams::TYPE_WINDOW);
   child_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   child_params.parent = parent_widget.GetNativeWindow();
-  child_widget.Init(child_params);
+  child_widget.Init(std::move(child_params));
   child_widget.Show();
   ui::X11EventSource::GetInstance()->DispatchXEvents();
 
@@ -448,14 +454,14 @@ TEST_F(DesktopWindowTreeHostX11Test, ChildWindowDestructionDuringTearDown) {
   ASSERT_NE(parent_widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
             child_widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget());
   Widget::CloseAllSecondaryWidgets();
-  EXPECT_TRUE(DesktopWindowTreeHostX11::GetAllOpenWindows().empty());
+  EXPECT_TRUE(DesktopWindowTreeHostLinux::GetAllOpenWindows().empty());
 }
 
 // A Widget that allows setting the min/max size for the widget.
 class CustomSizeWidget : public Widget {
  public:
-  CustomSizeWidget() {}
-  ~CustomSizeWidget() override {}
+  CustomSizeWidget() = default;
+  ~CustomSizeWidget() override = default;
 
   void set_min_size(const gfx::Size& size) { min_size_ = size; }
   void set_max_size(const gfx::Size& size) { max_size_ = size; }
@@ -476,7 +482,7 @@ TEST_F(DesktopWindowTreeHostX11Test, SetBoundsWithMinMax) {
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(200, 100);
-  widget.Init(params);
+  widget.Init(std::move(params));
   widget.Show();
   ui::X11EventSource::GetInstance()->DispatchXEvents();
 
@@ -494,8 +500,8 @@ TEST_F(DesktopWindowTreeHostX11Test, SetBoundsWithMinMax) {
 
 class MouseEventRecorder : public ui::EventHandler {
  public:
-  MouseEventRecorder() {}
-  ~MouseEventRecorder() override {}
+  MouseEventRecorder() = default;
+  ~MouseEventRecorder() override = default;
 
   void Reset() { mouse_events_.clear(); }
 
@@ -517,16 +523,10 @@ class MouseEventRecorder : public ui::EventHandler {
 class DesktopWindowTreeHostX11HighDPITest
     : public DesktopWindowTreeHostX11Test {
  public:
-  DesktopWindowTreeHostX11HighDPITest() {}
-  ~DesktopWindowTreeHostX11HighDPITest() override {}
+  DesktopWindowTreeHostX11HighDPITest() = default;
+  ~DesktopWindowTreeHostX11HighDPITest() override = default;
 
   void PretendCapture(views::Widget* capture_widget) {
-    DesktopWindowTreeHostX11* capture_host = nullptr;
-    if (capture_widget) {
-      capture_host = static_cast<DesktopWindowTreeHostX11*>(
-          capture_widget->GetNativeWindow()->GetHost());
-    }
-    DesktopWindowTreeHostX11::g_current_capture = capture_host;
     if (capture_widget)
       capture_widget->GetNativeWindow()->SetCapture();
   }
@@ -549,14 +549,14 @@ TEST_F(DesktopWindowTreeHostX11HighDPITest,
   Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(0, 0, 50, 50);
-  first.Init(params);
+  first.Init(std::move(params));
   first.Show();
 
   Widget second;
   params = CreateParams(Widget::InitParams::TYPE_WINDOW);
   params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.bounds = gfx::Rect(50, 50, 50, 50);
-  second.Init(params);
+  second.Init(std::move(params));
   second.Show();
 
   ui::X11EventSource::GetInstance()->DispatchXEvents();

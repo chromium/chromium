@@ -18,7 +18,7 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if defined(OS_FUCHSIA) || defined(IS_CHROMECAST)
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #endif
 
@@ -49,7 +49,7 @@ class CONTENT_EXPORT MessagePortProvider {
       const base::android::JavaParamRef<jobjectArray>& ports);
 #endif  // OS_ANDROID
 
-#if defined(OS_FUCHSIA)
+#if defined(OS_FUCHSIA) || defined(IS_CHROMECAST)
   // If |target_origin| is unset, then no origin scoping is applied.
   static void PostMessageToFrame(
       WebContents* web_contents,
@@ -57,7 +57,7 @@ class CONTENT_EXPORT MessagePortProvider {
       const base::Optional<base::string16>& target_origin,
       const base::string16& data,
       std::vector<mojo::ScopedMessagePipeHandle> channels);
-#endif  // OS_FUCHSIA
+#endif  // OS_FUCHSIA || IS_CHROMECAST
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(MessagePortProvider);

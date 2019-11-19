@@ -11,6 +11,8 @@ midl("elevation_service_idl") {
   sources = [
     "elevation_service_idl.idl",
   ]
+
+  writes_tlb = true
 }
 
 # Must be in a config because of how GN orders flags (otherwise /W4 will appear

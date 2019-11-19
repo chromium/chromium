@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS e.style['baseline-shift'] = "-10px" should set the property value
+PASS e.style['baseline-shift'] = "20%" should set the property value
+PASS e.style['baseline-shift'] = "calc(2em + 3ex)" should set the property value
+FAIL e.style['baseline-shift'] = "0" should set the property value assert_equals: serialization should be canonical expected "0px" but got "0"
+PASS e.style['baseline-shift'] = "sub" should set the property value
+PASS e.style['baseline-shift'] = "super" should set the property value
+Harness: the test ran to completion.
+

@@ -20,31 +20,35 @@
 #include "build/build_config.h"
 
 namespace base {
-
-class MessageLoopBase;
-
 namespace sequence_manager {
 namespace internal {
+class SequenceManagerImpl;
 
 // This is the interface between a SequenceManager which sits on top of an
-// underlying MessageLoop or SingleThreadTaskRunner. Currently it's only used
-// for workers in blink although we'd intend to migrate those to
-// ThreadControllerWithMessagePumpImpl. Long term we intend to use this for
-// sequence funneling.
+// underlying SequenceManagerImpl or SingleThreadTaskRunner. Currently it's only
+// used for workers in blink although we'd intend to migrate those to
+// ThreadControllerWithMessagePumpImpl (https://crbug.com/948051). Long term we
+// intend to use this for sequence funneling.
 class BASE_EXPORT ThreadControllerImpl : public ThreadController,
                                          public RunLoop::NestingObserver {
  public:
   ~ThreadControllerImpl() override;
 
+  // TODO(https://crbug.com/948051): replace |funneled_sequence_manager| with
+  // |funneled_task_runner| when we sort out the workers
   static std::unique_ptr<ThreadControllerImpl> Create(
-      MessageLoopBase* message_loop_base,
+      SequenceManagerImpl* funneled_sequence_manager,
+      const TickClock* time_source);
+
+  static std::unique_ptr<ThreadControllerImpl> CreateSequenceFunneled(
+      scoped_refptr<SingleThreadTaskRunner> task_runner,
       const TickClock* time_source);
 
   // ThreadController:
   void SetWorkBatchSize(int work_batch_size) override;
-  void WillQueueTask(PendingTask* pending_task) override;
+  void WillQueueTask(PendingTask* pending_task,
+                     const char* task_queue_name) override;
   void ScheduleWork() override;
-  void BindToCurrentThread(MessageLoopBase* message_loop_base) override;
   void BindToCurrentThread(std::unique_ptr<MessagePump> message_pump) override;
   void SetNextDelayedDoWork(LazyNow* lazy_now, TimeTicks run_time) override;
   void SetSequencedTaskSource(SequencedTaskSource* sequence) override;
@@ -70,13 +74,13 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   void OnExitNestedRunLoop() override;
 
  protected:
-  ThreadControllerImpl(MessageLoopBase* message_loop_base,
+  ThreadControllerImpl(SequenceManagerImpl* sequence_manager,
                        scoped_refptr<SingleThreadTaskRunner> task_runner,
                        const TickClock* time_source);
 
   // TODO(altimin): Make these const. Blocked on removing
   // lazy initialisation support.
-  MessageLoopBase* message_loop_base_;
+  SequenceManagerImpl* funneled_sequence_manager_;
   scoped_refptr<SingleThreadTaskRunner> task_runner_;
 
   RunLoop::NestingObserver* nesting_observer_ = nullptr;
@@ -123,7 +127,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   bool default_task_runner_set_ = false;
 #endif
 
-  WeakPtrFactory<ThreadControllerImpl> weak_factory_;
+  WeakPtrFactory<ThreadControllerImpl> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ThreadControllerImpl);
 };

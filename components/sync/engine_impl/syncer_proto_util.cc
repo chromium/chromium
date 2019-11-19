@@ -12,13 +12,13 @@
 #include "base/strings/stringprintf.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine_impl/cycle/sync_cycle_context.h"
 #include "components/sync/engine_impl/net/server_connection_manager.h"
 #include "components/sync/engine_impl/syncer.h"
 #include "components/sync/engine_impl/syncer_types.h"
 #include "components/sync/engine_impl/traffic_logger.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/protocol/sync_protocol_error.h"
-#include "components/sync/syncable/directory.h"
 #include "components/sync/syncable/entry.h"
 #include "components/sync/syncable/syncable_proto_util.h"
 #include "google_apis/google_api_keys.h"
@@ -43,24 +43,6 @@ namespace {
 
 // Time to backoff syncing after receiving a throttled response.
 const int kSyncDelayAfterThrottled = 2 * 60 * 60;  // 2 hours
-
-const char kGetUpdatesTokenHistogramPrefix[] =
-    "Sync.ReceivedDataTypeGetUpdatesResponseWithToken.";
-
-enum class GetUpdatesToken {
-  kNew = 0,
-  kSame = 1,
-  kDifferent = 2,
-  kMaxValue = kDifferent,
-};
-
-void RecordGetUpdatesToken(syncer::ModelType model_type,
-                           GetUpdatesToken token) {
-  std::string type_string = ModelTypeToHistogramSuffix(model_type);
-  std::string full_histogram_name =
-      kGetUpdatesTokenHistogramPrefix + type_string;
-  base::UmaHistogramEnumeration(full_histogram_name, token);
-}
 
 void LogResponseProfilingData(const ClientToServerResponse& response) {
   if (response.has_profiling_data()) {
@@ -104,17 +86,19 @@ void LogResponseProfilingData(const ClientToServerResponse& response) {
 
 SyncerError ServerConnectionErrorAsSyncerError(
     const HttpResponse::ServerConnectionCode server_status,
-    int net_error_code) {
+    int net_error_code,
+    int http_status_code) {
   switch (server_status) {
     case HttpResponse::CONNECTION_UNAVAILABLE:
       return SyncerError::NetworkConnectionUnavailable(net_error_code);
     case HttpResponse::IO_ERROR:
       return SyncerError(SyncerError::NETWORK_IO_ERROR);
     case HttpResponse::SYNC_SERVER_ERROR:
-      // FIXME what does this mean?
-      return SyncerError(SyncerError::SYNC_SERVER_ERROR);
+      // This means the server returned a non-401 HTTP error.
+      return SyncerError::HttpError(http_status_code);
     case HttpResponse::SYNC_AUTH_ERROR:
-      return SyncerError(SyncerError::SYNC_AUTH_ERROR);
+      // This means the server returned an HTTP 401 (unauthorized) error.
+      return SyncerError::HttpError(http_status_code);
     case HttpResponse::SERVER_CONNECTION_OK:
     case HttpResponse::NONE:
     default:
@@ -156,14 +140,10 @@ ClientAction PBActionToClientAction(const sync_pb::SyncEnums::Action& action) {
   switch (action) {
     case sync_pb::SyncEnums::UPGRADE_CLIENT:
       return UPGRADE_CLIENT;
-    case sync_pb::SyncEnums::CLEAR_USER_DATA_AND_RESYNC:
-      return CLEAR_USER_DATA_AND_RESYNC;
-    case sync_pb::SyncEnums::ENABLE_SYNC_ON_ACCOUNT:
-      return ENABLE_SYNC_ON_ACCOUNT;
-    case sync_pb::SyncEnums::STOP_AND_RESTART_SYNC:
-      return STOP_AND_RESTART_SYNC;
-    case sync_pb::SyncEnums::DISABLE_SYNC_ON_CLIENT:
-      return DISABLE_SYNC_ON_CLIENT;
+    case sync_pb::SyncEnums::DEPRECATED_CLEAR_USER_DATA_AND_RESYNC:
+    case sync_pb::SyncEnums::DEPRECATED_ENABLE_SYNC_ON_ACCOUNT:
+    case sync_pb::SyncEnums::DEPRECATED_STOP_AND_RESTART_SYNC:
+    case sync_pb::SyncEnums::DEPRECATED_DISABLE_SYNC_ON_CLIENT:
     case sync_pb::SyncEnums::UNKNOWN_ACTION:
       return UNKNOWN_ACTION;
     default:
@@ -211,6 +191,46 @@ SyncProtocolError ErrorCodeToSyncProtocolError(
   return error;
 }
 
+// Verifies the store birthday, alerting/resetting as appropriate if there's a
+// mismatch. Return false if the syncer should be stuck.
+bool ProcessResponseBirthday(const ClientToServerResponse& response,
+                             SyncCycleContext* context) {
+  const std::string& local_birthday = context->birthday();
+
+  if (local_birthday.empty()) {
+    if (!response.has_store_birthday()) {
+      DLOG(WARNING) << "Expected a birthday on first sync.";
+      return false;
+    }
+
+    DVLOG(1) << "New store birthday: " << response.store_birthday();
+    context->set_birthday(response.store_birthday());
+    return true;
+  }
+
+  // Error situation, but we're not stuck.
+  if (!response.has_store_birthday()) {
+    DLOG(WARNING) << "No birthday in server response?";
+    return true;
+  }
+
+  if (response.store_birthday() != local_birthday) {
+    DLOG(WARNING) << "Birthday changed, showing syncer stuck";
+    return false;
+  }
+
+  return true;
+}
+
+void SaveBagOfChipsFromResponse(const sync_pb::ClientToServerResponse& response,
+                                SyncCycleContext* context) {
+  if (!response.has_new_bag_of_chips())
+    return;
+  std::string bag_of_chips;
+  if (response.new_bag_of_chips().SerializeToString(&bag_of_chips))
+    context->set_bag_of_chips(bag_of_chips);
+}
+
 }  // namespace
 
 ModelTypeSet GetTypesToMigrate(const ClientToServerResponse& response) {
@@ -255,37 +275,6 @@ SyncProtocolError ConvertErrorPBToSyncProtocolError(
 }
 
 // static
-bool SyncerProtoUtil::VerifyResponseBirthday(
-    const ClientToServerResponse& response,
-    syncable::Directory* dir) {
-  std::string local_birthday = dir->store_birthday();
-
-  if (local_birthday.empty()) {
-    if (!response.has_store_birthday()) {
-      LOG(WARNING) << "Expected a birthday on first sync.";
-      return false;
-    }
-
-    DVLOG(1) << "New store birthday: " << response.store_birthday();
-    dir->set_store_birthday(response.store_birthday());
-    return true;
-  }
-
-  // Error situation, but we're not stuck.
-  if (!response.has_store_birthday()) {
-    LOG(WARNING) << "No birthday in server response?";
-    return true;
-  }
-
-  if (response.store_birthday() != local_birthday) {
-    LOG(WARNING) << "Birthday changed, showing syncer stuck";
-    return false;
-  }
-
-  return true;
-}
-
-// static
 bool SyncerProtoUtil::IsSyncDisabledByAdmin(
     const sync_pb::ClientToServerResponse& response) {
   return (response.has_error_code() &&
@@ -295,14 +284,14 @@ bool SyncerProtoUtil::IsSyncDisabledByAdmin(
 // static
 SyncProtocolError SyncerProtoUtil::GetProtocolErrorFromResponse(
     const sync_pb::ClientToServerResponse& response,
-    syncable::Directory* dir) {
+    SyncCycleContext* context) {
   SyncProtocolError sync_protocol_error;
 
   // The DISABLED_BY_ADMIN error overrides other errors sent by the server.
   if (IsSyncDisabledByAdmin(response)) {
     sync_protocol_error.error_type = DISABLED_BY_ADMIN;
     sync_protocol_error.action = STOP_SYNC_FOR_DISABLED_ACCOUNT;
-  } else if (!VerifyResponseBirthday(response, dir)) {
+  } else if (!ProcessResponseBirthday(response, context)) {
     // If sync isn't disabled, first check for a birthday mismatch error.
     if (response.error_code() == sync_pb::SyncEnums::CLIENT_DATA_OBSOLETE) {
       // Server indicates that client needs to reset sync data.
@@ -320,19 +309,6 @@ SyncProtocolError SyncerProtoUtil::GetProtocolErrorFromResponse(
     sync_protocol_error = ErrorCodeToSyncProtocolError(response.error_code());
   }
   return sync_protocol_error;
-}
-
-// static
-void SyncerProtoUtil::AddRequestBirthday(syncable::Directory* dir,
-                                         ClientToServerMessage* msg) {
-  if (!dir->store_birthday().empty())
-    msg->set_store_birthday(dir->store_birthday());
-}
-
-// static
-void SyncerProtoUtil::AddBagOfChips(syncable::Directory* dir,
-                                    ClientToServerMessage* msg) {
-  msg->mutable_bag_of_chips()->ParseFromString(dir->bag_of_chips());
 }
 
 // static
@@ -370,9 +346,8 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
           progress_marker.token();
       UMA_HISTOGRAM_ENUMERATION(
           "Sync.PostedDataTypeGetUpdatesRequest",
-          ModelTypeToHistogramInt(GetModelTypeFromSpecificsFieldNumber(
-              progress_marker.data_type_id())),
-          static_cast<int>(MODEL_TYPE_COUNT));
+          ModelTypeHistogramValue(GetModelTypeFromSpecificsFieldNumber(
+              progress_marker.data_type_id())));
     }
   }
 
@@ -395,21 +370,6 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
   if (response->error_code() != sync_pb::SyncEnums::SUCCESS) {
     base::UmaHistogramSparse("Sync.PostedClientToServerMessageError",
                              response->error_code());
-  }
-
-  for (const sync_pb::DataTypeProgressMarker& progress_marker :
-       response->get_updates().new_progress_marker()) {
-    ModelType type =
-        GetModelTypeFromSpecificsFieldNumber(progress_marker.data_type_id());
-    const std::string& old_token =
-        progress_marker_token_per_data_type[progress_marker.data_type_id()];
-    if (old_token.empty()) {
-      RecordGetUpdatesToken(type, GetUpdatesToken::kNew);
-    } else if (old_token == progress_marker.token()) {
-      RecordGetUpdatesToken(type, GetUpdatesToken::kSame);
-    } else {
-      RecordGetUpdatesToken(type, GetUpdatesToken::kDifferent);
-    }
   }
 
   return true;
@@ -435,9 +395,12 @@ void SyncerProtoUtil::AddRequiredFieldsToClientToServerMessage(
     sync_pb::ClientToServerMessage* msg) {
   DCHECK(msg);
   SetProtocolVersion(msg);
-  AddRequestBirthday(cycle->context()->directory(), msg);
+  const std::string birthday = cycle->context()->birthday();
+  if (!birthday.empty())
+    msg->set_store_birthday(birthday);
   DCHECK(msg->has_store_birthday() || !IsBirthdayRequired(*msg));
-  AddBagOfChips(cycle->context()->directory(), msg);
+  msg->mutable_bag_of_chips()->ParseFromString(
+      cycle->context()->bag_of_chips());
   msg->set_api_key(google_apis::GetAPIKey());
   msg->mutable_client_status()->CopyFrom(cycle->context()->client_status());
   msg->set_invalidator_client_id(cycle->context()->invalidator_client_id());
@@ -456,7 +419,6 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
   DCHECK(msg.has_api_key());
   DCHECK(msg.has_client_status());
   DCHECK(msg.has_invalidator_client_id());
-  DCHECK(!msg.get_updates().has_from_timestamp());  // Deprecated.
 
   LogClientToServerMessage(msg);
   if (!PostAndProcessHeaders(cycle->context()->connection_manager(), cycle, msg,
@@ -470,17 +432,16 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
     DCHECK_NE(server_status, HttpResponse::SERVER_CONNECTION_OK);
 
     return ServerConnectionErrorAsSyncerError(
-        server_status,
-        cycle->context()->connection_manager()->net_error_code());
+        server_status, cycle->context()->connection_manager()->net_error_code(),
+        cycle->context()->connection_manager()->http_status_code());
   }
   LogClientToServerResponse(*response);
 
-  syncable::Directory* dir = cycle->context()->directory();
-  // Persist a bag of chips if it has been sent by the server.
-  PersistBagOfChips(dir, *response);
+  // Remember a bag of chips if it has been sent by the server.
+  SaveBagOfChipsFromResponse(*response, cycle->context());
 
   SyncProtocolError sync_protocol_error =
-      GetProtocolErrorFromResponse(*response, dir);
+      GetProtocolErrorFromResponse(*response, cycle->context());
 
   // Inform the delegate of the error we got.
   cycle->delegate()->OnSyncProtocolError(sync_protocol_error);
@@ -493,27 +454,14 @@ SyncerError SyncerProtoUtil::PostClientToServerMessage(
           command.max_commit_batch_size());
     }
 
-    if (command.has_set_sync_long_poll_interval()) {
-      base::TimeDelta interval =
-          base::TimeDelta::FromSeconds(command.set_sync_long_poll_interval());
-      if (interval.is_zero()) {
-        DLOG(WARNING)
-            << "Received zero long poll interval from server. Ignoring.";
-      } else {
-        cycle->context()->set_long_poll_interval(interval);
-        cycle->delegate()->OnReceivedLongPollIntervalUpdate(interval);
-      }
-    }
-
     if (command.has_set_sync_poll_interval()) {
       base::TimeDelta interval =
           base::TimeDelta::FromSeconds(command.set_sync_poll_interval());
       if (interval.is_zero()) {
-        DLOG(WARNING)
-            << "Received zero short poll interval from server. Ignoring.";
+        DLOG(WARNING) << "Received zero poll interval from server. Ignoring.";
       } else {
-        cycle->context()->set_short_poll_interval(interval);
-        cycle->delegate()->OnReceivedShortPollIntervalUpdate(interval);
+        cycle->context()->set_poll_interval(interval);
+        cycle->delegate()->OnReceivedPollIntervalUpdate(interval);
       }
     }
 
@@ -649,17 +597,6 @@ const std::string& SyncerProtoUtil::NameFromCommitEntryResponse(
   return entry.name();
 }
 
-// static
-void SyncerProtoUtil::PersistBagOfChips(
-    syncable::Directory* dir,
-    const sync_pb::ClientToServerResponse& response) {
-  if (!response.has_new_bag_of_chips())
-    return;
-  std::string bag_of_chips;
-  if (response.new_bag_of_chips().SerializeToString(&bag_of_chips))
-    dir->set_bag_of_chips(bag_of_chips);
-}
-
 std::string SyncerProtoUtil::SyncEntityDebugString(
     const sync_pb::SyncEntity& entry) {
   const std::string& mtime_str =
@@ -674,12 +611,12 @@ std::string SyncerProtoUtil::SyncEntityDebugString(
       "d (%s), "
       "ctime: %" PRId64
       "d (%s), "
-      "name: %s, sync_timestamp: %" PRId64
+      "name: %s, "
       "d, "
       "%s ",
       entry.id_string().c_str(), entry.parent_id_string().c_str(),
       entry.version(), entry.mtime(), mtime_str.c_str(), entry.ctime(),
-      ctime_str.c_str(), entry.name().c_str(), entry.sync_timestamp(),
+      ctime_str.c_str(), entry.name().c_str(),
       entry.deleted() ? "deleted, " : "");
 }
 

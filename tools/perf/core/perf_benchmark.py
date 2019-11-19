@@ -102,24 +102,19 @@ class PerfBenchmark(benchmark.Benchmark):
           GetAdTaggingProfileFiles(
               self._GetOutDirectoryEstimate(finder_options)))
 
-    # A non-sandboxed, 15-seconds-delayed gpu process is currently running in
+    # A non-sandboxed, 120-seconds-delayed gpu process is currently running in
     # the browser to collect gpu info. A command line switch is added here to
     # skip this gpu process for all perf tests to prevent any interference
     # with the test results.
     browser_options.AppendExtraBrowserArgs(
         '--disable-gpu-process-for-dx12-vulkan-info-collection')
 
-    # TODO(crbug.com/881469): remove this once Webview support surface
-    # synchronization and viz.
+    # TODO(crbug.com/881469): remove this once Webview supports
+    # VizDisplayCompositor.
     if (browser_options.browser_type and
         'android-webview' in browser_options.browser_type):
       browser_options.AppendExtraBrowserArgs(
-          '--disable-features=SurfaceSynchronization,VizDisplayCompositor')
-
-    # Switch Chrome to use Perfetto instead of TraceLog as the tracing backend,
-    # needed until the feature gets turned on by default everywhere.
-    if browser_options.browser_type != 'reference':
-      browser_options.AppendExtraBrowserArgs('--enable-perfetto')
+          '--disable-features=VizDisplayCompositor')
 
     self.SetExtraBrowserOptions(browser_options)
 

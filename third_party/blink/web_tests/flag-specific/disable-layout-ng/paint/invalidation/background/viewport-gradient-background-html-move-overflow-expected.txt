@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "Scrolling background of LayoutView #document",
+          "rect": [0, 0, 800, 600],
+          "reason": "background"
+        },
+        {
+          "object": "LayoutBlockFlow HTML",
+          "rect": [0, 0, 800, 170],
+          "reason": "style change"
+        }
+      ]
+    }
+  ]
+}
+

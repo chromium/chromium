@@ -1,0 +1,9 @@
+# This restriction is in place to avoid accidental addition to our top level
+# layout files, such as adding duplicated assets, or introducing new colors when
+# we don't want them.
+set noparent
+
+file://ui/android/java/res/LAYOUT_OWNERS
+
+# COMPONENT: UI>Browser>Mobile
+# OS: Android

@@ -11,28 +11,25 @@
 #include "libxml/parser.h"
 
 #include "base/at_exit.h"
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
+#include "base/run_loop.h"
+#include "base/task/single_thread_task_executor.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_parser.h"
+#include "mojo/core/embedder/embedder.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "testing/libfuzzer/libfuzzer_exports.h"
 
-class PseudoRandomFilter : public TemplateURLParser::ParameterFilter {
- public:
-  explicit PseudoRandomFilter(uint32_t seed) : generator_(seed), pool_(0, 1) {}
-  ~PseudoRandomFilter() override = default;
-
-  bool KeepParameter(const std::string&, const std::string&) override {
-    // Return true 254/255 times, ie: as if pool_ only returned uint8_t.
-    return pool_(generator_) % (UINT8_MAX + 1);
-  }
-
- private:
-  std::mt19937 generator_;
-  // Use a uint16_t here instead of uint8_t because uniform_int_distribution
-  // does not support 8 bit types on Windows.
-  std::uniform_int_distribution<uint16_t> pool_;
-};
+bool PseudoRandomFilter(std::mt19937* generator,
+                        std::uniform_int_distribution<uint16_t>* pool,
+                        const std::string&,
+                        const std::string&) {
+  // Return true 254/255 times, ie: as if pool only returned uint8_t.
+  return (*pool)(*generator) % (UINT8_MAX + 1);
+}
 
 struct FuzzerFixedParams {
   uint32_t seed_;
@@ -52,7 +49,14 @@ void ignore(void* ctx, const char* msg, ...) {
 
 class Env {
  public:
-  Env() { xmlSetGenericErrorFunc(NULL, &ignore); }
+  Env() : executor_(base::MessagePumpType::IO) {
+    mojo::core::Init();
+    xmlSetGenericErrorFunc(nullptr, &ignore);
+  }
+
+ private:
+  base::SingleThreadTaskExecutor executor_;
+  data_decoder::test::InProcessDataDecoder data_decoder_;
 };
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
@@ -60,11 +64,32 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (size < sizeof(FuzzerFixedParams)) {
     return 0;
   }
+
   const FuzzerFixedParams* params =
       reinterpret_cast<const FuzzerFixedParams*>(data);
   size -= sizeof(FuzzerFixedParams);
-  const char* char_data = reinterpret_cast<const char*>(params + 1);
-  PseudoRandomFilter filter(params->seed_);
-  TemplateURLParser::Parse(SearchTermsData(), char_data, size, &filter);
+
+  std::mt19937 generator(params->seed_);
+  // Use a uint16_t here instead of uint8_t because uniform_int_distribution
+  // does not support 8 bit types on Windows.
+  std::uniform_int_distribution<uint16_t> pool(0, 1);
+
+  base::RunLoop run_loop;
+
+  SearchTermsData search_terms_data;
+  std::string string_data(reinterpret_cast<const char*>(params + 1), size);
+  TemplateURLParser::ParameterFilter filter =
+      base::BindRepeating(&PseudoRandomFilter, base::Unretained(&generator),
+                          base::Unretained(&pool));
+  TemplateURLParser::Parse(&search_terms_data, string_data, filter,
+                           base::BindOnce(
+                               [](base::OnceClosure quit_closure,
+                                  std::unique_ptr<TemplateURL> ignored) {
+                                 std::move(quit_closure).Run();
+                               },
+                               run_loop.QuitClosure()));
+
+  run_loop.Run();
+
   return 0;
 }

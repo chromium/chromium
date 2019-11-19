@@ -16,15 +16,16 @@
 
 #include "base/bind.h"
 #include "base/bind_helpers.h"
-#include "base/command_line.h"
 #include "base/debug/activity_tracker.h"
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/metrics/histogram.h"
+#include "base/process/environment_internal.h"
 #include "base/process/kill.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "base/win/startup_information.h"
@@ -34,7 +35,7 @@ namespace base {
 
 namespace {
 
-bool GetAppOutputInternal(const StringPiece16& cl,
+bool GetAppOutputInternal(CommandLine::StringPieceType cl,
                           bool include_stderr,
                           std::string* output,
                           int* exit_code) {
@@ -80,8 +81,8 @@ bool GetAppOutputInternal(const StringPiece16& cl,
 
   // Create the child process.
   PROCESS_INFORMATION temp_process_info = {};
-  if (!CreateProcess(nullptr, as_writable_wcstr(writable_command_line_string),
-                     nullptr, nullptr,
+  if (!CreateProcess(nullptr, data(writable_command_line_string), nullptr,
+                     nullptr,
                      TRUE,  // Handles are inherited.
                      0, nullptr, nullptr, &start_info, &temp_process_info)) {
     NOTREACHED() << "Failed to start process";
@@ -197,8 +198,12 @@ Process LaunchProcess(const CommandLine& cmdline,
   return LaunchProcess(cmdline.GetCommandLineString(), options);
 }
 
-Process LaunchProcess(const string16& cmdline,
+Process LaunchProcess(const CommandLine::StringType& cmdline,
                       const LaunchOptions& options) {
+  // Mitigate the issues caused by loading DLLs on a background thread
+  // (http://crbug/973868).
+  base::ScopedThreadMayLoadLibraryOnBackgroundThread priority_boost(FROM_HERE);
+
   win::StartupInformation startup_info_wrapper;
   STARTUPINFO* startup_info = startup_info_wrapper.startup_info();
 
@@ -261,7 +266,7 @@ Process LaunchProcess(const string16& cmdline,
     // automatically associated with a job object created by the debugger.
     // The CREATE_BREAKAWAY_FROM_JOB flag is used to prevent this on Windows
     // releases that do not support nested jobs.
-    if (win::GetVersion() < win::VERSION_WIN8)
+    if (win::GetVersion() < win::Version::WIN8)
       flags |= CREATE_BREAKAWAY_FROM_JOB;
   }
 
@@ -272,38 +277,62 @@ Process LaunchProcess(const string16& cmdline,
 
   LPCTSTR current_directory = options.current_directory.empty()
                                   ? nullptr
-                                  : as_wcstr(options.current_directory.value());
+                                  : options.current_directory.value().c_str();
 
-  string16 writable_cmdline(cmdline);
+  auto writable_cmdline(cmdline);
   DCHECK(!(flags & CREATE_SUSPENDED))
       << "Creating a suspended process can lead to hung processes if the "
       << "launching process is killed before it assigns the process to the"
       << "job. https://crbug.com/820996";
   if (options.as_user) {
     flags |= CREATE_UNICODE_ENVIRONMENT;
-    void* enviroment_block = nullptr;
+    void* environment_block = nullptr;
 
-    if (!CreateEnvironmentBlock(&enviroment_block, options.as_user, FALSE)) {
+    if (!CreateEnvironmentBlock(&environment_block, options.as_user, FALSE)) {
       DPLOG(ERROR);
       return Process();
     }
 
+    // Environment options are not implemented for use with |as_user|.
+    DCHECK(!options.clear_environment);
+    DCHECK(options.environment.empty());
+
     BOOL launched = CreateProcessAsUser(
-        options.as_user, nullptr, as_writable_wcstr(writable_cmdline), nullptr,
-        nullptr, inherit_handles, flags, enviroment_block, current_directory,
+        options.as_user, nullptr, data(writable_cmdline), nullptr, nullptr,
+        inherit_handles, flags, environment_block, current_directory,
         startup_info, &temp_process_info);
-    DestroyEnvironmentBlock(enviroment_block);
+    DestroyEnvironmentBlock(environment_block);
     if (!launched) {
-      DPLOG(ERROR) << "Command line:" << std::endl << UTF16ToUTF8(cmdline)
-                   << std::endl;
+      DPLOG(ERROR) << "Command line:" << std::endl
+                   << WideToUTF8(cmdline) << std::endl;
       return Process();
     }
   } else {
-    if (!CreateProcess(nullptr, as_writable_wcstr(writable_cmdline), nullptr,
-                       nullptr, inherit_handles, flags, nullptr,
+    wchar_t* new_environment = nullptr;
+    std::wstring env_storage;
+    if (options.clear_environment || !options.environment.empty()) {
+      if (options.clear_environment) {
+        static const wchar_t kEmptyEnvironment[] = {0};
+        env_storage =
+            internal::AlterEnvironment(kEmptyEnvironment, options.environment);
+      } else {
+        wchar_t* old_environment = GetEnvironmentStrings();
+        if (!old_environment) {
+          DPLOG(ERROR);
+          return Process();
+        }
+        env_storage =
+            internal::AlterEnvironment(old_environment, options.environment);
+        FreeEnvironmentStrings(old_environment);
+      }
+      new_environment = data(env_storage);
+      flags |= CREATE_UNICODE_ENVIRONMENT;
+    }
+
+    if (!CreateProcess(nullptr, data(writable_cmdline), nullptr, nullptr,
+                       inherit_handles, flags, new_environment,
                        current_directory, startup_info, &temp_process_info)) {
-      DPLOG(ERROR) << "Command line:" << std::endl << UTF16ToUTF8(cmdline)
-                   << std::endl;
+      DPLOG(ERROR) << "Command line:" << std::endl << cmdline << std::endl;
       return Process();
     }
   }
@@ -333,16 +362,16 @@ Process LaunchProcess(const string16& cmdline,
 
 Process LaunchElevatedProcess(const CommandLine& cmdline,
                               const LaunchOptions& options) {
-  const string16 file = cmdline.GetProgram().value();
-  const string16 arguments = cmdline.GetArgumentsString();
+  const FilePath::StringType file = cmdline.GetProgram().value();
+  const CommandLine::StringType arguments = cmdline.GetArgumentsString();
 
   SHELLEXECUTEINFO shex_info = {};
   shex_info.cbSize = sizeof(shex_info);
   shex_info.fMask = SEE_MASK_NOCLOSEPROCESS;
   shex_info.hwnd = GetActiveWindow();
   shex_info.lpVerb = L"runas";
-  shex_info.lpFile = as_wcstr(file);
-  shex_info.lpParameters = as_wcstr(arguments);
+  shex_info.lpFile = file.c_str();
+  shex_info.lpParameters = arguments.c_str();
   shex_info.lpDirectory = nullptr;
   shex_info.nShow = options.start_hidden ? SW_HIDE : SW_SHOWNORMAL;
   shex_info.hInstApp = nullptr;
@@ -387,7 +416,7 @@ bool GetAppOutputWithExitCode(const CommandLine& cl,
       cl.GetCommandLineString(), false, output, exit_code);
 }
 
-bool GetAppOutput(const StringPiece16& cl, std::string* output) {
+bool GetAppOutput(CommandLine::StringPieceType cl, std::string* output) {
   int exit_code;
   return GetAppOutputInternal(cl, false, output, &exit_code);
 }

@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/accelerator_table.h"
+
 #include <stddef.h>
 
 #include <set>
 
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/views/accelerator_table.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 
@@ -62,7 +64,8 @@ TEST(AcceleratorTableTest, CheckDuplicatedAcceleratorsAsh) {
     // 321568.
     if (ash_entry.action == ash::WINDOW_MINIMIZE ||
         ash_entry.action == ash::SHOW_TASK_MANAGER ||
-        ash_entry.action == ash::OPEN_GET_HELP)
+        ash_entry.action == ash::OPEN_GET_HELP ||
+        ash_entry.action == ash::MINIMIZE_TOP_WINDOW_ON_BACK)
       continue;
 
     // The following actions are duplicated in both ash and browser accelerator
@@ -71,7 +74,7 @@ TEST(AcceleratorTableTest, CheckDuplicatedAcceleratorsAsh) {
     // See http://crbug.com/737307 for details.
     if (ash_entry.action == ash::NEW_WINDOW ||
         ash_entry.action == ash::NEW_INCOGNITO_WINDOW ||
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         ash_entry.action == ash::OPEN_FEEDBACK_PAGE ||
 #endif
         ash_entry.action == ash::RESTORE_TAB ||

@@ -1,6 +1,6 @@
 rootWebArea
 ++genericContainer
-++++inputTime value='00:00:00'
+++++inputTime inputType='time' value='00:00:00'
 ++++++genericContainer
 ++++++++genericContainer
 ++++++++++spinButton name='Hours' value='12' valueForRange=12.00 minValueForRange=1.00 maxValueForRange=12.00
@@ -14,5 +14,21 @@ rootWebArea
 ++++++++++staticText name=' '
 ++++++++++++inlineTextBox name=' '
 ++++++++++spinButton name='AM/PM' value='AM' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=2.00
+++++++++++++staticText name='AM'
+++++++++++++++inlineTextBox name='AM'
+++++inputTime inputType='time' name='Breakfast' value='00:00:00'
+++++++genericContainer
+++++++++genericContainer
+++++++++++spinButton name='Hours Breakfast' value='12' valueForRange=12.00 minValueForRange=1.00 maxValueForRange=12.00
+++++++++++++staticText name='12'
+++++++++++++++inlineTextBox name='12'
+++++++++++staticText name=':'
+++++++++++++inlineTextBox name=':'
+++++++++++spinButton name='Minutes Breakfast' value='00' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=59.00
+++++++++++++staticText name='00'
+++++++++++++++inlineTextBox name='00'
+++++++++++staticText name=' '
+++++++++++++inlineTextBox name=' '
+++++++++++spinButton name='AM/PM Breakfast' value='AM' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=2.00
 ++++++++++++staticText name='AM'
 ++++++++++++++inlineTextBox name='AM'

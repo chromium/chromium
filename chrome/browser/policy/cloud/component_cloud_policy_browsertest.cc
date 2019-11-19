@@ -17,8 +17,6 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector_factory.h"
-#include "chrome/browser/policy/test/local_policy_test_server.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -33,6 +31,8 @@
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/policy/test_support/local_policy_test_server.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -40,16 +40,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/user_cloud_policy_manager_chromeos.h"
-#include "chrome/browser/chromeos/policy/user_policy_manager_factory_chromeos.h"
 #include "chromeos/constants/chromeos_switches.h"
 #else
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/policy/cloud/user_cloud_policy_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/identity_test_utils.h"
-#include "services/identity/public/cpp/primary_account_mutator.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #endif
 
 using testing::InvokeWithoutArgs;
@@ -158,14 +156,14 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
     base::FilePath full_path;
     if (!base::PathService::Get(chrome::DIR_TEST_DATA, &full_path)) {
       ADD_FAILURE();
-      return NULL;
+      return nullptr;
     }
     scoped_refptr<const extensions::Extension> extension(
         extensions::ExtensionBrowserTest::LoadExtension(
             full_path.Append(path)));
     if (!extension.get()) {
       ADD_FAILURE();
-      return NULL;
+      return nullptr;
     }
     return extension;
   }
@@ -177,19 +175,17 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
 
 #if defined(OS_CHROMEOS)
     UserCloudPolicyManagerChromeOS* policy_manager =
-        UserPolicyManagerFactoryChromeOS::GetCloudPolicyManagerForProfile(
-            browser()->profile());
+        browser()->profile()->GetUserCloudPolicyManagerChromeOS();
     ASSERT_TRUE(policy_manager);
 #else
     // Mock a signed-in user. This is used by the UserCloudPolicyStore to pass
     // the account id to the UserCloudPolicyValidator.
-    identity::SetPrimaryAccount(
+    signin::SetPrimaryAccount(
         IdentityManagerFactory::GetForProfile(browser()->profile()),
         PolicyBuilder::kFakeUsername);
 
     UserCloudPolicyManager* policy_manager =
-        UserCloudPolicyManagerFactory::GetForBrowserContext(
-            browser()->profile());
+        browser()->profile()->GetUserCloudPolicyManager();
     ASSERT_TRUE(policy_manager);
     policy_manager->SetSigninAccountId(
         PolicyBuilder::GetFakeAccountIdForTesting());
@@ -223,7 +219,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
         IdentityManagerFactory::GetForProfile(browser()->profile())
             ->GetPrimaryAccountMutator();
     primary_account_mutator->ClearPrimaryAccount(
-        identity::PrimaryAccountMutator::ClearAccountsAction::kDefault,
+        signin::PrimaryAccountMutator::ClearAccountsAction::kDefault,
         signin_metrics::SIGNOUT_TEST,
         signin_metrics::SignoutDelete::IGNORE_METRIC);
   }
@@ -231,8 +227,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
 
   void RefreshPolicies() {
     ProfilePolicyConnector* profile_connector =
-        ProfilePolicyConnectorFactory::GetForBrowserContext(
-            browser()->profile());
+        browser()->profile()->GetProfilePolicyConnector();
     PolicyService* policy_service = profile_connector->policy_service();
     base::RunLoop run_loop;
     policy_service->RefreshPolicies(run_loop.QuitClosure());

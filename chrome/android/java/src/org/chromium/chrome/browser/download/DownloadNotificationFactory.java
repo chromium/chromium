@@ -33,6 +33,7 @@ import com.google.ipc.invalidation.util.Preconditions;
 
 import org.chromium.base.ContentUriUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeFeatureList;
 import org.chromium.chrome.browser.media.MediaViewerUtils;
 import org.chromium.chrome.browser.notifications.ChromeNotificationBuilder;
 import org.chromium.chrome.browser.notifications.NotificationBuilderFactory;
@@ -74,10 +75,15 @@ public final class DownloadNotificationFactory {
     public static Notification buildNotification(Context context,
             @DownloadNotificationService.DownloadStatus int downloadStatus,
             DownloadUpdate downloadUpdate, int notificationId) {
+        String channelId = ChannelDefinitions.ChannelId.DOWNLOADS;
+        if (LegacyHelpers.isLegacyDownload(downloadUpdate.getContentId())
+                && downloadStatus == DownloadNotificationService.DownloadStatus.COMPLETED
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.DOWNLOAD_NOTIFICATION_BADGE)) {
+            channelId = ChannelDefinitions.ChannelId.COMPLETED_DOWNLOADS;
+        }
         ChromeNotificationBuilder builder =
                 NotificationBuilderFactory
-                        .createChromeNotificationBuilder(true /* preferCompat */,
-                                ChannelDefinitions.ChannelId.DOWNLOADS,
+                        .createChromeNotificationBuilder(true /* preferCompat */, channelId,
                                 null /* remoteAppPackageName */,
                                 new NotificationMetadata(LegacyHelpers.isLegacyDownload(
                                                                  downloadUpdate.getContentId())
@@ -162,8 +168,9 @@ public final class DownloadNotificationFactory {
                                         context, cancelIntent, downloadUpdate.getNotificationId()),
                                 cancelActionType);
 
-                if (!downloadUpdate.getIsOffTheRecord())
+                if (!downloadUpdate.getIsOffTheRecord()) {
                     builder.setLargeIcon(downloadUpdate.getIcon());
+                }
 
                 if (!downloadUpdate.getIsDownloadPending()) {
                     boolean indeterminate = downloadUpdate.getProgress().isIndeterminate();
@@ -215,8 +222,9 @@ public final class DownloadNotificationFactory {
                                         context, cancelIntent, downloadUpdate.getNotificationId()),
                                 cancelActionType);
 
-                if (!downloadUpdate.getIsOffTheRecord())
+                if (!downloadUpdate.getIsOffTheRecord()) {
                     builder.setLargeIcon(downloadUpdate.getIcon());
+                }
 
                 if (downloadUpdate.getIsTransient()) {
                     builder.setDeleteIntent(buildPendingIntentProvider(
@@ -242,7 +250,9 @@ public final class DownloadNotificationFactory {
 
                 if (downloadUpdate.getIsOpenable()) {
                     Intent intent;
-                    if (LegacyHelpers.isLegacyDownload(downloadUpdate.getContentId())) {
+                    if (LegacyHelpers.isLegacyDownload(downloadUpdate.getContentId())
+                            && !ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER)) {
                         Preconditions.checkNotNull(downloadUpdate.getContentId());
                         Preconditions.checkArgument(downloadUpdate.getSystemDownloadId() != -1
                                 || ContentUriUtils.isContentUri(downloadUpdate.getFilePath()));
@@ -278,8 +288,9 @@ public final class DownloadNotificationFactory {
 
                 // It's the job of the service to ensure that the default icon is provided when
                 // in incognito mode.
-                if (downloadUpdate.getIcon() != null)
+                if (downloadUpdate.getIcon() != null) {
                     builder.setLargeIcon(downloadUpdate.getIcon());
+                }
 
                 break;
             case DownloadNotificationService.DownloadStatus.FAILED:

@@ -6,13 +6,16 @@
 
 #include "base/single_thread_task_runner.h"
 #include "chromecast/net/connectivity_checker_impl.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace chromecast {
 
-ConnectivityChecker::ConnectivityChecker()
-    : connectivity_observer_list_(
-          new base::ObserverListThreadSafe<ConnectivityObserver>()) {
-}
+ConnectivityChecker::ConnectivityChecker(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : RefCountedDeleteOnSequence(std::move(task_runner)),
+      connectivity_observer_list_(
+          base::MakeRefCounted<
+              base::ObserverListThreadSafe<ConnectivityObserver>>()) {}
 
 ConnectivityChecker::~ConnectivityChecker() {
 }
@@ -36,9 +39,12 @@ void ConnectivityChecker::Notify(bool connected) {
 // static
 scoped_refptr<ConnectivityChecker> ConnectivityChecker::Create(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
-    net::URLRequestContextGetter* url_request_context_getter) {
+    std::unique_ptr<network::SharedURLLoaderFactoryInfo>
+        url_loader_factory_info,
+    network::NetworkConnectionTracker* network_connection_tracker) {
   return ConnectivityCheckerImpl::Create(task_runner,
-                                         url_request_context_getter);
+                                         std::move(url_loader_factory_info),
+                                         network_connection_tracker);
 }
 
 }  // namespace chromecast

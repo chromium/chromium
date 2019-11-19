@@ -1,0 +1,143 @@
+/* Copyright (C) 2019 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+body {
+  font-family: sans-serif;
+}
+
+.time-picker {
+  background: #FFFFFF;
+  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  height: 298px;
+}
+
+.time-columns {
+  display: flex;
+  flex-direction: row;
+  height: 252px;
+  margin: 1px;
+}
+
+.time-column {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  list-style-type: none;
+  margin: 2px;
+  outline: none;
+  overflow: scroll;
+  padding: 0;
+  scroll-snap-type: y mandatory;
+  width: 52px;
+}
+
+.time-column::-webkit-scrollbar {
+  display: none;
+}
+
+.time-cell {
+  border: 1px solid transparent;
+  color: #101010;
+  font-size: 14px;
+  height: 32px;
+  line-height: 32px;
+  margin: 1px;
+  scroll-margin: 1px;
+  scroll-snap-align: start;
+  text-align: center;
+  width: 48px;
+}
+
+.time-cell:hover {
+  background: #E5E5E5;
+  border-radius: 2px;
+}
+
+.time-cell.selected {
+  background-color: #CECECE;
+  border-radius: 2px;
+  font-weight: bold;
+}
+
+.time-column:focus .time-cell.selected {
+  outline: auto 1px -webkit-focus-ring-color;
+  outline-offset: 0px;
+}
+
+.submission-controls {
+  align-items: center;
+  border-top: 1px solid #CECECE;
+  bottom: 0px;
+  display: flex;
+  flex-direction: row;
+  height: 41px;
+  position: absolute;
+  width: 100%;
+}
+
+#submission-controls-padding {
+  height: 100%;
+  width: 84%;
+}
+
+.submission-button {
+  background-color: #FFFFFF;
+  border: 1px solid white;
+  height: 32px;
+  margin: 4px;
+  padding: 8px;
+  width: 32px;
+}
+
+.submission-button:hover {
+  background-color: #E5E5E5;
+  border-radius: 2px;
+}
+
+@media (forced-colors: active) {
+  .time-cell {
+    background-color: Window;
+    color: WindowText;
+    forced-color-adjust: none;
+    scroll-margin: 0px;
+  }
+
+  .time-cell:hover {
+    background-color: Window;
+    border-color: Highlight;
+  }
+
+  .time-cell.selected {
+    background-color: Highlight;
+    color: Window;
+  }
+
+  .time-column:focus .time-cell.selected {
+    border: 2px solid WindowText;
+    margin: 0px;
+    outline: none;
+  }
+
+  .submission-button {
+    background-color: Window;
+    border-color: transparent;
+    forced-color-adjust: none;
+  }
+
+  .submission-button:hover {
+    background-color: Window;
+    border-color: Highlight;
+  }
+
+  .submission-button:focus {
+    outline-color: WindowText;
+  }
+
+  .submission-button path {
+    fill: WindowText;
+  }
+}

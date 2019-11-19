@@ -1,0 +1,14 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module display.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Corresponds to display::DisplayMode
+struct DisplayMode {
+  gfx.mojom.Size size;
+  bool is_interlaced;
+  float refresh_rate;
+};

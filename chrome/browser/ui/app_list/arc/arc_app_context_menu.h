@@ -34,8 +34,8 @@ class ArcAppContextMenu : public app_list::AppContextMenu {
   void BuildMenu(ui::SimpleMenuModel* menu_model) override;
 
   // ui::SimpleMenuModel::Delegate overrides:
-  void ExecuteCommand(int command_id, int event_flags) override;
   bool IsCommandIdEnabled(int command_id) const override;
+  void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
   // Build additional app shortcuts menu items.

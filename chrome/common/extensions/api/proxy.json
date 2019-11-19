@@ -23,7 +23,7 @@
         "description": "An object encapsulating a single proxy server's specification.",
         "properties": {
           "scheme": {"$ref": "Scheme", "optional": true, "description": "The scheme (protocol) of the proxy server itself. Defaults to 'http'."},
-          "host": {"type": "string", "description": "The URI of the proxy server. This must be an ASCII hostname (in Punycode format). IDNA is not supported, yet."},
+          "host": {"type": "string", "description": "The hostname or IP address of the proxy server. Hostnames must be in ASCII (in Punycode format). IDNA is not supported, yet."},
           "port": {"type": "integer", "optional": true, "description": "The port of the proxy server. Defaults to a port that depends on the scheme."}
         }
       },

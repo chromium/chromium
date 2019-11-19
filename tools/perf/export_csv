@@ -1,0 +1,57 @@
+#!/usr/bin/env vpython
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import argparse
+import contextlib
+import csv
+import os
+import sqlite3
+import sys
+
+
+DEFAULT_DATABASE_PATH = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), '_cached_data', 'soundwave', 'soundwave.db'))
+
+
+@contextlib.contextmanager
+def OutputStream(filename):
+  if filename is None or filename == '-':
+    yield sys.stdout
+  else:
+    with open(filename, 'w') as f:
+      yield f
+
+
+def EncodeUnicode(v):
+  return v.encode('utf-8') if isinstance(v, unicode) else v
+
+
+def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+      'table', help='Name of a table to export')
+  parser.add_argument(
+      '--database-file', default=DEFAULT_DATABASE_PATH,
+      help='File path for database where to store data.')
+  parser.add_argument(
+      '--output', '-o',
+      help='Where to write the csv output, defaults to stdout.')
+  args = parser.parse_args()
+
+  con = sqlite3.connect(args.database_file)
+  try:
+    cur = con.execute('SELECT * FROM %s' % args.table)
+    header = [c[0] for c in cur.description]
+    with OutputStream(args.output) as out:
+      writer = csv.writer(out)
+      writer.writerow(header)
+      for row in cur:
+        writer.writerow([EncodeUnicode(v) for v in row])
+  finally:
+    con.close()
+
+
+if __name__ == '__main__':
+  sys.exit(main())

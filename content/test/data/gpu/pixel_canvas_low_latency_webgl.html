@@ -22,7 +22,7 @@ let g_gl;
 function main()
 {
   g_canvas = document.getElementById("c");
-  g_gl = g_canvas.getContext("webgl", {lowLatency: true, preserveDrawingBuffer: true});
+  g_gl = g_canvas.getContext("webgl", {desynchronized: true, preserveDrawingBuffer: true});
   requestAnimationFrame(draw);
 }
 

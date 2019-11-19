@@ -4,11 +4,9 @@
 
 // Custom binding for the Cast Streaming RtpStream API.
 
-var binding = apiBridge ||
-              require('binding').Binding.create('cast.streaming.rtpStream');
 var natives = requireNative('cast_streaming_natives');
 
-binding.registerCustomHook(function(bindingsAPI, extensionId) {
+apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setHandleRequest('destroy',
@@ -40,6 +38,3 @@ binding.registerCustomHook(function(bindingsAPI, extensionId) {
         natives.GetStats(transportId, callback);
   });
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

@@ -1,7 +1,8 @@
 rootWebArea
-++listBox setSize=4
-++++listBoxOption name='Item 1' setSize=4 posInSet=1 selected=false
-++++listBoxOption name='Item 2' setSize=4 posInSet=2 selected=false
-++++splitter horizontal
-++++listBoxOption name='Second group item 1' setSize=4 posInSet=3 selected=false
-++++listBoxOption name='Second group item 2' setSize=4 posInSet=4 selected=false
+++genericContainer ignored
+++++listBox setSize=4
+++++++listBoxOption name='Item 1' setSize=4 posInSet=1 selected=false
+++++++listBoxOption name='Item 2' setSize=4 posInSet=2 selected=false
+++++++splitter horizontal
+++++++listBoxOption name='Second group item 1' setSize=4 posInSet=3 selected=false
+++++++listBoxOption name='Second group item 2' setSize=4 posInSet=4 selected=false

@@ -110,8 +110,8 @@ New Procedures and Functions
 New Tokens
 
     Accepted by the <mode> parameter of BeginSharedImageAccessCHROMIUM:
-    SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM        0x8AF5
-    SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM   0x8AF6
+    SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM        0x8AF6
+    SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM   0x8AF7
 
 Errors
 

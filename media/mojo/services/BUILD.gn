@@ -45,10 +45,6 @@ jumbo_component("services") {
     "mojo_decryptor_service.h",
     "mojo_demuxer_stream_adapter.cc",
     "mojo_demuxer_stream_adapter.h",
-    "mojo_jpeg_decode_accelerator_service.cc",
-    "mojo_jpeg_decode_accelerator_service.h",
-    "mojo_jpeg_encode_accelerator_service.cc",
-    "mojo_jpeg_encode_accelerator_service.h",
     "mojo_media_client.cc",
     "mojo_media_client.h",
     "mojo_media_log.cc",
@@ -84,7 +80,7 @@ jumbo_component("services") {
     "//media/gpu",
     "//media/gpu/ipc/common",
     "//media/mojo:buildflags",
-    "//media/mojo/interfaces",
+    "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
@@ -95,11 +91,11 @@ jumbo_component("services") {
     "//gpu/ipc/service",
     "//media",
     "//media:shared_memory_support",
-    "//media/cdm:cdm_manager",
     "//media/gpu",
     "//media/gpu:buildflags",
     "//media/gpu/ipc/service",
     "//media/learning/impl",
+    "//media/learning/mojo:impl",
     "//media/mojo/common",
     "//media/mojo/common:mojo_shared_buffer_video_frame",
     "//services/metrics/public/cpp:metrics_cpp",
@@ -128,16 +124,24 @@ jumbo_component("services") {
       "mojo_cdm_file_io.h",
       "mojo_cdm_helper.cc",
       "mojo_cdm_helper.h",
-      "mojo_cdm_proxy.cc",
-      "mojo_cdm_proxy.h",
-      "mojo_cdm_proxy_service.cc",
-      "mojo_cdm_proxy_service.h",
     ]
     deps += [
       "//media/cdm:cdm_api",
       "//media/cdm:cdm_paths",
-      "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm_proxy",
     ]
+
+    if (enable_cdm_proxy) {
+      sources += [
+        "mojo_cdm_proxy.cc",
+        "mojo_cdm_proxy.h",
+        "mojo_cdm_proxy_service.cc",
+        "mojo_cdm_proxy_service.h",
+      ]
+      deps += [
+        # Needed by test_mojo_media_client.cc to create ClearKeyCdmProxy.
+        "//media/cdm/library_cdm/clear_key_cdm:clear_key_cdm_proxy",
+      ]
+    }
 
     # TODO(xhwang): Ideally media should not worry about sandbox. Find a way to
     # remove this dependency.
@@ -154,8 +158,8 @@ source_set("cdm_manifest") {
   ]
   deps = [
     "//base",
-    "//media/mojo/interfaces",
-    "//media/mojo/interfaces:constants",
+    "//media/mojo/mojom",
+    "//media/mojo/mojom:constants",
     "//services/service_manager/public/cpp",
   ]
 }
@@ -167,8 +171,9 @@ source_set("media_manifest") {
   ]
   deps = [
     "//base",
-    "//media/mojo/interfaces",
-    "//media/mojo/interfaces:constants",
+    "//media/mojo:buildflags",
+    "//media/mojo/mojom",
+    "//media/mojo/mojom:constants",
     "//services/service_manager/public/cpp",
   ]
   if (is_chromecast) {
@@ -188,9 +193,11 @@ source_set("unit_tests") {
     "mojo_audio_input_stream_unittest.cc",
     "mojo_audio_output_stream_provider_unittest.cc",
     "mojo_audio_output_stream_unittest.cc",
-    "mojo_jpeg_decode_accelerator_service_unittest.cc",
     "mojo_video_encode_accelerator_service_unittest.cc",
+    "test_helpers.cc",
+    "test_helpers.h",
     "video_decode_perf_history_unittest.cc",
+    "video_decode_stats_recorder_unittest.cc",
     "watch_time_recorder_unittest.cc",
   ]
 
@@ -199,6 +206,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/ukm:test_support",
     "//media:test_support",
+    "//media/learning/common",
     "//media/mojo:test_support",
     "//mojo/core/embedder",
     "//mojo/public/interfaces/bindings/tests:test_interfaces",
@@ -212,10 +220,19 @@ source_set("unit_tests") {
       "mojo_cdm_allocator_unittest.cc",
       "mojo_cdm_file_io_unittest.cc",
       "mojo_cdm_helper_unittest.cc",
-      "mojo_cdm_proxy_unittest.cc",
     ]
 
+    if (enable_cdm_proxy) {
+      sources += [ "mojo_cdm_proxy_unittest.cc" ]
+    }
+
     deps += [ "//media/cdm:cdm_api" ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//components/chromeos_camera:mjpeg_decode_accelerator_service_unittest",
+    ]
   }
 }
 
@@ -264,27 +281,13 @@ test("media_service_unittests") {
     "//media/cdm:cdm_paths",
     "//media/mojo/clients",
     "//media/mojo/common",
-    "//media/mojo/interfaces",
-    "//media/mojo/interfaces:constants",
+    "//media/mojo/mojom",
+    "//media/mojo/mojom:constants",
     "//mojo/core/test:run_all_unittests",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/cpp/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
-  ]
-
-  data_deps = [
-    ":media",
-  ]
-}
-
-# media_pipeline_integration_unittests is out of date and disabled by default.
-test("media_pipeline_integration_unittests") {
-  testonly = true
-
-  deps = [
-    "//media/test:mojo_pipeline_integration_tests",
-    "//mojo/core/test:run_all_unittests",
   ]
 
   data_deps = [

@@ -7,9 +7,12 @@
 
 #include <vector>
 
-#include "android_webview/browser/gfx/compositor_id.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/resources/returned_resource.h"
+
+namespace viz {
+class FrameSinkId;
+}
 
 namespace android_webview {
 
@@ -20,9 +23,9 @@ class CompositorFrameProducer {
   virtual base::WeakPtr<CompositorFrameProducer> GetWeakPtr() = 0;
   virtual void ReturnUsedResources(
       const std::vector<viz::ReturnedResource>& resources,
-      const CompositorID& compositor_id,
+      const viz::FrameSinkId& frame_sink_id,
       uint32_t layer_tree_frame_sink_id) = 0;
-  virtual void OnParentDrawConstraintsUpdated(
+  virtual void OnParentDrawDataUpdated(
       CompositorFrameConsumer* compositor_frame_consumer) = 0;
   virtual void OnViewTreeForceDarkStateChanged(
       bool view_tree_force_dark_state) = 0;

@@ -9,10 +9,10 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/md5.h"
+#include "base/hash/md5.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/synchronization/cancellation_flag.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task_runner_util.h"
@@ -50,11 +50,9 @@ void AddPair(base::ListValue* list,
 
 }  // namespace
 
-ResettableSettingsSnapshot::ResettableSettingsSnapshot(
-    Profile* profile)
+ResettableSettingsSnapshot::ResettableSettingsSnapshot(Profile* profile)
     : startup_(SessionStartupPref::GetStartupPref(profile)),
-      shortcuts_determined_(false),
-      weak_ptr_factory_(this) {
+      shortcuts_determined_(false) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // URLs are always stored sorted.
   std::sort(startup_.urls.begin(), startup_.urls.end());
@@ -139,8 +137,8 @@ void ResettableSettingsSnapshot::RequestShortcuts(
   cancellation_flag_ = new SharedCancellationFlag;
 #if defined(OS_WIN)
   base::PostTaskAndReplyWithResult(
-      base::CreateCOMSTATaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
+      base::CreateCOMSTATaskRunner({base::ThreadPool(), base::MayBlock(),
+                                    base::TaskPriority::USER_VISIBLE})
           .get(),
       FROM_HERE, base::Bind(&GetChromeLaunchShortcuts, cancellation_flag_),
       base::Bind(&ResettableSettingsSnapshot::SetShortcutsAndReport,
@@ -162,7 +160,7 @@ void ResettableSettingsSnapshot::SetShortcutsAndReport(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   shortcuts_ = shortcuts;
   shortcuts_determined_ = true;
-  cancellation_flag_ = NULL;
+  cancellation_flag_.reset();
 
   if (!callback.is_null())
     callback.Run();

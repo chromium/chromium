@@ -5,6 +5,10 @@
 #ifndef CRAZY_LINKER_SYSTEM_LINKER_H
 #define CRAZY_LINKER_SYSTEM_LINKER_H
 
+#ifdef __ANDROID__
+#include <android/dlext.h>
+#endif
+
 #include <dlfcn.h>
 
 namespace crazy {
@@ -17,6 +21,17 @@ namespace crazy {
 struct SystemLinker {
   // Wrapper for dlopen().
   static void* Open(const char* path, int flags);
+
+#ifdef __ANDROID__
+  // Returns true iff this system linker provides android_dlopen_ext().
+  static bool HasAndroidOpenExt();
+
+  // Calls android_dlopen_ext() if available, returns nullptr if it is not
+  // available otherwise.
+  static void* AndroidOpenExt(const char* path,
+                              int flags,
+                              const android_dlextinfo* info);
+#endif  // __ANDROID__
 
   // Wrapper for dlclose().
   static int Close(void* handle);

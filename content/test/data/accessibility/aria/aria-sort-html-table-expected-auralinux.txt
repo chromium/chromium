@@ -1,0 +1,103 @@
+[document web]
+++[table] name='Data table' cols=1 headers=('Alphabet'); rows=3 headers=(NONE); caption=false; spans=(all: 1x1)
+++++[table row]
+++++++[column header] name='Alphabet' (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Alphabet'
+++++[table row]
+++++++[table cell] name='A' (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='A'
+++++[table row]
+++++++[table cell] name='B' (row=2, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='B'
+++[table] name='Data table' cols=1 headers=('Alphabet'); rows=3 headers=(NONE); caption=false; spans=(all: 1x1)
+++++[table row]
+++++++[column header] name='Alphabet' (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Alphabet'
+++++[table row]
+++++++[table cell] name='A' (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='A'
+++++[table row]
+++++++[table cell] name='B' (row=2, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='B'
+++[table] name='Data table' cols=1 headers=('Alphabet'); rows=3 headers=(NONE); caption=false; spans=(all: 1x1)
+++++[table row]
+++++++[column header] name='Alphabet' sort:ascending (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Alphabet'
+++++[table row]
+++++++[table cell] name='A' (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='A'
+++++[table row]
+++++++[table cell] name='B' (row=2, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='B'
+++[table] name='Data table' cols=1 headers=('Alphabet'); rows=3 headers=(NONE); caption=false; spans=(all: 1x1)
+++++[table row]
+++++++[column header] name='Alphabet' sort:descending (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Alphabet'
+++++[table row]
+++++++[table cell] name='B' (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='B'
+++++[table row]
+++++++[table cell] name='A' (row=2, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='A'
+++[table] name='Data table' cols=1 headers=('Alphabet'); rows=3 headers=(NONE); caption=false; spans=(all: 1x1)
+++++[table row]
+++++++[column header] name='Alphabet' sort:other (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Alphabet'
+++++[table row]
+++++++[table cell] name='A' (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='A'
+++++[table row]
+++++++[table cell] name='A' (row=2, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='A'
+++[table] name='Data table' cols=3 headers=(NONE); rows=1 headers=('Alphabet'); caption=false; spans=(all: 1x1)
+++++[table row]
+++++++[row header] name='Alphabet' (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Alphabet'
+++++++[table cell] name='A' (row=0, col=1, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='A'
+++++++[table cell] name='B' (row=0, col=2, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='B'
+++[table] name='Data table' cols=3 headers=(NONE); rows=1 headers=('Alphabet'); caption=false; spans=(all: 1x1)
+++++[table row]
+++++++[row header] name='Alphabet' (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Alphabet'
+++++++[table cell] name='A' (row=0, col=1, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='A'
+++++++[table cell] name='B' (row=0, col=2, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='B'
+++[table] name='Data table' cols=3 headers=(NONE); rows=1 headers=('Alphabet'); caption=false; spans=(all: 1x1)
+++++[table row]
+++++++[row header] name='Alphabet' sort:ascending (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Alphabet'
+++++++[table cell] name='A' (row=0, col=1, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='A'
+++++++[table cell] name='B' (row=0, col=2, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='B'
+++[table] name='Data table' cols=3 headers=(NONE); rows=1 headers=('Alphabet'); caption=false; spans=(all: 1x1)
+++++[table row]
+++++++[row header] name='Alphabet' sort:descending (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Alphabet'
+++++++[table cell] name='B' (row=0, col=1, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='B'
+++++++[table cell] name='A' (row=0, col=2, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='A'
+++[table] name='Data table' cols=3 headers=(NONE); rows=1 headers=('Alphabet'); caption=false; spans=(all: 1x1)
+++++[table row]
+++++++[row header] name='Alphabet' sort:other (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Alphabet'
+++++++[table cell] name='A' (row=0, col=1, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='A'
+++++++[table cell] name='A' (row=0, col=2, row_span=1, col_span=1, n_row_headers=1, n_col_headers=0)
+++++++++[static] name='A'
+++[table] name='Data table' cols=1 headers=('Alphabet'); rows=3 headers=(NONE); caption=false; spans=(all: 1x1)
+++++[table row]
+++++++[column header] name='Alphabet' (row=0, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
+++++++++[static] name='Alphabet'
+++++[table row]
+++++++[table cell] name='A' (row=1, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='A'
+++++[table row]
+++++++[table cell] name='B' (row=2, col=0, row_span=1, col_span=1, n_row_headers=0, n_col_headers=1)
+++++++++[static] name='B'
+++[section]
+++++[static] name='Alphabet'

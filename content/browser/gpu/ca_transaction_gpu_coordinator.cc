@@ -10,7 +10,7 @@
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "services/viz/privileged/interfaces/gl/gpu_service.mojom.h"
+#include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 
@@ -64,7 +64,7 @@ void CATransactionGPUCoordinator::RemovePostCommitObserverOnUIThread() {
 
 void CATransactionGPUCoordinator::OnActivateForTransaction() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&CATransactionGPUCoordinator::OnActivateForTransactionOnIO,
                      this));
@@ -78,7 +78,7 @@ void CATransactionGPUCoordinator::OnEnterPostCommit() {
   // (and removed from the list of post-commit observers) soon after.
   pending_commit_count_++;
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&CATransactionGPUCoordinator::OnEnterPostCommitOnIO,
                      this));

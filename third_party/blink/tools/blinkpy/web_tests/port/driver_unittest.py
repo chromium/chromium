@@ -38,6 +38,8 @@ from blinkpy.web_tests.port.server_process_mock import MockServerProcess
 
 class DriverTest(unittest.TestCase):
 
+    # pylint: disable=protected-access
+
     def make_port(self):
         return Port(MockSystemHost(), 'test', optparse.Values({'configuration': 'Release'}))
 
@@ -62,9 +64,18 @@ class DriverTest(unittest.TestCase):
         self.assertEqual(driver.test_to_uri('http/tests/https/bar.html'), 'https://127.0.0.1:8443/https/bar.html')
         self.assertEqual(driver.test_to_uri('http/tests/bar.https.html'), 'https://127.0.0.1:8443/bar.https.html')
         self.assertEqual(driver.test_to_uri('http/tests/barhttps.html'), 'http://127.0.0.1:8000/barhttps.html')
-        self.assertEqual(driver.test_to_uri('external/wpt/foo/bar.html'), 'http://web-platform.test:8001/foo/bar.html')
-        self.assertEqual(driver.test_to_uri('external/wpt/foo/bar.https.html'), 'https://web-platform.test:8444/foo/bar.https.html')
-        self.assertEqual(driver.test_to_uri('external/wpt/foo/bar.serviceworker.html'), 'https://web-platform.test:8444/foo/bar.serviceworker.html')
+        self.assertEqual(driver.test_to_uri('external/wpt/foo/bar.html'),
+                         'http://web-platform.test:8001/foo/bar.html')
+        self.assertEqual(driver.test_to_uri('external/wpt/foo/bar.https.html'),
+                         'https://web-platform.test:8444/foo/bar.https.html')
+        self.assertEqual(driver.test_to_uri('external/wpt/foo/bar.serviceworker.html'),
+                         'https://web-platform.test:8444/foo/bar.serviceworker.html')
+        self.assertEqual(driver.test_to_uri('wpt_internal/foo/bar.html'),
+                         'http://web-platform.test:8001/wpt_internal/foo/bar.html')
+        self.assertEqual(driver.test_to_uri('wpt_internal/foo/bar.https.html'),
+                         'https://web-platform.test:8444/wpt_internal/foo/bar.https.html')
+        self.assertEqual(driver.test_to_uri('wpt_internal/foo/bar.serviceworker.html'),
+                         'https://web-platform.test:8444/wpt_internal/foo/bar.serviceworker.html')
 
     def test_uri_to_test(self):
         port = self.make_port()
@@ -73,9 +84,18 @@ class DriverTest(unittest.TestCase):
         self.assertEqual(driver.uri_to_test('http://127.0.0.1:8000/foo.html'), 'http/tests/foo.html')
         self.assertEqual(driver.uri_to_test('https://127.0.0.1:8443/https/bar.html'), 'http/tests/https/bar.html')
         self.assertEqual(driver.uri_to_test('https://127.0.0.1:8443/bar.https.html'), 'http/tests/bar.https.html')
-        self.assertEqual(driver.uri_to_test('http://web-platform.test:8001/foo/bar.html'), 'external/wpt/foo/bar.html')
-        self.assertEqual(driver.uri_to_test('https://web-platform.test:8444/foo/bar.https.html'), 'external/wpt/foo/bar.https.html')
-        self.assertEqual(driver.uri_to_test('https://web-platform.test:8444/foo/bar.serviceworker.html'), 'external/wpt/foo/bar.serviceworker.html')
+        self.assertEqual(driver.uri_to_test('http://web-platform.test:8001/foo/bar.html'),
+                         'external/wpt/foo/bar.html')
+        self.assertEqual(driver.uri_to_test('https://web-platform.test:8444/foo/bar.https.html'),
+                         'external/wpt/foo/bar.https.html')
+        self.assertEqual(driver.uri_to_test('https://web-platform.test:8444/foo/bar.serviceworker.html'),
+                         'external/wpt/foo/bar.serviceworker.html')
+        self.assertEqual(driver.uri_to_test('http://web-platform.test:8001/wpt_internal/foo/bar.html'),
+                         'wpt_internal/foo/bar.html')
+        self.assertEqual(driver.uri_to_test('https://web-platform.test:8444/wpt_internal/foo/bar.https.html'),
+                         'wpt_internal/foo/bar.https.html')
+        self.assertEqual(driver.uri_to_test('https://web-platform.test:8444/wpt_internal/foo/bar.serviceworker.html'),
+                         'wpt_internal/foo/bar.serviceworker.html')
 
     def test_read_block(self):
         port = self.make_port()
@@ -272,22 +292,22 @@ class CoalesceRepeatedSwitchesTest(unittest.TestCase):
 
     def test_multiple_enable_features(self):
         self._assert_coalesced_switches(
-            [ '--A', '--enable-features=Z,X',
-              '--enable-features=Y', '--X', '--enable-features=X,Y',
-              '--enable-features=X', '--enable-features=X,X'],
+            ['--A', '--enable-features=Z,X',
+             '--enable-features=Y', '--X', '--enable-features=X,Y',
+             '--enable-features=X', '--enable-features=X,X'],
             ['--A', '--X', '--enable-features=X,Y,Z'])
 
     def test_multiple_disable_features(self):
         self._assert_coalesced_switches(
-            [ '--A', '--disable-features=Z,X',
-              '--disable-features=Y', '--X', '--disable-features=X,Y',
-              '--disable-features=X', '--disable-features=X,X'],
+            ['--A', '--disable-features=Z,X',
+             '--disable-features=Y', '--X', '--disable-features=X,Y',
+             '--disable-features=X', '--disable-features=X,X'],
             ['--A', '--X', '--disable-features=X,Y,Z'])
 
     def test_enable_and_disable_features(self):
         # The coalescing of --enable-features and --disable-features is
         # independent (may both enable and disable the same feature).
         self._assert_coalesced_switches(
-            [ '--A', '--disable-features=Z','--disable-features=E,X',
-              '--enable-features=Y', '--X', '--enable-features=X,Y'],
+            ['--A', '--disable-features=Z', '--disable-features=E,X',
+             '--enable-features=Y', '--X', '--enable-features=X,Y'],
             ['--A', '--X', '--enable-features=X,Y', '--disable-features=E,X,Z'])

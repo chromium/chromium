@@ -24,7 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task_runner_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
@@ -359,7 +359,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir scoped_temp_dir_;
 
   scoped_refptr<base::TestSimpleTaskRunner> blocking_task_runner_;
@@ -988,7 +988,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
     ClearRulesetService();
     RunBlockingUntilIdle();
 
-    EXPECT_TRUE(base::DeleteFile(base_dir(), true));
+    EXPECT_TRUE(base::DeleteFileRecursively(base_dir()));
     ResetRulesetService();
   }
 
@@ -1035,7 +1035,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
     ClearRulesetService();
     RunBlockingUntilIdle();
 
-    EXPECT_TRUE(base::DeleteFile(base_dir(), true));
+    EXPECT_TRUE(base::DeleteFileRecursively(base_dir()));
     IndexedRulesetVersion().SaveToPrefs(prefs());
     ResetRulesetService();
   }

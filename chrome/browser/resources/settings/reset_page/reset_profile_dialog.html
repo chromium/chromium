@@ -1,11 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/html/action_link_css.html">
+<link rel="import" href="chrome://resources/cr_elements/action_link_css.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
 <link rel="import" href="reset_browser_proxy.html">
 <link rel="import" href="../i18n_setup.html">
@@ -19,11 +19,9 @@
         margin: 0 8px;
       }
 
-      cr-dialog {
-        --cr-dialog-body: {
-          /* Add space for the link focus ring. See https://crbug.com/909653. */
-          padding-bottom: 2px;
-        };
+      #dialog-body {
+        /* Add space for the link focus ring. See https://crbug.com/909653. */
+        padding-bottom: 2px;
       }
     </style>
     <cr-dialog id="dialog" close-text="$i18n{close}"
@@ -31,7 +29,7 @@
       <div slot="title">
         [[getPageTitle_(isTriggered_, triggeredResetToolName_)]]
       </div>
-      <div slot="body">
+      <div id="dialog-body" slot="body">
         <span>
           [[getExplanationText_(isTriggered_, triggeredResetToolName_)]]
           <a href="$i18nRaw{resetPageLearnMoreUrl}" target="_blank">
@@ -42,14 +40,14 @@
       <div slot="button-container">
         <paper-spinner-lite id="resetSpinner" active="[[clearingInProgress_]]">
         </paper-spinner-lite>
-        <paper-button class="cancel-button" on-click="onCancelTap_"
+        <cr-button class="cancel-button" on-click="onCancelTap_"
             id="cancel" disabled="[[clearingInProgress_]]">
           $i18n{cancel}
-        </paper-button>
-        <paper-button class="action-button" on-click="onResetTap_"
+        </cr-button>
+        <cr-button class="action-button" on-click="onResetTap_"
             id="reset" disabled="[[clearingInProgress_]]">
           $i18n{resetDialogCommit}
-        </paper-button>
+        </cr-button>
       </div>
       <div slot="footer">
         <cr-checkbox id="sendSettings" checked>

@@ -1,0 +1,16 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromeos.machine_learning.mojom;
+
+import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
+import "chromeos/services/machine_learning/public/mojom/model.mojom";
+import "chromeos/services/machine_learning/public/mojom/graph_executor.mojom";
+
+interface PageHandler {
+  // Loads the specified builtin model by forwarding it to Chrome OS ML
+  // Service.
+  LoadBuiltinModel(BuiltinModelSpec spec, pending_receiver<Model> receiver)
+      => (LoadModelResult result);
+};

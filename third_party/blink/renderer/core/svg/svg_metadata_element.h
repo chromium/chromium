@@ -29,8 +29,6 @@ class SVGMetadataElement final : public SVGElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(SVGMetadataElement);
-
   explicit SVGMetadataElement(Document&);
 
  private:

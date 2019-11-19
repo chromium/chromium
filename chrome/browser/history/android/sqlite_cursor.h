@@ -160,7 +160,7 @@ class SQLiteCursor {
 
   void GetFaviconForIDInUIThread(
       favicon_base::FaviconID id,
-      const favicon_base::FaviconRawBitmapCallback& callback);
+      favicon_base::FaviconRawBitmapCallback callback);
 
   // The callback function of FaviconService::GetLargestRawFaviconForID().
   void OnFaviconData(const favicon_base::FaviconRawBitmapResult& bitmap_result);

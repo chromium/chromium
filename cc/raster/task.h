@@ -112,18 +112,17 @@ struct CC_EXPORT TaskGraph {
          uint16_t category,
          uint16_t priority,
          uint32_t dependencies);
+    Node(const Node&) = delete;
     Node(Node&& other);
     ~Node();
 
+    Node& operator=(const Node&) = delete;
     Node& operator=(Node&& other) = default;
 
     scoped_refptr<Task> task;
     uint16_t category;
     uint16_t priority;
     uint32_t dependencies;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Node);
   };
 
   struct Edge {
@@ -137,17 +136,18 @@ struct CC_EXPORT TaskGraph {
   };
 
   TaskGraph();
+  TaskGraph(const TaskGraph&) = delete;
   TaskGraph(TaskGraph&& other);
   ~TaskGraph();
+
+  TaskGraph& operator=(const TaskGraph&) = delete;
+  TaskGraph& operator=(TaskGraph&&) = default;
 
   void Swap(TaskGraph* other);
   void Reset();
 
   Node::Vector nodes;
   Edge::Vector edges;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TaskGraph);
 };
 
 }  // namespace cc

@@ -62,6 +62,8 @@ class PLATFORM_EXPORT SkewTransformOperation final : public TransformOperation {
     transform.Skew(angle_x_, angle_y_);
   }
 
+  scoped_refptr<TransformOperation> Accumulate(
+      const TransformOperation& other) override;
   scoped_refptr<TransformOperation> Blend(
       const TransformOperation* from,
       double progress,

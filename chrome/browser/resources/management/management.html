@@ -1,23 +1,26 @@
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}" class="loading"
-    $i18n{dark}>
+<html dir="$i18n{textdirection}" lang="$i18n{language}" class="loading">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no">
+  <meta name="viewport" content="width=device-width, user-scalable=yes">
   <title>$i18n{title}</title>
 
   <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
   <style>
     html {
-      --toolbar-height: 56px;
       background: var(--md-background-color);
       height: 100%;
       overflow: hidden;
     }
 
-    html.loading {
-      border-top: var(--toolbar-height) solid var(--md-toolbar-color);
+    html.loading::before {
+      background-color: var(--md-toolbar-color);
+      border-bottom: var(--md-toolbar-border);
+      box-sizing: border-box;
+      content: '';
+      display: block;
+      height: var(--md-toolbar-height);
     }
 
     body {
@@ -26,8 +29,7 @@
     }
   </style>
 
-  <link rel="import" href="management_ui.html">
-  <script src="strings.js"></script>
+  <script type="module" src="management_ui.js"></script>
 </head>
 <body>
   <management-ui></management-ui>

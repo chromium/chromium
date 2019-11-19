@@ -33,19 +33,13 @@ int64_t ToDatabaseTime(base::Time time) {
   return time.since_origin().InMicroseconds();
 }
 
-// Statistics are logged to UMA with this string as part of histogram name. They
-// can all be found under LevelDB.*.ImageDatabase. Changing this needs to
-// synchronize with histograms.xml, AND will also become incompatible with older
-// browsers still reporting the previous values.
-const char kImageDatabaseUMAClientName[] = "CachedImageFetcherDatabase";
-
 // The folder where the data will be stored on disk.
 const char kImageDatabaseFolder[] = "cached_image_fetcher_images";
 
-// The amount of data to build up in memory before converting to a sorted on-
-// disk file.
-const size_t kDatabaseWriteBufferSizeBytes = 64 * 1024;                 // 64KB
-const size_t kDatabaseWriteBufferSizeBytesForLowEndDevice = 32 * 1024;  // 32KB
+// Most writes are very small, <100 bytes. This should buffer a handful of them
+// together, but not much more. This should allow a handful of them to be
+// buffered together without causing a significant impact to memory.
+const size_t kDatabaseWriteBufferSizeBytes = 1 * 1024;  // 1KB
 
 bool KeyMatcherFilter(std::string key, const std::string& other_key) {
   return key.compare(other_key) == 0;
@@ -62,40 +56,34 @@ using MetadataKeyEntryVector =
     leveldb_proto::ProtoDatabase<CachedImageMetadataProto>::KeyEntryVector;
 
 ImageMetadataStoreLevelDB::ImageMetadataStoreLevelDB(
+    leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
     const base::FilePath& database_dir,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::Clock* clock)
     : ImageMetadataStoreLevelDB(
-          database_dir,
-          leveldb_proto::ProtoDatabaseProvider::CreateUniqueDB<
-              CachedImageMetadataProto>(task_runner),
+          proto_database_provider->GetDB<CachedImageMetadataProto>(
+              leveldb_proto::ProtoDbType::CACHED_IMAGE_METADATA_STORE,
+              database_dir.AppendASCII(kImageDatabaseFolder),
+              task_runner),
           clock) {}
 
 ImageMetadataStoreLevelDB::ImageMetadataStoreLevelDB(
-    const base::FilePath& database_dir,
     std::unique_ptr<leveldb_proto::ProtoDatabase<CachedImageMetadataProto>>
         database,
     base::Clock* clock)
     : estimated_size_(0),
       initialization_status_(InitializationStatus::UNINITIALIZED),
-      database_dir_(database_dir),
       database_(std::move(database)),
-      clock_(clock),
-      weak_ptr_factory_(this) {}
+      clock_(clock) {}
 
 ImageMetadataStoreLevelDB::~ImageMetadataStoreLevelDB() = default;
 
 void ImageMetadataStoreLevelDB::Initialize(base::OnceClosure callback) {
   leveldb_env::Options options = leveldb_proto::CreateSimpleOptions();
-  if (base::SysInfo::IsLowEndDevice()) {
-    options.write_buffer_size = kDatabaseWriteBufferSizeBytesForLowEndDevice;
-  } else {
-    options.write_buffer_size = kDatabaseWriteBufferSizeBytes;
-  }
+  options.write_buffer_size = kDatabaseWriteBufferSizeBytes;
 
-  base::FilePath image_dir = database_dir_.AppendASCII(kImageDatabaseFolder);
   database_->Init(
-      kImageDatabaseUMAClientName, image_dir, options,
+      options,
       base::BindOnce(&ImageMetadataStoreLevelDB::OnDatabaseInitialized,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -105,8 +93,21 @@ bool ImageMetadataStoreLevelDB::IsInitialized() {
          initialization_status_ == InitializationStatus::INIT_FAILURE;
 }
 
+void ImageMetadataStoreLevelDB::LoadImageMetadata(
+    const std::string& key,
+    ImageMetadataCallback callback) {
+  DCHECK(IsInitialized());
+
+  database_->LoadEntriesWithFilter(
+      base::BindRepeating(&KeyMatcherFilter, key), CreateReadOptions(),
+      /* target_prefix */ "",
+      base::BindOnce(&ImageMetadataStoreLevelDB::LoadImageMetadataImpl,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void ImageMetadataStoreLevelDB::SaveImageMetadata(const std::string& key,
-                                                  const size_t data_size) {
+                                                  const size_t data_size,
+                                                  bool needs_transcoding) {
   // If the database is not initialized yet, ignore the request.
   if (!IsInitialized()) {
     return;
@@ -119,6 +120,7 @@ void ImageMetadataStoreLevelDB::SaveImageMetadata(const std::string& key,
   metadata_proto.set_data_size(data_size);
   metadata_proto.set_creation_time(current_time);
   metadata_proto.set_last_used_time(current_time);
+  metadata_proto.set_needs_transcoding(needs_transcoding);
 
   auto entries_to_save = std::make_unique<MetadataKeyEntryVector>();
   entries_to_save->emplace_back(key, metadata_proto);
@@ -188,10 +190,24 @@ void ImageMetadataStoreLevelDB::EvictImageMetadata(base::Time expiration_time,
 
 void ImageMetadataStoreLevelDB::OnDatabaseInitialized(
     base::OnceClosure callback,
-    bool success) {
-  initialization_status_ = success ? InitializationStatus::INITIALIZED
-                                   : InitializationStatus::INIT_FAILURE;
+    leveldb_proto::Enums::InitStatus status) {
+  initialization_status_ = status == leveldb_proto::Enums::InitStatus::kOK
+                               ? InitializationStatus::INITIALIZED
+                               : InitializationStatus::INIT_FAILURE;
   std::move(callback).Run();
+}
+
+void ImageMetadataStoreLevelDB::LoadImageMetadataImpl(
+    ImageMetadataCallback callback,
+    bool success,
+    std::unique_ptr<std::vector<CachedImageMetadataProto>> entries) {
+  if (!success || entries->size() == 0) {
+    std::move(callback).Run(CachedImageMetadataProto());
+    return;
+  }
+
+  DCHECK(entries->size() == 1);
+  std::move(callback).Run(std::move(entries->at(0)));
 }
 
 void ImageMetadataStoreLevelDB::OnImageUpdated(bool success) {

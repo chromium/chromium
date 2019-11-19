@@ -1,25 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://downloads/browser_proxy.html">
-<link rel="import" href="chrome://downloads/constants.html">
-<link rel="import" href="chrome://downloads/i18n_setup.html">
-<link rel="import" href="chrome://downloads/item.html">
-<link rel="import" href="chrome://downloads/search_service.html">
-<link rel="import" href="chrome://downloads/toolbar.html">
-<link rel="import" href="chrome://resources/cr_components/managed_footnote/managed_footnote.html">
-<link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/cr/ui.html">
-<link rel="import" href="chrome://resources/html/cr/ui/command.html">
-<link rel="import" href="chrome://resources/html/find_shortcut_behavior.html">
-<link rel="import" href="chrome://resources/html/util.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-
-<dom-module id="downloads-manager">
-  <template>
-    <style include="cr-hidden-style">
+    <style include="cr-page-host-style cr-shared-style cr-hidden-style">
       :host {
         display: flex;
         flex: 1 0;
@@ -27,20 +6,16 @@
         height: 100%;
         overflow: hidden;
         z-index: 0;
-
-        @apply --cr-page-host;
       }
 
-      :host-context([dark]) {
-        color: var(--cr-secondary-text-color);
+      @media (prefers-color-scheme: dark) {
+        :host {
+          color: var(--cr-secondary-text-color);
+        }
       }
 
       #toolbar {
         z-index: 1;
-      }
-
-      #drop-shadow {
-        @apply --cr-container-shadow;
       }
 
       :host([has-shadow_]) #drop-shadow {
@@ -80,12 +55,14 @@
         min-height: min-content;
       }
 
-      :host-context([dark]) #no-downloads {
-        color: var(--cr-secondary-text-color);
+      @media (prefers-color-scheme: dark) {
+        #no-downloads {
+          color: var(--cr-secondary-text-color);
+        }
       }
 
       #no-downloads .illustration {
-        background: url(chrome://downloads/images/no_downloads.svg) no-repeat
+        background: url(images/no_downloads.svg) no-repeat
             center center;
         background-size: contain;
         height: 144px;
@@ -120,7 +97,7 @@
     <downloads-toolbar id="toolbar" spinner-active="{{spinnerActive_}}"
         role="none" on-search-changed="onSearchChanged_">
     </downloads-toolbar>
-    <div id="drop-shadow"></div>
+    <div id="drop-shadow" class="cr-container-shadow"></div>
     <div id="mainContainer" on-scroll="onScroll_">
       <managed-footnote hidden="[[inSearchMode_]]"></managed-footnote>
       <iron-list id="downloadsList" items="[[items_]]"
@@ -129,7 +106,7 @@
         <template>
           <downloads-item data="[[item]]" tabindex$="[[tabIndex]]"
               iron-list-tab-index="[[tabIndex]]" last-focused="{{lastFocused_}}"
-              list-blurred="{{listBlurred_}}">
+              list-blurred="{{listBlurred_}}" focus-row-index="[[index]]">
           </downloads-item>
         </template>
       </iron-list>
@@ -140,6 +117,6 @@
         </div>
       </div>
     </div>
-  </template>
-  <script src="chrome://downloads/manager.js"></script>
-</dom-module>
+    <cr-toast-manager on-undo-click="onUndoClick_" undo-label="$i18n{undo}"
+        undo-description="$i18n{undoDescription}" duration="10000">
+    </cr-toast-manager>

@@ -1,4 +1,5 @@
 rootWebArea
-++footer
-++++staticText name='Footer element'
-++++++inlineTextBox name='Footer element'
+++genericContainer ignored
+++++footer
+++++++staticText name='Footer element'
+++++++++inlineTextBox name='Footer element'

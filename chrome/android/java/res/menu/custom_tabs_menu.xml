@@ -60,7 +60,9 @@
                   android:checkable="true" />
           </menu>
         </item>
-
+        <item android:id="@+id/translate_id"
+          android:title="@string/menu_translate"
+          android:orderInCategory="2"/>
         <!-- Title is intentionally left blank in xml and will be set in java. -->
         <item android:id="@+id/open_in_browser_id"
             android:title=""

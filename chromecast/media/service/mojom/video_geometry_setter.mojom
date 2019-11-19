@@ -1,0 +1,58 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.media.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/overlay_transform.mojom";
+
+// The purpose of VideoGeometrySetterService is to provide a brokerage between
+// chromecast::media::CastRenderers and viz::OverlayStrategyUnderlayCast, in a
+// situation where multiple instances of CastRenderers possibly run within
+// different instances of MediaService. When OverlayStrategyUnderlayCast decides
+// to set video geometry on a certain CastRenderer, it relies on
+// VideoGeometrySetterService to pass the geometry information to the right CastRenderer.
+
+// CastRenderer must implement this interface.
+// CastRenderer is used in multiple places but right now only CastRenderers
+// running within ::media::MediaService, on browser process, are using
+// video geometry setter service.
+interface VideoGeometryChangeClient {
+// Implementation of VideoGeometryChangeClient sets the video geometry on
+// itself.
+  OnVideoGeometryChange(gfx.mojom.RectF rect_f, gfx.mojom.OverlayTransform
+    transform);
+};
+
+// A single instance of VideoGeometrySetterService provides both the interface
+// and VideoGeometryChangeSubscriber and VideoGeometrySetter.
+
+// To be used by a VideoGeometryChangeClient(i.e., a CastRenderer).
+// CastRenders running in browser process can subscribe for the video geometry
+// information, that would be sent from compositor, which is being migrated
+// from browser process to GPU process.
+interface VideoGeometryChangeSubscriber {
+// A VideoGeometryChangeClient informs VideoGeometrySetterService its existence.
+// |overlay_plane_id| identifies the VideoGeometryChangeClient,
+// |client_pending_remote| is the pending remote bound to the
+// VideoGeometryChangeClient itself.
+  SubscribeToVideoGeometryChange(
+    mojo_base.mojom.UnguessableToken overlay_plane_id,
+    pending_remote<VideoGeometryChangeClient> client_pending_remote) => ();
+};
+
+// To be used by OverlayStrategyUnderlayCast, which is part of compositor that
+// is being migrated to GPU process. Within GPU process
+// OverlayStrategyUnderlayCast cannot access CastRenderer any more, so it
+// uses VideoGeometrySetter interface to send out the geometry information to
+// VideoGeometrySetter, which then forward it to the right CastRenderer.
+interface VideoGeometrySetter {
+// Informs VideoGeometrySetterService the video geometry information and the
+// target CastRenderer, identified by |overlay_plane_id|, that the geometry is
+// set to.
+  SetVideoGeometry(gfx.mojom.RectF rect_f,
+    gfx.mojom.OverlayTransform transform,
+    mojo_base.mojom.UnguessableToken overlay_plane_id);
+};

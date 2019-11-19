@@ -19,13 +19,12 @@ UkmManager::~UkmManager() {
   RecordRenderingUkm();
 }
 
-void UkmManager::SetSourceURL(const GURL& url) {
-  // If we accumulating any metrics, record them before reseting the source.
+void UkmManager::SetSourceId(ukm::SourceId source_id) {
+  // If we accumulated any metrics, record them before resetting the source.
   RecordCheckerboardUkm();
   RecordRenderingUkm();
 
-  source_id_ = recorder_->GetNewSourceID();
-  recorder_->UpdateSourceURL(source_id_, url);
+  source_id_ = source_id;
 }
 
 void UkmManager::SetUserInteractionInProgress(bool in_progress) {

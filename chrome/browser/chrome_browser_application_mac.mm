@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/native_event_processor_mac.h"
 #include "content/public/browser/native_event_processor_observer_mac.h"
+#include "ui/base/cocoa/accessibility_focus_overrider.h"
 
 namespace chrome_browser_application_mac {
 
@@ -338,6 +339,12 @@ std::string DescriptionForNSEvent(NSEvent* event) {
       accessibility_state->DisableAccessibility();
   }
   return [super accessibilitySetValue:value forAttribute:attribute];
+}
+
+- (id)accessibilityFocusedUIElement {
+  if (id forced_focus = ui::AccessibilityFocusOverrider::GetFocusedUIElement())
+    return forced_focus;
+  return [super accessibilityFocusedUIElement];
 }
 
 - (void)addNativeEventProcessorObserver:

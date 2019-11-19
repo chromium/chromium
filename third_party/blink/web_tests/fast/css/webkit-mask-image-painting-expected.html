@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      div {
+        background: skyblue;
+        width: 100px;
+      }
+      div > span {
+        display: block;
+      }
+      div > span > b {
+        display: inline-block;
+        background: black;
+        width: 10px;
+        height: 10px;
+        margin: 1px;
+      }
+    </style>
+  </head>
+  <body>
+    <div><span><b></b><b></b></span></div>
+    <p>
+      The blue box above should contain two black boxes.
+    </p>
+  </body>
+</html>

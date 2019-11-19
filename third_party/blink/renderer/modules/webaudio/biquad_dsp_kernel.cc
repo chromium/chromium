@@ -186,55 +186,30 @@ void BiquadDSPKernel::Process(const float* source,
   biquad_.Process(source, destination, frames_to_process);
 }
 
-void BiquadDSPKernel::GetFrequencyResponse(int n_frequencies,
+void BiquadDSPKernel::GetFrequencyResponse(BiquadDSPKernel& kernel,
+                                           int n_frequencies,
                                            const float* frequency_hz,
                                            float* mag_response,
                                            float* phase_response) {
-  bool is_good =
-      n_frequencies > 0 && frequency_hz && mag_response && phase_response;
-  DCHECK(is_good);
-  if (!is_good)
-    return;
+  // Only allow on the main thread because we don't want the audio thread to be
+  // updating |kernel| while we're computing the response.
+  DCHECK(IsMainThread());
+
+  DCHECK_GT(n_frequencies, 0);
+  DCHECK(frequency_hz);
+  DCHECK(mag_response);
+  DCHECK(phase_response);
 
   Vector<float> frequency(n_frequencies);
-
-  double nyquist = this->Nyquist();
+  double nyquist = kernel.Nyquist();
 
   // Convert from frequency in Hz to normalized frequency (0 -> 1),
   // with 1 equal to the Nyquist frequency.
   for (int k = 0; k < n_frequencies; ++k)
     frequency[k] = frequency_hz[k] / nyquist;
 
-  float cutoff_frequency;
-  float q;
-  float gain;
-  float detune;  // in Cents
-
-  {
-    // Get a copy of the current biquad filter coefficients so we can update the
-    // biquad with these values. We need to synchronize with process() to
-    // prevent process() from updating the filter coefficients while we're
-    // trying to access them. The process will update it next time around.
-    //
-    // The BiquadDSPKernel object here (along with it's Biquad object) is for
-    // querying the frequency response and is NOT the same as the one in
-    // process() which is used for performing the actual filtering. This one is
-    // is created in BiquadProcessor::getFrequencyResponse for this purpose.
-    // Both, however, point to the same BiquadProcessor object.
-    //
-    // FIXME: Simplify this: crbug.com/390266
-    MutexLocker process_locker(process_lock_);
-
-    cutoff_frequency = GetBiquadProcessor()->Parameter1().Value();
-    q = GetBiquadProcessor()->Parameter2().Value();
-    gain = GetBiquadProcessor()->Parameter3().Value();
-    detune = GetBiquadProcessor()->Parameter4().Value();
-  }
-
-  UpdateCoefficients(1, &cutoff_frequency, &q, &gain, &detune);
-
-  biquad_.GetFrequencyResponse(n_frequencies, frequency.data(), mag_response,
-                               phase_response);
+  kernel.biquad_.GetFrequencyResponse(n_frequencies, frequency.data(),
+                                      mag_response, phase_response);
 }
 
 bool BiquadDSPKernel::RequiresTailProcessing() const {

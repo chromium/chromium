@@ -8,12 +8,32 @@ a {
   text-decoration: none;
 }
 
+oobe-dialog {
+  height: 100%;
+}
+
+cr-dialog {
+  --cr-dialog-native: {
+    max-width: 640px;
+    min-width: 512px;
+    width: calc(100% - var(--oobe-dialog-content-padding) * 2);
+  }
+}
+
+webview {
+  user-select: none;
+}
+
 .container {
-  height: 496px;
-  overflow: hidden;
-  padding: 60px 64px 0 64px;
+  box-sizing: border-box;
+  height: 100%;
+  padding-bottom: 0;
+  padding-inline-end: var(--oobe-dialog-content-padding);
+  padding-inline-start: var(--oobe-dialog-content-padding);
+  padding-top: calc(var(--oobe-dialog-content-padding) -
+                    var(--caption-bar-height));
   position: absolute;
-  width: 640px;
+  width: 100%;
 }
 
 .line {
@@ -43,6 +63,7 @@ a {
 #logo {
   height: 32px;
   margin: 0;
+  width: 32px;
 }
 
 #next-button {

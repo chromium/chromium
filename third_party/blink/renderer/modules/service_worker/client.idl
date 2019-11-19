@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://wicg.github.io/page-lifecycle/#serviceworker-clients-dfn
+enum ClientLifecycleState {
+    "active",
+    "frozen"
+};
+
 // https://w3c.github.io/ServiceWorker/#client-interface
 [
     Exposed=ServiceWorker,
@@ -15,4 +21,6 @@
 
     // FIXME: frameType is non-standard, see https://crbug.com/697110
     [CallWith=ScriptState] readonly attribute ContextFrameType frameType;
+
+    [RuntimeEnabled=ServiceWorkerClientLifecycleState] readonly attribute ClientLifecycleState lifecycleState;
 };

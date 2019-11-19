@@ -128,6 +128,11 @@ const MainView = (function() {
         parsed.tabHash = EventsView.TAB_HASH;
       }
 
+      // Don't switch to the chromeos view if not on chromeos.
+      if (!cr.isChromeOS && parsed.tabHash == '#chromeos') {
+        parsed.tabHash = EventsView.TAB_HASH;
+      }
+
       if (!parsed.tabHash) {
         // Default to the events tab.
         parsed.tabHash = EventsView.TAB_HASH;

@@ -322,9 +322,7 @@ DisplayManager::BeginEndNotifier::~BeginEndNotifier() {
 }
 
 DisplayManager::DisplayManager(std::unique_ptr<Screen> screen)
-    : screen_(std::move(screen)),
-      layout_store_(new DisplayLayoutStore),
-      weak_ptr_factory_(this) {
+    : screen_(std::move(screen)), layout_store_(new DisplayLayoutStore) {
 #if defined(OS_CHROMEOS)
   configure_displays_ = chromeos::IsRunningAsSystemCompositor();
   change_display_upon_host_resize_ = !configure_displays_;
@@ -629,7 +627,6 @@ bool DisplayManager::SetDisplayMode(int64_t display_id,
 void DisplayManager::RegisterDisplayProperty(
     int64_t display_id,
     Display::Rotation rotation,
-    float ui_scale,
     const gfx::Insets* overscan_insets,
     const gfx::Size& resolution_in_pixels,
     float device_scale_factor,
@@ -648,26 +645,7 @@ void DisplayManager::RegisterDisplayProperty(
   info.SetRotation(rotation, Display::RotationSource::USER);
   info.SetRotation(rotation, Display::RotationSource::ACTIVE);
 
-  // TODO(malaykeshav|oshima): Remove this code in m71.
-  //
-  // We want to match the effective display resolution from what it was when
-  // ui scale was being used. This ensures that the users do not face any
-  // disruption after an update and/or when the display zoom feature is
-  // enabled. This also ensures that kiosk apps that have a ui scale set does
-  // not break when display zoom is enabled.
-  // NOTE - If the user tries to change the zoom level, they may not be able
-  // to come back to this zoom level again.
-
-  // We store a negative ui_scale value until m71.
-  // If |ui_scale| is negative, it means this is not the first boot with
-  // display zoom enabled, and hence we do not need to port the value for
-  // zoom scale from |ui_scale|.
-  if (ui_scale < 0) {
-    info.set_zoom_factor(display_zoom_factor);
-  } else {
-    info.set_zoom_factor(1.f / ui_scale);
-    info.set_is_zoom_factor_from_ui_scale(true);
-  }
+  info.set_zoom_factor(display_zoom_factor);
 
   if (overscan_insets)
     info.SetOverscanInsets(*overscan_insets);
@@ -692,16 +670,13 @@ bool DisplayManager::GetActiveModeForDisplayId(int64_t display_id,
   }
 
   // If 'selected' mode is empty, it should return the default mode. This means
-  // the native mode for the external display. Unfortunately this is not true
-  // for the internal display because restoring UI-scale doesn't register the
-  // restored mode to |display_mode_|, so it needs to look up the mode whose
-  // UI-scale value matches. See the TODO in RegisterDisplayProperty().
+  // the native mode for the external display, and the first one for internal.
   const ManagedDisplayInfo& info = GetDisplayInfo(display_id);
   const ManagedDisplayInfo::ManagedDisplayModeList& display_modes =
       info.display_modes();
 
   for (const auto& display_mode : display_modes) {
-    if (GetDisplayIdForUIScaling() == display_id) {
+    if (display::Display::IsInternalDisplayId(display_id)) {
       if (display_modes.size() == 1) {
         *mode = display_mode;
         return true;
@@ -749,10 +724,6 @@ void DisplayManager::SetSelectedModeForDisplayId(
   display_modes_[display_id] = *iter;
 }
 
-bool DisplayManager::IsDisplayUIScalingEnabled() const {
-  return GetDisplayIdForUIScaling() != kInvalidDisplayId;
-}
-
 gfx::Insets DisplayManager::GetOverscanInsets(int64_t display_id) const {
   auto it = display_info_.find(display_id);
   return (it != display_info_.end()) ? it->second.overscan_insets_in_dip()
@@ -762,7 +733,7 @@ gfx::Insets DisplayManager::GetOverscanInsets(int64_t display_id) const {
 void DisplayManager::OnNativeDisplaysChanged(
     const DisplayInfoList& updated_displays) {
   if (updated_displays.empty()) {
-    DVLOG(1) << __func__
+    VLOG(1) << __func__
              << "(0): # of current displays=" << active_display_list_.size();
     // If the device is booted without display, or chrome is started
     // without --ash-host-window-bounds on linux desktop, use the
@@ -787,9 +758,9 @@ void DisplayManager::OnNativeDisplaysChanged(
     }
     return;
   }
-  DVLOG_IF(1, updated_displays.size() == 1)
+  VLOG_IF(1, updated_displays.size() == 1)
       << __func__ << "(1):" << updated_displays[0].ToString();
-  DVLOG_IF(1, updated_displays.size() > 1)
+  VLOG_IF(1, updated_displays.size() > 1)
       << __func__ << "(" << updated_displays.size()
       << ") [0]=" << updated_displays[0].ToString()
       << ", [1]=" << updated_displays[1].ToString();
@@ -1047,7 +1018,7 @@ void DisplayManager::UpdateDisplaysWith(
   std::vector<size_t> updated_indices;
   UpdateNonPrimaryDisplayBoundsForLayout(&new_displays, &updated_indices);
   for (size_t updated_index : updated_indices) {
-    if (!base::ContainsValue(added_display_indices, updated_index)) {
+    if (!base::Contains(added_display_indices, updated_index)) {
       uint32_t metrics = DisplayObserver::DISPLAY_METRIC_BOUNDS |
                          DisplayObserver::DISPLAY_METRIC_WORK_AREA;
       if (display_changes.find(updated_index) != display_changes.end())
@@ -1310,12 +1281,6 @@ std::string DisplayManager::GetDisplayNameForId(int64_t id) const {
   return base::StringPrintf("Display %d", static_cast<int>(id));
 }
 
-int64_t DisplayManager::GetDisplayIdForUIScaling() const {
-  // UI Scaling is effective on internal display.
-  return Display::HasInternalDisplay() ? Display::InternalDisplayId()
-                                       : kInvalidDisplayId;
-}
-
 bool DisplayManager::ShouldSetMirrorModeOn(const DisplayIdList& new_id_list) {
   DCHECK(new_id_list.size() > 1);
   if (layout_store_->forced_mirror_mode_for_tablet())
@@ -1329,18 +1294,20 @@ bool DisplayManager::ShouldSetMirrorModeOn(const DisplayIdList& new_id_list) {
     return true;
   }
 
-  if (num_connected_displays_ <= 1) {
-    // The ChromeOS just boots up or it only has one display. Restore mirror
-    // mode based on the external displays' mirror info stored in the
-    // preferences. Mirror mode should be on if one of the external displays was
-    // in mirror mode before.
+  if (should_restore_mirror_mode_from_display_prefs_ ||
+      num_connected_displays_ <= 1) {
+    // The ChromeOS just boots up, the display prefs have just been loaded, or
+    // we only have one display. Restore mirror mode based on the external
+    // displays' mirror info stored in the preferences. Mirror mode should be on
+    // if one of the external displays was in mirror mode before.
+    should_restore_mirror_mode_from_display_prefs_ = false;
+
     for (int64_t id : new_id_list) {
       if (external_display_mirror_info_.count(
               GetDisplayIdWithoutOutputIndex(id))) {
         return true;
       }
     }
-    return false;
   }
   // Mirror mode should remain unchanged as long as there are more than one
   // connected displays.
@@ -2048,33 +2015,11 @@ void DisplayManager::InsertAndUpdateDisplayInfo(
   if (it != display_info_.end()) {
     ManagedDisplayInfo* info = &(it->second);
     info->Copy(new_info);
-
-    // FHD devices with 1.25 DSF behave differently from other configuration.
-    // It uses 1.25 DSF for its display mode, only when the UI-Scale is set to
-    // 0.8. Which means that the rest of the display modes do not have a 1.25
-    // DSF. Instead they have a DSF of 1.
-    // The logic to convert a ui scale to the corresponding display zoom factor
-    // relies on the assumption that the DSF for all modes in an internal
-    // display is constant.
-    // In the case of a FHD 1.25 DSF device, when we are converting a ui scale
-    // to the corresponding display zoom scale, we assume a DSF of 1.25 for all
-    // non native display modes. This we now know is incorrect. The actual
-    // active DSF for all non native modes is 1. This means we have to offset
-    // the new net scale of |1.25 DSF * zoom_scale| such that it is equal to the
-    // old net scale of |1 DSF * 1/ui_scale| to get the correct one-to-one
-    // mapping. We know |zoom_scale = 1/ui_scale|, which means we have to offset
-    // the net scale by a factor of 1/1.25 to get the correct result.
-    // See https://crbug/845987 for more detailed info and explanation.
-    if (info->is_zoom_factor_from_ui_scale() &&
-        Display::IsInternalDisplayId(new_info.id()) &&
-        new_info.bounds_in_native().height() == 1080 &&
-        new_info.device_scale_factor() == 1.25f) {
-      info->set_zoom_factor(info->zoom_factor() * 0.8f);
-      info->set_is_zoom_factor_from_ui_scale(false);
-    }
   } else {
     display_info_[new_info.id()] = new_info;
-    display_info_[new_info.id()].set_native(false);
+    // Set from_native_platform to false so that all information
+    // (rotation, zoom factor etc.) is copied.
+    display_info_[new_info.id()].set_from_native_platform(false);
   }
   display_info_[new_info.id()].UpdateDisplaySize();
 }
@@ -2095,13 +2040,15 @@ Display DisplayManager::CreateDisplayFromDisplayInfoById(int64_t id) {
   new_display.set_rotation(display_info.GetActiveRotation());
   new_display.set_touch_support(display_info.touch_support());
   new_display.set_maximum_cursor_size(display_info.maximum_cursor_size());
-#if defined(OS_CHROMEOS)
-  // TODO(mcasas): remove this check, http://crbug.com/771345.
-  if (base::FeatureList::IsEnabled(features::kUseMonitorColorSpace))
-    new_display.set_color_space(display_info.color_space());
-#else
-  new_display.set_color_space(display_info.color_space());
-#endif
+  new_display.SetColorSpaceAndDepth(display_info.color_space());
+  constexpr uint32_t kNormalBitDepthNumBitsPerChannel = 8u;
+  if (display_info.bits_per_channel() > kNormalBitDepthNumBitsPerChannel) {
+    new_display.set_depth_per_component(display_info.bits_per_channel());
+    constexpr uint32_t kRGBNumChannels = 3u;
+    new_display.set_color_depth(display_info.bits_per_channel() *
+                                kRGBNumChannels);
+  }
+  new_display.set_display_frequency(display_info.refresh_rate());
 
   if (internal_display_has_accelerometer_ && Display::IsInternalDisplayId(id)) {
     new_display.set_accelerometer_support(
@@ -2160,7 +2107,7 @@ void DisplayManager::UpdateNonPrimaryDisplayBoundsForLayout(
 void DisplayManager::CreateMirrorWindowIfAny() {
   if (software_mirroring_display_list_.empty() || !delegate_) {
     if (!created_mirror_window_.is_null())
-      base::ResetAndReturn(&created_mirror_window_).Run();
+      std::move(created_mirror_window_).Run();
     return;
   }
   DisplayInfoList list;
@@ -2168,7 +2115,7 @@ void DisplayManager::CreateMirrorWindowIfAny() {
     list.push_back(GetDisplayInfo(display.id()));
   delegate_->CreateOrUpdateMirroringDisplay(list);
   if (!created_mirror_window_.is_null())
-    base::ResetAndReturn(&created_mirror_window_).Run();
+    std::move(created_mirror_window_).Run();
 }
 
 void DisplayManager::ApplyDisplayLayout(DisplayLayout* layout,
@@ -2226,6 +2173,13 @@ const Display& DisplayManager::GetSecondaryDisplay() const {
 
 void DisplayManager::UpdateInfoForRestoringMirrorMode() {
   if (num_connected_displays_ <= 1)
+    return;
+
+  // The display prefs have just been loaded and we're waiting for the
+  // reconfiguration of the displays to apply the newly loaded prefs. We should
+  // not overwrite the newly-loaded external display mirror configs.
+  // https://crbug.com/936884.
+  if (should_restore_mirror_mode_from_display_prefs_)
     return;
 
   // External displays mirrored because of forced tablet mode mirroring should

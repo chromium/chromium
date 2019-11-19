@@ -32,7 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_HTML_INPUT_ELEMENT_FILE_SYSTEM_H_
 
 #include "third_party/blink/renderer/modules/filesystem/entry_heap_vector.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 

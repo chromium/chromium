@@ -11,13 +11,14 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/filename_util.h"
 #include "net/base/load_flags.h"
@@ -30,29 +31,25 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_session.h"
-#include "net/http/http_server_properties_impl.h"
+#include "net/http/http_server_properties.h"
 #include "net/http/http_transaction_factory.h"
 #include "net/http/transport_security_state.h"
 #include "net/net_buildflags.h"
+#include "net/quic/quic_context.h"
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/socket/transport_client_socket_pool.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/simple_connection_listener.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context_storage.h"
-#include "net/url_request/url_request_file_job.h"
 #include "net/url_request/url_request_job_factory_impl.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
-
-#if !BUILDFLAG(DISABLE_FILE_SUPPORT)
-#include "net/url_request/file_protocol_handler.h"
-#endif
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -94,7 +91,8 @@ class RequestContext : public URLRequestContext {
     storage_.set_ssl_config_service(
         std::make_unique<SSLConfigServiceDefaults>());
     storage_.set_http_server_properties(
-        std::make_unique<HttpServerPropertiesImpl>());
+        std::make_unique<HttpServerProperties>());
+    storage_.set_quic_context(std::make_unique<QuicContext>());
 
     HttpNetworkSession::Context session_context;
     session_context.host_resolver = host_resolver();
@@ -105,6 +103,7 @@ class RequestContext : public URLRequestContext {
     session_context.proxy_resolution_service = proxy_resolution_service();
     session_context.ssl_config_service = ssl_config_service();
     session_context.http_server_properties = http_server_properties();
+    session_context.quic_context = quic_context();
     storage_.set_http_network_session(std::make_unique<HttpNetworkSession>(
         HttpNetworkSession::Params(), session_context));
     storage_.set_http_transaction_factory(std::make_unique<HttpCache>(
@@ -112,11 +111,6 @@ class RequestContext : public URLRequestContext {
         false));
     std::unique_ptr<URLRequestJobFactoryImpl> job_factory =
         std::make_unique<URLRequestJobFactoryImpl>();
-#if !BUILDFLAG(DISABLE_FILE_SUPPORT)
-    job_factory->SetProtocolHandler("file",
-                                    std::make_unique<FileProtocolHandler>(
-                                        base::ThreadTaskRunnerHandle::Get()));
-#endif
     storage_.set_job_factory(std::move(job_factory));
   }
 
@@ -128,10 +122,6 @@ class RequestContext : public URLRequestContext {
 
 // Get a file:// url relative to net/data/proxy/pac_file_fetcher_unittest.
 GURL GetTestFileUrl(const std::string& relpath) {
-#if BUILDFLAG(DISABLE_FILE_SUPPORT)
-  LOG(WARNING)
-      << "Built a file:// URL to test data, however file support is disabled.";
-#endif  // BUILDFLAG(DISABLE_FILE_SUPPORT)
   base::FilePath path;
   base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
   path = path.AppendASCII("net");
@@ -164,15 +154,13 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
     return OK;
   }
 
-  void OnStartTransaction(URLRequest* request,
-                          const HttpRequestHeaders& headers) override {}
-
   int OnHeadersReceived(
       URLRequest* request,
       CompletionOnceCallback callback,
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
-      GURL* allowed_unsafe_redirect_url) override {
+      const net::IPEndPoint& endpoint,
+      base::Optional<GURL>* preserve_fragment_on_redirect_url) override {
     return OK;
   }
 
@@ -188,14 +176,6 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
   void OnPACScriptError(int line_number, const base::string16& error) override {
   }
 
-  NetworkDelegate::AuthRequiredResponse OnAuthRequired(
-      URLRequest* request,
-      const AuthChallengeInfo& auth_info,
-      AuthCallback callback,
-      AuthCredentials* credentials) override {
-    return NetworkDelegate::AUTH_REQUIRED_RESPONSE_NO_ACTION;
-  }
-
   bool OnCanGetCookies(const URLRequest& request,
                        const CookieList& cookie_list,
                        bool allowed_from_caller) override {
@@ -209,17 +189,10 @@ class BasicNetworkDelegate : public NetworkDelegateImpl {
     return allowed_from_caller;
   }
 
-  bool OnCanAccessFile(const URLRequest& request,
-                       const base::FilePath& original_path,
-                       const base::FilePath& absolute_path) const override {
-    return true;
-  }
-
   DISALLOW_COPY_AND_ASSIGN(BasicNetworkDelegate);
 };
 
-class PacFileFetcherImplTest : public PlatformTest,
-                               public WithScopedTaskEnvironment {
+class PacFileFetcherImplTest : public PlatformTest, public WithTaskEnvironment {
  public:
   PacFileFetcherImplTest() {
     test_server_.AddDefaultHandlers(base::FilePath(kDocRoot));
@@ -231,45 +204,6 @@ class PacFileFetcherImplTest : public PlatformTest,
   BasicNetworkDelegate network_delegate_;
   RequestContext context_;
 };
-
-// Try fetching a non-existent PAC file via file://.
-TEST_F(PacFileFetcherImplTest, FileUrlDoesNotExist) {
-  auto pac_fetcher = PacFileFetcherImpl::CreateWithFileUrlSupport(&context_);
-
-  base::string16 text;
-  TestCompletionCallback callback;
-  int result =
-      pac_fetcher->Fetch(GetTestFileUrl("does-not-exist"), &text,
-                         callback.callback(), TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  EXPECT_THAT(result, IsError(ERR_IO_PENDING));
-  EXPECT_TRUE(text.empty());
-
-#if !BUILDFLAG(DISABLE_FILE_SUPPORT)
-  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_FILE_NOT_FOUND));
-#else
-  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_UNKNOWN_URL_SCHEME));
-#endif  // !BUILDFLAG(DISABLE_FILE_SUPPORT)
-}
-
-TEST_F(PacFileFetcherImplTest, FileUrlExists) {
-  auto pac_fetcher = PacFileFetcherImpl::CreateWithFileUrlSupport(&context_);
-
-  base::string16 text;
-  TestCompletionCallback callback;
-  int result =
-      pac_fetcher->Fetch(GetTestFileUrl("pac.txt"), &text, callback.callback(),
-                         TRAFFIC_ANNOTATION_FOR_TESTS);
-
-  EXPECT_THAT(result, IsError(ERR_IO_PENDING));
-
-#if !BUILDFLAG(DISABLE_FILE_SUPPORT)
-  EXPECT_THAT(callback.WaitForResult(), IsOk());
-  EXPECT_EQ(ASCIIToUTF16("-pac.txt-\n"), text);
-#else
-  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_UNKNOWN_URL_SCHEME));
-#endif  // !BUILDFLAG(DISABLE_FILE_SUPPORT)
-}
 
 TEST_F(PacFileFetcherImplTest, FileUrlNotAllowed) {
   auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
@@ -284,15 +218,11 @@ TEST_F(PacFileFetcherImplTest, FileUrlNotAllowed) {
   EXPECT_THAT(result, IsError(ERR_DISALLOWED_URL_SCHEME));
 }
 
-// Even if the fetcher allows file://, a server-side redirect from http -->
-// file:// should not work.
-//
-// It is currently disallowed lower in the stack and results in an
-// ERR_UNSAFE_REDIRECT.
+// Redirect to file URLs are not allowed.
 TEST_F(PacFileFetcherImplTest, RedirectToFileUrl) {
   ASSERT_TRUE(test_server_.Start());
 
-  auto pac_fetcher = PacFileFetcherImpl::CreateWithFileUrlSupport(&context_);
+  auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
 
   GURL url(test_server_.GetURL("/redirect-to-file"));
 
@@ -355,7 +285,8 @@ TEST_F(PacFileFetcherImplTest, HttpStatusCode) {
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsError(ERR_IO_PENDING));
-    EXPECT_THAT(callback.WaitForResult(), IsError(ERR_PAC_STATUS_NOT_OK));
+    EXPECT_THAT(callback.WaitForResult(),
+                IsError(ERR_HTTP_RESPONSE_CODE_FAILURE));
     EXPECT_TRUE(text.empty());
   }
   {  // Fetch a PAC which gives a 404 -- FAIL
@@ -365,7 +296,8 @@ TEST_F(PacFileFetcherImplTest, HttpStatusCode) {
     int result = pac_fetcher->Fetch(url, &text, callback.callback(),
                                     TRAFFIC_ANNOTATION_FOR_TESTS);
     EXPECT_THAT(result, IsError(ERR_IO_PENDING));
-    EXPECT_THAT(callback.WaitForResult(), IsError(ERR_PAC_STATUS_NOT_OK));
+    EXPECT_THAT(callback.WaitForResult(),
+                IsError(ERR_HTTP_RESPONSE_CODE_FAILURE));
     EXPECT_TRUE(text.empty());
   }
 }
@@ -426,31 +358,21 @@ TEST_F(PacFileFetcherImplTest, NoCache) {
 TEST_F(PacFileFetcherImplTest, TooLarge) {
   ASSERT_TRUE(test_server_.Start());
 
-  auto pac_fetcher = PacFileFetcherImpl::CreateWithFileUrlSupport(&context_);
+  auto pac_fetcher = PacFileFetcherImpl::Create(&context_);
 
   // Set the maximum response size to 50 bytes.
   int prev_size = pac_fetcher->SetSizeConstraint(50);
 
-  // These two URLs are the same file, but are http:// vs file://
-  GURL urls[] = {
-    test_server_.GetURL("/large-pac.nsproxy"),
-#if !BUILDFLAG(DISABLE_FILE_SUPPORT)
-    GetTestFileUrl("large-pac.nsproxy")
-#endif
-  };
-
-  // Try fetching URLs that are 101 bytes large. We should abort the request
+  // Try fetching URL that is 101 bytes large. We should abort the request
   // after 50 bytes have been read, and fail with a too large error.
-  for (size_t i = 0; i < base::size(urls); ++i) {
-    const GURL& url = urls[i];
-    base::string16 text;
-    TestCompletionCallback callback;
-    int result = pac_fetcher->Fetch(url, &text, callback.callback(),
-                                    TRAFFIC_ANNOTATION_FOR_TESTS);
-    EXPECT_THAT(result, IsError(ERR_IO_PENDING));
-    EXPECT_THAT(callback.WaitForResult(), IsError(ERR_FILE_TOO_BIG));
-    EXPECT_TRUE(text.empty());
-  }
+  GURL url = test_server_.GetURL("/large-pac.nsproxy");
+  base::string16 text;
+  TestCompletionCallback callback;
+  int result = pac_fetcher->Fetch(url, &text, callback.callback(),
+                                  TRAFFIC_ANNOTATION_FOR_TESTS);
+  EXPECT_THAT(result, IsError(ERR_IO_PENDING));
+  EXPECT_THAT(callback.WaitForResult(), IsError(ERR_FILE_TOO_BIG));
+  EXPECT_TRUE(text.empty());
 
   // Restore the original size bound.
   pac_fetcher->SetSizeConstraint(prev_size);

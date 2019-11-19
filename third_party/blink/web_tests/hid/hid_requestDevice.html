@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<body>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/services/device/public/mojom/hid.mojom.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/hid/hid.mojom.js"></script>
+<script src="resources/hid-test-utils.js"></script>
+<script>
+
+const kTestVendorId = 0x1234;
+const kTestProductId = 0xabcd;
+
+promise_test((t) => {
+  return promise_rejects(
+      t, 'SecurityError', navigator.hid.requestDevice({filters: []}));
+}, 'requestDevice() rejects without a user gesture');
+
+promise_test(async (t) => {
+  let interceptor =
+      new MojoInterfaceInterceptor(blink.mojom.HidService.name, "context", true);
+  interceptor.oninterfacerequest = e => e.handle.close();
+  interceptor.start();
+
+  await trustedClick();
+  try {
+    await promise_rejects(
+        t, 'NotFoundError', navigator.hid.requestDevice({filters: []}));
+  } finally {
+    interceptor.stop();
+  }
+}, 'requestDevice() rejects if Mojo service connection fails');
+
+hid_test(async (t, fake) => {
+  await trustedClick();
+  return promise_rejects(
+      t, 'NotFoundError', navigator.hid.requestDevice({filters: []}));
+}, 'requestDevice() rejects if no device has been selected');
+
+hid_test(async (t, fake) => {
+  let guid = fake.addDevice(fake.makeDevice(kTestVendorId, kTestProductId));
+  fake.setSelectedDevice(guid);
+
+  await trustedClick();
+  let device = await navigator.hid.requestDevice({filters: []});
+  assert_true(device instanceof HIDDevice);
+}, 'requestDevice() returns the selected device');
+
+hid_test(async (t, fake) => {
+  let guid = fake.addDevice(fake.makeDevice(kTestVendorId, kTestProductId));
+  fake.setSelectedDevice(guid);
+
+  await trustedClick();
+  let firstDevice = await navigator.hid.requestDevice({filters: []});
+  assert_true(firstDevice instanceof HIDDevice);
+  let secondDevice = await navigator.hid.requestDevice({filters: []});
+  assert_true(secondDevice instanceof HIDDevice);
+  assert_true(firstDevice === secondDevice);
+}, 'requestDevice() returns the same device object every time');
+
+</script>
+</body>

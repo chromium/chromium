@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Obrázky boli nahradené textom z atribútu alt.</translation>
 <translation id="4896660567607030658">Žiadna odozva, iba zobraziť kurzor</translation>
 <translation id="4937901943818762779">Povoliť animované obrázky, no iba raz</translation>
+<translation id="4949131196216960195">Stlačením &lt;span class='key'&gt;klávesa vyhľadávania&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (kláves na zvýšenie jasu alebo kláves F7) zapnite prehliadanie Caret. Opätovným stlačením ho vypnete.</translation>
 <translation id="4954450790315188152">Keď je prehliadanie Caret povolené:</translation>
 <translation id="5041932793799765940">Úprava farieb</translation>
 <translation id="5094574508723441140">Zvýšený kontrast</translation>
@@ -60,7 +61,6 @@
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="786423340267544509">Pridať ohraničenie k prvkom s atribútom aria-describedat alebo longdesc.</translation>
 <translation id="7942349550061667556">Červená</translation>
-<translation id="8254860724243898966">Stlačením klávesa &lt;span class='key'&gt;Alt&lt;/span&gt; a &lt;img src='increase_brightness.png'&gt; (kláves na zvýšenie jasu alebo kláves F7) zapnete prehliadanie Caret. Opätovným stlačením klávesov ho vypnete.</translation>
 <translation id="8260673944985561857">Možnosti prehliadania Caret</translation>
 <translation id="8321034316479930120">Pravidlá pre animácie</translation>
 <translation id="8480209185614411573">Vysoký kontrast</translation>

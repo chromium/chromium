@@ -1,0 +1,26 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// clang-format off
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTY_INSTANCES_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTY_INSTANCES_H_
+
+#include "third_party/blink/renderer/core/css/css_property_names.h"
+
+namespace blink {
+
+class CSSUnresolvedProperty;
+class CSSProperty;
+
+const CSSUnresolvedProperty* GetAliasPropertyInternal(CSSPropertyID);
+const CSSUnresolvedProperty& GetNonAliasPropertyInternal(CSSPropertyID);
+
+{% for property_class_data in property_classes_by_property_id %}
+CORE_EXPORT const CSSProperty& Get{{property_class_data.property_id}}();
+{% endfor %}
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTY_INSTANCES_H_

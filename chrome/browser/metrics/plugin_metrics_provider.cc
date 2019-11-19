@@ -106,8 +106,7 @@ struct PluginMetricsProvider::ChildProcessStats {
 };
 
 PluginMetricsProvider::PluginMetricsProvider(PrefService* local_state)
-    : local_state_(local_state),
-      weak_ptr_factory_(this) {
+    : local_state_(local_state) {
   DCHECK(local_state_);
 
   BrowserChildProcessObserver::Add(this);
@@ -334,7 +333,7 @@ PluginMetricsProvider::ChildProcessStats&
 PluginMetricsProvider::GetChildProcessStats(
     const content::ChildProcessData& data) {
   const base::string16& child_name = data.name;
-  if (!base::ContainsKey(child_process_stats_buffer_, child_name)) {
+  if (!base::Contains(child_process_stats_buffer_, child_name)) {
     child_process_stats_buffer_[child_name] =
         ChildProcessStats(data.process_type);
   }

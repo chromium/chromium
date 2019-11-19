@@ -26,13 +26,16 @@ class APIBindingHooks {
   // The result of checking for hooks to handle a request.
   struct RequestResult {
     enum ResultCode {
-      HANDLED,             // A custom hook handled the request.
-      ARGUMENTS_UPDATED,   // The arguments were updated post-validation.
-      THROWN,              // An exception was thrown during parsing or
-                           // handling.
-      INVALID_INVOCATION,  // The request was called with invalid arguments.
-                           // |error| will contain the invocation error.
-      NOT_HANDLED,         // The request was not handled.
+      HANDLED,              // A custom hook handled the request.
+      ARGUMENTS_UPDATED,    // The arguments were updated post-validation.
+      THROWN,               // An exception was thrown during parsing or
+                            // handling.
+      INVALID_INVOCATION,   // The request was called with invalid arguments.
+                            // |error| will contain the invocation error.
+      CONTEXT_INVALIDATED,  // The context was invalidated during the handling
+                            // of the API. Ideally, this wouldn't happen, but
+                            // could in certain circumstances.
+      NOT_HANDLED,          // The request was not handled.
     };
 
     explicit RequestResult(ResultCode code);

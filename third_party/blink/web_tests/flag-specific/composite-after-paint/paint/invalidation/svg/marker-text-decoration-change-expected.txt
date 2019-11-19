@@ -1,0 +1,23 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "LayoutSVGPath path",
+          "rect": [8, 13, 146, 19],
+          "reason": "style change"
+        },
+        {
+          "object": "LayoutSVGPath path",
+          "rect": [8, 13, 146, 19],
+          "reason": "style change"
+        }
+      ]
+    }
+  ]
+}
+

@@ -18,7 +18,7 @@ const int kTestPrinterDpi = 600;
 
 // Creates a print ticket with some default values. Based on ticket creation in
 // chrome/browser/resources/print_preview/native_layer.js.
-base::Value GetPrintTicket(PrinterType type, bool cloud);
+base::Value GetPrintTicket(PrinterType type);
 
 }  // namespace printing
 

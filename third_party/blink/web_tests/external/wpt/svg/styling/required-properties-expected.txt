@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 83 tests; 79 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 82 tests; 78 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property "alignment-baseline" is supported
 PASS Property "baseline-shift" is supported
 PASS Property "clip" is supported
@@ -8,7 +8,6 @@ PASS Property "clip-rule" is supported
 PASS Property "color" is supported
 PASS Property "color-interpolation" is supported
 PASS Property "color-interpolation-filters" is supported
-PASS Property "color-rendering" is supported
 PASS Property "cursor" is supported
 PASS Property "direction" is supported
 PASS Property "display" is supported

@@ -1,0 +1,90 @@
+<style include="shared-style">
+  :host {
+    --activity-log-call-and-count-width: 514px;
+    --activity-type-width: 85px;
+    --activity-count-width: 100px;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  cr-search-field {
+    align-self: center;
+    margin-inline-end: auto;
+  }
+
+  cr-icon-button {
+    margin: 0;
+  }
+
+  .activity-table-headings {
+    width: var(--activity-log-call-and-count-width);
+  }
+
+  #activity-list {
+    overflow-y: auto;
+  }
+
+  #activity-type {
+    flex: 0 var(--activity-type-width);
+  }
+
+  #activity-key {
+    flex: 1;
+    margin-inline-start: 10px;
+  }
+
+  #activity-count {
+    flex: 0 var(--activity-count-width);
+    text-align: end;
+  }
+</style>
+<div class="activity-subpage-header">
+  <cr-search-field label="$i18n{activityLogSearchLabel}"
+    on-search-changed="onSearchChanged_">
+  </cr-search-field >
+  <cr-button class="clear-activities-button"
+      on-click="onClearActivitiesClick_">
+    $i18n{clearActivities}
+  </cr-button>
+  <cr-icon-button id="more-actions" iron-icon="cr:more-vert"
+      title="$i18n{activityLogMoreActionsLabel}"
+      on-click="onMoreActionsClick_"></cr-icon-button>
+  <cr-action-menu role-description="$i18n{menu}">
+    <button id="expand-all-button" class="dropdown-item"
+        on-click="onExpandAllClick_">
+      $i18n{activityLogExpandAll}
+    </button>
+    <button id="collapse-all-button" class="dropdown-item"
+        on-click="onCollapseAllClick_">
+      $i18n{activityLogCollapseAll}
+    </button>
+    <button id="export-button" class="dropdown-item"
+        on-click="onExportClick_">
+      $i18n{activityLogExportHistory}
+    </button>
+  </cr-action-menu>
+</div>
+<div id="loading-activities" class="activity-message"
+    hidden$="[[!shouldShowLoadingMessage_(
+        pageState_)]]">
+  <span>$i18n{loadingActivities}</span>
+</div>
+<div id="no-activities" class="activity-message"
+    hidden$="[[!shouldShowEmptyActivityLogMessage_(
+        pageState_, activityData_)]]">
+  <span>$i18n{noActivities}</span>
+</div>
+<div class="activity-table-headings"
+    hidden$="[[!shouldShowActivities_(pageState_, activityData_)]]">
+  <span id="activity-type">$i18n{activityLogTypeColumn}</span>
+  <span id="activity-key">$i18n{activityLogNameColumn}</span>
+  <span id="activity-count">$i18n{activityLogCountColumn}</span>
+</div>
+<div id="activity-list"
+    hidden$="[[!shouldShowActivities_(pageState_, activityData_)]]">
+  <template is="dom-repeat" items="[[activityData_]]">
+    <activity-log-history-item data="[[item]]">
+    </activity-log-history-item>
+  </template>
+</div>

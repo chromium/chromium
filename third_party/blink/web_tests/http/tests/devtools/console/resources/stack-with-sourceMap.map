@@ -6,5 +6,8 @@
     "stack-with-sourceMap.coffee"
   ],
   "names": [],
-  "mappings": ";AAAA;AAAA,MAAA,OAAA;;AAAA,EAAM;yBACF;;AAAA,sBAAA,iBAAA,GAAmB,SAAA,GAAA;aACf,OAAO,CAAC,GAAR,CAAY,CAAK,IAAA,KAAA,CAAA,CAAL,CAAa,CAAC,KAA1B,EADe;IAAA,CAAnB,CAAA;;mBAAA;;MADJ,CAAA;;AAAA,EAIA,MAAM,CAAC,OAAP,GAAiB,SAAA,GAAA;AACb,QAAA,OAAA;AAAA,IAAA,OAAA,GAAU,GAAA,CAAA,OAAV,CAAA;WACA,OAAO,CAAC,iBAAR,CAAA,EAFa;EAAA,CAJjB,CAAA;AAAA"
+  "mappings": ";AAAA;AAAA,MAAA;;EAAA,MAAM,CAAC,iBAAP,GAA2B,QAAA,CAAA,CAAA;WACvB,OAAO,CAAC,GAAR,CAAY,CAAC,IAAI,KAAJ,CAAA,CAAD,CAAa,CAAC,KAA1B;EADuB;;EAG3B,MAAM,CAAC,iBAAiB,CAAC,WAAzB,GAAuC;;EAEjC,UAAN,MAAA,QAAA;IACI,uBAAyB,CAAA,CAAA;aACrB,IAAA,CAAK,qBAAL;IADqB;;EAD7B;;EAIA,MAAM,CAAC,OAAP,GAAiB,QAAA,CAAA,CAAA;AACb,QAAA;IAAA,OAAA,GAAU,IAAI;IACd,OAAO,CAAC,uBAAuB,CAAC,WAAhC,GAA8C;WAC9C,OAAO,CAAC,uBAAR,CAAA;EAHa;AATjB",
+  "sourcesContent": [
+    "window.letsFailWithStack = ->\n    console.log((new Error()).stack)\n\nwindow.letsFailWithStack.displayName = \"letsFailWithStack(a:1:2)\"\n\nclass Failure\n    letsFailWithStackInEval: ->\n        eval(\"letsFailWithStack()\");\n\nwindow.failure = ->\n    failure = new Failure\n    failure.letsFailWithStackInEval.displayName = \"letsFailWithStackInEval(a)\"\n    failure.letsFailWithStackInEval()\n"
+  ]
 }

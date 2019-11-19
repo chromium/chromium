@@ -19,6 +19,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/offline_pages/core/offline_page_item.h"
 #include "components/offline_pages/core/offline_store_types.h"
+#include "components/offline_pages/task/sql_store_base.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -34,73 +35,30 @@ typedef StoreUpdateResult<OfflinePageItem> OfflinePagesUpdateResult;
 // OfflinePageMetadataStore keeps metadata for the offline pages in an SQLite
 // database.
 //
-// This store has a history of schema updates in pretty much every release.
-// Original schema was delivered in M52. Since then, the following changes
-// happened:
-// * In M53 expiration_time was added,
-// * In M54 title was added,
-// * In M55 we dropped the following fields (never used): version, status,
-//   offline_url, user_initiated.
-// * In M56 original_url was added.
-// * In M57 expiration_time was dropped. Existing expired pages would be
-//   removed when metadata consistency check happens.
-// * In M58-M60 there were no changes.
-// * In M61 request_origin was added.
-// * In M62 system_download_id, file_missing_time, upgrade_attempt and digest
-//   were added to support P2P sharing feature.
+// When updating the schema, be sure to do the following:
+// * Increment the version number kCurrentVersion (let's call its new value N).
+// * Write a function "UpgradeFromVersion<N-1>ToVersion<N>". This function
+//   should upgrade an existing database of the (previously) latest version and
+//   should call meta_table->SetVersionNumber(N). Add a case for version N-1 to
+//   the loop in CreateSchema.
+// * Update CreateLatestSchema() as necessary: this function creates a new empty
+//   DB. If there were changes to existing tables, their original "CREATE"
+//   queries should be copied into the new "UpgradeFromVersion..." function.
+// * Update `kCompatibleVersion` when a new schema becomes incompatible with
+//   old code (for instance, if a column is removed). Change it to the earliest
+//   version that is compatible with the new schema; that is very likely to be
+//   the version that broke compatibility.
+// * Add a test for upgrading to the latest database version to
+//   offline_page_metadata_store_unittest.cc. Good luck.
 //
-// Here is a procedure to update the schema for this store:
-// * Decide how to detect that the store is on a particular version, which
-//   typically means that a certain field exists or is missing. This happens in
-//   Upgrade section of |CreateSchema|
-// * Work out appropriate change and apply it to all existing upgrade paths. In
-//   the interest of performing a single update of the store, it upgrades from a
-//   detected version to the current one. This means that when making a change,
-//   more than a single query may have to be updated (in case of fields being
-//   removed or needed to be initialized to a specific, non-default value).
-//   Such approach is preferred to doing N updates for every changed version on
-//   a startup after browser update.
-// * New upgrade method should specify which version it is upgrading from, e.g.
-//   |UpgradeFrom54|.
-// * Upgrade should use |UpgradeWithQuery| and simply specify SQL command to
-//   move data from old table (prefixed by temp_) to the new one.
-class OfflinePageMetadataStore {
+class OfflinePageMetadataStore : public SqlStoreBase {
  public:
-  // This enum is used in an UMA histogram. Hence the entries here shouldn't
-  // be deleted or re-ordered and new ones should be added to the end.
-  enum LoadStatus {
-    LOAD_SUCCEEDED,
-    STORE_INIT_FAILED,
-    STORE_LOAD_FAILED,
-    DATA_PARSING_FAILED,
-
-    // NOTE: always keep this entry at the end.
-    LOAD_STATUS_COUNT
-  };
-
-  typedef base::RepeatingCallback<void(bool /* success */)> ResetCallback;
-
-  // Definition of the callback that is going to run the core of the command in
-  // the |Execute| method.
-  template <typename T>
-  using RunCallback = base::OnceCallback<T(sql::Database*)>;
-
-  // Definition of the callback used to pass the result back to the caller of
-  // |Execute| method.
-  template <typename T>
-  using ResultCallback = base::OnceCallback<void(T)>;
-
   // This is the first version saved in the meta table, which was introduced in
   // the store in M65. It is set once a legacy upgrade is run successfully for
   // the last time in |UpgradeFromLegacyVersion|.
   static const int kFirstPostLegacyVersion = 1;
-  static const int kCurrentVersion = 3;
+  static const int kCurrentVersion = 4;
   static const int kCompatibleVersion = kFirstPostLegacyVersion;
-
-  // Defines inactivity time of DB after which it is going to be closed.
-  // TODO(fgorski): Derive appropriate value in a scientific way.
-  static constexpr base::TimeDelta kClosingDelay =
-      base::TimeDelta::FromSeconds(20);
 
   // TODO(fgorski): Move to private and expose ForTest factory.
   // Applies in PrefetchStore as well.
@@ -113,126 +71,22 @@ class OfflinePageMetadataStore {
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       const base::FilePath& database_dir);
 
-  ~OfflinePageMetadataStore();
-
-  // Executes a |run_callback| on SQL store on the blocking thread, and posts
-  // its result back to calling thread through |result_callback|.
-  // Calling |Execute| when store is NOT_LOADED will cause the store
-  // initialization to start.
-  // Store state needs to be LOADED for |run_callback| to run.
-  // If initialization fails, |result_callback| is invoked with |default_value|.
-  template <typename T>
-  void Execute(RunCallback<T> run_callback,
-               ResultCallback<T> result_callback,
-               T default_value) {
-    // TODO(fgorski): Add a proper state indicating in progress initialization
-    // and CHECK that state.
-
-    if (state_ == StoreState::NOT_LOADED) {
-      InitializeInternal(base::BindOnce(
-          &OfflinePageMetadataStore::Execute<T>, weak_ptr_factory_.GetWeakPtr(),
-          std::move(run_callback), std::move(result_callback),
-          std::move(default_value)));
-      return;
-    }
-
-    TRACE_EVENT_ASYNC_BEGIN1("offline_pages", "Metadata Store: task execution",
-                             this, "is store loaded",
-                             state_ == StoreState::LOADED);
-    // This if allows to run commands later, after store was given a chance to
-    // initialize. They would be failing immediately otherwise.
-    if (state_ == StoreState::INITIALIZING) {
-      pending_commands_.push_back(base::BindOnce(
-          &OfflinePageMetadataStore::Execute<T>, weak_ptr_factory_.GetWeakPtr(),
-          std::move(run_callback), std::move(result_callback),
-          std::move(default_value)));
-      TRACE_EVENT_ASYNC_END1("offline_pages", "Metadata Store: task execution",
-                             this, "postponed", true);
-      return;
-    }
-
-    // Ensure that any scheduled close operations are canceled.
-    closing_weak_ptr_factory_.InvalidateWeakPtrs();
-
-    sql::Database* db = state_ == StoreState::LOADED ? db_.get() : nullptr;
-    if (!db) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(result_callback), std::move(default_value)));
-      return;
-    }
-    base::PostTaskAndReplyWithResult(
-        background_task_runner_.get(), FROM_HERE,
-        base::BindOnce(std::move(run_callback), db),
-        base::BindOnce(&OfflinePageMetadataStore::RescheduleClosing<T>,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(result_callback)));
-  }
+  ~OfflinePageMetadataStore() override;
 
   // Helper function used to force incorrect state for testing purposes.
-  void SetStateForTesting(StoreState state, bool reset_db);
   StoreState GetStateForTesting() const;
 
- private:
-  // Initializes database and calls callback.
-  void InitializeInternal(base::OnceClosure pending_command);
-
-  // Used to conclude opening/resetting DB connection.
-  void OnInitializeInternalDone(base::OnceClosure pending_command,
-                                bool success);
-
-  // Reschedules the closing with a delay. Ensures that |result_callback| is
-  // called.
-  template <typename T>
-  void RescheduleClosing(ResultCallback<T> result_callback, T result) {
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&OfflinePageMetadataStore::CloseInternal,
-                       closing_weak_ptr_factory_.GetWeakPtr()),
-        kClosingDelay);
-
-    // Note: the time recorded for this trace step will include thread hop wait
-    // times to the background thread and back.
-    TRACE_EVENT_ASYNC_STEP_PAST0(
-        "offline_pages", "Metadata Store: task execution", this, "Task");
-    std::move(result_callback).Run(std::move(result));
-    TRACE_EVENT_ASYNC_STEP_PAST0(
-        "offline_pages", "Metadata Store: task execution", this, "Callback");
-    TRACE_EVENT_ASYNC_END0("offline_pages", "Metadata Store: task execution",
-                           this);
-  }
-
-  // Internal function initiating the closing.
-  void CloseInternal();
-
-  // Completes the closing. Main purpose is to destroy the db pointer.
-  void CloseInternalDone(std::unique_ptr<sql::Database> db);
-
-  // Background thread where all SQL access should be run.
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-
-  // Whether store is opened in memory (for testing) or using a file.
-  bool in_memory_;
-
-  // Path to the database on disk.
-  base::FilePath db_file_path_;
-
-  // Database connection.
-  std::unique_ptr<sql::Database> db_;
-
-  // State of the store.
-  StoreState state_;
-
-  // Pending commands.
-  std::vector<base::OnceClosure> pending_commands_;
-
-  // Time of the last time the store was closed. Kept for metrics reporting.
-  base::TimeTicks last_closing_time_;
-
-  base::WeakPtrFactory<OfflinePageMetadataStore> weak_ptr_factory_;
-  base::WeakPtrFactory<OfflinePageMetadataStore> closing_weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageMetadataStore);
+ protected:
+  // SqlStoreBase:
+  base::OnceCallback<bool(sql::Database* db)> GetSchemaInitializationFunction()
+      override;
+  void OnOpenStart(base::TimeTicks last_open_time) override;
+  void OnOpenDone(bool success) override;
+  void OnTaskBegin(bool is_initialized) override;
+  void OnTaskRunComplete() override;
+  void OnTaskReturnComplete() override;
+  void OnCloseStart(InitializationStatus status_before_close) override;
+  void OnCloseComplete() override;
 };
 
 }  // namespace offline_pages

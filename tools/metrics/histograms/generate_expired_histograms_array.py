@@ -148,7 +148,7 @@ def _GetCurrentMilestone(content, regex):
 
 def _HashName(name):
   """Returns hash for the given histogram |name|."""
-  return "0x" + hashlib.md5(name).hexdigest()[:16]
+  return "0x" + hashlib.md5(name.encode()).hexdigest()[:16]
 
 
 def _GetHashToNameMap(histograms_names):

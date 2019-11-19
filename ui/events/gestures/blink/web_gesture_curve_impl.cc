@@ -28,7 +28,7 @@ std::unique_ptr<GestureCurve> CreateDefaultPlatformCurve(
     blink::WebGestureDevice device_source,
     const gfx::Vector2dF& initial_velocity,
     bool use_mobile_fling_curve) {
-  if (device_source == blink::kWebGestureDeviceSyntheticAutoscroll) {
+  if (device_source == blink::WebGestureDevice::kSyntheticAutoscroll) {
     return std::make_unique<FixedVelocityCurve>(initial_velocity,
                                                 base::TimeTicks());
   }

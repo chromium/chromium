@@ -7,11 +7,12 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/sync/base/cancelation_signal.h"
-#include "components/sync/base/hash_util.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine_impl/cycle/non_blocking_type_debug_info_emitter.h"
 #include "components/sync/engine_impl/model_type_worker.h"
 #include "components/sync/engine_impl/test_entry_factory.h"
@@ -29,11 +30,6 @@ namespace syncer {
 namespace {
 
 const ModelType kModelType = PREFERENCES;
-
-std::string GenerateTagHash(const std::string& tag) {
-  return GenerateSyncableHash(kModelType, tag);
-}
-
 const char kToken1[] = "token1";
 const char kTag1[] = "tag1";
 const char kTag2[] = "tag2";
@@ -41,7 +37,10 @@ const char kTag3[] = "tag3";
 const char kValue1[] = "value1";
 const char kValue2[] = "value2";
 const char kValue3[] = "value3";
-const std::string kHash1(GenerateTagHash(kTag1));
+
+ClientTagHash GenerateTagHash(const std::string& tag) {
+  return ClientTagHash::FromUnhashed(kModelType, tag);
+}
 
 sync_pb::EntitySpecifics GenerateSpecifics(const std::string& tag,
                                            const std::string& value) {
@@ -63,7 +62,7 @@ class UssMigratorTest : public ::testing::Test {
     processor_ = processor.get();
     worker_ = std::make_unique<ModelTypeWorker>(
         kModelType, sync_pb::ModelTypeState(), false, /*cryptographer=*/nullptr,
-        PassphraseType::IMPLICIT_PASSPHRASE, &nudge_handler_,
+        PassphraseType::kImplicitPassphrase, &nudge_handler_,
         std::move(processor), &debug_emitter_, &cancelation_signal_);
   }
 
@@ -102,7 +101,7 @@ class UssMigratorTest : public ::testing::Test {
  private:
   syncable::Directory* directory() { return user_share()->directory.get(); }
 
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   TestUserShare test_user_share_;
   CancelationSignal cancelation_signal_;
   std::unique_ptr<TestEntryFactory> entry_factory_;
@@ -133,15 +132,17 @@ TEST_F(UssMigratorTest, Migrate) {
   const sync_pb::ModelTypeState& state = processor()->GetNthUpdateState(0);
   EXPECT_EQ(kToken1, state.progress_marker().token());
 
-  UpdateResponseData update = processor()->GetNthUpdateResponse(0).at(0);
-  const EntityData& entity = update.entity.value();
+  const UpdateResponseData* update =
+      std::move(processor()->GetNthUpdateResponse(0).at(0));
+  ASSERT_TRUE(update);
+  const EntityData& entity = *update->entity;
 
   EXPECT_FALSE(entity.id.empty());
-  EXPECT_EQ(kHash1, entity.client_tag_hash);
-  EXPECT_EQ(1, update.response_version);
+  EXPECT_EQ(GenerateTagHash(kTag1), entity.client_tag_hash);
+  EXPECT_EQ(1, update->response_version);
   EXPECT_EQ(ctime, entity.creation_time);
   EXPECT_EQ(ctime, entity.modification_time);
-  EXPECT_EQ(kTag1, entity.non_unique_name);
+  EXPECT_EQ(kTag1, entity.name);
   EXPECT_FALSE(entity.is_deleted());
   EXPECT_EQ(kTag1, entity.specifics.preference().name());
   EXPECT_EQ(kValue1, entity.specifics.preference().value());
@@ -163,10 +164,14 @@ TEST_F(UssMigratorTest, MigrateMultiple) {
   EXPECT_EQ(3U, processor()->GetNthUpdateResponse(0).size());
   EXPECT_EQ(3, migrated_entity_count);
 
-  UpdateResponseDataList updates = processor()->GetNthUpdateResponse(0);
-  EXPECT_EQ(kTag1, updates.at(0).entity.value().specifics.preference().name());
-  EXPECT_EQ(kTag2, updates.at(1).entity.value().specifics.preference().name());
-  EXPECT_EQ(kTag3, updates.at(2).entity.value().specifics.preference().name());
+  std::vector<const UpdateResponseData*> updates =
+      processor()->GetNthUpdateResponse(0);
+  ASSERT_TRUE(updates.at(0));
+  EXPECT_EQ(kTag1, updates.at(0)->entity->specifics.preference().name());
+  ASSERT_TRUE(updates.at(1));
+  EXPECT_EQ(kTag2, updates.at(1)->entity->specifics.preference().name());
+  ASSERT_TRUE(updates.at(2));
+  EXPECT_EQ(kTag3, updates.at(2)->entity->specifics.preference().name());
 
   const sync_pb::ModelTypeState& state = processor()->GetNthUpdateState(0);
   EXPECT_EQ(kToken1, state.progress_marker().token());
@@ -193,10 +198,14 @@ TEST_F(UssMigratorTest, MigrateMultipleBatches) {
   EXPECT_EQ(kPreviouslyMigratedEntityCount + 3,
             cumulative_migrated_entity_count);
 
-  UpdateResponseDataList updates = processor()->GetNthUpdateResponse(0);
-  EXPECT_EQ(kTag1, updates.at(0).entity.value().specifics.preference().name());
-  EXPECT_EQ(kTag2, updates.at(1).entity.value().specifics.preference().name());
-  EXPECT_EQ(kTag3, updates.at(2).entity.value().specifics.preference().name());
+  std::vector<const UpdateResponseData*> updates =
+      processor()->GetNthUpdateResponse(0);
+  ASSERT_TRUE(updates.at(0));
+  EXPECT_EQ(kTag1, updates.at(0)->entity->specifics.preference().name());
+  ASSERT_TRUE(updates.at(1));
+  EXPECT_EQ(kTag2, updates.at(1)->entity->specifics.preference().name());
+  ASSERT_TRUE(updates.at(2));
+  EXPECT_EQ(kTag3, updates.at(2)->entity->specifics.preference().name());
 
   const sync_pb::ModelTypeState& state = processor()->GetNthUpdateState(0);
   EXPECT_EQ(kToken1, state.progress_marker().token());

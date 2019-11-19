@@ -81,7 +81,7 @@ void InitAccelerometerSensorData(SensorPathsLinux* data) {
   data->sensor_frequency_file_name = "in_accel_base_sampling_frequency";
   data->apply_scaling_func = base::Bind(
       [](double scaling_value, double offset, SensorReading& reading) {
-        double scaling = kMeanGravity / scaling_value;
+        double scaling = base::kMeanGravityDouble / scaling_value;
         reading.accel.x = scaling * (reading.accel.x + offset);
         reading.accel.y = scaling * (reading.accel.y + offset);
         reading.accel.z = scaling * (reading.accel.z + offset);
@@ -115,14 +115,14 @@ void InitGyroscopeSensorData(SensorPathsLinux* data) {
 #if defined(OS_CHROMEOS)
   data->sensor_scale_name = "in_anglvel_base_scale";
   data->sensor_frequency_file_name = "in_anglvel_base_frequency";
-  data->apply_scaling_func = base::Bind(
-      [](double scaling_value, double offset, SensorReading& reading) {
-        double scaling = gfx::DegToRad(kMeanGravity) / scaling_value;
-        // Adapt CrOS reading values to generic sensor api specs.
-        reading.gyro.x = -scaling * (reading.gyro.x + offset);
-        reading.gyro.y = -scaling * (reading.gyro.y + offset);
-        reading.gyro.z = -scaling * (reading.gyro.z + offset);
-      });
+  data->apply_scaling_func = base::Bind([](double scaling_value, double offset,
+                                           SensorReading& reading) {
+    double scaling = gfx::DegToRad(base::kMeanGravityDouble) / scaling_value;
+    // Adapt CrOS reading values to generic sensor api specs.
+    reading.gyro.x = -scaling * (reading.gyro.x + offset);
+    reading.gyro.y = -scaling * (reading.gyro.y + offset);
+    reading.gyro.z = -scaling * (reading.gyro.z + offset);
+  });
 #else
   data->sensor_scale_name = "in_anglvel_scale";
   data->sensor_offset_file_name = "in_anglvel_offset";
@@ -212,5 +212,7 @@ SensorInfoLinux::SensorInfoLinux(
       device_reading_files(std::move(device_reading_files)) {}
 
 SensorInfoLinux::~SensorInfoLinux() = default;
+
+SensorInfoLinux::SensorInfoLinux(const SensorInfoLinux&) = default;
 
 }  // namespace device

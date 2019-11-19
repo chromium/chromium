@@ -22,160 +22,6 @@
 
 namespace {
 
-// Returns CSS cursor name from an Aura cursor ID.
-const char* CursorCssNameFromId(ui::CursorType id) {
-  switch (id) {
-    case ui::CursorType::kMiddlePanning:
-      return "all-scroll";
-    case ui::CursorType::kEastPanning:
-      return "e-resize";
-    case ui::CursorType::kNorthPanning:
-      return "n-resize";
-    case ui::CursorType::kNorthEastPanning:
-      return "ne-resize";
-    case ui::CursorType::kNorthWestPanning:
-      return "nw-resize";
-    case ui::CursorType::kSouthPanning:
-      return "s-resize";
-    case ui::CursorType::kSouthEastPanning:
-      return "se-resize";
-    case ui::CursorType::kSouthWestPanning:
-      return "sw-resize";
-    case ui::CursorType::kWestPanning:
-      return "w-resize";
-    case ui::CursorType::kNone:
-      return "none";
-    case ui::CursorType::kGrab:
-      return "grab";
-    case ui::CursorType::kGrabbing:
-      return "grabbing";
-
-#if defined(OS_CHROMEOS)
-    case ui::CursorType::kNull:
-    case ui::CursorType::kPointer:
-    case ui::CursorType::kNoDrop:
-    case ui::CursorType::kNotAllowed:
-    case ui::CursorType::kCopy:
-    case ui::CursorType::kMove:
-    case ui::CursorType::kEastResize:
-    case ui::CursorType::kNorthResize:
-    case ui::CursorType::kSouthResize:
-    case ui::CursorType::kWestResize:
-    case ui::CursorType::kNorthEastResize:
-    case ui::CursorType::kNorthWestResize:
-    case ui::CursorType::kSouthWestResize:
-    case ui::CursorType::kSouthEastResize:
-    case ui::CursorType::kIBeam:
-    case ui::CursorType::kAlias:
-    case ui::CursorType::kCell:
-    case ui::CursorType::kContextMenu:
-    case ui::CursorType::kCross:
-    case ui::CursorType::kHelp:
-    case ui::CursorType::kWait:
-    case ui::CursorType::kNorthSouthResize:
-    case ui::CursorType::kEastWestResize:
-    case ui::CursorType::kNorthEastSouthWestResize:
-    case ui::CursorType::kNorthWestSouthEastResize:
-    case ui::CursorType::kProgress:
-    case ui::CursorType::kColumnResize:
-    case ui::CursorType::kRowResize:
-    case ui::CursorType::kVerticalText:
-    case ui::CursorType::kZoomIn:
-    case ui::CursorType::kZoomOut:
-    case ui::CursorType::kHand:
-    case ui::CursorType::kDndNone:
-    case ui::CursorType::kDndMove:
-    case ui::CursorType::kDndCopy:
-    case ui::CursorType::kDndLink:
-      // In some environments, the image assets are not set (e.g. in
-      // content-browsertests, content-shell etc.).
-      return "left_ptr";
-#else  // defined(OS_CHROMEOS)
-    case ui::CursorType::kNull:
-      return "left_ptr";
-    case ui::CursorType::kPointer:
-      return "left_ptr";
-    case ui::CursorType::kMove:
-      // Returning "move" is the correct thing here, but Blink doesn't
-      // make a distinction between move and all-scroll.  Other
-      // platforms use a cursor more consistent with all-scroll, so
-      // use that.
-      return "all-scroll";
-    case ui::CursorType::kCross:
-      return "crosshair";
-    case ui::CursorType::kHand:
-      return "pointer";
-    case ui::CursorType::kIBeam:
-      return "text";
-    case ui::CursorType::kProgress:
-      return "progress";
-    case ui::CursorType::kWait:
-      return "wait";
-    case ui::CursorType::kHelp:
-      return "help";
-    case ui::CursorType::kEastResize:
-      return "e-resize";
-    case ui::CursorType::kNorthResize:
-      return "n-resize";
-    case ui::CursorType::kNorthEastResize:
-      return "ne-resize";
-    case ui::CursorType::kNorthWestResize:
-      return "nw-resize";
-    case ui::CursorType::kSouthResize:
-      return "s-resize";
-    case ui::CursorType::kSouthEastResize:
-      return "se-resize";
-    case ui::CursorType::kSouthWestResize:
-      return "sw-resize";
-    case ui::CursorType::kWestResize:
-      return "w-resize";
-    case ui::CursorType::kNorthSouthResize:
-      return "ns-resize";
-    case ui::CursorType::kEastWestResize:
-      return "ew-resize";
-    case ui::CursorType::kColumnResize:
-      return "col-resize";
-    case ui::CursorType::kRowResize:
-      return "row-resize";
-    case ui::CursorType::kNorthEastSouthWestResize:
-      return "nesw-resize";
-    case ui::CursorType::kNorthWestSouthEastResize:
-      return "nwse-resize";
-    case ui::CursorType::kVerticalText:
-      return "vertical-text";
-    case ui::CursorType::kZoomIn:
-      return "zoom-in";
-    case ui::CursorType::kZoomOut:
-      return "zoom-out";
-    case ui::CursorType::kCell:
-      return "cell";
-    case ui::CursorType::kContextMenu:
-      return "context-menu";
-    case ui::CursorType::kAlias:
-      return "alias";
-    case ui::CursorType::kNoDrop:
-      return "no-drop";
-    case ui::CursorType::kCopy:
-      return "copy";
-    case ui::CursorType::kNotAllowed:
-      return "not-allowed";
-    case ui::CursorType::kDndNone:
-      return "dnd-none";
-    case ui::CursorType::kDndMove:
-      return "dnd-move";
-    case ui::CursorType::kDndCopy:
-      return "dnd-copy";
-    case ui::CursorType::kDndLink:
-      return "dnd-link";
-#endif  // defined(OS_CHROMEOS)
-    case ui::CursorType::kCustom:
-      NOTREACHED();
-      return "left_ptr";
-  }
-  NOTREACHED() << "Case not handled for " << static_cast<int>(id);
-  return "left_ptr";
-}
-
 static const struct {
   const char* css_name;
   const char* fallback_name;
@@ -187,6 +33,8 @@ static const struct {
     { "wait",        nullptr,           XC_watch },
     { "cell",        nullptr,           XC_plus },
     { "all-scroll",  nullptr,           XC_fleur},
+    { "v-scroll",    "all-scroll",      XC_fleur},
+    { "h-scroll",    "all-scroll",      XC_fleur},
     { "crosshair",   nullptr,           XC_cross },
     { "text",        nullptr,           XC_xterm },
     { "not-allowed", "crossed_circle",  x11::None },
@@ -233,7 +81,14 @@ CursorLoaderX11::ImageCursor::~ImageCursor() {
 
 CursorLoaderX11::CursorLoaderX11()
     : display_(gfx::GetXDisplay()),
-      invisible_cursor_(CreateInvisibleCursor(), gfx::GetXDisplay()) {}
+      invisible_cursor_(CreateInvisibleCursor(), gfx::GetXDisplay()) {
+  auto* cursor_theme_manager = CursorThemeManagerLinux::GetInstance();
+  if (cursor_theme_manager) {
+    cursor_theme_observer_.Add(cursor_theme_manager);
+    OnCursorThemeNameChanged(cursor_theme_manager->GetCursorThemeName());
+    OnCursorThemeSizeChanged(cursor_theme_manager->GetCursorThemeSize());
+  }
+}
 
 CursorLoaderX11::~CursorLoaderX11() {
   UnloadAll();
@@ -247,7 +102,8 @@ void CursorLoaderX11::LoadImageCursor(CursorType id,
 
   GetImageCursorBitmap(resource_id, scale(), rotation(), &hotspot, &bitmap);
   XcursorImage* x_image = SkBitmapToXcursorImage(&bitmap, hotspot);
-  image_cursors_[id].reset(new ImageCursor(x_image, scale(), rotation()));
+  image_cursors_[id] =
+      std::make_unique<ImageCursor>(x_image, scale(), rotation());
 }
 
 void CursorLoaderX11::LoadAnimatedCursor(CursorType id,
@@ -303,14 +159,23 @@ const XcursorImage* CursorLoaderX11::GetXcursorImageForTest(CursorType id) {
   return test::GetCachedXcursorImage(image_cursors_[id]->cursor);
 }
 
+void CursorLoaderX11::OnCursorThemeNameChanged(
+    const std::string& cursor_theme_name) {
+  XcursorSetTheme(display_, cursor_theme_name.c_str());
+  ClearThemeCursors();
+}
+
+void CursorLoaderX11::OnCursorThemeSizeChanged(int cursor_theme_size) {
+  XcursorSetDefaultSize(display_, cursor_theme_size);
+  ClearThemeCursors();
+}
+
 bool CursorLoaderX11::IsImageCursor(gfx::NativeCursor native_cursor) {
   CursorType type = native_cursor.native_type();
   return image_cursors_.count(type) || animated_cursors_.count(type);
 }
 
 ::Cursor CursorLoaderX11::CursorFromId(CursorType id) {
-  const char* css_name = CursorCssNameFromId(id);
-
   auto font_it = font_cursors_.find(id);
   if (font_it != font_cursors_.end())
     return font_it->second;
@@ -325,6 +190,7 @@ bool CursorLoaderX11::IsImageCursor(gfx::NativeCursor native_cursor) {
   }
 
   // First try to load the cursor directly.
+  const char* css_name = CursorCssNameFromId(id);
   ::Cursor cursor = XcursorLibraryLoadCursor(display_, css_name);
   if (cursor == x11::None) {
     // Try a similar cursor supplied by the native cursor theme.
@@ -357,6 +223,11 @@ bool CursorLoaderX11::IsImageCursor(gfx::NativeCursor native_cursor) {
   DCHECK(cursor);
   font_cursors_[id] = cursor;
   return cursor;
+}
+
+void CursorLoaderX11::ClearThemeCursors() {
+  font_cursors_.clear();
+  image_cursors_.clear();
 }
 
 }  // namespace ui

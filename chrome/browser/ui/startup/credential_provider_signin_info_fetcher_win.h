@@ -24,6 +24,7 @@ class SharedURLLoaderFactory;
 // - User's full name.
 // - ID token used for Mobile Device Management (MDM) registration.
 // - A token handle for the user's refresh token.
+// - Scoped down access token from login scoped access token.
 // A separate OAuth request is required for each piece of information and
 // each result arrives asynchronously so to gather all the results until they
 // have all been fetched or there is an error. Once one of the two conditions
@@ -45,6 +46,7 @@ class CredentialProviderSigninInfoFetcher
 
   void SetCompletionCallbackAndStart(
       const std::string& access_token,
+      const std::string& additional_mdm_oauth_scopes,
       FetchCompletionCallback completion_callback);
 
   // gaia::GaiaOAuthClient::Delegate:
@@ -71,6 +73,7 @@ class CredentialProviderSigninInfoFetcher
   std::string full_name_;
   std::string picture_url_;
   std::string mdm_id_token_;
+  std::string mdm_access_token_;
 
   std::unique_ptr<OAuth2AccessTokenFetcher> scoped_access_token_fetcher_;
   std::unique_ptr<gaia::GaiaOAuthClient> user_info_fetcher_;

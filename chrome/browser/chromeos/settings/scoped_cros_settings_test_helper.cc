@@ -17,6 +17,7 @@
 #include "components/ownership/mock_owner_key_util.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -121,6 +122,8 @@ void ScopedCrosSettingsTestHelper::StoreCachedDeviceSetting(
     OwnerSettingsServiceChromeOS::UpdateDeviceSettings(path, *value, settings);
     CHECK(settings.SerializeToString(data.mutable_policy_value()));
     CHECK(device_settings_cache::Store(data, g_browser_process->local_state()));
+    g_browser_process->local_state()->CommitPendingWrite(base::DoNothing(),
+                                                         base::DoNothing());
   }
 }
 
@@ -132,13 +135,6 @@ void ScopedCrosSettingsTestHelper::CopyStoredValue(const std::string& path) {
   if (value) {
     stub_settings_provider_ptr_->Set(path, *value);
   }
-}
-
-void ScopedCrosSettingsTestHelper::SetFakeSessionManager() {
-  DeviceSettingsService::Get()->SetSessionManager(
-      &fake_session_manager_client_, new ownership::MockOwnerKeyUtil());
-  DeviceSettingsService::Get()->Load();
-  content::RunAllTasksUntilIdle();
 }
 
 StubInstallAttributes* ScopedCrosSettingsTestHelper::InstallAttributes() {

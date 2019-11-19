@@ -4,24 +4,26 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.support.annotation.IntDef;
 import android.view.View;
+
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList.RewindableIterator;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.display_cutout.DisplayCutoutController;
-import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationService;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.policy.PolicyAuditor.AuditEvent;
+import org.chromium.chrome.browser.policy.PolicyAuditorJni;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -180,8 +182,8 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             }
             if (isMainFrame) mTab.didFinishPageLoad(validatedUrl);
             PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
-            auditor.notifyAuditEvent(
-                    mTab.getApplicationContext(), AuditEvent.OPEN_URL_SUCCESS, validatedUrl, "");
+            auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
+                    AuditEvent.OPEN_URL_SUCCESS, validatedUrl, "");
         }
 
         @Override
@@ -203,11 +205,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             assert description != null;
 
             PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
-            auditor.notifyAuditEvent(mTab.getApplicationContext(), AuditEvent.OPEN_URL_FAILURE,
-                    failingUrl, description);
+            auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
+                    AuditEvent.OPEN_URL_FAILURE, failingUrl, description);
             if (errorCode == BLOCKED_BY_ADMINISTRATOR) {
-                auditor.notifyAuditEvent(
-                        mTab.getApplicationContext(), AuditEvent.OPEN_URL_BLOCKED, failingUrl, "");
+                auditor.notifyAuditEvent(ContextUtils.getApplicationContext(),
+                        AuditEvent.OPEN_URL_BLOCKED, failingUrl, "");
             }
         }
 
@@ -264,17 +266,17 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 }
             }
 
-            FullscreenManager fullscreenManager = mTab.getFullscreenManager();
-            if (navigation.isInMainFrame() && !navigation.isSameDocument()
-                    && fullscreenManager != null) {
-                fullscreenManager.exitPersistentFullscreenMode();
-            }
-
             if (navigation.isInMainFrame()) {
                 // Stop swipe-to-refresh animation.
                 SwipeRefreshHandler handler = SwipeRefreshHandler.get(mTab);
                 if (handler != null) handler.didStopRefreshing();
             }
+        }
+
+        @Override
+        public void loadProgressChanged(float progress) {
+            if (!mTab.isLoading()) return;
+            mTab.notifyLoadProgress(progress);
         }
 
         @Override
@@ -292,6 +294,8 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
 
         @Override
         public void didAttachInterstitialPage() {
+            // TODO(huayinz): Observe #didAttachInterstitialPage and #didDetachInterstitialPage
+            // in InfoBarContainer.
             InfoBarContainer.get(mTab).setVisibility(View.INVISIBLE);
             mTab.showRenderedPage();
 
@@ -300,13 +304,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 observers.next().onDidAttachInterstitialPage(mTab);
             }
             mTab.notifyLoadProgress(mTab.getProgress());
-
-            mTab.updateFullscreenEnabledState();
-
+            TabBrowserControlsState.updateEnabledState(mTab);
             PolicyAuditor auditor = AppHooks.get().getPolicyAuditor();
             auditor.notifyCertificateFailure(
-                    PolicyAuditor.nativeGetCertificateFailure(mTab.getWebContents()),
-                    mTab.getApplicationContext());
+                    PolicyAuditorJni.get().getCertificateFailure(mTab.getWebContents()),
+                    ContextUtils.getApplicationContext());
         }
 
         @Override
@@ -318,9 +320,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
                 observers.next().onDidDetachInterstitialPage(mTab);
             }
             mTab.notifyLoadProgress(mTab.getProgress());
-
-            mTab.updateFullscreenEnabledState();
-
+            TabBrowserControlsState.updateEnabledState(mTab);
             if (!mTab.maybeShowNativePage(mTab.getUrl(), false)) {
                 mTab.showRenderedPage();
             }
@@ -342,17 +342,9 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         @Override
-        public void didReloadLoFiImages() {
-            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-            while (observers.hasNext()) {
-                observers.next().didReloadLoFiImages(mTab);
-            }
-        }
-
-        @Override
         public void destroy() {
             MediaCaptureNotificationService.updateMediaNotificationForTab(
-                    mTab.getApplicationContext(), mTab.getId(), 0, mTab.getUrl());
+                    ContextUtils.getApplicationContext(), mTab.getId(), null, mTab.getUrl());
             super.destroy();
         }
     }

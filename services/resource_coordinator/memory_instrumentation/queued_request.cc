@@ -8,12 +8,14 @@ namespace memory_instrumentation {
 
 QueuedRequest::Args::Args(MemoryDumpType dump_type,
                           MemoryDumpLevelOfDetail level_of_detail,
+                          MemoryDumpDeterminism determinism,
                           const std::vector<std::string>& allocator_dump_names,
                           bool add_to_trace,
                           base::ProcessId pid,
                           bool memory_footprint_only)
     : dump_type(dump_type),
       level_of_detail(level_of_detail),
+      determinism(determinism),
       allocator_dump_names(allocator_dump_names),
       add_to_trace(add_to_trace),
       pid(pid),
@@ -21,17 +23,17 @@ QueuedRequest::Args::Args(MemoryDumpType dump_type,
 QueuedRequest::Args::Args(const Args& args) = default;
 QueuedRequest::Args::~Args() = default;
 
-QueuedRequest::PendingResponse::PendingResponse(
-    const mojom::ClientProcess* client,
-    Type type)
-    : client(client), type(type) {}
+QueuedRequest::PendingResponse::PendingResponse(base::ProcessId process_id,
+                                                Type type)
+    : process_id(process_id), type(type) {}
 
 bool QueuedRequest::PendingResponse::operator<(
     const PendingResponse& other) const {
-  return std::tie(client, type) < std::tie(other.client, other.type);
+  return std::tie(process_id, type) < std::tie(other.process_id, other.type);
 }
 
 QueuedRequest::Response::Response() {}
+QueuedRequest::Response::Response(Response&& other) = default;
 QueuedRequest::Response::~Response() = default;
 
 QueuedRequest::QueuedRequest(const Args& args,
@@ -45,6 +47,7 @@ base::trace_event::MemoryDumpRequestArgs QueuedRequest::GetRequestArgs() {
   request_args.dump_guid = dump_guid;
   request_args.dump_type = args.dump_type;
   request_args.level_of_detail = args.level_of_detail;
+  request_args.determinism = args.determinism;
   return request_args;
 }
 

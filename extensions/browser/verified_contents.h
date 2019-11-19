@@ -49,6 +49,9 @@ class VerifiedContents {
   // signature" mode, this can return false.
   bool valid_signature() { return valid_signature_; }
 
+  static base::FilePath::StringType NormalizeResourcePath(
+      const base::FilePath& relative_path);
+
  private:
   // Note: the public_key must remain valid for the lifetime of this object.
   explicit VerifiedContents(base::span<const uint8_t> public_key);

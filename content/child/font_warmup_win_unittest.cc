@@ -4,12 +4,13 @@
 
 #include "content/child/font_warmup_win.h"
 
+#include <windows.h>
 #include <dwrite.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <windows.h>
 #include <wrl.h>
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -17,7 +18,7 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/sys_byteorder.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
 
 #include "content/child/dwrite_font_proxy/dwrite_font_proxy_win.h"
@@ -43,7 +44,7 @@ class GDIFontEmulationTest : public testing::Test {
     fake_collection_ = std::make_unique<FakeFontCollection>();
     SetupFonts(fake_collection_.get());
     DWriteFontCollectionProxy::Create(&collection_, factory.Get(),
-                                      fake_collection_->CreatePtr());
+                                      fake_collection_->CreateRemote());
     EXPECT_TRUE(collection_.Get());
 
     content::SetPreSandboxWarmupFontMgrForTesting(
@@ -74,7 +75,7 @@ class GDIFontEmulationTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   std::unique_ptr<FakeFontCollection> fake_collection_;
   mswr::ComPtr<DWriteFontCollectionProxy> collection_;
 
@@ -136,7 +137,7 @@ int CALLBACK EnumFontCallbackTest(const LOGFONT* log_font,
 }  // namespace
 
 TEST_F(GDIFontEmulationTest, CreateDeleteDCSuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
   std::unique_ptr<GdiFontPatchData> patch_data(SetupTest());
   EXPECT_FALSE(!patch_data);
@@ -149,7 +150,7 @@ TEST_F(GDIFontEmulationTest, CreateDeleteDCSuccess) {
 }
 
 TEST_F(GDIFontEmulationTest, CreateUniqueDCSuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
   std::unique_ptr<GdiFontPatchData> patch_data(SetupTest());
   EXPECT_NE(patch_data, nullptr);
@@ -166,7 +167,7 @@ TEST_F(GDIFontEmulationTest, CreateUniqueDCSuccess) {
 }
 
 TEST_F(GDIFontEmulationTest, CreateFontSuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
   std::unique_ptr<GdiFontPatchData> patch_data(SetupTest());
   EXPECT_NE(patch_data, nullptr);
@@ -179,7 +180,7 @@ TEST_F(GDIFontEmulationTest, CreateFontSuccess) {
 }
 
 TEST_F(GDIFontEmulationTest, CreateFontFailure) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
   std::unique_ptr<GdiFontPatchData> patch_data(SetupTest());
   EXPECT_NE(patch_data, nullptr);
@@ -190,7 +191,7 @@ TEST_F(GDIFontEmulationTest, CreateFontFailure) {
 }
 
 TEST_F(GDIFontEmulationTest, EnumFontFamilySuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
   std::unique_ptr<GdiFontPatchData> patch_data(SetupTest());
   EXPECT_NE(patch_data, nullptr);
@@ -204,7 +205,7 @@ TEST_F(GDIFontEmulationTest, EnumFontFamilySuccess) {
 }
 
 TEST_F(GDIFontEmulationTest, EnumFontFamilyFailure) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
   std::unique_ptr<GdiFontPatchData> patch_data(SetupTest());
   EXPECT_NE(patch_data, nullptr);
@@ -218,7 +219,7 @@ TEST_F(GDIFontEmulationTest, EnumFontFamilyFailure) {
 }
 
 TEST_F(GDIFontEmulationTest, DeleteDCFailure) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
   std::unique_ptr<GdiFontPatchData> patch_data(SetupTest());
   EXPECT_NE(patch_data, nullptr);
@@ -227,7 +228,7 @@ TEST_F(GDIFontEmulationTest, DeleteDCFailure) {
 }
 
 TEST_F(GDIFontEmulationTest, DeleteObjectFailure) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
   std::unique_ptr<GdiFontPatchData> patch_data(SetupTest());
   EXPECT_NE(patch_data, nullptr);
@@ -236,7 +237,7 @@ TEST_F(GDIFontEmulationTest, DeleteObjectFailure) {
 }
 
 TEST_F(GDIFontEmulationTest, GetFontDataSizeSuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
   std::unique_ptr<GdiFontPatchData> patch_data(SetupTest());
   EXPECT_NE(patch_data, nullptr);
@@ -255,7 +256,7 @@ TEST_F(GDIFontEmulationTest, GetFontDataSizeSuccess) {
 }
 
 TEST_F(GDIFontEmulationTest, GetFontDataInvalidTagSuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
   std::unique_ptr<GdiFontPatchData> patch_data(SetupTest());
   EXPECT_NE(patch_data, nullptr);
@@ -273,7 +274,7 @@ TEST_F(GDIFontEmulationTest, GetFontDataInvalidTagSuccess) {
 }
 
 TEST_F(GDIFontEmulationTest, GetFontDataInvalidFontSuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
   std::unique_ptr<GdiFontPatchData> patch_data(SetupTest());
   EXPECT_NE(patch_data, nullptr);
@@ -285,7 +286,7 @@ TEST_F(GDIFontEmulationTest, GetFontDataInvalidFontSuccess) {
 }
 
 TEST_F(GDIFontEmulationTest, GetFontDataDataSuccess) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN8)
+  if (base::win::GetVersion() < base::win::Version::WIN8)
     return;
   std::unique_ptr<GdiFontPatchData> patch_data(SetupTest());
   EXPECT_NE(patch_data, nullptr);

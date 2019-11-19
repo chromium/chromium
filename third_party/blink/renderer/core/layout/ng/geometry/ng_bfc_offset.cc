@@ -8,15 +8,6 @@
 
 namespace blink {
 
-bool NGBfcOffset::operator==(const NGBfcOffset& other) const {
-  return std::tie(other.line_offset, other.block_offset) ==
-         std::tie(line_offset, block_offset);
-}
-
-bool NGBfcOffset::operator!=(const NGBfcOffset& other) const {
-  return !operator==(other);
-}
-
 String NGBfcOffset::ToString() const {
   return String::Format("%dx%d", line_offset.ToInt(), block_offset.ToInt());
 }

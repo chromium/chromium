@@ -449,11 +449,8 @@ bool ArgumentSpec::ParseArgumentToFundamental(
           return false;
         }
 
-        if (out_value) {
-          // TODO(devlin): If base::Value ever takes a std::string&&, we
-          // could use std::move to construct.
-          *out_value = std::make_unique<base::Value>(str);
-        }
+        if (out_value)
+          *out_value = std::make_unique<base::Value>(std::move(str));
       }
 
       if (v8_out_value)

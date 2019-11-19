@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "remoting/host/security_key/security_key_ipc_client.h"
 #include "remoting/host/security_key/security_key_ipc_constants.h"
 #include "remoting/host/security_key/security_key_message_reader_impl.h"
@@ -185,7 +184,7 @@ void SecurityKeyMessageHandler::OnError() {
   reader_.reset();
 
   if (!error_callback_.is_null()) {
-    base::ResetAndReturn(&error_callback_).Run();
+    std::move(error_callback_).Run();
   }
 }
 

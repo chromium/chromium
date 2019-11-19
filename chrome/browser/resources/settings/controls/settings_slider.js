@@ -126,7 +126,8 @@ Polymer({
    * @private
    */
   valueChanged_: function() {
-    if (this.pref == undefined || !this.loaded_) {
+    if (this.pref == undefined || !this.loaded_ || this.$.slider.dragging ||
+        this.$.slider.updatingFromKey) {
       return;
     }
 
@@ -141,18 +142,7 @@ Polymer({
 
     // The preference and slider values are continuous when |ticks| is empty.
     if (numTicks == 0) {
-      // This method is handling a preference value change. If the slider is,
-      // in a dragging state, that change is discarded and the the preference
-      // value is updated based on the slider value.
-      if (this.$.slider.dragging) {
-        const prefValueFromSlider = this.$.slider.value / this.scale;
-        if (this.updateValueInstantly && prefValue != prefValueFromSlider) {
-          this.set('pref.value', prefValueFromSlider);
-        }
-      } else {
-        // When not dragging, simply update the slider value.
-        this.$.slider.value = prefValue * this.scale;
-      }
+      this.$.slider.value = prefValue * this.scale;
       return;
     }
 
@@ -161,15 +151,6 @@ Polymer({
     const MAX_TICKS = 10;
     this.$.slider.markerCount =
         (this.showMarkers || numTicks <= MAX_TICKS) ? numTicks : 0;
-
-    if (this.$.slider.dragging) {
-      const tickValue = this.getTickValueAtIndex_(this.$.slider.value);
-      if (this.updateValueInstantly && this.pref.value != tickValue) {
-        this.set('pref.value', tickValue);
-      }
-
-      return;
-    }
 
     // Convert from the public |value| to the slider index (where the knob
     // should be positioned on the slider).

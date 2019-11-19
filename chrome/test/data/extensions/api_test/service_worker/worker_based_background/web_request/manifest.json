@@ -1,0 +1,8 @@
+{
+  "name": "Service Worker-based background script",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Test tabs events APIs for service worker-based background scripts.",
+  "permissions": ["webRequest", "webRequestBlocking", "<all_urls>"],
+  "background": {"service_worker": "service_worker_background.js"}
+}

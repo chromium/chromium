@@ -16,14 +16,12 @@
         android:strokeWidth="1"
         android:pathData="M 0 0 L 128 0 L 128 80 L 0 80 Z" />
     <path
-        android:fillColor="#000000"
-        android:fillAlpha="0.54"
+        android:fillColor="@color/default_icon_color"
         android:fillType="evenOdd"
         android:strokeWidth="1"
         android:pathData="M 63.8 27 C 70.8692447978 27 76.6 32.7307552022 76.6 39.8 C 76.6 46.8692447978 70.8692447978 52.6 63.8 52.6 C 56.7307552022 52.6 51 46.8692447978 51 39.8 C 51 32.7307552022 56.7307552022 27 63.8 27 Z" />
     <path
-        android:fillColor="#000000"
-        android:fillAlpha="0.54"
+        android:fillColor="@color/default_icon_color"
         android:fillType="evenOdd"
         android:strokeWidth="1"
         android:pathData="M52,0 L44.68,8 L32,8 C27.6,8 24,11.6 24,16 L24,64 C24,68.4 27.6,72 32,72 L96,72

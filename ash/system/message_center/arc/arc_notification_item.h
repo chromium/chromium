@@ -6,7 +6,7 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_ARC_ARC_NOTIFICATION_ITEM_H_
 
 #include "base/macros.h"
-#include "components/arc/common/notifications.mojom.h"
+#include "components/arc/mojom/notifications.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -56,6 +56,9 @@ class ArcNotificationItem {
   // Called when the user wants to toggle expansio of notification. This is
   // called from ArcNotificationContentView.
   virtual void ToggleExpansion() = 0;
+  // Called when the notification is activated i.e. starts accepting input for
+  // inline reply. Called from ArcNotificationContentView.
+  virtual void OnWindowActivated(bool activated) = 0;
 
   // Called from ArcNotificationManager when the remote input textbox on
   // notification is activated or deactivated.

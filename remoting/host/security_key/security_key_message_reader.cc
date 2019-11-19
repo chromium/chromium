@@ -11,7 +11,7 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -24,7 +24,7 @@ SecurityKeyMessageReader::SecurityKeyMessageReader(base::File input_file)
       reader_thread_("SecurityKeyMessageReader"),
       weak_factory_(this) {
   base::Thread::Options options;
-  options.message_loop_type = base::MessageLoop::TYPE_IO;
+  options.message_pump_type = base::MessagePumpType::IO;
   reader_thread_.StartWithOptions(options);
 
   read_task_runner_ = reader_thread_.task_runner();

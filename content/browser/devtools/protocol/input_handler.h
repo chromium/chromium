@@ -132,6 +132,20 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
  private:
   class InputInjector;
 
+  void DispatchWebTouchEvent(
+      const std::string& type,
+      std::unique_ptr<Array<Input::TouchPoint>> touch_points,
+      protocol::Maybe<int> modifiers,
+      protocol::Maybe<double> timestamp,
+      std::unique_ptr<DispatchTouchEventCallback> callback);
+
+  void DispatchSyntheticPointerActionTouch(
+      const std::string& type,
+      std::unique_ptr<Array<Input::TouchPoint>> touch_points,
+      protocol::Maybe<int> modifiers,
+      protocol::Maybe<double> timestamp,
+      std::unique_ptr<DispatchTouchEventCallback> callback);
+
   SyntheticPointerActionParams PrepareSyntheticPointerActionParams(
       SyntheticPointerActionParams::PointerActionType pointer_action_type,
       int id,
@@ -177,7 +191,8 @@ class InputHandler : public DevToolsDomainHandler, public Input::Backend {
   bool ignore_input_events_ = false;
   std::set<int> pointer_ids_;
   std::unique_ptr<SyntheticPointerDriver> synthetic_pointer_driver_;
-  base::WeakPtrFactory<InputHandler> weak_factory_;
+  base::flat_map<int, blink::WebTouchPoint> touch_points_;
+  base::WeakPtrFactory<InputHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(InputHandler);
 };

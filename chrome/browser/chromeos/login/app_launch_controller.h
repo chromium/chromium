@@ -13,10 +13,11 @@
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_launch_error.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_profile_loader.h"
 #include "chrome/browser/chromeos/app_mode/startup_app_launcher.h"
 #include "chrome/browser/chromeos/login/app_launch_signin_screen.h"
-#include "chrome/browser/chromeos/login/screens/app_launch_splash_screen_view.h"
+#include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 
@@ -24,16 +25,17 @@ class Profile;
 
 namespace chromeos {
 
+class AppLaunchSplashScreenView;
 class LoginDisplayHost;
 class OobeUI;
 
 // Controller for the kiosk app launch process, responsible for
 // coordinating loading the kiosk profile, launching the app, and
 // updating the splash screen UI.
-class AppLaunchController : public AppLaunchSplashScreenView::Delegate,
-                            public KioskProfileLoader::Delegate,
+class AppLaunchController : public KioskProfileLoader::Delegate,
                             public StartupAppLauncher::Delegate,
                             public AppLaunchSigninScreen::Delegate,
+                            public AppLaunchSplashScreenView::Delegate,
                             public content::NotificationObserver {
  public:
   typedef base::Callback<bool()> ReturnBoolCallback;
@@ -52,6 +54,15 @@ class AppLaunchController : public AppLaunchSplashScreenView::Delegate,
   bool waiting_for_network() { return waiting_for_network_; }
   bool network_wait_timedout() { return network_wait_timedout_; }
   bool showing_network_dialog() { return showing_network_dialog_; }
+
+  // AppLaunchSplashScreenView::Delegate:
+  void OnConfigureNetwork() override;
+  void OnCancelAppLaunch() override;
+  void OnNetworkConfigRequested() override;
+  void OnNetworkConfigFinished() override;
+  void OnNetworkStateChanged(bool online) override;
+  void OnDeletingSplashScreenView() override;
+  KioskAppManagerBase::App GetAppData() override;
 
   // Customize controller for testing purposes.
   static void SkipSplashWaitForTesting();
@@ -92,13 +103,6 @@ class AppLaunchController : public AppLaunchSplashScreenView::Delegate,
   void OnProfileLoaded(Profile* profile) override;
   void OnProfileLoadFailed(KioskAppLaunchError::Error error) override;
 
-  // AppLaunchSplashScreenView::Delegate overrides:
-  void OnConfigureNetwork() override;
-  void OnCancelAppLaunch() override;
-  void OnNetworkConfigRequested(bool requested) override;
-  void OnNetworkStateChanged(bool online) override;
-  void OnDeletingSplashScreenView() override;
-
   // StartupAppLauncher::Delegate overrides:
   void InitializeNetwork() override;
   bool IsNetworkReady() override;
@@ -131,6 +135,7 @@ class AppLaunchController : public AppLaunchSplashScreenView::Delegate,
   content::NotificationRegistrar registrar_;
   bool login_screen_visible_ = false;
   bool launcher_ready_ = false;
+  bool cleaned_up_ = false;
 
   // A timer to ensure the app splash is shown for a minimum amount of time.
   base::OneShotTimer splash_wait_timer_;

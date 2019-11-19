@@ -22,6 +22,8 @@ blink_modules_sources("encryptedmedia") {
     "media_key_status_map.h",
     "media_key_system_access.cc",
     "media_key_system_access.h",
+    "media_key_system_access_initializer_base.cc",
+    "media_key_system_access_initializer_base.h",
     "media_keys.cc",
     "media_keys.h",
     "media_keys_controller.cc",

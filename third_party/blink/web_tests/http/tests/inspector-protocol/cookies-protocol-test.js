@@ -170,6 +170,12 @@
 
     deleteAllCookies,
 
+    async function setCookiesWithInvalidCookie() {
+      await setCookies([{url: '', name: 'foo', value: 'bar1'}]);
+    },
+
+    deleteAllCookies,
+
     async function deleteCookieByURL() {
       await setCookies([{name: 'cookie1', value: '.domain', url: 'http://www.chromium.org/path' },
                         {name: 'cookie2', value: '.domain', url: 'http://www.chromium.org/path', expires: Date.now() + 1000 }]);

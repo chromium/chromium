@@ -37,16 +37,15 @@
 
 namespace blink {
 
-using namespace html_names;
-
 AtomicString StyleSheetCandidate::Title() const {
-  return IsElement() ? ToElement(GetNode()).FastGetAttribute(kTitleAttr)
-                     : g_null_atom;
+  return IsElement()
+             ? To<Element>(GetNode()).FastGetAttribute(html_names::kTitleAttr)
+             : g_null_atom;
 }
 
 bool StyleSheetCandidate::IsXSL() const {
   return !GetNode().GetDocument().IsHTMLDocument() && type_ == kPi &&
-         ToProcessingInstruction(GetNode()).IsXSL();
+         To<ProcessingInstruction>(GetNode()).IsXSL();
 }
 
 bool StyleSheetCandidate::IsImport() const {
@@ -87,7 +86,7 @@ StyleSheetCandidate::Type StyleSheetCandidate::TypeOf(Node& node) {
   if (node.IsHTMLElement()) {
     if (IsHTMLLinkElement(node))
       return kHTMLLink;
-    if (IsHTMLStyleElement(node))
+    if (IsA<HTMLStyleElement>(node))
       return kHTMLStyle;
 
     NOTREACHED();
@@ -106,11 +105,11 @@ StyleSheet* StyleSheetCandidate::Sheet() const {
     case kHTMLLink:
       return ToHTMLLinkElement(GetNode()).sheet();
     case kHTMLStyle:
-      return ToHTMLStyleElement(GetNode()).sheet();
+      return To<HTMLStyleElement>(GetNode()).sheet();
     case kSVGStyle:
       return ToSVGStyleElement(GetNode()).sheet();
     case kPi:
-      return ToProcessingInstruction(GetNode()).sheet();
+      return To<ProcessingInstruction>(GetNode()).sheet();
     default:
       NOTREACHED();
       return nullptr;

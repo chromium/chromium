@@ -1,25 +1,36 @@
 <!DOCTYPE html>
-<html>
-<body style="-webkit-user-modify: read-write">
-<p>
- Test for <i><a href="http://bugs.webkit.org/show_bug.cgi?id=50012">http://bugs.webkit.org/show_bug.cgi?id=50012</a>
- Moving cursor down in table cycles at the end of a row</i>
-</p>
-<table id="table"><tr><td id="target">Cursor should be at the end</td></tr></table>
-<div style="-webkit-user-modify: read-only">
-<script src=../editing.js></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-if (window.testRunner)
-  testRunner.dumpAsText();
+// Test for http://bugs.webkit.org/show_bug.cgi?id=50012
+// Moving cursor down in table cycles at the end of a row
 
-var target = document.getElementById("target");
-getSelection().setBaseAndExtent(target.firstChild, 0, target.firstChild, 0);
-for (var i=0; i < 2; i++)
-  moveSelectionForwardByLineCommand();
+selection_test(
+    `
+      <div contenteditable>
+        <table><tbody><tr><td>|Cursor should be at the end</td></tr></tbody></table>
+      </div>
+    `,
+    selection => selection.modify('move', 'forward', 'line'),
+    `
+      <div contenteditable>
+        <table><tbody><tr><td>Cursor should be at the end</td></tr></tbody></table>|
+      </div>
+    `,
+    'Caret movement does not cycle');
 
-document.write(getSelection().baseOffset == 4 ? "PASS" : "FAIL: selection.baseOffset = " + getSelection().baseOffset);
+selection_test(
+    `
+      <div contenteditable>
+        <table><tbody><tr><td>Cursor should be at the end</td></tr></tbody></table>|
+      </div>
+    `,
+    selection => selection.modify('move', 'forward', 'line'),
+    `
+      <div contenteditable>
+        <table><tbody><tr><td>Cursor should be at the end</td></tr></tbody></table>|
+      </div>
+    `,
+    'Caret movement does not cycle 2');
 </script>
-</div>
-</body>
-</html>
-

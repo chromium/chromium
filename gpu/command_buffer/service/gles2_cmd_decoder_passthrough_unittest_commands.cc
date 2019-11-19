@@ -10,8 +10,6 @@
 namespace gpu {
 namespace gles2 {
 
-using namespace cmds;
-
 template <typename T>
 class GLES2DecoderPassthroughFixedCommandTest
     : public GLES2DecoderPassthroughTest {};
@@ -31,7 +29,7 @@ class GLES2DecoderPassthroughImmediateNoArgCommandTest
 TYPED_TEST_SUITE_P(GLES2DecoderPassthroughImmediateNoArgCommandTest);
 
 TYPED_TEST_P(GLES2DecoderPassthroughImmediateNoArgCommandTest, InvalidCommand) {
-  TypeParam& cmd = *(this->template GetImmediateAs<TypeParam>());
+  auto& cmd = *(this->template GetImmediateAs<TypeParam>());
   cmd.SetHeader();
   EXPECT_EQ(error::kUnknownCommand, this->ExecuteImmediateCmd(cmd, 64));
 }
@@ -45,7 +43,7 @@ TYPED_TEST_SUITE_P(GLES2DecoderPassthroughImmediateSizeArgCommandTest);
 
 TYPED_TEST_P(GLES2DecoderPassthroughImmediateSizeArgCommandTest,
              InvalidCommand) {
-  TypeParam& cmd = *(this->template GetImmediateAs<TypeParam>());
+  auto& cmd = *(this->template GetImmediateAs<TypeParam>());
   cmd.SetHeader(0);
   EXPECT_EQ(error::kUnknownCommand, this->ExecuteImmediateCmd(cmd, 0));
 }
@@ -53,95 +51,96 @@ REGISTER_TYPED_TEST_SUITE_P(GLES2DecoderPassthroughImmediateSizeArgCommandTest,
                             InvalidCommand);
 
 using ES3FixedCommandTypes0 =
-    ::testing::Types<BindBufferBase,
-                     BindBufferRange,
-                     BindSampler,
-                     BindTransformFeedback,
-                     ClearBufferfi,
-                     ClientWaitSync,
-                     CopyBufferSubData,
-                     CompressedTexImage3D,
-                     CompressedTexImage3DBucket,
-                     CompressedTexSubImage3D,
-                     CompressedTexSubImage3DBucket,
-                     CopyTexSubImage3D,
-                     DeleteSync,
-                     FenceSync,
-                     FlushMappedBufferRange,
-                     FramebufferTextureLayer,
-                     GetActiveUniformBlockiv,
-                     GetActiveUniformBlockName,
-                     GetActiveUniformsiv,
-                     GetFragDataLocation,
-                     GetBufferParameteri64v,
-                     GetInteger64v,
-                     GetInteger64i_v,
-                     GetIntegeri_v,
-                     GetInternalformativ,
-                     GetSamplerParameterfv,
-                     GetSamplerParameteriv,
-                     GetSynciv,
-                     GetUniformBlockIndex,
-                     GetUniformBlocksCHROMIUM,
-                     GetUniformsES3CHROMIUM,
-                     GetTransformFeedbackVarying,
-                     GetTransformFeedbackVaryingsCHROMIUM,
-                     GetUniformuiv,
-                     GetUniformIndices,
-                     GetVertexAttribIiv,
-                     GetVertexAttribIuiv,
-                     IsSampler,
-                     IsSync,
-                     IsTransformFeedback,
-                     MapBufferRange,
-                     PauseTransformFeedback,
-                     ReadBuffer,
-                     ResumeTransformFeedback,
-                     SamplerParameterf,
-                     SamplerParameteri,
-                     TexImage3D,
-                     TexStorage3D,
-                     TexSubImage3D>;
+    ::testing::Types<cmds::BindBufferBase,
+                     cmds::BindBufferRange,
+                     cmds::BindSampler,
+                     cmds::BindTransformFeedback,
+                     cmds::ClearBufferfi,
+                     cmds::ClientWaitSync,
+                     cmds::CopyBufferSubData,
+                     cmds::CompressedTexImage3D,
+                     cmds::CompressedTexImage3DBucket,
+                     cmds::CompressedTexSubImage3D,
+                     cmds::CompressedTexSubImage3DBucket,
+                     cmds::CopyTexSubImage3D,
+                     cmds::DeleteSync,
+                     cmds::FenceSync,
+                     cmds::FlushMappedBufferRange,
+                     cmds::FramebufferTextureLayer,
+                     cmds::GetActiveUniformBlockiv,
+                     cmds::GetActiveUniformBlockName,
+                     cmds::GetActiveUniformsiv,
+                     cmds::GetFragDataLocation,
+                     cmds::GetBufferParameteri64v,
+                     cmds::GetInteger64v,
+                     cmds::GetInteger64i_v,
+                     cmds::GetIntegeri_v,
+                     cmds::GetInternalformativ,
+                     cmds::GetSamplerParameterfv,
+                     cmds::GetSamplerParameteriv,
+                     cmds::GetSynciv,
+                     cmds::GetUniformBlockIndex,
+                     cmds::GetUniformBlocksCHROMIUM,
+                     cmds::GetUniformsES3CHROMIUM,
+                     cmds::GetTransformFeedbackVarying,
+                     cmds::GetTransformFeedbackVaryingsCHROMIUM,
+                     cmds::GetUniformuiv,
+                     cmds::GetUniformIndices,
+                     cmds::GetVertexAttribIiv,
+                     cmds::GetVertexAttribIuiv,
+                     cmds::IsSampler,
+                     cmds::IsSync,
+                     cmds::IsTransformFeedback,
+                     cmds::MapBufferRange,
+                     cmds::PauseTransformFeedback,
+                     cmds::ReadBuffer,
+                     cmds::ResumeTransformFeedback,
+                     cmds::SamplerParameterf,
+                     cmds::SamplerParameteri,
+                     cmds::TexImage3D,
+                     cmds::TexStorage3D,
+                     cmds::TexSubImage3D>;
 
-using ES3FixedCommandTypes1 = ::testing::Types<TransformFeedbackVaryingsBucket,
-                                               Uniform1ui,
-                                               Uniform2ui,
-                                               Uniform3ui,
-                                               Uniform4ui,
-                                               UniformBlockBinding,
-                                               UnmapBuffer,
-                                               VertexAttribI4i,
-                                               VertexAttribI4ui,
-                                               VertexAttribIPointer,
-                                               WaitSync,
-                                               BeginTransformFeedback,
-                                               EndTransformFeedback>;
+using ES3FixedCommandTypes1 =
+    ::testing::Types<cmds::TransformFeedbackVaryingsBucket,
+                     cmds::Uniform1ui,
+                     cmds::Uniform2ui,
+                     cmds::Uniform3ui,
+                     cmds::Uniform4ui,
+                     cmds::UniformBlockBinding,
+                     cmds::UnmapBuffer,
+                     cmds::VertexAttribI4i,
+                     cmds::VertexAttribI4ui,
+                     cmds::VertexAttribIPointer,
+                     cmds::WaitSync,
+                     cmds::BeginTransformFeedback,
+                     cmds::EndTransformFeedback>;
 
 using ES3ImmediateNoArgCommandTypes0 =
-    ::testing::Types<ClearBufferivImmediate,
-                     ClearBufferuivImmediate,
-                     ClearBufferfvImmediate,
-                     SamplerParameterfvImmediate,
-                     SamplerParameterfvImmediate,
-                     VertexAttribI4ivImmediate,
-                     VertexAttribI4uivImmediate>;
+    ::testing::Types<cmds::ClearBufferivImmediate,
+                     cmds::ClearBufferuivImmediate,
+                     cmds::ClearBufferfvImmediate,
+                     cmds::SamplerParameterfvImmediate,
+                     cmds::SamplerParameterfvImmediate,
+                     cmds::VertexAttribI4ivImmediate,
+                     cmds::VertexAttribI4uivImmediate>;
 
 using ES3ImmediateSizeArgCommandTypes0 =
-    ::testing::Types<DeleteSamplersImmediate,
-                     DeleteTransformFeedbacksImmediate,
-                     GenTransformFeedbacksImmediate,
-                     InvalidateFramebufferImmediate,
-                     InvalidateSubFramebufferImmediate,
-                     Uniform1uivImmediate,
-                     Uniform2uivImmediate,
-                     Uniform3uivImmediate,
-                     Uniform4uivImmediate,
-                     UniformMatrix2x3fvImmediate,
-                     UniformMatrix2x4fvImmediate,
-                     UniformMatrix3x2fvImmediate,
-                     UniformMatrix3x4fvImmediate,
-                     UniformMatrix4x2fvImmediate,
-                     UniformMatrix4x3fvImmediate>;
+    ::testing::Types<cmds::DeleteSamplersImmediate,
+                     cmds::DeleteTransformFeedbacksImmediate,
+                     cmds::GenTransformFeedbacksImmediate,
+                     cmds::InvalidateFramebufferImmediate,
+                     cmds::InvalidateSubFramebufferImmediate,
+                     cmds::Uniform1uivImmediate,
+                     cmds::Uniform2uivImmediate,
+                     cmds::Uniform3uivImmediate,
+                     cmds::Uniform4uivImmediate,
+                     cmds::UniformMatrix2x3fvImmediate,
+                     cmds::UniformMatrix2x4fvImmediate,
+                     cmds::UniformMatrix3x2fvImmediate,
+                     cmds::UniformMatrix3x4fvImmediate,
+                     cmds::UniformMatrix4x2fvImmediate,
+                     cmds::UniformMatrix4x3fvImmediate>;
 
 INSTANTIATE_TYPED_TEST_SUITE_P(0,
                                GLES2DecoderPassthroughFixedCommandTest,

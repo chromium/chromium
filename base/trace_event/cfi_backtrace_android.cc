@@ -164,16 +164,13 @@ void CFIBacktraceAndroid::Initialize() {
 }
 
 void CFIBacktraceAndroid::ParseCFITables() {
-  // The first 4 bytes in the file is the size of UNW_INDEX table.
-  static constexpr size_t kUnwIndexRowSize =
-      sizeof(*unw_index_function_col_) + sizeof(*unw_index_indices_col_);
+  // The first 4 bytes in the file is the number of entries in UNW_INDEX table.
   size_t unw_index_size = 0;
   memcpy(&unw_index_size, cfi_mmap_->data(), sizeof(unw_index_size));
-  DCHECK_EQ(0u, unw_index_size % kUnwIndexRowSize);
   // UNW_INDEX table starts after 4 bytes.
   unw_index_function_col_ =
       reinterpret_cast<const uintptr_t*>(cfi_mmap_->data()) + 1;
-  unw_index_row_count_ = unw_index_size / kUnwIndexRowSize;
+  unw_index_row_count_ = unw_index_size;
   unw_index_indices_col_ = reinterpret_cast<const uint16_t*>(
       unw_index_function_col_ + unw_index_row_count_);
 

@@ -1,0 +1,78 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("sync_wifi") {
+  sources = [
+    "network_identifier.cc",
+    "network_identifier.h",
+    "network_type_conversions.cc",
+    "network_type_conversions.h",
+    "pending_network_configuration_tracker.h",
+    "pending_network_configuration_tracker_impl.cc",
+    "pending_network_configuration_tracker_impl.h",
+    "pending_network_configuration_update.cc",
+    "pending_network_configuration_update.h",
+    "synced_network_updater.h",
+    "synced_network_updater_impl.cc",
+    "synced_network_updater_impl.h",
+    "wifi_configuration_bridge.cc",
+    "wifi_configuration_bridge.h",
+    "wifi_configuration_sync_service.cc",
+    "wifi_configuration_sync_service.h",
+  ]
+  deps = [
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/network",
+    "//chromeos/services/network_config/public/mojom",
+    "//components/device_event_log",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/proxy_config",
+    "//components/sync",
+    "//components/version_info",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_pending_network_configuration_tracker.cc",
+    "fake_pending_network_configuration_tracker.h",
+    "test_data_generator.cc",
+    "test_data_generator.h",
+  ]
+  deps = [
+    ":sync_wifi",
+    "//base/test:test_support",
+    "//components/sync:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "network_identifier_unittest.cc",
+    "pending_network_configuration_tracker_impl_unittest.cc",
+    "synced_network_updater_impl_unittest.cc",
+    "wifi_configuration_bridge_unittest.cc",
+  ]
+  deps = [
+    ":sync_wifi",
+    ":test_support",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chromeos/dbus/shill:test_support",
+    "//chromeos/login/login_state",
+    "//chromeos/login/login_state:test_support",
+    "//chromeos/network:test_support",
+    "//chromeos/services/network_config",
+    "//chromeos/services/network_config:in_process_instance",
+    "//chromeos/services/network_config/public/cpp:test_support",
+    "//components/sync:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/user_manager:test_support",
+    "//testing/gtest",
+  ]
+}

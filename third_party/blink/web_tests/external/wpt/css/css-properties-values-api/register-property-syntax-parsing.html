@@ -1,4 +1,5 @@
 <!DOCTYPE HTML>
+<meta charset="utf-8">
 <link rel="help" href="https://drafts.css-houdini.org/css-properties-values-api/#dom-css-registerproperty" />
 <link rel="help" href="https://drafts.css-houdini.org/css-properties-values-api/#supported-syntax-strings" />
 <script src="/resources/testharness.js"></script>
@@ -29,9 +30,11 @@ assert_valid(" <number>", "5");
 assert_valid("<percentage> ", "10%");
 assert_valid("<color>+", "red");
 assert_valid(" <length>+ | <percentage>", "2px 8px");
+assert_valid(" <length>+ | <color>#", "red, blue");
 assert_valid("<length>|<percentage>|<length-percentage>", "2px"); // Valid but silly
 assert_valid("<color> | <image> | <url> | <integer> | <angle>", "red");
 assert_valid("<time> | <resolution> | <transform-list> | <custom-ident>", "red");
+assert_valid("\t<color>\n|   foo", "foo");
 
 assert_valid("*", ":> hello");
 assert_valid("*", "([ brackets ]) { yay (??)}");
@@ -51,6 +54,8 @@ assert_valid("<percentage>", "-9.3e3%");
 assert_valid("<length-percentage>", "-54%");
 assert_valid("<length-percentage>", "0");
 assert_valid("<length-percentage>", "calc(-11px + 10.4%)");
+assert_valid("<length>", "10vmin");
+assert_valid("<percentage> | <length>+", "calc(100vh - 10px) 30px");
 
 assert_valid("<number>", "-109");
 assert_valid("<number>", "2.3e4");
@@ -86,10 +91,10 @@ assert_valid("banana", "banana");
 assert_valid("bAnAnA", "bAnAnA");
 assert_valid("ba-na-nya", "ba-na-nya");
 assert_valid("banana", "banan\\61");
+assert_valid("banan\\61", "banana");
 assert_valid("<custom-ident>", "banan\\61");
 assert_valid("big | bigger | BIGGER", "bigger");
 assert_valid("foo+|bar", "foo foo foo");
-assert_valid("default", "default");
 
 assert_valid("banana\t", "banana");
 assert_valid("\nbanana\r\n", "banana");
@@ -99,9 +104,14 @@ assert_valid(null, "null");
 assert_valid(undefined, "undefined");
 assert_valid(["array"], "array");
 
+assert_valid("\\1F914", "🤔");
+assert_valid("hmm\\1F914", "hmm🤔");
+assert_valid("\\1F914hmm", "🤔hmm");
+assert_valid("\\1F914 hmm", "🤔hmm");
+assert_valid("\\1F914\\1F914", "🤔🤔");
+
 // Invalid syntax
 assert_invalid("banana,nya", "banana");
-assert_invalid("banan\\61", "banana");
 assert_invalid("<\\6c ength>", "10px");
 assert_invalid("<banana>", "banana");
 assert_invalid("<Number>", "10");
@@ -110,26 +120,54 @@ assert_invalid("<LENGTH>", "10px");
 assert_invalid("< length>", "10px");
 assert_invalid("<length >", "10px");
 assert_invalid("<length> +", "10px");
+assert_invalid("<transform-list>+", "scale(2)");
+assert_invalid("<transform-list>#", "scale(2)");
 
 assert_invalid("<length>++", "10px");
+assert_invalid("<length>##", "10px");
+assert_invalid("<length>+#", "10px");
+assert_invalid("<length>#+", "10px");
 assert_invalid("<length> | *", "10px");
 assert_invalid("*|banana", "banana");
+assert_invalid("|banana", "banana");
 assert_invalid("*+", "banana");
+assert_invalid("|", "banana");
+assert_invalid(" |", "banana");
+assert_invalid("||", "banana");
+assert_invalid("foo bar", "foo bar");
+assert_invalid("foo foo foo", "foo foo foo");
+assert_invalid("foo § bar", "foo § bar");
+assert_invalid("foo \\1F914 bar", "foo \\1F914 bar");
+assert_invalid("<length> <number>", "0px 0");
+assert_invalid("<length> <length> <length>", "0px 0px 0px");
 
 assert_invalid("initial", "initial");
 assert_invalid("inherit", "inherit");
 assert_invalid("unset", "unset");
+assert_invalid("revert", "revert");
+assert_invalid("default", "default");
 assert_invalid("<length>|initial", "10px");
 assert_invalid("<length>|INHERIT", "10px");
 assert_invalid("<percentage>|unsEt", "2%");
+assert_invalid("<color>|REVert", "red");
+assert_invalid("<integer>|deFAUlt", "1");
 
 // Invalid initialValue
 assert_invalid("*", "initial");
 assert_invalid("*", "inherit");
 assert_invalid("*", "unset");
 assert_invalid("*", "revert");
+assert_invalid("*", "default");
 assert_invalid("<custom-ident>", "initial");
+assert_invalid("<custom-ident>", "inherit");
+assert_invalid("<custom-ident>", "unset");
+assert_invalid("<custom-ident>", "revert");
+assert_invalid("<custom-ident>", "default");
+assert_invalid("<custom-ident>+", "foo initial bar");
 assert_invalid("<custom-ident>+", "foo inherit bar");
+assert_invalid("<custom-ident>+", "foo unset bar");
+assert_invalid("<custom-ident>+", "foo revert bar");
+assert_invalid("<custom-ident>+", "foo default bar");
 
 assert_invalid("*", ")");
 assert_invalid("*", "([)]");
@@ -147,20 +185,20 @@ assert_invalid("<length>", "10%");
 assert_invalid("<length>", "calc(5px + 10%)");
 assert_invalid("<length>", "calc(5px * 3px / 6px)");
 assert_invalid("<length>", "10em");
-assert_invalid("<length>", "10vmin");
 assert_invalid("<length>", "calc(4px + 3em)");
 assert_invalid("<length>", "calc(4px + calc(8 * 2em))");
 assert_invalid("<length>+", "calc(2ex + 16px)");
 assert_invalid("<length>+", "10px calc(20px + 4rem)");
 assert_invalid("<length>+", "");
 assert_invalid("<length>#", "");
-assert_invalid("<percentage> | <length>+", "calc(100vh - 10px) 30px");
 assert_invalid("<length>", "10px;");
 assert_invalid("<length-percentage>", "calc(2px + 10% + 7ex)");
 assert_invalid("<percentage>", "0");
 assert_invalid("<integer>", "1.0");
 assert_invalid("<integer>", "1e0");
 assert_invalid("<number>|foo", "foo var(--foo, bla)");
+assert_invalid("Foo | bar", "foo");
+assert_invalid("Foo | bar", "Bar");
 
 assert_invalid("<angle>", "0");
 assert_invalid("<angle>", "10%");

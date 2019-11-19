@@ -1,0 +1,51 @@
+<link rel="import" href="../../../html/polymer.html">
+
+<link rel="import" href="network_list_item.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_scrollable_behavior.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
+
+<dom-module id="network-list">
+  <template>
+    <style include="cr-shared-style iron-flex">
+      :host {
+        display: inline-flex;
+      }
+
+      network-list-item {
+        align-items: center;
+        height: 48px;
+      }
+
+      #container {
+        overflow-x: hidden;
+        overflow-y: auto;
+      }
+
+      /* Override scrollable border-bottom-color */
+      #container[no-bottom-scroll-border] {
+        border-bottom-color: transparent;
+      }
+
+      iron-list > *:not(:first-of-type) {
+        border-top: var(--cr-separator-line);
+      }
+
+    </style>
+    <div id="container" class="layout vertical flex" scrollable
+        no-bottom-scroll-border$="[[noBottomScrollBorder]]">
+      <iron-list id="networkList" selection-enabled items="[[listItems_]]"
+          scroll-target="container" selected-item="{{selectedItem}}">
+        <template>
+          <network-list-item item="[[item]]"
+              show-technology-badge="[[showTechnologyBadge]]"
+              show-buttons="[[showButtons]]" tabindex$="[[tabIndex]]"
+              activation-unavailable="[[activationUnavailable]]">
+          </network-list-item>
+        </template>
+      </iron-list>
+    </div>
+  </template>
+  <script src="network_list.js"></script>
+</dom-module>

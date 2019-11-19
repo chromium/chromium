@@ -1,0 +1,75 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/learning/mojo/public/mojom/learning_task_controller.mojom";
+import "media/mojo/mojom/media_types.mojom";
+import "media/mojo/mojom/video_decode_stats_recorder.mojom";
+import "media/mojo/mojom/watch_time_recorder.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Used for reporting to UMA and UKM. Represents the URL scheme of the src URL
+// given to an <audio> or <video> tag. Always add new entries to the end.
+enum MediaURLScheme {
+  kUnknown = 0,
+  kMissing,
+  kHttp,
+  kHttps,
+  kFtp,
+  kChromeExtension,
+  kJavascript,
+  kFile,
+  kBlob,
+  kData,
+  kFileSystem,
+  kChrome,
+  kContent,
+  kContentId,
+};
+
+// Provider interface used to avoid having one time setters on each interface.
+// Each recorder will be stamped with an ID which can be used for linking UKM.
+interface MediaMetricsProvider {
+  // Assigns a playback ID and sets up this provider instance with information
+  // needed to make UKM reports. No other methods may be called until after
+  // Initialize() has been called. |url_scheme| is only used if |!is_mse|.
+  Initialize(bool is_mse, MediaURLScheme url_scheme);
+
+  // Called when a playback ends in error. The status is reported to UKM when
+  // the provider is destructed.
+  OnError(PipelineStatus status);
+
+  // Setters for various one-time lazily generated metrics or properties.
+  SetHasPlayed();
+  SetHaveEnough();
+  SetIsEME();
+  SetTimeToMetadata(mojo_base.mojom.TimeDelta elapsed);
+  SetTimeToFirstFrame(mojo_base.mojom.TimeDelta elapsed);
+  SetTimeToPlayReady(mojo_base.mojom.TimeDelta elapsed);
+
+  // For src= playbacks, this is the container (".mp4", ".webm", etc).
+  SetContainerName(MediaContainerName container_name);
+
+  // Creates a WatchTimeRecorder instance using |properties|. If any of those
+  // properties changes, a new recorder should be requested.
+  AcquireWatchTimeRecorder(PlaybackProperties properties,
+                           pending_receiver<WatchTimeRecorder> recorder);
+
+  // Creates a VideoDecodeStatsRecorder instance.
+  AcquireVideoDecodeStatsRecorder(
+      pending_receiver<VideoDecodeStatsRecorder> recorder);
+
+  // Returns a LearningTaskController for the given |taskName|.
+  AcquireLearningTaskController(
+    string taskName,
+    pending_receiver<media.learning.mojom.LearningTaskController> controller);
+
+  // Can be called multiple times to set properties about a playback.
+  SetHasAudio(AudioCodec codec);
+  SetHasVideo(VideoCodec codec);
+  SetVideoPipelineInfo(PipelineDecoderInfo info);
+  SetAudioPipelineInfo(PipelineDecoderInfo info);
+};

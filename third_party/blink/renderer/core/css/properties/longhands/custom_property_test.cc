@@ -12,10 +12,11 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
-using namespace css_test_helpers;
+using css_test_helpers::RegisterProperty;
 using VariableMode = CSSParserLocalContext::VariableMode;
 
 namespace {
@@ -31,7 +32,7 @@ class CustomPropertyTest : public PageTestBase {
   const CSSValue* GetComputedValue(const CustomProperty& property) {
     Element* node = GetDocument().getElementById("target");
     return property.CSSValueFromComputedStyle(node->ComputedStyleRef(),
-                                              nullptr /* layout_object */, node,
+                                              nullptr /* layout_object */,
                                               false /* allow_visited_style */);
   }
 
@@ -41,7 +42,7 @@ class CustomPropertyTest : public PageTestBase {
     CSSTokenizer tokenizer(value);
     const auto tokens = tokenizer.TokenizeToEOF();
     CSSParserTokenRange range(tokens);
-    CSSParserContext* context = CSSParserContext::Create(GetDocument());
+    auto* context = MakeGarbageCollected<CSSParserContext>(GetDocument());
     return property.ParseSingleValue(range, *context, local_context);
   }
 };
@@ -73,7 +74,7 @@ TEST_F(CustomPropertyTest, StaticVariableInstance) {
 
 TEST_F(CustomPropertyTest, PropertyID) {
   CustomProperty property("--x", GetDocument());
-  EXPECT_EQ(CSSPropertyVariable, property.PropertyID());
+  EXPECT_EQ(CSSPropertyID::kVariable, property.PropertyID());
 }
 
 TEST_F(CustomPropertyTest, GetPropertyNameAtomicString) {
@@ -95,7 +96,7 @@ TEST_F(CustomPropertyTest, ComputedCSSValueInherited) {
   SetElementWithStyle("--x:100px");
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
-  const CSSPrimitiveValue* primitive_value = ToCSSPrimitiveValue(value);
+  const auto* primitive_value = To<CSSPrimitiveValue>(value);
   EXPECT_EQ(100, primitive_value->GetIntValue());
 }
 
@@ -105,7 +106,7 @@ TEST_F(CustomPropertyTest, ComputedCSSValueNonInherited) {
   SetElementWithStyle("--x:100px");
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
-  const CSSPrimitiveValue* primitive_value = ToCSSPrimitiveValue(value);
+  const auto* primitive_value = To<CSSPrimitiveValue>(value);
   EXPECT_EQ(100, primitive_value->GetIntValue());
 }
 
@@ -115,7 +116,7 @@ TEST_F(CustomPropertyTest, ComputedCSSValueInitial) {
   SetElementWithStyle("");  // Do not apply --x.
   const CSSValue* value = GetComputedValue(property);
   ASSERT_TRUE(value->IsPrimitiveValue());
-  const CSSPrimitiveValue* primitive_value = ToCSSPrimitiveValue(value);
+  const auto* primitive_value = To<CSSPrimitiveValue>(value);
   EXPECT_EQ(100, primitive_value->GetIntValue());
 }
 
@@ -153,9 +154,9 @@ TEST_F(CustomPropertyTest, ParseSingleValueAnimationTainted) {
       property, "100px", CSSParserLocalContext().WithAnimationTainted(false));
 
   EXPECT_TRUE(
-      ToCSSCustomPropertyDeclaration(value1)->Value()->IsAnimationTainted());
+      To<CSSCustomPropertyDeclaration>(value1)->Value()->IsAnimationTainted());
   EXPECT_FALSE(
-      ToCSSCustomPropertyDeclaration(value2)->Value()->IsAnimationTainted());
+      To<CSSCustomPropertyDeclaration>(value2)->Value()->IsAnimationTainted());
 }
 
 TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
@@ -164,7 +165,7 @@ TEST_F(CustomPropertyTest, ParseSingleValueTyped) {
   const CSSValue* value1 =
       ParseValue(property, "100px", CSSParserLocalContext());
   EXPECT_TRUE(value1->IsPrimitiveValue());
-  EXPECT_EQ(100, ToCSSPrimitiveValue(value1)->GetIntValue());
+  EXPECT_EQ(100, To<CSSPrimitiveValue>(value1)->GetIntValue());
 
   const CSSValue* value2 =
       ParseValue(property, "maroon", CSSParserLocalContext());

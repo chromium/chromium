@@ -5,7 +5,7 @@ Original style:
 element.style { ()
 
 [expanded] 
-#main { (<style>…</style>)
+#main { (<style>)
     color: red;
 
 [expanded] 
@@ -23,11 +23,11 @@ element.style { ()
 
 [expanded] 
 @media print
-#main { (<style>…</style>)
+#main { (<style>)
     color: black;
 
 [expanded] 
-#main { (<style>…</style>)
+#main { (<style>)
 /-- overloaded --/     color: red;
 
 [expanded] 
@@ -44,11 +44,11 @@ tty media emulated:
 element.style { ()
 
 [expanded] 
-#main { (<style>…</style>)
+#main { (<style>)
     color: green;
 
 [expanded] 
-#main { (<style>…</style>)
+#main { (<style>)
 /-- overloaded --/     color: red;
 
 [expanded] 
@@ -65,7 +65,7 @@ No media emulated:
 element.style { ()
 
 [expanded] 
-#main { (<style>…</style>)
+#main { (<style>)
     color: red;
 
 [expanded] 

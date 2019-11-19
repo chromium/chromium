@@ -1,0 +1,21 @@
+<!--
+@BLINK-ALLOW:offscreen
+@BLINK-ALLOW:size=(0, 0)
+@BLINK-ALLOW:clipsChildren*
+@BLINK-ALLOW:unclippedSize=(50, 20)
+@BLINK-ALLOW:pageSize=(50, 20)
+@BLINK-ALLOW:pageSize=(1, 1)
+@BLINK-ALLOW:pageSize=(50, 1)
+-->
+<!DOCTYPE html>
+<div id="parent" aria-label="parent" role="article"
+     style="position: absolute; width: 0; height: 0; overflow: visible">
+  <div style="width:50px; height: 20px" aria-label="first child" role="checkbox">first child</div>
+  <div style="width:50px; height: 20px" aria-label="second child" role="radio">second child</div>
+</div>
+
+<script>
+  function go() {
+    document.getElementById("parent").innerHTML = "<div role=button>new child</div>";
+  }
+</script>

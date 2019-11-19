@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_error_type.mojom";
@@ -28,22 +29,22 @@ enum ControllerServiceWorkerPurpose {
 // - For service workers:
 //       Associated with EmbeddedWorkerInstanceClient, which is on a dedicated
 //       message pipe.
-// - For shared workers (S13nSW):
+// - For shared workers:
 //       Associated with SharedWorkerFactory, which is on a dedicated message
 //       pipe.
-// - For shared workers (non-S13nSW):
-//       Associated with ServiceWorkerDispatcherHost, which is on the
-//       channel-associated interface to the renderer process.
 // - For documents:
-//       Associated with ServiceWorkerDispatcherHost, which is on the
-//       channel-associated interface to the renderer process.
+//       Associated with NavigationClient/FrameNavigationControl, which is on
+//       the channel-associated interface to the renderer process.
 interface ServiceWorkerContainerHost {
   // Corresponds to navigator.serviceWorker.register().
   // Registers a service worker from |script_url| with |options|.
+  // |outside_fetch_client_settings_object| is used to fetch the top-level
+  // script.
   // On success, |error| is kNone with |registration| set.
   // Otherwise, |error| and |error_msg| describe the failure.
   Register(url.mojom.Url script_url,
-           ServiceWorkerRegistrationOptions options)
+           ServiceWorkerRegistrationOptions options,
+           FetchClientSettingsObject outside_fetch_client_settings_object)
     => (ServiceWorkerErrorType error,
         string? error_msg,
         ServiceWorkerRegistrationObjectInfo? registration);
@@ -76,7 +77,6 @@ interface ServiceWorkerContainerHost {
   GetRegistrationForReady()
     => (ServiceWorkerRegistrationObjectInfo? registration);
 
-  // S13nServiceWorker:
   // Returns a Mojo end point to the controller ServiceWorker. This may start a
   // service worker instance in a renderer process if the corresponding
   // instance is not alive.
@@ -86,19 +86,13 @@ interface ServiceWorkerContainerHost {
   // reported to the controllees, but the browser process is responsible for
   // properly handling the failure and recording the reasons.
   // |purpose| is used for UMA.
-  EnsureControllerServiceWorker(ControllerServiceWorker& controller,
-                                ControllerServiceWorkerPurpose purpose);
+  EnsureControllerServiceWorker(
+      pending_receiver<ControllerServiceWorker> receiver,
+      ControllerServiceWorkerPurpose purpose);
 
-  // S13nServiceWorker:
   // Makes a new endpoint to this ServiceWorkerContainerHost.
-  CloneContainerHost(ServiceWorkerContainerHost& container_host);
+  CloneContainerHost(pending_receiver<ServiceWorkerContainerHost> container_host);
 
-  // Does nothing but calls the callback. Useful for pumping the message pipe
-  // for this interface and associated interfaces: when the callback is called,
-  // you know all incoming messages up to the Ping() call have been received.
-  Ping() => ();
-
-  // S13nServiceWorker:
   // Gives a hint to the browser process to update the service worker after a
   // controlled page load. This message is meant to be sent at a time when page
   // load is no longer busy, so update doesn't adversely affect performance.
@@ -132,12 +126,9 @@ interface ServiceWorkerContainer {
   // Corresponds to setting ServiceWorkerContainer#controller.
   // If |controller_info| is invalid (its |object_info| is null), then
   // ServiceWorkerContainer#controller is cleared.
-  // If |controller_info| is valid, |used_features| is the set of
-  // features the controller has used, for UseCounter purposes.
   // If |should_notify_controllerchange| is true, dispatch a 'controllerchange'
   // event.
   SetController(ControllerServiceWorkerInfo controller_info,
-                array<WebFeature> used_features,
                 bool should_notify_controllerchange);
 
   // Corresponds to Client#postMessage().

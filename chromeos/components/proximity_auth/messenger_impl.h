@@ -102,7 +102,7 @@ class MessengerImpl : public Messenger,
   // response. Null if there is no message currently in this state.
   std::unique_ptr<PendingMessage> pending_message_;
 
-  base::WeakPtrFactory<MessengerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<MessengerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MessengerImpl);
 };

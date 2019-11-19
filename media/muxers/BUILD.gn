@@ -19,7 +19,6 @@ source_set("muxers") {
     "//base",
     "//media/base",
     "//media/formats",
-    "//skia",
     "//third_party/libwebm",
     "//ui/gfx/geometry",
   ]

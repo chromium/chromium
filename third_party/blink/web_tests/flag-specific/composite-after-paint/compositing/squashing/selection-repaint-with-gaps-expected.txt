@@ -1,0 +1,55 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalTextFragment 'ipsum'",
+          "rect": [15, 115, 40, 40],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'lorem'",
+          "rect": [15, 115, 40, 40],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalTextFragment 'ipsum'",
+          "rect": [15, 195, 40, 40],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'lorem'",
+          "rect": [15, 195, 40, 40],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'ipsum'",
+          "rect": [15, 115, 40, 40],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'lorem'",
+          "rect": [15, 115, 40, 40],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

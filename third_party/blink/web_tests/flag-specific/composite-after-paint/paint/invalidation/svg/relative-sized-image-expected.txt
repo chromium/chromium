@@ -1,0 +1,28 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow div id='contentBox'",
+          "rect": [8, 72, 402, 402],
+          "reason": "geometry"
+        },
+        {
+          "object": "LayoutSVGImage image",
+          "rect": [9, 73, 400, 400],
+          "reason": "image"
+        },
+        {
+          "object": "LayoutSVGRoot svg",
+          "rect": [109, 73, 300, 400],
+          "reason": "incremental"
+        }
+      ]
+    }
+  ]
+}
+

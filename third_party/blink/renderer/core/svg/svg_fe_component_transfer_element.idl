@@ -29,4 +29,4 @@ interface SVGFEComponentTransferElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
 };
 
-SVGFEComponentTransferElement implements SVGFilterPrimitiveStandardAttributes;
+SVGFEComponentTransferElement includes SVGFilterPrimitiveStandardAttributes;

@@ -1,0 +1,10 @@
+This is a test with a simulated drop
+cap. A drop cap is a large initial
+letter that drops below the first line
+of a paragraph. The drop cap should be
+considered part of the first line.
+¶
+This is another test with a simulated
+drop cap. We use large
+amounts of whitespace to defeat
+the PDFium text-run logic.

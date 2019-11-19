@@ -74,6 +74,11 @@ class PLATFORM_EXPORT TransformOperation
   virtual void Apply(TransformationMatrix&,
                      const FloatSize& border_box_size) const = 0;
 
+  // Implements the accumulative behavior described in
+  // https://drafts.csswg.org/css-transforms-2/#combining-transform-lists
+  virtual scoped_refptr<TransformOperation> Accumulate(
+      const TransformOperation& other) = 0;
+
   virtual scoped_refptr<TransformOperation> Blend(
       const TransformOperation* from,
       double progress,
@@ -89,6 +94,8 @@ class PLATFORM_EXPORT TransformOperation
     return other.GetType() == GetType();
   }
   virtual bool CanBlendWith(const TransformOperation& other) const = 0;
+
+  virtual bool PreservesAxisAlignment() const { return false; }
 
   bool Is3DOperation() const {
     OperationType op_type = GetType();

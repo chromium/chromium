@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_DATA_FETCHER_H_
 #define CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_DATA_FETCHER_H_
 
-#include <utility>
-
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
@@ -16,6 +14,7 @@
 #include "chrome/browser/android/shortcut_info.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace favicon_base {
@@ -38,7 +37,8 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
                                       const GURL& url,
                                       bool is_webapk_compatible) = 0;
 
-    // Called when all the data needed to create a shortcut is available.
+    // Called when all the data needed to prompt the user to add to home screen
+    // is available.
     virtual void OnDataAvailable(const ShortcutInfo& info,
                                  const SkBitmap& primary_icon,
                                  const SkBitmap& badge_icon) = 0;
@@ -59,7 +59,8 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
 
   // IPC message received when the initialization is finished.
   void OnDidGetWebApplicationInfo(
-      chrome::mojom::ChromeRenderFrameAssociatedPtr chrome_render_frame,
+      mojo::AssociatedRemote<chrome::mojom::ChromeRenderFrame>
+          chrome_render_frame,
       const WebApplicationInfo& web_app_info);
 
   // Accessors, etc.
@@ -86,11 +87,15 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
   void OnFaviconFetched(
       const favicon_base::FaviconRawBitmapResult& bitmap_result);
 
-  // Creates the primary launcher icon from the given |icon|.
-  void CreateLauncherIcon(const SkBitmap& icon);
+  // Creates an icon to display to the user to confirm the add to home screen
+  // from the given |base_icon|. If |use_for_launcher| is true, the created icon
+  // will also be used as the launcher icon.
+  void CreateIconForView(const SkBitmap& base_icon, bool use_for_launcher);
 
   // Notifies the observer that the shortcut data is all available.
-  void NotifyObserver(const std::pair<SkBitmap, bool /*is_generated*/>& icon);
+  void OnIconCreated(bool use_for_launcher,
+                     const SkBitmap& icon_for_view,
+                     bool is_icon_generated);
 
   InstallableManager* installable_manager_;
   Observer* observer_;
@@ -110,7 +115,7 @@ class AddToHomescreenDataFetcher : public content::WebContentsObserver {
 
   bool is_waiting_for_manifest_;
 
-  base::WeakPtrFactory<AddToHomescreenDataFetcher> weak_ptr_factory_;
+  base::WeakPtrFactory<AddToHomescreenDataFetcher> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AddToHomescreenDataFetcher);
 };

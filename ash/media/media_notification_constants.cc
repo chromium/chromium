@@ -10,8 +10,4 @@ const char kMediaSessionNotificationCustomViewType[] = "media-session";
 
 const char kMediaSessionNotifierId[] = "media-session";
 
-const int kMediaSessionNotificationArtworkMinSize = 114;
-
-const int kMediaSessionNotificationArtworkDesiredSize = 512;
-
 }  // namespace ash

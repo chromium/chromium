@@ -16,13 +16,12 @@ namespace {
 // Canonicalize the given |component| from |source| into |output| and
 // |new_component|. If |separator| is non-zero, it is pre-pended to |output|
 // prior to the canonicalized component; i.e. for the '?' or '#' characters.
-template<typename CHAR, typename UCHAR>
-bool DoCanonicalizePathComponent(const CHAR* source,
+template <typename CHAR, typename UCHAR>
+void DoCanonicalizePathComponent(const CHAR* source,
                                  const Component& component,
                                  char separator,
                                  CanonOutput* output,
                                  Component* new_component) {
-  bool success = true;
   if (component.is_valid()) {
     if (separator)
       output->push_back(separator);
@@ -34,7 +33,7 @@ bool DoCanonicalizePathComponent(const CHAR* source,
     for (int i = component.begin; i < end; i++) {
       UCHAR uch = static_cast<UCHAR>(source[i]);
       if (uch < 0x20 || uch >= 0x80)
-        success &= AppendUTF8EscapedChar(source, &i, end, output);
+        AppendUTF8EscapedChar(source, &i, end, output);
       else
         output->push_back(static_cast<char>(uch));
     }
@@ -43,7 +42,6 @@ bool DoCanonicalizePathComponent(const CHAR* source,
     // Empty part.
     new_component->reset();
   }
-  return success;
 }
 
 template <typename CHAR, typename UCHAR>
@@ -63,12 +61,15 @@ bool DoCanonicalizePathURL(const URLComponentSource<CHAR>& source,
   new_parsed->port.reset();
   // We allow path URLs to have the path, query and fragment components, but we
   // will canonicalize each of the via the weaker path URL rules.
-  success &= DoCanonicalizePathComponent<CHAR, UCHAR>(
-      source.path, parsed.path, '\0', output, &new_parsed->path);
-  success &= DoCanonicalizePathComponent<CHAR, UCHAR>(
-      source.query, parsed.query, '?', output, &new_parsed->query);
-  success &= DoCanonicalizePathComponent<CHAR, UCHAR>(
-      source.ref, parsed.ref, '#', output, &new_parsed->ref);
+  //
+  // Note: parsing the path part should never cause a failure, see
+  // https://url.spec.whatwg.org/#cannot-be-a-base-url-path-state
+  DoCanonicalizePathComponent<CHAR, UCHAR>(source.path, parsed.path, '\0',
+                                           output, &new_parsed->path);
+  DoCanonicalizePathComponent<CHAR, UCHAR>(source.query, parsed.query, '?',
+                                           output, &new_parsed->query);
+  DoCanonicalizePathComponent<CHAR, UCHAR>(source.ref, parsed.ref, '#', output,
+                                           &new_parsed->ref);
 
   return success;
 }

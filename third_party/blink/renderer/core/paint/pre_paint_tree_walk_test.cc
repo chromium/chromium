@@ -49,8 +49,8 @@ class PrePaintTreeWalkTest : public PaintControllerPaintTest {
 
  private:
   void SetUp() override {
-    RenderingTest::SetUp();
     EnableCompositing();
+    RenderingTest::SetUp();
   }
 };
 
@@ -69,8 +69,8 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithBorderInvalidation) {
   auto* transformed_element = GetDocument().getElementById("transformed");
   const auto* transformed_properties =
       transformed_element->GetLayoutObject()->FirstFragment().PaintProperties();
-  EXPECT_EQ(TransformationMatrix().Translate(100, 100),
-            transformed_properties->Transform()->Matrix());
+  EXPECT_EQ(FloatSize(100, 100),
+            transformed_properties->Transform()->Translation2D());
 
   // Artifically change the transform node.
   const_cast<ObjectPaintProperties*>(transformed_properties)->ClearTransform();
@@ -81,21 +81,19 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithBorderInvalidation) {
   UpdateAllLifecyclePhasesForTest();
 
   // Should have changed back.
-  EXPECT_EQ(TransformationMatrix().Translate(100, 100),
-            transformed_properties->Transform()->Matrix());
+  EXPECT_EQ(FloatSize(100, 100),
+            transformed_properties->Transform()->Translation2D());
 }
 
 TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithFrameScroll) {
   SetBodyInnerHTML("<style> body { height: 10000px; } </style>");
-  EXPECT_EQ(TransformationMatrix().Translate(0, 0),
-            FrameScrollTranslation()->Matrix());
+  EXPECT_TRUE(FrameScrollTranslation()->IsIdentity());
 
   // Cause a scroll invalidation and ensure the translation is updated.
   GetDocument().domWindow()->scrollTo(0, 100);
   UpdateAllLifecyclePhasesForTest();
 
-  EXPECT_EQ(TransformationMatrix().Translate(0, -100),
-            FrameScrollTranslation()->Matrix());
+  EXPECT_EQ(FloatSize(0, -100), FrameScrollTranslation()->Translation2D());
 }
 
 TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithCSSTransformInvalidation) {
@@ -111,16 +109,16 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithCSSTransformInvalidation) {
   auto* transformed_element = GetDocument().getElementById("transformed");
   const auto* transformed_properties =
       transformed_element->GetLayoutObject()->FirstFragment().PaintProperties();
-  EXPECT_EQ(TransformationMatrix().Translate(100, 100),
-            transformed_properties->Transform()->Matrix());
+  EXPECT_EQ(FloatSize(100, 100),
+            transformed_properties->Transform()->Translation2D());
 
   // Invalidate the CSS transform property.
   transformed_element->setAttribute(html_names::kClassAttr, "transformB");
   UpdateAllLifecyclePhasesForTest();
 
   // The transform should have changed.
-  EXPECT_EQ(TransformationMatrix().Translate(200, 200),
-            transformed_properties->Transform()->Matrix());
+  EXPECT_EQ(FloatSize(200, 200),
+            transformed_properties->Transform()->Translation2D());
 }
 
 TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithOpacityInvalidation) {
@@ -162,13 +160,13 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChange) {
   auto* child = GetDocument().getElementById("child");
   auto* child_paint_layer =
       ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
-  EXPECT_FALSE(child_paint_layer->NeedsRepaint());
+  EXPECT_FALSE(child_paint_layer->SelfNeedsRepaint());
   EXPECT_FALSE(child_paint_layer->NeedsPaintPhaseFloat());
 
   parent->setAttribute(html_names::kClassAttr, "clip");
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
 
-  EXPECT_TRUE(child_paint_layer->NeedsRepaint());
+  EXPECT_TRUE(child_paint_layer->SelfNeedsRepaint());
 }
 
 TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChange2DTransform) {
@@ -188,13 +186,13 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChange2DTransform) {
   auto* child = GetDocument().getElementById("child");
   auto* child_paint_layer =
       ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
-  EXPECT_FALSE(child_paint_layer->NeedsRepaint());
+  EXPECT_FALSE(child_paint_layer->SelfNeedsRepaint());
   EXPECT_FALSE(child_paint_layer->NeedsPaintPhaseFloat());
 
   parent->setAttribute(html_names::kClassAttr, "clip");
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
 
-  EXPECT_TRUE(child_paint_layer->NeedsRepaint());
+  EXPECT_TRUE(child_paint_layer->SelfNeedsRepaint());
 }
 
 TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosAbs) {
@@ -215,7 +213,7 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosAbs) {
   auto* child = GetDocument().getElementById("child");
   auto* child_paint_layer =
       ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
-  EXPECT_FALSE(child_paint_layer->NeedsRepaint());
+  EXPECT_FALSE(child_paint_layer->SelfNeedsRepaint());
   EXPECT_FALSE(child_paint_layer->NeedsPaintPhaseFloat());
 
   // This changes clips for absolute-positioned descendants of "child" but not
@@ -223,7 +221,7 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosAbs) {
   parent->setAttribute(html_names::kClassAttr, "clip");
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
 
-  EXPECT_TRUE(child_paint_layer->NeedsRepaint());
+  EXPECT_TRUE(child_paint_layer->SelfNeedsRepaint());
 }
 
 TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosFixed) {
@@ -232,7 +230,7 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosFixed) {
       .clip { overflow: hidden }
     </style>
     <div id='parent' style='transform: translateZ(0); width: 100px;
-      height: 100px; trans'>
+      height: 100px;'>
       <div id='child' style='overflow: hidden; z-index: 0;
           position: absolute; width: 50px; height: 50px'>
         content
@@ -244,7 +242,7 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosFixed) {
   auto* child = GetDocument().getElementById("child");
   auto* child_paint_layer =
       ToLayoutBoxModelObject(child->GetLayoutObject())->Layer();
-  EXPECT_FALSE(child_paint_layer->NeedsRepaint());
+  EXPECT_FALSE(child_paint_layer->SelfNeedsRepaint());
   EXPECT_FALSE(child_paint_layer->NeedsPaintPhaseFloat());
 
   // This changes clips for absolute-positioned descendants of "child" but not
@@ -252,7 +250,33 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosFixed) {
   parent->setAttribute(html_names::kClassAttr, "clip");
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
 
-  EXPECT_TRUE(child_paint_layer->NeedsRepaint());
+  EXPECT_TRUE(child_paint_layer->SelfNeedsRepaint());
+}
+
+TEST_P(PrePaintTreeWalkTest, ClipChangeRepaintsDescendants) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #parent { height: 75px; position: relative; width: 100px; }
+      #child { overflow: hidden; width: 10%; height: 100%; position: relative; }
+      #greatgrandchild {
+        width: 5px; height: 5px; z-index: 100; position: relative;
+      }
+    </style>
+    <div id='parent' style='height: 100px;'>
+      <div id='child'>
+        <div id='grandchild'>
+          <div id='greatgrandchild'></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+
+  GetDocument().getElementById("parent")->removeAttribute("style");
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
+
+  auto* greatgrandchild = GetLayoutObjectByElementId("greatgrandchild");
+  auto* paint_layer = ToLayoutBoxModelObject(greatgrandchild)->Layer();
+  EXPECT_TRUE(paint_layer->SelfNeedsRepaint());
 }
 
 TEST_P(PrePaintTreeWalkTest, VisualRectClipForceSubtree) {
@@ -297,7 +321,7 @@ TEST_P(PrePaintTreeWalkTest, ClipChangeHasRadius) {
   auto* target_object = ToLayoutBoxModelObject(target->GetLayoutObject());
   target->setAttribute(html_names::kStyleAttr, "border-radius: 5px");
   GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
-  EXPECT_TRUE(target_object->Layer()->NeedsRepaint());
+  EXPECT_TRUE(target_object->Layer()->SelfNeedsRepaint());
   // And should not trigger any assert failure.
   UpdateAllLifecyclePhasesForTest();
 }
@@ -324,13 +348,13 @@ TEST_P(PrePaintTreeWalkTest, InsideBlockingTouchEventHandlerUpdate) {
   auto& handler = *GetLayoutObjectByElementId("handler");
   auto& descendant = *GetLayoutObjectByElementId("descendant");
 
-  EXPECT_FALSE(ancestor.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(handler.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(descendant.EffectiveWhitelistedTouchActionChanged());
+  EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(handler.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(descendant.EffectiveAllowedTouchActionChanged());
 
-  EXPECT_FALSE(ancestor.DescendantEffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(handler.DescendantEffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(descendant.DescendantEffectiveWhitelistedTouchActionChanged());
+  EXPECT_FALSE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(handler.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
 
   EXPECT_FALSE(ancestor.InsideBlockingTouchEventHandler());
   EXPECT_FALSE(handler.InsideBlockingTouchEventHandler());
@@ -341,22 +365,22 @@ TEST_P(PrePaintTreeWalkTest, InsideBlockingTouchEventHandlerUpdate) {
   auto* handler_element = GetDocument().getElementById("handler");
   handler_element->addEventListener(event_type_names::kTouchstart, callback);
 
-  EXPECT_FALSE(ancestor.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_TRUE(handler.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(descendant.EffectiveWhitelistedTouchActionChanged());
+  EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
+  EXPECT_TRUE(handler.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(descendant.EffectiveAllowedTouchActionChanged());
 
-  EXPECT_TRUE(ancestor.DescendantEffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(handler.DescendantEffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(descendant.DescendantEffectiveWhitelistedTouchActionChanged());
+  EXPECT_TRUE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(handler.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(ancestor.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(handler.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(descendant.EffectiveWhitelistedTouchActionChanged());
+  EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(handler.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(descendant.EffectiveAllowedTouchActionChanged());
 
-  EXPECT_FALSE(ancestor.DescendantEffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(handler.DescendantEffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(descendant.DescendantEffectiveWhitelistedTouchActionChanged());
+  EXPECT_FALSE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(handler.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
 
   EXPECT_FALSE(ancestor.InsideBlockingTouchEventHandler());
   EXPECT_TRUE(handler.InsideBlockingTouchEventHandler());
@@ -379,31 +403,31 @@ TEST_P(PrePaintTreeWalkTest, EffectiveTouchActionStyleUpdate) {
   auto& touchaction = *GetLayoutObjectByElementId("touchaction");
   auto& descendant = *GetLayoutObjectByElementId("descendant");
 
-  EXPECT_FALSE(ancestor.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(touchaction.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(descendant.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(ancestor.DescendantEffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(touchaction.DescendantEffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(descendant.DescendantEffectiveWhitelistedTouchActionChanged());
+  EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(touchaction.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(descendant.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(touchaction.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
 
   GetDocument()
       .getElementById("touchaction")
       ->setAttribute(html_names::kClassAttr, "touchaction");
   GetDocument().View()->UpdateLifecycleToLayoutClean();
-  EXPECT_FALSE(ancestor.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_TRUE(touchaction.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(descendant.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_TRUE(ancestor.DescendantEffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(touchaction.DescendantEffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(descendant.DescendantEffectiveWhitelistedTouchActionChanged());
+  EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
+  EXPECT_TRUE(touchaction.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(descendant.EffectiveAllowedTouchActionChanged());
+  EXPECT_TRUE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(touchaction.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
 
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(ancestor.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(touchaction.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(descendant.EffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(ancestor.DescendantEffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(touchaction.DescendantEffectiveWhitelistedTouchActionChanged());
-  EXPECT_FALSE(descendant.DescendantEffectiveWhitelistedTouchActionChanged());
+  EXPECT_FALSE(ancestor.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(touchaction.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(descendant.EffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(ancestor.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(touchaction.DescendantEffectiveAllowedTouchActionChanged());
+  EXPECT_FALSE(descendant.DescendantEffectiveAllowedTouchActionChanged());
 }
 
 TEST_P(PrePaintTreeWalkTest, ClipChangesDoNotCauseVisualRectUpdates) {

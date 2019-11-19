@@ -4,4 +4,4 @@
 
 import("//build/config/ui.gni")
 
-use_pangocairo = is_linux && !use_ozone
+use_pangocairo = is_linux && !is_chromeos && !is_chromecast

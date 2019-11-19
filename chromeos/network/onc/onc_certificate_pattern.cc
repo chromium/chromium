@@ -72,7 +72,7 @@ bool OncCertificatePattern::Matches(
   }
 
   if (!pem_encoded_issuer_cas_.empty() &&
-      !base::ContainsValue(pem_encoded_issuer_cas_, pem_encoded_issuer_ca)) {
+      !base::Contains(pem_encoded_issuer_cas_, pem_encoded_issuer_ca)) {
     return false;
   }
   return true;

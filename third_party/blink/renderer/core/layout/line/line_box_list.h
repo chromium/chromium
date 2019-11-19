@@ -31,7 +31,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/api/hit_test_action.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
@@ -41,10 +41,10 @@ class HitTestLocation;
 class HitTestResult;
 class InlineFlowBox;
 class InlineTextBox;
-class LayoutPoint;
 class LayoutUnit;
 class LineLayoutBoxModel;
 class LineLayoutItem;
+struct PhysicalOffset;
 
 template <typename InlineBoxType>
 class InlineBoxList {
@@ -154,23 +154,23 @@ class CORE_EXPORT LineBoxList : public InlineBoxList<InlineFlowBox> {
 
   bool HitTest(LineLayoutBoxModel,
                HitTestResult&,
-               const HitTestLocation& location_in_container,
-               const LayoutPoint& accumulated_offset,
+               const HitTestLocation&,
+               const PhysicalOffset& accumulated_offset,
                HitTestAction) const;
   bool AnyLineIntersectsRect(LineLayoutBoxModel,
                              const CullRect&,
-                             const LayoutPoint&) const;
+                             const PhysicalOffset&) const;
   bool LineIntersectsDirtyRect(LineLayoutBoxModel,
                                InlineFlowBox*,
                                const CullRect&,
-                               const LayoutPoint&) const;
+                               const PhysicalOffset&) const;
 
  private:
   bool RangeIntersectsRect(LineLayoutBoxModel,
                            LayoutUnit logical_top,
                            LayoutUnit logical_bottom,
                            const CullRect&,
-                           const LayoutPoint&) const;
+                           const PhysicalOffset&) const;
 };
 
 class CORE_EXPORT InlineTextBoxList : public InlineBoxList<InlineTextBox> {

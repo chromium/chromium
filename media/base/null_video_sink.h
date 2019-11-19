@@ -20,7 +20,7 @@ namespace media {
 
 class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
  public:
-  using NewFrameCB = base::Callback<void(const scoped_refptr<VideoFrame>&)>;
+  using NewFrameCB = base::RepeatingCallback<void(scoped_refptr<VideoFrame>)>;
 
   // Periodically calls |callback| every |interval| on |task_runner| once the
   // sink has been started.  If |clockless| is true, the RenderCallback will
@@ -35,7 +35,7 @@ class MEDIA_EXPORT NullVideoSink : public VideoRendererSink {
   // VideoRendererSink implementation.
   void Start(RenderCallback* callback) override;
   void Stop() override;
-  void PaintSingleFrame(const scoped_refptr<VideoFrame>& frame,
+  void PaintSingleFrame(scoped_refptr<VideoFrame> frame,
                         bool repaint_duplicate_frame) override;
 
   void set_tick_clock_for_testing(const base::TickClock* tick_clock) {

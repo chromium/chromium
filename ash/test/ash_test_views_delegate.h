@@ -18,12 +18,6 @@ class AshTestViewsDelegate : public views::TestViewsDelegate {
   AshTestViewsDelegate();
   ~AshTestViewsDelegate() override;
 
-  // Call this only if this code is being run outside of ash, for example, in
-  // browser tests that use AshTestBase. This disables CHECKs that are
-  // applicable only when used inside ash.
-  // TODO: remove this and ban usage of AshTestHelper outside of ash.
-  void set_running_outside_ash() { running_outside_ash_ = true; }
-
   // Overriden from TestViewsDelegate.
   void OnBeforeWidgetInit(
       views::Widget::InitParams* params,
@@ -40,8 +34,6 @@ class AshTestViewsDelegate : public views::TestViewsDelegate {
   // ProcessAcceleratorWhileMenuShowing returns CLOSE_MENU if passed accelerator
   // matches with this.
   ui::Accelerator close_menu_accelerator_;
-
-  bool running_outside_ash_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(AshTestViewsDelegate);
 };

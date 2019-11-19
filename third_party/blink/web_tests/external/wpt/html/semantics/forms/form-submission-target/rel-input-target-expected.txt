@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS <form rel=""> with <input formtarget>
+FAIL <form rel="noopener"> with <input formtarget> assert_false: opener expected false got true
+FAIL <form rel="noreferrer"> with <input formtarget> assert_equals: referrer expected "" but got "http://web-platform.test:8001/html/semantics/forms/form-submission-target/rel-input-target.html"
+PASS <form rel="opener"> with <input formtarget>
+FAIL <form rel="noopener noreferrer"> with <input formtarget> assert_equals: referrer expected "" but got "http://web-platform.test:8001/html/semantics/forms/form-submission-target/rel-input-target.html"
+FAIL <form rel="noreferrer opener"> with <input formtarget> assert_equals: referrer expected "" but got "http://web-platform.test:8001/html/semantics/forms/form-submission-target/rel-input-target.html"
+FAIL <form rel="opener noopener"> with <input formtarget> assert_false: opener expected false got true
+Harness: the test ran to completion.
+

@@ -16,14 +16,14 @@ class Value;
 
 namespace extensions {
 
-class ChromeosInfoPrivateGetFunction : public UIThreadExtensionFunction {
+class ChromeosInfoPrivateGetFunction : public ExtensionFunction {
  public:
   ChromeosInfoPrivateGetFunction();
 
  protected:
   ~ChromeosInfoPrivateGetFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
@@ -33,20 +33,19 @@ class ChromeosInfoPrivateGetFunction : public UIThreadExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("chromeosInfoPrivate.get", CHROMEOSINFOPRIVATE_GET)
 };
 
-class ChromeosInfoPrivateSetFunction : public UIThreadExtensionFunction {
+class ChromeosInfoPrivateSetFunction : public ExtensionFunction {
  public:
   ChromeosInfoPrivateSetFunction();
 
  protected:
   ~ChromeosInfoPrivateSetFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() override;
 
  private:
   DECLARE_EXTENSION_FUNCTION("chromeosInfoPrivate.set", CHROMEOSINFOPRIVATE_SET)
 };
-
 
 }  // namespace extensions
 

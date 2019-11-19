@@ -16,6 +16,7 @@ MockDeviceInfo::MockDeviceInfo() {
       .WillByDefault(Return(base::android::SDK_VERSION_MARSHMALLOW));
   ON_CALL(*this, IsVp8DecoderAvailable()).WillByDefault(Return(true));
   ON_CALL(*this, IsVp9DecoderAvailable()).WillByDefault(Return(true));
+  ON_CALL(*this, IsAv1DecoderAvailable()).WillByDefault(Return(true));
   ON_CALL(*this, IsDecoderKnownUnaccelerated(_)).WillByDefault(Return(false));
   ON_CALL(*this, IsSetOutputSurfaceSupported()).WillByDefault(Return(true));
   ON_CALL(*this, SupportsOverlaySurfaces()).WillByDefault(Return(true));

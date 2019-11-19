@@ -1,7 +1,6 @@
 <!DOCTYPE HTML>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 
 <select id="menulist">
   <option selected>One</option>
@@ -10,7 +9,7 @@
 </select>
 
 <script>
-test_after_layout_and_paint((t) => {
+test((t) => {
     var menulist = document.getElementById("menulist");
     menulist.focus();
     var accessibleMenulist = accessibilityController.focusedElement;

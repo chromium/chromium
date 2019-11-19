@@ -25,7 +25,13 @@ CONSOLE ERROR: Blocked prompt('iFrame click PASS') during unload.
 CONSOLE ERROR: Blocked alert('iFrame pagehide PASS') during pagehide.
 CONSOLE ERROR: Blocked confirm('iFrame pagehide PASS') during pagehide.
 CONSOLE ERROR: Blocked prompt('iFrame pagehide PASS') during pagehide.
+CONSOLE ERROR: Blocked alert('mainFrame click PASS') during pagehide.
+CONSOLE ERROR: Blocked confirm('mainFrame click PASS') during pagehide.
+CONSOLE ERROR: Blocked prompt('mainFrame click PASS') during pagehide.
 CONSOLE ERROR: Blocked alert('iFrame unload PASS') during unload.
 CONSOLE ERROR: Blocked confirm('iFrame unload PASS') during unload.
 CONSOLE ERROR: Blocked prompt('iFrame unload PASS') during unload.
+CONSOLE ERROR: Blocked alert('mainFrame click PASS') during unload.
+CONSOLE ERROR: Blocked confirm('mainFrame click PASS') during unload.
+CONSOLE ERROR: Blocked prompt('mainFrame click PASS') during unload.
 PASS

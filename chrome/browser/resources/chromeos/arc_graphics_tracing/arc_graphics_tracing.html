@@ -6,30 +6,36 @@
 <html>
   <head>
     <meta charset=utf-8>
-    <link rel="stylesheet" href="arc_graphics_tracing.css">
+    <link rel="stylesheet" href="arc_tracing.css">
     <script src="chrome://resources/js/cr.js"></script>
     <script src="chrome://resources/js/cr/ui.js"></script>
     <script src="chrome://resources/js/util.js"></script>
+    <script src="arc_tracing_ui.js"></script>
     <script src="arc_graphics_tracing_ui.js"></script>
     <script src="arc_graphics_tracing.js"></script>
+    <title>ARC graphics tracing</title>
   </head>
-  <title>Graphics buffer</title>
-<body>
-  <div id="arc-graphics-tracing-control">
-    <h4>ARC graphics tracing</h4>
-    <input type="button"
-           id="arc-graphics-tracing-start"
-           value="Start tracing in ">
-    <input type="text"
-           id="arc-graphics-tracing-start-delay"
-           value="3">
-    seconds for
-    <input type="text"
-           id="arc-graphics-tracing-duration"
-           value="2">
-    seconds.
-  </div>
-  <div id='arc-event-bands'></div>
-  <svg id='arc-event-band-tooltip'></svg>
-</body>
+  <body>
+    <div>
+      <h3>ARC graphics tracing</h3>
+      Use <b>Ctrl+Shift+G</b> in active Android app to start/stop tracing.
+      <input type="checkbox" id="arc-graphics-tracing-stop-on-jank" checked>
+      Stop on jank. Status: <i id="arc-tracing-status">Idle</i>
+      <div id="arc-tracing-control-buttons">
+        <button type="button" id="arc-graphics-tracing-save" disabled>Save
+        </button>
+        <button type="button" id="arc-tracing-load">Load</button>
+      </div>
+    </div>
+    <hr>
+    <div>
+      <img id="arc-graphics-tracing-icon" class="arc-tracing-app-icon">
+      <span id="arc-graphics-tracing-title" class="arc-tracing-app-title">
+      </span>
+    </div>
+    <hr>
+    <div id='arc-event-bands'></div>
+    <div id='arc-detailed-view-overlay'></div>
+    <div id='arc-event-band-tooltip'></div>
+  </body>
 </html>

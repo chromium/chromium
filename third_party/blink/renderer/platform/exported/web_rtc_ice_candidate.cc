@@ -43,38 +43,42 @@ blink::WebString CandidateTypeToWebString(const std::string& type) {
 scoped_refptr<WebRTCICECandidate> WebRTCICECandidate::Create(
     WebString candidate,
     WebString sdp_mid,
-    uint16_t sdp_m_line_index,
+    base::Optional<uint16_t> sdp_m_line_index,
     WebString username_fragment) {
-  return base::AdoptRef(
-      new WebRTCICECandidate(std::move(candidate), std::move(sdp_mid),
-                             sdp_m_line_index, std::move(username_fragment)));
+  return base::AdoptRef(new WebRTCICECandidate(
+      std::move(candidate), std::move(sdp_mid), std::move(sdp_m_line_index),
+      std::move(username_fragment)));
 }
 
 scoped_refptr<WebRTCICECandidate> WebRTCICECandidate::Create(
     WebString candidate,
     WebString sdp_mid,
-    uint16_t sdp_m_line_index) {
+    int sdp_m_line_index) {
   return base::AdoptRef(new WebRTCICECandidate(
-      std::move(candidate), std::move(sdp_mid), sdp_m_line_index));
+      std::move(candidate), std::move(sdp_mid),
+      sdp_m_line_index < 0 ? base::Optional<uint16_t>()
+                           : base::Optional<uint16_t>(sdp_m_line_index)));
 }
 
-WebRTCICECandidate::WebRTCICECandidate(WebString candidate,
-                                       WebString sdp_mid,
-                                       uint16_t sdp_m_line_index,
-                                       WebString username_fragment)
+WebRTCICECandidate::WebRTCICECandidate(
+    WebString candidate,
+    WebString sdp_mid,
+    base::Optional<uint16_t> sdp_m_line_index,
+    WebString username_fragment)
     : candidate_(std::move(candidate)),
       sdp_mid_(std::move(sdp_mid)),
-      sdp_m_line_index_(sdp_m_line_index),
+      sdp_m_line_index_(std::move(sdp_m_line_index)),
       username_fragment_(std::move(username_fragment)) {
   PopulateFields(false);
 }
 
-WebRTCICECandidate::WebRTCICECandidate(WebString candidate,
-                                       WebString sdp_mid,
-                                       uint16_t sdp_m_line_index)
+WebRTCICECandidate::WebRTCICECandidate(
+    WebString candidate,
+    WebString sdp_mid,
+    base::Optional<uint16_t> sdp_m_line_index)
     : candidate_(std::move(candidate)),
       sdp_mid_(std::move(sdp_mid)),
-      sdp_m_line_index_(sdp_m_line_index) {
+      sdp_m_line_index_(std::move(sdp_m_line_index)) {
   PopulateFields(true);
 }
 

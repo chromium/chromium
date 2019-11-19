@@ -10,6 +10,7 @@
 
 #include "base/macros.h"
 #include "base/sequence_checker.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/mojom/connector.mojom.h"
@@ -26,16 +27,17 @@ class ChromeMojoProxyResolverFactory
   ChromeMojoProxyResolverFactory();
   ~ChromeMojoProxyResolverFactory() override;
 
-  // Convenience method that creates a ProxyResolverFactory, and Mojo strong
-  // binding wrapping it.
-  static proxy_resolver::mojom::ProxyResolverFactoryPtr
-  CreateWithStrongBinding();
+  // Convenience method that creates a self-owned ProxyResolverFactory and
+  // returns a remote endpoint to control it.
+  static mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
+  CreateWithSelfOwnedReceiver();
 
   // proxy_resolver::mojom::ProxyResolverFactory implementation:
   void CreateResolver(
       const std::string& pac_script,
-      proxy_resolver::mojom::ProxyResolverRequest req,
-      proxy_resolver::mojom::ProxyResolverFactoryRequestClientPtr client)
+      mojo::PendingReceiver<proxy_resolver::mojom::ProxyResolver> receiver,
+      mojo::PendingRemote<
+          proxy_resolver::mojom::ProxyResolverFactoryRequestClient> client)
       override;
 
  private:

@@ -1,0 +1,24 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Source: calculator_16px.svg -> SVGOMG -> Skiafy
+// Appearance Description: A large equals sign (=).
+
+// This answer_calculator.icon is not to be confused with calculator.icon.
+// answer_calculator.icon is considered by UX like other AiS icons and is
+// intended to be encircled like other answer_*.icon vectors.
+
+CANVAS_DIMENSIONS, 16,
+MOVE_TO, 3, 5,
+R_H_LINE_TO, 10,
+R_V_LINE_TO, 2,
+H_LINE_TO, 3,
+V_LINE_TO, 5,
+CLOSE,
+R_MOVE_TO, 0, 4,
+R_H_LINE_TO, 10,
+R_V_LINE_TO, 2,
+H_LINE_TO, 3,
+V_LINE_TO, 9,
+CLOSE

@@ -1,0 +1,261 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+import("//media/gpu/args.gni")
+import("//testing/test.gni")
+
+assert(is_chromeos)
+
+source_set("jpeg_encode_accelerator") {
+  sources = [
+    "jpeg_encode_accelerator.cc",
+    "jpeg_encode_accelerator.h",
+  ]
+
+  deps = [
+    "//media",
+  ]
+}
+
+source_set("mjpeg_decode_accelerator") {
+  sources = [
+    "mjpeg_decode_accelerator.cc",
+    "mjpeg_decode_accelerator.h",
+  ]
+
+  deps = [
+    "//media",
+  ]
+}
+
+source_set("mojo_mjpeg_decode_accelerator") {
+  visibility = [
+    "//content/browser",
+    "//media/capture:capture_lib",
+  ]
+
+  sources = [
+    "mojo_mjpeg_decode_accelerator.cc",
+    "mojo_mjpeg_decode_accelerator.h",
+  ]
+
+  deps = [
+    ":mjpeg_decode_accelerator",
+    "//base",
+    "//components/chromeos_camera/common",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "dmabuf_utils.cc",
+    "dmabuf_utils.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/chromeos_camera/common",
+    "//media",
+    "//ui/gfx/geometry",
+  ]
+
+  deps = [
+    "//mojo/public/cpp/system",
+  ]
+}
+
+# TODO(crbug.com/960243): Don't compile these codes for build without vaapi/v4l2
+# supported.
+source_set("jpeg_encode_accelerator_service") {
+  sources = [
+    "gpu_jpeg_encode_accelerator_factory.cc",
+    "gpu_jpeg_encode_accelerator_factory.h",
+    "mojo_jpeg_encode_accelerator_service.cc",
+    "mojo_jpeg_encode_accelerator_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//media",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//url",
+  ]
+
+  deps = [
+    ":jpeg_encode_accelerator",
+    ":utils",
+    "//components/chromeos_camera/common",
+    "//media",
+    "//media/gpu:buildflags",
+    "//ui/gl",
+  ]
+
+  if (use_vaapi) {
+    deps += [ "//media/gpu/vaapi" ]
+  }
+
+  if (use_v4l2_codec) {
+    deps += [ "//media/gpu/v4l2" ]
+  }
+}
+
+source_set("mjpeg_decode_accelerator_service") {
+  sources = [
+    "fake_mjpeg_decode_accelerator.cc",
+    "fake_mjpeg_decode_accelerator.h",
+    "gpu_mjpeg_decode_accelerator_factory.cc",
+    "gpu_mjpeg_decode_accelerator_factory.h",
+    "mojo_mjpeg_decode_accelerator_service.cc",
+    "mojo_mjpeg_decode_accelerator_service.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//media",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//url",
+  ]
+
+  deps = [
+    ":mjpeg_decode_accelerator",
+    ":utils",
+    "//components/chromeos_camera/common",
+    "//media",
+    "//media/gpu:buildflags",
+    "//ui/gl",
+  ]
+
+  if (use_vaapi) {
+    deps += [ "//media/gpu/vaapi" ]
+  }
+
+  if (use_v4l2_codec) {
+    deps += [ "//media/gpu/v4l2" ]
+  }
+}
+
+source_set("mjpeg_decode_accelerator_service_unittest") {
+  testonly = true
+
+  sources = [
+    "mojo_mjpeg_decode_accelerator_service_unittest.cc",
+  ]
+
+  deps = [
+    ":mjpeg_decode_accelerator_service",
+    "//base",
+    "//base/test:test_support",
+    "//components/chromeos_camera/common",
+    "//media/gpu:buildflags",
+    "//testing/gtest",
+  ]
+}
+
+if (use_v4l2_codec || use_vaapi) {
+  test("jpeg_encode_accelerator_unittest") {
+    deps = [
+      ":jpeg_encode_accelerator",
+      ":jpeg_encode_accelerator_service",
+      "//base",
+      "//base/test:test_support",
+      "//media:test_support",
+      "//media/capture:chromeos_test_utils",
+      "//media/gpu:buildflags",
+      "//media/gpu/linux:video_frame_mapper",
+      "//media/gpu/test:helpers",
+      "//media/parsers",
+      "//mojo/core/embedder",
+      "//testing/gtest",
+      "//third_party:jpeg",
+      "//third_party/libyuv",
+      "//ui/base",
+      "//ui/gfx",
+      "//ui/gfx:test_support",
+      "//ui/gfx/geometry",
+      "//ui/gl",
+      "//ui/gl:test_support",
+    ]
+    configs += [ "//third_party/libyuv:libyuv_config" ]
+    sources = [
+      "jpeg_encode_accelerator_unittest.cc",
+    ]
+    if (use_vaapi) {
+      deps += [ "//media/gpu/vaapi" ]
+    }
+    if (use_x11) {
+      deps += [ "//ui/gfx/x" ]
+    }
+    if (use_ozone) {
+      deps += [ "//ui/ozone" ]
+    }
+  }
+}
+
+source_set("camera_app_helper") {
+  sources = [
+    "camera_app_helper_impl.cc",
+    "camera_app_helper_impl.h",
+  ]
+
+  deps = [
+    "common:camera_app_helper",
+    "//ash/public/cpp",
+  ]
+}
+
+test("jpeg_decode_accelerator_unittest") {
+  deps = [
+    ":mjpeg_decode_accelerator",
+    ":mjpeg_decode_accelerator_service",
+    "//base",
+    "//media:test_support",
+    "//media/capture:chromeos_test_utils",
+    "//media/gpu",
+    "//media/gpu:buildflags",
+    "//media/gpu/test:helpers",
+    "//media/parsers",
+    "//mojo/core/embedder",
+    "//testing/gtest",
+    "//third_party/libyuv",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//ui/gfx/geometry",
+    "//ui/gl",
+    "//ui/gl:test_support",
+  ]
+  configs += [ "//third_party/libyuv:libyuv_config" ]
+  sources = [
+    "mjpeg_decode_accelerator_unittest.cc",
+  ]
+  data = [
+    "//media/test/data/peach_pi-1280x720.jpg",
+    "//media/test/data/peach_pi-40x23.jpg",
+    "//media/test/data/peach_pi-41x22.jpg",
+    "//media/test/data/peach_pi-41x23.jpg",
+  ]
+  if (use_vaapi) {
+    deps += [
+      "//media/gpu/vaapi",
+      "//media/gpu/vaapi:jpeg_decoder_unit_test",
+
+      # TODO(crbug.com/986074): we should move this to its own executable, but
+      # this would imply creating a new Tast wrapper in Chrome OS. So, for
+      # convenience, we make the WebP tests run with the
+      # jpeg_decode_accelerator_unittest binary.
+      "//media/gpu/vaapi:webp_decoder_unit_test",
+    ]
+
+    data += [ "//media/test/data/pixel-1280x720.jpg" ]
+  }
+  if (use_x11) {
+    deps += [ "//ui/gfx/x" ]
+  }
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+}

@@ -28,18 +28,18 @@
 <script src="../resources/run-after-layout-and-paint.js"></script>
 <script src="../fast/spatial-navigation/resources/snav-testharness.js"></script>
 <script>
-  test_after_layout_and_paint(function(t) {
+  test(function(t) {
       assert_true(internals.runtimeFlags.keyboardFocusableScrollersEnabled);
   }, "Make sure KeyboardFocusableScrollers is set.");
 
   let scroller = document.getElementById('scroller')
-  test_after_layout_and_paint(() => {
+  test(() => {
     assert_equals(scroller.scrollTop, 0);
   }, "Scroller starts at its top.");
 
-  test_after_layout_and_paint(() => {
-    assert_equals(scroller.tabIndex, 0);
-  }, "tabIndex reflects reality (the scroller can be focused).");
+  test(() => {
+    assert_equals(scroller.tabIndex, -1);
+  }, "tabIndex doesn't reflect focusability.");
 
   runAfterLayoutAndPaint(() => {
     async_test(t => {

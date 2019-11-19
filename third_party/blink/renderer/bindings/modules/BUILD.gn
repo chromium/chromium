@@ -1,4 +1,4 @@
-# Copyright 2014 Tfe Chromium Authors. All rights reserved.
+# Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -21,7 +21,9 @@ generate_event_interfaces("modules_bindings_generated_event_interfaces") {
     "//third_party/blink/renderer/modules/app_banner/before_install_prompt_event.idl",
     "//third_party/blink/renderer/modules/background_fetch/background_fetch_event.idl",
     "//third_party/blink/renderer/modules/background_fetch/background_fetch_update_ui_event.idl",
+    "//third_party/blink/renderer/modules/background_sync/periodic_sync_event.idl",
     "//third_party/blink/renderer/modules/background_sync/sync_event.idl",
+    "//third_party/blink/renderer/modules/content_index/content_index_event.idl",
     "//third_party/blink/renderer/modules/cookie_store/cookie_change_event.idl",
     "//third_party/blink/renderer/modules/cookie_store/extendable_cookie_change_event.idl",
     "//third_party/blink/renderer/modules/device_orientation/device_motion_event.idl",
@@ -31,19 +33,25 @@ generate_event_interfaces("modules_bindings_generated_event_interfaces") {
     "//third_party/blink/renderer/modules/gamepad/gamepad_axis_event.idl",
     "//third_party/blink/renderer/modules/gamepad/gamepad_button_event.idl",
     "//third_party/blink/renderer/modules/gamepad/gamepad_event.idl",
+    "//third_party/blink/renderer/modules/hid/hid_connection_event.idl",
+    "//third_party/blink/renderer/modules/hid/hid_input_report_event.idl",
     "//third_party/blink/renderer/modules/indexeddb/idb_version_change_event.idl",
     "//third_party/blink/renderer/modules/mediarecorder/blob_event.idl",
     "//third_party/blink/renderer/modules/mediastream/media_stream_event.idl",
     "//third_party/blink/renderer/modules/mediastream/media_stream_track_event.idl",
+    "//third_party/blink/renderer/modules/nfc/ndef_error_event.idl",
+    "//third_party/blink/renderer/modules/nfc/ndef_reading_event.idl",
     "//third_party/blink/renderer/modules/notifications/notification_event.idl",
     "//third_party/blink/renderer/modules/payments/abort_payment_event.idl",
     "//third_party/blink/renderer/modules/payments/can_make_payment_event.idl",
     "//third_party/blink/renderer/modules/payments/merchant_validation_event.idl",
     "//third_party/blink/renderer/modules/payments/payment_method_change_event.idl",
+    "//third_party/blink/renderer/modules/payments/payment_request_details_update.idl",
     "//third_party/blink/renderer/modules/payments/payment_request_event.idl",
     "//third_party/blink/renderer/modules/payments/payment_request_update_event.idl",
     "//third_party/blink/renderer/modules/peerconnection/rtc_data_channel_event.idl",
     "//third_party/blink/renderer/modules/peerconnection/rtc_dtmf_tone_change_event.idl",
+    "//third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_error_event.idl",
     "//third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event.idl",
     "//third_party/blink/renderer/modules/peerconnection/rtc_quic_stream_event.idl",
     "//third_party/blink/renderer/modules/picture_in_picture/enter_picture_in_picture_event.idl",
@@ -55,12 +63,11 @@ generate_event_interfaces("modules_bindings_generated_event_interfaces") {
     "//third_party/blink/renderer/modules/service_worker/extendable_message_event.idl",
     "//third_party/blink/renderer/modules/service_worker/fetch_event.idl",
     "//third_party/blink/renderer/modules/service_worker/install_event.idl",
-    "//third_party/blink/renderer/modules/speech/speech_recognition_error.idl",
+    "//third_party/blink/renderer/modules/speech/speech_recognition_error_event.idl",
     "//third_party/blink/renderer/modules/speech/speech_recognition_event.idl",
     "//third_party/blink/renderer/modules/speech/speech_synthesis_error_event.idl",
     "//third_party/blink/renderer/modules/speech/speech_synthesis_event.idl",
     "//third_party/blink/renderer/modules/storage/storage_event.idl",
-    "//third_party/blink/renderer/modules/vr/vr_display_event.idl",
     "//third_party/blink/renderer/modules/webaudio/audio_processing_event.idl",
     "//third_party/blink/renderer/modules/webaudio/offline_audio_completion_event.idl",
     "//third_party/blink/renderer/modules/webgl/webgl_context_event.idl",
@@ -68,6 +75,8 @@ generate_event_interfaces("modules_bindings_generated_event_interfaces") {
     "//third_party/blink/renderer/modules/webmidi/midi_message_event.idl",
     "//third_party/blink/renderer/modules/websockets/close_event.idl",
     "//third_party/blink/renderer/modules/xr/xr_input_source_event.idl",
+    "//third_party/blink/renderer/modules/xr/xr_input_sources_change_event.idl",
+    "//third_party/blink/renderer/modules/xr/xr_reference_space_event.idl",
     "//third_party/blink/renderer/modules/xr/xr_session_event.idl",
   ]
 
@@ -99,75 +108,34 @@ make_names("event_target_modules_names") {
 
 # ------------------------------------------------------------------------------
 
-compute_interfaces_info_individual("interfaces_info_individual_modules") {
+compute_interfaces_info("interfaces_info_modules") {
   sources = modules_static_interface_idl_files + modules_definition_idl_files +
             modules_static_dependency_idl_files +
             modules_generated_dependency_idl_files
 
   interfaces_info_file =
-      "$bindings_modules_output_dir/InterfacesInfoOverallIndividual.pickle"
+      "$bindings_modules_output_dir/interfaces_info_modules.pickle"
   component_info_file =
-      "$bindings_modules_output_dir/ComponentInfoModules.pickle"
+      "$bindings_modules_output_dir/component_info_modules.pickle"
   deps = [
-    ":modules_core_global_constructors_idls",
     ":modules_global_constructors_idls",
-  ]
-}
-
-action("interfaces_info") {
-  script = "$bindings_scripts_dir/compute_interfaces_info_overall.py"
-
-  inputs = [
-    "$bindings_core_output_dir/InterfacesInfoCoreIndividual.pickle",
-    "$bindings_modules_output_dir/InterfacesInfoOverallIndividual.pickle",
-  ]
-  outputs = [
-    "$bindings_modules_output_dir/InterfacesInfoOverall.pickle",
-  ]
-
-  args = [
-    "--",
-    rebase_path("$bindings_core_output_dir/InterfacesInfoCoreIndividual.pickle",
-                root_build_dir),
-    rebase_path(
-        "$bindings_modules_output_dir/InterfacesInfoOverallIndividual.pickle",
-        root_build_dir),
-    rebase_path("$bindings_modules_output_dir/InterfacesInfoOverall.pickle",
-                root_build_dir),
-  ]
-
-  public_deps = [
-    ":interfaces_info_individual_modules",
-    "//third_party/blink/renderer/bindings/core:interfaces_info_individual_core",
+    "//third_party/blink/renderer/bindings:global_constructors_idls",
   ]
 }
 
 compute_global_objects("modules_global_objects") {
   sources = modules_idl_files
-  sources_generated = [ "$bindings_core_output_dir/GlobalObjectsCore.pickle" ]
-  output_file = "$bindings_modules_output_dir/GlobalObjectsModules.pickle"
+  sources_generated = [ "$bindings_core_output_dir/global_objects_core.pickle" ]
+  output_file = "$bindings_modules_output_dir/global_objects_modules.pickle"
   deps = [
     "//third_party/blink/renderer/bindings/core:core_global_objects",
-  ]
-}
-
-generate_global_constructors("modules_core_global_constructors_idls") {
-  sources = core_idl_files + core_idl_with_modules_dependency_files
-  global_objects_file =
-      "$bindings_modules_output_dir/GlobalObjectsModules.pickle"
-  interfaces = modules_core_global_constructors_original_interfaces
-  basenames = modules_core_global_constructors_original_interface_basenames
-  component = "core"
-  output_dir = blink_modules_output_dir
-  deps = [
-    ":modules_global_objects",
   ]
 }
 
 generate_global_constructors("modules_global_constructors_idls") {
   sources = modules_idl_files
   global_objects_file =
-      "$bindings_modules_output_dir/GlobalObjectsModules.pickle"
+      "$bindings_modules_output_dir/global_objects_modules.pickle"
   interfaces = modules_global_constructors_original_interfaces
   basenames = modules_global_constructors_original_interface_basenames
   component = "modules"
@@ -201,20 +169,5 @@ source_set("generated") {
     "//third_party/blink/renderer/core",
     "//third_party/blink/renderer/platform/wtf",
     "//v8",
-  ]
-}
-
-generate_web_idl_collection("modules_web_idl_collection") {
-  # |sources| contains all IDL files under modules/.
-  sources = modules_definition_idl_files + modules_static_interface_idl_files +
-            modules_all_dependency_idl_files
-  output = "web_idl_collection_for_modules.pickle"
-  component = "modules"
-  output_dir = bindings_modules_output_dir
-
-  deps = [
-    "//third_party/blink/renderer/bindings/modules:modules_core_global_constructors_idls",
-    "//third_party/blink/renderer/bindings/modules:modules_global_constructors_idls",
-    "//third_party/blink/renderer/bindings/modules/v8:bindings_modules_origin_trial_features",
   ]
 }

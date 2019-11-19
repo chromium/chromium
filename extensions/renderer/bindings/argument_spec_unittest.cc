@@ -21,6 +21,19 @@
 
 namespace extensions {
 
+using api_errors::IndexError;
+using api_errors::InvalidType;
+using api_errors::kTypeBoolean;
+using api_errors::kTypeDouble;
+using api_errors::kTypeFunction;
+using api_errors::kTypeInteger;
+using api_errors::kTypeList;
+using api_errors::kTypeNull;
+using api_errors::kTypeObject;
+using api_errors::kTypeString;
+using api_errors::kTypeUndefined;
+using api_errors::MissingRequiredProperty;
+
 using V8Validator = base::OnceCallback<void(v8::Local<v8::Value>)>;
 
 class ArgumentSpecUnitTest : public gin::V8Test {
@@ -179,8 +192,6 @@ void ArgumentSpecUnitTest::RunTest(RunTestParams& params) {
 }
 
 TEST_F(ArgumentSpecUnitTest, Test) {
-  using namespace api_errors;
-
   {
     ArgumentSpec spec(*ValueFromString("{'type': 'integer'}"));
     ExpectSuccess(spec, "1", "1");
@@ -220,15 +231,15 @@ TEST_F(ArgumentSpecUnitTest, Test) {
     ArgumentSpec spec(*ValueFromString("{'type': 'integer', 'minimum': 1}"));
     ExpectSuccess(spec, "2", "2");
     ExpectSuccess(spec, "1", "1");
-    ExpectFailure(spec, "0", NumberTooSmall(1));
-    ExpectFailure(spec, "-1", NumberTooSmall(1));
+    ExpectFailure(spec, "0", api_errors::NumberTooSmall(1));
+    ExpectFailure(spec, "-1", api_errors::NumberTooSmall(1));
   }
 
   {
     ArgumentSpec spec(*ValueFromString("{'type': 'integer', 'maximum': 10}"));
     ExpectSuccess(spec, "10", "10");
     ExpectSuccess(spec, "1", "1");
-    ExpectFailure(spec, "11", NumberTooLarge(10));
+    ExpectFailure(spec, "11", api_errors::NumberTooLarge(10));
   }
 
   {
@@ -247,10 +258,10 @@ TEST_F(ArgumentSpecUnitTest, Test) {
     ExpectSuccess(spec, "'foo'", "'foo'");
     ExpectSuccess(spec, "'bar'", "'bar'");
     ExpectFailure(spec, "['foo']", InvalidType(kTypeString, kTypeList));
-    ExpectFailure(spec, "'fo'", InvalidEnumValue(valid_enums));
-    ExpectFailure(spec, "'foobar'", InvalidEnumValue(valid_enums));
-    ExpectFailure(spec, "'baz'", InvalidEnumValue(valid_enums));
-    ExpectFailure(spec, "''", InvalidEnumValue(valid_enums));
+    ExpectFailure(spec, "'fo'", api_errors::InvalidEnumValue(valid_enums));
+    ExpectFailure(spec, "'foobar'", api_errors::InvalidEnumValue(valid_enums));
+    ExpectFailure(spec, "'baz'", api_errors::InvalidEnumValue(valid_enums));
+    ExpectFailure(spec, "''", api_errors::InvalidEnumValue(valid_enums));
   }
 
   {
@@ -260,10 +271,10 @@ TEST_F(ArgumentSpecUnitTest, Test) {
     ExpectSuccess(spec, "'foo'", "'foo'");
     ExpectSuccess(spec, "'bar'", "'bar'");
     ExpectFailure(spec, "['foo']", InvalidType(kTypeString, kTypeList));
-    ExpectFailure(spec, "'fo'", InvalidEnumValue(valid_enums));
-    ExpectFailure(spec, "'foobar'", InvalidEnumValue(valid_enums));
-    ExpectFailure(spec, "'baz'", InvalidEnumValue(valid_enums));
-    ExpectFailure(spec, "''", InvalidEnumValue(valid_enums));
+    ExpectFailure(spec, "'fo'", api_errors::InvalidEnumValue(valid_enums));
+    ExpectFailure(spec, "'foobar'", api_errors::InvalidEnumValue(valid_enums));
+    ExpectFailure(spec, "'baz'", api_errors::InvalidEnumValue(valid_enums));
+    ExpectFailure(spec, "''", api_errors::InvalidEnumValue(valid_enums));
   }
 
   {
@@ -317,13 +328,13 @@ TEST_F(ArgumentSpecUnitTest, Test) {
     ExpectSuccess(spec, "({prop1: 'foo'})", "{'prop1':'foo'}");
     ExpectSuccess(spec, "({prop1: 'foo', prop2: null})", "{'prop1':'foo'}");
     ExpectSuccess(spec, "x = {}; x.prop1 = 'foo'; x;", "{'prop1':'foo'}");
-    ExpectFailure(
-        spec, "({prop1: 'foo', prop2: 'bar'})",
-        PropertyError("prop2", InvalidType(kTypeInteger, kTypeString)));
+    ExpectFailure(spec, "({prop1: 'foo', prop2: 'bar'})",
+                  api_errors::PropertyError(
+                      "prop2", InvalidType(kTypeInteger, kTypeString)));
     ExpectFailure(spec, "({prop2: 2})", MissingRequiredProperty("prop1"));
     // Unknown properties are not allowed.
     ExpectFailure(spec, "({prop1: 'foo', prop2: 2, prop3: 'blah'})",
-                  UnexpectedProperty("prop3"));
+                  api_errors::UnexpectedProperty("prop3"));
     // We only consider properties on the object itself, not its prototype
     // chain.
     ExpectFailure(spec,
@@ -342,9 +353,9 @@ TEST_F(ArgumentSpecUnitTest, Test) {
     // Self-referential fun. Currently we don't have to worry about these much
     // because the spec won't match at some point (and V8ValueConverter has
     // cycle detection and will fail).
-    ExpectFailure(
-        spec, "x = {}; x.prop1 = x; x;",
-        PropertyError("prop1", InvalidType(kTypeString, kTypeObject)));
+    ExpectFailure(spec, "x = {}; x.prop1 = x; x;",
+                  api_errors::PropertyError(
+                      "prop1", InvalidType(kTypeString, kTypeObject)));
     ExpectThrow(
         spec,
         "({ get prop1() { throw new Error('Badness'); }});",
@@ -415,7 +426,8 @@ TEST_F(ArgumentSpecUnitTest, Test) {
                     "b;",
                     *expected_value);
     }
-    ExpectFailure(spec, "1", InvalidType(kTypeBinary, kTypeInteger));
+    ExpectFailure(spec, "1",
+                  InvalidType(api_errors::kTypeBinary, kTypeInteger));
   }
   {
     const char kAnySpec[] = "{ 'type': 'any' }";
@@ -438,14 +450,13 @@ TEST_F(ArgumentSpecUnitTest, Test) {
     // null, which is a potentially important distinction. However, this means
     // that in serialization of an object {a: 1, foo:undefined}, we lose the
     // 'foo' property.
-    ExpectFailure(spec, "undefined", UnserializableValue());
+    ExpectFailure(spec, "undefined", api_errors::UnserializableValue());
 
     ExpectSuccess(spec, "({prop1: 1, prop2: undefined})", "{'prop1':1}");
   }
 }
 
 TEST_F(ArgumentSpecUnitTest, TypeRefsTest) {
-  using namespace api_errors;
   const char kObjectType[] =
       "{"
       "  'id': 'refObj',"
@@ -477,7 +488,8 @@ TEST_F(ArgumentSpecUnitTest, TypeRefsTest) {
     ExpectSuccess(spec, "({e: 'alpha', sub: 1})", "{'e':'alpha','sub':1}");
     ExpectSuccess(spec, "({e: 'beta', sub: 1})", "{'e':'beta','sub':1}");
     ExpectFailure(spec, "({e: 'gamma', sub: 1})",
-                  PropertyError("e", InvalidEnumValue(valid_enums)));
+                  api_errors::PropertyError(
+                      "e", api_errors::InvalidEnumValue(valid_enums)));
     ExpectFailure(spec, "({e: 'alpha'})", MissingRequiredProperty("sub"));
   }
 
@@ -496,8 +508,9 @@ TEST_F(ArgumentSpecUnitTest, TypeRefsTest) {
                   "{'o':{'prop1':'foo','prop2':2}}");
     ExpectFailure(
         spec, "({o: {prop1: 1}})",
-        PropertyError("o", PropertyError("prop1", InvalidType(kTypeString,
-                                                              kTypeInteger))));
+        api_errors::PropertyError(
+            "o", api_errors::PropertyError(
+                     "prop1", InvalidType(kTypeString, kTypeInteger))));
   }
 
   {
@@ -508,12 +521,11 @@ TEST_F(ArgumentSpecUnitTest, TypeRefsTest) {
     ExpectSuccess(spec, "['alpha', 'alpha']", "['alpha','alpha']");
     ExpectSuccess(spec, "['alpha', 'beta']", "['alpha','beta']");
     ExpectFailure(spec, "['alpha', 'beta', 'gamma']",
-                  IndexError(2u, InvalidEnumValue(valid_enums)));
+                  IndexError(2u, api_errors::InvalidEnumValue(valid_enums)));
   }
 }
 
 TEST_F(ArgumentSpecUnitTest, TypeChoicesTest) {
-  using namespace api_errors;
   {
     const char kSimpleChoices[] =
         "{'choices': [{'type': 'string'}, {'type': 'integer'}]}";
@@ -538,14 +550,13 @@ TEST_F(ArgumentSpecUnitTest, TypeChoicesTest) {
     ExpectSuccess(spec, "({prop1: 'alpha'})", "{'prop1':'alpha'}");
 
     const char kChoicesType[] = "[array|object]";
-    ExpectFailure(spec, "({prop1: 1})", InvalidChoice());
+    ExpectFailure(spec, "({prop1: 1})", api_errors::InvalidChoice());
     ExpectFailure(spec, "'alpha'", InvalidType(kChoicesType, kTypeString));
     ExpectFailure(spec, "42", InvalidType(kChoicesType, kTypeInteger));
   }
 }
 
 TEST_F(ArgumentSpecUnitTest, AdditionalPropertiesTest) {
-  using namespace api_errors;
   {
     const char kOnlyAnyAdditionalProperties[] =
         "{"
@@ -628,9 +639,9 @@ TEST_F(ArgumentSpecUnitTest, AdditionalPropertiesTest) {
     ExpectSuccess(spec, "({prop1: 'foo'})", "{'prop1':'foo'}");
     ExpectFailure(spec, "({prop2: 42, prop3: {foo: 'bar'}})",
                   MissingRequiredProperty("prop1"));
-    ExpectFailure(
-        spec, "({prop1: 42})",
-        PropertyError("prop1", InvalidType(kTypeString, kTypeInteger)));
+    ExpectFailure(spec, "({prop1: 42})",
+                  api_errors::PropertyError(
+                      "prop1", InvalidType(kTypeString, kTypeInteger)));
   }
   {
     const char kTypedAdditionalProperties[] =
@@ -641,14 +652,13 @@ TEST_F(ArgumentSpecUnitTest, AdditionalPropertiesTest) {
     ArgumentSpec spec(*ValueFromString(kTypedAdditionalProperties));
     ExpectSuccess(spec, "({prop1: 'alpha', prop2: 'beta', prop3: 'gamma'})",
                   "{'prop1':'alpha','prop2':'beta','prop3':'gamma'}");
-    ExpectFailure(
-        spec, "({prop1: 'alpha', prop2: 42})",
-        PropertyError("prop2", InvalidType(kTypeString, kTypeInteger)));
+    ExpectFailure(spec, "({prop1: 'alpha', prop2: 42})",
+                  api_errors::PropertyError(
+                      "prop2", InvalidType(kTypeString, kTypeInteger)));
   }
 }
 
 TEST_F(ArgumentSpecUnitTest, InstanceOfTest) {
-  using namespace api_errors;
   {
     const char kInstanceOfRegExp[] =
         "{"
@@ -671,11 +681,11 @@ TEST_F(ArgumentSpecUnitTest, InstanceOfTest) {
                   "  return new RegExp();\n"
                   "})()",
                   "{}");
-    ExpectFailure(spec, "({})", NotAnInstance("RegExp"));
+    ExpectFailure(spec, "({})", api_errors::NotAnInstance("RegExp"));
     ExpectFailure(spec, "('')", InvalidType("RegExp", kTypeString));
     ExpectFailure(spec, "('.*')", InvalidType("RegExp", kTypeString));
     ExpectFailure(spec, "({ __proto__: Date.prototype })",
-                  NotAnInstance("RegExp"));
+                  api_errors::NotAnInstance("RegExp"));
   }
 
   {
@@ -700,25 +710,24 @@ TEST_F(ArgumentSpecUnitTest, InstanceOfTest) {
                   "  return new otherClass();\n"
                   "})()",
                   "{}");
-    ExpectFailure(spec, "({})", NotAnInstance("customClass"));
+    ExpectFailure(spec, "({})", api_errors::NotAnInstance("customClass"));
     ExpectFailure(spec,
                   "(function() {\n"
                   "  function otherClass() {}\n"
                   "  return new otherClass();\n"
                   "})()",
-                  NotAnInstance("customClass"));
+                  api_errors::NotAnInstance("customClass"));
   }
 }
 
 TEST_F(ArgumentSpecUnitTest, MinAndMaxLengths) {
-  using namespace api_errors;
   {
     const char kMinLengthString[] = "{'type': 'string', 'minLength': 3}";
     ArgumentSpec spec(*ValueFromString(kMinLengthString));
     ExpectSuccess(spec, "'aaa'", "'aaa'");
     ExpectSuccess(spec, "'aaaa'", "'aaaa'");
-    ExpectFailure(spec, "'aa'", TooFewStringChars(3, 2));
-    ExpectFailure(spec, "''", TooFewStringChars(3, 0));
+    ExpectFailure(spec, "'aa'", api_errors::TooFewStringChars(3, 2));
+    ExpectFailure(spec, "''", api_errors::TooFewStringChars(3, 0));
   }
 
   {
@@ -727,7 +736,7 @@ TEST_F(ArgumentSpecUnitTest, MinAndMaxLengths) {
     ExpectSuccess(spec, "'aaa'", "'aaa'");
     ExpectSuccess(spec, "'aa'", "'aa'");
     ExpectSuccess(spec, "''", "''");
-    ExpectFailure(spec, "'aaaa'", TooManyStringChars(3, 4));
+    ExpectFailure(spec, "'aaaa'", api_errors::TooManyStringChars(3, 4));
   }
 
   {
@@ -736,8 +745,8 @@ TEST_F(ArgumentSpecUnitTest, MinAndMaxLengths) {
     ArgumentSpec spec(*ValueFromString(kMinLengthArray));
     ExpectSuccess(spec, "[1, 2, 3]", "[1,2,3]");
     ExpectSuccess(spec, "[1, 2, 3, 4]", "[1,2,3,4]");
-    ExpectFailure(spec, "[1, 2]", TooFewArrayItems(3, 2));
-    ExpectFailure(spec, "[]", TooFewArrayItems(3, 0));
+    ExpectFailure(spec, "[1, 2]", api_errors::TooFewArrayItems(3, 2));
+    ExpectFailure(spec, "[]", api_errors::TooFewArrayItems(3, 0));
   }
 
   {
@@ -747,12 +756,11 @@ TEST_F(ArgumentSpecUnitTest, MinAndMaxLengths) {
     ExpectSuccess(spec, "[1, 2, 3]", "[1,2,3]");
     ExpectSuccess(spec, "[1, 2]", "[1,2]");
     ExpectSuccess(spec, "[]", "[]");
-    ExpectFailure(spec, "[1, 2, 3, 4]", TooManyArrayItems(3, 4));
+    ExpectFailure(spec, "[1, 2, 3, 4]", api_errors::TooManyArrayItems(3, 4));
   }
 }
 
 TEST_F(ArgumentSpecUnitTest, PreserveNull) {
-  using namespace api_errors;
   {
     const char kObjectSpec[] =
         "{"
@@ -795,19 +803,17 @@ TEST_F(ArgumentSpecUnitTest, PreserveNull) {
     // Undefined should not be preserved.
     ExpectSuccess(spec, "({prop1: undefined})", "{}");
     // preserveNull shouldn't affect normal parsing restrictions.
-    ExpectFailure(
-        spec, "({prop1: 1})",
-        PropertyError("prop1", InvalidType(kTypeString, kTypeInteger)));
+    ExpectFailure(spec, "({prop1: 1})",
+                  api_errors::PropertyError(
+                      "prop1", InvalidType(kTypeString, kTypeInteger)));
   }
 }
 
 TEST_F(ArgumentSpecUnitTest, NaNFun) {
-  using namespace api_errors;
-
   {
     const char kAnySpec[] = "{'type': 'any'}";
     ArgumentSpec spec(*ValueFromString(kAnySpec));
-    ExpectFailure(spec, "NaN", UnserializableValue());
+    ExpectFailure(spec, "NaN", api_errors::UnserializableValue());
   }
 
   {
@@ -823,12 +829,12 @@ TEST_F(ArgumentSpecUnitTest, GetTypeName) {
     ArgumentType type;
     const char* expected_type_name;
   } simple_cases[] = {
-      {ArgumentType::BOOLEAN, api_errors::kTypeBoolean},
-      {ArgumentType::INTEGER, api_errors::kTypeInteger},
-      {ArgumentType::OBJECT, api_errors::kTypeObject},
-      {ArgumentType::LIST, api_errors::kTypeList},
+      {ArgumentType::BOOLEAN, kTypeBoolean},
+      {ArgumentType::INTEGER, kTypeInteger},
+      {ArgumentType::OBJECT, kTypeObject},
+      {ArgumentType::LIST, kTypeList},
       {ArgumentType::BINARY, api_errors::kTypeBinary},
-      {ArgumentType::FUNCTION, api_errors::kTypeFunction},
+      {ArgumentType::FUNCTION, kTypeFunction},
       {ArgumentType::ANY, api_errors::kTypeAny},
   };
 

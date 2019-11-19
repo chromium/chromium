@@ -1,0 +1,45 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: focus on new element</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<script src="../resources/utils.js"></script>
+
+<!--
+Focus on a div that doesn't have style/layout value yet.
+-->
+
+<div id=spacer style="height: 3000px"></div>
+<div id="container"></div>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+promise_test((t) => {
+  const acquirePromise = setInvisibleActivatable(container);
+  return new Promise((resolve, reject) => {
+    const focusable = document.createElement("div");
+    focusable.tabIndex = 0;
+
+    const eventPromise = new Promise((resolve, reject) => {
+      container.onbeforeactivate = (e) => {
+        t.step(() => assert_equals(e.target, container));
+        t.step(() => assert_equals(e.activatedElement, focusable));
+        resolve();
+      };
+    });
+
+    acquirePromise.then(() => {
+      container.appendChild(focusable);
+      focusable.focus();
+      eventPromise.then(() => {
+        t.step(() => assert_equals(document.activeElement, focusable));
+        resolve();
+      });
+    });
+  });
+}, "Activating locked element through tabindex navigation fires beforeactivate, focuses element");
+</script>
+</html>

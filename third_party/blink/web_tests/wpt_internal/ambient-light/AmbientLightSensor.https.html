@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>AmbientLightSensor Test</title>
+<link rel="author" title="Intel" href="http://www.intel.com">
+<link rel="help" href="https://www.w3.org/TR/ambient-light/">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/generic-sensor/resources/generic-sensor-helpers.js"></script>
+<script src="/generic-sensor/generic-sensor-tests.js"></script>
+<script>
+
+'use strict';
+
+const kReadings = {
+    readings: [
+        // We need to have at least two values here because some tests expect
+        // at least two readings to be available. If we have one value here,
+        // the ALS implementation will consider the value has not changed from
+        // the previous reading and not fire a reading event.
+        [240],
+        [110]
+    ],
+    expectedReadings: [
+        // Our ALS implementation rounds off raw illuminance values to the
+        // nearest 50 Lux.
+        // See kAlsRoundingThreshold in ambient_light_sensor.cc.
+        [250],
+        [100]
+    ]
+};
+
+runGenericSensorTests(
+    'AmbientLightSensor',
+    kReadings,
+    verifyAlsSensorReading,
+    ['ambient-light-sensor']);
+
+</script>

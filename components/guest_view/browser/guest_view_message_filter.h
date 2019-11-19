@@ -64,7 +64,7 @@ class GuestViewMessageFilter : public content::BrowserMessageFilter {
   content::BrowserContext* const browser_context_;
 
   // Weak pointers produced by this factory are bound to the IO thread.
-  base::WeakPtrFactory<GuestViewMessageFilter> weak_ptr_factory_;
+  base::WeakPtrFactory<GuestViewMessageFilter> weak_ptr_factory_{this};
 
  private:
   friend class content::BrowserThread;

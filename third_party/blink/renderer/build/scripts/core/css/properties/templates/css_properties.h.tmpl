@@ -1,0 +1,98 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{% from 'templates/macros.tmpl' import source_files_for_generated_file %}
+{{source_files_for_generated_file(template_file, input_files)}}
+
+{% set namespace = 'css_longhand' if is_longhand else 'css_shorthand' %}
+{% set include_guard = 'LONGHANDS' if is_longhand else 'SHORTHANDS' %}
+{% set superclass_include = 'longhand.h' if is_longhand else 'shorthand.h' %}
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PROPERTIES_{{include_guard}}_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PROPERTIES_{{include_guard}}_H_
+
+#include "third_party/blink/renderer/core/css/properties/{{superclass_include}}"
+
+namespace blink {
+
+class ComputedStyle;
+class CSSParserContext;
+class CSSParserLocalContext;
+class CSSValue;
+class LayoutObject;
+class Node;
+class SVGComputedStyle;
+
+namespace {{namespace}} {
+
+{% for property in properties %}
+{% set class_name = property.name.to_upper_camel_case() %}
+{% set is_alias = property.alias_for %}
+{% set property_id = 'CSSPropertyID::' + property.enum_key %}
+{% set separator = '\'' + (property.separator or '\\0') + '\'' %}
+{% set flags = [
+  (property.interpolable and 'kInterpolable' or ''),
+  (property.is_descriptor and 'kDescriptor' or ''),
+  (property.compositable and 'kCompositableProperty' or ''),
+  (property.is_property and 'kProperty' or ''),
+  (property.inherited and 'kInherited' or ''),
+  (property.visited and 'kVisited' or ''),
+  (property.is_internal and 'kInternal' or ''),
+  (property.affected_by_forced_colors and 'kIsAffectedByForcedColors' or ''),
+] | reject('==', '') | join(' | ') %}
+{% set ctor_args = (not is_alias and [property_id, flags, separator] or []) %}
+// {{property.name}}
+class {{class_name}} final : public {{property.superclass}} {
+ public:
+  constexpr {{class_name}}() : {{property.superclass}}({{ctor_args | join(', ')}}) { }
+  const char* GetPropertyName() const override;
+  const WTF::AtomicString& GetPropertyNameAtomicString() const override;
+  const char* GetJSPropertyName() const override;
+  {% if property.is_internal or property.runtime_flag %}
+  CSSExposure Exposure() const override;
+  {% endif %}
+  {% if not is_alias %}
+  {% if not property.affected_by_all %}
+  bool IsAffectedByAll() const override { return false; }
+  {% endif %}
+  {% if property.layout_dependent %}
+  bool IsLayoutDependentProperty() const override { return true; }
+  bool IsLayoutDependent(const ComputedStyle*, LayoutObject*) const override;
+  {% endif %}
+  {% if property.visited_property %}
+  const CSSProperty* GetVisitedProperty() const override;
+  {% endif %}
+  {% if property.unvisited_property %}
+  const CSSProperty* GetUnvisitedProperty() const override;
+  {% endif %}
+  {% for property_method in property.property_methods %}
+  {{property_method.return_type}} {{property_method.name}}{{property_method.parameters}} const override;
+  {% endfor %}
+  {% if property.direction_aware_options %}
+  const CSSProperty& ResolveDirectionAwareProperty(TextDirection, blink::WritingMode) const override;
+  const CSSValue* CSSValueFromComputedStyleInternal(
+      const ComputedStyle&,
+      const SVGComputedStyle&,
+      const LayoutObject*,
+      bool allow_visited_style) const override {
+    // Directional properties are resolved by CSSDirectionAwareResolver
+    // before calling CSSValueFromComputedStyleInternal.
+    NOTREACHED();
+    return nullptr;
+  }
+  {% endif %}
+  {% if property.style_builder_declare %}
+  void ApplyInitial(StyleResolverState&) const override;
+  void ApplyInherit(StyleResolverState&) const override;
+  void ApplyValue(StyleResolverState&, const CSSValue&) const  override;
+  {% endif %}
+  {% endif %} {# not is_alias #}
+};
+
+{% endfor %} {# properties #}
+
+}  // namespace {{namespace}}
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTIES_CSS_PROPERTIES_{{include_guard}}_H_

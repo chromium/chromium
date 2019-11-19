@@ -1,0 +1,12 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/base/mojom/window_open_disposition.mojom"
+public_headers = [ "//ui/base/window_open_disposition.h" ]
+public_deps = [
+  "//mojo/public/cpp/bindings",
+  "//ui/base",
+]
+traits_headers = [ "//ui/base/mojom/window_open_disposition_mojom_traits.h" ]
+type_mappings = [ "ui.mojom.WindowOpenDisposition=::WindowOpenDisposition" ]

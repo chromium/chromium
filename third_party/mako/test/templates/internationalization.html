@@ -1,0 +1,920 @@
+<div class="rst-docs">
+ 
+  <h1 class="pudge-member-page-heading">Internationalization, Localization and Unicode</h1>
+ 
+  <table rules="none" frame="void" class="docinfo">
+<col class="docinfo-name"></col>
+<col class="docinfo-content"></col>
+<tbody valign="top">
+<tr><th class="docinfo-name">Author:</th>
+<td>James Gardner</td></tr>
+<tr class="field"><th class="docinfo-name">updated:</th><td class="field-body">2006-12-11</td>
+</tr>
+</tbody>
+</table>
+
+  <div class="note">
+<p class="first admonition-title">Note</p>
+<p>This is a work in progress. We hope the internationalization, localization
+and Unicode support in Pylons is now robust and flexible but we would
+appreciate hearing about any issues we have. Just drop a line to the
+pylons-discuss mailing list on Google Groups.</p>
+<p class="last">This is the first draft of the full document including Unicode. Expect
+some typos and spelling mistakes!</p>
+</div>
+<div class="contents topic">
+<p class="topic-title first"><a id="table-of-contents" name="table-of-contents">Table of Contents</a></p>
+<ul class="auto-toc simple">
+<li><a href="#understanding-unicode" id="id1" name="id1" class="reference">1   Understanding Unicode</a><ul class="auto-toc">
+<li><a href="#what-is-unicode" id="id2" name="id2" class="reference">1.1   What is Unicode?</a></li>
+<li><a href="#unicode-in-python" id="id3" name="id3" class="reference">1.2   Unicode in Python</a></li>
+<li><a href="#unicode-literals-in-python-source-code" id="id4" name="id4" class="reference">1.3   Unicode Literals in Python Source Code</a></li>
+<li><a href="#input-and-output" id="id5" name="id5" class="reference">1.4   Input and Output</a></li>
+<li><a href="#unicode-filenames" id="id6" name="id6" class="reference">1.5   Unicode Filenames</a></li>
+</ul>
+</li>
+<li><a href="#applying-this-to-web-programming" id="id7" name="id7" class="reference">2   Applying this to Web Programming</a><ul class="auto-toc">
+<li><a href="#request-parameters" id="id8" name="id8" class="reference">2.1   Request Parameters</a></li>
+<li><a href="#templating" id="id9" name="id9" class="reference">2.2   Templating</a></li>
+<li><a href="#output-encoding" id="id10" name="id10" class="reference">2.3   Output Encoding</a></li>
+<li><a href="#databases" id="id11" name="id11" class="reference">2.4   Databases</a></li>
+</ul>
+</li>
+<li><a href="#internationalization-and-localization" id="id12" name="id12" class="reference">3   Internationalization and Localization</a><ul class="auto-toc">
+<li><a href="#getting-started" id="id13" name="id13" class="reference">3.1   Getting Started</a></li>
+<li><a href="#testing-the-application" id="id14" name="id14" class="reference">3.2   Testing the Application</a></li>
+<li><a href="#missing-translations" id="id15" name="id15" class="reference">3.3   Missing Translations</a></li>
+<li><a href="#translations-within-templates" id="id16" name="id16" class="reference">3.4   Translations Within Templates</a></li>
+<li><a href="#producing-a-python-egg" id="id17" name="id17" class="reference">3.5   Producing a Python Egg</a></li>
+<li><a href="#plural-forms" id="id18" name="id18" class="reference">3.6   Plural Forms</a></li>
+</ul>
+</li>
+<li><a href="#summary" id="id19" name="id19" class="reference">4   Summary</a></li>
+<li><a href="#further-reading" id="id20" name="id20" class="reference">5   Further Reading</a></li>
+</ul>
+</div>
+<p>Internationalization and localization are means of adapting software for
+non-native environments, especially for other nations and cultures.</p>
+<p>Parts of an application which might need to be localized might include:</p>
+<blockquote>
+<ul class="simple">
+<li>Language</li>
+<li>Date/time format</li>
+<li>Formatting of numbers e.g. decimal points, positioning of separators,
+character used as separator</li>
+<li>Time zones (UTC in internationalized environments)</li>
+<li>Currency</li>
+<li>Weights and measures</li>
+</ul>
+</blockquote>
+<p>The distinction between internationalization and localization is subtle but
+important. Internationalization is the adaptation of products for potential use
+virtually everywhere, while localization is the addition of special features
+for use in a specific locale.</p>
+<p>For example, in terms of language used in software, internationalization is the
+process of marking up all strings that might need to be translated whilst
+localization is the process of producing translations for a particular locale.</p>
+<p>Pylons provides built-in support to enable you to internationalize language but
+leaves you to handle any other aspects of internationalization which might be
+appropriate to your application.</p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">Internationalization is often abbreviated as I18N (or i18n or I18n) where the
+number 18 refers to the number of letters omitted.
+Localization is often abbreviated L10n or l10n in the same manner. These
+abbreviations also avoid picking one spelling (internationalisation vs.
+internationalization, etc.) over the other.</p>
+</div>
+<p>In order to represent characters from multiple languages, you will need to use
+Unicode so this documentation will start with a description of why Unicode is
+useful, its history and how to use Unicode in Python.</p>
+<div class="section">
+<h1><a href="#id1" id="understanding-unicode" name="understanding-unicode" class="toc-backref">1   Understanding Unicode</a></h1>
+<p>If you've ever come across text in a foreign language that contains lots of
+<tt class="docutils literal"><span class="pre">????</span></tt> characters or have written some Python code and received a message
+such as <tt class="docutils literal"><span class="pre">UnicodeDecodeError:</span> <span class="pre">'ascii'</span> <span class="pre">codec</span> <span class="pre">can't</span> <span class="pre">decode</span> <span class="pre">byte</span> <span class="pre">0xff</span> <span class="pre">in</span> <span class="pre">position</span>
+<span class="pre">6:</span> <span class="pre">ordinal</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">range(128)</span></tt> then you have run into a problem with character
+sets, encodings, Unicode and the like.</p>
+<p>The truth is that many developers are put off by Unicode because most of the
+time it is possible to muddle through rather than take the time to learn the
+basics. To make the problem worse if you have a system that manages to fudge
+the issues and just about work and then start trying to do things properly with
+Unicode it often highlights problems in other parts of your code.</p>
+<p>The good news is that Python has great Unicode support, so the rest of
+this article will show you how to correctly use Unicode in Pylons to avoid
+unwanted <tt class="docutils literal"><span class="pre">?</span></tt> characters and <tt class="docutils literal"><span class="pre">UnicodeDecodeErrors</span></tt>.</p>
+<div class="section">
+<h2><a href="#id2" id="what-is-unicode" name="what-is-unicode" class="toc-backref">1.1   What is Unicode?</a></h2>
+<p>When computers were first being used the characters that were most important
+were unaccented English letters. Each of these letters could be represented by
+a number between 32 and 127 and thus was born ASCII, a character set where
+space was 32, the letter "A" was 65 and everything could be stored in 7 bits.</p>
+<p>Most computers in those days were using 8-bit bytes so people quickly realized
+that they could use the codes 128-255 for their own purposes. Different people
+used the codes 128-255 to represent different characters and before long these
+different sets of characters were also standardized into <em>code pages</em>. This
+meant that if you needed some non-ASCII characters in a document you could also
+specify a codepage which would define which extra characters were available.
+For example Israel DOS used a code page called 862, while Greek users used 737.
+This just about worked for Western languages provided you didn't want to write
+an Israeli document with Greek characters but it didn't work at all for Asian
+languages where there are many more characters than can be represented in 8
+bits.</p>
+<p>Unicode is a character set that solves these problems by uniquely defining
+<em>every</em> character that is used anywhere in the world. Rather than defining a
+character as a particular combination of bits in the way ASCII does, each
+character is assigned a <em>code point</em>. For example the word <tt class="docutils literal"><span class="pre">hello</span></tt> is made
+from code points <tt class="docutils literal"><span class="pre">U+0048</span> <span class="pre">U+0065</span> <span class="pre">U+006C</span> <span class="pre">U+006C</span> <span class="pre">U+006F</span></tt>. The full list of code
+points can be found at <a href="http://www.unicode.org/charts/" class="reference">http://www.unicode.org/charts/</a>.</p>
+<p>There are lots of different ways of encoding Unicode code points into bits but
+the most popular encoding is UTF-8. Using UTF-8, every code point from 0-127 is
+stored in a single byte. Only code points 128 and above are stored using 2, 3,
+in fact, up to 6 bytes. This has the useful side effect that English text looks
+exactly the same in UTF-8 as it did in ASCII, because for every
+ASCII character with hexadecimal value 0xXY, the corresponding Unicode
+code point is U+00XY. This backwards compatibility is why if you are developing
+an application that is only used by English speakers you can often get away
+without handling characters properly and still expect things to work most of
+the time. Of course, if you use a different encoding such as UTF-16 this
+doesn't apply since none of the code points are encoded to 8 bits.</p>
+<p>The important things to note from the discussion so far are that:</p>
+<ul>
+<li><p class="first">Unicode can represent pretty much any character in any writing system in
+widespread use today</p>
+</li>
+<li><p class="first">Unicode uses code points to represent characters and the way these map to bits
+in memory depends on the encoding</p>
+</li>
+<li><dl class="first docutils">
+<dt>The most popular encoding is UTF-8 which has  several convenient properties:</dt>
+<dd><ol class="first last arabic simple">
+<li>It can handle any Unicode code point</li>
+<li>A Unicode string is turned into a string of bytes containing no embedded
+zero bytes. This avoids byte-ordering issues, and means UTF-8 strings can be
+processed by C functions such as strcpy() and sent through protocols that can't
+handle zero bytes</li>
+<li>A string of ASCII text is also valid UTF-8 text</li>
+<li>UTF-8 is fairly compact; the majority of code points are turned into two
+bytes, and values less than 128 occupy only a single byte.</li>
+<li>If bytes are corrupted or lost, it's possible to determine the start of
+the next UTF-8-encoded code point and resynchronize.</li>
+</ol>
+</dd>
+</dl>
+</li>
+</ul>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">Since Unicode 3.1, some extensions have even been defined so that the
+defined range is now U+000000 to U+10FFFF (21 bits), and formally, the
+character set is defined as 31-bits to allow for future expansion. It is a myth
+that there are 65,536 Unicode code points and that every Unicode letter can
+really be squeezed into two bytes. It is also incorrect to think that UTF-8 can
+represent less characters than UTF-16. UTF-8 simply uses a variable number of
+bytes for a character, sometimes just one byte (8 bits).</p>
+</div>
+</div>
+<div class="section">
+<h2><a href="#id3" id="unicode-in-python" name="unicode-in-python" class="toc-backref">1.2   Unicode in Python</a></h2>
+<p>In Python Unicode strings are expressed as instances of the built-in
+<tt class="docutils literal"><span class="pre">unicode</span></tt> type. Under the hood, Python represents Unicode strings as either
+16 or 32 bit integers, depending on how the Python interpreter was compiled.</p>
+<p>The <tt class="docutils literal"><span class="pre">unicode()</span></tt> constructor has the signature <tt class="docutils literal"><span class="pre">unicode(string[,</span> <span class="pre">encoding,</span>
+<span class="pre">errors])</span></tt>. All of its arguments should be 8-bit strings. The first argument is
+converted to Unicode using the specified encoding; if you leave off the
+encoding argument, the ASCII encoding is used for the conversion, so characters
+greater than 127 will be treated as errors:</p>
+<pre class="literal-block">
+>>> unicode('hello')
+u'hello'
+>>> s = unicode('hello')
+>>> type(s)
+&lt;type 'unicode'>
+>>> unicode('hello' + chr(255))
+Traceback (most recent call last):
+  File "&lt;stdin>", line 1, in ?
+UnicodeDecodeError: 'ascii' codec can't decode byte 0xff in position 6:
+                    ordinal not in range(128)
+</pre>
+<p>The <tt class="docutils literal"><span class="pre">errors</span></tt> argument specifies what to do if the string can't be decoded to
+ascii. Legal values for this argument are <tt class="docutils literal"><span class="pre">'strict'</span></tt> (raise a
+<tt class="docutils literal"><span class="pre">UnicodeDecodeError</span></tt> exception), <tt class="docutils literal"><span class="pre">'replace'</span></tt> (replace the character that
+can't be decoded with another one), or <tt class="docutils literal"><span class="pre">'ignore'</span></tt> (just leave the character
+out of the Unicode result).</p>
+<blockquote>
+<pre class="doctest-block">
+>>> unicode('\x80abc', errors='strict')
+Traceback (most recent call last):
+  File "&lt;stdin>", line 1, in ?
+UnicodeDecodeError: 'ascii' codec can't decode byte 0x80 in position 0:
+                    ordinal not in range(128)
+>>> unicode('\x80abc', errors='replace')
+u'\ufffdabc'
+>>> unicode('\x80abc', errors='ignore')
+u'abc'
+</pre>
+</blockquote>
+<p>It is important to understand the difference between <em>encoding</em> and <em>decoding</em>.
+Unicode strings are considered to be the Unicode code points but any
+representation of the Unicode string has to be encoded to something else, for
+example UTF-8 or ASCII. So when you are converting an ASCII or UTF-8 string to
+Unicode you are <em>decoding</em> it and when you are converting from Unicode to UTF-8
+or ASCII you are <em>encoding</em> it. This is why the error in the example above says
+that the ASCII codec cannot decode the byte <tt class="docutils literal"><span class="pre">0x80</span></tt> from ASCII to Unicode
+because it is not in the range(128) or 0-127. In fact <tt class="docutils literal"><span class="pre">0x80</span></tt> is hex for 128
+which the first number outside the ASCII range. However if we tell Python that
+the character <tt class="docutils literal"><span class="pre">0x80</span></tt> is encoded with the <tt class="docutils literal"><span class="pre">'latin-1'</span></tt>, <tt class="docutils literal"><span class="pre">'iso_8859_1'</span></tt> or
+<tt class="docutils literal"><span class="pre">'8859'</span></tt> character sets (which incidentally are different names for the same
+thing) we get the result we expected:</p>
+<textarea name="code" class="python">
+>>> unicode('\x80', encoding='latin-1')
+u'\x80'
+</textarea><div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">The character encodings Python supports are listed at
+<a href="http://docs.python.org/lib/standard-encodings.html" class="reference">http://docs.python.org/lib/standard-encodings.html</a></p>
+</div>
+<p>Unicode objects in Python have most of the same methods that normal Python
+strings provide. Python will try to use the <tt class="docutils literal"><span class="pre">'ascii'</span></tt> codec to convert
+strings to Unicode if you do an operation on both types:</p>
+<textarea name="code" class="python">
+>>> a = 'hello'
+>>> b = unicode(' world!')
+>>> print a + b
+u'hello world!'
+</textarea><p>You can encode a Unicode string using a particular encoding like this:</p>
+<textarea name="code" class="python">
+>>> u'Hello World!'.encode('UTF-8')
+'Hello World!'
+</textarea></div>
+<div class="section">
+<h2><a href="#id4" id="unicode-literals-in-python-source-code" name="unicode-literals-in-python-source-code" class="toc-backref">1.3   Unicode Literals in Python Source Code</a></h2>
+<p>In Python source code, Unicode literals are written as strings prefixed with
+the 'u' or 'U' character:</p>
+<textarea name="code" class="python">
+>>> u'abcdefghijk'
+>>> U'lmnopqrstuv'
+</textarea><p>You can also use <tt class="docutils literal"><span class="pre">"</span></tt>, <tt class="docutils literal"><span class="pre">"""`</span></tt> or <tt class="docutils literal"><span class="pre">'''</span></tt> versions too. For example:</p>
+<textarea name="code" class="python">
+>>> u"""This
+... is a really long
+... Unicode string"""
+</textarea><p>Specific code points can be written using the <tt class="docutils literal"><span class="pre">\u</span></tt> escape sequence, which is
+followed by four hex digits giving the code point. If you use <tt class="docutils literal"><span class="pre">\U</span></tt> instead
+you specify 8 hex digits instead of 4. Unicode literals can also use the same
+escape sequences as 8-bit strings, including <tt class="docutils literal"><span class="pre">\x</span></tt>, but <tt class="docutils literal"><span class="pre">\x</span></tt> only takes two
+hex digits so it can't express all the available code points. You can add
+characters to Unicode strings using the <tt class="docutils literal"><span class="pre">unichr()</span></tt> built-in function and find
+out what the ordinal is with <tt class="docutils literal"><span class="pre">ord()</span></tt>.</p>
+<p>Here is an example demonstrating the different alternatives:</p>
+<textarea name="code" class="python">
+>>> s = u"\x66\u0072\u0061\U0000006e" + unichr(231) + u"ais"
+>>> #     ^^^^ two-digit hex escape
+>>> #         ^^^^^^ four-digit Unicode escape
+>>> #                     ^^^^^^^^^^ eight-digit Unicode escape
+>>> for c in s:  print ord(c),
+...
+97 102 114 97 110 231 97 105 115
+>>> print s
+franÁais
+</textarea><p>Using escape sequences for code points greater than 127 is fine in small doses
+but Python 2.4 and above support writing Unicode literals in any encoding as
+long as you declare the encoding being used by including a special comment as
+either the first or second line of the source file:</p>
+<textarea name="code" class="python">
+#!/usr/bin/env python
+# -*- coding: latin-1 -*-
+
+u = u'abcdÈ'
+print ord(u[-1])
+</textarea><p>If you don't include such a comment, the default encoding used will be ASCII.
+Versions of Python before 2.4 were Euro-centric and assumed Latin-1 as a
+default encoding for string literals; in Python 2.4, characters greater than
+127 still work but result in a warning. For example, the following program has
+no encoding declaration:</p>
+<textarea name="code" class="python">
+#!/usr/bin/env python
+u = u'abcdÈ'
+print ord(u[-1])
+</textarea><p>When you run it with Python 2.4, it will output the following warning:</p>
+<pre class="literal-block">
+sys:1: DeprecationWarning: Non-ASCII character '\xe9' in file testas.py on line
+2, but no encoding declared; see http://www.python.org/peps/pep-0263.html for de
+tails
+</pre>
+<p>and then the following output:</p>
+<pre class="literal-block">
+233
+</pre>
+<p>For real world use it is recommended that you use the UTF-8 encoding for your
+file but you must be sure that your text editor actually saves the file as
+UTF-8 otherwise the Python interpreter will try to parse UTF-8 characters but
+they will actually be stored as something else.</p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">Windows users who use the <a href="http://www.scintilla.org/SciTE.html" class="reference">SciTE</a>
+editor can specify the encoding of their file from the menu using the
+<tt class="docutils literal"><span class="pre">File->Encoding</span></tt>.</p>
+</div>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">If you are working with Unicode in detail you might also be interested in
+the <tt class="docutils literal"><span class="pre">unicodedata</span></tt> module which can be used to find out Unicode properties
+such as a character's name, category, numeric value and the like.</p>
+</div>
+</div>
+<div class="section">
+<h2><a href="#id5" id="input-and-output" name="input-and-output" class="toc-backref">1.4   Input and Output</a></h2>
+<p>We now know how to use Unicode in Python source code but input and output can
+also be different using Unicode. Of course, some libraries natively support
+Unicode and if these libraries return Unicode objects you will not have to do
+anything special to support them. XML parsers and SQL databases frequently
+support Unicode for example.</p>
+<p>If you remember from the discussion earlier, Unicode data consists of code
+points. In order to send Unicode data via a socket or write it to a file you
+usually need to encode it to a series of bytes and then decode the data back to
+Unicode when reading it. You can of course perform the encoding manually
+reading a byte at the time but since encodings such as UTF-8 can have variable
+numbers of bytes per character it is usually much easier to use Python's
+built-in support in the form of the <tt class="docutils literal"><span class="pre">codecs</span></tt> module.</p>
+<p>The codecs module includes a version of the <tt class="docutils literal"><span class="pre">open()</span></tt> function that
+returns a file-like object that assumes the file's contents are in a specified
+encoding and accepts Unicode parameters for methods such as <tt class="docutils literal"><span class="pre">.read()</span></tt> and
+<tt class="docutils literal"><span class="pre">.write()</span></tt>.</p>
+<p>The function's parameters are open(filename, mode='rb', encoding=None,
+errors='strict', buffering=1). <tt class="docutils literal"><span class="pre">mode</span></tt> can be 'r', 'w', or 'a', just like the
+corresponding parameter to the regular built-in <tt class="docutils literal"><span class="pre">open()</span></tt> function. You can
+add a <tt class="docutils literal"><span class="pre">+</span></tt> character to update the file. <tt class="docutils literal"><span class="pre">buffering</span></tt> is similar to the
+standard function's parameter. <tt class="docutils literal"><span class="pre">encoding</span></tt> is a string giving the encoding to
+use, if not specified or specified as <tt class="docutils literal"><span class="pre">None</span></tt>, a regular Python file object
+that accepts 8-bit strings is returned.  Otherwise, a wrapper object is
+returned, and data written to or read from the wrapper object will be converted
+as needed. <tt class="docutils literal"><span class="pre">errors</span></tt> specifies the action for encoding errors and can be one
+of the usual values of <tt class="docutils literal"><span class="pre">'strict'</span></tt>, <tt class="docutils literal"><span class="pre">'ignore'</span></tt>, or <tt class="docutils literal"><span class="pre">'replace'</span></tt> which we
+saw right at the begining of this document when we were encoding strings in
+Python source files.</p>
+<p>Here is an example of how to read Unicode from a UTF-8 encoded file:</p>
+<textarea name="code" class="python">
+import codecs
+f = codecs.open('unicode.txt', encoding='utf-8')
+for line in f:
+    print repr(line)
+</textarea><p>It's also possible to open files in update mode, allowing both reading and writing:</p>
+<textarea name="code" class="python">
+f = codecs.open('unicode.txt', encoding='utf-8', mode='w+')
+f.write(u"\x66\u0072\u0061\U0000006e" + unichr(231) + u"ais")
+f.seek(0)
+print repr(f.readline()[:1])
+f.close()
+</textarea><p>Notice that we used the <tt class="docutils literal"><span class="pre">repr()</span></tt> function to display the Unicode data. This
+is very useful because if you tried to print the Unicode data directly, Python
+would need to encode it before it could be sent the console and depending on
+which characters were present and the character set used by the console, an
+error might be raised. This is avoided if you use <tt class="docutils literal"><span class="pre">repr()</span></tt>.</p>
+<p>The Unicode character <tt class="docutils literal"><span class="pre">U+FEFF</span></tt> is used as a byte-order mark or BOM, and is often
+written as the first character of a file in order to assist with auto-detection
+of the file's byte ordering. Some encodings, such as UTF-16, expect a BOM to be
+present at the start of a file, but with others such as UTF-8 it isn't necessary.</p>
+<p>When such an encoding is used, the BOM will be automatically written as the
+first character and will be silently dropped when the file is read. There are
+variants of these encodings, such as 'utf-16-le' and 'utf-16-be' for
+little-endian and big-endian encodings, that specify one particular byte
+ordering and don't skip the BOM.</p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">Some editors including SciTE will put a byte order mark (BOM) in the text
+file when saved as UTF-8, which is strange because UTF-8 doesn't need BOMs.</p>
+</div>
+</div>
+<div class="section">
+<h2><a href="#id6" id="unicode-filenames" name="unicode-filenames" class="toc-backref">1.5   Unicode Filenames</a></h2>
+<p>Most modern operating systems support the use of Unicode filenames. The
+filenames are transparently converted to the underlying filesystem encoding.
+The type of encoding depends on the operating system.</p>
+<p>On Windows 9x, the encoding is <tt class="docutils literal"><span class="pre">mbcs</span></tt>.</p>
+<p>On Mac OS X, the encoding is <tt class="docutils literal"><span class="pre">utf-8</span></tt>.</p>
+<p>On Unix, the encoding is the user's preference according to the
+result of nl_langinfo(CODESET), or None if the nl_langinfo(CODESET) failed.</p>
+<p>On Windows NT+, file names are Unicode natively, so no conversion is performed.
+getfilesystemencoding still returns <tt class="docutils literal"><span class="pre">mbcs</span></tt>, as this is the encoding that
+applications should use when they explicitly want to convert Unicode strings to
+byte strings that are equivalent when used as file names.</p>
+<p><tt class="docutils literal"><span class="pre">mbcs</span></tt> is a special encoding for Windows that effectively means "use
+whichever encoding is appropriate". In Python 2.3 and above you can find out
+the system encoding with <tt class="docutils literal"><span class="pre">sys.getfilesystemencoding()</span></tt>.</p>
+<p>Most file and directory functions and methods support Unicode. For example:</p>
+<textarea name="code" class="python">
+filename = u"\x66\u0072\u0061\U0000006e" + unichr(231) + u"ais"
+f = open(filename, 'w')
+f.write('Some data\n')
+f.close()
+</textarea><p>Other functions such as <tt class="docutils literal"><span class="pre">os.listdir()</span></tt> will return Unicode if you pass a
+Unicode argument and will try to return strings if you pass an ordinary 8 bit
+string. For example running this example as <tt class="docutils literal"><span class="pre">test.py</span></tt>:</p>
+<textarea name="code" class="python">
+filename = u"Sample " + unichar(5000)
+f = open(filename, 'w')
+f.close()
+
+import os
+print os.listdir('.')
+print os.listdir(u'.')
+</textarea><p>will produce the following output:</p>
+<blockquote>
+['Sample?', 'test.py']
+[u'Sampleu1388', u'test.py']</blockquote>
+</div>
+</div>
+<div class="section">
+<h1><a href="#id7" id="applying-this-to-web-programming" name="applying-this-to-web-programming" class="toc-backref">2   Applying this to Web Programming</a></h1>
+<p>So far we've seen how to use encoding in source files and seen how to decode
+text to Unicode and encode it back to text. We've also seen that Unicode
+objects can be manipulated in similar ways to strings and we've seen how to
+perform input and output operations on files. Next we are going to look at how
+best to use Unicode in a web app.</p>
+<p>The main rule is this:</p>
+<pre class="literal-block">
+Your application should use Unicode for all strings internally, decoding
+any input to Unicode as soon as it enters the application and encoding the
+Unicode to UTF-8 or another encoding only on output.
+</pre>
+<p>If you fail to do this you will find that <tt class="docutils literal"><span class="pre">UnicodeDecodeError</span></tt> s will start
+popping up in unexpected places when Unicode strings are used with normal 8-bit
+strings because Python's default encoding is ASCII and it will try to decode
+the text to ASCII and fail. It is always better to do any encoding or decoding
+at the edges of your application otherwise you will end up patching lots of
+different parts of your application unnecessarily as and when errors pop up.</p>
+<p>Unless you have a very good reason not to it is wise to use UTF-8 as the
+default encoding since it is so widely supported.</p>
+<p>The second rule is:</p>
+<pre class="literal-block">
+Always test your application with characters above 127 and above 255
+wherever possible.
+</pre>
+<p>If you fail to do this you might think your application is working fine, but as
+soon as your users do put in non-ASCII characters you will have problems.
+Using arabic is always a good test and www.google.ae is a good source of sample
+text.</p>
+<p>The third rule is:</p>
+<pre class="literal-block">
+Always do any checking of a string for illegal characters once it's in the
+form that will be used or stored, otherwise the illegal characters might be
+disguised.
+</pre>
+<p>For example, let's say you have a content management system that takes a
+Unicode filename, and you want to disallow paths with a '/' character. You
+might write this code:</p>
+<textarea name="code" class="python">
+def read_file(filename, encoding):
+    if '/' in filename:
+        raise ValueError("'/' not allowed in filenames")
+    unicode_name = filename.decode(encoding)
+    f = open(unicode_name, 'r')
+    # ... return contents of file ...
+</textarea><p>This is INCORRECT. If an attacker could specify the 'base64' encoding, they
+could pass <tt class="docutils literal"><span class="pre">L2V0Yy9wYXNzd2Q=</span></tt> which is the base-64 encoded form of the string
+<tt class="docutils literal"><span class="pre">'/etc/passwd'</span></tt> which is a file you clearly don't want an attacker to get
+hold of.  The above code looks for <tt class="docutils literal"><span class="pre">/</span></tt> characters in the encoded form and
+misses the dangerous character in the resulting decoded form.</p>
+<p>Those are the three basic rules so now we will look at some of the places you
+might want to perform Unicode decoding in a Pylons application.</p>
+<div class="section">
+<h2><a href="#id8" id="request-parameters" name="request-parameters" class="toc-backref">2.1   Request Parameters</a></h2>
+<p>Currently the Pylons input values come from <tt class="docutils literal"><span class="pre">request.params</span></tt> but these are
+not decoded to Unicode by default because not all input should be assumed to be
+Unicode data.</p>
+<p>If you would like However you can use the two functions below:</p>
+<textarea name="code" class="python">
+def decode_multi_dict(md, encoding="UTF-8", errors="strict"):
+    """Given a MultiDict, decode all its parts from the given encoding.
+
+    This modifies the MultiDict in place.
+
+    encoding, strict
+      These are passed to the decode function.
+
+    """
+    items = md.items()
+    md.clear()
+    for (k, v) in items:
+        md.add(k.decode(encoding, errors),
+               v.decode(encoding, errors))
+
+
+def decode_request(request, encoding="UTF-8", errors="strict"):
+    """Given a request object, decode GET and POST in place.
+
+    This implicitly takes care of params as well.
+
+    """
+    decode_multi_dict(request.GET, encoding, errors)
+    decode_multi_dict(request.POST, encoding, errors)
+</textarea><p>These can then be used as follows:</p>
+<textarea name="code" class="python">
+unicode_params = decode_request(request.params)
+</textarea><p>This code is discussed in <a href="http://pylonshq.com/project/pylonshq/ticket/135" class="reference">ticket 135</a> but shouldn't be used with
+file uploads since these shouldn't ordinarily be decoded to Unicode.</p>
+</div>
+<div class="section">
+<h2><a href="#id9" id="templating" name="templating" class="toc-backref">2.2   Templating</a></h2>
+<p>Pylons uses Myghty as its default templating language and Myghty 1.1 and above
+fully support Unicode. The Myghty documentation explains how to use Unicode and
+you at <a href="http://www.myghty.org/docs/unicode.myt" class="reference">http://www.myghty.org/docs/unicode.myt</a> but the important idea is that
+you can Unicode literals pretty much anywhere you can use normal 8-bit strings
+including in <tt class="docutils literal"><span class="pre">m.write()</span></tt> and <tt class="docutils literal"><span class="pre">m.comp()</span></tt>. You can also pass Unicode data to
+Pylons' <tt class="docutils literal"><span class="pre">render_response()</span></tt> and <tt class="docutils literal"><span class="pre">Response()</span></tt> callables.</p>
+<p>Any Unicode data output by Myghty is automatically decoded to whichever
+encoding you have chosen. The default is UTF-8 but you can choose which
+encoding to use by editing your project's <tt class="docutils literal"><span class="pre">config/environment.py</span></tt> file and
+adding an option like this:</p>
+<textarea name="code" class="python">
+# Add your own Myghty config options here, note that all config options will override
+# any Pylons config options
+
+myghty['output_encoding'] = 'UTF-8'
+</textarea><p>replacing <tt class="docutils literal"><span class="pre">UTF-8</span></tt> with the encoding you wish to use.</p>
+<p>If you need to disable Unicode support altogether you can set this:</p>
+<textarea name="code" class="python">
+myghty['disable_unicode'] = True
+</textarea><p>but again, you would have to have a good reason to want to do this.</p>
+</div>
+<div class="section">
+<h2><a href="#id10" id="output-encoding" name="output-encoding" class="toc-backref">2.3   Output Encoding</a></h2>
+<p>Web pages should be generated with a specific encoding, most likely UTF-8. At
+the very least, that means you should specify the following in the <tt class="docutils literal"><span class="pre">&lt;head></span></tt>
+section:</p>
+<pre class="literal-block">
+&lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</pre>
+<p>You should also set the charset in the <tt class="docutils literal"><span class="pre">Content-Type</span></tt> header:</p>
+<textarea name="code" class="python">
+respones = Response(...)
+response.headers['Content-type'] = 'text/html; charset=utf-8'
+</textarea><p>If you specify that your output is UTF-8, generally the web browser will
+give you UTF-8. If you want the browser to submit data using a different
+character set, you can set the encoding by adding the <tt class="docutils literal"><span class="pre">accept-encoding</span></tt>
+tag to your form. Here is an example:</p>
+<pre class="literal-block">
+&lt;form accept-encoding="US-ASCII" ...>
+</pre>
+<p>However, be forewarned that if the user tries to give you non-ASCII
+text, then:</p>
+<blockquote>
+<ul class="simple">
+<li>Firefox will translate the non-ASCII text into HTML entities.</li>
+<li>IE will ignore your suggested encoding and give you UTF-8 anyway.</li>
+</ul>
+</blockquote>
+<p>The lesson to be learned is that if you output UTF-8, you had better be
+prepared to accept UTF-8 by decoding the data in <tt class="docutils literal"><span class="pre">request.params</span></tt> as
+described in the section above entitled "Request Parameters".</p>
+<p>Another technique which is sometimes used to determine the character set is to
+use an algorithm to analyse the input and guess the encoding based on
+probabilities.</p>
+<p>For instance, if you get a file, and you don't know what encoding it is encoded
+in, you can often rename the file with a .txt extension and then try to open it
+in Firefox.  Then you can use the "View->Character Encoding" menu to try to
+auto-detect the encoding.</p>
+</div>
+<div class="section">
+<h2><a href="#id11" id="databases" name="databases" class="toc-backref">2.4   Databases</a></h2>
+<p>Your database driver should automatically convert from Unicode objects to a
+particular charset when writing and back again when reading. Again it is normal
+to use UTF-8 which is well supported.</p>
+<p>You should check your database's documentation for information on how it handles
+Unicode.</p>
+<p>For example MySQL's Unicode documentation is here
+<a href="http://dev.mysql.com/doc/refman/5.0/en/charset-unicode.html" class="reference">http://dev.mysql.com/doc/refman/5.0/en/charset-unicode.html</a></p>
+<p>Also note that you need to consider both the encoding of the database
+and the encoding used by the database driver.</p>
+<p>If you're using MySQL together with SQLAlchemy, see the following, as
+there are some bugs in MySQLdb that you'll need to work around:</p>
+<p><a href="http://www.mail-archive.com/sqlalchemy@googlegroups.com/msg00366.html" class="reference">http://www.mail-archive.com/sqlalchemy@googlegroups.com/msg00366.html</a></p>
+</div>
+</div>
+<div class="section">
+<h1><a href="#id12" id="internationalization-and-localization" name="internationalization-and-localization" class="toc-backref">3   Internationalization and Localization</a></h1>
+<p>By now you should have a good idea of what Unicode is, how to use it in Python
+and which areas of you application need to pay specific attention to decoding and
+encoding Unicode data.</p>
+<p>This final section will look at the issue of making your application work with
+multiple languages.</p>
+<div class="section">
+<h2><a href="#id13" id="getting-started" name="getting-started" class="toc-backref">3.1   Getting Started</a></h2>
+<p>Everywhere in your code where you want strings to be available in different
+languages you wrap them in the <tt class="docutils literal"><span class="pre">_()</span></tt> function. There
+are also a number of other translation functions which are documented in the API reference at
+<a href="http://pylonshq.com/docs/module-pylons.i18n.translation.html" class="reference">http://pylonshq.com/docs/module-pylons.i18n.translation.html</a></p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">The <tt class="docutils literal"><span class="pre">_()</span></tt> function is a reference to the <tt class="docutils literal"><span class="pre">ugettext()</span></tt> function.
+<tt class="docutils literal"><span class="pre">_()</span></tt> is a convention for marking text to be translated and saves on keystrokes.
+<tt class="docutils literal"><span class="pre">ugettext()</span></tt> is the Unicode version of <tt class="docutils literal"><span class="pre">gettext()</span></tt>.</p>
+</div>
+<p>In our example we want the string <tt class="docutils literal"><span class="pre">'Hello'</span></tt> to appear in three different
+languages: English, French and Spanish. We also want to display the word
+<tt class="docutils literal"><span class="pre">'Hello'</span></tt> in the default language. We'll then go on to use some pural words
+too.</p>
+<p>Lets call our project <tt class="docutils literal"><span class="pre">translate_demo</span></tt>:</p>
+<pre class="literal-block">
+paster create --template=pylons translate_demo
+</pre>
+<p>Now lets add a friendly controller that says hello:</p>
+<pre class="literal-block">
+cd translate_demo
+paster controller hello
+</pre>
+<p>Edit <tt class="docutils literal"><span class="pre">controllers/hello.py</span></tt> controller to look like this making use of the
+<tt class="docutils literal"><span class="pre">_()</span></tt> function everywhere where the string <tt class="docutils literal"><span class="pre">Hello</span></tt> appears:</p>
+<textarea name="code" class="python">
+from translate_demo.lib.base import *
+
+class HelloController(BaseController):
+
+    def index(self):
+        resp = Response()
+        resp.write('Default: %s&lt;br />' % _('Hello'))
+        for lang in ['fr','en','es']:
+            h.set_lang(lang)
+            resp.write("%s: %s&lt;br />" % (h.get_lang(), _('Hello')))
+        return resp
+</textarea><p>When writing your controllers it is important not to piece sentences together manually because
+certain languages might need to invert the grammars. As an example this is bad:</p>
+<textarea name="code" class="python">
+# BAD!
+msg = _("He told her ")
+msg += _("not to go outside.")
+</textarea><p>but this is perfectly acceptable:</p>
+<textarea name="code" class="python">
+# GOOD
+msg = _("He told her not to go outside")
+</textarea><p>The controller has now been internationalized but it will raise a <tt class="docutils literal"><span class="pre">LanguageError</span></tt>
+until we have specified the alternative languages.</p>
+<p>Pylons uses <a href="http://www.gnu.org/software/gettext/" class="reference">GNU gettext</a> to handle
+internationalization. GNU gettext use three types of files in the
+translation framework.</p>
+<p>POT (Portable Object Template) files</p>
+<blockquote>
+The first step in the localization process. A program is used to search through
+your project's source code and pick out every string passed to one of the
+translation functions, such as <tt class="docutils literal"><span class="pre">_()</span></tt>. This list is put together in a
+specially-formatted template file that will form the basis of all
+translations. This is the <tt class="docutils literal"><span class="pre">.pot</span></tt> file.</blockquote>
+<p>PO (Portable Object) files</p>
+<blockquote>
+The second step in the localization process. Using the POT file as a template,
+the list of messages are translated and saved as a <tt class="docutils literal"><span class="pre">.po</span></tt> file.</blockquote>
+<p>MO (Machine Object) files</p>
+<blockquote>
+The final step in the localization process. The PO file is run through a
+program that turns it into an optimized machine-readable binary file, which is
+the <tt class="docutils literal"><span class="pre">.mo</span></tt> file. Compiling the translations to machine code makes the
+localized program much faster in retrieving the translations while it is
+running.</blockquote>
+<p>Versions of Pylons prior to 0.9.4 came with a setuptools extension to help with
+the extraction of strings and production of a <tt class="docutils literal"><span class="pre">.mo</span></tt> file. The implementation
+did not support Unicode nor the ungettext function and was therfore dropped in
+Python 0.9.4.</p>
+<p>You will therefore need to use an external program to perform these tasks.  You
+may use whichever you prefer but <tt class="docutils literal"><span class="pre">xgettext</span></tt> is highly recommended. Python's
+gettext utility has some bugs, especially regarding plurals.</p>
+<p>Here are some compatible tools and projects:</p>
+<p>The Rosetta Project (<a href="https://launchpad.ubuntu.com/rosetta/" class="reference">https://launchpad.ubuntu.com/rosetta/</a>)</p>
+<blockquote>
+The Ubuntu Linux project has a web site that allows you to translate
+messages without even looking at a PO or POT file, and export directly to a MO.</blockquote>
+<p>poEdit (<a href="http://www.poedit.org/" class="reference">http://www.poedit.org/</a>)</p>
+<blockquote>
+An open source program for Windows and UNIX/Linux which provides an easy-to-use
+GUI for editing PO files and generating MO files.</blockquote>
+<p>KBabel (<a href="http://i18n.kde.org/tools/kbabel/" class="reference">http://i18n.kde.org/tools/kbabel/</a>)</p>
+<blockquote>
+Another open source PO editing program for KDE.</blockquote>
+<p>GNU Gettext (<a href="http://www.gnu.org/software/gettext/" class="reference">http://www.gnu.org/software/gettext/</a>)</p>
+<blockquote>
+The official Gettext tools package contains command-line tools for creating
+POTs, manipulating POs, and generating MOs. For those comfortable with a
+command shell.</blockquote>
+<p>As an example we will quickly discuss the use of poEdit which is cross platform
+and has a GUI which makes it easier to get started with.</p>
+<p>To use poEdit with the <tt class="docutils literal"><span class="pre">translate_demo</span></tt> you would do the following:</p>
+<ol class="arabic simple">
+<li>Download and install poEdit.</li>
+<li>A dialog pops up. Fill in <em>all</em> the fields you can on the <tt class="docutils literal"><span class="pre">Project</span> <span class="pre">Info</span></tt> tab, enter the path to your project on the <tt class="docutils literal"><span class="pre">Paths</span></tt> tab (ie <tt class="docutils literal"><span class="pre">/path/to/translate_demo</span></tt>) and enter the following keywords on separate lines on the <tt class="docutils literal"><span class="pre">keywords</span></tt> tab: <tt class="docutils literal"><span class="pre">_</span></tt>, <tt class="docutils literal"><span class="pre">N_</span></tt>, <tt class="docutils literal"><span class="pre">ugettext</span></tt>, <tt class="docutils literal"><span class="pre">gettext</span></tt>, <tt class="docutils literal"><span class="pre">ngettext</span></tt>, <tt class="docutils literal"><span class="pre">ungettext</span></tt>.</li>
+<li>Click OK</li>
+</ol>
+<p>poEdit will search your source tree and find all the strings you have marked
+up. You can then enter your translations in whatever charset you chose in
+the project info tab. UTF-8 is a good choice.</p>
+<p>Finally, after entering your translations you then save the catalog and rename
+the <tt class="docutils literal"><span class="pre">.mo</span></tt> file produced to <tt class="docutils literal"><span class="pre">translate_demo.mo</span></tt> and put it in the
+<tt class="docutils literal"><span class="pre">translate_demo/i18n/es/LC_MESSAGES</span></tt> directory or whatever is appropriate for
+your translation.</p>
+<p>You will need to repeat the process of creating a <tt class="docutils literal"><span class="pre">.mo</span></tt> file for the <tt class="docutils literal"><span class="pre">fr</span></tt>,
+<tt class="docutils literal"><span class="pre">es</span></tt> and <tt class="docutils literal"><span class="pre">en</span></tt> translations.</p>
+<p>The relevant lines from <tt class="docutils literal"><span class="pre">i18n/en/LC_MESSAGES/translate_demo.po</span></tt> look like this:</p>
+<pre class="literal-block">
+#: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
+msgid "Hello"
+msgstr "Hello"
+</pre>
+<p>The relevant lines from <tt class="docutils literal"><span class="pre">i18n/es/LC_MESSAGES/translate_demo.po</span></tt> look like this:</p>
+<pre class="literal-block">
+#: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
+msgid "Hello"
+msgstr "°Hola!"
+</pre>
+<p>The relevant lines from <tt class="docutils literal"><span class="pre">i18n/fr/LC_MESSAGES/translate_demo.po</span></tt> look like this:</p>
+<pre class="literal-block">
+#: translate_demo\controllers\hello.py:6 translate_demo\controllers\hello.py:9
+msgid "Hello"
+msgstr "Bonjour"
+</pre>
+<p>Whichever tools you use you should end up with an <tt class="docutils literal"><span class="pre">i18n</span></tt> directory that looks
+like this when you have finished:</p>
+<pre class="literal-block">
+i18n/en/LC_MESSAGES/translate_demo.po
+i18n/en/LC_MESSAGES/translate_demo.mo
+i18n/es/LC_MESSAGES/translate_demo.po
+i18n/es/LC_MESSAGES/translate_demo.mo
+i18n/fr/LC_MESSAGES/translate_demo.po
+i18n/fr/LC_MESSAGES/translate_demo.mo
+</pre>
+</div>
+<div class="section">
+<h2><a href="#id14" id="testing-the-application" name="testing-the-application" class="toc-backref">3.2   Testing the Application</a></h2>
+<p>Start the server with the following command:</p>
+<pre class="literal-block">
+paster serve --reload development.ini
+</pre>
+<p>Test your controller by visiting <a href="http://localhost:5000/hello" class="reference">http://localhost:5000/hello</a>. You should see
+the following output:</p>
+<pre class="literal-block">
+Default: Hello
+fr: Bonjour
+en: Hello
+es: °Hola!
+</pre>
+<p>You can now set the language used in a controller on the fly.</p>
+<p>For example this could be used to allow a user to set which language they
+wanted your application to work in. You could save the value to the session
+object:</p>
+<textarea name="code" class="python">
+session['lang'] = 'en'
+</textarea><p>then on each controller call the language to be used could be read from the
+session and set in your controller's <tt class="docutils literal"><span class="pre">__before__()</span></tt> method so that the pages
+remained in the same language that was previously set:</p>
+<textarea name="code" class="python">
+def __before__(self, action):
+    if session.has_key('lang'):
+        h.set_lang(session['lang'])
+</textarea><p>One more useful thing to be able to do is to set the default language to be
+used in the configuration file. Just add a <tt class="docutils literal"><span class="pre">lang</span></tt> variable together with the
+code of the language you wanted to use in your <tt class="docutils literal"><span class="pre">development.ini</span></tt> file. For
+example to set the default language to Spanish you would add <tt class="docutils literal"><span class="pre">lang</span> <span class="pre">=</span> <span class="pre">es</span></tt> to
+your <tt class="docutils literal"><span class="pre">development.ini</span></tt>. The relevant part from the file might look something
+like this:</p>
+<textarea name="code" class="pasteini">
+[app:main]
+use = egg:translate_demo
+lang = es
+</textarea><p>If you are running the server with the <tt class="docutils literal"><span class="pre">--reload</span></tt> option the server will
+automatically restart if you change the <tt class="docutils literal"><span class="pre">development.ini</span></tt> file. Otherwise
+restart the server manually and the output would this time be as follows:</p>
+<pre class="literal-block">
+Default: °Hola!
+fr: Bonjour
+en: Hello
+es: °Hola!
+</pre>
+</div>
+<div class="section">
+<h2><a href="#id15" id="missing-translations" name="missing-translations" class="toc-backref">3.3   Missing Translations</a></h2>
+<p>If your code calls <tt class="docutils literal"><span class="pre">_()</span></tt> with a string that doesn't exist in your language
+catalogue, the string passed to <tt class="docutils literal"><span class="pre">_()</span></tt> is returned instead.</p>
+<p>Modify the last line of the hello controller to look like this:</p>
+<textarea name="code" class="python">
+resp.write("%s: %s %s&lt;br />" % (h.get_lang(), _('Hello'), _('World!')))
+</textarea><div class="warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Of course, in real life breaking up sentences in this way is very dangerous because some
+grammars might require the order of the words to be different.</p>
+</div>
+<p>If you run the example again the output will be:</p>
+<pre class="literal-block">
+Default: °Hola!
+fr: Bonjour World!
+en: Hello World!
+es: °Hola! World!
+</pre>
+<p>This is because we never provided a translation for the string <tt class="docutils literal"><span class="pre">'World!'</span></tt> so
+the string itself is used.</p>
+</div>
+<div class="section">
+<h2><a href="#id16" id="translations-within-templates" name="translations-within-templates" class="toc-backref">3.4   Translations Within Templates</a></h2>
+<p>You can also use the <tt class="docutils literal"><span class="pre">_()</span></tt> function within templates in exactly the same way
+you do in code. For example:</p>
+<textarea name="code" class="html">
+&lt;% _('Hello') %>
+</textarea><p>would produce the string <tt class="docutils literal"><span class="pre">'Hello'</span></tt> in the language you had set.</p>
+<p>There is one complication though. gettext's <tt class="docutils literal"><span class="pre">xgettext</span></tt> command can only extract
+strings that need translating from Python code in <tt class="docutils literal"><span class="pre">.py</span></tt> files. This means
+that if you write <tt class="docutils literal"><span class="pre">_('Hello')</span></tt> in a template such as a Myghty template,
+<tt class="docutils literal"><span class="pre">xgettext</span></tt> will not find the string <tt class="docutils literal"><span class="pre">'Hello'</span></tt> as one which needs
+translating.</p>
+<p>As long as <tt class="docutils literal"><span class="pre">xgettext</span></tt> can find a string marked for translation with one
+of the translation functions and defined in Python code in your project
+filesystem it will manage the translation when the same string is defined in a
+Myghty template and marked for translation.</p>
+<p>One solution to ensure all strings are picked up for translation is to create a
+file in <tt class="docutils literal"><span class="pre">lib</span></tt> with an appropriate filename, <tt class="docutils literal"><span class="pre">i18n.py</span></tt> for example, and then
+add a list of all the strings which appear in your templates so that your
+translation tool can then extract the strings in <tt class="docutils literal"><span class="pre">lib/i18n.py</span></tt> for
+translation and use the translated versions in your templates as well.</p>
+<p>For example if you wanted to ensure the translated string <tt class="docutils literal"><span class="pre">'Good</span> <span class="pre">Morning'</span></tt>
+was available in all templates you could create a <tt class="docutils literal"><span class="pre">lib/i18n.py</span></tt> file that
+looked something like this:</p>
+<textarea name="code" class="python">
+from base import _
+_('Good Morning')
+</textarea><p>This approach requires quite a lot of work and is rather fragile. The best
+solution if you are using a templating system such as Myghty or Cheetah which
+uses compiled Python files is to use a Makefile to ensure that every template
+is compiled to Python before running the extraction tool to make sure that
+every template is scanned.</p>
+<p>Of course, if your cache directory is in the default location or elsewhere
+within your project's filesystem, you will probably find that all templates
+have been compiled as Python files during the course of the development process.
+This means that your tool's extraction command will successfully pick up
+strings to translate from the cached files anyway.</p>
+<p>You may also find that your extraction tool is capable of extracting the
+strings correctly from the template anyway, particularly if the templating
+langauge is quite similar to Python. It is best not to rely on this though.</p>
+</div>
+<div class="section">
+<h2><a href="#id17" id="producing-a-python-egg" name="producing-a-python-egg" class="toc-backref">3.5   Producing a Python Egg</a></h2>
+<p>Finally you can produce an egg of your project which includes the translation
+files like this:</p>
+<pre class="literal-block">
+python setup.py bdist_egg
+</pre>
+<p>The <tt class="docutils literal"><span class="pre">setup.py</span></tt> automatically includes the <tt class="docutils literal"><span class="pre">.mo</span></tt> language catalogs your
+application needs so that your application can be distributed as an egg. This
+is done with the following line in your <tt class="docutils literal"><span class="pre">setup.py</span></tt> file:</p>
+<pre class="literal-block">
+package_data={'translate_demo': ['i18n/*/LC_MESSAGES/*.mo']},
+</pre>
+<p>Internationalization support is zip safe so your application can be run
+directly from the egg without the need for <tt class="docutils literal"><span class="pre">easy_install</span></tt> to extract it.</p>
+</div>
+<div class="section">
+<h2><a href="#id18" id="plural-forms" name="plural-forms" class="toc-backref">3.6   Plural Forms</a></h2>
+<p>Pylons also defines <tt class="docutils literal"><span class="pre">ungettext()</span></tt> and <tt class="docutils literal"><span class="pre">ngettext()</span></tt> functions which can be imported
+from <tt class="docutils literal"><span class="pre">pylons.i18n</span></tt>. They are designed for internationalizing plural words and can be
+used as follows:</p>
+<textarea name="code" class="python">
+from pylons.i18n import ungettext
+
+ungettext(
+    'There is %(num)d file here',
+    'There are %(num)d files here',
+    n
+) % {'num': n}
+</textarea><p>If you wish to use plural forms in your application you need to add the appropriate
+headers to the <tt class="docutils literal"><span class="pre">.po</span></tt> files for the language you are using. You can read more about
+this at <a href="http://www.gnu.org/software/gettext/manual/html_chapter/gettext_10.html#SEC150" class="reference">http://www.gnu.org/software/gettext/manual/html_chapter/gettext_10.html#SEC150</a></p>
+<p>One thing to keep in mind is that other languages don't have the same
+plural forms as English.  While English only has 2 pulral forms, singular and
+plural, Slovenian has 4!  That means that you must use gettext's
+support for pluralization if you hope to get pluralization right.
+Specifically, the following will not work:</p>
+<textarea name="code" class="python">
+# BAD!
+    if n == 1:
+        msg = _("There was no dog.")
+    else:
+        msg = _("There were no dogs.")
+</textarea></div>
+</div>
+<div class="section">
+<h1><a href="#id19" id="summary" name="summary" class="toc-backref">4   Summary</a></h1>
+<p>Hopefully you now understand the history of Unicode, how to use it in Python
+and where to apply Unicode encoding and decoding in a Pylons application. You
+should also be able to use Unicode in your web app remembering the basic rule to
+use UTF-8 to talk to the world, do the encode and decode at the edge of your
+application.</p>
+<p>You should also be able to internationalize and then localize your application
+using Pylons' support for GNU gettext.</p>
+</div>
+<div class="section">
+<h1><a href="#id20" id="further-reading" name="further-reading" class="toc-backref">5   Further Reading</a></h1>
+<p>This information is based partly on the following articles which can be
+consulted for further information.:</p>
+<p><a href="http://www.joelonsoftware.com/articles/Unicode.html" class="reference">http://www.joelonsoftware.com/articles/Unicode.html</a></p>
+<p><a href="http://www.amk.ca/python/howto/unicode" class="reference">http://www.amk.ca/python/howto/unicode</a></p>
+<p><a href="http://en.wikipedia.org/wiki/Internationalization" class="reference">http://en.wikipedia.org/wiki/Internationalization</a></p>
+<p>Please feel free to report any mistakes to the Pylons mailing list or to the
+author. Any corrections or clarifications would be gratefully received.</p>
+</div>
+
+</div>

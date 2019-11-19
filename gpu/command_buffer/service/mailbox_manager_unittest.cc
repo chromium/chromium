@@ -17,8 +17,6 @@
 namespace gpu {
 namespace gles2 {
 
-using namespace ::testing;
-
 static const SyncToken g_sync_token(gpu::CommandBufferNamespace::GPU_IO,
                                     gpu::CommandBufferId::FromUnsafeValue(123),
                                     0);
@@ -191,8 +189,8 @@ class MailboxManagerSyncTest : public MailboxManagerTest {
                                        GLenum wrap_t) {
     DCHECK(texture_id);
     const GLuint kCurrentTexture = 0;
-    EXPECT_CALL(*gl_, GetIntegerv(GL_TEXTURE_BINDING_2D, _))
-        .WillOnce(SetArgPointee<1>(kCurrentTexture))
+    EXPECT_CALL(*gl_, GetIntegerv(GL_TEXTURE_BINDING_2D, testing::_))
+        .WillOnce(testing::SetArgPointee<1>(kCurrentTexture))
         .RetiresOnSaturation();
     EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_2D, texture_id))
         .Times(1)
@@ -233,7 +231,7 @@ TEST_F(MailboxManagerSyncTest, ProduceDestroy) {
   Texture* texture = DefineTexture();
   Mailbox name = Mailbox::Generate();
 
-  InSequence sequence;
+  testing::InSequence sequence;
   manager_->ProduceTexture(name, texture);
   EXPECT_EQ(texture, manager_->ConsumeTexture(name));
 
@@ -243,7 +241,7 @@ TEST_F(MailboxManagerSyncTest, ProduceDestroy) {
 }
 
 TEST_F(MailboxManagerSyncTest, ProduceSyncDestroy) {
-  InSequence sequence;
+  testing::InSequence sequence;
 
   Texture* texture = DefineTexture();
   Mailbox name = Mailbox::Generate();
@@ -261,7 +259,7 @@ TEST_F(MailboxManagerSyncTest, ProduceSyncDestroy) {
 }
 
 TEST_F(MailboxManagerSyncTest, ProduceSyncMultipleMailbox) {
-  InSequence sequence;
+  testing::InSequence sequence;
 
   Texture* texture = DefineTexture();
   Mailbox name = Mailbox::Generate();
@@ -285,7 +283,7 @@ TEST_F(MailboxManagerSyncTest, ProduceSyncMultipleMailbox) {
 // makes sure a redefinition becomes visible there too.
 TEST_F(MailboxManagerSyncTest, ProduceConsumeResize) {
   const GLuint kNewTextureId = 1234;
-  InSequence sequence;
+  testing::InSequence sequence;
 
   Texture* texture = DefineTexture();
   Mailbox name = Mailbox::Generate();
@@ -297,8 +295,8 @@ TEST_F(MailboxManagerSyncTest, ProduceConsumeResize) {
   manager_->PushTextureUpdates(g_sync_token);
   manager2_->PullTextureUpdates(g_sync_token);
 
-  EXPECT_CALL(*gl_, GenTextures(1, _))
-      .WillOnce(SetArgPointee<1>(kNewTextureId));
+  EXPECT_CALL(*gl_, GenTextures(1, testing::_))
+      .WillOnce(testing::SetArgPointee<1>(kNewTextureId));
   SetupUpdateTexParamExpectations(
       kNewTextureId, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
   Texture* new_texture = Texture::CheckedCast(manager2_->ConsumeTexture(name));
@@ -372,14 +370,14 @@ TEST_F(MailboxManagerSyncTest, ProduceConsumeBidirectional) {
   // respectively to create a real sharing scenario. Otherwise, there would
   // never be conflicting updates/pushes.
   {
-    InSequence sequence;
-    EXPECT_CALL(*gl_, GenTextures(1, _))
-        .WillOnce(SetArgPointee<1>(kNewTextureId1));
+    testing::InSequence sequence;
+    EXPECT_CALL(*gl_, GenTextures(1, testing::_))
+        .WillOnce(testing::SetArgPointee<1>(kNewTextureId1));
     SetupUpdateTexParamExpectations(
         kNewTextureId1, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
     new_texture1 = manager2_->ConsumeTexture(name1);
-    EXPECT_CALL(*gl_, GenTextures(1, _))
-        .WillOnce(SetArgPointee<1>(kNewTextureId2));
+    EXPECT_CALL(*gl_, GenTextures(1, testing::_))
+        .WillOnce(testing::SetArgPointee<1>(kNewTextureId2));
     SetupUpdateTexParamExpectations(
         kNewTextureId2, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
     new_texture2 = manager_->ConsumeTexture(name2);
@@ -400,7 +398,7 @@ TEST_F(MailboxManagerSyncTest, ProduceConsumeBidirectional) {
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR),
             SetParameter(texture2, GL_TEXTURE_MAG_FILTER, GL_NEAREST));
 
-  Mock::VerifyAndClearExpectations(gl_.get());
+  testing::Mock::VerifyAndClearExpectations(gl_.get());
 
   // Synchronize in both directions
   manager_->PushTextureUpdates(g_sync_token);
@@ -435,8 +433,8 @@ TEST_F(MailboxManagerSyncTest, ClearedStateSynced) {
   manager_->PushTextureUpdates(g_sync_token);
   manager2_->PullTextureUpdates(g_sync_token);
 
-  EXPECT_CALL(*gl_, GenTextures(1, _))
-      .WillOnce(SetArgPointee<1>(kNewTextureId));
+  EXPECT_CALL(*gl_, GenTextures(1, testing::_))
+      .WillOnce(testing::SetArgPointee<1>(kNewTextureId));
   SetupUpdateTexParamExpectations(
       kNewTextureId, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
   Texture* new_texture = Texture::CheckedCast(manager2_->ConsumeTexture(name));
@@ -482,8 +480,8 @@ TEST_F(MailboxManagerSyncTest, SyncIncompleteTexture) {
   manager2_->PullTextureUpdates(g_sync_token);
 
   // Should sync to new texture which is not defined.
-  EXPECT_CALL(*gl_, GenTextures(1, _))
-      .WillOnce(SetArgPointee<1>(kNewTextureId));
+  EXPECT_CALL(*gl_, GenTextures(1, testing::_))
+      .WillOnce(testing::SetArgPointee<1>(kNewTextureId));
   SetupUpdateTexParamExpectations(kNewTextureId, texture->min_filter(),
                                   texture->mag_filter(), texture->wrap_s(),
                                   texture->wrap_t());
@@ -520,7 +518,7 @@ TEST_F(MailboxManagerSyncTest, SyncIncompleteTexture) {
 // only a single texture also within a synchronized manager instance.
 TEST_F(MailboxManagerSyncTest, SharedThroughMultipleMailboxes) {
   const GLuint kNewTextureId = 1234;
-  InSequence sequence;
+  testing::InSequence sequence;
 
   Texture* texture = DefineTexture();
   Mailbox name1 = Mailbox::Generate();
@@ -530,8 +528,8 @@ TEST_F(MailboxManagerSyncTest, SharedThroughMultipleMailboxes) {
 
   // Share
   manager_->PushTextureUpdates(g_sync_token);
-  EXPECT_CALL(*gl_, GenTextures(1, _))
-      .WillOnce(SetArgPointee<1>(kNewTextureId));
+  EXPECT_CALL(*gl_, GenTextures(1, testing::_))
+      .WillOnce(testing::SetArgPointee<1>(kNewTextureId));
   manager2_->PullTextureUpdates(g_sync_token);
   SetupUpdateTexParamExpectations(
       kNewTextureId, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
@@ -559,7 +557,7 @@ TEST_F(MailboxManagerSyncTest, SharedThroughMultipleMailboxes) {
 // B: consume M should return new_texture
 TEST_F(MailboxManagerSyncTest, ProduceBothWays) {
   const GLuint kNewTextureId = 1234;
-  InSequence sequence;
+  testing::InSequence sequence;
 
   Texture* texture1 = DefineTexture();
   Texture* texture2 = DefineTexture();
@@ -569,8 +567,8 @@ TEST_F(MailboxManagerSyncTest, ProduceBothWays) {
 
   // Share
   manager_->PushTextureUpdates(g_sync_token);
-  EXPECT_CALL(*gl_, GenTextures(1, _))
-      .WillOnce(SetArgPointee<1>(kNewTextureId));
+  EXPECT_CALL(*gl_, GenTextures(1, testing::_))
+      .WillOnce(testing::SetArgPointee<1>(kNewTextureId));
   SetupUpdateTexParamExpectations(
       kNewTextureId, GL_LINEAR, GL_LINEAR, GL_REPEAT, GL_REPEAT);
   TextureBase* new_texture = manager2_->ConsumeTexture(name);
@@ -597,7 +595,7 @@ TEST_F(MailboxManagerSyncTest, ProduceBothWays) {
 // B: push updates
 TEST_F(MailboxManagerSyncTest, ProduceTextureNotDefined) {
   const GLuint kNewTextureId = 1234;
-  InSequence sequence;
+  testing::InSequence sequence;
 
   Texture* texture = CreateTexture();
   const GLsizei levels_needed = TextureManager::ComputeMipMapCount(
@@ -611,8 +609,8 @@ TEST_F(MailboxManagerSyncTest, ProduceTextureNotDefined) {
 
   // Share
   manager_->PushTextureUpdates(g_sync_token);
-  EXPECT_CALL(*gl_, GenTextures(1, _))
-      .WillOnce(SetArgPointee<1>(kNewTextureId));
+  EXPECT_CALL(*gl_, GenTextures(1, testing::_))
+      .WillOnce(testing::SetArgPointee<1>(kNewTextureId));
   SetupUpdateTexParamExpectations(kNewTextureId, GL_LINEAR, GL_LINEAR,
                                   GL_REPEAT, GL_REPEAT);
   TextureBase* new_texture = manager2_->ConsumeTexture(name);
@@ -634,7 +632,7 @@ TEST_F(MailboxManagerSyncTest, ProduceTextureNotDefined) {
 
 TEST_F(MailboxManagerSyncTest, ProduceTextureDefinedNotLevel0) {
   const GLuint kNewTextureId = 1234;
-  InSequence sequence;
+  testing::InSequence sequence;
 
   Texture* texture = CreateTexture();
   const GLsizei levels_needed = TextureManager::ComputeMipMapCount(
@@ -650,8 +648,8 @@ TEST_F(MailboxManagerSyncTest, ProduceTextureDefinedNotLevel0) {
 
   // Share
   manager_->PushTextureUpdates(g_sync_token);
-  EXPECT_CALL(*gl_, GenTextures(1, _))
-      .WillOnce(SetArgPointee<1>(kNewTextureId));
+  EXPECT_CALL(*gl_, GenTextures(1, testing::_))
+      .WillOnce(testing::SetArgPointee<1>(kNewTextureId));
   SetupUpdateTexParamExpectations(kNewTextureId, GL_LINEAR, GL_LINEAR,
                                   GL_REPEAT, GL_REPEAT);
   TextureBase* new_texture = manager2_->ConsumeTexture(name);
@@ -673,7 +671,7 @@ TEST_F(MailboxManagerSyncTest, ProduceTextureDefinedNotLevel0) {
 
 TEST_F(MailboxManagerSyncTest, ProduceTextureDefined0Size) {
   const GLuint kNewTextureId = 1234;
-  InSequence sequence;
+  testing::InSequence sequence;
 
   Texture* texture = CreateTexture();
   const GLsizei levels_needed = TextureManager::ComputeMipMapCount(
@@ -689,8 +687,8 @@ TEST_F(MailboxManagerSyncTest, ProduceTextureDefined0Size) {
 
   // Share
   manager_->PushTextureUpdates(g_sync_token);
-  EXPECT_CALL(*gl_, GenTextures(1, _))
-      .WillOnce(SetArgPointee<1>(kNewTextureId));
+  EXPECT_CALL(*gl_, GenTextures(1, testing::_))
+      .WillOnce(testing::SetArgPointee<1>(kNewTextureId));
   SetupUpdateTexParamExpectations(kNewTextureId, GL_LINEAR, GL_LINEAR,
                                   GL_REPEAT, GL_REPEAT);
   TextureBase* new_texture = manager2_->ConsumeTexture(name);
@@ -711,7 +709,7 @@ TEST_F(MailboxManagerSyncTest, ProduceTextureDefined0Size) {
 }
 
 TEST_F(MailboxManagerSyncTest, ProduceTextureNotBound) {
-  InSequence sequence;
+  testing::InSequence sequence;
 
   Texture* texture = CreateTexture();
   Mailbox name = Mailbox::Generate();

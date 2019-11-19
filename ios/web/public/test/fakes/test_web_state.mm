@@ -11,13 +11,13 @@
 #include "base/callback.h"
 #import "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#import "ios/web/public/crw_navigation_item_storage.h"
-#import "ios/web/public/crw_session_storage.h"
-#import "ios/web/public/serializable_user_data_manager.h"
-#import "ios/web/public/web_state/ui/crw_content_view.h"
-#include "ios/web/public/web_state/web_frame.h"
-#import "ios/web/public/web_state/web_state_policy_decider.h"
-#include "ios/web/web_state/web_frames_manager_impl.h"
+#import "ios/web/common/crw_content_view.h"
+#include "ios/web/js_messaging/web_frames_manager_impl.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/navigation/web_state_policy_decider.h"
+#import "ios/web/public/session/crw_navigation_item_storage.h"
+#import "ios/web/public/session/crw_session_storage.h"
+#import "ios/web/public/session/serializable_user_data_manager.h"
 #include "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -42,6 +42,7 @@ TestWebState::TestWebState()
       is_crashed_(false),
       is_evicted_(false),
       has_opener_(false),
+      can_take_snapshot_(false),
       trust_level_(kAbsolute),
       content_is_html_(true),
       web_view_proxy_(nil) {}
@@ -91,12 +92,22 @@ void TestWebState::WasHidden() {
     observer.WasHidden(this);
 }
 
+void TestWebState::SetKeepRenderProcessAlive(bool keep_alive) {}
+
 const NavigationManager* TestWebState::GetNavigationManager() const {
   return navigation_manager_.get();
 }
 
 NavigationManager* TestWebState::GetNavigationManager() {
   return navigation_manager_.get();
+}
+
+const WebFramesManager* TestWebState::GetWebFramesManager() const {
+  return web_frames_manager_.get();
+}
+
+WebFramesManager* TestWebState::GetWebFramesManager() {
+  return web_frames_manager_.get();
 }
 
 const SessionCertificatePolicyCache*
@@ -122,6 +133,11 @@ CRWSessionStorage* TestWebState::BuildSessionStorage() {
 void TestWebState::SetNavigationManager(
     std::unique_ptr<NavigationManager> navigation_manager) {
   navigation_manager_ = std::move(navigation_manager);
+}
+
+void TestWebState::SetWebFramesManager(
+    std::unique_ptr<WebFramesManager> web_frames_manager) {
+  web_frames_manager_ = std::move(web_frames_manager);
 }
 
 void TestWebState::SetView(UIView* view) {
@@ -185,8 +201,16 @@ const GURL& TestWebState::GetLastCommittedURL() const {
 }
 
 GURL TestWebState::GetCurrentURL(URLVerificationTrustLevel* trust_level) const {
-  *trust_level = trust_level_;
+  if (trust_level) {
+    *trust_level = trust_level_;
+  }
   return url_;
+}
+
+std::unique_ptr<WebState::ScriptCommandSubscription>
+TestWebState::AddScriptCommandCallback(const ScriptCommandCallback& callback,
+                                       const std::string& command_prefix) {
+  return callback_list_.Add(callback);
 }
 
 bool TestWebState::IsShowingWebInterstitial() const {
@@ -290,6 +314,18 @@ void TestWebState::OnVisibleSecurityStateChanged() {
   }
 }
 
+void TestWebState::OnWebFrameDidBecomeAvailable(WebFrame* frame) {
+  for (auto& observer : observers_) {
+    observer.WebFrameDidBecomeAvailable(this, frame);
+  }
+}
+
+void TestWebState::OnWebFrameWillBecomeUnavailable(WebFrame* frame) {
+  for (auto& observer : observers_) {
+    observer.WebFrameWillBecomeUnavailable(this, frame);
+  }
+}
+
 bool TestWebState::ShouldAllowRequest(
     NSURLRequest* request,
     const WebStatePolicyDecider::RequestInfo& request_info) {
@@ -333,35 +369,8 @@ void TestWebState::ClearLastExecutedJavascript() {
   last_executed_javascript_.clear();
 }
 
-void TestWebState::CreateWebFramesManager() {
-  DCHECK(!web::WebFramesManagerImpl::FromWebState(this));
-  web::WebFramesManagerImpl::CreateForWebState(this);
-}
-
-void TestWebState::AddWebFrame(std::unique_ptr<web::WebFrame> frame) {
-  DCHECK(frame);
-  web::WebFramesManagerImpl* manager =
-      web::WebFramesManagerImpl::FromWebState(this);
-  DCHECK(manager) << "Create a frame manager before adding a frame.";
-  std::string frame_id = frame->GetFrameId();
-  DCHECK(!manager->GetFrameWithId(frame_id));
-  manager->AddFrame(std::move(frame));
-  WebFrame* frame_ptr = manager->GetFrameWithId(frame_id);
-  for (auto& observer : observers_) {
-    observer.WebFrameDidBecomeAvailable(this, frame_ptr);
-  }
-}
-
-void TestWebState::RemoveWebFrame(std::string frame_id) {
-  web::WebFramesManagerImpl* manager =
-      web::WebFramesManagerImpl::FromWebState(this);
-  DCHECK(manager) << "Create a frame manager before adding a frame.";
-  DCHECK(manager->GetFrameWithId(frame_id));
-  WebFrame* frame_ptr = manager->GetFrameWithId(frame_id);
-  for (auto& observer : observers_) {
-    observer.WebFrameWillBecomeUnavailable(this, frame_ptr);
-  }
-  manager->RemoveFrameWithId(frame_id);
+void TestWebState::SetCanTakeSnapshot(bool can_take_snapshot) {
+  can_take_snapshot_ = can_take_snapshot;
 }
 
 CRWWebViewProxyType TestWebState::GetWebViewProxy() const {
@@ -376,16 +385,16 @@ void TestWebState::RemovePolicyDecider(WebStatePolicyDecider* decider) {
   policy_deciders_.RemoveObserver(decider);
 }
 
-WebStateInterfaceProvider* TestWebState::GetWebStateInterfaceProvider() {
-  return nullptr;
-}
-
 bool TestWebState::HasOpener() const {
   return has_opener_;
 }
 
 void TestWebState::SetHasOpener(bool has_opener) {
   has_opener_ = has_opener;
+}
+
+bool TestWebState::CanTakeSnapshot() const {
+  return can_take_snapshot_;
 }
 
 void TestWebState::TakeSnapshot(const gfx::RectF& rect,

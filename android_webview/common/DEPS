@@ -1,6 +1,7 @@
 include_rules = [
   "-android_webview",
   "+android_webview/common",
+  "+android_webview/common_jni_headers",
   "+components/cdm/common",
   "+components/printing/common",
   "+media/base/android",

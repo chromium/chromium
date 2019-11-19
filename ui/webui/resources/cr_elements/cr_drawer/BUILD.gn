@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile") {
   deps = [
@@ -15,4 +16,33 @@ js_library("cr_drawer") {
     "//ui/webui/resources/js:assert",
     "//ui/webui/resources/js:util",
   ]
+}
+
+polymer_modulizer("cr_drawer") {
+  js_file = "cr_drawer.js"
+  html_file = "cr_drawer.html"
+  html_type = "dom-module"
+  auto_imports = [
+    "ui/webui/resources/html/assert.html|assertNotReached",
+    "ui/webui/resources/html/util.html|listenOnce",
+  ]
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":cr_drawer.m",
+  ]
+}
+
+js_library("cr_drawer.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_drawer/cr_drawer.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+  extra_deps = [ ":cr_drawer_module" ]
 }

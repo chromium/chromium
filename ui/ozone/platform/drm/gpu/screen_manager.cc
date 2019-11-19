@@ -5,7 +5,7 @@
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 #include <xf86drmMode.h>
-
+#include <memory>
 #include <utility>
 
 #include "base/files/platform_file.h"
@@ -154,8 +154,8 @@ bool ScreenManager::ActualConfigureDisplayController(
   gfx::Rect modeset_bounds(origin.x(), origin.y(), mode.hdisplay,
                            mode.vdisplay);
   HardwareDisplayControllers::iterator it = FindDisplayController(drm, crtc);
-  DCHECK(controllers_.end() != it) << "Display controller (crtc=" << crtc
-                                   << ") doesn't exist.";
+  DCHECK(controllers_.end() != it)
+      << "Display controller (crtc=" << crtc << ") doesn't exist.";
 
   HardwareDisplayController* controller = it->get();
   CrtcController* crtc_controller = GetCrtcController(controller, drm, crtc);
@@ -230,7 +230,7 @@ HardwareDisplayController* ScreenManager::GetDisplayController(
 void ScreenManager::AddWindow(gfx::AcceleratedWidget widget,
                               std::unique_ptr<DrmWindow> window) {
   std::pair<WidgetToWindowMap::iterator, bool> result =
-      window_map_.insert(std::make_pair(widget, std::move(window)));
+      window_map_.emplace(widget, std::move(window));
   DCHECK(result.second) << "Window already added.";
   UpdateControllerToWindowMapping();
 }
@@ -393,7 +393,7 @@ DrmOverlayPlane ScreenManager::GetModesetBuffer(
   }
 
   scoped_refptr<DrmFramebuffer> framebuffer =
-      DrmFramebuffer::AddFramebuffer(drm, buffer.get());
+      DrmFramebuffer::AddFramebuffer(drm, buffer.get(), modifiers);
   if (!framebuffer) {
     LOG(ERROR) << "Failed to add framebuffer for scanout buffer";
     return DrmOverlayPlane::Error();

@@ -4,9 +4,10 @@
 
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 
-#include "services/service_manager/public/cpp/connector.h"
+#include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -17,12 +18,21 @@ RendererResourceCoordinator* g_renderer_resource_coordinator = nullptr;
 }  // namespace
 
 // static
-void RendererResourceCoordinator::Initialize() {
+void RendererResourceCoordinator::MaybeInitialize() {
+  if (!RuntimeEnabledFeatures::PerformanceManagerInstrumentationEnabled())
+    return;
+
   blink::Platform* platform = Platform::Current();
   DCHECK(IsMainThread());
   DCHECK(platform);
-  g_renderer_resource_coordinator = new RendererResourceCoordinator(
-      platform->GetConnector(), platform->GetBrowserServiceName());
+
+  mojo::PendingRemote<
+      performance_manager::mojom::blink::ProcessCoordinationUnit>
+      remote;
+  platform->GetBrowserInterfaceBroker()->GetInterface(
+      remote.InitWithNewPipeAndPassReceiver());
+  g_renderer_resource_coordinator =
+      new RendererResourceCoordinator(std::move(remote));
 }
 
 // static
@@ -33,15 +43,14 @@ void RendererResourceCoordinator::
 }
 
 // static
-RendererResourceCoordinator& RendererResourceCoordinator::Get() {
-  DCHECK(g_renderer_resource_coordinator);
-  return *g_renderer_resource_coordinator;
+RendererResourceCoordinator* RendererResourceCoordinator::Get() {
+  return g_renderer_resource_coordinator;
 }
 
 RendererResourceCoordinator::RendererResourceCoordinator(
-    service_manager::Connector* connector,
-    const std::string& service_name) {
-  connector->BindInterface(service_name, &service_);
+    mojo::PendingRemote<
+        performance_manager::mojom::blink::ProcessCoordinationUnit> remote) {
+  service_.Bind(std::move(remote));
 }
 
 RendererResourceCoordinator::RendererResourceCoordinator() = default;
@@ -60,12 +69,6 @@ void RendererResourceCoordinator::SetMainThreadTaskLoadIsLow(
   if (!service_)
     return;
   service_->SetMainThreadTaskLoadIsLow(main_thread_task_load_is_low);
-}
-
-void RendererResourceCoordinator::OnRendererIsBloated() {
-  if (!service_)
-    return;
-  service_->OnRendererIsBloated();
 }
 
 }  // namespace blink

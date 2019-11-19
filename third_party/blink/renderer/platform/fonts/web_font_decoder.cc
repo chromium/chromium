@@ -30,15 +30,16 @@
 
 #include "third_party/blink/renderer/platform/fonts/web_font_decoder.h"
 
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/web_font_typeface_factory.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
 #include "third_party/ots/include/ots-memory-stream.h"
 #include "third_party/skia/include/core/SkStream.h"
 
@@ -195,7 +196,7 @@ sk_sp<SkTypeface> WebFontDecoder::Decode(SharedBuffer* buffer) {
   // Most web fonts are compressed, so the result can be much larger than
   // the original.
   ots::ExpandingMemoryStream output(buffer->size(), kMaxWebFontSize);
-  double start = CurrentTime();
+  base::ElapsedTimer timer;
   BlinkOTSContext ots_context;
   SharedBuffer::DeprecatedFlatData flattened_buffer(buffer);
   const char* data = flattened_buffer.Data();
@@ -211,7 +212,7 @@ sk_sp<SkTypeface> WebFontDecoder::Decode(SharedBuffer* buffer) {
   }
 
   const size_t decoded_length = SafeCast<size_t>(output.Tell());
-  RecordDecodeSpeedHistogram(data, buffer->size(), CurrentTime() - start,
+  RecordDecodeSpeedHistogram(data, buffer->size(), timer.Elapsed().InSecondsF(),
                              decoded_length);
 
   sk_sp<SkData> sk_data = SkData::MakeWithCopy(output.get(), decoded_length);

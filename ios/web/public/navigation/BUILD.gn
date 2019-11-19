@@ -1,0 +1,26 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("navigation") {
+  deps = [
+    "//ios/web/common:user_agent",
+    "//ios/web/public/deprecated:deprecated_navigation_util",
+    "//ui/base",
+    "//url",
+  ]
+
+  sources = [
+    "browser_url_rewriter.h",
+    "navigation_context.h",
+    "navigation_item.h",
+    "navigation_manager.h",
+    "referrer.h",
+    "reload_type.h",
+    "url_schemes.h",
+    "web_state_policy_decider.h",
+    "web_state_policy_decider_bridge.h",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}

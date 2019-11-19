@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "testing/perf/perf_test.h"
+#include "testing/perf/perf_result_reporter.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
@@ -26,6 +26,16 @@
 namespace {
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+constexpr char kMetricLibrarySizeBytes[] = "library_size";
+constexpr char kMetricTimeToLoadLibraryMs[] = "time_to_load_library";
+
+perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
+  perf_test::PerfResultReporter reporter("", story);
+  reporter.RegisterImportantMetric(kMetricLibrarySizeBytes, "bytes");
+  reporter.RegisterImportantMetric(kMetricTimeToLoadLibraryMs, "ms");
+  return reporter;
+}
 
 // Measures the size (bytes) and time to load (sec) of a native library.
 // |library_relative_dir| is the relative path based on DIR_MODULE.
@@ -40,12 +50,8 @@ void MeasureSizeAndTimeToLoadNativeLibrary(
 
   int64_t size = 0;
   ASSERT_TRUE(base::GetFileSize(library_path, &size));
-  perf_test::PrintResult("library_size",
-                         "",
-                         library_name.AsUTF8Unsafe(),
-                         static_cast<size_t>(size),
-                         "bytes",
-                         true);
+  auto reporter = SetUpReporter(library_name.AsUTF8Unsafe());
+  reporter.AddResult(kMetricLibrarySizeBytes, static_cast<size_t>(size));
 
   base::NativeLibraryLoadError error;
   base::TimeTicks start = base::TimeTicks::Now();
@@ -54,12 +60,7 @@ void MeasureSizeAndTimeToLoadNativeLibrary(
   double delta = (base::TimeTicks::Now() - start).InMillisecondsF();
   ASSERT_TRUE(native_library) << "Error loading library: " << error.ToString();
   base::UnloadNativeLibrary(native_library);
-  perf_test::PrintResult("time_to_load_library",
-                         "",
-                         library_name.AsUTF8Unsafe(),
-                         delta,
-                         "ms",
-                         true);
+  reporter.AddResult(kMetricTimeToLoadLibraryMs, delta);
 }
 
 void MeasureSizeAndTimeToLoadCdm(const std::string& cdm_base_dir,

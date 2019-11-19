@@ -1,8 +1,0 @@
-CONSOLE ERROR: line 8: The XSS Auditor blocked access to 'http://localhost:8000/security/xssAuditor/resources/echo-intertag.pl?enable-full-block=1&q=%3Cscript%3Ealert(String.fromCharCode(0x58,0x53,0x53));%3C/script%3E' because the source code of a script was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-PASS xssed.contentDocument is null
-PASS xssed.contentWindow.location.href threw exception SecurityError: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a cross-origin frame..
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
- 

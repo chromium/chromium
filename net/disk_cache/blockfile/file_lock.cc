@@ -4,14 +4,14 @@
 
 #include "net/disk_cache/blockfile/file_lock.h"
 
-#include "base/atomicops.h"
+#include <atomic>
 
 namespace {
 
 void Barrier() {
 #if !defined(COMPILER_MSVC)
   // VS uses memory barrier semantics for volatiles.
-  base::subtle::MemoryBarrier();
+  std::atomic_thread_fence(std::memory_order_seq_cst);
 #endif
 }
 

@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ui/base/ime/linux/ui_base_ime_linux_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -17,7 +17,7 @@ class LinuxInputMethodContextDelegate;
 // An interface that lets different Linux platforms override the
 // CreateInputMethodContext function declared here to return native input method
 // contexts.
-class UI_BASE_IME_LINUX_EXPORT LinuxInputMethodContextFactory {
+class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextFactory {
  public:
   // Returns the current active factory or NULL.
   static const LinuxInputMethodContextFactory* instance();

@@ -9,7 +9,7 @@ import("//chrome/process_version_rc_template.gni")
 message_compiler("eventlog_messages") {
   visibility = [
     "//chrome/chrome_watcher:chrome_watcher",
-    "//chrome/common:common",
+    "//chrome/common",
     ":eventlog_provider",
   ]
 
@@ -35,6 +35,7 @@ shared_library("eventlog_provider") {
   ]
 
   if (!is_asan) {
+    no_default_deps = true
     ldflags = [ "/NOENTRY" ]
   }
 

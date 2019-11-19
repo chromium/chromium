@@ -20,7 +20,7 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "chrome/test/views/chrome_test_views_delegate.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -30,6 +30,10 @@
 
 namespace gfx {
 class Size;
+}
+
+namespace ui {
+class TestContextFactories;
 }
 
 class ViewEventTestPlatformPart;
@@ -62,16 +66,9 @@ class ViewEventTestPlatformPart;
 //
 // Testing drag and drop is tricky because the mouse move that initiates drag
 // and drop may trigger a nested native event loop that waits for more mouse
-// messages.  Thus code needs an initial mouse move to start the drag, then a
-// mouse move enqueued from a background thread to finish the drag (since tasks
-// on the main thread may be stalled waiting for the nested loop to terminate).
-// You can do this with a pattern like:
-//   // Schedule the mouse move at a location slightly different from where
-//   // you really want to move to to start the drag.
-//   ui_controls::SendMouseMoveNotifyWhenDone(loc.x + 10, loc.y,
-//       base::BindOnce(&YYY, this));
-//   // Then schedule another mouse move to finish it.
-//   ScheduleMouseMoveInBackground(loc.x, loc.y);
+// messages.  Once a drag begins, all UI events until the drag ends must be
+// driven from observer callbacks and posted on the task runner returned by
+// GetDragTaskRunner().
 
 class ViewEventTestBase : public views::WidgetDelegate, public testing::Test {
  public:
@@ -123,30 +120,29 @@ class ViewEventTestBase : public views::WidgetDelegate, public testing::Test {
                           base::BindOnce(method, base::Unretained(target)));
   }
 
-  // Spawns a new thread posts a MouseMove in the background.
-  void ScheduleMouseMoveInBackground(int x, int y);
+  // Returns a task runner to use for drag-related mouse events.
+  scoped_refptr<base::SingleThreadTaskRunner> GetDragTaskRunner();
 
-  views::Widget* window_;
+  views::Widget* window_ = nullptr;
 
  private:
-  // Stops the thread started by ScheduleMouseMoveInBackground.
-  void StopBackgroundThread();
-
-  // Callback from CreateEventTask. Stops the background thread, runs the
-  // supplied task and if there are failures invokes Done.
+  // Callback from CreateEventTask. Runs the supplied task and if there are
+  // failures invokes Done.
   void RunTestMethod(base::OnceClosure task);
 
   // The content of the Window.
-  views::View* content_view_;
+  views::View* content_view_ = nullptr;
 
   // Thread for posting background drag events.
   std::unique_ptr<base::Thread> drag_event_thread_;
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
 #if defined(OS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
+
+  std::unique_ptr<ui::TestContextFactories> context_factories_;
 
   std::unique_ptr<ViewEventTestPlatformPart> platform_part_;
 

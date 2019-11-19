@@ -1,6 +1,3 @@
-escordeiro@chromium.org
-menegola@chromium.org
-pam@chromium.org
-treib@chromium.org
+file://chrome/browser/supervised_user/OWNERS
 
 # COMPONENT: Services>SupervisedUser

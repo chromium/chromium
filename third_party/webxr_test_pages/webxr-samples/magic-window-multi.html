@@ -1,0 +1,343 @@
+<!doctype html>
+<!--
+Copyright 2018 The Immersive Web Community Group
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+
+    <!-- Origin Trial Token, feature = WebXR Device API (For Chrome M76+), origin = storage.googleapis.com, expires = 2019-11-14 -->
+    <meta http-equiv="origin-trial" data-feature="WebXR Device API (For Chrome M76+)" data-expires="2019-11-14" content="AhHyLykky2f1ejF4oOiAcixprTboDwDMxntJkEYdXJY192BEsCTEYcwRa7X9TB6Qq3kEqcQsVbwjkZgh0V6FhQkAAABxeyJvcmlnaW4iOiJodHRwczovL3N0b3JhZ2UuZ29vZ2xlYXBpcy5jb206NDQzIiwiZmVhdHVyZSI6IldlYlhSRGV2aWNlTTc2IiwiZXhwaXJ5IjoxNTczNzY4NzU1LCJpc1N1YmRvbWFpbiI6dHJ1ZX0=">
+
+    <title>Multiple Magic Windows</title>
+
+    <link href='css/common.css' rel='stylesheet'></link>
+    <style>
+      #magic-window-container {
+        display: flex;
+        flex-direction: column;
+      }
+
+      #magic-window-container canvas {
+        position: relative;
+        box-sizing: border-box;
+        height: 200px;
+        border-width: 0px 5px 5px 5px;
+        border-style: solid;
+        border-color: white;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      #magic-window-container canvas:first-child {
+        border-top-width: 5px;
+      }
+    </style>
+
+    <!--The polyfill is not needed for browser that have native API support,
+        but is linked by these samples for wider compatibility.-->
+    <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='js/xrray-polyfill.js' type='module'></script>
+    <script src='js/webxr-polyfill.js'></script>
+  </head>
+  <body>
+    <header>
+      <details open>
+        <summary>Multiple Magic Windows</summary>
+        <p>
+          This sample demonstrates use of multiple non-immersive XRSessions to present
+          'Magic Window' content from multiple scenes on the same page. The viewer pose
+          can be adjusted by clicking and dragging with mouse or touch.
+        </p>
+        <p>
+          <a class="back" href="./index.html">Back</a><br>
+        </p>
+      </details>
+    </header>
+    <div id="magic-window-container"></div>
+    <script type="module">
+      import {Scene} from './js/cottontail/src/scenes/scene.js';
+      import {Renderer, createWebGLContext} from './js/cottontail/src/core/renderer.js';
+      import {Gltf2Node} from './js/cottontail/src/nodes/gltf2.js';
+      import {QueryArgs} from './js/cottontail/src/util/query-args.js';
+      import {SkyboxNode} from './js/cottontail/src/nodes/skybox.js';
+      import {mat4, vec3, quat} from './js/cottontail/src/math/gl-matrix.js';
+
+      // If requested, initialize the WebXR polyfill
+      if (QueryArgs.getBool('allowPolyfill', false)) {
+        var polyfill = new WebXRPolyfill();
+      }
+
+      function initXR(scene, lookOffset) {
+        // Keep track of contextual data for each session (touches, reference space, renderer, etc)
+        let sessionCtx = {
+          // Touch-related state so that users can touch and drag on
+          // the canvas to adjust the viewer pose in an inline session.
+          lookOffset: lookOffset || { x: 0, y: 0, z: 0 },
+          lookYaw: 0,
+          lookPitch: 0,
+          primaryTouch: null,
+          prevTouchX: null,
+          prevTouchY: null,
+          currentTouches: new Set(),
+
+          // Rendering and scene-related state.
+          scene: scene,
+          refSpace: null,
+          gl: null,
+          renderer: null,
+        };
+
+        // Pick an arbitrary device for the magic window content and start
+        // up a non-immersive non-local session.
+        requestSession(sessionCtx)
+        .then(session => {
+          // Once the initial inline session has been set up, create a session
+          // supporting the local reference space when we have user activation.
+          sessionCtx.gl.canvas.addEventListener('touchend', () => {
+            session.end().then(() => requestSession(sessionCtx, {optionalFeatures: ['local']}))
+          }, { once: true });
+        });
+      }
+
+      function requestSession(sessionCtx, options) {
+        if (navigator.xr) {
+          return navigator.xr.requestSession('inline', options).then(session => {
+            return onSessionStarted(sessionCtx, session);
+          });
+        } else {
+          return Promise.reject();
+        }
+      }
+
+      function onSessionStarted(sessionCtx, session) {
+        if (!sessionCtx.gl) {
+          sessionCtx.gl = createWebGLContext({
+            xrCompatible: true
+          });
+          document.getElementById("magic-window-container").appendChild(sessionCtx.gl.canvas);
+
+          function onResize () {
+            sessionCtx.gl.canvas.width = (sessionCtx.gl.canvas.offsetWidth * window.devicePixelRatio);
+            sessionCtx.gl.canvas.height = (sessionCtx.gl.canvas.offsetHeight * window.devicePixelRatio);
+          }
+          window.addEventListener('resize', onResize);
+          onResize();
+
+          sessionCtx.renderer = new Renderer(sessionCtx.gl);
+          sessionCtx.scene.setRenderer(sessionCtx.renderer);
+
+          // Make the canvas listen for touch events so that we can adjust the
+          // viewer pose accordingly in inline sessions.
+          sessionCtx.gl.canvas.addEventListener("touchstart", ev => onTouchStart(sessionCtx, ev));
+          sessionCtx.gl.canvas.addEventListener("touchend", ev => onTouchEnd(sessionCtx, ev));
+          sessionCtx.gl.canvas.addEventListener("touchcancel", ev => onTouchCancel(sessionCtx, ev));
+          sessionCtx.gl.canvas.addEventListener("touchmove", ev => onTouchMove(sessionCtx, ev));
+          sessionCtx.gl.canvas.addEventListener("mousemove", ev => onMouseMove(sessionCtx, ev));
+        }
+
+        session.updateRenderState({
+          baseLayer: new XRWebGLLayer(session, sessionCtx.gl)
+        });
+
+        // Try to get a local reference space, if possible.
+        // Otherwise, get a viewer reference space.
+        session.requestReferenceSpace('local')
+        .catch(() => session.requestReferenceSpace('viewer'))
+        .then(refSpace => {
+          sessionCtx.refSpace = refSpace;
+          session.requestAnimationFrame((t, frame) => onXRFrame(sessionCtx, t, frame));
+        });
+
+        return session;
+      }
+
+      // Allow the user to click and drag the mouse (or touch and drag the
+      // screen on handheld devices) to adjust the viewer pose for inline
+      // sessions.
+      const lookSpeed = 0.0025;
+
+      function processMoveEvent(sessionCtx, dx, dy) {
+        sessionCtx.lookYaw += dx * lookSpeed;
+        sessionCtx.lookPitch += dy * lookSpeed;
+        if (sessionCtx.lookPitch < -Math.PI*0.5)
+            sessionCtx.lookPitch = -Math.PI*0.5;
+        if (sessionCtx.lookPitch > Math.PI*0.5)
+            sessionCtx.lookPitch = Math.PI*0.5;
+      }
+
+      function onMouseMove(sessionCtx, event) {
+        // Only rotate when the left button is pressed
+        if (event.buttons & 1) {
+          processMoveEvent(sessionCtx, event.movementX, event.movementY);
+        }
+      }
+
+      // Keep track of all active touches, but only use the first touch to
+      // adjust the viewer pose.
+      function onTouchStart(sessionCtx, event) {
+        for (const touch of event.changedTouches) {
+          const id = touch.identifier;
+          if (sessionCtx.primaryTouch == undefined) {
+            sessionCtx.primaryTouch = id;
+            sessionCtx.prevTouchX = touch.pageX;
+            sessionCtx.prevTouchY = touch.pageY;
+          }
+          sessionCtx.currentTouches.add(id);
+        }
+      }
+
+      // Update the set of active touches now that one or more touches finished.
+      // If the primary touch just finished, update the viewer pose based on the
+      // final touch movement.
+      function onTouchEnd(sessionCtx, event) {
+        for (const touch of event.changedTouches) {
+          const id = touch.identifier;
+          if (id == sessionCtx.primaryTouch) {
+            const dx = touch.pageX - sessionCtx.prevTouchX;
+            const dy = touch.pageY - sessionCtx.prevTouchY;
+            processMoveEvent(sessionCtx, dx, dy);
+            sessionCtx.primaryTouch = undefined;
+          }
+          sessionCtx.currentTouches.delete(id);
+        }
+      }
+
+      // Update the set of active touches now that one or more touches was
+      // cancelled. Don't update the viewer pose when the primary touch was
+      // cancelled.
+      function onTouchCancel(sessionCtx, event) {
+        for (const touch of event.changedTouches) {
+          const id = touch.identifier;
+          if (id == sessionCtx.primaryTouch) {
+            sessionCtx.primaryTouch = undefined;
+          }
+          sessionCtx.currentTouches.delete(id);
+        }
+      }
+
+      // Only use the delta between the most recent and previous events for the
+      // primary touch. Ignore the other touches.
+      function onTouchMove(sessionCtx, event) {
+        for (const touch of event.changedTouches) {
+          const id = touch.identifier;
+          if (id == sessionCtx.primaryTouch) {
+            const dx = touch.pageX - sessionCtx.prevTouchX;
+            const dy = touch.pageY - sessionCtx.prevTouchY;
+            processMoveEvent(sessionCtx, dx, dy);
+            sessionCtx.prevTouchX = touch.pageX;
+            sessionCtx.prevTouchY = touch.pageY;
+          }
+        }
+      }
+
+      // XRReferenceSpace offset is immutable, so return a new reference space
+      // that has an updated orientation.
+      function getAdjustedRefSpace(sessionCtx, refSpace) {
+        // Represent the rotational component of the reference space as a
+        // quaternion.
+        let invOrientation = quat.create();
+        quat.rotateX(invOrientation, invOrientation, -sessionCtx.lookPitch);
+        quat.rotateY(invOrientation, invOrientation, -sessionCtx.lookYaw);
+
+        // Rotate the camera based on lookYaw and lookPitch
+        let xform = new XRRigidTransform(
+            {x: 0, y: 0, z: 0},
+            {x: invOrientation[0], y: invOrientation[1], z: invOrientation[2], w: invOrientation[3]});
+        refSpace = refSpace.getOffsetReferenceSpace(xform);
+
+        // Translate the camera based on lookOffset
+        xform = new XRRigidTransform(
+            sessionCtx.lookOffset,
+            {x: 0, y: 0, z: 0, w: 1});
+        return refSpace.getOffsetReferenceSpace(xform);
+      }
+
+      // Called every time a XRSession requests that a new frame be drawn.
+      function onXRFrame(sessionCtx, t, frame) {
+        let session = frame.session;
+
+        // Per-frame scene setup. Nothing WebXR specific here.
+        sessionCtx.scene.startFrame();
+
+        // Inform the session that we're ready for the next frame.
+        session.requestAnimationFrame((t, frame) => onXRFrame(sessionCtx, t, frame));
+
+        // Account for the click-and-drag mouse movement or touch movement when
+        // calculating the viewer pose for inline sessions.
+        let refSpace = getAdjustedRefSpace(sessionCtx, sessionCtx.refSpace);
+
+        let pose = frame.getViewerPose(refSpace);
+
+        // In most other samples, these rendering details will be handled by
+        // cottontail by calling |scene.drawXRFrame|.
+        if (pose) {
+          sessionCtx.gl.bindFramebuffer(sessionCtx.gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+          sessionCtx.gl.clear(sessionCtx.gl.COLOR_BUFFER_BIT | sessionCtx.gl.DEPTH_BUFFER_BIT);
+
+          // Loop through each of the views reported by the frame and draw them
+          // into the corresponding viewport.
+          for (let view of pose.views) {
+            let viewport = session.renderState.baseLayer.getViewport(view);
+            sessionCtx.gl.viewport(viewport.x, viewport.y, viewport.width, viewport.height);
+
+            // Draw this view of the scene. What happens in this function really
+            // isn't all that important. What is important is that it renders
+            // into the XRWebGLLayer's framebuffer, using the viewport into that
+            // framebuffer reported by the current view, and using the
+            // projection and view matrices from the current view and pose.
+            // We bound the framebuffer and viewport up above, and are passing
+            // in the appropriate matrices here to be used when rendering.
+            sessionCtx.scene.draw(view.projectionMatrix, view.transform.inverse.matrix);
+          }
+        } else {
+          // There's several options for handling cases where no pose is given.
+          // The simplest, which these samples opt for, is to simply not draw
+          // anything. That way the device will continue to show the last frame
+          // drawn, possibly even with re-projection. Alternately you could
+          // re-draw the scene again with the last known good pose (which is now
+          // likely to be wrong), clear to black, or draw a head-locked message
+          // for the user indicating that they should try to get back to an area
+          // with better tracking. In all cases it's possible that the device
+          // may override what is drawn here to show the user it's own error
+          // message, so it should not be anything critical to the application's
+          // use.
+        }
+
+        // Per-frame scene tear-down. Nothing WebXR specific here.
+        sessionCtx.scene.endFrame();
+      }
+
+      // Create two XR Sessions
+      let scene1 = new Scene();
+      scene1.addNode(new Gltf2Node({url: '../media/gltf/space/space.gltf'}));
+      scene1.addNode(new SkyboxNode({url: '../media/textures/milky-way-4k.png'}));
+      initXR(scene1);
+
+      let scene2 = new Scene();
+      scene2.addNode(new Gltf2Node({url: '../media/gltf/cave/cave.gltf'}))
+      scene2.addNode(new SkyboxNode({url: '../media/textures/eilenriede-park-2k.png'}))
+      initXR(scene2, {x: 0, y: -1.5, z: 0});
+    </script>
+  </body>
+</html>

@@ -13,7 +13,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "net/url_request/url_request_file_job.h"
+#include "net/test/url_request/url_request_test_job_backed_by_file.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -26,9 +26,9 @@ class URLRequestInterceptor;
 
 namespace net {
 
-class URLRequestMockHTTPJob : public URLRequestFileJob {
+class URLRequestMockHTTPJob : public URLRequestTestJobBackedByFile {
  public:
-  // Note that all file I/O is done using TaskScheduler.
+  // Note that all file I/O is done using ThreadPool.
   URLRequestMockHTTPJob(URLRequest* request,
                         NetworkDelegate* network_delegate,
                         const base::FilePath& file_path);
@@ -77,7 +77,7 @@ class URLRequestMockHTTPJob : public URLRequestFileJob {
   std::string raw_headers_;
   int64_t total_received_bytes_ = 0;
 
-  base::WeakPtrFactory<URLRequestMockHTTPJob> weak_ptr_factory_;
+  base::WeakPtrFactory<URLRequestMockHTTPJob> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(URLRequestMockHTTPJob);
 };

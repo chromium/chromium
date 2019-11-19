@@ -20,6 +20,7 @@
 
 #include "base/files/file_path.h"
 #include "snapshot/crashpad_types/image_annotation_reader.h"
+#include "snapshot/memory_snapshot_generic.h"
 #include "util/misc/elf_note_types.h"
 
 namespace crashpad {
@@ -28,14 +29,17 @@ namespace internal {
 ModuleSnapshotElf::ModuleSnapshotElf(const std::string& name,
                                      ElfImageReader* elf_reader,
                                      ModuleSnapshot::ModuleType type,
-                                     ProcessMemoryRange* process_memory_range)
+                                     ProcessMemoryRange* process_memory_range,
+                                     const ProcessMemory* process_memory)
     : ModuleSnapshot(),
       name_(name),
       elf_reader_(elf_reader),
       process_memory_range_(process_memory_range),
+      process_memory_(process_memory),
       crashpad_info_(),
       type_(type),
-      initialized_() {}
+      initialized_(),
+      streams_() {}
 
 ModuleSnapshotElf::~ModuleSnapshotElf() = default;
 
@@ -150,13 +154,10 @@ void ModuleSnapshotElf::UUIDAndAge(crashpad::UUID* uuid, uint32_t* age) const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   *age = 0;
 
-  std::unique_ptr<ElfImageReader::NoteReader> notes =
-      elf_reader_->NotesWithNameAndType(ELF_NOTE_GNU, NT_GNU_BUILD_ID, 64);
-  std::string desc;
-  VMAddress desc_addr;
-  notes->NextNote(nullptr, nullptr, &desc, &desc_addr);
-  desc.insert(desc.end(), 16 - std::min(desc.size(), size_t{16}), '\0');
-  uuid->InitializeFromBytes(reinterpret_cast<const uint8_t*>(&desc[0]));
+  auto build_id = BuildID();
+  build_id.insert(
+      build_id.end(), 16 - std::min(build_id.size(), size_t{16}), '\0');
+  uuid->InitializeFromBytes(build_id.data());
 
   // TODO(scottmg): https://crashpad.chromium.org/bug/229. These are
   // endian-swapped to match FileID::ConvertIdentifierToUUIDString() in
@@ -169,6 +170,21 @@ void ModuleSnapshotElf::UUIDAndAge(crashpad::UUID* uuid, uint32_t* age) const {
 std::string ModuleSnapshotElf::DebugFileName() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   return base::FilePath(Name()).BaseName().value();
+}
+
+std::vector<uint8_t> ModuleSnapshotElf::BuildID() const {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+
+  std::unique_ptr<ElfImageReader::NoteReader> notes =
+      elf_reader_->NotesWithNameAndType(ELF_NOTE_GNU, NT_GNU_BUILD_ID, 64);
+  std::string desc;
+  VMAddress desc_addr;
+  notes->NextNote(nullptr, nullptr, &desc, &desc_addr);
+
+  std::vector<uint8_t> build_id;
+  build_id.reserve(desc.size());
+  std::copy(desc.begin(), desc.end(), std::back_inserter(build_id));
+  return build_id;
 }
 
 std::vector<std::string> ModuleSnapshotElf::AnnotationsVector() const {
@@ -204,7 +220,33 @@ std::set<CheckedRange<uint64_t>> ModuleSnapshotElf::ExtraMemoryRanges() const {
 
 std::vector<const UserMinidumpStream*>
 ModuleSnapshotElf::CustomMinidumpStreams() const {
-  return std::vector<const UserMinidumpStream*>();
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  streams_.clear();
+
+  std::vector<const UserMinidumpStream*> result;
+  if (!crashpad_info_)
+    return result;
+
+  for (uint64_t cur = crashpad_info_->UserDataMinidumpStreamHead(); cur;) {
+    internal::UserDataMinidumpStreamListEntry list_entry;
+    if (!process_memory_->Read(cur, sizeof(list_entry), &list_entry)) {
+      LOG(WARNING) << "could not read user data stream entry from " << name_;
+      return result;
+    }
+
+    if (list_entry.size != 0) {
+      auto memory = std::make_unique<internal::MemorySnapshotGeneric>();
+      memory->Initialize(
+          process_memory_, list_entry.base_address, list_entry.size);
+      streams_.push_back(std::make_unique<UserMinidumpStream>(
+          list_entry.stream_type, memory.release()));
+      result.push_back(streams_.back().get());
+    }
+
+    cur = list_entry.next;
+  }
+
+  return result;
 }
 
 }  // namespace internal

@@ -45,7 +45,8 @@ class OwningAudioManagerAccessor : public Service::AudioManagerAccessor {
  private:
 #if defined(OS_WIN)
   // Required to access CoreAudio.
-  base::win::ScopedCOMInitializer com_initializer_;
+  base::win::ScopedCOMInitializer com_initializer_{
+      base::win::ScopedCOMInitializer::kMTA};
 #endif
   AudioManagerFactoryCallback audio_manager_factory_cb_;
   std::unique_ptr<media::AudioManager> audio_manager_;

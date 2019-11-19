@@ -12,7 +12,6 @@
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_bindings_system.h"
 #include "extensions/renderer/bindings/event_emitter.h"
-#include "extensions/renderer/extension_bindings_system.h"
 #include "extensions/renderer/feature_cache.h"
 #include "extensions/renderer/native_renderer_messaging_service.h"
 #include "v8/include/v8.h"
@@ -20,38 +19,65 @@
 namespace extensions {
 class IPCMessageSender;
 class ScriptContext;
+class ScriptContextSetIterable;
 
-// The implementation of the Bindings System for extensions code with native
-// implementations (rather than JS hooks). Handles permission/availability
-// checking and creates all bindings available for a given context. Sending the
-// IPC is still abstracted out for testing purposes, but otherwise this should
-// be a plug-and-play version for use in the Extensions system.
-// Designed to be used in a single thread, but for all contexts on that thread.
-class NativeExtensionBindingsSystem : public ExtensionBindingsSystem {
+// The class responsible for creating extension bindings in different contexts,
+// permissions/availability checks, dispatching requests and handling responses,
+// and dispatching events to listeners.
+// This is designed to be used on a single thread (and for all contexts on that
+// thread), but should be safe to use on threads other than the main thread (so
+// that worker threads can have extension bindings).
+// TODO(devlin): Rename this to be simply "ExtensionBindingsSystem"? There's
+// no non-native version, but the rename causes churn and also makes git history
+// a bit messy (since there used to be a different ExtensionBindingsSystem).
+class NativeExtensionBindingsSystem {
  public:
   explicit NativeExtensionBindingsSystem(
       std::unique_ptr<IPCMessageSender> ipc_message_sender);
-  ~NativeExtensionBindingsSystem() override;
+  ~NativeExtensionBindingsSystem();
 
-  // ExtensionBindingsSystem:
-  void DidCreateScriptContext(ScriptContext* context) override;
-  void WillReleaseScriptContext(ScriptContext* context) override;
-  void UpdateBindingsForContext(ScriptContext* context) override;
+  // Called when a new ScriptContext is created.
+  // Initializes the bindings for a newly created |context|.
+  void DidCreateScriptContext(ScriptContext* context);
+
+  // Called when a ScriptContext is about to be released.
+  void WillReleaseScriptContext(ScriptContext* context);
+
+  // Updates the bindings for a given |context|. This happens at initialization,
+  // but also when e.g. an extension gets updated permissions.
+  // TODO(lazyboy): Make this private, and expose a test getter.
+  void UpdateBindingsForContext(ScriptContext* context);
+
+  // Dispatches an event with the given |name|, |event_args|, and
+  // |filtering_info| in the given |context|.
   void DispatchEventInContext(const std::string& event_name,
                               const base::ListValue* event_args,
                               const EventFilteringInfo* filtering_info,
-                              ScriptContext* context) override;
+                              ScriptContext* context);
+
+  // Returns true if there is a listener for the given |event_name| in the
+  // associated |context|.
   bool HasEventListenerInContext(const std::string& event_name,
-                                 ScriptContext* context) override;
+                                 ScriptContext* context);
+
+  // Handles the response associated with the given |request_id|.
   void HandleResponse(int request_id,
                       bool success,
                       const base::ListValue& response,
-                      const std::string& error) override;
-  RequestSender* GetRequestSender() override;
-  IPCMessageSender* GetIPCMessageSender() override;
-  RendererMessagingService* GetMessagingService() override;
-  void OnExtensionPermissionsUpdated(const ExtensionId& id) override;
-  void OnExtensionRemoved(const ExtensionId& id) override;
+                      const std::string& error);
+
+  // Returns the associated IPC message sender.
+  IPCMessageSender* GetIPCMessageSender();
+
+  // Adds or removes bindings for every context belonging to |extension_id|, or
+  // or all contexts if |extension_id| is empty. Also invalidates
+  // |feature_cache_| entry if |permissions_changed| = true.
+  void UpdateBindings(const ExtensionId& extension_id,
+                      bool permissions_changed,
+                      ScriptContextSetIterable* script_context_set);
+
+  // Called when an extension is removed.
+  void OnExtensionRemoved(const ExtensionId& id);
 
   APIBindingsSystem* api_system() { return &api_system_; }
   NativeRendererMessagingService* messaging_service() {
@@ -103,6 +129,14 @@ class NativeExtensionBindingsSystem : public ExtensionBindingsSystem {
   void GetJSBindingUtil(v8::Local<v8::Context> context,
                         v8::Local<v8::Value>* binding_util_out);
 
+  // Updates a web page context within |context| with any content capabilities
+  // granted by active extensions.
+  void UpdateContentCapabilities(ScriptContext* context);
+
+  // Invalidates the cached feature availability for |extension|; called when
+  // bindings availability has changed (such as after a permissions change).
+  void InvalidateFeatureCache(const ExtensionId& extension_id);
+
   std::unique_ptr<IPCMessageSender> ipc_message_sender_;
 
   // The APIBindingsSystem associated with this class.
@@ -115,7 +149,7 @@ class NativeExtensionBindingsSystem : public ExtensionBindingsSystem {
   // A function to acquire an internal API.
   v8::Eternal<v8::FunctionTemplate> get_internal_api_;
 
-  base::WeakPtrFactory<NativeExtensionBindingsSystem> weak_factory_;
+  base::WeakPtrFactory<NativeExtensionBindingsSystem> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NativeExtensionBindingsSystem);
 };

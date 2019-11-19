@@ -37,7 +37,7 @@ class MEDIA_GPU_EXPORT VaapiPicture {
   // and will close it even on failure. Return true on success, false otherwise.
   virtual bool ImportGpuMemoryBufferHandle(
       gfx::BufferFormat format,
-      const gfx::GpuMemoryBufferHandle& gpu_memory_buffer_handle) = 0;
+      gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle) = 0;
 
   // Allocates a buffer of |format| to use as backing storage for this picture.
   // Return true on success.

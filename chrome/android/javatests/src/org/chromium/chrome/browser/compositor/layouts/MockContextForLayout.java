@@ -5,11 +5,8 @@
 package org.chromium.chrome.browser.compositor.layouts;
 
 import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
+import android.content.ContextWrapper;
 import android.content.res.Resources;
-import android.os.Looper;
-import android.test.mock.MockContext;
 import android.test.mock.MockResources;
 
 /**
@@ -17,13 +14,12 @@ import android.test.mock.MockResources;
  * It points to a {@link MockResources} for anything that is based on xml configurations. For
  * everything else the standard provided Context should be sufficient.
  */
-public class MockContextForLayout extends MockContext {
-    private final Context mValidContext;
+public class MockContextForLayout extends ContextWrapper {
     private final MockResourcesForLayout mResources;
     private final Resources.Theme mTheme;
 
     public MockContextForLayout(Context validContext) {
-        mValidContext = validContext;
+        super(validContext);
         mResources = new MockResourcesForLayout(validContext.getResources());
         mTheme = mResources.newTheme();
     }
@@ -34,33 +30,8 @@ public class MockContextForLayout extends MockContext {
     }
 
     @Override
-    public ApplicationInfo getApplicationInfo() {
-        return mValidContext.getApplicationInfo();
-    }
-
-    @Override
-    public Object getSystemService(String name) {
-        return mValidContext.getSystemService(name);
-    }
-
-    @Override
-    public PackageManager getPackageManager() {
-        return mValidContext.getPackageManager();
-    }
-
-    @Override
     public Context getApplicationContext() {
         return this;
-    }
-
-    @Override
-    public int checkCallingOrSelfPermission(String permission) {
-        return mValidContext.checkCallingOrSelfPermission(permission);
-    }
-
-    @Override
-    public Looper getMainLooper() {
-        return mValidContext.getMainLooper();
     }
 
     @Override

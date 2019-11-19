@@ -39,11 +39,18 @@ class ASH_PUBLIC_EXPORT FrameSizeButton : public views::FrameCaptionButton {
   void OnMouseMoved(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
 
+  // Cancel the snap opereation if we're currently in snap mode. The snap
+  // preview will be deleted and the button will be set back to its normal mode.
+  void CancelSnap();
+
   void set_delay_to_set_buttons_to_snap_mode(int delay_ms) {
     set_buttons_to_snap_mode_delay_ms_ = delay_ms;
   }
+  bool in_snap_mode_for_testing() { return in_snap_mode_; }
 
  private:
+  class SnappingWindowObserver;
+
   // Starts |set_buttons_to_snap_mode_timer_|.
   void StartSetButtonsToSnapModeTimer(const ui::LocatedEvent& event);
 
@@ -74,6 +81,9 @@ class ASH_PUBLIC_EXPORT FrameSizeButton : public views::FrameCaptionButton {
 
   // Not owned.
   FrameSizeButtonDelegate* delegate_;
+
+  // The window observer to observe the to-be-snapped window.
+  std::unique_ptr<SnappingWindowObserver> snapping_window_observer_;
 
   // Location of the event which started |set_buttons_to_snap_mode_timer_| in
   // view coordinates.

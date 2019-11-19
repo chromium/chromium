@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
 
 #include "third_party/blink/renderer/core/animation/length_property_functions.h"
-#include "third_party/blink/renderer/core/css/css_calculation_value.h"
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
-#include "third_party/blink/renderer/core/css/css_syntax_descriptor.h"
+#include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_invert.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_max.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_min.h"
@@ -38,8 +40,7 @@ CSSPrimitiveValue::UnitType ToCanonicalUnitIfPossible(
 
 bool IsValueOutOfRangeForProperty(CSSPropertyID property_id,
                                   double value,
-                                  CSSPrimitiveValue::UnitType unit,
-                                  const CSSSyntaxComponent* match) {
+                                  CSSPrimitiveValue::UnitType unit) {
   // FIXME: Avoid this CSSProperty::Get call as it can be costly.
   // The caller often has a CSSProperty already, so we can just pass it here.
   if (LengthPropertyFunctions::GetValueRange(CSSProperty::Get(property_id)) ==
@@ -49,38 +50,34 @@ bool IsValueOutOfRangeForProperty(CSSPropertyID property_id,
 
   // For non-length properties and special cases.
   switch (property_id) {
-    case CSSPropertyVariable:
-      if (match && match->IsInteger())
-        return round(value) != value;
-      return false;
-    case CSSPropertyOrder:
-    case CSSPropertyZIndex:
+    case CSSPropertyID::kOrder:
+    case CSSPropertyID::kZIndex:
       return round(value) != value;
-    case CSSPropertyTabSize:
+    case CSSPropertyID::kTabSize:
       return value < 0 || (unit == CSSPrimitiveValue::UnitType::kNumber &&
                            round(value) != value);
-    case CSSPropertyOrphans:
-    case CSSPropertyWidows:
-    case CSSPropertyColumnCount:
+    case CSSPropertyID::kOrphans:
+    case CSSPropertyID::kWidows:
+    case CSSPropertyID::kColumnCount:
       return round(value) != value || value < 1;
-    case CSSPropertyBlockSize:
-    case CSSPropertyColumnRuleWidth:
-    case CSSPropertyFlexGrow:
-    case CSSPropertyFlexShrink:
-    case CSSPropertyFontSize:
-    case CSSPropertyFontSizeAdjust:
-    case CSSPropertyFontStretch:
-    case CSSPropertyInlineSize:
-    case CSSPropertyLineHeightStep:
-    case CSSPropertyMaxBlockSize:
-    case CSSPropertyMaxInlineSize:
-    case CSSPropertyMinBlockSize:
-    case CSSPropertyMinInlineSize:
-    case CSSPropertyR:
-    case CSSPropertyRx:
-    case CSSPropertyRy:
+    case CSSPropertyID::kBlockSize:
+    case CSSPropertyID::kColumnRuleWidth:
+    case CSSPropertyID::kFlexGrow:
+    case CSSPropertyID::kFlexShrink:
+    case CSSPropertyID::kFontSize:
+    case CSSPropertyID::kFontSizeAdjust:
+    case CSSPropertyID::kFontStretch:
+    case CSSPropertyID::kInlineSize:
+    case CSSPropertyID::kLineHeightStep:
+    case CSSPropertyID::kMaxBlockSize:
+    case CSSPropertyID::kMaxInlineSize:
+    case CSSPropertyID::kMinBlockSize:
+    case CSSPropertyID::kMinInlineSize:
+    case CSSPropertyID::kR:
+    case CSSPropertyID::kRx:
+    case CSSPropertyID::kRy:
       return value < 0;
-    case CSSPropertyFontWeight:
+    case CSSPropertyID::kFontWeight:
       return value < 0 || value > 1000;
     default:
       return false;
@@ -106,8 +103,8 @@ CSSUnitValue* CSSUnitValue::Create(double value,
   return MakeGarbageCollected<CSSUnitValue>(value, unit);
 }
 
-CSSUnitValue* CSSUnitValue::FromCSSValue(const CSSPrimitiveValue& value) {
-  CSSPrimitiveValue::UnitType unit = value.TypeWithCalcResolved();
+CSSUnitValue* CSSUnitValue::FromCSSValue(const CSSNumericLiteralValue& value) {
+  CSSPrimitiveValue::UnitType unit = value.GetType();
   if (unit == CSSPrimitiveValue::UnitType::kInteger)
     unit = CSSPrimitiveValue::UnitType::kNumber;
 
@@ -168,26 +165,25 @@ bool CSSUnitValue::Equals(const CSSNumericValue& other) const {
   return value_ == other_unit_value->value_ && unit_ == other_unit_value->unit_;
 }
 
-const CSSPrimitiveValue* CSSUnitValue::ToCSSValue() const {
-  return CSSPrimitiveValue::Create(value_, unit_);
+const CSSNumericLiteralValue* CSSUnitValue::ToCSSValue() const {
+  return CSSNumericLiteralValue::Create(value_, unit_);
 }
 
 const CSSPrimitiveValue* CSSUnitValue::ToCSSValueWithProperty(
-    CSSPropertyID property_id,
-    const CSSSyntaxComponent* match) const {
-  if (IsValueOutOfRangeForProperty(property_id, value_, unit_, match)) {
+    CSSPropertyID property_id) const {
+  if (IsValueOutOfRangeForProperty(property_id, value_, unit_)) {
     // Wrap out of range values with a calc.
-    CSSCalcExpressionNode* node = ToCalcExpressionNode();
+    CSSMathExpressionNode* node = ToCalcExpressionNode();
     node->SetIsNestedCalc();
-    return CSSPrimitiveValue::Create(CSSCalcValue::Create(node));
+    return CSSMathFunctionValue::Create(node);
   }
 
-  return CSSPrimitiveValue::Create(value_, unit_);
+  return CSSNumericLiteralValue::Create(value_, unit_);
 }
 
-CSSCalcExpressionNode* CSSUnitValue::ToCalcExpressionNode() const {
-  return CSSCalcValue::CreateExpressionNode(
-      CSSPrimitiveValue::Create(value_, unit_));
+CSSMathExpressionNode* CSSUnitValue::ToCalcExpressionNode() const {
+  return CSSMathExpressionNumericLiteral::Create(
+      CSSNumericLiteralValue::Create(value_, unit_));
 }
 
 CSSNumericValue* CSSUnitValue::Negate() {

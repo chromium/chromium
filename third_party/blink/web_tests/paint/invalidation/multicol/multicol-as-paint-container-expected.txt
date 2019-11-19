@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -19,7 +8,6 @@
     },
     {
       "name": "LayoutBlockFlow DIV id='target'",
-      "position": [8, 8],
       "bounds": [630, 180],
       "backfaceVisibility": "hidden",
       "paintInvalidations": [
@@ -108,6 +96,18 @@
           "rect": [0, 0, 625, 180],
           "reason": "style change"
         }
+      ],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
       ]
     }
   ]

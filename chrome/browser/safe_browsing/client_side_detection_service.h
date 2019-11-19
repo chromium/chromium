@@ -254,7 +254,7 @@ class ClientSideDetectionService : public content::NotificationObserver {
 
   // Used to asynchronously call the callbacks for
   // SendClientReportPhishingRequest.
-  base::WeakPtrFactory<ClientSideDetectionService> weak_factory_;
+  base::WeakPtrFactory<ClientSideDetectionService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ClientSideDetectionService);
 };

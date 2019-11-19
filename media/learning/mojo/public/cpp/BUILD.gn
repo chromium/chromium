@@ -9,8 +9,8 @@ source_set("cpp") {
   ]
 
   sources = [
-    "mojo_learning_session.cc",
-    "mojo_learning_session.h",
+    "mojo_learning_task_controller.cc",
+    "mojo_learning_task_controller.h",
   ]
 
   defines = [ "IS_MEDIA_LEARNING_MOJO_IMPL" ]
@@ -26,7 +26,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "mojo_learning_session_unittest.cc",
+    "mojo_learning_task_controller_unittest.cc",
   ]
 
   deps = [

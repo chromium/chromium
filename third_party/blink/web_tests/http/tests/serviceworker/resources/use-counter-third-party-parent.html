@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/get-host-info.js"></script>
+<title>Parent</title>
+<body></body>
+<script>
+window.onload = function() {
+  window.opener.postMessage('popup_page_loaded', '*');
+};
+
+window.onmessage = (msg) => {
+  if (msg.data == 'from_opener_assert_has_use_counter') {
+    const iframe = document.createElement('iframe');
+    iframe.src = get_host_info().HTTP_ORIGIN +
+        '/serviceworker/resources/use-counter-third-party-controlled-iframe.html';
+    document.body.appendChild(iframe);
+    iframe.onload = function() {
+      iframe.contentWindow.postMessage(msg.data, '*');
+    };
+  } else {
+    window.opener.postMessage(msg.data, '*');
+  }
+};
+</script>

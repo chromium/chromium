@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "base/callback.h"
@@ -53,6 +54,9 @@ class SmbService : public KeyedService,
   using MountResponse = base::OnceCallback<void(SmbMountResult result)>;
   using StartReadDirIfSuccessfulCallback =
       base::OnceCallback<void(bool should_retry_start_read_dir)>;
+  using GatherSharesResponse =
+      base::RepeatingCallback<void(const std::vector<SmbUrl>& shares_gathered,
+                                   bool done)>;
 
   SmbService(Profile* profile, std::unique_ptr<base::TickClock> tick_clock);
   ~SmbService() override;
@@ -72,6 +76,7 @@ class SmbService : public KeyedService,
              const std::string& password,
              bool use_chromad_kerberos,
              bool should_open_file_manager_after_mount,
+             bool save_credentials,
              MountResponse callback);
 
   // Completes the mounting of an SMB file system, passing |options| on to
@@ -82,13 +87,19 @@ class SmbService : public KeyedService,
                        const base::FilePath& share_path,
                        bool is_kerberos_chromad,
                        bool should_open_file_manager_after_mount,
+                       const std::string& username,
+                       const std::string& workgroup,
+                       bool save_credentials,
                        smbprovider::ErrorType error,
                        int32_t mount_id);
 
   // Gathers the hosts in the network using |share_finder_| and gets the shares
   // for each of the hosts found. |discovery_callback| is called as soon as host
-  // discovery is complete. |shares_callback| is called once per host and will
-  // contain the URLs to the shares found.
+  // discovery is complete. |shares_callback| may be called multiple times with
+  // new shares. |shares_callback| will be called with |done| == false when more
+  // shares are expected to be discovered. When share discovery is finished,
+  // |shares_callback| is called with |done| == true and will not be called
+  // again.
   void GatherSharesInNetwork(HostDiscoveryResponse discovery_callback,
                              GatherSharesResponse shares_callback);
 
@@ -104,7 +115,18 @@ class SmbService : public KeyedService,
                        const std::string& share_path,
                        StartReadDirIfSuccessfulCallback reply);
 
+  // Disable share discovery in test.
+  static void DisableShareDiscoveryForTesting() {
+    disable_share_discovery_for_testing_ = true;
+  }
+
+  // Run |callback| when setup had completed. If setup has already completed,
+  // |callback| will be run inline.
+  void OnSetupCompleteForTesting(base::OnceClosure callback);
+
  private:
+  friend class SmbServiceTest;
+
   // Calls SmbProviderClient::Mount(). |temp_file_manager_| must be initialized
   // before this is called.
   void CallMount(const file_system_provider::MountOptions& options,
@@ -113,12 +135,16 @@ class SmbService : public KeyedService,
                  const std::string& password,
                  bool use_chromad_kerberos,
                  bool should_open_file_manager_after_mount,
+                 bool save_credentials,
                  MountResponse callback);
+
+  // Retrieves the mount_id for |file_system_info|.
+  int32_t GetMountId(const ProvidedFileSystemInfo& info) const;
 
   // Calls file_system_provider::Service::UnmountFileSystem().
   base::File::Error Unmount(
       const std::string& file_system_id,
-      file_system_provider::Service::UnmountReason reason) const;
+      file_system_provider::Service::UnmountReason reason);
 
   Service* GetProviderService() const;
 
@@ -146,7 +172,8 @@ class SmbService : public KeyedService,
   // remounting fails, this logs and removes the file_system from the volume
   // manager.
   void OnRemountResponse(const std::string& file_system_id,
-                         smbprovider::ErrorType error);
+                         smbprovider::ErrorType error,
+                         int32_t mount_id);
 
   // Calls SmbProviderClient::Premount(). |temp_file_manager_| must be
   // initialized before this is called.
@@ -195,6 +222,9 @@ class SmbService : public KeyedService,
 
   // Whether NTLM should be used. Controlled via policy.
   bool IsNTLMAuthenticationEnabled() const;
+
+  // Whether |share| is already mounted.
+  bool IsShareMounted(const SmbUrl& share) const;
 
   // Gets the list of all shares preconfigured via policy with mode
   // |policy_mode|. If |policy_mode| is "unknown", returns a list of all shares
@@ -256,6 +286,8 @@ class SmbService : public KeyedService,
   void RecordMountCount() const;
 
   static bool service_should_run_;
+  static bool disable_share_discovery_for_testing_;
+
   base::TimeTicks previous_host_discovery_time_;
   const ProviderId provider_id_;
   Profile* profile_;
@@ -264,6 +296,10 @@ class SmbService : public KeyedService,
   std::unique_ptr<SmbShareFinder> share_finder_;
   // |mount_id| -> |reply|. Stored callbacks to run after updating credential.
   std::map<int32_t, base::OnceClosure> update_credential_replies_;
+  // |file_system_id| -> |mount_id|
+  std::unordered_map<std::string, int32_t> mount_id_map_;
+
+  base::OnceClosure setup_complete_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(SmbService);
 };

@@ -4,7 +4,7 @@
 
 mojom = "//gpu/ipc/common/mailbox_holder.mojom"
 public_headers = [ "//gpu/command_buffer/common/mailbox_holder.h" ]
-traits_headers = [ "//gpu/ipc/common/mailbox_holder_struct_traits.h" ]
+traits_headers = [ "//gpu/ipc/common/mailbox_holder_mojom_traits.h" ]
 public_deps = [
   "//gpu/command_buffer/common",
   "//gpu/ipc/common:interfaces",

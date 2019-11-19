@@ -20,6 +20,8 @@ namespace ash {
 constexpr int kCornerRadiusDip = 20;
 constexpr int kMiniUiCornerRadiusDip = 24;
 constexpr int kMaxHeightDip = 640;
+constexpr int kMaxHeightEmbeddedDip = 440;
+constexpr int kMinHeightEmbeddedDip = 180;
 constexpr int kPaddingDip = 14;
 constexpr int kPreferredWidthDip = 640;
 constexpr int kSpacingDip = 8;

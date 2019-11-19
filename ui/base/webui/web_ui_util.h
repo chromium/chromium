@@ -72,10 +72,6 @@ UI_BASE_EXPORT void SetLoadTimeDataDefaults(
     const std::string& app_locale,
     ui::TemplateReplacements* replacements);
 
-// Get a CSS declaration for common text styles using provided template.
-UI_BASE_EXPORT std::string GetWebUiCssTextDefaults(
-    const std::string& css_template);
-
 // Get a CSS declaration for common text styles for all of Web UI.
 UI_BASE_EXPORT std::string GetWebUiCssTextDefaults();
 
@@ -87,6 +83,7 @@ UI_BASE_EXPORT std::string GetWebUiCssTextDefaultsMd();
 // inline stylesheet.
 UI_BASE_EXPORT void AppendWebUiCssTextDefaults(std::string* html);
 
+UI_BASE_EXPORT std::string GetA11yEnhanced();
 // Get some common font styles for all of WebUI.
 UI_BASE_EXPORT std::string GetFontFamily();
 UI_BASE_EXPORT std::string GetFontSize();

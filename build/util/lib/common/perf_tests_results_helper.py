@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import re
 import sys
 
@@ -90,7 +92,7 @@ def _MeanAndStdDevFromList(values):
 
 def PrintPages(page_list):
   """Prints list of pages to stdout in the format required by perf tests."""
-  print 'Pages: [%s]' % ','.join([_EscapePerfResult(p) for p in page_list])
+  print('Pages: [%s]' % ','.join([_EscapePerfResult(p) for p in page_list]))
 
 
 def PrintPerfResult(measurement, trace, values, units,
@@ -161,7 +163,7 @@ def PrintPerfResult(measurement, trace, values, units,
   if sd:
     output += '\nSd  %s: %f%s' % (measurement, sd, units)
   if print_to_stdout:
-    print output
+    print(output)
     sys.stdout.flush()
   return output
 

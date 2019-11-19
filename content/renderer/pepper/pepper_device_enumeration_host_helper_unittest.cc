@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "content/renderer/pepper/pepper_device_enumeration_host_helper.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/host/host_message_context.h"
@@ -53,8 +53,8 @@ class TestDelegate : public PepperDeviceEnumerationHostHelper::Delegate,
   ~TestDelegate() override { CHECK(monitoring_callbacks_.empty()); }
 
   void EnumerateDevices(PP_DeviceType_Dev /* type */,
-                        const DevicesCallback& callback) override {
-    callback.Run(TestEnumerationData());
+                        DevicesOnceCallback callback) override {
+    std::move(callback).Run(TestEnumerationData());
   }
 
   size_t StartMonitoringDevices(PP_DeviceType_Dev /* type */,
@@ -146,7 +146,7 @@ class PepperDeviceEnumerationHostHelperTest : public testing::Test {
   ppapi::host::PpapiHost ppapi_host_;
   ppapi::host::ResourceHost resource_host_;
   PepperDeviceEnumerationHostHelper device_enumeration_;
-  base::test::ScopedTaskEnvironment
+  base::test::SingleThreadTaskEnvironment
       task_environment_;  // required for async calls to work.
 
  private:

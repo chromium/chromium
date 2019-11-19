@@ -227,14 +227,10 @@ OnInputDeviceInfoCallback WrapGetInputDeviceInfoReply(
 AudioSystemToServiceAdapter::AudioSystemToServiceAdapter(
     std::unique_ptr<service_manager::Connector> connector,
     base::TimeDelta disconnect_timeout)
-    : connector_(std::move(connector)) {
+    : connector_(std::move(connector)),
+      disconnect_timeout_(disconnect_timeout) {
   DCHECK(connector_);
   DETACH_FROM_THREAD(thread_checker_);
-  if (disconnect_timeout > base::TimeDelta()) {
-    disconnect_timer_.emplace(
-        FROM_HERE, disconnect_timeout, this,
-        &AudioSystemToServiceAdapter::DisconnectOnTimeout);
-  }
 }
 
 AudioSystemToServiceAdapter::AudioSystemToServiceAdapter(
@@ -324,30 +320,17 @@ mojom::SystemInfo* AudioSystemToServiceAdapter::GetSystemInfo() {
   if (!system_info_) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
         "audio", "AudioSystemToServiceAdapter bound", this);
-    connector_->BindInterface(mojom::kServiceName,
-                              mojo::MakeRequest(&system_info_));
-    system_info_.set_connection_error_handler(
+    connector_->Connect(mojom::kServiceName,
+                        system_info_.BindNewPipeAndPassReceiver());
+    system_info_.set_disconnect_handler(
         base::BindOnce(&AudioSystemToServiceAdapter::OnConnectionError,
                        base::Unretained(this)));
+    if (!disconnect_timeout_.is_zero())
+      system_info_.reset_on_idle_timeout(disconnect_timeout_);
     DCHECK(system_info_);
   }
-  if (disconnect_timer_)
-    disconnect_timer_->Reset();
-  return system_info_.get();
-}
 
-void AudioSystemToServiceAdapter::DisconnectOnTimeout() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (system_info_.IsExpectingResponse()) {
-    if (disconnect_timer_)
-      disconnect_timer_->Reset();
-    TRACE_EVENT_NESTABLE_ASYNC_INSTANT0("audio", "Timeout: expecting responce",
-                                        this);
-    return;
-  }
-  TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "AudioSystemToServiceAdapter bound",
-                                  this, "disconnect reason", "timeout");
-  system_info_.reset();
+  return system_info_.get();
 }
 
 void AudioSystemToServiceAdapter::OnConnectionError() {

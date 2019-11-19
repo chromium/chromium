@@ -36,10 +36,14 @@ class ExternalBeginFrameSourceAndroidTest : public ::testing::Test,
     frames_done_event_.Wait();
   }
 
+  ExternalBeginFrameSourceAndroid* begin_frame_source() {
+    return begin_frame_source_.get();
+  }
+
  private:
   void InitOnThread() {
     begin_frame_source_ = std::make_unique<ExternalBeginFrameSourceAndroid>(
-        BeginFrameSource::kNotRestartableId);
+        BeginFrameSource::kNotRestartableId, 60.f);
   }
 
   void AddObserverOnThread(uint32_t frame_count) {
@@ -72,6 +76,16 @@ TEST_F(ExternalBeginFrameSourceAndroidTest, DeliversFrames) {
   // Ensure we receive frames. When this returns we are no longer observing the
   // BeginFrameSource.
   WaitForFrames(10);
+  // Ensure we can re-observe the same BeginFrameSource and get more frames.
+  WaitForFrames(10);
+}
+
+TEST_F(ExternalBeginFrameSourceAndroidTest, DeliversFramesAfterIntervalChange) {
+  CreateThread();
+  // Ensure we receive frames. When this returns we are no longer observing the
+  // BeginFrameSource.
+  WaitForFrames(10);
+  begin_frame_source()->UpdateRefreshRate(30.f);
   // Ensure we can re-observe the same BeginFrameSource and get more frames.
   WaitForFrames(10);
 }

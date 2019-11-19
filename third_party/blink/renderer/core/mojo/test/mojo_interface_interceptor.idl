@@ -4,7 +4,8 @@
 
 [
     ActiveScriptWrappable,
-    Constructor(DOMString interfaceName, optional MojoScope scope = "context"),
+    Constructor(DOMString interfaceName, optional MojoScope scope = "context",
+                optional boolean useBrowserInterfaceBroker = false),
     ConstructorCallWith=ExecutionContext,
     Exposed=(Window,Worker),
     RaisesException=Constructor,

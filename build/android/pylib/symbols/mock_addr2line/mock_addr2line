@@ -9,6 +9,8 @@ Outputs mock symbol information, with each symbol being a function of the
 original address (so it is easy to double-check consistency in unittests).
 """
 
+from __future__ import print_function
+
 import optparse
 import os
 import posixpath
@@ -36,8 +38,8 @@ def main(argv):
 
     # An empty line should generate '??,??:0' (is used as marker for inlines).
     if line == '\n':
-      print '??'
-      print '??:0'
+      print('??')
+      print('??:0')
       sys.stdout.flush()
       continue
 
@@ -50,27 +52,27 @@ def main(argv):
 
     # Addresses < 1M will return good mock symbol information.
     if addr < 1024 * 1024:
-      print 'mock_sym_for_addr_%d' % addr
-      print 'mock_src/%s.c:%d' % (lib_file_name, addr)
+      print('mock_sym_for_addr_%d' % addr)
+      print('mock_src/%s.c:%d' % (lib_file_name, addr))
 
     # Addresses 1M <= x < 2M will return symbols with a name but a missing path.
     elif addr < 2 * 1024 * 1024:
-      print 'mock_sym_for_addr_%d' % addr
-      print '??:0'
+      print('mock_sym_for_addr_%d' % addr)
+      print('??:0')
 
     # Addresses 2M <= x < 3M will return unknown symbol information.
     elif addr < 3 * 1024 * 1024:
-      print '??'
-      print '??'
+      print('??')
+      print('??')
 
     # Addresses 3M <= x < 4M will return inlines.
     elif addr < 4 * 1024 * 1024:
-      print 'mock_sym_for_addr_%d_inner' % addr
-      print 'mock_src/%s.c:%d' % (lib_file_name, addr)
-      print 'mock_sym_for_addr_%d_middle' % addr
-      print 'mock_src/%s.c:%d' % (lib_file_name, addr)
-      print 'mock_sym_for_addr_%d_outer' % addr
-      print 'mock_src/%s.c:%d' % (lib_file_name, addr)
+      print('mock_sym_for_addr_%d_inner' % addr)
+      print('mock_src/%s.c:%d' % (lib_file_name, addr))
+      print('mock_sym_for_addr_%d_middle' % addr)
+      print('mock_src/%s.c:%d' % (lib_file_name, addr))
+      print('mock_sym_for_addr_%d_outer' % addr)
+      print('mock_src/%s.c:%d' % (lib_file_name, addr))
 
     sys.stdout.flush()
 

@@ -46,10 +46,9 @@ class EncodedFormData;
 class ExecutionContext;
 class Resource;
 class ResourceResponse;
-class SharedBuffer;
 class TextResourceDecoder;
 
-class XHRReplayData final : public GarbageCollectedFinalized<XHRReplayData> {
+class XHRReplayData final : public GarbageCollected<XHRReplayData> {
  public:
   static XHRReplayData* Create(ExecutionContext*,
                                const AtomicString& method,
@@ -79,20 +78,23 @@ class XHRReplayData final : public GarbageCollectedFinalized<XHRReplayData> {
     visitor->Trace(execution_context_);
   }
 
+  void DeleteFormData() { form_data_ = nullptr; }
+
  private:
   WeakMember<ExecutionContext> execution_context_;
   AtomicString method_;
   KURL url_;
   bool async_;
+  // TODO(http://crbug.com/958524): Remove form_data_ after OutOfBlinkCORS is launched.
   scoped_refptr<EncodedFormData> form_data_;
   HTTPHeaderMap headers_;
   bool include_credentials_;
 };
 
 class NetworkResourcesData final
-    : public GarbageCollectedFinalized<NetworkResourcesData> {
+    : public GarbageCollected<NetworkResourcesData> {
  public:
-  class ResourceData final : public GarbageCollectedFinalized<ResourceData> {
+  class ResourceData final : public GarbageCollected<ResourceData> {
     friend class NetworkResourcesData;
 
    public:
@@ -140,8 +142,8 @@ class NetworkResourcesData final
       buffer_ = std::move(buffer);
     }
 
-    Resource* CachedResource() const { return cached_resource_.Get(); }
-    void SetResource(Resource*);
+    const Resource* CachedResource() const { return cached_resource_.Get(); }
+    void SetResource(const Resource*);
 
     XHRReplayData* XhrReplayData() const { return xhr_replay_data_.Get(); }
     void SetXHRReplayData(XHRReplayData* xhr_replay_data) {
@@ -180,7 +182,7 @@ class NetworkResourcesData final
     uint64_t DataLength() const;
     void AppendData(const char* data, size_t data_length);
     size_t DecodeDataToContent();
-    void ClearWeakMembers(Visitor*);
+    void ProcessCustomWeakness(const WeakCallbackInfo&);
 
     Member<NetworkResourcesData> network_resources_data_;
     String request_id_;
@@ -201,7 +203,7 @@ class NetworkResourcesData final
     int64_t pending_encoded_data_length_;
 
     scoped_refptr<SharedBuffer> buffer_;
-    WeakMember<Resource> cached_resource_;
+    UntracedMember<const Resource> cached_resource_;
     scoped_refptr<BlobDataHandle> downloaded_file_blob_;
     Vector<AtomicString> certificate_;
     scoped_refptr<EncodedFormData> post_data_;
@@ -234,7 +236,7 @@ class NetworkResourcesData final
                             const char* data,
                             uint64_t data_length);
   void MaybeDecodeDataToContent(const String& request_id);
-  void AddResource(const String& request_id, Resource*);
+  void AddResource(const String& request_id, const Resource*);
   ResourceData const* Data(const String& request_id);
   void Clear(const String& preserved_loader_id = String());
 

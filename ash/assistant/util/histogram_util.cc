@@ -4,9 +4,9 @@
 
 #include "ash/assistant/util/histogram_util.h"
 
-#include "ash/assistant/model/assistant_query.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "base/metrics/histogram_macros.h"
+#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
 
 namespace ash {
 namespace assistant {
@@ -30,7 +30,8 @@ void IncrementAssistantButtonClickCount(AssistantButtonId button_id) {
                             AssistantButtonId::kMaxValue);
 }
 
-void RecordAssistantQuerySource(AssistantQuerySource source) {
+void RecordAssistantQuerySource(
+    chromeos::assistant::mojom::AssistantQuerySource source) {
   UMA_HISTOGRAM_ENUMERATION("Assistant.QuerySource", source);
 }
 

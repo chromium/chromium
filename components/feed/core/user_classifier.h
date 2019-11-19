@@ -58,7 +58,7 @@ class UserClassifier {
   UserClassifier(PrefService* pref_service, base::Clock* clock);
   ~UserClassifier();
 
-  // Registers profile prefs for all rates. Called from browser_prefs.cc.
+  // Registers profile prefs for all rates. Called from pref_names.cc.
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Informs the UserClassifier about a new event for |event|. The

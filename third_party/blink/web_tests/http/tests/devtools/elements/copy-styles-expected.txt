@@ -1,0 +1,42 @@
+Tests node xPath construction
+
+
+<html>​
+InspectorFrontendHost.copyText:
+
+
+<head>​
+InspectorFrontendHost.copyText:
+
+
+<style>​
+InspectorFrontendHost.copyText:
+
+
+      button {
+        color: red;
+      }
+      body {
+        border: 1px solid black;
+        font-weight: bold;
+      }
+    
+
+<body>​
+InspectorFrontendHost.copyText:
+border: 1px solid black;
+font-weight: bold;
+
+<div style=​"padding:​ 5px">​ Hello ​</div>​
+InspectorFrontendHost.copyText:
+font-weight: bold;
+padding: 5px;
+
+<button>​ A red button ​</button>​
+InspectorFrontendHost.copyText:
+color: red;
+
+<button style=​"color:​ green">​ A green button ​</button>​
+InspectorFrontendHost.copyText:
+color: green;
+

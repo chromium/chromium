@@ -1,0 +1,96 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom;
+
+import "chromeos/services/assistant/public/mojom/assistant_notification.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+enum AssistantTimerState {
+  kUnknown,
+  // The timer is scheduled to fire at some future date.
+  kScheduled,
+  // The timer will not fire but is kept in the queue of scheduled events;
+  // it can be resumed after which it will fire in |remaining_duration_ms|.
+  kPaused,
+  // The timer has fired. In the simplest case this means the timer has
+  // begun ringing.
+  kFired,
+};
+
+struct AssistantTimer {
+  string timer_id;
+
+  // The current state of this timer.
+  AssistantTimerState state;
+
+  // TODO(llin): Add more timer data.
+};
+
+// Assistant alarm/timer event type.
+// Currently, the AlarmTimerManager maintains only one firing alarm/timer,
+// the previous one will be dismissed if the second one firing.
+enum AssistantAlarmTimerEventType {
+  kTimer
+  // TODO(llin): Add alarm event type.
+};
+
+union AlarmTimerData {
+  AssistantTimer timer_data;
+  // TODO(llin): Add alarm data.
+};
+
+// A composite struct that will hold exactly one alarm or timer.
+struct AssistantAlarmTimerEvent {
+  AssistantAlarmTimerEventType type;
+
+  AlarmTimerData? data;
+};
+
+// Interface to the AssistantAlarmTimerController which is owned by the
+// AssistantController. Currently used by the Assistant service to notify Ash
+// of changes to the underlying alarm/timer state in LibAssistant.
+interface AssistantAlarmTimerController {
+  // Invoked when an alarm/timer state changed. No alarm/timer is ringing if
+  // |event| is nullptr.
+  OnAlarmTimerStateChanged(AssistantAlarmTimerEvent? event);
+};
+
+// Interface to the AssistantNotificationController which is owned by the
+// AssistantController. Currently used by the Assistant service to modify
+// Assistant notification state in Ash in response to LibAssistant events.
+interface AssistantNotificationController {
+  // Requests that the specified |notification| be added or updated. If the
+  // |client_id| for |notification| matches that of an existing notification,
+  // an update will occur. Otherwise, a new notification will be added.
+  AddOrUpdateNotification(
+    chromeos.assistant.mojom.AssistantNotification notification);
+
+  // Requests that the notification uniquely identified by |id| be removed. If
+  // |from_server| is true the request to remove was initiated by the server.
+  RemoveNotificationById(string id, bool from_server);
+
+  // Requests that all notifications associated with the given |grouping_key|
+  // be removed. If |from_server| is true the request to remove was initiated
+  // by the server.
+  RemoveNotificationByGroupingKey(string grouping_key, bool from_server);
+
+  // Requests that all notifications be removed. If |from_server| is true the
+  // request was initiated by the server.
+  RemoveAllNotifications(bool from_server);
+
+  // Changes the quiet mode state in the message center.
+  SetQuietMode(bool enabled);
+};
+
+// Interface to the AssistantScreenContextController which is owned by the
+// AssistantController. Currently used by the Assistant service to request
+// screenshots.
+interface AssistantScreenContextController {
+  // Requests a screenshot of the region enclosed by |rect| and returns the
+  // screenshot encoded in JPEG format. If |rect| is empty, it returns a
+  // fullscreen screenshot.
+  RequestScreenshot(gfx.mojom.Rect rect) => (array<uint8> screenshot);
+};

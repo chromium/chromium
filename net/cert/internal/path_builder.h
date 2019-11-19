@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/supports_user_data.h"
 #include "net/base/net_export.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/parsed_certificate.h"
@@ -23,6 +24,7 @@ namespace der {
 struct GeneralizedTime;
 }
 
+class CertPathBuilder;
 class CertPathIter;
 class CertIssuerSource;
 
@@ -91,7 +93,8 @@ class NET_EXPORT CertPathBuilderDelegate
   // been run through RFC 5280 verification. |path| may already have errors
   // and warnings set on it. Delegates can "reject" a candidate path from path
   // building by adding high severity errors.
-  virtual void CheckPathAfterVerification(CertPathBuilderResultPath* path) = 0;
+  virtual void CheckPathAfterVerification(const CertPathBuilder& path_builder,
+                                          CertPathBuilderResultPath* path) = 0;
 };
 
 // Checks whether a certificate is trusted by building candidate paths to trust
@@ -104,12 +107,17 @@ class NET_EXPORT CertPathBuilder {
  public:
   // Provides the overall result of path building. This includes the paths that
   // were attempted.
-  struct NET_EXPORT Result {
+  struct NET_EXPORT Result : public base::SupportsUserData {
     Result();
-    ~Result();
+    Result(Result&&);
+    ~Result() override;
+    Result& operator=(Result&&);
 
     // Returns true if there was a valid path.
     bool HasValidPath() const;
+
+    // Returns true if any of the attempted paths contain |error_id|.
+    bool AnyPathContainsError(CertErrorId error_id) const;
 
     // Returns the CertPathBuilderResultPath for the best valid path, or nullptr
     // if there was none.
@@ -117,9 +125,6 @@ class NET_EXPORT CertPathBuilder {
 
     // Returns the best CertPathBuilderResultPath or nullptr if there was none.
     const CertPathBuilderResultPath* GetBestPathPossiblyInvalid() const;
-
-    // Resets to the initial value.
-    void Clear();
 
     // List of paths that were attempted and the result for each.
     std::vector<std::unique_ptr<CertPathBuilderResultPath>> paths;
@@ -133,21 +138,23 @@ class NET_EXPORT CertPathBuilder {
     // configured with |SetIterationLimit|.
     bool exceeded_iteration_limit = false;
 
+    // True if the search stopped because it exceeded the deadline configured
+    // with |SetDeadline|.
+    bool exceeded_deadline = false;
+
    private:
     DISALLOW_COPY_AND_ASSIGN(Result);
   };
 
   // Creates a CertPathBuilder that attempts to find a path from |cert| to a
-  // trust anchor in |trust_store| and is valid at |time|. Details of attempted
-  // path(s) are stored in |*result|.
+  // trust anchor in |trust_store| and is valid at |time|.
   //
-  // The caller must keep |trust_store|, |delegate| and |*result| valid for the
-  // lifetime of the CertPathBuilder.
+  // The caller must keep |trust_store| and |delegate| valid for the lifetime
+  // of the CertPathBuilder.
   //
   // See VerifyCertificateChain() for a more detailed explanation of the
   // same-named parameters not defined below.
   //
-  // * |result|: Storage for the result of path building.
   // * |delegate|: Must be non-null. The delegate is called at various points in
   //               path building to verify specific parts of certificates or the
   //               final chain. See CertPathBuilderDelegate and
@@ -160,8 +167,7 @@ class NET_EXPORT CertPathBuilder {
                   InitialExplicitPolicy initial_explicit_policy,
                   const std::set<der::Input>& user_initial_policy_set,
                   InitialPolicyMappingInhibit initial_policy_mapping_inhibit,
-                  InitialAnyPolicyInhibit initial_any_policy_inhibit,
-                  Result* result);
+                  InitialAnyPolicyInhibit initial_any_policy_inhibit);
   ~CertPathBuilder();
 
   // Adds a CertIssuerSource to provide intermediates for use in path building.
@@ -174,18 +180,37 @@ class NET_EXPORT CertPathBuilder {
   void AddCertIssuerSource(CertIssuerSource* cert_issuer_source);
 
   // Sets a limit to the number of times to repeat the process of considering a
-  // new intermediate over all potential paths.
+  // new intermediate over all potential paths. Setting |limit| to 0 disables
+  // the iteration limit, which is the default.
   void SetIterationLimit(uint32_t limit);
+
+  // Sets a deadline for completing path building. If |deadline| has passed and
+  // path building has not completed, path building will stop. Note that this
+  // is not a hard limit, there is no guarantee how far past |deadline| time
+  // will be when path building is aborted.
+  void SetDeadline(base::TimeTicks deadline);
+
+  // If |explore_all_paths| is false (the default), path building will stop as
+  // soon as a valid path is found. If |explore_all_paths| is true, path
+  // building will continue until all possible paths have been exhausted (or
+  // iteration limit / deadline is exceeded).
+  void SetExploreAllPaths(bool explore_all_paths);
+
+  // Returns the deadline for path building, if any. If no deadline is set,
+  // |deadline().is_null()| will be true.
+  base::TimeTicks deadline() const { return deadline_; }
 
   // Executes verification of the target certificate.
   //
-  // Upon return results are written to the |result| object passed into the
-  // constructor. Run must not be called more than once on each CertPathBuilder
-  // instance.
-  void Run();
+  // Run must not be called more than once on each CertPathBuilder instance.
+  Result Run();
 
  private:
   void AddResultPath(std::unique_ptr<CertPathBuilderResultPath> result_path);
+
+  // |out_result_| may be referenced by other members, so should be initialized
+  // first.
+  Result out_result_;
 
   std::unique_ptr<CertPathIter> cert_path_iter_;
   CertPathBuilderDelegate* delegate_;
@@ -196,8 +221,8 @@ class NET_EXPORT CertPathBuilder {
   const InitialPolicyMappingInhibit initial_policy_mapping_inhibit_;
   const InitialAnyPolicyInhibit initial_any_policy_inhibit_;
   uint32_t max_iteration_count_ = 0;
-
-  Result* out_result_;
+  base::TimeTicks deadline_;
+  bool explore_all_paths_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(CertPathBuilder);
 };

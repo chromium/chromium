@@ -29,6 +29,12 @@ class AsyncDocumentSubresourceFilter;
 // The throttle should only be instantiated for navigations occuring in
 // subframes owned by documents which already have filtering activated, and
 // therefore an associated (Async)DocumentSubresourceFilter.
+//
+// TODO(https://crbug.com/984562): With AdTagging enabled, this throttle delays
+// almost all subframe navigations. This delay is necessary in blocking mode due
+// to logic related to BLOCK_REQUEST_AND_COLLAPSE. However, there may be room
+// for optimization during AdTagging, or migrating BLOCK_REQUEST_AND_COLLAPSE to
+// be allowed during WillProcessResponse.
 class SubframeNavigationFilteringThrottle : public content::NavigationThrottle {
  public:
   class Delegate {
@@ -61,14 +67,27 @@ class SubframeNavigationFilteringThrottle : public content::NavigationThrottle {
   const char* GetNameForLogging() override;
 
  private:
-  content::NavigationThrottle::ThrottleCheckResult DeferToCalculateLoadPolicy();
+  enum class DeferStage {
+    kNotDeferring,
+    kWillStartOrRedirectRequest,
+    kWillProcessResponse
+  };
+
+  content::NavigationThrottle::ThrottleCheckResult
+  MaybeDeferToCalculateLoadPolicy();
+
   void OnCalculatedLoadPolicy(LoadPolicy policy);
+  void HandleDisallowedLoad();
 
   void NotifyLoadPolicy() const;
+
+  void DeferStart(DeferStage stage);
 
   // Must outlive this class.
   AsyncDocumentSubresourceFilter* parent_frame_filter_;
 
+  int pending_load_policy_calculations_ = 0;
+  DeferStage defer_stage_ = DeferStage::kNotDeferring;
   base::TimeTicks last_defer_timestamp_;
   base::TimeDelta total_defer_time_;
   LoadPolicy load_policy_ = LoadPolicy::ALLOW;
@@ -77,7 +96,8 @@ class SubframeNavigationFilteringThrottle : public content::NavigationThrottle {
   // object.
   Delegate* delegate_;
 
-  base::WeakPtrFactory<SubframeNavigationFilteringThrottle> weak_ptr_factory_;
+  base::WeakPtrFactory<SubframeNavigationFilteringThrottle> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(SubframeNavigationFilteringThrottle);
 };

@@ -139,26 +139,12 @@ void Stats::InitSizeHistogram() {
     return;
 
   first_time = false;
-  int min = 1;
-  int max = 64 * 1024;
-  int num_buckets = 75;
-  base::BucketRanges ranges(num_buckets + 1);
-  base::Histogram::InitializeBucketRanges(min, max, &ranges);
-
-  base::HistogramBase* stats_histogram = base::Histogram::FactoryGet(
-      "DiskCache.SizeStats2", min, max, num_buckets,
-      base::HistogramBase::kUmaTargetedHistogramFlag);
-
-  base::SampleVector samples(&ranges);
   for (int i = 0; i < kDataSizesLength; i++) {
     // This is a good time to fix any inconsistent data. The count should be
     // always positive, but if it's not, reset the value now.
     if (data_sizes_[i] < 0)
       data_sizes_[i] = 0;
-
-    samples.Accumulate(GetBucketRange(i) / 1024, data_sizes_[i]);
   }
-  stats_histogram->AddSamples(samples);
 }
 
 int Stats::StorageSize() {

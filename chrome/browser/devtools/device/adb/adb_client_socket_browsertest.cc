@@ -19,7 +19,7 @@ FindBrowserByDisplayName(DevToolsAndroidBridge::RemoteBrowsers browsers,
   for (auto it = browsers.begin(); it != browsers.end(); ++it)
     if ((*it)->display_name() == name)
       return *it;
-  return NULL;
+  return nullptr;
 }
 
 class AdbClientSocketTest : public InProcessBrowserTest,

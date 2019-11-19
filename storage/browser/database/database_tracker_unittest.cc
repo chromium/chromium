@@ -13,7 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/net_errors.h"
@@ -189,7 +189,7 @@ class DatabaseTracker_TestHelper_Test {
  public:
   static void TestDeleteOpenDatabase(bool incognito_mode) {
     // Initialize the tracker database.
-    base::test::ScopedTaskEnvironment scoped_task_environment;
+    base::test::TaskEnvironment task_environment;
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     scoped_refptr<MockSpecialStoragePolicy> special_storage_policy =
@@ -232,15 +232,15 @@ class DatabaseTracker_TestHelper_Test {
     // Delete db1. Should also delete origin1.
     TestObserver observer;
     tracker->AddObserver(&observer);
-    net::TestCompletionCallback callback;
-    int result = tracker->DeleteDatabase(kOrigin1, kDB1, callback.callback());
+    net::TestCompletionCallback callback1;
+    int result = tracker->DeleteDatabase(kOrigin1, kDB1, callback1.callback());
     EXPECT_EQ(net::ERR_IO_PENDING, result);
-    ASSERT_FALSE(callback.have_result());
+    ASSERT_FALSE(callback1.have_result());
     EXPECT_TRUE(observer.DidReceiveNewNotification());
     EXPECT_EQ(kOrigin1, observer.GetNotificationOriginIdentifier());
     EXPECT_EQ(kDB1, observer.GetNotificationDatabaseName());
     tracker->DatabaseClosed(kOrigin1, kDB1);
-    result = callback.GetResult(result);
+    result = callback1.GetResult(result);
     EXPECT_EQ(net::OK, result);
     EXPECT_FALSE(base::PathExists(tracker->GetOriginDirectory(kOrigin1)));
 
@@ -265,13 +265,15 @@ class DatabaseTracker_TestHelper_Test {
     // Delete databases modified since yesterday. db2 is whitelisted.
     base::Time yesterday = base::Time::Now();
     yesterday -= base::TimeDelta::FromDays(1);
-    result = tracker->DeleteDataModifiedSince(yesterday, callback.callback());
+
+    net::TestCompletionCallback callback2;
+    result = tracker->DeleteDataModifiedSince(yesterday, callback2.callback());
     EXPECT_EQ(net::ERR_IO_PENDING, result);
-    ASSERT_FALSE(callback.have_result());
+    ASSERT_FALSE(callback2.have_result());
     EXPECT_TRUE(observer.DidReceiveNewNotification());
     tracker->DatabaseClosed(kOrigin1, kDB1);
     tracker->DatabaseClosed(kOrigin2, kDB2);
-    result = callback.GetResult(result);
+    result = callback2.GetResult(result);
     EXPECT_EQ(net::OK, result);
     EXPECT_FALSE(base::PathExists(tracker->GetOriginDirectory(kOrigin1)));
     EXPECT_TRUE(base::PathExists(tracker->GetFullDBFilePath(kOrigin2, kDB2)));
@@ -283,7 +285,7 @@ class DatabaseTracker_TestHelper_Test {
 
   static void TestDatabaseTracker(bool incognito_mode) {
     // Initialize the tracker database.
-    base::test::ScopedTaskEnvironment scoped_task_environment;
+    base::test::TaskEnvironment task_environment;
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     scoped_refptr<MockSpecialStoragePolicy> special_storage_policy =
@@ -424,7 +426,7 @@ class DatabaseTracker_TestHelper_Test {
     const base::string16 kName = ASCIIToUTF16("name");
     const base::string16 kDescription = ASCIIToUTF16("description");
 
-    base::test::ScopedTaskEnvironment scoped_task_environment;
+    base::test::TaskEnvironment task_environment;
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
@@ -535,7 +537,7 @@ class DatabaseTracker_TestHelper_Test {
     const base::string16 kDescription = ASCIIToUTF16("database_description");
 
     // Initialize the tracker database.
-    base::test::ScopedTaskEnvironment scoped_task_environment;
+    base::test::TaskEnvironment task_environment;
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     base::FilePath origin1_db_dir;
@@ -615,7 +617,7 @@ class DatabaseTracker_TestHelper_Test {
     const base::string16 kDescription = ASCIIToUTF16("database_description");
 
     // Initialize the tracker database.
-    base::test::ScopedTaskEnvironment scoped_task_environment;
+    base::test::TaskEnvironment task_environment;
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     base::FilePath origin1_db_dir;
@@ -691,7 +693,7 @@ class DatabaseTracker_TestHelper_Test {
 
     // Initialize a tracker database, no need to put it on disk.
     const bool kUseInMemoryTrackerDatabase = true;
-    base::test::ScopedTaskEnvironment scoped_task_environment;
+    base::test::TaskEnvironment task_environment;
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     scoped_refptr<DatabaseTracker> tracker(
@@ -740,7 +742,7 @@ class DatabaseTracker_TestHelper_Test {
 
     // Initialize a tracker database, no need to put it on disk.
     const bool kUseInMemoryTrackerDatabase = true;
-    base::test::ScopedTaskEnvironment scoped_task_environment;
+    base::test::TaskEnvironment task_environment;
     base::ScopedTempDir temp_dir;
     ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
     scoped_refptr<DatabaseTracker> tracker(

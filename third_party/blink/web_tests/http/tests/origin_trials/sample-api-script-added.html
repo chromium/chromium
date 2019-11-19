@@ -13,6 +13,7 @@
 // Generate this token with the command:
 // generate_token.py http://127.0.0.1:8000 Frobulate --expire-timestamp=2000000000
 var token = "AlCoOPbezqtrGMzSzbLQC4c+oPqO6yuioemcBPjgcXajF8jtmZr4B8tJRPAARPbsX6hDeVyXCKHzEJfpBXvZgQEAAABReyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+var invalid_os_token = "AtU8M1FWS2TbBCuG6ArIzseD6TBqls4fru1tJp4GyEMrvd+BgE14uWvstXek2Aw+iUjrl6QM5l/HZgpqEssvjgcAAABaeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlSW52YWxpZE9TIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
 
 // The trial is not enabled, as no token is provided.
 //  - Skip the worker tests, as they will likely fail due to running after the
@@ -24,10 +25,15 @@ expect_failure_implied(skip_worker);
 
 // Add the token to enable the trial
 OriginTrialsHelper.add_token(token);
+// Add the token for the trial with invalid os
+OriginTrialsHelper.add_token(invalid_os_token);
 
 // The trial is now enabled, by the token added via script.
 expect_success();
 expect_success_bindings();
 expect_success_implied();
+
+// The trial should not be enabled for |FrobulateInvalidOS|
+expect_failure_invalid_os();
 
 </script>

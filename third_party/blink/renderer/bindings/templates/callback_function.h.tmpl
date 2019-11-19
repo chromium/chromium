@@ -67,40 +67,6 @@ class {{exported}}{{cpp_class}} final : public CallbackFunctionBase {
 {% endif %}
 };
 
-template <>
-class V8PersistentCallbackFunction<{{cpp_class}}> final : public V8PersistentCallbackFunctionBase {
-  using V8CallbackFunction = {{cpp_class}};
-
- public:
-  explicit V8PersistentCallbackFunction(V8CallbackFunction* callback_function)
-      : V8PersistentCallbackFunctionBase(callback_function) {}
-  ~V8PersistentCallbackFunction() override = default;
-
-  // Returns a wrapper-tracing version of this callback function.
-  V8CallbackFunction* ToNonV8Persistent() { return Proxy(); }
-
-  v8::Maybe<{{return_cpp_type}}> Invoke({{argument_declarations | join(', ')}}) WARN_UNUSED_RESULT;
-{% if idl_type == 'void' or callback_function_name == 'Function' %}
-  {{exported}}void InvokeAndReportException({{argument_declarations | join(', ')}});
-{% endif %}
-
- private:
-  V8CallbackFunction* Proxy() {
-    return As<V8CallbackFunction>();
-  }
-
-  template <typename V8CallbackFunction>
-  friend V8PersistentCallbackFunction<V8CallbackFunction>*
-  ToV8PersistentCallbackFunction(V8CallbackFunction*);
-};
-
-// {{cpp_class}} is designed to be used with wrapper-tracing.
-// As blink::Persistent does not perform wrapper-tracing, use of
-// |WrapPersistent| for callback functions is likely (if not always) misuse.
-// Thus, this code prohibits such a use case. The call sites should explicitly
-// use WrapPersistent(V8PersistentCallbackFunction<T>*).
-Persistent<{{cpp_class}}> WrapPersistent({{cpp_class}}*) = delete;
-
 }  // namespace blink
 
 #endif  // {{header_guard}}

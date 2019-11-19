@@ -1,0 +1,98 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Wraps a target and any of its arguments to an executable script.
+#
+# Many executable targets have build-time-constant arguments. This
+# template allows those to be wrapped into a single, user- or bot-friendly
+# script at build time.
+#
+# Paths to be wrapped should be relative to root_build_dir and should be
+# wrapped in "@WrappedPath(...)"; see Example below.
+#
+# Variables:
+#   generator_script: Path to the script to use to perform the wrapping.
+#     Defaults to //build/util/generate_wrapper.py. Generally should only
+#     be set by other templates.
+#   wrapper_script: Output path.
+#   executable: Path to the executable to wrap. Can be a script or a
+#     build product. Paths can be relative to the containing gn file
+#     or source-absolute.
+#   executable_args: List of arguments to write into the wrapper.
+#
+# Example wrapping a checked-in script:
+#   generate_wrapper("sample_wrapper") {
+#     executable = "//for/bar/sample.py"
+#     wrapper_script = "$root_build_dir/bin/run_sample"
+#
+#     _sample_argument_path = "//sample/$target_cpu/lib/sample_lib.so"
+#     _rebased_sample_argument_path = rebase_path(
+#         _sample_argument_path,
+#         root_build_dir)
+#     executable_args = [
+#       "--sample-lib", "@WrappedPath(${_rebased_sample_argument_path})",
+#     ]
+#   }
+#
+# Example wrapping a build product:
+#   generate_wrapper("sample_wrapper") {
+#     executable = "$root_build_dir/sample_build_product"
+#     wrapper_script = "$root_build_dir/bin/run_sample_build_product"
+#   }
+template("generate_wrapper") {
+  _generator_script = "//build/util/generate_wrapper.py"
+  if (defined(invoker.generator_script)) {
+    _generator_script = invoker.generator_script
+  }
+  _executable_to_wrap = invoker.executable
+  _wrapper_script = invoker.wrapper_script
+  if (is_win) {
+    _wrapper_script += ".bat"
+  }
+  if (defined(invoker.executable_args)) {
+    _wrapped_arguments = invoker.executable_args
+  } else {
+    _wrapped_arguments = []
+  }
+
+  action(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "data",
+                             "data_deps",
+                             "deps",
+                             "sources",
+                             "testonly",
+                           ])
+    script = _generator_script
+    if (!defined(data)) {
+      data = []
+    }
+    data += [ _wrapper_script ]
+    outputs = [
+      _wrapper_script,
+    ]
+
+    _rebased_executable_to_wrap =
+        rebase_path(_executable_to_wrap, root_build_dir)
+    _rebased_wrapper_script = rebase_path(_wrapper_script, root_build_dir)
+    if (is_win) {
+      _script_language = "batch"
+    } else {
+      _script_language = "bash"
+    }
+    args = [
+      "--executable",
+      "@WrappedPath(${_rebased_executable_to_wrap})",
+      "--wrapper-script",
+      _rebased_wrapper_script,
+      "--output-directory",
+      rebase_path(root_build_dir, root_build_dir),
+      "--script-language",
+      _script_language,
+      "--",
+    ]
+    args += _wrapped_arguments
+  }
+}

@@ -3,7 +3,6 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body id="body">
 
@@ -25,7 +24,7 @@
 
 <script>
 
-test_after_layout_and_paint((t) => {
+test((t) => {
     let roles = ["AXRole: AXCheckBox",
                  "AXRole: AXMenuItemCheckBox",
                  "AXRole: AXRadioButton",

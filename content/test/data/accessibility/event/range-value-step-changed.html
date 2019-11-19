@@ -1,0 +1,21 @@
+<!--
+@WIN-DENY:EVENT_OBJECT_FOCUS*
+@UIA-WIN-DENY:AutomationFocusChanged*
+-->
+<!DOCTYPE html>
+<input id="step" type="range" min="0" max="10" value="4" step="4">
+<script>
+  var go_passes = [
+    () => document.querySelector('#step').setAttribute('step', 2),
+    () => document.querySelector('#step').removeAttribute('step'),
+    // This |step| value should also trigger a property changed event
+    // for UIA_RangeValueValuePropertyId
+    () => document.querySelector('#step').setAttribute('step', 3),
+  ];
+
+  var current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+</script>

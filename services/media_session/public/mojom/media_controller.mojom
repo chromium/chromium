@@ -12,13 +12,16 @@ interface MediaControllerManager {
   // Creates a MediaController linked to a specific session with |request_id|.
   // This should match the |request_id| from the AudioFocusRequestState.
   CreateMediaControllerForSession(
-      MediaController& request,
+      pending_receiver<MediaController> receiver,
       mojo_base.mojom.UnguessableToken request_id);
 
   // Creates a MediaController linked to the active session. This will
   // automatically route commands to the correct session if the active session
   // changes. If there is no active session then commands will be no-ops.
-  CreateActiveMediaController(MediaController& request);
+  CreateActiveMediaController(pending_receiver<MediaController> receiver);
+
+  // Suspends all media sessions.
+  SuspendAllSessions();
 };
 
 // Controls a MediaSession. If the media session is not controllable then the
@@ -40,7 +43,7 @@ interface MediaController {
   // Adds an observer that will forward events from the active media session.
   // If the active session changes then observers do not need to be readded.
   // Adding the observer will update the observer with the latest state.
-  AddObserver(MediaControllerObserver observer);
+  AddObserver(pending_remote<MediaControllerObserver> observer);
 
   // Skip to the previous track. If there is no previous track then this will be
   // a no-op.
@@ -62,7 +65,18 @@ interface MediaController {
   // |minimum_size_pc| and closest to |desired_size_px|.
   ObserveImages(
       MediaSessionImageType type, int32 minimum_size_px, int32 desired_size_px,
-      MediaControllerImageObserver observer);
+      pending_remote<MediaControllerImageObserver> observer);
+
+  // Seek the media session to a non-negative |seek_time| from the beginning of
+  // the current playing media. If the media cannot seek then this will be a
+  // no-op.
+  SeekTo(mojo_base.mojom.TimeDelta seek_time);
+
+  // Scrub ("fast seek") the media session to a non-negative |seek_time| from
+  // the beginning of the current playing media. If the media cannot scrub then
+  // this will be a no-op. The client should call |SeekTo| to finish the
+  // scrubbing operation.
+  ScrubTo(mojo_base.mojom.TimeDelta seek_time);
 };
 
 // The observer for observing media controller events. This is different to a
@@ -82,6 +96,17 @@ interface MediaControllerObserver {
   // Called when the bound media session action list has changed. This tells
   // the observer which actions can be used to control the session.
   MediaSessionActionsChanged(array<MediaSessionAction> action);
+
+  // Called when the bound media session changes. This tells the observer the
+  // |request_id| of the new session of null if it is not bound to a session.
+  MediaSessionChanged(mojo_base.mojom.UnguessableToken? request_id);
+
+  // Called when the position of the bound media session has changed. If
+  // |position| is empty then the media session does not have a position or
+  // the controller is no longer bound to a media session. Position is updated
+  // anytime the position state (playback rate, duration) is changed or the
+  // media is seeked.
+  MediaSessionPositionChanged(MediaPosition? position);
 };
 
 // The observer for observing when images associated with a media controller

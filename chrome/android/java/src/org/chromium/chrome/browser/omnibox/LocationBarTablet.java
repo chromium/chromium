@@ -15,13 +15,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
-import org.chromium.chrome.browser.widget.animation.CancelAwareAnimatorListener;
+import org.chromium.chrome.browser.ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.BakedBezierInterpolator;
 
@@ -498,7 +497,7 @@ public class LocationBarTablet extends LocationBarLayout {
      * @param deleteOffset The additional offset to use for the delete button.
      */
     private void setChildTranslationsForWidthChangeAnimation(int offset, int deleteOffset) {
-        if (!ApiCompatibilityUtils.isLayoutRtl(this)) {
+        if (getLayoutDirection() != LAYOUT_DIRECTION_RTL) {
             // When the location bar layout direction is LTR, the buttons at the end (left side)
             // of the location bar need to stick to the left edge.
             if (mSaveOfflineButton.getVisibility() == View.VISIBLE) {

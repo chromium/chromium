@@ -5,7 +5,7 @@
 #ifndef UI_BASE_IME_INPUT_METHOD_KEYBOARD_CONTROLLER_H_
 #define UI_BASE_IME_INPUT_METHOD_KEYBOARD_CONTROLLER_H_
 
-#include "ui/base/ime/ui_base_ime_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -13,7 +13,7 @@ class InputMethodKeyboardControllerObserver;
 
 // This class provides functionality to display the on screen keyboard and
 // add observers to observe changes in it.
-class UI_BASE_IME_EXPORT InputMethodKeyboardController {
+class COMPONENT_EXPORT(UI_BASE_IME) InputMethodKeyboardController {
  public:
   virtual ~InputMethodKeyboardController() = default;
 

@@ -1,0 +1,1 @@
+This directory contains API to read and delete browsing data like cookies or crash dumps.

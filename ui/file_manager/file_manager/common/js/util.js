@@ -102,9 +102,12 @@ Object.freeze(util.FileError);
 util.htmlEscape = str => {
   return str.replace(/[<>&]/g, entity => {
     switch (entity) {
-      case '<': return '&lt;';
-      case '>': return '&gt;';
-      case '&': return '&amp;';
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '&':
+        return '&amp;';
     }
   });
 };
@@ -116,9 +119,12 @@ util.htmlEscape = str => {
 util.htmlUnescape = str => {
   return str.replace(/&(lt|gt|amp);/g, entity => {
     switch (entity) {
-      case '&lt;': return '<';
-      case '&gt;': return '>';
-      case '&amp;': return '&';
+      case '&lt;':
+        return '<';
+      case '&gt;':
+        return '>';
+      case '&amp;':
+        return '&';
     }
   });
 };
@@ -142,22 +148,24 @@ util.rename = (entry, newName, successCallback, errorCallback) => {
     // a new entry may be create on background. However, there is no way not to
     // overwrite the existing file, unfortunately. The risk should be low,
     // assuming the unsafe period is very short.
-    (entry.isFile ? parent.getFile : parent.getDirectory).call(
-        parent, newName, {create: false},
-        entry => {
-          // The entry with the name already exists.
-          errorCallback(util.createDOMError(util.FileError.PATH_EXISTS_ERR));
-        },
-        error => {
-          if (error.name != util.FileError.NOT_FOUND_ERR) {
-            // Unexpected error is found.
-            errorCallback(error);
-            return;
-          }
+    (entry.isFile ? parent.getFile : parent.getDirectory)
+        .call(
+            parent, newName, {create: false},
+            entry => {
+              // The entry with the name already exists.
+              errorCallback(
+                  util.createDOMError(util.FileError.PATH_EXISTS_ERR));
+            },
+            error => {
+              if (error.name != util.FileError.NOT_FOUND_ERR) {
+                // Unexpected error is found.
+                errorCallback(error);
+                return;
+              }
 
-          // No existing entry is found.
-          entry.moveTo(parent, newName, successCallback, errorCallback);
-        });
+              // No existing entry is found.
+              entry.moveTo(parent, newName, successCallback, errorCallback);
+            });
   }, errorCallback);
 };
 
@@ -180,17 +188,16 @@ util.getRenameErrorMessage = (error, entry, newName) => {
     //   a) If we get PATH_EXISTS_ERR, a directory exists.
     //   b) If we get TYPE_MISMATCH_ERR, a file exists.
     return strf(
-        (entry.isFile && error.name ==
-            util.FileError.PATH_EXISTS_ERR) ||
-        (!entry.isFile && error.name ==
-            util.FileError.TYPE_MISMATCH_ERR) ?
+        (entry.isFile && error.name == util.FileError.PATH_EXISTS_ERR) ||
+                (!entry.isFile &&
+                 error.name == util.FileError.TYPE_MISMATCH_ERR) ?
             'FILE_ALREADY_EXISTS' :
             'DIRECTORY_ALREADY_EXISTS',
         newName);
   }
 
-  return strf('ERROR_RENAMING', entry.name,
-      util.getFileErrorString(error.name));
+  return strf(
+      'ERROR_RENAMING', entry.name, util.getFileErrorString(error.name));
 };
 
 /**
@@ -212,31 +219,42 @@ util.removeFileOrDirectory = (entry, onSuccess, onError) => {
  * number separators.
  *
  * @param {number} bytes The number of bytes.
+ * @param {number=} addedPrecision The number of precision digits to add.
  * @return {string} Localized string.
  */
-util.bytesToString = bytes => {
+util.bytesToString = (bytes, addedPrecision = 0) => {
   // Translation identifiers for size units.
-  const UNITS = ['SIZE_BYTES',
-               'SIZE_KB',
-               'SIZE_MB',
-               'SIZE_GB',
-               'SIZE_TB',
-               'SIZE_PB'];
+  const UNITS = [
+    'SIZE_BYTES',
+    'SIZE_KB',
+    'SIZE_MB',
+    'SIZE_GB',
+    'SIZE_TB',
+    'SIZE_PB',
+  ];
 
   // Minimum values for the units above.
-  const STEPS = [0,
-               Math.pow(2, 10),
-               Math.pow(2, 20),
-               Math.pow(2, 30),
-               Math.pow(2, 40),
-               Math.pow(2, 50)];
+  const STEPS = [
+    0,
+    Math.pow(2, 10),
+    Math.pow(2, 20),
+    Math.pow(2, 30),
+    Math.pow(2, 40),
+    Math.pow(2, 50),
+  ];
+
+  // Rounding with precision.
+  const round = (value, decimals) => {
+    const scale = Math.pow(10, decimals);
+    return Math.round(value * scale) / scale;
+  };
 
   const str = (n, u) => {
     return strf(u, n.toLocaleString());
   };
 
   const fmt = (s, u) => {
-    const rounded = Math.round(bytes / s * 10) / 10;
+    const rounded = round(bytes / s, 1 + addedPrecision);
     return str(rounded, u);
   };
 
@@ -245,9 +263,11 @@ util.bytesToString = bytes => {
     return str(bytes, UNITS[0]);
   }
 
-  // Up to 1MB is displayed as rounded up number of KBs.
+  // Up to 1MB is displayed as rounded up number of KBs, or with the desired
+  // number of precision digits.
   if (bytes < STEPS[2]) {
-    const rounded = Math.ceil(bytes / STEPS[1]);
+    const rounded = addedPrecision ? round(bytes / STEPS[1], addedPrecision) :
+                                     Math.ceil(bytes / STEPS[1]);
     return str(rounded, UNITS[1]);
   }
 
@@ -272,10 +292,8 @@ util.bytesToString = bytes => {
  * @return {string} Modifiers.
  */
 util.getKeyModifiers = event => {
-  return (event.ctrlKey ? 'Ctrl-' : '') +
-         (event.altKey ? 'Alt-' : '') +
-         (event.shiftKey ? 'Shift-' : '') +
-         (event.metaKey ? 'Meta-' : '');
+  return (event.ctrlKey ? 'Ctrl-' : '') + (event.altKey ? 'Alt-' : '') +
+      (event.shiftKey ? 'Shift-' : '') + (event.metaKey ? 'Meta-' : '');
 };
 
 /**
@@ -294,10 +312,10 @@ util.Transform;
  */
 util.applyTransform = (element, transform) => {
   // The order of rotate and scale matters.
-  element.style.transform =
-      transform ? 'rotate(' + transform.rotate90 * 90 + 'deg)' +
-                  'scaleX(' + transform.scaleX + ') ' +
-                  'scaleY(' + transform.scaleY + ') ' :
+  element.style.transform = transform ?
+      'rotate(' + transform.rotate90 * 90 + 'deg)' +
+          'scaleX(' + transform.scaleX + ') ' +
+          'scaleY(' + transform.scaleY + ') ' :
       '';
 };
 
@@ -308,10 +326,12 @@ util.applyTransform = (element, transform) => {
  */
 util.extractFilePath = url => {
   const match =
-      /^filesystem:[\w-]*:\/\/[\w]*\/(external|persistent|temporary)(\/.*)$/.
-      exec(url);
+      /^filesystem:[\w-]*:\/\/[\w]*\/(external|persistent|temporary)(\/.*)$/
+          .exec(url);
   const path = match && match[2];
-  if (!path) return null;
+  if (!path) {
+    return null;
+  }
   return decodeURIComponent(path);
 };
 
@@ -373,6 +393,9 @@ function strf(id, var_args) {
   return loadTimeData.getStringF.apply(loadTimeData, arguments);
 }
 
+// Export strf() into the util namespace.
+util.strf = strf;
+
 /**
  * @return {boolean} True if the Files app is running as an open files or a
  *     select folder dialog. False otherwise.
@@ -413,8 +436,9 @@ util.isFullScreen = appWindow => {
   if (appWindow) {
     return appWindow.isFullscreen();
   } else {
-    console.error('App window not passed. Unable to check status of ' +
-                  'the full screen mode.');
+    console.error(
+        'App window not passed. Unable to check status of the full screen ' +
+        'mode.');
     return false;
   }
 };
@@ -491,9 +515,9 @@ util.isFakeEntry = entry => {
 };
 
 /**
- * Obtains whether an entry is the root directory of a Team Drive.
+ * Obtains whether an entry is the root directory of a Shared Drive.
  * @param {Entry|FilesAppEntry} entry Entry or a fake entry.
- * @return {boolean} True if the given entry is root of a Team Drive.
+ * @return {boolean} True if the given entry is root of a Shared Drive.
  */
 util.isTeamDriveRoot = entry => {
   if (entry === null) {
@@ -503,44 +527,44 @@ util.isTeamDriveRoot = entry => {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree.length == 3 && util.isTeamDriveEntry(entry);
+  return tree.length == 3 && util.isSharedDriveEntry(entry);
 };
 
 /**
- * Obtains whether an entry is the grand root directory of Team Drives.
+ * Obtains whether an entry is the grand root directory of Shared Drives.
  * @param {(!Entry|!FakeEntry)} entry Entry or a fake entry.
- * @return {boolean} True if the given entry is the grand root of Team Drives.
+ * @return {boolean} True if the given entry is the grand root of Shared Drives.
  */
 util.isTeamDrivesGrandRoot = entry => {
   if (!entry.fullPath) {
     return false;
   }
   const tree = entry.fullPath.split('/');
-  return tree.length == 2 && util.isTeamDriveEntry(entry);
+  return tree.length == 2 && util.isSharedDriveEntry(entry);
 };
 
 /**
- * Obtains whether an entry is descendant of the Team Drives directory.
+ * Obtains whether an entry is descendant of the Shared Drives directory.
  * @param {!Entry|!FilesAppEntry} entry Entry or a fake entry.
- * @return {boolean} True if the given entry is under Team Drives.
+ * @return {boolean} True if the given entry is under Shared Drives.
  */
-util.isTeamDriveEntry = entry => {
+util.isSharedDriveEntry = entry => {
   if (!entry.fullPath) {
     return false;
   }
   const tree = entry.fullPath.split('/');
   return tree[0] == '' &&
-      tree[1] == VolumeManagerCommon.TEAM_DRIVES_DIRECTORY_NAME;
+      tree[1] == VolumeManagerCommon.SHARED_DRIVES_DIRECTORY_NAME;
 };
 
 /**
- * Extracts Team Drive name from entry path.
+ * Extracts Shared Drive name from entry path.
  * @param {(!Entry|!FakeEntry)} entry Entry or a fake entry.
- * @return {string} The name of Team Drive. Empty string if |entry| is not
- *     under Team Drives.
+ * @return {string} The name of Shared Drive. Empty string if |entry| is not
+ *     under Shared Drives.
  */
 util.getTeamDriveName = entry => {
-  if (!entry.fullPath || !util.isTeamDriveEntry(entry)) {
+  if (!entry.fullPath || !util.isSharedDriveEntry(entry)) {
     return '';
   }
   const tree = entry.fullPath.split('/');
@@ -591,8 +615,10 @@ util.isComputersEntry = entry => {
 };
 
 /**
- * Creates an instance of UserDOMError with given error name that looks like a
- * FileError except that it does not have the deprecated FileError.code member.
+ * Creates an instance of UserDOMError subtype of DOMError because DOMError is
+ * deprecated and its Closure extern is wrong, doesn't have the constructor
+ * with 2 arguments. This DOMError looks like a FileError except that it does
+ * not have the deprecated FileError.code member.
  *
  * @param {string} name Error name for the file error.
  * @param {string=} opt_message optional message.
@@ -604,40 +630,44 @@ util.createDOMError = (name, opt_message) => {
 
 /**
  * Creates a DOMError-like object to be used in place of returning file errors.
- *
- * @param {string} name Error name for the file error.
- * @param {string=} opt_message Optional message for this error.
- * @extends {DOMError}
- * @constructor
  */
-util.UserDOMError = function(name, opt_message) {
+util.UserDOMError = class UserDOMError extends DOMError {
   /**
-   * @type {string}
-   * @private
+   * @param {string} name Error name for the file error.
+   * @param {string=} opt_message Optional message for this error.
+   * @suppress {checkTypes} Closure externs for DOMError doesn't have
+   * constructor with 2 args.
    */
-  this.name_ = name;
+  constructor(name, opt_message) {
+    super(name, opt_message);
 
-  /**
-   * @type {string}
-   * @private
-   */
-  this.message_ = opt_message || '';
-  Object.freeze(this);
-};
+    /**
+     * @type {string}
+     * @private
+     */
+    this.name_ = name;
 
-util.UserDOMError.prototype = {
+    /**
+     * @type {string}
+     * @private
+     */
+    this.message_ = opt_message || '';
+    Object.freeze(this);
+  }
+
   /**
    * @return {string} File error name.
    */
   get name() {
     return this.name_;
-  },
+  }
+
   /**
    * @return {string} Error message.
    */
   get message() {
     return this.message_;
-  },
+  }
 };
 
 /**
@@ -725,8 +755,8 @@ util.isSiblingEntry = (entry1, entry2) => {
  * Collator for sorting.
  * @type {Intl.Collator}
  */
-util.collator = new Intl.Collator(
-    [], {usage: 'sort', numeric: true, sensitivity: 'base'});
+util.collator =
+    new Intl.Collator([], {usage: 'sort', numeric: true, sensitivity: 'base'});
 
 /**
  * Compare by name. The 2 entries must be in same directory.
@@ -809,18 +839,15 @@ util.compareLabelAndGroupBottomEntries = (locationInfo, bottomEntries) => {
  *     parent of {@code entry}.
  */
 util.isChildEntry = (entry, directory) => {
-  return new Promise(
-      (resolve, reject) => {
-        if (!entry || !directory) {
-          resolve(false);
-        }
+  return new Promise((resolve, reject) => {
+    if (!entry || !directory) {
+      resolve(false);
+    }
 
-        entry.getParent(
-            parent => {
-              resolve(util.isSameEntry(parent, directory));
-            },
-            reject);
-    });
+    entry.getParent(parent => {
+      resolve(util.isSameEntry(parent, directory));
+    }, reject);
+  });
 };
 
 /**
@@ -948,14 +975,16 @@ util.entriesToURLs = entries => {
  */
 util.URLsToEntries = (urls, opt_callback) => {
   const promises = urls.map(url => {
-    return new Promise(window.webkitResolveLocalFileSystemURL.bind(null, url)).
-        then(entry => {
-          return {entry: entry};
-        }, failureUrl => {
-          // Not an error. Possibly, the file is not accessible anymore.
-          console.warn('Failed to resolve the file with url: ' + url + '.');
-          return {failureUrl: url};
-        });
+    return new Promise(window.webkitResolveLocalFileSystemURL.bind(null, url))
+        .then(
+            entry => {
+              return {entry: entry};
+            },
+            failureUrl => {
+              // Not an error. Possibly, the file is not accessible anymore.
+              console.warn('Failed to resolve the file with url: ' + url + '.');
+              return {failureUrl: url};
+            });
   });
   const resultPromise = Promise.all(promises).then(results => {
     const entries = [];
@@ -970,20 +999,22 @@ util.URLsToEntries = (urls, opt_callback) => {
     }
     return {
       entries: entries,
-      failureUrls: failureUrls
+      failureUrls: failureUrls,
     };
   });
 
   // Invoke the callback. If opt_callback is specified, resultPromise is still
   // returned and fulfilled with a result.
   if (opt_callback) {
-    resultPromise.then(result => {
-      opt_callback(result.entries, result.failureUrls);
-    }).catch(error => {
-      console.error(
-          'util.URLsToEntries is failed.',
-          error.stack ? error.stack : error);
-    });
+    resultPromise
+        .then(result => {
+          opt_callback(result.entries, result.failureUrls);
+        })
+        .catch(error => {
+          console.error(
+              'util.URLsToEntries is failed.',
+              error.stack ? error.stack : error);
+        });
   }
 
   return resultPromise;
@@ -998,8 +1029,7 @@ util.URLsToEntries = (urls, opt_callback) => {
  *     {!Entry} if possible, else rejects.
  */
 util.urlToEntry = url => {
-  return new Promise(
-      window.webkitResolveLocalFileSystemURL.bind(null, url));
+  return new Promise(window.webkitResolveLocalFileSystemURL.bind(null, url));
 };
 
 /**
@@ -1064,18 +1094,18 @@ util.getRootTypeLabel = locationInfo => {
       return locationInfo.volumeInfo.label;
     case VolumeManagerCommon.RootType.DRIVE:
       return str('DRIVE_MY_DRIVE_LABEL');
-    case VolumeManagerCommon.RootType.TEAM_DRIVE:
+    case VolumeManagerCommon.RootType.SHARED_DRIVE:
     // |locationInfo| points to either the root directory of an individual Team
-    // Drive or subdirectory under it, but not the Team Drives grand directory.
-    // Every Team Drive and its subdirectories always have individual names
-    // (locationInfo.hasFixedLabel is false). So getRootTypeLabel() is only used
-    // by LocationLine.show() to display the ancestor name in the location line
-    // like this:
-    //   Team Drives > ABC Team Drive > Folder1
+    // Drive or subdirectory under it, but not the Shared Drives grand
+    // directory. Every Shared Drive and its subdirectories always have
+    // individual names (locationInfo.hasFixedLabel is false). So
+    // getRootTypeLabel() is only used by LocationLine.show() to display the
+    // ancestor name in the location line like this:
+    //   Shared Drives > ABC Shared Drive > Folder1
     //   ^^^^^^^^^^^
-    // By this reason, we return the label of the Team Drives grand root here.
-    case VolumeManagerCommon.RootType.TEAM_DRIVES_GRAND_ROOT:
-      return str('DRIVE_TEAM_DRIVES_LABEL');
+    // By this reason, we return the label of the Shared Drives grand root here.
+    case VolumeManagerCommon.RootType.SHARED_DRIVES_GRAND_ROOT:
+      return str('DRIVE_SHARED_DRIVES_LABEL');
     case VolumeManagerCommon.RootType.COMPUTER:
     case VolumeManagerCommon.RootType.COMPUTERS_GRAND_ROOT:
       return str('DRIVE_COMPUTERS_LABEL');
@@ -1114,6 +1144,7 @@ util.getRootTypeLabel = locationInfo => {
     case VolumeManagerCommon.RootType.PROVIDED:
     case VolumeManagerCommon.RootType.ANDROID_FILES:
     case VolumeManagerCommon.RootType.DOCUMENTS_PROVIDER:
+    case VolumeManagerCommon.RootType.SMB:
       return locationInfo.volumeInfo.label;
     default:
       console.error('Unsupported root type: ' + locationInfo.rootType);
@@ -1129,18 +1160,72 @@ util.getRootTypeLabel = locationInfo => {
  * @return {string} The localized name.
  */
 util.getEntryLabel = (locationInfo, entry) => {
-  if (locationInfo && locationInfo.hasFixedLabel) {
-    return util.getRootTypeLabel(locationInfo);
+  if (locationInfo) {
+    if (locationInfo.hasFixedLabel) {
+      return util.getRootTypeLabel(locationInfo);
+    }
+
+    if (entry.filesystem && entry.filesystem.root === entry) {
+      return util.getRootTypeLabel(locationInfo);
+    }
   }
 
-  // Special case for MyFiles/Downloads.
-  if (locationInfo && util.isMyFilesVolumeEnabled() &&
-      locationInfo.rootType == VolumeManagerCommon.RootType.DOWNLOADS &&
-      entry.fullPath == '/Downloads') {
-    return str('DOWNLOADS_DIRECTORY_LABEL');
+  // Special case for MyFiles/Downloads and MyFiles/PvmDefault.
+  if (locationInfo &&
+      locationInfo.rootType == VolumeManagerCommon.RootType.DOWNLOADS) {
+    if (entry.fullPath == '/Downloads') {
+      return str('DOWNLOADS_DIRECTORY_LABEL');
+    }
+    if (util.isPluginVmEnabled() && entry.fullPath == '/PvmDefault') {
+      return str('PLUGIN_VM_DIRECTORY_LABEL');
+    }
   }
 
   return entry.name;
+};
+
+/**
+ * Returns true if specified entry is a special entry such as MyFiles/Downloads,
+ * MyFiles/PvmDefault or Linux files root which cannot be modified such as
+ * deleted/cut or renamed.
+ *
+ * @param {!VolumeManager} volumeManager
+ * @param {(Entry|FakeEntry)} entry Entry or a fake entry.
+ * @return {boolean}
+ */
+util.isNonModifiable = (volumeManager, entry) => {
+  if (!entry) {
+    return false;
+  }
+  if (util.isFakeEntry(entry)) {
+    return true;
+  }
+
+  // If the entry is not a valid entry.
+  if (!volumeManager) {
+    return false;
+  }
+
+  const volumeInfo = volumeManager.getVolumeInfo(entry);
+  if (!volumeInfo) {
+    return false;
+  }
+
+  if (volumeInfo.volumeType === VolumeManagerCommon.RootType.DOWNLOADS) {
+    if (entry.fullPath === '/Downloads') {
+      return true;
+    }
+    if (util.isPluginVmEnabled() && entry.fullPath === '/PvmDefault') {
+      return true;
+    }
+  }
+
+  if (volumeInfo.volumeType === VolumeManagerCommon.RootType.CROSTINI &&
+      entry.fullPath === '/') {
+    return true;
+  }
+
+  return false;
 };
 
 /**
@@ -1223,31 +1308,22 @@ util.validateFileName = (parentEntry, name, filterHiddenOn) => {
  * It also verifies that name length is in the limits of the filesystem.
  *
  * @param {string} name New external drive name.
- * @param {!VolumeInfo} volumeInfo
+ * @param {!VolumeManagerCommon.FileSystemType} fileSystem
  * @return {Promise} Promise fulfilled on success, or rejected with the error
  *     message.
  */
-util.validateExternalDriveName = (name, volumeInfo) => {
+util.validateExternalDriveName = (name, fileSystem) => {
   // Verify if entered name for external drive respects restrictions provided by
   // the target filesystem
 
-  const fileSystem = volumeInfo.diskFileSystemType;
   const nameLength = name.length;
+  const lengthLimit = VolumeManagerCommon.FileSystemTypeVolumeNameLengthLimit;
 
   // Verify length for the target file system type
-  if (fileSystem == VolumeManagerCommon.FileSystemType.VFAT &&
-      nameLength >
-          VolumeManagerCommon.FileSystemTypeVolumeNameLengthLimit.VFAT) {
-    return Promise.reject(strf(
-        'ERROR_EXTERNAL_DRIVE_LONG_NAME',
-        VolumeManagerCommon.FileSystemTypeVolumeNameLengthLimit.VFAT));
-  } else if (
-      fileSystem == VolumeManagerCommon.FileSystemType.EXFAT &&
-      nameLength >
-          VolumeManagerCommon.FileSystemTypeVolumeNameLengthLimit.EXFAT) {
-    return Promise.reject(strf(
-        'ERROR_EXTERNAL_DRIVE_LONG_NAME',
-        VolumeManagerCommon.FileSystemTypeVolumeNameLengthLimit.EXFAT));
+  if (lengthLimit.hasOwnProperty(fileSystem) &&
+      nameLength > lengthLimit[fileSystem]) {
+    return Promise.reject(
+        strf('ERROR_EXTERNAL_DRIVE_LONG_NAME', lengthLimit[fileSystem]));
   }
 
   // Checks if name contains only printable ASCII (from ' ' to '~')
@@ -1313,11 +1389,26 @@ util.delay = ms => {
  */
 util.timeoutPromise = (promise, ms, opt_message) => {
   return Promise.race([
-    promise,
-    util.delay(ms).then(() => {
+    promise, util.delay(ms).then(() => {
       throw new Error(opt_message || 'Operation timed out.');
     })
   ]);
+};
+
+/**
+ * Examines whether the feedback panel mode is enabled.
+ * @return {boolean} True if the feedback panel UI mode is enabled.
+ */
+util.isFeedbackPanelEnabled = () => {
+  return loadTimeData.getBoolean('FEEDBACK_PANEL_ENABLED');
+};
+
+/**
+ * Returns true when FilesNG is enabled.
+ * @return {boolean}
+ */
+util.isFilesNg = () => {
+  return loadTimeData.getBoolean('FILES_NG_ENABLED');
 };
 
 /**
@@ -1335,59 +1426,55 @@ util.timeoutPromise = (promise, ms, opt_message) => {
  *     If 0 is specified, only the rootEntry will be read. If -1 is specified
  *     or opt_maxDepth is unspecified, the depth of recursion is unlimited.
  */
-util.readEntriesRecursively = (
-  rootEntry,
-  entriesCallback,
-  successCallback,
-  errorCallback,
-  shouldStop,
-  opt_maxDepth
-) => {
-  let numRunningTasks = 0;
-  let error = null;
-  const maxDepth = opt_maxDepth === undefined ? -1 : opt_maxDepth;
-  const maybeRunCallback = () => {
-    if (numRunningTasks === 0) {
-      if (shouldStop()) {
-        errorCallback(util.createDOMError(util.FileError.ABORT_ERR));
-      } else if (error) {
-        errorCallback(error);
-      } else {
-        successCallback();
-      }
-    }
-  };
-  const processEntry = (entry, depth) => {
-    const onError = fileError => {
-      if (!error) {
-        error = fileError;
-      }
-      numRunningTasks--;
-      maybeRunCallback();
-    };
-    const onSuccess = entries => {
-      if (shouldStop() || error || entries.length === 0) {
-        numRunningTasks--;
-        maybeRunCallback();
-        return;
-      }
-      entriesCallback(entries);
-      for (let i = 0; i < entries.length; i++) {
-        if (entries[i].isDirectory && (maxDepth === -1 || depth < maxDepth)) {
-          processEntry(entries[i], depth + 1);
+util.readEntriesRecursively =
+    (rootEntry, entriesCallback, successCallback, errorCallback, shouldStop,
+     opt_maxDepth) => {
+      let numRunningTasks = 0;
+      let error = null;
+      const maxDepth = opt_maxDepth === undefined ? -1 : opt_maxDepth;
+      const maybeRunCallback = () => {
+        if (numRunningTasks === 0) {
+          if (shouldStop()) {
+            errorCallback(util.createDOMError(util.FileError.ABORT_ERR));
+          } else if (error) {
+            errorCallback(error);
+          } else {
+            successCallback();
+          }
         }
-      }
-      // Read remaining entries.
-      reader.readEntries(onSuccess, onError);
+      };
+      const processEntry = (entry, depth) => {
+        const onError = fileError => {
+          if (!error) {
+            error = fileError;
+          }
+          numRunningTasks--;
+          maybeRunCallback();
+        };
+        const onSuccess = entries => {
+          if (shouldStop() || error || entries.length === 0) {
+            numRunningTasks--;
+            maybeRunCallback();
+            return;
+          }
+          entriesCallback(entries);
+          for (let i = 0; i < entries.length; i++) {
+            if (entries[i].isDirectory &&
+                (maxDepth === -1 || depth < maxDepth)) {
+              processEntry(entries[i], depth + 1);
+            }
+          }
+          // Read remaining entries.
+          reader.readEntries(onSuccess, onError);
+        };
+
+        numRunningTasks++;
+        const reader = entry.createReader();
+        reader.readEntries(onSuccess, onError);
+      };
+
+      processEntry(rootEntry, 0);
     };
-
-    numRunningTasks++;
-    const reader = entry.createReader();
-    reader.readEntries(onSuccess, onError);
-  };
-
-  processEntry(rootEntry, 0);
-};
 
 /**
  * Do not remove or modify.  Used in vm.CrostiniFiles tast tests at:
@@ -1484,9 +1571,15 @@ util.unwrapEntry = entry => {
 };
 
 /** @return {boolean} */
-util.isMyFilesVolumeEnabled = () => {
-  return loadTimeData.valueExists('MY_FILES_VOLUME_ENABLED') &&
-      loadTimeData.getBoolean('MY_FILES_VOLUME_ENABLED');
+util.isArcUsbStorageUIEnabled = () => {
+  return loadTimeData.valueExists('ARC_USB_STORAGE_UI_ENABLED') &&
+      loadTimeData.getBoolean('ARC_USB_STORAGE_UI_ENABLED');
+};
+
+/** @return {boolean} */
+util.isPluginVmEnabled = () => {
+  return loadTimeData.valueExists('PLUGIN_VM_ENABLED') &&
+      loadTimeData.getBoolean('PLUGIN_VM_ENABLED');
 };
 
 /**
@@ -1517,4 +1610,37 @@ util.entryDebugString = (entry) => {
     entryDescription = entryDescription + entry.toURL();
   }
   return entryDescription;
+};
+
+/**
+ * Returns true if all entries belong to the same volume. If there are no
+ * entries it also returns false.
+ *
+ * @param {!Array<Entry|FilesAppEntry>} entries
+ * @param {!VolumeManager} volumeManager
+ * @return boolean
+ */
+util.isSameVolume = (entries, volumeManager) => {
+  if (!entries.length) {
+    return false;
+  }
+
+  const firstEntry = entries[0];
+  if (!firstEntry) {
+    return false;
+  }
+  const volumeInfo = volumeManager.getVolumeInfo(firstEntry);
+
+  for (let i = 1; i < entries.length; i++) {
+    if (!entries[i]) {
+      return false;
+    }
+    const volumeInfoToCompare = volumeManager.getVolumeInfo(assert(entries[i]));
+    if (!volumeInfoToCompare ||
+        volumeInfoToCompare.volumeId !== volumeInfo.volumeId) {
+      return false;
+    }
+  }
+
+  return true;
 };

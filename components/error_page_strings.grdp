@@ -250,9 +250,6 @@
   <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_EXTENSION" desc="Summary in the error page when an extension blocks a request.">
     Requests to the server have been blocked by an extension.
   </message>
-  <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_XSS_AUDITOR" desc="Summary in the error page when the XSS Auditor blocks a response.">
-    Chrome detected unusual code on this page and blocked it to protect your personal information (for example, passwords, phone numbers, and credit cards).
-  </message>
   <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR" desc="Summary in the error page when an administrator policy blocks a request.">
     The person who set up this computer has chosen to block this site.
   </message>
@@ -348,13 +345,6 @@
     </message>
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_STANDALONE" desc="Standalone text for the link that invokes the connection diagnostic tool on the error page">
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Try running Connectivity Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
-    </message>
-  </if>
-
-  <!-- iOS specific error page messages -->
-  <if expr="is_ios">
-    <message name="IDS_ERRORPAGES_SUMMARY_NOT_AVAILABLE_NO_EMPHASIS" desc="Summary in the error page when we can't connect to a site. [iOS only]">
-      The webpage at <ph name="SITE">$1<ex>google.xom</ex></ph> might be temporarily down or it may have moved permanently to a new web address.
     </message>
   </if>
 

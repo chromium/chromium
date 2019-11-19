@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<title>Test that the overflow menu closes when the overlay play button area is tapped.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<script src="overlay-play-button.js"></script>
+<body></body>
+<script>
+async_test(t => {
+  // This test is only valid when the overlay play button is enabled.
+  enableOverlayPlayButtonForTest(t);
+
+  const video = document.createElement('video');
+  video.controls = true;
+  video.width = 400;
+  video.src='../content/60_sec_video.webm';
+  document.body.appendChild(video);
+
+  var button = overflowButton(video);
+  var menu = overflowMenu(video);
+  // Need to add a text track for the overflow menu to appear.
+  video.addTextTrack("captions");
+
+  video.addEventListener('loadedmetadata', t.step_func(() => {
+    // The overflow menu should be closed by default.
+    assert_false(isControlVisible(menu));
+
+    // Open overflow menu.
+    singleTapOnControl(button, t.step_func(tapOnOverlay));
+  }));
+
+  function tapOnOverlay() {
+    // Overflow menu should be visible.
+    assert_true(isControlVisible(menu));
+
+    // Single tap in the top right hand corner of overlay.
+    const overlayCoordinates = coordinatesOutsideElement(mediaControlsOverlayPlayButton(video));
+    singleTapAtCoordinates(overlayCoordinates[0] + 1,
+                           overlayCoordinates[1] + 1,
+                           t.step_func_done(checkOverflowMenuDisappeared));
+  }
+
+  function checkOverflowMenuDisappeared() {
+    // The overflow menu should disappear.
+    assert_false(isControlVisible(menu));
+  }
+});
+</script>
+</html>

@@ -1,0 +1,26 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/polymer/polymer.gni")
+
+group("closure_compile") {
+  deps = [
+    "signin_email_confirmation:closure_compile",
+    "sync_confirmation:closure_compile",
+  ]
+}
+
+group("polymer3_elements") {
+  deps = [
+    ":signin_shared_css_module",
+    "signin_email_confirmation:polymer3_elements",
+    "sync_confirmation:polymer3_elements",
+  ]
+}
+
+polymer_modulizer("signin_shared_css") {
+  html_file = "signin_shared_css.html"
+  js_file = "signin_shared_css.js"
+  html_type = "v3-ready"
+}

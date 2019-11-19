@@ -7,7 +7,7 @@ Font #0
     isCustomFont: true
 Font #1
     name: <Some-family-name-1>
-    glyphCount: 7
+    glyphCount: 6
     isCustomFont: false
 Font #2
     name: <Some-family-name-2>

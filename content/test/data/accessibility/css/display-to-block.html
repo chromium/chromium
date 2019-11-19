@@ -4,13 +4,14 @@
 <div>
   <div>Cats</div>
   <div id="block" style="display:none;">
-      <input type="checkbox" aria-label="done">
+      <input type="checkbox" aria-label="checkbox">
   </div>
-  <div></div>
+  <div><code>pending</code></div>
 </div>
 
 <script>
   setTimeout(()=> {
     document.getElementById('block').style.display = 'block';
+    document.querySelector('code').innerText = 'done';
   }, 100);
 </script>

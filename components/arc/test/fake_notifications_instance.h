@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "components/arc/common/notifications.mojom.h"
+#include "components/arc/mojom/notifications.mojom.h"
 
 namespace arc {
 

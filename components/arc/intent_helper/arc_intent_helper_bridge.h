@@ -11,12 +11,13 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
-#include "components/arc/common/intent_helper.mojom.h"
 #include "components/arc/intent_helper/activity_icon_loader.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
@@ -29,13 +30,14 @@ class BrowserContext;
 namespace arc {
 
 class ArcBridgeService;
+class ControlCameraAppDelegate;
+class FactoryResetDelegate;
 class IntentFilter;
 class OpenUrlDelegate;
 
 // Receives intents from ARC.
-class ArcIntentHelperBridge
-    : public KeyedService,
-      public mojom::IntentHelperHost {
+class ArcIntentHelperBridge : public KeyedService,
+                              public mojom::IntentHelperHost {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
@@ -51,6 +53,10 @@ class ArcIntentHelperBridge
 
   static void SetOpenUrlDelegate(OpenUrlDelegate* delegate);
 
+  static void SetControlCameraAppDelegate(ControlCameraAppDelegate* delegate);
+
+  static void SetFactoryResetDelegate(FactoryResetDelegate* delegate);
+
   ArcIntentHelperBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);
   ~ArcIntentHelperBridge() override;
@@ -58,6 +64,11 @@ class ArcIntentHelperBridge
   void AddObserver(ArcIntentHelperObserver* observer);
   void RemoveObserver(ArcIntentHelperObserver* observer);
   bool HasObserver(ArcIntentHelperObserver* observer) const;
+  void HandleCameraResult(
+      uint32_t intent_id,
+      arc::mojom::CameraIntentAction action,
+      const std::vector<uint8_t>& data,
+      arc::mojom::IntentHelperInstance::HandleCameraResultCallback callback);
 
   // mojom::IntentHelperHost
   void OnIconInvalidated(const std::string& package_name) override;
@@ -74,8 +85,20 @@ class ArcIntentHelperBridge
   void OpenWallpaperPicker() override;
   void SetWallpaperDeprecated(const std::vector<uint8_t>& jpeg_data) override;
   void OpenVolumeControl() override;
+  void FactoryResetArc() override;
   void OnOpenWebApp(const std::string& url) override;
   void RecordShareFilesMetrics(mojom::ShareFiles flag) override;
+  void LaunchCameraApp(uint32_t intent_id,
+                       arc::mojom::CameraIntentMode mode,
+                       bool should_handle_result,
+                       bool should_down_scale,
+                       bool is_secure) override;
+  void OnIntentFiltersUpdatedForPackage(
+      const std::string& package_name,
+      std::vector<IntentFilter> intent_filters) override;
+  void CloseCameraApp() override;
+  void IsChromeAppEnabled(arc::mojom::ChromeApp app,
+                          IsChromeAppEnabledCallback callback) override;
 
   // Retrieves icons for the |activities| and calls |callback|.
   // See ActivityIconLoader::GetActivityIcons() for more details.
@@ -106,6 +129,9 @@ class ArcIntentHelperBridge
 
   static const char kArcIntentHelperPackageName[];
 
+  const std::vector<IntentFilter>& GetIntentFilterForPackage(
+      const std::string& package_name);
+
  private:
   THREAD_CHECKER(thread_checker_);
 
@@ -114,15 +140,15 @@ class ArcIntentHelperBridge
 
   internal::ActivityIconLoader icon_loader_;
 
-  // List of intent filters from Android. Used to determine if Chrome should
-  // handle a URL without handing off to Android.
-  std::vector<IntentFilter> intent_filters_;
+  // A map of each package name to the intent filters for that package.
+  // Used to determine if Chrome should handle a URL without handing off to
+  // Android.
+  // TODO(crbug.com/853604): Now the package name exists in the map key as well
+  // as the IntentFilter struct, it is a duplication. Should update the ARC
+  // mojom type to optimise the structure.
+  std::map<std::string, std::vector<IntentFilter>> intent_filters_;
 
   base::ObserverList<ArcIntentHelperObserver>::Unchecked observer_list_;
-
-  // about: and chrome://settings pages assistant requires to launch via
-  // OnOpenChromePage.
-  const std::map<mojom::ChromePage, std::string> allowed_chrome_pages_map_;
 
   // Schemes that ARC is known to send via OnOpenUrl.
   const std::set<std::string> allowed_arc_schemes_;

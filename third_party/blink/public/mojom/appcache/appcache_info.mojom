@@ -21,6 +21,7 @@ enum AppCacheStatus {
   APPCACHE_STATUS_OBSOLETE = 5,
 };
 
+// Cache-wide information displayed in DevTools.
 struct AppCacheInfo {
   url.mojom.Url manifest_url;
   mojo_base.mojom.Time creation_time;
@@ -29,6 +30,9 @@ struct AppCacheInfo {
   int64 cache_id;
   int64 group_id;
   AppCacheStatus status;
-  int64 size;
+  // Sums up the sizes of all the responses in this cache.
+  int64 response_sizes;
+  // Sums up the padding sizes for all opaque responses in the cache.
+  int64 padding_sizes;
   bool is_complete;
 };

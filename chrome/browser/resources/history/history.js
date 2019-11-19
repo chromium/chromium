@@ -22,13 +22,7 @@ window.resultsRendered = false;
 function waitForAppUpgrade() {
   if (!upgradePromise) {
     upgradePromise = new Promise(function(resolve, reject) {
-      // TODO(dpapad): Need to update this to work with Polymer 2.
-      if (window.Polymer && Polymer.isInstance &&
-          Polymer.isInstance($('history-app'))) {
-        resolve();
-      } else {
-        $('bundle').addEventListener('load', resolve);
-      }
+      $('bundle').addEventListener('load', resolve);
     });
   }
   return upgradePromise;

@@ -8,47 +8,47 @@
 
 namespace blink {
 
-enum PassiveForcedListenerResultType {
-  kPreventDefaultNotCalled,
-  kDocumentLevelTouchPreventDefaultCalled
-};
-
 class EventTargetTest : public RenderingTest {
  public:
   EventTargetTest() = default;
   ~EventTargetTest() override = default;
 };
 
-TEST_F(EventTargetTest, PreventDefaultNotCalled) {
+TEST_F(EventTargetTest, UseCountPassiveTouchEventListener) {
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kPassiveTouchEventListener));
   GetDocument().GetSettings()->SetScriptEnabled(true);
-  HistogramTester histogram_tester;
   GetDocument().GetFrame()->GetScriptController().ExecuteScriptInMainWorld(
-      "window.addEventListener('touchstart', function(e) {}, {});"
-      "window.dispatchEvent(new TouchEvent('touchstart', "
-      "{cancelable: "
-      "false}));");
-
-  histogram_tester.ExpectTotalCount("Event.PassiveForcedEventDispatchCancelled",
-                                    1);
-  histogram_tester.ExpectUniqueSample(
-      "Event.PassiveForcedEventDispatchCancelled", kPreventDefaultNotCalled, 1);
+      "window.addEventListener('touchstart', function() {}, {passive: true});");
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kPassiveTouchEventListener));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kNonPassiveTouchEventListener));
 }
 
-TEST_F(EventTargetTest, PreventDefaultCalled) {
+TEST_F(EventTargetTest, UseCountNonPassiveTouchEventListener) {
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kNonPassiveTouchEventListener));
   GetDocument().GetSettings()->SetScriptEnabled(true);
-  HistogramTester histogram_tester;
   GetDocument().GetFrame()->GetScriptController().ExecuteScriptInMainWorld(
-      "window.addEventListener('touchstart', function(e) "
-      "{e.preventDefault();}, {});"
-      "window.dispatchEvent(new TouchEvent('touchstart', "
-      "{cancelable: "
-      "false}));");
+      "window.addEventListener('touchstart', function() {}, {passive: "
+      "false});");
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kNonPassiveTouchEventListener));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kPassiveTouchEventListener));
+}
 
-  histogram_tester.ExpectTotalCount("Event.PassiveForcedEventDispatchCancelled",
-                                    1);
-  histogram_tester.ExpectUniqueSample(
-      "Event.PassiveForcedEventDispatchCancelled",
-      kDocumentLevelTouchPreventDefaultCalled, 1);
+TEST_F(EventTargetTest, UseCountPassiveTouchEventListenerPassiveNotSpecified) {
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kPassiveTouchEventListener));
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  GetDocument().GetFrame()->GetScriptController().ExecuteScriptInMainWorld(
+      "window.addEventListener('touchstart', function() {});");
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kPassiveTouchEventListener));
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kNonPassiveTouchEventListener));
 }
 
 }  // namespace blink

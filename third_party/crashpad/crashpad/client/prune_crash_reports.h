@@ -37,8 +37,10 @@ class PruneCondition;
 //! \param[in] database The database from which crash reports will be deleted.
 //! \param[in] condition The condition against which all reports in the database
 //!     will be evaluated.
-void PruneCrashReportDatabase(CrashReportDatabase* database,
-                              PruneCondition* condition);
+//!
+//! \return The number of deleted crash reports.
+size_t PruneCrashReportDatabase(CrashReportDatabase* database,
+                                PruneCondition* condition);
 
 std::unique_ptr<PruneCondition> GetDefaultDatabasePruneCondition();
 

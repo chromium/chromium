@@ -1,0 +1,137 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+  /Outlines 10 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /Count 3
+  /Kids [
+    3 0 R
+    4 0 R
+    5 0 R
+  ]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 9 0 R
+    >>
+  >>
+  /Contents [6 0 R]
+  /MediaBox [0 0 612 792]
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 9 0 R
+    >>
+  >>
+  /Contents [7 0 R]
+  /MediaBox [0 0 612 792]
+>>
+endobj
+{{object 5 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Resources <<
+    /Font <<
+      /F1 9 0 R
+    >>
+  >>
+  /Contents [8 0 R]
+  /MediaBox [0 0 612 792]
+>>
+endobj
+{{object 6 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+70 700 Td
+/F1 8 Tf
+(1 First Section) Tj
+ET
+endstream
+endobj
+{{object 7 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+70 700 Td
+/F1 8 Tf
+(1.1 First Subsection) Tj
+ET
+endstream
+endobj
+{{object 8 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+70 700 Td
+/F1 8 Tf
+(2 Second Section) Tj
+ET
+endstream
+endobj
+{{object 9 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Arial
+>>
+endobj
+{{object 10 0}} <<
+  /Type /Outlines
+  /First 11 0 R
+  /Last  13 0 R
+  /Count 3
+>>
+endobj
+{{object 11 0}} <<
+  /Title (First Section)
+  /Parent 10 0 R
+  /Next 12 0 R
+  /Dest [3 0 R /XYZ 133 667 1.25]
+  /First 14 0 R
+  /Last 14 0 R
+  /Count 1
+>>
+endobj
+{{object 12 0}} <<
+  /Title (Second Section)
+  /Parent 10 0 R
+  /Prev 11 0 R
+  /Next 13 0 R
+  /Dest [5 0 R /XYZ 133 667 1.75]
+>>
+endobj
+{{object 13 0}} <<
+  /Title (URI Bookmark)
+  /Parent 10 0 R
+  /Prev 12 0 R
+  /A <<
+    /S /URI
+    /URI (http://www.chromium.org)
+  >>
+>>
+endobj
+{{object 14 0}} <<
+  /Title (First Subsection)
+  /Parent 11 0 R
+  /Dest [4 0 R /XYZ 133 667 1.5]
+>>
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

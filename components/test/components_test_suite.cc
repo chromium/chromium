@@ -17,8 +17,8 @@
 #include "build/buildflag.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "mojo/core/embedder/embedder.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 #include "url/url_util.h"
@@ -27,6 +27,7 @@
 #include "components/test/ios_components_test_initializer.h"
 #else
 #include "content/public/common/content_client.h"
+#include "content/public/common/network_service_util.h"
 #include "content/public/test/content_test_suite_base.h"
 #include "content/public/test/test_content_client_initializer.h"
 #include "content/public/test/unittest_test_suite.h"
@@ -35,10 +36,6 @@
 
 #if defined(OS_WIN)
 #include "base/win/scoped_com_initializer.h"
-#endif
-
-#if BUILDFLAG(ENABLE_MUS)
-#include "ui/aura/test/aura_test_suite_setup.h"  // nogncheck
 #endif
 
 namespace {
@@ -59,10 +56,12 @@ class ComponentsTestSuite : public base::TestSuite {
     mojo::core::Init();
 
     // Before registering any schemes, clear GURL's internal state.
-    url::Shutdown();
+    url::ResetForTests();
 
 #if !defined(OS_IOS)
     gl::GLSurfaceTestSupport::InitializeOneOff();
+
+    content::ForceInProcessNetworkService(true);
 
     // Setup content scheme statics.
     {
@@ -92,8 +91,9 @@ class ComponentsTestSuite : public base::TestSuite {
     // autocomplete_input_unittest.cc and content_settings_pattern*
     url::AddStandardScheme("chrome", url::SCHEME_WITH_HOST);
     url::AddStandardScheme("chrome-extension", url::SCHEME_WITH_HOST);
-    url::AddStandardScheme("chrome-devtools", url::SCHEME_WITH_HOST);
+    url::AddStandardScheme("devtools", url::SCHEME_WITH_HOST);
     url::AddStandardScheme("chrome-search", url::SCHEME_WITH_HOST);
+    url::AddStandardScheme("chrome-distiller", url::SCHEME_WITH_HOST);
 
     ContentSettingsPattern::SetNonWildcardDomainNonPortSchemes(
         kNonWildcardDomainNonPortSchemes,
@@ -158,10 +158,6 @@ base::RunTestSuiteCallback GetLaunchCallback(int argc, char** argv) {
   testing::TestEventListeners& listeners =
       testing::UnitTest::GetInstance()->listeners();
   listeners.Append(new ComponentsUnitTestEventListener());
-#if BUILDFLAG(ENABLE_MUS)
-  // Components unit tests do not use mus window service client code.
-  aura::AuraTestSuiteSetup::DisableMusFeatures();
-#endif
 
 #if !defined(OS_IOS)
   return base::BindOnce(&content::UnitTestTestSuite::Run,

@@ -10,7 +10,7 @@ android_library("reporter_java") {
 
   deps = [
     "//base:base_java",
-    "//third_party/android_tools:android_test_base_java",
+    "//third_party/android_sdk:android_test_base_java",
   ]
 
   java_files = [

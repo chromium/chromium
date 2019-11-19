@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+FAIL Same-origin blob URL iframe should inherit service worker controller. assert_equals: blob URL iframe should inherit controller expected (string) "https://web-platform.test:8444/service-workers/service-worker/resources/local-url-inherit-controller-worker.js" but got (object) null
+FAIL Same-origin blob URL iframe should intercept fetch(). assert_equals: blob URL iframe should intercept fetch expected "intercepted" but got "Hello world\n"
+FAIL Same-origin blob URL worker should inherit service worker controller. promise_test: Unhandled rejection with value: "Uncaught TypeError: Cannot read property 'controller' of undefined"
+FAIL Same-origin blob URL worker should intercept fetch(). assert_equals: blob URL worker should intercept fetch expected "intercepted" but got "Hello world\n"
+PASS Data URL iframe should not intercept fetch().
+FAIL Data URL worker should not inherit service worker controller. promise_test: Unhandled rejection with value: "Uncaught TypeError: Cannot read property 'controller' of undefined"
+PASS Data URL worker should not intercept fetch().
+Harness: the test ran to completion.
+

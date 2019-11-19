@@ -12,7 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.BoundedLinearLayout;
+import org.chromium.chrome.browser.ui.widget.BoundedLinearLayout;
 
 /**
  * Displays the status of a payment request to the user.

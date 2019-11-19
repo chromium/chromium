@@ -33,6 +33,7 @@ class DevModeBubbleDelegate
                                 int extension_count) const override;
   base::string16 GetOverflowText(
       const base::string16& overflow_count) const override;
+  base::string16 GetLearnMoreLabel() const override;
   GURL GetLearnMoreUrl() const override;
   base::string16 GetActionButtonLabel() const override;
   base::string16 GetDismissButtonLabel() const override;

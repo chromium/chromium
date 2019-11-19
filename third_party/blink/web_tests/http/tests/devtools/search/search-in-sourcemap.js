@@ -10,10 +10,10 @@
   await TestRunner.navigate('resources/sourcemap-page.html');
 
   await Promise.all([
-    TestRunner.waitForUISourceCode('sourcemap-style.css'),
-    TestRunner.waitForUISourceCode('sourcemap-sass.scss'),
     TestRunner.waitForUISourceCode('sourcemap-script.js'),
     TestRunner.waitForUISourceCode('sourcemap-typescript.ts'),
+    TestRunner.waitForUISourceCode('sourcemap-style.css'),
+    TestRunner.waitForUISourceCode('sourcemap-sass.scss'),
   ]);
   var scope = new Sources.SourcesSearchScope();
 

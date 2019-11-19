@@ -39,12 +39,14 @@ class BleDeviceHoverListModel : public HoverListModel,
   // HoverListModel:
   bool ShouldShowPlaceholderForEmptyList() const override;
   base::string16 GetPlaceholderText() const override;
-  const gfx::VectorIcon& GetPlaceholderIcon() const override;
+  const gfx::VectorIcon* GetPlaceholderIcon() const override;
   base::string16 GetItemText(int item_tag) const override;
-  const gfx::VectorIcon& GetItemIcon(int item_tag) const override;
+  base::string16 GetDescriptionText(int item_tag) const override;
+  const gfx::VectorIcon* GetItemIcon(int item_tag) const override;
   std::vector<int> GetItemTags() const override;
   void OnListItemSelected(int item_tag) override;
   size_t GetPreferredItemCount() const override;
+  bool StyleForTwoLines() const override;
 
   // AuthenticatorListObserver:
   void OnAuthenticatorAdded(

@@ -7,9 +7,7 @@ package org.chromium.chrome.browser;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import android.support.annotation.VisibleForTesting;
+import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,6 +20,10 @@ import android.widget.ListPopupWindow;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -32,6 +34,7 @@ import org.chromium.chrome.browser.favicon.FaviconHelper.DefaultFaviconHelper;
 import org.chromium.chrome.browser.favicon.FaviconHelper.FaviconImageCallback;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
@@ -100,14 +103,14 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
         mHistory = mNavigationController.getDirectedNavigationHistory(
                 isForward, MAXIMUM_HISTORY_ITEMS);
         mHistory.addEntry(new NavigationEntry(FULL_HISTORY_ENTRY_INDEX, UrlConstants.HISTORY_URL,
-                null, null, null, resources.getString(R.string.show_full_history), null, 0));
+                null, null, null, resources.getString(R.string.show_full_history), null, 0, 0));
 
         mAdapter = new NavigationAdapter();
 
         mPopup = new ListPopupWindow(context, null, 0, R.style.NavigationPopupDialog);
         mPopup.setOnDismissListener(this::onDismiss);
         mPopup.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(resources,
-                anchorToBottom ? R.drawable.popup_bg_bottom : R.drawable.popup_bg_tinted));
+                anchorToBottom ? R.drawable.popup_bg_bottom_tinted : R.drawable.popup_bg_tinted));
         mPopup.setModal(true);
         mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
         mPopup.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -224,7 +227,8 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
     private void onFaviconAvailable(String pageUrl, Bitmap favicon) {
         if (favicon == null) {
             if (mDefaultFaviconHelper == null) mDefaultFaviconHelper = new DefaultFaviconHelper();
-            favicon = mDefaultFaviconHelper.getDefaultFaviconBitmap(mContext, pageUrl, true);
+            favicon = mDefaultFaviconHelper.getDefaultFaviconBitmap(
+                    mContext.getResources(), pageUrl, true);
         }
         for (int i = 0; i < mHistory.getEntryCount(); i++) {
             NavigationEntry entry = mHistory.getEntryAtIndex(i);
@@ -290,6 +294,14 @@ public class NavigationPopup implements AdapterView.OnItemClickListener {
             NavigationEntry entry = (NavigationEntry) getItem(position);
             setViewText(entry, viewHolder.mTextView);
             viewHolder.mImageView.setImageBitmap(entry.getFavicon());
+
+            if (entry.getIndex() == FULL_HISTORY_ENTRY_INDEX) {
+                ApiCompatibilityUtils.setImageTintList(viewHolder.mImageView,
+                        AppCompatResources.getColorStateList(
+                                mContext, R.color.default_icon_color_blue));
+            } else {
+                ApiCompatibilityUtils.setImageTintList(viewHolder.mImageView, null);
+            }
 
             if (mType == Type.ANDROID_SYSTEM_BACK) {
                 View container = viewHolder.mContainer;

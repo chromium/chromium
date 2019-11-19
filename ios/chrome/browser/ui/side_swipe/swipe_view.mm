@@ -6,7 +6,7 @@
 
 #import "ios/chrome/browser/ui/elements/top_aligned_image_view.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#include "ios/web/public/features.h"
+#include "ios/web/common/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -61,11 +61,6 @@
     _toolbarTopConstraint = [[_topToolbarSnapshot topAnchor]
         constraintEqualToAnchor:self.topAnchor];
 
-    if (!base::FeatureList::IsEnabled(
-            web::features::kBrowserContainerFullscreen)) {
-      _toolbarTopConstraint.constant = -StatusBarHeight();
-    }
-
     _imageTopConstraint =
         [_imageView.topAnchor constraintEqualToAnchor:self.topAnchor
                                              constant:topMargin];
@@ -112,11 +107,6 @@
 
 - (void)setTopToolbarImage:(UIImage*)image {
   [self.topToolbarSnapshot setImage:image];
-  if (!base::FeatureList::IsEnabled(
-          web::features::kBrowserContainerFullscreen)) {
-    // Update constraints as StatusBarHeight changes depending on orientation.
-    self.toolbarTopConstraint.constant = -StatusBarHeight();
-  }
   [self.topToolbarSnapshot setNeedsLayout];
 }
 

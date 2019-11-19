@@ -135,7 +135,7 @@ void ConvertDecryptConfigToProto(const DecryptConfig& decrypt_config,
   }
 
   config_message->set_mode(
-      ToProtoEncryptionMode(decrypt_config.encryption_mode()).value());
+      ToProtoEncryptionMode(decrypt_config.encryption_scheme()).value());
   if (decrypt_config.HasPattern()) {
     config_message->set_crypt_byte_block(
         decrypt_config.encryption_pattern()->crypt_byte_block());
@@ -235,20 +235,23 @@ std::vector<uint8_t> DecoderBufferToByteArray(
   return buffer;
 }
 
-void ConvertEncryptionSchemeToProto(const EncryptionScheme& encryption_scheme,
+void ConvertEncryptionSchemeToProto(EncryptionScheme encryption_scheme,
                                     pb::EncryptionScheme* message) {
   DCHECK(message);
+
+  // The remote side only cares about the cipher mode. Setting EncryptionPattern
+  // to (0, 0) is fine.
+  // TODO(crbug.com/1018923): Upgrade proto to remove EncryptionPattern from
+  // Audio/VideoDecoderConfig.
   message->set_mode(
-      ToProtoEncryptionSchemeCipherMode(encryption_scheme.mode()).value());
-  message->set_encrypt_blocks(encryption_scheme.pattern().crypt_byte_block());
-  message->set_skip_blocks(encryption_scheme.pattern().skip_byte_block());
+      ToProtoEncryptionSchemeCipherMode(encryption_scheme).value());
+  message->set_encrypt_blocks(0);
+  message->set_skip_blocks(0);
 }
 
 EncryptionScheme ConvertProtoToEncryptionScheme(
     const pb::EncryptionScheme& message) {
-  return EncryptionScheme(
-      ToMediaEncryptionSchemeCipherMode(message.mode()).value(),
-      EncryptionPattern(message.encrypt_blocks(), message.skip_blocks()));
+  return ToMediaEncryptionScheme(message.mode()).value();
 }
 
 void ConvertAudioDecoderConfigToProto(const AudioDecoderConfig& audio_config,
@@ -308,8 +311,11 @@ void ConvertVideoDecoderConfigToProto(const VideoDecoderConfig& video_config,
       ToProtoVideoDecoderConfigCodec(video_config.codec()).value());
   video_message->set_profile(
       ToProtoVideoDecoderConfigProfile(video_config.profile()).value());
-  video_message->set_format(
-      ToProtoVideoDecoderConfigFormat(video_config.format()).value());
+  // TODO(dalecurtis): Remove |format| it's now unused.
+  video_message->set_format(video_config.alpha_mode() ==
+                                    VideoDecoderConfig::AlphaMode::kHasAlpha
+                                ? pb::VideoDecoderConfig::PIXEL_FORMAT_I420A
+                                : pb::VideoDecoderConfig::PIXEL_FORMAT_I420);
 
   // TODO(hubbe): Update proto to use color_space_info()
   if (video_config.color_space_info() == VideoColorSpace::JPEG()) {
@@ -356,7 +362,6 @@ bool ConvertProtoToVideoDecoderConfig(
     const pb::VideoDecoderConfig& video_message,
     VideoDecoderConfig* video_config) {
   DCHECK(video_config);
-  EncryptionScheme encryption_scheme;
 
   // TODO(hubbe): Update pb to use VideoColorSpace
   VideoColorSpace color_space;
@@ -376,8 +381,10 @@ bool ConvertProtoToVideoDecoderConfig(
   video_config->Initialize(
       ToMediaVideoCodec(video_message.codec()).value(),
       ToMediaVideoCodecProfile(video_message.profile()).value(),
-      ToMediaVideoPixelFormat(video_message.format()).value(), color_space,
-      VIDEO_ROTATION_0,
+      IsOpaque(ToMediaVideoPixelFormat(video_message.format()).value())
+          ? VideoDecoderConfig::AlphaMode::kIsOpaque
+          : VideoDecoderConfig::AlphaMode::kHasAlpha,
+      color_space, kNoTransformation,
       gfx::Size(video_message.coded_size().width(),
                 video_message.coded_size().height()),
       gfx::Rect(video_message.visible_rect().x(),
@@ -410,10 +417,22 @@ void ConvertProtoToPipelineStatistics(
 
   // The following fields were added after the initial message definition. Check
   // that sender provided the values.
-  if (stats_message.has_audio_decoder_name())
-    stats->audio_decoder_name = stats_message.audio_decoder_name();
-  if (stats_message.has_video_decoder_name())
-    stats->video_decoder_name = stats_message.video_decoder_name();
+  if (stats_message.has_audio_decoder_info()) {
+    auto audio_info = stats_message.audio_decoder_info();
+    stats->audio_decoder_info.decoder_name = audio_info.decoder_name();
+    stats->audio_decoder_info.is_platform_decoder =
+        audio_info.is_platform_decoder();
+    stats->audio_decoder_info.has_decrypting_demuxer_stream =
+        audio_info.has_decrypting_demuxer_stream();
+  }
+  if (stats_message.has_video_decoder_info()) {
+    auto video_info = stats_message.video_decoder_info();
+    stats->video_decoder_info.decoder_name = video_info.decoder_name();
+    stats->video_decoder_info.is_platform_decoder =
+        video_info.is_platform_decoder();
+    stats->video_decoder_info.has_decrypting_demuxer_stream =
+        video_info.has_decrypting_demuxer_stream();
+  }
   if (stats_message.has_video_frame_duration_average_usec()) {
     stats->video_frame_duration_average = base::TimeDelta::FromMicroseconds(
         stats_message.video_frame_duration_average_usec());

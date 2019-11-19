@@ -10,8 +10,8 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "remoting/host/security_key/fake_security_key_ipc_client.h"
 #include "remoting/host/security_key/fake_security_key_message_reader.h"
 #include "remoting/host/security_key/fake_security_key_message_writer.h"
@@ -53,7 +53,8 @@ class SecurityKeyMessageHandlerTest : public testing::Test {
   std::unique_ptr<SecurityKeyMessageHandler> message_handler_;
 
  private:
-  base::MessageLoopForIO message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   std::unique_ptr<base::RunLoop> run_loop_;
 
   DISALLOW_COPY_AND_ASSIGN(SecurityKeyMessageHandlerTest);

@@ -4,36 +4,35 @@
 
 /**
  * Controls last modified column in the file table.
- * @param {!FileTable} fileTable File table UI.
- * @param {!DirectoryModel} directoryModel Directory model.
- * @constructor
- * @struct
  */
-function LastModifiedController(fileTable, directoryModel) {
+class LastModifiedController {
   /**
-   * @private {!FileTable}
+   * @param {!FileTable} fileTable File table UI.
+   * @param {!DirectoryModel} directoryModel Directory model.
    */
-  this.fileTable_ = fileTable;
+  constructor(fileTable, directoryModel) {
+    /** @private @const {!FileTable} */
+    this.fileTable_ = fileTable;
+
+    /** @private @const {!DirectoryModel} */
+    this.directoryModel_ = directoryModel;
+
+    this.directoryModel_.addEventListener(
+        'scan-started', this.onScanStarted_.bind(this));
+  }
 
   /**
-   * @private {!DirectoryModel}
+   * Handles directory scan start.
+   * @private
    */
-  this.directoryModel_ = directoryModel;
-
-  this.directoryModel_.addEventListener(
-      'scan-started', this.onScanStarted_.bind(this));
+  onScanStarted_() {
+    // If the current directory is Recent root, request FileTable to use
+    // modificationByMeTime instead of modificationTime in last modified column.
+    const useModificationByMeTime =
+        this.directoryModel_.getCurrentRootType() ===
+        VolumeManagerCommon.RootType.RECENT;
+    this.fileTable_.setUseModificationByMeTime(useModificationByMeTime);
+    this.directoryModel_.getFileList().setUseModificationByMeTime(
+        useModificationByMeTime);
+  }
 }
-
-/**
- * Handles directory scan start.
- * @private
- */
-LastModifiedController.prototype.onScanStarted_ = function() {
-  // If the current directory is Recent root, request FileTable to use
-  // modificationByMeTime instead of modificationTime in last modified column.
-  const useModificationByMeTime = this.directoryModel_.getCurrentRootType() ===
-      VolumeManagerCommon.RootType.RECENT;
-  this.fileTable_.setUseModificationByMeTime(useModificationByMeTime);
-  this.directoryModel_.getFileList().setUseModificationByMeTime(
-      useModificationByMeTime);
-};

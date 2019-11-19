@@ -19,7 +19,6 @@
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/sync/base/encryptor.h"
-#include "components/sync/base/experiments.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/sync_base_switches.h"
 #include "components/sync/base/time.h"
@@ -36,6 +35,7 @@
 #include "components/sync/syncable/read_transaction.h"
 #include "components/sync/syncable/syncable_base_transaction.h"
 #include "components/sync/syncable/syncable_model_neutral_write_transaction.h"
+#include "components/sync/syncable/syncable_read_transaction.h"
 #include "components/sync/syncable/syncable_write_transaction.h"
 #include "components/sync/syncable/user_share.h"
 #include "components/sync/syncable/write_node.h"
@@ -73,19 +73,6 @@ enum NigoriMigrationState {
   MIGRATION_STATE_SIZE,
 };
 
-// Enumeration of possible values for a key derivation method (including a
-// special value of "not set"). Used in UMA metrics. Do not re-order or delete
-// these entries; they are used in a UMA histogram.  Please edit
-// SyncCustomPassphraseKeyDerivationMethodState in enums.xml if a value is
-// added.
-enum class KeyDerivationMethodStateForMetrics {
-  NOT_SET = 0,
-  UNSUPPORTED = 1,
-  PBKDF2_HMAC_SHA1_1003 = 2,
-  SCRYPT_8192_8_11 = 3,
-  kMaxValue = SCRYPT_8192_8_11
-};
-
 // The new passphrase state is sufficient to determine whether a nigori node
 // is migrated to support keystore encryption. In addition though, we also
 // want to verify the conditions for proper keystore encryption functionality.
@@ -93,6 +80,10 @@ enum class KeyDerivationMethodStateForMetrics {
 // 2. Frozen keybag is true
 // 3. If passphrase state is keystore, keystore_decryptor_token is set.
 bool IsNigoriMigratedToKeystore(const sync_pb::NigoriSpecifics& nigori) {
+  // |passphrase_type| is always populated by modern clients, but may be missing
+  // in coming from an ancient client, from data that was never upgraded, or
+  // from the uninitialized NigoriSpecifics (e.g. sync was just enabled for this
+  // account).
   if (!nigori.has_passphrase_type())
     return false;
   if (!nigori.keybag_is_frozen())
@@ -112,7 +103,7 @@ bool IsNigoriMigratedToKeystore(const sync_pb::NigoriSpecifics& nigori) {
 std::string PackKeystoreBootstrapToken(
     const std::vector<std::string>& old_keystore_keys,
     const std::string& current_keystore_key,
-    Encryptor* encryptor) {
+    const Encryptor& encryptor) {
   if (current_keystore_key.empty())
     return std::string();
 
@@ -128,14 +119,14 @@ std::string PackKeystoreBootstrapToken(
   JSONStringValueSerializer json(&serialized_keystores);
   json.Serialize(keystore_key_values);
   std::string encrypted_keystores;
-  encryptor->EncryptString(serialized_keystores, &encrypted_keystores);
+  encryptor.EncryptString(serialized_keystores, &encrypted_keystores);
   std::string keystore_bootstrap;
   base::Base64Encode(encrypted_keystores, &keystore_bootstrap);
   return keystore_bootstrap;
 }
 
 bool UnpackKeystoreBootstrapToken(const std::string& keystore_bootstrap_token,
-                                  Encryptor* encryptor,
+                                  const Encryptor& encryptor,
                                   std::vector<std::string>* old_keystore_keys,
                                   std::string* current_keystore_key) {
   if (keystore_bootstrap_token.empty())
@@ -146,8 +137,8 @@ bool UnpackKeystoreBootstrapToken(const std::string& keystore_bootstrap_token,
     return false;
   }
   std::string decrypted_keystore_bootstrap;
-  if (!encryptor->DecryptString(base64_decoded_keystore_bootstrap,
-                                &decrypted_keystore_bootstrap)) {
+  if (!encryptor.DecryptString(base64_decoded_keystore_bootstrap,
+                               &decrypted_keystore_bootstrap)) {
     return false;
   }
 
@@ -294,35 +285,35 @@ bool ShouldSetExplicitCustomPassphraseKeyDerivationMethod(
 
 }  // namespace
 
-SyncEncryptionHandlerImpl::Vault::Vault(Encryptor* encryptor,
-                                        ModelTypeSet encrypted_types,
+SyncEncryptionHandlerImpl::Vault::Vault(ModelTypeSet encrypted_types,
                                         PassphraseType passphrase_type)
-    : cryptographer(encryptor),
-      encrypted_types(encrypted_types),
-      passphrase_type(passphrase_type) {}
+    : encrypted_types(encrypted_types), passphrase_type(passphrase_type) {}
 
 SyncEncryptionHandlerImpl::Vault::~Vault() {}
 
 SyncEncryptionHandlerImpl::SyncEncryptionHandlerImpl(
     UserShare* user_share,
-    Encryptor* encryptor,
+    const Encryptor* encryptor,
     const std::string& restored_key_for_bootstrapping,
     const std::string& restored_keystore_key_for_bootstrapping,
     const base::RepeatingCallback<std::string()>& random_salt_generator)
     : user_share_(user_share),
-      vault_unsafe_(encryptor, SensitiveTypes(), kInitialPassphraseType),
+      encryptor_(encryptor),
+      vault_unsafe_(SensitiveTypes(), kInitialPassphraseType),
       encrypt_everything_(false),
       nigori_overwrite_count_(0),
       random_salt_generator_(random_salt_generator),
-      weak_ptr_factory_(this) {
+      migration_attempted_(false) {
+  DCHECK(encryptor);
   // Restore the cryptographer's previous keys. Note that we don't add the
   // keystore keys into the cryptographer here, in case a migration was pending.
-  vault_unsafe_.cryptographer.Bootstrap(restored_key_for_bootstrapping);
+  vault_unsafe_.cryptographer.Bootstrap(*encryptor,
+                                        restored_key_for_bootstrapping);
 
   // If this fails, we won't have a valid keystore key, and will simply request
   // new ones from the server on the next DownloadUpdates.
   UnpackKeystoreBootstrapToken(restored_keystore_key_for_bootstrapping,
-                               encryptor, &old_keystore_keys_, &keystore_key_);
+                               *encryptor, &old_keystore_keys_, &keystore_key_);
 }
 
 SyncEncryptionHandlerImpl::~SyncEncryptionHandlerImpl() {}
@@ -339,27 +330,35 @@ void SyncEncryptionHandlerImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SyncEncryptionHandlerImpl::Init() {
+bool SyncEncryptionHandlerImpl::Init() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   WriteTransaction trans(FROM_HERE, user_share_);
   WriteNode node(&trans);
 
-  if (node.InitTypeRoot(NIGORI) != BaseNode::INIT_OK)
-    return;
-  if (ApplyNigoriUpdateImpl(node.GetNigoriSpecifics(),
-                            trans.GetWrappedTrans())) {
-    // If we have successfully updated, we also need to replace an UNSPECIFIED
-    // key derivation method in Nigori with PBKDF2. (If the update fails,
-    // WriteEncryptionStateToNigori will do this for us.)
-    ReplaceImplicitKeyDerivationMethodInNigori(&trans);
-  } else {
-    WriteEncryptionStateToNigori(&trans);
+  if (node.InitTypeRoot(NIGORI) != BaseNode::INIT_OK) {
+    // TODO(mastiz): This should be treated as error because it's a protocol
+    // violation if the server doesn't return the NIGORI root.
+    return true;
+  }
+
+  switch (ApplyNigoriUpdateImpl(node.GetNigoriSpecifics(),
+                                trans.GetWrappedTrans())) {
+    case ApplyNigoriUpdateResult::kSuccess:
+      // If we have successfully updated, we also need to replace an UNSPECIFIED
+      // key derivation method in Nigori with PBKDF2. (If the update fails,
+      // WriteEncryptionStateToNigori will do this for us.)
+      ReplaceImplicitKeyDerivationMethodInNigori(&trans);
+      break;
+    case ApplyNigoriUpdateResult::kUnsupportedRemoteState:
+      return false;
+    case ApplyNigoriUpdateResult::kRemoteMustBeCorrected:
+      WriteEncryptionStateToNigori(&trans, NigoriMigrationTrigger::kInit);
+      break;
   }
 
   PassphraseType passphrase_type = GetPassphraseType(trans.GetWrappedTrans());
-  UMA_HISTOGRAM_ENUMERATION("Sync.PassphraseType", passphrase_type,
-                            PassphraseType::PASSPHRASE_TYPE_SIZE);
-  if (passphrase_type == PassphraseType::CUSTOM_PASSPHRASE) {
+  UMA_HISTOGRAM_ENUMERATION("Sync.PassphraseType", passphrase_type);
+  if (passphrase_type == PassphraseType::kCustomPassphrase) {
     UMA_HISTOGRAM_ENUMERATION(
         "Sync.Crypto.CustomPassphraseKeyDerivationMethodStateOnStartup",
         GetKeyDerivationMethodStateForMetrics(
@@ -368,7 +367,8 @@ void SyncEncryptionHandlerImpl::Init() {
 
   bool has_pending_keys =
       UnlockVault(trans.GetWrappedTrans()).cryptographer.has_pending_keys();
-  bool is_ready = UnlockVault(trans.GetWrappedTrans()).cryptographer.is_ready();
+  bool is_ready =
+      UnlockVault(trans.GetWrappedTrans()).cryptographer.CanEncrypt();
   // Log the state of the cryptographer regardless of migration state.
   UMA_HISTOGRAM_BOOLEAN("Sync.CryptographerReady", is_ready);
   UMA_HISTOGRAM_BOOLEAN("Sync.CryptographerPendingKeys", has_pending_keys);
@@ -377,9 +377,8 @@ void SyncEncryptionHandlerImpl::Init() {
     // keystore.
     UMA_HISTOGRAM_ENUMERATION("Sync.NigoriMigrationState", MIGRATED,
                               MIGRATION_STATE_SIZE);
-    if (has_pending_keys &&
-        GetPassphraseType(trans.GetWrappedTrans()) ==
-            PassphraseType::KEYSTORE_PASSPHRASE) {
+    if (has_pending_keys && GetPassphraseType(trans.GetWrappedTrans()) ==
+                                PassphraseType::kKeystorePassphrase) {
       // If this is happening, it means the keystore decryptor is either
       // undecryptable with the available keystore keys or does not match the
       // nigori keybag's encryption key. Otherwise we're simply missing the
@@ -393,6 +392,8 @@ void SyncEncryptionHandlerImpl::Init() {
     UMA_HISTOGRAM_ENUMERATION("Sync.NigoriMigrationState",
                               NOT_MIGRATED_CRYPTO_NOT_READY,
                               MIGRATION_STATE_SIZE);
+    UMA_HISTOGRAM_BOOLEAN("Sync.EncryptEverythingWhenCryptographerNotReady",
+                          encrypt_everything_);
   } else if (keystore_key_.empty()) {
     // The client has no keystore key, either because it is not yet enabled or
     // the server is not sending a valid keystore key.
@@ -407,6 +408,11 @@ void SyncEncryptionHandlerImpl::Init() {
                               MIGRATION_STATE_SIZE);
   }
 
+  if (!IsNigoriMigratedToKeystore(node.GetNigoriSpecifics())) {
+    UMA_HISTOGRAM_BOOLEAN("Sync.NigoriMigrationAttemptedBeforeNotMigrated",
+                          migration_attempted_);
+  }
+
   // Always trigger an encrypted types and cryptographer state change event at
   // init time so observers get the initial values.
   for (auto& observer : observers_) {
@@ -416,15 +422,18 @@ void SyncEncryptionHandlerImpl::Init() {
   }
   for (auto& observer : observers_) {
     observer.OnCryptographerStateChanged(
-        &UnlockVaultMutable(trans.GetWrappedTrans())->cryptographer);
+        &UnlockVaultMutable(trans.GetWrappedTrans())->cryptographer,
+        UnlockVault(trans.GetWrappedTrans()).cryptographer.has_pending_keys());
   }
 
   // If the cryptographer is not ready (either it has pending keys or we
   // failed to initialize it), we don't want to try and re-encrypt the data.
   // If we had encrypted types, the DataTypeManager will block, preventing
   // sync from happening until the the passphrase is provided.
-  if (UnlockVault(trans.GetWrappedTrans()).cryptographer.is_ready())
+  if (UnlockVault(trans.GetWrappedTrans()).cryptographer.CanEncrypt())
     ReEncryptEverything(&trans);
+
+  return true;
 }
 
 void SyncEncryptionHandlerImpl::SetEncryptionPassphrase(
@@ -444,7 +453,7 @@ void SyncEncryptionHandlerImpl::SetEncryptionPassphrase(
     return;
   }
 
-  Cryptographer* cryptographer =
+  DirectoryCryptographer* cryptographer =
       &UnlockVaultMutable(trans.GetWrappedTrans())->cryptographer;
 
   // Once we've migrated to keystore, the only way to set a passphrase for
@@ -496,13 +505,13 @@ void SyncEncryptionHandlerImpl::SetEncryptionPassphrase(
         // keys (1), or overwriting an implicit passphrase with a new explicit
         // one (2) when there are no pending keys.
         DVLOG(1) << "Setting explicit passphrase for encryption.";
-        *passphrase_type = PassphraseType::CUSTOM_PASSPHRASE;
+        *passphrase_type = PassphraseType::kCustomPassphrase;
         custom_passphrase_time_ = base::Time::Now();
         for (auto& observer : observers_) {
           observer.OnPassphraseTypeChanged(
               *passphrase_type, GetExplicitPassphraseTime(*passphrase_type));
         }
-        cryptographer->GetBootstrapToken(&bootstrap_token);
+        cryptographer->GetBootstrapToken(*encryptor_, &bootstrap_token);
 
         UMA_HISTOGRAM_BOOLEAN("Sync.CustomEncryption", true);
 
@@ -564,7 +573,7 @@ void SyncEncryptionHandlerImpl::SetDecryptionPassphrase(
     // previously (when reading the Nigori node), and we will use it for key
     // derivation in DecryptPendingKeysWithExplicitPassphrase.
     PassphraseType passphrase_type = GetPassphraseType(trans.GetWrappedTrans());
-    if (passphrase_type == PassphraseType::CUSTOM_PASSPHRASE) {
+    if (passphrase_type == PassphraseType::kCustomPassphrase) {
       DCHECK(custom_passphrase_key_derivation_params_.has_value());
       if (custom_passphrase_key_derivation_params_.value().method() ==
           KeyDerivationMethod::UNSUPPORTED) {
@@ -579,7 +588,7 @@ void SyncEncryptionHandlerImpl::SetDecryptionPassphrase(
 
       DVLOG(1)
           << "Setting passphrase of type "
-          << PassphraseTypeToString(PassphraseType::CUSTOM_PASSPHRASE)
+          << PassphraseTypeToString(PassphraseType::kCustomPassphrase)
           << " for decryption with key derivation method "
           << KeyDerivationMethodToString(
                  custom_passphrase_key_derivation_params_.value().method());
@@ -593,7 +602,7 @@ void SyncEncryptionHandlerImpl::SetDecryptionPassphrase(
     return;
   }
 
-  Cryptographer* cryptographer =
+  DirectoryCryptographer* cryptographer =
       &UnlockVaultMutable(trans.GetWrappedTrans())->cryptographer;
   if (!cryptographer->has_pending_keys()) {
     // Note that this *can* happen in a rare situation where data is
@@ -633,7 +642,7 @@ void SyncEncryptionHandlerImpl::SetDecryptionPassphrase(
       // Otherwise, we're in a situation where the pending keys are
       // encrypted with an old gaia passphrase, while the default is the
       // current gaia passphrase. In that case, we preserve the default.
-      Cryptographer temp_cryptographer(cryptographer->encryptor());
+      DirectoryCryptographer temp_cryptographer;
       temp_cryptographer.SetPendingKeys(cryptographer->GetPendingKeys());
       if (temp_cryptographer.DecryptPendingKeys(key_params)) {
         // Check to see if the pending bag of keys contains the current
@@ -646,7 +655,7 @@ void SyncEncryptionHandlerImpl::SetDecryptionPassphrase(
           // Case 7. The pending keybag contains the current default. Go ahead
           // and update the cryptographer, letting the default change.
           cryptographer->DecryptPendingKeys(key_params);
-          cryptographer->GetBootstrapToken(&bootstrap_token);
+          cryptographer->GetBootstrapToken(*encryptor_, &bootstrap_token);
           success = true;
         } else {
           // Case 8. The pending keybag does not contain the current default
@@ -657,11 +666,12 @@ void SyncEncryptionHandlerImpl::SetDecryptionPassphrase(
                    << "decryption, restoring implicit internal passphrase "
                    << "as default.";
           std::string bootstrap_token_from_current_key;
-          cryptographer->GetBootstrapToken(&bootstrap_token_from_current_key);
+          cryptographer->GetBootstrapToken(*encryptor_,
+                                           &bootstrap_token_from_current_key);
           cryptographer->DecryptPendingKeys(key_params);
           // Overwrite the default from the pending keys.
           cryptographer->AddKeyFromBootstrapToken(
-              bootstrap_token_from_current_key);
+              *encryptor_, bootstrap_token_from_current_key);
           success = true;
         }
       } else {  // !temp_cryptographer.DecryptPendingKeys(..)
@@ -681,7 +691,7 @@ void SyncEncryptionHandlerImpl::SetDecryptionPassphrase(
         // above. This user provided passphrase could be the current or the
         // old. But, as long as we persist the token, there's nothing more
         // we can do.
-        cryptographer->GetBootstrapToken(&bootstrap_token);
+        cryptographer->GetBootstrapToken(*encryptor_, &bootstrap_token);
         DVLOG(1) << "Implicit user provided passphrase accepted, initializing"
                  << " cryptographer.";
         success = true;
@@ -695,7 +705,7 @@ void SyncEncryptionHandlerImpl::SetDecryptionPassphrase(
     // with the passphrase provided by the user.
     if (cryptographer->DecryptPendingKeys(key_params)) {
       DVLOG(1) << "Explicit passphrase accepted for decryption.";
-      cryptographer->GetBootstrapToken(&bootstrap_token);
+      cryptographer->GetBootstrapToken(*encryptor_, &bootstrap_token);
       success = true;
     } else {
       DVLOG(1) << "Explicit passphrase failed to decrypt.";
@@ -712,6 +722,12 @@ void SyncEncryptionHandlerImpl::SetDecryptionPassphrase(
   FinishSetPassphrase(success, bootstrap_token, &trans, &node);
 }
 
+void SyncEncryptionHandlerImpl::AddTrustedVaultDecryptionKeys(
+    const std::vector<std::string>& keys) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NOTIMPLEMENTED();
+}
+
 void SyncEncryptionHandlerImpl::EnableEncryptEverything() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   WriteTransaction trans(FROM_HERE, user_share_);
@@ -719,8 +735,9 @@ void SyncEncryptionHandlerImpl::EnableEncryptEverything() {
   if (encrypt_everything_)
     return;
   EnableEncryptEverythingImpl(trans.GetWrappedTrans());
-  WriteEncryptionStateToNigori(&trans);
-  if (UnlockVault(trans.GetWrappedTrans()).cryptographer.is_ready())
+  WriteEncryptionStateToNigori(
+      &trans, NigoriMigrationTrigger::kEnableEncryptEverything);
+  if (UnlockVault(trans.GetWrappedTrans()).cryptographer.CanEncrypt())
     ReEncryptEverything(&trans);
 }
 
@@ -729,62 +746,89 @@ bool SyncEncryptionHandlerImpl::IsEncryptEverythingEnabled() const {
   return encrypt_everything_;
 }
 
+base::Time SyncEncryptionHandlerImpl::GetKeystoreMigrationTime() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return keystore_migration_time_;
+}
+
+KeystoreKeysHandler* SyncEncryptionHandlerImpl::GetKeystoreKeysHandler() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return this;
+}
+
+std::string SyncEncryptionHandlerImpl::GetLastKeystoreKey() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  syncable::ReadTransaction trans(FROM_HERE, user_share_->directory.get());
+  return keystore_key_;
+}
+
 // Note: this is called from within a syncable transaction, so we need to post
 // tasks if we want to do any work that creates a new sync_api transaction.
-void SyncEncryptionHandlerImpl::ApplyNigoriUpdate(
+bool SyncEncryptionHandlerImpl::ApplyNigoriUpdate(
     const sync_pb::NigoriSpecifics& nigori,
     syncable::BaseTransaction* const trans) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(trans);
-  if (ApplyNigoriUpdateImpl(nigori, trans)) {
-    // If we have successfully updated, we also need to replace an UNSPECIFIED
-    // key derivation method in Nigori with PBKDF2, for which we post a task.
-    // (If the update fails, RewriteNigori will do this for us.) Note that this
-    // check is redundant, but it is used to avoid the overhead of posting a
-    // task which will just do nothing.
-    if (ShouldSetExplicitCustomPassphraseKeyDerivationMethod(nigori)) {
+
+  switch (ApplyNigoriUpdateImpl(nigori, trans)) {
+    case ApplyNigoriUpdateResult::kSuccess:
+      // If we have successfully updated, we also need to replace an UNSPECIFIED
+      // key derivation method in Nigori with PBKDF2, for which we post a task.
+      // (If the update fails, RewriteNigori will do this for us.) Note that
+      // this check is redundant, but it is used to avoid the overhead of
+      // posting a task which will just do nothing.
+      if (ShouldSetExplicitCustomPassphraseKeyDerivationMethod(nigori)) {
+        base::SequencedTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &SyncEncryptionHandlerImpl::
+                    ReplaceImplicitKeyDerivationMethodInNigoriWithTransaction,
+                weak_ptr_factory_.GetWeakPtr()));
+      }
+      break;
+    case ApplyNigoriUpdateResult::kUnsupportedRemoteState:
+      return false;
+    case ApplyNigoriUpdateResult::kRemoteMustBeCorrected:
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
-          base::BindOnce(
-              &SyncEncryptionHandlerImpl::
-                  ReplaceImplicitKeyDerivationMethodInNigoriWithTransaction,
-              weak_ptr_factory_.GetWeakPtr()));
-    }
-  } else {
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&SyncEncryptionHandlerImpl::RewriteNigori,
-                                  weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(&SyncEncryptionHandlerImpl::RewriteNigori,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         NigoriMigrationTrigger::kApplyNigoriUpdate));
+      break;
   }
 
   for (auto& observer : observers_) {
     observer.OnCryptographerStateChanged(
-        &UnlockVaultMutable(trans)->cryptographer);
+        &UnlockVaultMutable(trans)->cryptographer,
+        UnlockVault(trans).cryptographer.has_pending_keys());
   }
+
+  return true;
 }
 
 void SyncEncryptionHandlerImpl::UpdateNigoriFromEncryptedTypes(
     sync_pb::NigoriSpecifics* nigori,
-    syncable::BaseTransaction* const trans) const {
+    const syncable::BaseTransaction* const trans) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   syncable::UpdateNigoriFromEncryptedTypes(UnlockVault(trans).encrypted_types,
                                            encrypt_everything_, nigori);
 }
 
-bool SyncEncryptionHandlerImpl::NeedKeystoreKey(
-    syncable::BaseTransaction* const trans) const {
+bool SyncEncryptionHandlerImpl::NeedKeystoreKey() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  syncable::ReadTransaction trans(FROM_HERE, user_share_->directory.get());
   return keystore_key_.empty();
 }
 
 bool SyncEncryptionHandlerImpl::SetKeystoreKeys(
-    const google::protobuf::RepeatedPtrField<google::protobuf::string>& keys,
-    syncable::BaseTransaction* const trans) {
+    const std::vector<std::string>& keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (keys.size() == 0)
+  syncable::ReadTransaction trans(FROM_HERE, user_share_->directory.get());
+  if (keys.empty())
     return false;
   // The last key in the vector is the current keystore key. The others are kept
   // around for decryption only.
-  const std::string& raw_keystore_key = keys.Get(keys.size() - 1);
+  const std::string& raw_keystore_key = keys.back();
   if (raw_keystore_key.empty())
     return false;
 
@@ -795,16 +839,17 @@ bool SyncEncryptionHandlerImpl::SetKeystoreKeys(
   // Go through and save the old keystore keys. We always persist all keystore
   // keys the server sends us.
   old_keystore_keys_.resize(keys.size() - 1);
-  for (int i = 0; i < keys.size() - 1; ++i)
-    base::Base64Encode(keys.Get(i), &old_keystore_keys_[i]);
+  for (size_t i = 0; i < keys.size() - 1; ++i)
+    base::Base64Encode(keys[i], &old_keystore_keys_[i]);
 
-  Cryptographer* cryptographer = &UnlockVaultMutable(trans)->cryptographer;
+  DirectoryCryptographer* cryptographer =
+      &UnlockVaultMutable(&trans)->cryptographer;
 
   // Update the bootstrap token. If this fails, we persist an empty string,
   // which will force us to download the keystore keys again on the next
   // restart.
   std::string keystore_bootstrap = PackKeystoreBootstrapToken(
-      old_keystore_keys_, keystore_key_, cryptographer->encryptor());
+      old_keystore_keys_, keystore_key_, *encryptor_);
 
   for (auto& observer : observers_) {
     observer.OnBootstrapTokenUpdated(keystore_bootstrap,
@@ -815,7 +860,7 @@ bool SyncEncryptionHandlerImpl::SetKeystoreKeys(
   // If this is a first time sync, we get the encryption keys before we process
   // the nigori node. Just return for now, ApplyNigoriUpdate will be invoked
   // once we have the nigori node.
-  syncable::Entry entry(trans, syncable::GET_TYPE_ROOT, NIGORI);
+  syncable::Entry entry(&trans, syncable::GET_TYPE_ROOT, NIGORI);
   if (!entry.good())
     return true;
 
@@ -831,29 +876,36 @@ bool SyncEncryptionHandlerImpl::SetKeystoreKeys(
 
   // Note that triggering migration will have no effect if we're already
   // properly migrated with the newest keystore keys.
-  if (ShouldTriggerMigration(nigori, *cryptographer,
-                             GetPassphraseType(trans))) {
+  if (GetMigrationReason(nigori, *cryptographer, GetPassphraseType(&trans)) !=
+      NigoriMigrationReason::kNoReason) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&SyncEncryptionHandlerImpl::RewriteNigori,
-                                  weak_ptr_factory_.GetWeakPtr()));
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  NigoriMigrationTrigger::kSetKeystoreKeys));
   }
 
   return true;
 }
 
+const Cryptographer* SyncEncryptionHandlerImpl::GetCryptographer(
+    const syncable::BaseTransaction* const trans) const {
+  return &UnlockVault(trans).cryptographer;
+}
+
+const DirectoryCryptographer*
+SyncEncryptionHandlerImpl::GetDirectoryCryptographer(
+    const syncable::BaseTransaction* const trans) const {
+  return &UnlockVault(trans).cryptographer;
+}
+
 ModelTypeSet SyncEncryptionHandlerImpl::GetEncryptedTypes(
-    syncable::BaseTransaction* const trans) const {
+    const syncable::BaseTransaction* const trans) const {
   return UnlockVault(trans).encrypted_types;
 }
 
 PassphraseType SyncEncryptionHandlerImpl::GetPassphraseType(
-    syncable::BaseTransaction* const trans) const {
+    const syncable::BaseTransaction* const trans) const {
   return UnlockVault(trans).passphrase_type;
-}
-
-Cryptographer* SyncEncryptionHandlerImpl::GetCryptographerUnsafe() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return &vault_unsafe_.cryptographer;
 }
 
 ModelTypeSet SyncEncryptionHandlerImpl::GetEncryptedTypesUnsafe() {
@@ -870,16 +922,12 @@ bool SyncEncryptionHandlerImpl::MigratedToKeystore() {
   return IsNigoriMigratedToKeystore(nigori_node.GetNigoriSpecifics());
 }
 
-base::Time SyncEncryptionHandlerImpl::migration_time() const {
-  return migration_time_;
-}
-
 base::Time SyncEncryptionHandlerImpl::custom_passphrase_time() const {
   return custom_passphrase_time_;
 }
 
-void SyncEncryptionHandlerImpl::RestoreNigori(
-    const SyncEncryptionHandler::NigoriState& nigori_state) {
+void SyncEncryptionHandlerImpl::RestoreNigoriForTesting(
+    const sync_pb::NigoriSpecifics& nigori_specifics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   WriteTransaction trans(FROM_HERE, user_share_);
@@ -902,11 +950,16 @@ void SyncEncryptionHandlerImpl::RestoreNigori(
                                        syncable::GET_TYPE_ROOT, NIGORI);
   DCHECK(mutable_entry.good());
   sync_pb::EntitySpecifics specifics;
-  specifics.mutable_nigori()->CopyFrom(nigori_state.nigori_specifics);
+  *specifics.mutable_nigori() = nigori_specifics;
   mutable_entry.PutSpecifics(specifics);
 
   // Update our state based on the saved nigori node.
-  ApplyNigoriUpdate(nigori_state.nigori_specifics, trans.GetWrappedTrans());
+  ApplyNigoriUpdate(nigori_specifics, trans.GetWrappedTrans());
+}
+
+DirectoryCryptographer*
+SyncEncryptionHandlerImpl::GetMutableCryptographerForTesting() {
+  return &vault_unsafe_.cryptographer;
 }
 
 // This function iterates over all encrypted types.  There are many scenarios in
@@ -915,9 +968,9 @@ void SyncEncryptionHandlerImpl::RestoreNigori(
 // type.
 void SyncEncryptionHandlerImpl::ReEncryptEverything(WriteTransaction* trans) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(UnlockVault(trans->GetWrappedTrans()).cryptographer.is_ready());
+  DCHECK(UnlockVault(trans->GetWrappedTrans()).cryptographer.CanEncrypt());
   for (ModelType type : UnlockVault(trans->GetWrappedTrans()).encrypted_types) {
-    if (type == PASSWORDS || IsControlType(type))
+    if (type == PASSWORDS || type == WIFI_CONFIGURATIONS || IsControlType(type))
       continue;  // These types handle encryption differently.
 
     ReadNode type_root(trans);
@@ -963,6 +1016,22 @@ void SyncEncryptionHandlerImpl::ReEncryptEverything(WriteTransaction* trans) {
     }
   }
 
+  // Wifi configs are encrypted with their own legacy scheme and are always
+  // encrypted so we don't need to check GetEncryptedTypes().
+  ReadNode wifi_configurations_root(trans);
+  if (wifi_configurations_root.InitTypeRoot(WIFI_CONFIGURATIONS) ==
+      BaseNode::INIT_OK) {
+    int64_t child_id = wifi_configurations_root.GetFirstChildId();
+    while (child_id != kInvalidId) {
+      WriteNode child(trans);
+      if (child.InitByIdLookup(child_id) != BaseNode::INIT_OK)
+        break;  // Possible if we failed to decrypt the data for some reason.
+      child.SetWifiConfigurationSpecifics(
+          child.GetWifiConfigurationSpecifics());
+      child_id = child.GetSuccessorId();
+    }
+  }
+
   DVLOG(1) << "Re-encrypt everything complete.";
 
   // NOTE: We notify from within a transaction.
@@ -971,10 +1040,27 @@ void SyncEncryptionHandlerImpl::ReEncryptEverything(WriteTransaction* trans) {
   }
 }
 
-bool SyncEncryptionHandlerImpl::ApplyNigoriUpdateImpl(
+SyncEncryptionHandlerImpl::ApplyNigoriUpdateResult
+SyncEncryptionHandlerImpl::ApplyNigoriUpdateImpl(
     const sync_pb::NigoriSpecifics& nigori,
     syncable::BaseTransaction* const trans) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  const base::Optional<PassphraseType> nigori_passphrase_type_optional =
+      ProtoPassphraseInt32ToEnum(nigori.passphrase_type());
+  if (!nigori_passphrase_type_optional) {
+    DVLOG(1) << "Ignoring nigori node update with unknown passphrase type.";
+    return ApplyNigoriUpdateResult::kUnsupportedRemoteState;
+  }
+
+  const PassphraseType nigori_passphrase_type =
+      *nigori_passphrase_type_optional;
+
+  if (nigori_passphrase_type == PassphraseType::kTrustedVaultPassphrase) {
+    NOTIMPLEMENTED();
+    return ApplyNigoriUpdateResult::kUnsupportedRemoteState;
+  }
+
   DVLOG(1) << "Applying nigori node update.";
   bool nigori_types_need_update =
       !UpdateEncryptedTypesFromNigori(nigori, trans);
@@ -985,9 +1071,8 @@ bool SyncEncryptionHandlerImpl::ApplyNigoriUpdateImpl(
   bool is_nigori_migrated = IsNigoriMigratedToKeystore(nigori);
   PassphraseType* passphrase_type = &UnlockVaultMutable(trans)->passphrase_type;
   if (is_nigori_migrated) {
-    migration_time_ = ProtoTimeToTime(nigori.keystore_migration_time());
-    PassphraseType nigori_passphrase_type =
-        ProtoPassphraseTypeToEnum(nigori.passphrase_type());
+    keystore_migration_time_ =
+        ProtoTimeToTime(nigori.keystore_migration_time());
 
     // Only update the local passphrase state if it's a valid transition:
     // - implicit -> keystore
@@ -998,9 +1083,9 @@ bool SyncEncryptionHandlerImpl::ApplyNigoriUpdateImpl(
     // but we let it through here as well in case future versions do add support
     // for this transition.
     if (*passphrase_type != nigori_passphrase_type &&
-        nigori_passphrase_type != PassphraseType::IMPLICIT_PASSPHRASE &&
-        (*passphrase_type == PassphraseType::IMPLICIT_PASSPHRASE ||
-         nigori_passphrase_type == PassphraseType::CUSTOM_PASSPHRASE)) {
+        nigori_passphrase_type != PassphraseType::kImplicitPassphrase &&
+        (*passphrase_type == PassphraseType::kImplicitPassphrase ||
+         nigori_passphrase_type == PassphraseType::kCustomPassphrase)) {
       DVLOG(1) << "Changing passphrase state from "
                << PassphraseTypeToString(*passphrase_type) << " to "
                << PassphraseTypeToString(nigori_passphrase_type);
@@ -1010,7 +1095,7 @@ bool SyncEncryptionHandlerImpl::ApplyNigoriUpdateImpl(
             *passphrase_type, GetExplicitPassphraseTime(*passphrase_type));
       }
     }
-    if (*passphrase_type == PassphraseType::KEYSTORE_PASSPHRASE &&
+    if (*passphrase_type == PassphraseType::kKeystorePassphrase &&
         encrypt_everything_) {
       // This is the case where another client that didn't support keystore
       // encryption attempted to enable full encryption. We detect it
@@ -1020,7 +1105,7 @@ bool SyncEncryptionHandlerImpl::ApplyNigoriUpdateImpl(
       // type, we will trigger a rewrite and subsequently a re-migration.
       DVLOG(1) << "Changing passphrase state to FROZEN_IMPLICIT_PASSPHRASE "
                << "due to full encryption.";
-      *passphrase_type = PassphraseType::FROZEN_IMPLICIT_PASSPHRASE;
+      *passphrase_type = PassphraseType::kFrozenImplicitPassphrase;
       for (auto& observer : observers_) {
         observer.OnPassphraseTypeChanged(
             *passphrase_type, GetExplicitPassphraseTime(*passphrase_type));
@@ -1030,8 +1115,8 @@ bool SyncEncryptionHandlerImpl::ApplyNigoriUpdateImpl(
     // It's possible that while we're waiting for migration a client that does
     // not have keystore encryption enabled switches to a custom passphrase.
     if (nigori.keybag_is_frozen() &&
-        *passphrase_type != PassphraseType::CUSTOM_PASSPHRASE) {
-      *passphrase_type = PassphraseType::CUSTOM_PASSPHRASE;
+        *passphrase_type != PassphraseType::kCustomPassphrase) {
+      *passphrase_type = PassphraseType::kCustomPassphrase;
       for (auto& observer : observers_) {
         observer.OnPassphraseTypeChanged(
             *passphrase_type, GetExplicitPassphraseTime(*passphrase_type));
@@ -1039,15 +1124,15 @@ bool SyncEncryptionHandlerImpl::ApplyNigoriUpdateImpl(
     }
   }
 
-  Cryptographer* cryptographer = &UnlockVaultMutable(trans)->cryptographer;
+  DirectoryCryptographer* cryptographer =
+      &UnlockVaultMutable(trans)->cryptographer;
   bool nigori_needs_new_keys = false;
   if (!nigori.encryption_keybag().blob().empty()) {
     // We only update the default key if this was a new explicit passphrase.
     // Else, since it was decryptable, it must not have been a new key.
     bool need_new_default_key = false;
     if (is_nigori_migrated) {
-      need_new_default_key = IsExplicitPassphrase(
-          ProtoPassphraseTypeToEnum(nigori.passphrase_type()));
+      need_new_default_key = IsExplicitPassphrase(nigori_passphrase_type);
     } else {
       need_new_default_key = nigori.keybag_is_frozen();
     }
@@ -1085,14 +1170,15 @@ bool SyncEncryptionHandlerImpl::ApplyNigoriUpdateImpl(
   // backwards compatible.
   KeyDerivationParams key_derivation_params =
       KeyDerivationParams::CreateForPbkdf2();
-  if (*passphrase_type == PassphraseType::CUSTOM_PASSPHRASE) {
+  if (*passphrase_type == PassphraseType::kCustomPassphrase) {
     key_derivation_params = GetKeyDerivationParamsFromNigori(nigori);
-    custom_passphrase_key_derivation_params_ = key_derivation_params;
 
     if (key_derivation_params.method() == KeyDerivationMethod::UNSUPPORTED) {
       DLOG(WARNING) << "Updating from a Nigori node with an unsupported key "
-                       "derivation method. Decryption will fail.";
+                       "derivation method.";
     }
+
+    custom_passphrase_key_derivation_params_ = key_derivation_params;
   }
 
   // If we've completed a sync cycle and the cryptographer isn't ready
@@ -1104,7 +1190,7 @@ bool SyncEncryptionHandlerImpl::ApplyNigoriUpdateImpl(
       observer.OnPassphraseRequired(REASON_DECRYPTION, key_derivation_params,
                                     pending_keys);
     }
-  } else if (!cryptographer->is_ready()) {
+  } else if (!cryptographer->CanEncrypt()) {
     DVLOG(1) << "OnPassphraseRequired sent because cryptographer is not "
              << "ready";
     for (auto& observer : observers_) {
@@ -1118,33 +1204,33 @@ bool SyncEncryptionHandlerImpl::ApplyNigoriUpdateImpl(
   // state.
   bool passphrase_type_matches = true;
   if (!is_nigori_migrated) {
-    DCHECK(*passphrase_type == PassphraseType::CUSTOM_PASSPHRASE ||
-           *passphrase_type == PassphraseType::IMPLICIT_PASSPHRASE);
+    DCHECK(*passphrase_type == PassphraseType::kCustomPassphrase ||
+           *passphrase_type == PassphraseType::kImplicitPassphrase);
     passphrase_type_matches =
         nigori.keybag_is_frozen() == IsExplicitPassphrase(*passphrase_type);
   } else {
-    passphrase_type_matches =
-        (ProtoPassphraseTypeToEnum(nigori.passphrase_type()) ==
-         *passphrase_type);
+    passphrase_type_matches = (nigori_passphrase_type == *passphrase_type);
   }
   if (!passphrase_type_matches ||
       nigori.encrypt_everything() != encrypt_everything_ ||
       nigori_types_need_update || nigori_needs_new_keys) {
     DVLOG(1) << "Triggering nigori rewrite.";
-    return false;
+    return ApplyNigoriUpdateResult::kRemoteMustBeCorrected;
   }
-  return true;
+  return ApplyNigoriUpdateResult::kSuccess;
 }
 
-void SyncEncryptionHandlerImpl::RewriteNigori() {
+void SyncEncryptionHandlerImpl::RewriteNigori(
+    NigoriMigrationTrigger migration_trigger) {
   DVLOG(1) << "Writing local encryption state into nigori.";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   WriteTransaction trans(FROM_HERE, user_share_);
-  WriteEncryptionStateToNigori(&trans);
+  WriteEncryptionStateToNigori(&trans, migration_trigger);
 }
 
 void SyncEncryptionHandlerImpl::WriteEncryptionStateToNigori(
-    WriteTransaction* trans) {
+    WriteTransaction* trans,
+    NigoriMigrationTrigger migration_trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   WriteNode nigori_node(trans);
   // This can happen in tests that don't have nigori nodes.
@@ -1152,13 +1238,14 @@ void SyncEncryptionHandlerImpl::WriteEncryptionStateToNigori(
     return;
 
   sync_pb::NigoriSpecifics nigori = nigori_node.GetNigoriSpecifics();
-  const Cryptographer& cryptographer =
+  const DirectoryCryptographer& cryptographer =
       UnlockVault(trans->GetWrappedTrans()).cryptographer;
 
   // Will not do anything if we shouldn't or can't migrate. Otherwise
   // migrates, writing the full encryption state as it does.
-  if (!AttemptToMigrateNigoriToKeystore(trans, &nigori_node)) {
-    if (cryptographer.is_ready() &&
+  if (!AttemptToMigrateNigoriToKeystore(trans, &nigori_node,
+                                        migration_trigger)) {
+    if (cryptographer.CanEncrypt() &&
         nigori_overwrite_count_ < kNigoriOverwriteLimit) {
       // Does not modify the encrypted blob if the unencrypted data already
       // matches what is about to be written.
@@ -1282,14 +1369,14 @@ void SyncEncryptionHandlerImpl::SetCustomPassphrase(
   KeyParams key_params = {key_derivation_params, passphrase};
 
   if (GetPassphraseType(trans->GetWrappedTrans()) !=
-      PassphraseType::KEYSTORE_PASSPHRASE) {
+      PassphraseType::kKeystorePassphrase) {
     DVLOG(1) << "Failing to set a custom passphrase because one has already "
              << "been set.";
     FinishSetPassphrase(false, std::string(), trans, nigori_node);
     return;
   }
 
-  Cryptographer* cryptographer =
+  DirectoryCryptographer* cryptographer =
       &UnlockVaultMutable(trans->GetWrappedTrans())->cryptographer;
   if (cryptographer->has_pending_keys()) {
     // This theoretically shouldn't happen, because the only way to have pending
@@ -1310,11 +1397,11 @@ void SyncEncryptionHandlerImpl::SetCustomPassphrase(
 
   DVLOG(1) << "Setting custom passphrase with key derivation method "
            << KeyDerivationMethodToString(key_derivation_params.method());
-  cryptographer->GetBootstrapToken(&bootstrap_token);
+  cryptographer->GetBootstrapToken(*encryptor_, &bootstrap_token);
 
   PassphraseType* passphrase_type =
       &UnlockVaultMutable(trans->GetWrappedTrans())->passphrase_type;
-  *passphrase_type = PassphraseType::CUSTOM_PASSPHRASE;
+  *passphrase_type = PassphraseType::kCustomPassphrase;
   custom_passphrase_key_derivation_params_ = key_derivation_params;
   custom_passphrase_time_ = base::Time::Now();
 
@@ -1330,14 +1417,13 @@ void SyncEncryptionHandlerImpl::NotifyObserversOfLocalCustomPassphrase(
   WriteNode nigori_node(trans);
   BaseNode::InitByLookupResult init_result = nigori_node.InitTypeRoot(NIGORI);
   DCHECK_EQ(init_result, BaseNode::INIT_OK);
-  NigoriState nigori_state;
-  nigori_state.nigori_specifics = nigori_node.GetNigoriSpecifics();
-  DCHECK(nigori_state.nigori_specifics.passphrase_type() ==
+  sync_pb::NigoriSpecifics nigori_specifics = nigori_node.GetNigoriSpecifics();
+  DCHECK(nigori_specifics.passphrase_type() ==
              sync_pb::NigoriSpecifics::CUSTOM_PASSPHRASE ||
-         nigori_state.nigori_specifics.passphrase_type() ==
+         nigori_specifics.passphrase_type() ==
              sync_pb::NigoriSpecifics::FROZEN_IMPLICIT_PASSPHRASE);
   for (auto& observer : observers_) {
-    observer.OnLocalSetPassphraseEncryption(nigori_state);
+    observer.OnLocalSetPassphraseEncryption(nigori_specifics);
   }
 }
 
@@ -1353,13 +1439,15 @@ void SyncEncryptionHandlerImpl::DecryptPendingKeysWithExplicitPassphrase(
   // backwards compatible.
   KeyDerivationParams key_derivation_params =
       KeyDerivationParams::CreateForPbkdf2();
-  if (passphrase_type == PassphraseType::CUSTOM_PASSPHRASE) {
+  if (passphrase_type == PassphraseType::kCustomPassphrase) {
     DCHECK(custom_passphrase_key_derivation_params_.has_value());
+    DCHECK_NE(custom_passphrase_key_derivation_params_->method(),
+              KeyDerivationMethod::UNSUPPORTED);
     key_derivation_params = custom_passphrase_key_derivation_params_.value();
   }
   KeyParams key_params = {key_derivation_params, passphrase};
 
-  Cryptographer* cryptographer =
+  DirectoryCryptographer* cryptographer =
       &UnlockVaultMutable(trans->GetWrappedTrans())->cryptographer;
   if (!cryptographer->has_pending_keys()) {
     // Note that this *can* happen in a rare situation where data is
@@ -1374,10 +1462,10 @@ void SyncEncryptionHandlerImpl::DecryptPendingKeysWithExplicitPassphrase(
   std::string bootstrap_token;
   if (cryptographer->DecryptPendingKeys(key_params)) {
     DVLOG(1) << "Explicit passphrase accepted for decryption.";
-    cryptographer->GetBootstrapToken(&bootstrap_token);
+    cryptographer->GetBootstrapToken(*encryptor_, &bootstrap_token);
     success = true;
 
-    if (passphrase_type == PassphraseType::CUSTOM_PASSPHRASE) {
+    if (passphrase_type == PassphraseType::kCustomPassphrase) {
       DCHECK(custom_passphrase_key_derivation_params_.has_value());
       UMA_HISTOGRAM_ENUMERATION(
           "Sync.Crypto."
@@ -1408,7 +1496,8 @@ void SyncEncryptionHandlerImpl::FinishSetPassphrase(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observers_) {
     observer.OnCryptographerStateChanged(
-        &UnlockVaultMutable(trans->GetWrappedTrans())->cryptographer);
+        &UnlockVaultMutable(trans->GetWrappedTrans())->cryptographer,
+        UnlockVault(trans->GetWrappedTrans()).cryptographer.has_pending_keys());
   }
 
   // It's possible we need to change the bootstrap token even if we failed to
@@ -1422,7 +1511,7 @@ void SyncEncryptionHandlerImpl::FinishSetPassphrase(
     }
   }
 
-  const Cryptographer& cryptographer =
+  const DirectoryCryptographer& cryptographer =
       UnlockVault(trans->GetWrappedTrans()).cryptographer;
   if (!success) {
     // If we have not set an explicit method, fall back to PBKDF2 to ensure
@@ -1431,11 +1520,11 @@ void SyncEncryptionHandlerImpl::FinishSetPassphrase(
         KeyDerivationParams::CreateForPbkdf2();
     if (custom_passphrase_key_derivation_params_.has_value()) {
       DCHECK_EQ(GetPassphraseType(trans->GetWrappedTrans()),
-                PassphraseType::CUSTOM_PASSPHRASE);
+                PassphraseType::kCustomPassphrase);
       key_derivation_params = custom_passphrase_key_derivation_params_.value();
     }
 
-    if (cryptographer.is_ready()) {
+    if (cryptographer.CanEncrypt()) {
       LOG(ERROR) << "Attempt to change passphrase failed while cryptographer "
                  << "was ready.";
     } else if (cryptographer.has_pending_keys()) {
@@ -1452,13 +1541,14 @@ void SyncEncryptionHandlerImpl::FinishSetPassphrase(
     return;
   }
   DCHECK(success);
-  DCHECK(cryptographer.is_ready());
+  DCHECK(cryptographer.CanEncrypt());
 
   // Will do nothing if we're already properly migrated or unable to migrate
-  // (in otherwords, if ShouldTriggerMigration is false).
+  // (in otherwords, if GetMigrationReason returns kNoReason).
   // Otherwise will update the nigori node with the current migrated state,
   // writing all encryption state as it does.
-  if (!AttemptToMigrateNigoriToKeystore(trans, nigori_node)) {
+  if (!AttemptToMigrateNigoriToKeystore(
+          trans, nigori_node, NigoriMigrationTrigger::kFinishSetPassphrase)) {
     sync_pb::NigoriSpecifics nigori(nigori_node->GetNigoriSpecifics());
     // Does not modify nigori.encryption_keybag() if the original decrypted
     // data was the same.
@@ -1482,7 +1572,7 @@ void SyncEncryptionHandlerImpl::FinishSetPassphrase(
   }
 
   PassphraseType passphrase_type = GetPassphraseType(trans->GetWrappedTrans());
-  if (passphrase_type == PassphraseType::CUSTOM_PASSPHRASE) {
+  if (passphrase_type == PassphraseType::kCustomPassphrase) {
     DVLOG(1) << "Successfully set passphrase of type "
              << PassphraseTypeToString(passphrase_type)
              << " with key derivation method "
@@ -1525,86 +1615,103 @@ void SyncEncryptionHandlerImpl::MergeEncryptedTypes(
 }
 
 SyncEncryptionHandlerImpl::Vault* SyncEncryptionHandlerImpl::UnlockVaultMutable(
-    syncable::BaseTransaction* const trans) {
+    const syncable::BaseTransaction* const trans) {
   DCHECK_EQ(user_share_->directory.get(), trans->directory());
   return &vault_unsafe_;
 }
 
 const SyncEncryptionHandlerImpl::Vault& SyncEncryptionHandlerImpl::UnlockVault(
-    syncable::BaseTransaction* const trans) const {
+    const syncable::BaseTransaction* const trans) const {
   DCHECK_EQ(user_share_->directory.get(), trans->directory());
   return vault_unsafe_;
 }
 
-bool SyncEncryptionHandlerImpl::ShouldTriggerMigration(
+SyncEncryptionHandlerImpl::NigoriMigrationReason
+SyncEncryptionHandlerImpl::GetMigrationReason(
     const sync_pb::NigoriSpecifics& nigori,
-    const Cryptographer& cryptographer,
+    const DirectoryCryptographer& cryptographer,
     PassphraseType passphrase_type) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Don't migrate if there are pending encryption keys (because data
   // encrypted with the pending keys will not be decryptable).
   if (cryptographer.has_pending_keys())
-    return false;
-  if (IsNigoriMigratedToKeystore(nigori)) {
-    // If the nigori is already migrated but does not reflect the explicit
-    // passphrase state, remigrate. Similarly, if the nigori has an explicit
-    // passphrase but does not have full encryption, or the nigori has an
-    // implicit passphrase but does have full encryption, re-migrate.
-    // Note that this is to defend against other clients without keystore
-    // encryption enabled transitioning to states that are no longer valid.
-    if (passphrase_type != PassphraseType::KEYSTORE_PASSPHRASE &&
-        nigori.passphrase_type() ==
-            sync_pb::NigoriSpecifics::KEYSTORE_PASSPHRASE) {
-      return true;
-    } else if (IsExplicitPassphrase(passphrase_type) && !encrypt_everything_) {
-      return true;
-    } else if (passphrase_type == PassphraseType::KEYSTORE_PASSPHRASE &&
-               encrypt_everything_) {
-      return true;
-    } else if (cryptographer.is_ready() &&
-               !cryptographer.CanDecryptUsingDefaultKey(
-                   nigori.encryption_keybag())) {
-      // We need to overwrite the keybag. This might involve overwriting the
-      // keystore decryptor too.
-      return true;
-    } else if (old_keystore_keys_.size() > 0 && !keystore_key_.empty()) {
-      // Check to see if a server key rotation has happened, but the nigori
-      // node's keys haven't been rotated yet, and hence we should re-migrate.
-      // Note that once a key rotation has been performed, we no longer
-      // preserve backwards compatibility, and the keybag will therefore be
-      // encrypted with the current keystore key.
-      Cryptographer temp_cryptographer(cryptographer.encryptor());
-      KeyParams keystore_params = {KeyDerivationParams::CreateForPbkdf2(),
-                                   keystore_key_};
-      temp_cryptographer.AddKey(keystore_params);
-      if (!temp_cryptographer.CanDecryptUsingDefaultKey(
-              nigori.encryption_keybag())) {
-        return true;
-      }
+    return NigoriMigrationReason::kNoReason;
+
+  if (!IsNigoriMigratedToKeystore(nigori)) {
+    if (keystore_key_.empty()) {
+      // If we haven't already migrated, we don't want to do anything unless
+      // a keystore key is available (so that those clients without keystore
+      // encryption enabled aren't forced into new states, e.g. frozen implicit
+      // passphrase).
+      return NigoriMigrationReason::kNoReason;
     }
-    return false;
-  } else if (keystore_key_.empty()) {
-    // If we haven't already migrated, we don't want to do anything unless
-    // a keystore key is available (so that those clients without keystore
-    // encryption enabled aren't forced into new states, e.g. frozen implicit
-    // passphrase).
-    return false;
+    if (nigori.encryption_keybag().blob().empty()) {
+      return NigoriMigrationReason::kInitialization;
+    }
+    return NigoriMigrationReason::KNigoriNotMigrated;
   }
-  return true;
+
+  // If the nigori is already migrated but does not reflect the explicit
+  // passphrase state, remigrate. Similarly, if the nigori has an explicit
+  // passphrase but does not have full encryption, or the nigori has an
+  // implicit passphrase but does have full encryption, re-migrate.
+  // Note that this is to defend against other clients without keystore
+  // encryption enabled transitioning to states that are no longer valid.
+  if (passphrase_type != PassphraseType::kKeystorePassphrase &&
+      nigori.passphrase_type() ==
+          sync_pb::NigoriSpecifics::KEYSTORE_PASSPHRASE) {
+    return NigoriMigrationReason::kOldPassphraseType;
+  }
+  if (IsExplicitPassphrase(passphrase_type) && !encrypt_everything_) {
+    return NigoriMigrationReason::kNotEncryptEverythingWithExplicitPassphrase;
+  }
+  if (passphrase_type == PassphraseType::kKeystorePassphrase &&
+      encrypt_everything_) {
+    return NigoriMigrationReason::kEncryptEverythingWithKeystorePassphrase;
+  }
+  if (cryptographer.CanEncrypt() &&
+      !cryptographer.CanDecryptUsingDefaultKey(nigori.encryption_keybag())) {
+    // We need to overwrite the keybag. This might involve overwriting the
+    // keystore decryptor too.
+    return NigoriMigrationReason::kCannotDecryptUsingDefaultKey;
+  }
+  if (old_keystore_keys_.size() > 0 && !keystore_key_.empty()) {
+    // Check to see if a server key rotation has happened, but the nigori
+    // node's keys haven't been rotated yet, and hence we should re-migrate.
+    // Note that once a key rotation has been performed, we no longer
+    // preserve backwards compatibility, and the keybag will therefore be
+    // encrypted with the current keystore key.
+    DirectoryCryptographer temp_cryptographer;
+    KeyParams keystore_params = {KeyDerivationParams::CreateForPbkdf2(),
+                                 keystore_key_};
+    temp_cryptographer.AddKey(keystore_params);
+    if (!temp_cryptographer.CanDecryptUsingDefaultKey(
+            nigori.encryption_keybag())) {
+      return NigoriMigrationReason::kServerKeyRotation;
+    }
+  }
+  return NigoriMigrationReason::kNoReason;
 }
 
 bool SyncEncryptionHandlerImpl::AttemptToMigrateNigoriToKeystore(
     WriteTransaction* trans,
-    WriteNode* nigori_node) {
+    WriteNode* nigori_node,
+    NigoriMigrationTrigger migration_trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const sync_pb::NigoriSpecifics& old_nigori =
       nigori_node->GetNigoriSpecifics();
-  Cryptographer* cryptographer =
+  DirectoryCryptographer* cryptographer =
       &UnlockVaultMutable(trans->GetWrappedTrans())->cryptographer;
   PassphraseType* passphrase_type =
       &UnlockVaultMutable(trans->GetWrappedTrans())->passphrase_type;
-  if (!ShouldTriggerMigration(old_nigori, *cryptographer, *passphrase_type))
+  NigoriMigrationReason migration_reason =
+      GetMigrationReason(old_nigori, *cryptographer, *passphrase_type);
+  if (migration_reason == NigoriMigrationReason::kNoReason)
     return false;
+
+  UMA_HISTOGRAM_ENUMERATION("Sync.NigoriMigrationReason", migration_reason);
+  UMA_HISTOGRAM_ENUMERATION("Sync.NigoriMigrationTrigger", migration_trigger);
+  migration_attempted_ = true;
 
   DVLOG(1) << "Starting nigori migration to keystore support.";
   sync_pb::NigoriSpecifics migrated_nigori(old_nigori);
@@ -1615,7 +1722,7 @@ bool SyncEncryptionHandlerImpl::AttemptToMigrateNigoriToKeystore(
   if (encrypt_everything_ && !IsExplicitPassphrase(*passphrase_type)) {
     DVLOG(1) << "Switching to frozen implicit passphrase due to already having "
              << "full encryption.";
-    new_passphrase_type = PassphraseType::FROZEN_IMPLICIT_PASSPHRASE;
+    new_passphrase_type = PassphraseType::kFrozenImplicitPassphrase;
     migrated_nigori.clear_keystore_decryptor_token();
   } else if (IsExplicitPassphrase(*passphrase_type)) {
     DVLOG_IF(1, !encrypt_everything_) << "Enabling encrypt everything due to "
@@ -1624,13 +1731,13 @@ bool SyncEncryptionHandlerImpl::AttemptToMigrateNigoriToKeystore(
     migrated_nigori.clear_keystore_decryptor_token();
   } else {
     DCHECK(!encrypt_everything_);
-    new_passphrase_type = PassphraseType::KEYSTORE_PASSPHRASE;
+    new_passphrase_type = PassphraseType::kKeystorePassphrase;
     DVLOG(1) << "Switching to keystore passphrase state.";
   }
   migrated_nigori.set_encrypt_everything(new_encrypt_everything);
   migrated_nigori.set_passphrase_type(
       EnumPassphraseTypeToProto(new_passphrase_type));
-  if (new_passphrase_type == PassphraseType::CUSTOM_PASSPHRASE) {
+  if (new_passphrase_type == PassphraseType::kCustomPassphrase) {
     if (!custom_passphrase_key_derivation_params_.has_value()) {
       // We ended up in a CUSTOM_PASSPHRASE state, but we went through neither
       // SetCustomPassphrase() nor SetDecryptionPassphrase()'s
@@ -1651,7 +1758,7 @@ bool SyncEncryptionHandlerImpl::AttemptToMigrateNigoriToKeystore(
     KeyParams key_params = {KeyDerivationParams::CreateForPbkdf2(),
                             keystore_key_};
     if ((old_keystore_keys_.size() > 0 &&
-         new_passphrase_type == PassphraseType::KEYSTORE_PASSPHRASE) ||
+         new_passphrase_type == PassphraseType::kKeystorePassphrase) ||
         !cryptographer->is_initialized()) {
       // Either at least one key rotation has been performed, so we no longer
       // care about backwards compatibility, or we're generating keystore-based
@@ -1659,7 +1766,7 @@ bool SyncEncryptionHandlerImpl::AttemptToMigrateNigoriToKeystore(
       // cryptographer is not initialized), so we can't support backwards
       // compatibility. Ensure the keystore key is the default key.
       DVLOG(1) << "Migrating keybag to keystore key.";
-      bool cryptographer_was_ready = cryptographer->is_ready();
+      bool cryptographer_was_ready = cryptographer->CanEncrypt();
       if (!cryptographer->AddKey(key_params)) {
         LOG(ERROR) << "Failed to add keystore key as default key";
         UMA_HISTOGRAM_ENUMERATION("Sync.AttemptNigoriMigration",
@@ -1667,7 +1774,7 @@ bool SyncEncryptionHandlerImpl::AttemptToMigrateNigoriToKeystore(
                                   MIGRATION_RESULT_SIZE);
         return false;
       }
-      if (!cryptographer_was_ready && cryptographer->is_ready()) {
+      if (!cryptographer_was_ready && cryptographer->CanEncrypt()) {
         for (auto& observer : observers_) {
           observer.OnPassphraseAccepted();
         }
@@ -1698,7 +1805,7 @@ bool SyncEncryptionHandlerImpl::AttemptToMigrateNigoriToKeystore(
       cryptographer->AddNonDefaultKey(key_params);
     }
   }
-  if (new_passphrase_type == PassphraseType::KEYSTORE_PASSPHRASE &&
+  if (new_passphrase_type == PassphraseType::kKeystorePassphrase &&
       !GetKeystoreDecryptor(
           *cryptographer, keystore_key_,
           migrated_nigori.mutable_keystore_decryptor_token())) {
@@ -1715,9 +1822,11 @@ bool SyncEncryptionHandlerImpl::AttemptToMigrateNigoriToKeystore(
     return false;
   }
 
-  if (migration_time_.is_null())
-    migration_time_ = base::Time::Now();
-  migrated_nigori.set_keystore_migration_time(TimeToProtoTime(migration_time_));
+  if (keystore_migration_time_.is_null()) {
+    keystore_migration_time_ = base::Time::Now();
+  }
+  migrated_nigori.set_keystore_migration_time(
+      TimeToProtoTime(keystore_migration_time_));
 
   if (!custom_passphrase_time_.is_null()) {
     migrated_nigori.set_custom_passphrase_time(
@@ -1725,7 +1834,8 @@ bool SyncEncryptionHandlerImpl::AttemptToMigrateNigoriToKeystore(
   }
 
   for (auto& observer : observers_) {
-    observer.OnCryptographerStateChanged(cryptographer);
+    observer.OnCryptographerStateChanged(cryptographer,
+                                         cryptographer->has_pending_keys());
   }
   if (*passphrase_type != new_passphrase_type) {
     *passphrase_type = new_passphrase_type;
@@ -1748,13 +1858,13 @@ bool SyncEncryptionHandlerImpl::AttemptToMigrateNigoriToKeystore(
   nigori_node->SetNigoriSpecifics(migrated_nigori);
 
   if (new_encrypt_everything &&
-      (new_passphrase_type == PassphraseType::FROZEN_IMPLICIT_PASSPHRASE ||
-       new_passphrase_type == PassphraseType::CUSTOM_PASSPHRASE)) {
+      (new_passphrase_type == PassphraseType::kFrozenImplicitPassphrase ||
+       new_passphrase_type == PassphraseType::kCustomPassphrase)) {
     NotifyObserversOfLocalCustomPassphrase(trans);
   }
 
   switch (new_passphrase_type) {
-    case PassphraseType::KEYSTORE_PASSPHRASE:
+    case PassphraseType::kKeystorePassphrase:
       if (old_keystore_keys_.size() > 0) {
         UMA_HISTOGRAM_ENUMERATION("Sync.AttemptNigoriMigration",
                                   MIGRATION_SUCCESS_KEYSTORE_NONDEFAULT,
@@ -1765,12 +1875,12 @@ bool SyncEncryptionHandlerImpl::AttemptToMigrateNigoriToKeystore(
                                   MIGRATION_RESULT_SIZE);
       }
       break;
-    case PassphraseType::FROZEN_IMPLICIT_PASSPHRASE:
+    case PassphraseType::kFrozenImplicitPassphrase:
       UMA_HISTOGRAM_ENUMERATION("Sync.AttemptNigoriMigration",
                                 MIGRATION_SUCCESS_FROZEN_IMPLICIT,
                                 MIGRATION_RESULT_SIZE);
       break;
-    case PassphraseType::CUSTOM_PASSPHRASE:
+    case PassphraseType::kCustomPassphrase:
       UMA_HISTOGRAM_ENUMERATION("Sync.AttemptNigoriMigration",
                                 MIGRATION_SUCCESS_CUSTOM,
                                 MIGRATION_RESULT_SIZE);
@@ -1779,23 +1889,29 @@ bool SyncEncryptionHandlerImpl::AttemptToMigrateNigoriToKeystore(
       NOTREACHED();
       break;
   }
+  UMA_HISTOGRAM_BOOLEAN("Sync.IsNigoriMigratedAfterMigration",
+                        IsNigoriMigratedToKeystore(migrated_nigori));
+  UMA_HISTOGRAM_BOOLEAN(
+      "Sync.ShouldTriggerMigrationAfterMigration",
+      GetMigrationReason(migrated_nigori, *cryptographer, *passphrase_type) !=
+          NigoriMigrationReason::kNoReason);
   return true;
 }
 
 bool SyncEncryptionHandlerImpl::GetKeystoreDecryptor(
-    const Cryptographer& cryptographer,
+    const DirectoryCryptographer& cryptographer,
     const std::string& keystore_key,
     sync_pb::EncryptedData* encrypted_blob) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!keystore_key.empty());
-  DCHECK(cryptographer.is_ready());
+  DCHECK(cryptographer.CanEncrypt());
   std::string serialized_nigori;
   serialized_nigori = cryptographer.GetDefaultNigoriKeyData();
   if (serialized_nigori.empty()) {
     LOG(ERROR) << "Failed to get cryptographer bootstrap token.";
     return false;
   }
-  Cryptographer temp_cryptographer(cryptographer.encryptor());
+  DirectoryCryptographer temp_cryptographer;
   KeyParams key_params = {KeyDerivationParams::CreateForPbkdf2(), keystore_key};
   if (!temp_cryptographer.AddKey(key_params))
     return false;
@@ -1807,7 +1923,7 @@ bool SyncEncryptionHandlerImpl::GetKeystoreDecryptor(
 bool SyncEncryptionHandlerImpl::AttemptToInstallKeybag(
     const sync_pb::EncryptedData& keybag,
     bool update_default,
-    Cryptographer* cryptographer) {
+    DirectoryCryptographer* cryptographer) {
   if (!cryptographer->CanDecrypt(keybag))
     return false;
   cryptographer->InstallKeys(keybag);
@@ -1832,11 +1948,11 @@ void SyncEncryptionHandlerImpl::EnableEncryptEverythingImpl(
 
 bool SyncEncryptionHandlerImpl::DecryptPendingKeysWithKeystoreKey(
     const sync_pb::EncryptedData& keystore_decryptor_token,
-    Cryptographer* cryptographer) {
+    DirectoryCryptographer* cryptographer) {
   DCHECK(cryptographer->has_pending_keys());
   if (keystore_decryptor_token.blob().empty())
     return false;
-  Cryptographer temp_cryptographer(cryptographer->encryptor());
+  DirectoryCryptographer temp_cryptographer;
 
   // First, go through and all all the old keystore keys to the temporary
   // cryptographer.
@@ -1887,9 +2003,9 @@ bool SyncEncryptionHandlerImpl::DecryptPendingKeysWithKeystoreKey(
       DVLOG(1) << "Pending keys based on newest keystore key.";
       cryptographer->AddNonDefaultKey(keystore_params);
     }
-    if (cryptographer->is_ready()) {
+    if (cryptographer->CanEncrypt()) {
       std::string bootstrap_token;
-      cryptographer->GetBootstrapToken(&bootstrap_token);
+      cryptographer->GetBootstrapToken(*encryptor_, &bootstrap_token);
       DVLOG(1) << "Keystore decryptor token decrypted pending keys.";
       // Note: These are separate loops to match previous functionality and not
       // out of explicit knowledge that they must be.
@@ -1901,7 +2017,8 @@ bool SyncEncryptionHandlerImpl::DecryptPendingKeysWithKeystoreKey(
                                          PASSPHRASE_BOOTSTRAP_TOKEN);
       }
       for (auto& observer : observers_) {
-        observer.OnCryptographerStateChanged(cryptographer);
+        observer.OnCryptographerStateChanged(cryptographer,
+                                             cryptographer->has_pending_keys());
       }
       return true;
     }
@@ -1911,9 +2028,9 @@ bool SyncEncryptionHandlerImpl::DecryptPendingKeysWithKeystoreKey(
 
 base::Time SyncEncryptionHandlerImpl::GetExplicitPassphraseTime(
     PassphraseType passphrase_type) const {
-  if (passphrase_type == PassphraseType::FROZEN_IMPLICIT_PASSPHRASE)
-    return migration_time();
-  else if (passphrase_type == PassphraseType::CUSTOM_PASSPHRASE)
+  if (passphrase_type == PassphraseType::kFrozenImplicitPassphrase)
+    return GetKeystoreMigrationTime();
+  else if (passphrase_type == PassphraseType::kCustomPassphrase)
     return custom_passphrase_time();
   return base::Time();
 }

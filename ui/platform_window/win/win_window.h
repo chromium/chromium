@@ -9,16 +9,15 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/gfx/win/window_impl.h"
-#include "ui/platform_window/platform_window.h"
+#include "ui/platform_window/platform_window_delegate.h"
+#include "ui/platform_window/platform_window_win.h"
 #include "ui/platform_window/win/win_window_export.h"
 
 #include <windows.h>
 
 namespace ui {
 
-class PlatformWindowDelegate;
-
-class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
+class WIN_WINDOW_EXPORT WinWindow : public PlatformWindowWin,
                                     public gfx::WindowImpl {
  public:
   WinWindow(PlatformWindowDelegate* delegate, const gfx::Rect& bounds);
@@ -28,9 +27,10 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
   void Destroy();
 
   // PlatformWindow:
-  void Show() override;
+  void Show(bool inactive) override;
   void Hide() override;
   void Close() override;
+  bool IsVisible() const override;
   void PrepareForShutdown() override;
   void SetBounds(const gfx::Rect& bounds) override;
   gfx::Rect GetBounds() override;
@@ -43,12 +43,32 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
   void Minimize() override;
   void Restore() override;
   PlatformWindowState GetPlatformWindowState() const override;
+  void Activate() override;
+  void Deactivate() override;
+  void SetUseNativeFrame(bool use_native_frame) override;
+  bool ShouldUseNativeFrame() const override;
   void SetCursor(PlatformCursor cursor) override;
   void MoveCursorTo(const gfx::Point& location) override;
   void ConfineCursorToBounds(const gfx::Rect& bounds) override;
-  PlatformImeController* GetPlatformImeController() override;
   void SetRestoredBoundsInPixels(const gfx::Rect& bounds) override;
   gfx::Rect GetRestoredBoundsInPixels() const override;
+  bool ShouldWindowContentsBeTransparent() const override;
+  void SetZOrderLevel(ZOrderLevel order) override;
+  ZOrderLevel GetZOrderLevel() const override;
+  void StackAbove(gfx::AcceleratedWidget widget) override;
+  void StackAtTop() override;
+  void FlashFrame(bool flash_frame) override;
+  void SetVisibilityChangedAnimationsEnabled(bool enabled) override;
+  void SetShape(std::unique_ptr<ShapeRects> native_shape,
+                const gfx::Transform& transform) override;
+  void SetAspectRatio(const gfx::SizeF& aspect_ratio) override;
+  void SetWindowIcons(const gfx::ImageSkia& window_icon,
+                      const gfx::ImageSkia& app_icon) override;
+  void SizeConstraintsChanged() override;
+  bool IsAnimatingClosed() const override;
+  bool IsTranslucentWindowOpacitySupported() const override;
+
+  bool IsFullscreen() const;
 
   CR_BEGIN_MSG_MAP_EX(WinWindow)
     CR_MESSAGE_RANGE_HANDLER_EX(WM_MOUSEFIRST, WM_MOUSELAST, OnMouseRange)

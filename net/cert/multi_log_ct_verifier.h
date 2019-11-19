@@ -42,9 +42,6 @@ class NET_EXPORT MultiLogCTVerifier : public CTVerifier {
               SignedCertificateTimestampAndStatusList* output_scts,
               const NetLogWithSource& net_log) override;
 
-  void SetObserver(Observer* observer) override;
-  Observer* GetObserver() const override;
-
  private:
   // Verify a list of SCTs from |encoded_sct_list| over |expected_entry|,
   // placing the verification results in |output_scts|. The SCTs in the list
@@ -67,8 +64,6 @@ class NET_EXPORT MultiLogCTVerifier : public CTVerifier {
   // A log's ID is the SHA-256 of the log's key, as defined in section 3.2.
   // of RFC6962.
   std::map<std::string, scoped_refptr<const CTLogVerifier>> logs_;
-
-  Observer* observer_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiLogCTVerifier);
 };

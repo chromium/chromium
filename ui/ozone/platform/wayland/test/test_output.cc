@@ -31,4 +31,9 @@ void TestOutput::OnBind() {
   wl_output_send_done(resource());
 }
 
+void TestOutput::SetScale(int32_t factor) {
+  wl_output_send_scale(resource(), factor);
+  wl_output_send_done(resource());
+}
+
 }  // namespace wl

@@ -41,14 +41,6 @@ class SVGLengthListTearOff final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SVGLengthListTearOff* Create(
-      SVGLengthList* target,
-      SVGAnimatedPropertyBase* binding,
-      PropertyIsAnimValType property_is_anim_val) {
-    return MakeGarbageCollected<SVGLengthListTearOff>(target, binding,
-                                                      property_is_anim_val);
-  }
-
   SVGLengthListTearOff(SVGLengthList* target,
                        SVGAnimatedPropertyBase* binding,
                        PropertyIsAnimValType property_is_anim_val)

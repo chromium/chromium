@@ -127,7 +127,7 @@ bool ChromeRLZTrackerDelegate::GetBrand(std::string* brand) {
 }
 
 bool ChromeRLZTrackerDelegate::IsBrandOrganic(const std::string& brand) {
-  return brand.empty() || google_brand::IsOrganic(brand);
+  return google_brand::IsOrganic(brand);
 }
 
 bool ChromeRLZTrackerDelegate::GetReactivationBrand(std::string* brand) {

@@ -39,8 +39,9 @@ class CacheStorageOperationTest : public testing::Test {
       : mock_task_runner_(new base::TestMockTimeTaskRunner()) {
     operation_ = std::make_unique<CacheStorageOperation>(
         base::BindOnce(&TestTask::Run, base::Unretained(&task_)),
-        CacheStorageSchedulerClient::kStorage, CacheStorageSchedulerOp::kTest,
-        mock_task_runner_);
+        /* id = */ 0, CacheStorageSchedulerClient::kStorage,
+        CacheStorageSchedulerMode::kExclusive, CacheStorageSchedulerOp::kTest,
+        CacheStorageSchedulerPriority::kNormal, mock_task_runner_);
   }
 
   base::HistogramTester histogram_tester_;

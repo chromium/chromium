@@ -14,11 +14,17 @@
 #include "base/callback_forward.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "storage/browser/fileapi/file_system_operation_runner.h"
+#include "storage/browser/file_system/file_system_operation_runner.h"
+#include "storage/browser/file_system/isolated_context.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "url/gurl.h"
 
 class Profile;
+
+namespace base {
+class DictionaryValue;
+class ListValue;
+}  // namespace base
 
 namespace content {
 class RenderFrameHost;
@@ -93,22 +99,7 @@ storage::FileSystemContext* GetFileSystemContextForRenderFrameHost(
     Profile* profile,
     content::RenderFrameHost* render_frame_host);
 
-// Converts DrivePath (e.g., "drive/root", which always starts with the fixed
-// "drive" directory) to a RelativeFileSystemPathrelative (e.g.,
-// "drive-xxx/root/foo". which starts from the "mount point" in the FileSystem
-// API that may be distinguished for each profile by the appended "xxx" part.)
-base::FilePath ConvertDrivePathToRelativeFileSystemPath(
-    Profile* profile,
-    const std::string& extension_id,
-    const base::FilePath& drive_path);
-
-// Converts DrivePath to FileSystem URL.
-// E.g., "drive/root" to filesystem://id/external/drive-xxx/root.
-GURL ConvertDrivePathToFileSystemUrl(Profile* profile,
-                                     const base::FilePath& drive_path,
-                                     const std::string& extension_id);
-
-// Converts AbsolutePath (e.g., "/special/drive-xxx/root" or
+// Converts AbsolutePath (e.g., "/media/removable/foo" or
 // "/home/chronos/u-xxx/Downloads") into filesystem URL. Returns false
 // if |absolute_path| is not managed by the external filesystem provider.
 bool ConvertAbsoluteFilePathToFileSystemUrl(Profile* profile,
@@ -117,7 +108,7 @@ bool ConvertAbsoluteFilePathToFileSystemUrl(Profile* profile,
                                             GURL* url);
 
 // Converts AbsolutePath into RelativeFileSystemPath (e.g.,
-// "/special/drive-xxx/root/foo" => "drive-xxx/root/foo".) Returns false if
+// "/media/removable/foo/bar" => "removable/foo/bar".) Returns false if
 // |absolute_path| is not managed by the external filesystem provider.
 bool ConvertAbsoluteFilePathToRelativeFileSystemPath(
     Profile* profile,
@@ -170,9 +161,17 @@ void GetMetadataForPath(
     int fields,
     storage::FileSystemOperationRunner::GetMetadataCallback callback);
 
+// Groups a FileSystemURL and a related ScopedFSHandle.
+//
+// The URL is guaranteed to be valid as long as the handle is valid.
+struct FileSystemURLAndHandle {
+  storage::FileSystemURL url;
+  storage::IsolatedContext::ScopedFSHandle handle;
+};
+
 // Obtains isolated file system URL from |virtual_path| pointing a file in the
 // external file system.
-storage::FileSystemURL CreateIsolatedURLFromVirtualPath(
+FileSystemURLAndHandle CreateIsolatedURLFromVirtualPath(
     const storage::FileSystemContext& context,
     const GURL& origin,
     const base::FilePath& virtual_path);

@@ -52,6 +52,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "in_memory_video_decode_stats_db_unittest.cc",
+    "video_decode_stats_db_impl_unittest.cc",
     "video_decode_stats_db_unittest.cc",
   ]
 

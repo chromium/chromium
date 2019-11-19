@@ -18,28 +18,26 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/crash/core/common/crash_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
 
 namespace crash_keys {
 
 namespace {
 
-#if defined(OS_MACOSX) || defined(OS_WIN) || defined(OS_ANDROID)
+#if !BUILDFLAG(USE_CRASHPAD_ANNOTATION)
 // When using Crashpad, the crash reporting client ID is the responsibility of
-// Crashpad. It is not set directly by Chrome. To make the metrics client ID
-// available on the server, it's stored in a distinct key.
-const char kMetricsClientId[] = "metrics_client_id";
-#else
-// When using Breakpad instead of Crashpad, the crash reporting client ID is the
-// same as the metrics client ID.
+// Crashpad. It is not set directly by Chrome. When using Breakpad instead of
+// Crashpad, the crash reporting client ID is the same as the metrics client ID.
 const char kMetricsClientId[] = "guid";
-#endif
 
 crash_reporter::CrashKeyString<40> client_id_key(kMetricsClientId);
+#endif
 
 }  // namespace
 
 void SetMetricsClientIdFromGUID(const std::string& metrics_client_guid) {
+#if !BUILDFLAG(USE_CRASHPAD_ANNOTATION)
   std::string stripped_guid(metrics_client_guid);
   // Remove all instance of '-' char from the GUID. So BCD-WXY becomes BCDWXY.
   base::ReplaceSubstringsAfterOffset(
@@ -48,24 +46,14 @@ void SetMetricsClientIdFromGUID(const std::string& metrics_client_guid) {
     return;
 
   client_id_key.Set(stripped_guid);
+#endif
 }
 
 void ClearMetricsClientId() {
-#if defined(OS_MACOSX) || defined(OS_WIN) || defined(OS_ANDROID)
-  // Crashpad always monitors for crashes, but doesn't upload them when
-  // crash reporting is disabled. The preference to upload crash reports is
-  // linked to the preference for metrics reporting. When metrics reporting is
-  // disabled, don't put the metrics client ID into crash dumps. This way, crash
-  // reports that are saved but not uploaded will not have a metrics client ID
-  // from the time that metrics reporting was disabled even if they are uploaded
-  // by user action at a later date.
-  //
   // Breakpad cannot be enabled or disabled without an application restart, and
   // it needs to use the metrics client ID as its stable crash client ID, so
   // leave its client ID intact even when metrics reporting is disabled while
   // the application is running.
-  client_id_key.Clear();
-#endif
 }
 
 using SwitchesCrashKeys = std::deque<crash_reporter::CrashKeyString<64>>;

@@ -14,7 +14,6 @@
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 
 namespace content {
-
 namespace background_fetch {
 
 // Moves the request from an active state to a complete state. Stores the
@@ -38,12 +37,14 @@ class MarkRequestCompleteTask : public DatabaseTask {
  private:
   void StoreResponse(base::OnceClosure done_closure);
 
-  void PopulateResponseBody(blink::mojom::FetchAPIResponse* response);
+  void DidMakeBlob(base::OnceClosure done_closure,
+                   blink::mojom::SerializedBlobPtr blob);
 
   void DidGetIsQuotaAvailable(base::OnceClosure done_closure,
                               bool is_available);
 
   void DidOpenCache(base::OnceClosure done_closure,
+                    int64_t trace_id,
                     CacheStorageCacheHandle handle,
                     blink::mojom::CacheStorageError error);
 
@@ -81,13 +82,13 @@ class MarkRequestCompleteTask : public DatabaseTask {
   proto::BackgroundFetchRegistration::BackgroundFetchFailureReason
       failure_reason_ = proto::BackgroundFetchRegistration::NONE;
 
-  base::WeakPtrFactory<MarkRequestCompleteTask> weak_factory_;  // Keep as last.
+  base::WeakPtrFactory<MarkRequestCompleteTask> weak_factory_{
+      this};  // Keep as last.
 
   DISALLOW_COPY_AND_ASSIGN(MarkRequestCompleteTask);
 };
 
 }  // namespace background_fetch
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_BACKGROUND_FETCH_STORAGE_MARK_REQUEST_COMPLETE_TASK_H_

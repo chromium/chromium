@@ -251,7 +251,7 @@ class VpnService : public KeyedService,
   // Service path does not own the VpnConfigurations.
   StringToConfigurationMap service_path_to_configuration_map_;
 
-  base::WeakPtrFactory<VpnService> weak_factory_;
+  base::WeakPtrFactory<VpnService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VpnService);
 };

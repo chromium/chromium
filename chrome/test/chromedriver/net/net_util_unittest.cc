@@ -11,11 +11,11 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "chrome/test/chromedriver/net/url_request_context_getter.h"
 #include "mojo/core/embedder/embedder.h"
@@ -39,9 +39,8 @@ class FetchUrlTest : public testing::Test,
   FetchUrlTest()
       : io_thread_("io"),
         response_(kSendHello),
-        scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO) {
-    base::Thread::Options options(base::MessageLoop::TYPE_IO, 0);
+        task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+    base::Thread::Options options(base::MessagePumpType::IO, 0);
     CHECK(io_thread_.StartWithOptions(options));
 
     base::WaitableEvent event(base::WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -117,8 +116,7 @@ class FetchUrlTest : public testing::Test,
 
   void OnWebSocketRequest(int connection_id,
                           const net::HttpServerRequestInfo& info) override {}
-  void OnWebSocketMessage(int connection_id, const std::string& data) override {
-  }
+  void OnWebSocketMessage(int connection_id, std::string data) override {}
   void OnClose(int connection_id) override {}
 
  protected:
@@ -135,7 +133,7 @@ class FetchUrlTest : public testing::Test,
       url_loader_factory_owner_;
   network::mojom::URLLoaderFactory* url_loader_factory_;
   std::string server_url_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 };
 
 }  // namespace

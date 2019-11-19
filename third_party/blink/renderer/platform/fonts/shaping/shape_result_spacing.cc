@@ -10,21 +10,6 @@
 namespace blink {
 
 template <typename TextContainerType>
-ShapeResultSpacing<TextContainerType>::ShapeResultSpacing(
-    const TextContainerType& text)
-    : text_(text),
-      letter_spacing_(0),
-      word_spacing_(0),
-      expansion_(0),
-      expansion_per_opportunity_(0),
-      expansion_opportunity_count_(0),
-      text_justify_(TextJustify::kAuto),
-      has_spacing_(false),
-      normalize_space_(false),
-      allow_tabs_(false),
-      is_after_expansion_(false) {}
-
-template <typename TextContainerType>
 bool ShapeResultSpacing<TextContainerType>::SetSpacing(
     const FontDescription& font_description) {
   if (!font_description.LetterSpacing() && !font_description.WordSpacing()) {
@@ -99,12 +84,10 @@ void ShapeResultSpacing<TextContainerType>::ComputeExpansion(
   bool is_after_expansion = is_after_expansion_;
   if (text_.Is8Bit()) {
     expansion_opportunity_count_ = Character::ExpansionOpportunityCount(
-        text_.Characters8(), text_.length(), direction, is_after_expansion,
-        text_justify_);
+        text_.Span8(), direction, is_after_expansion, text_justify_);
   } else {
     expansion_opportunity_count_ = Character::ExpansionOpportunityCount(
-        text_.Characters16(), text_.length(), direction, is_after_expansion,
-        text_justify_);
+        text_.Span16(), direction, is_after_expansion, text_justify_);
   }
   if (is_after_expansion && !allows_trailing_expansion) {
     DCHECK_GT(expansion_opportunity_count_, 0u);

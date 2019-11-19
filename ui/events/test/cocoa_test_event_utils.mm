@@ -266,24 +266,26 @@ NSEvent* KeyEventWithModifierOnly(unsigned short key_code,
                            keyCode:key_code];
 }
 
-static NSEvent* EnterExitEventWithType(NSEventType event_type) {
+static NSEvent* EnterExitEventWithType(NSPoint point,
+                                       NSEventType event_type,
+                                       NSWindow* window) {
   return [NSEvent enterExitEventWithType:event_type
-                                location:NSZeroPoint
+                                location:point
                            modifierFlags:0
                                timestamp:TimeIntervalSinceSystemStartup()
-                            windowNumber:0
+                            windowNumber:[window windowNumber]
                                  context:nil
                              eventNumber:0
                           trackingNumber:0
                                 userData:NULL];
 }
 
-NSEvent* EnterEvent() {
-  return EnterExitEventWithType(NSMouseEntered);
+NSEvent* EnterEvent(NSPoint point, NSWindow* window) {
+  return EnterExitEventWithType(point, NSMouseEntered, window);
 }
 
-NSEvent* ExitEvent() {
-  return EnterExitEventWithType(NSMouseExited);
+NSEvent* ExitEvent(NSPoint point, NSWindow* window) {
+  return EnterExitEventWithType(point, NSMouseExited, window);
 }
 
 NSEvent* OtherEventWithType(NSEventType event_type) {

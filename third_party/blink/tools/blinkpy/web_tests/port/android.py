@@ -273,7 +273,7 @@ class AndroidPort(base.Port):
         devil_chromium.Initialize(
             output_directory=self._build_path(),
             adb_path=self._path_from_chromium_base(
-                'third_party', 'android_tools', 'sdk', 'platform-tools', 'adb'))
+                'third_party', 'android_sdk', 'public', 'platform-tools', 'adb'))
         devil_env.config.InitializeLogging(
             logging.DEBUG
             if self._debug_logging and self.get_option('debug_rwt_logging')
@@ -306,11 +306,6 @@ class AndroidPort(base.Port):
             raise test_run_results.TestRunException(exit_codes.NO_DEVICES_EXIT_STATUS,
                                                     'Unable to find any attached Android devices.')
         return len(usable_devices)
-
-    def max_drivers_per_process(self):
-        # Android falls over when we try to run multiple content_shells per worker.
-        # See https://codereview.chromium.org/1158323009/
-        return 1
 
     def check_build(self, needs_http, printer):
         exit_status = super(AndroidPort, self).check_build(needs_http, printer)

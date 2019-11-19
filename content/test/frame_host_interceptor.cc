@@ -8,13 +8,15 @@
 
 #include "content/browser/frame_host/render_frame_host_impl.h"
 #include "content/common/frame.mojom-test-utils.h"
+#include "content/common/frame.mojom.h"
 #include "content/common/frame_messages.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 
 namespace content {
 
-// Responsible for intercepting DidCommitProvisionalLoad's being disptached to
+// Responsible for intercepting mojom::FrameHost messages being disptached to
 // a given RenderFrameHostImpl.
 class FrameHostInterceptor::FrameAgent
     : public mojom::FrameHostInterceptorForTesting {
@@ -22,46 +24,35 @@ class FrameHostInterceptor::FrameAgent
   FrameAgent(FrameHostInterceptor* interceptor, RenderFrameHost* rfh)
       : interceptor_(interceptor),
         rfhi_(static_cast<RenderFrameHostImpl*>(rfh)),
-        impl_(binding().SwapImplForTesting(this)) {}
+        impl_(receiver().SwapImplForTesting(this)) {}
 
   ~FrameAgent() override {
-    auto* old_impl = binding().SwapImplForTesting(impl_);
+    auto* old_impl = receiver().SwapImplForTesting(impl_);
     // TODO(https://crbug.com/729021): Investigate the scenario where
     // |old_impl| can be nullptr if the renderer process is killed.
     DCHECK_EQ(this, old_impl);
   }
 
  protected:
-  mojo::AssociatedBinding<mojom::FrameHost>& binding() {
-    return rfhi_->frame_host_binding_for_testing();
+  mojo::AssociatedReceiver<mojom::FrameHost>& receiver() {
+    return rfhi_->frame_host_receiver_for_testing();
   }
 
   // mojom::FrameHostInterceptorForTesting:
   FrameHost* GetForwardingInterface() override { return impl_; }
 
-  void DidCommitProvisionalLoad(
-      std::unique_ptr<::FrameHostMsg_DidCommitProvisionalLoad_Params> params,
-      mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params)
-      override {
-    if (interceptor_->WillDispatchDidCommitProvisionalLoad(rfhi_, params.get(),
-                                                           &interface_params)) {
-      GetForwardingInterface()->DidCommitProvisionalLoad(
-          std::move(params), std::move(interface_params));
-    }
-  }
-
   void BeginNavigation(
-      const CommonNavigationParams& common_params,
+      mojom::CommonNavigationParamsPtr common_params,
       mojom::BeginNavigationParamsPtr begin_params,
-      blink::mojom::BlobURLTokenPtr blob_url_token,
-      mojom::NavigationClientAssociatedPtrInfo navigation_client,
-      blink::mojom::NavigationInitiatorPtr navigation_initiator) override {
-    CommonNavigationParams overrideable_common_params = common_params;
+      mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
+      mojo::PendingAssociatedRemote<mojom::NavigationClient> navigation_client,
+      mojo::PendingRemote<blink::mojom::NavigationInitiator>
+          navigation_initiator) override {
     if (interceptor_->WillDispatchBeginNavigation(
-            rfhi_, &overrideable_common_params, &begin_params, &blob_url_token,
+            rfhi_, &common_params, &begin_params, &blob_url_token,
             &navigation_client, &navigation_initiator)) {
       GetForwardingInterface()->BeginNavigation(
-          overrideable_common_params, std::move(begin_params),
+          std::move(common_params), std::move(begin_params),
           std::move(blob_url_token), std::move(navigation_client),
           std::move(navigation_initiator));
     }
@@ -86,20 +77,14 @@ FrameHostInterceptor::FrameHostInterceptor(WebContents* web_contents)
 
 FrameHostInterceptor::~FrameHostInterceptor() = default;
 
-bool FrameHostInterceptor::WillDispatchDidCommitProvisionalLoad(
-    RenderFrameHost* render_frame_host,
-    ::FrameHostMsg_DidCommitProvisionalLoad_Params* params,
-    mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params) {
-  return true;
-}
-
 bool FrameHostInterceptor::WillDispatchBeginNavigation(
     RenderFrameHost* render_frame_host,
-    CommonNavigationParams* common_params,
+    mojom::CommonNavigationParamsPtr* common_params,
     mojom::BeginNavigationParamsPtr* begin_params,
-    blink::mojom::BlobURLTokenPtr* blob_url_token,
-    mojom::NavigationClientAssociatedPtrInfo* navigation_client,
-    blink::mojom::NavigationInitiatorPtr* navigation_initiator) {
+    mojo::PendingRemote<blink::mojom::BlobURLToken>* blob_url_token,
+    mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client,
+    mojo::PendingRemote<blink::mojom::NavigationInitiator>*
+        navigation_initiator) {
   return true;
 }
 

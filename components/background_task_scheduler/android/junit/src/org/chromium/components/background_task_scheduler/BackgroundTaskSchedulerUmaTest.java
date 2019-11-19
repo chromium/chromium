@@ -10,6 +10,7 @@ import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -33,10 +34,13 @@ public class BackgroundTaskSchedulerUmaTest {
     @Spy
     private BackgroundTaskSchedulerUma mUmaSpy;
 
+    private BackgroundTaskSchedulerExternalUma mExternalUma;
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         BackgroundTaskSchedulerUma.setInstanceForTesting(mUmaSpy);
+        mExternalUma = new BackgroundTaskSchedulerExternalUma();
         doNothing().when(mUmaSpy).assertNativeIsLoaded();
     }
 
@@ -102,7 +106,13 @@ public class BackgroundTaskSchedulerUmaTest {
         assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_NOTIFICATION_SCHEDULER,
                 BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
                         TaskIds.NOTIFICATION_SCHEDULER_JOB_ID));
-        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 21);
+        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_NOTIFICATION_TRIGGER,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
+                        TaskIds.NOTIFICATION_TRIGGER_JOB_ID));
+        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_PERIODIC_SYNC_WAKE_UP,
+                BackgroundTaskSchedulerUma.toUmaEnumValueFromTaskId(
+                        TaskIds.PERIODIC_BACKGROUND_SYNC_CHROME_WAKEUP_TASK_JOB_ID));
+        assertEquals(BackgroundTaskSchedulerUma.BACKGROUND_TASK_COUNT, 23);
     }
 
     @Test
@@ -187,6 +197,48 @@ public class BackgroundTaskSchedulerUmaTest {
 
     @Test
     @Feature({"BackgroundTaskScheduler"})
+    public void testReportExactTaskCreated() {
+        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
+        BackgroundTaskSchedulerUma.getInstance().reportExactTaskCreated(TaskIds.TEST);
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.BackgroundTaskScheduler.ExactTaskCreated"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_TEST));
+    }
+
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
+    public void testReportTaskScheduledWithExpiration() {
+        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
+        BackgroundTaskSchedulerUma.getInstance().reportTaskCreatedAndExpirationState(
+                TaskIds.TEST, /* expires= */ true);
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskCreated.WithExpiration"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_TEST));
+    }
+
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
+    public void testReportTaskScheduledWithoutExpiration() {
+        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
+        BackgroundTaskSchedulerUma.getInstance().reportTaskCreatedAndExpirationState(
+                TaskIds.TEST, /* expires= */ false);
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskCreated.WithoutExpiration"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_TEST));
+    }
+
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
+    public void testReportTaskExpired() {
+        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
+        BackgroundTaskSchedulerUma.getInstance().reportTaskExpired(TaskIds.TEST);
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskExpired"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_TEST));
+    }
+
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
     public void testReportTaskCanceled() {
         doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
         BackgroundTaskSchedulerUma.getInstance().reportTaskCanceled(
@@ -219,11 +271,107 @@ public class BackgroundTaskSchedulerUmaTest {
 
     @Test
     @Feature({"BackgroundTaskScheduler"})
-    public void testReportTaskStartedNative() {
+    public void testReportMigrationToProto() {
         doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
-        BackgroundTaskSchedulerExternalUma.reportTaskStartedNative(TaskIds.DOWNLOAD_SERVICE_JOB_ID);
+        BackgroundTaskSchedulerUma.getInstance().reportMigrationToProto(TaskIds.TEST);
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.BackgroundTaskScheduler.MigrationToProto"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_TEST));
+    }
+
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
+    public void testReportTaskStartedNativeFullBrowser() {
+        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
+        mExternalUma.reportTaskStartedNative(TaskIds.DOWNLOAD_SERVICE_JOB_ID, false);
         verify(mUmaSpy, times(1))
                 .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskLoadedNative"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+        verify(mUmaSpy, never())
+                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskLoadedNative.ReducedMode"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskLoadedNative.FullBrowser"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+    }
+
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
+    public void testReportTaskStartedNativeReducedMode() {
+        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
+        mExternalUma.reportTaskStartedNative(TaskIds.DOWNLOAD_SERVICE_JOB_ID, true);
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskLoadedNative"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskLoadedNative.ReducedMode"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+        verify(mUmaSpy, never())
+                .cacheEvent(eq("Android.BackgroundTaskScheduler.TaskLoadedNative.FullBrowser"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+    }
+
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
+    public void testReportNativeTaskStartedFullBrowser() {
+        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
+        mExternalUma.reportNativeTaskStarted(TaskIds.DOWNLOAD_SERVICE_JOB_ID, false);
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.NativeBackgroundTask.TaskStarted"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+        verify(mUmaSpy, never())
+                .cacheEvent(eq("Android.NativeBackgroundTask.TaskStarted.ReducedMode"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.NativeBackgroundTask.TaskStarted.FullBrowser"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+    }
+
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
+    public void testReportNativeTaskStartedReducedMode() {
+        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
+        mExternalUma.reportNativeTaskStarted(TaskIds.DOWNLOAD_SERVICE_JOB_ID, true);
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.NativeBackgroundTask.TaskStarted"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.NativeBackgroundTask.TaskStarted.ReducedMode"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+        verify(mUmaSpy, never())
+                .cacheEvent(eq("Android.NativeBackgroundTask.TaskStarted.FullBrowser"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+    }
+
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
+    public void testReportNativeTaskFinishedFullBrowser() {
+        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
+        mExternalUma.reportNativeTaskFinished(TaskIds.DOWNLOAD_SERVICE_JOB_ID, false);
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.NativeBackgroundTask.TaskFinished"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+        verify(mUmaSpy, never())
+                .cacheEvent(eq("Android.NativeBackgroundTask.TaskFinished.ReducedMode"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.NativeBackgroundTask.TaskFinished.FullBrowser"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+    }
+
+    @Test
+    @Feature({"BackgroundTaskScheduler"})
+    public void testReportNativeTaskFinishedReducedMode() {
+        doNothing().when(mUmaSpy).cacheEvent(anyString(), anyInt());
+        mExternalUma.reportNativeTaskFinished(TaskIds.DOWNLOAD_SERVICE_JOB_ID, true);
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.NativeBackgroundTask.TaskFinished"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+        verify(mUmaSpy, times(1))
+                .cacheEvent(eq("Android.NativeBackgroundTask.TaskFinished.ReducedMode"),
+                        eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
+        verify(mUmaSpy, never())
+                .cacheEvent(eq("Android.NativeBackgroundTask.TaskFinished.FullBrowser"),
                         eq(BackgroundTaskSchedulerUma.BACKGROUND_TASK_DOWNLOAD_SERVICE));
     }
 }

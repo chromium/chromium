@@ -46,6 +46,67 @@ TEST(CryptohomeUtilTest, CreateAuthorizationRequestWithLabel) {
   EXPECT_EQ(auth_request.key().secret(), kExpectedSecret);
 }
 
+TEST(CryptohomeUtilTest,
+     CreateAuthorizationRequestFromKeyDefPasswordEmptyLabel) {
+  const std::string kExpectedSecret = "secret";
+
+  const AuthorizationRequest auth_request =
+      CreateAuthorizationRequestFromKeyDef(KeyDefinition::CreateForPassword(
+          kExpectedSecret, std::string() /* label */, PRIV_DEFAULT));
+
+  EXPECT_FALSE(auth_request.key().data().has_label());
+  EXPECT_EQ(auth_request.key().secret(), kExpectedSecret);
+}
+
+TEST(CryptohomeUtilTest,
+     CreateAuthorizationRequestFromKeyDefPasswordWithLabel) {
+  const std::string kExpectedSecret = "secret";
+
+  const AuthorizationRequest auth_request =
+      CreateAuthorizationRequestFromKeyDef(KeyDefinition::CreateForPassword(
+          kExpectedSecret, kKeyLabel, PRIV_DEFAULT));
+
+  EXPECT_EQ(auth_request.key().data().label(), kKeyLabel);
+  EXPECT_EQ(auth_request.key().secret(), kExpectedSecret);
+}
+
+TEST(CryptohomeUtilTest,
+     CreateAuthorizationRequestFromKeyDefChallengeResponse) {
+  using Algorithm = ChallengeResponseKey::SignatureAlgorithm;
+  const std::string kKeySpki = "spki";
+  const Algorithm kKeyAlgorithm = Algorithm::kRsassaPkcs1V15Sha1;
+  const ChallengeSignatureAlgorithm kKeyAlgorithmProto =
+      CHALLENGE_RSASSA_PKCS1_V1_5_SHA1;
+
+  ChallengeResponseKey challenge_response_key;
+  challenge_response_key.set_public_key_spki_der(kKeySpki);
+  challenge_response_key.set_signature_algorithms({kKeyAlgorithm});
+  const KeyDefinition key_def = KeyDefinition::CreateForChallengeResponse(
+      {challenge_response_key}, kKeyLabel, PRIV_DEFAULT);
+
+  const AuthorizationRequest auth_request =
+      CreateAuthorizationRequestFromKeyDef(key_def);
+
+  EXPECT_FALSE(auth_request.key().has_secret());
+  EXPECT_EQ(auth_request.key().data().type(),
+            KeyData::KEY_TYPE_CHALLENGE_RESPONSE);
+  EXPECT_EQ(auth_request.key().data().label(), kKeyLabel);
+  EXPECT_TRUE(auth_request.key().data().privileges().mount());
+  ASSERT_EQ(auth_request.key().data().challenge_response_key_size(), 1);
+  EXPECT_EQ(
+      auth_request.key().data().challenge_response_key(0).public_key_spki_der(),
+      kKeySpki);
+  ASSERT_EQ(auth_request.key()
+                .data()
+                .challenge_response_key(0)
+                .signature_algorithm_size(),
+            1);
+  EXPECT_EQ(
+      auth_request.key().data().challenge_response_key(0).signature_algorithm(
+          0),
+      kKeyAlgorithmProto);
+}
+
 TEST(CryptohomeUtilTest, BaseReplyToMountErrorNullOptional) {
   const base::Optional<BaseReply> reply = base::nullopt;
 

@@ -1,0 +1,32 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// NOTE: This mojom should be kept in sync with the copy in Chromium OS's repo
+// in TODO(crbug.com/945409): Update this with CrOS side mojom copy.
+
+module cups_proxy.mojom;
+
+struct HttpHeader {
+  string key;
+  string value;
+};
+
+// Implemented by the CupsProxyService; this service runs in the browser process
+// and supports serving CUPS printing requests from VMs on ChromeOS (currently
+// just PluginVM).
+interface CupsProxier {
+  // Expects, and strictly enforces, that |request| be a well-formatted IPP
+  // printing request. If so, the service integrates with the Chrome printing
+  // stack to correctly proxy it to the CUPS daemon, returning the resulting
+  // IPP response. Invalid IPP requests will generate an appropriate error IPP
+  // response.
+  //
+  // Note: This service expects only one request at a time; any further
+  // concurrent requests will fail with an empty IPP response, i.e. empty
+  // returned headers and ipp_message.
+  ProxyRequest@0(string method, string url, string version,
+                 array<HttpHeader> headers, array<uint8> body) =>
+                 (array<HttpHeader> headers, array<uint8> ipp_message,
+                 [MinVersion=1] int32 http_status_code);
+};

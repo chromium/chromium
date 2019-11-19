@@ -1,0 +1,7 @@
+ALERT: Running test #2
+CONSOLE ERROR: line 29: This document requires 'TrustedScript' assignment.
+ALERT: message: blocked
+ALERT: Running test #1
+ALERT: message: pass
+ALERT: Running test #0
+This test ensures that scripts run in isolated worlds marked with their own Content Security Policy aren't affected by the page's content security policy. Extensions, for example, should not be restricted by the page's Trusted Types policy.

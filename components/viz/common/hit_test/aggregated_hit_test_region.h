@@ -83,6 +83,17 @@ struct AggregatedHitTestRegion {
     transform_ = transform;
   }
 
+  bool operator==(const AggregatedHitTestRegion& rhs) const {
+    return (frame_sink_id == rhs.frame_sink_id && flags == rhs.flags &&
+            async_hit_test_reasons == rhs.async_hit_test_reasons &&
+            rect == rhs.rect && child_count == rhs.child_count &&
+            transform_ == rhs.transform());
+  }
+
+  bool operator!=(const AggregatedHitTestRegion& other) const {
+    return !(*this == other);
+  }
+
  private:
   friend struct mojo::StructTraits<mojom::AggregatedHitTestRegionDataView,
                                    AggregatedHitTestRegion>;

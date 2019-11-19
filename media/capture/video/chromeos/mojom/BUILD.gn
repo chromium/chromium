@@ -1,0 +1,24 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("cros_camera") {
+  sources = [
+    "camera3.mojom",
+    "camera_app.mojom",
+    "camera_common.mojom",
+    "camera_metadata.mojom",
+    "camera_metadata_tags.mojom",
+    "cros_camera_service.mojom",
+  ]
+
+  deps = [
+    "//components/chromeos_camera/common",
+    "//media/capture/mojom:image_capture",
+    "//media/mojo/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/range/mojom",
+  ]
+}

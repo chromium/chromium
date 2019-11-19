@@ -15,8 +15,8 @@ struct Request {
   handle<message_pipe>? pipe;
   array<handle<message_pipe>>? more_pipes;
 
-  // Interfaces can be used as members.
-  imported.ImportedInterface? obj;
+  // Interface remotes can be used as members.
+  pending_remote<imported.ImportedInterface>? obj;
 };
 
 struct Response {
@@ -33,9 +33,9 @@ interface Factory {
   DoStuff(Request request, handle<message_pipe>? pipe) =>
       (Response response, string text);
   DoStuff2(handle<data_pipe_consumer> pipe) => (string text);
-  CreateNamedObject(NamedObject& obj);
-  RequestImportedInterface(
-      imported.ImportedInterface& obj) => (imported.ImportedInterface& obj);
-  TakeImportedInterface(
-      imported.ImportedInterface obj) => (imported.ImportedInterface obj);
+  CreateNamedObject(pending_receiver<NamedObject> obj);
+  RequestImportedInterface(pending_receiver<imported.ImportedInterface> obj)
+      => (pending_receiver<imported.ImportedInterface> obj);
+  TakeImportedInterface(pending_remote<imported.ImportedInterface> obj)
+      => (pending_remote<imported.ImportedInterface> obj);
 };

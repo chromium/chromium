@@ -19,7 +19,7 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.testing.local.LocalRobolectricTestRunner;
-import org.chromium.webapk.lib.common.WebApkVersionUtils;
+import org.chromium.webapk.lib.common.WebApkCommonUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -75,7 +75,7 @@ public class HostBrowserClassLoaderTest {
     public void testNewRuntimeDexVersion() {
         HostBrowserClassLoader.createClassLoader(mContext, mRemoteContext, mMockDexLoader, null);
 
-        String expectedDexName = WebApkVersionUtils.getRuntimeDexName(REMOTE_DEX_VERSION);
+        String expectedDexName = WebApkCommonUtils.getRuntimeDexName(REMOTE_DEX_VERSION);
         verifyDexLoaderLoadCall(expectedDexName);
         Mockito.reset(mMockDexLoader);
 
@@ -83,7 +83,7 @@ public class HostBrowserClassLoaderTest {
         setRemoteDexVersion(REMOTE_DEX_VERSION + 1);
         HostBrowserClassLoader.createClassLoader(mContext, mRemoteContext, mMockDexLoader, null);
 
-        expectedDexName = WebApkVersionUtils.getRuntimeDexName(REMOTE_DEX_VERSION + 1);
+        expectedDexName = WebApkCommonUtils.getRuntimeDexName(REMOTE_DEX_VERSION + 1);
         verifyDexLoaderLoadCall(expectedDexName);
     }
 
@@ -93,7 +93,7 @@ public class HostBrowserClassLoaderTest {
      */
     @Test
     public void testCreateClassLoaderTwiceSameCachedData() {
-        String expectedDexName = WebApkVersionUtils.getRuntimeDexName(REMOTE_DEX_VERSION);
+        String expectedDexName = WebApkCommonUtils.getRuntimeDexName(REMOTE_DEX_VERSION);
         HostBrowserClassLoader.createClassLoader(mContext, mRemoteContext, mMockDexLoader, null);
         verifyDexLoaderLoadCall(expectedDexName);
         Mockito.reset(mMockDexLoader);

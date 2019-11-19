@@ -39,4 +39,14 @@ bool StructTraits<media::learning::mojom::TargetValueDataView,
   return true;
 }
 
+// static
+bool StructTraits<media::learning::mojom::ObservationCompletionDataView,
+                  media::learning::ObservationCompletion>::
+    Read(media::learning::mojom::ObservationCompletionDataView data,
+         media::learning::ObservationCompletion* out_observation_completion) {
+  if (!data.ReadTargetValue(&out_observation_completion->target_value))
+    return false;
+  out_observation_completion->weight = data.weight();
+  return true;
+}
 }  // namespace mojo

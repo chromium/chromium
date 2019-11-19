@@ -36,8 +36,6 @@ class CORE_EXPORT HTMLBodyElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(HTMLBodyElement);
-
   explicit HTMLBodyElement(Document&);
   ~HTMLBodyElement() override;
 

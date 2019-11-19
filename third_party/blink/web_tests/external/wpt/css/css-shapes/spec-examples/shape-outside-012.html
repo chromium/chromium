@@ -13,6 +13,7 @@
                                  image-threshold" />
     <!-- This test is derived from Example 7 in this version of the spec:
          http://www.w3.org/TR/2014/WD-css-shapes-1-20140211/ -->
+    <link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
     <style type="text/css">
         .container {
           width: 400px;
@@ -33,8 +34,10 @@
     <script src="/resources/testharnessreport.js"></script>
     <script src="support/spec-example-utils.js"></script>
     <script>
+    setup({ single_test: true });
     function checkFloats() {
       approxShapeTest('test', 'line-', 2, [181, 199, 201, 199, 181, 0]);
+      done();
     }
     </script>
 </head>

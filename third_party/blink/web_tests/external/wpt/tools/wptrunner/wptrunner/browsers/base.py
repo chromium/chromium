@@ -36,24 +36,38 @@ def cmd_arg(name, value=None):
     return rv
 
 
-def get_free_port(start_port, exclude=None):
-    """Get the first port number after start_port (inclusive) that is
-    not currently bound.
+def maybe_add_args(required_args, current_args):
+    for required_arg in required_args:
+        # If the arg is in the form of "variable=value", only add it if
+        # no arg with another value for "variable" is already there.
+        if "=" in required_arg:
+            required_arg_prefix = "%s=" % required_arg.split("=")[0]
+            if not any(item.startswith(required_arg_prefix) for item in current_args):
+                current_args.append(required_arg)
+        else:
+            if required_arg not in current_args:
+                current_args.append(required_arg)
+    return current_args
 
-    :param start_port: Integer port number at which to start testing.
-    :param exclude: Set of port numbers to skip"""
-    port = start_port
+
+def certificate_domain_list(list_of_domains, certificate_file):
+    """Build a list of domains where certificate_file should be used"""
+    cert_list = []
+    for domain in list_of_domains:
+        cert_list.append({"host": domain, "certificateFile": certificate_file})
+    return cert_list
+
+
+def get_free_port():
+    """Get a random unbound port"""
     while True:
-        if exclude and port in exclude:
-            port += 1
-            continue
         s = socket.socket()
         try:
-            s.bind(("127.0.0.1", port))
+            s.bind(("127.0.0.1", 0))
         except socket.error:
-            port += 1
+            continue
         else:
-            return port
+            return s.getsockname()[1]
         finally:
             s.close()
 
@@ -82,21 +96,21 @@ class BrowserError(Exception):
 
 
 class Browser(object):
+    """Abstract class serving as the basis for Browser implementations.
+
+    The Browser is used in the TestRunnerManager to start and stop the browser
+    process, and to check the state of that process. This class also acts as a
+    context manager, enabling it to do browser-specific setup at the start of
+    the testrun and cleanup after the run is complete.
+
+    :param logger: Structured logger to use for output.
+    """
     __metaclass__ = ABCMeta
 
     process_cls = None
     init_timeout = 30
 
     def __init__(self, logger):
-        """Abstract class serving as the basis for Browser implementations.
-
-        The Browser is used in the TestRunnerManager to start and stop the browser
-        process, and to check the state of that process. This class also acts as a
-        context manager, enabling it to do browser-specific setup at the start of
-        the testrun and cleanup after the run is complete.
-
-        :param logger: Structured logger to use for output.
-        """
         self.logger = logger
 
     def __enter__(self):
@@ -176,14 +190,14 @@ class NullBrowser(Browser):
 
 
 class ExecutorBrowser(object):
-    def __init__(self, **kwargs):
-        """View of the Browser used by the Executor object.
-        This is needed because the Executor runs in a child process and
-        we can't ship Browser instances between processes on Windows.
+    """View of the Browser used by the Executor object.
+    This is needed because the Executor runs in a child process and
+    we can't ship Browser instances between processes on Windows.
 
-        Typically this will have a few product-specific properties set,
-        but in some cases it may have more elaborate methods for setting
-        up the browser from the runner process.
-        """
+    Typically this will have a few product-specific properties set,
+    but in some cases it may have more elaborate methods for setting
+    up the browser from the runner process.
+    """
+    def __init__(self, **kwargs):
         for k, v in kwargs.iteritems():
             setattr(self, k, v)

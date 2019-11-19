@@ -59,19 +59,19 @@ IOSurfaceContext::Get(Type type) {
                                &number_virtual_screens);
   if (error != kCGLNoError) {
     LOG(ERROR) << "Failed to create pixel format object.";
-    return NULL;
+    return nullptr;
   }
 
   // Create all contexts in the same share group so that the textures don't
   // need to be recreated when transitioning contexts.
-  CGLContextObj share_context = NULL;
+  CGLContextObj share_context = nullptr;
   if (!type_map->empty())
     share_context = type_map->begin()->second->cgl_context();
   error = CGLCreateContext(
       pixel_format, share_context, cgl_context.InitializeInto());
   if (error != kCGLNoError) {
     LOG(ERROR) << "Failed to create context object.";
-    return NULL;
+    return nullptr;
   }
 
   return new IOSurfaceContext(type, cgl_context);
@@ -113,7 +113,7 @@ IOSurfaceContext::~IOSurfaceContext() {
   }
 }
 
-void IOSurfaceContext::OnGpuSwitched() {
+void IOSurfaceContext::OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) {
   // Recreate all browser-side GL contexts whenever the GPU switches. If this
   // is not done, performance will suffer.
   // http://crbug.com/361493

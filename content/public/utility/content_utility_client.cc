@@ -16,4 +16,12 @@ bool ContentUtilityClient::HandleServiceRequest(
   return false;
 }
 
+mojo::ServiceFactory* ContentUtilityClient::GetIOThreadServiceFactory() {
+  return nullptr;
+}
+
+mojo::ServiceFactory* ContentUtilityClient::GetMainThreadServiceFactory() {
+  return nullptr;
+}
+
 }  // namespace content

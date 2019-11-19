@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "build/build_config.h"
+#include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "content/public/common/content_switches.h"
 #include "services/service_manager/embedder/descriptors.h"
 
@@ -48,6 +49,16 @@ void InitializeFieldTrialAndFeatureList() {
   base::FieldTrialList::CreateFeaturesFromCommandLine(
       command_line, switches::kEnableFeatures, switches::kDisableFeatures,
       feature_list.get());
+  // TODO(crbug.com/988603): This may be redundant. The way this is supposed to
+  // work is that the parent process's state should be passed via command-line
+  // to the child process, such that a feature explicitly enabled or disabled in
+  // the parent process via this mechanism (since the browser process also
+  // registers these switch-dependent overrides), it will get passed via the
+  // command line - so then no extra logic would be needed in the child.
+  // TODO(chlily): Test this more thoroughly and understand the behavior to see
+  // whether this is actually needed.
+  feature_list->RegisterExtraFeatureOverrides(
+      GetSwitchDependentFeatureOverrides(command_line));
   base::FeatureList::SetInstance(std::move(feature_list));
 }
 

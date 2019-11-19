@@ -11,8 +11,15 @@
 #include "base/stl_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/host_zoom_map.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/render_view_host.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/aura/window.h"
 
 namespace chromeos {
@@ -35,6 +42,15 @@ SystemWebDialogDelegate* SystemWebDialogDelegate::FindInstance(
       std::find_if(instances->begin(), instances->end(),
                    [id](SystemWebDialogDelegate* i) { return i->Id() == id; });
   return iter == instances->end() ? nullptr : *iter;
+}
+
+// static
+bool SystemWebDialogDelegate::HasInstance(const GURL& url) {
+  auto* instances = GetInstances();
+  auto it = std::find_if(
+      instances->begin(), instances->end(),
+      [url](SystemWebDialogDelegate* dialog) { return dialog->gurl_ == url; });
+  return it != instances->end();
 }
 
 SystemWebDialogDelegate::SystemWebDialogDelegate(const GURL& gurl,
@@ -75,6 +91,11 @@ void SystemWebDialogDelegate::Focus() {
     dialog_window()->Focus();
 }
 
+void SystemWebDialogDelegate::Close() {
+  DCHECK(dialog_window());
+  views::Widget::GetWidgetForNativeWindow(dialog_window())->Close();
+}
+
 ui::ModalType SystemWebDialogDelegate::GetDialogModalType() const {
   return modal_type_;
 }
@@ -94,14 +115,28 @@ void SystemWebDialogDelegate::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kDialogWidth, kDialogHeight);
 }
 
+bool SystemWebDialogDelegate::CanResizeDialog() const {
+  return false;
+}
+
 std::string SystemWebDialogDelegate::GetDialogArgs() const {
   return std::string();
 }
 
-void SystemWebDialogDelegate::OnDialogShown(
-    content::WebUI* webui,
-    content::RenderViewHost* render_view_host) {
+void SystemWebDialogDelegate::OnDialogShown(content::WebUI* webui) {
   webui_ = webui;
+
+  if (features::IsSplitSettingsEnabled()) {
+    // System dialogs don't use the browser's default page zoom. Their contents
+    // stay at 100% to match the size of app list, shelf, status area, etc.
+    auto* web_contents = webui_->GetWebContents();
+    auto* rvh = web_contents->GetRenderViewHost();
+    auto* zoom_map = content::HostZoomMap::GetForWebContents(web_contents);
+    // Temporary means the lifetime of the WebContents.
+    zoom_map->SetTemporaryZoomLevel(rvh->GetProcess()->GetID(),
+                                    rvh->GetRoutingID(),
+                                    blink::PageZoomFactorToZoomLevel(1.0));
+  }
 }
 
 void SystemWebDialogDelegate::OnDialogClosed(const std::string& json_retval) {
@@ -117,15 +152,21 @@ bool SystemWebDialogDelegate::ShouldShowDialogTitle() const {
   return !title_.empty();
 }
 
-void SystemWebDialogDelegate::ShowSystemDialog(gfx::NativeWindow parent) {
-  content::BrowserContext* browser_context =
-      ProfileManager::GetActiveUserProfile();
+void SystemWebDialogDelegate::ShowSystemDialogForBrowserContext(
+    content::BrowserContext* browser_context,
+    gfx::NativeWindow parent) {
   views::Widget::InitParams extra_params;
   // If unparented and not modal, keep it on top (see header comment).
   if (!parent && GetDialogModalType() == ui::MODAL_TYPE_NONE)
-    extra_params.keep_on_top = true;
-  dialog_window_ = chrome::ShowWebDialogWithParams(parent, browser_context,
-                                                   this, &extra_params);
+    extra_params.z_order = ui::ZOrderLevel::kFloatingWindow;
+  AdjustWidgetInitParams(&extra_params);
+  dialog_window_ = chrome::ShowWebDialogWithParams(
+      parent, browser_context, this,
+      base::make_optional<views::Widget::InitParams>(std::move(extra_params)));
 }
 
+void SystemWebDialogDelegate::ShowSystemDialog(gfx::NativeWindow parent) {
+  ShowSystemDialogForBrowserContext(ProfileManager::GetActiveUserProfile(),
+                                    parent);
+}
 }  // namespace chromeos

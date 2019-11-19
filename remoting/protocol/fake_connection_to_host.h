@@ -30,6 +30,7 @@ class FakeConnectionToHost : public protocol::ConnectionToHost {
   void Connect(std::unique_ptr<protocol::Session> session,
                scoped_refptr<protocol::TransportContext> transport_context,
                HostEventCallback* event_callback) override;
+  void Disconnect(protocol::ErrorCode error) override;
   const protocol::SessionConfig& config() override;
   protocol::ClipboardStub* clipboard_forwarder() override;
   protocol::HostStub* host_stub() override;

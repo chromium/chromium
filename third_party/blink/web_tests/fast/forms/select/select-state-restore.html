@@ -63,6 +63,6 @@ function runTest()
     }
 }
 
-window.onload = runTest;
+window.onload = function() { setTimeout(runTest, 1); };
 </script>
 </body>

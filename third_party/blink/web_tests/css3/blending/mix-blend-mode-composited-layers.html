@@ -18,7 +18,7 @@
 <!-- Mix-blend-mode should create a composited layer when having composited descendants-->
 <div style="background-color: green">
     <div style="background-color: blue; mix-blend-mode: multiply">
-        <div style="background-color: yellow; transform: translatez(0);"></div>
+        <div style="background-color: yellow; transform: translatez(0); will-change: transform;"></div>
     </div>
 </div>
 

@@ -3,7 +3,6 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body id="body">
 
@@ -26,18 +25,33 @@
 </div>
 
 <script>
-test_after_layout_and_paint(function(t) {
-    var content = accessibilityController.accessibleElementById("content");
-    assert_equals(content.childrenCount, 6);
+function testChildren(parent, expected_unignored_child_indices) {
+    for (let i = 0; i < parent.childrenCount; i++) {
+      if (expected_unignored_child_indices.includes(i))
+        assert_false(parent.childAtIndex(i).isIgnored);
+      else
+        assert_true(parent.childAtIndex(i).isIgnored);
+    }
+}
 
+test(function(t) {
+    var content = accessibilityController.accessibleElementById("main");
+    assert_equals(content.childrenCount, 17);
+    assert_true(content.isIgnored);
+    testChildren(content, [0, 2, 4, 6, 11]);
     document.getElementById("ul").tabIndex = -1;
 
-    assert_equals(content.childrenCount, 7,
-                      "Making list focusable should make it not hidden");
+    assert_equals(content.childrenCount, 17,
+                      "Making list focusable should not impact if it's hidden");
+    assert_true(content.isIgnored);
+    testChildren(content, [0, 2, 4, 6, 10, 11]);
+
     document.getElementById("ul").removeAttribute("tabindex");
 
-    assert_equals(content.childrenCount, 6,
+    assert_equals(content.childrenCount, 17,
                           "Making list unfocusable should make it hidden again");
+    assert_true(content.isIgnored);
+    testChildren(content, [0, 2, 4, 6, 11]);
 });
 </script>
 

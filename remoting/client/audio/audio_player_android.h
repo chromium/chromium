@@ -47,7 +47,7 @@ class AudioPlayerAndroid : public AudioPlayer {
   size_t buffer_size_ = 0;
   uint32_t sample_per_frame_ = 0;
 
-  base::WeakPtrFactory<AudioPlayerAndroid> weak_factory_;
+  base::WeakPtrFactory<AudioPlayerAndroid> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AudioPlayerAndroid);
 };

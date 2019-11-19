@@ -15,6 +15,8 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_endpoint.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/p2p/socket.h"
@@ -33,8 +35,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcpBase : public P2PSocket {
  public:
   P2PSocketTcpBase(
       Delegate* delegate,
-      mojom::P2PSocketClientPtr client,
-      mojom::P2PSocketRequest socket,
+      mojo::PendingRemote<mojom::P2PSocketClient> client,
+      mojo::PendingReceiver<mojom::P2PSocket> socket,
       P2PSocketType type,
       ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory);
   ~P2PSocketTcpBase() override;
@@ -123,8 +125,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketTcp : public P2PSocketTcpBase {
  public:
   P2PSocketTcp(
       Delegate* delegate,
-      mojom::P2PSocketClientPtr client,
-      mojom::P2PSocketRequest socket,
+      mojo::PendingRemote<mojom::P2PSocketClient> client,
+      mojo::PendingReceiver<mojom::P2PSocket> socket,
       P2PSocketType type,
       ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory);
 
@@ -153,8 +155,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketStunTcp
  public:
   P2PSocketStunTcp(
       Delegate* delegate,
-      mojom::P2PSocketClientPtr client,
-      mojom::P2PSocketRequest socket,
+      mojo::PendingRemote<mojom::P2PSocketClient> client,
+      mojo::PendingReceiver<mojom::P2PSocket> socket,
       P2PSocketType type,
       ProxyResolvingClientSocketFactory* proxy_resolving_socket_factory);
 

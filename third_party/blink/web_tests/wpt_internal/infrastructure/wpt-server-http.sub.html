@@ -1,0 +1,12 @@
+<!doctype html>
+<title>Basic server-side substituion and testharness</title>
+<meta charset="utf-8" />
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    assert_true('{{domains[www]}}'.startsWith('www.'));
+    assert_true({{ports[http][0]}} > 0);
+    done();
+  </script>
+</body>

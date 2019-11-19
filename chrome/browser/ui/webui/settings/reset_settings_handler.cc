@@ -73,7 +73,7 @@ ResetRequestOriginFromString(const std::string& request_origin) {
 const char ResetSettingsHandler::kCctResetSettingsHash[] = "cct";
 
 ResetSettingsHandler::ResetSettingsHandler(Profile* profile)
-    : profile_(profile), callback_weak_ptr_factory_(this) {
+    : profile_(profile) {
   google_brand::GetBrand(&brandcode_);
 }
 
@@ -212,17 +212,17 @@ void ResetSettingsHandler::OnGetReportedSettingsDone(std::string callback_id) {
 void ResetSettingsHandler::OnShowResetProfileDialog(
     const base::ListValue* args) {
   if (!GetResetter()->IsActive()) {
-    setting_snapshot_.reset(new ResettableSettingsSnapshot(profile_));
+    setting_snapshot_ = std::make_unique<ResettableSettingsSnapshot>(profile_);
   }
 
   if (brandcode_.empty())
     return;
-  config_fetcher_.reset(new BrandcodeConfigFetcher(
+  config_fetcher_ = std::make_unique<BrandcodeConfigFetcher>(
       g_browser_process->system_network_context_manager()
           ->GetURLLoaderFactory(),
       base::Bind(&ResetSettingsHandler::OnSettingsFetched,
                  base::Unretained(this)),
-      GURL("https://tools.google.com/service/update2"), brandcode_));
+      GURL("https://tools.google.com/service/update2"), brandcode_);
 }
 
 void ResetSettingsHandler::OnHideResetProfileDialog(
@@ -246,7 +246,7 @@ void ResetSettingsHandler::ResetProfile(
     const std::string& callback_id,
     bool send_settings,
     reset_report::ChromeResetReport::ResetRequestOrigin request_origin) {
-  DCHECK(!GetResetter()->IsActive());
+  CHECK(!GetResetter()->IsActive());
 
   std::unique_ptr<BrandcodedDefaultSettings> default_settings;
   if (config_fetcher_) {
@@ -260,7 +260,7 @@ void ResetSettingsHandler::ResetProfile(
   // If failed to fetch BrandcodedDefaultSettings or this is an organic
   // installation, use default settings.
   if (!default_settings)
-    default_settings.reset(new BrandcodedDefaultSettings);
+    default_settings = std::make_unique<BrandcodedDefaultSettings>();
 
   GetResetter()->Reset(
       ProfileResetter::ALL, std::move(default_settings),
@@ -268,7 +268,6 @@ void ResetSettingsHandler::ResetProfile(
                  callback_weak_ptr_factory_.GetWeakPtr(), callback_id,
                  send_settings, request_origin));
   base::RecordAction(base::UserMetricsAction("ResetProfile"));
-  UMA_HISTOGRAM_BOOLEAN("ProfileReset.SendFeedback", send_settings);
   UMA_HISTOGRAM_ENUMERATION(
       "ProfileReset.ResetRequestOrigin", request_origin,
       reset_report::ChromeResetReport::ResetRequestOrigin_MAX + 1);
@@ -276,7 +275,7 @@ void ResetSettingsHandler::ResetProfile(
 
 ProfileResetter* ResetSettingsHandler::GetResetter() {
   if (!resetter_)
-    resetter_.reset(new ProfileResetter(profile_));
+    resetter_ = std::make_unique<ProfileResetter>(profile_);
   return resetter_.get();
 }
 

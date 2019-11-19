@@ -28,6 +28,7 @@ class FakeInvalidationHandler : public InvalidationHandler {
   void OnIncomingInvalidation(
       const ObjectIdInvalidationMap& invalidation_map) override;
   std::string GetOwnerName() const override;
+  bool IsPublicTopic(const syncer::Topic& topic) const override;
 
  private:
   InvalidatorState state_;

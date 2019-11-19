@@ -6,16 +6,28 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
+#include "third_party/skia/include/core/SkImage.h"
+
 namespace blink {
 
 AutoCanvasDrawListener::AutoCanvasDrawListener(
-    std::unique_ptr<WebCanvasCaptureHandler> handler)
-    : CanvasDrawListener(std::move(handler)) {}
+    std::unique_ptr<CanvasCaptureHandler> handler)
+    : handler_(std::move(handler)), frame_capture_requested_(true) {}
 
-// static
-AutoCanvasDrawListener* AutoCanvasDrawListener::Create(
-    std::unique_ptr<WebCanvasCaptureHandler> handler) {
-  return MakeGarbageCollected<AutoCanvasDrawListener>(std::move(handler));
+void AutoCanvasDrawListener::SendNewFrame(
+    sk_sp<SkImage> image,
+    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider) {
+  handler_->SendNewFrame(
+      image, context_provider ? context_provider->ContextProvider() : nullptr);
+}
+
+bool AutoCanvasDrawListener::NeedsNewFrame() const {
+  return frame_capture_requested_ && handler_->NeedsNewFrame();
+}
+
+void AutoCanvasDrawListener::RequestFrame() {
+  frame_capture_requested_ = true;
 }
 
 }  // namespace blink

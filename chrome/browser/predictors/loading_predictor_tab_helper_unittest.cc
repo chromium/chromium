@@ -43,7 +43,7 @@ class LoadingPredictorTabHelperTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override;
   void TearDown() override;
 
-  void ExpectRecordNavigation(const std::string& url);
+  virtual void ExpectRecordNavigation(const std::string& url);
   SessionID GetTabID();
   void NavigateAndCommitInFrame(const std::string& url,
                                 content::RenderFrameHost* rfh);
@@ -98,6 +98,10 @@ void LoadingPredictorTabHelperTest::NavigateAndCommitInFrame(
     content::RenderFrameHost* rfh) {
   auto navigation =
       content::NavigationSimulator::CreateRendererInitiated(GURL(url), rfh);
+  // These tests simulate loading events manually.
+  // TODO(ahemery): Consider refactoring to rely on load events dispatched by
+  // NavigationSimulator.
+  navigation->SetKeepLoading(true);
   navigation->Start();
   navigation->Commit();
 }
@@ -114,6 +118,11 @@ TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigation) {
 TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationWithRedirects) {
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
       GURL("http://test.org"), main_rfh());
+  // The problem here is that mock_collector_ is a strict mock, which expects
+  // a particular set of loading events and fails when extra is present.
+  // TOOO(ahemery): Consider refactoring this to rely on loading events
+  // in NavigationSimulator.
+  navigation->SetKeepLoading(true);
   auto navigation_id = CreateNavigationID(GetTabID(), "http://test.org");
   EXPECT_CALL(*mock_collector_, RecordStartNavigation(navigation_id));
   navigation->Start();
@@ -143,6 +152,11 @@ TEST_F(LoadingPredictorTabHelperTest, SubframeNavigation) {
 TEST_F(LoadingPredictorTabHelperTest, MainFrameNavigationFailed) {
   auto navigation = content::NavigationSimulator::CreateRendererInitiated(
       GURL("http://test.org"), main_rfh());
+  navigation->SetKeepLoading(true);
+  // The problem here is that mock_collector_ is a strict mock, which expects
+  // a particular set of loading events and fails when extra is present.
+  // TOOO(ahemery): Consider refactoring this to rely on loading events
+  // in NavigationSimulator.
   auto navigation_id = CreateNavigationID(GetTabID(), "http://test.org");
   EXPECT_CALL(*mock_collector_, RecordStartNavigation(navigation_id));
   EXPECT_CALL(*mock_collector_,
@@ -188,7 +202,7 @@ TEST_F(LoadingPredictorTabHelperTest, ResourceLoadComplete) {
 
   auto navigation_id = CreateNavigationID(GetTabID(), "http://test.org");
   auto resource_load_info = CreateResourceLoadInfo(
-      "http://test.org/script.js", content::RESOURCE_TYPE_SCRIPT);
+      "http://test.org/script.js", content::ResourceType::kScript);
   EXPECT_CALL(*mock_collector_,
               RecordResourceLoadComplete(navigation_id,
                                          Eq(ByRef(*resource_load_info))));
@@ -207,7 +221,7 @@ TEST_F(LoadingPredictorTabHelperTest, ResourceLoadCompleteInSubFrame) {
 
   // Resource loaded in subframe shouldn't be recorded.
   auto resource_load_info = CreateResourceLoadInfo(
-      "http://sub.test.org/script.js", content::RESOURCE_TYPE_SCRIPT);
+      "http://sub.test.org/script.js", content::ResourceType::kScript);
   tab_helper_->ResourceLoadComplete(subframe, content::GlobalRequestID(),
                                     *resource_load_info);
 }
@@ -219,15 +233,107 @@ TEST_F(LoadingPredictorTabHelperTest, LoadResourceFromMemoryCache) {
 
   auto navigation_id = CreateNavigationID(GetTabID(), "http://test.org");
   auto resource_load_info = CreateResourceLoadInfo(
-      "http://test.org/script.js", content::RESOURCE_TYPE_SCRIPT, false);
+      "http://test.org/script.js", content::ResourceType::kScript, false);
   resource_load_info->mime_type = "application/javascript";
   resource_load_info->network_info->network_accessed = false;
   EXPECT_CALL(*mock_collector_,
               RecordResourceLoadComplete(navigation_id,
                                          Eq(ByRef(*resource_load_info))));
-  tab_helper_->DidLoadResourceFromMemoryCache(
-      GURL("http://test.org/script.js"), "application/javascript",
-      content::ResourceType::RESOURCE_TYPE_SCRIPT);
+  tab_helper_->DidLoadResourceFromMemoryCache(GURL("http://test.org/script.js"),
+                                              "application/javascript",
+                                              content::ResourceType::kScript);
+}
+
+class TestLoadingDataCollector : public LoadingDataCollector {
+ public:
+  explicit TestLoadingDataCollector(const LoadingPredictorConfig& config);
+
+  void RecordStartNavigation(const NavigationID& navigation_id) override {}
+  void RecordFinishNavigation(const NavigationID& old_navigation_id,
+                              const NavigationID& new_navigation_id,
+                              bool is_error_page) override {}
+  void RecordResourceLoadComplete(
+      const NavigationID& navigation_id,
+      const content::mojom::ResourceLoadInfo& resource_load_info) override {
+    ++count_resource_loads_completed_;
+    EXPECT_EQ(expected_request_priority_, resource_load_info.request_priority);
+  }
+
+  void RecordMainFrameLoadComplete(const NavigationID& navigation_id) override {
+  }
+
+  void RecordFirstContentfulPaint(
+      const NavigationID& navigation_id,
+      const base::TimeTicks& first_contentful_paint) override {}
+
+  void SetExpectedResourcePriority(net::RequestPriority request_priority) {
+    expected_request_priority_ = request_priority;
+  }
+
+  size_t count_resource_loads_completed() const {
+    return count_resource_loads_completed_;
+  }
+
+ private:
+  net::RequestPriority expected_request_priority_ = net::HIGHEST;
+  size_t count_resource_loads_completed_ = 0;
+};
+
+TestLoadingDataCollector::TestLoadingDataCollector(
+    const LoadingPredictorConfig& config)
+    : LoadingDataCollector(nullptr, nullptr, config) {}
+
+class LoadingPredictorTabHelperTestCollectorTest
+    : public LoadingPredictorTabHelperTest {
+ public:
+  void SetUp() override;
+
+  void ExpectRecordNavigation(const std::string& url) override {}
+
+ protected:
+  TestLoadingDataCollector* test_collector_;
+};
+
+void LoadingPredictorTabHelperTestCollectorTest::SetUp() {
+  ChromeRenderViewHostTestHarness::SetUp();
+  SessionTabHelper::CreateForWebContents(web_contents());
+  LoadingPredictorTabHelper::CreateForWebContents(web_contents());
+  tab_helper_ = LoadingPredictorTabHelper::FromWebContents(web_contents());
+
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  loading_predictor_ = std::make_unique<LoadingPredictor>(config, profile());
+
+  auto test_collector = std::make_unique<TestLoadingDataCollector>(config);
+  test_collector_ = test_collector.get();
+  loading_predictor_->set_mock_loading_data_collector(
+      std::move(test_collector));
+
+  tab_helper_->SetLoadingPredictorForTesting(loading_predictor_->GetWeakPtr());
+}
+
+// Tests that a resource load is correctly recorded with the correct priority.
+TEST_F(LoadingPredictorTabHelperTestCollectorTest, ResourceLoadComplete) {
+  ExpectRecordNavigation("http://test.org");
+  NavigateAndCommitInFrame("http://test.org", main_rfh());
+
+  auto navigation_id = CreateNavigationID(GetTabID(), "http://test.org");
+
+  // Set expected priority to HIGHEST and load a HIGHEST priority resource.
+  test_collector_->SetExpectedResourcePriority(net::HIGHEST);
+  auto resource_load_info = CreateResourceLoadInfo(
+      "http://test.org/script.js", content::ResourceType::kScript);
+  tab_helper_->ResourceLoadComplete(main_rfh(), content::GlobalRequestID(),
+                                    *resource_load_info);
+  EXPECT_EQ(1u, test_collector_->count_resource_loads_completed());
+
+  // Set expected priority to LOWEST and load a LOWEST priority resource.
+  test_collector_->SetExpectedResourcePriority(net::LOWEST);
+  resource_load_info = CreateLowPriorityResourceLoadInfo(
+      "http://test.org/script.js", content::ResourceType::kScript);
+  tab_helper_->ResourceLoadComplete(main_rfh(), content::GlobalRequestID(),
+                                    *resource_load_info);
+  EXPECT_EQ(2u, test_collector_->count_resource_loads_completed());
 }
 
 }  // namespace predictors

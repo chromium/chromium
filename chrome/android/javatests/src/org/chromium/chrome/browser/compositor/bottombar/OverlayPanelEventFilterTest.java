@@ -206,7 +206,7 @@ public class OverlayPanelEventFilterTest {
     // --------------------------------------------------------------------------------------------
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         Context context = InstrumentationRegistry.getTargetContext();
 
         mDpToPx = context.getResources().getDisplayMetrics().density;

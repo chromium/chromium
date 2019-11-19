@@ -1,0 +1,44 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_components/chromeos/smb_shares/add_smb_share_dialog.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/cr_elements/action_link_css.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="../../route.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../../settings_vars_css.html">
+
+<dom-module id="settings-smb-shares-page">
+  <template>
+    <style include="settings-shared"></style>
+    <div class="settings-box first">
+      <div class="start">
+        <span>$i18n{smbSharesLearnMoreLabel}</span>
+        <a href="$i18n{smbSharesLearnMoreURL}" target="_blank">
+          $i18n{learnMore}
+        </a>
+      </div>
+      <template is="dom-if" if="[[!prefs.network_file_shares.allowed.value]]"
+          restamp>
+        <cr-policy-pref-indicator
+            pref="[[prefs.network_file_shares.allowed]]"
+            icon-aria-label="$i18n{smbSharesTitle}">
+        </cr-policy-pref-indicator>
+      </template>
+      <cr-button class="action-button" id="addShare"
+          on-click="onAddShareTap_"
+          disabled="[[!prefs.network_file_shares.allowed.value]]">
+        $i18n{addSmbShare}
+      </cr-button>
+    </div>
+    <template is="dom-if" if="[[showAddSmbDialog_]]" restamp>
+      <add-smb-share-dialog on-close="onAddSmbDialogClosed_"
+          last-url="[[prefs.network_file_shares.most_recently_used_url.value]]"
+          should-open-file-manager-after-mount>
+      </add-smb-share-dialog>
+    </template>
+  </template>
+  <script src="smb_shares_page.js"></script>
+</dom-module>

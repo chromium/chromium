@@ -29,14 +29,9 @@ bool Image::LoadMetafile(const Metafile& metafile) {
   data_.resize(bytes);
   base::ScopedCFTypeRef<CGColorSpaceRef> color_space(
       CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB));
-  base::ScopedCFTypeRef<CGContextRef> bitmap_context(
-      CGBitmapContextCreate(&*data_.begin(),
-                            size_.width(),
-                            size_.height(),
-                            8,
-                            row_length_,
-                            color_space,
-                            kCGImageAlphaPremultipliedLast));
+  base::ScopedCFTypeRef<CGContextRef> bitmap_context(CGBitmapContextCreate(
+      &*data_.begin(), size_.width(), size_.height(), 8, row_length_,
+      color_space, kCGImageAlphaPremultipliedLast));
   DCHECK(bitmap_context.get());
 
   struct Metafile::MacRenderPageParams params;

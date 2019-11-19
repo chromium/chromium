@@ -49,7 +49,7 @@ void FakePictureLayerTilingClient::SetTileSize(const gfx::Size& tile_size) {
 }
 
 gfx::Size FakePictureLayerTilingClient::CalculateTileSize(
-    const gfx::Size& /* content_bounds */) const {
+    const gfx::Size& /* content_bounds */) {
   return tile_size_;
 }
 
@@ -76,6 +76,11 @@ FakePictureLayerTilingClient::GetPendingOrActiveTwinTiling(
 
 bool FakePictureLayerTilingClient::RequiresHighResToDraw() const {
   return false;
+}
+
+const PaintWorkletRecordMap&
+FakePictureLayerTilingClient::GetPaintWorkletRecords() const {
+  return paint_worklet_records_;
 }
 
 }  // namespace cc

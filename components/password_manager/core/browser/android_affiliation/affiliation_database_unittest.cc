@@ -243,40 +243,6 @@ TEST_F(AffiliationDatabaseTest, StoreAndRemoveConflicting) {
   }
 }
 
-TEST_F(AffiliationDatabaseTest, DeleteAllAffiliationsAndBranding) {
-  db().DeleteAllAffiliationsAndBranding();
-
-  ASSERT_NO_FATAL_FAILURE(StoreInitialTestData());
-
-  db().DeleteAllAffiliationsAndBranding();
-
-  std::vector<AffiliatedFacetsWithUpdateTime> affiliations;
-  db().GetAllAffiliationsAndBranding(&affiliations);
-  ASSERT_EQ(0u, affiliations.size());
-}
-
-TEST_F(AffiliationDatabaseTest, DeleteAffiliationsAndBrandingOlderThan) {
-  db().DeleteAffiliationsAndBrandingOlderThan(base::Time::FromInternalValue(0));
-
-  ASSERT_NO_FATAL_FAILURE(StoreInitialTestData());
-
-  db().DeleteAffiliationsAndBrandingOlderThan(
-      base::Time::FromInternalValue(kTestTimeUs2));
-
-  std::vector<AffiliatedFacetsWithUpdateTime> affiliations;
-  db().GetAllAffiliationsAndBranding(&affiliations);
-  ASSERT_EQ(2u, affiliations.size());
-  ExpectEquivalenceClassesIncludingBrandingInfoAreEqual(TestEquivalenceClass2(),
-                                                        affiliations[0]);
-  ExpectEquivalenceClassesIncludingBrandingInfoAreEqual(TestEquivalenceClass3(),
-                                                        affiliations[1]);
-
-  db().DeleteAffiliationsAndBrandingOlderThan(base::Time::Max());
-
-  db().GetAllAffiliationsAndBranding(&affiliations);
-  ASSERT_EQ(0u, affiliations.size());
-}
-
 // Verify that an existing DB can be reopened, and data is retained.
 TEST_F(AffiliationDatabaseTest, DBRetainsDataAfterReopening) {
   ASSERT_NO_FATAL_FAILURE(StoreInitialTestData());

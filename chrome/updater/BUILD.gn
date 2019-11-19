@@ -4,8 +4,10 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//build/util/process_version.gni")
 import("//testing/test.gni")
 
+# TODO(sorin): make the code build on Linux. https://crbug.com/1014320
 group("updater") {
   if (is_win) {
     deps = [
@@ -19,50 +21,91 @@ group("updater") {
   }
 }
 
-source_set("common") {
-  sources = [
-    "configurator.cc",
-    "configurator.h",
-    "updater.cc",
-    "updater.h",
-  ]
+# Conditional build is needed, otherwise the analyze script on Linux
+# requires all targets and it is going to include the targets below.
+if (is_win || is_mac) {
+  source_set("common") {
+    sources = [
+      "configurator.cc",
+      "configurator.h",
+      "crash_client.cc",
+      "crash_client.h",
+      "crash_reporter.cc",
+      "crash_reporter.h",
+      "installer.cc",
+      "installer.h",
+      "patcher.cc",
+      "patcher.h",
+      "prefs.cc",
+      "prefs.h",
+      "unzipper.cc",
+      "unzipper.h",
+      "update_apps.cc",
+      "update_apps.h",
+      "updater.cc",
+      "updater.h",
+      "updater_constants.cc",
+      "updater_constants.h",
+      "util.cc",
+      "util.h",
+    ]
 
-  deps = [
-    "//base",
-    "//components/services/patch/public/cpp:manifest",
-    "//components/services/unzip/public/cpp:manifest",
-    "//components/update_client",
-    "//components/version_info",
-    "//mojo/core/embedder",
-    "//services/service_manager",
-    "//url",
-  ]
-}
-
-source_set("updater_tests") {
-  testonly = true
-
-  sources = [
-    "updater_unittest.cc",
-  ]
-
-  deps = [
-    ":updater",
-    "//base/test:test_support",
-    "//testing/gtest",
-  ]
-
-  if (is_win) {
-    deps += [ "//chrome/updater/win:unittest" ]
-
-    data_deps = [
-      "//chrome/updater/win:updater",
+    deps = [
+      ":version_header",
+      "//base",
+      "//components/crash/core/common:crash_key",
+      "//components/crx_file",
+      "//components/prefs",
+      "//components/update_client",
+      "//components/version_info",
+      "//courgette:bsdiff",
+      "//courgette:courgette_lib",
+      "//third_party/crashpad/crashpad/client",
+      "//third_party/crashpad/crashpad/handler",
+      "//third_party/zlib/google:zip",
+      "//url",
     ]
   }
 
-  if (is_mac) {
-    data_deps = [
-      "//chrome/updater/mac:updater",
+  process_version("version_header") {
+    sources = [
+      "//chrome/VERSION",
+      "BRANDING",
     ]
+    template_file = "updater_version.h.in"
+    output = "$target_gen_dir/updater_version.h"
+  }
+
+  test("updater_tests") {
+    testonly = true
+
+    sources = [
+      "run_all_unittests.cc",
+      "updater_unittest.cc",
+    ]
+
+    deps = [
+      ":common",
+      ":updater",
+      "//base",
+      "//base/test:test_support",
+      "//testing/gtest",
+    ]
+
+    if (is_win) {
+      deps += [ "//chrome/updater/win:updater_tests" ]
+
+      data_deps = [
+        "//chrome/updater/win:updater",
+      ]
+    }
+
+    if (is_mac) {
+      deps += [ "//chrome/updater/mac:updater_tests" ]
+
+      data_deps = [
+        "//chrome/updater/mac:updater",
+      ]
+    }
   }
 }

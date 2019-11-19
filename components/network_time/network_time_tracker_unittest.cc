@@ -14,9 +14,9 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "components/client_update_protocol/ecdsa.h"
 #include "components/network_time/network_time_pref_names.h"
 #include "components/network_time/network_time_test_utils.h"
@@ -49,7 +49,7 @@ class NetworkTimeTrackerTest : public ::testing::Test {
 
   NetworkTimeTrackerTest()
       : task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO),
+            base::test::SingleThreadTaskEnvironment::MainThreadType::IO),
         field_trial_test_(new FieldTrialTest()),
         clock_(new base::SimpleTestClock),
         tick_clock_(new base::SimpleTestTickClock),
@@ -156,7 +156,7 @@ class NetworkTimeTrackerTest : public ::testing::Test {
   }
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<FieldTrialTest> field_trial_test_;
   base::TimeDelta resolution_;
   base::TimeDelta latency_;

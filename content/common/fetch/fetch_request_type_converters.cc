@@ -30,17 +30,16 @@ blink::mojom::FetchAPIRequestPtr TypeConverter<
   output->referrer = blink::mojom::Referrer::New(
       input.referrer, content::Referrer::NetReferrerPolicyToBlinkReferrerPolicy(
                           input.referrer_policy));
-  output->mode = input.fetch_request_mode;
+  output->mode = input.mode;
   output->is_main_resource_load =
       content::ServiceWorkerUtils::IsMainResourceType(
           static_cast<content::ResourceType>(input.resource_type));
-  output->credentials_mode = input.fetch_credentials_mode;
+  output->credentials_mode = input.credentials_mode;
   output->cache_mode =
       content::ServiceWorkerUtils::GetCacheModeFromLoadFlags(input.load_flags);
-  output->redirect_mode = input.fetch_redirect_mode;
+  output->redirect_mode = input.redirect_mode;
   output->request_context_type = static_cast<blink::mojom::RequestContextType>(
       input.fetch_request_context_type);
-  output->frame_type = input.fetch_frame_type;
   output->is_reload = ui::PageTransitionCoreTypeIs(
       static_cast<ui::PageTransition>(input.transition_type),
       ui::PAGE_TRANSITION_RELOAD);

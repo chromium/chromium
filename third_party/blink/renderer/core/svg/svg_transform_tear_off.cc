@@ -31,8 +31,14 @@
 #include "third_party/blink/renderer/core/svg/svg_transform_tear_off.h"
 
 #include "third_party/blink/renderer/core/svg/svg_matrix_tear_off.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
+
+SVGTransformTearOff::SVGTransformTearOff(SVGMatrixTearOff* matrix)
+    : SVGTransformTearOff(MakeGarbageCollected<SVGTransform>(matrix->Value()),
+                          nullptr,
+                          kPropertyIsNotAnimVal) {}
 
 SVGTransformTearOff::SVGTransformTearOff(
     SVGTransform* target,
@@ -48,18 +54,14 @@ void SVGTransformTearOff::Trace(blink::Visitor* visitor) {
 }
 
 SVGTransformTearOff* SVGTransformTearOff::CreateDetached() {
-  return Create(SVGTransform::Create(blink::SVGTransformType::kMatrix), nullptr,
-                kPropertyIsNotAnimVal);
-}
-
-SVGTransformTearOff* SVGTransformTearOff::Create(SVGMatrixTearOff* matrix) {
-  return Create(SVGTransform::Create(matrix->Value()), nullptr,
-                kPropertyIsNotAnimVal);
+  return MakeGarbageCollected<SVGTransformTearOff>(
+      MakeGarbageCollected<SVGTransform>(blink::SVGTransformType::kMatrix),
+      nullptr, kPropertyIsNotAnimVal);
 }
 
 SVGMatrixTearOff* SVGTransformTearOff::matrix() {
   if (!matrix_tearoff_)
-    matrix_tearoff_ = SVGMatrixTearOff::Create(this);
+    matrix_tearoff_ = MakeGarbageCollected<SVGMatrixTearOff>(this);
   return matrix_tearoff_.Get();
 }
 

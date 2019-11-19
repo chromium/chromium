@@ -13,6 +13,9 @@
 @protocol ManageSyncSettingsTableViewControllerModelDelegate;
 @protocol ManageSyncSettingsServiceDelegate;
 
+// Accessibility identifier for Manage Sync table view.
+extern NSString* const kManageSyncTableViewAccessibilityIdentifier;
+
 // Delegate for presentation events related to
 // ManageSyncSettingsTableViewController.
 @protocol ManageSyncSettingsTableViewControllerPresentationDelegate <NSObject>

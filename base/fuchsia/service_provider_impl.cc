@@ -4,10 +4,22 @@
 
 #include "base/fuchsia/service_provider_impl.h"
 
+#include <lib/sys/cpp/outgoing_directory.h>
 #include <utility>
 
 namespace base {
 namespace fuchsia {
+
+// static
+std::unique_ptr<ServiceProviderImpl>
+ServiceProviderImpl::CreateForOutgoingDirectory(
+    sys::OutgoingDirectory* outgoing_directory) {
+  fidl::InterfaceHandle<::fuchsia::io::Directory> service_directory;
+  outgoing_directory->GetOrCreateDirectory("svc")->Serve(
+      ::fuchsia::io::OPEN_RIGHT_READABLE | ::fuchsia::io::OPEN_RIGHT_WRITABLE,
+      service_directory.NewRequest().TakeChannel());
+  return std::make_unique<ServiceProviderImpl>(std::move(service_directory));
+}
 
 ServiceProviderImpl::ServiceProviderImpl(
     fidl::InterfaceHandle<::fuchsia::io::Directory> service_directory)
@@ -22,8 +34,7 @@ void ServiceProviderImpl::AddBinding(
 
 void ServiceProviderImpl::ConnectToService(std::string service_name,
                                            zx::channel client_handle) {
-  directory_.ConnectToServiceUnsafe(service_name.c_str(),
-                                    std::move(client_handle));
+  directory_.Connect(service_name.c_str(), std::move(client_handle));
 }
 
 void ServiceProviderImpl::SetOnLastClientDisconnectedClosure(

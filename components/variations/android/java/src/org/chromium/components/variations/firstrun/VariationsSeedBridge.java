@@ -8,6 +8,9 @@ import android.util.Base64;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
+
+import java.text.ParseException;
 
 /**
  * VariationsSeedBridge is a class which is used to pass variations first run seed that was fetched
@@ -19,7 +22,8 @@ public class VariationsSeedBridge {
     protected static final String VARIATIONS_FIRST_RUN_SEED_BASE64 = "variations_seed_base64";
     protected static final String VARIATIONS_FIRST_RUN_SEED_SIGNATURE = "variations_seed_signature";
     protected static final String VARIATIONS_FIRST_RUN_SEED_COUNTRY = "variations_seed_country";
-    protected static final String VARIATIONS_FIRST_RUN_SEED_DATE = "variations_seed_date";
+    protected static final String VARIATIONS_FIRST_RUN_SEED_DATE_HEADER = "variations_seed_date";
+    protected static final String VARIATIONS_FIRST_RUN_SEED_DATE = "variations_seed_date_ms";
     protected static final String VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED =
             "variations_seed_is_gzip_compressed";
 
@@ -37,15 +41,15 @@ public class VariationsSeedBridge {
      * CalledByNative attribute is used by unit tests code to set test data.
      */
     @CalledByNative
-    public static void setVariationsFirstRunSeed(byte[] rawSeed, String signature, String country,
-            String date, boolean isGzipCompressed) {
+    public static void setVariationsFirstRunSeed(
+            byte[] rawSeed, String signature, String country, long date, boolean isGzipCompressed) {
         ContextUtils.getAppSharedPreferences()
                 .edit()
                 .putString(VARIATIONS_FIRST_RUN_SEED_BASE64,
                         Base64.encodeToString(rawSeed, Base64.NO_WRAP))
                 .putString(VARIATIONS_FIRST_RUN_SEED_SIGNATURE, signature)
                 .putString(VARIATIONS_FIRST_RUN_SEED_COUNTRY, country)
-                .putString(VARIATIONS_FIRST_RUN_SEED_DATE, date)
+                .putLong(VARIATIONS_FIRST_RUN_SEED_DATE, date)
                 .putBoolean(VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED, isGzipCompressed)
                 .apply();
     }
@@ -58,6 +62,7 @@ public class VariationsSeedBridge {
                 .remove(VARIATIONS_FIRST_RUN_SEED_SIGNATURE)
                 .remove(VARIATIONS_FIRST_RUN_SEED_COUNTRY)
                 .remove(VARIATIONS_FIRST_RUN_SEED_DATE)
+                .remove(VARIATIONS_FIRST_RUN_SEED_DATE_HEADER)
                 .remove(VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED)
                 .apply();
     }
@@ -104,8 +109,22 @@ public class VariationsSeedBridge {
     }
 
     @CalledByNative
-    private static String getVariationsFirstRunSeedDate() {
-        return getVariationsFirstRunSeedPref(VARIATIONS_FIRST_RUN_SEED_DATE);
+    private static long getVariationsFirstRunSeedDate() {
+        long date =
+                ContextUtils.getAppSharedPreferences().getLong(VARIATIONS_FIRST_RUN_SEED_DATE, 0);
+        if (date > 0) return date;
+        // VARIATIONS_FIRST_RUN_SEED_DATE_HEADER is deprecated in favor of
+        // VARIATIONS_FIRST_RUN_SEED_DATE, but fall back on the old value in case the prefs were
+        // written by an old version.
+        // TODO(crbug.com/1013390): Remove this fallback logic.
+        String header = getVariationsFirstRunSeedPref(VARIATIONS_FIRST_RUN_SEED_DATE_HEADER);
+        if (header.isEmpty()) return 0;
+        try {
+            return SeedInfo.parseDateHeader(header);
+        } catch (ParseException e) {
+            // Shouldn't happen as the date will have been verified in VariationsSeedFetcher.
+            throw new RuntimeException("Invalid date in first run seed pref", e);
+        }
     }
 
     @CalledByNative

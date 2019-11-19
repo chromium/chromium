@@ -18,13 +18,14 @@
 #include "content/browser/service_worker/fake_service_worker.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -95,7 +96,8 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
 
     void DispatchCanMakePaymentEvent(
         payments::mojom::CanMakePaymentEventDataPtr event_data,
-        payments::mojom::PaymentHandlerResponseCallbackPtr response_callback,
+        mojo::PendingRemote<payments::mojom::PaymentHandlerResponseCallback>
+            pending_response_callback,
         DispatchCanMakePaymentEventCallback callback) override {
       bool can_make_payment = false;
       for (const auto& method_data : event_data->method_data) {
@@ -104,6 +106,9 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
           break;
         }
       }
+
+      mojo::Remote<payments::mojom::PaymentHandlerResponseCallback>
+          response_callback(std::move(pending_response_callback));
       response_callback->OnResponseForCanMakePayment(can_make_payment);
       std::move(callback).Run(
           blink::mojom::ServiceWorkerEventStatus::COMPLETED);
@@ -111,17 +116,18 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
 
     void DispatchPaymentRequestEvent(
         payments::mojom::PaymentRequestEventDataPtr event_data,
-        payments::mojom::PaymentHandlerResponseCallbackPtr response_callback,
+        mojo::PendingRemote<payments::mojom::PaymentHandlerResponseCallback>
+            pending_response_callback,
         DispatchPaymentRequestEventCallback callback) override {
       if (!worker_helper_)
         return;
       if (worker_helper_->respond_payment_request_immediately_) {
         FakeServiceWorker::DispatchPaymentRequestEvent(
-            std::move(event_data), std::move(response_callback),
+            std::move(event_data), std::move(pending_response_callback),
             std::move(callback));
       } else {
-        worker_helper_->pending_response_callback_ =
-            std::move(response_callback);
+        worker_helper_->response_callback_.Bind(
+            std::move(pending_response_callback));
         std::move(callback).Run(
             blink::mojom::ServiceWorkerEventStatus::COMPLETED);
       }
@@ -147,15 +153,16 @@ class PaymentAppContentUnitTestBase::PaymentAppForWorkerTestHelper
 
   // Variables to delay payment request response.
   bool respond_payment_request_immediately_ = true;
-  payments::mojom::PaymentHandlerResponseCallbackPtr pending_response_callback_;
+  mojo::Remote<payments::mojom::PaymentHandlerResponseCallback>
+      response_callback_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(PaymentAppForWorkerTestHelper);
 };
 
 PaymentAppContentUnitTestBase::PaymentAppContentUnitTestBase()
-    : thread_bundle_(
-          new TestBrowserThreadBundle(TestBrowserThreadBundle::IO_MAINLOOP)),
+    : task_environment_(
+          new BrowserTaskEnvironment(BrowserTaskEnvironment::IO_MAINLOOP)),
       worker_helper_(new PaymentAppForWorkerTestHelper()) {
   worker_helper_->context_wrapper()->set_storage_partition(storage_partition());
   storage_partition()->service_worker_context_->Shutdown();
@@ -184,6 +191,7 @@ PaymentManager* PaymentAppContentUnitTestBase::CreatePaymentManager(
   registration_opt.scope = scope_url;
   worker_helper_->context()->RegisterServiceWorker(
       sw_script_url, registration_opt,
+      blink::mojom::FetchClientSettingsObject::New(),
       base::BindOnce(&RegisterServiceWorkerCallback, &called,
                      &registration_id));
   base::RunLoop().RunUntilIdle();
@@ -214,17 +222,16 @@ PaymentManager* PaymentAppContentUnitTestBase::CreatePaymentManager(
   }
 
   // Create a new payment manager.
-  payments::mojom::PaymentManagerPtr manager;
-  mojo::InterfaceRequest<payments::mojom::PaymentManager> request =
-      mojo::MakeRequest(&manager);
+  mojo::Remote<payments::mojom::PaymentManager> manager;
+  payment_app_context()->CreatePaymentManagerForOrigin(
+      url::Origin::Create(scope_url), manager.BindNewPipeAndPassReceiver());
   payment_managers_.push_back(std::move(manager));
-  payment_app_context()->CreatePaymentManager(std::move(request));
   base::RunLoop().RunUntilIdle();
 
   // Find a last registered payment manager.
   for (const auto& candidate_manager :
        payment_app_context()->payment_managers_) {
-    if (!base::ContainsKey(existing_managers, candidate_manager.first)) {
+    if (!base::Contains(existing_managers, candidate_manager.first)) {
       candidate_manager.first->Init(sw_script_url, scope_url.spec());
       base::RunLoop().RunUntilIdle();
       return candidate_manager.first;
@@ -250,7 +257,7 @@ void PaymentAppContentUnitTestBase::SetNoPaymentRequestResponseImmediately() {
 }
 
 void PaymentAppContentUnitTestBase::RespondPendingPaymentRequest() {
-  std::move(worker_helper_->pending_response_callback_)
+  std::move(worker_helper_->response_callback_)
       ->OnResponseForPaymentRequest(
           payments::mojom::PaymentHandlerResponse::New());
 }

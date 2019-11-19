@@ -43,10 +43,6 @@ class CORE_EXPORT MediaError final : public ScriptWrappable {
     kMediaErrSrcNotSupported,
   };
 
-  static MediaError* Create(ErrorCode code, const String& message) {
-    return MakeGarbageCollected<MediaError>(code, message);
-  }
-
   MediaError(ErrorCode code, const String& message)
       : code_(code), message_(message) {}
 

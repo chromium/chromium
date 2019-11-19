@@ -21,7 +21,7 @@ class CORE_EXPORT DragEvent final : public MouseEvent {
 
   static DragEvent* Create(const AtomicString& type,
                            const DragEventInit* initializer,
-                           TimeTicks platform_time_stamp,
+                           base::TimeTicks platform_time_stamp,
                            SyntheticEventType synthetic_event_type) {
     return MakeGarbageCollected<DragEvent>(
         type, initializer, platform_time_stamp, synthetic_event_type);
@@ -30,13 +30,13 @@ class CORE_EXPORT DragEvent final : public MouseEvent {
   static DragEvent* Create(const AtomicString& type,
                            const DragEventInit* initializer) {
     return MakeGarbageCollected<DragEvent>(
-        type, initializer, CurrentTimeTicks(), kRealOrIndistinguishable);
+        type, initializer, base::TimeTicks::Now(), kRealOrIndistinguishable);
   }
 
   DragEvent();
   DragEvent(const AtomicString& type,
             const DragEventInit*,
-            TimeTicks platform_time_stamp,
+            base::TimeTicks platform_time_stamp,
             SyntheticEventType);
 
   DataTransfer* getDataTransfer() const override {

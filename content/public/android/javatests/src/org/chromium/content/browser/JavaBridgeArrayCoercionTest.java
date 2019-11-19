@@ -161,7 +161,7 @@ public class JavaBridgeArrayCoercionTest {
     private TestObject mTestObject;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mTestObject = new TestObject();
         mActivityTestRule.injectObjectAndReload(mTestObject, "testObject");
     }

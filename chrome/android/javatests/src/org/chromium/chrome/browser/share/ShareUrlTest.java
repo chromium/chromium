@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.support.test.InstrumentationRegistry;
 import android.support.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -13,10 +14,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.chrome.browser.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.ui.base.WindowAndroid;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Tests sharing URLs in reader mode (DOM distiller)
@@ -29,31 +34,34 @@ public class ShareUrlTest {
     private static final String HTTP_URL = "http://www.google.com/";
     private static final String HTTPS_URL = "https://www.google.com/";
 
-    private void assertCorrectUrl(final String originalUrl, final String sharedUrl)
-            throws Throwable {
-        ThreadUtils.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                ShareParams params =
-                        new ShareParams.Builder(new Activity(), "", sharedUrl).setText("").build();
-                Intent intent = ShareHelper.getShareLinkIntent(params);
-                Assert.assertTrue(intent.hasExtra(Intent.EXTRA_TEXT));
-                String url = intent.getStringExtra(Intent.EXTRA_TEXT);
-                Assert.assertEquals(originalUrl, url);
-            }
+    private void assertCorrectUrl(final String originalUrl, final String sharedUrl) {
+        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
+            Activity activity = new Activity();
+            WindowAndroid window = new WindowAndroid(
+                    InstrumentationRegistry.getInstrumentation().getTargetContext()) {
+                @Override
+                public WeakReference<Activity> getActivity() {
+                    return new WeakReference<>(activity);
+                }
+            };
+            ShareParams params = new ShareParams.Builder(window, "", sharedUrl).setText("").build();
+            Intent intent = ShareHelper.getShareLinkIntent(params);
+            Assert.assertTrue(intent.hasExtra(Intent.EXTRA_TEXT));
+            String url = intent.getStringExtra(Intent.EXTRA_TEXT);
+            Assert.assertEquals(originalUrl, url);
         });
     }
 
     @Test
     @SmallTest
-    public void testNormalUrl() throws Throwable {
+    public void testNormalUrl() {
         assertCorrectUrl(HTTP_URL, HTTP_URL);
         assertCorrectUrl(HTTPS_URL, HTTPS_URL);
     }
 
     @Test
     @SmallTest
-    public void testDistilledUrl() throws Throwable {
+    public void testDistilledUrl() {
         final String DomDistillerScheme = "chrome-distiller";
         String distilledHttpUrl =
                 DomDistillerUrlUtils.getDistillerViewUrlFromUrl(DomDistillerScheme, HTTP_URL);

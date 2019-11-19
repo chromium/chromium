@@ -15,18 +15,16 @@
 #include "chrome/browser/extensions/api/identity/gaia_web_auth_flow.h"
 #include "chrome/browser/extensions/api/identity/identity_mint_queue.h"
 #include "chrome/browser/extensions/chrome_extension_function.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/oauth2_access_token_manager.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
-#include "google_apis/gaia/oauth2_token_service.h"
-#include "services/identity/public/cpp/account_state.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/mojom/identity_accessor.mojom.h"
 
-namespace identity {
+namespace signin {
 class AccessTokenFetcher;
 struct AccessTokenInfo;
-}  // namespace identity
+}  // namespace signin
 
 namespace extensions {
 
@@ -50,9 +48,9 @@ namespace extensions {
 class IdentityGetAuthTokenFunction : public ChromeAsyncExtensionFunction,
                                      public GaiaWebAuthFlow::Delegate,
                                      public IdentityMintRequestQueue::Request,
-                                     public identity::IdentityManager::Observer,
+                                     public signin::IdentityManager::Observer,
 #if defined(OS_CHROMEOS)
-                                     public OAuth2TokenService::Consumer,
+                                     public OAuth2AccessTokenManager::Consumer,
 #endif
                                      public OAuth2MintTokenFlow::Delegate {
  public:
@@ -82,17 +80,17 @@ class IdentityGetAuthTokenFunction : public ChromeAsyncExtensionFunction,
 
 // TODO(blundell): Investigate feasibility of moving the ChromeOS use case
 // to use the Identity Service instead of being an
-// OAuth2TokenService::Consumer.
+// OAuth2AccessTokenManager::Consumer.
 #if defined(OS_CHROMEOS)
   void OnGetTokenSuccess(
-      const OAuth2TokenService::Request* request,
+      const OAuth2AccessTokenManager::Request* request,
       const OAuth2AccessTokenConsumer::TokenResponse& token_response) override;
-  void OnGetTokenFailure(const OAuth2TokenService::Request* request,
+  void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
                          const GoogleServiceAuthError& error) override;
 #endif
 
   void OnAccessTokenFetchCompleted(GoogleServiceAuthError error,
-                                   identity::AccessTokenInfo access_token_info);
+                                   signin::AccessTokenInfo access_token_info);
 
   // Invoked on completion of the access token fetcher.
   // Exposed for testing.
@@ -110,11 +108,12 @@ class IdentityGetAuthTokenFunction : public ChromeAsyncExtensionFunction,
 
   // Pending request for an access token from the device account (via
   // DeviceOAuth2TokenService).
-  std::unique_ptr<OAuth2TokenService::Request> device_access_token_request_;
+  std::unique_ptr<OAuth2AccessTokenManager::Request>
+      device_access_token_request_;
 
   // Pending fetcher for an access token for |token_key_.account_id| (via
   // IdentityManager).
-  std::unique_ptr<identity::AccessTokenFetcher>
+  std::unique_ptr<signin::AccessTokenFetcher>
       token_key_account_access_token_fetcher_;
 
  private:
@@ -130,17 +129,18 @@ class IdentityGetAuthTokenFunction : public ChromeAsyncExtensionFunction,
   // instance, or empty if this was not in the parameters.
   void GetAuthTokenForPrimaryAccount(const std::string& extension_gaia_id);
 
-  // Called when the AccountInfo that this instance should use is available.
-  void OnReceivedExtensionAccountInfo(
-      const std::string& extension_gaia_id,
-      const base::Optional<AccountInfo>& account_info,
-      const identity::AccountState& account_state);
+  // Wrapper to FindExtendedAccountInfoForAccountWithRefreshTokenByGaiaId() to
+  // avoid a synchronous call to IdentityManager in RunAsync().
+  void FetchExtensionAccountInfo(const std::string& gaia_id);
 
-  // identity::IdentityManager::Observer implementation:
+  // Called when the AccountInfo that this instance should use is available.
+  void OnReceivedExtensionAccountInfo(const CoreAccountInfo* account_info);
+
+  // signin::IdentityManager::Observer implementation:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
   void OnAccountsInCookieUpdated(
-      const identity::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
+      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
   void OnPrimaryAccountSet(
       const CoreAccountInfo& primary_account_info) override;
@@ -194,13 +194,6 @@ class IdentityGetAuthTokenFunction : public ChromeAsyncExtensionFunction,
 
   std::string GetOAuth2ClientId() const;
 
-  // Gets the IdentityAccessor mojo interface, lazily binding it.
-  // TODO(https://crbug.com/913853): As of Dec 2018, the chrome.identity
-  // API is the only client of the Identity Service. It should be migrated to
-  // the IdentityManager soon after the IdentityManager is backed by the
-  // Identity Service.
-  ::identity::mojom::IdentityAccessor* GetMojoIdentityAccessor();
-
   // Returns true if extensions are restricted to the primary account.
   bool IsPrimaryAccountOnly() const;
 
@@ -225,8 +218,7 @@ class IdentityGetAuthTokenFunction : public ChromeAsyncExtensionFunction,
   std::unique_ptr<base::CallbackList<void()>::Subscription>
       identity_api_shutdown_subscription_;
 
-  identity::mojom::IdentityAccessorPtr mojo_identity_accessor_;
-  ScopedObserver<identity::IdentityManager, identity::IdentityManager::Observer>
+  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
       scoped_identity_manager_observer_;
 
   // This class can be listening to account changes, but only for one type of
@@ -240,7 +232,7 @@ class IdentityGetAuthTokenFunction : public ChromeAsyncExtensionFunction,
   AccountListeningMode account_listening_mode_ =
       AccountListeningMode::kNotListening;
 
-  base::WeakPtrFactory<IdentityGetAuthTokenFunction> weak_ptr_factory_;
+  base::WeakPtrFactory<IdentityGetAuthTokenFunction> weak_ptr_factory_{this};
 };
 
 }  // namespace extensions

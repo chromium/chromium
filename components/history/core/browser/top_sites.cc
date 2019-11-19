@@ -17,14 +17,11 @@ PrepopulatedPage::PrepopulatedPage(const GURL& url,
     : most_visited(url, title),
       favicon_id(favicon_id),
       color(color) {
-  most_visited.redirects.push_back(url);
 }
 
-TopSites::TopSites() {
-}
+TopSites::TopSites() = default;
 
-TopSites::~TopSites() {
-}
+TopSites::~TopSites() = default;
 
 void TopSites::AddObserver(TopSitesObserver* observer) {
   observer_list_.AddObserver(observer);

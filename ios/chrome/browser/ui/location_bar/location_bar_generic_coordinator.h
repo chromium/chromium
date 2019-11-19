@@ -58,10 +58,6 @@ class WebStateList;
 // Indicates when the omnibox is the first responder.
 - (BOOL)isOmniboxFirstResponder;
 
-// TODO(crbug.com/831506): Once legacy location bar is deleted, remove the
-// @optional label and matching respondsToSelector: calls.
-@optional
-
 // Returns the location bar animatee.
 - (id<LocationBarAnimatee>)locationBarAnimatee;
 

@@ -14,7 +14,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/spellcheck/common/spellcheck_common.h"
 #include "components/spellcheck/common/spellcheck_result.h"
 #include "components/spellcheck/renderer/empty_local_interface_provider.h"
@@ -52,7 +52,7 @@ class MultilingualSpellCheckTest : public testing::Test {
   MultilingualSpellCheckTest() {}
 
   void ReinitializeSpellCheck(const std::string& unsplit_languages) {
-    spellcheck_ = new SpellCheck(nullptr, &embedder_provider_);
+    spellcheck_ = new SpellCheck(&embedder_provider_);
     provider_.reset(
         new TestingSpellCheckProvider(spellcheck_, &embedder_provider_));
     InitializeSpellCheck(unsplit_languages);
@@ -114,7 +114,7 @@ class MultilingualSpellCheckTest : public testing::Test {
   }
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   spellcheck::EmptyLocalInterfaceProvider embedder_provider_;
 
   // Owned by |provider_|.

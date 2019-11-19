@@ -14,8 +14,9 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "components/autofill_assistant/browser/element_precondition.h"
 #include "components/autofill_assistant/browser/service.pb.h"
-#include "components/autofill_assistant/browser/web_controller.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 
 namespace re2 {
 class RE2;
@@ -23,6 +24,7 @@ class RE2;
 
 namespace autofill_assistant {
 class BatchElementChecker;
+class TriggerContext;
 
 // Class represents a set of preconditions for a script to be executed.
 class ScriptPrecondition {
@@ -37,12 +39,17 @@ class ScriptPrecondition {
       const ScriptPreconditionProto& script_precondition_proto);
 
   ScriptPrecondition(
-      const std::vector<Selector>& elements_exist,
-      const std::set<std::string>& domain_match,
+      const google::protobuf::RepeatedPtrField<std::string>& domain_match,
       std::vector<std::unique_ptr<re2::RE2>> path_pattern,
-      const std::vector<ScriptParameterMatchProto>& parameter_match,
-      const std::vector<FormValueMatchProto>& form_value_match,
-      const std::vector<ScriptStatusMatchProto>& status_match);
+      const google::protobuf::RepeatedPtrField<ScriptStatusMatchProto>&
+          status_match,
+      const google::protobuf::RepeatedPtrField<ScriptParameterMatchProto>&
+          parameter_match,
+      const google::protobuf::RepeatedPtrField<ElementReferenceProto>&
+          element_exists,
+      const google::protobuf::RepeatedPtrField<FormValueMatchProto>&
+          form_value_match);
+
   ~ScriptPrecondition();
 
   // Check whether the conditions satisfied and return the result through
@@ -52,23 +59,16 @@ class ScriptPrecondition {
   // running check.
   void Check(const GURL& url,
              BatchElementChecker* batch_checks,
-             const std::map<std::string, std::string>& parameters,
+             const TriggerContext& context,
              const std::map<std::string, ScriptStatusProto>& executed_scripts,
              base::OnceCallback<void(bool)> callback);
 
  private:
   bool MatchDomain(const GURL& url) const;
   bool MatchPath(const GURL& url) const;
-  bool MatchParameters(
-      const std::map<std::string, std::string>& parameters) const;
+  bool MatchParameters(const TriggerContext& context) const;
   bool MatchScriptStatus(
       const std::map<std::string, ScriptStatusProto>& executed_scripts) const;
-
-  void OnCheckElementExists(bool exists);
-  void OnGetFieldValue(int index, bool exists, const std::string& value);
-  void ReportCheckResult(bool success);
-
-  std::vector<Selector> elements_exist_;
 
   // Domain (exact match) excluding the last '/' character.
   std::set<std::string> domain_match_;
@@ -79,20 +79,10 @@ class ScriptPrecondition {
   // Condition on parameters, identified by name, as found in the intent.
   std::vector<ScriptParameterMatchProto> parameter_match_;
 
-  // Conditions on form fields value.
-  std::vector<FormValueMatchProto> form_value_match_;
-
   // Conditions regarding the execution status of passed scripts.
   std::vector<ScriptStatusMatchProto> status_match_;
 
-  // Number of checks for which there's still no result.
-  int pending_check_count_;
-
-  // A callback called as soon as an element or field check fails or, failing
-  // that, when |pending_check_count_| reaches 0.
-  base::OnceCallback<void(bool)> check_preconditions_callback_;
-
-  base::WeakPtrFactory<ScriptPrecondition> weak_ptr_factory_;
+  ElementPrecondition element_precondition_;
 
   DISALLOW_COPY_AND_ASSIGN(ScriptPrecondition);
 };

@@ -42,8 +42,7 @@ BluetoothLocalGattDescriptorBlueZ::BluetoothLocalGattDescriptorBlueZ(
               characteristic->object_path().value() + "/descriptor")),
       uuid_(uuid),
       permissions_(permissions),
-      characteristic_(characteristic),
-      weak_ptr_factory_(this) {
+      characteristic_(characteristic) {
   DCHECK(characteristic->GetService());
   VLOG(1) << "Creating local GATT descriptor with identifier: "
           << GetIdentifier();

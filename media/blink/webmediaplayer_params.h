@@ -20,8 +20,8 @@
 #include "media/base/media_switches.h"
 #include "media/base/routing_token_callback.h"
 #include "media/blink/media_blink_export.h"
-#include "media/filters/context_3d.h"
-#include "media/mojo/interfaces/media_metrics_provider.mojom.h"
+#include "media/mojo/mojom/media_metrics_provider.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 
@@ -51,8 +51,6 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerParams {
  public:
   // Returns true if load will deferred. False if it will run immediately.
   using DeferLoadCB = base::RepeatingCallback<bool(base::OnceClosure)>;
-
-  using Context3DCB = base::Callback<Context3D()>;
 
   // Callback to obtain the media ContextProvider.
   // Requires being called on the media thread.
@@ -84,7 +82,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerParams {
       base::WeakPtr<MediaObserver> media_observer,
       bool enable_instant_source_buffer_gc,
       bool embedded_media_experience_enabled,
-      mojom::MediaMetricsProviderPtr metrics_provider,
+      mojo::PendingRemote<mojom::MediaMetricsProvider> metrics_provider,
       CreateSurfaceLayerBridgeCB bridge_callback,
       scoped_refptr<viz::ContextProvider> context_provider,
       blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video,
@@ -103,7 +101,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerParams {
 
   std::unique_ptr<MediaLog> take_media_log() { return std::move(media_log_); }
 
-  mojom::MediaMetricsProviderPtr take_metrics_provider() {
+  mojo::PendingRemote<mojom::MediaMetricsProvider> take_metrics_provider() {
     return std::move(metrics_provider_);
   }
 
@@ -189,7 +187,7 @@ class MEDIA_BLINK_EXPORT WebMediaPlayerParams {
   base::WeakPtr<MediaObserver> media_observer_;
   bool enable_instant_source_buffer_gc_;
   const bool embedded_media_experience_enabled_;
-  mojom::MediaMetricsProviderPtr metrics_provider_;
+  mojo::PendingRemote<mojom::MediaMetricsProvider> metrics_provider_;
   CreateSurfaceLayerBridgeCB create_bridge_callback_;
   scoped_refptr<viz::ContextProvider> context_provider_;
   blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video_;

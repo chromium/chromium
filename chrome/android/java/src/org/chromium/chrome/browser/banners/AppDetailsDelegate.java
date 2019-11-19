@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.banners;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 /**
  * Fetches data about the given app.

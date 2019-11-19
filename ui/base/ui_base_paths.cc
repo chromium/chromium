@@ -65,7 +65,7 @@ bool PathProvider(int key, base::FilePath* result) {
       if (!base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &cur))
         return false;
 #else
-      if (!base::PathService::Get(base::DIR_MODULE, &cur))
+      if (!base::PathService::Get(base::DIR_ASSETS, &cur))
         return false;
 #endif
       cur = cur.AppendASCII("ui_test.pak");
@@ -74,8 +74,7 @@ bool PathProvider(int key, base::FilePath* result) {
       return false;
   }
 
-  if (create_dir && !base::PathExists(cur) &&
-      !base::CreateDirectory(cur))
+  if (create_dir && !base::CreateDirectory(cur))
     return false;
 
   *result = cur;

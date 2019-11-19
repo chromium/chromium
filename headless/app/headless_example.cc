@@ -55,7 +55,7 @@ class HeadlessExample : public headless::HeadlessWebContents::Observer,
   // The DevTools client used to control the tab.
   std::unique_ptr<headless::HeadlessDevToolsClient> devtools_client_;
   // A helper for creating weak pointers to this class.
-  base::WeakPtrFactory<HeadlessExample> weak_factory_;
+  base::WeakPtrFactory<HeadlessExample> weak_factory_{this};
 };
 
 namespace {
@@ -66,8 +66,7 @@ HeadlessExample::HeadlessExample(headless::HeadlessBrowser* browser,
                                  headless::HeadlessWebContents* web_contents)
     : browser_(browser),
       web_contents_(web_contents),
-      devtools_client_(headless::HeadlessDevToolsClient::Create()),
-      weak_factory_(this) {
+      devtools_client_(headless::HeadlessDevToolsClient::Create()) {
   web_contents_->AddObserver(this);
 }
 

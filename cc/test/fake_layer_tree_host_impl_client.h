@@ -8,6 +8,10 @@
 #include "cc/trees/layer_tree_host_impl.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
+namespace viz {
+struct FrameTimingDetails;
+}
+
 namespace cc {
 
 class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
@@ -27,6 +31,7 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
   void PostAnimationEventsToMainThreadOnImplThread(
       std::unique_ptr<MutatorEvents> events) override;
   bool IsInsideDraw() override;
+  bool IsBeginMainFrameExpected() override;
   void RenewTreePriority() override {}
   void PostDelayedAnimationTaskOnImplThread(base::OnceClosure task,
                                             base::TimeDelta delay) override {}
@@ -42,12 +47,12 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
       std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
-      const gfx::PresentationFeedback& feedback) override {}
-  void DidGenerateLocalSurfaceIdAllocationOnImplThread(
-      const viz::LocalSurfaceIdAllocation& allocation) override {}
+      const viz::FrameTimingDetails& details) override {}
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override {}
+  void NotifyPaintWorkletStateChange(
+      Scheduler::PaintWorkletState state) override {}
 
   void reset_did_request_impl_side_invalidation() {
     did_request_impl_side_invalidation_ = false;

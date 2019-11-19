@@ -1,4 +1,4 @@
-namespace third_party_unrar {
+
 
 #if !defined(SFX_MODULE) && defined(_WIN_ALL)
 void ExtractStreams20(Archive &Arc,const wchar *FileName)
@@ -20,11 +20,13 @@ void ExtractStreams20(Archive &Arc,const wchar *FileName)
   wchar StreamName[NM+2];
   if (FileName[0]!=0 && FileName[1]==0)
   {
-    wcscpy(StreamName,L".\\");
-    wcscpy(StreamName+2,FileName);
+    // Convert single character names like f:stream to .\f:stream to
+    // resolve the ambiguity with drive letters.
+    wcsncpyz(StreamName,L".\\",ASIZE(StreamName));
+    wcsncatz(StreamName,FileName,ASIZE(StreamName));
   }
   else
-    wcscpy(StreamName,FileName);
+    wcsncpyz(StreamName,FileName,ASIZE(StreamName));
   if (wcslen(StreamName)+strlen(Arc.StreamHead.StreamName)>=ASIZE(StreamName) ||
       Arc.StreamHead.StreamName[0]!=':')
   {
@@ -35,7 +37,7 @@ void ExtractStreams20(Archive &Arc,const wchar *FileName)
 
   wchar StoredName[NM];
   CharToWide(Arc.StreamHead.StreamName,StoredName,ASIZE(StoredName));
-  ConvertPath(StoredName+1,StoredName+1);
+  ConvertPath(StoredName+1,StoredName+1,ASIZE(StoredName)-1);
 
   wcsncatz(StreamName,StoredName,ASIZE(StreamName));
 
@@ -83,8 +85,10 @@ void ExtractStreams(Archive &Arc,const wchar *FileName,bool TestMode)
   wchar FullName[NM+2];
   if (FileName[0]!=0 && FileName[1]==0)
   {
-    wcscpy(FullName,L".\\");
-    wcsncpyz(FullName+2,FileName,ASIZE(FullName)-2);
+    // Convert single character names like f:stream to .\f:stream to
+    // resolve the ambiguity with drive letters.
+    wcsncpyz(FullName,L".\\",ASIZE(FullName));
+    wcsncatz(FullName,FileName,ASIZE(FullName));
   }
   else
     wcsncpyz(FullName,FileName,ASIZE(FullName));
@@ -145,5 +149,3 @@ void GetStreamNameNTFS(Archive &Arc,wchar *StreamName,size_t MaxSize)
     UtfToWide(UtfString,StreamName,MaxSize);
   }
 }
-
-}  // namespace third_party_unrar

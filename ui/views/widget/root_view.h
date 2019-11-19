@@ -52,7 +52,7 @@ class VIEWS_EXPORT RootView : public View,
                               public FocusTraversable,
                               public ui::EventProcessor {
  public:
-  static const char kViewClassName[];
+  METADATA_HEADER(RootView);
 
   // Creation and lifetime -----------------------------------------------------
   explicit RootView(Widget* widget);
@@ -98,7 +98,6 @@ class VIEWS_EXPORT RootView : public View,
   View* GetFocusTraversableParentView() override;
 
   // Overridden from ui::EventProcessor:
-  ui::EventTarget* GetInitialEventTarget(ui::Event* event) override;
   ui::EventTarget* GetRootForEvent(ui::Event* event) override;
   ui::EventTargeter* GetDefaultEventTargeter() override;
   void OnEventProcessingStarted(ui::Event* event) override;
@@ -108,8 +107,6 @@ class VIEWS_EXPORT RootView : public View,
   const Widget* GetWidget() const override;
   Widget* GetWidget() override;
   bool IsDrawn() const override;
-  const char* GetClassName() const override;
-  void SchedulePaintInRect(const gfx::Rect& rect) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
@@ -126,6 +123,7 @@ class VIEWS_EXPORT RootView : public View,
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
+  void OnDidSchedulePaint(const gfx::Rect& rect) override;
   void OnPaint(gfx::Canvas* canvas) override;
   View::LayerOffsetData CalculateOffsetToAncestorWithLayer(
       ui::Layer** layer_parent) override;

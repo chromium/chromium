@@ -57,7 +57,7 @@ class Step final : public ParseNode {
     kSelfAxis
   };
 
-  class NodeTest : public GarbageCollectedFinalized<NodeTest> {
+  class NodeTest final : public GarbageCollected<NodeTest> {
    public:
     enum Kind {
       kTextNodeTest,

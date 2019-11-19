@@ -4,15 +4,17 @@
 
 package org.chromium.chrome.browser.feed;
 
-import com.google.android.libraries.feed.host.storage.JournalMutation;
-import com.google.android.libraries.feed.host.storage.JournalOperation;
-import com.google.android.libraries.feed.host.storage.JournalOperation.Append;
-import com.google.android.libraries.feed.host.storage.JournalOperation.Copy;
-import com.google.android.libraries.feed.host.storage.JournalOperation.Type;
+import androidx.annotation.VisibleForTesting;
+
+import com.google.android.libraries.feed.api.host.storage.JournalMutation;
+import com.google.android.libraries.feed.api.host.storage.JournalOperation;
+import com.google.android.libraries.feed.api.host.storage.JournalOperation.Append;
+import com.google.android.libraries.feed.api.host.storage.JournalOperation.Copy;
+import com.google.android.libraries.feed.api.host.storage.JournalOperation.Type;
 
 import org.chromium.base.Callback;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
@@ -30,7 +32,7 @@ public class FeedJournalBridge {
      */
 
     public FeedJournalBridge(Profile profile) {
-        mNativeFeedJournalBridge = nativeInit(profile);
+        mNativeFeedJournalBridge = FeedJournalBridgeJni.get().init(FeedJournalBridge.this, profile);
     }
 
     /**
@@ -42,7 +44,7 @@ public class FeedJournalBridge {
     /** Cleans up native half of this bridge. */
     public void destroy() {
         assert mNativeFeedJournalBridge != 0;
-        nativeDestroy(mNativeFeedJournalBridge);
+        FeedJournalBridgeJni.get().destroy(mNativeFeedJournalBridge, FeedJournalBridge.this);
         mNativeFeedJournalBridge = 0;
     }
 
@@ -50,7 +52,8 @@ public class FeedJournalBridge {
     public void loadJournal(String journalName, Callback<byte[][]> successCallback,
             Callback<Void> failureCallback) {
         assert mNativeFeedJournalBridge != 0;
-        nativeLoadJournal(mNativeFeedJournalBridge, journalName, successCallback, failureCallback);
+        FeedJournalBridgeJni.get().loadJournal(mNativeFeedJournalBridge, FeedJournalBridge.this,
+                journalName, successCallback, failureCallback);
     }
 
     /**
@@ -62,68 +65,82 @@ public class FeedJournalBridge {
     public void commitJournalMutation(JournalMutation mutation, Callback<Boolean> callback) {
         assert mNativeFeedJournalBridge != 0;
 
-        nativeStartJournalMutation(mNativeFeedJournalBridge, mutation.getJournalName());
+        FeedJournalBridgeJni.get().startJournalMutation(
+                mNativeFeedJournalBridge, FeedJournalBridge.this, mutation.getJournalName());
         for (JournalOperation operation : mutation.getOperations()) {
             switch (operation.getType()) {
                 case Type.APPEND:
                     Append append = (Append) operation;
-                    nativeAddAppendOperation(mNativeFeedJournalBridge, append.getValue());
+                    FeedJournalBridgeJni.get().addAppendOperation(
+                            mNativeFeedJournalBridge, FeedJournalBridge.this, append.getValue());
                     break;
                 case Type.COPY:
                     Copy copy = (Copy) operation;
-                    nativeAddCopyOperation(mNativeFeedJournalBridge, copy.getToJournalName());
+                    FeedJournalBridgeJni.get().addCopyOperation(mNativeFeedJournalBridge,
+                            FeedJournalBridge.this, copy.getToJournalName());
                     break;
                 case Type.DELETE:
-                    nativeAddDeleteOperation(mNativeFeedJournalBridge);
+                    FeedJournalBridgeJni.get().addDeleteOperation(
+                            mNativeFeedJournalBridge, FeedJournalBridge.this);
                     break;
                 default:
                     // Operation type is not supported, therefore failing immediately.
                     assert false : "Unsupported type of operation.";
-                    nativeDeleteJournalMutation(mNativeFeedJournalBridge);
+                    FeedJournalBridgeJni.get().deleteJournalMutation(
+                            mNativeFeedJournalBridge, FeedJournalBridge.this);
                     callback.onResult(false);
                     return;
             }
         }
-        nativeCommitJournalMutation(mNativeFeedJournalBridge, callback);
+        FeedJournalBridgeJni.get().commitJournalMutation(
+                mNativeFeedJournalBridge, FeedJournalBridge.this, callback);
     }
 
     /** Determines whether a journal exists and asynchronously responds. */
     public void doesJournalExist(
             String journalName, Callback<Boolean> successCallback, Callback<Void> failureCallback) {
         assert mNativeFeedJournalBridge != 0;
-        nativeDoesJournalExist(
-                mNativeFeedJournalBridge, journalName, successCallback, failureCallback);
+        FeedJournalBridgeJni.get().doesJournalExist(mNativeFeedJournalBridge,
+                FeedJournalBridge.this, journalName, successCallback, failureCallback);
     }
 
     /** Asynchronously retrieve a list of all current journals' name. */
     public void loadAllJournalKeys(
             Callback<String[]> successCallback, Callback<Void> failureCallback) {
         assert mNativeFeedJournalBridge != 0;
-        nativeLoadAllJournalKeys(mNativeFeedJournalBridge, successCallback, failureCallback);
+        FeedJournalBridgeJni.get().loadAllJournalKeys(
+                mNativeFeedJournalBridge, FeedJournalBridge.this, successCallback, failureCallback);
     }
 
     /** Delete all journals. Reports success or failure. */
     public void deleteAllJournals(Callback<Boolean> callback) {
         assert mNativeFeedJournalBridge != 0;
-        nativeDeleteAllJournals(mNativeFeedJournalBridge, callback);
+        FeedJournalBridgeJni.get().deleteAllJournals(
+                mNativeFeedJournalBridge, FeedJournalBridge.this, callback);
     }
 
-    private native long nativeInit(Profile profile);
-    private native void nativeDestroy(long nativeFeedJournalBridge);
-    private native void nativeLoadJournal(long nativeFeedJournalBridge, String journalName,
-            Callback<byte[][]> successCallback, Callback<Void> failureCallback);
-    private native void nativeCommitJournalMutation(
-            long nativeFeedJournalBridge, Callback<Boolean> callback);
-    private native void nativeStartJournalMutation(
-            long nativeFeedJournalBridge, String journalName);
-    private native void nativeDeleteJournalMutation(long nativeFeedJournalBridge);
-    private native void nativeAddAppendOperation(long nativeFeedJournalBridge, byte[] value);
-    private native void nativeAddCopyOperation(long nativeFeedJournalBridge, String toJournalName);
-    private native void nativeAddDeleteOperation(long nativeFeedJournalBridge);
-    private native void nativeDoesJournalExist(long nativeFeedJournalBridge, String journalName,
-            Callback<Boolean> successCallback, Callback<Void> failureCallback);
-    private native void nativeLoadAllJournalKeys(long nativeFeedJournalBridge,
-            Callback<String[]> successCallback, Callback<Void> failureCallback);
-    private native void nativeDeleteAllJournals(
-            long nativeFeedJournalBridge, Callback<Boolean> callback);
+    @NativeMethods
+    interface Natives {
+        long init(FeedJournalBridge caller, Profile profile);
+        void destroy(long nativeFeedJournalBridge, FeedJournalBridge caller);
+        void loadJournal(long nativeFeedJournalBridge, FeedJournalBridge caller, String journalName,
+                Callback<byte[][]> successCallback, Callback<Void> failureCallback);
+        void commitJournalMutation(
+                long nativeFeedJournalBridge, FeedJournalBridge caller, Callback<Boolean> callback);
+        void startJournalMutation(
+                long nativeFeedJournalBridge, FeedJournalBridge caller, String journalName);
+        void deleteJournalMutation(long nativeFeedJournalBridge, FeedJournalBridge caller);
+        void addAppendOperation(
+                long nativeFeedJournalBridge, FeedJournalBridge caller, byte[] value);
+        void addCopyOperation(
+                long nativeFeedJournalBridge, FeedJournalBridge caller, String toJournalName);
+        void addDeleteOperation(long nativeFeedJournalBridge, FeedJournalBridge caller);
+        void doesJournalExist(long nativeFeedJournalBridge, FeedJournalBridge caller,
+                String journalName, Callback<Boolean> successCallback,
+                Callback<Void> failureCallback);
+        void loadAllJournalKeys(long nativeFeedJournalBridge, FeedJournalBridge caller,
+                Callback<String[]> successCallback, Callback<Void> failureCallback);
+        void deleteAllJournals(
+                long nativeFeedJournalBridge, FeedJournalBridge caller, Callback<Boolean> callback);
+    }
 }

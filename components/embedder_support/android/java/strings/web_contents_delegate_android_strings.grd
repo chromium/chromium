@@ -22,7 +22,7 @@
     <output filename="values-tl/web_contents_delegate_android_strings.xml" lang="fil" type="android" />
     <output filename="values-fr/web_contents_delegate_android_strings.xml" lang="fr" type="android" />
     <output filename="values-gu/web_contents_delegate_android_strings.xml" lang="gu" type="android" />
-    <output filename="values-iw/web_contents_delegate_android_strings.xml" lang="he" type="android" />
+    <output filename="values-iw/web_contents_delegate_android_strings.xml" lang="iw" type="android" />
     <output filename="values-hi/web_contents_delegate_android_strings.xml" lang="hi" type="android" />
     <output filename="values-hr/web_contents_delegate_android_strings.xml" lang="hr" type="android" />
     <output filename="values-hu/web_contents_delegate_android_strings.xml" lang="hu" type="android" />

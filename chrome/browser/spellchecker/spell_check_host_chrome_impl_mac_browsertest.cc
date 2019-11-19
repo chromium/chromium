@@ -12,17 +12,15 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 class SpellCheckHostChromeImplMacBrowserTest : public InProcessBrowserTest {
  public:
   void SetUpOnMainThread() override {
     content::BrowserContext* context = browser()->profile();
     renderer_.reset(new content::MockRenderProcessHost(context));
-
-    service_manager::BindSourceInfo source_info;
-    source_info.identity = renderer_->GetChildIdentity();
-    SpellCheckHostChromeImpl::Create(mojo::MakeRequest(&spell_check_host_),
-                                     source_info);
+    SpellCheckHostChromeImpl::Create(
+        renderer_->GetID(), spell_check_host_.BindNewPipeAndPassReceiver());
   }
 
   void TearDownOnMainThread() override { renderer_.reset(); }
@@ -44,7 +42,7 @@ class SpellCheckHostChromeImplMacBrowserTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<content::MockRenderProcessHost> renderer_;
-  spellcheck::mojom::SpellCheckHostPtr spell_check_host_;
+  mojo::Remote<spellcheck::mojom::SpellCheckHost> spell_check_host_;
 
   bool received_result_ = false;
   std::vector<SpellCheckResult> result_;

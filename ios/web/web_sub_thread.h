@@ -8,7 +8,7 @@
 #include "base/macros.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
-#include "ios/web/public/web_thread.h"
+#include "ios/web/public/thread/web_thread.h"
 
 namespace web {
 class WebThreadImpl;

@@ -4,17 +4,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -22,6 +11,7 @@
     },
     {
       "name": "LayoutBlockFlow DIV class='composited block'",
+      "position": [-5, -5],
       "bounds": [210, 60],
       "backgroundColor": "#0000FF",
       "transform": 1
@@ -31,20 +21,21 @@
       "bounds": [50, 50],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "transform": 2
+      "transform": 1
     },
     {
       "name": "LayoutBlockFlow DIV class='composited block'",
+      "position": [-5, -5],
       "bounds": [210, 60],
       "backgroundColor": "#0000FF",
-      "transform": 3
+      "transform": 2
     },
     {
       "name": "LayoutBlockFlow DIV class='composited box'",
       "bounds": [50, 50],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "transform": 4
+      "transform": 2
     }
   ],
   "transforms": [
@@ -54,36 +45,16 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [14, 164, 0, 1]
+        [19, 169, 0, 1]
       ]
     },
     {
       "id": 2,
-      "parent": 1,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [5, 5, 0, 1]
-      ]
-    },
-    {
-      "id": 3,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [272, 89, 0, 1]
-      ]
-    },
-    {
-      "id": 4,
-      "parent": 3,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [5, 5, 0, 1]
+        [277, 94, 0, 1]
       ]
     }
   ]

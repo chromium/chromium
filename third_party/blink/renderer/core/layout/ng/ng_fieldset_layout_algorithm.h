@@ -7,13 +7,12 @@
 
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_algorithm.h"
 
-#include "third_party/blink/renderer/core/layout/ng/geometry/ng_logical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 
 namespace blink {
 
 class NGBlockBreakToken;
-class NGBreakToken;
 class NGConstraintSpace;
 
 class CORE_EXPORT NGFieldsetLayoutAlgorithm
@@ -21,9 +20,7 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  NGFieldsetLayoutAlgorithm(NGBlockNode node,
-                            const NGConstraintSpace& space,
-                            const NGBreakToken* break_token = nullptr);
+  NGFieldsetLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
   scoped_refptr<const NGLayoutResult> Layout() override;
 
@@ -32,9 +29,11 @@ class CORE_EXPORT NGFieldsetLayoutAlgorithm
 
   const NGConstraintSpace CreateConstraintSpaceForLegend(
       NGBlockNode legend,
-      NGLogicalSize available_size);
+      LogicalSize available_size);
   const NGConstraintSpace CreateConstraintSpaceForFieldsetContent(
-      NGLogicalSize padding_box_size);
+      LogicalSize padding_box_size);
+
+  const NGBoxStrut border_padding_;
 };
 
 }  // namespace blink

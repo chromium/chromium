@@ -66,9 +66,7 @@ SecureChannel::PendingMessage::PendingMessage(const std::string& feature,
 SecureChannel::PendingMessage::~PendingMessage() {}
 
 SecureChannel::SecureChannel(std::unique_ptr<Connection> connection)
-    : status_(Status::DISCONNECTED),
-      connection_(std::move(connection)),
-      weak_ptr_factory_(this) {
+    : status_(Status::DISCONNECTED), connection_(std::move(connection)) {
   connection_->AddObserver(this);
 }
 

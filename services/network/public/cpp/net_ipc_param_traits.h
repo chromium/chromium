@@ -45,9 +45,8 @@
 namespace IPC {
 
 template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
-    ParamTraits<scoped_refptr<net::AuthChallengeInfo>> {
-  typedef scoped_refptr<net::AuthChallengeInfo> param_type;
+struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ParamTraits<net::AuthChallengeInfo> {
+  typedef net::AuthChallengeInfo param_type;
   static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
@@ -275,9 +274,9 @@ IPC_STRUCT_TRAITS_BEGIN(net::RedirectInfo)
   IPC_STRUCT_TRAITS_MEMBER(new_method)
   IPC_STRUCT_TRAITS_MEMBER(new_url)
   IPC_STRUCT_TRAITS_MEMBER(new_site_for_cookies)
-  IPC_STRUCT_TRAITS_MEMBER(new_top_frame_origin)
   IPC_STRUCT_TRAITS_MEMBER(new_referrer)
   IPC_STRUCT_TRAITS_MEMBER(insecure_scheme_was_upgraded)
+  IPC_STRUCT_TRAITS_MEMBER(is_signed_exchange_fallback_redirect)
   IPC_STRUCT_TRAITS_MEMBER(new_referrer_policy)
 IPC_STRUCT_TRAITS_END()
 

@@ -33,7 +33,7 @@
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/pod_interval_tree.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -77,6 +77,8 @@ class PLATFORM_EXPORT FloatPolygon {
 };
 
 class PLATFORM_EXPORT VertexPair {
+  DISALLOW_NEW();
+
  public:
   virtual ~VertexPair() = default;
 

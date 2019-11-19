@@ -22,7 +22,7 @@ LocalMuter::LocalMuter(LoopbackCoordinator* coordinator,
         member->StartMuting();
       }));
 
-  bindings_.set_connection_error_handler(
+  receivers_.set_disconnect_handler(
       base::BindRepeating(&LocalMuter::OnBindingLost, base::Unretained(this)));
 }
 
@@ -42,10 +42,10 @@ void LocalMuter::SetAllBindingsLostCallback(base::OnceClosure callback) {
   all_bindings_lost_callback_ = std::move(callback);
 }
 
-void LocalMuter::AddBinding(mojom::LocalMuterAssociatedRequest request) {
+void LocalMuter::AddReceiver(
+    mojo::PendingAssociatedReceiver<mojom::LocalMuter> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  bindings_.AddBinding(this, std::move(request));
+  receivers_.Add(this, std::move(receiver));
 }
 
 void LocalMuter::OnMemberJoinedGroup(LoopbackGroupMember* member) {
@@ -63,7 +63,7 @@ void LocalMuter::OnMemberLeftGroup(LoopbackGroupMember* member) {
 void LocalMuter::OnBindingLost() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (bindings_.empty()) {
+  if (receivers_.empty()) {
     std::move(all_bindings_lost_callback_).Run();
   }
 }

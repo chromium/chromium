@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_effect.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_alpha.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -95,7 +96,7 @@ void SVGFilterGraphNodeMap::InvalidateDependentEffects(FilterEffect* effect) {
 
   effect->DisposeImageFilters();
 
-  FilterEffectSet& effect_references = this->EffectReferences(effect);
+  FilterEffectSet& effect_references = EffectReferences(effect);
   for (FilterEffect* effect_reference : effect_references)
     InvalidateDependentEffects(effect_reference);
 }
@@ -113,18 +114,19 @@ SVGFilterBuilder::SVGFilterBuilder(FilterEffect* source_graphic,
   FilterEffect* source_graphic_ref = source_graphic;
   builtin_effects_.insert(FilterInputKeywords::GetSourceGraphic(),
                           source_graphic_ref);
-  builtin_effects_.insert(FilterInputKeywords::SourceAlpha(),
-                          SourceAlpha::Create(source_graphic_ref));
+  builtin_effects_.insert(
+      FilterInputKeywords::SourceAlpha(),
+      MakeGarbageCollected<SourceAlpha>(source_graphic_ref));
   if (fill_flags) {
     builtin_effects_.insert(FilterInputKeywords::FillPaint(),
-                            PaintFilterEffect::Create(
+                            MakeGarbageCollected<PaintFilterEffect>(
                                 source_graphic_ref->GetFilter(), *fill_flags));
   }
   if (stroke_flags) {
     builtin_effects_.insert(
         FilterInputKeywords::StrokePaint(),
-        PaintFilterEffect::Create(source_graphic_ref->GetFilter(),
-                                  *stroke_flags));
+        MakeGarbageCollected<PaintFilterEffect>(source_graphic_ref->GetFilter(),
+                                                *stroke_flags));
   }
   AddBuiltinEffects();
 }
@@ -147,10 +149,10 @@ static EColorInterpolation ColorInterpolationForElement(
   // "manually" (used by external SVG files.)
   if (const CSSPropertyValueSet* property_set =
           element.PresentationAttributeStyle()) {
-    const CSSValue* css_value =
-        property_set->GetPropertyCSSValue(CSSPropertyColorInterpolationFilters);
-    if (css_value && css_value->IsIdentifierValue()) {
-      return ToCSSIdentifierValue(*css_value).ConvertTo<EColorInterpolation>();
+    const CSSValue* css_value = property_set->GetPropertyCSSValue(
+        CSSPropertyID::kColorInterpolationFilters);
+    if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(css_value)) {
+      return identifier_value->ConvertTo<EColorInterpolation>();
     }
   }
   // 'auto' is the default (per Filter Effects), but since the property is
@@ -177,8 +179,7 @@ void SVGFilterBuilder::BuildGraph(Filter* filter,
     if (!element->IsFilterEffect())
       continue;
 
-    SVGFilterPrimitiveStandardAttributes& effect_element =
-        ToSVGFilterPrimitiveStandardAttributes(*element);
+    auto& effect_element = To<SVGFilterPrimitiveStandardAttributes>(*element);
     FilterEffect* effect = effect_element.Build(this, filter);
     if (!effect)
       continue;
@@ -192,7 +193,7 @@ void SVGFilterBuilder::BuildGraph(Filter* filter,
         effect_element, filter_color_interpolation);
     effect->SetOperatingInterpolationSpace(
         ResolveInterpolationSpace(color_interpolation));
-    if (effect_element.TaintsOrigin(effect->InputsTaintOrigin()))
+    if (effect->InputsTaintOrigin() || effect_element.TaintsOrigin())
       effect->SetOriginTainted();
 
     Add(AtomicString(effect_element.result()->CurrentValue()->Value()), effect);

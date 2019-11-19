@@ -38,43 +38,23 @@ class BASE_EXPORT Environment {
   // Syntactic sugar for GetVar(variable_name, nullptr);
   virtual bool HasVar(StringPiece variable_name);
 
-  // Returns true on success, otherwise returns false.
+  // Returns true on success, otherwise returns false. This method should not
+  // be called in a multi-threaded process.
   virtual bool SetVar(StringPiece variable_name,
                       const std::string& new_value) = 0;
 
-  // Returns true on success, otherwise returns false.
+  // Returns true on success, otherwise returns false. This method should not
+  // be called in a multi-threaded process.
   virtual bool UnSetVar(StringPiece variable_name) = 0;
 };
 
-
 #if defined(OS_WIN)
-
-typedef string16 NativeEnvironmentString;
-typedef std::map<NativeEnvironmentString, NativeEnvironmentString>
-    EnvironmentMap;
-
+using NativeEnvironmentString = std::wstring;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-
-typedef std::string NativeEnvironmentString;
-typedef std::map<NativeEnvironmentString, NativeEnvironmentString>
-    EnvironmentMap;
-
-// Returns a modified environment vector constructed from the given environment
-// and the list of changes given in |changes|. Each key in the environment is
-// matched against the first element of the pairs. In the event of a match, the
-// value is replaced by the second of the pair, unless the second is empty, in
-// which case the key-value is removed.
-//
-// This Posix version takes and returns a Posix-style environment block, which
-// is a null-terminated list of pointers to null-terminated strings. The
-// returned array will have appended to it the storage for the array itself so
-// there is only one pointer to manage, but this means that you can't copy the
-// array without keeping the original around.
-BASE_EXPORT std::unique_ptr<char* []> AlterEnvironment(
-    const char* const* env,
-    const EnvironmentMap& changes);
-
+using NativeEnvironmentString = std::string;
 #endif
+using EnvironmentMap =
+    std::map<NativeEnvironmentString, NativeEnvironmentString>;
 
 }  // namespace base
 

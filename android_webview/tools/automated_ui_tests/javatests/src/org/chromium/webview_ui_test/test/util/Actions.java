@@ -10,12 +10,13 @@ import static android.support.test.espresso.matcher.ViewMatchers.withEffectiveVi
 
 import static org.hamcrest.Matchers.allOf;
 
-import android.support.annotation.NonNull;
 import android.support.test.espresso.UiController;
 import android.support.test.espresso.ViewAction;
 import android.support.test.espresso.matcher.ViewMatchers;
 import android.view.View;
 import android.webkit.WebView;
+
+import androidx.annotation.NonNull;
 
 import org.hamcrest.Matcher;
 

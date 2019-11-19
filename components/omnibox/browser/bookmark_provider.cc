@@ -17,6 +17,7 @@
 #include "components/bookmarks/browser/titled_url_match.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/titled_url_match_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/snippet.h"
@@ -66,8 +67,9 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   //  - Terms must be at least three characters in length in order to perform
   //    partial word matches. Any term of lesser length will only be used as an
   //    exact match. 'def' will match against 'define' but 'de' will not match.
+  //    (Unless IsShortBookmarkSuggestionsEnabled is true.)
   //  - A search containing multiple terms will return results with those words
-  //    occuring in any order.
+  //    occurring in any order.
   //  - Terms enclosed in quotes comprises a phrase that must match exactly.
   //  - Multiple terms enclosed in quotes will require those exact words in that
   //    exact order to match.
@@ -75,9 +77,12 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   // Please refer to the code for TitledUrlIndex::GetResultsMatching for
   // complete details of how searches are performed against the user's
   // bookmarks.
-  bookmark_model_->GetBookmarksMatching(input.text(),
-                                        kMaxBookmarkMatches,
-                                        &matches);
+  bookmark_model_->GetBookmarksMatching(
+      input.text(), kMaxBookmarkMatches,
+      OmniboxFieldTrial::IsShortBookmarkSuggestionsEnabled()
+          ? query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH
+          : query_parser::MatchingAlgorithm::DEFAULT,
+      &matches);
   if (matches.empty())
     return;  // There were no matches.
   const base::string16 fixed_up_input(FixupUserInput(input).second);
@@ -93,8 +98,7 @@ void BookmarkProvider::DoAutocomplete(const AutocompleteInput& input) {
   }
 
   // Sort and clip the resulting matches.
-  size_t num_matches =
-      std::min(matches_.size(), AutocompleteProvider::kMaxMatches);
+  size_t num_matches = std::min(matches_.size(), provider_max_matches_);
   std::partial_sort(matches_.begin(), matches_.begin() + num_matches,
                     matches_.end(), AutocompleteMatch::MoreRelevant);
   matches_.resize(num_matches);

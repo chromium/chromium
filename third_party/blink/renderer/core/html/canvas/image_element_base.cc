@@ -6,11 +6,12 @@
 
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/image_loader.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -142,7 +143,7 @@ ScriptPromise ImageElementBase::CreateImageBitmap(
   if (!image_content) {
     return ScriptPromise::RejectWithDOMException(
         script_state,
-        DOMException::Create(
+        MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             "No image can be retrieved from the provided element."));
   }
@@ -153,7 +154,7 @@ ScriptPromise ImageElementBase::CreateImageBitmap(
          (!options->hasResizeWidth() || !options->hasResizeHeight()))) {
       return ScriptPromise::RejectWithDOMException(
           script_state,
-          DOMException::Create(
+          MakeGarbageCollected<DOMException>(
               DOMExceptionCode::kInvalidStateError,
               "The image element contains an SVG image without intrinsic "
               "dimensions, and no resize options or crop region are "

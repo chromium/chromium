@@ -7,22 +7,23 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 // Helper functions providing access to ui::ResourceBundle in Blink.
 
-// Returns the contents of a resource as a string specified by the
-// resource name.
-PLATFORM_EXPORT String GetDataResourceAsASCIIString(const char* resource);
-
-// Returns the contents of a resource as a string specified by the
-// resource id from Grit.
-PLATFORM_EXPORT String GetResourceAsString(int resource_id);
-
 // Uncompresses a gzipped resource and returns it as a string. The resource
 // is specified by the resource id from Grit.
 PLATFORM_EXPORT String UncompressResourceAsString(int resource_id);
+
+// Uncompresses a gzipped resource and returns it as an ascii string. The
+// resource is specified by the resource id from Grit.
+PLATFORM_EXPORT String UncompressResourceAsASCIIString(int resource_id);
+
+// Uncompresses a gzipped resource and returns it as a vector of characters.
+// The resource is specified by the resource id from Grit.
+PLATFORM_EXPORT Vector<char> UncompressResourceAsBinary(int resource_id);
 
 }  // namespace blink
 

@@ -8,10 +8,14 @@
 #include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
+#include "base/test/test_switches.h"
+#include "base/time/time.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
+#include "chrome/chrome_cleaner/buildflags.h"
 #include "chrome/chrome_cleaner/crash/crash_client.h"
 #include "chrome/chrome_cleaner/ipc/sandbox.h"
 #include "chrome/chrome_cleaner/logging/scoped_logging.h"
@@ -53,14 +57,6 @@ class ChromeCleanerTestSuite : public base::TestSuite {
 
 }  // namespace
 
-namespace chrome_cleaner {
-
-// Gives each test executable a chance to modify |command_line|. Each
-// executable must link with exactly one implementation of this.
-void OverrideTestCommandLine(base::CommandLine* command_line);
-
-}  // namespace chrome_cleaner
-
 int main(int argc, char** argv) {
   // This must be executed as soon as possible to reduce the number of dlls that
   // the code might try to load before we can lock things down.
@@ -81,8 +77,16 @@ int main(int argc, char** argv) {
   if (chrome_cleaner::Rebooter::IsPostReboot())
     return 0;
 
-  chrome_cleaner::OverrideTestCommandLine(
-      base::CommandLine::ForCurrentProcess());
+#if BUILDFLAG(IS_INTERNAL_CHROME_CLEANER_BUILD)
+  // The tests will run with the internal engine, which takes longer.
+  // IS_INTERNAL_CHROME_CLEANER_BUILD is only set on the Chrome Cleaner
+  // builders, not the chromium builders, so this will not slow down the
+  // general commit queue.
+  constexpr base::TimeDelta kInternalTimeout = base::TimeDelta::FromMinutes(10);
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTestLauncherTimeout,
+      base::NumberToString(kInternalTimeout.InMilliseconds()));
+#endif
 
   // ScopedCOMInitializer keeps COM initialized in a specific scope. We don't
   // want to initialize it for sandboxed processes, so manage its lifetime with
@@ -112,7 +116,7 @@ int main(int argc, char** argv) {
   // Some tests spawn sandbox targets using job objects. Windows 7 doesn't
   // support nested job objects, so don't use them in the test suite. Otherwise
   // all sandbox tests will fail as they try to create a second job object.
-  bool use_job_objects = base::win::GetVersion() >= base::win::VERSION_WIN8;
+  bool use_job_objects = base::win::GetVersion() >= base::win::Version::WIN8;
 
   // Some tests will fail if two tests try to launch test_process.exe
   // simultaneously, so run the tests serially. This will still shard them and

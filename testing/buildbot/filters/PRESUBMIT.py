@@ -38,6 +38,11 @@ def _CheckFilterFileFormat(input_api, output_api):
       if line.startswith('#'):
         # A comment. Ignore these.
         continue
+      if line.find('#') >= 0:
+        errors.append(
+            '%s:%d "#" is not a valid method separator.  Use ".": "%s"' % (
+                filename, line_num, line))
+        continue
       if line.startswith('//') or line.startswith('/*'):
         errors.append(
             '%s:%d Not a valid comment syntax. Use "#" instead: "%s"' % (

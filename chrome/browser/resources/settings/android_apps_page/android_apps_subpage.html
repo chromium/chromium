@@ -1,12 +1,11 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-button/paper-button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="android_apps_browser_proxy.html">
 <link rel="import" href="../i18n_setup.html">
 <link rel="import" href="../prefs/prefs_behavior.html">
@@ -17,18 +16,20 @@
     <style include="settings-shared"></style>
 
     <template is="dom-if" if="[[androidAppsInfo.settingsAppAvailable]]" restamp>
-      <cr-link-row id="manageApps" icon-class="icon-external"
-          label="$i18n{androidAppsManageApps}"
-          on-click="onManageAndroidAppsTap_">
-      </cr-link-row>
+      <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
+          on-click="onManageAndroidAppsTap_" external></cr-link-row>
     </template>
 
-    <template is="dom-if" if="[[allowRemove_(prefs.arc.enabled.*)]]">
-      <div id="remove" class="settings-box" actionable on-click="onRemoveTap_">
-        <div class="start">$i18n{androidAppsRemove}</div>
-        <paper-icon-button-light class="subpage-arrow">
-          <button aria-label="$i18n{androidAppsRemove}"></button>
-        </paper-icon-button-light>
+    <!-- Use 'restamp' so tests can check if the row exists. -->
+    <template is="dom-if" if="[[allowRemove_(prefs.arc.enabled.*)]]" restamp>
+      <div id="remove" class="settings-box">
+        <div id="androidRemoveLabel" class="start">
+            $i18n{androidAppsRemove}
+        </div>
+        <cr-button on-click="onRemoveTap_"
+          aria-labelledby="androidRemoveLabel">
+           $i18n{androidAppsRemoveButton}
+        </cr-button>
       </div>
     </template>
 
@@ -39,14 +40,14 @@
       <div slot="title">$i18n{androidAppsDisableDialogTitle}</div>
       <div slot="body" inner-h-t-m-l="[[dialogBody_]]"></div>
       <div slot="button-container">
-        <paper-button class="cancel-button"
+        <cr-button class="cancel-button"
             on-click="onConfirmDisableDialogCancel_">
           $i18n{cancel}
-        </paper-button>
-        <paper-button class="action-button"
+        </cr-button>
+        <cr-button class="action-button"
             on-click="onConfirmDisableDialogConfirm_">
           $i18n{androidAppsDisableDialogRemove}
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
 

@@ -4,28 +4,27 @@
 
 #include "chrome/browser/ui/managed_ui.h"
 
-#include "base/feature_list.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/browser/policy/profile_policy_connector_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/ui/webui/management_ui_handler.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/login/demo_mode/demo_session.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "components/user_manager/user_manager.h"
+#include "ui/chromeos/devicetype_utils.h"
 #endif
 
 namespace chrome {
 
 bool ShouldDisplayManagedUi(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kShowManagedUi))
-    return false;
-
 #if defined(OS_CHROMEOS)
   // Don't show the UI in demo mode.
   if (chromeos::DemoSession::IsDeviceInDemoMode())
@@ -37,8 +36,7 @@ bool ShouldDisplayManagedUi(Profile* profile) {
 #endif
 
   // This profile may have policies configured.
-  auto* profile_connector =
-      policy::ProfilePolicyConnectorFactory::GetForBrowserContext(profile);
+  auto* profile_connector = profile->GetProfilePolicyConnector();
   if (profile_connector->IsManaged())
     return true;
 
@@ -51,8 +49,7 @@ bool ShouldDisplayManagedUi(Profile* profile) {
         chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
     if (primary_profile) {
       auto* primary_profile_connector =
-          policy::ProfilePolicyConnectorFactory::GetForBrowserContext(
-              primary_profile);
+          primary_profile->GetProfilePolicyConnector();
       if (primary_profile_connector->IsManaged())
         return true;
     }
@@ -73,5 +70,54 @@ bool ShouldDisplayManagedUi(Profile* profile) {
 
   return false;
 }
+
+base::string16 GetManagedUiMenuItemLabel(Profile* profile) {
+  std::string management_domain =
+      ManagementUIHandler::GetAccountDomain(profile);
+
+  int string_id = IDS_MANAGED;
+  std::vector<base::string16> replacements;
+  if (!management_domain.empty()) {
+    string_id = IDS_MANAGED_BY;
+    replacements.push_back(base::UTF8ToUTF16(management_domain));
+  }
+
+  return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
+}
+
+base::string16 GetManagedUiWebUILabel(Profile* profile) {
+  std::string management_domain =
+      ManagementUIHandler::GetAccountDomain(profile);
+
+  int string_id = IDS_MANAGED_WITH_HYPERLINK;
+
+  std::vector<base::string16> replacements;
+  replacements.push_back(base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
+  if (!management_domain.empty()) {
+    string_id = IDS_MANAGED_BY_WITH_HYPERLINK;
+    replacements.push_back(base::UTF8ToUTF16(management_domain));
+  }
+
+  return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
+}
+
+#if defined(OS_CHROMEOS)
+base::string16 GetDeviceManagedUiWebUILabel(Profile* profile) {
+  std::string management_domain =
+      ManagementUIHandler::GetAccountDomain(profile);
+
+  int string_id = IDS_DEVICE_MANAGED_WITH_HYPERLINK;
+
+  std::vector<base::string16> replacements;
+  replacements.push_back(base::UTF8ToUTF16(chrome::kChromeUIManagementURL));
+  replacements.push_back(ui::GetChromeOSDeviceName());
+  if (!management_domain.empty()) {
+    string_id = IDS_DEVICE_MANAGED_BY_WITH_HYPERLINK;
+    replacements.push_back(base::UTF8ToUTF16(management_domain));
+  }
+
+  return l10n_util::GetStringFUTF16(string_id, replacements, nullptr);
+}
+#endif
 
 }  // namespace chrome

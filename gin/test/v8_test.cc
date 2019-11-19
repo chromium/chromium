@@ -16,15 +16,13 @@ using v8::HandleScope;
 namespace gin {
 
 V8Test::V8Test()
-    : scoped_task_environment_(
-          base::test::ScopedTaskEnvironment::MainThreadType::IO) {}
+    : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
 V8Test::~V8Test() = default;
 
 void V8Test::SetUp() {
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
   gin::V8Initializer::LoadV8Snapshot();
-  gin::V8Initializer::LoadV8Natives();
 #endif
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kStrictMode,
                                  gin::ArrayBufferAllocator::SharedInstance());

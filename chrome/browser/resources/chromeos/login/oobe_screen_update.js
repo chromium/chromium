@@ -8,74 +8,22 @@
 
 login.createScreen('UpdateScreen', 'update', function() {
   var USER_ACTION_CANCEL_UPDATE_SHORTCUT = 'cancel-update';
-  var CONTEXT_KEY_TIME_LEFT_SEC = 'time-left-sec';
-  var CONTEXT_KEY_SHOW_TIME_LEFT = 'show-time-left';
-  var CONTEXT_KEY_UPDATE_COMPLETED = 'update-completed';
-  var CONTEXT_KEY_SHOW_CURTAIN = 'show-curtain';
-  var CONTEXT_KEY_SHOW_PROGRESS_MESSAGE = 'show-progress-msg';
-  var CONTEXT_KEY_PROGRESS = 'progress';
-  var CONTEXT_KEY_PROGRESS_MESSAGE = 'progress-msg';
-  var CONTEXT_KEY_CANCEL_UPDATE_SHORTCUT_ENABLED = 'cancel-update-enabled';
-  var CONTEXT_KEY_REQUIRES_PERMISSION_FOR_CELLULAR =
-      'requires-permission-for-cellular';
 
   return {
-    EXTERNAL_API: [],
+    EXTERNAL_API: [
+      'setEstimatedTimeLeft',
+      'showEstimatedTimeLeft',
+      'setUpdateCompleted',
+      'showUpdateCurtain',
+      'setProgressMessage',
+      'setUpdateProgress',
+      'setRequiresPermissionForCellular',
+      'setCancelUpdateShortcutEnabled',
+    ],
 
-    /** @override */
-    decorate: function() {
-      var self = this;
-
-      this.context.addObserver(
-          CONTEXT_KEY_TIME_LEFT_SEC, function(time_left_sec) {
-            self.setEstimatedTimeLeft(time_left_sec);
-          });
-      this.context.addObserver(
-          CONTEXT_KEY_SHOW_TIME_LEFT, function(show_time_left) {
-            self.showEstimatedTimeLeft(show_time_left);
-          });
-      this.context.addObserver(
-          CONTEXT_KEY_UPDATE_COMPLETED, function(is_completed) {
-            self.setUpdateCompleted(is_completed);
-          });
-      this.context.addObserver(
-          CONTEXT_KEY_SHOW_CURTAIN, function(show_curtain) {
-            self.showUpdateCurtain(show_curtain);
-          });
-      this.context.addObserver(
-          CONTEXT_KEY_SHOW_PROGRESS_MESSAGE, function(show_progress_msg) {
-            self.showProgressMessage(show_progress_msg);
-          });
-      this.context.addObserver(CONTEXT_KEY_PROGRESS, function(progress) {
-        self.setUpdateProgress(progress);
-      });
-      this.context.addObserver(
-          CONTEXT_KEY_PROGRESS_MESSAGE, function(progress_msg) {
-            self.setProgressMessage(progress_msg);
-          });
-      this.context.addObserver(
-          CONTEXT_KEY_REQUIRES_PERMISSION_FOR_CELLULAR,
-          function(requires_permission) {
-            self.setRequiresPermissionForCellular(requires_permission);
-          });
-      this.context.addObserver(
-          CONTEXT_KEY_CANCEL_UPDATE_SHORTCUT_ENABLED, function(enabled) {
-            $('oobe-update-md').cancelAllowed = enabled;
-            var configuration = Oobe.getInstance().getOobeConfiguration();
-            if (!configuration)
-              return;
-            if (configuration.updateSkipNonCritical && enabled) {
-              self.cancel();
-            }
-          });
-    },
-
-    /**
-     * Header text of the screen.
-     * @type {string}
-     */
-    get header() {
-      return loadTimeData.getString('updateScreenTitle');
+    /** @param {boolean} enabled */
+    setCancelUpdateShortcutEnabled: function(enabled) {
+      $('oobe-update-md').cancelAllowed = enabled;
     },
 
     /**
@@ -142,20 +90,15 @@ login.createScreen('UpdateScreen', 'update', function() {
     },
 
     /**
-     * Shows or hides info message below progress bar.
-     * @param {boolean} visible Are message visible?
-     */
-    showProgressMessage: function(visible) {
-      $('oobe-update-md').estimatedTimeLeftShown = !visible;
-      $('oobe-update-md').progressMessageShown = visible;
-    },
-
-    /**
-     * Sets message below progress bar.
+     * Sets message below progress bar. Hide the message by setting an empty
+     * string.
      * @param {string} message Message that should be shown.
      */
     setProgressMessage: function(message) {
+      var visible = !!message;
       $('oobe-update-md').progressMessage = message;
+      $('oobe-update-md').estimatedTimeLeftShown = !visible;
+      $('oobe-update-md').progressMessageShown = visible;
     },
 
     /**

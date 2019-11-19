@@ -49,13 +49,13 @@ TargetCreateNamedPipeW(CreateNamedPipeWFunction orig_CreateNamedPipeW,
     CountedParameterSet<NameBased> params;
     params[NameBased::NAME] = ParamPickerMake(pipe_name);
 
-    if (!QueryBroker(IPC_CREATENAMEDPIPEW_TAG, params.GetBase()))
+    if (!QueryBroker(IpcTag::CREATENAMEDPIPEW, params.GetBase()))
       break;
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
     ResultCode code =
-        CrossCall(ipc, IPC_CREATENAMEDPIPEW_TAG, pipe_name, open_mode,
+        CrossCall(ipc, IpcTag::CREATENAMEDPIPEW, pipe_name, open_mode,
                   pipe_mode, max_instance, out_buffer_size, in_buffer_size,
                   default_timeout, &answer);
     if (SBOX_ALL_OK != code)

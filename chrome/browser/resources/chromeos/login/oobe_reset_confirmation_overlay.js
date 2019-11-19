@@ -10,6 +10,8 @@
 Polymer({
   is: 'reset-confirm-overlay-md',
 
+  behaviors: [I18nBehavior],
+
   properties: {
     isPowerwashView_: Boolean,
   },

@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="id">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> mengelola perangkat ini dan mungkin dapat memantau aktivitas Anda.</translation>
 <translation id="1510238584712386396">Peluncur</translation>
 <translation id="1734367976349034509">Perangkat ini dikelola perusahaan</translation>
+<translation id="1930797645656624981">Layanan Metode Masukan Chrome OS</translation>
+<translation id="1979103255016296513">Perubahan sandi melewati batas waktu</translation>
 <translation id="2049639323467105390">Perangkat ini dikelola oleh <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Tidak menemukan apa pun di layar</translation>
 <translation id="2338501278241028356">Aktifkan Bluetooth untuk menemukan perangkat di sekitar</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="2872961005593481000">Matikan</translation>
-<translation id="3147142846278915599">Peluncur (menyinkronkan aplikasi...)</translation>
+<translation id="3008341117444806826">PERBARUI</translation>
+<translation id="3838338534323494292">Sandi baru</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
+<translation id="4227825898293920515">Sandi kedaluwarsa dalam <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Masa berlaku tiket Kerberos segera berakhir</translation>
+<translation id="445059817448385655">Sandi lama</translation>
+<translation id="467510802200863975">Sandi tidak cocok</translation>
 <translation id="4731797938093519117">Akses orang tua</translation>
+<translation id="4890353053343094602">Segera pilih satu sandi baru</translation>
 <translation id="5212543919916444558">Di layar tidak ada apa pun yang membutuhkan bantuan saya.
-Tap mikrofon untuk bertanya apa saja.</translation>
+Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5222676887888702881">Logout</translation>
+<translation id="5317780077021120954">Simpan</translation>
+<translation id="5332948983412042822">Pilih satu sandi baru sekarang</translation>
 <translation id="5457599981699367932">Login sebagai Tamu</translation>
 <translation id="54609108002486618">Terkelola</translation>
 <translation id="5832805196449965646">Tambahkan Pengguna</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
+<translation id="6058625436358447366">Untuk menyelesaikan, masukkan sandi yang lama dan baru</translation>
+<translation id="6106186594183574873">Untuk menyelesaikan, masukkan sandi yang lama</translation>
+<translation id="6146993107019042706">Untuk menyelesaikan, masukkan sandi yang baru</translation>
 <translation id="7658239707568436148">Batal</translation>
+<translation id="7690294790491645610">Konfirmasi sandi baru</translation>
+<translation id="808894953321890993">Ubah sandi</translation>
+<translation id="8747900814994928677">Konfirmasi perubahan</translation>
+<translation id="910415269708673980">Perbarui tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>
 </translationbundle>

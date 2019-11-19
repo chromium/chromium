@@ -4,13 +4,16 @@
 
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 
+#include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
+#include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/parser/css_variable_parser.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 
@@ -21,7 +24,7 @@ namespace {
 CSSValue* ConsumeFontVariantList(CSSParserTokenRange& range) {
   CSSValueList* values = CSSValueList::CreateCommaSeparated();
   do {
-    if (range.Peek().Id() == CSSValueAll) {
+    if (range.Peek().Id() == CSSValueID::kAll) {
       // FIXME: CSSPropertyParser::ParseFontVariant() implements
       // the old css3 draft:
       // http://www.w3.org/TR/2002/WD-css3-webfonts-20020802/#font-variant
@@ -44,8 +47,8 @@ CSSValue* ConsumeFontVariantList(CSSParserTokenRange& range) {
 
 CSSIdentifierValue* ConsumeFontDisplay(CSSParserTokenRange& range) {
   return css_property_parser_helpers::ConsumeIdent<
-      CSSValueAuto, CSSValueBlock, CSSValueSwap, CSSValueFallback,
-      CSSValueOptional>(range);
+      CSSValueID::kAuto, CSSValueID::kBlock, CSSValueID::kSwap,
+      CSSValueID::kFallback, CSSValueID::kOptional>(range);
 }
 
 CSSValueList* ConsumeFontFaceUnicodeRange(CSSParserTokenRange& range) {
@@ -60,7 +63,8 @@ CSSValueList* ConsumeFontFaceUnicodeRange(CSSParserTokenRange& range) {
     UChar32 end = token.UnicodeRangeEnd();
     if (start > end)
       return nullptr;
-    values->Append(*CSSUnicodeRangeValue::Create(start, end));
+    values->Append(
+        *MakeGarbageCollected<cssvalue::CSSUnicodeRangeValue>(start, end));
   } while (css_property_parser_helpers::ConsumeCommaIncludingWhitespace(range));
 
   return values;
@@ -69,14 +73,16 @@ CSSValueList* ConsumeFontFaceUnicodeRange(CSSParserTokenRange& range) {
 CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
                                 const CSSParserContext& context) {
   String url =
-      css_property_parser_helpers::ConsumeUrlAsStringView(range).ToString();
+      css_property_parser_helpers::ConsumeUrlAsStringView(range, &context)
+          .ToString();
   if (url.IsNull())
     return nullptr;
   CSSFontFaceSrcValue* uri_value(CSSFontFaceSrcValue::Create(
       url, context.CompleteURL(url), context.GetReferrer(),
-      context.ShouldCheckContentSecurityPolicy()));
+      context.ShouldCheckContentSecurityPolicy(),
+      context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse));
 
-  if (range.Peek().FunctionId() != CSSValueFormat)
+  if (range.Peek().FunctionId() != CSSValueID::kFormat)
     return uri_value;
 
   // FIXME: https://drafts.csswg.org/css-fonts says that format() contains a
@@ -102,14 +108,16 @@ CSSValue* ConsumeFontFaceSrcLocal(CSSParserTokenRange& range,
     if (!args.AtEnd())
       return nullptr;
     return CSSFontFaceSrcValue::CreateLocal(
-        arg.Value().ToString(), should_check_content_security_policy);
+        arg.Value().ToString(), should_check_content_security_policy,
+        context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse);
   }
   if (args.Peek().GetType() == kIdentToken) {
     String family_name = css_parsing_utils::ConcatenateFamilyName(args);
     if (!args.AtEnd())
       return nullptr;
     return CSSFontFaceSrcValue::CreateLocal(
-        family_name, should_check_content_security_policy);
+        family_name, should_check_content_security_policy,
+        context.IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse);
   }
   return nullptr;
 }
@@ -122,7 +130,7 @@ CSSValueList* ConsumeFontFaceSrc(CSSParserTokenRange& range,
   do {
     const CSSParserToken& token = range.Peek();
     CSSValue* parsed_value = nullptr;
-    if (token.FunctionId() == CSSValueLocal)
+    if (token.FunctionId() == CSSValueID::kLocal)
       parsed_value = ConsumeFontFaceSrcLocal(range, context);
     else
       parsed_value = ConsumeFontFaceSrcURI(range, context);
@@ -208,14 +216,53 @@ CSSValue* AtRuleDescriptorParser::ParseFontFaceDeclaration(
   return ParseFontFaceDescriptor(id, range, context);
 }
 
+CSSValue* AtRuleDescriptorParser::ParseAtPropertyDescriptor(
+    AtRuleDescriptorID id,
+    CSSParserTokenRange& range,
+    const CSSParserContext& context) {
+  CSSValue* parsed_value = nullptr;
+  switch (id) {
+    case AtRuleDescriptorID::Syntax:
+      range.ConsumeWhitespace();
+      parsed_value = css_property_parser_helpers::ConsumeString(range);
+      break;
+    case AtRuleDescriptorID::InitialValue: {
+      // Note that we must retain leading whitespace here.
+      return CSSVariableParser::ParseDeclarationValue(
+          g_null_atom, range, false /* is_animation_tainted */, context);
+    }
+    case AtRuleDescriptorID::Inherits:
+      range.ConsumeWhitespace();
+      parsed_value =
+          css_property_parser_helpers::ConsumeIdent<CSSValueID::kTrue,
+                                                    CSSValueID::kFalse>(range);
+      break;
+    default:
+      break;
+  }
+
+  if (!parsed_value || !range.AtEnd())
+    return nullptr;
+
+  return parsed_value;
+}
+
 bool AtRuleDescriptorParser::ParseAtRule(
     AtRuleDescriptorID id,
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     HeapVector<CSSPropertyValue, 256>& parsed_descriptors) {
+  const CSSParserTokenRange original_range = range;
+
   // TODO(meade): Handle other descriptor types here.
   CSSValue* result =
       AtRuleDescriptorParser::ParseFontFaceDescriptor(id, range, context);
+
+  if (!result) {
+    range = original_range;
+    result =
+        AtRuleDescriptorParser::ParseAtPropertyDescriptor(id, range, context);
+  }
   if (!result)
     return false;
   // Convert to CSSPropertyID for legacy compatibility,

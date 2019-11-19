@@ -6,5 +6,15 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_PUSHBUTTON name='LabelledBy4' FOCUSABLE explicit-name:true description='DescribedBy4'
 ++ROLE_SYSTEM_PUSHBUTTON name='InnerText5' FOCUSABLE description='DescribedBy5'
 ++ROLE_SYSTEM_PUSHBUTTON name='Outer inner' FOCUSABLE
+++++ROLE_SYSTEM_STATICTEXT name='Outer'
+++++IA2_ROLE_SECTION
+++++++ROLE_SYSTEM_STATICTEXT name='inner'
 ++ROLE_SYSTEM_PUSHBUTTON name='Outer inner1' FOCUSABLE
+++++ROLE_SYSTEM_STATICTEXT name='Outer'
+++++IA2_ROLE_SECTION name='inner1' explicit-name:true
+++++++ROLE_SYSTEM_STATICTEXT name='inner2'
 ++ROLE_SYSTEM_PUSHBUTTON name='Outer grandchild' FOCUSABLE
+++++ROLE_SYSTEM_STATICTEXT name='Outer'
+++++IA2_ROLE_SECTION
+++++++IA2_ROLE_SECTION
+++++++++ROLE_SYSTEM_STATICTEXT name='grandchild'

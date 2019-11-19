@@ -1,0 +1,31 @@
+<html>
+ <head>
+
+  <script>
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
+    }
+
+    function onLoad() {
+      video = document.getElementsByTagName('video')[0];
+      video.src = "../../media/content/test.ogv";
+
+      canvas = document.getElementsByTagName('canvas')[0];
+      ctx = canvas.getContext('2d');
+
+      video.load();
+      video.addEventListener("canplay", function (e) {
+        ctx.globalAlpha = 0.5;
+        ctx.drawImage(video, 0, 0);
+
+        if (window.testRunner) {
+          testRunner.notifyDone();
+        }
+      });
+    }
+  </script>
+ </head>
+ <body onload="onLoad();">
+   <video preload="auto"></video><canvas width="320px" height="240px" style="position:relative;left:-100px;"> </canvas>
+ </body>
+</html>

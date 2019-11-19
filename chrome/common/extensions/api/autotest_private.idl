@@ -8,6 +8,101 @@
  implemented_in="chrome/browser/chromeos/extensions/autotest_private/autotest_private_api.h"]
 namespace autotestPrivate {
 
+  enum ShelfAlignmentType {
+    // BottomLocked not supported by shelf_prefs.
+    Bottom, Left, Right
+  };
+
+  // A mapping of ash::ShelfItemType.
+  enum ShelfItemType {
+    App,
+    PinnedApp,
+    BrowserShortcut,
+    Dialog
+  };
+
+  // A mapping of ash::ShelfItemStatus.
+  enum ShelfItemStatus {
+    Closed,
+    Running,
+    Attention
+  };
+
+  // A mapping of apps::mojom::Type
+  enum AppType {
+    Arc,
+    BuiltIn,
+    Crostini,
+    Extension,
+    Web,
+    MacNative
+  };
+
+  // A mapping of apps::mojom::Readiness
+  enum AppReadiness {
+    Ready,
+    DisabledByBlacklist,
+    DisabledByPolicy,
+    DisabledByUser,
+    Terminated,
+    UninstalledByUser
+  };
+
+  // A subset of Window State types in ash::WindowStateType. We may add more
+  // into the set in the future.
+  enum WindowStateType {
+    Normal,
+    Minimized,
+    Maximized,
+    Fullscreen,
+    LeftSnapped,
+    RightSnapped,
+    PIP
+  };
+
+  // A subset of WM event types in ash::WMEventType. We may add more in the
+  // set in the future.
+  enum WMEventType {
+    WMEventNormal,
+    WMEventMaximize,
+    WMEventMinimize,
+    WMEventFullscreen,
+    WMEventSnapLeft,
+    WMEventSnapRight
+  };
+
+  // Display orientation type.
+  enum RotationType {
+    Rotate0,
+    Rotate90,
+    Rotate180,
+    Rotate270
+  };
+
+  enum LauncherStateType {
+    Closed,
+    Peeking,
+    Half,
+    FullscreenAllApps,
+    FullscreenSearch
+  };
+
+  enum MouseButton {
+    Left,
+    Middle,
+    Right
+  };
+
+  // A paramter used in setArcAppWindowState() function.
+  dictionary WindowStateChangeDict {
+    // The WM event to change the ARC window state.
+    WMEventType eventType;
+
+    // If the initial state is already same as the expected state, should we
+    // treat this case as a failure? Default value is false.
+    boolean? failIfNoChange;
+  };
+
   dictionary LoginStatusDict {
     // Are we logged in?
     boolean isLoggedIn;
@@ -31,6 +126,10 @@ namespace autotestPrivate {
     DOMString userImage;
   };
   callback LoginStatusCallback = void (LoginStatusDict status);
+
+  // |all_policies| will be the full list of policies as returned by the
+  // DictionaryPolicyConversions.ToValue function.
+  callback AllEnterprisePoliciesCallback = void (any all_policies);
 
   dictionary ExtensionInfoDict {
     DOMString id;
@@ -78,6 +177,8 @@ namespace autotestPrivate {
   };
   callback PrinterArrayCallback = void (Printer[] printers);
 
+  callback ArcStartTimeCallback = void (double startTime);
+
   dictionary ArcState {
     // Whether the ARC is provisioned.
     boolean provisioned;
@@ -111,12 +212,26 @@ namespace autotestPrivate {
   callback HistogramCallback = void (Histogram histogram);
 
   dictionary AssistantQueryResponse {
+    // Text response returned from server.
     DOMString? text;
+    // HTML response returned from server, usually accompanied with
+    // fallback text.
     DOMString? htmlResponse;
+    // Text messages used as the "fallback" for HTML card rendering.
+    // Generally the fallback text is similar to transcribed TTS,
+    // e.g. "It's exactly 6 o'clock." or "Turning bluetooth off.".
     DOMString? htmlFallback;
   };
-  callback AssistantQueryResponseCallback =
-      void(AssistantQueryResponse response);
+  dictionary AssistantQueryStatus {
+    // Indicates whether this might be a voice interaction.
+    boolean isMicOpen;
+    // Query text sent to Assistant. In the event of a voice interaction,
+    // this field will be same as the speech recognition final result.
+    DOMString queryText;
+    // Response for the current query.
+    AssistantQueryResponse queryResponse;
+  };
+  callback AssistantQueryStatusCallback = void (AssistantQueryStatus status);
 
   callback IsAppShownCallback = void (boolean appShown);
 
@@ -151,12 +266,37 @@ namespace autotestPrivate {
   };
   callback GetArcPackageCallback = void (ArcPackageDict package);
 
+  dictionary Location {
+    double x;
+    double y;
+  };
+
+  dictionary Bounds {
+    double left;
+    double top;
+    double width;
+    double height;
+  };
+
+  dictionary ArcAppWindowInfo {
+    Bounds bounds;
+    DOMString displayId;
+    boolean isAnimating;
+    boolean isVisible;
+  };
+
+  dictionary ArcAppTracingInfo {
+    boolean success;
+    double fps;
+    double commitDeviation;
+    double renderQuality;
+  };
+
+  callback GetArcAppWindowInfoCallback = void (ArcAppWindowInfo info);
+
   callback LaunchArcAppCallback = void (boolean appLaunched);
 
   callback TakeScreenshotCallback = void (DOMString base64Png);
-
-  callback EnsureWindowServiceClientHasDrawnWindowCallback =
-      void(boolean success);
 
   callback GetPrimaryDisplayScaleFactorCallback = void (double scaleFactor);
 
@@ -164,9 +304,151 @@ namespace autotestPrivate {
 
   callback SetTabletModeEnabledCallback = void(boolean enabled);
 
+  callback SetOverviewModeStateCallback = void(boolean finished);
+
+  callback ArcAppTracingCallback = void(ArcAppTracingInfo info);
+
+  callback WaitForDisplayRotationCallback = void (boolean success);
+
+  callback InstallPWAForCurrentURLCallback = void (DOMString appId);
+
+  dictionary App {
+    DOMString appId;
+    DOMString name;
+    DOMString shortName;
+    AppType? type;
+    AppReadiness? readiness;
+    DOMString[] additionalSearchTerms;
+    boolean? showInLauncher;
+    boolean? showInSearch;
+  };
+
+  callback GetAllInstalledAppsCallback = void (App[] apps);
+
+  dictionary ShelfItem {
+    DOMString appId;
+    DOMString launchId;
+    DOMString title;
+    ShelfItemType? type;
+    ShelfItemStatus status;
+    boolean showsTooltip;
+    boolean pinnedByPolicy;
+    boolean hasNotification;
+  };
+
+  // A mapping of ash::AppType.
+  enum AppWindowType {
+    Browser,
+    ChromeApp,
+    ArcApp,
+    CrostiniApp,
+    SystemApp,
+    ExtensionApp
+  };
+
+  // The frame mode of a window. None if the window is framesless.
+  enum FrameMode {
+    Normal,
+    Immersive
+  };
+
+  dictionary OverviewInfo {
+    // Bounds in screen of an OverviewItem.
+    Bounds bounds;
+    // Whether an OverviewItem is being dragged in overview.
+    boolean isDragged;
+  };
+
+  dictionary AppWindowInfo {
+    // The identifier of the window. This shouldn't change across the time.
+    long id;
+
+    // The name of the window object -- typically internal class name of the
+    // window (like 'BrowserFrame').
+    DOMString name;
+
+    AppWindowType windowType;
+    WindowStateType stateType;
+
+    // The bounds of the window, in the coordinate of the root window (i.e.
+    // relative to the display where this window resides).
+    Bounds boundsInRoot;
+
+    // The identifier of the display where this window resides.
+    DOMString displayId;
+
+    boolean isVisible;
+    boolean canFocus;
+
+    // The title of the window; this can be seen in the window caption, or in
+    // the overview mode. Typically, this provides the title of the webpage or
+    // the title supplied by the application.
+    DOMString title;
+
+    // Whether some animation is ongoing on the window or not.
+    boolean isAnimating;
+
+    // The final bounds of the window when the animation completes. This should
+    // be same as |boundsInRoot| when |isAnimating| is false.
+    Bounds targetBounds;
+
+    // Whether or not the window is going to be visible after the animation
+    // completes. This should be same as |isVisible| when |isAnimating| is
+    // false.
+    boolean targetVisibility;
+
+    // WM Releated states
+    boolean isActive;
+    boolean hasFocus;
+    boolean onActiveDesk;
+    boolean hasCapture;
+
+    // Window frame info
+    FrameMode frameMode;
+    boolean isFrameVisible;
+    long captionHeight;
+    // The bitset of the enabled caption buttons. See
+    // ui/views/window/caption_button_types.h.
+    long captionButtonEnabledStatus;
+    // The bitset of the caption buttons which are visible on the frame.
+    long captionButtonVisibleStatus;
+
+    DOMString? arcPackageName;
+
+    OverviewInfo? overviewInfo;
+  };
+
+  dictionary Accelerator {
+    DOMString keyCode;
+    boolean shift;
+    boolean control;
+    boolean alt;
+    boolean search;
+    boolean pressed;
+  };
+
+  callback GetShelfItemsCallback = void (ShelfItem[] items);
+
+  callback GetShelfAutoHideBehaviorCallback = void (DOMString behavior);
+
+  callback GetShelfAlignmentCallback = void (ShelfAlignmentType alignment);
+
+  callback WindowStateCallback = void (WindowStateType currentType);
+
   callback VoidCallback = void ();
 
+  callback DOMStringCallback = void (DOMString data);
+
+  callback GetAppWindowListCallback = void (AppWindowInfo[] window_list);
+
+  callback AcceleratorCallback = void (boolean success);
+
+  callback DesksCallback = void (boolean success);
+
   interface Functions {
+    // Must be called to allow autotestPrivateAPI events to be fired.
+    static void initializeEvents();
+
     // Logout of a user session.
     static void logout();
 
@@ -185,6 +467,16 @@ namespace autotestPrivate {
 
     // Get info about installed extensions.
     static void getExtensionsInfo(ExtensionsInfoCallback callback);
+
+    // Get state of the policies.
+    // Will contain device policies and policies from the active profile.
+    // The policy values are formatted as they would be for exporting in
+    // chrome://policy.
+    static void getAllEnterprisePolicies(
+        AllEnterprisePoliciesCallback callback);
+
+    // Refreshes the Enterprise Policies.
+    static void refreshEnterprisePolicies(VoidCallback callback);
 
     // Simulates a memory access bug for asan testing.
     static void simulateAsanMemoryBug();
@@ -223,6 +515,9 @@ namespace autotestPrivate {
 
     // Get visible notifications on the system.
     static void getVisibleNotifications(NotificationArrayCallback callback);
+
+    // Get ARC start time.
+    static void getArcStartTime(ArcStartTimeCallback callback);
 
     // Get state of the ARC session.
     static void getArcState(ArcStateCallback callback);
@@ -274,6 +569,14 @@ namespace autotestPrivate {
     // |callback|: Invoked with details.
     static void getHistogram(DOMString name, HistogramCallback callback);
 
+    // Get text from ui::Clipboard.
+    // |callback|: Called with result.
+    static void getClipboardTextData(DOMStringCallback callback);
+
+    // Set text in ui::Clipbaord.
+    // |callback|: Called when operation is complete.
+    static void setClipboardTextData(DOMString data, VoidCallback callback);
+
     // Run the crostini installer GUI to install the default crostini
     // vm / container and create sshfs mount.  The installer launches the
     // crostini terminal app on completion.  The installer expects that
@@ -290,23 +593,71 @@ namespace autotestPrivate {
     // |callback|: Called when the operation has completed.
     static void setCrostiniEnabled(boolean enabled, VoidCallback callback);
 
+    // Export the crostini container.
+    // |path|: The path in Downloads to save the export.
+    // |callback|: Called when the operation has completed.
+    static void exportCrostini(DOMString path, VoidCallback callback);
+
+    // Import the crostini container.
+    // |path|: The path in Downloads to read the import.
+    // |callback|: Called when the operation has completed.
+    static void importCrostini(DOMString path, VoidCallback callback);
+
+    // Register a component with CrOSComponentManager.
+    // |name|: The name of the component.
+    // |path|: Path to the component.
+    static void registerComponent(DOMString name, DOMString path);
+
     // Takes a screenshot and returns the data in base64 encoded PNG format.
     static void takeScreenshot(TakeScreenshotCallback callback);
+
+    // Tasks a screenshot for a display.
+    // |display_id|: the display id of the display.
+    // |callback|: called when the operation has completed.
+    static void takeScreenshotForDisplay(DOMString display_id,
+                                         TakeScreenshotCallback callback);
 
     // Makes a basic request to ML Service, triggering 1. ML Service
     // daemon startup, and 2. the initial D-Bus -> Mojo IPC bootstrap.
     // |callback|: Called when the operation has completed.
     static void bootstrapMachineLearningService(VoidCallback callback);
 
-    // Enable/disable the Google Assistant
+    // Enables/disables the Google Assistant.
     // |callback|: Called when the operation has completed.
     static void setAssistantEnabled(boolean enabled, long timeout_ms,
                                     VoidCallback callback);
 
-    // Send a text query via Google Assistant.
+    // Bring up the Assistant service, and wait for the ready signal.
+    // |callback|: Called when the operation has completed.
+    static void enableAssistantAndWaitForReady(VoidCallback callback);
+
+    // Sends a text query via Google Assistant.
     // |callback|: Called when response has been received.
     static void sendAssistantTextQuery(DOMString query, long timeout_ms,
-                                       AssistantQueryResponseCallback callback);
+                                       AssistantQueryStatusCallback callback);
+
+    // Invokes |callback| once the current text/voice interaction is completed.
+    // Responds with the the query status if any valid response was caught
+    // before the timeout. This API should be called before sending the query.
+    // To use it for testing a voice query via OKG in Autotest, for example,
+    // you can do:
+    //
+    //    // Enable hotword setting for Assistant.
+    //    assistant_util.enable_hotword();
+    //
+    //    // Call this API with your callback function.
+    //    chrome.autotestPrivate.waitForAssistantQueryStatus(timeout_s,
+    //        function(status) {...});
+    //
+    // then start Assistant via OKG and send voice query before timeout.
+    //
+    // TODO(meilinw@): disable warmer welcome to avoid an unintended early
+    // return of this API when launching Assistant via hotkey.
+    // TODO(meilinw@): update the comment above to use Tast instead after
+    // adding API to enable hotword in Tast.
+    static void waitForAssistantQueryStatus(
+        long timeout_s,
+        AssistantQueryStatusCallback callback);
 
     // Set value for the specified user pref in the pref tree.
     static void setWhitelistedPref(DOMString pref_name, any value,
@@ -320,21 +671,12 @@ namespace autotestPrivate {
     static void setCrostiniAppScaled(DOMString appId, boolean scaled,
                                      VoidCallback callback);
 
-    // Ensure that the Window Service client identified by |clientName| has
-    // drawn any window. |callback| is invoked with true if the client has drawn
-    // anything or when it does so before the time out. Otherwise, an error
-    // is raised when timeout happens.
-    static void ensureWindowServiceClientHasDrawnWindow(
-        DOMString clientName,
-        long timeout_ms,
-        EnsureWindowServiceClientHasDrawnWindowCallback callback);
-
     // Get the primary display scale factor.
     // |callback| is invoked with the scale factor.
     static void getPrimaryDisplayScaleFactor(
         GetPrimaryDisplayScaleFactorCallback callback);
 
-    // Returns the tablet mode enabled status.
+    // Get the tablet mode enabled status.
     // |callback| is invoked with the tablet mode enablement status.
     static void isTabletModeEnabled(IsTabletModeEnabledCallback callback);
 
@@ -345,5 +687,186 @@ namespace autotestPrivate {
     // |callback|: Called when the operation has completed.
     static void setTabletModeEnabled(boolean enabled,
         SetTabletModeEnabledCallback callback);
+
+    // Get the list of all installed applications
+    static void getAllInstalledApps(GetAllInstalledAppsCallback callback);
+
+    // Get the list of all shelf items
+    static void getShelfItems(GetShelfItemsCallback callback);
+
+    // Get the shelf auto hide behavior.
+    // |displayId|: display that contains the shelf.
+    // |callback| is invoked with the shelf auto hide behavior. Possible
+    // behavior values are: "always", "never" or "hidden".
+    static void getShelfAutoHideBehavior(DOMString displayId,
+        GetShelfAutoHideBehaviorCallback callback);
+
+    // Set the shelf auto hide behavior.
+    // |displayId|: display that contains the shelf.
+    // |behavior|: an enum of "always", "never" or "hidden".
+    // |callback|: Called when the operation has completed.
+    static void setShelfAutoHideBehavior(DOMString displayId,
+        DOMString behavior, VoidCallback callback);
+
+    // Get the shelf alignment.
+    // |displayId|: display that contains the shelf.
+    // |callback| is invoked with the shelf alignment type.
+    static void getShelfAlignment(DOMString displayId,
+        GetShelfAlignmentCallback callback);
+
+    // Set the shelf alignment.
+    // |displayId|: display that contains the shelf.
+    // |alignment|: the type of alignment to set.
+    // |callback|: Called when the operation has completed.
+    static void setShelfAlignment(DOMString displayId,
+        ShelfAlignmentType alignment, VoidCallback callback);
+
+    // Enter or exit the overview mode.
+    // |start|: whether entering to or exiting from the overview mode.
+    // |callback|: called after the overview mode switch finishes.
+    static void setOverviewModeState(boolean start,
+        SetOverviewModeStateCallback callback);
+
+    // Show virtual keyboard of the current input method if it's available.
+    static void showVirtualKeyboardIfEnabled();
+
+    // Send WM event to change the ARC app window's window state.
+    // |packageName|: the package name of the ARC app window.
+    // |change|: WM event type to send to the ARC app window.
+    // |callback|: called when the window state is changed.
+    [deprecated="Use setAppWindowState"] static void setArcAppWindowState(
+        DOMString packageName,
+        WindowStateChangeDict change,
+        WindowStateCallback callback);
+
+    // Get ARC app window's window state.
+    // |packageName|: the package name of the ARC app window.
+    // |callback| is invoked with the window state.
+    static void getArcAppWindowState(DOMString packageName,
+                                     WindowStateCallback callback);
+
+    // Get various information on an ARC window.
+    // |packageName|: the package name of the ARC app window.
+    // |callback|: called when the operation has completed.
+    [deprecated="Use getAppWindowList"] static void getArcAppWindowInfo(
+        DOMString packageName,
+        GetArcAppWindowInfoCallback callback);
+
+    // Start ARC performance tracing for the active ARC app window.
+    // |callback|: Called when the operation has completed.
+    static void arcAppTracingStart(VoidCallback callback);
+
+    // Stop ARC performance tracing if it was started and analyze results.
+    // |callback|: callback to deliver tracing results.
+    static void arcAppTracingStopAndAnalyze(ArcAppTracingCallback callback);
+
+    // Swap the windows in the split view.
+    // |callback|: Called when the operation has completed.
+    static void swapWindowsInSplitView(VoidCallback callback);
+
+    // Set ARC app window focused.
+    // |packageName|: the package name of the ARC app window.
+    // |callback|: called when the operation has completed.
+    static void setArcAppWindowFocus(DOMString packageName,
+                                     VoidCallback callback);
+
+    // Invokes the callback when the display rotation animation is finished, or
+    // invokes it immediately if it is not animating. The callback argument
+    // is true if the display's rotation is same as |rotation|, or false otherwise.
+    // |displayId|: display that contains the shelf.
+    // |rotation|: the target rotation.
+    // |callback|: called when the operation has completed.
+    static void waitForDisplayRotation(DOMString displayId,
+                                       RotationType rotation,
+                                       WaitForDisplayRotationCallback callback);
+
+    // Get information on all application windows. Callback will be called
+    // with the list of |AppWindowInfo| dictionary.
+    // |callback|: called with window list.
+    static void getAppWindowList(GetAppWindowListCallback callback);
+
+    // Send WM event to change the app window's window state.
+    // |id|: the id of the window
+    // |change|: WM event type to send to the app window.
+    // |callback|: called when the window state is changed.
+    static void setAppWindowState(long id,
+                                  WindowStateChangeDict change,
+                                  WindowStateCallback callback);
+
+    // Closes an app window given by "id".
+    // |id|: the id of the window
+    // |callback|: called when the window state is requested to close.
+    static void closeAppWindow(long id, VoidCallback callback);
+
+    // Installs the Progressive Web App (PWA) that is in the current URL.
+    // |timeout_ms|: Timeout in milliseconds for the operation to complete.
+    // |callback|: called when the operation has completed. Passes the app Id
+    //             of the recently installed PWA as argument.
+    static void installPWAForCurrentURL(
+        long timeout_ms,
+        InstallPWAForCurrentURLCallback callback);
+
+    // Activates shortcut.
+    // |accelerator|: the accelerator to activate.
+    // |callback|: called when the operation has completed.
+    static void activateAccelerator(Accelerator accelerator,
+                                    AcceleratorCallback callback);
+
+    // Wwait until the launcher is transitionto the |launcherState|, if it's not
+    // in that state.
+    // |launcherState|: the target launcher state.
+    // |callback|: called when the operation has completed.
+    static void waitForLauncherState(LauncherStateType launcherState,
+                                     VoidCallback callback);
+
+    // Creates a new desk if the maximum number of desks has not been reached.
+    // |callback|: called to indicate success or failure.
+    static void createNewDesk(DesksCallback callback);
+
+    // Activates the desk at the given |index| triggering the activate-desk
+    // animation.
+    // |index|: the zero-based index of the desk desired to be activated.
+    // |callback|: called indicating success when the animation completes, or
+    // failure when the desk at |index| is already the active desk.
+    static void activateDeskAtIndex(long index, DesksCallback callback);
+
+    // Removes the currently active desk and triggers the remove-desk animation.
+    // |callback|: called indicating success when the animation completes, or
+    // failure if the currently active desk is the last available desk which
+    // cannot be removed.
+    static void removeActiveDesk(DesksCallback callback);
+
+    // Create mouse events to cause a mouse click.
+    // |button|: the mouse button for the click event.
+    // |callback|: called after the mouse click finishes.
+    static void mouseClick(MouseButton button, VoidCallback callback);
+
+    // Create a mouse event to cause mouse pressing. The mouse button stays
+    // in the pressed state.
+    // |button|: the mouse button to be pressed.
+    // |callback|: called after the mouse pressed event is handled.
+    static void mousePress(MouseButton button, VoidCallback callback);
+
+    // Create a mouse event to release a mouse button. This does nothing and
+    // returns immediately if the specified button is not pressed.
+    // |button|: the mouse button to be released.
+    // |callback|: called after the mouse is released.
+    static void mouseRelease(MouseButton button, VoidCallback callback);
+
+    // Create mouse events to move a mouse cursor to the location. This can
+    // cause a dragging if a button is pressed. It starts from the last mouse
+    // location. It does not support the move or drag across display boundaries.
+    // |location|: the target location (in display's coordinate).
+    // |duration_in_ms|: the duration (in milliseconds) for the mouse movement.
+    //    The mouse will move linearly. 0 means moving immediately.
+    // |callback|: called after the mouse move finishes.
+    static void mouseMove(Location location,
+                          double duration_in_ms,
+                          VoidCallback callback);
+  };
+
+  interface Events {
+    // Fired when the data in ui::Clipboard is changed.
+    static void onClipboardDataChanged();
   };
 };

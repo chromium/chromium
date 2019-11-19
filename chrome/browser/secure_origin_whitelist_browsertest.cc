@@ -17,6 +17,7 @@
 #include "components/security_state/core/features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/network/public/cpp/network_switches.h"
 
 namespace {
 // SecureOriginWhitelistBrowsertests differ in the setup of the browser. Since
@@ -58,7 +59,7 @@ class SecureOriginWhitelistBrowsertest
       return;
 
     command_line->AppendSwitchASCII(
-        switches::kUnsafelyTreatInsecureOriginAsSecure, BaseURL());
+        network::switches::kUnsafelyTreatInsecureOriginAsSecure, BaseURL());
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -167,17 +168,26 @@ IN_PROC_BROWSER_TEST_P(SecureOriginWhitelistBrowsertest, Simple) {
   }
 }
 
+class SecureOriginWhitelistBrowsertestWithMarkHttpDangerous
+    : public SecureOriginWhitelistBrowsertest {
+ public:
+  SecureOriginWhitelistBrowsertestWithMarkHttpDangerous() {
+    // TODO(crbug.com/917693): Remove this forced feature/param when the feature
+    // fully launches.
+    feature_list_.InitAndEnableFeatureWithParameters(
+        security_state::features::kMarkHttpAsFeature,
+        {{security_state::features::kMarkHttpAsFeatureParameterName,
+          security_state::features::kMarkHttpAsParameterDangerous}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that whitelisted insecure origins are correctly set as security level
 // NONE instead of the default level DANGEROUS.
-IN_PROC_BROWSER_TEST_P(SecureOriginWhitelistBrowsertest, SecurityIndicators) {
-  // TODO(crbug.com/917693): Remove this forced feature/param when the feature
-  // fully launches.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      security_state::features::kMarkHttpAsFeature,
-      {{security_state::features::kMarkHttpAsFeatureParameterName,
-        security_state::features::kMarkHttpAsParameterDangerous}});
-
+IN_PROC_BROWSER_TEST_P(SecureOriginWhitelistBrowsertestWithMarkHttpDangerous,
+                       SecurityIndicators) {
   ui_test_utils::NavigateToURL(
       browser(),
       embedded_test_server()->GetURL(
@@ -185,21 +195,18 @@ IN_PROC_BROWSER_TEST_P(SecureOriginWhitelistBrowsertest, SecurityIndicators) {
   auto* helper = SecurityStateTabHelper::FromWebContents(
       browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(helper);
-  security_state::SecurityInfo security_info;
-  helper->GetSecurityInfo(&security_info);
 
   if (GetParam() == TestVariant::kPolicyOldAndNew) {
     // When both policies are set, the new policy overrides the old policy.
-    EXPECT_EQ(security_state::DANGEROUS, security_info.security_level);
+    EXPECT_EQ(security_state::DANGEROUS, helper->GetSecurityLevel());
     ui_test_utils::NavigateToURL(
         browser(),
         embedded_test_server()->GetURL(
             "otherexample.com", "/secure_origin_whitelist_browsertest.html"));
-    helper->GetSecurityInfo(&security_info);
-    EXPECT_EQ(security_state::NONE, security_info.security_level);
+    EXPECT_EQ(security_state::NONE, helper->GetSecurityLevel());
   } else {
     EXPECT_EQ(ExpectSecureContext() ? security_state::NONE
                                     : security_state::DANGEROUS,
-              security_info.security_level);
+              helper->GetSecurityLevel());
   }
 }

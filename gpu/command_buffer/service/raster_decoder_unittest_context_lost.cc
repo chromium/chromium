@@ -18,8 +18,6 @@ using ::testing::SetArrayArgument;
 namespace gpu {
 namespace raster {
 
-using namespace cmds;
-
 class RasterDecoderOOMTest : public RasterDecoderManualInitTest {
  protected:
   void Init(bool has_robustness) {
@@ -33,7 +31,7 @@ class RasterDecoderOOMTest : public RasterDecoderManualInitTest {
 
   void OOM(GLenum reset_status,
            error::ContextLostReason expected_other_reason) {
-    if (context_->WasAllocatedUsingRobustnessExtension()) {
+    if (context_->HasRobustness()) {
       EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
           .WillOnce(Return(reset_status));
     }
@@ -119,7 +117,7 @@ class RasterDecoderLostContextTest : public RasterDecoderManualInitTest {
         .RetiresOnSaturation();
     EXPECT_CALL(*gl_, GetGraphicsResetStatusARB())
         .WillOnce(Return(reset_status));
-    GetError cmd;
+    cmds::GetError cmd;
     cmd.Init(shared_memory_id_, shared_memory_offset_);
     EXPECT_EQ(error::kLostContext, ExecuteCmd(cmd));
     EXPECT_EQ(static_cast<GLuint>(GL_NO_ERROR), *GetSharedMemoryAs<GLenum*>());
@@ -130,7 +128,7 @@ class RasterDecoderLostContextTest : public RasterDecoderManualInitTest {
     EXPECT_CALL(*gl_, GetError())
         .WillOnce(Return(GL_CONTEXT_LOST_KHR))
         .RetiresOnSaturation();
-    GetError cmd;
+    cmds::GetError cmd;
     cmd.Init(shared_memory_id_, shared_memory_offset_);
     EXPECT_EQ(error::kLostContext, ExecuteCmd(cmd));
   }
@@ -169,9 +167,9 @@ TEST_P(RasterDecoderLostContextTest, QueryDestroyAfterLostFromMakeCurrent) {
   Init(/*has_robustness=*/false);
 
   const GLsync kGlSync = reinterpret_cast<GLsync>(0xdeadbeef);
-  GenHelper<GenQueriesEXTImmediate>(kNewClientId);
+  GenHelper<cmds::GenQueriesEXTImmediate>(kNewClientId);
 
-  BeginQueryEXT begin_cmd;
+  cmds::BeginQueryEXT begin_cmd;
   begin_cmd.Init(GL_COMMANDS_COMPLETED_CHROMIUM, kNewClientId,
                  shared_memory_id_, kSharedMemoryOffset);
   EXPECT_EQ(error::kNoError, ExecuteCmd(begin_cmd));
@@ -193,7 +191,7 @@ TEST_P(RasterDecoderLostContextTest, QueryDestroyAfterLostFromMakeCurrent) {
       .RetiresOnSaturation();
 #endif
 
-  EndQueryEXT end_cmd;
+  cmds::EndQueryEXT end_cmd;
   end_cmd.Init(GL_COMMANDS_COMPLETED_CHROMIUM, 1);
   EXPECT_EQ(error::kNoError, ExecuteCmd(end_cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());

@@ -33,7 +33,7 @@
 
 #include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/reverb_convolver.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -69,7 +69,8 @@ class PLATFORM_EXPORT Reverb {
   void Initialize(AudioBus* impulse_response_buffer,
                   size_t render_slice_size,
                   size_t max_fft_size,
-                  bool use_background_threads);
+                  bool use_background_threads,
+                  float scale);
 
   size_t impulse_response_length_;
   // The actual number of channels in the response.  This can be less

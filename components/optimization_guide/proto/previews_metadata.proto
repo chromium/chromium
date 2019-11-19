@@ -1,0 +1,52 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package optimization_guide.proto;
+
+import "common_types.proto";
+
+enum LoadingOptimizationType {
+  LOADING_UNSPECIFIED = 0;
+  // The resource should not be loaded.
+  LOADING_BLOCK_RESOURCE = 1;
+}
+
+message ResourceLoadingHint {
+  // The pattern to match against the resource URL.
+  //
+  // The pattern may be a single substring to match against the URL or it may be
+  // an ordered set of substrings to match where the substrings are separated by
+  // the ‘*’ wildcard character (with an implicit ‘*’ at the beginning and end).
+  optional string resource_pattern = 1;
+  // The type of loading optimization to apply to the resource.
+  optional LoadingOptimizationType loading_optimization_type = 2;
+}
+
+// Optimization metadata associated with Previews.
+//
+// Currently, this is just populated for optimization types NOSCRIPT and
+// RESOURCE_LOADING.
+message PreviewsMetadata {
+  // A percent value to inflate the number of received bytes by for the purposes
+  // of data savings calculations in the client.
+  //
+  // If this value is set to 0, the client should use its configured default.
+  //
+  // Ex: If the received bytes is 100 and the inflation_percent is 30, the
+  // inflated bytes calculated by the client will be 30 in order to have a total
+  // consumed bytes value of 130.
+  optional int64 inflation_percent = 1;
+  // The maximum effective connection type threshold for triggering the
+  // optimization associated with this optimization.
+  optional EffectiveConnectionType max_ect_trigger = 2;
+  // An ordered set of resource loading hints.
+  //
+  // Only the first ResourceLoadingHint record that matches a target resource
+  // URL will be applied to that resource.
+  repeated ResourceLoadingHint resource_loading_hints = 3;
+}

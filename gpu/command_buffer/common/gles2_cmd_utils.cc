@@ -290,6 +290,10 @@ int GLES2Util::GLGetNumValuesReturned(int id) const {
       return 1;
     case GL_ATOMIC_COUNTER_BUFFER_START:
       return 1;
+    case GL_DISPATCH_INDIRECT_BUFFER_BINDING:
+      return 1;
+    case GL_DRAW_INDIRECT_BUFFER_BINDING:
+      return 1;
     case GL_MAX_ATOMIC_COUNTER_BUFFER_BINDINGS:
       return 1;
     case GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS:
@@ -1674,6 +1678,10 @@ uint32_t GLES2Util::MapBufferTargetToBindingEnum(uint32_t target) {
       return GL_COPY_READ_BUFFER_BINDING;
     case GL_COPY_WRITE_BUFFER:
       return GL_COPY_WRITE_BUFFER_BINDING;
+    case GL_DISPATCH_INDIRECT_BUFFER:
+      return GL_DISPATCH_INDIRECT_BUFFER_BINDING;
+    case GL_DRAW_INDIRECT_BUFFER:
+      return GL_DRAW_INDIRECT_BUFFER_BINDING;
     case GL_ELEMENT_ARRAY_BUFFER:
       return GL_ELEMENT_ARRAY_BUFFER_BINDING;
     case GL_PIXEL_PACK_BUFFER:
@@ -1751,6 +1759,19 @@ bool GLES2Util::IsFloatFormat(uint32_t internal_format) {
     case GL_RGB16F:
     case GL_RGB32F:
     case GL_RGBA16F:
+    case GL_RGBA32F:
+      return true;
+    default:
+      return false;
+  }
+}
+
+// static
+bool GLES2Util::IsFloat32Format(uint32_t internal_format) {
+  switch (internal_format) {
+    case GL_R32F:
+    case GL_RG32F:
+    case GL_RGB32F:
     case GL_RGBA32F:
       return true;
     default:

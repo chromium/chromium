@@ -62,7 +62,6 @@ void APIBindingJSUtil::SendRequest(
     gin::Arguments* arguments,
     const std::string& name,
     const std::vector<v8::Local<v8::Value>>& request_args,
-    v8::Local<v8::Value> schemas_unused,
     v8::Local<v8::Value> options) {
   v8::Isolate* isolate = arguments->isolate();
   v8::HandleScope handle_scope(isolate);
@@ -71,7 +70,6 @@ void APIBindingJSUtil::SendRequest(
   const APISignature* signature = type_refs_->GetAPIMethodSignature(name);
   DCHECK(signature);
 
-  binding::RequestThread thread = binding::RequestThread::UI;
   v8::Local<v8::Function> custom_callback;
   if (!options.IsEmpty() && !options->IsUndefined() && !options->IsNull()) {
     if (!options->IsObject()) {
@@ -84,11 +82,8 @@ void APIBindingJSUtil::SendRequest(
       return;
     }
     gin::Dictionary options_dict(isolate, options_obj);
-    // NOTE: We don't throw any errors here if forIOThread or customCallback are
-    // of invalid types. We could, if we wanted to be a bit more verbose.
-    bool for_io_thread = false;
-    if (options_dict.Get("forIOThread", &for_io_thread) && for_io_thread)
-      thread = binding::RequestThread::IO;
+    // NOTE: We don't throw any errors here if customCallback is of an invalid
+    // type. We could, if we wanted to be a bit more verbose.
     options_dict.Get("customCallback", &custom_callback);
   }
 
@@ -101,11 +96,13 @@ void APIBindingJSUtil::SendRequest(
   // TODO(devlin): We should ideally always be able to validate these, meaning
   // that we either need to make the APIs give us the expected signature, or
   // need to have a way of indicating an internal signature.
-  CHECK(signature->ConvertArgumentsIgnoringSchema(
-      context, request_args, &converted_arguments, &callback));
+  APISignature::JSONParseResult parse_result =
+      signature->ConvertArgumentsIgnoringSchema(context, request_args);
+  CHECK(parse_result.succeeded());
 
-  request_handler_->StartRequest(context, name, std::move(converted_arguments),
-                                 callback, custom_callback, thread);
+  request_handler_->StartRequest(context, name,
+                                 std::move(parse_result.arguments),
+                                 parse_result.callback, custom_callback);
 }
 
 void APIBindingJSUtil::RegisterEventArgumentMassager(
@@ -121,7 +118,6 @@ void APIBindingJSUtil::RegisterEventArgumentMassager(
 
 void APIBindingJSUtil::CreateCustomEvent(gin::Arguments* arguments,
                                          v8::Local<v8::Value> v8_event_name,
-                                         v8::Local<v8::Value> unused_schema,
                                          bool supports_filters,
                                          bool supports_lazy_listeners) {
   v8::Isolate* isolate = arguments->isolate();
@@ -323,11 +319,10 @@ void APIBindingJSUtil::ValidateCustomSignature(
     return;
   }
 
-  std::vector<v8::Local<v8::Value>> args_out;
-  std::string parse_error;
-  if (!signature->ParseArgumentsToV8(context, vector_arguments, *type_refs_,
-                                     &args_out, &parse_error)) {
-    arguments->ThrowTypeError(parse_error);
+  APISignature::V8ParseResult parse_result =
+      signature->ParseArgumentsToV8(context, vector_arguments, *type_refs_);
+  if (!parse_result.succeeded()) {
+    arguments->ThrowTypeError(std::move(*parse_result.error));
   }
 }
 

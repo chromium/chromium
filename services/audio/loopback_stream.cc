@@ -23,31 +23,36 @@
 
 namespace audio {
 
-// static
-constexpr double LoopbackStream::kMaxVolume;
+namespace {
+
+// Start with a conservative, but reasonable capture delay that should work for
+// most platforms (i.e., not needing an increase during a loopback session).
+constexpr base::TimeDelta kInitialCaptureDelay =
+    base::TimeDelta::FromMilliseconds(20);
+
+}  // namespace
 
 // static
-constexpr base::TimeDelta LoopbackStream::kCaptureDelay;
+constexpr double LoopbackStream::kMaxVolume;
 
 LoopbackStream::LoopbackStream(
     CreatedCallback created_callback,
     BindingLostCallback binding_lost_callback,
     scoped_refptr<base::SequencedTaskRunner> flow_task_runner,
-    media::mojom::AudioInputStreamRequest request,
-    media::mojom::AudioInputStreamClientPtr client,
-    media::mojom::AudioInputStreamObserverPtr observer,
+    mojo::PendingReceiver<media::mojom::AudioInputStream> receiver,
+    mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
+    mojo::PendingRemote<media::mojom::AudioInputStreamObserver> observer,
     const media::AudioParameters& params,
     uint32_t shared_memory_count,
     LoopbackCoordinator* coordinator,
     const base::UnguessableToken& group_id)
     : binding_lost_callback_(std::move(binding_lost_callback)),
-      binding_(this, std::move(request)),
+      receiver_(this, std::move(receiver)),
       client_(std::move(client)),
       observer_(std::move(observer)),
       coordinator_(coordinator),
       group_id_(group_id),
-      network_(nullptr, base::OnTaskRunnerDeleter(flow_task_runner)),
-      weak_factory_(this) {
+      network_(nullptr, base::OnTaskRunnerDeleter(flow_task_runner)) {
   DCHECK(coordinator_);
 
   TRACE_EVENT1("audio", "LoopbackStream::LoopbackStream", "params",
@@ -55,50 +60,39 @@ LoopbackStream::LoopbackStream(
 
   // Generate an error and shut down automatically whenever any of the mojo
   // bindings is closed.
-  binding_.set_connection_error_handler(
+  receiver_.set_disconnect_handler(
       base::BindOnce(&LoopbackStream::OnError, base::Unretained(this)));
-  client_.set_connection_error_handler(
+  client_.set_disconnect_handler(
       base::BindOnce(&LoopbackStream::OnError, base::Unretained(this)));
-  observer_.set_connection_error_handler(
+  observer_.set_disconnect_handler(
       base::BindOnce(&LoopbackStream::OnError, base::Unretained(this)));
 
-  // As of this writing, only machines older than about 10 years won't be able
-  // to produce high-resolution timestamps. In order to avoid adding extra
-  // complexity to the implementation, simply refuse to operate without that
-  // basic level of hardware support.
-  //
   // Construct the components of the AudioDataPipe, for delivering the data to
   // the consumer. If successful, create the FlowNetwork too.
-  if (base::TimeTicks::IsHighResolution()) {
-    base::CancelableSyncSocket foreign_socket;
-    std::unique_ptr<InputSyncWriter> writer = InputSyncWriter::Create(
-        base::BindRepeating(
-            [](const std::string& message) { VLOG(1) << message; }),
-        shared_memory_count, params, &foreign_socket);
-    if (writer) {
-      base::ReadOnlySharedMemoryRegion shared_memory_region =
-          writer->TakeSharedMemoryRegion();
-      mojo::ScopedHandle socket_handle;
-      if (shared_memory_region.IsValid()) {
-        socket_handle = mojo::WrapPlatformFile(foreign_socket.Release());
-        if (socket_handle.is_valid()) {
-          std::move(created_callback)
-              .Run({base::in_place, std::move(shared_memory_region),
-                    std::move(socket_handle)});
-          network_.reset(new FlowNetwork(std::move(flow_task_runner), params,
-                                         std::move(writer)));
-          return;  // Success!
-        }
+  base::CancelableSyncSocket foreign_socket;
+  std::unique_ptr<InputSyncWriter> writer = InputSyncWriter::Create(
+      base::BindRepeating(
+          [](const std::string& message) { VLOG(1) << message; }),
+      shared_memory_count, params, &foreign_socket);
+  if (writer) {
+    base::ReadOnlySharedMemoryRegion shared_memory_region =
+        writer->TakeSharedMemoryRegion();
+    mojo::ScopedHandle socket_handle;
+    if (shared_memory_region.IsValid()) {
+      socket_handle = mojo::WrapPlatformFile(foreign_socket.Release());
+      if (socket_handle.is_valid()) {
+        std::move(created_callback)
+            .Run({base::in_place, std::move(shared_memory_region),
+                  std::move(socket_handle)});
+        network_.reset(new FlowNetwork(std::move(flow_task_runner), params,
+                                       std::move(writer)));
+        return;  // Success!
       }
     }
-  } else /* if (!base::TimeTicks::IsHighResolution()) */ {
-    LOG(ERROR) << "Refusing to start loop-back because this machine cannot "
-                  "provide high-resolution timestamps.";
   }
 
-  // If this point is reached, either the TimeTicks clock is not high resolution
-  // or one or more AudioDataPipe components failed to initialize. Report the
-  // error.
+  // If this point is reached, one or more AudioDataPipe components failed to
+  // initialize. Report the error.
   std::move(created_callback).Run(nullptr);
   OnError();
 }
@@ -168,6 +162,17 @@ void LoopbackStream::OnMemberJoinedGroup(LoopbackGroupMember* member) {
     return;
   }
 
+  if (!base::TimeTicks::IsHighResolution()) {
+    // As of this writing, only machines manufactured before 2008 won't be able
+    // to produce high-resolution timestamps. Since the buffer management logic
+    // (to mitigate overruns/underruns) depends on them to function correctly,
+    // simply return early (i.e., never start snooping on the |member|).
+    TRACE_EVENT_INSTANT0("audio",
+                         "LoopbackStream::OnMemberJoinedGroup Rejected",
+                         TRACE_EVENT_SCOPE_THREAD);
+    return;
+  }
+
   TRACE_EVENT1("audio", "LoopbackStream::OnMemberJoinedGroup", "member",
                member);
 
@@ -177,7 +182,7 @@ void LoopbackStream::OnMemberJoinedGroup(LoopbackGroupMember* member) {
       std::forward_as_tuple(input_params, network_->output_params()));
   DCHECK(emplace_result.second);  // There was no pre-existing map entry.
   SnooperNode* const snooper = &(emplace_result.first->second);
-  member->StartSnooping(snooper, Snoopable::SnoopingMode::kDeferred);
+  member->StartSnooping(snooper);
   network_->AddInput(snooper);
 }
 
@@ -188,12 +193,16 @@ void LoopbackStream::OnMemberLeftGroup(LoopbackGroupMember* member) {
     return;
   }
 
+  const auto snoop_it = snoopers_.find(member);
+  if (snoop_it == snoopers_.end()) {
+    // See comments about "high-resolution timestamps" in OnMemberJoinedGroup().
+    return;
+  }
+
   TRACE_EVENT1("audio", "LoopbackStream::OnMemberLeftGroup", "member", member);
 
-  const auto snoop_it = snoopers_.find(member);
-  DCHECK(snoop_it != snoopers_.end());
   SnooperNode* const snooper = &(snoop_it->second);
-  member->StopSnooping(snooper, Snoopable::SnoopingMode::kDeferred);
+  member->StopSnooping(snooper);
   network_->RemoveInput(snooper);
   snoopers_.erase(snoop_it);
 }
@@ -207,7 +216,7 @@ void LoopbackStream::OnError() {
 
   TRACE_EVENT0("audio", "LoopbackStream::OnError");
 
-  binding_.Close();
+  receiver_.reset();
   if (client_) {
     client_->OnError();
     client_.reset();
@@ -256,7 +265,7 @@ void LoopbackStream::FlowNetwork::AddInput(SnooperNode* node) {
   if (inputs_.empty()) {
     HelpDiagnoseCauseOfLoopbackCrash("adding first input");
   }
-  DCHECK(!base::ContainsValue(inputs_, node));
+  DCHECK(!base::Contains(inputs_, node));
   inputs_.push_back(node);
 }
 
@@ -294,6 +303,7 @@ void LoopbackStream::FlowNetwork::Start() {
   first_generate_time_ = clock_->NowTicks();
   frames_elapsed_ = 0;
   next_generate_time_ = first_generate_time_;
+  capture_delay_ = kInitialCaptureDelay;
 
   flow_task_runner_->PostTask(
       FROM_HERE,
@@ -319,20 +329,37 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
   TRACE_EVENT_WITH_FLOW0("audio", "GenerateMoreAudio", this,
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
 
-  // Always generate audio from the recent past, to prevent buffer underruns
-  // in the inputs.
-  const base::TimeTicks delayed_capture_time =
-      next_generate_time_ - kCaptureDelay;
-
   // Drive the audio flows from the SnooperNodes and produce the single result
   // stream. Hold the lock during this part of the process to prevent any of the
   // control methods from altering the configuration of the network.
   double output_volume;
+  base::TimeTicks delayed_capture_time;
   {
     base::AutoLock scoped_lock(lock_);
     output_volume = volume_;
 
     HelpDiagnoseCauseOfLoopbackCrash("generating");
+
+    // Compute the reference time to use for audio rendering. Query each input
+    // node and update |capture_delay_|, if necessary. This is used to always
+    // generate audio from a "safe point" in the recent past, to prevent buffer
+    // underruns in the inputs. http://crbug.com/934770
+    delayed_capture_time = next_generate_time_ - capture_delay_;
+    for (SnooperNode* node : inputs_) {
+      const base::Optional<base::TimeTicks> suggestion =
+          node->SuggestLatestRenderTime(mix_bus_->frames());
+      if (suggestion.value_or(delayed_capture_time) < delayed_capture_time) {
+        const base::TimeDelta increase = delayed_capture_time - (*suggestion);
+        TRACE_EVENT_INSTANT2("audio", "GenerateMoreAudio Capture Delay Change",
+                             TRACE_EVENT_SCOPE_THREAD, "old capture delay (µs)",
+                             capture_delay_.InMicroseconds(), "change (µs)",
+                             increase.InMicroseconds());
+        delayed_capture_time = *suggestion;
+        capture_delay_ += increase;
+      }
+    }
+    TRACE_COUNTER_ID1("audio", "Loopback Capture Delay (µs)", this,
+                      capture_delay_.InMicroseconds());
 
     // Render the audio from each input, apply this stream's volume setting by
     // scaling the data, then mix it all together to form a single audio

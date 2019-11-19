@@ -1,0 +1,8 @@
+{
+  "name": "Test",
+  "icons": [{
+    "src": "icon.png",
+    "sizes": "any",
+    "type": "image/png"
+  }]
+}

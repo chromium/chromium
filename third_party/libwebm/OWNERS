@@ -1,9 +1,11 @@
 # The following OWNERS refer to libwebm Chromium integration.
-emircan@chromium.org
-mcasas@chromium.org
 niklase@chromium.org
 
 # The following OWNER refer to libwebm content.
 tomfinegan@chromium.org
+
+# Original (legacy) owner.
+emircan@chromium.org
+mcasas@chromium.org
 
 # COMPONENT: Blink>MediaRecording

@@ -17,7 +17,7 @@ import java.lang.ref.WeakReference;
  * WebView applications through WebChromeClient.onGeolocationPermissionsShowPrompt().
  */
 public class AwGeolocationCallback implements AwGeolocationPermissions.Callback {
-    private static final String TAG = "cr.Geolocation";
+    private static final String TAG = "Geolocation";
 
     private CleanupRunable mCleanupRunable;
     private CleanupReference mCleanupReference;

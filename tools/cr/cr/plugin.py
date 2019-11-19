@@ -9,6 +9,9 @@ found and used.
 The module registers a scan hook with the cr.loader system to enable it to
 discover plugins as they are loaded.
 """
+
+from __future__ import print_function
+
 from operator import attrgetter
 
 import cr
@@ -107,11 +110,11 @@ class Plugin(cr.loader.AutoExport):
       def unbound(*args, **kwargs):
         active = owner.GetActivePlugin()
         if not active:
-          print 'No active', owner.__name__
+          print('No active', owner.__name__)
           exit(1)
         method = getattr(active, self.method.__name__, None)
         if not method:
-          print owner.__name__, 'does not support', self.method.__name__
+          print(owner.__name__, 'does not support', self.method.__name__)
           exit(1)
         return method(*args, **kwargs)
 

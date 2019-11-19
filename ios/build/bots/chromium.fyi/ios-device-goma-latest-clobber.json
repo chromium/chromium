@@ -1,0 +1,25 @@
+{
+  "comments": [
+    "Goma latest builder for iOS.",
+    "It is chromium.mac/ios-device.json + use_goma_canary, clobber."
+  ],
+  "xcode build version": "11a1027",
+  "gn_args": [
+    "goma_dir=\"$(goma_dir)\"",
+    "ios_enable_code_signing=false",
+    "is_component_build=false",
+    "is_debug=false",
+    "symbol_level=0",
+    "target_cpu=\"arm64\"",
+    "target_os=\"ios\"",
+    "use_goma=true"
+  ],
+  "additional_compile_targets": [
+    "all"
+  ],
+  "configuration": "Release",
+  "tests": [
+  ],
+  "clobber": true,
+  "goma_client_type": "latest"
+}

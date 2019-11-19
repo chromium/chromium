@@ -11,6 +11,6 @@ namespace extensions {
 InputImeEventRouterBase::InputImeEventRouterBase(Profile* profile)
     : profile_(profile) {}
 
-InputImeEventRouterBase::~InputImeEventRouterBase() {}
+InputImeEventRouterBase::~InputImeEventRouterBase() = default;
 
 }  // namespace extensions

@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui_util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -54,16 +55,16 @@
     _textLabel.numberOfLines = 0;
     _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _textLabel.adjustsFontForContentSizeCategory = YES;
-    _textLabel.textColor = UIColor.blackColor;
+    _textLabel.textColor = UIColor.cr_labelColor;
     [contentView addSubview:_textLabel];
 
     _detailTextLabel = [[UILabel alloc] init];
     _detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _detailTextLabel.numberOfLines = 0;
     _detailTextLabel.font =
-        [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+        [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
     _detailTextLabel.adjustsFontForContentSizeCategory = YES;
-    _detailTextLabel.textColor = UIColorFromRGB(kSettingsCellsDetailTextColor);
+    _detailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
     [contentView addSubview:_detailTextLabel];
 
     // Set up the constraints.

@@ -1,0 +1,416 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">|    abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">|    abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  '38-0 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre"> |   abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">|    abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  '38-1 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">  |  abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">|    abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  '38-2 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">   | abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">|    abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  '38-3 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    |abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">|    abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  '38-4 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    a|bc    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-5 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    ab|c    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-6 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc|    def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-7 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc |   def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-8 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc  |  def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-9 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc   | def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-10 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    |def    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    |abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-11 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    d|ef    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    |def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-12 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    de|f    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    |def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-13 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def|    hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    |def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-14 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def |   hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    |def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-15 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def  |  hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    |def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-16 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def   | hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    |def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-17 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    |hij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    |def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-18 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    h|ij    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    |hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-19 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hi|j    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    |hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-20 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij|    אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    |hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-21 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij |   אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    |hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-22 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij  |  אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    |hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-23 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij   | אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    |hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-24 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    |אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    |hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    uvw    </div>',
+  '38-25 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    א|בצ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    |אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  '38-26 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אב|צ    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    |אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  '38-27 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ|    דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    |אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  '38-28 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ |   דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    |אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  '38-29 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ  |  דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    |אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  '38-30 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ   | דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    |אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  '38-31 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    |דעפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    |אבצ    דעפ    היח    opq    rst    uvw    </div>',
+  '38-32 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    ד|עפ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    |דעפ    היח    opq    rst    uvw    </div>',
+  '38-33 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דע|פ    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    |דעפ    היח    opq    rst    uvw    </div>',
+  '38-34 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ|    היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    |דעפ    היח    opq    rst    uvw    </div>',
+  '38-35 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ |   היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    |דעפ    היח    opq    rst    uvw    </div>',
+  '38-36 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ  |  היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    |דעפ    היח    opq    rst    uvw    </div>',
+  '38-37 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ   | היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    |דעפ    היח    opq    rst    uvw    </div>',
+  '38-38 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    |היח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    |דעפ    היח    opq    rst    uvw    </div>',
+  '38-39 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    ה|יח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    |היח    opq    rst    uvw    </div>',
+  '38-40 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    הי|ח    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    |היח    opq    rst    uvw    </div>',
+  '38-41 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח|    opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    |היח    opq    rst    uvw    </div>',
+  '38-42 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח |   opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    |היח    opq    rst    uvw    </div>',
+  '38-43 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח  |  opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    |היח    opq    rst    uvw    </div>',
+  '38-44 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח   | opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    |היח    opq    rst    uvw    </div>',
+  '38-45 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    |opq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    |היח    opq    rst    uvw    </div>',
+  '38-46 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    o|pq    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    |opq    rst    uvw    </div>',
+  '38-47 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    op|q    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    |opq    rst    uvw    </div>',
+  '38-48 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq|    rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    |opq    rst    uvw    </div>',
+  '38-49 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq |   rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    |opq    rst    uvw    </div>',
+  '38-50 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq  |  rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    |opq    rst    uvw    </div>',
+  '38-51 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq   | rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    |opq    rst    uvw    </div>',
+  '38-52 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    |rst    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    |opq    rst    uvw    </div>',
+  '38-53 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    r|st    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    |rst    uvw    </div>',
+  '38-54 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rs|t    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    |rst    uvw    </div>',
+  '38-55 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rst|    uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    |rst    uvw    </div>',
+  '38-56 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rst |   uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    |rst    uvw    </div>',
+  '38-57 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rst  |  uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    |rst    uvw    </div>',
+  '38-58 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rst   | uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    |rst    uvw    </div>',
+  '38-59 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rst    |uvw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    |rst    uvw    </div>',
+  '38-60 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rst    u|vw    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    |uvw    </div>',
+  '38-61 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rst    uv|w    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    |uvw    </div>',
+  '38-62 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw|    </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    |uvw    </div>',
+  '38-63 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw |   </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    |uvw    </div>',
+  '38-64 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw  |  </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    |uvw    </div>',
+  '38-65 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw   | </div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    |uvw    </div>',
+  '38-66 right word');
+
+selection_test(
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    אבצ    דעפ    היח    opq    rst    uvw    |</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="rtl" style="white-space:pre">    abc    def    hij    \u05D0\u05D1\u05E6    \u05D3\u05E2\u05E4    \u05D4\u05D9\u05D7    opq    rst    |uvw    </div>',
+  '38-67 right word');
+</script>

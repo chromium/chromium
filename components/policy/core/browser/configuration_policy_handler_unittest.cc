@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -718,7 +719,8 @@ TEST(IntPercentageToDoublePolicyHandler, ApplyPolicySettingsDontClamp) {
   EXPECT_EQ(*expected, *value);
 }
 
-TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValue) {
+TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueInvalid) {
+  base::HistogramTester histogram_tester;
   std::string error;
   static const char kSchemaJson[] =
       "{"
@@ -770,6 +772,65 @@ TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValue) {
   EXPECT_TRUE(dict->GetInteger("OneToThree", &int_value));
   EXPECT_EQ(2, int_value);
   EXPECT_FALSE(dict->HasKey("Colors"));
+  histogram_tester.ExpectUniqueSample("Enterprise.SchemaMismatchedValueIgnored",
+                                      /*ignored=*/true, /*amount=*/1);
+}
+
+TEST(SchemaValidatingPolicyHandlerTest, CheckAndGetValueUnknown) {
+  base::HistogramTester histogram_tester;
+  std::string error;
+  static const char kSchemaJson[] =
+      "{"
+      "  \"type\": \"object\","
+      "  \"properties\": {"
+      "    \"OneToThree\": {"
+      "      \"type\": \"integer\","
+      "      \"minimum\": 1,"
+      "      \"maximum\": 3"
+      "    },"
+      "    \"Colors\": {"
+      "      \"type\": \"string\","
+      "      \"enum\": [ \"Red\", \"Green\", \"Blue\" ]"
+      "    }"
+      "  }"
+      "}";
+  Schema schema = Schema::Parse(kSchemaJson, &error);
+  ASSERT_TRUE(schema.valid()) << error;
+
+  static const char kPolicyMapJson[] =
+      "{"
+      "  \"PolicyForTesting\": {"
+      "    \"OneToThree\": 2,"
+      "    \"Apples\": \"Red\""
+      "  }"
+      "}";
+  std::unique_ptr<base::Value> policy_map_value =
+      base::JSONReader::ReadAndReturnErrorDeprecated(
+          kPolicyMapJson, base::JSON_ALLOW_TRAILING_COMMAS, nullptr, &error);
+  ASSERT_TRUE(policy_map_value) << error;
+
+  const base::DictionaryValue* policy_map_dict = nullptr;
+  ASSERT_TRUE(policy_map_value->GetAsDictionary(&policy_map_dict));
+
+  PolicyMap policy_map;
+  policy_map.LoadFrom(policy_map_dict, POLICY_LEVEL_RECOMMENDED,
+                      POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD);
+
+  TestSchemaValidatingPolicyHandler handler(schema, SCHEMA_ALLOW_INVALID);
+  std::unique_ptr<base::Value> output_value;
+  ASSERT_TRUE(handler.CheckAndGetValueForTest(policy_map, &output_value));
+  ASSERT_TRUE(output_value);
+
+  base::DictionaryValue* dict = nullptr;
+  ASSERT_TRUE(output_value->GetAsDictionary(&dict));
+
+  // Test that CheckAndGetValue() actually dropped unknown properties.
+  int int_value = -1;
+  EXPECT_TRUE(dict->GetInteger("OneToThree", &int_value));
+  EXPECT_EQ(2, int_value);
+  EXPECT_FALSE(dict->HasKey("Apples"));
+  histogram_tester.ExpectUniqueSample("Enterprise.SchemaMismatchedValueIgnored",
+                                      /*ignored=*/false, /*amount=*/1);
 }
 
 TEST(SimpleSchemaValidatingPolicyHandlerTest, CheckAndGetValue) {

@@ -58,7 +58,7 @@ class CastCdm : public ::media::ContentDecryptionModule {
   // |key_id|. Returns null if |key_id| is not available.
   virtual std::unique_ptr<DecryptContextImpl> GetDecryptContext(
       const std::string& key_id,
-      const EncryptionScheme& encryption_scheme) const = 0;
+      EncryptionScheme encryption_scheme) const = 0;
 
   // Notifies that key status has changed (e.g. if expiry is detected by
   // hardware decoder).
@@ -103,7 +103,10 @@ class CastCdm : public ::media::ContentDecryptionModule {
   ::media::SessionKeysChangeCB session_keys_change_cb_;
   ::media::SessionExpirationUpdateCB session_expiration_update_cb_;
 
-  MediaResourceTracker* media_resource_tracker_;
+  // Track the usage for hardware resource. nullptr means the implementation
+  // doesn't need hardware resource.
+  MediaResourceTracker* const media_resource_tracker_;
+  std::unique_ptr<MediaResourceTracker::ScopedUsage> media_resource_usage_;
   std::unique_ptr<::media::PlayerTrackerImpl> player_tracker_impl_;
   std::unique_ptr<CastCdmContext> cast_cdm_context_;
 

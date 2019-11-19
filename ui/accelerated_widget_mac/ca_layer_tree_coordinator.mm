@@ -8,7 +8,6 @@
 
 #include "base/mac/mac_util.h"
 #include "base/trace_event/trace_event.h"
-#include "ui/accelerated_widget_mac/availability_macros.h"
 #include "ui/base/cocoa/animation_utils.h"
 
 namespace ui {
@@ -36,8 +35,8 @@ void CALayerTreeCoordinator::Resize(const gfx::Size& pixel_size,
 
 CARendererLayerTree* CALayerTreeCoordinator::GetPendingCARendererLayerTree() {
   if (!pending_ca_renderer_layer_tree_)
-    pending_ca_renderer_layer_tree_.reset(new CARendererLayerTree(
-        allow_av_sample_buffer_display_layer_, false));
+    pending_ca_renderer_layer_tree_ = std::make_unique<CARendererLayerTree>(
+        allow_av_sample_buffer_display_layer_, false);
   return pending_ca_renderer_layer_tree_.get();
 }
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <style>
 #clipping-repaint-container {
-    transform: translateZ(0);
+    will-change: transform;
     overflow: hidden;
     position: absolute;
     left: 49px;
@@ -32,6 +32,7 @@
 }
 
 #compositing-child1 {
+    will-change: transform;
     transform: translateZ(-1px);
     position: absolute;
     left: 48px;
@@ -42,6 +43,7 @@
 }
 
 #compositing-child2 {
+    will-change: transform;
     transform: translateZ(-1px);
     position: absolute;
     left: 49px;

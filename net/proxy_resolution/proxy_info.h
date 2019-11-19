@@ -127,12 +127,6 @@ class NET_EXPORT ProxyInfo {
     return did_use_pac_script_;
   }
 
-  // Returns true if the proxy list was obtained from a PAC script that
-  // was auto-detected.
-  bool did_use_auto_detected_pac_script() const {
-    return did_use_auto_detected_pac_script_;
-  }
-
   // Returns the first valid proxy server. is_empty() must be false to be able
   // to call this function.
   const ProxyServer& proxy_server() const { return proxy_list_.Get(); }
@@ -209,7 +203,6 @@ class NET_EXPORT ProxyInfo {
 
   // Whether we used a PAC script for resolving the proxy.
   bool did_use_pac_script_;
-  bool did_use_auto_detected_pac_script_;
 
   // How long it took to resolve the proxy.  Times are both null if proxy was
   // determined synchronously without running a PAC.

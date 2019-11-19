@@ -8,7 +8,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.download.DownloadManagerService;
 import org.chromium.chrome.browser.download.DownloadNotifier;
 import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBridge;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
 
 /**
@@ -25,14 +24,10 @@ public class OfflineContentAggregatorNotificationBridgeUiFactory {
     public static OfflineContentAggregatorNotificationBridgeUi instance() {
         ThreadUtils.assertOnUiThread();
         if (sBridgeUi == null) {
-            Profile profile = Profile.getLastUsedProfile();
-            OfflineContentProvider provider = OfflineContentAggregatorFactory.forProfile(profile);
+            OfflineContentProvider provider = OfflineContentAggregatorFactory.get();
             DownloadNotifier ui =
                     DownloadManagerService.getDownloadManagerService().getDownloadNotifier();
-
-            // TODO(shaktisahu): Move the offline page initialization to native.
             OfflinePageDownloadBridge.getInstance();
-
             sBridgeUi = new OfflineContentAggregatorNotificationBridgeUi(provider, ui);
         }
 

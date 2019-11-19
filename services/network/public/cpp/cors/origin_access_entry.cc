@@ -34,11 +34,15 @@ bool IsSubdomainOfHost(const std::string& subdomain, const std::string& host) {
 OriginAccessEntry::OriginAccessEntry(
     const std::string& protocol,
     const std::string& host,
-    const mojom::CorsOriginAccessMatchMode mode,
+    const uint16_t port,
+    const mojom::CorsDomainMatchMode domain_match_mode,
+    const mojom::CorsPortMatchMode port_match_mode,
     const mojom::CorsOriginAccessMatchPriority priority)
     : protocol_(protocol),
       host_(host),
-      mode_(mode),
+      port_(port),
+      domain_match_mode_(domain_match_mode),
+      port_match_mode_(port_match_mode),
       priority_(priority),
       host_is_ip_address_(url::HostIsIPAddress(host)),
       host_is_public_suffix_(false) {
@@ -57,17 +61,17 @@ OriginAccessEntry::OriginAccessEntry(
 
   if (host_.length() <= public_suffix_length + 1) {
     host_is_public_suffix_ = true;
-  } else if (mode_ ==
-                 mojom::CorsOriginAccessMatchMode::kAllowRegisterableDomains &&
+  } else if (domain_match_mode_ ==
+                 mojom::CorsDomainMatchMode::kAllowRegistrableDomains &&
              public_suffix_length) {
     // The "2" in the next line is 1 for the '.', plus a 1-char minimum label
     // length.
     const size_t dot =
         host_.rfind('.', host_.length() - public_suffix_length - 2);
     if (dot == std::string::npos)
-      registerable_domain_ = host_;
+      registrable_domain_ = host_;
     else
-      registerable_domain_ = host_.substr(dot + 1);
+      registrable_domain_ = host_.substr(dot + 1);
   }
 }
 
@@ -78,19 +82,25 @@ OriginAccessEntry::MatchResult OriginAccessEntry::MatchesOrigin(
   if (protocol_ != origin.scheme())
     return kDoesNotMatchOrigin;
 
-  return MatchesDomain(origin);
+  if (port_match_mode_ == mojom::CorsPortMatchMode::kAllowOnlySpecifiedPort &&
+      port_ != origin.port()) {
+    return kDoesNotMatchOrigin;
+  }
+
+  return MatchesDomain(origin.host());
 }
 
 OriginAccessEntry::MatchResult OriginAccessEntry::MatchesDomain(
-    const url::Origin& origin) const {
+    const std::string& domain) const {
   // Special case: Include subdomains and empty host means "all hosts, including
   // ip addresses".
-  if (mode_ != mojom::CorsOriginAccessMatchMode::kDisallowSubdomains &&
-      host_.empty())
+  if (domain_match_mode_ != mojom::CorsDomainMatchMode::kDisallowSubdomains &&
+      host_.empty()) {
     return kMatchesOrigin;
+  }
 
   // Exact match.
-  if (host_ == origin.host())
+  if (host_ == domain)
     return kMatchesOrigin;
 
   // Don't try to do subdomain matching on IP addresses.
@@ -98,23 +108,23 @@ OriginAccessEntry::MatchResult OriginAccessEntry::MatchesDomain(
     return kDoesNotMatchOrigin;
 
   // Match subdomains.
-  switch (mode_) {
-    case mojom::CorsOriginAccessMatchMode::kDisallowSubdomains:
+  switch (domain_match_mode_) {
+    case mojom::CorsDomainMatchMode::kDisallowSubdomains:
       return kDoesNotMatchOrigin;
 
-    case mojom::CorsOriginAccessMatchMode::kAllowSubdomains:
-      if (!IsSubdomainOfHost(origin.host(), host_))
+    case mojom::CorsDomainMatchMode::kAllowSubdomains:
+      if (!IsSubdomainOfHost(domain, host_))
         return kDoesNotMatchOrigin;
       break;
 
-    case mojom::CorsOriginAccessMatchMode::kAllowRegisterableDomains:
-      // Fall back to a simple subdomain check if no registerable domain could
+    case mojom::CorsDomainMatchMode::kAllowRegistrableDomains:
+      // Fall back to a simple subdomain check if no registrable domain could
       // be found:
-      if (registerable_domain_.empty()) {
-        if (!IsSubdomainOfHost(origin.host(), host_))
+      if (registrable_domain_.empty()) {
+        if (!IsSubdomainOfHost(domain, host_))
           return kDoesNotMatchOrigin;
-      } else if (registerable_domain_ != origin.host() &&
-                 !IsSubdomainOfHost(origin.host(), registerable_domain_)) {
+      } else if (registrable_domain_ != domain &&
+                 !IsSubdomainOfHost(domain, registrable_domain_)) {
         return kDoesNotMatchOrigin;
       }
       break;
@@ -126,9 +136,10 @@ OriginAccessEntry::MatchResult OriginAccessEntry::MatchesDomain(
   return kMatchesOrigin;
 }
 
-mojo::InlinedStructPtr<mojom::CorsOriginPattern>
+mojo::StructPtr<mojom::CorsOriginPattern>
 OriginAccessEntry::CreateCorsOriginPattern() const {
-  return mojom::CorsOriginPattern::New(protocol_, host_, mode_, priority_);
+  return mojom::CorsOriginPattern::New(
+      protocol_, host_, port_, domain_match_mode_, port_match_mode_, priority_);
 }
 
 }  // namespace cors

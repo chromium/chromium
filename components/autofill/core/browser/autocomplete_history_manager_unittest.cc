@@ -12,8 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
@@ -28,7 +27,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/version_info.h"
-#include "components/webdata_services/web_data_service_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -79,7 +77,7 @@ class MockAutofillClient : public TestAutofillClient {
 class MockSuggestionsHandler
     : public AutocompleteHistoryManager::SuggestionsHandler {
  public:
-  MockSuggestionsHandler() : weak_ptr_factory_(this) {}
+  MockSuggestionsHandler() {}
 
   MOCK_METHOD3(OnSuggestionsReturned,
                void(int query_id,
@@ -91,7 +89,7 @@ class MockSuggestionsHandler
   }
 
  private:
-  base::WeakPtrFactory<MockSuggestionsHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<MockSuggestionsHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MockSuggestionsHandler);
 };
@@ -152,11 +150,10 @@ class AutocompleteHistoryManagerTest : public testing::Test {
                          date_last_used);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   scoped_refptr<MockWebDataService> web_data_service_;
   std::unique_ptr<AutocompleteHistoryManager> autocomplete_manager_;
   std::unique_ptr<PrefService> prefs_;
-  base::test::ScopedFeatureList scoped_features;
   TestAutofillClock test_clock;
 };
 
@@ -164,7 +161,7 @@ class AutocompleteHistoryManagerTest : public testing::Test {
 TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.origin = GURL("http://myform.com/form.html");
+  form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Valid Visa credit card number pulled from the paypal help site.
@@ -186,7 +183,7 @@ TEST_F(AutocompleteHistoryManagerTest, CreditCardNumberValue) {
 TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.origin = GURL("http://myform.com/form.html");
+  form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Invalid credit card number.
@@ -206,7 +203,7 @@ TEST_F(AutocompleteHistoryManagerTest, NonCreditCardNumberValue) {
 TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.origin = GURL("http://myform.com/form.html");
+  form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   FormFieldData ssn;
@@ -225,7 +222,7 @@ TEST_F(AutocompleteHistoryManagerTest, SSNValue) {
 TEST_F(AutocompleteHistoryManagerTest, SearchField) {
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.origin = GURL("http://myform.com/form.html");
+  form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Search field.
@@ -244,7 +241,7 @@ TEST_F(AutocompleteHistoryManagerTest, SearchField) {
 TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.origin = GURL("http://myform.com/form.html");
+  form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Search field.
@@ -260,6 +257,42 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
                                           /*is_autocomplete_enabled=*/false);
 }
 
+// Verify that we don't save invalid values in Autocomplete.
+TEST_F(AutocompleteHistoryManagerTest, InvalidValues) {
+  FormData form;
+  form.name = ASCIIToUTF16("MyForm");
+  form.url = GURL("http://myform.com/form.html");
+  form.action = GURL("http://myform.com/submit.html");
+
+  // Search field.
+  FormFieldData search_field;
+
+  // Empty value.
+  search_field.label = ASCIIToUTF16("Search");
+  search_field.name = ASCIIToUTF16("search");
+  search_field.value = ASCIIToUTF16("");
+  search_field.form_control_type = "search";
+  form.fields.push_back(search_field);
+
+  // Single whitespace.
+  search_field.label = ASCIIToUTF16("Search2");
+  search_field.name = ASCIIToUTF16("other search");
+  search_field.value = ASCIIToUTF16(" ");
+  search_field.form_control_type = "search";
+  form.fields.push_back(search_field);
+
+  // Multiple whitespaces.
+  search_field.label = ASCIIToUTF16("Search3");
+  search_field.name = ASCIIToUTF16("other search");
+  search_field.value = ASCIIToUTF16("      ");
+  search_field.form_control_type = "search";
+  form.fields.push_back(search_field);
+
+  EXPECT_CALL(*(web_data_service_.get()), AddFormFields(_)).Times(0);
+  autocomplete_manager_->OnWillSubmitForm(form,
+                                          /*is_autocomplete_enabled=*/true);
+}
+
 // Tests that text entered into fields specifying autocomplete="off" is not sent
 // to the WebDatabase to be saved. Note this is also important as the mechanism
 // for preventing CVCs from being saved.
@@ -267,7 +300,7 @@ TEST_F(AutocompleteHistoryManagerTest, AutocompleteFeatureOff) {
 TEST_F(AutocompleteHistoryManagerTest, FieldWithAutocompleteOff) {
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.origin = GURL("http://myform.com/form.html");
+  form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Field specifying autocomplete="off".
@@ -290,7 +323,7 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
                               /*is_off_the_record_=*/true);
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.origin = GURL("http://myform.com/form.html");
+  form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Search field.
@@ -311,7 +344,7 @@ TEST_F(AutocompleteHistoryManagerTest, Incognito) {
 TEST_F(AutocompleteHistoryManagerTest, NonFocusableField) {
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.origin = GURL("http://myform.com/form.html");
+  form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Unfocusable field.
@@ -333,7 +366,7 @@ TEST_F(AutocompleteHistoryManagerTest, NonFocusableField) {
 TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.origin = GURL("http://myform.com/form.html");
+  form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   // Presentation field.
@@ -342,7 +375,7 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
   field.name = ASCIIToUTF16("esoterica");
   field.value = ASCIIToUTF16("a truly esoteric value, I assure you");
   field.form_control_type = "text";
-  field.role = FormFieldData::ROLE_ATTRIBUTE_PRESENTATION;
+  field.role = FormFieldData::RoleAttribute::kPresentation;
   form.fields.push_back(field);
 
   EXPECT_CALL(*web_data_service_, AddFormFields(_)).Times(0);
@@ -354,9 +387,7 @@ TEST_F(AutocompleteHistoryManagerTest, PresentationField) {
 // cleanup if the flag is enabled, we're not in OTR and it hadn't run in the
 // current major version.
 TEST_F(AutocompleteHistoryManagerTest, Init_TriggersCleanup) {
-  // Enable the feature, and set the major version.
-  scoped_features.InitAndEnableFeature(
-      features::kAutocompleteRetentionPolicyEnabled);
+  // Set the rentention policy cleanup to a past major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      CHROME_VERSION_MAJOR - 1);
 
@@ -370,9 +401,7 @@ TEST_F(AutocompleteHistoryManagerTest, Init_TriggersCleanup) {
 // Tests that the Init function will not trigger the Autocomplete Retention
 // Policy when running in OTR.
 TEST_F(AutocompleteHistoryManagerTest, Init_OTR_Not_TriggersCleanup) {
-  // Enable the feature, and set the major version.
-  scoped_features.InitAndEnableFeature(
-      features::kAutocompleteRetentionPolicyEnabled);
+  // Set the rentention policy cleanup to a past major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      CHROME_VERSION_MAJOR - 1);
 
@@ -383,20 +412,16 @@ TEST_F(AutocompleteHistoryManagerTest, Init_OTR_Not_TriggersCleanup) {
                               /*is_off_the_record=*/true);
 }
 
-// Tests that the Init function will not trigger the Autocomplete Retention
-// Policy when the feature is disabled.
-TEST_F(AutocompleteHistoryManagerTest,
-       Init_FeatureDisabled_Not_TriggersCleanup) {
-  // Disable the feature, and set the major version.
-  scoped_features.InitAndDisableFeature(
-      features::kAutocompleteRetentionPolicyEnabled);
+// Tests that the Init function will not crash even if we don't have a DB.
+TEST_F(AutocompleteHistoryManagerTest, Init_NullDB_NoCrash) {
+  // Set the rentention policy cleanup to a past major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      CHROME_VERSION_MAJOR - 1);
 
   EXPECT_CALL(*web_data_service_,
               RemoveExpiredAutocompleteEntries(autocomplete_manager_.get()))
       .Times(0);
-  autocomplete_manager_->Init(web_data_service_, prefs_.get(),
+  autocomplete_manager_->Init(nullptr, prefs_.get(),
                               /*is_off_the_record=*/false);
 }
 
@@ -404,9 +429,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 // Policy when running in a major version that was already cleaned.
 TEST_F(AutocompleteHistoryManagerTest,
        Init_SameMajorVersion_Not_TriggersCleanup) {
-  // Enable the feature, and set the major version.
-  scoped_features.InitAndEnableFeature(
-      features::kAutocompleteRetentionPolicyEnabled);
+  // Set the rentention policy cleanup to the current major version.
   prefs_->SetInteger(prefs::kAutocompleteLastVersionRetentionPolicy,
                      CHROME_VERSION_MAJOR);
 
@@ -872,7 +895,7 @@ TEST_F(AutocompleteHistoryManagerTest,
 TEST_F(AutocompleteHistoryManagerTest, NoAutocompleteSuggestionsForTextarea) {
   FormData form;
   form.name = ASCIIToUTF16("MyForm");
-  form.origin = GURL("http://myform.com/form.html");
+  form.url = GURL("http://myform.com/form.html");
   form.action = GURL("http://myform.com/submit.html");
 
   FormFieldData field;

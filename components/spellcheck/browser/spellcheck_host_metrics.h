@@ -14,6 +14,7 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 
 // A helper object for recording spell-check related histograms.
 // This class encapsulates histogram names and metrics API.
@@ -60,6 +61,16 @@ class SpellCheckHostMetrics {
 
   // Records if spelling service is enabled or disabled.
   void RecordSpellingServiceStats(bool enabled);
+
+#if defined(OS_WIN)
+  // Records how many user spellcheck languages are currently not supported by
+  // the Windows OS spellchecker due to missing language packs.
+  void RecordMissingLanguagePacksCount(int count);
+
+  // Records how many user languages are not supported by Hunspell for
+  // spellchecking.
+  void RecordHunspellUnsupportedLanguageCount(int count);
+#endif  // defined(OS_WIN)
 
  private:
   friend class SpellcheckHostMetricsTest;

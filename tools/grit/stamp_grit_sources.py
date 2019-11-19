@@ -12,6 +12,8 @@
 # Usage:
 #    stamp_grit_sources.py <directory> <stamp-file> <.d-file>
 
+from __future__ import print_function
+
 import os
 import sys
 
@@ -39,7 +41,7 @@ def WriteStampFile(stamp_file):
 
 def main(argv):
   if len(argv) != 4:
-    print "Error: expecting 3 args."
+    print("Error: expecting 3 args.")
     return 1
 
   grit_root_dir = sys.argv[1]

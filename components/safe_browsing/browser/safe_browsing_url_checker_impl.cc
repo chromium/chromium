@@ -6,14 +6,19 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/browser/url_checker_delegate.h"
+#include "components/safe_browsing/realtime/policy_engine.h"
+#include "components/safe_browsing/realtime/url_lookup_service.h"
 #include "components/safe_browsing/web_ui/constants.h"
+#include "components/safe_browsing/web_ui/safe_browsing_ui.h"
 #include "components/security_interstitials/content/unsafe_resource.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_event_type.h"
@@ -25,6 +30,10 @@ namespace {
 // check. After this amount of time the outstanding check will be aborted, and
 // the resource will be treated as if it were safe.
 const int kCheckUrlTimeoutMs = 5000;
+
+void RecordCheckUrlTimeout(bool timed_out) {
+  UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.CheckUrl.Timeout", timed_out);
+}
 
 }  // namespace
 
@@ -44,8 +53,8 @@ operator=(Notifier&& other) = default;
 
 void SafeBrowsingUrlCheckerImpl::Notifier::OnStartSlowCheck() {
   if (callback_) {
-    std::move(callback_).Run(mojo::MakeRequest(&slow_check_notifier_), false,
-                             false);
+    std::move(callback_).Run(slow_check_notifier_.BindNewPipeAndPassReceiver(),
+                             false, false);
     return;
   }
 
@@ -57,7 +66,8 @@ void SafeBrowsingUrlCheckerImpl::Notifier::OnCompleteCheck(
     bool proceed,
     bool showed_interstitial) {
   if (callback_) {
-    std::move(callback_).Run(nullptr, proceed, showed_interstitial);
+    std::move(callback_).Run(mojo::NullReceiver(), proceed,
+                             showed_interstitial);
     return;
   }
 
@@ -90,7 +100,8 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
     content::ResourceType resource_type,
     bool has_user_gesture,
     scoped_refptr<UrlCheckerDelegate> url_checker_delegate,
-    const base::Callback<content::WebContents*()>& web_contents_getter)
+    const base::Callback<content::WebContents*()>& web_contents_getter,
+    bool real_time_lookup_enabled)
     : headers_(headers),
       load_flags_(load_flags),
       resource_type_(resource_type),
@@ -98,7 +109,7 @@ SafeBrowsingUrlCheckerImpl::SafeBrowsingUrlCheckerImpl(
       web_contents_getter_(web_contents_getter),
       url_checker_delegate_(std::move(url_checker_delegate)),
       database_manager_(url_checker_delegate_->GetDatabaseManager()),
-      weak_factory_(this) {}
+      real_time_lookup_enabled_(real_time_lookup_enabled) {}
 
 SafeBrowsingUrlCheckerImpl::~SafeBrowsingUrlCheckerImpl() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -127,11 +138,18 @@ void SafeBrowsingUrlCheckerImpl::OnCheckBrowseUrlResult(
     const GURL& url,
     SBThreatType threat_type,
     const ThreatMetadata& metadata) {
+  OnUrlResult(url, threat_type, metadata);
+}
+
+void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
+                                             SBThreatType threat_type,
+                                             const ThreatMetadata& metadata) {
   DCHECK_EQ(STATE_CHECKING_URL, state_);
   DCHECK_LT(next_index_, urls_.size());
   DCHECK_EQ(urls_[next_index_].url, url);
 
   timer_.Stop();
+  RecordCheckUrlTimeout(/*timed_out=*/false);
 
   TRACE_EVENT_ASYNC_END1(
       "safe_browsing", "CheckUrl", this, "result",
@@ -154,18 +172,20 @@ void SafeBrowsingUrlCheckerImpl::OnCheckBrowseUrlResult(
 
   if (load_flags_ & net::LOAD_PREFETCH) {
     // Destroy the prefetch with FINAL_STATUS_SAFEBROSWING.
-    if (resource_type_ == content::RESOURCE_TYPE_MAIN_FRAME) {
+    if (resource_type_ == content::ResourceType::kMainFrame) {
       url_checker_delegate_->MaybeDestroyPrerenderContents(
           web_contents_getter_);
     }
-    UMA_HISTOGRAM_ENUMERATION("SB2.ResourceTypes2.UnsafePrefetchCanceled",
-                              resource_type_, content::RESOURCE_TYPE_LAST_TYPE);
+    // Record the result of canceled unsafe prefetch. This is used as a signal
+    // for testing.
+    LOCAL_HISTOGRAM_ENUMERATION("SB2Test.ResourceTypes2.UnsafePrefetchCanceled",
+                                resource_type_);
+
     BlockAndProcessUrls(false);
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("SB2.ResourceTypes2.Unsafe", resource_type_,
-                            content::RESOURCE_TYPE_LAST_TYPE);
+  UMA_HISTOGRAM_ENUMERATION("SB2.ResourceTypes2.Unsafe", resource_type_);
 
   security_interstitials::UnsafeResource resource;
   resource.url = url;
@@ -175,29 +195,34 @@ void SafeBrowsingUrlCheckerImpl::OnCheckBrowseUrlResult(
     for (size_t i = 1; i < urls_.size(); ++i)
       resource.redirect_urls.push_back(urls_[i].url);
   }
-  resource.is_subresource = resource_type_ != content::RESOURCE_TYPE_MAIN_FRAME;
-  resource.is_subframe = resource_type_ == content::RESOURCE_TYPE_SUB_FRAME;
+  resource.is_subresource = resource_type_ != content::ResourceType::kMainFrame;
+  resource.is_subframe = resource_type_ == content::ResourceType::kSubFrame;
   resource.threat_type = threat_type;
   resource.threat_metadata = metadata;
   resource.callback =
       base::Bind(&SafeBrowsingUrlCheckerImpl::OnBlockingPageComplete,
                  weak_factory_.GetWeakPtr());
-  resource.callback_thread = base::CreateSingleThreadTaskRunnerWithTraits(
-      {content::BrowserThread::IO});
+  resource.callback_thread =
+      base::CreateSingleThreadTaskRunner({content::BrowserThread::IO});
   resource.web_contents_getter = web_contents_getter_;
   resource.threat_source = database_manager_->GetThreatSource();
 
   state_ = STATE_DISPLAYING_BLOCKING_PAGE;
   url_checker_delegate_->StartDisplayingBlockingPageHelper(
       resource, urls_[next_index_].method, headers_,
-      resource_type_ == content::RESOURCE_TYPE_MAIN_FRAME, has_user_gesture_);
+      resource_type_ == content::ResourceType::kMainFrame, has_user_gesture_);
 }
 
-void SafeBrowsingUrlCheckerImpl::OnCheckUrlTimeout() {
+void SafeBrowsingUrlCheckerImpl::OnTimeout() {
+  RecordCheckUrlTimeout(/*timed_out=*/true);
+
   database_manager_->CancelCheck(this);
 
-  OnCheckBrowseUrlResult(urls_[next_index_].url,
-                         safe_browsing::SB_THREAT_TYPE_SAFE, ThreatMetadata());
+  // Any pending callbacks on this URL check should be skipped.
+  weak_factory_.InvalidateWeakPtrs();
+
+  OnUrlResult(urls_[next_index_].url, safe_browsing::SB_THREAT_TYPE_SAFE,
+              ThreatMetadata());
 }
 
 void SafeBrowsingUrlCheckerImpl::CheckUrlImpl(const GURL& url,
@@ -212,6 +237,7 @@ void SafeBrowsingUrlCheckerImpl::CheckUrlImpl(const GURL& url,
 }
 
 void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK_NE(STATE_BLOCKED, state_);
 
   if (state_ == STATE_CHECKING_URL ||
@@ -223,7 +249,6 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
     DCHECK_EQ(STATE_NONE, state_);
 
     const GURL& url = urls_[next_index_].url;
-
     if (url_checker_delegate_->IsUrlWhitelisted(url)) {
       if (!RunNextCallback(true, false))
         return;
@@ -238,8 +263,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
       // TODO(vakh): Consider changing this metric to
       // SafeBrowsing.V4ResourceType to be consistent with the other PVer4
       // metrics.
-      UMA_HISTOGRAM_ENUMERATION("SB2.ResourceTypes2.Skipped", resource_type_,
-                                content::RESOURCE_TYPE_LAST_TYPE);
+      UMA_HISTOGRAM_ENUMERATION("SB2.ResourceTypes2.Skipped", resource_type_);
 
       if (!RunNextCallback(true, false))
         return;
@@ -249,8 +273,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
 
     // TODO(vakh): Consider changing this metric to SafeBrowsing.V4ResourceType
     // to be consistent with the other PVer4 metrics.
-    UMA_HISTOGRAM_ENUMERATION("SB2.ResourceTypes2.Checked", resource_type_,
-                              content::RESOURCE_TYPE_LAST_TYPE);
+    UMA_HISTOGRAM_ENUMERATION("SB2.ResourceTypes2.Checked", resource_type_);
 
     SBThreatType threat_type = CheckWebUIUrls(url);
     if (threat_type != safe_browsing::SB_THREAT_TYPE_SAFE) {
@@ -258,7 +281,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
       TRACE_EVENT_ASYNC_BEGIN1("safe_browsing", "CheckUrl", this, "url",
                                url.spec());
 
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {content::BrowserThread::IO},
           base::BindOnce(&SafeBrowsingUrlCheckerImpl::OnCheckBrowseUrlResult,
                          weak_factory_.GetWeakPtr(), url, threat_type,
@@ -266,8 +289,58 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
       break;
     }
 
-    if (database_manager_->CheckBrowseUrl(
-            url, url_checker_delegate_->GetThreatTypes(), this)) {
+    TRACE_EVENT_ASYNC_BEGIN1("safe_browsing", "CheckUrl", this, "url",
+                             url.spec());
+
+    // Start a timer to abort the check if it takes too long.
+    timer_.Start(FROM_HERE,
+                 base::TimeDelta::FromMilliseconds(kCheckUrlTimeoutMs), this,
+                 &SafeBrowsingUrlCheckerImpl::OnTimeout);
+
+    bool safe_synchronously;
+    if (CanPerformFullURLLookup(url)) {
+      UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.ResourceTypes.Checked",
+                                resource_type_);
+      safe_synchronously = false;
+      AsyncMatch match =
+          database_manager_->CheckUrlForHighConfidenceAllowlist(url, this);
+      switch (match) {
+        case AsyncMatch::ASYNC:
+          // Hash-prefix matched. A call to
+          // |OnCheckUrlForHighConfidenceAllowlist| will follow.
+          break;
+        case AsyncMatch::MATCH:
+          // Full-hash matched locally so queue a call to
+          // |OnCheckUrlForHighConfidenceAllowlist| to trigger the hash-based
+          // checking.
+          base::PostTask(
+              FROM_HERE, {content::BrowserThread::IO},
+              base::BindOnce(&SafeBrowsingUrlCheckerImpl::
+                                 OnCheckUrlForHighConfidenceAllowlist,
+                             weak_factory_.GetWeakPtr(),
+                             /*did_match_allowlist=*/true));
+          break;
+        case AsyncMatch::NO_MATCH:
+          // No match found locally. Queue the call to
+          // |OnCheckUrlForHighConfidenceAllowlist| to perform the full URL
+          // lookup.
+          base::PostTask(
+              FROM_HERE, {content::BrowserThread::IO},
+              base::BindOnce(&SafeBrowsingUrlCheckerImpl::
+                                 OnCheckUrlForHighConfidenceAllowlist,
+                             weak_factory_.GetWeakPtr(),
+                             /*did_match_allowlist=*/false));
+          break;
+      }
+    } else {
+      safe_synchronously = database_manager_->CheckBrowseUrl(
+          url, url_checker_delegate_->GetThreatTypes(), this);
+    }
+
+    if (safe_synchronously) {
+      timer_.Stop();
+      RecordCheckUrlTimeout(/*timed_out=*/false);
+
       if (!RunNextCallback(true, false))
         return;
 
@@ -284,14 +357,6 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
     if (!database_manager_->ChecksAreAlwaysAsync())
       urls_[next_index_].notifier.OnStartSlowCheck();
 
-    TRACE_EVENT_ASYNC_BEGIN1("safe_browsing", "CheckUrl", this, "url",
-                             url.spec());
-
-    // Start a timer to abort the check if it takes too long.
-    timer_.Start(FROM_HERE,
-                 base::TimeDelta::FromMilliseconds(kCheckUrlTimeoutMs), this,
-                 &SafeBrowsingUrlCheckerImpl::OnCheckUrlTimeout);
-
     break;
   }
 }
@@ -307,6 +372,19 @@ void SafeBrowsingUrlCheckerImpl::BlockAndProcessUrls(bool showed_interstitial) {
     if (!RunNextCallback(false, showed_interstitial))
       return;
   }
+}
+
+bool SafeBrowsingUrlCheckerImpl::CanPerformFullURLLookup(const GURL& url) {
+  if (!real_time_lookup_enabled_)
+    return false;
+
+  if (!RealTimePolicyEngine::CanPerformFullURLLookupForResourceType(
+          resource_type_))
+    return false;
+
+  auto* rt_lookup_service = database_manager_->GetRealTimeUrlLookupService();
+  return rt_lookup_service && rt_lookup_service->CanCheckUrl(url) &&
+         !rt_lookup_service->IsInBackoffMode();
 }
 
 void SafeBrowsingUrlCheckerImpl::OnBlockingPageComplete(bool proceed) {
@@ -342,6 +420,84 @@ bool SafeBrowsingUrlCheckerImpl::RunNextCallback(bool proceed,
   auto weak_self = weak_factory_.GetWeakPtr();
   urls_[next_index_++].notifier.OnCompleteCheck(proceed, showed_interstitial);
   return !!weak_self;
+}
+
+void SafeBrowsingUrlCheckerImpl::OnCheckUrlForHighConfidenceAllowlist(
+    bool did_match_allowlist) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_EQ(content::ResourceType::kMainFrame, resource_type_);
+
+  const GURL& url = urls_[next_index_].url;
+  if (did_match_allowlist) {
+    // If the URL matches the high-confidence allowlist, still do the hash based
+    // checks.
+    if (database_manager_->CheckBrowseUrl(
+            url, url_checker_delegate_->GetThreatTypes(), this)) {
+      // No match found in the local database. Safe to call |OnUrlResult| here
+      // directly.
+      OnUrlResult(url, SB_THREAT_TYPE_SAFE, ThreatMetadata());
+    }
+    return;
+  }
+
+  RTLookupRequestCallback request_callback =
+      base::Bind(&SafeBrowsingUrlCheckerImpl::OnRTLookupRequest,
+                 weak_factory_.GetWeakPtr());
+
+  RTLookupResponseCallback response_callback =
+      base::Bind(&SafeBrowsingUrlCheckerImpl::OnRTLookupResponse,
+                 weak_factory_.GetWeakPtr());
+
+  auto* rt_lookup_service = database_manager_->GetRealTimeUrlLookupService();
+  rt_lookup_service->StartLookup(url, std::move(request_callback),
+                                 std::move(response_callback));
+}
+
+void SafeBrowsingUrlCheckerImpl::OnRTLookupRequest(
+    std::unique_ptr<RTLookupRequest> request) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  // The following is to log this RTLookupRequest on any open
+  // chrome://safe-browsing pages.
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, {content::BrowserThread::UI},
+      base::BindOnce(&WebUIInfoSingleton::AddToRTLookupPings,
+                     base::Unretained(WebUIInfoSingleton::GetInstance()),
+                     *request),
+      base::BindOnce(&SafeBrowsingUrlCheckerImpl::SetWebUIToken,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void SafeBrowsingUrlCheckerImpl::OnRTLookupResponse(
+    std::unique_ptr<RTLookupResponse> response) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_EQ(content::ResourceType::kMainFrame, resource_type_);
+
+  if (url_web_ui_token_ != -1) {
+    // The following is to log this RTLookupResponse on any open
+    // chrome://safe-browsing pages.
+    base::PostTask(
+        FROM_HERE, {content::BrowserThread::UI},
+        base::BindOnce(&WebUIInfoSingleton::AddToRTLookupResponses,
+                       base::Unretained(WebUIInfoSingleton::GetInstance()),
+                       url_web_ui_token_, *response));
+  }
+
+  const GURL& url = urls_[next_index_].url;
+  if (response && (response->threat_info_size() > 0) &&
+      (response->threat_info(0).verdict_type() ==
+       RTLookupResponse::ThreatInfo::DANGEROUS)) {
+    OnUrlResult(url,
+                RealTimeUrlLookupService::GetSBThreatTypeForRTThreatType(
+                    response->threat_info(0).threat_type()),
+                ThreatMetadata());
+  } else {
+    OnUrlResult(url, SB_THREAT_TYPE_SAFE, ThreatMetadata());
+  }
+}
+
+void SafeBrowsingUrlCheckerImpl::SetWebUIToken(int token) {
+  url_web_ui_token_ = token;
 }
 
 }  // namespace safe_browsing

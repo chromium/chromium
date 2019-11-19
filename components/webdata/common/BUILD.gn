@@ -68,6 +68,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/web_database/version_78.sql",
     "//components/test/data/web_database/version_79.sql",
     "//components/test/data/web_database/version_80.sql",
+    "//components/test/data/web_database/version_81.sql",
   ]
   outputs = [
     "{{bundle_resources_dir}}/" +
@@ -89,7 +90,7 @@ source_set("unit_tests") {
     "//components/autofill/core/common",
     "//components/password_manager/core/browser",
     "//components/search_engines",
-    "//components/signin/core/browser",
+    "//components/signin/public/webdata",
     "//sql",
     "//testing/gtest",
   ]

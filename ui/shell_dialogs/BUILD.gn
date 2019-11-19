@@ -75,31 +75,15 @@ jumbo_component("shell_dialogs") {
       "Foundation.framework",
       "AppKit.framework",
     ]
+    deps += [
+      "//components/remote_cocoa/app_shim",
+      "//components/remote_cocoa/browser",
+      "//components/remote_cocoa/common:mojo",
+    ]
   }
 
   if (is_fuchsia) {
     sources += [ "select_file_dialog_fuchsia.cc" ]
-  }
-}
-
-if (is_mac) {
-  mac_xib_bundle_data("shell_dialogs_unittests_xibs") {
-    testonly = true
-    sources = [
-      "//chrome/app/nibs/SaveAccessoryView.xib",
-    ]
-  }
-
-  mac_framework_bundle("shell_dialogs_unittests_bundle") {
-    testonly = true
-    framework_version = "S"
-    framework_contents = [ "Resources" ]
-    info_plist = "//ui/base/test/framework-Info.plist"
-    deps = [
-      ":shell_dialogs_unittests_xibs",
-      "//ui/resources:ui_test_pak_bundle_data",
-    ]
-    extra_substitutions = [ "CHROMIUM_BUNDLE_ID=$target_name" ]
   }
 }
 
@@ -117,6 +101,7 @@ test("shell_dialogs_unittests") {
     ":shell_dialogs",
     "//base",
     "//base/test:test_support",
+    "//mojo/core/embedder",
     "//testing/gtest",
     "//ui/base",
     "//ui/resources:ui_test_pak_data",
@@ -124,6 +109,25 @@ test("shell_dialogs_unittests") {
   ]
 
   if (is_mac) {
-    deps += [ ":shell_dialogs_unittests_bundle" ]
+    deps += [ "//components/remote_cocoa/app_shim" ]
   }
+
+  # TODO: Remove once http://crbug.com/951419 is fixed.
+  if (is_android) {
+    deps += [ "//ui/android:ui_java" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_select_file_dialog.cc",
+    "fake_select_file_dialog.h",
+  ]
+  public_deps = [
+    ":shell_dialogs",
+  ]
+  deps = [
+    "//base",
+  ]
 }

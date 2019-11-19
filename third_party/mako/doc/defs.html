@@ -1,0 +1,712 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        
+        <title>
+            
+    
+                Defs and Blocks
+             &mdash;
+    Mako 1.0.14 Documentation
+
+        </title>
+
+        
+            <!-- begin iterate through site-imported + sphinx environment css_files -->
+                <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+                <link rel="stylesheet" href="_static/changelog.css" type="text/css" />
+                <link rel="stylesheet" href="_static/sphinx_paramlinks.css" type="text/css" />
+                <link rel="stylesheet" href="_static/docs.css" type="text/css" />
+            <!-- end iterate through site-imported + sphinx environment css_files -->
+        
+
+        
+    
+
+    <!-- begin layout.mako headers -->
+
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="top" title="Mako 1.0.14 Documentation" href="index.html" />
+        <link rel="next" title="The Mako Runtime Environment" href="runtime.html" />
+        <link rel="prev" title="Syntax" href="syntax.html" />
+    <!-- end layout.mako headers -->
+
+
+    </head>
+    <body>
+        
+
+
+
+
+
+
+
+
+
+
+<div id="docs-container">
+
+
+
+<div id="docs-header">
+    <h1>Mako 1.0.14 Documentation</h1>
+
+    <div id="docs-search">
+    Search:
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+
+    <div id="docs-version-header">
+        Release: <span class="version-num">1.0.14</span>
+
+    </div>
+
+</div>
+
+<div id="docs-top-navigation">
+    <div id="docs-top-page-control" class="docs-navigation-links">
+        <ul>
+            <li>Prev:
+            <a href="syntax.html" title="previous chapter">Syntax</a>
+            </li>
+            <li>Next:
+            <a href="runtime.html" title="next chapter">The Mako Runtime Environment</a>
+            </li>
+
+        <li>
+            <a href="index.html">Table of Contents</a> |
+            <a href="genindex.html">Index</a>
+        </li>
+        </ul>
+    </div>
+
+    <div id="docs-navigation-banner">
+        <a href="index.html">Mako 1.0.14 Documentation</a>
+        » 
+                Defs and Blocks
+            
+
+        <h2>
+            
+                Defs and Blocks
+            
+        </h2>
+    </div>
+
+</div>
+
+<div id="docs-body-container">
+
+
+    <div id="docs-sidebar">
+    <div id="sidebar-banner">
+        
+    </div>
+
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Defs and Blocks</a><ul>
+<li><a class="reference internal" href="#using-defs">Using Defs</a><ul>
+<li><a class="reference internal" href="#calling-defs-from-other-files">Calling Defs from Other Files</a></li>
+<li><a class="reference internal" href="#calling-defs-programmatically">Calling Defs Programmatically</a></li>
+<li><a class="reference internal" href="#defs-within-defs">Defs within Defs</a></li>
+<li><a class="reference internal" href="#calling-a-def-with-embedded-content-and-or-other-defs">Calling a Def with Embedded Content and/or Other Defs</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#using-blocks">Using Blocks</a><ul>
+<li><a class="reference internal" href="#using-named-blocks">Using Named Blocks</a></li>
+<li><a class="reference internal" href="#using-page-arguments-in-named-blocks">Using Page Arguments in Named Blocks</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+    <h4>Previous Topic</h4>
+    <p>
+    <a href="syntax.html" title="previous chapter">Syntax</a>
+    </p>
+    <h4>Next Topic</h4>
+    <p>
+    <a href="runtime.html" title="next chapter">The Mako Runtime Environment</a>
+    </p>
+
+    <h4>Quick Search</h4>
+    <p>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" size="18" /> <input type="submit" value="Search" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </p>
+
+    </div>
+
+    <div id="docs-body" class="withsidebar" >
+        
+<div class="section" id="defs-and-blocks">
+<span id="defs-toplevel"></span><h1>Defs and Blocks<a class="headerlink" href="#defs-and-blocks" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> are two tags that both demarcate any block of text
+and/or code.   They both exist within generated Python as a callable function,
+i.e., a Python <code class="docutils literal notranslate"><span class="pre">def</span></code>.   They differ in their scope and calling semantics.
+Whereas <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> provides a construct that is very much like a named Python
+<code class="docutils literal notranslate"><span class="pre">def</span></code>, the <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> is more layout oriented.</p>
+<div class="section" id="using-defs">
+<h2>Using Defs<a class="headerlink" href="#using-defs" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> tag requires a <code class="docutils literal notranslate"><span class="pre">name</span></code> attribute, where the <code class="docutils literal notranslate"><span class="pre">name</span></code> references
+a Python function signature:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;hello()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    hello world</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>To invoke the <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code>, it is normally called as an expression:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">the def:  </span><span class="cp">${</span><span class="n">hello</span><span class="p">()</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>If the <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> is not nested inside of another <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code>,
+it’s known as a <strong>top level def</strong> and can be accessed anywhere in
+the template, including above where it was defined.</p>
+<p>All defs, top level or not, have access to the current
+contextual namespace in exactly the same way their containing
+template does. Suppose the template below is executed with the
+variables <code class="docutils literal notranslate"><span class="pre">username</span></code> and <code class="docutils literal notranslate"><span class="pre">accountdata</span></code> inside the context:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">Hello there </span><span class="cp">${</span><span class="n">username</span><span class="cp">}</span><span class="x">, how are ya.  Lets see what your account says:</span>
+
+<span class="cp">${</span><span class="n">account</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;account()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    Account for </span><span class="cp">${</span><span class="n">username</span><span class="cp">}</span><span class="x">:&lt;br/&gt;</span>
+
+    <span class="cp">%</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">accountdata</span><span class="p">:</span><span class="x"></span>
+<span class="x">        Value: </span><span class="cp">${</span><span class="n">row</span><span class="cp">}</span><span class="x">&lt;br/&gt;</span>
+    <span class="cp">%</span><span class="k"> endfor</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">username</span></code> and <code class="docutils literal notranslate"><span class="pre">accountdata</span></code> variables are present
+within the main template body as well as the body of the
+<code class="docutils literal notranslate"><span class="pre">account()</span></code> def.</p>
+<p>Since defs are just Python functions, you can define and pass
+arguments to them as well:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="n">account</span><span class="p">(</span><span class="n">accountname</span><span class="o">=</span><span class="s1">&#39;john&#39;</span><span class="p">)</span><span class="cp">}</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;account(accountname, type=&#39;regular&#39;)&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    account name: </span><span class="cp">${</span><span class="n">accountname</span><span class="cp">}</span><span class="x">, type: </span><span class="cp">${</span><span class="nb">type</span><span class="cp">}</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>When you declare an argument signature for your def, they are
+required to follow normal Python conventions (i.e., all
+arguments are required except keyword arguments with a default
+value). This is in contrast to using context-level variables,
+which evaluate to <code class="docutils literal notranslate"><span class="pre">UNDEFINED</span></code> if you reference a name that
+does not exist.</p>
+<div class="section" id="calling-defs-from-other-files">
+<h3>Calling Defs from Other Files<a class="headerlink" href="#calling-defs-from-other-files" title="Permalink to this headline">¶</a></h3>
+<p>Top level <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code>s are <strong>exported</strong> by your template’s
+module, and can be called from the outside; including from other
+templates, as well as normal Python code. Calling a <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code>
+from another template is something like using an <code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code>
+– except you are calling a specific function within the
+template, not the whole template.</p>
+<p>The remote <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> call is also a little bit like calling
+functions from other modules in Python. There is an “import”
+step to pull the names from another template into your own
+template; then the function or functions are available.</p>
+<p>To import another template, use the <code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code> tag:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">name=</span><span class="s">&quot;mystuff&quot;</span> <span class="na">file=</span><span class="s">&quot;mystuff.html&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>The above tag adds a local variable <code class="docutils literal notranslate"><span class="pre">mystuff</span></code> to the current
+scope.</p>
+<p>Then, just call the defs off of <code class="docutils literal notranslate"><span class="pre">mystuff</span></code>:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">${</span><span class="n">mystuff</span><span class="o">.</span><span class="n">somedef</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span><span class="n">y</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span><span class="cp">}</span><span class="x"></span></pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;%namespace&gt;</span></code> tag also supports some of the other
+semantics of Python’s <code class="docutils literal notranslate"><span class="pre">import</span></code> statement, including pulling
+names into the local variable space, or using <code class="docutils literal notranslate"><span class="pre">*</span></code> to represent
+all names, using the <code class="docutils literal notranslate"><span class="pre">import</span></code> attribute:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">namespace</span> <span class="na">file=</span><span class="s">&quot;mystuff.html&quot;</span> <span class="na">import=</span><span class="s">&quot;foo, bar&quot;</span><span class="cp">/&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>This is just a quick intro to the concept of a <strong>namespace</strong>,
+which is a central Mako concept that has its own chapter in
+these docs. For more detail and examples, see
+<a class="reference internal" href="namespaces.html"><span class="std std-ref">Namespaces</span></a>.</p>
+</div>
+<div class="section" id="calling-defs-programmatically">
+<h3>Calling Defs Programmatically<a class="headerlink" href="#calling-defs-programmatically" title="Permalink to this headline">¶</a></h3>
+<p>You can call defs programmatically from any <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> object
+using the <a class="reference internal" href="usage.html#mako.template.Template.get_def" title="mako.template.Template.get_def"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_def()</span></code></a> method, which returns a <a class="reference internal" href="usage.html#mako.template.DefTemplate" title="mako.template.DefTemplate"><code class="xref py py-class docutils literal notranslate"><span class="pre">DefTemplate</span></code></a>
+object. This is a <a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> subclass which the parent
+<a class="reference internal" href="usage.html#mako.template.Template" title="mako.template.Template"><code class="xref py py-class docutils literal notranslate"><span class="pre">Template</span></code></a> creates, and is usable like any other template:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">mako.template</span> <span class="kn">import</span> <span class="n">Template</span>
+
+<span class="n">template</span> <span class="o">=</span> <span class="n">Template</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">    &lt;</span><span class="si">%d</span><span class="s2">ef name=&quot;hi(name)&quot;&gt;</span>
+<span class="s2">        hi ${name}!</span>
+<span class="s2">    &lt;/</span><span class="si">%d</span><span class="s2">ef&gt;</span>
+
+<span class="s2">    &lt;</span><span class="si">%d</span><span class="s2">ef name=&quot;bye(name)&quot;&gt;</span>
+<span class="s2">        bye ${name}!</span>
+<span class="s2">    &lt;/</span><span class="si">%d</span><span class="s2">ef&gt;</span>
+<span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">get_def</span><span class="p">(</span><span class="s2">&quot;hi&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ed&quot;</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="n">template</span><span class="o">.</span><span class="n">get_def</span><span class="p">(</span><span class="s2">&quot;bye&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;ed&quot;</span><span class="p">))</span></pre></div>
+</div>
+</div>
+<div class="section" id="defs-within-defs">
+<h3>Defs within Defs<a class="headerlink" href="#defs-within-defs" title="Permalink to this headline">¶</a></h3>
+<p>The def model follows regular Python rules for closures.
+Declaring <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> inside another <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> declares it
+within the parent’s <strong>enclosing scope</strong>:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;mydef()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;subdef()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        a sub def</span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="x">    i&#39;m the def, and the subcomponent is </span><span class="cp">${</span><span class="n">subdef</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Just like Python, names that exist outside the inner <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code>
+exist inside it as well:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="cp">%&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;outer()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    </span><span class="cp">&lt;%</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="mi">15</span>
+    <span class="cp">%&gt;</span><span class="x"></span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;inner()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        inner, x is </span><span class="cp">${</span><span class="n">x</span><span class="cp">}</span><span class="x">, y is </span><span class="cp">${</span><span class="n">y</span><span class="cp">}</span><span class="x"></span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="x">    outer, x is </span><span class="cp">${</span><span class="n">x</span><span class="cp">}</span><span class="x">, y is </span><span class="cp">${</span><span class="n">y</span><span class="cp">}</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Assigning to a name inside of a def declares that name as local
+to the scope of that def (again, like Python itself). This means
+the following code will raise an error:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="cp">%&gt;</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;somedef()&quot;</span><span class="cp">&gt;</span>
+    <span class="cp">## error !</span><span class="x"></span>
+<span class="x">    somedef, x is </span><span class="cp">${</span><span class="n">x</span><span class="cp">}</span><span class="x"></span>
+<span class="x">    </span><span class="cp">&lt;%</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="mi">27</span>
+    <span class="cp">%&gt;</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>…because the assignment to <code class="docutils literal notranslate"><span class="pre">x</span></code> declares <code class="docutils literal notranslate"><span class="pre">x</span></code> as local to the
+scope of <code class="docutils literal notranslate"><span class="pre">somedef</span></code>, rendering the “outer” version unreachable
+in the expression that tries to render it.</p>
+</div>
+<div class="section" id="calling-a-def-with-embedded-content-and-or-other-defs">
+<span id="defs-with-content"></span><h3>Calling a Def with Embedded Content and/or Other Defs<a class="headerlink" href="#calling-a-def-with-embedded-content-and-or-other-defs" title="Permalink to this headline">¶</a></h3>
+<p>A flip-side to def within def is a def call with content. This
+is where you call a def, and at the same time declare a block of
+content (or multiple blocks) that can be used by the def being
+called. The main point of such a call is to create custom,
+nestable tags, just like any other template language’s
+custom-tag creation system – where the external tag controls the
+execution of the nested tags and can communicate state to them.
+Only with Mako, you don’t have to use any external Python
+modules, you can define arbitrarily nestable tags right in your
+templates.</p>
+<p>To achieve this, the target def is invoked using the form
+<code class="docutils literal notranslate"><span class="pre">&lt;%namespacename:defname&gt;</span></code> instead of the normal <code class="docutils literal notranslate"><span class="pre">${}</span></code>
+syntax. This syntax, introduced in Mako 0.2.3, is functionally
+equivalent to another tag known as <code class="docutils literal notranslate"><span class="pre">%call</span></code>, which takes the form
+<code class="docutils literal notranslate"><span class="pre">&lt;%call</span> <span class="pre">expr='namespacename.defname(args)'&gt;</span></code>. While <code class="docutils literal notranslate"><span class="pre">%call</span></code>
+is available in all versions of Mako, the newer style is
+probably more familiar looking. The <code class="docutils literal notranslate"><span class="pre">namespace</span></code> portion of the
+call is the name of the <strong>namespace</strong> in which the def is
+defined – in the most simple cases, this can be <code class="docutils literal notranslate"><span class="pre">local</span></code> or
+<code class="docutils literal notranslate"><span class="pre">self</span></code> to reference the current template’s namespace (the
+difference between <code class="docutils literal notranslate"><span class="pre">local</span></code> and <code class="docutils literal notranslate"><span class="pre">self</span></code> is one of inheritance
+– see <a class="reference internal" href="namespaces.html#namespaces-builtin"><span class="std std-ref">Built-in Namespaces</span></a> for details).</p>
+<p>When the target def is invoked, a variable <code class="docutils literal notranslate"><span class="pre">caller</span></code> is placed
+in its context which contains another namespace containing the
+body and other defs defined by the caller. The body itself is
+referenced by the method <code class="docutils literal notranslate"><span class="pre">body()</span></code>. Below, we build a <code class="docutils literal notranslate"><span class="pre">%def</span></code>
+that operates upon <code class="docutils literal notranslate"><span class="pre">caller.body()</span></code> to invoke the body of the
+custom tag:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;buildtable()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    &lt;table&gt;</span>
+<span class="x">        &lt;tr&gt;&lt;td&gt;</span>
+<span class="x">            </span><span class="cp">${</span><span class="n">caller</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">        &lt;/td&gt;&lt;/tr&gt;</span>
+<span class="x">    &lt;/table&gt;</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">self:buildtable</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    I am the table body.</span>
+<span class="cp">&lt;/%</span><span class="nb">self:buildtable</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>This produces the output (whitespace formatted):</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">table</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;&lt;</span><span class="nt">td</span><span class="p">&gt;</span>
+        I am the table body.
+    <span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span></pre></div>
+</div>
+<p>Using the older <code class="docutils literal notranslate"><span class="pre">%call</span></code> syntax looks like:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;buildtable()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    &lt;table&gt;</span>
+<span class="x">        &lt;tr&gt;&lt;td&gt;</span>
+<span class="x">            </span><span class="cp">${</span><span class="n">caller</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">        &lt;/td&gt;&lt;/tr&gt;</span>
+<span class="x">    &lt;/table&gt;</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">call</span> <span class="na">expr=</span><span class="s">&quot;buildtable()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    I am the table body.</span>
+<span class="cp">&lt;/%</span><span class="nb">call</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">body()</span></code> can be executed multiple times or not at all.
+This means you can use def-call-with-content to build iterators,
+conditionals, etc:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;lister(count)&quot;</span><span class="cp">&gt;</span>
+    <span class="cp">%</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">count</span><span class="p">):</span><span class="x"></span>
+<span class="x">        </span><span class="cp">${</span><span class="n">caller</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span>
+    <span class="cp">%</span><span class="k"> endfor</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">self:lister</span> <span class="na">count=</span><span class="s">&quot;${3}&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    hi</span>
+<span class="cp">&lt;/%</span><span class="nb">self:lister</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Produces:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>hi
+hi
+hi</pre></div>
+</div>
+<p>Notice above we pass <code class="docutils literal notranslate"><span class="pre">3</span></code> as a Python expression, so that it
+remains as an integer.</p>
+<p>A custom “conditional” tag:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;conditional(expression)&quot;</span><span class="cp">&gt;</span>
+    <span class="cp">%</span> <span class="k">if</span> <span class="n">expression</span><span class="p">:</span><span class="x"></span>
+<span class="x">        </span><span class="cp">${</span><span class="n">caller</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span>
+    <span class="cp">%</span><span class="k"> endif</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">self:conditional</span> <span class="na">expression=</span><span class="s">&quot;${4==4}&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    i&#39;m the result</span>
+<span class="cp">&lt;/%</span><span class="nb">self:conditional</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Produces:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span>i&#39;m the result</pre></div>
+</div>
+<p>But that’s not all. The <code class="docutils literal notranslate"><span class="pre">body()</span></code> function also can handle
+arguments, which will augment the local namespace of the body
+callable. The caller must define the arguments which it expects
+to receive from its target def using the <code class="docutils literal notranslate"><span class="pre">args</span></code> attribute,
+which is a comma-separated list of argument names. Below, our
+<code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> calls the <code class="docutils literal notranslate"><span class="pre">body()</span></code> of its caller, passing in an
+element of data from its argument:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;layoutdata(somedata)&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    &lt;table&gt;</span>
+    <span class="cp">%</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">somedata</span><span class="p">:</span><span class="x"></span>
+<span class="x">        &lt;tr&gt;</span>
+        <span class="cp">%</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span><span class="x"></span>
+<span class="x">            &lt;td&gt;</span><span class="cp">${</span><span class="n">caller</span><span class="o">.</span><span class="n">body</span><span class="p">(</span><span class="n">col</span><span class="o">=</span><span class="n">col</span><span class="p">)</span><span class="cp">}</span><span class="x">&lt;/td&gt;</span>
+        <span class="cp">%</span><span class="k"> endfor</span><span class="x"></span>
+<span class="x">        &lt;/tr&gt;</span>
+    <span class="cp">%</span><span class="k"> endfor</span><span class="x"></span>
+<span class="x">    &lt;/table&gt;</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="cp">&lt;%</span><span class="nb">self:layoutdata</span> <span class="na">somedata=</span><span class="s">&quot;${[[1,2,3],[4,5,6],[7,8,9]]}&quot;</span> <span class="na">args=</span><span class="s">&quot;col&quot;</span><span class="cp">&gt;</span><span class="x">\</span>
+<span class="x">Body data: </span><span class="cp">${</span><span class="n">col</span><span class="cp">}</span><span class="x">\</span>
+<span class="cp">&lt;/%</span><span class="nb">self:layoutdata</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>Produces:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">table</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Body data: 1<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Body data: 2<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Body data: 3<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Body data: 4<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Body data: 5<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Body data: 6<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">tr</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Body data: 7<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Body data: 8<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">td</span><span class="p">&gt;</span>Body data: 9<span class="p">&lt;/</span><span class="nt">td</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">tr</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">table</span><span class="p">&gt;</span></pre></div>
+</div>
+<p>You don’t have to stick to calling just the <code class="docutils literal notranslate"><span class="pre">body()</span></code> function.
+The caller can define any number of callables, allowing the
+<code class="docutils literal notranslate"><span class="pre">&lt;%call&gt;</span></code> tag to produce whole layouts:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;layout()&quot;</span><span class="cp">&gt;</span>
+    <span class="cp">## a layout def</span><span class="x"></span>
+<span class="x">    &lt;div class=&quot;mainlayout&quot;&gt;</span>
+<span class="x">        &lt;div class=&quot;header&quot;&gt;</span>
+<span class="x">            </span><span class="cp">${</span><span class="n">caller</span><span class="o">.</span><span class="n">header</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">        &lt;/div&gt;</span>
+
+<span class="x">        &lt;div class=&quot;sidebar&quot;&gt;</span>
+<span class="x">            </span><span class="cp">${</span><span class="n">caller</span><span class="o">.</span><span class="n">sidebar</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">        &lt;/div&gt;</span>
+
+<span class="x">        &lt;div class=&quot;content&quot;&gt;</span>
+<span class="x">            </span><span class="cp">${</span><span class="n">caller</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">        &lt;/div&gt;</span>
+<span class="x">    &lt;/div&gt;</span>
+<span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span>
+
+<span class="cp">## calls the layout def</span><span class="x"></span>
+<span class="cp">&lt;%</span><span class="nb">self:layout</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;header()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        I am the header</span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">def</span> <span class="na">name=</span><span class="s">&quot;sidebar()&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;ul&gt;</span>
+<span class="x">            &lt;li&gt;sidebar 1&lt;/li&gt;</span>
+<span class="x">            &lt;li&gt;sidebar 2&lt;/li&gt;</span>
+<span class="x">        &lt;/ul&gt;</span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">def</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="x">        this is the body</span>
+<span class="cp">&lt;/%</span><span class="nb">self:layout</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>The above layout would produce:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;mainlayout&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;header&quot;</span><span class="p">&gt;</span>
+    I am the header
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;sidebar&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">ul</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>sidebar 1<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">li</span><span class="p">&gt;</span>sidebar 2<span class="p">&lt;/</span><span class="nt">li</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">ul</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;content&quot;</span><span class="p">&gt;</span>
+    this is the body
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span></pre></div>
+</div>
+<p>The number of things you can do with <code class="docutils literal notranslate"><span class="pre">&lt;%call&gt;</span></code> and/or the
+<code class="docutils literal notranslate"><span class="pre">&lt;%namespacename:defname&gt;</span></code> calling syntax is enormous. You can
+create form widget libraries, such as an enclosing <code class="docutils literal notranslate"><span class="pre">&lt;FORM&gt;</span></code>
+tag and nested HTML input elements, or portable wrapping schemes
+using <code class="docutils literal notranslate"><span class="pre">&lt;div&gt;</span></code> or other elements. You can create tags that
+interpret rows of data, such as from a database, providing the
+individual columns of each row to a <code class="docutils literal notranslate"><span class="pre">body()</span></code> callable which
+lays out the row any way it wants. Basically anything you’d do
+with a “custom tag” or tag library in some other system, Mako
+provides via <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> tags and plain Python callables which are
+invoked via <code class="docutils literal notranslate"><span class="pre">&lt;%namespacename:defname&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;%call&gt;</span></code>.</p>
+</div>
+</div>
+<div class="section" id="using-blocks">
+<span id="blocks"></span><h2>Using Blocks<a class="headerlink" href="#using-blocks" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> tag introduces some new twists on the
+<code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> tag which make it more closely tailored towards layout.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.4.1.</span></p>
+</div>
+<p>An example of a block:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;html&gt;</span>
+<span class="x">    &lt;body&gt;</span>
+<span class="x">        </span><span class="cp">&lt;%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">            this is a block.</span>
+<span class="x">        </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    &lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span></pre></div>
+</div>
+<p>In the above example, we define a simple block.  The block renders its content in the place
+that it’s defined.  Since the block is called for us, it doesn’t need a name and the above
+is referred to as an <strong>anonymous block</strong>.  So the output of the above template will be:</p>
+<div class="highlight-html notranslate"><div class="highlight"><pre><span></span><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+            this is a block.
+    <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span></pre></div>
+</div>
+<p>So in fact the above block has absolutely no effect.  Its usefulness comes when we start
+using modifiers.  Such as, we can apply a filter to our block:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;html&gt;</span>
+<span class="x">    &lt;body&gt;</span>
+<span class="x">        </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">filter=</span><span class="s">&quot;h&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">            &lt;html&gt;this is some escaped html.&lt;/html&gt;</span>
+<span class="x">        </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    &lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span></pre></div>
+</div>
+<p>or perhaps a caching directive:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;html&gt;</span>
+<span class="x">    &lt;body&gt;</span>
+<span class="x">        </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">cached=</span><span class="s">&quot;True&quot;</span> <span class="na">cache_timeout=</span><span class="s">&quot;60&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">            This content will be cached for 60 seconds.</span>
+<span class="x">        </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    &lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span></pre></div>
+</div>
+<p>Blocks also work in iterations, conditionals, just like defs:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">%</span> <span class="k">if</span> <span class="n">some_condition</span><span class="p">:</span><span class="x"></span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x">condition is met</span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span>
+<span class="cp">%</span><span class="k"> endif</span><span class="x"></span></pre></div>
+</div>
+<p>While the block renders at the point it is defined in the template,
+the underlying function is present in the generated Python code only
+once, so there’s no issue with placing a block inside of a loop or
+similar. Anonymous blocks are defined as closures in the local
+rendering body, so have access to local variable scope:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">%</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">):</span><span class="x"></span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x">i is </span><span class="cp">${</span><span class="n">i</span><span class="cp">}&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span>
+<span class="cp">%</span><span class="k"> endfor</span><span class="x"></span></pre></div>
+</div>
+<div class="section" id="using-named-blocks">
+<h3>Using Named Blocks<a class="headerlink" href="#using-named-blocks" title="Permalink to this headline">¶</a></h3>
+<p>Possibly the more important area where blocks are useful is when we
+do actually give them names. Named blocks are tailored to behave
+somewhat closely to Jinja2’s block tag, in that they define an area
+of a layout which can be overridden by an inheriting template. In
+sharp contrast to the <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code> tag, the name given to a block is
+global for the entire template regardless of how deeply it’s nested:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;html&gt;</span>
+<span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;header&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    &lt;head&gt;</span>
+<span class="x">        &lt;title&gt;</span>
+<span class="x">            </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;title&quot;</span><span class="cp">&gt;</span><span class="x">Title</span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;/title&gt;</span>
+<span class="x">    &lt;/head&gt;</span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">&lt;body&gt;</span>
+<span class="x">    </span><span class="cp">${</span><span class="nb">next</span><span class="o">.</span><span class="n">body</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">&lt;/body&gt;</span>
+<span class="x">&lt;/html&gt;</span></pre></div>
+</div>
+<p>The above example has two named blocks “<code class="docutils literal notranslate"><span class="pre">header</span></code>” and “<code class="docutils literal notranslate"><span class="pre">title</span></code>”, both of which can be referred to
+by an inheriting template. A detailed walkthrough of this usage can be found at <a class="reference internal" href="inheritance.html"><span class="std std-ref">Inheritance</span></a>.</p>
+<p>Note above that named blocks don’t have any argument declaration the way defs do. They still implement themselves
+as Python functions, however, so they can be invoked additional times beyond their initial definition:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="x">&lt;div name=&quot;page&quot;&gt;</span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;pagecontrol&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        &lt;a href=&quot;&quot;&gt;previous page&lt;/a&gt; |</span>
+<span class="x">        &lt;a href=&quot;&quot;&gt;next page&lt;/a&gt;</span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+
+<span class="x">    &lt;table&gt;</span>
+<span class="x">        ## some content</span>
+<span class="x">    &lt;/table&gt;</span>
+
+<span class="x">    </span><span class="cp">${</span><span class="n">pagecontrol</span><span class="p">()</span><span class="cp">}</span><span class="x"></span>
+<span class="x">&lt;/div&gt;</span></pre></div>
+</div>
+<p>The content referenced by <code class="docutils literal notranslate"><span class="pre">pagecontrol</span></code> above will be rendered both above and below the <code class="docutils literal notranslate"><span class="pre">&lt;table&gt;</span></code> tags.</p>
+<p>To keep things sane, named blocks have restrictions that defs do not:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> declaration cannot have any argument signature.</p></li>
+<li><p>The name of a <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> can only be defined once in a template – an error is raised if two blocks of the same
+name occur anywhere in a single template, regardless of nesting.  A similar error is raised if a top level def
+shares the same name as that of a block.</p></li>
+<li><p>A named <code class="docutils literal notranslate"><span class="pre">&lt;%block&gt;</span></code> cannot be defined within a <code class="docutils literal notranslate"><span class="pre">&lt;%def&gt;</span></code>, or inside the body of a “call”, i.e.
+<code class="docutils literal notranslate"><span class="pre">&lt;%call&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;%namespacename:defname&gt;</span></code> tag.  Anonymous blocks can, however.</p></li>
+</ul>
+</div>
+<div class="section" id="using-page-arguments-in-named-blocks">
+<h3>Using Page Arguments in Named Blocks<a class="headerlink" href="#using-page-arguments-in-named-blocks" title="Permalink to this headline">¶</a></h3>
+<p>A named block is very much like a top level def. It has a similar
+restriction to these types of defs in that arguments passed to the
+template via the <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag aren’t automatically available.
+Using arguments with the <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag is described in the section
+<a class="reference internal" href="namespaces.html#namespaces-body"><span class="std std-ref">The body() Method</span></a>, and refers to scenarios such as when the
+<code class="docutils literal notranslate"><span class="pre">body()</span></code> method of a template is called from an inherited template passing
+arguments, or the template is invoked from an <code class="docutils literal notranslate"><span class="pre">&lt;%include&gt;</span></code> tag
+with arguments. To allow a named block to share the same arguments
+passed to the page, the <code class="docutils literal notranslate"><span class="pre">args</span></code> attribute can be used:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">page</span> <span class="na">args=</span><span class="s">&quot;post&quot;</span><span class="cp">/&gt;</span><span class="x"></span>
+
+<span class="x">&lt;a name=&quot;</span><span class="cp">${</span><span class="n">post</span><span class="o">.</span><span class="n">title</span><span class="cp">}</span><span class="x">&quot; /&gt;</span>
+
+<span class="x">&lt;span class=&quot;post_prose&quot;&gt;</span>
+<span class="x">    </span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;post_prose&quot;</span> <span class="na">args=</span><span class="s">&quot;post&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">        </span><span class="cp">${</span><span class="n">post</span><span class="o">.</span><span class="n">content</span><span class="cp">}</span><span class="x"></span>
+<span class="x">    </span><span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">&lt;/span&gt;</span></pre></div>
+</div>
+<p>Where above, if the template is called via a directive like
+<code class="docutils literal notranslate"><span class="pre">&lt;%include</span> <span class="pre">file=&quot;post.mako&quot;</span> <span class="pre">args=&quot;post=post&quot;</span> <span class="pre">/&gt;</span></code>, the <code class="docutils literal notranslate"><span class="pre">post</span></code>
+variable is available both in the main body as well as the
+<code class="docutils literal notranslate"><span class="pre">post_prose</span></code> block.</p>
+<p>Similarly, the <code class="docutils literal notranslate"><span class="pre">**pageargs</span></code> variable is present, in named blocks only,
+for those arguments not explicit in the <code class="docutils literal notranslate"><span class="pre">&lt;%page&gt;</span></code> tag:</p>
+<div class="highlight-mako notranslate"><div class="highlight"><pre><span></span><span class="cp">&lt;%</span><span class="nb">block</span> <span class="na">name=</span><span class="s">&quot;post_prose&quot;</span><span class="cp">&gt;</span><span class="x"></span>
+<span class="x">    </span><span class="cp">${</span><span class="n">pageargs</span><span class="p">[</span><span class="s1">&#39;post&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">content</span><span class="cp">}</span><span class="x"></span>
+<span class="cp">&lt;/%</span><span class="nb">block</span><span class="cp">&gt;</span><span class="x"></span></pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">args</span></code> attribute is only allowed with named blocks. With
+anonymous blocks, the Python function is always rendered in the same
+scope as the call itself, so anything available directly outside the
+anonymous block is available inside as well.</p>
+</div>
+</div>
+</div>
+
+    </div>
+
+</div>
+
+<div id="docs-bottom-navigation" class="docs-navigation-links">
+        Previous:
+        <a href="syntax.html" title="previous chapter">Syntax</a>
+        Next:
+        <a href="runtime.html" title="next chapter">The Mako Runtime Environment</a>
+
+    <div id="docs-copyright">
+        &copy; Copyright the Mako authors and contributors.
+        Documentation generated using <a href="http://sphinx.pocoo.org/">Sphinx</a> 2.1.2
+        with Mako templates.
+    </div>
+</div>
+
+</div>
+
+
+
+        
+        
+
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+          URL_ROOT:    './',
+          VERSION:     '1.0.14',
+          COLLAPSE_MODINDEX: false,
+          FILE_SUFFIX: '.html'
+      };
+    </script>
+
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+
+    <!-- begin iterate through sphinx environment script_files -->
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    <!-- end iterate through sphinx environment script_files -->
+
+    <script type="text/javascript" src="_static/detectmobile.js"></script>
+    <script type="text/javascript" src="_static/init.js"></script>
+
+
+    </body>
+</html>
+
+

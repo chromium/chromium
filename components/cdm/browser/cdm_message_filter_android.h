@@ -31,7 +31,7 @@ class CdmMessageFilterAndroid : public content::BrowserMessageFilter {
 
   // BrowserMessageFilter implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
-  base::TaskRunner* OverrideTaskRunnerForMessage(
+  scoped_refptr<base::SequencedTaskRunner> OverrideTaskRunnerForMessage(
       const IPC::Message& message) override;
 
   // Query the key system information.

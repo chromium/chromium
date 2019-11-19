@@ -4,8 +4,8 @@
 <script src="../resources/js-test.js"></script>
 <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
 <script src="file:///gen/device/geolocation/public/interfaces/geolocation.mojom.js"></script>
-<script src="file:///gen/third_party/blink/public/platform/modules/geolocation/geolocation_service.mojom.js"></script>
-<script src="file:///gen/third_party/blink/public/platform/modules/permissions/permission.mojom.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/geolocation/geolocation_service.mojom.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/permissions/permission.mojom.js"></script>
 <script src="resources/geolocation-mock.js"></script>
 </head>
 <body>
@@ -14,7 +14,8 @@ description("Tests that when timeout is zero (and maximumAge is too), the error 
 
 var error;
 
-geolocationMock.setGeolocationPosition(51.478, -0.166, 100.0);
+geolocationMock.setGeolocationPermission(true);
+geolocationMock.setGeolocationTimeoutError(true);
 
 navigator.geolocation.getCurrentPosition(function(p) {
     testFailed('Success callback invoked unexpectedly');

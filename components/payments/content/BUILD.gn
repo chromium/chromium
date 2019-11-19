@@ -8,26 +8,14 @@ jumbo_static_library("content") {
   sources = [
     "can_make_payment_query_factory.cc",
     "can_make_payment_query_factory.h",
-    "content_payment_request_delegate.h",
-    "initialization_task.cc",
-    "initialization_task.h",
-    "payment_request.cc",
-    "payment_request.h",
+    "payment_details_converter.cc",
+    "payment_details_converter.h",
+    "payment_event_response_util.cc",
+    "payment_event_response_util.h",
+    "payment_handler_host.cc",
+    "payment_handler_host.h",
     "payment_request_converter.cc",
     "payment_request_converter.h",
-    "payment_request_dialog.h",
-    "payment_request_display_manager.cc",
-    "payment_request_display_manager.h",
-    "payment_request_spec.cc",
-    "payment_request_spec.h",
-    "payment_request_state.cc",
-    "payment_request_state.h",
-    "payment_request_web_contents_manager.cc",
-    "payment_request_web_contents_manager.h",
-    "payment_response_helper.cc",
-    "payment_response_helper.h",
-    "service_worker_payment_instrument.cc",
-    "service_worker_payment_instrument.h",
   ]
 
   deps = [
@@ -37,6 +25,7 @@ jumbo_static_library("content") {
     "//components/keyed_service/content",
     "//components/payments/content/utility",
     "//components/payments/core",
+    "//components/payments/core:error_strings",
     "//components/payments/mojom",
     "//components/prefs",
     "//components/strings:components_strings_grit",
@@ -46,6 +35,31 @@ jumbo_static_library("content") {
     "//third_party/blink/public:blink_headers",
     "//url",
   ]
+
+  if (!is_android) {
+    sources += [
+      "content_payment_request_delegate.h",
+      "initialization_task.cc",
+      "initialization_task.h",
+      "payment_request.cc",
+      "payment_request.h",
+      "payment_request_dialog.h",
+      "payment_request_display_manager.cc",
+      "payment_request_display_manager.h",
+      "payment_request_spec.cc",
+      "payment_request_spec.h",
+      "payment_request_state.cc",
+      "payment_request_state.h",
+      "payment_request_web_contents_manager.cc",
+      "payment_request_web_contents_manager.h",
+      "payment_response_helper.cc",
+      "payment_response_helper.h",
+      "service_worker_payment_app.cc",
+      "service_worker_payment_app.h",
+    ]
+
+    deps += [ "//components/payments/core:method_strings" ]
+  }
 }
 
 # Files used by content and utility.
@@ -56,6 +70,7 @@ jumbo_static_library("content_common") {
   ]
 
   deps = [
+    "//content/public/browser",
     "//skia",
   ]
 }
@@ -68,8 +83,6 @@ jumbo_static_library("utils") {
     "installable_payment_app_crawler.h",
     "manifest_verifier.cc",
     "manifest_verifier.h",
-    "origin_security_checker.cc",
-    "origin_security_checker.h",
     "payment_manifest_web_data_service.cc",
     "payment_manifest_web_data_service.h",
     "payment_method_manifest_table.cc",
@@ -83,8 +96,11 @@ jumbo_static_library("utils") {
   deps = [
     ":content_common",
     "//components/autofill/core/browser",
+    "//components/payments/content/icon",
     "//components/payments/content/utility",
     "//components/payments/core",
+    "//components/payments/core:error_strings",
+    "//components/payments/core:method_strings",
     "//components/strings",
     "//components/webdata/common",
     "//content/public/browser",
@@ -103,16 +119,24 @@ jumbo_static_library("utils") {
 jumbo_source_set("unit_tests") {
   testonly = true
   sources = [
+    "mock_identity_observer.cc",
+    "mock_identity_observer.h",
     "payment_method_manifest_table_unittest.cc",
-    "payment_request_spec_unittest.cc",
-    "payment_request_state_unittest.cc",
-    "payment_response_helper_unittest.cc",
     "service_worker_payment_app_factory_unittest.cc",
-    "service_worker_payment_instrument_unittest.cc",
     "test_content_payment_request_delegate.cc",
     "test_content_payment_request_delegate.h",
     "web_app_manifest_section_table_unittest.cc",
   ]
+
+  if (!is_android) {
+    sources += [
+      "payment_app_unittest.cc",
+      "payment_request_spec_unittest.cc",
+      "payment_request_state_unittest.cc",
+      "payment_response_helper_unittest.cc",
+      "service_worker_payment_app_unittest.cc",
+    ]
+  }
 
   deps = [
     ":content",
@@ -122,6 +146,7 @@ jumbo_source_set("unit_tests") {
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/payments/core",
+    "//components/payments/core:error_strings",
     "//components/payments/core:test_support",
     "//components/strings:components_strings_grit",
     "//components/webdata/common",

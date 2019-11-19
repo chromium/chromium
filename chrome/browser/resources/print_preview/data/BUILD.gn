@@ -3,13 +3,16 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 
-js_type_check("closure_compile") {
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
   deps = [
     ":cloud_parsers",
     ":coordinate2d",
     ":destination",
     ":destination_match",
+    ":destination_policies",
     ":destination_store",
     ":document_info",
     ":invitation",
@@ -17,9 +20,16 @@ js_type_check("closure_compile") {
     ":local_parsers",
     ":margins",
     ":measurement_system",
+    ":model",
     ":printable_area",
+    ":scaling",
     ":size",
+    ":state",
+    ":user_manager",
   ]
+}
+
+js_library("destination_policies") {
 }
 
 js_library("destination_store") {
@@ -30,9 +40,11 @@ js_library("destination_store") {
     "..:cloud_print_interface",
     "..:metrics",
     "..:native_layer",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:event_tracker",
-    "//ui/webui/resources/js/cr:event_target",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:event_tracker.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
@@ -40,24 +52,24 @@ js_library("invitation_store") {
   deps = [
     ":invitation",
     "..:cloud_print_interface",
-    "//ui/webui/resources/js:event_tracker",
-    "//ui/webui/resources/js/cr:event_target",
+    "//ui/webui/resources/js:event_tracker.m",
+    "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
 js_library("local_parsers") {
   deps = [
     ":destination",
+    ":destination_match",
     "..:native_layer",
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 
 js_library("destination_match") {
   deps = [
     ":destination",
-    "..:native_layer",
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
@@ -65,22 +77,26 @@ js_library("cloud_parsers") {
   deps = [
     ":destination",
     ":invitation",
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
 js_library("invitation") {
   deps = [
     ":destination",
-    "//ui/webui/resources/js:cr",
   ]
 }
 
 js_library("destination") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
+
+  if (is_chromeos) {
+    deps += [ ":destination_policies" ]
+  }
 }
 
 js_library("document_info") {
@@ -89,20 +105,33 @@ js_library("document_info") {
     ":margins",
     ":printable_area",
     ":size",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 }
 
 js_library("margins") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
 }
 
 js_library("measurement_system") {
   deps = [
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:assert.m",
+  ]
+}
+
+js_library("model") {
+  deps = [
+    ":destination",
+    ":destination_match",
+    ":document_info",
+    ":margins",
+    ":scaling",
+    ":size",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:promise_resolver.m",
   ]
 }
 
@@ -110,28 +139,33 @@ js_library("printable_area") {
   deps = [
     ":coordinate2d",
     ":size",
-    "//ui/webui/resources/js:cr",
   ]
 }
 
+js_library("scaling") {
+}
+
 js_library("size") {
+}
+
+js_library("state") {
   deps = [
-    "//ui/webui/resources/js:cr",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
 js_library("coordinate2d") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
 }
 
-js_library("user_info") {
+js_library("user_manager") {
   deps = [
+    ":destination",
     ":destination_store",
     ":invitation_store",
     "..:cloud_print_interface",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:event_tracker",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:event_tracker.m",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
 }

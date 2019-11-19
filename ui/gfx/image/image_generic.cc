@@ -4,6 +4,7 @@
 
 #include "ui/gfx/image/image_platform.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 
@@ -16,12 +17,11 @@ namespace internal {
 namespace {
 
 // Returns a 16x16 red image to visually show error in decoding PNG.
-// Caller takes ownership of returned ImageSkia.
-ImageSkia* GetErrorImageSkia() {
+ImageSkia GetErrorImageSkia() {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(16, 16);
   bitmap.eraseARGB(0xff, 0xff, 0, 0);
-  return new ImageSkia(ImageSkiaRep(bitmap, 1.0f));
+  return ImageSkia(ImageSkiaRep(bitmap, 1.0f));
 }
 
 class PNGImageSource : public ImageSkiaSource {
@@ -33,7 +33,7 @@ class PNGImageSource : public ImageSkiaSource {
     if (image_skia_reps_.empty())
       return ImageSkiaRep();
 
-    const ImageSkiaRep* rep = NULL;
+    const ImageSkiaRep* rep = nullptr;
     // gfx::ImageSkia passes one of the resource scale factors. The source
     // should return:
     // 1) The ImageSkiaRep with the highest scale if all available
@@ -90,7 +90,7 @@ class PNGImageSource : public ImageSkiaSource {
 
 }  // namespace
 
-ImageSkia* ImageSkiaFromPNG(const std::vector<ImagePNGRep>& image_png_reps) {
+ImageSkia ImageSkiaFromPNG(const std::vector<ImagePNGRep>& image_png_reps) {
   if (image_png_reps.empty())
     return GetErrorImageSkia();
   std::unique_ptr<PNGImageSource> image_source(new PNGImageSource);
@@ -103,7 +103,7 @@ ImageSkia* ImageSkiaFromPNG(const std::vector<ImagePNGRep>& image_png_reps) {
   DCHECK(!size.IsEmpty());
   if (size.IsEmpty())
     return GetErrorImageSkia();
-  return new ImageSkia(std::move(image_source), size);
+  return ImageSkia(std::move(image_source), size);
 }
 
 scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromImageSkia(
@@ -114,7 +114,7 @@ scoped_refptr<base::RefCountedMemory> Get1xPNGBytesFromImageSkia(
   if (image_skia_rep.scale() != 1.0f ||
       !PNGCodec::EncodeBGRASkBitmap(image_skia_rep.GetBitmap(), false,
                                     &png_bytes->data())) {
-    return NULL;
+    return nullptr;
   }
   return png_bytes;
 }

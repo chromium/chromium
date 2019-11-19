@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="@color/default_icon_color_inverse_disabled" android:state_enabled="false" />
+    <item android:color="@color/default_icon_color_inverse" />
+</selector>

@@ -5,6 +5,7 @@
 #include "chromeos/printing/epson_driver_matching.h"
 
 #include <string>
+#include <vector>
 
 #include "chromeos/printing/ppd_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -13,7 +14,7 @@ namespace chromeos {
 namespace {
 
 const char kOctetStream[] = "application/octet-stream";
-const char kEscPr[] = "ESC/P-R";
+const char kEscPr[] = "ESCPR1";
 const char kEpsonEscpr[] = "application/vnd.epson.escpr";
 
 using PrinterDiscoveryType = PrinterSearchData::PrinterDiscoveryType;
@@ -31,7 +32,7 @@ PrinterSearchData GetTestPrinterSearchData(
 
     case PrinterDiscoveryType::kUsb:
       sd.discovery_type = PrinterDiscoveryType::kUsb;
-      sd.usb_command_set.push_back(kEscPr);
+      sd.printer_id.set_command_set({kEscPr});
       break;
 
     case PrinterDiscoveryType::kZeroconf:
@@ -96,7 +97,7 @@ TEST(EpsonDriverMatchingTest, ManualDiscovery) {
   sd.supported_document_formats.push_back(std::string(kOctetStream) + "afds");
   EXPECT_FALSE(CanUseEpsonGenericPPD(sd));
 
-  sd.usb_command_set.push_back(kOctetStream);
+  sd.printer_id.set_command_set({kOctetStream});
   EXPECT_FALSE(CanUseEpsonGenericPPD(sd));
 
   sd.supported_document_formats.push_back(kOctetStream);
@@ -106,18 +107,21 @@ TEST(EpsonDriverMatchingTest, ManualDiscovery) {
 // Simple PrinterDiscoveryType::kUsb checks.
 TEST(EpsonDriverMatchingTest, UsbDiscovery) {
   PrinterSearchData sd(GetTestPrinterSearchData(PrinterDiscoveryType::kUsb));
-  sd.usb_command_set.clear();
+  std::vector<std::string> command_set;
 
-  sd.usb_command_set.push_back("ESC");
+  command_set.push_back("ESC");
+  sd.printer_id.set_command_set(command_set);
   EXPECT_FALSE(CanUseEpsonGenericPPD(sd));
 
-  sd.usb_command_set.push_back(std::string(kEscPr) + ":asfd");
+  command_set.push_back("abcd" + std::string(kEscPr));
+  sd.printer_id.set_command_set(command_set);
   EXPECT_FALSE(CanUseEpsonGenericPPD(sd));
 
   sd.supported_document_formats.push_back(kEscPr);
   EXPECT_FALSE(CanUseEpsonGenericPPD(sd));
 
-  sd.usb_command_set.push_back(kEscPr);
+  command_set.push_back(std::string(kEscPr) + "garbage");
+  sd.printer_id.set_command_set(command_set);
   EXPECT_TRUE(CanUseEpsonGenericPPD(sd));
 }
 
@@ -132,7 +136,7 @@ TEST(EpsonDriverMatchingTest, ZerconfDiscovery) {
   sd.supported_document_formats.push_back(std::string(kEpsonEscpr) + ":asfd");
   EXPECT_FALSE(CanUseEpsonGenericPPD(sd));
 
-  sd.usb_command_set.push_back(kEpsonEscpr);
+  sd.printer_id.set_command_set({kEpsonEscpr});
   EXPECT_FALSE(CanUseEpsonGenericPPD(sd));
 
   sd.supported_document_formats.push_back(kEpsonEscpr);

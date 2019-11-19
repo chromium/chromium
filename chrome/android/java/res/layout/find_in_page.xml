@@ -12,7 +12,7 @@
     android:gravity="center_vertical"
     style="@android:style/Theme.Holo.Light">
     <view
-        class="org.chromium.chrome.browser.widget.findinpage.FindToolbar$FindQuery"
+        class="org.chromium.chrome.browser.findinpage.FindToolbar$FindQuery"
         android:id="@+id/find_query"
         android:layout_width="0dp"
         android:layout_weight="1"
@@ -39,8 +39,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="#000000"
-        android:alpha="0.1" />
+        android:background="@color/divider_bg_color" />
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/find_prev_button"
         style="@style/ToolbarButton"

@@ -21,12 +21,8 @@ CameraBufferFactory::CreateGpuMemoryBuffer(const gfx::Size& size,
     LOG(ERROR) << "GpuMemoryBufferManager not set";
     return std::unique_ptr<gfx::GpuMemoryBuffer>();
   }
-  gfx::BufferUsage buffer_usage = gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE;
-  if (format == gfx::BufferFormat::R_8) {
-    buffer_usage = gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE;
-  }
-  return buf_manager->CreateGpuMemoryBuffer(size, format, buffer_usage,
-                                            gpu::kNullSurfaceHandle);
+  return buf_manager->CreateGpuMemoryBuffer(
+      size, format, GetBufferUsage(format), gpu::kNullSurfaceHandle);
 }
 
 // There's no good way to resolve the HAL pixel format to the platform-specific
@@ -55,6 +51,18 @@ ChromiumPixelFormat CameraBufferFactory::ResolveStreamBufferFormat(
     }
   }
   return kUnsupportedFormat;
+}
+
+// static
+gfx::BufferUsage CameraBufferFactory::GetBufferUsage(gfx::BufferFormat format) {
+  switch (format) {
+    case gfx::BufferFormat::R_8:
+      // Usage for JPEG capture buffer backed by R8 pixel buffer.
+      return gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE;
+    default:
+      // Default usage for YUV camera buffer.
+      return gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE;
+  }
 }
 
 }  // namespace media

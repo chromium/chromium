@@ -11,8 +11,8 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_listener.h"
 #include "ipc/ipc_message.h"
@@ -85,7 +85,8 @@ class SecurityKeyAuthHandlerWinTest : public testing::Test {
   mojo::NamedPlatformChannel::ServerName GetUniqueTestChannelHandle();
 
   // IPC tests require a valid MessageLoop to run.
-  base::MessageLoopForIO message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   // Used to allow |message_loop_| to run during tests.  The instance is reset
   // after each stage of the tests has been completed.

@@ -15,21 +15,15 @@
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
 #include "components/translate/ios/browser/ios_translate_driver.h"
-#include "ios/web/public/web_state/web_state_observer.h"
-#import "ios/web/public/web_state/web_state_user_data.h"
+#include "ios/web/public/web_state_observer.h"
+#import "ios/web/public/web_state_user_data.h"
 
 class PrefService;
-
-namespace metrics {
-class TranslateEventProto;
-}  // namespace metrics
 
 namespace translate {
 class TranslateAcceptLanguages;
 class TranslatePrefs;
 class TranslateManager;
-
-struct LanguageDetectionDetails;
 }  // namespace translate
 
 namespace web {
@@ -63,10 +57,6 @@ class ChromeIOSTranslateClient
   std::unique_ptr<translate::TranslatePrefs> GetTranslatePrefs() override;
   translate::TranslateAcceptLanguages* GetTranslateAcceptLanguages() override;
   int GetInfobarIconID() const override;
-  // Record language detection event.
-  void RecordLanguageDetectionEvent(
-      const translate::LanguageDetectionDetails& details) const override;
-  void RecordTranslateEvent(const metrics::TranslateEventProto&) override;
   std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)
       const override;

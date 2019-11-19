@@ -1,0 +1,10 @@
+document
+++group
+++++group
+++++++description Name='Choose one:'
+++++menu Name='Choose one: Foo' ExpandCollapse.ExpandCollapseState='LeafNode'
+++++++description Name='Foo'
+++++listbox Name='Choose one:' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++option Name='Baz' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='Choose one:'
+++++++option Name='Bar' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='Choose one:'
+++++++option Name='Foo' SelectionItem.IsSelected=false SelectionItem.SelectionContainer='Choose one:'

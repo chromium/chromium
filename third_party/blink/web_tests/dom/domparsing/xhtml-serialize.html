@@ -1,39 +1,16 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
+<title>This test checks whether serialized invalid XHTML is valid XML (for bug 9901)</title>
 <body>
-<p>This test checks whether serialized invalid XHTML is valid XML (for bug 9901).</p>
-<p>If the test passes, you'll see a series of 'PASS' messages below.</p>
-<pre id="console"></pre>
-
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-if (window.testRunner)
-    testRunner.dumpAsText();
-    
-function log(s)
-{
-    document.getElementById('console').appendChild(document.createTextNode(s));
-}
-
-function shouldBe(a, b)
-{
-    var evalA;
-    try {
-        evalA = eval(a);
-    } catch(e) {
-        evalA = e;
-    }
-    
-    if (evalA == b)
-        log('PASS: ' + a + ' should be ' + b + ' and is.\n');
-    else
-        log('FAIL: ' + a + ' should be ' + b + ' but instead is ' + evalA + '.\n');
-}
-
 var doc = (new DOMParser()).parseFromString('<input xmlns="http://www.w3.org/1999/xhtml">123</input>', 'text/xml');
 var str = (new XMLSerializer()).serializeToString(doc);
 
-shouldBe('doc.firstChild.firstChild.nodeValue', '123');
-shouldBe('str', '<input xmlns=\"http://www.w3.org/1999/xhtml\">123</input>');
+assert_equals(doc.firstChild.firstChild.nodeValue, "123");
+assert_equals(str, '<input xmlns=\"http://www.w3.org/1999/xhtml\">123</input>');
+done();
 </script>
 </body>
 </html>

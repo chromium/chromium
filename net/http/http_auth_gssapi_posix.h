@@ -10,10 +10,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/native_library.h"
+#include "base/strings/string_piece_forward.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth.h"
-#include "net/http/http_negotiate_auth_system.h"
+#include "net/http/http_auth_mechanism.h"
 
 #if defined(OS_MACOSX)
 #include <GSS/gssapi.h>
@@ -41,7 +43,7 @@ class NET_EXPORT_PRIVATE GSSAPILibrary {
   // Initializes the library, including any necessary dynamic libraries.
   // This is done separately from construction (which happens at startup time)
   // in order to delay work until the class is actually needed.
-  virtual bool Init() = 0;
+  virtual bool Init(const NetLogWithSource& net_log) = 0;
 
   // These methods match the ones in the GSSAPI library.
   virtual OM_uint32 import_name(
@@ -114,7 +116,7 @@ class NET_EXPORT_PRIVATE GSSAPISharedLibrary : public GSSAPILibrary {
   ~GSSAPISharedLibrary() override;
 
   // GSSAPILibrary methods:
-  bool Init() override;
+  bool Init(const NetLogWithSource& net_log) override;
   OM_uint32 import_name(OM_uint32* minor_status,
                         const gss_buffer_t input_name_buffer,
                         const gss_OID input_name_type,
@@ -167,41 +169,33 @@ class NET_EXPORT_PRIVATE GSSAPISharedLibrary : public GSSAPILibrary {
   const std::string& GetLibraryNameForTesting() override;
 
  private:
-  typedef decltype(&gss_import_name) gss_import_name_type;
-  typedef decltype(&gss_release_name) gss_release_name_type;
-  typedef decltype(&gss_release_buffer) gss_release_buffer_type;
-  typedef decltype(&gss_display_name) gss_display_name_type;
-  typedef decltype(&gss_display_status) gss_display_status_type;
-  typedef decltype(&gss_init_sec_context) gss_init_sec_context_type;
-  typedef decltype(&gss_wrap_size_limit) gss_wrap_size_limit_type;
-  typedef decltype(&gss_delete_sec_context) gss_delete_sec_context_type;
-  typedef decltype(&gss_inquire_context) gss_inquire_context_type;
-
   FRIEND_TEST_ALL_PREFIXES(HttpAuthGSSAPIPOSIXTest, GSSAPIStartup);
 
-  bool InitImpl();
+  bool InitImpl(const NetLogWithSource& net_log);
   // Finds a usable dynamic library for GSSAPI and loads it.  The criteria are:
   //   1. The library must exist.
   //   2. The library must export the functions we need.
-  base::NativeLibrary LoadSharedLibrary();
-  bool BindMethods(base::NativeLibrary lib);
+  base::NativeLibrary LoadSharedLibrary(const NetLogWithSource& net_log);
+  bool BindMethods(base::NativeLibrary lib,
+                   base::StringPiece library_name,
+                   const NetLogWithSource& net_log);
 
-  bool initialized_;
+  bool initialized_ = false;
 
   std::string gssapi_library_name_;
   // Need some way to invalidate the library.
-  base::NativeLibrary gssapi_library_;
+  base::NativeLibrary gssapi_library_ = nullptr;
 
   // Function pointers
-  gss_import_name_type import_name_;
-  gss_release_name_type release_name_;
-  gss_release_buffer_type release_buffer_;
-  gss_display_name_type display_name_;
-  gss_display_status_type display_status_;
-  gss_init_sec_context_type init_sec_context_;
-  gss_wrap_size_limit_type wrap_size_limit_;
-  gss_delete_sec_context_type delete_sec_context_;
-  gss_inquire_context_type inquire_context_;
+  decltype(&gss_import_name) import_name_ = nullptr;
+  decltype(&gss_release_name) release_name_ = nullptr;
+  decltype(&gss_release_buffer) release_buffer_ = nullptr;
+  decltype(&gss_display_name) display_name_ = nullptr;
+  decltype(&gss_display_status) display_status_ = nullptr;
+  decltype(&gss_init_sec_context) init_sec_context_ = nullptr;
+  decltype(&gss_wrap_size_limit) wrap_size_limit_ = nullptr;
+  decltype(&gss_delete_sec_context) delete_sec_context_ = nullptr;
+  decltype(&gss_inquire_context) inquire_context_ = nullptr;
 };
 
 // ScopedSecurityContext releases a gss_ctx_id_t when it goes out of
@@ -215,7 +209,7 @@ class ScopedSecurityContext {
   gss_ctx_id_t* receive() { return &security_context_; }
 
  private:
-  gss_ctx_id_t security_context_;
+  gss_ctx_id_t security_context_ = GSS_C_NO_CONTEXT;
   GSSAPILibrary* gssapi_lib_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedSecurityContext);
@@ -223,15 +217,14 @@ class ScopedSecurityContext {
 
 
 // TODO(ahendrickson): Share code with HttpAuthSSPI.
-class NET_EXPORT_PRIVATE HttpAuthGSSAPI : public HttpNegotiateAuthSystem {
+class NET_EXPORT_PRIVATE HttpAuthGSSAPI : public HttpAuthMechanism {
  public:
   HttpAuthGSSAPI(GSSAPILibrary* library,
-                 const std::string& scheme,
                  const gss_OID gss_oid);
   ~HttpAuthGSSAPI() override;
 
-  // HttpNegotiateAuthSystem implementation:
-  bool Init() override;
+  // HttpAuthMechanism implementation:
+  bool Init(const NetLogWithSource& net_log) override;
   bool NeedsIdentity() const override;
   bool AllowsExplicitCredentials() const override;
   HttpAuth::AuthorizationResult ParseChallenge(
@@ -240,23 +233,135 @@ class NET_EXPORT_PRIVATE HttpAuthGSSAPI : public HttpNegotiateAuthSystem {
                         const std::string& spn,
                         const std::string& channel_bindings,
                         std::string* auth_token,
+                        const NetLogWithSource& net_log,
                         CompletionOnceCallback callback) override;
-  void Delegate() override;
+  void SetDelegation(HttpAuth::DelegationType delegation_type) override;
 
  private:
   int GetNextSecurityToken(const std::string& spn,
                            const std::string& channel_bindings,
                            gss_buffer_t in_token,
-                           gss_buffer_t out_token);
+                           gss_buffer_t out_token,
+                           const NetLogWithSource& net_log);
 
-  std::string scheme_;
   gss_OID gss_oid_;
   GSSAPILibrary* library_;
   std::string decoded_server_auth_token_;
   ScopedSecurityContext scoped_sec_context_;
-  bool can_delegate_;
+  HttpAuth::DelegationType delegation_type_ = HttpAuth::DelegationType::kNone;
 };
 
+// Diagnostics
+
+// GetGssStatusCodeValue constructs a base::Value containing a status code and a
+// message.
+//
+//     {
+//       "status" : <status value as a number>,
+//       "message": [
+//          <list of strings explaining what that number means>
+//       ]
+//     }
+//
+// Messages are looked up via gss_display_status() exposed by |gssapi_lib|. The
+// type of status code should be indicated by setting |status_code_type| to
+// either |GSS_C_MECH_CODE| or |GSS_C_GSS_CODE|.
+//
+// Mechanism specific codes aren't unique, so the mechanism needs to be
+// identified to look up messages if |status_code_type| is |GSS_C_MECH_CODE|.
+// Since no mechanism OIDs are passed in, mechanism specific status codes will
+// likely not have messages.
+NET_EXPORT_PRIVATE base::Value GetGssStatusCodeValue(
+    GSSAPILibrary* gssapi_lib,
+    OM_uint32 status,
+    OM_uint32 status_code_type);
+
+// Given major and minor GSSAPI status codes, returns a base::Value
+// encapsulating the codes as well as their meanings as expanded via
+// gss_display_status().
+//
+// The base::Value has the following structure:
+//   {
+//     "function": <name of GSSAPI function that returned the error>
+//     "major_status": {
+//       "status" : <status value as a number>,
+//       "message": [
+//          <list of strings hopefully explaining what that number means>
+//       ]
+//     },
+//     "minor_status": {
+//       "status" : <status value as a number>,
+//       "message": [
+//          <list of strings hopefully explaining what that number means>
+//       ]
+//     }
+//   }
+//
+// Passing nullptr to |gssapi_lib| will skip the message lookups. Thus the
+// returned value will be missing the "message" fields. The same is true if the
+// message lookup failed for some reason, or if the lookups succeeded but
+// yielded an empty message.
+NET_EXPORT_PRIVATE base::Value GetGssStatusValue(GSSAPILibrary* gssapi_lib,
+                                                 base::StringPiece method,
+                                                 OM_uint32 major_status,
+                                                 OM_uint32 minor_status);
+
+// OidToValue returns a base::Value representing an OID. The structure of the
+// value is:
+//   {
+//     "oid":    <symbolic name of OID if it is known>
+//     "length": <length in bytes of serialized OID>,
+//     "bytes":  <hexdump of up to 1024 bytes of serialized OID>
+//   }
+NET_EXPORT_PRIVATE base::Value OidToValue(const gss_OID oid);
+
+// GetDisplayNameValue returns a base::Value representing a gss_name_t. It
+// invokes |gss_display_name()| via |gssapi_lib| to determine the display name
+// associated with |gss_name|.
+//
+// The structure of the returned value is:
+//   {
+//     "gss_name": <display name as returned by gss_display_name()>,
+//     "type": <OID indicating type. See OidToValue() for structure of this
+//              field>
+//   }
+//
+// If the lookup failed, then the structure is:
+//   {
+//     "error": <error. See GetGssStatusValue() for structure.>
+//   }
+//
+// Note that |gss_name_t| is platform dependent. If |gss_display_name| fails,
+// there's no good value to display in its stead.
+NET_EXPORT_PRIVATE base::Value GetDisplayNameValue(GSSAPILibrary* gssapi_lib,
+                                                   const gss_name_t gss_name);
+
+// GetContextStateAsValue returns a base::Value that describes the state of a
+// GSSAPI context. The structure of the value is:
+//
+//   {
+//     "source": {
+//       "name": <GSSAPI principal name of source (e.g. the user)>,
+//       "type": <OID of name type>
+//     },
+//     "target": {
+//       "name": <GSSAPI principal name of target (e.g. the server)>,
+//       "type": <OID of name type>
+//     },
+//     "lifetime": <Lifetime of the negotiated context in seconds.>,
+//     "mechanism": <OID of negotiated mechanism>,
+//     "flags": <Context flags. See documentation for gss_inquire_context for
+//               flag values>
+//     "open": <True if the context has finished the handshake>
+//   }
+//
+// If the inquiry fails, the following is returned:
+//   {
+//     "error": <error. See GetGssStatusValue() for structure.>
+//   }
+NET_EXPORT_PRIVATE base::Value GetContextStateAsValue(
+    GSSAPILibrary* gssapi_lib,
+    const gss_ctx_id_t context_handle);
 }  // namespace net
 
 #endif  // NET_HTTP_HTTP_AUTH_GSSAPI_POSIX_H_

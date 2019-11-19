@@ -5,18 +5,17 @@
 -->
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:alpha="@dimen/default_disabled_alpha"
-        android:color="@color/modern_secondary_color"
+    <item android:color="@color/chip_background_color_disabled"
         android:state_enabled="false" />
     <item android:alpha="@dimen/chip_background_selected_focused_alpha"
-        android:color="@color/modern_blue_600"
+        android:color="@color/filled_button_bg_color"
         android:state_selected="true"
         android:state_focused="true" />
     <item android:alpha="@dimen/chip_background_selected_alpha"
-        android:color="@color/modern_blue_600"
+        android:color="@color/filled_button_bg_color"
         android:state_selected="true" />
     <item android:alpha="@dimen/default_focused_alpha"
         android:color="@color/modern_grey_800"
         android:state_focused="true" />
-    <item android:color="@color/modern_primary_color" />
+    <item android:color="@android:color/transparent" />
 </selector>

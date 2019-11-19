@@ -15,8 +15,8 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "services/ws/public/cpp/gpu/command_buffer_metrics.h"
-#include "services/ws/public/cpp/gpu/context_provider_command_buffer.h"
+#include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
+#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -47,7 +47,7 @@ GpuBrowsertestEstablishGpuChannelSyncRunLoop() {
   return gpu_channel_host;
 }
 
-scoped_refptr<ws::ContextProviderCommandBuffer> GpuBrowsertestCreateContext(
+scoped_refptr<viz::ContextProviderCommandBuffer> GpuBrowsertestCreateContext(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
   gpu::GpuChannelEstablishFactory* factory =
       content::BrowserMainLoop::GetInstance()->gpu_channel_establish_factory();
@@ -63,12 +63,12 @@ scoped_refptr<ws::ContextProviderCommandBuffer> GpuBrowsertestCreateContext(
   constexpr bool automatic_flushes = false;
   constexpr bool support_locking = false;
   constexpr bool support_grcontext = true;
-  return base::MakeRefCounted<ws::ContextProviderCommandBuffer>(
+  return base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
       std::move(gpu_channel_host), factory->GetGpuMemoryBufferManager(),
       content::kGpuStreamIdDefault, content::kGpuStreamPriorityDefault,
       gpu::kNullSurfaceHandle, GURL(), automatic_flushes, support_locking,
       support_grcontext, gpu::SharedMemoryLimits(), attributes,
-      ws::command_buffer_metrics::ContextType::FOR_TESTING);
+      viz::command_buffer_metrics::ContextType::FOR_TESTING);
 }
 
 }  // namespace content

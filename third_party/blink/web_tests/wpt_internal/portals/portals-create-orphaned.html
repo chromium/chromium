@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script>
+    function createPortal(doc, src, channel) {
+      var portal = doc.createElement("portal");
+      portal.src = new URL(src, location.href);
+      return new Promise((resolve, reject) => {
+        var bc = new BroadcastChannel(channel);
+        bc.onmessage = () => {
+          bc.close();
+          resolve(portal);
+        }
+        doc.body.appendChild(portal);
+      });
+    }
+
+    promise_test(async () => {
+      var w = window.open();
+      var doc = w.document;
+      var portal = await createPortal(doc,
+          "resources/portals-create-orphaned-portal.html",
+          "create-orphaned-portal");
+      portal.activate();
+      return createPortal(doc, "resources/simple-portal.html", "simple-portal");
+    }, "creating a portal from an orphaned portal should succeed");
+  </script>
+</body>

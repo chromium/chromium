@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@android:color/black"
+    android:id="@+id/childLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+  <LinearLayout
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:padding="0dp"
+      android:layout_height="wrap_content"
+      android:layout_marginStart="0dp"
+      android:layout_marginTop="0dp"
+      android:id="@+id/childTopControls">
+    <Button
+        android:text="@string/close_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:padding="0dp"
+        android:paddingTop="0dp"
+        android:id="@+id/childCloseButton"/>
+    <TextView
+        android:id="@+id/childTitleText"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="65dp"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:gravity="center"
+        android:scrollHorizontally="true"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        />
+  </LinearLayout>
+  <WebView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:id="@+id/childWebView"
+      />
+</LinearLayout>

@@ -1,10 +1,22 @@
 include_rules = [
   "+cc/base/switches.h",
-  "+components",  # For jni registers.
+  "+components/autofill/core",
+  "+components/crash/core",
+  "+components/safe_browsing/android",
+  "+components/spellcheck/common",
+  "+components/viz/common",
   "+content/public",
   "+gin/public",
   "+gin/v8_initializer.h",
   "+media/base/media_switches.h",  # For media command line switches.
+  "+mojo/core/embedder/embedder.h",
   "+ui/events/gesture_detection",
   "+ui/gl",
 ]
+
+specific_include_rules = {
+    # Special-case where webview composes webview+weblayer.
+    "webview_entry_point\.cc": [
+        "+weblayer",
+    ],
+}

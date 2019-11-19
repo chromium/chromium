@@ -1,0 +1,55 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "url/mojom/url.mojom";
+
+// The HTTP Content-Security-Policy-Report-Only response header allows web
+// developers to experiment with policies by monitoring (but not enforcing)
+// their effects. These violation reports consist of JSON documents sent via an
+// HTTP POST request to the specified URI.
+enum ContentSecurityPolicyType {
+  kReport,
+  kEnforce
+};
+
+// A CSPSource represents an expression that matches a set of urls.
+// Examples of CSPSource:
+// - domain.example.com
+// - *.example.com
+// - https://cdn.com
+// - data:
+// - 'none'
+// - 'self'
+// - *
+struct CSPSource {
+  string scheme;
+  string host;
+  int32 port = -1;
+  string path;
+  bool is_host_wildcard = false;
+  bool is_port_wildcard = false;
+};
+
+struct CSPSourceList {
+  array<CSPSource> sources;
+
+  // Wildcard hosts and 'self' aren't stored in |sources|, but as attributes
+  // on the source list itself.
+  bool allow_self = false;
+  bool allow_star = false;
+};
+
+struct ContentSecurityPolicy {
+  // List of sources specified in the frame-ancestors directive.
+  CSPSourceList? frame_ancestors;
+
+  // Whether this CSP policy uses the new reporting API.
+  // https://w3c.github.io/reporting/
+  bool use_reporting_api = false;
+
+  // Set of reporting endpoints to which violation reports are sent.
+  array<url.mojom.Url> report_endpoints;
+};

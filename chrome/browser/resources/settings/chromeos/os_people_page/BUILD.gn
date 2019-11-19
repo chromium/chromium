@@ -1,0 +1,70 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":os_people_page",
+    "//chrome/browser/resources/settings/people_page:account_manager",
+    "//chrome/browser/resources/settings/people_page:account_manager_browser_proxy",
+    "//chrome/browser/resources/settings/people_page:change_picture",
+    "//chrome/browser/resources/settings/people_page:change_picture_browser_proxy",
+    "//chrome/browser/resources/settings/people_page:fingerprint_browser_proxy",
+    "//chrome/browser/resources/settings/people_page:fingerprint_list",
+    "//chrome/browser/resources/settings/people_page:kerberos_accounts",
+    "//chrome/browser/resources/settings/people_page:kerberos_accounts_browser_proxy",
+    "//chrome/browser/resources/settings/people_page:lock_screen",
+    "//chrome/browser/resources/settings/people_page:lock_screen_password_prompt_dialog",
+    "//chrome/browser/resources/settings/people_page:lock_state_behavior",
+    "//chrome/browser/resources/settings/people_page:profile_info_browser_proxy",
+    "//chrome/browser/resources/settings/people_page:setup_fingerprint_dialog",
+    "//chrome/browser/resources/settings/people_page:setup_pin_dialog",
+    "//chrome/browser/resources/settings/people_page:signout_dialog",
+    "//chrome/browser/resources/settings/people_page:sync_browser_proxy",
+    "//chrome/browser/resources/settings/people_page:sync_page",
+    "//chrome/browser/resources/settings/people_page:user_list",
+    "//chrome/browser/resources/settings/people_page:users_add_user_dialog",
+    "//chrome/browser/resources/settings/people_page:users_page",
+  ]
+}
+
+js_library("os_people_page") {
+  deps = [
+    ":os_sync_controls",
+    "../../:page_visibility",
+    "../../:route",
+    "../../settings_page:settings_animated_pages",
+    "//chrome/browser/resources/settings/people_page:lock_screen",
+    "//chrome/browser/resources/settings/people_page:lock_state_behavior",
+    "//chrome/browser/resources/settings/people_page:profile_info_browser_proxy",
+    "//chrome/browser/resources/settings/people_page:signout_dialog",
+    "//chrome/browser/resources/settings/people_page:sync_browser_proxy",
+    "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants",
+    "//ui/webui/resources/cr_elements/chromeos/cr_picture:cr_png_behavior",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:icon",
+    "//ui/webui/resources/js:load_time_data",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink",
+  ]
+}
+
+js_library("os_sync_controls") {
+  deps = [
+    ":os_sync_browser_proxy",
+    "../../:route",
+    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle",
+    "//ui/webui/resources/js:assert",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
+}
+
+js_library("os_sync_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:load_time_data",
+  ]
+}

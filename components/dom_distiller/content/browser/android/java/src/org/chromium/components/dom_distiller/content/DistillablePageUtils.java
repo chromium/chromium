@@ -6,6 +6,7 @@ package org.chromium.components.dom_distiller.content;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -30,7 +31,7 @@ public final class DistillablePageUtils {
 
     public static void setDelegate(WebContents webContents,
             PageDistillableDelegate delegate) {
-        nativeSetDelegate(webContents, delegate);
+        DistillablePageUtilsJni.get().setDelegate(webContents, delegate);
     }
 
     @CalledByNative
@@ -41,6 +42,8 @@ public final class DistillablePageUtils {
         }
     }
 
-    private static native void nativeSetDelegate(
-            WebContents webContents, PageDistillableDelegate delegate);
+    @NativeMethods
+    interface Natives {
+        void setDelegate(WebContents webContents, PageDistillableDelegate delegate);
+    }
 }

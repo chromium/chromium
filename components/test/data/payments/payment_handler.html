@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<!--
+Copyright 2019 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1">
+    <title>Payment Handler Test</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <div>
+      <button onclick="install()" id="install">Install Payment handler</button>
+    </div>
+    <div>
+      <button onclick="launch()" id="testNoHandler">Launch Payment Handler</button>
+    </div>
+    <script src="payment_handler.js"></script>
+  </body>
+</html>

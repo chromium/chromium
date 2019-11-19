@@ -4,8 +4,14 @@
 
 #include "content/browser/field_trial_recorder.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "base/metrics/field_trial.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "content/common/field_trial_recorder.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
@@ -15,9 +21,9 @@ FieldTrialRecorder::~FieldTrialRecorder() = default;
 
 // static
 void FieldTrialRecorder::Create(
-    mojom::FieldTrialRecorderRequest request) {
-  mojo::MakeStrongBinding(std::make_unique<FieldTrialRecorder>(),
-                          std::move(request));
+    mojo::PendingReceiver<mojom::FieldTrialRecorder> receiver) {
+  mojo::MakeSelfOwnedReceiver(std::make_unique<FieldTrialRecorder>(),
+                              std::move(receiver));
 }
 
 void FieldTrialRecorder::FieldTrialActivated(const std::string& trial_name) {
@@ -28,4 +34,4 @@ void FieldTrialRecorder::FieldTrialActivated(const std::string& trial_name) {
   base::FieldTrialList::FindFullName(trial_name);
 }
 
-}  // namespce content
+}  // namespace content

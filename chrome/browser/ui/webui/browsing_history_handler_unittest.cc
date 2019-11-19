@@ -80,7 +80,7 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
         WebHistoryServiceFactory::GetForProfile(profile()));
     ASSERT_TRUE(web_history_service_);
 
-    web_ui_.reset(new content::TestWebUI);
+    web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(web_contents());
   }
 
@@ -89,14 +89,15 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  content::BrowserContext* CreateBrowserContext() override {
-    TestingProfile::Builder builder;
-    builder.AddTestingFactory(ProfileSyncServiceFactory::GetInstance(),
-                              base::BindRepeating(&BuildTestSyncService));
-    builder.AddTestingFactory(WebHistoryServiceFactory::GetInstance(),
-                              base::BindRepeating(&BuildFakeWebHistoryService));
-    return builder.Build().release();
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    return {
+        {ProfileSyncServiceFactory::GetInstance(),
+         base::BindRepeating(&BuildTestSyncService)},
+        {WebHistoryServiceFactory::GetInstance(),
+         base::BindRepeating(&BuildFakeWebHistoryService)},
+    };
   }
+
   syncer::TestSyncService* sync_service() { return sync_service_; }
   history::WebHistoryService* web_history_service() {
     return web_history_service_;

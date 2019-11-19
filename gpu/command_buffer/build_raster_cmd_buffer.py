@@ -4,6 +4,7 @@
 # found in the LICENSE file.
 """code generator for raster command buffers."""
 
+import filecmp
 import os
 import os.path
 import sys
@@ -46,6 +47,7 @@ _NAMED_TYPE_INFO = {
     'is_complete': True,
     'valid': [
       'GL_COMMANDS_ISSUED_CHROMIUM',
+      'GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM',
       'GL_COMMANDS_COMPLETED_CHROMIUM',
     ],
     'invalid': [
@@ -106,7 +108,6 @@ _NAMED_TYPE_INFO = {
       'gfx::BufferUsage::GPU_READ',
       'gfx::BufferUsage::SCANOUT',
       'gfx::BufferUsage::GPU_READ_CPU_READ_WRITE',
-      'gfx::BufferUsage::GPU_READ_CPU_READ_WRITE_PERSISTENT',
     ],
     'invalid': [
       'gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE',
@@ -134,7 +135,6 @@ _NAMED_TYPE_INFO = {
       'viz::ResourceFormat::BGRX_1010102',
       'viz::ResourceFormat::YVU_420',
       'viz::ResourceFormat::YUV_420_BIPLANAR',
-      'viz::ResourceFormat::UYVY_422',
 
     ],
     'invalid': [
@@ -240,9 +240,21 @@ _FUNCTION_INFO = {
     'gl_test_func': 'glEndnQuery',
     'client_test': False,
   },
+  'QueryCounterEXT' : {
+    'type': 'Custom',
+    'impl_func': False,
+    'cmd_args': 'GLidQuery id, GLenumQueryTarget target, '
+                'void* sync_data, GLuint submit_count',
+    'data_transfer_methods': ['shm'],
+    'gl_test_func': 'glQueryCounter',
+  },
   'GetQueryObjectuivEXT': {
     'type': 'NoCommand',
     'gl_test_func': 'glGetQueryObjectuiv',
+  },
+  'GetQueryObjectui64vEXT': {
+    'type': 'NoCommand',
+    'gl_test_func': 'glGetQueryObjectui64v',
   },
   'ShallowFlushCHROMIUM': {
     'type': 'NoCommand',
@@ -270,26 +282,10 @@ _FUNCTION_INFO = {
     'client_test': False,
     'cmd_args': 'GLuint url_bucket_id',
   },
-  'InsertFenceSyncCHROMIUM': {
-    'type': 'Custom',
-    'internal': True,
-    'impl_func': False,
-    'cmd_args': 'GLuint64 release_count',
-    'trace_level': 1,
-  },
   'LoseContextCHROMIUM': {
     'decoder_func': 'DoLoseContextCHROMIUM',
     'unit_test': False,
     'trace_level': 1,
-  },
-  'GenUnverifiedSyncTokenCHROMIUM': {
-    'type': 'NoCommand',
-  },
-  'VerifySyncTokensCHROMIUM' : {
-    'type': 'NoCommand',
-  },
-  'WaitSyncTokenCHROMIUM': {
-    'type': 'NoCommand',
   },
   'BeginRasterCHROMIUM': {
     'decoder_func': 'DoBeginRasterCHROMIUM',
@@ -364,27 +360,35 @@ def main(argv):
   parser = OptionParser()
   parser.add_option(
       "--output-dir",
-      help="base directory for resulting files, under chrome/src. default is "
-      "empty. Use this if you want the result stored under gen.")
+      help="Output directory for generated files. Defaults to chromium root "
+      "directory.")
   parser.add_option(
-      "-v", "--verbose", action="store_true",
-      help="prints more output.")
+      "-v", "--verbose", action="store_true", help="Verbose logging output.")
+  parser.add_option(
+      "-c", "--check", action="store_true",
+      help="Check if output files match generated files in chromium root "
+      "directory.  Use this in PRESUBMIT scripts with --output-dir.")
 
   (options, _) = parser.parse_args(args=argv)
 
-  # This script lives under gpu/command_buffer, cd to base directory.
-  os.chdir(os.path.dirname(__file__) + "/../..")
-  base_dir = os.getcwd()
+  # This script lives under src/gpu/command_buffer.
+  script_dir = os.path.dirname(os.path.abspath(__file__))
+  assert script_dir.endswith(os.path.normpath("src/gpu/command_buffer"))
+  # os.path.join doesn't do the right thing with relative paths.
+  chromium_root_dir = os.path.abspath(script_dir + "/../..")
+
+  # Support generating files under gen/ and for PRESUBMIT.
+  if options.output_dir:
+    output_dir = options.output_dir
+  else:
+    output_dir = chromium_root_dir
+  os.chdir(output_dir)
+
   build_cmd_buffer_lib.InitializePrefix("Raster")
-  gen = build_cmd_buffer_lib.GLGenerator(options.verbose, "2018",
-                                         _FUNCTION_INFO, _NAMED_TYPE_INFO)
+  gen = build_cmd_buffer_lib.GLGenerator(
+      options.verbose, "2018", _FUNCTION_INFO, _NAMED_TYPE_INFO,
+      chromium_root_dir)
   gen.ParseGLH("gpu/command_buffer/raster_cmd_buffer_functions.txt")
-
-  # Support generating files under gen/
-  if options.output_dir != None:
-    os.chdir(options.output_dir)
-
-  os.chdir(base_dir)
 
   gen.WriteCommandIds("gpu/command_buffer/common/raster_cmd_ids_autogen.h")
   gen.WriteFormat("gpu/command_buffer/common/raster_cmd_format_autogen.h")
@@ -410,11 +414,27 @@ def main(argv):
     "gpu/command_buffer/service/"
     "raster_cmd_validation_implementation_autogen.h")
 
-  build_cmd_buffer_lib.Format(gen.generated_cpp_filenames)
+  build_cmd_buffer_lib.Format(gen.generated_cpp_filenames, output_dir,
+                              chromium_root_dir)
 
   if gen.errors > 0:
-    print "%d errors" % gen.errors
+    print "build_raster_cmd_buffer.py: Failed with %d errors" % gen.errors
     return 1
+
+  check_failed_filenames = []
+  if options.check:
+    for filename in gen.generated_cpp_filenames:
+      if not filecmp.cmp(os.path.join(output_dir, filename),
+                         os.path.join(chromium_root_dir, filename)):
+        check_failed_filenames.append(filename)
+
+  if len(check_failed_filenames) > 0:
+    print 'Please run gpu/command_buffer/build_raster_cmd_buffer.py'
+    print 'Failed check on autogenerated command buffer files:'
+    for filename in check_failed_filenames:
+      print filename
+    return 1
+
   return 0
 
 

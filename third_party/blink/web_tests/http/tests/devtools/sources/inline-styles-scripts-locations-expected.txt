@@ -1,0 +1,77 @@
+Bindings should only generate locations for an inline script (style) if the location is inside of the inline script (style).
+
+Content:
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Website</title>
+</head>
+<body>
+    <style>
+        body {
+            --var-1: one;
+        }
+    </style>
+    Hello World
+    <script>
+        function firstFunction() {
+        }
+    </script>
+    <style>body {--var-2: two;} </style><script>function secondFunction() { }</script>
+</body>
+</html>
+
+Scanning 21 lines for css locations. Note that location line/column numbers are zero-based.
+uiLocation 8:0 resolves to: 8:0 (css)
+uiLocation 9:0 resolves to: 9:0 (css)
+uiLocation 10:0 resolves to: 10:0 (css)
+uiLocation 11:0 resolves to: 11:0 (css)
+Scanning 21 lines for script locations. Note that location line/column numbers are zero-based.
+uiLocation 14:0 resolves to: 14:0 (script)
+uiLocation 15:0 resolves to: 15:0 (script)
+uiLocation 16:0 resolves to: 16:0 (script)
+
+
+Formatting source now...
+
+
+Formatted Content:
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Website</title>
+    </head>
+    <body>
+        <style>
+            body {
+                --var-1: one; }
+        </style>
+        Hello World
+    <script>
+            function firstFunction() {}
+        </script>
+        <style>
+            body {
+                --var-2: two;}
+        </style>
+        <script>
+            function secondFunction() {}
+        </script>
+    </body>
+</html>
+
+Scanning 25 lines for css locations. Note that location line/column numbers are zero-based.
+uiLocation 8:0 resolves to: 8:0 (css)
+uiLocation 9:0 resolves to: 9:0 (css)
+uiLocation 10:0 resolves to: 11:0 (css)
+uiLocation 16:0 resolves to: 17:11 (css)
+uiLocation 17:0 resolves to: 17:17 (css)
+uiLocation 18:0 resolves to: 17:32 (css)
+Scanning 25 lines for script locations. Note that location line/column numbers are zero-based.
+uiLocation 13:0 resolves to: 14:0 (script)
+uiLocation 14:0 resolves to: 16:0 (script)
+uiLocation 20:0 resolves to: 17:48 (script)
+uiLocation 21:0 resolves to: 17:77 (script)
+

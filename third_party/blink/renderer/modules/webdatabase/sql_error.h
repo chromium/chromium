@@ -42,21 +42,16 @@ class SQLErrorData {
 
  public:
   static std::unique_ptr<SQLErrorData> Create(unsigned code,
-                                              const String& message) {
-    return base::WrapUnique(new SQLErrorData(code, message));
-  }
-
-  static std::unique_ptr<SQLErrorData> Create(unsigned code,
                                               const char* message,
                                               int sqlite_code,
                                               const char* sqlite_message) {
-    return Create(code, String::Format("%s (%d %s)", message, sqlite_code,
-                                       sqlite_message));
+    return std::make_unique<SQLErrorData>(
+        code,
+        String::Format("%s (%d %s)", message, sqlite_code, sqlite_message));
   }
 
-  static std::unique_ptr<SQLErrorData> Create(const SQLErrorData& data) {
-    return Create(data.Code(), data.Message());
-  }
+  SQLErrorData(unsigned code, const String& message)
+      : code_(code), message_(message.IsolatedCopy()) {}
 
   SQLErrorData(const SQLErrorData& data)
       : code_(data.code_), message_(data.message_.IsolatedCopy()) {}
@@ -65,9 +60,6 @@ class SQLErrorData {
   String Message() const { return message_.IsolatedCopy(); }
 
  private:
-  SQLErrorData(unsigned code, const String& message)
-      : code_(code), message_(message.IsolatedCopy()) {}
-
   unsigned code_;
   String message_;
 };
@@ -76,10 +68,6 @@ class SQLError final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SQLError* Create(const SQLErrorData& data) {
-    return MakeGarbageCollected<SQLError>(data);
-  }
-
   explicit SQLError(const SQLErrorData& data) : data_(data) {}
 
   unsigned code() const { return data_.Code(); }

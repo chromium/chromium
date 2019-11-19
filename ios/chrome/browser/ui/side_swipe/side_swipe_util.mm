@@ -10,7 +10,8 @@
 #import "ios/chrome/browser/chrome_url_util.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
-#import "ios/web/public/navigation_item.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -31,6 +32,9 @@ BOOL IsSwipingForward(UISwipeGestureRecognizerDirection direction) {
 }
 
 BOOL UseNativeSwipe(web::NavigationItem* item) {
+  if (!item)
+    return NO;
+
   if (IsURLNewTabPage(item->GetVirtualURL()))
     return YES;
 

@@ -12,19 +12,17 @@ namespace blink {
 
 class HTMLDataListOptionsCollection : public HTMLCollection {
  public:
-  static HTMLDataListOptionsCollection* Create(ContainerNode& owner_node,
-                                               CollectionType type) {
-    DCHECK_EQ(type, kDataListOptions);
-    return MakeGarbageCollected<HTMLDataListOptionsCollection>(owner_node);
-  }
-
   explicit HTMLDataListOptionsCollection(ContainerNode& owner_node)
       : HTMLCollection(owner_node,
                        kDataListOptions,
                        kDoesNotOverrideItemAfter) {}
+  HTMLDataListOptionsCollection(ContainerNode& owner_node, CollectionType type)
+      : HTMLDataListOptionsCollection(owner_node) {
+    DCHECK_EQ(type, kDataListOptions);
+  }
 
   HTMLOptionElement* Item(unsigned offset) const {
-    return ToHTMLOptionElement(HTMLCollection::item(offset));
+    return To<HTMLOptionElement>(HTMLCollection::item(offset));
   }
 
   bool ElementMatches(const HTMLElement&) const;
@@ -38,7 +36,7 @@ DEFINE_TYPE_CASTS(HTMLDataListOptionsCollection,
 
 inline bool HTMLDataListOptionsCollection::ElementMatches(
     const HTMLElement& element) const {
-  return IsHTMLOptionElement(element);
+  return IsA<HTMLOptionElement>(element);
 }
 
 }  // namespace blink

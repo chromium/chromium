@@ -8,8 +8,9 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "content/browser/dom_storage/dom_storage_types.h"
 #include "content/browser/dom_storage/session_storage_data_map.h"
-#include "content/common/dom_storage/dom_storage_types.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 namespace content {
@@ -22,23 +23,22 @@ SessionStorageAreaImpl::SessionStorageAreaImpl(
     : namespace_entry_(namespace_entry),
       origin_(std::move(origin)),
       shared_data_map_(std::move(data_map)),
-      register_new_map_callback_(std::move(register_new_map_callback)),
-      binding_(this) {}
+      register_new_map_callback_(std::move(register_new_map_callback)) {}
 
 SessionStorageAreaImpl::~SessionStorageAreaImpl() {
-  if (binding_.is_bound())
+  if (receiver_.is_bound())
     shared_data_map_->RemoveBindingReference();
 }
 
 void SessionStorageAreaImpl::Bind(
-    blink::mojom::StorageAreaAssociatedRequest request) {
+    mojo::PendingAssociatedReceiver<blink::mojom::StorageArea> receiver) {
   if (IsBound()) {
-    binding_.Unbind();
+    receiver_.reset();
   } else {
     shared_data_map_->AddBindingReference();
   }
-  binding_.Bind(std::move(request));
-  binding_.set_connection_error_handler(base::BindOnce(
+  receiver_.Bind(std::move(receiver));
+  receiver_.set_disconnect_handler(base::BindOnce(
       &SessionStorageAreaImpl::OnConnectionError, base::Unretained(this)));
 }
 
@@ -50,19 +50,17 @@ std::unique_ptr<SessionStorageAreaImpl> SessionStorageAreaImpl::Clone(
 }
 
 void SessionStorageAreaImpl::NotifyObserversAllDeleted() {
-  observers_.ForAllPtrs([](blink::mojom::StorageAreaObserver* observer) {
+  for (auto& observer : observers_) {
     // Renderer process expects |source| to always be two newline separated
     // strings.
     observer->AllDeleted("\n");
-  });
+  };
 }
 
 // blink::mojom::StorageArea:
 void SessionStorageAreaImpl::AddObserver(
-    blink::mojom::StorageAreaObserverAssociatedPtrInfo observer) {
-  blink::mojom::StorageAreaObserverAssociatedPtr observer_ptr;
-  observer_ptr.Bind(std::move(observer));
-  observers_.AddPtr(std::move(observer_ptr));
+    mojo::PendingAssociatedRemote<blink::mojom::StorageAreaObserver> observer) {
+  observers_.Add(std::move(observer));
 }
 
 void SessionStorageAreaImpl::Put(
@@ -112,7 +110,8 @@ void SessionStorageAreaImpl::Get(const std::vector<uint8_t>& key,
 }
 
 void SessionStorageAreaImpl::GetAll(
-    blink::mojom::StorageAreaGetAllCallbackAssociatedPtrInfo complete_callback,
+    mojo::PendingAssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
+        complete_callback,
     GetAllCallback callback) {
   DCHECK(IsBound());
   DCHECK_NE(0, shared_data_map_->map_data()->ReferenceCount());
@@ -123,17 +122,19 @@ void SessionStorageAreaImpl::GetAll(
 // Note: this can be called after invalidation of the |namespace_entry_|.
 void SessionStorageAreaImpl::OnConnectionError() {
   shared_data_map_->RemoveBindingReference();
-  // Make sure we totally unbind the binding - this doesn't seem to happen
+  // Make sure we totally unbind the receiver - this doesn't seem to happen
   // automatically on connection error. The bound status is used in the
   // destructor to know if |RemoveBindingReference| was already called.
-  if (binding_.is_bound())
-    binding_.Unbind();
+  if (receiver_.is_bound())
+    receiver_.reset();
 }
 
 void SessionStorageAreaImpl::CreateNewMap(
     NewMapType map_type,
     const base::Optional<std::string>& delete_all_source) {
-  shared_data_map_->RemoveBindingReference();
+  bool bound = IsBound();
+  if (bound)
+    shared_data_map_->RemoveBindingReference();
   switch (map_type) {
     case NewMapType::FORKED:
       shared_data_map_ = SessionStorageDataMap::CreateClone(
@@ -152,7 +153,8 @@ void SessionStorageAreaImpl::CreateNewMap(
       break;
     }
   }
-  shared_data_map_->AddBindingReference();
+  if (bound)
+    shared_data_map_->AddBindingReference();
 }
 
 }  // namespace content

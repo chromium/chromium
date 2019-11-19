@@ -69,6 +69,7 @@ if (!use_system_minigbm) {
     sources = [
       "src/amdgpu.c",
       "src/drv.c",
+      "src/dri.c",
       "src/evdi.c",
       "src/exynos.c",
       "src/gbm.c",

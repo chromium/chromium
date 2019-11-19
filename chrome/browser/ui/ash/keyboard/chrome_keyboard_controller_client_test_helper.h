@@ -10,10 +10,6 @@
 #include "base/callback_forward.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 
-namespace service_manager {
-class Connector;
-}
-
 class Profile;
 
 // Helper for tests depending on ChromeKeyboardControllerClient.
@@ -38,14 +34,8 @@ class ChromeKeyboardControllerClientTestHelper {
  private:
   class FakeKeyboardController;
 
-  void Initialize(base::RepeatingCallback<void(mojo::ScopedMessagePipeHandle)>
-                      bind_callback);
+  void Initialize(ash::KeyboardController* keyboard_controller);
 
-  void AddKeyboardControllerBindingForAsh(mojo::ScopedMessagePipeHandle handle);
-  void AddKeyboardControllerBindingForFake(
-      mojo::ScopedMessagePipeHandle handle);
-
-  std::unique_ptr<service_manager::Connector> connector_;
   std::unique_ptr<ChromeKeyboardControllerClient>
       chrome_keyboard_controller_client_;
 

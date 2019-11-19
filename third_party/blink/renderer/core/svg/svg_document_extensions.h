@@ -35,8 +35,8 @@ class SVGElement;
 class SVGSVGElement;
 class SubtreeLayoutScope;
 
-class SVGDocumentExtensions
-    : public GarbageCollectedFinalized<SVGDocumentExtensions> {
+class SVGDocumentExtensions final
+    : public GarbageCollected<SVGDocumentExtensions> {
  public:
   explicit SVGDocumentExtensions(Document*);
   ~SVGDocumentExtensions();

@@ -62,7 +62,6 @@ HighEntropy
 HTMLConstructor
 ImmutablePrototype
 ImplementedAs=*
-LegacyInterfaceTypeChecking
 LegacyTreatAsPartialInterface
 LegacyUnenumerableNamedProperties
 LenientSetter
@@ -75,7 +74,6 @@ MeasureAs=*
 NamedConstructor=*
 NoInterfaceObject
 NotEnumerable
-OriginTrialEnabled=*
 OverrideBuiltins
 PartialInterfaceImplementedAs=*
 PermissiveDictionaryConversion

@@ -3,13 +3,14 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.chrome.browser.preferences.datareduction.DataReductionMainMenuItem
+<org.chromium.chrome.browser.datareduction.DataReductionMainMenuItem
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/data_reduction_menu_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <View
         android:id="@+id/data_reduction_menu_divider"
@@ -25,13 +26,14 @@
         style="@style/AppMenuItem" >
 
         <!-- ContentDescription is set in Java code. -->
-        <ImageView
+        <org.chromium.ui.widget.ChromeImageView
             tools:ignore="ContentDescription"
             android:id="@+id/icon"
             android:src="@drawable/preview_pin_round"
             android:layout_width="@dimen/data_reduction_main_menu_icon_width"
             android:layout_height="match_parent"
-            android:layout_gravity="start|center_vertical" />
+            android:layout_gravity="start|center_vertical"
+            app:tint="@color/default_icon_color_blue" />
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -44,15 +46,15 @@
                 android:id="@+id/menu_item_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.BlackTitle2" />
+                android:textAppearance="?android:attr/textAppearanceLargePopupMenu" />
 
             <TextView
                 android:id="@+id/menu_item_summary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.BlackBody" />
+                android:textAppearance="@style/TextAppearance.BlackHint2" />
         </LinearLayout>
 
     </FrameLayout>
 
-</org.chromium.chrome.browser.preferences.datareduction.DataReductionMainMenuItem>
+</org.chromium.chrome.browser.datareduction.DataReductionMainMenuItem>

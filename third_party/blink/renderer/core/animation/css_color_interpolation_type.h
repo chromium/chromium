@@ -26,6 +26,10 @@ class CSSColorInterpolationType : public CSSInterpolationType {
   void ApplyStandardPropertyValue(const InterpolableValue&,
                                   const NonInterpolableValue*,
                                   StyleResolverState&) const final;
+  void Composite(UnderlyingValueOwner& underlying_value_owner,
+                 double underlying_fraction,
+                 const InterpolationValue& value,
+                 double interpolation_fraction) const final;
 
   static std::unique_ptr<InterpolableValue> CreateInterpolableColor(
       const Color&);

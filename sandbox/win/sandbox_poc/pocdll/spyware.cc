@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "sandbox/win/sandbox_poc/pocdll/exports.h"
 #include "sandbox/win/sandbox_poc/pocdll/utils.h"
 
@@ -25,7 +24,7 @@ void POCDLL_API TestSpyKeys(HANDLE log) {
 
   fprintf(output, "[INFO] Logging keystrokes for 15 seconds\r\n");
   fflush(output);
-  base::string16 logged;
+  std::wstring logged;
   DWORD tick = ::GetTickCount() + 15000;
   while (tick > ::GetTickCount()) {
     for (int i = 0; i < 256; ++i) {

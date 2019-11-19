@@ -8,16 +8,21 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/optional.h"
+#include "ui/gfx/geometry/rect.h"
 
 class GURL;
 
+namespace aura {
+class Window;
+}
+
 namespace content {
 class BrowserContext;
-class WebContents;
-}  // namespace content
+}
 
 namespace views {
-class RemoteViewProvider;
+class Widget;
 }
 
 namespace ash {
@@ -26,18 +31,23 @@ namespace shell {
 // Exercises ServerRemoteViewHost to embed a content::WebContents.
 class EmbeddedBrowser {
  public:
-  EmbeddedBrowser(content::BrowserContext* context, const GURL& url);
-  ~EmbeddedBrowser();
+  aura::Window* GetWindow();
 
   // Factory.
-  static void Create(content::BrowserContext* context, const GURL& url);
+  static aura::Window* Create(content::BrowserContext* context,
+                              const GURL& url,
+                              base::Optional<gfx::Rect> bounds = base::nullopt);
 
  private:
+  EmbeddedBrowser(content::BrowserContext* context,
+                  const GURL& url,
+                  const gfx::Rect& bounds);
+  ~EmbeddedBrowser();
+
   // Callback invoked when the embedding is broken.
   void OnUnembed();
 
-  std::unique_ptr<content::WebContents> contents_;
-  std::unique_ptr<views::RemoteViewProvider> remote_view_provider_;
+  views::Widget* widget_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(EmbeddedBrowser);
 };

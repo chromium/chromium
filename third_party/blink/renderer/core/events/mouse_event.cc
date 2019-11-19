@@ -30,15 +30,17 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -79,9 +81,9 @@ const LayoutObject* FindTargetLayoutObject(Node*& target_node) {
     layout_object = layout_object->Parent();
   // Update the target node to point to the SVG root.
   target_node = layout_object->GetNode();
+  auto* svg_element = DynamicTo<SVGElement>(target_node);
   DCHECK(!target_node ||
-         (target_node->IsSVGElement() &&
-          ToSVGElement(*target_node).IsOutermostSVGSVGElement()));
+         (svg_element && svg_element->IsOutermostSVGSVGElement()));
   return layout_object;
 }
 
@@ -117,7 +119,7 @@ MouseEvent* MouseEvent::Create(ScriptState* script_state,
 
 MouseEvent* MouseEvent::Create(const AtomicString& event_type,
                                const MouseEventInit* initializer,
-                               TimeTicks platform_time_stamp,
+                               base::TimeTicks platform_time_stamp,
                                SyntheticEventType synthetic_event_type,
                                WebMenuSourceType menu_source_type) {
   return MakeGarbageCollected<MouseEvent>(
@@ -155,8 +157,9 @@ MouseEvent* MouseEvent::Create(const AtomicString& event_type,
   initializer->setButtons(
       MouseEvent::WebInputEventModifiersToButtons(modifiers));
 
-  TimeTicks timestamp = underlying_event ? underlying_event->PlatformTimeStamp()
-                                         : CurrentTimeTicks();
+  base::TimeTicks timestamp = underlying_event
+                                  ? underlying_event->PlatformTimeStamp()
+                                  : base::TimeTicks::Now();
   MouseEvent* created_event = MakeGarbageCollected<MouseEvent>(
       event_type, initializer, timestamp, synthetic_type);
 
@@ -181,7 +184,7 @@ MouseEvent::MouseEvent()
 
 MouseEvent::MouseEvent(const AtomicString& event_type,
                        const MouseEventInit* initializer,
-                       TimeTicks platform_time_stamp,
+                       base::TimeTicks platform_time_stamp,
                        SyntheticEventType synthetic_event_type,
                        WebMenuSourceType menu_source_type)
     : UIEventWithKeyState(event_type, initializer, platform_time_stamp),
@@ -220,24 +223,36 @@ void MouseEvent::SetCoordinatesFromWebPointerProperties(
     const LocalDOMWindow* dom_window,
     MouseEventInit* initializer) {
   FloatPoint client_point;
+  FloatPoint screen_point = web_pointer_properties.PositionInScreen();
   float scale_factor = 1.0f;
   if (dom_window && dom_window->GetFrame() && dom_window->GetFrame()->View()) {
     LocalFrame* frame = dom_window->GetFrame();
-    FloatPoint page_point = frame->View()->ConvertFromRootFrame(
-        web_pointer_properties.PositionInWidget());
+    FloatPoint root_frame_point = web_pointer_properties.PositionInWidget();
+    if (Page* p = frame->GetPage()) {
+      if (p->GetPointerLockController().GetElement() &&
+          !p->GetPointerLockController().LockPending()) {
+        p->GetPointerLockController().GetPointerLockPosition(&root_frame_point,
+                                                             &screen_point);
+      }
+    }
+    FloatPoint frame_point =
+        frame->View()->ConvertFromRootFrame(root_frame_point);
     scale_factor = 1.0f / frame->PageZoomFactor();
-    client_point = page_point.ScaledBy(scale_factor);
+    client_point = frame_point.ScaledBy(scale_factor);
   }
 
-  initializer->setScreenX(web_pointer_properties.PositionInScreen().x);
-  initializer->setScreenY(web_pointer_properties.PositionInScreen().y);
+  initializer->setScreenX(screen_point.X());
+  initializer->setScreenY(screen_point.Y());
   initializer->setClientX(client_point.X());
   initializer->setClientY(client_point.Y());
 
-  // TODO(nzolghadr): We need to scale movement attrinutes as well. But if we
-  // do that here and round it to the int again it causes inconsistencies
-  // between screenX/Y and cumulative movementX/Y.
-  if (!RuntimeEnabledFeatures::MovementXYInBlinkEnabled()) {
+  // TODO(crbug.com/982379): We need to merge the code path of raw movement
+  // events and regular events so that we can remove the block below.
+  if (web_pointer_properties.is_raw_movement_event ||
+      !RuntimeEnabledFeatures::ConsolidatedMovementXYEnabled()) {
+    // TODO(nzolghadr): We need to scale movement attrinutes as well. But if we
+    // do that here and round it to the int again it causes inconsistencies
+    // between screenX/Y and cumulative movementX/Y.
     initializer->setMovementX(web_pointer_properties.movement_x);
     initializer->setMovementY(web_pointer_properties.movement_y);
   }
@@ -469,12 +484,12 @@ void MouseEvent::ComputeRelativePosition() {
   float inverse_zoom_factor = 1 / PageZoomFactor(this);
 
   // Must have an updated layout tree for this math to work correctly.
-  target_node->GetDocument().UpdateStyleAndLayoutIgnorePendingStylesheets();
+  target_node->GetDocument().UpdateStyleAndLayout();
 
   // Adjust offsetLocation to be relative to the target's padding box.
   if (const LayoutObject* layout_object = FindTargetLayoutObject(target_node)) {
-    FloatPoint local_pos = layout_object->AbsoluteToLocal(
-        FloatPoint(AbsoluteLocation()), kUseTransforms);
+    FloatPoint local_pos = layout_object->AbsoluteToLocalFloatPoint(
+        FloatPoint(AbsoluteLocation()));
 
     // Adding this here to address crbug.com/570666. Basically we'd like to
     // find the local coordinates relative to the padding box not the border
@@ -504,12 +519,13 @@ void MouseEvent::ComputeRelativePosition() {
     if (LocalFrameView* view = n->GetLayoutObject()->View()->GetFrameView())
       layer_location_ = view->DocumentToFrame(scaled_page_location);
 
-    // FIXME: Does this differ from PaintLayer::ConvertToLayerCoords?
-    for (PaintLayer* layer = n->GetLayoutObject()->EnclosingLayer(); layer;
-         layer = layer->ContainingLayer()) {
-      layer_location_ -= DoubleSize(layer->Location().X().ToDouble(),
-                                    layer->Location().Y().ToDouble());
-    }
+    PaintLayer* layer = n->GetLayoutObject()->EnclosingLayer();
+
+    PhysicalOffset physical_offset;
+    layer->ConvertToLayerCoords(nullptr, physical_offset);
+    layer_location_ -= DoubleSize(physical_offset.left.ToDouble(),
+                                  physical_offset.top.ToDouble());
+
     if (inverse_zoom_factor != 1.0f)
       layer_location_.Scale(inverse_zoom_factor, inverse_zoom_factor);
   }

@@ -11,7 +11,7 @@ CancelableClosureHolder::CancelableClosureHolder() = default;
 
 CancelableClosureHolder::~CancelableClosureHolder() = default;
 
-void CancelableClosureHolder::Reset(const base::Closure& callback) {
+void CancelableClosureHolder::Reset(const base::RepeatingClosure& callback) {
   callback_ = callback;
   cancelable_callback_.Reset(callback_);
 }
@@ -21,7 +21,7 @@ void CancelableClosureHolder::Cancel() {
   cancelable_callback_.Reset(callback_);
 }
 
-base::Closure CancelableClosureHolder::GetCallback() const {
+base::RepeatingClosure CancelableClosureHolder::GetCallback() const {
   DCHECK(!callback_.is_null());
   return cancelable_callback_.callback();
 }

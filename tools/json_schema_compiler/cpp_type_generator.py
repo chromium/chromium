@@ -139,7 +139,7 @@ class CppTypeGenerator(object):
     """Returns the forward declarations for self._default_namespace.
     """
     c = Code()
-    for namespace, deps in self._NamespaceTypeDependencies().iteritems():
+    for namespace, deps in self._NamespaceTypeDependencies().items():
       filtered_deps = [
         dep for dep in deps
         # Add more ways to forward declare things as necessary.

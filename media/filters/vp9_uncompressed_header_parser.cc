@@ -1083,10 +1083,13 @@ bool Vp9UncompressedHeaderParser::Parse(const uint8_t* stream,
   }
 
   ReadLoopFilterParams();
+  // Update loop_filter in current_frame_hdr
+  fhdr->loop_filter = context_->loop_filter_;
   ReadQuantizationParams(&fhdr->quant_params);
   if (!ReadSegmentationParams())
     return false;
-
+  // Update segmentation in current_frame_hdr
+  fhdr->segmentation = context_->segmentation_;
   if (!ReadTileInfo(fhdr))
     return false;
 

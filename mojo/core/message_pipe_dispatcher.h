@@ -101,11 +101,13 @@ class MessagePipeDispatcher : public Dispatcher {
   // BeginTransit() and Complete/CancelTransit().
   AtomicFlag in_transit_;
 
+  mutable MojoHandleSignals last_known_satisfied_signals_ = 0;
   bool port_transferred_ = false;
   AtomicFlag port_closed_;
   WatcherSet watchers_;
   base::Optional<uint64_t> receive_queue_length_limit_;
   base::Optional<uint64_t> receive_queue_memory_size_limit_;
+  base::Optional<uint64_t> unread_message_count_limit_;
 
   DISALLOW_COPY_AND_ASSIGN(MessagePipeDispatcher);
 };

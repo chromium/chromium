@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +19,7 @@ using ::testing::StrictMock;
 
 class Base {
  public:
-  Base() : weak_ptr_factory_(this) {}
+  Base() {}
 
   WeakHandle<Base> AsWeakHandle() {
     return MakeWeakHandle(weak_ptr_factory_.GetWeakPtr());
@@ -36,7 +36,7 @@ class Base {
   MOCK_METHOD1(TestWithSelf, void(const WeakHandle<Base>&));
 
  private:
-  base::WeakPtrFactory<Base> weak_ptr_factory_;
+  base::WeakPtrFactory<Base> weak_ptr_factory_{this};
 };
 
 class Derived : public Base, public base::SupportsWeakPtr<Derived> {};
@@ -63,7 +63,7 @@ class WeakHandleTest : public ::testing::Test {
     h.Call(from_here, &Base::Test);
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
 TEST_F(WeakHandleTest, Uninitialized) {

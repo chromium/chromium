@@ -16,7 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/system/system_monitor.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/midi/midi_service.h"
 #include "media/midi/task_service.h"
@@ -35,8 +35,7 @@ using mojom::Result;
 
 class FakeMidiManager : public MidiManager {
  public:
-  explicit FakeMidiManager(MidiService* service)
-      : MidiManager(service), weak_factory_(this) {}
+  explicit FakeMidiManager(MidiService* service) : MidiManager(service) {}
 
   ~FakeMidiManager() override = default;
 
@@ -68,14 +67,14 @@ class FakeMidiManager : public MidiManager {
  private:
   bool initialized_ = false;
 
-  base::WeakPtrFactory<FakeMidiManager> weak_factory_;
+  base::WeakPtrFactory<FakeMidiManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeMidiManager);
 };
 
 class FakeMidiManagerFactory : public MidiService::ManagerFactory {
  public:
-  FakeMidiManagerFactory() : weak_factory_(this) {}
+  FakeMidiManagerFactory() {}
   ~FakeMidiManagerFactory() override = default;
 
   std::unique_ptr<MidiManager> Create(MidiService* service) override {
@@ -103,7 +102,7 @@ class FakeMidiManagerFactory : public MidiService::ManagerFactory {
 
  private:
   base::WeakPtr<FakeMidiManager> manager_ = nullptr;
-  base::WeakPtrFactory<FakeMidiManagerFactory> weak_factory_;
+  base::WeakPtrFactory<FakeMidiManagerFactory> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeMidiManagerFactory);
 };
@@ -222,7 +221,7 @@ class MidiManagerTest : public ::testing::Test {
   base::WeakPtr<FakeMidiManagerFactory> factory() { return factory_; }
 
  private:
-  base::test::ScopedTaskEnvironment env_;
+  base::test::TaskEnvironment env_;
   base::WeakPtr<FakeMidiManagerFactory> factory_;
   std::unique_ptr<MidiService> service_;
 
@@ -355,7 +354,7 @@ class PlatformMidiManagerTest : public ::testing::Test {
   // SystemMonitor is needed on Windows.
   base::SystemMonitor system_monitor;
 
-  base::test::ScopedTaskEnvironment env_;
+  base::test::TaskEnvironment env_;
 
   std::unique_ptr<FakeMidiManagerClient> client_;
   std::unique_ptr<MidiService> service_;

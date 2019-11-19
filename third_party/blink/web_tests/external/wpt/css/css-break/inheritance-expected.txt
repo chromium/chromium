@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL Property box-decoration-break has initial value slice assert_true: box-decoration-break doesn't seem to be supported in the computed style expected true got false
+FAIL Property box-decoration-break does not inherit assert_true: expected true got false
+PASS Property break-after has initial value auto
+PASS Property break-after does not inherit
+PASS Property break-before has initial value auto
+PASS Property break-before does not inherit
+PASS Property break-inside has initial value auto
+PASS Property break-inside does not inherit
+PASS Property orphans has initial value 2
+PASS Property orphans inherits
+PASS Property widows has initial value 2
+PASS Property widows inherits
+Harness: the test ran to completion.
+

@@ -38,7 +38,7 @@ class PhishingTermFeatureExtractor {
  public:
   // Callback to be run when feature extraction finishes.  The callback
   // argument is true if extraction was successful, false otherwise.
-  typedef base::Callback<void(bool)> DoneCallback;
+  typedef base::OnceCallback<void(bool)> DoneCallback;
 
   // Creates a PhishingTermFeatureExtractor which will extract features for
   // all of the terms whose SHA-256 hashes are in |page_term_hashes|.  These
@@ -83,7 +83,7 @@ class PhishingTermFeatureExtractor {
   void ExtractFeatures(const base::string16* page_text,
                        FeatureMap* features,
                        std::set<uint32_t>* shingle_hashes,
-                       const DoneCallback& done_callback);
+                       DoneCallback done_callback);
 
   // Cancels any pending feature extraction.  The DoneCallback will not be run.
   // Must be called if there is a feature extraction in progress when the page
@@ -162,7 +162,7 @@ class PhishingTermFeatureExtractor {
 
   // Used in scheduling ExtractFeaturesWithTimeout tasks.
   // These pointers are invalidated if extraction is cancelled.
-  base::WeakPtrFactory<PhishingTermFeatureExtractor> weak_factory_;
+  base::WeakPtrFactory<PhishingTermFeatureExtractor> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PhishingTermFeatureExtractor);
 };

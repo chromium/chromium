@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_IDLE_TIME_ESTIMATOR_H_
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/task/sequence_manager/task_queue.h"
+#include "base/task/task_observer.h"
 #include "base/time/tick_clock.h"
 #include "cc/base/rolling_time_delta_history.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -16,8 +16,7 @@ namespace blink {
 namespace scheduler {
 
 // Estimates how much idle time there is available.  Ignores nested tasks.
-class PLATFORM_EXPORT IdleTimeEstimator
-    : public base::MessageLoop::TaskObserver {
+class PLATFORM_EXPORT IdleTimeEstimator : public base::TaskObserver {
  public:
   IdleTimeEstimator(const scoped_refptr<base::sequence_manager::TaskQueue>&
                         compositor_task_runner,

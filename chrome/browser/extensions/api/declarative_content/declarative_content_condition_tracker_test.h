@@ -11,8 +11,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,7 +45,7 @@ class DeclarativeContentConditionTrackerTest : public testing::Test {
   const void* GeneratePredicateGroupID();
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   // Enables MockRenderProcessHosts.
   content::RenderViewHostTestEnabler render_view_host_test_enabler_;

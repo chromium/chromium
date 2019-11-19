@@ -10,12 +10,19 @@
 
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/display/renderer_settings.h"
+#include "content/common/content_export.h"
+#include "content/common/render_frame_metadata.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+
+class GURL;
 
 namespace base {
 class SingleThreadTaskRunner;
 }
 
 namespace cc {
+class LayerTreeFrameSink;
 class TaskGraphRunner;
 class UkmRecorderFactory;
 }  // namespace cc
@@ -27,8 +34,10 @@ class WebThreadScheduler;
 }  // namespace blink
 
 namespace content {
+class FrameSwapMessageQueue;
+class RenderWidget;
 
-class CompositorDependencies {
+class CONTENT_EXPORT CompositorDependencies {
  public:
   virtual bool IsGpuRasterizationForced() = 0;
   virtual int GetGpuRasterizationMSAASampleCount() = 0;
@@ -44,11 +53,26 @@ class CompositorDependencies {
   // compositor thread).
   virtual scoped_refptr<base::SingleThreadTaskRunner>
   GetCompositorImplThreadTaskRunner() = 0;
+  virtual scoped_refptr<base::SingleThreadTaskRunner>
+  GetCleanupTaskRunner() = 0;
   virtual blink::scheduler::WebThreadScheduler* GetWebMainThreadScheduler() = 0;
   virtual cc::TaskGraphRunner* GetTaskGraphRunner() = 0;
   virtual bool IsScrollAnimatorEnabled() = 0;
   virtual std::unique_ptr<cc::UkmRecorderFactory>
   CreateUkmRecorderFactory() = 0;
+
+  using LayerTreeFrameSinkCallback =
+      base::OnceCallback<void(std::unique_ptr<cc::LayerTreeFrameSink>)>;
+  virtual void RequestNewLayerTreeFrameSink(
+      RenderWidget* render_widget,
+      scoped_refptr<FrameSwapMessageQueue> frame_swap_message_queue,
+      const GURL& url,
+      LayerTreeFrameSinkCallback callback,
+      mojo::PendingReceiver<mojom::RenderFrameMetadataObserverClient>
+          render_frame_metadata_observer_client_receiver,
+      mojo::PendingRemote<mojom::RenderFrameMetadataObserver>
+          render_frame_metadata_observer_remote,
+      const char* client_name) = 0;
 
 #ifdef OS_ANDROID
   virtual bool UsingSynchronousCompositing() = 0;

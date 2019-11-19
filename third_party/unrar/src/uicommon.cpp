@@ -1,10 +1,8 @@
-namespace third_party_unrar {
+static SOUND_NOTIFY_MODE uiSoundNotify;
 
-static bool uiSoundEnabled;
-
-void uiInit(bool Sound)
+void uiInit(SOUND_NOTIFY_MODE Sound)
 {
-  uiSoundEnabled = Sound;
+  uiSoundNotify = Sound;
 }
 
 
@@ -65,5 +63,3 @@ UIASKREP_RESULT uiAskReplaceEx(RAROptions *Cmd,wchar *Name,size_t MaxNameSize,in
 #endif
   return Choice;
 }
-
-}  // namespace third_party_unrar

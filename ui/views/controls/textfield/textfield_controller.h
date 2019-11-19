@@ -8,8 +8,8 @@
 #include <set>
 
 #include "base/strings/string16.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
-#include "ui/base/clipboard/clipboard_types.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/views/views_export.h"
 
@@ -62,7 +62,7 @@ class VIEWS_EXPORT TextfieldController {
   virtual void OnAfterUserAction(Textfield* sender) {}
 
   // Called after performing a Cut or Copy operation.
-  virtual void OnAfterCutOrCopy(ui::ClipboardType clipboard_type) {}
+  virtual void OnAfterCutOrCopy(ui::ClipboardBuffer clipboard_buffer) {}
 
   // Called after performing a Paste operation.
   virtual void OnAfterPaste() {}
@@ -90,7 +90,7 @@ class VIEWS_EXPORT TextfieldController {
   virtual void UpdateContextMenu(ui::SimpleMenuModel* menu_contents) {}
 
  protected:
-  virtual ~TextfieldController() {}
+  virtual ~TextfieldController() = default;
 };
 
 }  // namespace views

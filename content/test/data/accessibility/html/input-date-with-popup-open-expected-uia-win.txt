@@ -1,0 +1,44 @@
+document
+++group
+++++textbox LocalizedControlType='date picker' ControllerFor='{document}'
+++++++group
+++++++++group
+++++++++++spinbutton Name='Month' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=12.00 RangeValue.Minimum=1.00 RangeValue.Value=9.00 Value.Value='09'
+++++++++++++description Name='09'
+++++++++++description Name='/'
+++++++++++spinbutton Name='Day' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=31.00 RangeValue.Minimum=1.00 RangeValue.Value=1.00 Value.Value='01'
+++++++++++++description Name='01'
+++++++++++description Name='/'
+++++++++++spinbutton Name='Year' RangeValue.IsReadOnly=false RangeValue.LargeChange=0.00 RangeValue.SmallChange=0.00 RangeValue.Maximum=275760.00 RangeValue.Minimum=1.00 RangeValue.Value=2008.00 Value.Value='2008'
+++++++++++++description Name='2008'
+++++++menu Name='Show date picker' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++++document
+++++++++group
+++++++++++group
+++++++++++++group
+++++++++++++++button Name='Show month selection panel'
+++++++++++++++++img
+++++++++++++button Name='Show previous month'
+++++++++++++++img
+++++++++++++button Name='Today'
+++++++++++++++group
+++++++++++++button Name='Show next month'
+++++++++++++++img
+++++++++++++grid Grid.ColumnCount=0 Grid.RowCount=0 Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Table.RowOrColumnMajor='RowMajor'
+++++++++++++++group
+++++++++++++++++group
+++++++++++++++++++description Name='Sun'
+++++++++++++++++group
+++++++++++++++++++description Name='Mon'
+++++++++++++++++group
+++++++++++++++++++description Name='Tue'
+++++++++++++++++group
+++++++++++++++++++description Name='Wed'
+++++++++++++++++group
+++++++++++++++++++description Name='Thu'
+++++++++++++++++group
+++++++++++++++++++description Name='Fri'
+++++++++++++++++group
+++++++++++++++++++description Name='Sat'
+++++++++++++++group
+++++++++++++++++group

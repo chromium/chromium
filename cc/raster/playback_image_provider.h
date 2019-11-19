@@ -23,6 +23,8 @@ class CC_EXPORT PlaybackImageProvider : public ImageProvider {
     Settings(const Settings&) = delete;
     Settings(Settings&&);
     ~Settings();
+
+    Settings& operator=(const Settings&) = delete;
     Settings& operator=(Settings&&);
 
     // The set of image ids to skip during raster.
@@ -35,10 +37,13 @@ class CC_EXPORT PlaybackImageProvider : public ImageProvider {
 
   // If no settings are provided, all images are skipped during rasterization.
   PlaybackImageProvider(ImageDecodeCache* cache,
+                        const gfx::ColorSpace& target_color_space,
                         base::Optional<Settings>&& settings);
+  PlaybackImageProvider(const PlaybackImageProvider&) = delete;
+  PlaybackImageProvider(PlaybackImageProvider&& other);
   ~PlaybackImageProvider() override;
 
-  PlaybackImageProvider(PlaybackImageProvider&& other);
+  PlaybackImageProvider& operator=(const PlaybackImageProvider&) = delete;
   PlaybackImageProvider& operator=(PlaybackImageProvider&& other);
 
   // ImageProvider implementation.
@@ -47,9 +52,8 @@ class CC_EXPORT PlaybackImageProvider : public ImageProvider {
 
  private:
   ImageDecodeCache* cache_;
+  gfx::ColorSpace target_color_space_;
   base::Optional<Settings> settings_;
-
-  DISALLOW_COPY_AND_ASSIGN(PlaybackImageProvider);
 };
 
 }  // namespace cc

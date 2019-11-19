@@ -200,7 +200,7 @@ class NET_EXPORT_PRIVATE URLRequestTestJob : public URLRequestJob {
 
   bool async_reads_;
 
-  base::WeakPtrFactory<URLRequestTestJob> weak_factory_;
+  base::WeakPtrFactory<URLRequestTestJob> weak_factory_{this};
 };
 
 }  // namespace net

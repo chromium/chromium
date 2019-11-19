@@ -28,9 +28,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -67,9 +67,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -106,9 +106,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -149,9 +149,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 16
         },
         "trigger_script": {
@@ -196,9 +196,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 16
         },
         "trigger_script": {
@@ -243,10 +243,10 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
-          "shards": 8
+          "io_timeout": 21600,
+          "shards": 12
         },
         "trigger_script": {
           "args": [
@@ -278,15 +278,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-23.21.13.8792",
               "os": "Windows-2008ServerR2-SP1",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R220 [01] (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -315,15 +316,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-23.21.13.8792",
               "os": "Windows-2008ServerR2-SP1",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R220 [01] (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -352,15 +354,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-23.21.13.8792",
               "os": "Windows-2008ServerR2-SP1",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R220 [01] (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -391,15 +394,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-23.21.13.8792",
               "os": "Windows-2008ServerR2-SP1",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R220 [01] (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -430,15 +434,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-23.21.13.8792",
               "os": "Windows-2008ServerR2-SP1",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R220 [01] (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -471,15 +476,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-23.21.13.8792",
               "os": "Windows-2008ServerR2-SP1",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R220 [01] (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 5
         },
         "trigger_script": {
@@ -512,15 +518,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "102b:0532",
+              "gpu": "102b:0532-6.1.7600.16385",
               "os": "Windows-2008ServerR2-SP1",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R210 II (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -549,15 +556,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "102b:0532",
+              "gpu": "102b:0532-6.1.7600.16385",
               "os": "Windows-2008ServerR2-SP1",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R210 II (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -586,15 +594,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "102b:0532",
+              "gpu": "102b:0532-6.1.7600.16385",
               "os": "Windows-2008ServerR2-SP1",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R210 II (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -626,15 +635,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "102b:0532",
+              "gpu": "102b:0532-6.1.7600.16385",
               "os": "Windows-2008ServerR2-SP1",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R210 II (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 5
         },
         "trigger_script": {
@@ -653,6 +663,200 @@
       "microdump_stackwalk",
       "angle_perftests",
       "chrome_apk"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_chrome_apk",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_chrome_apk",
+        "override_compile_targets": [
+          "resource_sizes_chrome_apk"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_chrome_modern_minimal_apks",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_chrome_modern_minimal_apks",
+        "override_compile_targets": [
+          "resource_sizes_chrome_modern_minimal_apks"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_chrome_modern_public_minimal_apks",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_chrome_modern_public_minimal_apks",
+        "override_compile_targets": [
+          "resource_sizes_chrome_modern_public_minimal_apks"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_chrome_public_apk",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_chrome_public_apk",
+        "override_compile_targets": [
+          "resource_sizes_chrome_public_apk"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_monochrome_minimal_apks",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_monochrome_minimal_apks",
+        "override_compile_targets": [
+          "resource_sizes_monochrome_minimal_apks"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_monochrome_public_minimal_apks",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_monochrome_public_minimal_apks",
+        "override_compile_targets": [
+          "resource_sizes_monochrome_public_minimal_apks"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_system_webview_apk",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_system_webview_apk",
+        "override_compile_targets": [
+          "resource_sizes_system_webview_apk"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_system_webview_google_apk",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_system_webview_google_apk",
+        "override_compile_targets": [
+          "resource_sizes_system_webview_google_apk"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      }
     ]
   },
   "android-go-perf": {
@@ -660,7 +864,7 @@
       {
         "args": [
           "-v",
-          "--browser=android-chromium",
+          "--browser=android-chrome",
           "--upload-results",
           "--run-ref-build",
           "--test-shard-map-filename=android-go-perf_map.json"
@@ -677,7 +881,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "O",
+              "device_os": "OMB1.180119.001",
               "device_os_flavor": "google",
               "device_type": "gobo",
               "os": "Android",
@@ -685,9 +889,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 19
         },
         "trigger_script": {
@@ -723,7 +927,7 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "device_os": "O",
+              "device_os": "OMB1.180119.001",
               "device_os_flavor": "google",
               "device_type": "gobo",
               "os": "Android",
@@ -731,10 +935,10 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
-          "shards": 25
+          "io_timeout": 21600,
+          "shards": 13
         },
         "trigger_script": {
           "args": [
@@ -775,9 +979,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -814,9 +1018,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -853,9 +1057,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -892,9 +1096,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -931,9 +1135,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -970,9 +1174,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1013,10 +1217,149 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
-          "shards": 16
+          "io_timeout": 21600,
+          "shards": 10
+        },
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
+  "android-pixel2-perf": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "--browser=android-chrome",
+          "--upload-results",
+          "--run-ref-build",
+          "--test-shard-map-filename=android-pixel2-perf_map.json"
+        ],
+        "isolate_name": "performance_test_suite",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_test_suite",
+        "override_compile_targets": [
+          "performance_test_suite"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "OPM1.171019.021",
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android",
+              "pool": "chrome.tests.perf"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
+          "shards": 35
+        },
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
+  "android-pixel2_weblayer-perf": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "--browser=android-weblayer",
+          "--upload-results",
+          "--webview-embedder-apk=../../out/Release/apks/WebLayerShell.apk",
+          "--webview-embedder-apk=../../out/Release/apks/WebLayerSupport.apk",
+          "--test-shard-map-filename=android-pixel2_weblayer-perf_map.json"
+        ],
+        "isolate_name": "performance_weblayer_test_suite",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_weblayer_test_suite",
+        "override_compile_targets": [
+          "performance_weblayer_test_suite"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "OPM1.171019.021",
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android",
+              "pool": "chrome.tests.perf-weblayer"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
+          "shards": 4
+        },
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      }
+    ]
+  },
+  "android-pixel2_webview-perf": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "-v",
+          "--browser=android-webview-google",
+          "--upload-results",
+          "--webview-embedder-apk=../../out/Release/apks/SystemWebViewShell.apk",
+          "--test-shard-map-filename=android-pixel2_webview-perf_map.json"
+        ],
+        "isolate_name": "performance_webview_test_suite",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "performance_webview_test_suite",
+        "override_compile_targets": [
+          "performance_webview_test_suite"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "device_os": "OPM1.171019.021",
+              "device_os_flavor": "google",
+              "device_type": "walleye",
+              "os": "Android",
+              "pool": "chrome.tests.perf-webview"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
+          "shards": 28
         },
         "trigger_script": {
           "args": [
@@ -1034,6 +1377,176 @@
       "microdump_stackwalk",
       "angle_perftests",
       "chrome_apk"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_chrome_modern_minimal_apks",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_chrome_modern_minimal_apks",
+        "override_compile_targets": [
+          "resource_sizes_chrome_modern_minimal_apks"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_chrome_modern_public_minimal_apks",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_chrome_modern_public_minimal_apks",
+        "override_compile_targets": [
+          "resource_sizes_chrome_modern_public_minimal_apks"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_chrome_public_apk",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_chrome_public_apk",
+        "override_compile_targets": [
+          "resource_sizes_chrome_public_apk"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_monochrome_minimal_apks",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_monochrome_minimal_apks",
+        "override_compile_targets": [
+          "resource_sizes_monochrome_minimal_apks"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_monochrome_public_minimal_apks",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_monochrome_public_minimal_apks",
+        "override_compile_targets": [
+          "resource_sizes_monochrome_public_minimal_apks"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_system_webview_apk",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_system_webview_apk",
+        "override_compile_targets": [
+          "resource_sizes_system_webview_apk"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      },
+      {
+        "args": [],
+        "isolate_name": "resource_sizes_system_webview_google_apk",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "resource_sizes_system_webview_google_apk",
+        "override_compile_targets": [
+          "resource_sizes_system_webview_google_apk"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "os": "Ubuntu-16.04",
+              "pool": "chrome.tests"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600
+        }
+      }
     ]
   },
   "linux-builder-perf": {
@@ -1060,15 +1573,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-384.90",
               "os": "Ubuntu-14.04",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1097,15 +1611,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-384.90",
               "os": "Ubuntu-14.04",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1134,15 +1649,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-384.90",
               "os": "Ubuntu-14.04",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1171,15 +1687,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-384.90",
               "os": "Ubuntu-14.04",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1208,15 +1725,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-384.90",
               "os": "Ubuntu-14.04",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1245,15 +1763,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-384.90",
               "os": "Ubuntu-14.04",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1286,15 +1805,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "10de:1cb3",
+              "gpu": "10de:1cb3-384.90",
               "os": "Ubuntu-14.04",
-              "pool": "chrome.tests.perf"
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "PowerEdge R230 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 26
         },
         "trigger_script": {
@@ -1333,9 +1853,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1370,9 +1890,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1411,9 +1931,9 @@
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 26
         },
         "trigger_script": {
@@ -1446,15 +1966,54 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "1002:6821",
-              "os": "Mac-10.13",
-              "pool": "chrome.tests.perf"
+              "gpu": "1002:6821-4.0.20-3.2.8",
+              "os": "Mac-10.13.3",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_1_475936.0"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
+          "shards": 1
+        },
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      },
+      {
+        "args": [
+          "--gtest-benchmark-name",
+          "dawn_perf_tests"
+        ],
+        "isolate_name": "dawn_perf_tests",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "dawn_perf_tests",
+        "override_compile_targets": [
+          "dawn_perf_tests"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "1002:6821-4.0.20-3.2.8",
+              "os": "Mac-10.13.3",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_1_475936.0"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1483,15 +2042,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "1002:6821",
-              "os": "Mac-10.13",
-              "pool": "chrome.tests.perf"
+              "gpu": "1002:6821-4.0.20-3.2.8",
+              "os": "Mac-10.13.3",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_1_475936.0"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1520,15 +2080,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "1002:6821",
-              "os": "Mac-10.13",
-              "pool": "chrome.tests.perf"
+              "gpu": "1002:6821-4.0.20-3.2.8",
+              "os": "Mac-10.13.3",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_1_475936.0"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1557,15 +2118,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "1002:6821",
-              "os": "Mac-10.13",
-              "pool": "chrome.tests.perf"
+              "gpu": "1002:6821-4.0.20-3.2.8",
+              "os": "Mac-10.13.3",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_1_475936.0"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1594,15 +2156,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "1002:6821",
-              "os": "Mac-10.13",
-              "pool": "chrome.tests.perf"
+              "gpu": "1002:6821-4.0.20-3.2.8",
+              "os": "Mac-10.13.3",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_1_475936.0"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1635,15 +2198,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "1002:6821",
-              "os": "Mac-10.13",
-              "pool": "chrome.tests.perf"
+              "gpu": "1002:6821-4.0.20-3.2.8",
+              "os": "Mac-10.13.3",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "MacBookPro11,5_x86-64-i7-4870HQ_AMD Radeon R8 M370X 4.0.20 [3.2.8]_Intel Haswell Iris Pro Graphics 5200 4.0.20 [3.2.8]_16384_1_475936.0"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 26
         },
         "trigger_script": {
@@ -1682,15 +2246,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912",
-              "os": "Windows-10",
-              "pool": "chrome.tests.perf"
+              "gpu": "8086:5912-23.20.16.4877",
+              "os": "Windows-10-16299.309",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1719,15 +2284,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912",
-              "os": "Windows-10",
-              "pool": "chrome.tests.perf"
+              "gpu": "8086:5912-23.20.16.4877",
+              "os": "Windows-10-16299.309",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1756,15 +2322,55 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912",
-              "os": "Windows-10",
-              "pool": "chrome.tests.perf"
+              "gpu": "8086:5912-23.20.16.4877",
+              "os": "Windows-10-16299.309",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
+          "shards": 1
+        },
+        "trigger_script": {
+          "args": [
+            "--multiple-dimension-script-verbose",
+            "True"
+          ],
+          "requires_simultaneous_shard_dispatch": true,
+          "script": "//testing/trigger_scripts/perf_device_trigger.py"
+        }
+      },
+      {
+        "args": [
+          "--gtest-benchmark-name",
+          "dawn_perf_tests",
+          "--shard-timeout=300"
+        ],
+        "isolate_name": "dawn_perf_tests",
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "dawn_perf_tests",
+        "override_compile_targets": [
+          "dawn_perf_tests"
+        ],
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "gpu": "8086:5912-23.20.16.4877",
+              "os": "Windows-10-16299.309",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
+            }
+          ],
+          "expiration": 7200,
+          "hard_timeout": 43200,
+          "ignore_task_failure": false,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1793,15 +2399,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912",
-              "os": "Windows-10",
-              "pool": "chrome.tests.perf"
+              "gpu": "8086:5912-23.20.16.4877",
+              "os": "Windows-10-16299.309",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1830,15 +2437,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912",
-              "os": "Windows-10",
-              "pool": "chrome.tests.perf"
+              "gpu": "8086:5912-23.20.16.4877",
+              "os": "Windows-10-16299.309",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 1
         },
         "trigger_script": {
@@ -1871,15 +2479,16 @@
           "can_use_on_swarming_builders": true,
           "dimension_sets": [
             {
-              "gpu": "8086:5912",
-              "os": "Windows-10",
-              "pool": "chrome.tests.perf"
+              "gpu": "8086:5912-23.20.16.4877",
+              "os": "Windows-10-16299.309",
+              "pool": "chrome.tests.perf",
+              "synthetic_product_name": "OptiPlex 7050 (Dell Inc.)"
             }
           ],
           "expiration": 7200,
-          "hard_timeout": 36000,
+          "hard_timeout": 43200,
           "ignore_task_failure": false,
-          "io_timeout": 1800,
+          "io_timeout": 21600,
           "shards": 26
         },
         "trigger_script": {

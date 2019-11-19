@@ -8,12 +8,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources">
     <item android:alpha="@dimen/default_pressed_alpha"
-        android:color="@color/modern_grey_600" android:state_pressed="true"/>
+        android:color="@color/chip_ripple_color_default" android:state_pressed="true"/>
     <item android:alpha="@dimen/default_focused_hovered_alpha"
-        android:color="@color/modern_grey_600" android:state_focused="true" android:state_hovered="true"/>
+        android:color="@color/chip_ripple_color_default" android:state_focused="true" android:state_hovered="true"/>
     <item android:alpha="@dimen/default_focused_alpha"
-        android:color="@color/modern_grey_600" android:state_focused="true"/>
+        android:color="@color/chip_ripple_color_default" android:state_focused="true"/>
     <item android:alpha="@dimen/default_hovered_alpha"
-        android:color="@color/modern_grey_600" android:state_hovered="true"/>
+        android:color="@color/chip_ripple_color_default" android:state_hovered="true"/>
     <item android:color="@android:color/transparent" />
 </selector>

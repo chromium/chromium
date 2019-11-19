@@ -78,9 +78,6 @@ class BLINK_EXPORT WebElement : public WebNode {
   // element has no ShadowRoot or has a UA ShadowRoot.
   WebNode ShadowRoot() const;
 
-  // If this element takes up space in the layout of the page.
-  bool HasNonEmptyLayoutSize() const;
-
   // Returns the bounds of the element in Visual Viewport. The bounds
   // have been adjusted to include any transformations, including page scale.
   // This function will update the layout if required.

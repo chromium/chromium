@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
@@ -20,11 +21,9 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/ime_bridge.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/keyboard/keyboard_controller.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace {
@@ -35,7 +34,6 @@ const int kShadowElevationVirtualKeyboard = 2;
 
 ChromeKeyboardUI::ChromeKeyboardUI(content::BrowserContext* context)
     : browser_context_(context) {
-  DCHECK(!::features::IsUsingWindowService());
 }
 
 ChromeKeyboardUI::~ChromeKeyboardUI() {
@@ -51,8 +49,7 @@ aura::Window* ChromeKeyboardUI::LoadKeyboardWindow(LoadCallback callback) {
       browser_context_,
       ChromeKeyboardControllerClient::Get()->GetVirtualKeyboardUrl(),
       base::BindOnce(
-          [](LoadCallback callback, const base::UnguessableToken&,
-             const gfx::Size&) {
+          [](LoadCallback callback) {
             ChromeKeyboardControllerClient::Get()->NotifyKeyboardLoaded();
             std::move(callback).Run();
           },
@@ -131,5 +128,5 @@ void ChromeKeyboardUI::SetShadowAroundKeyboard() {
   // shadows drawn by IME.
   shadow_->layer()->SetVisible(
       keyboard_controller()->GetActiveContainerType() ==
-      keyboard::mojom::ContainerType::kFullWidth);
+      keyboard::ContainerType::kFullWidth);
 }

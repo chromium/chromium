@@ -83,7 +83,7 @@ int32_t MessageLoopResource::AttachToCurrentThread() {
     if (slot->Get())
       return PP_ERROR_INPROGRESS;
   }
-  // TODO(dmichael) check that the current thread can support a message loop.
+  // TODO(dmichael) check that the current thread can support a task executor.
 
   // Take a ref to the MessageLoop on behalf of the TLS. Note that this is an
   // internal ref and not a plugin ref so the plugin can't accidentally
@@ -91,10 +91,10 @@ int32_t MessageLoopResource::AttachToCurrentThread() {
   AddRef();
   slot->Set(this);
 
-  loop_.reset(new base::MessageLoop);
+  single_thread_task_executor_.reset(new base::SingleThreadTaskExecutor);
   task_runner_ = base::ThreadTaskRunnerHandle::Get();
 
-  // Post all pending work to the message loop.
+  // Post all pending work to the task executor.
   for (size_t i = 0; i < pending_tasks_.size(); i++) {
     const TaskInfo& info = pending_tasks_[i];
     PostClosure(info.from_here, info.closure, info.delay_ms);
@@ -122,8 +122,8 @@ int32_t MessageLoopResource::Run() {
   run_loop_ = previous_run_loop;
 
   if (should_destroy_ && nested_invocations_ == 0) {
-    task_runner_ = NULL;
-    loop_.reset();
+    task_runner_.reset();
+    single_thread_task_executor_.reset();
     destroyed_ = true;
   }
   return PP_OK;
@@ -169,10 +169,10 @@ MessageLoopResource* MessageLoopResource::GetCurrent() {
 }
 
 void MessageLoopResource::DetachFromThread() {
-  // Note that the message loop must be destroyed on the thread it was created
+  // Note that the task executor must be destroyed on the thread it was created
   // on.
-  task_runner_ = NULL;
-  loop_.reset();
+  task_runner_.reset();
+  single_thread_task_executor_.reset();
 
   // Cancel out the AddRef in AttachToCurrentThread().
   Release();

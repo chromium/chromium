@@ -1,5 +1,21 @@
-http://127.0.0.1:8000/navigation/location-reload-after-post.php - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/navigation/location-reload-after-post.php, main document URL http://127.0.0.1:8000/navigation/location-reload-after-post.php, http method POST>
-http://127.0.0.1:8000/navigation/location-reload-after-post.php - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/navigation/location-reload-after-post.php, http status code 200>
-http://127.0.0.1:8000/navigation/location-reload-after-post.php - willSendRequest <NSURLRequest URL http://127.0.0.1:8000/navigation/location-reload-after-post.php, main document URL http://127.0.0.1:8000/navigation/location-reload-after-post.php, http method POST>
-http://127.0.0.1:8000/navigation/location-reload-after-post.php - didReceiveResponse <NSURLResponse http://127.0.0.1:8000/navigation/location-reload-after-post.php, http status code 200>
+main frame - didReceiveTitle: 
+main frame - didFinishDocumentLoadForFrame
+main frame - didHandleOnloadEventsForFrame
+main frame - didFinishLoadForFrame
+main frame - BeginNavigation request to 'http://127.0.0.1:8000/navigation/location-reload-after-post.php', http method POST
+main frame - DidStartNavigation
+main frame - ReadyToCommitNavigation
+main frame - didCommitLoadForFrame
+main frame - didReceiveTitle: 
+main frame - didFinishDocumentLoadForFrame
+main frame - didHandleOnloadEventsForFrame
+main frame - didFinishLoadForFrame
+main frame - BeginNavigation request to 'http://127.0.0.1:8000/navigation/location-reload-after-post.php', http method POST
+main frame - DidStartNavigation
+main frame - ReadyToCommitNavigation
+main frame - didCommitLoadForFrame
+main frame - didReceiveTitle: 
+main frame - didFinishDocumentLoadForFrame
+main frame - didHandleOnloadEventsForFrame
+main frame - didFinishLoadForFrame
 

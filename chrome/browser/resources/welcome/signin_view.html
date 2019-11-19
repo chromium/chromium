@@ -1,0 +1,20 @@
+<style include="animations action-link-style splash-pages-shared-css">
+  onboarding-background {
+    --animation-delay: 150ms;
+  }
+
+  h1 {
+    outline: none;
+  }
+</style>
+<div id="container">
+  <onboarding-background class="fade-in"></onboarding-background>
+  <h2>$i18n{signInSubHeader}</h2>
+  <h1 tabindex="-1">$i18n{signInHeader}</h1>
+  <cr-button class="action-button" on-click="onSignInClick_">
+    $i18n{signIn}
+  </cr-button>
+  <button class="action-link" on-click="onNoThanksClick_">
+    $i18n{noThanks}
+  </button>
+</div>

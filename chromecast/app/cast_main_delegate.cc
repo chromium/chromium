@@ -26,6 +26,7 @@
 #include "chromecast/chromecast_buildflags.h"
 #include "chromecast/common/cast_resource_delegate.h"
 #include "chromecast/common/global_descriptors.h"
+#include "chromecast/gpu/cast_content_gpu_client.h"
 #include "chromecast/renderer/cast_content_renderer_client.h"
 #include "chromecast/utility/cast_content_utility_client.h"
 #include "components/crash/content/app/crash_reporter_client.h"
@@ -71,7 +72,8 @@ bool CastMainDelegate::BasicStartupComplete(int* exit_code) {
   RegisterPathProvider();
 
   logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  settings.logging_dest =
+      logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
 #if defined(OS_ANDROID)
   const base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
   std::string process_type =
@@ -80,8 +82,9 @@ bool CastMainDelegate::BasicStartupComplete(int* exit_code) {
   if (process_type.empty()) {
     base::FilePath log_file;
     base::PathService::Get(FILE_CAST_ANDROID_LOG, &log_file);
-    settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
-    settings.log_file = log_file.value().c_str();
+    settings.logging_dest =
+        logging::LOG_TO_SYSTEM_DEBUG_LOG | logging::LOG_TO_STDERR;
+    settings.log_file_path = log_file.value().c_str();
     settings.delete_old = logging::DELETE_OLD_LOG_FILE;
   }
 #endif  // defined(OS_ANDROID)
@@ -178,7 +181,13 @@ int CastMainDelegate::RunProcess(
   // Note: Android must handle running its own browser process.
   // See ChromeMainDelegateAndroid::RunProcess.
   browser_runner_ = content::BrowserMainRunner::Create();
-  return browser_runner_->Initialize(main_function_params);
+  int exit_code = browser_runner_->Initialize(main_function_params);
+  // On Android we do not run BrowserMain(), so the above initialization of a
+  // BrowserMainRunner is all we want to occur. Return >= 0 to avoid running
+  // BrowserMain, while preserving any error codes > 0.
+  if (exit_code > 0)
+    return exit_code;
+  return 0;
 #else
   return -1;
 #endif  // defined(OS_ANDROID)
@@ -212,8 +221,13 @@ void CastMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   CHECK(base::CreateDirectory(home_dir));
 #endif  // !defined(OS_ANDROID)
 
-  // The |FieldTrialList| is a dependency of the feature list.
-  field_trial_list_ = std::make_unique<base::FieldTrialList>(nullptr);
+  // The |FieldTrialList| is a dependency of the feature list. In tests, it
+  // gets constructed as part of the test suite.
+  if (is_running_tests) {
+    DCHECK(base::FieldTrialList::GetInstance());
+  } else {
+    field_trial_list_ = std::make_unique<base::FieldTrialList>(nullptr);
+  }
 
   // Initialize the base::FeatureList and the PrefService (which it depends on),
   // so objects initialized after this point can use features from
@@ -274,6 +288,11 @@ content::ContentBrowserClient* CastMainDelegate::CreateContentBrowserClient() {
   browser_client_ =
       CastContentBrowserClient::Create(cast_feature_list_creator_.get());
   return browser_client_.get();
+}
+
+content::ContentGpuClient* CastMainDelegate::CreateContentGpuClient() {
+  gpu_client_ = CastContentGpuClient::Create();
+  return gpu_client_.get();
 }
 
 content::ContentRendererClient*

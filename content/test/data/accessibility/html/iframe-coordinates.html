@@ -12,7 +12,6 @@
 @WIN-ALLOW:size=(150, 50)
 @WIN-ALLOW:IA2_STATE_EDITABLE
 
-@BLINK-ALLOW:location*
 @BLINK-ALLOW:scrollX=*
 @BLINK-ALLOW:scrollY=*
 @BLINK-ALLOW:size=(300, 150)
@@ -23,6 +22,17 @@
 @BLINK-ALLOW:unclippedSize=(300, 100)
 @BLINK-ALLOW:unclippedLocation=(-125, 425)
 @BLINK-ALLOW:unclippedSize=(250, 50)
+
+Only allow these locations, which are not the locations of button's children
+inside an iframe. The locations of button's children inside an iframe have
+slight variances across different platforms.
+@BLINK-ALLOW:pageLocation=(0, 0)
+@BLINK-ALLOW:pageLocation=(25, 25)
+@BLINK-ALLOW:pageLocation=(0, 150)
+@BLINK-ALLOW:pageLocation=(25, 175)
+@BLINK-ALLOW:pageLocation=(0, 300)
+@BLINK-ALLOW:pageLocation=(25, 325)
+@BLINK-ALLOW:pageLocation=(0, 450)
 
 These can be removed when bug 532249 is fixed because
 then the test framework will just wait until all frames

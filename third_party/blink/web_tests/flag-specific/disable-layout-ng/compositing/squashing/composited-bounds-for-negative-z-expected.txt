@@ -1,0 +1,56 @@
+{
+  "layers": [
+    {
+      "name": "LayoutBlockFlow HTML",
+      "bounds": [800, 408]
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV",
+      "bounds": [10, 10],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow HTML (foreground) Layer",
+      "bounds": [800, 408]
+    },
+    {
+      "name": "LayoutBlockFlow DIV",
+      "bounds": [300, 300],
+      "transform": 2
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [285, 0],
+      "bounds": [15, 300],
+      "transform": 2
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (relative positioned) DIV)",
+      "bounds": [285, 1000],
+      "transform": 2
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 100, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [108, 100, 0, 1]
+      ]
+    }
+  ]
+}
+

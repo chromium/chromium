@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -16,7 +16,7 @@ namespace blink {
 // by auto-generated IDL dictionary impl classes. toV8Impl() is used
 // in ToV8.h to provide a consistent API of ToV8().
 class CORE_EXPORT IDLDictionaryBase
-    : public GarbageCollectedFinalized<IDLDictionaryBase> {
+    : public GarbageCollected<IDLDictionaryBase> {
  public:
   virtual ~IDLDictionaryBase() = default;
 

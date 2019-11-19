@@ -48,6 +48,8 @@ jumbo_source_set("clients") {
     "mojo_renderer.h",
     "mojo_renderer_factory.cc",
     "mojo_renderer_factory.h",
+    "mojo_renderer_wrapper.cc",
+    "mojo_renderer_wrapper.h",
     "mojo_video_decoder.cc",
     "mojo_video_decoder.h",
     "mojo_video_encode_accelerator.cc",
@@ -65,7 +67,7 @@ jumbo_source_set("clients") {
     "//base",
     "//media",
     "//media/mojo:buildflags",
-    "//media/mojo/interfaces",
+    "//media/mojo/mojom",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/mojom",
@@ -84,23 +86,6 @@ jumbo_source_set("clients") {
       "//ui/gl:gl",
     ]
   }
-}
-
-source_set("jpeg_decode_accelerator") {
-  visibility = [
-    "//content/browser",
-    "//media/capture:capture_lib",
-  ]
-
-  sources = [
-    "mojo_jpeg_decode_accelerator.cc",
-    "mojo_jpeg_decode_accelerator.h",
-  ]
-
-  deps = [
-    "//base",
-    "//media/mojo/interfaces",
-  ]
 }
 
 source_set("unit_tests") {
@@ -127,7 +112,7 @@ source_set("unit_tests") {
     sources += [ "mojo_android_overlay_unittest.cc" ]
 
     deps += [
-      "//media/mojo/interfaces:test_interfaces",
+      "//media/mojo/mojom:test_interfaces",
       "//ui/gfx:test_support",
       "//ui/gl",
     ]

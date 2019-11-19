@@ -1,35 +1,11 @@
+<!DOCTYPE html>
 <script src="../../resources/run-after-layout-and-paint.js"></script>
-<script src="resources/composited-scroll.js"></script>
 <script>
-    if (window.testRunner) {
-        testRunner.dumpAsTextWithPixelResults();
-        testRunner.waitUntilDone();
-    }
-
-    onload = function() {
-        if (!window.testRunner || !window.internals)
-            return;
-
-        var result = "Should not have opaque composited scrolling contents layer: ";
-        if (!elementSubtreeHasCompositedScrollLayers(document.getElementById('scroller')))
-            result += "Pass.\n";
-        else
-            result += "Fail.\n";
-        document.getElementById("test-1-output").innerHTML = result;
-
-        scrollerElement = document.getElementById("scroller");
-        scrollerElement.style.background = "green local content-box";
-
-        runAfterLayoutAndPaint(function() {
-            var result = "Should have opaque composited scrolling contents layer: ";
-            if (elementSubtreeHasOpaqueCompositedScrollingContentsLayer(document.getElementById('scroller')))
-                result += "Pass.\n";
-            else
-                result += "Fail.\n";
-            document.getElementById("test-2-output").innerHTML = result;
-            runAfterLayoutAndPaint(function() { testRunner.notifyDone(); });
-        });
-    }
+onload = function() {
+    runAfterLayoutAndPaint(function() {
+        scroller.style.background = "green local content-box";
+    }, true);
+};
 </script>
 <style>
 #scroller {
@@ -46,6 +22,4 @@
 </style>
 <div id="scroller"><div class="spacer"></div></div>
 <p>Scroller background should be green</p>
-<p id="test-1-output"></p>
-<p id="test-2-output"></p>
 

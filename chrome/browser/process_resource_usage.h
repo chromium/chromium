@@ -12,7 +12,9 @@
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "content/public/common/resource_usage_reporter.mojom.h"
-#include "third_party/blink/public/platform/web_cache.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/common/web_cache/web_cache_resource_type_stats.h"
 
 // Provides resource usage information about a child process.
 //
@@ -24,31 +26,31 @@
 // manager.
 //
 // To create:
-// 1. Create a content::mojom::ResourceUsageReporterPtr and obtain an
-//    InterfaceRequest<>
-// using
-//    mojo::MakeRequest.
+// 1. Create a mojo::PendingRemote<content::mojom::ResourceUsageReporter> and
+//    obtain a mojo::PendingReceiver<> using InitWithNewPipeAndPassReceiver().
 // 2. Use the child process's service registry to connect to the service using
-//    the InterfaceRequest<>. Note, ServiceRegistry is thread hostile and
-//    must always be accessed from the same thread. However, InterfaceRequest<>
+//    the mojo::PendingReceiver<>. Note, ServiceRegistry is thread hostile and
+//    must always be accessed from the same thread. However, PendingReceiver<>
 //    can be passed safely between threads, and therefore a task can be posted
 //    to the ServiceRegistry thread to connect to the remote service.
-// 3. Pass the content::mojom::ResourceUsageReporterPtr to the constructor.
+// 3. Pass the mojo::PendingRemote<content::mojom::ResourceUsageReporter> to the
+//    constructor.
 //
 // Example:
 //   void Foo::ConnectToService(
-//       mojo::InterfaceRequest<content::mojom::ResourceUsageReporter> req) {
+//       mojo::PendingReceiver<content::mojom::ResourceUsageReporter>
+//           receiver) {
 //     content::ServiceRegistry* registry = host_->GetServiceRegistry();
 //     registry->ConnectToRemoteService(std::move(req));
 //   }
 //
 //   ...
-//     content::mojom::ResourceUsageReporterPtr service;
-//     mojo::InterfaceRequest<content::mojom::ResourceUsageReporter> request =
-//         mojo::MakeRequest(&service);
-//     base::PostTaskWithTraits(
+//     mojo::PendingRemote<content::mojom::ResourceUsageReporter> service;
+//     mojo::PendingReceiver<content::mojom::ResourceUsageReporter> receiver =
+//         service.InitWithNewPipeAndPassReceiver();
+//     base::PostTask(
 //         FROM_HERE, {content::BrowserThread::IO},
-//         base::Bind(&Foo::ConnectToService, this, base::Passed(&request)));
+//         base::Bind(&Foo::ConnectToService, this, base::Passed(&receiver)));
 //     resource_usage_.reset(new ProcessResourceUsage(std::move(service)));
 //   ...
 //
@@ -58,7 +60,7 @@ class ProcessResourceUsage {
  public:
   // Must be called from the same thread that created |service|.
   explicit ProcessResourceUsage(
-      content::mojom::ResourceUsageReporterPtr service);
+      mojo::PendingRemote<content::mojom::ResourceUsageReporter> service);
   ~ProcessResourceUsage();
 
   // Refresh the resource usage information. |callback| is invoked when the
@@ -71,7 +73,7 @@ class ProcessResourceUsage {
   size_t GetV8MemoryUsed() const;
 
   // Get Blink resource cache information.
-  blink::WebCache::ResourceTypeStats GetWebCoreCacheStats() const;
+  blink::WebCacheResourceTypeStats GetBlinkMemoryCacheStats() const;
 
  private:
   // Mojo IPC callback.
@@ -79,7 +81,7 @@ class ProcessResourceUsage {
 
   void RunPendingRefreshCallbacks();
 
-  content::mojom::ResourceUsageReporterPtr service_;
+  mojo::Remote<content::mojom::ResourceUsageReporter> service_;
   bool update_in_progress_;
   base::circular_deque<base::Closure> refresh_callbacks_;
 

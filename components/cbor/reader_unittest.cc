@@ -1234,4 +1234,58 @@ TEST(CBORReaderTest, TestSuperLongContentDontCrash) {
   }
 }
 
+TEST(CBORReaderTest, AllowInvalidUTF8) {
+  static const uint8_t kInvalidUTF8[] = {
+      // clang-format off
+      0xa1,                    // map of length 1
+        0x61, 'x',             // "x"
+        0x81,                  // array of length 1
+          0xa2,                // map of length 2
+            0x61, 'y',         // "y"
+            0x62, 0xe2, 0x80,  // invalid UTF-8 value
+            0x61, 'z',         // "z"
+            0x61, '.',         // "."
+      // clang-format on
+  };
+
+  Reader::DecoderError error;
+  Reader::Config config;
+  config.error_code_out = &error;
+
+  base::Optional<Value> cbor = Reader::Read(kInvalidUTF8, config);
+  EXPECT_FALSE(cbor);
+  EXPECT_EQ(Reader::DecoderError::INVALID_UTF8, error);
+
+  cbor = Reader::Read(kInvalidUTF8, config);
+  EXPECT_FALSE(cbor);
+  EXPECT_EQ(Reader::DecoderError::INVALID_UTF8, error);
+
+  config.allow_invalid_utf8 = true;
+
+  cbor = Reader::Read(kInvalidUTF8, config);
+  EXPECT_TRUE(cbor);
+  EXPECT_EQ(Reader::DecoderError::CBOR_NO_ERROR, error);
+  const cbor::Value& invalid_value = cbor->GetMap()
+                                         .find(Value("x"))
+                                         ->second.GetArray()[0]
+                                         .GetMap()
+                                         .find(Value("y"))
+                                         ->second;
+  ASSERT_TRUE(invalid_value.is_invalid_utf8());
+  EXPECT_EQ(std::vector<uint8_t>({0xe2, 0x80}), invalid_value.GetInvalidUTF8());
+
+  static const uint8_t kInvalidUTF8InMapKey[] = {
+      // clang-format off
+      0xa1,                    // map of length 1
+        0x62, 0xe2, 0x80,      // invalid UTF-8 map key
+        0x61, '.',             // "."
+      // clang-format on
+  };
+
+  EXPECT_TRUE(config.allow_invalid_utf8);
+  cbor = Reader::Read(kInvalidUTF8InMapKey, config);
+  EXPECT_FALSE(cbor);
+  EXPECT_EQ(Reader::DecoderError::INVALID_UTF8, error);
+}
+
 }  // namespace cbor

@@ -4,6 +4,9 @@
 
 #include "content/browser/indexed_db/indexed_db_return_value.h"
 
+#include <stdint.h>
+#include <vector>
+
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
 namespace content {

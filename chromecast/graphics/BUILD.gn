@@ -12,11 +12,17 @@ cast_source_set("graphics") {
     "cast_window_manager.h",
     "gestures/cast_gesture_handler.cc",
     "gestures/cast_gesture_handler.h",
+    "rounded_window_corners.cc",
+    "rounded_window_corners.h",
   ]
 
   deps = [
     "//base",
     "//ui/gfx",
+  ]
+
+  public_deps = [
+    "//chromecast/ui/mojom",
   ]
 
   if (use_aura) {
@@ -45,12 +51,16 @@ cast_source_set("graphics") {
       "accessibility/partial_magnification_controller.h",
       "cast_display_util.cc",
       "cast_display_util.h",
+      "cast_external_begin_frame_source.cc",
+      "cast_external_begin_frame_source.h",
       "cast_focus_client_aura.cc",
       "cast_focus_client_aura.h",
       "cast_touch_event_gate.cc",
       "cast_touch_event_gate.h",
       "cast_window_manager_aura.cc",
       "cast_window_manager_aura.h",
+      "cast_window_tree_host_aura.cc",
+      "cast_window_tree_host_aura.h",
       "gestures/cast_system_gesture_dispatcher.cc",
       "gestures/cast_system_gesture_dispatcher.h",
       "gestures/cast_system_gesture_event_handler.cc",
@@ -59,10 +69,13 @@ cast_source_set("graphics") {
       "gestures/multiple_tap_detector.h",
       "gestures/side_swipe_detector.cc",
       "gestures/side_swipe_detector.h",
+      "rounded_window_corners_aura.cc",
     ]
 
     deps += [
-      "//ui/base/ime",
+      "//chromecast:chromecast_buildflags",
+      "//components/viz/common",
+      "//ui/base/ime/init",
       "//ui/events:gesture_detection",
       "//ui/views",
       "//ui/wm",
@@ -72,6 +85,7 @@ cast_source_set("graphics") {
     sources += [
       "cast_window_manager_default.cc",
       "cast_window_manager_default.h",
+      "rounded_window_corners_default.cc",
     ]
   }
 
@@ -124,6 +138,7 @@ if (use_aura && !is_cast_audio_only) {
       "accessibility/partial_magnification_controller_unittest.cc",
       "cast_display_util_unittest.cc",
       "cast_focus_client_aura_test.cc",
+      "cast_screen_unittest.cc",
       "cast_touch_event_gate_test.cc",
       "cast_views_test.cc",
       "cast_window_manager_aura_test.cc",
@@ -147,6 +162,7 @@ if (use_aura && !is_cast_audio_only) {
       "//ui/gl:test_support",
       "//ui/platform_window",
       "//ui/views",
+      "//ui/views:test_support",
       "//ui/wm",
     ]
   }

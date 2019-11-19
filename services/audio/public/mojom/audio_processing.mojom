@@ -47,7 +47,6 @@ enum AutomaticGainControlType {
 
 enum EchoCancellationType {
   kDisabled,
-  kAec2,
   kAec3,
   kSystemAec
 };
@@ -89,7 +88,7 @@ interface AudioProcessorControls {
 
 struct AudioProcessingConfig {
   // Used for getting stats and controlling AEC dumps.
-  AudioProcessorControls& controls_request;
+  pending_receiver<AudioProcessorControls> controls_receiver;
 
   // Used for connecting streams to the audio processor.
   mojo_base.mojom.UnguessableToken processing_id;

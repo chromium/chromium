@@ -144,6 +144,10 @@ std::string GetCrashKeyValue(const std::string& key_name) {
   return std::string();
 }
 
+void InitializeCrashKeysForTesting() {
+  InitializeCrashKeys();
+}
+
 void ResetCrashKeysForTesting() {
   internal::ResetCrashKeyStorageForTesting();
   base::debug::SetCrashKeyImplementation(nullptr);

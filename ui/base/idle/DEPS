@@ -1,5 +1,5 @@
 include_rules = [
-  "+jni",
   "+chromeos/dbus/dbus_thread_manager.h",
-  "+chromeos/dbus/session_manager_client.h",
+  "+chromeos/dbus/session_manager",
+  "+ui/base/ui_base_jni_headers",
 ]

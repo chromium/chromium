@@ -1,0 +1,69 @@
+This is a testharness.js-based test.
+Found 65 tests; 64 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS form autocomplete attribute missing
+PASS form autocomplete attribute on
+PASS form autocomplete attribute off
+PASS form autocomplete attribute invalid
+PASS on is an allowed autocomplete field name
+PASS off is an allowed autocomplete field name
+PASS name is an allowed autocomplete field name
+PASS honorific-prefix is an allowed autocomplete field name
+PASS given-name is an allowed autocomplete field name
+PASS additional-name is an allowed autocomplete field name
+PASS family-name is an allowed autocomplete field name
+PASS honorific-suffix is an allowed autocomplete field name
+PASS nickname is an allowed autocomplete field name
+PASS username is an allowed autocomplete field name
+PASS new-password is an allowed autocomplete field name
+PASS current-password is an allowed autocomplete field name
+FAIL one-time-code is an allowed autocomplete field name assert_equals: expected "one-time-code" but got ""
+PASS organization-title is an allowed autocomplete field name
+PASS organization is an allowed autocomplete field name
+PASS street-address is an allowed autocomplete field name
+PASS address-line1 is an allowed autocomplete field name
+PASS address-line2 is an allowed autocomplete field name
+PASS address-line3 is an allowed autocomplete field name
+PASS address-level4 is an allowed autocomplete field name
+PASS address-level3 is an allowed autocomplete field name
+PASS address-level2 is an allowed autocomplete field name
+PASS address-level1 is an allowed autocomplete field name
+PASS country is an allowed autocomplete field name
+PASS country-name is an allowed autocomplete field name
+PASS postal-code is an allowed autocomplete field name
+PASS cc-name is an allowed autocomplete field name
+PASS cc-given-name is an allowed autocomplete field name
+PASS cc-additional-name is an allowed autocomplete field name
+PASS cc-family-name is an allowed autocomplete field name
+PASS cc-number is an allowed autocomplete field name
+PASS cc-exp is an allowed autocomplete field name
+PASS cc-exp-month is an allowed autocomplete field name
+PASS cc-exp-year is an allowed autocomplete field name
+PASS cc-csc is an allowed autocomplete field name
+PASS cc-type is an allowed autocomplete field name
+PASS transaction-currency is an allowed autocomplete field name
+PASS transaction-amount is an allowed autocomplete field name
+PASS language is an allowed autocomplete field name
+PASS bday is an allowed autocomplete field name
+PASS bday-day is an allowed autocomplete field name
+PASS bday-month is an allowed autocomplete field name
+PASS bday-year is an allowed autocomplete field name
+PASS sex is an allowed autocomplete field name
+PASS url is an allowed autocomplete field name
+PASS photo is an allowed autocomplete field name
+PASS tel is an allowed autocomplete field name
+PASS tel-country-code is an allowed autocomplete field name
+PASS tel-national is an allowed autocomplete field name
+PASS tel-area-code is an allowed autocomplete field name
+PASS tel-local is an allowed autocomplete field name
+PASS tel-local-prefix is an allowed autocomplete field name
+PASS tel-local-suffix is an allowed autocomplete field name
+PASS tel-extension is an allowed autocomplete field name
+PASS email is an allowed autocomplete field name
+PASS impp is an allowed autocomplete field name
+PASS Test whitespace-only attribute value
+PASS Test maximum number of tokens
+PASS Unknown field
+PASS Test 'wearing the autofill anchor mantle' with off/on
+PASS Serialize combinations of section, mode, contact, and field
+Harness: the test ran to completion.
+

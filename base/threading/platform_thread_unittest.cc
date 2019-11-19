@@ -289,9 +289,7 @@ TEST(PlatformThreadTest, MAYBE_SetCurrentThreadPriority) {
 #if defined(OS_WIN)
 // Test changing a created thread's priority, with the
 // kWindowsThreadModeBackground feature enabled.
-// Flaky: https://crbug.com/931706
-TEST(PlatformThreadTest,
-     DISABLED_SetCurrentThreadPriorityWithThreadModeBackground) {
+TEST(PlatformThreadTest, SetCurrentThreadPriorityWithThreadModeBackground) {
   test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kWindowsThreadModeBackground);
@@ -301,9 +299,8 @@ TEST(PlatformThreadTest,
 // Test changing a created thread's priority, with the
 // kWindowsThreadModeBackground feature enabled, in an IDLE_PRIORITY_CLASS
 // process (regression test for https://crbug.com/901483).
-// Flaky: https://crbug.com/931706
 TEST(PlatformThreadTest,
-     DISABLED_SetCurrentThreadPriorityWithThreadModeBackgroundIdleProcess) {
+     SetCurrentThreadPriorityWithThreadModeBackgroundIdleProcess) {
   ::SetPriorityClass(Process::Current().Handle(), IDLE_PRIORITY_CLASS);
 
   test::ScopedFeatureList scoped_feature_list;

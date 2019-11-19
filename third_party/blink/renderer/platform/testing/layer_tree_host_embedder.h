@@ -11,6 +11,7 @@
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -18,6 +19,8 @@ namespace blink {
 // for unit tests that need to instantiate only a cc::LayerTreeHost and not the
 // full blink APIs that normally own and embed it.
 class LayerTreeHostEmbedder {
+  USING_FAST_MALLOC(LayerTreeHostEmbedder);
+
  public:
   // Default constructor uses stub clients, and default LayerTreeSettings
   // appropriate for blink unit tests.

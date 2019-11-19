@@ -27,7 +27,10 @@ def main(argv):
   for filename in os.listdir(common.SCRIPT_DIR):
     if not filename.endswith('.py'):
       continue
-    if filename in ('common.py', 'get_compile_targets.py'):
+    if filename in ('common.py',
+                    'get_compile_targets.py',
+                    'gpu_integration_test_adapter.py',
+                    'sizes_common.py'):
       continue
 
     with common.temporary_file() as tempfile_path:

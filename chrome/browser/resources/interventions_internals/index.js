@@ -284,7 +284,7 @@ function changeTab() {
  * Helper function to check if all keywords, case insensitive, are in the given
  * text.
  *
- * @param {string[]} keywords The collection of keywords.
+ * @param {Array<string>} keywords The collection of keywords.
  * @param {string} text The given text to search.
  * @return True iff all keywords present in the given text.
  */
@@ -370,7 +370,7 @@ function setupExpandLogs() {
  * Create and add a copy to clipboard button to a given node.
  *
  * @param {string} text The text that will be copied to the clipboard.
- * @param {element!} node The node that will have the button appended to.
+ * @param {Element} node The node that will have the button appended to.
  */
 function appendCopyToClipBoardButton(text, node) {
   if (!document.queryCommandSupported ||
@@ -449,15 +449,20 @@ function setupLogClear() {
   $('clear-log-button').addEventListener('click', removeAllLogMessagesRows);
 }
 
-/** @constructor */
-const InterventionsInternalPageImpl = function() {};
+/**
+ * @constructor
+ * @implements {mojom.InterventionsInternalsPageInterface}
+ */
+const InterventionsInternalPageImpl = function() {
+  this.receiver_ = new mojom.InterventionsInternalsPageReceiver(this);
+};
 
 InterventionsInternalPageImpl.prototype = {
   /**
    * Post a new log message to the web page.
    *
    * @override
-   * @param {!MessageLog} log The new log message recorded by
+   * @param {!mojom.MessageLog} log The new log message recorded by
    * PreviewsLogger.
    */
   logNewMessage: function(log) {
@@ -580,6 +585,14 @@ InterventionsInternalPageImpl.prototype = {
     nqeCol.textContent = type;
     nqeRow.appendChild(nqeCol);
   },
+
+  /**
+   * Returns a remote interface to the receiver.
+   */
+  bindNewPipeAndPassRemote: function() {
+    const helper = this.receiver_.$;
+    return helper.bindNewPipeAndPassRemote();
+  },
 };
 
 cr.define('interventions_internals', () => {
@@ -600,23 +613,7 @@ cr.define('interventions_internals', () => {
   }
 
   /**
-   * Sort keys by the value of each value by its description attribute of a
-   * |mapObject|.
-   *
-   * @param mapObject {!Map<string, Object} A map where all values have a
-   * description attribute.
-   * @return A list of keys sorted by their descriptions.
-   */
-  function getSortedKeysByDescription(mapObject) {
-    const sortedKeys = Array.from(mapObject.keys());
-    sortedKeys.sort((a, b) => {
-      return mapObject.get(a).description > mapObject.get(b).description;
-    });
-    return sortedKeys;
-  }
-
-  /**
-   * Retrieves the statuses of previews (i.e. Offline, LoFi, AMP Redirection),
+   * Retrieves the statuses of previews (i.e. Offline, Lite Pages, etc),
    * and posts them on chrome://intervention-internals.
    */
   function getPreviewsEnabled() {
@@ -699,12 +696,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (window.testPageHandler) {
       pageHandler = window.testPageHandler;
     } else {
-      pageHandler = mojom.InterventionsInternalsPageHandler.getProxy();
+      pageHandler = mojom.InterventionsInternalsPageHandler.getRemote();
 
       // Set up client side mojo interface.
       pageImpl = new InterventionsInternalPageImpl();
-      const client = new mojom.InterventionsInternalsPage(pageImpl);
-      pageHandler.setClientPage(client.createProxy());
+      pageHandler.setClientPage(pageImpl.bindNewPipeAndPassRemote());
     }
 
     interventions_internals.init(pageHandler);

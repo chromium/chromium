@@ -20,17 +20,17 @@
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/image_decoder.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
-#include "chrome/common/safe_browsing/file_type_policies.h"
 #include "chrome/common/url_constants.h"
 #include "components/google/core/common/google_util.h"
-#include "components/safe_browsing/proto/csd.pb.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/url_util.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MACOSX)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
+#endif
 
 #if defined(OS_WIN)
 #include "chrome/browser/download/download_target_determiner.h"
@@ -90,7 +90,7 @@ class ImageClipboardCopyManager : public ImageDecoder::ImageRequest {
     // This method is called on the same thread as constructor (the UI thread).
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-    ui::ScopedClipboardWriter scw(ui::CLIPBOARD_TYPE_COPY_PASTE);
+    ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
     scw.Reset();
 
     if (!decoded_image.empty() && !decoded_image.isNull())
@@ -153,18 +153,18 @@ void DownloadCommands::ExecuteCommand(Command command) {
   model_->ExecuteCommand(this, command);
 }
 
+#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
+
 Browser* DownloadCommands::GetBrowser() const {
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(model_->profile());
   DCHECK(browser_displayer.browser());
   return browser_displayer.browser();
 }
 
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
 bool DownloadCommands::IsDownloadPdf() const {
   base::FilePath path = model_->GetTargetFilePath();
   return path.MatchesExtension(FILE_PATH_LITERAL(".pdf"));
 }
-#endif
 
 bool DownloadCommands::CanOpenPdfInSystemViewer() const {
 #if defined(OS_WIN)
@@ -181,6 +181,8 @@ bool DownloadCommands::CanOpenPdfInSystemViewer() const {
 #endif
 }
 
+#endif  // defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
+
 void DownloadCommands::CopyFileAsImageToClipboard() {
   if (model_->GetState() != download::DownloadItem::COMPLETE ||
       model_->GetCompletedBytes() > kMaxImageClipboardSize) {
@@ -193,8 +195,8 @@ void DownloadCommands::CopyFileAsImageToClipboard() {
   base::FilePath file_path = model_->GetFullPath();
 
   if (!task_runner_) {
-    task_runner_ = base::CreateSequencedTaskRunnerWithTraits(
-        {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+    task_runner_ = base::CreateSequencedTaskRunner(
+        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
          base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   }
   ImageClipboardCopyManager::Start(file_path, task_runner_.get());

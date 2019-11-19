@@ -29,16 +29,16 @@ class CONTENT_EXPORT WebContentsBindingSet {
  public:
   class CONTENT_EXPORT Binder {
    public:
-    virtual ~Binder() {}
+    virtual ~Binder() = default;
 
     virtual void OnRequestForFrame(
         RenderFrameHost* render_frame_host,
         mojo::ScopedInterfaceEndpointHandle handle);
+    virtual void CloseAllBindings();
   };
 
-  void SetBinderForTesting(std::unique_ptr<Binder> binder) {
-    binder_for_testing_ = std::move(binder);
-  }
+  // |binder| must outlive |this| or be reset to null before being destroyed.
+  void SetBinder(Binder* binder) { binder_ = binder; }
 
   template <typename Interface>
   static WebContentsBindingSet* GetForWebContents(WebContents* web_contents) {
@@ -47,8 +47,7 @@ class CONTENT_EXPORT WebContentsBindingSet {
 
  protected:
   WebContentsBindingSet(WebContents* web_contents,
-                        const std::string& interface_name,
-                        std::unique_ptr<Binder> binder);
+                        const std::string& interface_name);
   ~WebContentsBindingSet();
 
  private:
@@ -62,8 +61,7 @@ class CONTENT_EXPORT WebContentsBindingSet {
                          mojo::ScopedInterfaceEndpointHandle handle);
 
   const base::Closure remove_callback_;
-  std::unique_ptr<Binder> binder_;
-  std::unique_ptr<Binder> binder_for_testing_;
+  Binder* binder_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsBindingSet);
 };
@@ -113,22 +111,23 @@ template <typename Interface>
 class WebContentsFrameBindingSet : public WebContentsBindingSet {
  public:
   WebContentsFrameBindingSet(WebContents* web_contents, Interface* impl)
-      : WebContentsBindingSet(
-            web_contents,
-            Interface::Name_,
-            std::make_unique<FrameInterfaceBinder>(this, web_contents, impl)) {}
-  ~WebContentsFrameBindingSet() {}
+      : WebContentsBindingSet(web_contents, Interface::Name_),
+        binder_(this, web_contents, impl) {
+    SetBinder(&binder_);
+  }
+  ~WebContentsFrameBindingSet() = default;
 
   // Returns the RenderFrameHost currently targeted by a message dispatch to
   // this interface. Must only be called during the extent of a message dispatch
   // for this interface.
   RenderFrameHost* GetCurrentTargetFrame() {
-    DCHECK(current_target_frame_);
-    return current_target_frame_;
+    if (current_target_frame_for_testing_)
+      return current_target_frame_for_testing_;
+    return binder_.GetCurrentTargetFrame();
   }
 
   void SetCurrentTargetFrameForTesting(RenderFrameHost* render_frame_host) {
-    current_target_frame_ = render_frame_host;
+    current_target_frame_for_testing_ = render_frame_host;
   }
 
  private:
@@ -137,14 +136,15 @@ class WebContentsFrameBindingSet : public WebContentsBindingSet {
     FrameInterfaceBinder(WebContentsFrameBindingSet* binding_set,
                          WebContents* web_contents,
                          Interface* impl)
-        : WebContentsObserver(web_contents), impl_(impl) {
-      bindings_.set_pre_dispatch_handler(
-          base::Bind(&WebContentsFrameBindingSet::WillDispatchForContext,
-                     base::Unretained(binding_set)));
+        : WebContentsObserver(web_contents), impl_(impl) {}
+
+    ~FrameInterfaceBinder() override = default;
+
+    RenderFrameHost* GetCurrentTargetFrame() {
+      return bindings_.dispatch_context();
     }
 
-    ~FrameInterfaceBinder() override {}
-
+   private:
     // Binder:
     void OnRequestForFrame(
         RenderFrameHost* render_frame_host,
@@ -154,6 +154,8 @@ class WebContentsFrameBindingSet : public WebContentsBindingSet {
           render_frame_host);
       frame_to_bindings_map_[render_frame_host].push_back(id);
     }
+
+    void CloseAllBindings() override { bindings_.CloseAllBindings(); }
 
     // WebContentsObserver:
     void RenderFrameDeleted(RenderFrameHost* render_frame_host) override {
@@ -173,11 +175,8 @@ class WebContentsFrameBindingSet : public WebContentsBindingSet {
     DISALLOW_COPY_AND_ASSIGN(FrameInterfaceBinder);
   };
 
-  void WillDispatchForContext(RenderFrameHost* const& frame_host) {
-    current_target_frame_ = frame_host;
-  }
-
-  RenderFrameHost* current_target_frame_ = nullptr;
+  FrameInterfaceBinder binder_;
+  RenderFrameHost* current_target_frame_for_testing_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(WebContentsFrameBindingSet);
 };

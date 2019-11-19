@@ -1,0 +1,4 @@
+[document web]
+++[check box] checked checkable:true xml-roles:checkbox
+++[check box] checkable:true xml-roles:checkbox
+++[check box] indeterminate checkable:true xml-roles:checkbox

@@ -5,18 +5,22 @@
 #ifndef CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_APPCACHE_HELPER_H_
 #define CHROME_BROWSER_BROWSING_DATA_MOCK_BROWSING_DATA_APPCACHE_HELPER_H_
 
+#include <list>
+
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "chrome/browser/browsing_data/browsing_data_appcache_helper.h"
+#include "url/origin.h"
+
+class Profile;
 
 class MockBrowsingDataAppCacheHelper
     : public BrowsingDataAppCacheHelper {
  public:
-  explicit MockBrowsingDataAppCacheHelper(
-      content::BrowserContext* browser_context);
+  explicit MockBrowsingDataAppCacheHelper(Profile* profile);
 
   void StartFetching(FetchCallback completion_callback) override;
-  void DeleteAppCacheGroup(const GURL& manifest_url) override;
+  void DeleteAppCaches(const url::Origin& origin) override;
 
   // Adds AppCache samples.
   void AddAppCacheSamples();
@@ -29,7 +33,7 @@ class MockBrowsingDataAppCacheHelper
 
   FetchCallback completion_callback_;
 
-  scoped_refptr<content::AppCacheInfoCollection> response_;
+  std::list<content::StorageUsageInfo> response_;
 
   DISALLOW_COPY_AND_ASSIGN(MockBrowsingDataAppCacheHelper);
 };

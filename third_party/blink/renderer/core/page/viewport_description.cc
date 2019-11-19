@@ -30,14 +30,13 @@
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -298,12 +297,6 @@ void ViewportDescription::ReportMobilePageStats(
     meta_tag_type_histogram.Count(
         static_cast<int>(ViewportUMAType::kMetaMobileOptimized));
   }
-}
-
-bool ViewportDescription::MatchesHeuristicsForGpuRasterization() const {
-  bool enable_viewport_restriction = base::FeatureList::IsEnabled(
-      features::kEnableGpuRasterizationViewportRestriction);
-  return !enable_viewport_restriction || IsSpecifiedByAuthor();
 }
 
 }  // namespace blink

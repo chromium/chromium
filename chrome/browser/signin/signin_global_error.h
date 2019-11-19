@@ -27,10 +27,6 @@ class SigninGlobalError : public GlobalErrorWithStandardBubble,
   // Returns true if there is an authentication error.
   bool HasError();
 
-  // Shows re-authentication UI to the user in an attempt to fix the error.
-  // The re-authentication UI will be shown in |browser|.
-  void AttemptToFixError(Browser* browser);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(SigninGlobalErrorTest, Basic);
   FRIEND_TEST_ALL_PREFIXES(SigninGlobalErrorTest, AuthStatusEnumerateAllErrors);

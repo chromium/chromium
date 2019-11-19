@@ -5,5 +5,5 @@
 [
     ImplementedAs=DOMWindowDeviceMotion
 ] partial interface Window {
-    attribute EventHandler ondevicemotion;
+    [SecureContext] attribute EventHandler ondevicemotion;
 };

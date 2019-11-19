@@ -1,0 +1,32 @@
+This is a testharness.js-based test.
+PASS Property font value 'italic small-caps 900 expanded 25px / 50px Ahem' computes to ['italic small-caps 900 expanded 25px Ahem' or 'italic small-caps 900 expanded 25px/normal Ahem'] in ::marker
+PASS Property font-family value 'Ahem' computes to 'Ahem' in ::marker
+PASS Property font-feature-settings value '"smcp"' computes to '"smcp"' in ::marker
+PASS Property font-kerning value 'none' computes to 'none' in ::marker
+PASS Property font-size value '25px' computes to '25px' in ::marker
+PASS Property font-size-adjust value '1' computes to '1' in ::marker
+PASS Property font-stretch value 'expanded' computes to ['expanded' or '125%'] in ::marker
+PASS Property font-style value 'italic' computes to 'italic' in ::marker
+FAIL Property font-synthesis value 'none' computes to 'none' in ::marker assert_true: font-synthesis doesn't seem to be supported in the computed style expected true got false
+PASS Property font-variant value 'small-caps' computes to 'small-caps' in ::marker
+PASS Property font-variant-caps value 'small-caps' computes to 'small-caps' in ::marker
+PASS Property font-variant-east-asian value 'full-width' computes to 'full-width' in ::marker
+PASS Property font-variant-ligatures value 'historical-ligatures' computes to 'historical-ligatures' in ::marker
+PASS Property font-variant-numeric value 'slashed-zero' computes to 'slashed-zero' in ::marker
+FAIL Property font-variant-position value 'sub' computes to 'sub' in ::marker assert_true: font-variant-position doesn't seem to be supported in the computed style expected true got false
+PASS Property font-weight value '900' computes to '900' in ::marker
+PASS Property color value 'rgb(0, 100, 200)' computes to 'rgb(0, 100, 200)' in ::marker
+PASS Property text-combine-upright value 'none' computes to 'none' in ::marker
+PASS Property unicode-bidi value 'plaintext' computes to 'plaintext' in ::marker
+PASS Property direction value 'rtl' computes to 'rtl' in ::marker
+PASS Property content value '"foo"' computes to '"foo"' in ::marker
+PASS Property display value 'none' computes to ['block' or 'inline'] in ::marker
+PASS Property position value 'absolute' computes to 'static' in ::marker
+PASS Property float value 'right' computes to 'none' in ::marker
+PASS Property list-style value 'inside url('foo') decimal' computes to 'outside none disc' in ::marker
+PASS Property list-style-image value 'url('foo')' computes to 'none' in ::marker
+PASS Property list-style-position value 'inside' computes to 'outside' in ::marker
+PASS Property list-style-type value 'decimal' computes to 'disc' in ::marker
+PASS Property line-height value '50px' computes to 'normal' in ::marker
+Harness: the test ran to completion.
+

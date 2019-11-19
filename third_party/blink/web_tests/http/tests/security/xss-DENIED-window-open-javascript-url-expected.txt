@@ -1,3 +1,2 @@
-CONSOLE ERROR: line 13: Blocked a frame with origin "http://127.0.0.1:8000" from accessing a frame with origin "http://localhost:8080". Protocols, domains, and ports must match.
 This test passes if there is no alert dialog.
 

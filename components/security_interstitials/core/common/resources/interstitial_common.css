@@ -6,7 +6,7 @@ button {
   border: 0;
   border-radius: 4px;
   box-sizing: border-box;
-  color: #fff;
+  color: var(--primary-button-text-color);
   cursor: pointer;
   float: right;
   font-size: .875em;
@@ -29,11 +29,11 @@ button {
 .pdf button,
 .ssl button,
 .safe-browsing-billing button {
-  background: var(--google-blue-600);
+  background: var(--primary-button-fill-color);
 }
 
 button:active {
-  background: var(--google-blue-700);
+  background: var(--primary-button-fill-color-active);
   outline: 0;
 }
 
@@ -74,13 +74,13 @@ button:active {
 }
 
 .secondary-button:hover {
-  background: var(--google-gray-50);
-  border-color: var(--google-gray-600);
+  background: var(--secondary-button-hover-fill-color);
+  border-color: var(--secondary-button-hover-border-color);
   text-decoration: none;
 }
 
 .error-code {
-  color: #646464;
+  color: var(--error-code-color);
   font-size: .86667em;
   text-transform: uppercase;
   margin-top: 12px;
@@ -91,7 +91,7 @@ button:active {
 }
 
 h1 {
-  color: var(--google-gray-900);
+  color: var(--heading-color);
   font-size: 1.6em;
   font-weight: normal;
   line-height: 1.25em;
@@ -113,7 +113,7 @@ input[type=checkbox] {
   opacity: 0;
 }
 
-input[type=checkbox]:focus ~ .checkbox {
+input[type=checkbox]:focus ~ .checkbox:after {
   outline: -webkit-focus-ring-color auto 5px;
 }
 
@@ -132,13 +132,13 @@ input[type=checkbox]:focus ~ .checkbox {
 
 #extended-reporting-opt-in {
   font-size: .875em;
-  margin-top: 39px;
+  margin-top: 32px;
 }
 
 #extended-reporting-opt-in label {
+  display: grid;
+  grid-template-columns: 1.8em 1fr;
   position: relative;
-  display: flex;
-  align-items: flex-start;
 }
 
 .nav-wrapper {
@@ -153,7 +153,7 @@ input[type=checkbox]:focus ~ .checkbox {
 }
 
 .small-link {
-  color: #696969;
+  color: var(--small-link-color);
   font-size: .875em;
 }
 
@@ -162,16 +162,27 @@ input[type=checkbox]:focus ~ .checkbox {
 }
 
 .checkbox {
+  --padding: .9em;
   background: transparent;
-  border: 1px solid white;
-  border-radius: 2px;
   display: block;
-  height: 14px;
-  left: 0;
+  height: 1em;
+  left: -1em;
+  padding-inline-start: var(--padding);
   position: absolute;
   right: 0;
-  top: 3px;
-  width: 14px;
+  top: -.5em;
+  width: 1em;
+}
+
+.checkbox::after {
+  border: 1px solid white;
+  border-radius: 2px;
+  content: '';
+  height: 1em;
+  position: absolute;
+  top: var(--padding);
+  left: var(--padding);
+  width: 1em;
 }
 
 .checkbox::before {
@@ -180,13 +191,13 @@ input[type=checkbox]:focus ~ .checkbox {
   border-right-width: 0;
   border-top-width: 0;
   content: '';
-  height: 4px;
-  left: 2px;
+  height: .2em;
+  left: calc(.3em + var(--padding));
   opacity: 0;
   position: absolute;
-  top: 3px;
+  top: calc(.3em  + var(--padding));
   transform: rotate(-45deg);
-  width: 9px;
+  width: .5em;
 }
 
 input[type=checkbox]:checked ~ .checkbox::before {
@@ -280,9 +291,9 @@ input[type=checkbox]:checked ~ .checkbox::before {
        (min-width: 421px) and (min-height: 240px) and
        (max-height: 560px) {
   body .nav-wrapper {
-    background: #fff;
+    background: var(--background-color);
     bottom: 0;
-    box-shadow: 0 -22px 40px #fff;
+    box-shadow: 0 -12px 24px var(--background-color);
     left: 0;
     margin: 0 auto;
     max-width: 736px;
@@ -320,7 +331,8 @@ input[type=checkbox]:checked ~ .checkbox::before {
 
   button,
   [dir='rtl'] button,
-  button.small-link {
+  button.small-link,
+  .nav-wrapper .secondary-button {
     font-family: Roboto-Regular,Helvetica;
     font-size: .933em;
     margin: 6px 0;
@@ -407,6 +419,12 @@ input[type=checkbox]:checked ~ .checkbox::before {
   }
 }
 
+@media (max-height: 560px) and (min-height: 240px) and (orientation:landscape) {
+  .extended-reporting-has-checkbox #details {
+    padding-bottom: 80px;
+  }
+}
+
 @media (min-height: 500px) and (max-height: 650px) and (max-width: 414px) and
        (orientation: portrait) {
   .interstitial-wrapper {
@@ -450,7 +468,8 @@ input[type=checkbox]:checked ~ .checkbox::before {
     width: 100%;
   }
 
-  button {
+  button,
+  .nav-wrapper .secondary-button {
     padding: 16px 24px;
   }
 

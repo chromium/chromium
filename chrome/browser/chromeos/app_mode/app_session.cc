@@ -15,6 +15,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_update_service.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_mode_idle_app_name_notification.h"
@@ -29,8 +30,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/prefs/pref_service.h"
@@ -46,7 +46,6 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
-#include "third_party/cros_system_api/dbus/service_constants.h"
 
 using extensions::AppWindow;
 using extensions::AppWindowRegistry;
@@ -94,7 +93,7 @@ void DumpPluginProcessOnIOThread(const std::set<int>& child_ids) {
 
   // Wait a bit to let dump finish (if requested) before rebooting the device.
   const int kDumpWaitSeconds = 10;
-  base::PostDelayedTaskWithTraits(
+  base::PostDelayedTask(
       FROM_HERE, {content::BrowserThread::UI}, base::BindOnce(&RebootDevice),
       base::TimeDelta::FromSeconds(dump_requested ? kDumpWaitSeconds : 0));
 }
@@ -271,9 +270,8 @@ void AppSession::OnPluginHung(const std::set<int>& hung_plugins) {
   is_shutting_down_ = true;
 
   LOG(ERROR) << "Plugin hung detected. Dump and reboot.";
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::IO},
-      base::BindOnce(&DumpPluginProcessOnIOThread, hung_plugins));
+  base::PostTask(FROM_HERE, {content::BrowserThread::IO},
+                 base::BindOnce(&DumpPluginProcessOnIOThread, hung_plugins));
 }
 
 }  // namespace chromeos

@@ -23,7 +23,7 @@ ArcNotificationDelegate::~ArcNotificationDelegate() = default;
 std::unique_ptr<message_center::MessageView>
 ArcNotificationDelegate::CreateCustomMessageView(
     const message_center::Notification& notification) {
-  DCHECK(item_);
+  CHECK(item_);
   DCHECK_EQ(item_->GetNotificationId(), notification.id());
   return std::make_unique<ArcNotificationView>(item_.get(), notification);
 }

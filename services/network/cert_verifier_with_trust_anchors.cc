@@ -11,6 +11,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/caching_cert_verifier.h"
 #include "net/cert/cert_verify_proc.h"
+#include "net/cert/coalescing_cert_verifier.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
 
 namespace network {
@@ -65,7 +66,8 @@ void CertVerifierWithTrustAnchors::InitializeOnIOThread(
         << "Additional trust anchors not supported on the current platform!";
   }
   delegate_ = std::make_unique<net::CachingCertVerifier>(
-      std::make_unique<net::MultiThreadedCertVerifier>(verify_proc.get()));
+      std::make_unique<net::CoalescingCertVerifier>(
+          std::make_unique<net::MultiThreadedCertVerifier>(verify_proc.get())));
   delegate_->SetConfig(ExtendTrustAnchors(orig_config_, trust_anchors_));
 }
 

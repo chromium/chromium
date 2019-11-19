@@ -47,25 +47,39 @@ String CSSStepsTimingFunctionValue::CustomCSSText() const {
     case StepsTimingFunction::StepPosition::START:
       step_position_string = "start";
       break;
+
     case StepsTimingFunction::StepPosition::END:
-      step_position_string = "end";
+      step_position_string = "";
       break;
+
+    case StepsTimingFunction::StepPosition::JUMP_BOTH:
+      step_position_string = "jump-both";
+      break;
+
+    case StepsTimingFunction::StepPosition::JUMP_END:
+      step_position_string = "";
+      break;
+
+    case StepsTimingFunction::StepPosition::JUMP_NONE:
+      step_position_string = "jump-none";
+      break;
+
+    case StepsTimingFunction::StepPosition::JUMP_START:
+      step_position_string = "jump-start";
   }
+
+  // https://drafts.csswg.org/css-easing-1/#serialization
+  // If the step position is jump-end or end, serialize as steps(<integer>).
+  // Otherwise, serialize as steps(<integer>, <step-position>).
+  if (step_position_string.IsEmpty())
+    return "steps(" + String::Number(steps_) + ')';
+
   return "steps(" + String::Number(steps_) + ", " + step_position_string + ')';
 }
 
 bool CSSStepsTimingFunctionValue::Equals(
     const CSSStepsTimingFunctionValue& other) const {
   return steps_ == other.steps_ && step_position_ == other.step_position_;
-}
-
-String CSSFramesTimingFunctionValue::CustomCSSText() const {
-  return "frames(" + String::Number(frames_) + ")";
-}
-
-bool CSSFramesTimingFunctionValue::Equals(
-    const CSSFramesTimingFunctionValue& other) const {
-  return frames_ == other.frames_;
 }
 
 }  // namespace cssvalue

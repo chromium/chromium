@@ -15,7 +15,7 @@ class XRHitResult final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit XRHitResult(std::unique_ptr<TransformationMatrix>);
+  explicit XRHitResult(const TransformationMatrix&);
   ~XRHitResult() override;
 
   DOMFloat32Array* hitMatrix() const;

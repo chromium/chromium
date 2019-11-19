@@ -5,11 +5,13 @@
 
 """Utility for reading / writing command-line flag files on device(s)."""
 
+from __future__ import print_function
+
 import argparse
 import logging
 import sys
 
-import devil_chromium  # pylint: disable=import-error, unused-import
+import devil_chromium
 
 from devil.android import device_errors
 from devil.android import device_utils
@@ -17,6 +19,20 @@ from devil.android import flag_changer
 from devil.android.tools import script_common
 from devil.utils import cmd_helper
 from devil.utils import logging_common
+
+
+def CheckBuildTypeSupportsFlags(device, command_line_flags_file):
+  is_webview = command_line_flags_file == 'webview-command-line'
+  if device.IsUserBuild() and is_webview:
+    raise device_errors.CommandFailedError(
+        'WebView only respects flags on a userdebug or eng device, yours '
+        'is a user build.', device)
+  elif device.IsUserBuild():
+    logging.warning(
+        'Your device (%s) is a user build; Chrome may or may not pick up '
+        'your commandline flags. Check your '
+        '"command_line_on_non_rooted_enabled" preference, or switch '
+        'devices.', device)
 
 
 def main():
@@ -37,7 +53,7 @@ Otherwise: Writes command-line file.
   logging_common.AddLoggingArguments(parser)
 
   args, remote_args = parser.parse_known_args()
-  script_common.InitializeEnvironment(args)
+  devil_chromium.Initialize(adb_path=args.adb_path)
   logging_common.InitializeLogging(args)
 
   devices = device_utils.DeviceUtils.HealthyDevices(device_arg=args.devices,
@@ -55,19 +71,8 @@ Otherwise: Writes command-line file.
   else:
     action = 'Wrote command line file. '
 
-  is_webview = args.name == 'webview-command-line'
-
   def update_flags(device):
-    if device.IsUserBuild() and is_webview:
-      raise device_errors.CommandFailedError(
-          'WebView only respects flags on a userdebug or eng device, yours '
-          'is a user build.', device)
-    elif device.IsUserBuild():
-      logging.warning(
-          'Your device (%s) is a user build; Chrome may or may not pick up '
-          'your commandline flags. Check your '
-          '"command_line_on_non_rooted_enabled" preference, or switch '
-          'devices.', device)
+    CheckBuildTypeSupportsFlags(device, args.name)
     changer = flag_changer.FlagChanger(device, args.name)
     if remote_args is not None:
       flags = changer.ReplaceFlags(remote_args)
@@ -77,14 +82,14 @@ Otherwise: Writes command-line file.
 
   updated_values = all_devices.pMap(update_flags).pGet(None)
 
-  print '%sCurrent flags (in %s):' % (action, args.name)
+  print('%sCurrent flags (in %s):' % (action, args.name))
   for d, desc, flags in updated_values:
     if flags:
       # Shell-quote flags for easy copy/paste as new args on the terminal.
       quoted_flags = ' '.join(cmd_helper.SingleQuote(f) for f in sorted(flags))
     else:
       quoted_flags = '( empty )'
-    print '  %s (%s): %s' % (d, desc, quoted_flags)
+    print('  %s (%s): %s' % (d, desc, quoted_flags))
 
   return 0
 

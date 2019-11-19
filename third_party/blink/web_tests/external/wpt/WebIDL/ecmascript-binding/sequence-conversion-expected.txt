@@ -5,5 +5,6 @@ FAIL An array with an overridden Symbol.iterator assert_array_equals: property 0
 FAIL An array with an overridden Symbol.iterator on the prototype assert_array_equals: property 0, expected 11 but got 1
 FAIL An array with an overridden %ArrayIterator%.prototype.next assert_array_equals: property 0, expected 8 but got 1
 PASS A holey array with fallback to an accessor on the prototype
+PASS A string array in sequence<sequence> or record
 Harness: the test ran to completion.
 

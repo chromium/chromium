@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "components/gcm_driver/crypto/p256_key_util.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
+#include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "crypto/random.h"
 
 namespace gcm {
@@ -26,12 +27,6 @@ namespace {
 
 using EntryVectorType =
     leveldb_proto::ProtoDatabase<EncryptionData>::KeyEntryVector;
-
-// Statistics are logged to UMA with this string as part of histogram name. They
-// can all be found under LevelDB.*.GCMKeyStore. Changing this needs to
-// synchronize with histograms.xml, AND will also become incompatible with older
-// browsers still reporting the previous values.
-const char kDatabaseUMAClientName[] = "GCMKeyStore";
 
 // Number of cryptographically secure random bytes to generate as a key pair's
 // authentication secret. Must be at least 16 bytes.
@@ -61,8 +56,7 @@ GCMKeyStore::GCMKeyStore(
     const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner)
     : key_store_path_(key_store_path),
       blocking_task_runner_(blocking_task_runner),
-      state_(State::UNINITIALIZED),
-      weak_factory_(this) {
+      state_(State::UNINITIALIZED) {
   DCHECK(blocking_task_runner);
 }
 
@@ -295,17 +289,17 @@ void GCMKeyStore::LazyInitialize(base::OnceClosure done_closure) {
 
   state_ = State::INITIALIZING;
 
-  database_ =
-      leveldb_proto::ProtoDatabaseProvider::CreateUniqueDB<EncryptionData>(
-          blocking_task_runner_);
+  database_ = leveldb_proto::ProtoDatabaseProvider::GetUniqueDB<EncryptionData>(
+      leveldb_proto::ProtoDbType::GCM_KEY_STORE, key_store_path_,
+      blocking_task_runner_);
 
   database_->Init(
-      kDatabaseUMAClientName, key_store_path_,
       leveldb_proto::CreateSimpleOptions(),
       base::BindOnce(&GCMKeyStore::DidInitialize, weak_factory_.GetWeakPtr()));
 }
 
-void GCMKeyStore::DidInitialize(bool success) {
+void GCMKeyStore::DidInitialize(leveldb_proto::Enums::InitStatus status) {
+  bool success = status == leveldb_proto::Enums::kOK;
   UMA_HISTOGRAM_BOOLEAN("GCM.Crypto.InitKeyStoreSuccessRate", success);
   if (!success) {
     DVLOG(1) << "Unable to initialize the GCM Key Store.";

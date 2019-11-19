@@ -13,6 +13,10 @@ namespace gfx {
 class RenderText;
 }
 
+namespace ui {
+struct AXNodeData;
+}
+
 namespace views {
 namespace corewm {
 class TooltipAura;
@@ -25,6 +29,8 @@ class TooltipAuraTestApi {
       : tooltip_aura_(tooltip_aura) {}
 
   gfx::RenderText* GetRenderText();
+
+  void GetAccessibleNodeData(ui::AXNodeData* node_data);
 
  private:
   TooltipAura* tooltip_aura_;

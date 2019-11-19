@@ -11,16 +11,19 @@
 namespace test {
 
 // static
-void AuthenticatorRequestDialogViewTestApi::Show(
-    content::WebContents* web_contents,
-    std::unique_ptr<AuthenticatorRequestDialogView> dialog) {
-  constrained_window::ShowWebModalDialogViews(dialog.release(), web_contents);
+AuthenticatorRequestDialogView*
+AuthenticatorRequestDialogViewTestApi::CreateDialogView(
+    std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model,
+    content::WebContents* web_contents) {
+  return new AuthenticatorRequestDialogView(web_contents,
+                                            std::move(dialog_model));
 }
 
 // static
-void AuthenticatorRequestDialogViewTestApi::ReplaceCurrentSheet(
+void AuthenticatorRequestDialogViewTestApi::ShowWithSheet(
     AuthenticatorRequestDialogView* dialog,
     std::unique_ptr<AuthenticatorRequestSheetView> new_sheet) {
   dialog->ReplaceCurrentSheetWith(std::move(new_sheet));
+  dialog->Show();
 }
 }  // namespace test

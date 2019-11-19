@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "ui/base/ime/ui_base_ime_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 class Event;
@@ -18,7 +18,7 @@ class TextEditCommandAuraLinux;
 //
 // On desktop Linux, we've traditionally supported the user's custom
 // keybindings. We need to support this in both content/ and in views/.
-class UI_BASE_IME_EXPORT TextEditKeyBindingsDelegateAuraLinux {
+class COMPONENT_EXPORT(UI_BASE_IME_LINUX) TextEditKeyBindingsDelegateAuraLinux {
  public:
   // Matches a key event against the users' platform specific key bindings,
   // false will be returned if the key event doesn't correspond to a predefined
@@ -33,10 +33,11 @@ class UI_BASE_IME_EXPORT TextEditKeyBindingsDelegateAuraLinux {
 
 // Sets/Gets the global TextEditKeyBindingsDelegateAuraLinux. No ownership
 // changes. Can be NULL.
-UI_BASE_IME_EXPORT void SetTextEditKeyBindingsDelegate(
+COMPONENT_EXPORT(UI_BASE_IME_LINUX)
+void SetTextEditKeyBindingsDelegate(
     TextEditKeyBindingsDelegateAuraLinux* delegate);
-UI_BASE_IME_EXPORT TextEditKeyBindingsDelegateAuraLinux*
-GetTextEditKeyBindingsDelegate();
+COMPONENT_EXPORT(UI_BASE_IME_LINUX)
+TextEditKeyBindingsDelegateAuraLinux* GetTextEditKeyBindingsDelegate();
 
 }  // namespace ui
 

@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.incognito;
 import android.view.Window;
 import android.view.WindowManager;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.compositor.layouts.EmptyOverviewModeObserver;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
@@ -17,10 +19,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 /**
  * This is the controller that prevents incognito tabs from being visible in Android Recents.
  */
-public class IncognitoTabSnapshotController
-        extends EmptyTabModelSelectorObserver implements OverviewModeObserver {
+public class IncognitoTabSnapshotController extends EmptyTabModelSelectorObserver {
     private final Window mWindow;
     private final TabModelSelector mTabModelSelector;
+    private final OverviewModeObserver mOverviewModeObserver;
     private boolean mInOverviewMode;
 
     /**
@@ -42,26 +44,22 @@ public class IncognitoTabSnapshotController
         mWindow = window;
         mTabModelSelector = tabModelSelector;
 
-        layoutManager.addOverviewModeObserver(this);
+        mOverviewModeObserver = new EmptyOverviewModeObserver() {
+            @Override
+            public void onOverviewModeStartedShowing(boolean showToolbar) {
+                mInOverviewMode = true;
+                updateIncognitoState();
+            }
+
+            @Override
+            public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) {
+                mInOverviewMode = false;
+            }
+        };
+
+        layoutManager.addOverviewModeObserver(mOverviewModeObserver);
         tabModelSelector.addObserver(this);
     }
-
-    @Override
-    public void onOverviewModeStartedShowing(boolean showToolbar) {
-        mInOverviewMode = true;
-        updateIncognitoState();
-    }
-
-    @Override
-    public void onOverviewModeFinishedShowing() {}
-
-    @Override
-    public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) {
-        mInOverviewMode = false;
-    }
-
-    @Override
-    public void onOverviewModeFinishedHiding() {}
 
     @Override
     public void onChange() {

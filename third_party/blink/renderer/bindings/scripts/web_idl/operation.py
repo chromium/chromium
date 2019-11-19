@@ -1,56 +1,101 @@
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from .extended_attribute import ExtendedAttributeList
-from .utilities import assert_no_extra_args
+from .argument import Argument
+from .code_generator_info import CodeGeneratorInfo
+from .composition_parts import WithCodeGeneratorInfo
+from .composition_parts import WithComponent
+from .composition_parts import WithDebugInfo
+from .composition_parts import WithExposure
+from .composition_parts import WithExtendedAttributes
+from .composition_parts import WithOwner
+from .exposure import Exposure
+from .function_like import FunctionLike
+from .idl_type import IdlType
+from .make_copy import make_copy
+from .overload_group import OverloadGroup
 
 
-# https://heycam.github.io/webidl/#idl-operations
-class Operation(object):
-    # https://www.w3.org/TR/WebIDL-1/#idl-special-operations
-    _SPECIAL_KEYWORDS = frozenset(['deleter', 'getter', 'setter', 'stringifier', 'serializer'])
+class Operation(FunctionLike, WithExtendedAttributes, WithCodeGeneratorInfo,
+                WithExposure, WithOwner, WithComponent, WithDebugInfo):
+    """https://heycam.github.io/webidl/#idl-operations"""
 
-    def __init__(self, **kwargs):
-        self._identifier = kwargs.pop('identifier')
-        self._return_type = kwargs.pop('return_type')
-        self._arguments = tuple(kwargs.pop('arguments', []))
-        self._special_keywords = frozenset(kwargs.pop('special_keywords', []))
-        self._is_static = kwargs.pop('is_static', False)
-        self._extended_attribute_list = kwargs.pop('extended_attribute_list', ExtendedAttributeList())
-        assert_no_extra_args(kwargs)
+    class IR(FunctionLike.IR, WithExtendedAttributes, WithCodeGeneratorInfo,
+             WithExposure, WithComponent, WithDebugInfo):
+        def __init__(self,
+                     identifier,
+                     arguments,
+                     return_type,
+                     is_static=False,
+                     extended_attributes=None,
+                     component=None,
+                     debug_info=None):
+            FunctionLike.IR.__init__(
+                self,
+                identifier=identifier,
+                arguments=arguments,
+                return_type=return_type,
+                is_static=is_static)
+            WithExtendedAttributes.__init__(self, extended_attributes)
+            WithCodeGeneratorInfo.__init__(self)
+            WithExposure.__init__(self)
+            WithComponent.__init__(self, component=component)
+            WithDebugInfo.__init__(self, debug_info)
 
-        if any(keyword not in Operation._SPECIAL_KEYWORDS for keyword in self._special_keywords):
-            raise ValueError('Unknown keyword is specified in special keywords')
+            self.is_stringifier = False
+
+    def __init__(self, ir, owner):
+        assert isinstance(ir, Operation.IR)
+
+        FunctionLike.__init__(self, ir)
+        WithExtendedAttributes.__init__(self, ir.extended_attributes)
+        WithCodeGeneratorInfo.__init__(
+            self, CodeGeneratorInfo(ir.code_generator_info))
+        WithExposure.__init__(self, Exposure(ir.exposure))
+        WithOwner.__init__(self, owner)
+        WithComponent.__init__(self, components=ir.components)
+        WithDebugInfo.__init__(self, ir.debug_info)
+
+        self._is_stringifier = ir.is_stringifier
 
     @property
-    def identifier(self):
-        return self._identifier
+    def is_stringifier(self):
+        return self._is_stringifier
 
-    @property
-    def return_type(self):
-        return self._return_type
 
-    @property
-    def arguments(self):
-        return self._arguments
+class OperationGroup(OverloadGroup, WithCodeGeneratorInfo, WithExposure,
+                     WithOwner, WithDebugInfo):
+    """
+    Represents a group of operations with the same identifier.
 
-    @property
-    def special_keywords(self):
-        return self._special_keywords
+    The number of operations in this group may be 1 or 2+.  In the latter case,
+    the operations are overloaded.
+    """
 
-    @property
-    def is_static(self):
-        return self._is_static
+    class IR(OverloadGroup.IR, WithCodeGeneratorInfo, WithExposure,
+             WithDebugInfo):
+        def __init__(self,
+                     operations,
+                     code_generator_info=None,
+                     debug_info=None):
+            OverloadGroup.IR.__init__(self, operations)
+            WithCodeGeneratorInfo.__init__(self, code_generator_info)
+            WithExposure.__init__(self)
+            WithDebugInfo.__init__(self, debug_info)
 
-    @property
-    def extended_attribute_list(self):
-        return self._extended_attribute_list
+    def __init__(self, ir, operations, owner):
+        assert isinstance(ir, OperationGroup.IR)
+        assert isinstance(operations, (list, tuple))
+        assert all(
+            isinstance(operation, Operation) for operation in operations)
+        assert all(
+            operation.identifier == ir.identifier for operation in operations)
 
-    @property
-    def is_regular(self):
-        return self.identifier and not self.is_static
-
-    @property
-    def is_special(self):
-        return bool(self.special_keywords)
+        ir = make_copy(ir)
+        OverloadGroup.__init__(self, functions=operations)
+        WithCodeGeneratorInfo.__init__(
+            self, CodeGeneratorInfo(ir.code_generator_info))
+        WithExposure.__init__(self, Exposure(ir.exposure))
+        WithOwner.__init__(self, owner)
+        WithDebugInfo.__init__(self, ir.debug_info)

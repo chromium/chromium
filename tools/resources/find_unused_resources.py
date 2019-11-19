@@ -15,6 +15,8 @@ Example:
   tools/resources/find_unused_resouces.py chrome/browser/browser_resources.grd
 """
 
+from __future__ import print_function
+
 __author__ = 'jamescook@chromium.org (James Cook)'
 
 
@@ -87,7 +89,7 @@ def GetUnusedResources(grd_filepath):
   unused_resources = []
   grd_file = open(grd_filepath, 'r')
   grd_data = grd_file.read()
-  print 'Checking:'
+  print('Checking:')
   # Match the resource id and file path out of substrings like:
   # ...name="IDR_FOO_123" file="common/foo.png"...
   # by matching between the quotation marks.
@@ -113,7 +115,7 @@ def GetUnusedResources(grd_filepath):
     searched.add(key)
 
     # Print progress as we go along.
-    print resource_id
+    print(resource_id)
 
     # Ensure the resource isn't used anywhere by checking both for the resource
     # id (which should appear in C++ code) and the raw filename (in case the
@@ -124,7 +126,7 @@ def GetUnusedResources(grd_filepath):
     # other matching files, it is unused.
     if len(matching_files) == 1:
       # Give the user some happy news.
-      print 'Unused!'
+      print('Unused!')
       unused_resources.append([resource_id, filepath])
 
   return unused_resources
@@ -157,47 +159,47 @@ def GetScaleDirectories(resources_path):
 def main():
   # The script requires exactly one parameter, the .grd file path.
   if len(sys.argv) != 2:
-    print 'Usage: tools/resources/find_unused_resources.py <path/to/grd>'
+    print('Usage: tools/resources/find_unused_resources.py <path/to/grd>')
     sys.exit(1)
   grd_filepath = sys.argv[1]
 
   # Try to ensure we are in a source checkout.
   current_dir = os.getcwd()
   if os.path.basename(current_dir) != 'src':
-    print 'Script must be run in your "src" directory.'
+    print('Script must be run in your "src" directory.')
     sys.exit(1)
 
   # We require a git checkout to use git grep.
   if not os.path.exists(current_dir + '/.git'):
-    print 'You must use a git checkout for this script to run.'
-    print current_dir + '/.git', 'not found.'
+    print('You must use a git checkout for this script to run.')
+    print(current_dir + '/.git', 'not found.')
     sys.exit(1)
 
   # Look up the scale-factor directories.
   resources_path = os.path.dirname(grd_filepath)
   scale_directories = GetScaleDirectories(resources_path)
   if not scale_directories:
-    print 'No scale directories (like "default_100_percent") found.'
+    print('No scale directories (like "default_100_percent") found.')
     sys.exit(1)
 
   # |unused_resources| stores pairs of [resource_id, filepath] for resource ids
   # that are not referenced in the code.
   unused_resources = GetUnusedResources(grd_filepath)
   if not unused_resources:
-    print 'All resources are used.'
+    print('All resources are used.')
     sys.exit(0)
 
   # Dump our output for the user.
-  print
-  print 'Unused resource ids:'
+  print()
+  print('Unused resource ids:')
   for resource_id, filepath in unused_resources:
-    print resource_id
+    print(resource_id)
   # Print a list of 'git rm' command lines to remove unused assets.
-  print
-  print 'Unused files:'
+  print()
+  print('Unused files:')
   for resource_id, filepath in unused_resources:
     for directory in scale_directories:
-      print 'git rm ' + os.path.join(directory, filepath)
+      print('git rm ' + os.path.join(directory, filepath))
 
 
 if __name__ == '__main__':

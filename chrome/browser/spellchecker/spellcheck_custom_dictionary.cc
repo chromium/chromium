@@ -14,7 +14,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
-#include "base/md5.h"
+#include "base/hash/md5.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -222,12 +222,11 @@ int SpellcheckCustomDictionary::Change::Sanitize(
 
 SpellcheckCustomDictionary::SpellcheckCustomDictionary(
     const base::FilePath& dictionary_directory_name)
-    : task_runner_(
-          base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()})),
+    : task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock()})),
       custom_dictionary_path_(
           dictionary_directory_name.Append(chrome::kCustomDictionaryFileName)),
-      is_loaded_(false),
-      weak_ptr_factory_(this) {}
+      is_loaded_(false) {}
 
 SpellcheckCustomDictionary::~SpellcheckCustomDictionary() {
 }
@@ -262,7 +261,7 @@ bool SpellcheckCustomDictionary::RemoveWord(const std::string& word) {
 }
 
 bool SpellcheckCustomDictionary::HasWord(const std::string& word) const {
-  return base::ContainsKey(words_, word);
+  return base::Contains(words_, word);
 }
 
 void SpellcheckCustomDictionary::AddObserver(Observer* observer) {
@@ -295,6 +294,14 @@ void SpellcheckCustomDictionary::Load() {
                      custom_dictionary_path_),
       base::BindOnce(&SpellcheckCustomDictionary::OnLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SpellcheckCustomDictionary::WaitUntilReadyToSync(base::OnceClosure done) {
+  DCHECK(!wait_until_ready_to_sync_cb_);
+  if (is_loaded_)
+    std::move(done).Run();
+  else
+    wait_until_ready_to_sync_cb_ = std::move(done);
 }
 
 syncer::SyncMergeResult SpellcheckCustomDictionary::MergeDataAndStartSyncing(
@@ -436,6 +443,8 @@ void SpellcheckCustomDictionary::OnLoaded(
   Apply(dictionary_change);
   Sync(dictionary_change);
   is_loaded_ = true;
+  if (wait_until_ready_to_sync_cb_)
+    std::move(wait_until_ready_to_sync_cb_).Run();
   for (Observer& observer : observers_)
     observer.OnCustomDictionaryLoaded();
   if (!result->is_valid_file) {
@@ -443,9 +452,9 @@ void SpellcheckCustomDictionary::OnLoaded(
     fix_invalid_file_.Reset(
         base::BindOnce(&SpellcheckCustomDictionary::FixInvalidFile,
                        weak_ptr_factory_.GetWeakPtr(), std::move(result)));
-    BrowserThread::PostAfterStartupTask(
+    base::PostTask(
         FROM_HERE,
-        base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI}),
+        {content::BrowserThread::UI, base::TaskPriority::BEST_EFFORT},
         fix_invalid_file_.callback());
   }
 }

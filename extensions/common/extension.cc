@@ -17,7 +17,6 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string16.h"
@@ -30,7 +29,6 @@
 #include "base/values.h"
 #include "base/version.h"
 #include "components/crx_file/id_util.h"
-#include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
@@ -78,13 +76,28 @@ bool ContainsReservedCharacters(const base::FilePath& path) {
 }
 
 // Returns true if the given |manifest_version| is supported for the specified
-// |type| of extension.
+// |type| of extension. Optionally populates |warning| if an InstallWarning
+// should be added.
 bool IsManifestSupported(int manifest_version,
                          Manifest::Type type,
-                         int creation_flags) {
+                         int creation_flags,
+                         std::string* warning) {
+  static constexpr int kMaximumSupportedManifestVersion = 2;
+  static_assert(kMaximumSupportedManifestVersion >= kModernManifestVersion,
+                "The modern manifest version must be supported.");
   // Modern is always safe.
-  if (manifest_version >= kModernManifestVersion)
+  if (manifest_version >= kModernManifestVersion &&
+      manifest_version <= kMaximumSupportedManifestVersion) {
     return true;
+  }
+
+  if (manifest_version > kMaximumSupportedManifestVersion) {
+    *warning = ErrorUtils::FormatErrorMessage(
+        manifest_errors::kManifestVersionTooHighWarning,
+        base::NumberToString(kMaximumSupportedManifestVersion),
+        base::NumberToString(manifest_version));
+    return true;
+  }
 
   // Allow an exception for extensions if a special commandline flag is present.
   // Note: This allows the extension to load, but it may effectively be treated
@@ -113,7 +126,7 @@ bool IsManifestSupported(int manifest_version,
 
 }  // namespace
 
-const int Extension::kInitFromValueFlagBits = 13;
+const int Extension::kInitFromValueFlagBits = 15;
 
 const char Extension::kMimeType[] = "application/x-chrome-extension";
 
@@ -158,17 +171,23 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
   base::ElapsedTimer timer;
   DCHECK(utf8_error);
   base::string16 error;
-  std::unique_ptr<extensions::Manifest> manifest(
-      new extensions::Manifest(location, value.CreateDeepCopy()));
+
+  std::unique_ptr<extensions::Manifest> manifest;
+  if (flags & FOR_LOGIN_SCREEN) {
+    manifest = Manifest::CreateManifestForLoginScreen(location,
+                                                      value.CreateDeepCopy());
+  } else {
+    manifest = std::make_unique<Manifest>(location, value.CreateDeepCopy());
+  }
 
   if (!InitExtensionID(manifest.get(), path, explicit_id, flags, &error)) {
     *utf8_error = base::UTF16ToUTF8(error);
-    return NULL;
+    return nullptr;
   }
 
   std::vector<InstallWarning> install_warnings;
   if (!manifest->ValidateManifest(utf8_error, &install_warnings)) {
-    return NULL;
+    return nullptr;
   }
 
   scoped_refptr<Extension> extension = new Extension(path, std::move(manifest));
@@ -176,28 +195,7 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
 
   if (!extension->InitFromValue(flags, &error)) {
     *utf8_error = base::UTF16ToUTF8(error);
-    return NULL;
-  }
-
-  const base::CommandLine& command_line =
-      *base::CommandLine::ForCurrentProcess();
-  std::string process_type =
-      command_line.GetSwitchValueASCII(::switches::kProcessType);
-  // Use microsecond accuracy for increased granularity. Max at 10 seconds.
-  base::TimeDelta elapsed_time = timer.Elapsed();
-  const int kMaxTimeInMicroseconds = 10000000;
-  if (process_type.empty()) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "Extensions.ExtensionCreationTime.BrowserProcess",
-        elapsed_time.InMicroseconds(), 1, kMaxTimeInMicroseconds, 100);
-  } else if (command_line.HasSwitch(switches::kExtensionProcess)) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "Extensions.ExtensionCreationTime.ExtensionProcess",
-        elapsed_time.InMicroseconds(), 1, kMaxTimeInMicroseconds, 100);
-  } else if (process_type == ::switches::kRendererProcess) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS(
-        "Extensions.ExtensionCreationTime.RendererProcess",
-        elapsed_time.InMicroseconds(), 1, kMaxTimeInMicroseconds, 100);
+    return nullptr;
   }
 
   return extension;
@@ -221,13 +219,13 @@ bool Extension::ResourceMatches(const URLPatternSet& pattern_set,
 }
 
 ExtensionResource Extension::GetResource(
-    const std::string& relative_path) const {
-  std::string new_path = relative_path;
+    base::StringPiece relative_path) const {
   // We have some legacy data where resources have leading slashes.
   // See: http://crbug.com/121164
-  if (!new_path.empty() && new_path.at(0) == '/')
-    new_path.erase(0, 1);
-  base::FilePath relative_file_path = base::FilePath::FromUTF8Unsafe(new_path);
+  if (!relative_path.empty() && relative_path[0] == '/')
+    relative_path.remove_prefix(1);
+  base::FilePath relative_file_path =
+      base::FilePath::FromUTF8Unsafe(relative_path);
   if (ContainsReservedCharacters(relative_file_path))
     return ExtensionResource();
   ExtensionResource r(id(), path(), relative_file_path);
@@ -398,7 +396,7 @@ Extension::ManifestData* Extension::GetManifestData(const std::string& key)
   auto iter = manifest_data_.find(key);
   if (iter != manifest_data_.end())
     return iter->second.get();
-  return NULL;
+  return nullptr;
 }
 
 void Extension::SetManifestData(const std::string& key,
@@ -421,6 +419,20 @@ const HashedExtensionId& Extension::hashed_id() const {
 
 const std::string Extension::VersionString() const {
   return version_.GetString();
+}
+
+const std::string Extension::DifferentialFingerprint() const {
+  std::string fingerprint;
+  // We currently support two sources of differential fingerprints:
+  // server-provided and synthesized. Fingerprints are of the format V.FP, where
+  // V indicates the fingerprint type (1 for SHA256 hash, 2 for app version) and
+  // FP indicates the value. The hash-based FP from the server is more precise
+  // (a hash of the extension CRX), so use that when available, otherwise
+  // synthesize a 2.VERSION fingerprint for use. For more information, see
+  // https://github.com/google/omaha/blob/master/doc/ServerProtocolV3.md#packages--fingerprints
+  return manifest_->GetString(keys::kDifferentialFingerprint, &fingerprint)
+             ? fingerprint
+             : "2." + VersionString();
 }
 
 const std::string Extension::GetVersionForDisplay() const {
@@ -465,6 +477,10 @@ bool Extension::is_shared_module() const {
 
 bool Extension::is_theme() const {
   return manifest()->is_theme();
+}
+
+bool Extension::is_login_screen_extension() const {
+  return manifest()->is_login_screen_extension();
 }
 
 void Extension::AddWebExtentPattern(const URLPattern& pattern) {
@@ -654,11 +670,11 @@ bool Extension::LoadExtent(const char* key,
                            const char* list_error,
                            const char* value_error,
                            base::string16* error) {
-  const base::Value* temp_pattern_value = NULL;
+  const base::Value* temp_pattern_value = nullptr;
   if (!manifest_->Get(key, &temp_pattern_value))
     return true;
 
-  const base::ListValue* pattern_list = NULL;
+  const base::ListValue* pattern_list = nullptr;
   if (!temp_pattern_value->GetAsList(&pattern_list)) {
     *error = base::ASCIIToUTF16(list_error);
     return false;
@@ -748,7 +764,9 @@ bool Extension::LoadManifestVersion(base::string16* error) {
   }
 
   manifest_version_ = manifest_->GetManifestVersion();
-  if (!IsManifestSupported(manifest_version_, GetType(), creation_flags_)) {
+  std::string warning;
+  if (!IsManifestSupported(manifest_version_, GetType(), creation_flags_,
+                           &warning)) {
     std::string json;
     base::JSONWriter::Write(*manifest_->value(), &json);
     LOG(WARNING) << "Failed to load extension.  Manifest JSON: " << json;
@@ -758,6 +776,9 @@ bool Extension::LoadManifestVersion(base::string16* error) {
         is_platform_app() ? "apps" : "extensions");
     return false;
   }
+
+  if (!warning.empty())
+    AddInstallWarning(InstallWarning(warning, keys::kManifestVersion));
 
   return true;
 }

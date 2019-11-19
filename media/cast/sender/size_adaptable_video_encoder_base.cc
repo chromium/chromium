@@ -21,8 +21,7 @@ SizeAdaptableVideoEncoderBase::SizeAdaptableVideoEncoderBase(
       video_config_(video_config),
       status_change_cb_(status_change_cb),
       frames_in_encoder_(0),
-      next_frame_id_(FrameId::first()),
-      weak_factory_(this) {
+      next_frame_id_(FrameId::first()) {
   cast_environment_->PostTask(
       CastEnvironment::MAIN,
       FROM_HERE,
@@ -34,7 +33,7 @@ SizeAdaptableVideoEncoderBase::~SizeAdaptableVideoEncoderBase() {
 }
 
 bool SizeAdaptableVideoEncoderBase::EncodeVideoFrame(
-    const scoped_refptr<media::VideoFrame>& video_frame,
+    scoped_refptr<media::VideoFrame> video_frame,
     const base::TimeTicks& reference_time,
     const FrameEncodedCallback& frame_encoded_callback) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
@@ -56,11 +55,9 @@ bool SizeAdaptableVideoEncoderBase::EncodeVideoFrame(
   }
 
   const bool is_frame_accepted = encoder_->EncodeVideoFrame(
-      video_frame,
-      reference_time,
+      std::move(video_frame), reference_time,
       base::Bind(&SizeAdaptableVideoEncoderBase::OnEncodedVideoFrame,
-                 weak_factory_.GetWeakPtr(),
-                 frame_encoded_callback));
+                 weak_factory_.GetWeakPtr(), frame_encoded_callback));
   if (is_frame_accepted)
     ++frames_in_encoder_;
   return is_frame_accepted;

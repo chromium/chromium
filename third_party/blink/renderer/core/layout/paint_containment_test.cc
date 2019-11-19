@@ -13,8 +13,8 @@ namespace blink {
 class PaintContainmentTest : public RenderingTest {
  private:
   void SetUp() override {
-    RenderingTest::SetUp();
     EnableCompositing();
+    RenderingTest::SetUp();
   }
 };
 
@@ -28,8 +28,7 @@ static void CheckIsClippingStackingContextAndContainer(
   // clipping and stacking performed by paint containment.
   DCHECK(obj.Layer());
   PaintLayer* layer = obj.Layer();
-  EXPECT_TRUE(layer->StackingNode() &&
-              layer->GetLayoutObject().StyleRef().IsStackingContext());
+  EXPECT_TRUE(layer->GetLayoutObject().StyleRef().IsStackingContext());
 }
 
 TEST_F(PaintContainmentTest, BlockPaintContainment) {
@@ -39,7 +38,7 @@ TEST_F(PaintContainmentTest, BlockPaintContainment) {
   LayoutObject* obj = div->GetLayoutObject();
   DCHECK(obj);
   DCHECK(obj->IsLayoutBlock());
-  LayoutBlock& block = ToLayoutBlock(*obj);
+  auto& block = To<LayoutBlock>(*obj);
   EXPECT_TRUE(block.CreatesNewFormattingContext());
   EXPECT_FALSE(block.CanBeScrolledAndHasScrollableArea());
   CheckIsClippingStackingContextAndContainer(block);

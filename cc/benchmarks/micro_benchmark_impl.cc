@@ -31,7 +31,7 @@ void MicroBenchmarkImpl::DidCompleteCommit(LayerTreeHostImpl* host) {}
 
 void MicroBenchmarkImpl::NotifyDone(std::unique_ptr<base::Value> result) {
   origin_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_), base::Passed(&result)));
+      FROM_HERE, base::BindOnce(std::move(callback_), std::move(result)));
   is_done_ = true;
 }
 

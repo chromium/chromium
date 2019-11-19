@@ -1,0 +1,26 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Sync protocol datatype extension for Chrome OS priority preferences.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+import "preference_specifics.proto";
+
+// Properties of a Chrome OS priority preference. Uses PreferenceSpecifics
+// instead of declaring name and value fields to allow more code sharing
+// in the client (e.g. all PrefModelAssociators can use PreferenceSpecifics).
+message OsPriorityPreferenceSpecifics {
+  optional PreferenceSpecifics preference = 1;
+}

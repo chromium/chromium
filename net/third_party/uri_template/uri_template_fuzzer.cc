@@ -4,11 +4,11 @@
 
 #include "net/third_party/uri_template/uri_template.h"
 
-#include "base/test/fuzzed_data_provider.h"
+#include <fuzzer/FuzzedDataProvider.h>
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::FuzzedDataProvider fuzzed_data(data, size);
+  FuzzedDataProvider fuzzed_data(data, size);
   std::string uri_template = fuzzed_data.ConsumeRandomLengthString(256);
   // Construct a map containing variable names and corresponding values.
   std::unordered_map<std::string, std::string> parameters;

@@ -1,7 +1,0 @@
-CONSOLE WARNING: HTML Imports is deprecated and will be removed in M73, around March 2019. Please use ES modules instead. See https://www.chromestatus.com/features/5144752345317376 for more details.
-This test passes if the "safe" HTML5 import occurs, because XSSAuditor gives a pass to resources from the same origin to cut down on the false positive rate.
-
---------
-Frame: '<!--framePath //<!--frame0-->-->'
---------
-Page rendered here.

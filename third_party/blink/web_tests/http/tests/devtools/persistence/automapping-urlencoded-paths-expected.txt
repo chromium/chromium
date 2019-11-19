@@ -1,0 +1,14 @@
+Verify that automapping is capable of mapping file:// urls with special characters.
+
+Binding created: {
+       network: file:///usr/local/node/script%201.js
+    fileSystem: file:///usr/local/node/script 1.js
+    exactMatch: false
+}
+Binding created: {
+       network: file:///usr/local/node/script%25201.js
+    fileSystem: file:///usr/local/node/script%201.js
+    exactMatch: false
+}
+Mapping has stabilized.
+

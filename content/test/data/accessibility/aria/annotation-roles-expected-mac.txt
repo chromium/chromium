@@ -1,0 +1,5 @@
+AXWebArea AXRoleDescription='HTML content'
+++AXGroup AXRoleDescription='comment' AXDescription='comment'
+++AXGroup AXRoleDescription='commentsection' AXDescription='comment section'
+++AXGroup AXRoleDescription='revision' AXDescription='revision'
+++AXGroup AXRoleDescription='suggestion' AXDescription='suggestion'

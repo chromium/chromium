@@ -18,7 +18,10 @@
     Boston, MA 02110-1301, USA.
 */
 
+// https://html.spec.whatwg.org/multipage/system-state.html#mimetype
+
 [
+    Exposed=Window,
     ImplementedAs=DOMMimeType
 ] interface MimeType {
     readonly attribute DOMString type;

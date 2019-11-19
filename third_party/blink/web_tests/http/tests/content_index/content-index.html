@@ -1,0 +1,149 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Content Index: Behaviour of the add() function</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../serviceworker/resources/test-helpers.js"></script>
+<script src="resources.js"></script>
+<script>
+'use strict';
+
+contentIndexTest(async (t, index) => {
+  // Exposure of the interface and method.
+  assert_own_property(window, 'ContentIndex');
+  assert_own_property(ContentIndex.prototype, 'add');
+
+  assert_idl_attribute(index, 'add');
+  assert_idl_attribute(index, 'delete');
+  assert_idl_attribute(index, 'getAll');
+
+}, 'The Content Index API is exposed');
+
+contentIndexTest(async (t, index) => {
+  await expectTypeErrorWithMessage(
+      index.add(createDescription({id: ''})),
+      'ID cannot be empty');
+  await expectTypeErrorWithMessage(
+      index.add(createDescription({title: ''})),
+      'Title cannot be empty');
+  await expectTypeErrorWithMessage(
+      index.add(createDescription({description:''})),
+      'Description cannot be empty');
+  await expectTypeErrorWithMessage(
+      index.add(createDescription({category: 'fake-category'})));
+
+  await expectTypeErrorWithMessage(
+      index.add(createDescription({iconUrl: 'file://some-local-file.png'})),
+      'Invalid icon URL protocol');
+  await expectTypeErrorWithMessage(
+      index.add(createDescription({includeIcons: false})),
+      'icons must be provided');
+  await expectTypeErrorWithMessage(
+      index.add(createDescription({iconUrl: '/non-existent-icon.png'})),
+      'Icon could not be loaded');
+  await expectTypeErrorWithMessage(
+      index.add(createDescription({iconUrl: '/resources/dummy.txt'})),
+      'Icon could not be loaded');
+
+  await expectTypeErrorWithMessage(
+      index.add(createDescription({launchUrl: 'https://other-domain.com/'})),
+      'Service Worker cannot request provided launch URL');
+  await expectTypeErrorWithMessage(
+      index.add(createDescription({launchUrl: '/different-scope'})),
+      `Launch URL must belong to the Service Worker's scope`);
+
+  await index.add(createDescription({}));
+
+}, 'index.add parameters are validated.');
+
+contentIndexTest(async (t, index) => {
+  const description = createDescription({});
+
+  // Initially there are no descriptions.
+  assert_array_equals(await index.getAll(), []);
+
+  await index.add(description);
+
+  const descriptions = await index.getAll();
+  assert_equals(descriptions.length, 1);
+
+  assert_object_equals(descriptions[0], description);
+
+}, 'index.getAll returns the same objects provided.');
+
+contentIndexTest(async (t, index) => {
+  const description1 = createDescription({title: 'title1'});
+  const description2 = createDescription({title: 'title2'});
+
+  await index.add(description1);
+  await index.add(description2);
+
+  // There should be one description.
+  const descriptions = await index.getAll();
+  assert_equals(descriptions.length, 1);
+
+  assert_object_equals(descriptions[0], description2);
+
+}, 'index.add with same ID overwrites existing entry.');
+
+contentIndexTest(async (t, index) => {
+  const description1 = createDescription({id: 'id1'});
+  const description2 = createDescription({id: 'id2'});
+
+  await index.add(description1);
+  await index.add(description2);
+
+  // There should be two descriptions.
+  assert_equals((await index.getAll()).length, 2);
+
+  await index.delete('id1');
+
+  // There should be one description.
+  const descriptions = await index.getAll();
+  assert_equals(descriptions.length, 1);
+
+  assert_object_equals(descriptions[0], description2);
+
+}, 'index.delete removes entry.');
+
+contentIndexTest(async (t, index) => {
+  const descriptions = await index.getAll();
+  assert_equals(descriptions.length, 0);
+
+  await index.delete('id');
+
+}, 'index.delete works on invalid ID.');
+
+contentIndexTest(async (t, index) => {
+  // Register an entry.
+  await index.add(createDescription({id: 'my-id'}));
+
+  // Simulate a user deleting it.
+  testRunner.simulateWebContentIndexDelete('my-id');
+
+  const swMessage = await waitForMessageFromServiceWorker();
+  assert_equals(swMessage, 'my-id');
+
+  // Make sure it is actually deleted.
+  const descriptions = await index.getAll();
+  assert_equals(descriptions.length, 0);
+
+}, 'Fire contentdelete event on user intiated content deletion.');
+
+contentIndexTest(async (t, index) => {
+  // Register an entry.
+  await index.add(createDescription({id: 'register-again'}));
+
+  // Simulate a user deleting it.
+  testRunner.simulateWebContentIndexDelete('register-again');
+
+  const swMessage = await waitForMessageFromServiceWorker();
+  assert_equals(swMessage, 'Failed to add description due to I/O error.');
+
+  // Make sure it is actually deleted and no new content was added.
+  const descriptions = await index.getAll();
+  assert_equals(descriptions.length, 0);
+
+}, 'Content cannot be registered while contentdelete event is firing.');
+
+</script>

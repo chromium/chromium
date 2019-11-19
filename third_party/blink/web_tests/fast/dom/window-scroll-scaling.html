@@ -4,9 +4,6 @@
     <script>
         description("This test ensures that document content width (height) as reported by scrollWidth (scrollHeight) is invariant to changes in page scale factor.");
 
-        if (window.internals)
-            internals.settings.setMockScrollbarsEnabled(true);
-
         var body = document.body;
 
         // According to CSSOM (http://dev.w3.org/csswg/cssom-view/#dom-element-scrollwidth)

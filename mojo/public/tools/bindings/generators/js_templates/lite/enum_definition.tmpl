@@ -2,7 +2,10 @@
 {# TODO: Less generic enum annotations would be nice. We do it this way because
    the bindings generator is still too stupid to generate the right integral
    constants directly. #}
+{%- set enum_name = enum|lite_closure_type -%}
+
 {%  if generate_closure_exports -%}
+goog.provide('{{enum_name}}');
 goog.provide('{{enum_spec_parent}}.{{enum.name}}Spec');
 {%- endif %}
 /**
@@ -15,7 +18,7 @@ goog.provide('{{enum_spec_parent}}.{{enum.name}}Spec');
  * @enum {number}
  * @export
  */
-{{enum_parent}}.{{enum.name}} = {
+{{enum_name}} = {
   {# Set up the enum here, but fill out the values later. #}
 {%-   for field in enum.fields %}
   {{field.name}}: 0,
@@ -31,11 +34,11 @@ goog.provide('{{enum_spec_parent}}.{{enum.name}}Spec');
 {# Suppress type checks since we're assigning number into an enum. #}
 /** @suppress {checkTypes} */
 {%-     if field.value %}
-{{enum_parent}}.{{enum.name}}.{{field.name}} = {{field.value|expression_to_text_lite}};
+{{enum_name}}.{{field.name}} = {{field.value|expression_to_text_lite}};
 {%-     elif loop.first %}
-{{enum_parent}}.{{enum.name}}.{{field.name}} = 0;
+{{enum_name}}.{{field.name}} = 0;
 {%-     else %}
-{{enum_parent}}.{{enum.name}}.{{field.name}} = {{enum_parent}}.{{enum.name}}.{{enum.fields[loop.index0 - 1].name}} + 1;
+{{enum_name}}.{{field.name}} = {{enum_name}}.{{enum.fields[loop.index0 - 1].name}} + 1;
 {%-     endif %}
 {%-   endfor %}
 

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 mojom = "//mojo/public/mojom/base/time.mojom"
-public_headers = [ "//third_party/blink/renderer/platform/wtf/time.h" ]
 traits_headers = [
   "//ipc/ipc_message_utils.h",
   "//mojo/public/cpp/base/time_mojom_traits.h",
@@ -14,6 +13,6 @@ public_deps = [
 ]
 
 type_mappings = [
-  "mojo_base.mojom.Time=WTF::Time[copyable_pass_by_value]",
-  "mojo_base.mojom.TimeDelta=WTF::TimeDelta[copyable_pass_by_value]",
+  "mojo_base.mojom.Time=::base::Time[copyable_pass_by_value]",
+  "mojo_base.mojom.TimeDelta=::base::TimeDelta[copyable_pass_by_value]",
 ]

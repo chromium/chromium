@@ -1,5 +1,8 @@
-# Times out crbug.com/930943
-#AuraWindowVideoCaptureDeviceBrowserTest.ErrorsOutIfWindowHasGoneBeforeDeviceStart
-AuraWindowVideoCaptureDeviceBrowserTest.ErrorsOutWhenWindowIsDestroyed
-AuraWindowVideoCaptureDeviceBrowserTest.DeliversRefreshFramesUponRequest
-AuraWindowVideoCaptureDeviceBrowserTest.SuspendsAndResumes
+AuraWindowVideoCaptureDeviceBrowserTest.*
+# Some of these tests fallback on software compositing.
+AuraWindowVideoCaptureDeviceBrowserTestP.*
+CaptureScreenshotTest.*
+OOPBrowserTest.Basic
+SnapshotBrowserTest.*
+# Some of these tests fallback on software compositing.
+WebContentsVideoCaptureDeviceBrowserTestP.*

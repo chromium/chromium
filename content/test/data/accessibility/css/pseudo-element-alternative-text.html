@@ -1,0 +1,20 @@
+<!--
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #parent::before {
+      content: url(bullet.png) / "alternative text";
+    }
+    #parent::after {
+      content: url(bullet.png) / "";
+    }
+  </style>
+</head>
+<body>
+  <div id="parent">
+    <span class="before">DOM text</span>
+  </div>
+</body>
+</html>

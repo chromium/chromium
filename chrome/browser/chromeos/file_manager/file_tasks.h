@@ -106,6 +106,10 @@
 class PrefService;
 class Profile;
 
+namespace apps {
+struct FileHandlerInfo;
+}
+
 namespace extensions {
 struct EntryInfo;
 }
@@ -125,6 +129,7 @@ enum TaskType {
   DEPRECATED_TASK_TYPE_DRIVE_APP,
   TASK_TYPE_ARC_APP,
   TASK_TYPE_CROSTINI_APP,
+  TASK_TYPE_WEB_APP,
   // The enum values must be kept in sync with FileManagerTaskType in
   // tools/metrics/histograms/enums.xml. Since enums for histograms are
   // append-only (for keeping the number consistent across versions), new values
@@ -240,10 +245,10 @@ std::string TaskDescriptorToId(const TaskDescriptor& task_descriptor);
 // "task_id" looks like.
 bool ParseTaskID(const std::string& task_id, TaskDescriptor* task);
 
-// The callback is used for ExecuteFileTask(). Will be called with true if
-// the file task execution is successful, or false if unsuccessful.
+// The callback is used for ExecuteFileTask().
 typedef base::OnceCallback<void(
-    extensions::api::file_manager_private::TaskResult result)>
+    extensions::api::file_manager_private::TaskResult result,
+    std::string error_message)>
     FileTaskFinishedCallback;
 
 // Executes file handler task for each element of |file_urls|.
@@ -265,10 +270,14 @@ bool ExecuteFileTask(Profile* profile,
                      const std::vector<storage::FileSystemURL>& file_urls,
                      FileTaskFinishedCallback done);
 
+// Returns true if a file handler is enabled. Some handlers such as
+// import-crostini-image can be disabled at runtime by enterprise policy.
+bool IsFileHandlerEnabled(Profile* profile,
+                          const apps::FileHandlerInfo& file_handler_info);
+
 // Returns true if a file handler matches with entries as good match.
-bool IsGoodMatchFileHandler(
-    const extensions::FileHandlerInfo& file_handler_info,
-    const std::vector<extensions::EntryInfo>& entries);
+bool IsGoodMatchFileHandler(const apps::FileHandlerInfo& file_handler_info,
+                            const std::vector<extensions::EntryInfo>& entries);
 
 // Finds the file handler tasks (apps declaring "file_handlers" in
 // manifest.json) that can be used with the given entries, appending them to

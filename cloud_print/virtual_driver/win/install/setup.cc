@@ -257,7 +257,7 @@ HRESULT UninstallPrinter(void) {
 
 bool IsOSSupported() {
   // We don't support Vista or older.
-  return base::win::GetVersion() >= base::win::VERSION_WIN7;
+  return base::win::GetVersion() >= base::win::Version::WIN7;
 }
 
 HRESULT RegisterVirtualDriver(const base::FilePath& install_path) {
@@ -408,26 +408,27 @@ int WINAPI WinMain(__in HINSTANCE hInstance,
                    __in HINSTANCE hPrevInstance,
                    __in LPSTR lpCmdLine,
                    __in int nCmdShow) {
-  using namespace cloud_print;
-
   base::AtExitManager at_exit_manager;
-  base::CommandLine::Init(0, NULL);
+  base::CommandLine::Init(0, nullptr);
 
-  HRESULT retval = ExecuteCommands();
+  HRESULT retval = cloud_print::ExecuteCommands();
 
   if (retval == HRESULT_FROM_WIN32(ERROR_BAD_DRIVER)) {
-    SetGoogleUpdateError(kGoogleUpdateProductId,
-                         LoadLocalString(IDS_ERROR_NO_XPS));
+    cloud_print::SetGoogleUpdateError(
+        cloud_print::kGoogleUpdateProductId,
+        cloud_print::LoadLocalString(IDS_ERROR_NO_XPS));
   } else if (FAILED(retval)) {
-    SetGoogleUpdateError(kGoogleUpdateProductId, retval);
+    cloud_print::SetGoogleUpdateError(cloud_print::kGoogleUpdateProductId,
+                                      retval);
   }
 
-  VLOG(0) << GetErrorMessage(retval) << " HRESULT=0x" << std::setbase(16)
-          << retval;
+  VLOG(0) << cloud_print::GetErrorMessage(retval) << " HRESULT=0x"
+          << std::setbase(16) << retval;
 
   // Installer is silent by default as required by Google Update.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("verbose")) {
-    DisplayWindowsMessage(NULL, retval, LoadLocalString(IDS_DRIVER_NAME));
+    cloud_print::DisplayWindowsMessage(
+        nullptr, retval, cloud_print::LoadLocalString(IDS_DRIVER_NAME));
   }
   return retval;
 }

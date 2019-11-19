@@ -9,8 +9,9 @@
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "dbus/exported_object.h"
 #include "dbus/object_path.h"
@@ -129,12 +130,11 @@ TEST(BusTest, GetObjectProxyIgnoreUnknownService) {
 }
 
 TEST(BusTest, RemoveObjectProxy) {
-  // Setup the current thread's MessageLoop.
-  base::MessageLoop message_loop;
+  base::test::SingleThreadTaskEnvironment task_environment;
 
   // Start the D-Bus thread.
   base::Thread::Options thread_options;
-  thread_options.message_loop_type = base::MessageLoop::TYPE_IO;
+  thread_options.message_pump_type = base::MessagePumpType::IO;
   base::Thread dbus_thread("D-Bus thread");
   dbus_thread.StartWithOptions(thread_options);
 
@@ -212,7 +212,7 @@ TEST(BusTest, GetExportedObject) {
 TEST(BusTest, UnregisterExportedObject) {
   // Start the D-Bus thread.
   base::Thread::Options thread_options;
-  thread_options.message_loop_type = base::MessageLoop::TYPE_IO;
+  thread_options.message_pump_type = base::MessagePumpType::IO;
   base::Thread dbus_thread("D-Bus thread");
   dbus_thread.StartWithOptions(thread_options);
 
@@ -262,7 +262,7 @@ TEST(BusTest, ShutdownAndBlock) {
 TEST(BusTest, ShutdownAndBlockWithDBusThread) {
   // Start the D-Bus thread.
   base::Thread::Options thread_options;
-  thread_options.message_loop_type = base::MessageLoop::TYPE_IO;
+  thread_options.message_pump_type = base::MessagePumpType::IO;
   base::Thread dbus_thread("D-Bus thread");
   dbus_thread.StartWithOptions(thread_options);
 
@@ -318,11 +318,8 @@ TEST(BusTest, DoubleAddAndRemoveMatch) {
 }
 
 TEST(BusTest, ListenForServiceOwnerChange) {
-  base::MessageLoopForIO message_loop;
-
-  // This enables FileDescriptorWatcher, which is required by dbus::Watch.
-  base::FileDescriptorWatcher file_descriptor_watcher(
-      message_loop.task_runner());
+  base::test::SingleThreadTaskEnvironment task_environment(
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO);
 
   RunLoopWithExpectedCount run_loop_state;
 

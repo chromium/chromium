@@ -26,6 +26,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -33,13 +34,33 @@
 
 using content::WebContents;
 
+FullscreenNotificationObserver::FullscreenNotificationObserver(
+    Browser* browser) {
+  observer_.Add(browser->exclusive_access_manager()->fullscreen_controller());
+}
+
+FullscreenNotificationObserver::~FullscreenNotificationObserver() = default;
+
+void FullscreenNotificationObserver::OnFullscreenStateChanged() {
+  observed_change_ = true;
+  if (run_loop_.running())
+    run_loop_.Quit();
+}
+
+void FullscreenNotificationObserver::Wait() {
+  if (observed_change_)
+    return;
+
+  run_loop_.Run();
+}
+
 const char FullscreenControllerTest::kFullscreenKeyboardLockHTML[] =
     "/fullscreen_keyboardlock/fullscreen_keyboardlock.html";
 
 const char FullscreenControllerTest::kFullscreenMouseLockHTML[] =
     "/fullscreen_mouselock/fullscreen_mouselock.html";
 
-FullscreenControllerTest::FullscreenControllerTest() : weak_ptr_factory_(this) {
+FullscreenControllerTest::FullscreenControllerTest() {
   // It is important to disable system keyboard lock as low-level test utilities
   // may install a keyboard hook to listen for keyboard events and having an
   // active system hook may cause issues with that mechanism.
@@ -173,20 +194,20 @@ void FullscreenControllerTest::SetPrivilegedFullscreen(bool is_privileged) {
 
 void FullscreenControllerTest::EnterActiveTabFullscreen() {
   WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-  FullscreenNotificationObserver fullscreen_observer;
+  FullscreenNotificationObserver fullscreen_observer(browser());
   browser()->EnterFullscreenModeForTab(tab, GURL(),
-                                       blink::WebFullscreenOptions());
+                                       blink::mojom::FullscreenOptions());
   fullscreen_observer.Wait();
 }
 
 void FullscreenControllerTest::ToggleBrowserFullscreen() {
-  FullscreenNotificationObserver fullscreen_observer;
+  FullscreenNotificationObserver fullscreen_observer(browser());
   chrome::ToggleFullscreenMode(browser());
   fullscreen_observer.Wait();
 }
 
 void FullscreenControllerTest::EnterExtensionInitiatedFullscreen() {
-  FullscreenNotificationObserver fullscreen_observer;
+  FullscreenNotificationObserver fullscreen_observer(browser());
   browser()->ToggleFullscreenModeWithExtension(GURL("faux_extension"));
   fullscreen_observer.Wait();
 }

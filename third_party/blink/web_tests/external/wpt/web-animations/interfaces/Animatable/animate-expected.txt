@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 133 tests; 125 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 140 tests; 137 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Element.animate() creates an Animation object
 PASS Element.animate() creates an Animation object in the relevant realm of the target element
 PASS Element.animate() creates an Animation object with a KeyframeEffect
@@ -8,18 +8,20 @@ PASS Element.animate() accepts empty keyframe lists (input: [])
 PASS Element.animate() accepts empty keyframe lists (input: null)
 PASS Element.animate() accepts empty keyframe lists (input: undefined)
 PASS Element.animate() accepts a one property two value property-indexed keyframes specification
-FAIL Element.animate() accepts a one shorthand property two value property-indexed keyframes specification assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,margin,offset" but got "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset"
-FAIL Element.animate() accepts a two property (one shorthand and one of its longhand components) two value property-indexed keyframes specification assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,margin,marginTop,offset" but got "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset"
+PASS Element.animate() accepts a one shorthand property two value property-indexed keyframes specification
+PASS Element.animate() accepts a two property (one shorthand and one of its longhand components) two value property-indexed keyframes specification
+PASS Element.animate() accepts a two property (one shorthand and one of its shorthand components) two value property-indexed keyframes specification
 PASS Element.animate() accepts a two property two value property-indexed keyframes specification
 PASS Element.animate() accepts a two property property-indexed keyframes specification with different numbers of values
 PASS Element.animate() accepts a property-indexed keyframes specification with an invalid value
 PASS Element.animate() accepts a one property two value property-indexed keyframes specification that needs to stringify its values
 PASS Element.animate() accepts a property-indexed keyframes specification with a CSS variable reference
-FAIL Element.animate() accepts a property-indexed keyframes specification with a CSS variable reference in a shorthand property assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,margin,offset" but got "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset"
+PASS Element.animate() accepts a property-indexed keyframes specification with a CSS variable reference in a shorthand property
 PASS Element.animate() accepts a one property one value property-indexed keyframes specification
 PASS Element.animate() accepts a one property one non-array value property-indexed keyframes specification
 PASS Element.animate() accepts a one property two value property-indexed keyframes specification where the first value is invalid
 PASS Element.animate() accepts a one property two value property-indexed keyframes specification where the second value is invalid
+PASS Element.animate() accepts a property-indexed keyframes specification with a CSS variable as the property
 PASS Element.animate() accepts a property-indexed keyframe with a single offset
 PASS Element.animate() accepts a property-indexed keyframe with an array of offsets
 PASS Element.animate() accepts a property-indexed keyframe with an array of offsets that is too short
@@ -40,20 +42,21 @@ PASS Element.animate() accepts a property-indexed keyframe with a single-element
 PASS Element.animate() accepts a property-indexed keyframe with an empty array of easings
 PASS Element.animate() accepts a property-indexed keyframe with an array of easings that is too long
 PASS Element.animate() accepts a property-indexed keyframe with a single composite operation
-FAIL Element.animate() accepts a property-indexed keyframe with a composite array assert_equals: value for 'composite' on ComputedKeyframe #2 expected "accumulate" but got "replace"
+PASS Element.animate() accepts a property-indexed keyframe with a composite array
 PASS Element.animate() accepts a property-indexed keyframe with a composite array that is too short
 PASS Element.animate() accepts a property-indexed keyframe with a composite array that is too long
 PASS Element.animate() accepts a property-indexed keyframe with a single-element composite array
 PASS Element.animate() accepts a one property one keyframe sequence
 PASS Element.animate() accepts a one property two keyframe sequence
 PASS Element.animate() accepts a two property two keyframe sequence
-FAIL Element.animate() accepts a one shorthand property two keyframe sequence assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,margin,offset" but got "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset"
-FAIL Element.animate() accepts a two property (a shorthand and one of its component longhands) two keyframe sequence assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,margin,marginTop,offset" but got "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset"
+PASS Element.animate() accepts a one shorthand property two keyframe sequence
+PASS Element.animate() accepts a two property (a shorthand and one of its component longhands) two keyframe sequence
 PASS Element.animate() accepts a two property keyframe sequence where one property is missing from the first keyframe
 PASS Element.animate() accepts a two property keyframe sequence where one property is missing from the last keyframe
 PASS Element.animate() accepts a one property two keyframe sequence that needs to stringify its values
 PASS Element.animate() accepts a keyframe sequence with a CSS variable reference
-FAIL Element.animate() accepts a keyframe sequence with a CSS variable reference in a shorthand property assert_equals: properties on ComputedKeyframe #0 should match expected "composite,computedOffset,easing,margin,offset" but got "composite,computedOffset,easing,marginBottom,marginLeft,marginRight,marginTop,offset"
+PASS Element.animate() accepts a keyframe sequence with a CSS variable reference in a shorthand property
+PASS Element.animate() accepts a keyframe sequence with a CSS variable as its property
 PASS Element.animate() accepts a keyframe sequence with duplicate values for a given interior offset
 PASS Element.animate() accepts a keyframe sequence with duplicate values for offsets 0 and 1
 PASS Element.animate() accepts a two property four keyframe sequence
@@ -129,9 +132,13 @@ PASS Element.animate() correctly sets the id attribute when no id is specified
 PASS Element.animate() correctly sets the id attribute
 PASS Element.animate() correctly sets the Animation's timeline
 PASS Element.animate() correctly sets the Animation's timeline when triggered on an element in a different document
-FAIL Element.animate() calls play on the Animation assert_equals: expected "running" but got "pending"
+PASS Element.animate() calls play on the Animation
 PASS Element.animate() does NOT trigger a style change event
-PASS CSSPseudoElement.animate() creates an Animation object
-PASS CSSPseudoElement.animate() creates an Animation object targeting to the correct CSSPseudoElement object
+PASS animate() with pseudoElement parameter creates an Animation object
+PASS animate() with pseudoElement parameter  creates an Animation object for ::marker
+PASS animate() with pseudoElement parameter  creates an Animation object for ::first-line
+FAIL animate() with pseudoElement an Animation object targeting to the correct pseudo-element assert_equals: The returned Animation targets to the correct selector expected (string) "::before" but got (undefined) undefined
+FAIL animate() with pseudoElement an Animation object targeting to the correct pseudo-element for ::marker assert_equals: The returned Animation targets to the correct selector expected (string) "::marker" but got (undefined) undefined
+FAIL animate() with pseudoElement an Animation object targeting to the correct pseudo-element for ::first-line assert_equals: The returned Animation targets to the correct selector expected (string) "::first-line" but got (undefined) undefined
 Harness: the test ran to completion.
 

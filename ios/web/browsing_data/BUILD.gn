@@ -8,10 +8,16 @@ source_set("browsing_data") {
     "browsing_data_remover.mm",
     "browsing_data_remover_observer.h",
     "browsing_data_removing_util.mm",
+    "system_cookie_store_util.mm",
   ]
 
   deps = [
+    "//base",
+    "//ios/net",
+    "//ios/web/common",
+    "//ios/web/net/cookies",
     "//ios/web/public",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -22,11 +28,18 @@ source_set("browsing_data_unittests") {
   testonly = true
   deps = [
     ":browsing_data",
+    "//base/test:test_support",
+    "//ios/net",
+    "//ios/net:test_support",
+    "//ios/web/common",
+    "//ios/web/net/cookies",
+    "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
   ]
 
   sources = [
     "browsing_data_remover_unittest.mm",
+    "system_cookie_store_util_unittest.mm",
   ]
 }

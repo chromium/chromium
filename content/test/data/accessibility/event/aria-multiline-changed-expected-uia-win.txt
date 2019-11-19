@@ -1,0 +1,3 @@
+AriaProperties changed on role=textbox, name=input1
+AriaProperties changed on role=textbox, name=input2
+AriaProperties changed on role=textbox, name=input3

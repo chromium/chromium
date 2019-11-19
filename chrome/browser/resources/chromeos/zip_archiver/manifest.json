@@ -68,6 +68,7 @@
         "js/volume.js"
       ]
     },
-    "content_security_policy": "default-src 'none'; script-src 'self' chrome://resources; style-src 'unsafe-inline' chrome://resources;"
+    // connect-src for Polymer: crbug.com/1022018
+    "content_security_policy": "default-src 'none'; script-src 'self' chrome://resources; style-src 'unsafe-inline' chrome://resources; connect-src chrome://resources"
   }
 }

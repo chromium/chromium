@@ -13,10 +13,10 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/task_environment.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
 #include "components/encrypted_messages/message_encrypter.h"
 #include "net/http/http_status_code.h"
@@ -49,7 +49,8 @@ class ErrorReporterTest : public ::testing::Test {
   ~ErrorReporterTest() override {}
 
  protected:
-  base::MessageLoopForIO loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
   uint8_t server_public_key_[32];
   uint8_t server_private_key_[32];
 
@@ -124,7 +125,7 @@ TEST_F(ErrorReporterTest, ErroredRequestCallsCallback) {
   const GURL report_uri("http://foo.com/bar");
 
   test_url_loader_factory_.AddResponse(
-      report_uri, network::ResourceResponseHead(), std::string(),
+      report_uri, network::mojom::URLResponseHead::New(), std::string(),
       network::URLLoaderCompletionStatus(net::ERR_CONNECTION_FAILED));
 
   CertificateErrorReporter reporter(test_shared_loader_factory_, report_uri);

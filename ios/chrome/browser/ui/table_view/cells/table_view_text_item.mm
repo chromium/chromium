@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -33,7 +34,6 @@
   [super configureCell:tableCell withStyler:styler];
   TableViewTextCell* cell =
       base::mac::ObjCCastStrict<TableViewTextCell>(tableCell);
-  // TODO(crbug.com/894791): set isAccessibilityElement = YES in TableViewItem.
   cell.isAccessibilityElement = YES;
 
   if (self.masked) {
@@ -46,27 +46,19 @@
         self.accessibilityLabel ? self.accessibilityLabel : self.text;
   }
 
-  // Decide cell.textLabel.backgroundColor in order:
-  //   1. styler.cellBackgroundColor;
-  //   2. styler.tableViewBackgroundColor.
-  cell.textLabel.backgroundColor = styler.cellBackgroundColor
-                                       ? styler.cellBackgroundColor
-                                       : styler.tableViewBackgroundColor;
-
   // Decide cell.textLabel.textColor in order:
   //   1. this.textColor;
   //   2. styler.cellTitleColor;
-  //   3. kTableViewTextLabelColorLightGrey.
+  //   3. UIColor.cr_labelColor.
   if (self.textColor) {
     cell.textLabel.textColor = self.textColor;
   } else if (styler.cellTitleColor) {
     cell.textLabel.textColor = styler.cellTitleColor;
   } else {
-    cell.textLabel.textColor =
-        UIColorFromRGB(kTableViewTextLabelColorLightGrey);
+    cell.textLabel.textColor = UIColor.cr_labelColor;
   }
   cell.textLabel.textAlignment =
-      self.textAlignment ? self.textAlignment : NSTextAlignmentLeft;
+      self.textAlignment ? self.textAlignment : NSTextAlignmentNatural;
 
   cell.userInteractionEnabled = self.enabled;
 }
@@ -88,6 +80,7 @@
     _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _textLabel.numberOfLines = 0;
     _textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    _textLabel.adjustsFontForContentSizeCategory = YES;
     _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
     _textLabel.isAccessibilityElement = NO;
 

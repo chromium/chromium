@@ -7,9 +7,7 @@
 
 #include "base/bind.h"
 #include "base/optional.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search/ntp_features.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_data.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_loader.h"
 #include "chrome/browser/search/one_google_bar/one_google_bar_service.h"
@@ -59,7 +57,6 @@ class LocalNTPOneGoogleBarSmokeTest : public InProcessBrowserTest {
 
  private:
   void SetUp() override {
-    feature_list_.InitWithFeatures({features::kUseGoogleLocalNtp}, {});
     InProcessBrowserTest::SetUp();
   }
 
@@ -74,7 +71,7 @@ class LocalNTPOneGoogleBarSmokeTest : public InProcessBrowserTest {
 
   static std::unique_ptr<KeyedService> CreateOneGoogleBarService(
       content::BrowserContext* context) {
-    identity::IdentityManager* identity_manager =
+    signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(
             Profile::FromBrowserContext(context));
     return std::make_unique<OneGoogleBarService>(
@@ -87,8 +84,6 @@ class LocalNTPOneGoogleBarSmokeTest : public InProcessBrowserTest {
         base::BindRepeating(
             &LocalNTPOneGoogleBarSmokeTest::CreateOneGoogleBarService));
   }
-
-  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<
       base::CallbackList<void(content::BrowserContext*)>::Subscription>

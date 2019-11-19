@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.preferences.password;
 
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,11 +27,11 @@ public class ExportWarningDialogFragmentTest {
      */
     @Test
     public void testDismissWithoutInit() {
-        Activity testActivity = Robolectric.setupActivity(Activity.class);
+        FragmentActivity testActivity = Robolectric.setupActivity(FragmentActivity.class);
 
         ExportWarningDialogFragment exportWarningDialogFragment = new ExportWarningDialogFragment();
         // No initialization, just show and dismiss.
-        exportWarningDialogFragment.show(testActivity.getFragmentManager(), null);
+        exportWarningDialogFragment.show(testActivity.getSupportFragmentManager(), null);
         exportWarningDialogFragment.dismiss();
         // There should be no crash.
     }

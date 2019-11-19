@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "crypto/crypto_export.h"
 
@@ -19,6 +20,12 @@ std::string HkdfSha256(base::StringPiece secret,
                        base::StringPiece salt,
                        base::StringPiece info,
                        size_t derived_key_size);
+
+CRYPTO_EXPORT
+std::vector<uint8_t> HkdfSha256(base::span<const uint8_t> secret,
+                                base::span<const uint8_t> salt,
+                                base::span<const uint8_t> info,
+                                size_t derived_key_size);
 
 }  // namespace crypto
 

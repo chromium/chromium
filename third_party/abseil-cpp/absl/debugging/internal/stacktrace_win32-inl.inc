@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,7 +32,7 @@
 // server.
 //
 // This code is inspired by a patch from David Vitek:
-//   http://code.google.com/p/google-perftools/issues/detail?id=83
+//   https://code.google.com/p/google-perftools/issues/detail?id=83
 
 #ifndef ABSL_DEBUGGING_INTERNAL_STACKTRACE_WIN32_INL_H_
 #define ABSL_DEBUGGING_INTERNAL_STACKTRACE_WIN32_INL_H_

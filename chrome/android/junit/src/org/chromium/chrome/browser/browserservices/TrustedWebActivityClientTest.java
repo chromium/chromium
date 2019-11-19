@@ -14,10 +14,6 @@ import static org.mockito.Mockito.when;
 import android.content.ComponentName;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.RemoteException;
-import android.support.customtabs.trusted.TrustedWebActivityServiceConnectionManager;
-import android.support.customtabs.trusted.TrustedWebActivityServiceConnectionManager.ExecutionCallback;
-import android.support.customtabs.trusted.TrustedWebActivityServiceWrapper;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -28,8 +24,13 @@ import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.notifications.ChromeNotification;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
+
+import androidx.browser.trusted.TrustedWebActivityServiceConnectionManager;
+import androidx.browser.trusted.TrustedWebActivityServiceConnectionManager.ExecutionCallback;
+import androidx.browser.trusted.TrustedWebActivityServiceWrapper;
 
 /**
  * Unit tests for {@link TrustedWebActivityClient}.
@@ -55,10 +56,13 @@ public class TrustedWebActivityClientTest {
     @Mock
     private Bitmap mServiceSmallIconBitmap;
 
+    @Mock
+    private ChromeNotification mChromeNotification;
+
     private TrustedWebActivityClient mClient;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         when(mConnection.execute(any(), anyString(), any()))
@@ -71,8 +75,10 @@ public class TrustedWebActivityClientTest {
         when(mService.getSmallIconId()).thenReturn(SERVICE_SMALL_ICON_ID);
         when(mService.getSmallIconBitmap()).thenReturn(mServiceSmallIconBitmap);
         when(mService.getComponentName()).thenReturn(new ComponentName(CLIENT_PACKAGE_NAME, ""));
+        when(mService.areNotificationsEnabled(any())).thenReturn(true);
+        when(mNotificationBuilder.build(any())).thenReturn(mChromeNotification);
 
-        mClient = new TrustedWebActivityClient(mConnection, mRecorder, mNotificationUmaTracker);
+        mClient = new TrustedWebActivityClient(mConnection, mRecorder);
     }
 
     @Test
@@ -107,9 +113,8 @@ public class TrustedWebActivityClientTest {
         verify(mNotificationBuilder, never()).setContentSmallIconForRemoteApp(any());
     }
 
-
     @Test
-    public void doesntFetchIconIdFromService_IfBothIconsAreSet() throws RemoteException {
+    public void doesntFetchIconIdFromService_IfBothIconsAreSet() {
         setHasContentBitmap(true);
         setHasStatusBarBitmap(true);
         postNotification();
@@ -117,13 +122,12 @@ public class TrustedWebActivityClientTest {
     }
 
     @Test
-    public void doesntFetchIconBitmapFromService_IfIconsIdIs() throws RemoteException {
+    public void doesntFetchIconBitmapFromService_IfIconsIdIs() {
         setHasContentBitmap(false);
         when(mService.getSmallIconId()).thenReturn(-1);
         postNotification();
         verify(mService, never()).getSmallIconBitmap();
     }
-
 
     private void setHasStatusBarBitmap(boolean hasBitmap) {
         when(mNotificationBuilder.hasStatusBarIconBitmap()).thenReturn(hasBitmap);
@@ -134,6 +138,8 @@ public class TrustedWebActivityClientTest {
     }
 
     private void postNotification() {
-        mClient.notifyNotification(Uri.parse(""), "tag", 1, mNotificationBuilder);
+        Uri uri = Uri.parse("https://www.example.com");
+        mClient.notifyNotification(uri, "tag", 1, mNotificationBuilder,
+                mNotificationUmaTracker);
     }
 }

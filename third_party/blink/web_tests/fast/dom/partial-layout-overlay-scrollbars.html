@@ -1,5 +1,9 @@
 <!DOCTYPE HTML>
 <html>
+<script>
+if (window.internals)
+  internals.useMockOverlayScrollbars();
+</script>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <link rel="stylesheet" href="../../resources/testharness.css">
@@ -21,9 +25,6 @@
 <script>
     if (window.testRunner)
         testRunner.dumpAsText();
-
-    if (window.internals)
-        internals.runtimeFlags.overlayScrollbarsEnabled = true;
 
     var test = async_test("Test that partial layout works with overlay scrollbars.");
     setTimeout(function() {

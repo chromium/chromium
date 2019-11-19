@@ -13,9 +13,9 @@
 #include "chrome/browser/chromeos/file_system_provider/fileapi/provider_async_file_util.h"
 #include "chrome/browser/chromeos/file_system_provider/fileapi/watcher_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/fileapi/file_stream_reader.h"
-#include "storage/browser/fileapi/file_stream_writer.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_stream_reader.h"
+#include "storage/browser/file_system/file_stream_writer.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 using content::BrowserThread;
 

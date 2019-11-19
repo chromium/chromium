@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 
-namespace app_list {
+namespace ash {
 
 SearchModel::SearchModel()
     : search_box_(std::make_unique<SearchBoxModel>()),
@@ -50,12 +50,11 @@ std::vector<SearchResult*> SearchModel::FilterSearchResultsByFunction(
     size_t max_results) {
   std::vector<SearchResult*> matches;
   for (size_t i = 0; i < results->item_count(); ++i) {
+    if (matches.size() == max_results)
+      break;
     SearchResult* item = results->GetItemAt(i);
-    if (result_filter.Run(*item)) {
+    if (result_filter.Run(*item))
       matches.push_back(item);
-      if (matches.size() == max_results)
-        break;
-    }
   }
   return matches;
 }
@@ -129,4 +128,4 @@ void SearchModel::DeleteResultById(const std::string& id) {
   }
 }
 
-}  // namespace app_list
+}  // namespace ash

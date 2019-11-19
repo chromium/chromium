@@ -14,8 +14,8 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/browser/pref_names.h"
@@ -30,15 +30,14 @@ namespace extensions {
 class ExternalPolicyLoaderTest : public testing::Test {
  public:
   ExternalPolicyLoaderTest()
-      : test_browser_thread_bundle_(
-            content::TestBrowserThreadBundle::IO_MAINLOOP) {}
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP) {}
 
   ~ExternalPolicyLoaderTest() override {}
 
  private:
   // Needed to satisfy BrowserThread::CurrentlyOn(BrowserThread::UI) checks in
   // ExternalProviderImpl.
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 class MockExternalPolicyProviderVisitor
@@ -57,12 +56,11 @@ class MockExternalPolicyProviderVisitor
     provider_.reset(new ExternalProviderImpl(
         this,
         new ExternalPolicyLoader(
+            profile_.get(),
             ExtensionManagementFactory::GetForBrowserContext(profile_.get()),
             ExternalPolicyLoader::FORCED),
-        profile_.get(),
-        Manifest::INVALID_LOCATION,
-        Manifest::EXTERNAL_POLICY_DOWNLOAD,
-        Extension::NO_FLAGS));
+        profile_.get(), Manifest::INVALID_LOCATION,
+        Manifest::EXTERNAL_POLICY_DOWNLOAD, Extension::NO_FLAGS));
 
     // Extensions will be removed from this list as they visited,
     // so it should be emptied by the end.

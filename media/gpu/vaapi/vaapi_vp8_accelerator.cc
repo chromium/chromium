@@ -39,9 +39,14 @@ bool VaapiVP8Accelerator::SubmitDecode(
     const Vp8ReferenceFrameVector& reference_frames) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return FillVP8DataStructuresAndPassToVaapiWrapper(
-      vaapi_wrapper_, pic->AsVaapiVP8Picture()->va_surface()->id(),
-      *pic->frame_hdr, reference_frames);
+  auto va_surface_id = pic->AsVaapiVP8Picture()->va_surface()->id();
+
+  if (!FillVP8DataStructures(vaapi_wrapper_, va_surface_id, *pic->frame_hdr,
+                             reference_frames)) {
+    return false;
+  }
+
+  return vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(va_surface_id);
 }
 
 bool VaapiVP8Accelerator::OutputPicture(const scoped_refptr<VP8Picture>& pic) {

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/macros.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -23,7 +24,7 @@ class MockBluetoothAdapter : public BluetoothAdapter {
  public:
   class Observer : public BluetoothAdapter::Observer {
    public:
-    Observer();
+    Observer(scoped_refptr<BluetoothAdapter> adapter);
     ~Observer() override;
 
     MOCK_METHOD2(AdapterPresentChanged, void(BluetoothAdapter*, bool));
@@ -32,6 +33,15 @@ class MockBluetoothAdapter : public BluetoothAdapter {
     MOCK_METHOD2(DeviceAdded, void(BluetoothAdapter*, BluetoothDevice*));
     MOCK_METHOD2(DeviceChanged, void(BluetoothAdapter*, BluetoothDevice*));
     MOCK_METHOD2(DeviceRemoved, void(BluetoothAdapter*, BluetoothDevice*));
+    MOCK_METHOD3(GattCharacteristicValueChanged,
+                 void(BluetoothAdapter*,
+                      BluetoothRemoteGattCharacteristic*,
+                      const std::vector<uint8_t>&));
+
+   private:
+    const scoped_refptr<BluetoothAdapter> adapter_;
+
+    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
   MockBluetoothAdapter();
@@ -62,16 +72,22 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                     const base::Closure& callback,
                     const ErrorCallback& error_callback));
   MOCK_CONST_METHOD0(IsDiscovering, bool());
-  MOCK_METHOD2(StartDiscoverySession,
-               void(const DiscoverySessionCallback& callback,
-                    const ErrorCallback& error_callback));
-  MOCK_METHOD3(StartDiscoverySessionWithFilterRaw,
-               void(const BluetoothDiscoveryFilter*,
-                    const DiscoverySessionCallback& callback,
-                    const ErrorCallback& error_callback));
+  MOCK_METHOD2(
+      StartScanWithFilter_,
+      void(const BluetoothDiscoveryFilter*,
+           base::OnceCallback<void(/*is_error=*/bool,
+                                   UMABluetoothDiscoverySessionOutcome)>&
+               callback));
+  MOCK_METHOD2(
+      UpdateFilter_,
+      void(const BluetoothDiscoveryFilter*,
+           base::OnceCallback<void(/*is_error=*/bool,
+                                   UMABluetoothDiscoverySessionOutcome)>&
+               callback));
+  MOCK_METHOD1(StopScan, void(DiscoverySessionResultCallback callback));
   MOCK_METHOD3(SetDiscoveryFilterRaw,
                void(const BluetoothDiscoveryFilter*,
-                    const base::Closure& callback,
+                    const base::RepeatingClosure& callback,
                     DiscoverySessionErrorCallback& error_callback));
   MOCK_CONST_METHOD0(GetDevices, BluetoothAdapter::ConstDeviceList());
   MOCK_METHOD1(GetDevice, BluetoothDevice*(const std::string& address));
@@ -97,11 +113,6 @@ class MockBluetoothAdapter : public BluetoothAdapter {
   MOCK_CONST_METHOD1(GetGattService,
                      BluetoothLocalGattService*(const std::string& identifier));
 
-  void StartDiscoverySessionWithFilter(
-      std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
-      const DiscoverySessionCallback& callback,
-      const ErrorCallback& error_callback) override;
-
   // BluetoothAdapter is supposed to manage the lifetime of BluetoothDevices.
   // This method takes ownership of the MockBluetoothDevice. This is only for
   // convenience as far testing is concerned and it's possible to write test
@@ -121,19 +132,13 @@ class MockBluetoothAdapter : public BluetoothAdapter {
   }
 
  protected:
+  base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;
   bool SetPoweredImpl(bool powered) override;
-  void AddDiscoverySession(
-      BluetoothDiscoveryFilter* discovery_filter,
-      const base::Closure& callback,
-      DiscoverySessionErrorCallback error_callback) override;
-  void RemoveDiscoverySession(
-      BluetoothDiscoveryFilter* discovery_filter,
-      const base::Closure& callback,
-      DiscoverySessionErrorCallback error_callback) override;
-  void SetDiscoveryFilter(
+  void StartScanWithFilter(
       std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
-      const base::Closure& callback,
-      DiscoverySessionErrorCallback error_callback) override;
+      DiscoverySessionResultCallback callback) override;
+  void UpdateFilter(std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
+                    DiscoverySessionResultCallback callback) override;
   void RegisterAdvertisement(
       std::unique_ptr<BluetoothAdvertisement::Data> advertisement_data,
       const CreateAdvertisementCallback& callback,
@@ -154,6 +159,10 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                void(BluetoothDevice::PairingDelegate* pairing_delegate));
 
   std::vector<std::unique_ptr<MockBluetoothDevice>> mock_devices_;
+
+  // This must be the last field in the class so that weak pointers are
+  // invalidated first.
+  base::WeakPtrFactory<MockBluetoothAdapter> weak_ptr_factory_{this};
 };
 
 }  // namespace device

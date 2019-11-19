@@ -5,6 +5,7 @@
 #include "content/browser/notifications/notification_database.h"
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -12,12 +13,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
-#include "content/browser/notifications/notification_database_data_conversions.h"
-#include "content/common/service_worker/service_worker_types.h"
+#include "content/browser/notifications/notification_database_conversions.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_database_data.h"
 #include "storage/common/database/database_identifier.h"
+#include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
@@ -33,15 +34,16 @@
 // value: String containing the NotificationDatabaseDataProto protocol buffer
 //        in serialized form.
 //
-// key: "NEXT_NOTIFICATION_ID"
-// value: Decimal string which fits into an int64_t, containing the next
-//        persistent notification ID.
+// key: "RESOURCES:" <origin identifier> '\x00' <notification_id>
+// value: String containing the NotificationDatabaseResourcesProto protocol
+//        buffer in serialized form.
 
 namespace content {
 namespace {
 
 // Keys of the fields defined in the database.
 const char kDataKeyPrefix[] = "DATA:";
+const char kResourcesKeyPrefix[] = "RESOURCES:";
 
 // Separates the components of compound keys.
 const char kNotificationKeySeparator = '\x00';
@@ -84,6 +86,25 @@ std::string CreateDataKey(const GURL& origin,
   return CreateDataPrefix(origin) + notification_id;
 }
 
+// Creates a prefix for the resources entries based on |origin|.
+std::string CreateResourcesPrefix(const GURL& origin) {
+  if (!origin.is_valid())
+    return kResourcesKeyPrefix;
+
+  return base::StringPrintf("%s%s%c", kResourcesKeyPrefix,
+                            storage::GetIdentifierFromOrigin(origin).c_str(),
+                            kNotificationKeySeparator);
+}
+
+// Creates the compound data key in which notification resources are stored.
+std::string CreateResourcesKey(const GURL& origin,
+                               const std::string& notification_id) {
+  DCHECK(origin.is_valid());
+  DCHECK(!notification_id.empty());
+
+  return CreateResourcesPrefix(origin) + notification_id;
+}
+
 // Deserializes data in |serialized_data| to |notification_database_data|.
 // Will return if the deserialization was successful.
 NotificationDatabase::Status DeserializedNotificationData(
@@ -96,6 +117,21 @@ NotificationDatabase::Status DeserializedNotificationData(
   }
 
   DLOG(ERROR) << "Unable to deserialize a notification's data.";
+  return NotificationDatabase::STATUS_ERROR_CORRUPTED;
+}
+
+// Deserializes resources in |serialized_resources| to |notification_resources|.
+// Will return if the deserialization was successful.
+NotificationDatabase::Status DeserializedNotificationResources(
+    const std::string& serialized_resources,
+    blink::NotificationResources* notification_resources) {
+  DCHECK(notification_resources);
+  if (DeserializeNotificationDatabaseResources(serialized_resources,
+                                               notification_resources)) {
+    return NotificationDatabase::STATUS_OK;
+  }
+
+  DLOG(ERROR) << "Unable to deserialize a notification's resources.";
   return NotificationDatabase::STATUS_ERROR_CORRUPTED;
 }
 
@@ -172,6 +208,28 @@ NotificationDatabase::Status NotificationDatabase::ReadNotificationData(
                                       notification_database_data);
 }
 
+NotificationDatabase::Status NotificationDatabase::ReadNotificationResources(
+    const std::string& notification_id,
+    const GURL& origin,
+    blink::NotificationResources* notification_resources) const {
+  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_EQ(State::INITIALIZED, state_);
+  DCHECK(!notification_id.empty());
+  DCHECK(origin.is_valid());
+  DCHECK(notification_resources);
+
+  std::string key = CreateResourcesKey(origin, notification_id);
+  std::string serialized_resources;
+
+  Status status = LevelDBStatusToNotificationDatabaseStatus(
+      db_->Get(leveldb::ReadOptions(), key, &serialized_resources));
+  if (status != STATUS_OK)
+    return status;
+
+  return DeserializedNotificationResources(serialized_resources,
+                                           notification_resources);
+}
+
 NotificationDatabase::Status
 NotificationDatabase::ReadNotificationDataAndRecordInteraction(
     const std::string& notification_id,
@@ -209,6 +267,13 @@ NotificationDatabase::ReadNotificationDataAndRecordInteraction(
       "Notifications.Database.ReadResultRecordInteraction", status,
       NotificationDatabase::STATUS_COUNT);
   return status;
+}
+
+NotificationDatabase::Status NotificationDatabase::ForEachNotificationData(
+    ReadAllNotificationsCallback callback) const {
+  return ForEachNotificationDataInternal(
+      GURL() /* origin */, blink::mojom::kInvalidServiceWorkerRegistrationId,
+      std::move(callback));
 }
 
 NotificationDatabase::Status NotificationDatabase::ReadAllNotificationData(
@@ -256,6 +321,20 @@ NotificationDatabase::Status NotificationDatabase::WriteNotificationData(
   leveldb::WriteBatch batch;
   batch.Put(CreateDataKey(origin, notification_id), serialized_data);
 
+  if (notification_data.notification_resources.has_value()) {
+    std::string serialized_resources;
+    if (!SerializeNotificationDatabaseResources(
+            notification_data.notification_resources.value(),
+            &serialized_resources)) {
+      DLOG(ERROR) << "Unable to serialize resources for a notification "
+                  << "belonging to: " << origin;
+      return STATUS_ERROR_FAILED;
+    }
+
+    batch.Put(CreateResourcesKey(origin, notification_id),
+              serialized_resources);
+  }
+
   return LevelDBStatusToNotificationDatabaseStatus(
       db_->Write(leveldb::WriteOptions(), &batch));
 }
@@ -271,11 +350,27 @@ NotificationDatabase::Status NotificationDatabase::DeleteNotificationData(
   NotificationDatabaseData data;
   Status status = ReadNotificationData(notification_id, origin, &data);
   if (status == STATUS_OK && record_notification_to_ukm_callback_) {
-    base::PostTaskWithTraits(
-        FROM_HERE, {BrowserThread::UI},
-        base::BindOnce(record_notification_to_ukm_callback_, data));
+    base::PostTask(FROM_HERE, {BrowserThread::UI},
+                   base::BindOnce(record_notification_to_ukm_callback_, data));
   }
-  std::string key = CreateDataKey(origin, notification_id);
+
+  leveldb::WriteBatch batch;
+  batch.Delete(CreateDataKey(origin, notification_id));
+  batch.Delete(CreateResourcesKey(origin, notification_id));
+
+  return LevelDBStatusToNotificationDatabaseStatus(
+      db_->Write(leveldb::WriteOptions(), &batch));
+}
+
+NotificationDatabase::Status NotificationDatabase::DeleteNotificationResources(
+    const std::string& notification_id,
+    const GURL& origin) {
+  DCHECK(sequence_checker_.CalledOnValidSequence());
+  DCHECK_EQ(State::INITIALIZED, state_);
+  DCHECK(!notification_id.empty());
+  DCHECK(origin.is_valid());
+
+  std::string key = CreateResourcesKey(origin, notification_id);
   return LevelDBStatusToNotificationDatabaseStatus(
       db_->Delete(leveldb::WriteOptions(), key));
 }
@@ -326,6 +421,21 @@ NotificationDatabase::ReadAllNotificationDataInternal(
   DCHECK(sequence_checker_.CalledOnValidSequence());
   DCHECK(notification_data_vector);
 
+  return ForEachNotificationDataInternal(
+      origin, service_worker_registration_id,
+      base::BindRepeating(
+          [](std::vector<NotificationDatabaseData>* datas,
+             const NotificationDatabaseData& data) { datas->push_back(data); },
+          notification_data_vector));
+}
+
+NotificationDatabase::Status
+NotificationDatabase::ForEachNotificationDataInternal(
+    const GURL& origin,
+    int64_t service_worker_registration_id,
+    ReadAllNotificationsCallback callback) const {
+  DCHECK(sequence_checker_.CalledOnValidSequence());
+
   const std::string prefix = CreateDataPrefix(origin);
 
   leveldb::Slice prefix_slice(prefix);
@@ -349,7 +459,7 @@ NotificationDatabase::ReadAllNotificationDataInternal(
       continue;
     }
 
-    notification_data_vector->push_back(notification_database_data);
+    callback.Run(notification_database_data);
   }
 
   return LevelDBStatusToNotificationDatabaseStatus(iter->status());
@@ -369,6 +479,7 @@ NotificationDatabase::DeleteAllNotificationDataInternal(
 
   leveldb::Slice prefix_slice(prefix);
   leveldb::WriteBatch batch;
+  bool did_delete = false;
 
   NotificationDatabaseData notification_database_data;
   std::unique_ptr<leveldb::Iterator> iter(
@@ -395,20 +506,22 @@ NotificationDatabase::DeleteAllNotificationDataInternal(
     }
 
     if (record_notification_to_ukm_callback_) {
-      base::PostTaskWithTraits(
-          FROM_HERE, {BrowserThread::UI},
-          base::BindOnce(record_notification_to_ukm_callback_,
-                         notification_database_data));
+      base::PostTask(FROM_HERE, {BrowserThread::UI},
+                     base::BindOnce(record_notification_to_ukm_callback_,
+                                    notification_database_data));
     }
 
-    batch.Delete(iter->key());
+    std::string notification_id = notification_database_data.notification_id;
+    DCHECK(!notification_id.empty());
 
-    DCHECK(!notification_database_data.notification_id.empty());
-    deleted_notification_ids->insert(
-        notification_database_data.notification_id);
+    batch.Delete(iter->key());
+    batch.Delete(CreateResourcesKey(origin, notification_id));
+    did_delete = true;
+
+    deleted_notification_ids->insert(notification_id);
   }
 
-  if (deleted_notification_ids->empty())
+  if (!did_delete)
     return STATUS_OK;
 
   return LevelDBStatusToNotificationDatabaseStatus(

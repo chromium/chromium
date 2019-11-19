@@ -70,9 +70,8 @@ Response BrowserHandler::GetWindowBounds(
 }
 
 Response BrowserHandler::Close() {
-  base::PostTaskWithTraits(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&HeadlessBrowserImpl::Shutdown, browser()));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&HeadlessBrowserImpl::Shutdown, browser()));
   return Response::OK();
 }
 

@@ -7,10 +7,12 @@
 
 #include <string>
 
-#include "media/mojo/interfaces/audio_input_stream.mojom.h"
-#include "media/mojo/interfaces/audio_logging.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "base/optional.h"
+#include "base/run_loop.h"
+#include "media/mojo/mojom/audio_input_stream.mojom.h"
+#include "media/mojo/mojom/audio_logging.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/audio/public/mojom/audio_processing.mojom.h"
 #include "services/audio/public/mojom/stream_factory.mojom.h"
 
@@ -21,53 +23,67 @@ class FakeStreamFactory : public mojom::StreamFactory {
   FakeStreamFactory();
   ~FakeStreamFactory() override;
 
-  mojom::StreamFactoryPtr MakePtr() {
-    mojom::StreamFactoryPtr ptr;
-    binding_.Bind(mojo::MakeRequest(&ptr));
-    return ptr;
+  mojo::PendingRemote<mojom::StreamFactory> MakeRemote() {
+    auto remote = receiver_.BindNewPipeAndPassRemote();
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &FakeStreamFactory::CloseBinding, base::Unretained(this)));
+    return remote;
   }
 
-  void CloseBinding() { binding_.Close(); }
+  void CloseBinding() {
+    receiver_.reset();
+    if (disconnect_loop_)
+      disconnect_loop_->Quit();
+  }
 
-  void CreateInputStream(::media::mojom::AudioInputStreamRequest stream,
-                         ::media::mojom::AudioInputStreamClientPtr client,
-                         ::media::mojom::AudioInputStreamObserverPtr observer,
-                         ::media::mojom::AudioLogPtr log,
-                         const std::string& device_id,
-                         const media::AudioParameters& params,
-                         uint32_t shared_memory_count,
-                         bool enable_agc,
-                         mojo::ScopedSharedBufferHandle key_press_count_buffer,
-                         mojom::AudioProcessingConfigPtr processing_config,
-                         CreateInputStreamCallback callback) override {}
+  void WaitForDisconnect() {
+    disconnect_loop_.emplace();
+    disconnect_loop_->Run();
+  }
+
+  void CreateInputStream(
+      mojo::PendingReceiver<::media::mojom::AudioInputStream> stream_receiver,
+      mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
+      mojo::PendingRemote<::media::mojom::AudioInputStreamObserver> observer,
+      mojo::PendingRemote<::media::mojom::AudioLog> log,
+      const std::string& device_id,
+      const media::AudioParameters& params,
+      uint32_t shared_memory_count,
+      bool enable_agc,
+      mojo::ScopedSharedBufferHandle key_press_count_buffer,
+      mojom::AudioProcessingConfigPtr processing_config,
+      CreateInputStreamCallback callback) override {}
 
   void AssociateInputAndOutputForAec(
       const base::UnguessableToken& input_stream_id,
       const std::string& output_device_id) override {}
 
   void CreateOutputStream(
-      media::mojom::AudioOutputStreamRequest stream_request,
-      media::mojom::AudioOutputStreamObserverAssociatedPtrInfo observer_info,
-      media::mojom::AudioLogPtr log,
+      mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
+      mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
+          observer,
+      mojo::PendingRemote<media::mojom::AudioLog> log,
       const std::string& output_device_id,
       const media::AudioParameters& params,
       const base::UnguessableToken& group_id,
       const base::Optional<base::UnguessableToken>& processing_id,
       CreateOutputStreamCallback created_callback) override {}
-  void BindMuter(mojom::LocalMuterAssociatedRequest request,
+  void BindMuter(mojo::PendingAssociatedReceiver<mojom::LocalMuter> receiver,
                  const base::UnguessableToken& group_id) override {}
   void CreateLoopbackStream(
-      media::mojom::AudioInputStreamRequest stream_request,
-      media::mojom::AudioInputStreamClientPtr client,
-      media::mojom::AudioInputStreamObserverPtr observer,
+      mojo::PendingReceiver<media::mojom::AudioInputStream> receiver,
+      mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
+      mojo::PendingRemote<media::mojom::AudioInputStreamObserver> observer,
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
       const base::UnguessableToken& group_id,
       CreateLoopbackStreamCallback created_callback) override {}
 
-  mojo::Binding<mojom::StreamFactory> binding_;
+  mojo::Receiver<mojom::StreamFactory> receiver_{this};
 
  private:
+  base::Optional<base::RunLoop> disconnect_loop_;
+
   DISALLOW_COPY_AND_ASSIGN(FakeStreamFactory);
 };
 

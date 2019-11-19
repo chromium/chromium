@@ -13,8 +13,10 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_server.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 class GURL;
 
@@ -23,8 +25,6 @@ struct RedirectInfo;
 }  // namespace net
 
 namespace network {
-struct ResourceResponseHead;
-class SharedURLLoaderFactory;
 class SimpleURLLoader;
 }  // namespace network
 
@@ -50,11 +50,10 @@ class WarmupURLFetcher {
           const std::vector<DataReductionProxyServer>&)>;
 
   WarmupURLFetcher(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       CreateCustomProxyConfigCallback create_custom_proxy_config_callback,
       WarmupURLFetcherCallback callback,
       GetHttpRttCallback get_http_rtt_callback,
-      scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+      const std::string& user_agent);
 
   virtual ~WarmupURLFetcher();
 
@@ -87,11 +86,11 @@ class WarmupURLFetcher {
   // URL loader callback when response starts.
   void OnURLLoadResponseStarted(
       const GURL& final_url,
-      const network::ResourceResponseHead& response_head);
+      const network::mojom::URLResponseHead& response_head);
 
   // URL loader callback for redirections.
   void OnURLLoaderRedirect(const net::RedirectInfo& redirect_info,
-                           const network::ResourceResponseHead& response_head,
+                           const network::mojom::URLResponseHead& response_head,
                            std::vector<std::string>* to_be_removed_headers);
 
   // URL loader completion callback.
@@ -123,18 +122,16 @@ class WarmupURLFetcher {
 
   // Gets a URLLoaderFactory which will only attempt to use |proxy_server| as a
   // proxy.
-  network::mojom::URLLoaderFactory* GetNetworkServiceURLLoaderFactory(
+  virtual network::mojom::URLLoaderFactory* GetNetworkServiceURLLoaderFactory(
       const DataReductionProxyServer& proxy_server);
 
   // Count of fetch attempts that have been made to the proxy which is being
   // probed.
   size_t previous_attempt_counts_;
 
-  scoped_refptr<network::SharedURLLoaderFactory>
-      non_network_service_url_loader_factory_;
   CreateCustomProxyConfigCallback create_custom_proxy_config_callback_;
-  network::mojom::URLLoaderFactoryPtr url_loader_factory_;
-  network::mojom::NetworkContextPtr context_;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
+  mojo::Remote<network::mojom::NetworkContext> context_;
 
   // Callback that should be executed when the fetching of the warmup URL is
   // completed.
@@ -143,7 +140,7 @@ class WarmupURLFetcher {
   // Callback to obtain the current HTTP RTT estimate.
   GetHttpRttCallback get_http_rtt_callback_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
+  const std::string user_agent_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

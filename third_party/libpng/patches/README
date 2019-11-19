@@ -5,7 +5,6 @@ upstreamed or released to the canonical libpng repository [1] yet.
 
 == Patches applied on top of libpng ==
 
- - 0000-plte.patch: ARM NEON optimizations not yet released upstream.
  - 0001-chunkerror.patch: Change chunk errors into benign errors
    (https://crrev.com/c/1014027).
  - 0002-fuzzeroom.patch: Add custom malloc/free to limit too-large

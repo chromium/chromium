@@ -1,24 +1,22 @@
 #! /usr/bin/env python
 #
 # See README for usage instructions.
+from distutils import util
 import glob
 import os
+import pkg_resources
+import re
 import subprocess
 import sys
+import sysconfig
 import platform
 
 # We must use setuptools, not distutils, because we need to use the
 # namespace_packages option for the "google" package.
 from setuptools import setup, Extension, find_packages
 
+from distutils.command.build_py import build_py as _build_py
 from distutils.command.clean import clean as _clean
-
-if sys.version_info[0] == 3:
-  # Python 3
-  from distutils.command.build_py import build_py_2to3 as _build_py
-else:
-  # Python 2
-  from distutils.command.build_py import build_py as _build_py
 from distutils.spawn import find_executable
 
 # Find the Protocol Compiler.
@@ -44,6 +42,7 @@ def GetVersion():
 
   with open(os.path.join('google', 'protobuf', '__init__.py')) as version_file:
     exec(version_file.read(), globals())
+    global __version__
     return __version__
 
 
@@ -93,6 +92,7 @@ def GenerateUnittestProtos():
   generate_proto("../src/google/protobuf/unittest_mset_wire_format.proto", False)
   generate_proto("../src/google/protobuf/unittest_no_generic_services.proto", False)
   generate_proto("../src/google/protobuf/unittest_proto3_arena.proto", False)
+  generate_proto("../src/google/protobuf/util/json_format.proto", False)
   generate_proto("../src/google/protobuf/util/json_format_proto3.proto", False)
   generate_proto("google/protobuf/internal/any_test.proto", False)
   generate_proto("google/protobuf/internal/descriptor_pool_test1.proto", False)
@@ -148,10 +148,9 @@ class build_py(_build_py):
 class test_conformance(_build_py):
   target = 'test_python'
   def run(self):
-    if sys.version_info >= (2, 7):
-      # Python 2.6 dodges these extra failures.
-      os.environ["CONFORMANCE_PYTHON_EXTRA_FAILURES"] = (
-          "--failure_list failure_list_python-post26.txt")
+    # Python 2.6 dodges these extra failures.
+    os.environ["CONFORMANCE_PYTHON_EXTRA_FAILURES"] = (
+        "--failure_list failure_list_python-post26.txt")
     cmd = 'cd ../conformance && make %s' % (test_conformance.target)
     status = subprocess.check_call(cmd, shell=True)
 
@@ -185,6 +184,24 @@ if __name__ == '__main__':
         extra_compile_args.append('-Wno-write-strings')
         extra_compile_args.append('-Wno-invalid-offsetof')
         extra_compile_args.append('-Wno-sign-compare')
+        extra_compile_args.append('-Wno-unused-variable')
+        extra_compile_args.append('-std=c++11')
+
+    if sys.platform == 'darwin':
+      extra_compile_args.append("-Wno-shorten-64-to-32");
+      extra_compile_args.append("-Wno-deprecated-register");
+
+    # https://developer.apple.com/documentation/xcode_release_notes/xcode_10_release_notes
+    # C++ projects must now migrate to libc++ and are recommended to set a
+    # deployment target of macOS 10.9 or later, or iOS 7 or later.
+    if sys.platform == 'darwin':
+      mac_target = sysconfig.get_config_var('MACOSX_DEPLOYMENT_TARGET')
+      if mac_target and (pkg_resources.parse_version(mac_target) <
+                       pkg_resources.parse_version('10.9.0')):
+        os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
+        os.environ['_PYTHON_HOST_PLATFORM'] = re.sub(
+            r'macosx-[0-9]+\.[0-9]+-(.+)', r'macosx-10.9-\1',
+            util.get_platform())
 
     # https://github.com/Theano/Theano/issues/4926
     if sys.platform == 'win32':
@@ -200,14 +217,6 @@ if __name__ == '__main__':
 
     if "clang" in os.popen('$CC --version 2> /dev/null').read():
       extra_compile_args.append('-Wno-shorten-64-to-32')
-
-    v, _, _ = platform.mac_ver()
-    if v:
-      v = float('.'.join(v.split('.')[:2]))
-      if v >= 10.12:
-        extra_compile_args.append('-std=c++11')
-    elif os.getenv('KOKORO_BUILD_NUMBER') or os.getenv('KOKORO_BUILD_ID'):
-        extra_compile_args.append('-std=c++11')
 
     if warnings_as_errors in sys.argv:
       extra_compile_args.append('-Werror')
@@ -242,7 +251,7 @@ if __name__ == '__main__':
       name='protobuf',
       version=GetVersion(),
       description='Protocol Buffers',
-      download_url='https://github.com/google/protobuf/releases',
+      download_url='https://github.com/protocolbuffers/protobuf/releases',
       long_description="Protocol Buffers are Google's data interchange format",
       url='https://developers.google.com/protocol-buffers/',
       maintainer='protobuf@googlegroups.com',
@@ -255,6 +264,9 @@ if __name__ == '__main__':
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
         ],
       namespace_packages=['google'],
       packages=find_packages(

@@ -70,10 +70,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse
   DISALLOW_COPY_AND_ASSIGN(AuthenticatorGetAssertionResponse);
 };
 
-COMPONENT_EXPORT(DEVICE_FIDO)
-std::vector<uint8_t> GetSerializedCtapDeviceResponse(
-    const AuthenticatorGetAssertionResponse& response);
-
 }  // namespace device
 
 #endif  // DEVICE_FIDO_AUTHENTICATOR_GET_ASSERTION_RESPONSE_H_

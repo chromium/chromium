@@ -1,10 +1,10 @@
 Name: gRPC
 URL: https://github.com/grpc/grpc
 Version: 0
-Date: Feb 3, 2019
-Revision: 0fc01a302f03c313d33492439366821cb66e0eb6
+Date: Jul 16, 2019
+Revision: 74b981a6a3d9ba17f3acae1d72b9109325ef656d
 License: Apache 2.0
-License File: NOT_SHIPPED
+License File: LICENSE
 Security Critical: yes
 
 Description:

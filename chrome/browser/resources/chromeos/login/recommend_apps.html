@@ -8,6 +8,7 @@
 
 <dom-module id="recommend-apps">
   <template>
+    <link rel="stylesheet" href="oobe_dialog_host.css">
     <link rel="stylesheet" href="recommend_apps.css">
     <link rel="stylesheet" href="oobe_flex_layout.css">
     <oobe-dialog id="recommend-apps-dialog" role="dialog" has-buttons
@@ -19,25 +20,33 @@
         [[i18nDynamic(locale, 'recommendAppsScreenTitle')]]
       </h1>
       <div id="subtitle" slot="subtitle"></div>
+      <div id="app-list-error" slot="subtitle">
+        [[i18nDynamic(locale, 'recommendAppsError')]]
+      </div>
+      <div slot="footer" class="flex layout vertical center end-justified"
+          id="download-fail-illustration">
+        <img id="illustration"
+            srcset="images/1x/download_fail_illustration.svg 1x,
+            images/2x/download_fail_illustration.svg 2x"
+            class="oobe-illustration">
+      </div>
       <div id="app-list-view-container" slot="footer">
         <webview id="app-list-view"></webview>
       </div>
       <div class="app-list-loading" slot="footer">
         <p>[[i18nDynamic(locale, 'recommendAppsLoading')]]</p>
       </div>
-      <div class="app-list-error" slot="footer">
-        <p>[[i18nDynamic(locale, 'recommendAppsError')]]</p>
-      </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
-        <oobe-text-button id="recommend-apps-skip-button" border on-tap="onSkip_">
+        <oobe-text-button id="recommend-apps-skip-button" on-tap="onSkip_"
+            border>
           <div>[[i18nDynamic(locale, 'recommendAppsSkip')]]</div>
         </oobe-text-button>
         <oobe-next-button id="recommend-apps-install-button"
             on-tap="onInstall_" inverse>
           <div>[[i18nDynamic(locale, 'recommendAppsInstall')]]</div>
         </oobe-next-button>
-        <oobe-text-button id="recommend-apps-retry-button" border
-            on-tap="onRetry_">
+        <oobe-text-button id="recommend-apps-retry-button" on-tap="onRetry_"
+            border inverse>
           <div>[[i18nDynamic(locale, 'recommendAppsRetry')]]</div>
         </oobe-text-button>
       </div>

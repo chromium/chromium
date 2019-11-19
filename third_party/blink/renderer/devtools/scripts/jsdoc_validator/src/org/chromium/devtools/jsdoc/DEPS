@@ -1,3 +1,0 @@
-include_rules = [
-    "+Source/devtools/scripts/jsdoc-validator/src/org/chromium/devtools/jsdoc",
-]

@@ -14,8 +14,6 @@ if (use_udev) {
       "udev0_loader.h",
       "udev1_loader.cc",
       "udev1_loader.h",
-      "udev_linux.cc",
-      "udev_linux.h",
       "udev_loader.cc",
       "udev_loader.h",
       "udev_watcher.cc",

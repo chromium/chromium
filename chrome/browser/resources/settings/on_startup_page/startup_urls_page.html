@@ -1,7 +1,7 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/html/action_link_css.html">
+<link rel="import" href="chrome://resources/cr_elements/action_link_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-flex-layout/iron-flex-layout-classes.html">
@@ -42,7 +42,7 @@
             <settings-startup-url-entry model="[[item]]" first$="[[!index]]"
                 tabindex$="[[tabIndex]]" iron-list-tab-index="[[tabIndex]]"
                 last-focused="{{lastFocused_}}" list-blurred="{{listBlurred_}}"
-                editable="[[shouldAllowUrlsEdit_(
+                focus-row-index="[[index]]" editable="[[shouldAllowUrlsEdit_(
                     prefs.session.startup_urls.enforcement)]]">
             </settings-startup-url-entry>
           </template>

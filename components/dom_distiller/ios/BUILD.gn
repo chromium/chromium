@@ -16,7 +16,8 @@ source_set("ios") {
     "//components/dom_distiller/core",
     "//components/dom_distiller/core/proto",
     "//components/favicon/ios",
-    "//ios/web",
+    "//ios/web/public",
+    "//ios/web/public/deprecated",
     "//url",
   ]
 }

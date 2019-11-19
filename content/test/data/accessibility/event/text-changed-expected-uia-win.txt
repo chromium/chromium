@@ -1,0 +1,7 @@
+Name changed on role=description, name=Modified Div
+Name changed on role=heading, name=h
+StructureChanged/ChildAdded on role=description, name=Modified Para
+StructureChanged/ChildRemoved on role=group, name=p
+Text_TextChanged on role=description, name=Modified Div
+Text_TextChanged on role=document
+Text_TextChanged on role=heading, name=h

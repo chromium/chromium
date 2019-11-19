@@ -17,7 +17,6 @@ extern const char kLanguageRemapAltKeyTo[];
 extern const char kLanguageRemapEscapeKeyTo[];
 extern const char kLanguageRemapBackspaceKeyTo[];
 extern const char kLanguageRemapAssistantKeyTo[];
-extern const char kLanguageRemapDiamondKeyTo[];
 extern const char kLanguageRemapExternalCommandKeyTo[];
 extern const char kLanguageRemapExternalMetaKeyTo[];
 

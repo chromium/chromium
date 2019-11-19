@@ -16,6 +16,8 @@
 # In future it might be possible to extend this to other kinds of differences,
 # e.g. page load times.
 
+from __future__ import print_function
+
 import argparse
 from argparse import RawTextHelpFormatter
 from contextlib import closing
@@ -96,15 +98,15 @@ def SetupPathsAndOut():
 
 def CheckPrerequisites():
   if not find_executable("wget"):
-    print "wget not found! Install wget and re-run this."
+    print("wget not found! Install wget and re-run this.")
     return False
   if not os.path.exists(image_diff):
-    print "image_diff not found (%s)!" % image_diff
-    print "Build the image_diff target and re-run this."
+    print("image_diff not found (%s)!" % image_diff)
+    print("Build the image_diff target and re-run this.")
     return False
   if not os.path.exists(content_shell):
-    print "Content shell not found (%s)!" % content_shell
-    print "Build Release/content_shell and re-run this."
+    print("Content shell not found (%s)!" % content_shell)
+    print("Build Release/content_shell and re-run this.")
     return False
   return True
 
@@ -118,7 +120,7 @@ def PickSampleUrls():
   # TODO(johnme): Should probably update this when it gets too stale...
   csv_path = os.path.join(data_dir, "top-1m.csv")
   if not os.path.exists(csv_path):
-    print "Downloading list of top 1,000,000 sites from Alexa..."
+    print("Downloading list of top 1,000,000 sites from Alexa...")
     csv_url = "http://s3.amazonaws.com/alexa-static/top-1m.csv.zip"
     with closing(urlopen(csv_url)) as stream:
       ZipFile(StringIO(stream.read())).extract("top-1m.csv", data_dir)
@@ -136,10 +138,10 @@ def PickSampleUrls():
   urls_path = os.path.join(data_dir, "%06d_urls.txt" % num_sites)
   if not os.path.exists(urls_path):
     if action == 'compare':
-      print ("Error: you must run 'before %d' and 'after %d' before "
-             "running 'compare %d'") % (num_sites, num_sites, num_sites)
+      print("Error: you must run 'before %d' and 'after %d' before "
+            "running 'compare %d'" % (num_sites, num_sites, num_sites))
       return False
-    print "Picking %d sample urls..." % num_sites
+    print("Picking %d sample urls..." % num_sites)
 
     # TODO(johnme): For now this just gets the top num_sites entries. In future
     # this should pick a weighted random sample. For example, it could fit a
@@ -177,7 +179,7 @@ def PrintElapsedTime(elapsed, detail=""):
   elapsed = round(elapsed * 10) / 10.0
   m = elapsed / 60
   s = elapsed % 60
-  print "Took %dm%.1fs" % (m, s), detail
+  print("Took %dm%.1fs" % (m, s), detail)
 
 
 def DownloadStaticCopyTask(url):
@@ -216,10 +218,10 @@ def DownloadStaticCopyTask(url):
       success = False
     else:
       with print_lock:
-        print "Downloaded:", url
+        print("Downloaded:", url)
   if not success:
     with print_lock:
-      print "Failed to download:", url
+      print("Failed to download:", url)
     return False
   return True
 
@@ -235,7 +237,7 @@ def DownloadStaticCopies():
       new_urls.append(url)
 
   if new_urls:
-    print "Downloading static copies of %d sites..." % len(new_urls)
+    print("Downloading static copies of %d sites..." % len(new_urls))
     start_time = time.time()
 
     results = multiprocessing.Pool(20).map(DownloadStaticCopyTask, new_urls)
@@ -303,7 +305,7 @@ def RunDrtTask(url):
 
 
 def RunDrt():
-  print "Taking screenshots of %d pages..." % len(urls)
+  print("Taking screenshots of %d pages..." % len(urls))
   start_time = time.time()
 
   results = multiprocessing.Pool().map(RunDrtTask, urls, 1)
@@ -355,7 +357,7 @@ def CompareResultsTask(url):
 
 
 def CompareResults():
-  print "Running image_diff on %d pages..." % len(urls)
+  print("Running image_diff on %d pages..." % len(urls))
   start_time = time.time()
 
   results = multiprocessing.Pool().map(CompareResultsTask, urls)

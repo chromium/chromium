@@ -4,6 +4,9 @@
 
 #include "extensions/browser/events/event_ack_data.h"
 
+#include <string>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/guid.h"
@@ -11,6 +14,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_external_request_result.h"
 
 namespace extensions {
 
@@ -22,37 +26,41 @@ using EventInfo = std::pair<std::string, int>;
 }  // namespace
 
 // Class that holds map of unacked event information keyed by event id, accessed
-// on IO thread.
+// on service worker core thread.
+// TODO(crbug.com/824858): This shouldn't be needed after service worker core
+// thread moves to the UI thread.
 // TODO(lazyboy): Could this potentially be owned exclusively (and deleted) on
-// the IO thread, thus not requiring RefCounted?
-class EventAckData::IOEventInfo
-    : public base::RefCountedThreadSafe<IOEventInfo> {
+// the core thread, thus not requiring RefCounted?
+class EventAckData::CoreThreadEventInfo
+    : public base::RefCountedThreadSafe<CoreThreadEventInfo> {
  public:
-  IOEventInfo() = default;
+  CoreThreadEventInfo() = default;
 
   // Map of event information keyed by event_id.
   std::map<int, EventInfo> event_map;
 
  private:
-  friend class base::RefCountedThreadSafe<IOEventInfo>;
-  ~IOEventInfo() = default;
+  friend class base::RefCountedThreadSafe<CoreThreadEventInfo>;
+  ~CoreThreadEventInfo() = default;
 
-  DISALLOW_COPY_AND_ASSIGN(IOEventInfo);
+  DISALLOW_COPY_AND_ASSIGN(CoreThreadEventInfo);
 };
 
 // static
-void EventAckData::StartExternalRequestOnIO(
+void EventAckData::StartExternalRequestOnCoreThread(
     content::ServiceWorkerContext* context,
     int render_process_id,
     int64_t version_id,
     int event_id,
-    scoped_refptr<IOEventInfo> unacked_events) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+    scoped_refptr<CoreThreadEventInfo> unacked_events) {
+  DCHECK_CURRENTLY_ON(content::ServiceWorkerContext::GetCoreThreadId());
 
   std::string request_uuid = base::GenerateGUID();
 
-  if (!context->StartingExternalRequest(version_id, request_uuid)) {
-    LOG(ERROR) << "StartExternalRequest failed";
+  content::ServiceWorkerExternalRequestResult result =
+      context->StartingExternalRequest(version_id, request_uuid);
+  if (result != content::ServiceWorkerExternalRequestResult::kOk) {
+    LOG(ERROR) << "StartExternalRequest failed: " << static_cast<int>(result);
     return;
   }
 
@@ -65,14 +73,15 @@ void EventAckData::StartExternalRequestOnIO(
 }
 
 // static
-void EventAckData::FinishExternalRequestOnIO(
+void EventAckData::FinishExternalRequestOnCoreThread(
     content::ServiceWorkerContext* context,
     int render_process_id,
     int64_t version_id,
     int event_id,
-    scoped_refptr<IOEventInfo> unacked_events,
+    bool worker_stopped,
+    scoped_refptr<CoreThreadEventInfo> unacked_events,
     base::OnceClosure failure_callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  DCHECK_CURRENTLY_ON(content::ServiceWorkerContext::GetCoreThreadId());
 
   std::map<int, EventInfo>& unacked_events_map = unacked_events->event_map;
   auto request_info_iter = unacked_events_map.find(event_id);
@@ -85,13 +94,21 @@ void EventAckData::FinishExternalRequestOnIO(
   std::string request_uuid = std::move(request_info_iter->second.first);
   unacked_events_map.erase(request_info_iter);
 
-  if (!context->FinishedExternalRequest(version_id, request_uuid))
+  content::ServiceWorkerExternalRequestResult result =
+      context->FinishedExternalRequest(version_id, request_uuid);
+  // If the worker was already stopped, the FinishedExternalRequest will
+  // legitimately fail.
+  if (worker_stopped)
+    return;
+
+  if (result != content::ServiceWorkerExternalRequestResult::kOk) {
+    LOG(ERROR) << "FinishExternalRequest failed: " << static_cast<int>(result);
     std::move(failure_callback).Run();
+  }
 }
 
 EventAckData::EventAckData()
-    : unacked_events_(base::MakeRefCounted<IOEventInfo>()),
-      weak_factory_(this) {}
+    : unacked_events_(base::MakeRefCounted<CoreThreadEventInfo>()) {}
 EventAckData::~EventAckData() = default;
 
 void EventAckData::IncrementInflightEvent(
@@ -101,12 +118,17 @@ void EventAckData::IncrementInflightEvent(
     int event_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  content::ServiceWorkerContext::RunTask(
-      base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::IO}),
-      FROM_HERE, context,
-      base::BindOnce(&EventAckData::StartExternalRequestOnIO, context,
-                     render_process_id, version_id, event_id, unacked_events_));
+  if (content::ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
+    StartExternalRequestOnCoreThread(context, render_process_id, version_id,
+                                     event_id, unacked_events_);
+  } else {
+    content::ServiceWorkerContext::RunTask(
+        base::CreateSingleThreadTaskRunner({content::BrowserThread::IO}),
+        FROM_HERE, context,
+        base::BindOnce(&EventAckData::StartExternalRequestOnCoreThread, context,
+                       render_process_id, version_id, event_id,
+                       unacked_events_));
+  }
 }
 
 void EventAckData::DecrementInflightEvent(
@@ -114,16 +136,23 @@ void EventAckData::DecrementInflightEvent(
     int render_process_id,
     int64_t version_id,
     int event_id,
+    bool worker_stopped,
     base::OnceClosure failure_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  content::ServiceWorkerContext::RunTask(
-      base::CreateSingleThreadTaskRunnerWithTraits(
-          {content::BrowserThread::IO}),
-      FROM_HERE, context,
-      base::BindOnce(&EventAckData::FinishExternalRequestOnIO, context,
-                     render_process_id, version_id, event_id, unacked_events_,
-                     std::move(failure_callback)));
+  if (content::ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
+    FinishExternalRequestOnCoreThread(context, render_process_id, version_id,
+                                      event_id, worker_stopped, unacked_events_,
+                                      std::move(failure_callback));
+  } else {
+    content::ServiceWorkerContext::RunTask(
+        base::CreateSingleThreadTaskRunner({content::BrowserThread::IO}),
+        FROM_HERE, context,
+        base::BindOnce(&EventAckData::FinishExternalRequestOnCoreThread,
+                       context, render_process_id, version_id, event_id,
+                       worker_stopped, unacked_events_,
+                       std::move(failure_callback)));
+  }
 }
 
 }  // namespace extensions

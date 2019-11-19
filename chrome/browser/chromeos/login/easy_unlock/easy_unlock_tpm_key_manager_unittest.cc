@@ -27,7 +27,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "crypto/scoped_test_nss_chromeos_user.h"
 #include "crypto/scoped_test_system_nss_key_slot.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -198,7 +198,7 @@ void RecordStringAndRunClosure(std::string* result,
 class EasyUnlockTpmKeyManagerTest : public testing::Test {
  public:
   EasyUnlockTpmKeyManagerTest()
-      : thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
+      : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         user_manager_(new FakeChromeUserManager()),
         user_manager_enabler_(base::WrapUnique(user_manager_)),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
@@ -235,7 +235,7 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
     bool success = false;
     base::RunLoop run_loop;
     // Has to be done on IO thread due to thread assertions in nss code.
-    base::PostTaskWithTraitsAndReply(
+    base::PostTaskAndReply(
         FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&EasyUnlockTpmKeyManagerTest::InitTestNssUserOnIOThread,
                        base::Unretained(this), base::Unretained(&success)),
@@ -259,7 +259,7 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
 
     base::RunLoop run_loop;
     // Has to be done on IO thread due to thread assertions in nss code.
-    base::PostTaskWithTraitsAndReply(
+    base::PostTaskAndReply(
         FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(
             &EasyUnlockTpmKeyManagerTest::FinalizeTestNssUserOnIOThread,
@@ -273,7 +273,7 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
   void ResetTestNssUser() {
     base::RunLoop run_loop;
     // Has to be done on IO thread due to thread assertions in nss code.
-    base::PostTaskWithTraitsAndReply(
+    base::PostTaskAndReply(
         FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(&EasyUnlockTpmKeyManagerTest::ResetTestNssUserOnIOThread,
                        base::Unretained(this)),
@@ -340,7 +340,7 @@ class EasyUnlockTpmKeyManagerTest : public testing::Test {
   const AccountId test_account_id_ = AccountId::FromUserEmail(kTestUserId);
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 
   // The NSS system slot used by EasyUnlockTPMKeyManagers in tests.
   std::unique_ptr<crypto::ScopedTestSystemNSSKeySlot> test_system_slot_;

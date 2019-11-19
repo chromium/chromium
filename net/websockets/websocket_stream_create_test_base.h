@@ -15,7 +15,7 @@
 #include "base/timer/timer.h"
 #include "net/socket/socket_test_util.h"
 #include "net/ssl/ssl_info.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "net/websockets/websocket_event_interface.h"
 #include "net/websockets/websocket_test_util.h"
 
@@ -31,7 +31,7 @@ class WebSocketStreamRequest;
 struct WebSocketHandshakeRequestInfo;
 struct WebSocketHandshakeResponseInfo;
 
-class WebSocketStreamCreateTestBase : public WithScopedTaskEnvironment {
+class WebSocketStreamCreateTestBase : public WithTaskEnvironment {
  public:
   using HeaderKeyValuePair = std::pair<std::string, std::string>;
 
@@ -40,12 +40,14 @@ class WebSocketStreamCreateTestBase : public WithScopedTaskEnvironment {
 
   // A wrapper for CreateAndConnectStreamForTesting that knows about our default
   // parameters.
-  void CreateAndConnectStream(const GURL& socket_url,
-                              const std::vector<std::string>& sub_protocols,
-                              const url::Origin& origin,
-                              const GURL& site_for_cookies,
-                              const HttpRequestHeaders& additional_headers,
-                              std::unique_ptr<base::OneShotTimer> timer);
+  void CreateAndConnectStream(
+      const GURL& socket_url,
+      const std::vector<std::string>& sub_protocols,
+      const url::Origin& origin,
+      const GURL& site_for_cookies,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const HttpRequestHeaders& additional_headers,
+      std::unique_ptr<base::OneShotTimer> timer);
 
   static std::vector<HeaderKeyValuePair> RequestHeadersToVector(
       const HttpRequestHeaders& headers);
@@ -81,7 +83,7 @@ class WebSocketStreamCreateTestBase : public WithScopedTaskEnvironment {
   SSLInfo ssl_info_;
   bool ssl_fatal_;
   URLRequest* url_request_;
-  scoped_refptr<AuthChallengeInfo> auth_challenge_info_;
+  AuthChallengeInfo auth_challenge_info_;
   base::OnceCallback<void(const AuthCredentials*)> on_auth_required_callback_;
 
   // This value will be copied to |*credentials| on OnAuthRequired.

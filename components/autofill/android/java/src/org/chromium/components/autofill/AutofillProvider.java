@@ -11,6 +11,7 @@ import android.view.autofill.AutofillValue;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -132,7 +133,8 @@ public abstract class AutofillProvider {
      * @param formData the form to fill.
      */
     protected void autofill(long nativeAutofillProvider, FormData formData) {
-        nativeOnAutofillAvailable(nativeAutofillProvider, formData);
+        AutofillProviderJni.get().onAutofillAvailable(
+                nativeAutofillProvider, AutofillProvider.this, formData);
     }
 
     /**
@@ -147,6 +149,9 @@ public abstract class AutofillProvider {
     @CalledByNative
     protected abstract void onDidFillAutofillFormData();
 
-    private native void nativeOnAutofillAvailable(
-            long nativeAutofillProviderAndroid, FormData formData);
+    @NativeMethods
+    interface Natives {
+        void onAutofillAvailable(
+                long nativeAutofillProviderAndroid, AutofillProvider caller, FormData formData);
+    }
 }

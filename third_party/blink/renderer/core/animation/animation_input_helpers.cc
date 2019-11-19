@@ -33,13 +33,13 @@ static String RemoveSVGPrefix(const String& property) {
 }
 
 static String CSSPropertyToKeyframeAttribute(const CSSProperty& property) {
-  DCHECK_NE(property.PropertyID(), CSSPropertyInvalid);
-  DCHECK_NE(property.PropertyID(), CSSPropertyVariable);
+  DCHECK_NE(property.PropertyID(), CSSPropertyID::kInvalid);
+  DCHECK_NE(property.PropertyID(), CSSPropertyID::kVariable);
 
   switch (property.PropertyID()) {
-    case CSSPropertyFloat:
+    case CSSPropertyID::kFloat:
       return "cssFloat";
-    case CSSPropertyOffset:
+    case CSSPropertyID::kOffset:
       return "cssOffset";
     default:
       return property.GetJSPropertyName();
@@ -58,23 +58,23 @@ CSSPropertyID AnimationInputHelpers::KeyframeAttributeToCSSProperty(
     const String& property,
     const Document& document) {
   if (CSSVariableParser::IsValidVariableName(property))
-    return CSSPropertyVariable;
+    return CSSPropertyID::kVariable;
 
   // Disallow prefixed properties.
   if (property[0] == '-')
-    return CSSPropertyInvalid;
+    return CSSPropertyID::kInvalid;
   if (IsASCIIUpper(property[0]))
-    return CSSPropertyInvalid;
+    return CSSPropertyID::kInvalid;
   if (property == "cssFloat")
-    return CSSPropertyFloat;
+    return CSSPropertyID::kFloat;
   if (property == "cssOffset")
-    return CSSPropertyOffset;
+    return CSSPropertyID::kOffset;
 
   StringBuilder builder;
   for (wtf_size_t i = 0; i < property.length(); ++i) {
     // Disallow hyphenated properties.
     if (property[i] == '-')
-      return CSSPropertyInvalid;
+      return CSSPropertyID::kInvalid;
     if (IsASCIIUpper(property[i]))
       builder.Append('-');
     builder.Append(property[i]);
@@ -87,14 +87,14 @@ CSSPropertyID AnimationInputHelpers::KeyframeAttributeToPresentationAttribute(
     const Element* element) {
   if (!RuntimeEnabledFeatures::WebAnimationsSVGEnabled() || !element ||
       !element->IsSVGElement() || !IsSVGPrefixed(property))
-    return CSSPropertyInvalid;
+    return CSSPropertyID::kInvalid;
 
   String unprefixed_property = RemoveSVGPrefix(property);
   if (SVGElement::IsAnimatableCSSProperty(QualifiedName(
           g_null_atom, AtomicString(unprefixed_property), g_null_atom)))
     return cssPropertyID(unprefixed_property);
 
-  return CSSPropertyInvalid;
+  return CSSPropertyID::kInvalid;
 }
 
 using AttributeNameMap = HashMap<QualifiedName, const QualifiedName*>;
@@ -217,12 +217,12 @@ QualifiedName SvgAttributeName(const String& property) {
 const QualifiedName* AnimationInputHelpers::KeyframeAttributeToSVGAttribute(
     const String& property,
     Element* element) {
-  if (!RuntimeEnabledFeatures::WebAnimationsSVGEnabled() || !element ||
-      !element->IsSVGElement() || !IsSVGPrefixed(property))
+  auto* svg_element = DynamicTo<SVGElement>(element);
+  if (!RuntimeEnabledFeatures::WebAnimationsSVGEnabled() || !svg_element ||
+      !IsSVGPrefixed(property))
     return nullptr;
 
-  SVGElement* svg_element = ToSVGElement(element);
-  if (IsSVGSMILElement(svg_element))
+  if (IsA<SVGSMILElement>(svg_element))
     return nullptr;
 
   String unprefixed_property = RemoveSVGPrefix(property);
@@ -250,16 +250,16 @@ scoped_refptr<TimingFunction> AnimationInputHelpers::ParseTimingFunction(
   SecureContextMode secure_context_mode =
       document ? document->GetSecureContextMode()
                : SecureContextMode::kInsecureContext;
-  const CSSValue* value =
-      CSSParser::ParseSingleValue(CSSPropertyTransitionTimingFunction, string,
-                                  StrictCSSParserContext(secure_context_mode));
-  if (!value || !value->IsValueList()) {
+  const CSSValue* value = CSSParser::ParseSingleValue(
+      CSSPropertyID::kTransitionTimingFunction, string,
+      StrictCSSParserContext(secure_context_mode));
+  const auto* value_list = DynamicTo<CSSValueList>(value);
+  if (!value_list) {
     DCHECK(!value || value->IsCSSWideKeyword());
     exception_state.ThrowTypeError("'" + string +
                                    "' is not a valid value for easing");
     return nullptr;
   }
-  const CSSValueList* value_list = ToCSSValueList(value);
   if (value_list->length() > 1) {
     exception_state.ThrowTypeError("Easing may not be set to a list of values");
     return nullptr;

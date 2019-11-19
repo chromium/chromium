@@ -19,8 +19,15 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script>
-test(function () {
-  assert_equals(getComputedStyle(bodyText).fontSize, "40px")
-}, "Checks if we are in print mode");
+var t = async_test();
+// The <style> is guaranteed to be set by the time this script runs, but print
+// mode is set via an IPC which races with the loading task which runs this
+// script. We get @media screen until that IPC is processed.
+window.onload = function() {
+  t.step(function () {
+    assert_equals(getComputedStyle(bodyText).fontSize, "40px")
+  }, "Checks if we are in print mode");
+  t.done();
+};
 </script>
 </html>

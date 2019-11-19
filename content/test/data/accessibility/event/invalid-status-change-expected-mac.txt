@@ -1,1 +1,0 @@
-AXInvalidStatusChanged on AXTextField AXDescription="Field"

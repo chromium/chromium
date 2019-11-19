@@ -1,0 +1,22 @@
+<style include="navi-colors-css">
+  :host {
+    align-items: center;
+    display: flex;
+  }
+
+  span {
+    background: var(--navi-step-indicator-color);
+    border-radius: 50%;
+    display: inline-block;
+    height: 8px;
+    margin: 0 4px;
+    width: 8px;
+  }
+
+  span.active {
+    background: var(--navi-step-indicator-active-color);
+  }
+</style>
+<template is="dom-repeat" items="[[dots_]]">
+  <span class$="[[getActiveClass_(index, model.active)]]"></span>
+</template>

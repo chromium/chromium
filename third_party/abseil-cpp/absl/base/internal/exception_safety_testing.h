@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -169,8 +169,10 @@ class ConstructorTracker {
     return current_tracker_instance_ != nullptr;
   }
 
-  static std::string ErrorMessage(void* address, const std::string& address_description,
-                             int countdown, const std::string& error_description) {
+  static std::string ErrorMessage(void* address,
+                                  const std::string& address_description,
+                                  int countdown,
+                                  const std::string& error_description) {
     return absl::Substitute(
         "With coundtown at $0:\n"
         "  $1\n"
@@ -556,8 +558,8 @@ class ThrowingValue : private exceptions_internal::TrackedObject {
   // We provide both regular and templated operator delete because if only the
   // templated version is provided as we did with operator new, the compiler has
   // no way of knowing which overload of operator delete to call. See
-  // http://en.cppreference.com/w/cpp/memory/new/operator_delete and
-  // http://en.cppreference.com/w/cpp/language/delete for the gory details.
+  // https://en.cppreference.com/w/cpp/memory/new/operator_delete and
+  // https://en.cppreference.com/w/cpp/language/delete for the gory details.
   void operator delete(void* p) noexcept { ::operator delete(p); }
 
   template <typename... Args>

@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/core/paint/frame_paint_timing.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_painter.h"
-#include "third_party/blink/renderer/core/paint/scrollbar_painter.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
@@ -67,24 +66,18 @@ void FramePainter::PaintContents(GraphicsContext& context,
   FramePaintTiming frame_paint_timing(context, &GetFrameView().GetFrame());
   TRACE_EVENT1("devtools.timeline,rail", "Paint", "data",
                inspector_paint_event::Data(
-                   layout_view, LayoutRect(cull_rect.Rect()), nullptr));
+                   layout_view, PhysicalRect(cull_rect.Rect()), nullptr));
 
   bool is_top_level_painter = !in_paint_contents_;
   in_paint_contents_ = true;
 
   FontCachePurgePreventer font_cache_purge_preventer;
 
-  // TODO(jchaffraix): GlobalPaintFlags should be const during a paint
-  // phase. Thus we should set this flag upfront (crbug.com/510280).
-  GlobalPaintFlags updated_global_paint_flags = global_paint_flags;
   PaintLayerFlags root_layer_paint_flags = 0;
-  if (document->Printing()) {
-    updated_global_paint_flags |=
-        kGlobalPaintFlattenCompositingLayers | kGlobalPaintPrinting;
-    // This will prevent clipping the root PaintLayer to its visible content
-    // rect when root layer scrolling is enabled.
+  // This will prevent clipping the root PaintLayer to its visible content
+  // rect when root layer scrolling is enabled.
+  if (document->IsCapturingLayout())
     root_layer_paint_flags = kPaintLayerPaintingOverflowContents;
-  }
 
   PaintLayer* root_layer = layout_view->Layer();
 
@@ -100,13 +93,8 @@ void FramePainter::PaintContents(GraphicsContext& context,
       root_layer->GetLayoutObject().GetFrame());
   context.SetDeviceScaleFactor(device_scale_factor);
 
-  layer_painter.Paint(context, cull_rect, updated_global_paint_flags,
+  layer_painter.Paint(context, cull_rect, global_paint_flags,
                       root_layer_paint_flags);
-
-  if (root_layer->ContainsDirtyOverlayScrollbars()) {
-    layer_painter.PaintOverlayScrollbars(context, cull_rect,
-                                         updated_global_paint_flags);
-  }
 
   // Regions may have changed as a result of the visibility/z-index of element
   // changing.

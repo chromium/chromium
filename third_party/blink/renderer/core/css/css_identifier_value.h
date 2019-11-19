@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_id_mappings.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 namespace blink {
@@ -64,7 +65,12 @@ class CORE_EXPORT CSSIdentifierValue : public CSSValue {
   CSSValueID value_id_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSIdentifierValue, IsIdentifierValue());
+template <>
+struct DowncastTraits<CSSIdentifierValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsIdentifierValue();
+  }
+};
 
 }  // namespace blink
 

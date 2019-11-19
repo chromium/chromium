@@ -49,9 +49,6 @@ class PaymentRequestItemList {
     // SelectedStateChanged is called if |notify| is true.
     void SetSelected(bool selected, bool notify);
 
-    // Creates and returns the view associated with this list item.
-    std::unique_ptr<views::View> CreateItemView();
-
     // Returns a pointer to the PaymentRequestItemList that owns this object.
     PaymentRequestItemList* list() { return list_; }
 
@@ -116,7 +113,6 @@ class PaymentRequestItemList {
     PaymentRequestSpec* spec_;
     PaymentRequestState* state_;
     PaymentRequestItemList* list_;
-    std::unique_ptr<views::ImageView> checkmark_;
     base::string16 accessible_item_description_;
     bool selected_;
     bool show_edit_button_;

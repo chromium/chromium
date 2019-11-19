@@ -8,7 +8,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
-#include "extensions/browser/extension_registry.h"
 
 namespace extensions {
 
@@ -20,7 +19,7 @@ ChromeAppIconService* ChromeAppIconService::Get(
 }
 
 ChromeAppIconService::ChromeAppIconService(content::BrowserContext* context)
-    : context_(context), observer_(this), weak_ptr_factory_(this) {
+    : context_(context) {
 #if defined(OS_CHROMEOS)
   app_updater_ = std::make_unique<LauncherExtensionAppUpdater>(this, context);
 #endif

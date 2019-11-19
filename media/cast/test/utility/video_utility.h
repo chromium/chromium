@@ -13,12 +13,12 @@ namespace media {
 namespace cast {
 
 // Compute and return PSNR between two frames.
-double I420PSNR(const scoped_refptr<media::VideoFrame>& frame1,
-                const scoped_refptr<media::VideoFrame>& frame2);
+double I420PSNR(const media::VideoFrame& frame1,
+                const media::VideoFrame& frame2);
 
 // Compute and return SSIM between two frames.
-double I420SSIM(const scoped_refptr<media::VideoFrame>& frame1,
-                const scoped_refptr<media::VideoFrame>& frame2);
+double I420SSIM(const media::VideoFrame& frame1,
+                const media::VideoFrame& frame2);
 
 // Populate a video |frame| with a plaid pattern, cycling from the given
 // |start_value|.

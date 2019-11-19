@@ -54,11 +54,12 @@ class MockSharedImageBacking : public SharedImageBacking {
                            size,
                            color_space,
                            usage,
-                           estimated_size) {}
+                           estimated_size,
+                           false /* is_thread_safe */) {}
 
   MOCK_CONST_METHOD0(IsCleared, bool());
   MOCK_METHOD0(SetCleared, void());
-  MOCK_METHOD0(Update, void());
+  MOCK_METHOD1(Update, void(std::unique_ptr<gfx::GpuFence>));
   MOCK_METHOD0(Destroy, void());
   MOCK_METHOD1(ProduceLegacyMailbox, bool(MailboxManager*));
 

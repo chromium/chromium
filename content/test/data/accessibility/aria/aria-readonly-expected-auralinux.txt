@@ -1,0 +1,23 @@
+[document web] enabled sensitive
+++[section] enabled sensitive
+++++[entry] editable enabled sensitive selectable-text
+++[section] enabled sensitive
+++++[entry] selectable-text
+++[section] name='Readonly-false plain div' enabled sensitive
+++[section] name='Readonly-true plain div' enabled sensitive
+++[section] name='Readonly-false contenteditable div' editable enabled sensitive selectable-text
+++[section] name='Readonly-true contenteditable div' editable enabled sensitive selectable-text
+++[entry] name='Readonly-false role unimplemented textbox' enabled sensitive selectable-text
+++[entry] name='Readonly-true role unimplemented textbox' selectable-text
+++[entry] name='Readonly-false contenteditable textbox' enabled sensitive selectable-text
+++[entry] name='Readonly-true contenteditable textbox' selectable-text
+++[check box] name='Readonly checkbox' checkable:true
+++[combo box] name='Readonly combobox' selectable-text
+++[list box] name='Readonly listbox'
+++[panel] name='Readonly radiogroup'
+++[slider] name='Readonly slider' horizontal current=50.000000 minimum=0.000000 maximum=100.000000
+++[spin button] name='Readonly spinbutton' current=0.000000 minimum=0.000000 maximum=0.000000
+++[check menu item] name='Readonly menuitemcheckbox' checkable:true
+++[radio menu item] name='Readonly menuitemradio' checkable:true
+++[entry] name='Readonly searchbox' selectable-text
+++[toggle button] name='Readonly switch' checkable:true

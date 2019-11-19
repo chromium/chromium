@@ -85,26 +85,6 @@ v8::Maybe<{{return_cpp_type}}> {{cpp_class}}::InvokeWithoutRunnabilityCheck({{ar
 }
 {% endif %}
 
-v8::Maybe<{{return_cpp_type}}> V8PersistentCallbackFunction<{{cpp_class}}>::Invoke({{argument_declarations | join(', ')}}) {
-  return Proxy()->Invoke(
-      {{
-         (['callback_this_value'] +
-          (arguments|map(attribute='name')|list)
-         )|join(', ')
-      }});
-}
-
-{% if idl_type == 'void' or callback_function_name == 'Function' %}
-void V8PersistentCallbackFunction<{{cpp_class}}>::InvokeAndReportException({{argument_declarations | join(', ')}}) {
-  Proxy()->InvokeAndReportException(
-      {{
-         (['callback_this_value'] +
-          (arguments|map(attribute='name')|list)
-         )|join(', ')
-      }});
-}
-{% endif %}
-
 }  // namespace blink
 
 {% endfilter %}{# format_blink_cpp_source_code #}

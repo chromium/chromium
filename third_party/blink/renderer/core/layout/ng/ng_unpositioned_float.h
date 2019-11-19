@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NGUnpositionedFloat_h
-#define NGUnpositionedFloat_h
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_UNPOSITIONED_FLOAT_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_UNPOSITIONED_FLOAT_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/core/layout/logical_values.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -41,19 +40,17 @@ struct CORE_EXPORT NGUnpositionedFloat final {
   scoped_refptr<const NGLayoutResult> layout_result;
   NGBoxStrut margins;
 
-  bool IsLineLeft(TextDirection direction) const {
-    return ResolvedFloating(node.Style().Floating(), direction) ==
-           EFloat::kLeft;
+  bool IsLineLeft(TextDirection cb_direction) const {
+    return node.Style().Floating(cb_direction) == EFloat::kLeft;
   }
-  bool IsLineRight(TextDirection direction) const {
-    return ResolvedFloating(node.Style().Floating(), direction) ==
-           EFloat::kRight;
+  bool IsLineRight(TextDirection cb_direction) const {
+    return node.Style().Floating(cb_direction) == EFloat::kRight;
   }
-  EClear ClearType(TextDirection direction) const {
-    return ResolvedClear(node.Style().Clear(), direction);
+  EClear ClearType(TextDirection cb_direction) const {
+    return node.Style().Clear(cb_direction);
   }
 };
 
 }  // namespace blink
 
-#endif  // NGUnpositionedFloat_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_UNPOSITIONED_FLOAT_H_

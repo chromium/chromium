@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2014 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+
+<!-- TODO(crbug.com/1017190): Remove the UnusedResources workaround. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools"
+          tools:ignore="UnusedResources">
+    <item android:state_selected="true" android:color="@color/default_icon_color_white_pressed" />
+    <item android:state_focused="true" android:color="@color/default_icon_color_white_pressed" />
+    <item android:state_pressed="true" android:color="@color/default_icon_color_white_pressed" />
+    <item android:state_activated="true" android:color="@color/default_icon_color_white_pressed" />
+    <item android:state_enabled="false" android:color="@color/default_icon_color_white_disabled" />
+    <item android:color="@color/default_icon_color_white" />
+</selector>

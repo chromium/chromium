@@ -5,14 +5,14 @@
 #ifndef UI_BASE_IME_CHROMEOS_MOCK_COMPONENT_EXTENSION_IME_MANAGER_DELEGATE_H_
 #define UI_BASE_IME_CHROMEOS_MOCK_COMPONENT_EXTENSION_IME_MANAGER_DELEGATE_H_
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "ui/base/ime/chromeos/component_extension_ime_manager.h"
-#include "ui/base/ime/ui_base_ime_export.h"
 
 namespace chromeos {
 namespace input_method {
 
-class UI_BASE_IME_EXPORT MockComponentExtIMEManagerDelegate
+class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) MockComponentExtIMEManagerDelegate
     : public ComponentExtensionIMEManagerDelegate {
  public:
   MockComponentExtIMEManagerDelegate();

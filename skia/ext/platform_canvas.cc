@@ -57,8 +57,7 @@ std::unique_ptr<SkCanvas> CreatePlatformCanvasWithPixels(
     bitmap.setPixels(data);
   } else {
       if (!bitmap.tryAllocPixels()) {
-        if (CRASH_ON_FAILURE == failureType)
-          SK_CRASH();
+        CHECK(failureType != CRASH_ON_FAILURE);
         return nullptr;
       }
 

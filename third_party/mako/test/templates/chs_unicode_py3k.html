@@ -1,0 +1,11 @@
+## -*- coding:utf-8 -*-
+<%
+ msg = '新中国的主席'
+%>
+
+<%def name="welcome(who, place='北京')">
+Welcome ${who} to ${place}.
+</%def>
+
+${name} 是 ${msg}<br/>
+${welcome('你')}

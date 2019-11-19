@@ -137,13 +137,15 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     ~Config();
 
     std::string AsHumanReadableString() const;
-    bool is_encrypted() const { return encryption_scheme.is_encrypted(); }
+    bool is_encrypted() const {
+      return encryption_scheme != EncryptionScheme::kUnencrypted;
+    }
 
     // The video codec and profile.
     VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
 
     // Whether the stream is encrypted, and, if so, the scheme used.
-    EncryptionScheme encryption_scheme;
+    EncryptionScheme encryption_scheme = EncryptionScheme::kUnencrypted;
 
     // The CDM that the VDA should use to decode encrypted streams. Must be
     // set to a valid ID if |is_encrypted|.
@@ -212,6 +214,17 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
                                        const gfx::Size& dimensions,
                                        uint32_t texture_target) = 0;
 
+    // This is the same as ProvidePictureBuffers() except that |visible_rect| is
+    // also included. The default implementation of VDA would call
+    // ProvidePictureBuffers().
+    virtual void ProvidePictureBuffersWithVisibleRect(
+        uint32_t requested_num_of_buffers,
+        VideoPixelFormat format,
+        uint32_t textures_per_buffer,
+        const gfx::Size& dimensions,
+        const gfx::Rect& visible_rect,
+        uint32_t texture_target);
+
     // Callback to dismiss picture buffer that was assigned earlier.
     virtual void DismissPictureBuffer(int32_t picture_buffer_id) = 0;
 
@@ -270,7 +283,7 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   // NotifyEndOfBitstreamBuffer() with the bitstream buffer id.
   // Parameters:
   //  |bitstream_buffer| is the input bitstream that is sent for decoding.
-  virtual void Decode(const BitstreamBuffer& bitstream_buffer) = 0;
+  virtual void Decode(BitstreamBuffer bitstream_buffer) = 0;
 
   // Decodes given decoder buffer that contains at most one frame.  Once
   // decoder is done with processing |buffer| it will call
@@ -309,7 +322,7 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
   virtual void ImportBufferForPicture(
       int32_t picture_buffer_id,
       VideoPixelFormat pixel_format,
-      const gfx::GpuMemoryBufferHandle& gpu_memory_buffer_handle);
+      gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle);
 
   // Sends picture buffers to be reused by the decoder. This needs to be called
   // for each buffer that has been processed so that decoder may know onto which

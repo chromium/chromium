@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind_test_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +15,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -24,6 +26,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
+#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -369,7 +373,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInMainframe) {
   EXPECT_THAT(source_text,
               HasSubstr("<h1>Request Body:</h1><pre>text=value</pre>"));
   EXPECT_THAT(source_text,
-              HasSubstr("<h1>Request Headers:</h1><pre>POST /echoall HTTP"));
+              HasSubstr("<pre id='request-headers'>POST /echoall HTTP"));
   EXPECT_THAT(source_text,
               ContainsRegex("Request Headers:.*Referer: " + form_url.spec()));
   EXPECT_THAT(
@@ -400,9 +404,25 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInMainframe) {
   EXPECT_THAT(title, HasSubstr(original_url.path()));
 }
 
+class ViewSourceWithSplitCacheTest
+    : public ViewSourceTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  void SetUp() override {
+    bool split_cache_by_network_isolation_key = GetParam();
+    feature_list_.InitWithFeatureState(
+        net::features::kSplitCacheByNetworkIsolationKey,
+        split_cache_by_network_isolation_key);
+    ViewSourceTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Tests that "View Source" works fine for *subframes* shown via HTTP POST.
 // This is a regression test for https://crbug.com/774691.
-IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInSubframe) {
+IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheTest, HttpPostInSubframe) {
   // Navigate to a page with multiple frames.
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -463,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInSubframe) {
   EXPECT_THAT(source_text,
               HasSubstr("<h1>Request Body:</h1><pre>text=value</pre>"));
   EXPECT_THAT(source_text,
-              HasSubstr("<h1>Request Headers:</h1><pre>POST /echoall HTTP"));
+              HasSubstr("<pre id='request-headers'>POST /echoall HTTP"));
   EXPECT_THAT(source_text,
               ContainsRegex("Request Headers:.*Referer: " + form_url.spec()));
   EXPECT_THAT(
@@ -490,6 +510,103 @@ IN_PROC_BROWSER_TEST_F(ViewSourceTest, HttpPostInSubframe) {
   EXPECT_THAT(title, HasSubstr(original_url.port()));
   EXPECT_THAT(title, HasSubstr(original_url.path()));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ViewSourceWithSplitCacheTest,
+    testing::Bool());
+
+using ViewSourceWithSplitCacheEnabledTest = ViewSourceWithSplitCacheTest;
+
+// Tests that the network isolation key for the view-source request is reused
+// in the back-navigation request to the view-source page.
+//
+// The test runs the following steps:
+// 1. Navigate to page a.com/title1.html
+// 2. Create a cross-site subframe b.com/title1.html
+// 3. View-source the subframe
+// 4. Navigate the view-source page to a c.com/title1.html
+// 5. Navigate back to the view-source page
+//
+// In the end, the test checks whether the back navigation request resource
+// exists in the cache. |exists_in_cache == true| implies the top_frame_origin
+// of the network isolation key is a.com (reused).
+//
+// Flaky. http://crbug.com/1024033
+IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheEnabledTest,
+                       DISABLED_NetworkIsolationKeyReusedForBackNavigation) {
+  content::SetupCrossSiteRedirector(embedded_test_server());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // 1. Navigate to page a.com/title1.html
+  GURL main_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  ui_test_utils::NavigateToURL(browser(), main_url);
+
+  content::WebContents* original_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  {
+    // 2. Create a cross-site subframe b.com/title1.html
+    std::string subframe_url =
+        GURL(embedded_test_server()->GetURL("b.com", "/title1.html")).spec();
+    std::string create_frame_script = base::StringPrintf(
+        "let frame = document.createElement('iframe');"
+        "frame.src = '%s';"
+        "document.body.appendChild(frame);",
+        subframe_url.c_str());
+    content::TestNavigationObserver navigation_observer(original_contents);
+    original_contents->GetMainFrame()->ExecuteJavaScriptForTests(
+        base::ASCIIToUTF16(create_frame_script), base::NullCallback());
+    navigation_observer.Wait();
+  }
+
+  // 3. View-source the subframe
+  content::WebContentsAddedObserver view_source_contents_observer;
+  original_contents->GetAllFrames()[1]->ViewSource();
+  content::WebContents* view_source_contents =
+      view_source_contents_observer.GetWebContents();
+  EXPECT_TRUE(WaitForLoadStop(view_source_contents));
+  // This test expects us to re-load a page after a back navigation (and reuse
+  // the network isolation key while doing so), which won't happen when the
+  // page is restored from the back forward cache. We are disabling caching for
+  // |view_source_contents| to make sure it will not be put into the back
+  // forward cache.
+  view_source_contents->GetController().GetBackForwardCache().DisableForTesting(
+      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+
+  // 4. Navigate the view-source page to a c.com/title1.html
+  ui_test_utils::NavigateToURL(
+      browser(), GURL(embedded_test_server()->GetURL("c.com", "/title1.html")));
+
+  bool exists_in_cache = false;
+  content::URLLoaderInterceptor interceptor(
+      base::BindLambdaForTesting(
+          [&](content::URLLoaderInterceptor::RequestParams* params) {
+            return false;
+          }),
+      base::BindLambdaForTesting(
+          [&](const GURL& request_url,
+              const network::URLLoaderCompletionStatus& status) {
+            exists_in_cache = status.exists_in_cache;
+          }),
+      {});
+
+  {
+    // 5. Navigate back to the view-source page
+    content::WebContents* new_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    content::TestNavigationObserver navigation_observer(new_contents);
+    chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
+    navigation_observer.Wait();
+  }
+
+  EXPECT_TRUE(exists_in_cache);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ViewSourceWithSplitCacheEnabledTest,
+    ::testing::Values(true));
 
 // Verify that links clicked from view-source do not send a Referer header.
 // See https://crbug.com/834023.

@@ -1,0 +1,23 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//components/chromeos_camera/common/jpeg_encode_accelerator.mojom"
+
+public_headers = [ "//components/chromeos_camera/jpeg_encode_accelerator.h" ]
+
+traits_headers = [
+  "//components/chromeos_camera/common/jpeg_encode_accelerator_mojom_traits.h",
+]
+
+sources = [
+  "//components/chromeos_camera/common/jpeg_encode_accelerator_mojom_traits.cc",
+]
+
+deps = [
+  "//base",
+  "//media",
+  "//media/base/ipc",
+]
+
+type_mappings = [ "chromeos_camera.mojom.EncodeStatus=::chromeos_camera::JpegEncodeAccelerator::Status" ]

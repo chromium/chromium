@@ -1,2 +1,0 @@
-This test passes because the injected iframe is from about:blank and is harmless.
-

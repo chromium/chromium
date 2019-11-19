@@ -1,0 +1,1 @@
+This directory contains the APIs that is only allowed to be used in //ios/web_view.

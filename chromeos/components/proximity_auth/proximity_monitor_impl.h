@@ -27,15 +27,12 @@ class BluetoothAdapter;
 
 namespace proximity_auth {
 
-class ProximityAuthPrefManager;
-
 // The concrete implemenation of the proximity monitor interface.
 class ProximityMonitorImpl : public ProximityMonitor {
  public:
   // The |connection| is not owned, and must outlive |this| instance.
   ProximityMonitorImpl(chromeos::multidevice::RemoteDeviceRef remote_device,
-                       chromeos::secure_channel::ClientChannel* channel,
-                       ProximityAuthPrefManager* pref_manager);
+                       chromeos::secure_channel::ClientChannel* channel);
   ~ProximityMonitorImpl() override;
 
   // ProximityMonitor:
@@ -81,10 +78,6 @@ class ProximityMonitorImpl : public ProximityMonitor {
   // samples. Notifies observers on a change.
   void CheckForProximityStateChange();
 
-  // Gets the user-selected proximity threshold and converts it to a
-  // RSSI value.
-  void GetRssiThresholdFromPrefs();
-
   // Used to get the name of the remote device that ProximitMonitor is
   // communicating with, for metrics purposes.
   chromeos::multidevice::RemoteDeviceRef remote_device_;
@@ -92,10 +85,6 @@ class ProximityMonitorImpl : public ProximityMonitor {
   // Used to communicate with the remote device to gauge its proximity via RSSI
   // measurement.
   chromeos::secure_channel::ClientChannel* channel_;
-
-  // Used to get determine the user pref for how far away the phone is allowed
-  // to be.
-  ProximityAuthPrefManager* pref_manager_;
 
   // The Bluetooth adapter that will be polled for connection info.
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
@@ -108,9 +97,6 @@ class ProximityMonitorImpl : public ProximityMonitor {
   // for proximity to the remote device.
   bool is_active_;
 
-  // When the RSSI is below this value the phone the unlock is not allowed.
-  int rssi_threshold_;
-
   // The exponentailly weighted rolling average of the RSSI, used to smooth the
   // RSSI readings. Null if the monitor is inactive, has not recently observed
   // an RSSI reading, or the most recent connection info included an invalid
@@ -120,10 +106,10 @@ class ProximityMonitorImpl : public ProximityMonitor {
   // Used to vend weak pointers for polling. Using a separate factory for these
   // weak pointers allows the weak pointers to be invalidated when polling
   // stops, which effectively cancels the scheduled tasks.
-  base::WeakPtrFactory<ProximityMonitorImpl> polling_weak_ptr_factory_;
+  base::WeakPtrFactory<ProximityMonitorImpl> polling_weak_ptr_factory_{this};
 
   // Used to vend all other weak pointers.
-  base::WeakPtrFactory<ProximityMonitorImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ProximityMonitorImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProximityMonitorImpl);
 };

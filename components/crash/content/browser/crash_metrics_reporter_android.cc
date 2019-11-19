@@ -287,6 +287,17 @@ void CrashMetricsReporter::ChildProcessExited(
         info.remaining_process_with_strong_binding, 20);
   }
 
+  if (android_oom_kill) {
+    if (info.best_effort_reverse_rank >= 0) {
+      UMA_HISTOGRAM_EXACT_LINEAR("Stability.Android.OomKillReverseRank",
+                                 info.best_effort_reverse_rank, 50);
+    }
+    if (info.best_effort_reverse_rank != -2) {
+      UMA_HISTOGRAM_BOOLEAN("Stability.Android.OomKillReverseRankSuccess",
+                            info.best_effort_reverse_rank != -1);
+    }
+  }
+
   ReportLegacyCrashUma(info, crashed);
   NotifyObservers(info.process_host_id, reported_counts);
 }

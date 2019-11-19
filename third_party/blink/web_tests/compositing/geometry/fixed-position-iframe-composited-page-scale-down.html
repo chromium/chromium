@@ -23,9 +23,6 @@
     internals.setPageScaleFactor(0.5);
   }
   function test() {
-    if (window.testRunner)
-      testRunner.dumpAsTextWithPixelResults();
-
     var d = document.getElementById('frame').contentDocument.open();
     d.write("<div style='position:fixed; z-index: 1; left; 10px;'>TEST</div>");
     d.close();

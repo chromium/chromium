@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../fast/forms/resources/common.js"></script>
+<script src="../../../fast/forms/resources/picker-common.js"></script>
+<script src="../../../fast/forms/calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+
+<input type=date id=date value="2019-09-20" min="2019-09-17" max="2019-09-25">
+
+<script>
+let t = async_test('Test clicking on disabled day');
+
+function test1() {
+  removeCommitDelay();
+  clickDayCellAt(6, 0);
+  assert_not_equals(internals.pagePopupWindow, null);
+}
+
+t.step(() => {
+  openPicker(document.getElementById('date'), t.step_func_done(test1));
+});
+</script>
+</body>
+</html>

@@ -4,7 +4,6 @@
 
 #include "ui/views/animation/ink_drop_host_view.h"
 
-#include "build/build_config.h"
 #include "ui/events/event.h"
 #include "ui/events/scoped_target_handler.h"
 #include "ui/gfx/color_palette.h"
@@ -22,123 +21,29 @@
 
 namespace views {
 
-// An EventHandler that is guaranteed to be invoked and is not prone to
-// InkDropHostView descendents who do not call
-// InkDropHostView::OnGestureEvent() and InkDropHostView::OnMouseEvent().
-// Only one instance of this class can exist at any given time for each ink drop
-// host view.
-class InkDropHostView::InkDropEventHandler : public ui::EventHandler {
- public:
-  explicit InkDropEventHandler(InkDropHostView* host_view)
-      : target_handler_(
-            std::make_unique<ui::ScopedTargetHandler>(host_view, this)),
-        host_view_(host_view) {}
+// static
+constexpr gfx::Size InkDropHostView::kDefaultInkDropSize;
 
-  ~InkDropEventHandler() override = default;
+InkDropHostView::InkDropHostViewEventHandlerDelegate::
+    InkDropHostViewEventHandlerDelegate(InkDropHostView* host_view)
+    : host_view_(host_view) {}
 
-  // ui::EventHandler:
-  void OnGestureEvent(ui::GestureEvent* event) override {
-    if (!host_view_->enabled() || host_view_->ink_drop_mode_ != InkDropMode::ON)
-      return;
+bool InkDropHostView::InkDropHostViewEventHandlerDelegate::HasInkDrop() const {
+  return host_view_->HasInkDrop();
+}
 
-    InkDropState current_ink_drop_state =
-        host_view_->GetInkDrop()->GetTargetInkDropState();
+InkDrop* InkDropHostView::InkDropHostViewEventHandlerDelegate::GetInkDrop() {
+  return host_view_->GetInkDrop();
+}
 
-    InkDropState ink_drop_state = InkDropState::HIDDEN;
-    switch (event->type()) {
-      case ui::ET_GESTURE_TAP_DOWN:
-        if (current_ink_drop_state == InkDropState::ACTIVATED)
-          return;
-        ink_drop_state = InkDropState::ACTION_PENDING;
-        // The ui::ET_GESTURE_TAP_DOWN event needs to be marked as handled so
-        // that subsequent events for the gesture are sent to |this|.
-        event->SetHandled();
-        break;
-      case ui::ET_GESTURE_LONG_PRESS:
-        if (current_ink_drop_state == InkDropState::ACTIVATED)
-          return;
-        ink_drop_state = InkDropState::ALTERNATE_ACTION_PENDING;
-        break;
-      case ui::ET_GESTURE_LONG_TAP:
-        ink_drop_state = InkDropState::ALTERNATE_ACTION_TRIGGERED;
-        break;
-      case ui::ET_GESTURE_END:
-      case ui::ET_GESTURE_SCROLL_BEGIN:
-      case ui::ET_GESTURE_TAP_CANCEL:
-        if (current_ink_drop_state == InkDropState::ACTIVATED)
-          return;
-        ink_drop_state = InkDropState::HIDDEN;
-        break;
-      default:
-        return;
-    }
-
-    if (ink_drop_state == InkDropState::HIDDEN &&
-        (current_ink_drop_state == InkDropState::ACTION_TRIGGERED ||
-         current_ink_drop_state == InkDropState::ALTERNATE_ACTION_TRIGGERED ||
-         current_ink_drop_state == InkDropState::DEACTIVATED ||
-         current_ink_drop_state == InkDropState::HIDDEN)) {
-      // These InkDropStates automatically transition to the HIDDEN state so we
-      // don't make an explicit call. Explicitly animating to HIDDEN in this
-      // case would prematurely pre-empt these animations.
-      return;
-    }
-    host_view_->AnimateInkDrop(ink_drop_state, event);
-  }
-
-  void OnMouseEvent(ui::MouseEvent* event) override {
-    switch (event->type()) {
-      case ui::ET_MOUSE_ENTERED:
-        host_view_->GetInkDrop()->SetHovered(true);
-        break;
-      case ui::ET_MOUSE_EXITED:
-        host_view_->GetInkDrop()->SetHovered(false);
-        break;
-      case ui::ET_MOUSE_DRAGGED:
-        host_view_->GetInkDrop()->SetHovered(
-            host_view_->GetLocalBounds().Contains(event->location()));
-        break;
-      default:
-        break;
-    }
-  }
-
- private:
-  // Allows |this| to handle all GestureEvents on |host_view_|.
-  std::unique_ptr<ui::ScopedTargetHandler> target_handler_;
-
-  // The host view to cache ui::Events to when animating the ink drop.
-  InkDropHostView* host_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropEventHandler);
-};
-
-class InkDropHostView::InkDropViewObserver : public ViewObserver {
- public:
-  explicit InkDropViewObserver(InkDropHostView* parent) : parent_(parent) {
-    parent_->AddObserver(this);
-  }
-  ~InkDropViewObserver() override { parent_->RemoveObserver(this); }
-  // ViewObserver:
-  void OnViewFocused(View* observed_view) override {
-    DCHECK_EQ(parent_, observed_view);
-    parent_->GetInkDrop()->SetFocused(true);
-  }
-
-  void OnViewBlurred(View* observed_view) override {
-    DCHECK_EQ(parent_, observed_view);
-    parent_->GetInkDrop()->SetFocused(false);
-  }
-
- private:
-  InkDropHostView* const parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(InkDropViewObserver);
-};
+bool InkDropHostView::InkDropHostViewEventHandlerDelegate::
+    SupportsGestureEvents() const {
+  return host_view_->ink_drop_mode_ == InkDropMode::ON;
+}
 
 InkDropHostView::InkDropHostView()
-    : ink_drop_event_handler_(std::make_unique<InkDropEventHandler>(this)),
-      ink_drop_view_observer_(std::make_unique<InkDropViewObserver>(this)) {}
+    : ink_drop_event_handler_delegate_(this),
+      ink_drop_event_handler_(this, &ink_drop_event_handler_delegate_) {}
 
 InkDropHostView::~InkDropHostView() {
   // TODO(bruthig): Improve InkDropImpl to be safer about calling back to
@@ -147,14 +52,8 @@ InkDropHostView::~InkDropHostView() {
 }
 
 void InkDropHostView::AddInkDropLayer(ui::Layer* ink_drop_layer) {
-  old_paint_to_layer_ = layer() != nullptr;
-  if (!old_paint_to_layer_)
-    SetPaintToLayer();
-
-  layer()->SetFillsBoundsOpaquely(false);
   InstallInkDropMask(ink_drop_layer);
-  layer()->Add(ink_drop_layer);
-  layer()->StackAtBottom(ink_drop_layer);
+  AddLayerBeneathView(ink_drop_layer);
 }
 
 void InkDropHostView::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
@@ -163,11 +62,9 @@ void InkDropHostView::RemoveInkDropLayer(ui::Layer* ink_drop_layer) {
   // would be wrong.
   if (destroying_)
     return;
-  layer()->Remove(ink_drop_layer);
+  RemoveLayerBeneathView(ink_drop_layer);
   // Layers safely handle destroying a mask layer before the masked layer.
   ink_drop_mask_.reset();
-  if (!old_paint_to_layer_)
-    DestroyLayer();
 }
 
 std::unique_ptr<InkDrop> InkDropHostView::CreateInkDrop() {
@@ -211,44 +108,7 @@ void InkDropHostView::SetInkDropMode(InkDropMode ink_drop_mode) {
 
 void InkDropHostView::AnimateInkDrop(InkDropState state,
                                      const ui::LocatedEvent* event) {
-#if defined(OS_WIN)
-  // On Windows, don't initiate ink-drops for touch/gesture events.
-  // Additionally, certain event states should dismiss existing ink-drop
-  // animations. If the state is already other than HIDDEN, presumably from
-  // a mouse or keyboard event, then the state should be allowed. Conversely,
-  // if the requested state is ACTIVATED, then it should always be allowed.
-  if (event && (event->IsTouchEvent() || event->IsGestureEvent()) &&
-      GetInkDrop()->GetTargetInkDropState() == InkDropState::HIDDEN &&
-      state != InkDropState::ACTIVATED)
-    return;
-#endif
-  last_ripple_triggering_event_.reset(
-      event ? ui::Event::Clone(*event).release()->AsLocatedEvent() : nullptr);
-  GetInkDrop()->AnimateToState(state);
-}
-
-void InkDropHostView::ViewHierarchyChanged(
-    const ViewHierarchyChangedDetails& details) {
-  // If we're being removed hide the ink-drop so if we're highlighted now the
-  // highlight won't be active if we're added back again.
-  if (!details.is_add && details.child == this && ink_drop_) {
-    GetInkDrop()->SnapToHidden();
-    GetInkDrop()->SetHovered(false);
-  }
-  View::ViewHierarchyChanged(details);
-}
-
-void InkDropHostView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  if (ink_drop_)
-    ink_drop_->HostSizeChanged(size());
-}
-
-void InkDropHostView::VisibilityChanged(View* starting_from, bool is_visible) {
-  View::VisibilityChanged(starting_from, is_visible);
-  if (GetWidget() && !is_visible) {
-    GetInkDrop()->AnimateToState(InkDropState::HIDDEN);
-    GetInkDrop()->SetHovered(false);
-  }
+  GetEventHandler()->AnimateInkDrop(state, event);
 }
 
 std::unique_ptr<InkDropImpl> InkDropHostView::CreateDefaultInkDropImpl() {
@@ -313,8 +173,8 @@ InkDrop* InkDropHostView::GetInkDrop() {
 }
 
 gfx::Point InkDropHostView::GetInkDropCenterBasedOnLastEvent() const {
-  return last_ripple_triggering_event_
-             ? last_ripple_triggering_event_->location()
+  return GetEventHandler()->GetLastRippleTriggeringEvent()
+             ? GetEventHandler()->GetLastRippleTriggeringEvent()->location()
              : GetMirroredRect(GetContentsBounds()).CenterPoint();
 }
 
@@ -336,5 +196,20 @@ gfx::Size InkDropHostView::CalculateLargeInkDropSize(
   constexpr float kLargeInkDropScale = 1.333f;
   return gfx::ScaleToCeiledSize(gfx::Size(small_size), kLargeInkDropScale);
 }
+
+const InkDropEventHandler* InkDropHostView::GetEventHandler() const {
+  if (ink_drop_event_handler_override_)
+    return ink_drop_event_handler_override_;
+  return &ink_drop_event_handler_;
+}
+
+InkDropEventHandler* InkDropHostView::GetEventHandler() {
+  return const_cast<InkDropEventHandler*>(
+      const_cast<const InkDropHostView*>(this)->GetEventHandler());
+}
+
+BEGIN_METADATA(InkDropHostView)
+METADATA_PARENT_CLASS(View)
+END_METADATA()
 
 }  // namespace views

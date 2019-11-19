@@ -20,18 +20,16 @@ enum StackMode {
   MIXED
 };
 
+// Type of the allocator responsible for the allocation sample.
+enum AllocatorType {
+  kMalloc,
+  kPartitionAlloc,
+  kOilpan
+};
+
 // A wrapper for parameters that affect each client's implementation of
 // profiling.
 struct ProfilingParams {
-  // When |stream_samples| is true the samples are streamed through the
-  // provided |sender_pipe|. Otherwise, the samples are stored on
-  // the client side during recording and can be retrieved using
-  // |ProfilingClient.RetrieveHeapProfile| method.
-  bool stream_samples;
-
-  // The client should record allocations into |memlog_sender_pipe|.
-  handle sender_pipe;
-
   // |stack_mode| refers to the type of data that should be recorded for each
   // allocation.
   StackMode stack_mode;
@@ -46,7 +44,7 @@ struct ProfilingParams {
 // A single memory allocation sample.
 struct HeapProfileSample {
   // Allocator type.
-  uint32 allocator;
+  AllocatorType allocator;
 
   // The size in bytes accounted for the sample.
   uint64 size;
@@ -80,11 +78,6 @@ interface ProfilingClient {
   // the |params.use_in_process_storage|.
   // There is currently no mechanism to stop recording allocations.
   StartProfiling(ProfilingParams params);
-
-  // Flushes the memlog pipe associated with this client. A barrier packet is
-  // set over the memlog pipe with the given identifier. This allows the
-  // receiver to synchronize with the flush.
-  FlushMemlogPipe(uint32 barrier_id);
 
   RetrieveHeapProfile() => (HeapProfile profile);
 };

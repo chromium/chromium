@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
 namespace app_modal {
@@ -27,9 +26,6 @@ class ChromeJavaScriptDialogExtraData {
 
   // True if the user has decided to block future JavaScript dialogs.
   bool suppress_javascript_messages_;
-
-  // Number of dialogs from the origin that were suppressed.
-  int suppressed_dialog_count_;
 };
 
 // A controller + model class for JavaScript alert, confirm, prompt, and
@@ -141,8 +137,6 @@ class JavaScriptAppModalDialog {
   // used when notifying the delegate, if |use_override_prompt_text_| is true.
   base::string16 override_prompt_text_;
   bool use_override_prompt_text_;
-
-  base::TimeTicks creation_time_;
 
   DISALLOW_COPY_AND_ASSIGN(JavaScriptAppModalDialog);
 };

@@ -16,7 +16,7 @@ class MockSpeechRecognizer {
     this.task_queue_ = [];
 
     this.binding_ = new mojo.Binding(blink.mojom.SpeechRecognizer, this);
-    this.interceptor_ = new MojoInterfaceInterceptor(blink.mojom.SpeechRecognizer.name);
+    this.interceptor_ = new MojoInterfaceInterceptor(blink.mojom.SpeechRecognizer.name, "context", true);
     this.interceptor_.oninterfacerequest = e => {
       this.binding_.bind(e.handle);
       this.binding_.setConnectionErrorHandler(() => {
@@ -89,7 +89,7 @@ class MockSpeechRecognizer {
   }
 
   start(params) {
-    this.session_ = new MockSpeechRecognitionSession(params.sessionRequest, this);
+    this.session_ = new MockSpeechRecognitionSession(params.sessionReceiver, this);
     this.session_client_ = params.client;
 
     // if setMockSpeechRecognitionError was called

@@ -74,6 +74,8 @@ class AutomationManagerAura : public ui::AXActionHandler,
     event_bundle_sink_ = sink;
   }
 
+  int32_t GetIDFromWindow(aura::Window* window) { return cache_.GetID(window); }
+
  private:
   friend class base::NoDestructor<AutomationManagerAura>;
 
@@ -116,6 +118,8 @@ class AutomationManagerAura : public ui::AXActionHandler,
   ui::AXEventBundleSink* event_bundle_sink_ = nullptr;
 
   std::unique_ptr<views::AccessibilityAlertWindow> alert_window_;
+
+  views::AXAuraObjCache cache_;
 
   DISALLOW_COPY_AND_ASSIGN(AutomationManagerAura);
 };

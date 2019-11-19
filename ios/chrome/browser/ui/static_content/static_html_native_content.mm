@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #include "ios/chrome/browser/ui/static_content/static_html_view_controller.h"
-#include "ios/web/public/referrer.h"
+#include "ios/web/public/navigation/referrer.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -127,7 +127,7 @@
 }
 
 - (void)executeJavaScript:(NSString*)script
-        completionHandler:(web::JavaScriptResultBlock)handler {
+        completionHandler:(void (^)(id, NSError*))handler {
   [_staticHTMLViewController executeJavaScript:script
                              completionHandler:handler];
 }

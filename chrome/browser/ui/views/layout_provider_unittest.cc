@@ -14,6 +14,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/font_list.h"
+#include "ui/gfx/font_util.h"
 #include "ui/strings/grit/app_locale_settings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
@@ -25,11 +26,19 @@
 #endif
 
 #if defined(OS_WIN)
+#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "ui/gfx/win/direct_write.h"
+#include "ui/display/win/dpi.h"
+#include "ui/gfx/platform_font_win.h"
+#include "ui/gfx/system_fonts_win.h"
 #endif
 
 namespace {
+
+// The default system font name.
+#if defined(OS_WIN)
+const char kDefaultFontName[] = "Segoe UI";
+#endif
 
 // Constant from the Harmony spec.
 constexpr int kHarmonyTitleSize = 15;
@@ -39,42 +48,97 @@ class LayoutProviderTest : public testing::Test {
  public:
   LayoutProviderTest() {}
 
-#if defined(OS_WIN)
  protected:
-  static void SetUpTestCase() {
-    // The expected case is to have DirectWrite enabled; the fallback gives
-    // different font heights. However, only use DirectWrite on Windows 10 and
-    // later, since it's known to have flaky results on Windows 7. See
-    // http://crbug.com/759870.
-    if (base::win::GetVersion() >= base::win::VERSION_WIN10)
-      gfx::win::MaybeInitializeDirectWrite();
-  }
+  static void SetUpTestSuite() {
+#if defined(OS_WIN)
+    base::win::EnableHighDPISupport();
 #endif
+    gfx::InitializeFonts();
+  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(LayoutProviderTest);
 };
 
+// Check whether the system is in the default configuration. This test will fail
+// if some system-wide settings are changed. Other tests rely on these default
+// settings and were the cause of many flaky tests.
+TEST_F(LayoutProviderTest, EnsuresDefaultSystemSettings) {
+#if defined(OS_WIN)
+  // Ensures anti-aliasing is activated.
+  BOOL antialiasing = TRUE;
+  BOOL result = SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &antialiasing, 0);
+  EXPECT_NE(result, FALSE);
+  EXPECT_NE(antialiasing, FALSE)
+      << "The test requires that fonts smoothing (anti-aliasing) is "
+         "activated. If this assert is failing you need to manually activate "
+         "the flag in your system fonts settings.";
+
+  // Ensures that the screen resolution is at the default value.
+  float system_dpi_scale = display::win::GetDPIScale();
+  EXPECT_EQ(system_dpi_scale, 1.0)
+      << "The test requires default display settings. The DPI of the display "
+         "is not 100%. dpi_scale="
+      << system_dpi_scale;
+
+  double accessibility_font_scale = display::win::GetAccessibilityFontScale();
+  EXPECT_EQ(accessibility_font_scale, 1.0)
+      << "The test requires default display settings. The fonts are scaled "
+         "due to accessibility settings. font_scale="
+      << accessibility_font_scale;
+
+  // Ensures that the default UI fonts have the original settings.
+  gfx::Font caption_font =
+      gfx::win::GetSystemFont(gfx::win::SystemFont::kCaption);
+  gfx::Font small_caption_font =
+      gfx::win::GetSystemFont(gfx::win::SystemFont::kSmallCaption);
+  gfx::Font menu_font = gfx::win::GetSystemFont(gfx::win::SystemFont::kMenu);
+  gfx::Font status_font =
+      gfx::win::GetSystemFont(gfx::win::SystemFont::kStatus);
+  gfx::Font message_font =
+      gfx::win::GetSystemFont(gfx::win::SystemFont::kMessage);
+
+  EXPECT_EQ(caption_font.GetFontName(), kDefaultFontName);
+  EXPECT_EQ(small_caption_font.GetFontName(), kDefaultFontName);
+  EXPECT_EQ(menu_font.GetFontName(), kDefaultFontName);
+  EXPECT_EQ(status_font.GetFontName(), kDefaultFontName);
+  EXPECT_EQ(message_font.GetFontName(), kDefaultFontName);
+
+  EXPECT_EQ(caption_font.GetFontSize(), 12);
+  EXPECT_EQ(small_caption_font.GetFontSize(), 12);
+  EXPECT_EQ(menu_font.GetFontSize(), 12);
+  EXPECT_EQ(status_font.GetFontSize(), 12);
+  EXPECT_EQ(message_font.GetFontSize(), 12);
+#endif
+}
+
 // Check legacy font sizes. No new code should be using these constants, but if
 // these tests ever fail it probably means something in the old UI will have
 // changed by mistake.
-// Disabled since this relies on machine configuration. http://crbug.com/701241.
-TEST_F(LayoutProviderTest, DISABLED_LegacyFontSizeConstants) {
+// https://crbug.com/961938
+#if defined(OS_MACOSX)
+#define MAYBE_LegacyFontSizeConstants DISABLED_LegacyFontSizeConstants
+#else
+#define MAYBE_LegacyFontSizeConstants LegacyFontSizeConstants
+#endif
+TEST_F(LayoutProviderTest, MAYBE_LegacyFontSizeConstants) {
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   gfx::FontList label_font = rb.GetFontListWithDelta(ui::kLabelFontSizeDelta);
 
-  EXPECT_EQ(12, label_font.GetFontSize());
+#if defined(OS_WIN)
+  EXPECT_EQ(16, label_font.GetHeight());
+  EXPECT_EQ(13, label_font.GetBaseline());
+#else
   EXPECT_EQ(15, label_font.GetHeight());
   EXPECT_EQ(12, label_font.GetBaseline());
+#endif
+  EXPECT_EQ(12, label_font.GetFontSize());
   EXPECT_EQ(9, label_font.GetCapHeight());
-// Note some Windows bots report 11,13,11,9 for the above.
-// TODO(tapted): Smoke them out and figure out why.
 
 #if defined(OS_MACOSX)
-  EXPECT_EQ(10, label_font.GetExpectedTextWidth(1));
+  EXPECT_EQ(7, label_font.GetExpectedTextWidth(1));
 #else
   EXPECT_EQ(6, label_font.GetExpectedTextWidth(1));
-// Some Windows bots may say 5.
 #endif
 
   gfx::FontList title_font = rb.GetFontListWithDelta(ui::kTitleFontSizeDelta);
@@ -88,11 +152,7 @@ TEST_F(LayoutProviderTest, DISABLED_LegacyFontSizeConstants) {
   EXPECT_EQ(14, title_font.GetFontSize());
   EXPECT_EQ(17, title_font.GetHeight());
   EXPECT_EQ(14, title_font.GetBaseline());
-  if (base::mac::IsOS10_9()) {
-    EXPECT_EQ(11, title_font.GetCapHeight());
-  } else {
-    EXPECT_EQ(10, title_font.GetCapHeight());
-  }
+  EXPECT_EQ(10, title_font.GetCapHeight());
 #else
   EXPECT_EQ(15, title_font.GetFontSize());
   EXPECT_EQ(18, title_font.GetHeight());
@@ -100,11 +160,11 @@ TEST_F(LayoutProviderTest, DISABLED_LegacyFontSizeConstants) {
   EXPECT_EQ(11, title_font.GetCapHeight());
 #endif
 
-#if defined(OS_MACOSX)
-  if (base::mac::IsOS10_9()) {
+#if defined(OS_WIN)
+  if (base::FeatureList::IsEnabled(gfx::kPlatformFontSkiaOnWindows)) {
     EXPECT_EQ(7, title_font.GetExpectedTextWidth(1));
   } else {
-    EXPECT_EQ(12, title_font.GetExpectedTextWidth(1));
+    EXPECT_EQ(8, title_font.GetExpectedTextWidth(1));
   }
 #else
   EXPECT_EQ(8, title_font.GetExpectedTextWidth(1));
@@ -142,8 +202,7 @@ TEST_F(LayoutProviderTest, DISABLED_LegacyFontSizeConstants) {
 // platform starts returning 18 in a standard configuration then the
 // TypographyProvider must add 4 instead. We do this so that Chrome adapts
 // correctly to _non-standard_ system font configurations on user machines.
-// Disabled since this relies on machine configuration. http://crbug.com/701241.
-TEST_F(LayoutProviderTest, DISABLED_RequestFontBySize) {
+TEST_F(LayoutProviderTest, RequestFontBySize) {
 #if defined(OS_MACOSX)
   constexpr int kBase = 13;
 #else
@@ -183,8 +242,7 @@ TEST_F(LayoutProviderTest, DISABLED_RequestFontBySize) {
 #if defined(OS_MACOSX)
   EXPECT_EQ(25, headline_font.GetHeight());
 #elif defined(OS_WIN)
-  EXPECT_EQ(ChromeTypographyProvider::GetPlatformFontHeight(CONTEXT_HEADLINE),
-            headline_font.GetHeight());
+  EXPECT_EQ(27, headline_font.GetHeight());
 #else
   EXPECT_EQ(24, headline_font.GetHeight());
 #endif
@@ -206,9 +264,7 @@ TEST_F(LayoutProviderTest, DISABLED_RequestFontBySize) {
 #if defined(OS_MACOSX)
   EXPECT_EQ(16, body1_font.GetHeight());  // Add 4.
 #elif defined(OS_WIN)
-  EXPECT_EQ(
-      ChromeTypographyProvider::GetPlatformFontHeight(CONTEXT_BODY_TEXT_LARGE),
-      body1_font.GetHeight());
+  EXPECT_EQ(18, body1_font.GetHeight());
 #else  // Linux.
   EXPECT_EQ(17, body1_font.GetHeight());  // Add 3.
 #endif
@@ -217,9 +273,7 @@ TEST_F(LayoutProviderTest, DISABLED_RequestFontBySize) {
 
 // Body2 font leading should be 20.
 #if defined(OS_WIN)
-  EXPECT_EQ(
-      ChromeTypographyProvider::GetPlatformFontHeight(CONTEXT_BODY_TEXT_SMALL),
-      body2_font.GetHeight());
+  EXPECT_EQ(16, body2_font.GetHeight());
 #else
   EXPECT_EQ(15, body2_font.GetHeight());  // Other platforms: Add 5.
 #endif
@@ -228,9 +282,7 @@ TEST_F(LayoutProviderTest, DISABLED_RequestFontBySize) {
 
 // Button leading not specified (shouldn't be needed: no multiline buttons).
 #if defined(OS_WIN)
-  EXPECT_EQ(
-      ChromeTypographyProvider::GetPlatformFontHeight(CONTEXT_BODY_TEXT_SMALL),
-      button_font.GetHeight());
+  EXPECT_EQ(16, button_font.GetHeight());
 #else
   EXPECT_EQ(15, button_font.GetHeight());
 #endif

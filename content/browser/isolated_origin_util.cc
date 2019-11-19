@@ -2,13 +2,89 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
 #include "content/browser/isolated_origin_util.h"
 
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
+const char* kAllSubdomainsWildcard = "[*.]";
+
 namespace content {
+
+IsolatedOriginPattern::IsolatedOriginPattern(base::StringPiece pattern)
+    : isolate_all_subdomains_(false), is_valid_(false) {
+  Parse(pattern);
+}
+
+IsolatedOriginPattern::IsolatedOriginPattern(const url::Origin& origin)
+    : IsolatedOriginPattern(origin.GetURL().spec()) {}
+
+IsolatedOriginPattern::~IsolatedOriginPattern() = default;
+IsolatedOriginPattern::IsolatedOriginPattern(
+    const IsolatedOriginPattern& other) = default;
+IsolatedOriginPattern& IsolatedOriginPattern::operator=(
+    const IsolatedOriginPattern& other) = default;
+IsolatedOriginPattern::IsolatedOriginPattern(IsolatedOriginPattern&& other) =
+    default;
+IsolatedOriginPattern& IsolatedOriginPattern::operator=(
+    IsolatedOriginPattern&& other) = default;
+
+bool IsolatedOriginPattern::Parse(const base::StringPiece& unparsed_pattern) {
+  pattern_ = unparsed_pattern.as_string();
+  origin_ = url::Origin();
+  isolate_all_subdomains_ = false;
+  is_valid_ = false;
+
+  size_t host_begin = unparsed_pattern.find(url::kStandardSchemeSeparator);
+  if (host_begin == base::StringPiece::npos || host_begin == 0)
+    return false;
+
+  // Skip over the scheme separator.
+  host_begin += strlen(url::kStandardSchemeSeparator);
+  if (host_begin >= unparsed_pattern.size())
+    return false;
+
+  base::StringPiece scheme_part = unparsed_pattern.substr(0, host_begin);
+  base::StringPiece host_part = unparsed_pattern.substr(host_begin);
+
+  // Empty schemes or hosts are invalid for isolation purposes.
+  if (host_part.size() == 0)
+    return false;
+
+  if (host_part.starts_with(kAllSubdomainsWildcard)) {
+    isolate_all_subdomains_ = true;
+    host_part.remove_prefix(strlen(kAllSubdomainsWildcard));
+  }
+
+  GURL conformant_url(base::JoinString({scheme_part, host_part}, ""));
+  origin_ = url::Origin::Create(conformant_url);
+
+  // Ports are ignored when matching isolated origins (see also
+  // https://crbug.com/914511).
+  const std::string& scheme = origin_.scheme();
+  int default_port = url::DefaultPortForScheme(scheme.data(), scheme.length());
+  if (origin_.port() != default_port) {
+    LOG(ERROR) << "Ignoring port number in isolated origin: " << origin_;
+    origin_ = url::Origin::Create(GURL(
+        origin_.scheme() + url::kStandardSchemeSeparator + origin_.host()));
+  }
+
+  // Can't isolate subdomains of an IP address, must be a valid isolated origin
+  // after processing.
+  if ((conformant_url.HostIsIPAddress() && isolate_all_subdomains_) ||
+      !IsolatedOriginUtil::IsValidIsolatedOrigin(origin_)) {
+    origin_ = url::Origin();
+    isolate_all_subdomains_ = false;
+    return false;
+  }
+
+  DCHECK(!is_valid_ || !origin_.opaque());
+  is_valid_ = true;
+  return true;
+}
 
 // static
 bool IsolatedOriginUtil::DoesOriginMatchIsolatedOrigin(

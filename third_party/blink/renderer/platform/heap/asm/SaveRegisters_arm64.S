@@ -30,8 +30,8 @@
 
 
 /*
- * typedef void (*PushAllRegistersCallback)(SafePointBarrier*, ThreadState*, intptr_t*);
- * extern "C" void PushAllRegisters(SafePointBarrier*, ThreadState*, PushAllRegistersCallback)
+ * typedef void (*PushAllRegistersCallback)(ThreadState*, intptr_t*);
+ * extern "C" void PushAllRegisters(ThreadState*, PushAllRegistersCallback)
  */
 
 /* Supplementary macro for setting function attributes */
@@ -59,13 +59,13 @@ asm_function PushAllRegisters
         stp x27, x28, [sp, #16]
         stp x30, x29, [sp, #0]  // x30 is lr.
 
-        /* Pass the two first arguments unchanged (x0, x1)
+        /* Pass the first argument unchanged (x0)
          * and pass the stack pointer as third argument to the
          * callback function.
          */
-        mov x3, x2
-        mov x2, sp
-        blr x3
+        mov x2, x1
+        mov x1, sp
+        blr x2
 
         /* We don't restore all registers since they are callee saved (so
          * the callback didn't clobber them) and we didn't modify them either.

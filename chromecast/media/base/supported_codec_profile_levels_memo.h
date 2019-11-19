@@ -7,7 +7,8 @@
 
 #include <vector>
 
-#include "base/threading/thread_checker.h"
+#include "base/macros.h"
+#include "base/synchronization/lock.h"
 #include "chromecast/public/media/decoder_config.h"
 
 namespace chromecast {
@@ -26,8 +27,10 @@ class SupportedCodecProfileLevelsMemo {
                               int level) const;
 
  private:
+  mutable base::Lock lock_;
   std::vector<CodecProfileLevel> codec_profile_levels_;
-  const base::ThreadChecker thread_checker_;
+
+  DISALLOW_COPY_AND_ASSIGN(SupportedCodecProfileLevelsMemo);
 };
 
 }  // namespace media

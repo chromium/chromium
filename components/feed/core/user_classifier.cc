@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/ranges.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/clock.h"
@@ -155,7 +156,7 @@ double GetEstimateHoursBetweenEvents(double rate,
   //   discount_rate * estimate_hours = log(rate / (rate - 1)),
   //   estimate_hours = log(rate / (rate - 1)) / discount_rate.
   double estimate_hours = std::log(rate / (rate - 1)) / discount_rate_per_hour;
-  return std::max(min_hours, std::min(max_hours, estimate_hours));
+  return base::ClampToRange(estimate_hours, min_hours, max_hours);
 }
 
 // The inverse of GetEstimateHoursBetweenEvents().
@@ -164,7 +165,7 @@ double GetRateForEstimateHoursBetweenEvents(double estimate_hours,
                                             double min_hours,
                                             double max_hours) {
   // Keep the input value within [min_hours, max_hours].
-  estimate_hours = std::max(min_hours, std::min(max_hours, estimate_hours));
+  estimate_hours = base::ClampToRange(estimate_hours, min_hours, max_hours);
   // Return |rate| such that GetEstimateHoursBetweenEvents for |rate| returns
   // |estimate_hours|. Thus, solve |rate| in
   //   rate = 1 + e^{-discount_rate * estimate_hours} * rate,

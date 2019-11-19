@@ -11,6 +11,8 @@
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/common/media/renderer_audio_output_stream_factory.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -63,13 +65,15 @@ class CONTENT_EXPORT AudioOutputIPCFactory {
 
  private:
   using StreamFactoryMap =
-      base::flat_map<int, mojom::RendererAudioOutputStreamFactoryPtr>;
+      base::flat_map<int,
+                     mojo::Remote<mojom::RendererAudioOutputStreamFactory>>;
 
   mojom::RendererAudioOutputStreamFactory* GetRemoteFactory(int frame_id) const;
 
   void RegisterRemoteFactoryOnIOThread(
       int frame_id,
-      mojom::RendererAudioOutputStreamFactoryPtrInfo factory_ptr_info);
+      mojo::PendingRemote<mojom::RendererAudioOutputStreamFactory>
+          factory_pending_remote);
 
   void MaybeDeregisterRemoteFactoryOnIOThread(int frame_id);
 
@@ -77,7 +81,7 @@ class CONTENT_EXPORT AudioOutputIPCFactory {
   bool UsingMojoFactories() const;
 
   // Maps frame id to the corresponding factory.
-  StreamFactoryMap factory_ptrs_;
+  StreamFactoryMap factory_remotes_;
 
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 

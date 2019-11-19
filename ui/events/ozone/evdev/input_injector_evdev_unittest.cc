@@ -7,13 +7,13 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/ozone/device/device_manager.h"
-#include "ui/events/ozone/evdev/cursor_delegate_evdev.h"
 #include "ui/events/ozone/evdev/event_converter_test_util.h"
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
+#include "ui/events/ozone/evdev/testing/fake_cursor_delegate_evdev.h"
 #include "ui/events/ozone/events_ozone.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 
@@ -43,36 +43,6 @@ class EventObserver {
   // Mock functions for intercepting mouse events.
   MOCK_METHOD1(OnMouseEvent, void(MouseEvent* event));
   MOCK_METHOD1(OnMouseWheelEvent, void(MouseWheelEvent* event));
-};
-
-class MockCursorEvdev : public CursorDelegateEvdev {
- public:
-  MockCursorEvdev() {}
-  ~MockCursorEvdev() override {}
-
-  // CursorDelegateEvdev:
-  void MoveCursorTo(gfx::AcceleratedWidget widget,
-                    const gfx::PointF& location) override {
-    cursor_location_ = location;
-  }
-  void MoveCursorTo(const gfx::PointF& location) override {
-    cursor_location_ = location;
-  }
-  void MoveCursor(const gfx::Vector2dF& delta) override {
-    cursor_location_ = gfx::PointF(delta.x(), delta.y());
-  }
-  bool IsCursorVisible() override { return 1; }
-  gfx::Rect GetCursorConfinedBounds() override {
-    NOTIMPLEMENTED();
-    return gfx::Rect();
-  }
-  gfx::PointF GetLocation() override { return cursor_location_; }
-  void InitializeOnEvdev() override {}
- private:
-  // The location of the mock cursor.
-  gfx::PointF cursor_location_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCursorEvdev);
 };
 
 MATCHER_P4(MatchesMouseEvent, type, button, x, y, "") {
@@ -110,15 +80,15 @@ class InputInjectorEvdevTest : public testing::Test {
   void ExpectClick(int x, int y, int button, int count);
 
   EventObserver event_observer_;
-  EventDispatchCallback dispatch_callback_;
-  MockCursorEvdev cursor_;
+  const EventDispatchCallback dispatch_callback_;
+  FakeCursorDelegateEvdev cursor_;
 
   std::unique_ptr<DeviceManager> device_manager_;
   std::unique_ptr<EventFactoryEvdev> event_factory_;
 
   InputInjectorEvdev injector_;
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
 
  private:

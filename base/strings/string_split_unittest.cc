@@ -47,7 +47,7 @@ TEST_F(SplitStringIntoKeyValuePairsUsingSubstrTest, MissingKeyValueDelimiter) {
 }
 
 TEST_F(SplitStringIntoKeyValuePairsUsingSubstrTest,
-       MissingKeyValuePairDelimeter) {
+       MissingKeyValuePairDelimiter) {
   EXPECT_TRUE(SplitStringIntoKeyValuePairsUsingSubstr(
       "key1:value1,,key3:value3",
       ':',    // Key-value delimiter

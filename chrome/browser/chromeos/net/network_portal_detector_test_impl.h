@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -26,6 +27,13 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
                                      const CaptivePortalState& state);
   void NotifyObserversForTesting();
 
+  // Returns the GUID of the network the detector considers to be default.
+  std::string GetDefaultNetworkGuid() const;
+
+  // Registers a callback that will be run when portal detection is requested by
+  // StartPortalDetection().
+  void RegisterPortalDetectionStartCallback(base::OnceClosure callback);
+
   // NetworkPortalDetector implementation:
   void AddObserver(Observer* observer) override;
   void AddAndFireObserver(Observer* observer) override;
@@ -41,6 +49,10 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
     return strategy_id_;
   }
 
+  bool portal_detection_in_progress() const {
+    return portal_detection_in_progress_;
+  }
+
  private:
   using NetworkId = std::string;
   using CaptivePortalStateMap = std::map<NetworkId, CaptivePortalState>;
@@ -49,6 +61,12 @@ class NetworkPortalDetectorTestImpl : public NetworkPortalDetector {
   std::unique_ptr<NetworkState> default_network_;
   CaptivePortalStateMap portal_state_map_;
   PortalDetectorStrategy::StrategyId strategy_id_;
+
+  // Set when StartPortalDetection() is called - it will be reset when observers
+  // are notified using NotifyObserversForTesting().
+  bool portal_detection_in_progress_ = false;
+
+  std::vector<base::OnceClosure> start_detection_callbacks_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkPortalDetectorTestImpl);
 };

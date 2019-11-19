@@ -12,7 +12,6 @@
 <translation id="2159915644201199628">Kunne ikke dekode bilde: «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2350172092385603347">Lokaliseringen er brukt, men default_locale var ikke spesifisert i manifestet.</translation>
 <translation id="2576842806987913196">Det fins allerede en .crx-fil med dette navnet.</translation>
-<translation id="2753617847762399167">Ugyldig bane (absolutt eller relativ med '..'): «<ph name="IMAGE_PATH" />»</translation>
 <translation id="2785530881066938471">Kan ikke laste inn filen «<ph name="RELATIVE_PATH" />» for innholdsskript. Den er ikke UTF-8-kodet.</translation>
 <translation id="2903070246402204397"><ph name="EXTENSION_NAME" /> (utvidelses-ID «<ph name="EXTENSION_ID" />») er blokkert av administratoren. <ph name="ADMIN_INFO" /></translation>
 <translation id="2988488679308982380">Kunne ikke installere pakken: <ph name="ERROR_CODE" /></translation>
@@ -38,8 +37,6 @@
 <translation id="5436430103864390185">Formede vinduer støttes ikke.</translation>
 <translation id="5456409301717116725">Denne utvidelsen inneholder nøkkelfilen «<ph name="KEY_PATH" />». Du ønsker sannsynligvis ikke å gjøre dette.</translation>
 <translation id="5486326529110362464">Inndataverdien for privatnøkkelen må eksistere.</translation>
-<translation id="5627523580512561598"><ph name="EXTENSION_NAME" />-utvidelse</translation>
-<translation id="5960890139610307736">Utvidelsesvisning (ExtensionView): <ph name="EXTENSIONVIEW_TAG_NAME" /></translation>
 <translation id="5972529113578162692">Administratoren for denne maskinen krever at <ph name="EXTENSION_NAME" /> installeres. Denne utvidelsen kan ikke avinstalleres.</translation>
 <translation id="6027032947578871493">Ukjent produkt, <ph name="PRODUCT_ID" />, fra <ph name="VENDOR_NAME" /> (serienummer: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="6068932090455285721"><ph name="PRODUCT_NAME" /> fra leverandøren <ph name="VENDOR_ID" /></translation>
@@ -51,7 +48,6 @@
 <translation id="6542618148162044354">«<ph name="APP_NAME" />» ber om tilgang til én eller flere av enhetene dine:</translation>
 <translation id="657064425229075395">Kunne ikke laste inn bakgrunnsskriptet «<ph name="BACKGROUND_SCRIPT" />».</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> fra <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>
-<translation id="6731255991101203740">Kunne ikke opprette katalog for utpakking: «<ph name="DIRECTORY_PATH" />»</translation>
 <translation id="677806580227005219">Mime-behandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Denne utvidelsen lastet seg inn på nytt for ofte.</translation>
 <translation id="7003844668372540529">Ukjent produkt, <ph name="PRODUCT_ID" />, fra <ph name="VENDOR_NAME" /></translation>

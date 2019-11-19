@@ -14,6 +14,7 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
 
@@ -33,12 +34,12 @@ class BitmapFetcher : public ImageDecoder::ImageRequest {
   // Initializes internal fetcher.  After this function returns url_fetcher()
   // can be accessed to configure it further (eg. add user data to request).
   // All configuration must be done before Start() is called.
-  // Values for |load_flags| are defined in net/base/load_flags.h.  In general,
-  // |net::LOAD_NORMAL| is appropriate.  Init may be called more than once in
-  // some cases.  If so, subsequent starts will be ignored.
+  // |credentials_mode| determines whether credentials such as cookies should be
+  // sent.  Init may be called more than once in some cases.  If so, subsequent
+  // starts will be ignored.
   void Init(const std::string& referrer,
             net::URLRequest::ReferrerPolicy referrer_policy,
-            int load_flags);
+            network::mojom::CredentialsMode credentials_mode);
 
   // Start fetching the URL with the fetcher. The delegate is notified
   // asynchronously when done.  Start may be called more than once in some

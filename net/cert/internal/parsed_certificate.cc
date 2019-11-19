@@ -46,6 +46,10 @@ DEFINE_CERT_ERROR_ID(kFailedParsingPolicyMappings,
                      "Failed parsing policy mappings");
 DEFINE_CERT_ERROR_ID(kFailedParsingInhibitAnyPolicy,
                      "Failed parsing inhibit any policy");
+DEFINE_CERT_ERROR_ID(kFailedParsingAuthorityKeyIdentifier,
+                     "Failed parsing authority key identifier");
+DEFINE_CERT_ERROR_ID(kFailedParsingSubjectKeyIdentifier,
+                     "Failed parsing subject key identifier");
 
 WARN_UNUSED_RESULT bool GetSequenceValue(const der::Input& tlv,
                                          der::Input* value) {
@@ -285,6 +289,27 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::CreateInternal(
       if (!ParseInhibitAnyPolicy(extension.value,
                                  &result->inhibit_any_policy_)) {
         errors->AddError(kFailedParsingInhibitAnyPolicy);
+        return nullptr;
+      }
+    }
+
+    // Subject Key Identifier.
+    if (result->GetExtension(SubjectKeyIdentifierOid(), &extension)) {
+      result->subject_key_identifier_ = base::make_optional<der::Input>();
+      if (!ParseSubjectKeyIdentifier(
+              extension.value, &result->subject_key_identifier_.value())) {
+        errors->AddError(kFailedParsingSubjectKeyIdentifier);
+        return nullptr;
+      }
+    }
+
+    // Authority Key Identifier.
+    if (result->GetExtension(AuthorityKeyIdentifierOid(), &extension)) {
+      result->authority_key_identifier_ =
+          base::make_optional<ParsedAuthorityKeyIdentifier>();
+      if (!ParseAuthorityKeyIdentifier(
+              extension.value, &result->authority_key_identifier_.value())) {
+        errors->AddError(kFailedParsingAuthorityKeyIdentifier);
         return nullptr;
       }
     }

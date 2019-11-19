@@ -12,10 +12,6 @@ Running test: testOpaqueBgColor
 Opaque background color: should be red
 {"backgroundColors":["rgb(255, 0, 0)"],"computedFontSize":"16px","computedFontWeight":"400"}
 
-Running test: testNoDirectText
-No direct text: should be red
-{"backgroundColors":["rgb(255, 0, 0)"],"computedFontSize":"16px","computedFontWeight":"400"}
-
 Running test: testLayeredOpaqueBgColors
 Opaque background color in front of another opaque background color: should be blue
 {"backgroundColors":["rgb(0, 0, 255)"],"computedFontSize":"16px","computedFontWeight":"400"}

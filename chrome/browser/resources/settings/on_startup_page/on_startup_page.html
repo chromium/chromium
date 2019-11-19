@@ -17,7 +17,8 @@
     </style>
     <div class="settings-box block first">
       <settings-radio-group id="onStartupRadioGroup"
-          pref="{{prefs.session.restore_on_startup}}">
+          pref="{{prefs.session.restore_on_startup}}"
+          group-aria-label="$i18n{onStartup}">
         <controlled-radio-button name="[[prefValues_.OPEN_NEW_TAB]]"
             pref="[[prefs.session.restore_on_startup]]"
             label="$i18n{onStartupOpenNewTab}"

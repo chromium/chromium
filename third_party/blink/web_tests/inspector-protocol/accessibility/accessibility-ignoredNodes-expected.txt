@@ -1,6 +1,27 @@
 Tests accessibility values of ignored nodes.
 
 WebArea
+  *Ignored
+{
+  "nodeId": "<string>",
+  "ignored": true,
+  "ignoredReasons": [
+    {
+      "name": "uninteresting",
+      "value": {
+        "type": "boolean",
+        "value": true
+      }
+    }
+  ],
+  "role": {
+    "type": "internalRole",
+    "value": "Ignored"
+  },
+  "domNode": "html"
+}
+
+WebArea
   img
     *Ignored
 {
@@ -24,32 +45,6 @@ WebArea
     "value": "Ignored"
   },
   "domNode": "svg"
-}
-
-WebArea
-  button "Buttons are leaf nodes"
-    *Ignored
-{
-  "nodeId": "<string>",
-  "ignored": true,
-  "ignoredReasons": [
-    {
-      "name": "ancestorIsLeafNode",
-      "value": {
-        "type": "idref",
-        "relatedNodes": [
-          {
-            "nodeResult": "button"
-          }
-        ]
-      }
-    }
-  ],
-  "role": {
-    "type": "internalRole",
-    "value": "Ignored"
-  },
-  "domNode": "span"
 }
 
 WebArea
@@ -145,21 +140,14 @@ WebArea
 }
 
 WebArea
-  GenericContainer
-  img
-  button "Buttons are leaf nodes"
-  text "List item also presentational"
-  *GenericContainer
+  *generic
     text "Div in list isn't presentational"
-  checkbox "Content within label refers to label container"
-  GenericContainer
-  combobox
 {
   "nodeId": "<string>",
   "ignored": false,
   "role": {
-    "type": "internalRole",
-    "value": "GenericContainer"
+    "type": "role",
+    "value": "generic"
   },
   "name": {
     "type": "computedString",
@@ -331,13 +319,6 @@ WebArea
 }
 
 WebArea
-  GenericContainer
-  img
-  button "Buttons are leaf nodes"
-  text "List item also presentational"
-  GenericContainer
-  checkbox "Content within label refers to label container"
-  GenericContainer
   *combobox
     MenuListPopup
       menuitem "Options should be"
@@ -406,8 +387,6 @@ WebArea
   combobox
     MenuListPopup
       *menuitem "Options should be"
-      menuitem "sent down even though"
-      menuitem "they are grandchildren"
 {
   "nodeId": "<string>",
   "ignored": false,
@@ -499,6 +478,163 @@ WebArea
     "type": "internalRole",
     "value": "Ignored"
   },
+  "domNode": "button"
+}
+
+WebArea
+  *generic "span with ARIA label"
+    text "should not be ignored"
+{
+  "nodeId": "<string>",
+  "ignored": false,
+  "role": {
+    "type": "role",
+    "value": "generic"
+  },
+  "name": {
+    "type": "computedString",
+    "value": "span with ARIA label",
+    "sources": [
+      {
+        "type": "relatedElement",
+        "attribute": "aria-labelledby"
+      },
+      {
+        "type": "attribute",
+        "value": {
+          "type": "computedString",
+          "value": "span with ARIA label"
+        },
+        "attribute": "aria-label",
+        "attributeValue": {
+          "type": "string",
+          "value": "span with ARIA label"
+        }
+      },
+      {
+        "type": "attribute",
+        "attribute": "title",
+        "superseded": true
+      }
+    ]
+  },
+  "properties": [],
+  "domNode": "span"
+}
+
+WebArea
+  *Ignored
+{
+  "nodeId": "<string>",
+  "ignored": true,
+  "ignoredReasons": [
+    {
+      "name": "notRendered",
+      "value": {
+        "type": "boolean",
+        "value": true
+      }
+    }
+  ],
+  "role": {
+    "type": "internalRole",
+    "value": "Ignored"
+  },
+  "domNode": "div"
+}
+
+WebArea
+  *generic
+    text "summary element without details parent is ignored"
+{
+  "nodeId": "<string>",
+  "ignored": false,
+  "role": {
+    "type": "role",
+    "value": "generic"
+  },
+  "name": {
+    "type": "computedString",
+    "value": "",
+    "sources": [
+      {
+        "type": "relatedElement",
+        "attribute": "aria-labelledby"
+      },
+      {
+        "type": "attribute",
+        "attribute": "aria-label"
+      },
+      {
+        "type": "attribute",
+        "attribute": "title"
+      }
+    ]
+  },
+  "description": {
+    "type": "computedString",
+    "value": "summary element without details parent is ignored"
+  },
+  "properties": [],
+  "domNode": "summary"
+}
+
+WebArea
+  *button "Ignored parent shouldn't cause descendant to be missing from the tree"
+    text "Ignored parent shouldn't cause descendant to be missing from the tree"
+{
+  "nodeId": "<string>",
+  "ignored": false,
+  "role": {
+    "type": "role",
+    "value": "button"
+  },
+  "name": {
+    "type": "computedString",
+    "value": "Ignored parent shouldn't cause descendant to be missing from the tree",
+    "sources": [
+      {
+        "type": "relatedElement",
+        "attribute": "aria-labelledby"
+      },
+      {
+        "type": "attribute",
+        "attribute": "aria-label"
+      },
+      {
+        "type": "relatedElement",
+        "nativeSource": "label"
+      },
+      {
+        "type": "contents",
+        "value": {
+          "type": "computedString",
+          "value": "Ignored parent shouldn't cause descendant to be missing from the tree"
+        }
+      },
+      {
+        "type": "attribute",
+        "attribute": "title",
+        "superseded": true
+      }
+    ]
+  },
+  "properties": [
+    {
+      "name": "invalid",
+      "value": {
+        "type": "token",
+        "value": "false"
+      }
+    },
+    {
+      "name": "focusable",
+      "value": {
+        "type": "booleanOrUndefined",
+        "value": true
+      }
+    }
+  ],
   "domNode": "button"
 }
 

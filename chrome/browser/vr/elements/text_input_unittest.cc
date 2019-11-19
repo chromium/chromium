@@ -49,7 +49,7 @@ class TextInputSceneTest : public UiTest {
                                       text_input_delegate_.get());
     text_input_ = text_input.get();
     scene_->AddUiElement(k2dBrowsingForeground, std::move(text_input));
-    EXPECT_TRUE(OnBeginFrame());
+    EXPECT_TRUE(AdvanceFrame());
   }
 
  protected:
@@ -117,7 +117,7 @@ TEST_F(TextInputSceneTest, InputFieldFocus) {
   EXPECT_CALL(*kb_delegate, ShowKeyboard()).InSequence(in_sequence_);
   EXPECT_CALL(*kb_delegate, OnBeginFrame()).InSequence(in_sequence_);
   EXPECT_CALL(*kb_delegate, SetTransform(_)).InSequence(in_sequence_);
-  EXPECT_TRUE(OnBeginFrame());
+  EXPECT_TRUE(AdvanceFrame());
   EXPECT_EQ(*edited_text_, text_input_->edited_text());
 
   // Focusing out of an input field should hide the keyboard.
@@ -125,7 +125,7 @@ TEST_F(TextInputSceneTest, InputFieldFocus) {
   EXPECT_CALL(*kb_delegate, HideKeyboard()).InSequence(in_sequence_);
   EXPECT_CALL(*kb_delegate, OnBeginFrame()).InSequence(in_sequence_);
   EXPECT_CALL(*kb_delegate, SetTransform(_)).InSequence(in_sequence_);
-  EXPECT_TRUE(OnBeginFrame());
+  EXPECT_TRUE(AdvanceFrame());
   EXPECT_EQ(*edited_text_, text_input_->edited_text());
 }
 
@@ -144,7 +144,7 @@ TEST_F(TextInputSceneTest, InputFieldEdit) {
   EXPECT_CALL(*text_input_delegate_, UpdateInput(_)).InSequence(in_sequence_);
   EditedText info(base::ASCIIToUTF16("asdfgh"));
   text_input_->OnInputEdited(info);
-  EXPECT_TRUE(OnBeginFrame());
+  EXPECT_TRUE(AdvanceFrame());
   EXPECT_EQ(info, *edited_text_);
 }
 

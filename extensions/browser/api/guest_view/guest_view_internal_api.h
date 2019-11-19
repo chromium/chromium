@@ -10,7 +10,7 @@
 
 namespace extensions {
 
-class GuestViewInternalCreateGuestFunction : public UIThreadExtensionFunction {
+class GuestViewInternalCreateGuestFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("guestViewInternal.createGuest",
                              GUESTVIEWINTERNAL_CREATEGUEST)
@@ -19,7 +19,7 @@ class GuestViewInternalCreateGuestFunction : public UIThreadExtensionFunction {
  protected:
   ~GuestViewInternalCreateGuestFunction() override {}
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() final;
 
  private:
@@ -27,7 +27,7 @@ class GuestViewInternalCreateGuestFunction : public UIThreadExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(GuestViewInternalCreateGuestFunction);
 };
 
-class GuestViewInternalDestroyGuestFunction : public UIThreadExtensionFunction {
+class GuestViewInternalDestroyGuestFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("guestViewInternal.destroyGuest",
                              GUESTVIEWINTERNAL_DESTROYGUEST)
@@ -36,7 +36,7 @@ class GuestViewInternalDestroyGuestFunction : public UIThreadExtensionFunction {
  protected:
   ~GuestViewInternalDestroyGuestFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() final;
 
  private:
@@ -44,7 +44,7 @@ class GuestViewInternalDestroyGuestFunction : public UIThreadExtensionFunction {
   DISALLOW_COPY_AND_ASSIGN(GuestViewInternalDestroyGuestFunction);
 };
 
-class GuestViewInternalSetSizeFunction : public UIThreadExtensionFunction {
+class GuestViewInternalSetSizeFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("guestViewInternal.setSize",
                              GUESTVIEWINTERNAL_SETAUTOSIZE)
@@ -54,7 +54,7 @@ class GuestViewInternalSetSizeFunction : public UIThreadExtensionFunction {
  protected:
   ~GuestViewInternalSetSizeFunction() override;
 
-  // UIThreadExtensionFunction:
+  // ExtensionFunction:
   ResponseAction Run() final;
 
  private:

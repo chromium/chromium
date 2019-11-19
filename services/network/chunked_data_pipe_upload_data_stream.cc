@@ -15,7 +15,7 @@ namespace network {
 
 ChunkedDataPipeUploadDataStream::ChunkedDataPipeUploadDataStream(
     scoped_refptr<ResourceRequestBody> resource_request_body,
-    mojom::ChunkedDataPipeGetterPtr chunked_data_pipe_getter)
+    mojo::PendingRemote<mojom::ChunkedDataPipeGetter> chunked_data_pipe_getter)
     : net::UploadDataStream(true /* is_chunked */,
                             resource_request_body->identifier()),
       resource_request_body_(std::move(resource_request_body)),
@@ -23,7 +23,7 @@ ChunkedDataPipeUploadDataStream::ChunkedDataPipeUploadDataStream(
       handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                       base::SequencedTaskRunnerHandle::Get()) {
-  chunked_data_pipe_getter_.set_connection_error_handler(
+  chunked_data_pipe_getter_.set_disconnect_handler(
       base::BindOnce(&ChunkedDataPipeUploadDataStream::OnDataPipeGetterClosed,
                      base::Unretained(this)));
   chunked_data_pipe_getter_->GetSize(
@@ -41,7 +41,7 @@ int ChunkedDataPipeUploadDataStream::InitInternal(
     return status_;
 
   // If the data pipe was closed, just fail initialization.
-  if (chunked_data_pipe_getter_.encountered_error())
+  if (!chunked_data_pipe_getter_.is_connected())
     return net::ERR_FAILED;
 
   // Get a new data pipe and start.

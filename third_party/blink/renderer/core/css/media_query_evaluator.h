@@ -56,8 +56,7 @@ using MediaQueryResultList = Vector<MediaQueryResult>;
 // loading of stylesheets to only those which are probable to match.
 
 class CORE_EXPORT MediaQueryEvaluator final
-    : public GarbageCollectedFinalized<MediaQueryEvaluator> {
-
+    : public GarbageCollected<MediaQueryEvaluator> {
  public:
   static void Init();
 

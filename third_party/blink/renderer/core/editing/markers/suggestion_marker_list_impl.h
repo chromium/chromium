@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_SUGGESTION_MARKER_LIST_IMPL_H_
 
 #include "third_party/blink/renderer/core/editing/markers/document_marker_list.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -59,11 +60,12 @@ class CORE_EXPORT SuggestionMarkerListImpl final : public DocumentMarkerList {
   DISALLOW_COPY_AND_ASSIGN(SuggestionMarkerListImpl);
 };
 
-DEFINE_TYPE_CASTS(SuggestionMarkerListImpl,
-                  DocumentMarkerList,
-                  list,
-                  list->MarkerType() == DocumentMarker::kSuggestion,
-                  list.MarkerType() == DocumentMarker::kSuggestion);
+template <>
+struct DowncastTraits<SuggestionMarkerListImpl> {
+  static bool AllowFrom(const DocumentMarkerList& list) {
+    return list.MarkerType() == DocumentMarker::kSuggestion;
+  }
+};
 
 }  // namespace blink
 

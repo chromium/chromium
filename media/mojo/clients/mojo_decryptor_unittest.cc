@@ -18,9 +18,9 @@
 #include "media/base/video_frame.h"
 #include "media/mojo/clients/mojo_decryptor.h"
 #include "media/mojo/common/mojo_shared_buffer_video_frame.h"
-#include "media/mojo/interfaces/decryptor.mojom.h"
+#include "media/mojo/mojom/decryptor.mojom.h"
 #include "media/mojo/services/mojo_decryptor_service.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -44,16 +44,15 @@ class MojoDecryptorTest : public ::testing::Test {
   void Initialize() {
     decryptor_.reset(new StrictMock<MockDecryptor>());
 
-    mojom::DecryptorPtr remote_decryptor;
     mojo_decryptor_service_.reset(
         new MojoDecryptorService(decryptor_.get(), nullptr));
-    binding_ = std::make_unique<mojo::Binding<mojom::Decryptor>>(
-        mojo_decryptor_service_.get(), MakeRequest(&remote_decryptor));
-    binding_->set_connection_error_handler(base::BindOnce(
-        &MojoDecryptorTest::OnConnectionClosed, base::Unretained(this)));
 
-    mojo_decryptor_.reset(
-        new MojoDecryptor(std::move(remote_decryptor), writer_capacity_));
+    receiver_ = std::make_unique<mojo::Receiver<mojom::Decryptor>>(
+        mojo_decryptor_service_.get());
+    mojo_decryptor_ = std::make_unique<MojoDecryptor>(
+        receiver_->BindNewPipeAndPassRemote(), writer_capacity_);
+    receiver_->set_disconnect_handler(base::BindOnce(
+        &MojoDecryptorTest::OnConnectionClosed, base::Unretained(this)));
   }
 
   void DestroyClient() {
@@ -64,7 +63,7 @@ class MojoDecryptorTest : public ::testing::Test {
   void DestroyService() {
     // MojoDecryptor has no way to notify callers that the connection is closed.
     // TODO(jrummell): Determine if notification is needed.
-    binding_.reset();
+    receiver_.reset();
     mojo_decryptor_service_.reset();
   }
 
@@ -107,8 +106,7 @@ class MojoDecryptorTest : public ::testing::Test {
                void(Decryptor::Status status,
                     const Decryptor::AudioFrames& frames));
   MOCK_METHOD2(VideoDecoded,
-               void(Decryptor::Status status,
-                    const scoped_refptr<VideoFrame>& frame));
+               void(Decryptor::Status status, scoped_refptr<VideoFrame> frame));
   MOCK_METHOD0(OnConnectionClosed, void());
   MOCK_METHOD0(OnFrameDestroyed, void());
 
@@ -123,7 +121,7 @@ class MojoDecryptorTest : public ::testing::Test {
 
   // The matching MojoDecryptorService for |mojo_decryptor_|.
   std::unique_ptr<MojoDecryptorService> mojo_decryptor_service_;
-  std::unique_ptr<mojo::Binding<mojom::Decryptor>> binding_;
+  std::unique_ptr<mojo::Receiver<mojom::Decryptor>> receiver_;
 
   // The actual Decryptor object used by |mojo_decryptor_service_|.
   std::unique_ptr<StrictMock<MockDecryptor>> decryptor_;

@@ -180,23 +180,19 @@ html[dir=rtl] .main-pane {
 }
 
 .auth-container .submit-button[disabled] {
-  color: #000;
+  --cr-icon-button-color: #000;
   opacity: 0.26;
 }
 
 .auth-container .submit-button {
-  box-sizing: border-box;
-  color: var(--google-blue-500);
-  height: 43px;
-  min-height: 43px;
-  min-width: 43px;
-  padding: 11.5px 10px;
+  --cr-icon-button-color: var(--google-blue-500);
+  --cr-icon-button-icon-size: 22px;
+  --cr-icon-button-size: 43px;
   position: relative;
-  width: 43px;
 }
 
 .auth-container .submit-button.error-shown {
-  color: #CD2A00;
+  --cr-icon-button-color: #CD2A00;
 }
 
 .name-container {
@@ -427,20 +423,6 @@ html[dir=rtl] .main-pane {
   width: 27px;
 }
 
-.launch-app-button-container {
-  display: block;
-  flex: auto;
-  text-align: center;
-}
-
-.launch-app-button {
-  display: inline;
-  margin-top: 6px !important;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
 .pod[auth-type='onlineSignIn'] .reauth-hint-container {
   display: flex;
   justify-content: center;
@@ -499,10 +481,10 @@ html[dir=rtl] .action-box-area {
 }
 
 .action-box-button {
+  --cr-icon-button--icon-size: 13px;
+  --cr-icon-button-size: 29px;
   background-image: url(chrome://theme/IDR_OOBE_ACTION_BOX_BUTTON_NORMAL);
-  height: 13px;
   margin: 5px;
-  width: 13px;
 }
 
 .action-box-button:hover {
@@ -514,12 +496,12 @@ html[dir=rtl] .action-box-area {
 }
 
 .action-box-area .action-box-icon {
-  /* overriden in chrome/browser/resources/md_user_manager/user_manager.css */
+  /* overriden in chrome/browser/resources/user_manager/user_manager.css */
   display: none;
 }
 
 .user-image-gradient-area {
-  /* overriden in chrome/browser/resources/md_user_manager/user_manager.css */
+  /* overriden in chrome/browser/resources/user_manager/user_manager.css */
   display: none;
 }
 

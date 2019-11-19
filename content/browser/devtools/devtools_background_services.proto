@@ -10,11 +10,19 @@ package content.devtools.proto;
 
 // The background service we are logging events for.
 // Do not change the tags since these are persisted.
+// Add a corresponding entry in `enums.xml` if a new value is introduced.
 enum BackgroundService {
   UNKNOWN = 0;
   TEST_BACKGROUND_SERVICE = 1;
   BACKGROUND_FETCH = 2;
   BACKGROUND_SYNC = 3;
+  PUSH_MESSAGING = 4;
+  NOTIFICATIONS = 5;
+  PAYMENT_HANDLER = 6;
+  PERIODIC_BACKGROUND_SYNC = 7;
+
+  // Keep as last, must have the largest tag value.
+  COUNT = 8;
 }
 
 // A proto for storing the background service event with common metadata for

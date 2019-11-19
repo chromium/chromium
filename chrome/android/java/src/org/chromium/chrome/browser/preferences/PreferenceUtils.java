@@ -9,16 +9,17 @@ import android.content.Context;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.StrictMode;
-import android.preference.PreferenceFragment;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.Nullable;
-import android.support.annotation.XmlRes;
 import android.support.v7.content.res.AppCompatResources;
+import android.support.v7.preference.PreferenceFragmentCompat;
 import android.support.v7.widget.ActionMenuView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnScrollChangedListener;
 import android.widget.ImageView;
+
+import androidx.annotation.DrawableRes;
+import androidx.annotation.Nullable;
+import androidx.annotation.XmlRes;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
@@ -31,11 +32,11 @@ public class PreferenceUtils {
      * A helper that is used to load preferences from XML resources without causing a
      * StrictModeViolation. See http://crbug.com/692125.
      *
-     * @param preferenceFragment A PreferenceFragment.
+     * @param preferenceFragment A Support Library {@link PreferenceFragmentCompat}.
      * @param preferencesResId   The id of the XML resource to add to the PreferenceFragment.
      */
     public static void addPreferencesFromResource(
-            PreferenceFragment preferenceFragment, @XmlRes int preferencesResId) {
+            PreferenceFragmentCompat preferenceFragment, @XmlRes int preferencesResId) {
         StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
         try {
             preferenceFragment.addPreferencesFromResource(preferencesResId);

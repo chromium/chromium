@@ -102,10 +102,10 @@ for message parameters.
 | `handle<shared_buffer>`       | Shared buffer handle.
 | `handle<data_pipe_producer>`  | Data pipe producer handle.
 | `handle<data_pipe_consumer>`  | Data pipe consumer handle.
-| *`InterfaceType`*             | Any user-defined Mojom interface type. This is sugar for a strongly-typed message pipe handle which should eventually be used to make outgoing calls on the interface.
-| *`InterfaceType&`*            | An interface request for any user-defined Mojom interface type. This is sugar for a more strongly-typed message pipe handle which is expected to receive request messages and should therefore eventually be bound to an implementation of the interface.
-| *`associated InterfaceType`*  | An associated interface handle. See [Associated Interfaces](#Associated-Interfaces)
-| *`associated InterfaceType&`* | An associated interface request. See [Associated Interfaces](#Associated-Interfaces)
+| *`pending_remote<InterfaceType>`*             | Any user-defined Mojom interface type. This is sugar for a strongly-typed message pipe handle which should eventually be used to make outgoing calls on the interface.
+| *`pending_receiver<InterfaceType>`*            | A pending receiver for any user-defined Mojom interface type. This is sugar for a more strongly-typed message pipe handle which is expected to receive request messages and should therefore eventually be bound to an implementation of the interface.
+| *`pending_associated_remote<InterfaceType>`*  | An associated interface handle. See [Associated Interfaces](#Associated-Interfaces)
+| *`pending_associated_receiver<InterfaceType>`* | A pending associated receiver. See [Associated Interfaces](#Associated-Interfaces)
 | *T*?                          | An optional (nullable) value. Primitive numeric types (integers, floats, booleans, and enums) are not nullable. All other types are nullable.
 
 ### Modules
@@ -254,12 +254,12 @@ struct AllTheThings {
   handle<data_pipe_producer>? maybe_writer;
   handle<shared_buffer> dumping_ground;
   handle<message_pipe> raw_message_pipe;
-  SampleInterface? maybe_a_sample_interface_client_pipe;
-  SampleInterface& non_nullable_sample_interface_request;
-  SampleInterface&? nullable_sample_interface_request;
-  associated SampleInterface associated_interface_client;
-  associated SampleInterface& associated_interface_request;
-  associated SampleInterface&? maybe_another_associated_request;
+  pending_remote<SampleInterface>? maybe_a_sample_interface_client_pipe;
+  pending_receiver<SampleInterface> non_nullable_sample_pending_receiver;
+  pending_receiver<SampleInterface>? nullable_sample_pending_receiver;
+  pending_associated_remote<SampleInterface> associated_interface_client;
+  pending_associated_receiver<SampleInterface> associated_pending_receiver;
+  pending_associated_receiver<SampleInterface>? maybe_another_pending_receiver;
 };
 ```
 
@@ -494,8 +494,8 @@ validation failure behavior as the built-in type validation routines.
 
 ## Associated Interfaces
 
-As mentioned in the [Primitive Types](#Primitive-Types) section above, interface
-and interface request fields and parameters may be marked as `associated`. This
+As mentioned in the [Primitive Types](#Primitive-Types) section above, pending_remote
+and pending_receiver fields and parameters may be marked as `associated`. This
 essentially means that they are piggy-backed on some other interface's message
 pipe.
 
@@ -557,6 +557,12 @@ By default, fields belong to version 0. New fields must be appended to the
 struct definition (*i.e*., existing fields must not change **ordinal value**)
 with the `MinVersion` attribute set to a number greater than any previous
 existing versions.
+
+*** note
+**NOTE:** do not change existing fields in versioned structs, as this is
+not backwards-compatible. Instead, rename the old field to make its
+deprecation clear and add a new field with the new version number.
+***
 
 **Ordinal value** refers to the relative positional layout of a struct's fields
 (and an interface's methods) when encoded in a message. Implicitly, ordinal
@@ -640,7 +646,7 @@ implementation of version 0, the client will be disconnected.
 
 Bindings target languages that support versioning expose means to query or
 assert the remote version from a client handle (*e.g.*, an
-`InterfacePtr<T>` in C++ bindings.)
+`mojo::Remote<T>` in C++ bindings.)
 
 See
 [C++ Versioning Considerations](/mojo/public/cpp/bindings/README.md#Versioning-Considerations)

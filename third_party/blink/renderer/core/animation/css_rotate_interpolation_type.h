@@ -13,7 +13,7 @@ class CSSRotateInterpolationType : public CSSInterpolationType {
  public:
   CSSRotateInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
-    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyRotate);
+    DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kRotate);
   }
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
@@ -39,7 +39,11 @@ class CSSRotateInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertValue(const CSSValue&,
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final;
-  void AdditiveKeyframeHook(InterpolationValue&) const final;
+  InterpolationValue PreInterpolationCompositeIfNeeded(
+      InterpolationValue value,
+      const InterpolationValue& underlying,
+      EffectModel::CompositeOperation,
+      ConversionCheckers&) const final;
 };
 
 }  // namespace blink

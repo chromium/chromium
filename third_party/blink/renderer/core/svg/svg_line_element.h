@@ -31,8 +31,6 @@ class SVGLineElement final : public SVGGeometryElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  DECLARE_NODE_FACTORY(SVGLineElement);
-
   explicit SVGLineElement(Document&);
 
   Path AsPath() const override;

@@ -8,17 +8,18 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "chrome/chrome_cleaner/interfaces/parser_interface.mojom.h"
 #include "chrome/chrome_cleaner/ipc/mojo_sandbox_hooks.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
 #include "chrome/chrome_cleaner/ipc/sandbox.h"
+#include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"
 #include "components/chrome_cleaner/public/constants/result_codes.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 
 namespace chrome_cleaner {
 
-using UniqueParserPtr =
-    std::unique_ptr<mojom::ParserPtr, base::OnTaskRunnerDeleter>;
+using RemoteParserPtr =
+    std::unique_ptr<mojo::Remote<mojom::Parser>, base::OnTaskRunnerDeleter>;
 
 // Hooks to spawn a new sandboxed Parser process and bind a Mojo interface
 // pointer to the sandboxed implementation.
@@ -28,31 +29,31 @@ class ParserSandboxSetupHooks : public MojoSandboxSetupHooks {
                           base::OnceClosure connection_error_handler);
   ~ParserSandboxSetupHooks() override;
 
-  // Transfers ownership of |parser_ptr_| to the caller.
-  UniqueParserPtr TakeParserPtr();
+  // Transfers ownership of |parser_| to the caller.
+  RemoteParserPtr TakeParserRemote();
 
   // SandboxSetupHooks
   ResultCode UpdateSandboxPolicy(sandbox::TargetPolicy* policy,
                                  base::CommandLine* command_line) override;
 
  private:
-  void BindParserPtr(mojo::ScopedMessagePipeHandle pipe_handle,
-                     mojom::ParserPtr* parser_ptr);
+  void BindParserRemote(mojo::ScopedMessagePipeHandle pipe_handle,
+                        mojo::Remote<mojom::Parser>* parser);
 
   scoped_refptr<MojoTaskRunner> mojo_task_runner_;
   base::OnceClosure connection_error_handler_;
 
-  UniqueParserPtr parser_ptr_;
+  RemoteParserPtr parser_;
 
   DISALLOW_COPY_AND_ASSIGN(ParserSandboxSetupHooks);
 };
 
 // Spawn a sandboxed process with type kParser, and return the bound
-// |parser_ptr|.
+// |parser|.
 ResultCode SpawnParserSandbox(
     scoped_refptr<MojoTaskRunner> mojo_task_runner,
     const SandboxConnectionErrorCallback& connection_error_callback,
-    UniqueParserPtr* parser_ptr);
+    RemoteParserPtr* parser);
 
 }  // namespace chrome_cleaner
 

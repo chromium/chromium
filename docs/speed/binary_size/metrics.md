@@ -37,9 +37,10 @@ For Googlers, more information available at [go/chrome-apk-size](https://goto.go
  * Computed as:
    * The size of an APK
    * With all native code as the sum of section sizes (except .bss), uncompressed.
-   * With all dex code as if it were stored compressed and also extracted.
+   * With all dex code as if it were stored uncompressed.
    * With all translations as if they were not missing (estimates size of missing translations based on size of english strings).
      * Without translation-normalization, translation dumps cause jumps.
+     * Translation-normalization applies only to apks (not to Android App Bundles).
 
 ### Native Code Size Metrics
 

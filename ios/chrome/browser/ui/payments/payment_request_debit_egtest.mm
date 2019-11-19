@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <EarlGrey/EarlGrey.h>
+
 #include <memory>
 #include <vector>
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_profile.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/payment_prefs.h"
@@ -100,7 +102,7 @@ std::unique_ptr<autofill::AutofillProfile> _profile;
 
   [self addServerCardWithType:DEBIT];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"canMakePayment"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"canMakePayment"];
 
   [self waitForWebViewContainingTexts:{"true"}];
 }
@@ -115,7 +117,7 @@ std::unique_ptr<autofill::AutofillProfile> _profile;
 
   [self addServerCardWithType:UNKNOWN];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"canMakePayment"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"canMakePayment"];
 
   [self waitForWebViewContainingTexts:{"true"}];
 }
@@ -127,7 +129,7 @@ std::unique_ptr<autofill::AutofillProfile> _profile;
   [self addServerCardWithType:CREDIT];
   [self addServerCardWithType:PREPAID];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"canMakePayment"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"canMakePayment"];
 
   [self waitForWebViewContainingTexts:{"false"}];
 }
@@ -142,7 +144,7 @@ std::unique_ptr<autofill::AutofillProfile> _profile;
 
   [self addServerCardWithType:DEBIT];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   // Confirm that the Payment Request UI is showing.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::PaymentRequestView()]
@@ -160,7 +162,7 @@ std::unique_ptr<autofill::AutofillProfile> _profile;
 
   [self addServerCardWithType:UNKNOWN];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   // Confirm that the Payment Request UI is showing.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::PaymentRequestView()]
@@ -182,7 +184,7 @@ std::unique_ptr<autofill::AutofillProfile> _profile;
 
   [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kDebitPage)];
 
-  [ChromeEarlGrey tapWebViewElementWithID:@"buy"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"buy"];
 
   // Confirm that the Payment Request UI is showing.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::PaymentRequestView()]

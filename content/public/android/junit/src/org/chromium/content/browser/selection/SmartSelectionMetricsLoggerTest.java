@@ -8,16 +8,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 
-import android.content.Context;
+import android.view.textclassifier.SelectionEvent;
+import android.view.textclassifier.TextClassificationManager;
+import android.view.textclassifier.TextClassifier;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
@@ -25,7 +30,6 @@ import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.content.browser.selection.SmartSelectionMetricsLogger.ActionType;
 
 import java.text.BreakIterator;
 
@@ -35,6 +39,9 @@ import java.text.BreakIterator;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SmartSelectionMetricsLoggerTest {
+    @Mock
+    private TextClassifier mTextClassifier;
+
     // Char index (in 10s)         0         1         2         3         4
     // Word index (thou)          -7-6   -5-4   -3-2        -1   0    1    2
     private static String sText = "O Romeo, Romeo! Wherefore art thou Romeo?\n"
@@ -47,26 +54,16 @@ public class SmartSelectionMetricsLoggerTest {
             //       3         4         5
             // 4   567  8  9      0  1 2      34
             + "And I’ll no longer be a Capulet.\n";
-    private static class TestSmartSelectionMetricsLogger extends SmartSelectionMetricsLogger {
-        public TestSmartSelectionMetricsLogger(SelectionEventProxy selectionEventProxy) {
-            super(selectionEventProxy);
-        }
-
-        @Override
-        public void logEvent(Object selectionEvent) {
-            // no-op
-        }
-
-        @Override
-        public Object createTracker(Context context, boolean editable) {
-            return new Object();
-        }
-    }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
         ShadowLog.stream = System.out;
+
+        TextClassificationManager tcm =
+                ApplicationProvider.getApplicationContext().getSystemService(
+                        TextClassificationManager.class);
+        tcm.setTextClassifier(mTextClassifier);
     }
 
     @Test
@@ -306,146 +303,221 @@ public class SmartSelectionMetricsLoggerTest {
     @Test
     @Feature({"TextInput", "SmartSelection"})
     public void testNormalLoggingFlow() {
-        SmartSelectionMetricsLogger.SelectionEventProxy selectionEventProxy =
-                Mockito.mock(SmartSelectionMetricsLogger.SelectionEventProxy.class);
-        TestSmartSelectionMetricsLogger logger =
-                new TestSmartSelectionMetricsLogger(selectionEventProxy);
-        InOrder order = inOrder(selectionEventProxy);
+        SmartSelectionMetricsLogger logger =
+                SmartSelectionMetricsLogger.create(ApplicationProvider.getApplicationContext());
+        ArgumentCaptor<SelectionEvent> captor = ArgumentCaptor.forClass(SelectionEvent.class);
+        InOrder inOrder = inOrder(mTextClassifier);
 
         // Start to select, selected "thou" in row#1.
         logger.logSelectionStarted("thou", 30, /* editable = */ false);
-        order.verify(selectionEventProxy).createSelectionStarted(0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        SelectionEvent selectionEvent = captor.getValue();
+        assertSelectionStartedEvent(selectionEvent);
 
         // Smart Selection, expand to "Wherefore art thou Romeo?".
         logger.logSelectionModified("Wherefore art thou Romeo?", 16, null);
-        order.verify(selectionEventProxy).createSelectionModified(-2, 3);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertEvent(selectionEvent, SelectionEvent.EVENT_SELECTION_MODIFIED, /*expectedStart=*/-2,
+                /*expectedEnd=*/3);
 
         // Smart Selection reset, to the last Romeo in row#1.
-        logger.logSelectionAction("Romeo", 35, ActionType.RESET, null);
-        order.verify(selectionEventProxy).createSelectionAction(1, 2, ActionType.RESET);
+        logger.logSelectionAction("Romeo", 35, SelectionEvent.ACTION_RESET, null);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertEquals(SelectionEvent.ACTION_RESET, selectionEvent.getEventType());
+        assertEvent(selectionEvent, SelectionEvent.ACTION_RESET, /*expectedStart=*/1,
+                /*expectedEnd=*/2);
 
         // User clear selection.
-        logger.logSelectionAction("Romeo", 35, ActionType.ABANDON, null);
-        order.verify(selectionEventProxy).createSelectionAction(1, 2, ActionType.ABANDON);
+        logger.logSelectionAction("Romeo", 35, SelectionEvent.ACTION_ABANDON, null);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertEvent(selectionEvent, SelectionEvent.ACTION_ABANDON, /*expectedStart=*/1,
+                /*expectedEnd=*/2);
 
         // User start a new selection without abandon.
         logger.logSelectionStarted("thou", 30, /* editable = */ false);
-        order.verify(selectionEventProxy).createSelectionStarted(0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertSelectionStartedEvent(selectionEvent);
 
         // Smart Selection, expand to "Wherefore art thou Romeo?".
         logger.logSelectionModified("Wherefore art thou Romeo?", 16, null);
-        order.verify(selectionEventProxy).createSelectionModified(-2, 3);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertEvent(selectionEvent, SelectionEvent.EVENT_SELECTION_MODIFIED, /*expectedStart=*/-2,
+                /*expectedEnd=*/3);
 
         // COPY, PASTE, CUT, SHARE, SMART_SHARE are basically the same.
-        logger.logSelectionAction("Wherefore art thou Romeo?", 16, ActionType.COPY, null);
-        order.verify(selectionEventProxy).createSelectionAction(-2, 3, ActionType.COPY);
+        logger.logSelectionAction(
+                "Wherefore art thou Romeo?", 16, SelectionEvent.ACTION_COPY, null);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertEvent(selectionEvent, SelectionEvent.ACTION_COPY, /*expectedStart=*/-2,
+                /*expectedEnd=*/3);
 
         // SELECT_ALL
         logger.logSelectionStarted("thou", 30, /* editable = */ true);
-        order.verify(selectionEventProxy).createSelectionStarted(0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertSelectionStartedEvent(selectionEvent);
 
-        logger.logSelectionAction(sText, 0, ActionType.SELECT_ALL, null);
-        order.verify(selectionEventProxy).createSelectionAction(-7, 34, ActionType.SELECT_ALL);
+        logger.logSelectionAction(sText, 0, SelectionEvent.ACTION_SELECT_ALL, null);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertEvent(selectionEvent, SelectionEvent.ACTION_SELECT_ALL, /*expectedStart=*/-7,
+                /*expectedEnd=*/34);
     }
 
     @Test
     @Feature({"TextInput", "SmartSelection"})
     public void testMultipleDrag() {
-        SmartSelectionMetricsLogger.SelectionEventProxy selectionEventProxy =
-                Mockito.mock(SmartSelectionMetricsLogger.SelectionEventProxy.class);
-        TestSmartSelectionMetricsLogger logger =
-                new TestSmartSelectionMetricsLogger(selectionEventProxy);
-        InOrder order = inOrder(selectionEventProxy);
+        SmartSelectionMetricsLogger logger =
+                SmartSelectionMetricsLogger.create(ApplicationProvider.getApplicationContext());
+        ArgumentCaptor<SelectionEvent> captor = ArgumentCaptor.forClass(SelectionEvent.class);
+        InOrder inOrder = inOrder(mTextClassifier);
+
         // Start new selection. First "Deny" in row#2.
         logger.logSelectionStarted("Deny", 42, /* editable = */ false);
-        order.verify(selectionEventProxy).createSelectionStarted(0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        SelectionEvent selectionEvent = captor.getValue();
+        assertSelectionStartedEvent(selectionEvent);
 
         // Drag right handle to "father".
         logger.logSelectionModified("Deny thy father", 42, null);
-        order.verify(selectionEventProxy).createSelectionModified(0, 3);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertEvent(selectionEvent, SelectionEvent.EVENT_SELECTION_MODIFIED, /*expectedStart=*/0,
+                /*expectedEnd=*/3);
 
         // Drag left handle to " and refuse"
         logger.logSelectionModified(" and refuse", 57, null);
-        order.verify(selectionEventProxy).createSelectionModified(3, 5);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertEvent(selectionEvent, SelectionEvent.EVENT_SELECTION_MODIFIED, /*expectedStart=*/3,
+                /*expectedEnd=*/5);
 
         // Drag right handle to " Romeo?\nDeny thy father".
         logger.logSelectionModified(" Romeo?\nDeny thy father", 34, null);
-        order.verify(selectionEventProxy).createSelectionModified(-2, 3);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertEvent(selectionEvent, SelectionEvent.EVENT_SELECTION_MODIFIED, /*expectedStart=*/-2,
+                /*expectedEnd=*/3);
 
         // Dismiss the selection.
-        logger.logSelectionAction(" Romeo?\nDeny thy father", 34, ActionType.ABANDON, null);
-        order.verify(selectionEventProxy).createSelectionAction(-2, 3, ActionType.ABANDON);
+        logger.logSelectionAction(
+                " Romeo?\nDeny thy father", 34, SelectionEvent.ACTION_ABANDON, null);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertEvent(selectionEvent, SelectionEvent.ACTION_ABANDON, /*expectedStart=*/-2,
+                /*expectedEnd=*/3);
 
         // Start a new selection.
         logger.logSelectionStarted("Deny", 42, /* editable = */ false);
-        order.verify(selectionEventProxy).createSelectionStarted(0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertSelectionStartedEvent(selectionEvent);
     }
 
     @Test
     @Feature({"TextInput", "SmartSelection"})
     public void testTextShift() {
-        SmartSelectionMetricsLogger.SelectionEventProxy selectionEventProxy =
-                Mockito.mock(SmartSelectionMetricsLogger.SelectionEventProxy.class);
-        TestSmartSelectionMetricsLogger logger =
-                new TestSmartSelectionMetricsLogger(selectionEventProxy);
-        InOrder order = inOrder(selectionEventProxy);
+        SmartSelectionMetricsLogger logger =
+                SmartSelectionMetricsLogger.create(ApplicationProvider.getApplicationContext());
+        ArgumentCaptor<SelectionEvent> captor = ArgumentCaptor.forClass(SelectionEvent.class);
+        InOrder inOrder = inOrder(mTextClassifier);
 
         // Start to select, selected "thou" in row#1.
         logger.logSelectionStarted("thou", 30, /* editable = */ false);
-        order.verify(selectionEventProxy).createSelectionStarted(0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        SelectionEvent selectionEvent = captor.getValue();
+        assertSelectionStartedEvent(selectionEvent);
 
         // Smart Selection, expand to "Wherefore art thou Romeo?".
         logger.logSelectionModified("Wherefore art thou Romeo?", 30, null);
-        order.verify(selectionEventProxy, never()).createSelectionModified(anyInt(), anyInt());
+        inOrder.verify(mTextClassifier, never())
+                .onSelectionEvent(Mockito.any(SelectionEvent.class));
 
         // Start to select, selected "thou" in row#1.
         logger.logSelectionStarted("thou", 30, /* editable = */ false);
-        order.verify(selectionEventProxy).createSelectionStarted(0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertSelectionStartedEvent(selectionEvent);
 
         // Drag. Non-intersect case.
         logger.logSelectionModified("Wherefore art thou", 10, null);
-        order.verify(selectionEventProxy, never()).createSelectionModified(anyInt(), anyInt());
+        inOrder.verify(mTextClassifier, never())
+                .onSelectionEvent(Mockito.any(SelectionEvent.class));
 
         // Start to select, selected "thou" in row#1.
         logger.logSelectionStarted("thou", 30, /* editable = */ false);
-        order.verify(selectionEventProxy).createSelectionStarted(0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertSelectionStartedEvent(selectionEvent);
 
         // Drag. Adjacent case, form "Wherefore art thouthou". Wrong case.
         logger.logSelectionModified("Wherefore art thou", 12, null);
-        order.verify(selectionEventProxy).createSelectionModified(-3, 0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertEvent(selectionEvent, SelectionEvent.EVENT_SELECTION_MODIFIED, /*expectedStart=*/-3,
+                /*expectedEnd=*/0);
     }
 
     @Test
     @Feature({"TextInput", "SmartSelection"})
     public void testSelectionChanged() {
-        SmartSelectionMetricsLogger.SelectionEventProxy selectionEventProxy =
-                Mockito.mock(SmartSelectionMetricsLogger.SelectionEventProxy.class);
-        TestSmartSelectionMetricsLogger logger =
-                new TestSmartSelectionMetricsLogger(selectionEventProxy);
-        InOrder order = inOrder(selectionEventProxy);
+        SmartSelectionMetricsLogger logger =
+                SmartSelectionMetricsLogger.create(ApplicationProvider.getApplicationContext());
+        ArgumentCaptor<SelectionEvent> captor = ArgumentCaptor.forClass(SelectionEvent.class);
+        InOrder inOrder = inOrder(mTextClassifier);
 
         // Start to select, selected "thou" in row#1.
         logger.logSelectionStarted("thou", 30, /* editable = */ false);
-        order.verify(selectionEventProxy).createSelectionStarted(0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        SelectionEvent selectionEvent = captor.getValue();
+        assertSelectionStartedEvent(selectionEvent);
 
         // Change "thou" to "math".
         logger.logSelectionModified("Wherefore art math", 16, null);
-        order.verify(selectionEventProxy, never()).createSelectionModified(anyInt(), anyInt());
+        inOrder.verify(mTextClassifier, never())
+                .onSelectionEvent(Mockito.any(SelectionEvent.class));
 
         // Start to select, selected "thou" in row#1.
         logger.logSelectionStarted("thou", 30, /* editable = */ false);
-        order.verify(selectionEventProxy).createSelectionStarted(0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertSelectionStartedEvent(selectionEvent);
 
         // Drag while deleting "art ". Wrong case.
         logger.logSelectionModified("Wherefore thou", 16, null);
-        order.verify(selectionEventProxy).createSelectionModified(-2, 0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertEvent(selectionEvent, SelectionEvent.EVENT_SELECTION_MODIFIED, /*expectedStart=*/-2,
+                /*expectedEnd=*/0);
 
         // Start to select, selected "thou" in row#1.
         logger.logSelectionStarted("thou", 30, /* editable = */ false);
-        order.verify(selectionEventProxy).createSelectionStarted(0);
+        inOrder.verify(mTextClassifier).onSelectionEvent(captor.capture());
+        selectionEvent = captor.getValue();
+        assertSelectionStartedEvent(selectionEvent);
 
         // Drag while deleting "Wherefore art ".
         logger.logSelectionModified("thou", 16, null);
-        order.verify(selectionEventProxy, never()).createSelectionModified(anyInt(), anyInt());
+        inOrder.verify(mTextClassifier, never())
+                .onSelectionEvent(Mockito.any(SelectionEvent.class));
+    }
+
+    private static void assertSelectionStartedEvent(SelectionEvent event) {
+        assertEquals(SelectionEvent.EVENT_SELECTION_STARTED, event.getEventType());
+        assertEquals(0, event.getStart());
+        assertEquals(1, event.getEnd());
+    }
+
+    private static void assertEvent(
+            SelectionEvent event, int eventType, int expectedStart, int expectedEnd) {
+        assertEquals(eventType, event.getEventType());
+        assertEquals(expectedStart, event.getStart());
+        assertEquals(expectedEnd, event.getEnd());
     }
 }

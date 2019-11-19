@@ -11,7 +11,9 @@
 #include "base/time/default_tick_clock.h"
 #include "content/browser/media/audio_log_factory.h"
 #include "content/public/common/content_features.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/audio/public/mojom/constants.mojom.h"
 #include "services/audio/public/mojom/log_factory_manager.mojom.h"
 
@@ -87,21 +89,20 @@ void AudioServiceListener::Metrics::LogServiceStartStatus(
 
 AudioServiceListener::AudioServiceListener(
     std::unique_ptr<service_manager::Connector> connector)
-    : binding_(this),
-      connector_(std::move(connector)),
+    : connector_(std::move(connector)),
       metrics_(base::DefaultTickClock::GetInstance()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   if (!connector_)
     return;  // Happens in unittests.
 
-  service_manager::mojom::ServiceManagerPtr service_manager;
-  connector_->BindInterface(service_manager::mojom::kServiceName,
-                            &service_manager);
-  service_manager::mojom::ServiceManagerListenerPtr listener;
-  service_manager::mojom::ServiceManagerListenerRequest request(
-      mojo::MakeRequest(&listener));
+  mojo::Remote<service_manager::mojom::ServiceManager> service_manager;
+  connector_->Connect(service_manager::mojom::kServiceName,
+                      service_manager.BindNewPipeAndPassReceiver());
+  mojo::PendingRemote<service_manager::mojom::ServiceManagerListener> listener;
+  mojo::PendingReceiver<service_manager::mojom::ServiceManagerListener> request(
+      listener.InitWithNewPipeAndPassReceiver());
   service_manager->AddListener(std::move(listener));
-  binding_.Bind(std::move(request));
+  receiver_.Bind(std::move(request));
 }
 
 AudioServiceListener::~AudioServiceListener() {
@@ -219,13 +220,14 @@ void AudioServiceListener::MaybeSetLogFactory() {
       !connector_ || log_factory_is_set_)
     return;
 
-  media::mojom::AudioLogFactoryPtr audio_log_factory_ptr;
-  mojo::MakeStrongBinding(std::make_unique<AudioLogFactory>(),
-                          mojo::MakeRequest(&audio_log_factory_ptr));
-  audio::mojom::LogFactoryManagerPtr log_factory_manager_ptr;
-  connector_->BindInterface(*current_instance_identity_,
-                            mojo::MakeRequest(&log_factory_manager_ptr));
-  log_factory_manager_ptr->SetLogFactory(std::move(audio_log_factory_ptr));
+  mojo::PendingRemote<media::mojom::AudioLogFactory> audio_log_factory;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<AudioLogFactory>(),
+      audio_log_factory.InitWithNewPipeAndPassReceiver());
+  mojo::Remote<audio::mojom::LogFactoryManager> log_factory_manager;
+  connector_->Connect(*current_instance_identity_,
+                      log_factory_manager.BindNewPipeAndPassReceiver());
+  log_factory_manager->SetLogFactory(std::move(audio_log_factory));
   log_factory_is_set_ = true;
 }
 

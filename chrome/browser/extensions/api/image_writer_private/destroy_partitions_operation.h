@@ -19,7 +19,6 @@ class DestroyPartitionsOperation : public Operation {
  public:
   DestroyPartitionsOperation(
       base::WeakPtr<OperationManager> manager,
-      std::unique_ptr<service_manager::Connector> connector,
       const ExtensionId& extension_id,
       const std::string& storage_unit_id,
       const base::FilePath& download_folder);

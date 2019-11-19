@@ -18,8 +18,7 @@ Status DebuggerTracker::OnEvent(DevToolsClient* client,
                          const std::string& method,
                          const base::DictionaryValue& params) {
   if (method == "Debugger.paused") {
-    base::DictionaryValue empty_params;
-    return client->SendCommand("Debugger.resume", empty_params);
+    return client->SendCommandAndIgnoreResponse("Debugger.resume", {});
   }
   return Status(kOk);
 }

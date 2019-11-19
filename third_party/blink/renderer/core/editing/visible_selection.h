@@ -34,7 +34,7 @@
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_granularity.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -97,7 +97,7 @@ class VisibleSelectionTemplate {
 
   void Trace(Visitor*);
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   void ShowTreeForThis() const;
 #endif
   static void PrintTo(const VisibleSelectionTemplate&, std::ostream*);
@@ -161,8 +161,8 @@ PositionInFlatTree ComputeEndRespectingGranularity(
 
 }  // namespace blink
 
-#ifndef NDEBUG
-// Outside the WebCore namespace for ease of invocation from gdb.
+#if DCHECK_IS_ON()
+// Outside the blink namespace for ease of invocation from gdb.
 void showTree(const blink::VisibleSelection&);
 void showTree(const blink::VisibleSelection*);
 void showTree(const blink::VisibleSelectionInFlatTree&);

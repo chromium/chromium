@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.webauth;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.chrome.browser.AppHooks;
@@ -15,7 +16,7 @@ import org.chromium.content_public.browser.RenderFrameHost;
 
 /**
  * Android implementation of the Authenticator service defined in
- * //third_party/blink/public/platform/modules/webauth/authenticator.mojom.
+ * //third_party/blink/public/mojom/webauth/authenticator.mojom.
  */
 public class Fido2ApiHandler {
     private static Fido2ApiHandler sInstance;
@@ -49,5 +50,8 @@ public class Fido2ApiHandler {
             RenderFrameHost frameHost, HandlerResponseCallback callback) {}
 
     protected void getAssertion(PublicKeyCredentialRequestOptions options,
+            RenderFrameHost frameHost, HandlerResponseCallback callback) {}
+
+    protected void isUserVerifyingPlatformAuthenticatorAvailable(
             RenderFrameHost frameHost, HandlerResponseCallback callback) {}
 }

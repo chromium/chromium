@@ -23,7 +23,6 @@ jumbo_component("x11") {
   configs += [ "//build/config/linux:x11" ]
 
   public_deps = [
-    "//ui/base/x",
     "//ui/events",
     "//ui/events:events_base",
     "//ui/events/devices",
@@ -42,7 +41,7 @@ jumbo_component("x11") {
     deps += [ "//ui/events/ozone:events_ozone" ]
   }
 
-  if (use_glib) {
+  if (use_x11) {
     sources += [
       "x11_event_source_glib.cc",
       "x11_event_source_glib.h",
@@ -50,9 +49,10 @@ jumbo_component("x11") {
 
     configs += [ "//build/config/linux:glib" ]
   } else {
+    assert(ozone_platform_x11)
     sources += [
-      "x11_event_source_libevent.cc",
-      "x11_event_source_libevent.h",
+      "x11_event_source_default.cc",
+      "x11_event_source_default.h",
     ]
 
     deps += [ "//ui/events/keycodes:x11" ]

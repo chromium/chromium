@@ -22,8 +22,7 @@ class Visitor;
 // https://streams.spec.whatwg.org/#rs-default-controller-internal-slots.
 // Subclasses may refer to JavaScript functions and so objects of this type must
 // always be reachable by V8's garbage collector.
-class StrategySizeAlgorithm
-    : public GarbageCollectedFinalized<StrategySizeAlgorithm> {
+class StrategySizeAlgorithm : public GarbageCollected<StrategySizeAlgorithm> {
  public:
   virtual ~StrategySizeAlgorithm() = default;
 
@@ -38,8 +37,7 @@ class StrategySizeAlgorithm
 // method of the underlying object. These differ from other underlying
 // algorithms in that they can throw synchronously. Objects of this
 // type must always be reachable by V8's garbage collector.
-class StreamStartAlgorithm
-    : public GarbageCollectedFinalized<StreamStartAlgorithm> {
+class StreamStartAlgorithm : public GarbageCollected<StreamStartAlgorithm> {
  public:
   virtual ~StreamStartAlgorithm() = default;
 
@@ -52,7 +50,7 @@ class StreamStartAlgorithm
 // Promise. This is used as the type for all the algorithms in the standard that
 // do not use StrategySizeAlgorithm or StreamStartAlgorithm. Objects of this
 // type must always be reachable by V8's garbage collector.
-class StreamAlgorithm : public GarbageCollectedFinalized<StreamAlgorithm> {
+class StreamAlgorithm : public GarbageCollected<StreamAlgorithm> {
  public:
   virtual ~StreamAlgorithm() = default;
 

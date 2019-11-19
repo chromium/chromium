@@ -1,0 +1,18 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://gpuweb.github.io/gpuweb/
+
+dictionary GPUDepthStencilStateDescriptor {
+    required GPUTextureFormat format;
+
+    boolean depthWriteEnabled = false;
+    GPUCompareFunction depthCompare = "always";
+
+    GPUStencilStateFaceDescriptor stencilFront = {};
+    GPUStencilStateFaceDescriptor stencilBack = {};
+
+    unsigned long stencilReadMask = 0xFFFFFFFF;
+    unsigned long stencilWriteMask = 0xFFFFFFFF;
+};

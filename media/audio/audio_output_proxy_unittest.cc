@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "media/audio/audio_manager.h"
@@ -90,6 +90,7 @@ class MockAudioOutputStream : public AudioOutputStream {
   MOCK_METHOD1(SetVolume, void(double volume));
   MOCK_METHOD1(GetVolume, void(double* volume));
   MOCK_METHOD0(Close, void());
+  MOCK_METHOD0(Flush, void());
 
  private:
   bool start_called_;
@@ -487,7 +488,7 @@ class AudioOutputProxyTest : public testing::Test {
     proxy->Close();
   }
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   MockAudioManager manager_;
   std::unique_ptr<AudioOutputDispatcherImpl> dispatcher_impl_;
   MockAudioSourceCallback callback_;
@@ -510,7 +511,7 @@ class AudioOutputResamplerTest : public AudioOutputProxyTest {
   void OnStart() override {
     // Let Start() run for a bit.
     base::RunLoop run_loop;
-    message_loop_.task_runner()->PostDelayedTask(
+    task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
         FROM_HERE, run_loop.QuitClosure(),
         base::TimeDelta::FromMilliseconds(kStartRunTimeMs));
     run_loop.Run();
@@ -823,7 +824,7 @@ TEST_F(AudioOutputResamplerTest, FallbackRecovery) {
   // Once all proxies have been closed, AudioOutputResampler will start the
   // reinitialization timer and execute it after the close delay elapses.
   base::RunLoop run_loop;
-  message_loop_.task_runner()->PostDelayedTask(
+  task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE, run_loop.QuitClosure(),
       base::TimeDelta::FromMilliseconds(2 * kTestCloseDelayMs));
   run_loop.Run();

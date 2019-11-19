@@ -56,7 +56,7 @@ std::string BuildDescription(const std::vector<std::string>& families,
       break;
   }
 
-  description += base::IntToString(size_pixels);
+  description += base::NumberToString(size_pixels);
   description += "px";
 
   return description;

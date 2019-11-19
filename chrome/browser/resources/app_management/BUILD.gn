@@ -25,12 +25,14 @@ if (!is_android) {
       ":permission_item",
       ":permission_toggle",
       ":permission_view_header",
+      ":pin_to_shelf_item",
       ":pwa_permission_view",
       ":reducers",
       ":router",
       ":search_view",
       ":store",
       ":store_client",
+      ":toggle_row",
       ":types",
       ":util",
     ]
@@ -68,6 +70,8 @@ if (!is_android) {
       ":types",
       ":util",
       "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile",
+      "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
+      "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field",
     ]
   }
 
@@ -86,6 +90,7 @@ if (!is_android) {
       ":metadata_view",
       ":permission_item",
       ":permission_view_header",
+      ":pin_to_shelf_item",
       ":store_client",
     ]
   }
@@ -103,6 +108,7 @@ if (!is_android) {
       ":fake_page_handler",
       ":metadata_view",
       ":permission_view_header",
+      ":pin_to_shelf_item",
       ":store_client",
     ]
   }
@@ -184,6 +190,14 @@ if (!is_android) {
     ]
   }
 
+  js_library("pin_to_shelf_item") {
+    deps = [
+      ":browser_proxy",
+      ":toggle_row",
+      ":types",
+    ]
+  }
+
   js_library("pwa_permission_view") {
     deps = [
       ":constants",
@@ -191,6 +205,7 @@ if (!is_android) {
       ":metadata_view",
       ":permission_item",
       ":permission_view_header",
+      ":pin_to_shelf_item",
       ":store_client",
     ]
   }
@@ -235,6 +250,13 @@ if (!is_android) {
       "//ui/webui/resources/js:cr",
       "//ui/webui/resources/js/cr/ui:store",
       "//ui/webui/resources/js/cr/ui:store_client",
+    ]
+  }
+
+  js_library("toggle_row") {
+    deps = [
+      ":types",
+      "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle",
     ]
   }
 

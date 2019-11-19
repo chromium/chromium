@@ -42,9 +42,9 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
     ok_button_ = CreateButton(ConfirmInfoBarDelegate::BUTTON_OK);
     ok_button_->SetProminent(true);
     if (delegate_ptr->OKButtonTriggersUACPrompt()) {
-      elevation_icon_setter_.reset(new ElevationIconSetter(
+      elevation_icon_setter_ = std::make_unique<ElevationIconSetter>(
           ok_button_,
-          base::BindOnce(&ConfirmInfoBar::Layout, base::Unretained(this))));
+          base::BindOnce(&ConfirmInfoBar::Layout, base::Unretained(this)));
     }
   }
 
@@ -67,15 +67,15 @@ void ConfirmInfoBar::Layout() {
   InfoBarView::Layout();
 
   int x = StartX();
-  Labels labels;
-  labels.push_back(label_);
-  labels.push_back(link_);
-  AssignWidths(&labels, std::max(0, EndX() - x - NonLabelWidth()));
+  Views views;
+  views.push_back(label_);
+  views.push_back(link_);
+  AssignWidths(&views, std::max(0, EndX() - x - NonLabelWidth()));
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
   label_->SetPosition(gfx::Point(x, OffsetY(label_)));
-  if (!label_->text().empty())
+  if (!label_->GetText().empty())
     x = label_->bounds().right() +
         layout_provider->GetDistanceMetric(
             views::DISTANCE_RELATED_LABEL_HORIZONTAL);
@@ -109,11 +109,6 @@ void ConfirmInfoBar::ButtonPressed(views::Button* sender,
   }
 }
 
-int ConfirmInfoBar::ContentMinimumWidth() const {
-  return label_->GetMinimumSize().width() + link_->GetMinimumSize().width() +
-      NonLabelWidth();
-}
-
 void ConfirmInfoBar::LinkClicked(views::Link* source, int event_flags) {
   if (!owner())
     return;  // We're closing; don't call anything, it might access the owner.
@@ -122,22 +117,27 @@ void ConfirmInfoBar::LinkClicked(views::Link* source, int event_flags) {
     RemoveSelf();
 }
 
+int ConfirmInfoBar::ContentMinimumWidth() const {
+  return label_->GetMinimumSize().width() + link_->GetMinimumSize().width() +
+         NonLabelWidth();
+}
+
 ConfirmInfoBarDelegate* ConfirmInfoBar::GetDelegate() {
   return delegate()->AsConfirmInfoBarDelegate();
 }
 
 views::MdTextButton* ConfirmInfoBar::CreateButton(
     ConfirmInfoBarDelegate::InfoBarButton type) {
-  auto* button =
+  auto button =
       views::MdTextButton::Create(this, GetDelegate()->GetButtonLabel(type));
   button->SetProperty(
       views::kMarginsKey,
-      new gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
-                          DISTANCE_TOAST_CONTROL_VERTICAL),
-                      0));
-  AddChildView(button);
-  button->SizeToPreferredSize();
-  return button;
+      gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                      DISTANCE_TOAST_CONTROL_VERTICAL),
+                  0));
+  auto* button_ptr = AddChildView(std::move(button));
+  button_ptr->SizeToPreferredSize();
+  return button_ptr;
 }
 
 int ConfirmInfoBar::NonLabelWidth() const {
@@ -148,11 +148,11 @@ int ConfirmInfoBar::NonLabelWidth() const {
   const int button_spacing = layout_provider->GetDistanceMetric(
       views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
 
-  int width = (label_->text().empty() || (!ok_button_ && !cancel_button_))
+  int width = (label_->GetText().empty() || (!ok_button_ && !cancel_button_))
                   ? 0
                   : label_spacing;
   if (ok_button_)
     width += ok_button_->width() + (cancel_button_ ? button_spacing : 0);
   width += cancel_button_ ? cancel_button_->width() : 0;
-  return width + ((link_->text().empty() || !width) ? 0 : label_spacing);
+  return width + ((link_->GetText().empty() || !width) ? 0 : label_spacing);
 }

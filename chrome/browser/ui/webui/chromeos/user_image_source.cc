@@ -173,23 +173,25 @@ UserImageSource::UserImageSource() {}
 
 UserImageSource::~UserImageSource() {}
 
-std::string UserImageSource::GetSource() const {
+std::string UserImageSource::GetSource() {
   return chrome::kChromeUIUserImageHost;
 }
 
 void UserImageSource::StartDataRequest(
-    const std::string& path,
-    const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+    const GURL& url,
+    const content::WebContents::Getter& wc_getter,
     const content::URLDataSource::GotDataCallback& callback) {
+  // TODO(crbug/1009127): Make sure |url| matches
+  // |chrome::kChromeUIUserImageURL| now that |url| is available.
+  const std::string path = content::URLDataSource::URLToRequestPath(url);
   std::string email;
   int frame = -1;
-  GURL url(chrome::kChromeUIUserImageURL + path);
   ParseRequest(url, &email, &frame);
   const AccountId account_id(AccountId::FromUserEmail(email));
   callback.Run(GetUserImageInternal(account_id, frame));
 }
 
-std::string UserImageSource::GetMimeType(const std::string& path) const {
+std::string UserImageSource::GetMimeType(const std::string& path) {
   // We need to explicitly return a mime type, otherwise if the user tries to
   // drag the image they get no extension.
   return "image/png";

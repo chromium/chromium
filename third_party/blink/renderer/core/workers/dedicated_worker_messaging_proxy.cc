@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 
 #include <memory>
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
+#include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_cache_options.h"
@@ -15,13 +15,14 @@
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger.h"
+#include "third_party/blink/renderer/core/loader/worker_resource_timing_notifier_impl.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_object_proxy.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_options.h"
-#include "third_party/blink/renderer/platform/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
@@ -31,7 +32,7 @@ DedicatedWorkerMessagingProxy::DedicatedWorkerMessagingProxy(
     DedicatedWorker* worker_object)
     : ThreadedMessagingProxyBase(execution_context),
       worker_object_(worker_object) {
-  worker_object_proxy_ = DedicatedWorkerObjectProxy::Create(
+  worker_object_proxy_ = std::make_unique<DedicatedWorkerObjectProxy>(
       this, GetParentExecutionContextTaskRunners());
 }
 
@@ -63,11 +64,18 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
   if (options->type() == "classic") {
     // "classic: Fetch a classic worker script given url, outside settings,
     // destination, and inside settings."
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kClassicDedicatedWorker);
     switch (off_main_thread_fetch_option) {
-      case OffMainThreadWorkerScriptFetchOption::kEnabled:
-        GetWorkerThread()->ImportClassicScript(
-            script_url, outside_settings_object, stack_id);
+      case OffMainThreadWorkerScriptFetchOption::kEnabled: {
+        auto* resource_timing_notifier =
+            WorkerResourceTimingNotifierImpl::CreateForOutsideResourceFetcher(
+                *GetExecutionContext());
+        GetWorkerThread()->FetchAndRunClassicScript(
+            script_url, outside_settings_object.CopyData(),
+            resource_timing_notifier, stack_id);
         break;
+      }
       case OffMainThreadWorkerScriptFetchOption::kDisabled:
         // Legacy code path (to be deprecated, see https://crbug.com/835717):
         GetWorkerThread()->EvaluateClassicScript(
@@ -80,12 +88,18 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     // "module: Fetch a module worker script graph given url, outside settings,
     // destination, the value of the credentials member of options, and inside
     // settings."
-    network::mojom::FetchCredentialsMode credentials_mode;
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kModuleDedicatedWorker);
+    network::mojom::CredentialsMode credentials_mode;
     bool result = Request::ParseCredentialsMode(options->credentials(),
                                                 &credentials_mode);
     DCHECK(result);
-    GetWorkerThread()->ImportModuleScript(script_url, outside_settings_object,
-                                          credentials_mode);
+    auto* resource_timing_notifier =
+        WorkerResourceTimingNotifierImpl::CreateForOutsideResourceFetcher(
+            *GetExecutionContext());
+    GetWorkerThread()->FetchAndRunModuleScript(
+        script_url, outside_settings_object.CopyData(),
+        resource_timing_notifier, credentials_mode);
   } else {
     NOTREACHED();
   }
@@ -102,7 +116,7 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerGlobalScope(
   }
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kPostedMessage), FROM_HERE,
-      CrossThreadBind(
+      CrossThreadBindOnce(
           &DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject,
           CrossThreadUnretained(&WorkerObjectProxy()),
           WTF::Passed(std::move(message)),
@@ -119,6 +133,22 @@ void DedicatedWorkerMessagingProxy::DidFailToFetchScript() {
   if (!worker_object_ || AskedToTerminate())
     return;
   worker_object_->DispatchErrorEventForScriptFetchFailure();
+}
+
+void DedicatedWorkerMessagingProxy::Freeze() {
+  DCHECK(IsParentContextThread());
+  auto* worker_thread = GetWorkerThread();
+  if (AskedToTerminate() || !worker_thread)
+    return;
+  worker_thread->Freeze();
+}
+
+void DedicatedWorkerMessagingProxy::Resume() {
+  DCHECK(IsParentContextThread());
+  auto* worker_thread = GetWorkerThread();
+  if (AskedToTerminate() || !worker_thread)
+    return;
+  worker_thread->Resume();
 }
 
 void DedicatedWorkerMessagingProxy::DidEvaluateScript(bool success) {
@@ -140,7 +170,7 @@ void DedicatedWorkerMessagingProxy::DidEvaluateScript(bool success) {
   for (auto& task : tasks) {
     PostCrossThreadTask(
         *GetWorkerThread()->GetTaskRunner(TaskType::kPostedMessage), FROM_HERE,
-        CrossThreadBind(
+        CrossThreadBindOnce(
             &DedicatedWorkerObjectProxy::ProcessMessageFromWorkerObject,
             CrossThreadUnretained(&WorkerObjectProxy()),
             WTF::Passed(std::move(task)),
@@ -197,9 +227,10 @@ void DedicatedWorkerMessagingProxy::DispatchErrorEvent(
   // https://html.spec.whatwg.org/C/#runtime-script-errors-2
   PostCrossThreadTask(
       *GetWorkerThread()->GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
-      CrossThreadBind(&DedicatedWorkerObjectProxy::ProcessUnhandledException,
-                      CrossThreadUnretained(worker_object_proxy_.get()),
-                      exception_id, CrossThreadUnretained(GetWorkerThread())));
+      CrossThreadBindOnce(
+          &DedicatedWorkerObjectProxy::ProcessUnhandledException,
+          CrossThreadUnretained(worker_object_proxy_.get()), exception_id,
+          CrossThreadUnretained(GetWorkerThread())));
 
   // Propagate an unhandled error to the parent context.
   const auto mute_script_errors = SanitizeScriptErrors::kDoNotSanitize;
@@ -225,8 +256,8 @@ DedicatedWorkerMessagingProxy::CreateBackingThreadStartupData(
 
 std::unique_ptr<WorkerThread>
 DedicatedWorkerMessagingProxy::CreateWorkerThread() {
-  return DedicatedWorkerThread::Create(GetExecutionContext(),
-                                       WorkerObjectProxy());
+  return std::make_unique<DedicatedWorkerThread>(GetExecutionContext(),
+                                                 WorkerObjectProxy());
 }
 
 }  // namespace blink

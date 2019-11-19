@@ -1,0 +1,39 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+
+component("session") {
+  defines = [ "IS_CHROMEOS_LOGIN_SESSION_IMPL" ]
+  deps = [
+    "//base",
+    "//chromeos/constants",
+    "//chromeos/dbus/cryptohome:cryptohome",
+    "//chromeos/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/dbus/power:power",
+    "//chromeos/dbus/session_manager:session_manager",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+  sources = [
+    "session_termination_manager.cc",
+    "session_termination_manager.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    "//base",
+    "//chromeos/dbus/cryptohome:cryptohome",
+    "//chromeos/dbus/power:power",
+    "//chromeos/dbus/session_manager:session_manager",
+    "//chromeos/login/session:session",
+    "//testing/gtest",
+  ]
+  sources = [
+    "session_termination_manager_unittest.cc",
+  ]
+}

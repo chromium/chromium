@@ -6,16 +6,16 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_RTC_RTP_TRANSCEIVER_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/optional.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_rtc_rtp_receiver.h"
-#include "third_party/blink/public/platform/web_rtc_rtp_sender.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/webrtc/api/rtp_transceiver_interface.h"
 
 namespace blink {
+
+class RTCRtpSenderPlatform;
 
 // In Unified Plan transceivers exist and a full implementation of
 // WebRTCRtpTransceiver is required.
@@ -49,7 +49,8 @@ class BLINK_PLATFORM_EXPORT WebRTCRtpTransceiver {
   // exist for the same webrtc-layer transceiver.
   virtual uintptr_t Id() const = 0;
   virtual WebString Mid() const = 0;
-  virtual std::unique_ptr<WebRTCRtpSender> Sender() const = 0;
+  virtual void SetMid(base::Optional<WebString>) {}
+  virtual std::unique_ptr<RTCRtpSenderPlatform> Sender() const = 0;
   virtual std::unique_ptr<WebRTCRtpReceiver> Receiver() const = 0;
   virtual bool Stopped() const = 0;
   virtual webrtc::RtpTransceiverDirection Direction() const = 0;
@@ -58,6 +59,10 @@ class BLINK_PLATFORM_EXPORT WebRTCRtpTransceiver {
       const = 0;
   virtual base::Optional<webrtc::RtpTransceiverDirection> FiredDirection()
       const = 0;
+  virtual webrtc::RTCError SetCodecPreferences(
+      WebVector<webrtc::RtpCodecCapability>) {
+    return {};
+  }
 };
 
 }  // namespace blink

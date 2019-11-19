@@ -1,0 +1,38 @@
+<!doctype HTML>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: empty fieldset</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="fieldset-empty-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+#border {
+  border: 1px solid black;
+  width: min-content;
+}
+#container {
+  intrinsic-size: 0px 0px;
+}
+fieldset:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+
+<div id="border">
+  <fieldset id="container"></fieldset>
+</div>
+
+<script>
+async function runTest() {
+  const container = document.getElementById("container");
+  await setInvisible(container);
+  takeScreenshot();
+}
+
+window.onload = requestAnimationFrame(() => requestAnimationFrame(runTest));
+</script>
+
+</html>

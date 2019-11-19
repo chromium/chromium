@@ -13,5 +13,14 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_AUTOGEN_H_
 #define GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_AUTOGEN_H_
 
-virtual void Dummy() = 0;
+virtual void AssociateMailbox(GLuint device_id,
+                              GLuint device_generation,
+                              GLuint id,
+                              GLuint generation,
+                              GLuint usage,
+                              const GLbyte* mailbox) = 0;
+virtual void DissociateMailbox(GLuint texture_id,
+                               GLuint texture_generation) = 0;
+virtual void RequestAdapter(
+    PowerPreference power_preference = PowerPreference::kHighPerformance) = 0;
 #endif  // GPU_COMMAND_BUFFER_CLIENT_WEBGPU_INTERFACE_AUTOGEN_H_

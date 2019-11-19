@@ -1,0 +1,11 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//third_party/blink/public/mojom/clipboard/clipboard.mojom"
+public_headers = [ "//ui/base/clipboard/clipboard_buffer.h" ]
+traits_headers = [ "//ui/base/mojom/clipboard_blink_mojom_traits.h" ]
+public_deps = [
+  "//ui/base/clipboard:clipboard_types",
+]
+type_mappings = [ "blink.mojom.ClipboardBuffer=ui::ClipboardBuffer" ]

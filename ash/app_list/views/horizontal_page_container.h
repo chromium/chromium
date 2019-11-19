@@ -9,21 +9,22 @@
 #include <vector>
 
 #include "ash/app_list/app_list_export.h"
-#include "ash/app_list/pagination_model.h"
-#include "ash/app_list/pagination_model_observer.h"
 #include "ash/app_list/views/app_list_page.h"
+#include "ash/public/cpp/pagination/pagination_model.h"
+#include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/macros.h"
 
-namespace app_list {
+namespace ash {
 
 class AppsContainerView;
-class PaginationController;
 class HorizontalPage;
+class PaginationController;
 
 // HorizontalPageContainer contains a list of HorizontalPage that are
 // horizontally laid out. These pages can be switched with gesture scrolling.
-class APP_LIST_EXPORT HorizontalPageContainer : public AppListPage,
-                                                public PaginationModelObserver {
+class APP_LIST_EXPORT HorizontalPageContainer
+    : public AppListPage,
+      public ash::PaginationModelObserver {
  public:
   HorizontalPageContainer(ContentsView* contents_view, AppListModel* model);
   ~HorizontalPageContainer() override;
@@ -32,26 +33,30 @@ class APP_LIST_EXPORT HorizontalPageContainer : public AppListPage,
   gfx::Size CalculatePreferredSize() const override;
   void Layout() override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  const char* GetClassName() const override;
 
   // AppListPage overrides:
   void OnWillBeHidden() override;
-  void OnAnimationUpdated(double progress,
-                          ash::AppListState from_state,
+  void OnAnimationStarted(ash::AppListState from_state,
                           ash::AppListState to_state) override;
-  gfx::Rect GetSearchBoxBounds() const override;
-  gfx::Rect GetSearchBoxBoundsForState(ash::AppListState state) const override;
-  gfx::Rect GetPageBoundsForState(ash::AppListState state) const override;
+  gfx::Rect GetPageBoundsForState(
+      ash::AppListState state,
+      const gfx::Rect& contents_bounds,
+      const gfx::Rect& search_box_bounds) const override;
+  void UpdateOpacityForState(ash::AppListState state) override;
   views::View* GetFirstFocusableView() override;
   views::View* GetLastFocusableView() override;
   bool ShouldShowSearchBox() const override;
 
   AppsContainerView* apps_container_view() { return apps_container_view_; }
 
+  void OnTabletModeChanged(bool started);
+
  private:
   // PaginationModelObserver:
-  void TotalPagesChanged() override;
+  void TotalPagesChanged(int previous_page_count, int new_page_count) override;
   void SelectedPageChanged(int old_selected, int new_selected) override;
-  void TransitionStarted() override;
+  void TransitionStarting() override;
   void TransitionChanged() override;
   void TransitionEnded() override;
 
@@ -70,10 +75,10 @@ class APP_LIST_EXPORT HorizontalPageContainer : public AppListPage,
   gfx::Vector2d GetOffsetForPageIndex(int index) const;
 
   // Manages the pagination for the horizontal pages.
-  PaginationModel pagination_model_;
+  ash::PaginationModel pagination_model_{this};
 
   // Must appear after |pagination_model_|.
-  std::unique_ptr<PaginationController> pagination_controller_;
+  std::unique_ptr<ash::PaginationController> pagination_controller_;
 
   ContentsView* contents_view_;  // Not owned
 
@@ -86,6 +91,6 @@ class APP_LIST_EXPORT HorizontalPageContainer : public AppListPage,
   DISALLOW_COPY_AND_ASSIGN(HorizontalPageContainer);
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_VIEWS_HORIZONTAL_PAGE_CONTAINER_H_

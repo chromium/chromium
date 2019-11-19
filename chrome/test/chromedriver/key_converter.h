@@ -28,6 +28,6 @@ Status ConvertKeysToKeyEvents(const base::string16& keys,
 Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
                                   base::DictionaryValue* input_state,
                                   bool is_key_down,
-                                  std::vector<KeyEvent>* client_key_events);
+                                  std::list<KeyEvent>* client_key_events);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_KEY_CONVERTER_H_

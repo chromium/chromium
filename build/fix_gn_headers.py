@@ -10,6 +10,8 @@ try to fix them by adding them to the GN files.
 Manual cleaning up is likely required afterwards.
 """
 
+from __future__ import print_function
+
 import argparse
 import os
 import re
@@ -39,7 +41,7 @@ def ValidMatches(basename, cc, grep_lines):
       continue
     if lines[linenr - 2] == new:
       continue
-    print '    ', gnfile, linenr, new
+    print('    ', gnfile, linenr, new)
     matches.append((gnfile, linenr, new))
   return matches
 
@@ -59,7 +61,7 @@ def AddHeadersNextToCC(headers, skip_ambiguous=True):
     if not (filename.endswith('.h') or filename.endswith('.hh')):
       continue
     basename = os.path.basename(filename)
-    print filename
+    print(filename)
     cc = r'\b' + os.path.splitext(basename)[0] + r'\.(cc|cpp|mm)\b'
     out, returncode = GitGrep('(/|")' + cc + '"')
     if returncode != 0 or not out:
@@ -71,10 +73,10 @@ def AddHeadersNextToCC(headers, skip_ambiguous=True):
     if len(matches) == 0:
       continue
     if len(matches) > 1:
-      print '\n[WARNING] Ambiguous matching for', filename
+      print('\n[WARNING] Ambiguous matching for', filename)
       for i in enumerate(matches, 1):
-        print '%d: %s' % (i[0], i[1])
-      print
+        print('%d: %s' % (i[0], i[1]))
+      print()
       if skip_ambiguous:
         continue
 
@@ -86,7 +88,7 @@ def AddHeadersNextToCC(headers, skip_ambiguous=True):
 
     for match in matches:
       gnfile, linenr, new = match
-      print '  ', gnfile, linenr, new
+      print('  ', gnfile, linenr, new)
       edits.setdefault(gnfile, {})[linenr] = new
 
   for gnfile in edits:
@@ -111,7 +113,7 @@ def AddHeadersToSources(headers, skip_ambiguous=True):
   """
   for filename in headers:
     filename = filename.strip()
-    print filename
+    print(filename)
     dirname = os.path.dirname(filename)
     while not os.path.exists(os.path.join(dirname, 'BUILD.gn')):
       dirname = os.path.dirname(dirname)
@@ -121,12 +123,12 @@ def AddHeadersToSources(headers, skip_ambiguous=True):
     lines = open(gnfile).read().splitlines()
     matched = [i for i, l in enumerate(lines) if ' sources = [' in l]
     if skip_ambiguous and len(matched) > 1:
-      print '[WARNING] Multiple sources in', gnfile
+      print('[WARNING] Multiple sources in', gnfile)
       continue
 
     if len(matched) < 1:
       continue
-    print '  ', gnfile, rel
+    print('  ', gnfile, rel)
     index = matched[0]
     lines.insert(index + 1, '"%s",' % rel)
     open(gnfile, 'w').write('\n'.join(lines) + '\n')
@@ -144,18 +146,18 @@ def RemoveHeader(headers, skip_ambiguous=True):
     if not (filename.endswith('.h') or filename.endswith('.hh')):
       continue
     basename = os.path.basename(filename)
-    print filename
+    print(filename)
     out, returncode = GitGrep('(/|")' + basename + '"')
     if returncode != 0 or not out:
       unhandled.append(filename)
-      print '  Not found'
+      print('  Not found')
       continue
 
     grep_lines = out.splitlines()
     matches = []
     for line in grep_lines:
       gnfile, linenr, contents = line.split(':')
-      print '    ', gnfile, linenr, contents
+      print('    ', gnfile, linenr, contents)
       linenr = int(linenr)
       lines = open(gnfile).read().splitlines()
       assert contents in lines[linenr - 1]
@@ -164,10 +166,10 @@ def RemoveHeader(headers, skip_ambiguous=True):
     if len(matches) == 0:
       continue
     if len(matches) > 1:
-      print '\n[WARNING] Ambiguous matching for', filename
+      print('\n[WARNING] Ambiguous matching for', filename)
       for i in enumerate(matches, 1):
-        print '%d: %s' % (i[0], i[1])
-      print
+        print('%d: %s' % (i[0], i[1]))
+      print()
       if skip_ambiguous:
         continue
 
@@ -179,7 +181,7 @@ def RemoveHeader(headers, skip_ambiguous=True):
 
     for match in matches:
       gnfile, linenr, contents = match
-      print '  ', gnfile, linenr, contents
+      print('  ', gnfile, linenr, contents)
       edits.setdefault(gnfile, set()).add(linenr)
 
   for gnfile in edits:

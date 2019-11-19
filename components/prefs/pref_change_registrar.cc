@@ -24,8 +24,9 @@ void PrefChangeRegistrar::Init(PrefService* service) {
 }
 
 void PrefChangeRegistrar::Add(const std::string& path,
-                              const base::Closure& obs) {
-  Add(path, base::Bind(&PrefChangeRegistrar::InvokeUnnamedCallback, obs));
+                              const base::RepeatingClosure& obs) {
+  Add(path,
+      base::BindRepeating(&PrefChangeRegistrar::InvokeUnnamedCallback, obs));
 }
 
 void PrefChangeRegistrar::Add(const std::string& path,
@@ -81,8 +82,9 @@ void PrefChangeRegistrar::OnPreferenceChanged(PrefService* service,
     observers_[pref].Run(pref);
 }
 
-void PrefChangeRegistrar::InvokeUnnamedCallback(const base::Closure& callback,
-                                                const std::string& pref_name) {
+void PrefChangeRegistrar::InvokeUnnamedCallback(
+    const base::RepeatingClosure& callback,
+    const std::string& pref_name) {
   callback.Run();
 }
 

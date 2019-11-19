@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<template id="template">
+  <slot role="note" name="one"></slot>
+  <slot name="two"></slot>
+</template>
+
+<div class="container">
+  <div style="display: contents" id="div">Boring old div</div>
+  <div style="display: contents" role="heading" id="role-heading">Heading</div>
+  <button style="display: contents" id="button">Clear form</button>
+  <a href="#" style="display: contents" id="link">Click here</a>
+  <div id="shadow-host">
+    <div slot="one">Hello</div>
+    <div slot="two">Goodbye</div>
+  </div>
+</div>
+
+<script>
+  let shadowHost = document.getElementById('shadow-host');
+  let shadowRoot = shadowHost.attachShadow({mode: 'open'});
+  let template = document.getElementById('template');
+  shadowRoot.appendChild(template.content.cloneNode(true));
+</script>
+
+<script>
+test(function(t)
+{
+    let axDiv = accessibilityController.accessibleElementById('div');
+    assert_not_equals(axDiv, undefined);
+    assert_equals(axDiv.role, 'AXRole: AXGenericContainer');
+}, 'Elements with display: contents should appear in the accessibility tree.');
+
+test(function(t)
+{
+    let axHeading = accessibilityController.accessibleElementById('role-heading');
+    assert_not_equals(axHeading, undefined);
+    assert_equals(axHeading.role, 'AXRole: AXHeading');
+}, 'Elements with display: contents should have ARIA roles respected.');
+
+test(function(t)
+{
+    let axButton = accessibilityController.accessibleElementById('button');
+    assert_not_equals(axButton, undefined);
+    assert_equals(axButton.role, 'AXRole: AXButton');
+    let axLink = accessibilityController.accessibleElementById('link');
+    assert_not_equals(axLink, undefined);
+    assert_equals(axLink.role, 'AXRole: AXLink');
+}, 'Elements with display: contents should have native roles respected.');
+
+test(function(t)
+{
+    let axShadowHost = accessibilityController.accessibleElementById('shadow-host');
+    assert_equals(axShadowHost.childrenCount, 2);
+
+    let axSlotWithRole = axShadowHost.childAtIndex(0);
+    assert_equals(axSlotWithRole.role, 'AXRole: AXNote');
+
+    let axSlotWithoutRole = axShadowHost.childAtIndex(1);
+    assert_equals(axSlotWithoutRole.role, 'AXRole: AXGenericContainer');
+}, '<slot> elements should appear in the accessibility tree, and have ARIA roles respected');
+</script>

@@ -8,12 +8,9 @@
 
 #include "base/containers/adapters.h"
 #include "cc/animation/animation_host.h"
-#include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_layer_tree_host.h"
-#include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/test_task_graph_runner.h"
-#include "cc/trees/layer_tree_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -100,8 +97,8 @@ TEST(LayerListIteratorTest, VerifyNullFirstLayer) {
   // Ensures that if an iterator is constructed with a nullptr, that it can be
   // iterated without issue and that it remains equal to any other
   // null-initialized iterator.
-  LayerListIterator<Layer> it(nullptr);
-  LayerListIterator<Layer> end(nullptr);
+  LayerListIterator it(nullptr);
+  LayerListIterator end(nullptr);
 
   EXPECT_EQ(it, end);
   ++it;
@@ -189,188 +186,8 @@ TEST(LayerListReverseIteratorTest, VerifyNullFirstLayer) {
   // Ensures that if an iterator is constructed with a nullptr, that it can be
   // iterated without issue and that it remains equal to any other
   // null-initialized iterator.
-  LayerListReverseIterator<Layer> it(nullptr);
-  LayerListReverseIterator<Layer> end(nullptr);
-
-  EXPECT_EQ(it, end);
-  ++it;
-  EXPECT_EQ(it, end);
-}
-
-// LayerImpl version unit tests
-
-TEST(LayerListIteratorTest, VerifyTraversalOrderImpl) {
-  // Unfortunate preamble.
-  FakeImplTaskRunnerProvider task_runner_provider;
-  TestTaskGraphRunner task_graph_runner;
-  std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink =
-      FakeLayerTreeFrameSink::Create3d();
-  FakeLayerTreeHostImpl host_impl(&task_runner_provider, &task_graph_runner);
-  host_impl.SetVisible(true);
-  EXPECT_TRUE(host_impl.InitializeFrameSink(layer_tree_frame_sink.get()));
-
-  // This test constructs the following tree.
-  // 1
-  // +-2
-  // | +-3
-  // | +-4
-  // + 5
-  //   +-6
-  //   +-7
-  // We expect to visit all seven layers in that order.
-  std::unique_ptr<LayerImpl> layer1 =
-      LayerImpl::Create(host_impl.active_tree(), 1);
-  std::unique_ptr<LayerImpl> layer2 =
-      LayerImpl::Create(host_impl.active_tree(), 2);
-  std::unique_ptr<LayerImpl> layer3 =
-      LayerImpl::Create(host_impl.active_tree(), 3);
-  std::unique_ptr<LayerImpl> layer4 =
-      LayerImpl::Create(host_impl.active_tree(), 4);
-  std::unique_ptr<LayerImpl> layer5 =
-      LayerImpl::Create(host_impl.active_tree(), 5);
-  std::unique_ptr<LayerImpl> layer6 =
-      LayerImpl::Create(host_impl.active_tree(), 6);
-  std::unique_ptr<LayerImpl> layer7 =
-      LayerImpl::Create(host_impl.active_tree(), 7);
-
-  layer2->test_properties()->AddChild(std::move(layer3));
-  layer2->test_properties()->AddChild(std::move(layer4));
-
-  layer5->test_properties()->AddChild(std::move(layer6));
-  layer5->test_properties()->AddChild(std::move(layer7));
-
-  layer1->test_properties()->AddChild(std::move(layer2));
-  layer1->test_properties()->AddChild(std::move(layer5));
-
-  host_impl.active_tree()->SetRootLayerForTesting(std::move(layer1));
-  host_impl.active_tree()->BuildLayerListForTesting();
-
-  int i = 1;
-  for (auto* layer : *host_impl.active_tree()) {
-    EXPECT_EQ(i++, layer->id());
-  }
-  EXPECT_EQ(8, i);
-}
-
-TEST(LayerListIteratorTest, VerifySingleLayerImpl) {
-  // Unfortunate preamble.
-  FakeImplTaskRunnerProvider task_runner_provider;
-  TestTaskGraphRunner task_graph_runner;
-  std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink =
-      FakeLayerTreeFrameSink::Create3d();
-  FakeLayerTreeHostImpl host_impl(&task_runner_provider, &task_graph_runner);
-  host_impl.SetVisible(true);
-  EXPECT_TRUE(host_impl.InitializeFrameSink(layer_tree_frame_sink.get()));
-
-  // This test constructs a tree consisting of a single layer.
-  std::unique_ptr<LayerImpl> layer1 =
-      LayerImpl::Create(host_impl.active_tree(), 1);
-  host_impl.active_tree()->SetRootLayerForTesting(std::move(layer1));
-  host_impl.active_tree()->BuildLayerListForTesting();
-
-  int i = 1;
-  for (auto* layer : *host_impl.active_tree()) {
-    EXPECT_EQ(i++, layer->id());
-  }
-  EXPECT_EQ(2, i);
-}
-
-TEST(LayerListIteratorTest, VerifyNullFirstLayerImpl) {
-  // Ensures that if an iterator is constructed with a nullptr, that it can be
-  // iterated without issue and that it remains equal to any other
-  // null-initialized iterator.
-  LayerListIterator<LayerImpl> it(nullptr);
-  LayerListIterator<LayerImpl> end(nullptr);
-
-  EXPECT_EQ(it, end);
-  ++it;
-  EXPECT_EQ(it, end);
-}
-
-TEST(LayerListReverseIteratorTest, VerifyTraversalOrderImpl) {
-  // Unfortunate preamble.
-  FakeImplTaskRunnerProvider task_runner_provider;
-  TestTaskGraphRunner task_graph_runner;
-  std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink =
-      FakeLayerTreeFrameSink::Create3d();
-  FakeLayerTreeHostImpl host_impl(&task_runner_provider, &task_graph_runner);
-  host_impl.SetVisible(true);
-  EXPECT_TRUE(host_impl.InitializeFrameSink(layer_tree_frame_sink.get()));
-
-  // This test constructs the following tree.
-  // 1
-  // +-2
-  // | +-3
-  // | +-4
-  // + 5
-  //   +-6
-  //   +-7
-  // We expect to visit all seven layers in reverse order.
-  std::unique_ptr<LayerImpl> layer1 =
-      LayerImpl::Create(host_impl.active_tree(), 1);
-  std::unique_ptr<LayerImpl> layer2 =
-      LayerImpl::Create(host_impl.active_tree(), 2);
-  std::unique_ptr<LayerImpl> layer3 =
-      LayerImpl::Create(host_impl.active_tree(), 3);
-  std::unique_ptr<LayerImpl> layer4 =
-      LayerImpl::Create(host_impl.active_tree(), 4);
-  std::unique_ptr<LayerImpl> layer5 =
-      LayerImpl::Create(host_impl.active_tree(), 5);
-  std::unique_ptr<LayerImpl> layer6 =
-      LayerImpl::Create(host_impl.active_tree(), 6);
-  std::unique_ptr<LayerImpl> layer7 =
-      LayerImpl::Create(host_impl.active_tree(), 7);
-
-  layer2->test_properties()->AddChild(std::move(layer3));
-  layer2->test_properties()->AddChild(std::move(layer4));
-
-  layer5->test_properties()->AddChild(std::move(layer6));
-  layer5->test_properties()->AddChild(std::move(layer7));
-
-  layer1->test_properties()->AddChild(std::move(layer2));
-  layer1->test_properties()->AddChild(std::move(layer5));
-
-  host_impl.active_tree()->SetRootLayerForTesting(std::move(layer1));
-  host_impl.active_tree()->BuildLayerListForTesting();
-
-  int i = 7;
-
-  for (auto* layer : base::Reversed(*host_impl.active_tree())) {
-    EXPECT_EQ(i--, layer->id());
-  }
-
-  EXPECT_EQ(0, i);
-}
-
-TEST(LayerListReverseIteratorTest, VerifySingleLayerImpl) {
-  // Unfortunate preamble.
-  FakeImplTaskRunnerProvider task_runner_provider;
-  TestTaskGraphRunner task_graph_runner;
-  std::unique_ptr<LayerTreeFrameSink> layer_tree_frame_sink =
-      FakeLayerTreeFrameSink::Create3d();
-  FakeLayerTreeHostImpl host_impl(&task_runner_provider, &task_graph_runner);
-  host_impl.SetVisible(true);
-  EXPECT_TRUE(host_impl.InitializeFrameSink(layer_tree_frame_sink.get()));
-
-  // This test constructs a tree consisting of a single layer.
-  std::unique_ptr<LayerImpl> layer1 =
-      LayerImpl::Create(host_impl.active_tree(), 1);
-  host_impl.active_tree()->SetRootLayerForTesting(std::move(layer1));
-  host_impl.active_tree()->BuildLayerListForTesting();
-
-  int i = 1;
-  for (auto* layer : base::Reversed(*host_impl.active_tree())) {
-    EXPECT_EQ(i--, layer->id());
-  }
-  EXPECT_EQ(0, i);
-}
-
-TEST(LayerListReverseIteratorTest, VerifyNullFirstLayerImpl) {
-  // Ensures that if an iterator is constructed with a nullptr, that it can be
-  // iterated without issue and that it remains equal to any other
-  // null-initialized iterator.
-  LayerListReverseIterator<LayerImpl> it(nullptr);
-  LayerListReverseIterator<LayerImpl> end(nullptr);
+  LayerListReverseIterator it(nullptr);
+  LayerListReverseIterator end(nullptr);
 
   EXPECT_EQ(it, end);
   ++it;

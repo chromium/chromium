@@ -49,11 +49,10 @@ class DrmDeviceManager {
 
   const DrmDeviceVector& GetDrmDevices() const;
 
- protected:
-  DrmDeviceVector devices_;
-
  private:
   const std::unique_ptr<DrmDeviceGenerator> drm_device_generator_;
+
+  DrmDeviceVector devices_;
 
   std::map<gfx::AcceleratedWidget, scoped_refptr<DrmDevice>> drm_device_map_;
 

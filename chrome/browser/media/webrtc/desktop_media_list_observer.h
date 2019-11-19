@@ -11,6 +11,8 @@ class DesktopMediaList;
 // notifications about changes in DesktopMediaList.
 class DesktopMediaListObserver {
  public:
+  // TODO(jrw): None of the |list| parameters below seem to be used.  Consider
+  // removing them.
   virtual void OnSourceAdded(DesktopMediaList* list, int index) = 0;
   virtual void OnSourceRemoved(DesktopMediaList* list, int index) = 0;
   virtual void OnSourceMoved(DesktopMediaList* list,

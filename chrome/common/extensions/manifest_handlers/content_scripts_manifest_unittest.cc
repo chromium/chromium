@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "chrome/common/webui_url_constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
@@ -49,7 +50,7 @@ TEST_F(ContentScriptsManifestTest, OnChromeUrlsWithFlag) {
       switches::kExtensionsOnChromeURLs);
   scoped_refptr<Extension> extension =
     LoadAndExpectSuccess("content_script_chrome_url_invalid.json");
-  const GURL newtab_url("chrome://newtab/");
+  const GURL newtab_url(chrome::kChromeUINewTabURL);
   EXPECT_TRUE(
       ContentScriptsInfo::ExtensionHasScriptAtURL(extension.get(), newtab_url));
 }

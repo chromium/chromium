@@ -19,6 +19,8 @@ class CORE_EXPORT LayoutNGListMarkerImage final : public LayoutImage {
 
   bool IsLayoutNGObject() const override { return true; }
 
+  Node* NodeForHitTest() const final;
+
  private:
   bool IsOfType(LayoutObjectType) const override;
 

@@ -59,15 +59,6 @@ void CheckUserDataDirPolicy(base::FilePath* user_data_dir) {
   }
 }
 
-void CheckDiskCacheDirPolicy(base::FilePath* disk_cache_dir) {
-  DCHECK(disk_cache_dir);
-  if (!LoadUserDataDirPolicyFromRegistry(HKEY_LOCAL_MACHINE, key::kDiskCacheDir,
-                                         disk_cache_dir)) {
-    LoadUserDataDirPolicyFromRegistry(HKEY_CURRENT_USER, key::kDiskCacheDir,
-                                      disk_cache_dir);
-  }
-}
-
 }  // namespace path_parser
 
 }  // namespace policy

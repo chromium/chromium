@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/html/parser/html_meta_charset_parser.h"
 #include "third_party/blink/renderer/platform/text/text_encoding_detector.h"
-#include "third_party/blink/renderer/platform/wtf/string_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
@@ -149,7 +149,7 @@ void TextResourceDecoder::SetEncoding(const WTF::TextEncoding& encoding,
   // When encoding comes from meta tag (i.e. it cannot be XML files sent via
   // XHR), treat x-user-defined as windows-1252 (bug 18270)
   if (source == kEncodingFromMetaTag &&
-      !strcasecmp(encoding.GetName(), "x-user-defined"))
+      WTF::EqualIgnoringASCIICase(encoding.GetName(), "x-user-defined"))
     encoding_ = WTF::TextEncoding("windows-1252");
   else if (source == kEncodingFromMetaTag || source == kEncodingFromXMLHeader ||
            source == kEncodingFromCSSCharset)
@@ -210,6 +210,11 @@ wtf_size_t TextResourceDecoder::CheckForBOM(const char* data, wtf_size_t len) {
   // - Steps 1-3 of https://encoding.spec.whatwg.org/#utf-8-decode,
   // respectively.
   DCHECK(!checked_for_bom_);
+
+  if (options_.GetNoBOMDecoding()) {
+    checked_for_bom_ = true;
+    return 0;
+  }
 
   wtf_size_t length_of_bom = 0;
   const wtf_size_t max_bom_length = 3;
@@ -356,7 +361,7 @@ void TextResourceDecoder::CheckForMetaCharset(const char* data,
   }
 
   if (!charset_parser_)
-    charset_parser_ = HTMLMetaCharsetParser::Create();
+    charset_parser_ = std::make_unique<HTMLMetaCharsetParser>();
 
   if (!charset_parser_->CheckForMetaCharset(data, length))
     return;

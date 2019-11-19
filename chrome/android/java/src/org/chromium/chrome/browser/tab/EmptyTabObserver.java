@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tab;
 import android.graphics.Bitmap;
 import android.view.ContextMenu;
 
+import org.chromium.chrome.browser.findinpage.FindMatchRectsDetails;
+import org.chromium.chrome.browser.findinpage.FindNotificationDetails;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.tab.Tab.TabHidingType;
 import org.chromium.chrome.browser.tabmodel.TabSelectionType;
@@ -14,6 +16,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.BrowserControlsState;
+import org.chromium.net.NetError;
 
 /**
  * An implementation of the {@link TabObserver} which has empty implementations of all methods.
@@ -22,6 +25,9 @@ import org.chromium.content_public.common.BrowserControlsState;
  * bloats the number of methods. See https://crbug.com/781359.
  */
 public class EmptyTabObserver implements TabObserver {
+    @Override
+    public void onInitialized(Tab tab, TabState tabState) {}
+
     @Override
     public void onShown(Tab tab, @TabSelectionType int type) {}
 
@@ -47,7 +53,7 @@ public class EmptyTabObserver implements TabObserver {
     public void onPageLoadFinished(Tab tab, String url) {}
 
     @Override
-    public void onPageLoadFailed(Tab tab, int errorCode) { }
+    public void onPageLoadFailed(Tab tab, @NetError int errorCode) {}
 
     @Override
     public void onRestoreStarted(Tab tab) {}
@@ -86,7 +92,7 @@ public class EmptyTabObserver implements TabObserver {
     public void onLoadStopped(Tab tab, boolean toDifferentDocument) { }
 
     @Override
-    public void onLoadProgressChanged(Tab tab, int progress) { }
+    public void onLoadProgressChanged(Tab tab, float progress) {}
 
     @Override
     public void onUpdateUrl(Tab tab, String url) { }
@@ -147,5 +153,15 @@ public class EmptyTabObserver implements TabObserver {
             Tab tab, @BrowserControlsState int constraints) {}
 
     @Override
-    public void didReloadLoFiImages(Tab tab) {}
+    public void onFindResultAvailable(FindNotificationDetails result) {}
+
+    @Override
+    public void onFindMatchRectsAvailable(FindMatchRectsDetails result) {}
+
+    @Override
+    public void onRootIdChanged(Tab tab, int newRootId) {}
+
+    @Override
+    public void onBrowserControlsOffsetChanged(
+            Tab tab, int topControlsOffsetY, int bottomControlsOffsetY, int contentOffsetY) {}
 }

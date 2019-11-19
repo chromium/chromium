@@ -15,7 +15,7 @@
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -73,7 +73,7 @@ class DownloadPathReservationTrackerTest : public testing::Test {
   base::ScopedTempDir test_download_dir_;
   base::FilePath default_download_path_;
   base::FilePath fallback_directory_;
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
  private:
   void TestReservedPathCallback(base::FilePath* return_path,
@@ -136,7 +136,7 @@ bool DownloadPathReservationTrackerTest::IsPathInUse(
 }
 
 void DownloadPathReservationTrackerTest::RunUntilIdle() {
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 void DownloadPathReservationTrackerTest::CallGetReservedPath(
@@ -155,7 +155,7 @@ void DownloadPathReservationTrackerTest::CallGetReservedPath(
       create_directory, conflict_action,
       base::Bind(&DownloadPathReservationTrackerTest::TestReservedPathCallback,
                  weak_ptr_factory.GetWeakPtr(), return_path, return_result));
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
 }
 
 void DownloadPathReservationTrackerTest::TestReservedPathCallback(
@@ -401,8 +401,8 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingReservations) {
   }
   RunUntilIdle();
 
-  // Now acquire an overwriting reservation. We should end up with the same
-  // non-uniquified path for both reservations.
+  // Now acquire an overwriting reservation. It should end up with a CONFLICT
+  // result.
   std::unique_ptr<MockDownloadItem> item3 = CreateDownloadItem(2);
   base::FilePath reserved_path3;
   conflict_action = DownloadPathReservationTracker::OVERWRITE;
@@ -411,11 +411,45 @@ TEST_F(DownloadPathReservationTrackerTest, ConflictingReservations) {
   EXPECT_TRUE(IsPathInUse(path));
   EXPECT_FALSE(IsPathInUse(uniquified_path));
 
+  EXPECT_EQ(PathValidationResult::CONFLICT, result);
+
   EXPECT_EQ(path.value(), reserved_path1.value());
   EXPECT_EQ(path.value(), reserved_path3.value());
 
   SetDownloadItemState(item1.get(), DownloadItem::COMPLETE);
   SetDownloadItemState(item3.get(), DownloadItem::COMPLETE);
+}
+
+// An OVERWRITE reservation with the same path as an active reservation should
+// return a CONFLICT result.
+TEST_F(DownloadPathReservationTrackerTest, ConflictingReservation_Prevented) {
+  std::unique_ptr<MockDownloadItem> item1 = CreateDownloadItem(1);
+  base::FilePath path(
+      GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo.txt")));
+  ASSERT_FALSE(IsPathInUse(path));
+
+  base::FilePath reserved_path;
+  PathValidationResult result = PathValidationResult::NAME_TOO_LONG;
+  DownloadPathReservationTracker::FilenameConflictAction conflict_action =
+      DownloadPathReservationTracker::OVERWRITE;
+  bool create_directory = false;
+  CallGetReservedPath(item1.get(), path, create_directory, conflict_action,
+                      &reserved_path, &result);
+  EXPECT_TRUE(IsPathInUse(path));
+  EXPECT_EQ(PathValidationResult::SUCCESS, result);
+  EXPECT_EQ(path.value(), reserved_path.value());
+
+  std::unique_ptr<MockDownloadItem> item2 = CreateDownloadItem(2);
+  base::FilePath reserved_path2;
+  CallGetReservedPath(item2.get(), path, create_directory, conflict_action,
+                      &reserved_path2, &result);
+
+  EXPECT_TRUE(IsPathInUse(path));
+  EXPECT_EQ(PathValidationResult::CONFLICT, result);
+  EXPECT_EQ(path.value(), reserved_path2.value());
+
+  SetDownloadItemState(item1.get(), DownloadItem::COMPLETE);
+  SetDownloadItemState(item2.get(), DownloadItem::COMPLETE);
 }
 
 // Two active downloads shouldn't be able to reserve paths that only differ by
@@ -530,11 +564,23 @@ TEST_F(DownloadPathReservationTrackerTest, UnwriteableDirectory) {
     bool create_directory = false;
     CallGetReservedPath(item.get(), path, create_directory, conflict_action,
                         &reserved_path, &result);
-    // Verification fails.
+    // Verification fails. If |dir| is the same as the default download dir,
+    // fallback_dir should be used.
     EXPECT_EQ(PathValidationResult::PATH_NOT_WRITABLE, result);
     EXPECT_EQ(path.BaseName().value(), reserved_path.BaseName().value());
     EXPECT_EQ(fallback_dir.value(), reserved_path.DirName().value());
+
+    // Change the default download dir to something else.
+    base::FilePath default_download_path =
+        GetPathInDownloadsDirectory(FILE_PATH_LITERAL("foo/foo.txt"));
+    set_default_download_path(default_download_path);
+    CallGetReservedPath(item.get(), path, create_directory, conflict_action,
+                        &reserved_path, &result);
+    EXPECT_EQ(PathValidationResult::PATH_NOT_WRITABLE, result);
+    EXPECT_EQ(path.BaseName().value(), reserved_path.BaseName().value());
+    EXPECT_EQ(default_download_path.value(), reserved_path.DirName().value());
   }
+
   SetDownloadItemState(item.get(), DownloadItem::COMPLETE);
 }
 

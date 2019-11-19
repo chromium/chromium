@@ -22,12 +22,18 @@ SessionTab::SessionTab()
 SessionTab::~SessionTab() {
 }
 
+// SessionTab -----------------------------------------------------------------
+
+SessionTabGroup::SessionTabGroup(base::Token group_id) : group_id(group_id) {}
+
+SessionTabGroup::~SessionTabGroup() {}
+
 // SessionWindow ---------------------------------------------------------------
 
 SessionWindow::SessionWindow()
     : window_id(SessionID::NewUnique()),
       selected_tab_index(-1),
-      type(TYPE_TABBED),
+      type(TYPE_NORMAL),
       is_constrained(true),
       show_state(ui::SHOW_STATE_DEFAULT) {}
 

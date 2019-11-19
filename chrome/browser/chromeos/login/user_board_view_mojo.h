@@ -41,7 +41,7 @@ class UserBoardViewMojo : public UserBoardView {
   base::WeakPtr<UserBoardView> GetWeakPtr() override;
 
  private:
-  base::WeakPtrFactory<UserBoardViewMojo> weak_factory_;
+  base::WeakPtrFactory<UserBoardViewMojo> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UserBoardViewMojo);
 };

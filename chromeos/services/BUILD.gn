@@ -4,7 +4,6 @@
 
 import("//build/config/ui.gni")
 import("//chromeos/assistant/assistant.gni")
-import("//chromeos/services/ime/public/features.gni")
 import("//testing/test.gni")
 
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
@@ -19,24 +18,15 @@ assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 source_set("unit_tests") {
   testonly = true
   deps = [
+    "//chromeos/services/assistant:tests",
+    "//chromeos/services/cellular_setup:unit_tests",
+    "//chromeos/services/cros_healthd/public/cpp:unit_tests",
     "//chromeos/services/device_sync:unit_tests",
+    "//chromeos/services/ime:services_unittests",
     "//chromeos/services/ime:unit_tests",
     "//chromeos/services/machine_learning/public/cpp:unit_tests",
     "//chromeos/services/multidevice_setup:unit_tests",
+    "//chromeos/services/network_config:unit_tests",
     "//chromeos/services/secure_channel:unit_tests",
   ]
-}
-
-# Use this target for adding new service tests. To add a unit test to this
-# target, create a "tests" source_set in your service and add it as a dependency
-# here.
-test("chromeos_services_unittests") {
-  deps = [
-    "//chromeos/services/ime:services_unittests",
-    "//mojo/core/test:run_all_unittests",
-  ]
-
-  if (enable_cros_assistant) {
-    deps += [ "//chromeos/services/assistant:tests" ]
-  }
 }

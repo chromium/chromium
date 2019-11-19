@@ -10,7 +10,7 @@
 
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/search/search_suggest/search_suggest_data.h"
 #include "chrome/browser/search/search_suggest/search_suggest_loader.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -18,10 +18,10 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/core/browser/test_signin_client.h"
+#include "components/signin/public/base/test_signin_client.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "services/identity/public/cpp/identity_test_environment.h"
-#include "services/identity/public/cpp/identity_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -64,7 +64,7 @@ class SearchSuggestServiceTest : public BrowserWithTestWindowTest {
     template_url_service_ = TemplateURLServiceFactory::GetForProfile(profile());
     search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service_);
 
-    identity_env_ = std::make_unique<identity::IdentityTestEnvironment>(
+    identity_env_ = std::make_unique<signin::IdentityTestEnvironment>(
         &test_url_loader_factory_);
     auto loader = std::make_unique<FakeSearchSuggestLoader>();
     loader_ = loader.get();
@@ -132,7 +132,7 @@ class SearchSuggestServiceTest : public BrowserWithTestWindowTest {
  private:
   TemplateURLService* template_url_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
-  std::unique_ptr<identity::IdentityTestEnvironment> identity_env_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_env_;
 
   // Owned by the service.
   FakeSearchSuggestLoader* loader_;
@@ -159,7 +159,8 @@ TEST_F(SearchSuggestServiceTest, RefreshesOnSignedInRequest) {
 
   // Fulfill it.
   SearchSuggestData data = TestSearchSuggestData();
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   EXPECT_EQ(data, service()->search_suggest_data());
 
   // Request another refresh.
@@ -171,7 +172,8 @@ TEST_F(SearchSuggestServiceTest, RefreshesOnSignedInRequest) {
 
   // Fulfill the second request.
   SearchSuggestData other_data = TestSearchSuggestData();
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, other_data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, other_data);
   EXPECT_EQ(other_data, service()->search_suggest_data());
 }
 
@@ -182,7 +184,8 @@ TEST_F(SearchSuggestServiceTest, KeepsCacheOnTransientError) {
   // Load some data.
   service()->Refresh();
   SearchSuggestData data = TestSearchSuggestData();
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   ASSERT_EQ(data, service()->search_suggest_data());
 
   // Request a refresh and respond with a transient error.
@@ -200,7 +203,8 @@ TEST_F(SearchSuggestServiceTest, ClearsCacheOnFatalError) {
   // Load some data.
   service()->Refresh();
   SearchSuggestData data = TestSearchSuggestData();
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   ASSERT_EQ(data, service()->search_suggest_data());
 
   // Request a refresh and respond with a fatal error.
@@ -218,7 +222,8 @@ TEST_F(SearchSuggestServiceTest, ResetsOnSignOut) {
   // Load some data.
   service()->Refresh();
   SearchSuggestData data = TestSearchSuggestData();
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   ASSERT_EQ(data, service()->search_suggest_data());
 
   // Sign out. This should clear the cached data and notify the observer.
@@ -253,23 +258,34 @@ TEST_F(SearchSuggestServiceTest, BlocklistUnchangedOnInvalidHash) {
   uint8_t hash1[5] = {'a', 'b', '?', 'd', '\0'};
   uint8_t hash2[5] = {'a', '_', 'b', 'm', '\0'};
   uint8_t hash3[5] = {'A', 'B', 'C', 'D', '\0'};
-  uint8_t hash4[6] = {'a', 'b', 'c', 'd', 'e', '\0'};
   std::string expected = std::string();
 
   service()->BlocklistSearchSuggestionWithHash(0, 1234, hash1);
   service()->BlocklistSearchSuggestionWithHash(0, 1234, hash2);
   service()->BlocklistSearchSuggestionWithHash(0, 1234, hash3);
-  service()->BlocklistSearchSuggestionWithHash(0, 1234, hash4);
   ASSERT_EQ(expected, service()->GetBlocklistAsString());
 }
 
-TEST_F(SearchSuggestServiceTest, ShortHashUpdatesBlackist) {
+TEST_F(SearchSuggestServiceTest, ShortHashDoesNotUpdateBlackist) {
   SetUserSelectedDefaultSearchProvider("{google:baseURL}");
   ASSERT_EQ(std::string(), service()->GetBlocklistAsString());
 
   uint8_t hash1[4] = {'a', 'b', 'c', '\0'};
   uint8_t hash2[5] = {'d', 'e', '\0', 'f', '\0'};
-  std::string expected = "0_1234:abc;1_5678:de";
+  std::string expected = std::string();
+
+  service()->BlocklistSearchSuggestionWithHash(0, 1234, hash1);
+  service()->BlocklistSearchSuggestionWithHash(1, 5678, hash2);
+  ASSERT_EQ(expected, service()->GetBlocklistAsString());
+}
+
+TEST_F(SearchSuggestServiceTest, LongHashIsTruncated) {
+  SetUserSelectedDefaultSearchProvider("{google:baseURL}");
+  ASSERT_EQ(std::string(), service()->GetBlocklistAsString());
+
+  uint8_t hash1[6] = {'a', 'b', 'c', 'd', 'e', '\0'};
+  uint8_t hash2[7] = {'d', 'e', 'f', 'g', '\0', 'h', 'i'};
+  std::string expected = "0_1234:abcd;1_5678:defg";
 
   service()->BlocklistSearchSuggestionWithHash(0, 1234, hash1);
   service()->BlocklistSearchSuggestionWithHash(1, 5678, hash2);
@@ -300,7 +316,8 @@ TEST_F(SearchSuggestServiceTest, BlocklistClearsCachedDataAndIssuesRequest) {
 
   // Fulfill it.
   SearchSuggestData data = TestSearchSuggestData();
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   EXPECT_EQ(data, service()->search_suggest_data());
 
   // Select a suggestion to blocklist.
@@ -312,7 +329,8 @@ TEST_F(SearchSuggestServiceTest, BlocklistClearsCachedDataAndIssuesRequest) {
   // Fulfill the second request.
   SearchSuggestData other_data;
   other_data.suggestions_html = "<div>Different!</div>";
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, other_data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, other_data);
   EXPECT_EQ(other_data, service()->search_suggest_data());
 }
 
@@ -328,7 +346,8 @@ TEST_F(SearchSuggestServiceTest,
 
   // Fulfill it.
   SearchSuggestData data = TestSearchSuggestData();
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   EXPECT_EQ(data, service()->search_suggest_data());
 
   // Select a suggestion to blocklist.
@@ -342,7 +361,8 @@ TEST_F(SearchSuggestServiceTest,
   // Fulfill the second request.
   SearchSuggestData other_data;
   other_data.suggestions_html = "<div>Different!</div>";
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, other_data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, other_data);
   EXPECT_EQ(other_data, service()->search_suggest_data());
 }
 
@@ -388,7 +408,8 @@ TEST_F(SearchSuggestServiceTest, UpdateImpressionCapParameters) {
 
   // Fulfill it.
   SearchSuggestData data = TestSearchSuggestData();
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   EXPECT_EQ(data, service()->search_suggest_data());
 
   // Request another refresh.
@@ -404,7 +425,8 @@ TEST_F(SearchSuggestServiceTest, UpdateImpressionCapParameters) {
   other_data.impression_cap_expire_time_ms = 1234;
   other_data.request_freeze_time_ms = 4321;
   other_data.max_impressions = 456;
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, other_data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, other_data);
   EXPECT_EQ(other_data, service()->search_suggest_data());
 
   // Ensure the pref parses successfully.
@@ -441,7 +463,8 @@ TEST_F(SearchSuggestServiceTest, DontRequestWhenImpressionCapped) {
   // Fulfill it.
   SearchSuggestData data = TestSearchSuggestData();
   data.max_impressions = 2;
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   EXPECT_EQ(data, service()->search_suggest_data());
   service()->SuggestionsDisplayed();
 
@@ -452,7 +475,9 @@ TEST_F(SearchSuggestServiceTest, DontRequestWhenImpressionCapped) {
   // Request another refresh.
   service()->Refresh();
   EXPECT_EQ(1u, loader()->GetCallbackCount());
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  data.suggestions_html = "<div>Different!</div>";
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   EXPECT_EQ(data, service()->search_suggest_data());
   service()->SuggestionsDisplayed();
 
@@ -483,7 +508,8 @@ TEST_F(SearchSuggestServiceTest, ImpressionCountResetsAfterTimeout) {
   SearchSuggestData data = TestSearchSuggestData();
   data.max_impressions = 1;
   data.impression_cap_expire_time_ms = 1000;
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   EXPECT_EQ(data, service()->search_suggest_data());
   service()->SuggestionsDisplayed();
 
@@ -500,7 +526,8 @@ TEST_F(SearchSuggestServiceTest, ImpressionCountResetsAfterTimeout) {
   // The impression cap timeout has expired.
   service()->Refresh();
   EXPECT_EQ(1u, loader()->GetCallbackCount());
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   EXPECT_EQ(data, service()->search_suggest_data());
 }
 
@@ -515,15 +542,16 @@ TEST_F(SearchSuggestServiceTest, RequestsFreezeOnEmptyResponse) {
   // Fulfill it.
   SearchSuggestData data = TestSearchSuggestData();
   data.request_freeze_time_ms = 1000;
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   EXPECT_EQ(data, service()->search_suggest_data());
 
   // Request a refresh. That should arrive at the loader.
   service()->Refresh();
   EXPECT_EQ(1u, loader()->GetCallbackCount());
 
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::FATAL_ERROR,
-                                  base::nullopt);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITHOUT_SUGGESTIONS, data);
 
   const base::DictionaryValue* dict =
       pref_service()->GetDictionary(prefs::kNtpSearchSuggestionsImpressions);
@@ -540,6 +568,7 @@ TEST_F(SearchSuggestServiceTest, RequestsFreezeOnEmptyResponse) {
   // The freeze timeout has expired.
   service()->Refresh();
   EXPECT_EQ(1u, loader()->GetCallbackCount());
-  loader()->RespondToAllCallbacks(SearchSuggestLoader::Status::OK, data);
+  loader()->RespondToAllCallbacks(
+      SearchSuggestLoader::Status::OK_WITH_SUGGESTIONS, data);
   EXPECT_EQ(data, service()->search_suggest_data());
 }

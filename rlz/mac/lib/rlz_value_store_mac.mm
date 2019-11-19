@@ -353,15 +353,15 @@ RlzValueStore* ScopedRlzValueStoreLock::GetStore() {
 namespace testing {
 
 void SetRlzStoreDirectory(const base::FilePath& directory) {
-  base::mac::ScopedNSAutoreleasePool pool;
-
-  [g_test_folder release];
-  if (directory.empty()) {
-    g_test_folder = nil;
-  } else {
-    // Not Unsafe on OS X.
-    g_test_folder =
-      [[NSString alloc] initWithUTF8String:directory.AsUTF8Unsafe().c_str()];
+  @autoreleasepool {
+    [g_test_folder release];
+    if (directory.empty()) {
+      g_test_folder = nil;
+    } else {
+      // Not Unsafe on OS X.
+      g_test_folder = [[NSString alloc]
+          initWithUTF8String:directory.AsUTF8Unsafe().c_str()];
+    }
   }
 }
 

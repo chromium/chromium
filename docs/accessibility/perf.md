@@ -1,84 +1,84 @@
 # Accessibility Performance Measurements
 
-Accessibility support in Chromium can be expensive, so we have some
-performance tests to help catch regressions and encourage
-improving performance over time.
+Accessibility support can have a negative impact on performance, so it is
+important to test for regressions and to improve performance over time. This can
+be done with Chromium's performance testing framework,
+[Telemetry](https://chromium.googlesource.com/catapult/+/HEAD/telemetry/README.md).
 
-As background material, read up on
-[Telemetry](https://chromium.googlesource.com/catapult/+/HEAD/telemetry/README.md),
-Chromium's performance testing framework.
-
-The metrics for accessibility are defined here:
-
-```third_party/catapult/tracing/tracing/metrics/accessibility_metric.html```
-
-They measure the time spent in three key parts of accessibility code
-in Chrome, wherever you see SCOPED_TRACE. If there's any nontrivial
-code that you think is being called that isn't covered now, the first
-step would be to add a new SCOPED_TRACE, then update this metric to
-start tracking it.
+The metrics for accessibility are defined in
+[third_party/catapult/tracing/tracing/metrics/accessibility_metric.html](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/metrics/accessibility_metric.html).
 
 ## Stories
 
-The stories are defined here:
+A story is a url to load and actions to take on that page.
 
-```tools/perf/page_sets/system_health/accessibility_stories.py```
+Accessibility stories are defined in
+[tools/perf/page_sets/system_health/accessibility_stories.py](https://cs.chromium.org/chromium/src/tools/perf/page_sets/system_health/accessibility_stories.py).
+If a particular web page seems slow, you may add a new story here to track its
+performance.
 
-A story is a url to load and other actions to take on that page. The
-accessibility stories are also configured to run with accessibility
-enabled via the command-line flag.
+### Running stories from the command line
 
-If there's a particular web page that seems slow and you'd like to
-start tracking its performance, the first step would be to try adding
-a new story here.
+To run all accessibility stories locally using the currently installed Canary
+browser:
 
-Here's an example command line to run all of the accessibility stories
-locally using the currently installed Canary browser:
-
-```tools/perf/run_benchmark system_health.common_desktop --story-filter="accessibility.*" --browser canary```
+```shell
+tools/perf/run_benchmark system_health.common_desktop \
+  --story-filter="accessibility.*" \
+  --browser canary
+```
 
 To run the same set of tests on your own compiled version of Chrome:
 
-```tools/perf/run_benchmark system_health.common_desktop --story-filter="accessibility.*" --browser=exact --browser-executable=out/Release/chrome```
+```shell
+tools/perf/run_benchmark system_health.common_desktop \
+  --story-filter="accessibility.*" \
+  --browser=exact \
+  --browser-executable=out/Release/chrome
+```
 
-See the [documentation](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md)
-or command-line help for tools/perf/run_benchmark for
-more command-line arguments.
+For more information, see the
+[Telemetry documentation](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md)
+or command-line help for tools/perf/run_benchmark.
 
-Here's an example command line to run to capture the web page replay for
-all accessibility stories, if you add a new story or update an existing one:
+### Capture web page replay for new or modified stories
 
-```tools/perf/record_wpr desktop_system_health_story_set --story-filter="accessibility.*" --browser canary```
+You should capture web page replay information whenever you add or modify a
+story. The following command captures the web page replay for all accessibility
+stories:
 
-Running this will upload the web page replay data captured and modify this
-file, which should be submitted as part of your changelist:
+```shell
+tools/perf/record_wpr desktop_system_health_story_set \
+  --story-filter="accessibility.*" \
+  --browser canary
+```
 
-```tools/perf/page_sets/data/system_health_desktop.json```
-
-For more information, see [Record a page set](https://sites.google.com/a/chromium.org/dev/developers/telemetry/record_a_page_set).
+Running this will upload the web page replay data captured and modify
+[tools/perf/page_sets/data/system_health_desktop.json](https://cs.chromium.org/chromium/src/tools/perf/page_sets/data/system_health_desktop.json),
+which should be submitted as part of your changelist. For more information, see
+[Record a page set](https://sites.google.com/a/chromium.org/dev/developers/telemetry/record_a_page_set).
 
 ## Blink Perf
 
-In addition, we have Blink perf tests here. These are microbenchmarks
-intended to track the performance of a small function or operation
-in isolation. You can find these tests here:
+Blink perf tests are microbenchmarks that track the performance of a small
+function or operation in isolation. You can find these tests in
+[third_party/blink/perf_tests/accessibility/](https://cs.chromium.org/chromium/src/third_party/blink/perf_tests/accessibility/).
 
-```third_party/blink/perf_tests/accessibility/```
+To run these tests locally on your own compiled Chrome:
 
-Example command line to run these tests locally on your own compiled Chrome:
-
-```tools/perf/run_benchmark blink_perf.accessibility --browser=exact --browser-executable=out/Release/chrome```
+```shell
+tools/perf/run_benchmark blink_perf.accessibility \
+  --browser=exact \
+  --browser-executable=out/Release/chrome
+```
 
 ## Results
 
 The results can be found at
 [https://chromeperf.appspot.com](chromeperf.appspot.com).
-Because that site displays graphs, we also maintain a command-line
-script (Google-internal only) as a more accessible alternative way to
-examine the same data via the command line.
 
-To get the script:
+## Google-internal Info
 
-```git clone sso://user/dmazzoni/chrome-accessibility-site``` and then run:
-
-```./accessibility_issues.py perf```
+More information on analytics and performance, including some additional
+Google-internal resources, can be found at
+[go/chrome-a11y/resources/analytics-performance](http://go/chrome-a11y/resources/analytics-performance).

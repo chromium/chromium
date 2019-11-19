@@ -8,53 +8,18 @@ For the mapping 'lang' to policy_templates filename see crbug.com/806577.
 <grit base_dir="." latest_public_release="0" current_release="1"
       output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
   <outputs>
-    <output filename="app/policy/translations/policy_templates_am.json" type="policy_templates" lang="am" />
-    <output filename="app/policy/translations/policy_templates_ar-EG.json" type="policy_templates" lang="ar" />
-    <output filename="app/policy/translations/policy_templates_bg-BG.json" type="policy_templates" lang="bg" />
-    <output filename="app/policy/translations/policy_templates_ms-BN.json" type="policy_templates" lang="bn" />
-    <output filename="app/policy/translations/policy_templates_ca-ES.json" type="policy_templates" lang="ca" />
-    <output filename="app/policy/translations/policy_templates_cs-CZ.json" type="policy_templates" lang="cs" />
-    <output filename="app/policy/translations/policy_templates_da-DK.json" type="policy_templates" lang="da" />
     <output filename="app/policy/translations/policy_templates_de-DE.json" type="policy_templates" lang="de" />
-    <output filename="app/policy/translations/policy_templates_el-GR.json" type="policy_templates" lang="el" />
-    <output filename="app/policy/translations/policy_templates_en-GB.json" type="policy_templates" lang="en-GB" />
     <output filename="app/policy/translations/policy_templates_en-US.json" type="policy_templates" lang="en" />
     <output filename="app/policy/translations/policy_templates_es-ES.json" type="policy_templates" lang="es" />
     <output filename="app/policy/translations/policy_templates_es-419.json" type="policy_templates" lang="es-419" />
-    <output filename="app/policy/translations/policy_templates_et-EE.json" type="policy_templates" lang="et" />
-    <output filename="app/policy/translations/policy_templates_fa-IR.json" type="policy_templates" lang="fa" />
-    <output filename="app/policy/translations/policy_templates_fi-FI.json" type="policy_templates" lang="fi" />
-    <output filename="app/policy/translations/policy_templates_fil.json" type="policy_templates" lang="fil" />
     <output filename="app/policy/translations/policy_templates_fr-FR.json" type="policy_templates" lang="fr" />
-    <output filename="app/policy/translations/policy_templates_gu-IN.json" type="policy_templates" lang="gu" />
-    <output filename="app/policy/translations/policy_templates_he-IL.json" type="policy_templates" lang="he" />
-    <output filename="app/policy/translations/policy_templates_hi-IN.json" type="policy_templates" lang="hi" />
-    <output filename="app/policy/translations/policy_templates_hr-HR.json" type="policy_templates" lang="hr" />
-    <output filename="app/policy/translations/policy_templates_hu-HU.json" type="policy_templates" lang="hu" />
     <output filename="app/policy/translations/policy_templates_id-ID.json" type="policy_templates" lang="id" />
     <output filename="app/policy/translations/policy_templates_it-IT.json" type="policy_templates" lang="it" />
     <output filename="app/policy/translations/policy_templates_ja-JP.json" type="policy_templates" lang="ja" />
-    <output filename="app/policy/translations/policy_templates_kn-IN.json" type="policy_templates" lang="kn" />
     <output filename="app/policy/translations/policy_templates_ko-KR.json" type="policy_templates" lang="ko" />
-    <output filename="app/policy/translations/policy_templates_lt-LT.json" type="policy_templates" lang="lt" />
-    <output filename="app/policy/translations/policy_templates_lv-LV.json" type="policy_templates" lang="lv" />
-    <output filename="app/policy/translations/policy_templates_ml.json" type="policy_templates" lang="ml" />
-    <output filename="app/policy/translations/policy_templates_mr-IN.json" type="policy_templates" lang="mr" />
-    <output filename="app/policy/translations/policy_templates_ms-MY.json" type="policy_templates" lang="ms" />
     <output filename="app/policy/translations/policy_templates_nl-NL.json" type="policy_templates" lang="nl" />
-    <output filename="app/policy/translations/policy_templates_nb-NO.json" type="policy_templates" lang="no" />
-    <output filename="app/policy/translations/policy_templates_pl-PL.json" type="policy_templates" lang="pl" />
     <output filename="app/policy/translations/policy_templates_pt-BR.json" type="policy_templates" lang="pt-BR" />
-    <output filename="app/policy/translations/policy_templates_pt-PT.json" type="policy_templates" lang="pt-PT" />
-    <output filename="app/policy/translations/policy_templates_ro-RO.json" type="policy_templates" lang="ro" />
     <output filename="app/policy/translations/policy_templates_ru-RU.json" type="policy_templates" lang="ru" />
-    <output filename="app/policy/translations/policy_templates_sk-SK.json" type="policy_templates" lang="sk" />
-    <output filename="app/policy/translations/policy_templates_sl-SI.json" type="policy_templates" lang="sl" />
-    <output filename="app/policy/translations/policy_templates_Cy-sr-SP.json" type="policy_templates" lang="sr" />
-    <output filename="app/policy/translations/policy_templates_sv-SE.json" type="policy_templates" lang="sv" />
-    <output filename="app/policy/translations/policy_templates_sw-KE.json" type="policy_templates" lang="sw" />
-    <output filename="app/policy/translations/policy_templates_ta-IN.json" type="policy_templates" lang="ta" />
-    <output filename="app/policy/translations/policy_templates_te-IN.json" type="policy_templates" lang="te" />
     <output filename="app/policy/translations/policy_templates_th-TH.json" type="policy_templates" lang="th" />
     <output filename="app/policy/translations/policy_templates_tr-TR.json" type="policy_templates" lang="tr" />
     <output filename="app/policy/translations/policy_templates_uk-UA.json" type="policy_templates" lang="uk" />
@@ -63,53 +28,17 @@ For the mapping 'lang' to policy_templates filename see crbug.com/806577.
     <output filename="app/policy/translations/policy_templates_zh-TW.json" type="policy_templates" lang="zh-TW" />
   </outputs>
   <translations>
-    <file path="policy_templates_am.xtb" lang="am" />
-    <file path="policy_templates_ar.xtb" lang="ar" />
-    <file path="policy_templates_bg.xtb" lang="bg" />
-    <file path="policy_templates_bn.xtb" lang="bn" />
-    <file path="policy_templates_ca.xtb" lang="ca" />
-    <file path="policy_templates_cs.xtb" lang="cs" />
-    <file path="policy_templates_da.xtb" lang="da" />
     <file path="policy_templates_de.xtb" lang="de" />
-    <file path="policy_templates_el.xtb" lang="el" />
-    <file path="policy_templates_en-GB.xtb" lang="en-GB" />
     <file path="policy_templates_es.xtb" lang="es" />
     <file path="policy_templates_es-419.xtb" lang="es-419" />
-    <file path="policy_templates_et.xtb" lang="et" />
-    <file path="policy_templates_fa.xtb" lang="fa" />
-    <file path="policy_templates_fi.xtb" lang="fi" />
-    <file path="policy_templates_fil.xtb" lang="fil" />
     <file path="policy_templates_fr.xtb" lang="fr" />
-    <file path="policy_templates_gu.xtb" lang="gu" />
-    <file path="policy_templates_hi.xtb" lang="hi" />
-    <file path="policy_templates_hr.xtb" lang="hr" />
-    <file path="policy_templates_hu.xtb" lang="hu" />
     <file path="policy_templates_id.xtb" lang="id" />
     <file path="policy_templates_it.xtb" lang="it" />
-    <!-- The translation console uses 'iw' for Hebrew, but we use 'he'. -->
-    <file path="policy_templates_iw.xtb" lang="he" />
     <file path="policy_templates_ja.xtb" lang="ja" />
-    <file path="policy_templates_kn.xtb" lang="kn" />
     <file path="policy_templates_ko.xtb" lang="ko" />
-    <file path="policy_templates_lt.xtb" lang="lt" />
-    <file path="policy_templates_lv.xtb" lang="lv" />
-    <file path="policy_templates_ml.xtb" lang="ml" />
-    <file path="policy_templates_mr.xtb" lang="mr" />
-    <file path="policy_templates_ms.xtb" lang="ms" />
     <file path="policy_templates_nl.xtb" lang="nl" />
-    <file path="policy_templates_no.xtb" lang="no" />
-    <file path="policy_templates_pl.xtb" lang="pl" />
     <file path="policy_templates_pt-BR.xtb" lang="pt-BR" />
-    <file path="policy_templates_pt-PT.xtb" lang="pt-PT" />
-    <file path="policy_templates_ro.xtb" lang="ro" />
     <file path="policy_templates_ru.xtb" lang="ru" />
-    <file path="policy_templates_sk.xtb" lang="sk" />
-    <file path="policy_templates_sl.xtb" lang="sl" />
-    <file path="policy_templates_sr.xtb" lang="sr" />
-    <file path="policy_templates_sv.xtb" lang="sv" />
-    <file path="policy_templates_sw.xtb" lang="sw" />
-    <file path="policy_templates_ta.xtb" lang="ta" />
-    <file path="policy_templates_te.xtb" lang="te" />
     <file path="policy_templates_th.xtb" lang="th" />
     <file path="policy_templates_tr.xtb" lang="tr" />
     <file path="policy_templates_uk.xtb" lang="uk" />

@@ -71,6 +71,14 @@ class CollectionViewControllerTest : public BlockCleanupTest {
   // items in a dedicated section.
   void CheckSectionFooterWithId(int expected_text_id, int section);
 
+  // Verifies that the text cell at |item| in |section| has a text property
+  // which matches |expected_title|.
+  void CheckTextCellText(NSString* expected_text, int section, int item);
+
+  // Verifies that the text cell at |item| in |section| has a text property
+  // which matches the l10n string for |expected_title_id|.
+  void CheckTextCellTextWithId(int expected_text_id, int section, int item);
+
   // Verifies that the text cell at |item| in |section| has a title which
   // matches |expected_title|.
   void CheckTextCellTitle(NSString* expected_title, int section, int item);

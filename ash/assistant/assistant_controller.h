@@ -13,57 +13,66 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
 #include "ash/assistant/assistant_alarm_timer_controller.h"
-#include "ash/assistant/assistant_cache_controller.h"
 #include "ash/assistant/assistant_controller_observer.h"
 #include "ash/assistant/assistant_interaction_controller.h"
 #include "ash/assistant/assistant_notification_controller.h"
 #include "ash/assistant/assistant_screen_context_controller.h"
 #include "ash/assistant/assistant_setup_controller.h"
+#include "ash/assistant/assistant_state_controller.h"
+#include "ash/assistant/assistant_suggestions_controller.h"
 #include "ash/assistant/assistant_ui_controller.h"
 #include "ash/assistant/assistant_view_delegate_impl.h"
 #include "ash/assistant/ui/assistant_view_delegate.h"
-#include "ash/public/cpp/assistant/default_voice_interaction_observer.h"
-#include "ash/public/interfaces/assistant_controller.mojom.h"
-#include "ash/public/interfaces/assistant_image_downloader.mojom.h"
-#include "ash/public/interfaces/assistant_setup.mojom.h"
-#include "ash/public/interfaces/assistant_volume_control.mojom.h"
-#include "ash/public/interfaces/voice_interaction_controller.mojom.h"
+#include "ash/public/cpp/assistant/assistant_image_downloader.h"
+#include "ash/public/cpp/assistant/assistant_interface_binder.h"
+#include "ash/public/mojom/assistant_volume_control.mojom.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/audio/cras_audio_handler.h"
-#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
-#include "mojo/public/cpp/bindings/interface_ptr_set.h"
-#include "services/content/public/mojom/navigable_contents_factory.mojom.h"
+#include "chromeos/services/assistant/public/mojom/assistant.mojom-forward.h"
+#include "components/prefs/pref_service.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+#include "services/content/public/mojom/navigable_contents_factory.mojom-forward.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
 
 class AssistantAlarmTimerController;
-class AssistantCacheController;
 class AssistantInteractionController;
 class AssistantNotificationController;
 class AssistantScreenContextController;
 class AssistantSetupController;
+class AssistantStateController;
+class AssistantSuggestionsController;
 class AssistantUiController;
+class AssistantWebUiController;
 
 class ASH_EXPORT AssistantController
-    : public mojom::AssistantController,
+    : public chromeos::assistant::mojom::AssistantController,
       public AssistantControllerObserver,
-      public DefaultVoiceInteractionObserver,
+      public AssistantStateObserver,
       public mojom::AssistantVolumeControl,
       public chromeos::CrasAudioHandler::AudioObserver,
-      public AccessibilityObserver {
+      public AccessibilityObserver,
+      public AssistantInterfaceBinder {
  public:
   AssistantController();
   ~AssistantController() override;
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  void BindRequest(mojom::AssistantControllerRequest request);
-  void BindRequest(mojom::AssistantVolumeControlRequest request);
+  void BindReceiver(
+      mojo::PendingReceiver<chromeos::assistant::mojom::AssistantController>
+          receiver);
+  void BindReceiver(
+      mojo::PendingReceiver<mojom::AssistantVolumeControl> receiver);
 
   // Adds/removes the specified |observer|.
   void AddObserver(AssistantControllerObserver* observer);
@@ -72,17 +81,13 @@ class ASH_EXPORT AssistantController
   // Downloads the image found at the specified |url|. On completion, the
   // supplied |callback| will be run with the downloaded image. If the download
   // attempt is unsuccessful, a NULL image is returned.
-  void DownloadImage(
-      const GURL& url,
-      mojom::AssistantImageDownloader::DownloadCallback callback);
+  void DownloadImage(const GURL& url,
+                     AssistantImageDownloader::DownloadCallback callback);
 
-  // mojom::AssistantController:
+  // chromeos::assistant::mojom::AssistantController:
   // TODO(updowndota): Refactor Set() calls to use a factory pattern.
-  void SetAssistant(
-      chromeos::assistant::mojom::AssistantPtr assistant) override;
-  void SetAssistantImageDownloader(
-      mojom::AssistantImageDownloaderPtr assistant_image_downloader) override;
-  void OpenAssistantSettings() override;
+  void SetAssistant(mojo::PendingRemote<chromeos::assistant::mojom::Assistant>
+                        assistant) override;
   void StartSpeakerIdEnrollmentFlow() override;
   void SendAssistantFeedback(bool assistant_debug_info_allowed,
                              const std::string& feedback_description,
@@ -96,10 +101,11 @@ class ASH_EXPORT AssistantController
   // mojom::VolumeControl:
   void SetVolume(int volume, bool user_initiated) override;
   void SetMuted(bool muted) override;
-  void AddVolumeObserver(mojom::VolumeObserverPtr observer) override;
+  void AddVolumeObserver(
+      mojo::PendingRemote<mojom::VolumeObserver> observer) override;
 
   // chromeos::CrasAudioHandler::AudioObserver:
-  void OnOutputMuteChanged(bool mute_on, bool system_adjust) override;
+  void OnOutputMuteChanged(bool mute_on) override;
   void OnOutputNodeVolumeChanged(uint64_t node, int volume) override;
 
   // AccessibilityObserver:
@@ -107,19 +113,17 @@ class ASH_EXPORT AssistantController
 
   // Opens the specified |url| in a new browser tab. Special handling is applied
   // to deep links which may cause deviation from this behavior.
-  void OpenUrl(const GURL& url, bool from_server = false);
+  void OpenUrl(const GURL& url,
+               bool in_background = false,
+               bool from_server = false);
 
   // Acquires a NavigableContentsFactory from the Content Service to allow
   // Assistant to display embedded web contents.
   void GetNavigableContentsFactory(
-      content::mojom::NavigableContentsFactoryRequest request);
+      mojo::PendingReceiver<content::mojom::NavigableContentsFactory> receiver);
 
   AssistantAlarmTimerController* alarm_timer_controller() {
     return &assistant_alarm_timer_controller_;
-  }
-
-  AssistantCacheController* cache_controller() {
-    return &assistant_cache_controller_;
   }
 
   AssistantInteractionController* interaction_controller() {
@@ -138,9 +142,19 @@ class ASH_EXPORT AssistantController
     return &assistant_setup_controller_;
   }
 
+  AssistantSuggestionsController* suggestions_controller() {
+    return &assistant_suggestions_controller_;
+  }
+
   AssistantUiController* ui_controller() { return &assistant_ui_controller_; }
 
+  AssistantWebUiController* web_ui_controller() {
+    return assistant_web_ui_controller_.get();
+  }
+
   AssistantViewDelegate* view_delegate() { return &view_delegate_; }
+
+  bool IsAssistantReady() const;
 
   base::WeakPtr<AssistantController> GetWeakPtr();
 
@@ -148,38 +162,58 @@ class ASH_EXPORT AssistantController
   void NotifyConstructed();
   void NotifyDestroying();
   void NotifyDeepLinkReceived(const GURL& deep_link);
+  void NotifyOpeningUrl(const GURL& url, bool in_background, bool from_server);
   void NotifyUrlOpened(const GURL& url, bool from_server);
 
-  // mojom::VoiceInteractionObserver:
-  void OnVoiceInteractionStatusChanged(
-      mojom::VoiceInteractionState state) override;
+  // AssistantStateObserver:
+  void OnAssistantStatusChanged(mojom::AssistantState state) override;
+  void OnLockedFullScreenStateChanged(bool enabled) override;
+
+  // AssistantInterfaceBinder implementation:
+  void BindController(
+      mojo::PendingReceiver<chromeos::assistant::mojom::AssistantController>
+          receiver) override;
+  void BindAlarmTimerController(
+      mojo::PendingReceiver<mojom::AssistantAlarmTimerController> receiver)
+      override;
+  void BindNotificationController(
+      mojo::PendingReceiver<mojom::AssistantNotificationController> receiver)
+      override;
+  void BindScreenContextController(
+      mojo::PendingReceiver<mojom::AssistantScreenContextController> receiver)
+      override;
+  void BindStateController(
+      mojo::PendingReceiver<mojom::AssistantStateController> receiver) override;
+  void BindVolumeControl(
+      mojo::PendingReceiver<mojom::AssistantVolumeControl> receiver) override;
 
   // The observer list should be initialized early so that sub-controllers may
   // register as observers during their construction.
   base::ObserverList<AssistantControllerObserver> observers_;
 
-  mojo::BindingSet<mojom::AssistantController> assistant_controller_bindings_;
+  mojo::ReceiverSet<chromeos::assistant::mojom::AssistantController>
+      assistant_controller_receivers_;
 
-  mojo::Binding<mojom::AssistantVolumeControl>
-      assistant_volume_control_binding_;
-  mojo::InterfacePtrSet<mojom::VolumeObserver> volume_observer_;
+  mojo::Receiver<mojom::AssistantVolumeControl>
+      assistant_volume_control_receiver_{this};
+  mojo::RemoteSet<mojom::VolumeObserver> volume_observers_;
 
-  chromeos::assistant::mojom::AssistantPtr assistant_;
-
-  mojom::AssistantImageDownloaderPtr assistant_image_downloader_;
+  mojo::Remote<chromeos::assistant::mojom::Assistant> assistant_;
 
   // Assistant sub-controllers.
-  AssistantAlarmTimerController assistant_alarm_timer_controller_;
-  AssistantCacheController assistant_cache_controller_;
-  AssistantInteractionController assistant_interaction_controller_;
-  AssistantNotificationController assistant_notification_controller_;
-  AssistantScreenContextController assistant_screen_context_controller_;
-  AssistantSetupController assistant_setup_controller_;
-  AssistantUiController assistant_ui_controller_;
+  AssistantAlarmTimerController assistant_alarm_timer_controller_{this};
+  AssistantInteractionController assistant_interaction_controller_{this};
+  AssistantNotificationController assistant_notification_controller_{this};
+  AssistantStateController assistant_state_controller_;
+  AssistantScreenContextController assistant_screen_context_controller_{this};
+  AssistantSetupController assistant_setup_controller_{this};
+  AssistantSuggestionsController assistant_suggestions_controller_{this};
+  AssistantUiController assistant_ui_controller_{this};
+  std::unique_ptr<AssistantWebUiController> assistant_web_ui_controller_;
 
-  AssistantViewDelegateImpl view_delegate_;
+  AssistantViewDelegateImpl view_delegate_{this};
 
-  base::WeakPtrFactory<AssistantController> weak_factory_;
+  base::WeakPtrFactory<AssistantController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AssistantController);
 };

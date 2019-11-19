@@ -96,6 +96,15 @@ class GLScalerPixelTest : public cc::PixelTest, public GLScalerTestUtil {
     texture_helper_ = std::make_unique<GLScalerTestTextureHelper>(gl_);
   }
 
+  bool IsAndroidMarshmallow() {
+#if defined(OS_ANDROID)
+    return base::android::BuildInfo::GetInstance()->sdk_int() ==
+           base::android::SDK_VERSION_MARSHMALLOW;
+#else
+    return false;
+#endif
+  }
+
   void TearDown() final {
     texture_helper_.reset();
     gl_ = nullptr;
@@ -112,6 +121,10 @@ class GLScalerPixelTest : public cc::PixelTest, public GLScalerTestUtil {
 
 // Tests that the default GLScaler::Parameters produces an unscaled copy.
 TEST_F(GLScalerPixelTest, CopiesByDefault) {
+  // Disabled on Marshmallow. See crbug.com/933080
+  if (IsAndroidMarshmallow())
+    return;
+
   ASSERT_TRUE(scaler()->Configure(GLScaler::Parameters()));
   EXPECT_EQ(u8"Output ← {BILINEAR/lowp copy} ← Source", GetScalerString());
   const SkBitmap source = CreateSMPTETestImage(kSMPTEFullSize);
@@ -250,6 +263,10 @@ TEST_F(GLScalerPixelTest, ScalesAtBestQuality) {
 // Tests that a source offset can be provided to sample the source starting at a
 // different location.
 TEST_F(GLScalerPixelTest, TranslatesWithSourceOffset) {
+  // Disabled on Marshmallow. See crbug.com/933080
+  if (IsAndroidMarshmallow())
+    return;
+
   GLScaler::Parameters params;
   params.is_flipped_source = false;
   ASSERT_TRUE(scaler()->Configure(params));
@@ -275,6 +292,10 @@ TEST_F(GLScalerPixelTest, TranslatesWithSourceOffset) {
 // Tests that the source offset works when the source content is vertically
 // flipped.
 TEST_F(GLScalerPixelTest, TranslatesVerticallyFlippedSourceWithSourceOffset) {
+  // Disabled on Marshmallow. See crbug.com/933080
+  if (IsAndroidMarshmallow())
+    return;
+
   GLScaler::Parameters params;
   params.is_flipped_source = true;
   ASSERT_TRUE(scaler()->Configure(params));
@@ -335,6 +356,10 @@ TEST_F(GLScalerPixelTest, ScalesWithTranslatedSourceOffset) {
 
 // Tests that the output is vertically flipped, if requested in the parameters.
 TEST_F(GLScalerPixelTest, VerticallyFlipsOutput) {
+  // Disabled on Marshmallow. See crbug.com/933080
+  if (IsAndroidMarshmallow())
+    return;
+
   GLScaler::Parameters params;
   params.is_flipped_source = false;
   params.flip_output = true;
@@ -355,6 +380,10 @@ TEST_F(GLScalerPixelTest, VerticallyFlipsOutput) {
 // Tests that the single-channel export ScalerStage works by executing a red
 // channel export.
 TEST_F(GLScalerPixelTest, ExportsTheRedColorChannel) {
+  // Disabled on Marshmallow. See crbug.com/933080
+  if (IsAndroidMarshmallow())
+    return;
+
   GLScaler::Parameters params;
   params.is_flipped_source = false;
   params.export_format = GLScaler::Parameters::ExportFormat::CHANNEL_0;

@@ -35,13 +35,17 @@ static_library("client") {
     "//remoting/build/config:enable_webrtc_remoting_client",
   ]
 
-  deps = [
+  public_deps = [
     "//remoting/base",
+  ]
+
+  deps = [
     "//remoting/client/audio",
+    "//remoting/client/notification",
     "//remoting/codec:decoder",
     "//remoting/protocol",
     "//third_party/libyuv",
-    "//third_party/webrtc/modules/desktop_capture:primitives",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//ui/events:dom_keycode_converter",
   ]
 
@@ -57,11 +61,10 @@ static_library("client") {
       "chromoting_session.h",
       "dual_buffer_frame_consumer.cc",
       "dual_buffer_frame_consumer.h",
-      "oauth_token_getter_proxy.cc",
-      "oauth_token_getter_proxy.h",
     ]
     deps += [
       "//mojo/core/embedder",
+      "//remoting/base:authorization",
       "//remoting/client/input",
       "//remoting/client/ui",
       "//services/network:network_service",
@@ -92,7 +95,6 @@ source_set("unit_tests") {
     "client_telemetry_logger_unittest.cc",
     "dual_buffer_frame_consumer_unittest.cc",
     "empty_cursor_filter_unittest.cc",
-    "oauth_token_getter_proxy_unittest.cc",
     "queued_task_poster_unittest.cc",
     "software_video_renderer_unittest.cc",
   ]
@@ -107,6 +109,6 @@ source_set("unit_tests") {
     "//remoting/proto",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/webrtc/rtc_base:rtc_base_approved",
+    "//third_party/webrtc_overrides:webrtc_component",
   ]
 }

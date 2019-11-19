@@ -35,6 +35,8 @@
 #include "components/download/public/common/download_item.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -47,9 +49,8 @@
 #include "net/http/http_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/url_request/url_request_slow_download_job.h"
-#include "services/identity/public/cpp/identity_manager.h"
-#include "services/identity/public/cpp/identity_test_utils.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_response.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -109,13 +110,13 @@ class SlowDownloadInterceptor {
   static const char* kErrorDownloadUrl;
 
   SlowDownloadInterceptor()
-      : interceptor_(base::BindRepeating(&SlowDownloadInterceptor::OnIntercept,
-                                         base::Unretained(this))),
-        handlers_(
+      : handlers_(
             {{kKnownSizeUrl, &SlowDownloadInterceptor::HandleKnownSize},
              {kUnknownSizeUrl, &SlowDownloadInterceptor::HandleUnknownSize},
              {kFinishDownloadUrl, &SlowDownloadInterceptor::HandleFinish},
-             {kErrorDownloadUrl, &SlowDownloadInterceptor::HandleError}}) {}
+             {kErrorDownloadUrl, &SlowDownloadInterceptor::HandleError}}),
+        interceptor_(base::BindRepeating(&SlowDownloadInterceptor::OnIntercept,
+                                         base::Unretained(this))) {}
 
  private:
   using Handler = void (SlowDownloadInterceptor::*)(
@@ -211,8 +212,8 @@ class SlowDownloadInterceptor {
       headers += base::StringPrintf("Content-Length: %ld\n", content_length);
       head.content_length = content_length;
     }
-    head.headers = new net::HttpResponseHeaders(
-        net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.length()));
+    head.headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(headers));
     head.headers->GetMimeType(&head.mime_type);
     params->client->OnReceiveResponse(head);
   }
@@ -230,10 +231,10 @@ class SlowDownloadInterceptor {
     params->client->OnStartLoadingResponseBody(std::move(pipe.consumer_handle));
   }
 
-  content::URLLoaderInterceptor interceptor_;
   const std::map<std::string, Handler> handlers_;
   base::Lock lock_;
   std::vector<PendingRequest*> pending_requests_ GUARDED_BY(lock_);
+  content::URLLoaderInterceptor interceptor_;
 };
 
 const char* SlowDownloadInterceptor::kUnknownSizeUrl =
@@ -277,11 +278,10 @@ class DownloadNotificationTestBase : public InProcessBrowserTest {
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
         browser()->profile());
 
-    if (base::FeatureList::IsEnabled(network::features::kNetworkService) &&
-        !content::IsInProcessNetworkService()) {
+    if (!content::IsInProcessNetworkService()) {
       interceptor_ = std::make_unique<SlowDownloadInterceptor>();
     } else {
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {content::BrowserThread::IO},
           base::BindOnce(&net::URLRequestSlowDownloadJob::AddUrlHandler));
     }
@@ -1047,10 +1047,10 @@ class MultiProfileDownloadNotificationTest
     Profile* profile =
         chromeos::ProfileHelper::GetProfileByUserIdHashForTest(info.hash);
 
-    identity::IdentityManager* identity_manager =
+    signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile);
     if (!identity_manager->HasPrimaryAccount())
-      identity::MakePrimaryAccountAvailable(identity_manager, info.email);
+      signin::MakePrimaryAccountAvailable(identity_manager, info.email);
   }
 
   std::unique_ptr<NotificationDisplayServiceTester> display_service1_;
@@ -1065,9 +1065,8 @@ IN_PROC_BROWSER_TEST_F(MultiProfileDownloadNotificationTest,
   AddAllUsers();
 }
 
-// TODO(crbug.com/933963): Flaky with network service.
 IN_PROC_BROWSER_TEST_F(MultiProfileDownloadNotificationTest,
-                       DISABLED_DownloadMultipleFiles) {
+                       DownloadMultipleFiles) {
   AddAllUsers();
 
   GURL url(SlowDownloadInterceptor::kUnknownSizeUrl);

@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_codecs.h"
@@ -39,13 +39,21 @@ class AcceleratedVideoEncoder {
   AcceleratedVideoEncoder() = default;
   virtual ~AcceleratedVideoEncoder() = default;
 
+  struct Config {
+    // Maxium number of reference frames.
+    // For H.264 encoding, the value represents the maximum number of reference
+    // frames for both the reference picture list 0 (bottom 16 bits) and the
+    // reference picture list 1 (top 16 bits).
+    size_t max_num_ref_frames;
+  };
+
   // An abstraction of an encode job for one frame. Parameters required for an
   // EncodeJob to be executed are prepared by an AcceleratedVideoEncoder, while
   // the accelerator-specific callbacks required to set up and execute it are
   // provided by the accelerator itself, based on these parameters.
   // Accelerators are also responsible for providing any resources (such as
   // memory for output and reference pictures, etc.) as needed.
-  class EncodeJob : public base::RefCounted<EncodeJob> {
+  class EncodeJob {
    public:
     // Creates an EncodeJob to encode |input_frame|, which will be executed
     // by calling |execute_cb|. If |keyframe| is true, requests this job
@@ -53,6 +61,7 @@ class AcceleratedVideoEncoder {
     EncodeJob(scoped_refptr<VideoFrame> input_frame,
               bool keyframe,
               base::OnceClosure execute_cb);
+    virtual ~EncodeJob();
 
     // Schedules a callback to be run immediately before this job is executed.
     // Can be called multiple times to schedule multiple callbacks, and all
@@ -90,10 +99,6 @@ class AcceleratedVideoEncoder {
 
     virtual VaapiEncodeJob* AsVaapiEncodeJob();
 
-   protected:
-    friend class base::RefCounted<EncodeJob>;
-    virtual ~EncodeJob();
-
    private:
     // Input VideoFrame to be encoded.
     const scoped_refptr<VideoFrame> input_frame_;
@@ -117,10 +122,12 @@ class AcceleratedVideoEncoder {
     DISALLOW_COPY_AND_ASSIGN(EncodeJob);
   };
 
-  // Initializes the encoder with requested parameter set |config|.
-  // Returns false if the requested set of parameters is not supported,
-  // true on success.
-  virtual bool Initialize(const VideoEncodeAccelerator::Config& config) = 0;
+  // Initializes the encoder with requested parameter set |config| and
+  // |ave_config|. Returns false if the requested set of parameters is not
+  // supported, true on success.
+  virtual bool Initialize(
+      const VideoEncodeAccelerator::Config& config,
+      const AcceleratedVideoEncoder::Config& ave_config) = 0;
 
   // Updates current framerate and/or bitrate to |framerate| in FPS
   // and the specified video bitrate allocation.

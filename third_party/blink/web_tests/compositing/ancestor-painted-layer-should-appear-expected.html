@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <style>
 body {
-  transform: translateZ(0);
+  will-change: transform;
 }
 #overlapper {
   width: 400px;
@@ -9,12 +9,12 @@ body {
   left: 200px;
   background: gray;
   position: absolute;
-  transform: translateZ(0);
+  will-change: transform;
 }
 
 #container {
   -webkit-perspective: 1400px;
-  transform: translateZ(0);
+  will-change: transform;
   position: absolute;
   width: 180px;
   height: 180px;

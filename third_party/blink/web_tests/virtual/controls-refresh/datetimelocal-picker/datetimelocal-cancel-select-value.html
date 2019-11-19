@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../fast/forms/resources/common.js"></script>
+<script src="../../../fast/forms/resources/picker-common.js"></script>
+<script src="../../../fast/forms/calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="datetime-local" id="datetime-local" value="2019-02-14T13:02">
+<script>
+
+let t = async_test('Test cancel select value in datetime-local popup');
+
+function selectValue() {
+  if (!internals.runtimeFlags.formControlsRefreshEnabled) {
+    t.done();
+  }
+
+  let dateTimeElement = document.getElementById("datetime-local");
+  clickDayCellAt(3, 4);
+  clickTimeCellAt(0, 4);
+  clickTimeCellAt(1, 1);
+  clickCancelTimeButton();
+  assert_equals(dateTimeElement.value, "2019-02-14T13:02");
+  t.done();
+}
+
+t.step(() => {
+  openPicker(document.getElementById('datetime-local'), t.step_func(selectValue));
+});
+</script>
+</body>
+</html>

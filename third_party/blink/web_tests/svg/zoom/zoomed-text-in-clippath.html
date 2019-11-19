@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<title>The bounds of text content rounds "outward"</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<svg height="200" style="zoom: 1.5">
+  <clipPath id="clip" clipPathUnits="objectBoundingBox">
+    <text y=".8" font-size="1">X</text>
+  </clipPath>
+  <rect width="200" height="200" fill="green" clip-path="url(#clip)"/>
+</svg>
+<script>
+  test(function() {
+    let clip_text = clip.firstElementChild;
+    let clip_text_bbox = clip_text.getBBox();
+    let clip_text_extents = clip_text.getExtentOfChar(0);
+    assert_less_than_equal(clip_text_bbox.x, clip_text_extents.x, 'left');
+    assert_less_than_equal(clip_text_bbox.y, clip_text_extents.y, 'top');
+    assert_greater_than_equal(clip_text_bbox.x + clip_text_bbox.width,
+                              clip_text_extents.x + clip_text_extents.width, 'right');
+    assert_greater_than_equal(clip_text_bbox.y + clip_text_bbox.height,
+                              clip_text_extents.y + clip_text_extents.height, 'bottom');
+  });
+</script>

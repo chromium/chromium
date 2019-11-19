@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_display_cutout_fullscreen_button_element.h"
 
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
@@ -17,11 +18,11 @@ namespace blink {
 MediaControlDisplayCutoutFullscreenButtonElement::
     MediaControlDisplayCutoutFullscreenButtonElement(
         MediaControlsImpl& media_controls)
-    : MediaControlInputElement(media_controls, kMediaIgnore) {
+    : MediaControlInputElement(media_controls) {
   setType(input_type_names::kButton);
   setAttribute(html_names::kAriaLabelAttr,
                WTF::AtomicString(GetLocale().QueryString(
-                   WebLocalizedString::kAXMediaDisplayCutoutFullscreenButton)));
+                   IDS_AX_MEDIA_DISPLAY_CUT_OUT_FULL_SCREEN_BUTTON)));
   SetShadowPseudoId(AtomicString(
       "-internal-media-controls-display-cutout-fullscreen-button"));
   SetIsWanted(false);

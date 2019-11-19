@@ -4,9 +4,13 @@
 
 #include "third_party/blink/renderer/modules/screen_orientation/lock_orientation_callback.h"
 
+#include "base/single_thread_task_runner.h"
+#include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -17,7 +21,16 @@ LockOrientationCallback::LockOrientationCallback(
 LockOrientationCallback::~LockOrientationCallback() = default;
 
 void LockOrientationCallback::OnSuccess() {
-  resolver_->Resolve();
+  // Resolving the promise should be done after the event is fired which is
+  // delayed to avoid running script on the stack. We then have to delay
+  // resolving the promise.
+  resolver_->GetExecutionContext()
+      ->GetTaskRunner(TaskType::kMiscPlatformAPI)
+      ->PostTask(FROM_HERE, WTF::Bind(
+                                [](ScriptPromiseResolver* resolver) {
+                                  resolver->Resolve();
+                                },
+                                std::move(resolver_)));
 }
 
 void LockOrientationCallback::OnError(WebLockOrientationError error) {
@@ -43,7 +56,7 @@ void LockOrientationCallback::OnError(WebLockOrientationError error) {
       break;
   }
 
-  resolver_->Reject(DOMException::Create(code, message));
+  resolver_->Reject(MakeGarbageCollected<DOMException>(code, message));
 }
 
 }  // namespace blink

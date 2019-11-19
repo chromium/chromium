@@ -5,14 +5,17 @@
 #include "third_party/blink/renderer/core/loader/frame_resource_fetcher_properties.h"
 
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
+#include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_or_imported_document.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script/fetch_client_settings_object_impl.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
+#include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 
 namespace blink {
 
@@ -20,18 +23,13 @@ FrameResourceFetcherProperties::FrameResourceFetcherProperties(
     FrameOrImportedDocument& frame_or_imported_document)
     : frame_or_imported_document_(frame_or_imported_document),
       fetch_client_settings_object_(
-          CreateFetchClientSettingsObject(frame_or_imported_document)) {}
+          MakeGarbageCollected<FetchClientSettingsObjectImpl>(
+              frame_or_imported_document.GetDocument())) {}
 
 void FrameResourceFetcherProperties::Trace(Visitor* visitor) {
   visitor->Trace(frame_or_imported_document_);
   visitor->Trace(fetch_client_settings_object_);
   ResourceFetcherProperties::Trace(visitor);
-}
-
-void FrameResourceFetcherProperties::UpdateDocument(Document& document) {
-  frame_or_imported_document_->UpdateDocument(document);
-  fetch_client_settings_object_ =
-      CreateFetchClientSettingsObject(*frame_or_imported_document_);
 }
 
 bool FrameResourceFetcherProperties::IsMainFrame() const {
@@ -45,7 +43,7 @@ FrameResourceFetcherProperties::GetControllerServiceWorkerMode() const {
           .GetServiceWorkerNetworkProvider();
   if (!service_worker_network_provider)
     return blink::mojom::ControllerServiceWorkerMode::kNoController;
-  return service_worker_network_provider->IsControlledByServiceWorker();
+  return service_worker_network_provider->GetControllerServiceWorkerMode();
 }
 
 int64_t FrameResourceFetcherProperties::ServiceWorkerId() const {
@@ -63,8 +61,7 @@ bool FrameResourceFetcherProperties::IsPaused() const {
 }
 
 bool FrameResourceFetcherProperties::IsLoadComplete() const {
-  Document* document = frame_or_imported_document_->GetDocument();
-  return document && document->LoadEventFinished();
+  return frame_or_imported_document_->GetDocument().LoadEventFinished();
 }
 
 bool FrameResourceFetcherProperties::ShouldBlockLoadingSubResource() const {
@@ -77,57 +74,36 @@ bool FrameResourceFetcherProperties::ShouldBlockLoadingSubResource() const {
   return document_loader != loader.GetDocumentLoader();
 }
 
+bool FrameResourceFetcherProperties::IsSubframeDeprioritizationEnabled() const {
+  Settings* settings = frame_or_imported_document_->GetFrame().GetSettings();
+  if (!settings) {
+    return false;
+  }
+
+  const WebEffectiveConnectionType max_effective_connection_type_threshold =
+      settings->GetLowPriorityIframesThreshold();
+  if (max_effective_connection_type_threshold <=
+      WebEffectiveConnectionType::kTypeOffline) {
+    return false;
+  }
+
+  const WebEffectiveConnectionType effective_connection_type =
+      GetNetworkStateNotifier().EffectiveType();
+  if (effective_connection_type <= WebEffectiveConnectionType::kTypeOffline) {
+    return false;
+  }
+
+  if (effective_connection_type > max_effective_connection_type_threshold) {
+    // Network is not slow enough.
+    return false;
+  }
+
+  return true;
+}
+
 scheduler::FrameStatus FrameResourceFetcherProperties::GetFrameStatus() const {
   return scheduler::GetFrameStatus(
       frame_or_imported_document_->GetFrame().GetFrameScheduler());
-}
-
-const FetchClientSettingsObject&
-FrameResourceFetcherProperties::CreateFetchClientSettingsObject(
-    const FrameOrImportedDocument& frame_or_imported_document) {
-  if (frame_or_imported_document.GetDocument()) {
-    // HTML imports case
-    return *MakeGarbageCollected<FetchClientSettingsObjectImpl>(
-        *frame_or_imported_document.GetDocument());
-  }
-
-  // This FetchClientSettingsObject can be used only for navigation, as
-  // at the creation of the corresponding Document a new
-  // FetchClientSettingsObject is set.
-  // Also, currently all the members except for SecurityOrigin are not
-  // used in FrameFetchContext, and therefore we set some safe default
-  // values here.
-  // Once PlzNavigate removes ResourceFetcher usage in navigations, we
-  // might be able to remove this FetchClientSettingsObject at all.
-  return *MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
-      KURL(), KURL(),
-
-      // SecurityOrigin. This is actually used via
-      // FetchContext::GetSecurityOrigin().
-      // TODO(hiroshige): Assign non-nullptr SecurityOrigin.
-      nullptr,
-
-      // Currently this is not used, and referrer for navigation request
-      // is set based on previous Document's referrer policy, for example
-      // in FrameLoader::SetReferrerForFrameRequest().
-      // If we want to set referrer based on FetchClientSettingsObject,
-      // it should refer to the FetchClientSettingsObject of the previous
-      // Document, probably not this one.
-      network::mojom::ReferrerPolicy::kDefault, String(),
-
-      // MixedContentChecker::ShouldBlockFetch() doesn't check mixed
-      // contents if frame type is not kNone, which is always true in
-      // RawResource::FetchMainResource().
-      // Therefore HttpsState here isn't (and isn't expected to be)
-      // used and thus it's safe to pass a safer default value.
-      HttpsState::kModern,
-
-      // This is only for workers and this value is not (and isn't
-      // expected to be) used.
-      AllowedByNosniff::MimeTypeCheck::kStrict,
-
-      // address space; Until the document gets available, return nullopt.
-      base::nullopt);
 }
 
 }  // namespace blink

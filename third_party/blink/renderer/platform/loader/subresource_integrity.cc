@@ -5,14 +5,14 @@
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 
 #include "base/stl_util.h"
+#include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
-#include "third_party/blink/renderer/platform/wtf/dtoa/utils.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
@@ -50,11 +50,6 @@ static bool DigestsEqual(const DigestValue& digest1,
 
 inline bool IsSpaceOrComma(UChar c) {
   return IsASCIISpace(c) || c == ',';
-}
-
-static String DigestToString(const DigestValue& digest) {
-  return Base64Encode(reinterpret_cast<const char*>(digest.data()),
-                      digest.size(), kBase64DoNotInsertLFs);
 }
 
 void SubresourceIntegrity::ReportInfo::AddUseCount(UseCounterFeature feature) {
@@ -163,7 +158,7 @@ bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
         "Failed to find a valid digest in the 'integrity' attribute for "
         "resource '" +
         resource_url.ElidedString() + "' with computed SHA-256 integrity '" +
-        DigestToString(digest) + "'. The resource has been blocked.");
+        Base64Encode(digest) + "'. The resource has been blocked.");
   } else {
     report_info.AddConsoleErrorMessage(
         "There was an error computing an integrity value for resource '" +

@@ -1,0 +1,190 @@
+# Copyright 2014 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/jumbo.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/test.gni")
+import("//third_party/google_input_tools/closure.gni")
+import("//third_party/google_input_tools/inputview.gni")
+import("//tools/grit/grit_rule.gni")
+
+assert(is_chromeos)
+
+jumbo_component("ui") {
+  sources = [
+    "container_behavior.cc",
+    "container_behavior.h",
+    "container_floating_behavior.cc",
+    "container_floating_behavior.h",
+    "container_full_width_behavior.cc",
+    "container_full_width_behavior.h",
+    "display_util.cc",
+    "display_util.h",
+    "drag_descriptor.h",
+    "keyboard_event_handler.cc",
+    "keyboard_event_handler.h",
+    "keyboard_export.h",
+    "keyboard_layout_delegate.h",
+    "keyboard_layout_manager.cc",
+    "keyboard_layout_manager.h",
+    "keyboard_ui.cc",
+    "keyboard_ui.h",
+    "keyboard_ui_controller.cc",
+    "keyboard_ui_controller.h",
+    "keyboard_ui_factory.cc",
+    "keyboard_ui_factory.h",
+    "keyboard_ui_model.cc",
+    "keyboard_ui_model.h",
+    "keyboard_ukm_recorder.cc",
+    "keyboard_ukm_recorder.h",
+    "keyboard_util.cc",
+    "keyboard_util.h",
+    "notification_manager.cc",
+    "notification_manager.h",
+    "queued_container_type.cc",
+    "queued_container_type.h",
+    "queued_display_change.cc",
+    "queued_display_change.h",
+    "resources/keyboard_resource_util.cc",
+    "resources/keyboard_resource_util.h",
+    "shaped_window_targeter.cc",
+    "shaped_window_targeter.h",
+  ]
+
+  defines = [ "KEYBOARD_IMPLEMENTATION" ]
+
+  deps = [
+    ":resources",
+    "//ash/public/cpp",
+    "//base",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/base/ime",
+    "//ui/compositor",
+    "//ui/display:display",
+    "//ui/events",
+    "//ui/events:dom_keycode_converter",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/wm",
+  ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+
+  data_deps = [
+    ":resources",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test/keyboard_test_util.cc",
+    "test/keyboard_test_util.h",
+    "test/test_keyboard_controller_observer.cc",
+    "test/test_keyboard_controller_observer.h",
+    "test/test_keyboard_layout_delegate.cc",
+    "test/test_keyboard_layout_delegate.h",
+    "test/test_keyboard_ui_factory.cc",
+    "test/test_keyboard_ui_factory.h",
+  ]
+  deps = [
+    ":ui",
+    "//ash/public/cpp",
+    "//base",
+    "//ui/aura",
+    "//ui/aura:test_support",
+    "//ui/base:test_support",
+    "//ui/display",
+  ]
+}
+
+grit("resources_grit") {
+  source = "keyboard_resources.grd"
+  outputs = [
+    "grit/keyboard_resources.h",
+    "grit/keyboard_resources_map.h",
+    "keyboard_resources.pak",
+  ]
+
+  input_tools_root_dir = "//third_party/google_input_tools/src/chrome/os"
+  inputview_gen_js = "$root_gen_dir/ash/keyboard/ui/resources/inputview.js"
+  grit_flags = [
+    "-E",
+    "input_tools_root_dir=" + rebase_path(input_tools_root_dir, "."),
+    "-E",
+    "inputview_gen_js=" + rebase_path(inputview_gen_js, root_build_dir),
+  ]
+
+  deps = [
+    ":inputview",
+  ]
+}
+
+copy("resources") {
+  sources = [
+    "$target_gen_dir/keyboard_resources.pak",
+  ]
+  outputs = [
+    "$root_out_dir/keyboard_resources.pak",
+  ]
+  public_deps = [
+    ":resources_grit",
+  ]
+}
+
+build_closure("inputview") {
+  sources = inputview_sources
+  target = "$target_gen_dir/resources/inputview.js"
+  path = rebase_path("//third_party/google_input_tools")
+}
+
+test("keyboard_unittests") {
+  sources = [
+    "container_floating_behavior_unittest.cc",
+    "container_full_width_behavior_unittest.cc",
+    "keyboard_event_handler_unittest.cc",
+    "keyboard_ui_controller_unittest.cc",
+    "keyboard_ui_model_unittest.cc",
+    "keyboard_ukm_recorder_unittest.cc",
+    "keyboard_util_unittest.cc",
+    "notification_manager_unittest.cc",
+    "test/run_all_unittests.cc",
+  ]
+
+  deps = [
+    ":test_support",
+    ":ui",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//components/ukm:test_support",
+    "//mojo/core/embedder",
+    "//services/service_manager/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/aura:test_support",
+    "//ui/base",
+    "//ui/base:test_support",
+    "//ui/base/ime/init",
+    "//ui/compositor:test_support",
+    "//ui/events:test_support",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/gl:test_support",
+    "//ui/resources:ui_test_pak",
+    "//ui/wm",
+  ]
+
+  data_deps = [
+    "//ui/resources:ui_test_pak_data",
+  ]
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
+  }
+}

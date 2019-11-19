@@ -1,0 +1,290 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//build/config/jumbo.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build/config/ui.gni")
+import("//build/config/win/console_app.gni")
+import("//build/config/win/manifest.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/repack.gni")
+import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
+if (is_android) {
+  import("//build/config/android/config.gni")
+}
+
+jumbo_static_library("weblayer_shell_lib") {
+  testonly = true
+  sources = [
+    "app/shell_main_params.cc",
+    "app/shell_main_params.h",
+    "browser/shell.cc",
+    "browser/shell.h",
+    "browser/shell_android.cc",
+    "common/shell_switches.cc",
+    "common/shell_switches.h",
+  ]
+
+  configs += [
+    "//build/config:precompiled_headers",
+
+    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
+    "//build/config/compiler:no_size_t_to_int_warning",
+  ]
+
+  public_deps = [
+    "//weblayer:weblayer_lib",
+  ]
+  deps = [
+    ":resources",
+    "//base",
+    "//base:base_static",
+    "//base/third_party/dynamic_annotations",
+    "//net",
+    "//net:net_resources",
+    "//sandbox",
+    "//skia",
+    "//third_party/icu",
+    "//ui/base",
+    "//ui/base/clipboard",
+    "//ui/base/ime/init",
+    "//ui/display",
+    "//ui/events:events_base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/gfx/ipc",
+    "//ui/gfx/ipc/geometry",
+    "//ui/gfx/ipc/skia",
+    "//ui/gl",
+    "//ui/platform_window",
+    "//url",
+    "//v8",
+    "//weblayer:resources",
+  ]
+
+  if (is_linux) {
+    deps += [
+      "//third_party/fontconfig",
+      "//ui/gfx:test_support",
+    ]
+  }
+
+  if (use_x11) {
+    # Some tests rely on this tool at runtime. Note: it might be better if
+    # the tests that needed it had this as a dep instead of adding it here.
+    deps += [ "//ui/events/devices/x11" ]
+  }
+
+  if (is_android) {
+    deps += [ "//ui/android" ]
+  }
+
+  if (toolkit_views) {
+    deps += [ "//ui/views" ]
+  }
+
+  if (use_aura) {
+    deps += [
+      "//ui/aura",
+      "//ui/aura:test_support",
+      "//ui/events",
+      "//ui/strings",
+      "//ui/wm",
+    ]
+
+    if (toolkit_views) {
+      sources += [ "browser/shell_views.cc" ]
+      deps += [
+        "//ui/resources",
+        "//ui/views:test_support",
+        "//ui/views/controls/webview",
+        "//ui/wm:test_support",
+      ]
+    }
+  }
+
+  if (is_linux) {
+    deps += [ "//build/config/freetype" ]
+  }
+}
+
+grit("weblayer_shell_resources_grit") {
+  testonly = true
+
+  # External code should depend on ":resources" instead.
+  visibility = [ ":*" ]
+  source = "shell_resources.grd"
+  outputs = [
+    "grit/shell_resources.h",
+    "weblayer_shell_resources.pak",
+  ]
+}
+
+copy("copy_shell_resources") {
+  testonly = true
+
+  sources = [
+    "$target_gen_dir/weblayer_shell_resources.pak",
+  ]
+  outputs = [
+    "$root_out_dir/weblayer_shell_resources.pak",
+  ]
+
+  public_deps = [
+    ":weblayer_shell_resources_grit",
+  ]
+}
+
+group("resources") {
+  testonly = true
+
+  public_deps = [
+    ":copy_shell_resources",
+  ]
+}
+
+repack("shell_pak") {
+  testonly = true
+
+  sources = [
+    "$root_gen_dir/weblayer/shell/weblayer_shell_resources.pak",
+  ]
+
+  deps = [
+    ":resources",
+  ]
+  output = "$root_out_dir/weblayer_shell.pak"
+}
+
+repack("support_pak") {
+  testonly = true
+
+  sources = [
+    "$root_gen_dir/components/components_resources.pak",
+    "$root_gen_dir/components/components_resources_100_percent.pak",
+    "$root_gen_dir/components/strings/components_strings_en-US.pak",
+    "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
+    "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
+    "$root_gen_dir/content/content_resources.pak",
+    "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
+    "$root_gen_dir/net/net_resources.pak",
+    "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
+    "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+    "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
+    "$root_gen_dir/ui/resources/webui_resources.pak",
+    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+    "$root_gen_dir/weblayer/weblayer_resources.pak",
+  ]
+
+  deps = [
+    "//components/resources",
+    "//components/strings",
+    "//content:resources",
+    "//content/app/resources",
+    "//content/browser/tracing:resources",
+    "//mojo/public/js:resources",
+    "//net:net_resources",
+    "//third_party/blink/public:resources",
+    "//third_party/blink/public:scaled_resources_100_percent",
+    "//third_party/blink/public/strings",
+    "//ui/resources",
+    "//ui/strings",
+    "//weblayer:resources",
+  ]
+
+  if (toolkit_views) {
+    deps += [ "//ui/views/resources" ]
+    sources +=
+        [ "$root_gen_dir/ui/views/resources/views_resources_100_percent.pak" ]
+  }
+  if (is_android) {
+    deps += [ "//ui/android:ui_java_resources" ]
+  }
+  output = "$root_out_dir/weblayer_support.pak"
+}
+
+repack("pak") {
+  testonly = true
+
+  sources = [
+    "$root_out_dir/weblayer_shell.pak",
+    "$root_out_dir/weblayer_support.pak",
+  ]
+
+  deps = [
+    ":shell_pak",
+    ":support_pak",
+  ]
+  output = "$root_out_dir/weblayer.pak"
+}
+
+if (is_android) {
+  group("weblayer_shell") {
+    testonly = true
+    deps = [
+      "//weblayer/shell/android:weblayer_shell_apk",
+    ]
+  }
+  group("weblayer_support") {
+    testonly = true
+    deps = [
+      "//weblayer/shell/android:weblayer_support_apk",
+    ]
+  }
+} else {
+  executable("weblayer_shell") {
+    testonly = true
+
+    sources = [
+      "app/shell_main.cc",
+    ]
+
+    if (is_win) {
+      sources += [ "app/shell.rc" ]
+    }
+
+    defines = []
+
+    deps = [
+      ":pak",
+      ":weblayer_shell_lib",
+      "//base",
+      "//build/win:default_exe_manifest",
+      "//net",
+      "//weblayer:weblayer_lib",
+    ]
+
+    data_deps = [
+      ":pak",
+      "//tools/v8_context_snapshot:v8_context_snapshot",
+    ]
+
+    if (is_win) {
+      deps += [ "//sandbox" ]
+
+      # This is a large module that can't do incremental linking in some cases.
+      configs -= [ "//build/config/win:default_incremental_linking" ]
+      configs +=
+          [ "//build/config/win:default_large_module_incremental_linking" ]
+      if (win_console_app) {
+        defines += [ "WIN_CONSOLE_APP" ]
+      } else {
+        # Set /SUBSYSTEM:WINDOWS unless a console build has been requested.
+        configs -= [ "//build/config/win:console" ]
+        configs += [ "//build/config/win:windowed" ]
+      }
+
+      data_deps +=
+          [ "//third_party/crashpad/crashpad/handler:crashpad_handler" ]
+    }
+
+    if (is_linux && !is_component_build) {
+      # Set rpath to find our own libfreetype even in a non-component build.
+      configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
+    }
+  }
+}

@@ -7,32 +7,43 @@
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "base/logging.h"
 
-namespace app_list {
+namespace ash {
 
 AppListItem::AppListItem(const std::string& id)
-    : metadata_(ash::mojom::AppListItemMetadata::New(
-          id,
-          std::string() /* name */,
-          std::string() /* short_name */,
-          std::string() /* folder_id */,
-          syncer::StringOrdinal() /* position */,
-          false /* is_folder */,
-          false /* is_persistent */,
-          gfx::ImageSkia() /* icon */,
-          false /* is_page_break */)),
+    : metadata_(std::make_unique<ash::AppListItemMetadata>()),
       is_installing_(false),
-      percent_downloaded_(-1) {}
+      percent_downloaded_(-1) {
+  metadata_->id = id;
+}
 
 AppListItem::~AppListItem() {
   for (auto& observer : observers_)
     observer.ItemBeingDestroyed();
 }
 
-void AppListItem::SetIcon(const gfx::ImageSkia& icon) {
-  metadata_->icon = icon;
-  metadata_->icon.EnsureRepsForSupportedScales();
+void AppListItem::SetIcon(ash::AppListConfigType config_type,
+                          const gfx::ImageSkia& icon) {
+  if (config_type == ash::AppListConfigType::kShared) {
+    metadata_->icon = icon;
+  } else {
+    per_config_icons_[config_type] = icon;
+  }
+  icon.EnsureRepsForSupportedScales();
+
   for (auto& observer : observers_)
-    observer.ItemIconChanged();
+    observer.ItemIconChanged(config_type);
+}
+
+const gfx::ImageSkia& AppListItem::GetIcon(
+    ash::AppListConfigType config_type) const {
+  if (config_type != ash::AppListConfigType::kShared) {
+    const auto& it = per_config_icons_.find(config_type);
+    if (it != per_config_icons_.end())
+      return it->second;
+    // If icon for requested config cannt be found, default to the shared config
+    // icon.
+  }
+  return metadata_->icon;
 }
 
 void AppListItem::SetIsInstalling(bool is_installing) {
@@ -67,18 +78,11 @@ const char* AppListItem::GetItemType() const {
 }
 
 AppListItem* AppListItem::FindChildItem(const std::string& id) {
-  return NULL;
+  return nullptr;
 }
 
 size_t AppListItem::ChildItemCount() const {
   return 0;
-}
-
-bool AppListItem::CompareForTest(const AppListItem* other) const {
-  return id() == other->id() && folder_id() == other->folder_id() &&
-         name() == other->name() && short_name_ == other->short_name_ &&
-         GetItemType() == other->GetItemType() &&
-         position().Equals(other->position());
 }
 
 std::string AppListItem::ToDebugString() const {
@@ -107,4 +111,4 @@ void AppListItem::SetNameAndShortName(const std::string& name,
     observer.ItemNameChanged();
 }
 
-}  // namespace app_list
+}  // namespace ash

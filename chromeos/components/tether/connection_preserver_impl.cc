@@ -34,8 +34,7 @@ ConnectionPreserverImpl::ConnectionPreserverImpl(
       network_state_handler_(network_state_handler),
       active_host_(active_host),
       tether_host_response_recorder_(tether_host_response_recorder),
-      preserved_connection_timer_(std::make_unique<base::OneShotTimer>()),
-      weak_ptr_factory_(this) {
+      preserved_connection_timer_(std::make_unique<base::OneShotTimer>()) {
   active_host_->AddObserver(this);
 }
 

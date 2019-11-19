@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
-import org.chromium.chrome.browser.util.AccessibilityUtil;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -50,10 +49,6 @@ public class TabSwitcherButtonCoordinator {
         final TabSwitcherButtonView view = root.findViewById(R.id.tab_switcher_button);
         PropertyModelChangeProcessor.create(
                 mTabSwitcherButtonModel, view, new TabSwitcherButtonViewBinder());
-
-        CharSequence description = root.getResources().getString(R.string.open_tabs);
-        mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.ON_LONG_CLICK_LISTENER,
-                v -> AccessibilityUtil.showAccessibilityToast(root.getContext(), v, description));
     }
 
     /**

@@ -20,13 +20,8 @@
 #include "chrome/common/media_router/discovery/media_sink_service_base.h"
 #include "chrome/common/media_router/discovery/media_sink_service_util.h"
 
-namespace service_manager {
-class Connector;
-}
-
 namespace media_router {
 
-class DataDecoder;
 class DeviceDescriptionService;
 class DialRegistry;
 
@@ -51,13 +46,10 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
   // Represents DIAL app status on receiver device.
   enum SinkAppStatus { kUnknown = 0, kAvailable, kUnavailable };
 
-  // |connector|: connector to the ServiceManager suitable to use on
-  // |task_runner|.
   // |on_sinks_discovered_cb|: Callback for MediaSinkServiceBase.
   // Note that both callbacks are invoked on |task_runner|.
   // |task_runner|: The SequencedTaskRunner this class runs in.
   DialMediaSinkServiceImpl(
-      service_manager::Connector* connector,
       const OnSinksDiscoveredCallback& on_sinks_discovered_cb,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
   ~DialMediaSinkServiceImpl() override;
@@ -171,10 +163,6 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
   // MediaSinkServiceBase implementation.
   void OnDiscoveryComplete() override;
   void RecordDeviceCounts() override;
-
-  // Used for parsing XML. Shared by |description_service_| and
-  // |app_discovery_service_|.
-  std::unique_ptr<DataDecoder> data_decoder_;
 
   // Initialized in |Start()|.
   std::unique_ptr<DeviceDescriptionService> description_service_;

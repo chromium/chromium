@@ -11,14 +11,15 @@
   <script src="webui.js"></script>
   <script src="logs.js"></script>
   <script src="proximity_auth.js"></script>
-  <script src="chrome://resources/js/mojo_bindings_lite.js"></script>
-  <script src="chrome://resources/js/time.mojom-lite.js"></script>
-  <script src="chrome://resources/js/chromeos/multidevice_types.mojom-lite.js">
+  <script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js">
   </script>
-  <script src="chrome://resources/js/chromeos/device_sync.mojom-lite.js"></script>
-  <script src="chrome://resources/js/chromeos/multidevice_setup.mojom-lite.js">
+  <script src="chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js">
   </script>
-  <script src="chrome://resources/js/chromeos/multidevice_setup_constants.mojom-lite.js">
+  <script src="chrome://resources/mojo/chromeos/components/multidevice/mojom/multidevice_types.mojom-lite.js">
+  </script>
+  <script src="chrome://resources/mojo/chromeos/services/device_sync/public/mojom/device_sync.mojom-lite.js">
+  </script>
+  <script src="chrome://resources/mojo/chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom-lite.js">
   </script>
 </head>
 
@@ -127,6 +128,10 @@
         <tr>
           <td>Device ID</td>
           <td class='device-id'></td>
+        </tr>
+        <tr>
+          <td>PII-Free Name</td>
+          <td class='no-pii-name'></td>
         </tr>
         <tr>
           <td>Supported/Enabled Features</td>

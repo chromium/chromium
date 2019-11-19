@@ -10,6 +10,7 @@
 #include "base/sequence_checker.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/browser/url_util.h"
+#include "components/safe_search_api/safe_search/safe_search_url_checker_client.h"
 #include "components/safe_search_api/url_checker.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -72,11 +73,12 @@ bool PolicyBlacklistService::CheckSafeSearchURL(
             }
           })");
 
-    // TODO(michaelpg): Find the country code.
     safe_search_url_checker_ = std::make_unique<safe_search_api::URLChecker>(
-        content::BrowserContext::GetDefaultStoragePartition(browser_context_)
-            ->GetURLLoaderFactoryForBrowserProcess(),
-        traffic_annotation, std::string());
+        std::make_unique<safe_search_api::SafeSearchURLCheckerClient>(
+            content::BrowserContext::GetDefaultStoragePartition(
+                browser_context_)
+                ->GetURLLoaderFactoryForBrowserProcess(),
+            traffic_annotation));
   }
 
   return safe_search_url_checker_->CheckURL(

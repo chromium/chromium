@@ -107,8 +107,8 @@ function Class() {
 
 cr.addSingletonGetter(Class);
 Class.getInstance().needsNumber("wrong type");
-""", "ERROR - actual parameter 1 of Class.needsNumber does not match formal "
-        "parameter")
+""", "ERROR - [JSC_TYPE_MISMATCH] actual parameter 1 of Class.needsNumber does "
+        "not match formal parameter")
 
   def testCrDefineFunctionDefinition(self):
     self._runCompilerTestExpectError(self._CR_DEFINE_DEFINITION + """
@@ -122,8 +122,8 @@ cr.define('a.b.c', function() {
 });
 
 a.b.c.needsNumber("wrong type");
-""", "ERROR - actual parameter 1 of a.b.c.needsNumber does not match formal "
-        "parameter")
+""", "ERROR - [JSC_TYPE_MISMATCH] actual parameter 1 of a.b.c.needsNumber does "
+        "not match formal parameter")
 
   def testCrDefineFunctionAssignment(self):
     self._runCompilerTestExpectError(self._CR_DEFINE_DEFINITION + """
@@ -137,8 +137,8 @@ cr.define('a.b.c', function() {
 });
 
 a.b.c.needsNumber("wrong type");
-""", "ERROR - actual parameter 1 of a.b.c.needsNumber does not match formal "
-        "parameter")
+""", "ERROR - [JSC_TYPE_MISMATCH] actual parameter 1 of a.b.c.needsNumber does "
+        "not match formal parameter")
 
   def testCrDefineConstructorDefinitionPrototypeMethod(self):
     self._runCompilerTestExpectError(self._CR_DEFINE_DEFINITION + """
@@ -157,8 +157,9 @@ cr.define('a.b.c', function() {
 });
 
 new a.b.c.ClassExternalName().method("wrong type");
-""", "ERROR - actual parameter 1 of a.b.c.ClassExternalName.prototype.method "
-        "does not match formal parameter")
+""", "ERROR - [JSC_TYPE_MISMATCH] actual parameter 1 of "
+        "a.b.c.ClassExternalName.prototype.method does not match formal "
+        "parameter")
 
   def testCrDefineConstructorAssignmentPrototypeMethod(self):
     self._runCompilerTestExpectError(self._CR_DEFINE_DEFINITION + """
@@ -177,8 +178,9 @@ cr.define('a.b.c', function() {
 });
 
 new a.b.c.ClassExternalName().method("wrong type");
-""", "ERROR - actual parameter 1 of a.b.c.ClassExternalName.prototype.method "
-        "does not match formal parameter")
+""", "ERROR - [JSC_TYPE_MISMATCH] actual parameter 1 of "
+        "a.b.c.ClassExternalName.prototype.method does not match formal "
+        "parameter")
 
   def testCrDefineEnum(self):
     self._runCompilerTestExpectError(self._CR_DEFINE_DEFINITION + """
@@ -195,8 +197,8 @@ cr.define('a.b.c', function() {
 function needsNumber(num) {}
 
 needsNumber(a.b.c.exportedEnum.key);
-""", "ERROR - actual parameter 1 of needsNumber does not match formal "
-        "parameter")
+""", "ERROR - [JSC_TYPE_MISMATCH] actual parameter 1 of needsNumber does not "
+        "match formal parameter")
 
   def testObjectDefineProperty(self):
     self._runCompilerTestExpectSuccess("""
@@ -229,8 +231,8 @@ cr.defineProperty(Class.prototype, 'booleanProp', cr.PropertyKind.BOOL_ATTR);
 function needsNumber(num) {}
 
 needsNumber(new Class().booleanProp);
-""", "ERROR - actual parameter 1 of needsNumber does not match formal "
-        "parameter")
+""", "ERROR - [JSC_TYPE_MISMATCH] actual parameter 1 of needsNumber does not "
+        "match formal parameter")
 
   def testCrDefineOnCrWorks(self):
     self._runCompilerTestExpectSuccess(self._CR_DEFINE_DEFINITION + """
@@ -340,7 +342,8 @@ testScript();
   def testExportPathNoPath(self):
     self._runCompilerTestExpectError(self._CR_DEFINE_DEFINITION +
         "cr.exportPath();",
-        "ERROR - cr.exportPath() should have at least 1 argument: path name")
+        "ERROR - [JSC_CR_EXPORT_PATH_TOO_FEW_ARGUMENTS] cr.exportPath() should"
+            " have at least 1 argument: path name")
 
   def testMissingReturnAssertNotReached(self):
     template = self._ASSERT_DEFINITION + """

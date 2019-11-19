@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.preferences.website;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ContentSettingsType;
@@ -163,16 +163,15 @@ public class Website implements Serializable {
             // permission.
             if (mContentSettingException[type] == null) {
                 mContentSettingException[type] =
-                        new ContentSettingException(ContentSettingsType.CONTENT_SETTINGS_TYPE_ADS,
+                        new ContentSettingException(ContentSettingsType.ADS,
                                 getAddress().getOrigin(), ContentSettingValues.BLOCK, "");
             }
         } else if (type == ContentSettingException.Type.SOUND) {
             // It is possible to set the permission without having an existing exception,
             // because we always show the sound permission in Site Settings.
             if (mContentSettingException[type] == null) {
-                mContentSettingException[type] =
-                        new ContentSettingException(ContentSettingsType.CONTENT_SETTINGS_TYPE_SOUND,
-                                getAddress().getHost(), value, "");
+                mContentSettingException[type] = new ContentSettingException(
+                        ContentSettingsType.SOUND, getAddress().getHost(), value, "");
             }
             if (value == ContentSettingValues.BLOCK) {
                 RecordUserAction.record("SoundContentSetting.MuteBy.SiteSettings");
@@ -182,8 +181,9 @@ public class Website implements Serializable {
             // We want setContentSetting to be called even after calling setSoundException
             // above because this will trigger the actual change on the PrefServiceBridge.
         }
-        if (mContentSettingException[type] != null)
+        if (mContentSettingException[type] != null) {
             mContentSettingException[type].setContentSetting(value);
+        }
     }
 
     public void setLocalStorageInfo(LocalStorageInfo info) {

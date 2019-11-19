@@ -5,7 +5,6 @@
 package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.AwActivityTestRule.WAIT_TIMEOUT_MS;
-import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.content.Context;
 import android.graphics.Point;
@@ -38,7 +37,6 @@ import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.android_webview.test.util.VideoTestUtil;
 import org.chromium.android_webview.test.util.VideoTestWebServer;
 import org.chromium.base.Callback;
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
@@ -50,6 +48,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -68,7 +67,7 @@ import java.util.regex.Pattern;
  * application
  */
 @RunWith(AwJUnit4ClassRunner.class)
-@CommandLineFlags.Add(ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1")
+@CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
 public class AwSettingsTest {
     @Rule
     public AwActivityTestRule mActivityTestRule =
@@ -1503,8 +1502,8 @@ public class AwSettingsTest {
 
             final WebContents webContents = mAwContents.getWebContents();
             final CallbackHelper onTitleUpdatedHelper = new CallbackHelper();
-            final WebContentsObserver observer =
-                    ThreadUtils.runOnUiThreadBlocking(() -> new WebContentsObserver(webContents) {
+            final WebContentsObserver observer = TestThreadUtils.runOnUiThreadBlocking(
+                    () -> new WebContentsObserver(webContents) {
                         @Override
                         public void titleWasSet(String title) {
                             onTitleUpdatedHelper.notifyCalled();
@@ -1540,7 +1539,7 @@ public class AwSettingsTest {
                         PREV_TITLE, getTitleOnUiThread());
             }
 
-            ThreadUtils.runOnUiThreadBlocking(() -> webContents.removeObserver(observer));
+            TestThreadUtils.runOnUiThreadBlocking(() -> webContents.removeObserver(observer));
         }
 
         private String getData() {
@@ -1550,7 +1549,7 @@ public class AwSettingsTest {
     }
 
     public static int calcDisplayWidthDp(Context context) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(() -> {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
             DisplayAndroid displayAndroid = DisplayAndroid.getNonMultiDisplay(context);
             return DisplayUtil.pxToDp(displayAndroid, displayAndroid.getDisplayWidth());
         });
@@ -2184,9 +2183,8 @@ public class AwSettingsTest {
                     + "</body></html>";
             // Actual test. Blocking should trigger onerror handler.
             awSettings.setBlockNetworkLoads(true);
-            InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                    () -> awContents.addJavascriptInterface(new AudioEvent(callback),
-                            "AudioEvent"));
+            AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                    awContents, new AudioEvent(callback), "AudioEvent");
             int count = callback.getCallCount();
             mActivityTestRule.loadDataSync(awContents, contentClient.getOnPageFinishedHelper(),
                     pageHtml, "text/html", false);
@@ -2498,16 +2496,15 @@ public class AwSettingsTest {
             return mManifestPath;
         }
 
-        int waitUntilHtmlIsRequested(final int initialRequestCount) throws Exception {
+        int waitUntilHtmlIsRequested(final int initialRequestCount) {
             return waitUntilResourceIsRequested(mHtmlPath, initialRequestCount);
         }
 
-        int waitUntilManifestIsRequested(final int initialRequestCount) throws Exception {
+        int waitUntilManifestIsRequested(final int initialRequestCount) {
             return waitUntilResourceIsRequested(mManifestPath, initialRequestCount);
         }
 
-        private int waitUntilResourceIsRequested(
-                final String path, final int initialRequestCount) throws Exception {
+        private int waitUntilResourceIsRequested(final String path, final int initialRequestCount) {
             AwActivityTestRule.pollInstrumentationThread(
                     () -> mWebServer.getRequestCount(path) > initialRequestCount);
             return mWebServer.getRequestCount(path);
@@ -2870,8 +2867,8 @@ public class AwSettingsTest {
     @Feature({"AndroidWebView", "Preferences"})
     public void testMediaPlaybackWithUserGesture() throws Throwable {
         // Wait for 5 second to see if video played.
-        Assert.assertFalse(VideoTestUtil.runVideoTest(InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule, true, scaleTimeout(5000)));
+        Assert.assertFalse(VideoTestUtil.runVideoTest(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule, true, 5000L));
     }
 
     @Test
@@ -3049,7 +3046,7 @@ public class AwSettingsTest {
     private TestDependencyFactory mOverridenFactory;
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mOverridenFactory = null;
     }
 
@@ -3126,6 +3123,35 @@ public class AwSettingsTest {
         Assert.assertEquals(expectedTitle, actualTitle);
     }
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testWebComponentsV0Reenabled() throws Throwable {
+        // TODO(1021631): This test should be removed once Android Webview
+        // disables Web Components v0 by default.
+        final TestAwContentsClient client = new TestAwContentsClient();
+        final AwTestContainerView view =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(client);
+        final AwContents awContents = view.getAwContents();
+        CallbackHelper onPageFinishedHelper = client.getOnPageFinishedHelper();
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        final String expectedTitle = "enabled"; // https://crbug.com/1021631
+        final String page = "<!doctype html>"
+                + "<script>"
+                + "const htmlImportsEnabled = 'import' in document.createElement('link');"
+                + "const customElementsV0Enabled = 'registerElement' in document;"
+                + "const shadowDomV0Enabled = 'createShadowRoot' in document.createElement('div');"
+                + "if (htmlImportsEnabled && customElementsV0Enabled && shadowDomV0Enabled) {"
+                + "  document.title = 'enabled';"
+                + "} else {"
+                + "  document.title = 'disabled';"
+                + "}"
+                + "</script>";
+        mActivityTestRule.loadDataSync(awContents, onPageFinishedHelper, page, "text/html", false);
+        String actualTitle = mActivityTestRule.getTitleOnUiThread(awContents);
+        Assert.assertEquals(expectedTitle, actualTitle);
+    }
+
     private static class SelectionRangeTestDependencyFactory extends TestDependencyFactory {
         private boolean mDoNotUpdate;
         public SelectionRangeTestDependencyFactory(boolean doNotUpdate) {
@@ -3184,7 +3210,7 @@ public class AwSettingsTest {
                 expectedResult, getSelectionChangeCountForSelectionUpdateTest(awContents, client));
     }
 
-    private void pollTitleAs(final String title, final AwContents awContents) throws Exception {
+    private void pollTitleAs(final String title, final AwContents awContents) {
         AwActivityTestRule.pollInstrumentationThread(
                 () -> title.equals(mActivityTestRule.getTitleOnUiThread(awContents)));
     }
@@ -3311,11 +3337,11 @@ public class AwSettingsTest {
         helper1.ensureSettingHasInitialValue();
     }
 
-    private ViewPair createViews() throws Throwable {
+    private ViewPair createViews() {
         return createViews(false);
     }
 
-    private ViewPair createViews(boolean supportsLegacyQuirks) throws Throwable {
+    private ViewPair createViews(boolean supportsLegacyQuirks) {
         TestAwContentsClient client0 = new TestAwContentsClient();
         TestAwContentsClient client1 = new TestAwContentsClient();
         return new ViewPair(mActivityTestRule.createAwTestContainerViewOnMainSync(
@@ -3359,14 +3385,12 @@ public class AwSettingsTest {
         return TestContentProvider.createContentUrl(target);
     }
 
-    private void simulateDoubleTapCenterOfWebViewOnUiThread(final AwTestContainerView webView)
-            throws Throwable {
+    private void simulateDoubleTapCenterOfWebViewOnUiThread(final AwTestContainerView webView) {
         final int x = (webView.getRight() - webView.getLeft()) / 2;
         final int y = (webView.getBottom() - webView.getTop()) / 2;
         final AwContents awContents = webView.getAwContents();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                ()
-                        -> awContents.getWebContents().getEventForwarder().doubleTapForTest(
+                () -> awContents.getWebContents().getEventForwarder().doubleTapForTest(
                                 SystemClock.uptimeMillis(), x, y));
     }
 }

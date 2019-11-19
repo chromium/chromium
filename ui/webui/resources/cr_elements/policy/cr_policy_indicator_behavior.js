@@ -18,7 +18,10 @@
  *   controlledSettingRecommendedMatches: string,
  *   controlledSettingRecommendedDiffers: string,
  *   controlledSettingShared: (string|undefined),
- *   controlledSettingOwner: (string|undefined),
+ *   controlledSettingWithOwner: string,
+ *   controlledSettingNoOwner: string,
+ *   controlledSettingParent: string,
+ *   controlledSettingChildRestriction: string,
  * }}
  */
 // eslint-disable-next-line no-var
@@ -33,6 +36,8 @@ const CrPolicyIndicatorType = {
   PRIMARY_USER: 'primary_user',
   RECOMMENDED: 'recommended',
   USER_POLICY: 'userPolicy',
+  PARENT: 'parent',
+  CHILD_RESTRICTION: 'childRestriction',
 };
 
 /** @polymerBehavior */
@@ -99,6 +104,9 @@ const CrPolicyIndicatorBehavior = {
       case CrPolicyIndicatorType.DEVICE_POLICY:
       case CrPolicyIndicatorType.RECOMMENDED:
         return 'cr20:domain';
+      case CrPolicyIndicatorType.PARENT:
+      case CrPolicyIndicatorType.CHILD_RESTRICTION:
+        return 'cr20:kite';
       default:
         assertNotReached();
     }
@@ -124,7 +132,9 @@ const CrPolicyIndicatorBehavior = {
       case CrPolicyIndicatorType.PRIMARY_USER:
         return CrPolicyStrings.controlledSettingShared.replace('$1', name);
       case CrPolicyIndicatorType.OWNER:
-        return CrPolicyStrings.controlledSettingOwner.replace('$1', name);
+        return name.length > 0 ?
+            CrPolicyStrings.controlledSettingWithOwner.replace('$1', name) :
+            CrPolicyStrings.controlledSettingNoOwner;
       case CrPolicyIndicatorType.USER_POLICY:
       case CrPolicyIndicatorType.DEVICE_POLICY:
         return CrPolicyStrings.controlledSettingPolicy;
@@ -132,6 +142,10 @@ const CrPolicyIndicatorBehavior = {
         return opt_matches ?
             CrPolicyStrings.controlledSettingRecommendedMatches :
             CrPolicyStrings.controlledSettingRecommendedDiffers;
+      case CrPolicyIndicatorType.PARENT:
+        return CrPolicyStrings.controlledSettingParent;
+      case CrPolicyIndicatorType.CHILD_RESTRICTION:
+        return CrPolicyStrings.controlledSettingChildRestriction;
     }
     return '';
   },

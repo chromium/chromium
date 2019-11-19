@@ -14,13 +14,13 @@
 #include "chrome/browser/chromeos/arc/arc_support_host.h"
 #include "chrome/browser/chromeos/arc/auth/arc_fetcher_base.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
 
 namespace enterprise_management {
 class DeviceManagementResponse;
 }  // namespace enterprise_management
 
 namespace policy {
-class DeviceManagementRequestJob;
 class DMTokenStorage;
 }  // namespace policy
 
@@ -71,6 +71,7 @@ class ArcActiveDirectoryEnrollmentTokenFetcher
   // Response from DM server. Calls the stored FetchCallback or initiates the
   // SAML flow.
   void OnEnrollmentTokenResponseReceived(
+      policy::DeviceManagementService::Job* job,
       policy::DeviceManagementStatus dm_status,
       int net_error,
       const enterprise_management::DeviceManagementResponse& response);
@@ -85,7 +86,7 @@ class ArcActiveDirectoryEnrollmentTokenFetcher
 
   ArcSupportHost* const support_host_ = nullptr;  // Not owned.
 
-  std::unique_ptr<policy::DeviceManagementRequestJob> fetch_request_job_;
+  std::unique_ptr<policy::DeviceManagementService::Job> fetch_request_job_;
   std::unique_ptr<policy::DMTokenStorage> dm_token_storage_;
   FetchCallback callback_;
 
@@ -95,7 +96,7 @@ class ArcActiveDirectoryEnrollmentTokenFetcher
   std::string auth_session_id_;
 
   base::WeakPtrFactory<ArcActiveDirectoryEnrollmentTokenFetcher>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcActiveDirectoryEnrollmentTokenFetcher);
 };

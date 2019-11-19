@@ -24,9 +24,10 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   static FakeChromeIdentityService* GetInstanceFromChromeProvider();
 
   // ChromeIdentityService implementation.
-  UINavigationController* CreateAccountDetailsController(
+  DismissASMViewControllerBlock PresentAccountDetailsController(
       ChromeIdentity* identity,
-      id<ChromeIdentityBrowserOpener> browser_opener) override;
+      UIViewController* viewController,
+      BOOL animated) override;
   ChromeIdentityInteractionManager* CreateChromeIdentityInteractionManager(
       ios::ChromeBrowserState* browser_state,
       id<ChromeIdentityInteractionManagerDelegate> delegate) const override;
@@ -55,6 +56,9 @@ class FakeChromeIdentityService : public ChromeIdentityService {
       ChromeIdentity* identity,
       GetHostedDomainCallback callback) override;
 
+  virtual NSString* GetCachedHostedDomainForIdentity(
+      ChromeIdentity* identity) override;
+
   MOCK_METHOD1(GetMDMDeviceStatus,
                ios::MDMDeviceStatus(NSDictionary* user_info));
 
@@ -80,11 +84,15 @@ class FakeChromeIdentityService : public ChromeIdentityService {
   // When set to true, call to GetAccessToken() fakes a MDM error.
   void SetFakeMDMError(bool fakeMDMError);
 
+  bool HasPendingCallback();
+
  private:
   NSMutableArray* identities_;
 
   // If true, call to GetAccessToken() fakes a MDM error.
   bool _fakeMDMError;
+
+  int _pendingCallback;
 };
 
 }  // namespace ios

@@ -8,7 +8,6 @@ component("platform") {
   output_name = "mojo_cpp_platform"
 
   public = [
-    "features.h",
     "platform_channel.h",
     "platform_channel_endpoint.h",
     "platform_channel_server_endpoint.h",
@@ -16,7 +15,6 @@ component("platform") {
   ]
 
   sources = [
-    "features.cc",
     "named_platform_channel_win.cc",
     "platform_channel.cc",
     "platform_channel_endpoint.cc",
@@ -24,7 +22,7 @@ component("platform") {
     "platform_handle.cc",
   ]
 
-  if (is_posix && (!is_nacl || is_nacl_nonsfi)) {
+  if (is_posix && !is_mac && (!is_nacl || is_nacl_nonsfi)) {
     public += [ "socket_utils_posix.h" ]
     sources += [ "socket_utils_posix.cc" ]
   }
@@ -34,8 +32,12 @@ component("platform") {
     "//mojo/public/c/system:headers",
   ]
 
-  if (is_posix && !is_nacl) {
+  if (is_posix && !is_nacl && !is_mac) {
     sources += [ "named_platform_channel_posix.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "named_platform_channel_mac.cc" ]
   }
 
   if (is_fuchsia) {

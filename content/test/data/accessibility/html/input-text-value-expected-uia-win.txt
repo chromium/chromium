@@ -1,0 +1,18 @@
+document
+++group
+++++description
+++++++description Name='l1'
+++++textbox Name='l1'
+++++description
+++++++description Name='l2'
+++++textbox Name='l2' Value.Value='value'
+++++textbox Name='l2'
+++++textbox Name='l2' Value.Value='value  *'
+++++description
+++++++description Name='Email'
+++++group
+++++textbox Name='Email'
+++++textbox Name='Email' Value.Value='value'
+++++textbox Name='l5'
+++++textbox Name='l6' Value.Value='Value'
+++++textbox Name='Name' Value.Value='value'

@@ -4,24 +4,31 @@
 
 #include "ash/shelf/shelf_button.h"
 
-#include "ash/shelf/ink_drop_button_listener.h"
-#include "ash/shelf/shelf_constants.h"
-#include "ash/shelf/shelf_view.h"
-#include "ash/system/tray/tray_popup_utils.h"
+#include "ash/public/cpp/ash_constants.h"
+#include "ash/public/cpp/shelf_config.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shelf/shelf_button_delegate.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/animation/ink_drop_impl.h"
 
 namespace ash {
 
-ShelfButton::ShelfButton(ShelfView* shelf_view)
-    : Button(nullptr), shelf_view_(shelf_view), listener_(shelf_view) {
-  DCHECK(shelf_view_);
+ShelfButton::ShelfButton(Shelf* shelf,
+                         ShelfButtonDelegate* shelf_button_delegate)
+    : Button(nullptr),
+      shelf_(shelf),
+      shelf_button_delegate_(shelf_button_delegate) {
+  DCHECK(shelf_button_delegate_);
   set_hide_ink_drop_when_showing_context_menu(false);
-  set_ink_drop_base_color(kShelfInkDropBaseColor);
-  set_ink_drop_visible_opacity(kShelfInkDropVisibleOpacity);
-  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
+  set_ink_drop_base_color(ShelfConfig::Get()->shelf_ink_drop_base_color());
+  set_ink_drop_visible_opacity(
+      ShelfConfig::Get()->shelf_ink_drop_visible_opacity());
+  SetFocusBehavior(FocusBehavior::ALWAYS);
   SetInkDropMode(InkDropMode::ON_NO_GESTURE_HANDLER);
-  SetFocusPainter(TrayPopupUtils::CreateFocusPainter());
+  SetFocusPainter(views::Painter::CreateSolidFocusPainter(
+      ShelfConfig::Get()->shelf_focus_border_color(), kFocusBorderThickness,
+      gfx::InsetsF()));
 }
 
 ShelfButton::~ShelfButton() = default;
@@ -29,65 +36,34 @@ ShelfButton::~ShelfButton() = default;
 ////////////////////////////////////////////////////////////////////////////////
 // views::View
 
-bool ShelfButton::OnMousePressed(const ui::MouseEvent& event) {
-  Button::OnMousePressed(event);
-  shelf_view_->PointerPressedOnButton(this, ShelfView::MOUSE, event);
-  return true;
-}
-
-void ShelfButton::OnMouseReleased(const ui::MouseEvent& event) {
-  Button::OnMouseReleased(event);
-  // PointerReleasedOnButton deletes the ShelfAppButton when user drags a pinned
-  // running app from shelf.
-  shelf_view_->PointerReleasedOnButton(this, ShelfView::MOUSE, false);
-  // WARNING: we may have been deleted.
-}
-
-void ShelfButton::OnMouseCaptureLost() {
-  shelf_view_->PointerReleasedOnButton(this, ShelfView::MOUSE, true);
-  Button::OnMouseCaptureLost();
-}
-
-bool ShelfButton::OnMouseDragged(const ui::MouseEvent& event) {
-  Button::OnMouseDragged(event);
-  shelf_view_->PointerDraggedOnButton(this, ShelfView::MOUSE, event);
-  return true;
+const char* ShelfButton::GetClassName() const {
+  return "ash/ShelfButton";
 }
 
 void ShelfButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
-  shelf_view_->OnShelfButtonAboutToRequestFocusFromTabTraversal(this, reverse);
+  shelf_button_delegate_->OnShelfButtonAboutToRequestFocusFromTabTraversal(
+      this, reverse);
 }
 
 // Do not remove this function to avoid unnecessary ChromeVox announcement
 // triggered by Button::GetAccessibleNodeData. (See https://crbug.com/932200)
 void ShelfButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
-  node_data->SetName(GetAccessibleName());
-}
-
-bool ShelfButton::GetTooltipText(const gfx::Point& p,
-                                 base::string16* tooltip) const {
-  // Copy the proper tooltip text, but return false because we do not want to
-  // show a tooltip with the standard view mechanism and instead use the
-  // custom display logic defined in |ShelfTooltipManager|.
-  *tooltip = GetAccessibleName();
-  return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // views::Button
 
 void ShelfButton::NotifyClick(const ui::Event& event) {
+  // Pressing a shelf button in the auto-hide shelf should not do anything.
+  // The event can still be received by the auto-hide shelf since we reserved
+  // a portion of the auto-hide shelf within the screen bounds.
+  if (!shelf_->IsVisible())
+    return;
+
   Button::NotifyClick(event);
-  if (listener_)
-    listener_->ButtonPressed(this, event, GetInkDrop());
-}
-
-bool ShelfButton::ShouldEnterPushedState(const ui::Event& event) {
-  if (!shelf_view_->ShouldEventActivateButton(this, event))
-    return false;
-
-  return Button::ShouldEnterPushedState(event);
+  if (shelf_button_delegate_)
+    shelf_button_delegate_->ButtonPressed(/*sender=*/this, event, GetInkDrop());
 }
 
 std::unique_ptr<views::InkDrop> ShelfButton::CreateInkDrop() {
@@ -95,10 +71,6 @@ std::unique_ptr<views::InkDrop> ShelfButton::CreateInkDrop() {
       Button::CreateDefaultInkDropImpl();
   ink_drop->SetShowHighlightOnHover(false);
   return std::move(ink_drop);
-}
-
-const char* ShelfButton::GetClassName() const {
-  return "ash/ShelfButton";
 }
 
 }  // namespace ash

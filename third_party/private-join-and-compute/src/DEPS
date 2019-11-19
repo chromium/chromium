@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "chromium_patch.h": [
+    "+base",
+  ]
+}
+

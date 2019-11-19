@@ -36,17 +36,6 @@
 
 namespace blink {
 
-RTCVoidRequestImpl* RTCVoidRequestImpl::Create(
-    ExecutionContext* context,
-    base::Optional<RTCSetSessionDescriptionOperation> operation,
-    RTCPeerConnection* requester,
-    V8VoidFunction* success_callback,
-    V8RTCPeerConnectionErrorCallback* error_callback) {
-  return MakeGarbageCollected<RTCVoidRequestImpl>(context, std::move(operation),
-                                                  requester, success_callback,
-                                                  error_callback);
-}
-
 RTCVoidRequestImpl::RTCVoidRequestImpl(
     ExecutionContext* context,
     base::Optional<RTCSetSessionDescriptionOperation> operation,
@@ -55,8 +44,8 @@ RTCVoidRequestImpl::RTCVoidRequestImpl(
     V8RTCPeerConnectionErrorCallback* error_callback)
     : ContextLifecycleObserver(context),
       operation_(std::move(operation)),
-      success_callback_(ToV8PersistentCallbackFunction(success_callback)),
-      error_callback_(ToV8PersistentCallbackFunction(error_callback)),
+      success_callback_(success_callback),
+      error_callback_(error_callback),
       requester_(requester) {
   DCHECK(requester_);
 }

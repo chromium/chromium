@@ -12,7 +12,7 @@ namespace sql {
 
 namespace features {
 
-COMPONENT_EXPORT(SQL) extern const base::Feature kSqlTempStoreMemory;
+COMPONENT_EXPORT(SQL) extern const base::Feature kSqlSkipPreload;
 
 }  // namespace features
 

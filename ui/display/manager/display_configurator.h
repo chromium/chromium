@@ -5,14 +5,11 @@
 #ifndef UI_DISPLAY_MANAGER_DISPLAY_CONFIGURATOR_H_
 #define UI_DISPLAY_MANAGER_DISPLAY_CONFIGURATOR_H_
 
-#include <stdint.h>
-
-#include <map>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -20,7 +17,6 @@
 #include "base/timer/timer.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/display/manager/display_manager_export.h"
-#include "ui/display/manager/query_content_protection_task.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/native_display_observer.h"
 #include "ui/display/util/display_util.h"
@@ -32,13 +28,16 @@ class Size;
 }
 
 namespace display {
-struct GammaRampRGBEntry;
+
+class ContentProtectionManager;
 class DisplayLayoutManager;
 class DisplayMode;
 class DisplaySnapshot;
 class ManagedDisplayMode;
 class NativeDisplayDelegate;
 class UpdateDisplayConfigurationTask;
+
+struct GammaRampRGBEntry;
 
 namespace test {
 class DisplayManagerTestApi;
@@ -48,28 +47,10 @@ class DisplayManagerTestApi;
 class DISPLAY_MANAGER_EXPORT DisplayConfigurator
     : public NativeDisplayObserver {
  public:
-  enum : uint64_t {
-    INVALID_CLIENT_ID = 0,
-  };
-
-  using ConfigurationCallback = base::Callback<void(bool /* success */)>;
-
-  using SetProtectionCallback = base::OnceCallback<void(bool /* success */)>;
-
-  // link_mask: The type of connected display links, which is a bitmask of
-  // DisplayConnectionType values.
-  // protection_mask: The desired protection methods, which is a bitmask of the
-  // ContentProtectionMethod values.
-  using QueryProtectionCallback =
-      base::OnceCallback<void(bool /* success */,
-                              uint32_t /* link_mask */,
-                              uint32_t /* protection_mask */)>;
-  using DisplayControlCallback = base::OnceCallback<void(bool /* success */)>;
+  using ConfigurationCallback = base::OnceCallback<void(bool /* success */)>;
+  using DisplayControlCallback = base::OnceCallback<void(bool success)>;
 
   using DisplayStateList = std::vector<DisplaySnapshot*>;
-
-  // Mapping a display_id to a protection request bitmask.
-  using ContentProtections = std::map<int64_t, uint32_t>;
 
   class Observer {
    public:
@@ -200,6 +181,9 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   chromeos::DisplayPowerState current_power_state() const {
     return current_power_state_;
   }
+  ContentProtectionManager* content_protection_manager() const {
+    return content_protection_manager_.get();
+  }
 
   // Called when an external process no longer needs to control the display
   // and Chrome can take control.
@@ -243,7 +227,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // operation.
   void SetDisplayPower(chromeos::DisplayPowerState power_state,
                        int flags,
-                       const ConfigurationCallback& callback);
+                       ConfigurationCallback callback);
 
   // Force switching the display mode to |new_state|. Returns false if
   // switching failed (possibly because |new_state| is invalid for the
@@ -261,33 +245,11 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // configure them for their resume state. This allows faster resume on
   // machines where display configuration is slow. On completion of the display
   // configuration |callback| is executed synchronously or asynchronously.
-  void SuspendDisplays(const ConfigurationCallback& callback);
+  void SuspendDisplays(ConfigurationCallback callback);
 
   // Reprobes displays to handle changes made while the system was
   // suspended.
   void ResumeDisplays();
-
-  // Registers a client for display protection and requests a client id. Returns
-  // 0 if requesting failed.
-  uint64_t RegisterContentProtectionClient();
-
-  // Unregisters the client.
-  void UnregisterContentProtectionClient(uint64_t client_id);
-
-  // Queries link status and protection status. |callback| is used to respond
-  // to the query.
-  void QueryContentProtectionStatus(uint64_t client_id,
-                                    int64_t display_id,
-                                    QueryProtectionCallback callback);
-
-  // Requests the desired protection methods.
-  // |protection_mask| is the desired protection methods, which is a bitmask
-  // of the ContentProtectionMethod values.
-  // Returns true when the protection request has been made.
-  void SetContentProtection(uint64_t client_id,
-                            int64_t display_id,
-                            uint32_t protection_mask,
-                            SetProtectionCallback callback);
 
   // Returns true if there is at least one display on.
   bool IsDisplayOn() const;
@@ -321,14 +283,15 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
 
   class DisplayLayoutManagerImpl;
 
-  // Mapping a client to its protection request.
-  using ProtectionRequests = std::map<uint64_t, ContentProtections>;
+  bool configurator_disabled() const {
+    return !configure_display_ || display_externally_controlled_;
+  }
 
   // Updates |pending_*| members and applies the passed-in state. |callback| is
   // invoked (perhaps synchronously) on completion.
   void SetDisplayPowerInternal(chromeos::DisplayPowerState power_state,
                                int flags,
-                               const ConfigurationCallback& callback);
+                               ConfigurationCallback callback);
 
   // Configures displays. Invoked by |configure_timer_|.
   void ConfigureDisplays();
@@ -344,9 +307,6 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // in |power_state|.
   MultipleDisplayState ChooseDisplayState(
       chromeos::DisplayPowerState power_state) const;
-
-  // Applies display protections according to requests.
-  bool ApplyProtections(const ContentProtections& requests);
 
   // If |configuration_task_| isn't initialized, initializes it and starts the
   // configuration task.
@@ -374,19 +334,6 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // the configuration status used when calling the callbacks.
   void CallAndClearInProgressCallbacks(bool success);
   void CallAndClearQueuedCallbacks(bool success);
-
-  // Content protection callbacks called by the tasks when they finish. These
-  // are responsible for destroying the task, replying to the caller that made
-  // the task and starting the a new content protection task if one is queued.
-  void OnContentProtectionQueried(
-      uint64_t client_id,
-      int64_t display_id,
-      QueryContentProtectionTask::Response response);
-  void OnSetContentProtectionCompleted(uint64_t client_id,
-                                       int64_t display_id,
-                                       uint32_t desired_method_mask,
-                                       bool success);
-  void OnContentProtectionClientUnregistered(bool success);
 
   // Callbacks used to signal when the native platform has released/taken
   // display control.
@@ -445,10 +392,6 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // task.
   std::vector<ConfigurationCallback> in_progress_configuration_callbacks_;
 
-  base::queue<base::Closure> content_protection_tasks_;
-  base::queue<QueryProtectionCallback> query_protection_callbacks_;
-  base::queue<SetProtectionCallback> set_protection_callbacks_;
-
   // True if the caller wants to force the display configuration process.
   bool force_configure_;
 
@@ -462,12 +405,6 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   // display configuration events when they are reported in short time spans.
   base::OneShotTimer configure_timer_;
 
-  // Id for next display protection client.
-  uint64_t next_display_protection_client_id_;
-
-  // Display protection requests of each client.
-  ProtectionRequests client_protection_requests_;
-
   // Display controlled by an external entity.
   bool display_externally_controlled_;
 
@@ -479,16 +416,17 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   bool displays_suspended_;
 
   std::unique_ptr<DisplayLayoutManager> layout_manager_;
+  std::unique_ptr<ContentProtectionManager> content_protection_manager_;
 
   std::unique_ptr<UpdateDisplayConfigurationTask> configuration_task_;
 
   // Indicates whether there is any connected display having no associated crtc.
   // This can be caused by crtc shortage. When it is true, the corresponding
-  // notification will be created to inform the user.
+  // notification will be created to inform user.
   bool has_unassociated_display_;
 
   // This must be the last variable.
-  base::WeakPtrFactory<DisplayConfigurator> weak_ptr_factory_;
+  base::WeakPtrFactory<DisplayConfigurator> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DisplayConfigurator);
 };

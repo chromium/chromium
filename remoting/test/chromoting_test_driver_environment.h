@@ -16,7 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-class MessageLoopForIO;
+class SingleThreadTaskExecutor;
 }
 
 namespace remoting {
@@ -147,7 +147,7 @@ class ChromotingTestDriverEnvironment : public testing::Environment {
   remoting::test::HostListFetcher* test_host_list_fetcher_ = nullptr;
 
   // Used for running network request tasks.
-  std::unique_ptr<base::MessageLoopForIO> message_loop_;
+  std::unique_ptr<base::SingleThreadTaskExecutor> executor_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromotingTestDriverEnvironment);
 };

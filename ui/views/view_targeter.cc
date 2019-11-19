@@ -16,7 +16,7 @@ ViewTargeter::ViewTargeter(ViewTargeterDelegate* delegate)
   DCHECK(delegate_);
 }
 
-ViewTargeter::~ViewTargeter() {}
+ViewTargeter::~ViewTargeter() = default;
 
 bool ViewTargeter::DoesIntersectRect(const View* target,
                                      const gfx::Rect& rect) const {
@@ -45,14 +45,14 @@ ui::EventTarget* ViewTargeter::FindTargetForEvent(ui::EventTarget* root,
   }
 
   NOTREACHED() << "ViewTargeter does not yet support this event type.";
-  return NULL;
+  return nullptr;
 }
 
 ui::EventTarget* ViewTargeter::FindNextBestTarget(
     ui::EventTarget* previous_target,
     ui::Event* event) {
   if (!previous_target)
-    return NULL;
+    return nullptr;
 
   if (event->IsGestureEvent()) {
     ui::GestureEvent* gesture = event->AsGestureEvent();
@@ -68,7 +68,7 @@ ui::EventTarget* ViewTargeter::FindNextBestTarget(
 View* ViewTargeter::FindTargetForKeyEvent(View* root, const ui::KeyEvent& key) {
   if (root->GetFocusManager())
     return root->GetFocusManager()->GetFocusedView();
-  return NULL;
+  return nullptr;
 }
 
 View* ViewTargeter::FindTargetForScrollEvent(View* root,
@@ -85,14 +85,14 @@ View* ViewTargeter::FindTargetForGestureEvent(View* root,
   //                   here if we need to be able to perform gesture targeting
   //                   starting at an arbitrary node in a Views tree.
   NOTREACHED();
-  return NULL;
+  return nullptr;
 }
 
 ui::EventTarget* ViewTargeter::FindNextBestTargetForGestureEvent(
     ui::EventTarget* previous_target,
     const ui::GestureEvent& gesture) {
   NOTREACHED();
-  return NULL;
+  return nullptr;
 }
 
 }  // namespace views

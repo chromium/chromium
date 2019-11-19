@@ -1,0 +1,123 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module autofill.mojom;
+
+import "components/autofill/core/common/mojom/autofill_types.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+
+// There is one instance of this interface per render frame in the render
+// process. All methods are called by browser on renderer.
+interface AutofillAgent {
+  // Instructs the renderer to fill the active form with the given form data.
+  // Please refer AutofillDriver.QueryFormFieldAutofill comments about the |id|.
+  FillForm(int32 id, FormData form);
+
+  // Instructs the renderer to preview the active form with the given form data.
+  // Please refer AutofillDriver.QueryFormFieldAutofill comments about the |id|.
+  PreviewForm(int32 id, FormData form);
+
+  // Sends the heuristic and server field type predictions to the renderer.
+  FieldTypePredictionsAvailable(array<FormDataPredictions> forms);
+
+  // Clears the currently displayed Autofill results of the current section.
+  // The current section is the section to which the element corresponding to
+  // the last request belongs.
+  ClearSection();
+
+  // Tells the renderer that the Autofill previewed form should be cleared.
+  ClearPreviewedForm();
+
+  // Sets the currently selected node's value.
+  FillFieldWithValue(mojo_base.mojom.String16 value);
+
+  // Sets the suggested value for the currently previewed node.
+  PreviewFieldWithValue(mojo_base.mojom.String16 value);
+
+  // Sets the currently selected node's corresponding accessibility node's
+  // autofill/autocomplete suggestion availability.
+  SetSuggestionAvailability(AutofillState type);
+
+  // Sets the currently selected node's value to be the given data list value.
+  AcceptDataListSuggestion(mojo_base.mojom.String16 value);
+
+  // Tells the renderer to fill the username and password with with given
+  // values.
+  FillPasswordSuggestion(mojo_base.mojom.String16 username,
+                         mojo_base.mojom.String16 password);
+
+  // Tells the renderer to preview the username and password with the given
+  // values.
+  PreviewPasswordSuggestion(mojo_base.mojom.String16 username,
+                            mojo_base.mojom.String16 password);
+
+  // Configures the render to require, or not, a user gesture before notifying
+  // the autofill agent of a field change. The default is true. Bypassing the
+  // user gesture check should only used for Android Webview, which needs to
+  // be notified of every change to the field.
+  // Note: The Android platform autofill framework only sends values to the
+  // autofill service with the user's consent, so the gesture check is
+  // redundant there anyway.
+  SetUserGestureRequired(bool required);
+
+  // Configures the render to require, or not, the secure context to query
+  // autofill suggestion, the default is false.
+  SetSecureContextRequired(bool required);
+
+  // Configures whether scroll is required in order to complete focus. The default is true.
+  SetFocusRequiresScroll(bool require);
+
+  // Configures whether AutofillAgent will query password field autofill suggestions. The default is false.
+  SetQueryPasswordSuggestion(bool query);
+
+  // Get form element's form and field data.
+  // The form field is given by an path defined by an array of CSS selectors.
+  GetElementFormAndFieldData(array<string> selectors) => (
+      autofill.mojom.FormData form, autofill.mojom.FormFieldData field);
+};
+
+// There is one instance of this interface per render frame in the render
+// process.
+interface PasswordAutofillAgent {
+  // Fills a password form and prepare field autocomplete for multiple
+  // matching logins. Lets the renderer know if it should disable the popup
+  // because the browser process will own the popup UI.
+  FillPasswordForm(PasswordFormFillData form_data);
+
+  // Lets the renderer know that there are no saved credentials for filling.
+  // This is the "no results" equivalent of FillPasswordForm.
+  InformNoSavedCredentials();
+
+  // Fills the given |credential| into the last focused text input.
+  FillIntoFocusedField(bool is_password, mojo_base.mojom.String16 credential);
+
+  // Notification to start (|active| == true) or stop (|active| == false)
+  // logging the decisions made about saving the password.
+  SetLoggingState(bool active);
+
+  // Informs the renderer that the Touch To Fill sheet has been closed.
+  // Indicates whether the virtual keyboard should be shown instead.
+  TouchToFillClosed(bool show_virtual_keyboard);
+
+  // Annotate password related (username, password) DOM input elements with
+  // corresponding HTML attributes. It is used only for debugging.
+  AnnotateFieldsWithParsingResult(ParsingResult parsing_result);
+};
+
+// There is one instance of this interface per render frame in the render
+// process.
+interface PasswordGenerationAgent {
+  // Tells the renderer to populate the correct password fields with this
+  // generated password.
+  GeneratedPasswordAccepted(mojo_base.mojom.String16 generated_password);
+
+  // Tells the renderer to find a focused element, and if it is a password field
+  // eligible for generation then to trigger generation by returning
+  // non-empty PasswordGenerationUIData.
+  UserTriggeredGeneratePassword() => (PasswordGenerationUIData? data);
+
+  // Tells the renderer that a password can be generated on the fields
+  // identified by |form|.
+  FoundFormEligibleForGeneration(PasswordFormGenerationData form);
+};

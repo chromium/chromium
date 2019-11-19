@@ -7,23 +7,27 @@
     <link rel="stylesheet" href="oobe_flex_layout.css">
     <link rel="stylesheet" href="oobe_reset_confirmation_overlay.css">
     <dialog id="dialog" class="reset-popup not-resizable">
-        <h1 i18n-content="confirmPowerwashTitle" hidden="[[!isPowerwashView_]]">
+        <h1 hidden="[[!isPowerwashView_]]">
+          [[i18nDynamic(locale, 'confirmPowerwashTitle')]]
         </h1>
-        <h1 i18n-content="confirmRollbackTitle" hidden="[[isPowerwashView_]]">
+        <h1 hidden="[[isPowerwashView_]]">
+          [[i18nDynamic(locale, 'confirmRollbackTitle')]]
         </h1>
       <div class="reset-popup-content-area">
-        <div i18n-content="confirmPowerwashMessage"
-            hidden="[[!isPowerwashView_]]"></div>
-        <div i18n-content="confirmRollbackMessage"
-            hidden="[[isPowerwashView_]]"></div>
+        <div hidden="[[!isPowerwashView_]]">
+          [[i18nDynamic(locale, 'confirmPowerwashMessage')]]
+        </div>
+        <div hidden="[[isPowerwashView_]]">
+          [[i18nDynamic(locale, 'confirmRollbackMessage')]]
+        </div>
       </div>
       <div slot="bottom-buttons" class="flex layout horizontal">
         <div class="flex"></div>
         <oobe-text-button id="cancelButton" border on-tap="onCancelTap_">
-          <div i18n-content="cancel"></div>
+          <div>[[i18nDynamic(locale, 'cancel')]]</div>
         </oobe-text-button>
         <oobe-text-button inverse on-tap="onContinueTap_">
-          <div i18n-content="confirmResetButton"></div>
+          <div>[[i18nDynamic(locale, 'confirmResetButton')]]</div>
         </oobe-text-button>
       </div>
     </dialog>

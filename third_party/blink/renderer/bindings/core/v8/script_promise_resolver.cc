@@ -7,6 +7,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 #if DCHECK_IS_ON()
 #include "base/debug/alias.h"
@@ -19,14 +20,17 @@ ScriptPromiseResolver::ScriptPromiseResolver(ScriptState* script_state)
     : ContextLifecycleObserver(ExecutionContext::From(script_state)),
       state_(kPending),
       script_state_(script_state),
-      resolver_(script_state) {
+      resolver_(script_state),
+      keep_alive_(PERSISTENT_FROM_HERE) {
   if (GetExecutionContext()->IsContextDestroyed()) {
     state_ = kDetached;
     resolver_.Clear();
   }
 }
 
-ScriptPromiseResolver::~ScriptPromiseResolver() {
+ScriptPromiseResolver::~ScriptPromiseResolver() = default;
+
+void ScriptPromiseResolver::Dispose() {
 #if DCHECK_IS_ON()
   // This assertion fails if:
   //  - promise() is called at least once and
@@ -49,6 +53,9 @@ ScriptPromiseResolver::~ScriptPromiseResolver() {
         << create_stack_trace_.ToString();
   }
 #endif
+  deferred_resolve_task_.Cancel();
+  resolver_.Clear();
+  value_.Clear();
 }
 
 void ScriptPromiseResolver::Reject(ExceptionState& exception_state) {
@@ -113,6 +120,8 @@ void ScriptPromiseResolver::ResolveOrRejectDeferred() {
 
 void ScriptPromiseResolver::Trace(blink::Visitor* visitor) {
   visitor->Trace(script_state_);
+  visitor->Trace(resolver_);
+  visitor->Trace(value_);
   ContextLifecycleObserver::Trace(visitor);
 }
 

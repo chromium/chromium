@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Property text-transform value 'none' computes to 'none'
+PASS Property text-transform value 'capitalize' computes to 'capitalize'
+PASS Property text-transform value 'uppercase' computes to 'uppercase'
+PASS Property text-transform value 'lowercase' computes to 'lowercase'
+FAIL Property text-transform value 'full-width' computes to 'full-width' assert_true: 'full-width' is a supported value for text-transform. expected true got false
+FAIL Property text-transform value 'full-size-kana' computes to 'full-size-kana' assert_true: 'full-size-kana' is a supported value for text-transform. expected true got false
+FAIL Property text-transform value 'capitalize full-width' computes to 'capitalize full-width' assert_true: 'capitalize full-width' is a supported value for text-transform. expected true got false
+FAIL Property text-transform value 'full-width full-size-kana' computes to 'full-width full-size-kana' assert_true: 'full-width full-size-kana' is a supported value for text-transform. expected true got false
+FAIL Property text-transform value 'uppercase full-width full-size-kana' computes to 'uppercase full-width full-size-kana' assert_true: 'uppercase full-width full-size-kana' is a supported value for text-transform. expected true got false
+Harness: the test ran to completion.
+

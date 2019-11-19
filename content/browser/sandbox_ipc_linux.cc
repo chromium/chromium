@@ -15,7 +15,7 @@
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/linux_util.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/platform_shared_memory_region.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/process/launch.h"
@@ -131,19 +131,27 @@ void SandboxIPCHandler::HandleMakeSharedMemorySegment(
     int fd,
     base::PickleIterator iter,
     const std::vector<base::ScopedFD>& fds) {
-  base::SharedMemoryCreateOptions options;
   uint32_t size;
   if (!iter.ReadUInt32(&size))
     return;
-  options.size = size;
-  if (!iter.ReadBool(&options.executable))
+  // TODO(crbug.com/982879): executable shared memory should be removed when
+  // NaCl is unshipped.
+  bool executable;
+  if (!iter.ReadBool(&executable))
     return;
-  int shm_fd = -1;
-  base::SharedMemory shm;
-  if (shm.Create(options))
-    shm_fd = shm.handle().GetHandle();
+  base::ScopedFD shm_fd;
+  if (executable) {
+    shm_fd =
+        base::subtle::PlatformSharedMemoryRegion::ExecutableRegion::CreateFD(
+            size);
+  } else {
+    base::subtle::PlatformSharedMemoryRegion region =
+        base::subtle::PlatformSharedMemoryRegion::CreateUnsafe(size);
+    shm_fd = std::move(region.PassPlatformHandle().fd);
+  }
   base::Pickle reply;
-  SendRendererReply(fds, reply, shm_fd);
+  SendRendererReply(fds, reply, shm_fd.get());
+  // shm_fd will close the handle which is no longer needed by this process.
 }
 
 void SandboxIPCHandler::SendRendererReply(

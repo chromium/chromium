@@ -8,14 +8,16 @@ import android.accounts.Account;
 import android.content.Intent;
 import android.os.Build;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.google.protos.ipc.invalidation.Types;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.sync.notifier.InvalidationClientNameProvider;
 import org.chromium.components.sync.notifier.InvalidationIntentProtocol;
 import org.chromium.components.sync.notifier.InvalidationPreferences;
@@ -29,7 +31,7 @@ import org.chromium.components.sync.notifier.InvalidationPreferences;
 public class InvalidationService {
     private final long mNativeInvalidationServiceAndroid;
 
-    private static final String TAG = "cr_invalidation";
+    private static final String TAG = "invalidation";
 
     private InvalidationService(long nativeInvalidationServiceAndroid) {
         mNativeInvalidationServiceAndroid = nativeInvalidationServiceAndroid;
@@ -38,8 +40,8 @@ public class InvalidationService {
     public void notifyInvalidationToNativeChrome(
             int objectSource, String objectId, long version, String payload) {
         ThreadUtils.assertOnUiThread();
-        nativeInvalidate(
-                mNativeInvalidationServiceAndroid, objectSource, objectId, version, payload);
+        InvalidationServiceJni.get().invalidate(mNativeInvalidationServiceAndroid,
+                InvalidationService.this, objectSource, objectId, version, payload);
     }
 
     public void requestSyncFromNativeChromeForAllTypes() {
@@ -97,6 +99,9 @@ public class InvalidationService {
         return InvalidationClientNameProvider.get().getInvalidatorClientName();
     }
 
-    private native void nativeInvalidate(long nativeInvalidationServiceAndroid, int objectSource,
-            String objectId, long version, String payload);
+    @NativeMethods
+    interface Natives {
+        void invalidate(long nativeInvalidationServiceAndroid, InvalidationService caller,
+                int objectSource, String objectId, long version, String payload);
+    }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser;
 
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
 
@@ -28,7 +29,7 @@ public class WebContentsFactory {
      */
     // TODO(pshmakov): remove static for unit-testability.
     public static WebContents createWebContents(boolean incognito, boolean initiallyHidden) {
-        return nativeCreateWebContents(
+        return WebContentsFactoryJni.get().createWebContents(
                 Profile.getLastUsedProfile(), incognito, initiallyHidden, false);
     }
 
@@ -44,10 +45,13 @@ public class WebContentsFactory {
      */
     public WebContents createWebContentsWithWarmRenderer(
             boolean incognito, boolean initiallyHidden) {
-        return nativeCreateWebContents(
+        return WebContentsFactoryJni.get().createWebContents(
                 Profile.getLastUsedProfile(), incognito, initiallyHidden, true);
     }
 
-    private static native WebContents nativeCreateWebContents(Profile profile, boolean incognito,
-            boolean initiallyHidden, boolean initializeRenderer);
+    @NativeMethods
+    interface Natives {
+        WebContents createWebContents(Profile profile, boolean incognito, boolean initiallyHidden,
+                boolean initializeRenderer);
+    }
 }

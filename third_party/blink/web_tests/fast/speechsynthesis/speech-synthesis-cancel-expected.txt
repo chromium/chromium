@@ -2,8 +2,8 @@ This tests that cancelling a speech job fires the right events.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-Speech started
 PASS speechSynthesis.pending is true
+Speech started
 Speech error received because we cancelled and speech should no longer be pending.
 PASS speechSynthesis.pending is false
 PASS successfullyParsed is true

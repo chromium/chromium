@@ -16,18 +16,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.prerender.ExternalPrerenderHandler;
+import org.chromium.chrome.browser.prerender.PrerenderTestHelper;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.PrerenderTestHelper;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.PageTransition;
 
@@ -53,7 +54,7 @@ public class PrerenderTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
@@ -65,6 +66,7 @@ public class PrerenderTest {
     @LargeTest
     @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"TabContents"})
+    @DisableIf.Build(sdk_is_greater_than = 25, message = "https://crbug.com/1014213")
     public void testNoPrerender() throws InterruptedException {
         String testUrl = mTestServer.getURL(
                 "/chrome/test/data/android/prerender/google.html");
@@ -91,7 +93,7 @@ public class PrerenderTest {
     */
     @Test
     @FlakyTest(message = "crbug.com/339668")
-    public void testPrerenderNotDead() throws InterruptedException, TimeoutException {
+    public void testPrerenderNotDead() throws TimeoutException {
         String testUrl = mTestServer.getURL(
                 "/chrome/test/data/android/prerender/google.html");
         final Tab tab = mActivityTestRule.getActivity().getActivityTab();
@@ -130,7 +132,7 @@ public class PrerenderTest {
     */
     @Test
     @DisabledTest(message = "Prerenderer disables infobars. crbug.com/588808")
-    public void testInfoBarDismissed() throws InterruptedException {
+    public void testInfoBarDismissed() {
         final String url = mTestServer.getURL(
                 "/chrome/test/data/geolocation/geolocation_on_load.html");
         final ExternalPrerenderHandler handler = PrerenderTestHelper.prerenderUrl(
@@ -138,6 +140,6 @@ public class PrerenderTest {
 
         // Cancel the prerender. This will discard the prerendered WebContents and close the
         // infobars.
-        ThreadUtils.runOnUiThreadBlocking(() -> handler.cancelCurrentPrerender());
+        TestThreadUtils.runOnUiThreadBlocking(() -> handler.cancelCurrentPrerender());
     }
 }

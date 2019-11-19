@@ -6,9 +6,10 @@
 
 #include <stdint.h>
 
-#include "base/md5.h"
+#include "base/hash/md5.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "build/build_config.h"
 
 SpellCheckHostMetrics::SpellCheckHostMetrics()
     : misspelled_word_count_(0),
@@ -154,3 +155,15 @@ void SpellCheckHostMetrics::RecordWordCounts() {
 void SpellCheckHostMetrics::RecordSpellingServiceStats(bool enabled) {
   UMA_HISTOGRAM_BOOLEAN("SpellCheck.SpellingService.Enabled", enabled);
 }
+
+#if defined(OS_WIN)
+void SpellCheckHostMetrics::RecordMissingLanguagePacksCount(int count) {
+  UMA_HISTOGRAM_EXACT_LINEAR("Spellcheck.Windows.MissingLanguagePacksCount",
+                             count, 20);
+}
+
+void SpellCheckHostMetrics::RecordHunspellUnsupportedLanguageCount(int count) {
+  UMA_HISTOGRAM_EXACT_LINEAR(
+      "Spellcheck.Windows.HunspellUnsupportedLanguageCount", count, 20);
+}
+#endif  // defined(OS_WIN)

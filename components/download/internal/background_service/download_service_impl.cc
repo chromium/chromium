@@ -22,8 +22,7 @@ DownloadServiceImpl::DownloadServiceImpl(std::unique_ptr<Configuration> config,
       logger_(std::move(logger)),
       controller_(std::move(controller)),
       service_config_(config_.get()),
-      startup_completed_(false),
-      weak_ptr_factory_(this) {
+      startup_completed_(false) {
   controller_->Initialize(
       base::BindRepeating(&DownloadServiceImpl::OnControllerInitialized,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -80,7 +79,6 @@ DownloadService::ServiceStatus DownloadServiceImpl::GetStatus() {
 void DownloadServiceImpl::StartDownload(const DownloadParams& download_params) {
   stats::LogServiceApiAction(download_params.client,
                              stats::ServiceApiAction::START_DOWNLOAD);
-  stats::LogDownloadParams(download_params);
   if (startup_completed_) {
     controller_->StartDownload(download_params);
   } else {
@@ -91,8 +89,6 @@ void DownloadServiceImpl::StartDownload(const DownloadParams& download_params) {
 }
 
 void DownloadServiceImpl::PauseDownload(const std::string& guid) {
-  stats::LogServiceApiAction(controller_->GetOwnerOfDownload(guid),
-                             stats::ServiceApiAction::PAUSE_DOWNLOAD);
   if (startup_completed_) {
     controller_->PauseDownload(guid);
   } else {
@@ -102,8 +98,6 @@ void DownloadServiceImpl::PauseDownload(const std::string& guid) {
 }
 
 void DownloadServiceImpl::ResumeDownload(const std::string& guid) {
-  stats::LogServiceApiAction(controller_->GetOwnerOfDownload(guid),
-                             stats::ServiceApiAction::RESUME_DOWNLOAD);
   if (startup_completed_) {
     controller_->ResumeDownload(guid);
   } else {
@@ -114,8 +108,6 @@ void DownloadServiceImpl::ResumeDownload(const std::string& guid) {
 }
 
 void DownloadServiceImpl::CancelDownload(const std::string& guid) {
-  stats::LogServiceApiAction(controller_->GetOwnerOfDownload(guid),
-                             stats::ServiceApiAction::CANCEL_DOWNLOAD);
   if (startup_completed_) {
     controller_->CancelDownload(guid);
   } else {
@@ -128,8 +120,6 @@ void DownloadServiceImpl::CancelDownload(const std::string& guid) {
 void DownloadServiceImpl::ChangeDownloadCriteria(
     const std::string& guid,
     const SchedulingParams& params) {
-  stats::LogServiceApiAction(controller_->GetOwnerOfDownload(guid),
-                             stats::ServiceApiAction::CHANGE_CRITERIA);
   if (startup_completed_) {
     controller_->ChangeDownloadCriteria(guid, params);
   } else {

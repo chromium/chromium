@@ -12,7 +12,7 @@ suite('drawer-test', function() {
   test('drawer has correct selection', function() {
     app.selectedPage_ = 'syncedTabs';
     app.hasDrawer_ = true;
-    return PolymerTest.flushTasks().then(function() {
+    return test_util.flushTasks().then(function() {
       const drawer = /** @type {CrLazyRenderElement} */ (app.$.drawer);
       let drawerSideBar = app.$$('#drawer-side-bar');
 

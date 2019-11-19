@@ -15,6 +15,7 @@
 #include "client/prune_crash_reports.h"
 
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include <algorithm>
@@ -81,56 +82,49 @@ TEST(PruneCrashReports, AgeCondition) {
 }
 
 TEST(PruneCrashReports, SizeCondition) {
-  ScopedTempDir temp_dir;
-
   CrashReportDatabase::Report report_1k;
-  report_1k.file_path = temp_dir.path().Append(FILE_PATH_LITERAL("file1024"));
+  report_1k.total_size = 1024u;
   CrashReportDatabase::Report report_3k;
-  report_3k.file_path = temp_dir.path().Append(FILE_PATH_LITERAL("file3072"));
+  report_3k.total_size = 1024u * 3u;
+  CrashReportDatabase::Report report_unset_size;
 
   {
-    ScopedFileHandle scoped_file_1k(
-        LoggingOpenFileForWrite(report_1k.file_path,
-                                FileWriteMode::kCreateOrFail,
-                                FilePermissions::kOwnerOnly));
-    ASSERT_TRUE(scoped_file_1k.is_valid());
-
-    std::string string;
-    for (int i = 0; i < 128; ++i)
-      string.push_back(static_cast<char>(i));
-
-    for (size_t i = 0; i < 1024; i += string.size()) {
-      ASSERT_TRUE(LoggingWriteFile(scoped_file_1k.get(),
-                                   string.c_str(), string.length()));
-    }
-
-    ScopedFileHandle scoped_file_3k(
-        LoggingOpenFileForWrite(report_3k.file_path,
-                                FileWriteMode::kCreateOrFail,
-                                FilePermissions::kOwnerOnly));
-    ASSERT_TRUE(scoped_file_3k.is_valid());
-
-    for (size_t i = 0; i < 3072; i += string.size()) {
-      ASSERT_TRUE(LoggingWriteFile(scoped_file_3k.get(),
-                                   string.c_str(), string.length()));
-    }
-  }
-
-  {
-    DatabaseSizePruneCondition condition(1);
+    DatabaseSizePruneCondition condition(/*max_size_in_kb=*/1);
+    // |report_1k| should not be pruned as the cumulated size is not past 1kB
+    // yet.
     EXPECT_FALSE(condition.ShouldPruneReport(report_1k));
-    EXPECT_TRUE(condition.ShouldPruneReport(report_1k));
-  }
-
-  {
-    DatabaseSizePruneCondition condition(1);
+    // |report_3k| should be pruned as the cumulated size is now past 1kB.
     EXPECT_TRUE(condition.ShouldPruneReport(report_3k));
   }
 
   {
-    DatabaseSizePruneCondition condition(6);
+    DatabaseSizePruneCondition condition(/*max_size_in_kb=*/1);
+    // |report_3k| should be pruned as the cumulated size is already past 1kB.
+    EXPECT_TRUE(condition.ShouldPruneReport(report_3k));
+  }
+
+  {
+    DatabaseSizePruneCondition condition(/*max_size_in_kb=*/6);
+    // |report_3k| should not be pruned as the cumulated size is not past 6kB
+    // yet.
     EXPECT_FALSE(condition.ShouldPruneReport(report_3k));
+    // |report_3k| should not be pruned as the cumulated size is not past 6kB
+    // yet.
     EXPECT_FALSE(condition.ShouldPruneReport(report_3k));
+    // |report_1k| should be pruned as the cumulated size is now past 6kB.
+    EXPECT_TRUE(condition.ShouldPruneReport(report_1k));
+  }
+
+  {
+    DatabaseSizePruneCondition condition(/*max_size_in_kb=*/0);
+    // |report_unset_size| should not be pruned as its size is 0, regardless of
+    // how many times we try to prune it.
+    EXPECT_FALSE(condition.ShouldPruneReport(report_unset_size));
+    EXPECT_FALSE(condition.ShouldPruneReport(report_unset_size));
+    EXPECT_FALSE(condition.ShouldPruneReport(report_unset_size));
+    EXPECT_FALSE(condition.ShouldPruneReport(report_unset_size));
+    EXPECT_FALSE(condition.ShouldPruneReport(report_unset_size));
+    // |report_1k| should be pruned as the cumulated size is now past 0kB.
     EXPECT_TRUE(condition.ShouldPruneReport(report_1k));
   }
 }
@@ -211,11 +205,12 @@ TEST(PruneCrashReports, PruneOrder) {
   using ::testing::Return;
   using ::testing::SetArgPointee;
 
+  const size_t kNumReports = 10;
   std::vector<CrashReportDatabase::Report> reports;
-  for (int i = 0; i < 10; ++i) {
+  for (size_t i = 0; i < kNumReports; ++i) {
     CrashReportDatabase::Report temp;
-    temp.uuid.data_1 = i;
-    temp.creation_time = NDaysAgo(i * 10);
+    temp.uuid.data_1 = static_cast<uint32_t>(i);
+    temp.creation_time = NDaysAgo(static_cast<int>(i) * 10);
     reports.push_back(temp);
   }
   std::mt19937 urng(std::random_device{}());
@@ -238,7 +233,7 @@ TEST(PruneCrashReports, PruneOrder) {
   }
 
   StaticCondition delete_all(true);
-  PruneCrashReportDatabase(&db, &delete_all);
+  EXPECT_EQ(PruneCrashReportDatabase(&db, &delete_all), kNumReports);
 }
 
 }  // namespace

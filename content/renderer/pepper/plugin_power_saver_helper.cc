@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -22,24 +21,19 @@
 
 namespace content {
 
-namespace {
-
-const char kPeripheralHeuristicHistogram[] =
-    "Plugin.PowerSaver.PeripheralHeuristicInitialDecision";
-
-}  // namespace
-
 PluginPowerSaverHelper::PeripheralPlugin::PeripheralPlugin(
     const url::Origin& content_origin,
-    const base::Closure& unthrottle_callback)
+    base::OnceClosure unthrottle_callback)
     : content_origin(content_origin),
-      unthrottle_callback(unthrottle_callback) {}
+      unthrottle_callback(std::move(unthrottle_callback)) {}
 
-PluginPowerSaverHelper::PeripheralPlugin::PeripheralPlugin(
-    const PeripheralPlugin& other) = default;
+PluginPowerSaverHelper::PeripheralPlugin::~PeripheralPlugin() = default;
 
-PluginPowerSaverHelper::PeripheralPlugin::~PeripheralPlugin() {
-}
+PluginPowerSaverHelper::PeripheralPlugin::PeripheralPlugin(PeripheralPlugin&&) =
+    default;
+PluginPowerSaverHelper::PeripheralPlugin&
+PluginPowerSaverHelper::PeripheralPlugin::operator=(PeripheralPlugin&&) =
+    default;
 
 PluginPowerSaverHelper::PluginPowerSaverHelper(RenderFrame* render_frame)
     : RenderFrameObserver(render_frame) {}
@@ -82,8 +76,9 @@ void PluginPowerSaverHelper::OnUpdatePluginContentOriginWhitelist(
     if (origin_whitelist.count(it->content_origin)) {
       // Because the unthrottle callback may register another peripheral plugin
       // and invalidate our iterator, we cannot run it synchronously.
-      base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
-                                                    it->unthrottle_callback);
+      render_frame()
+          ->GetTaskRunner(blink::TaskType::kInternalDefault)
+          ->PostTask(FROM_HERE, std::move(it->unthrottle_callback));
       it = peripheral_plugins_.erase(it);
     } else {
       ++it;
@@ -93,9 +88,9 @@ void PluginPowerSaverHelper::OnUpdatePluginContentOriginWhitelist(
 
 void PluginPowerSaverHelper::RegisterPeripheralPlugin(
     const url::Origin& content_origin,
-    const base::Closure& unthrottle_callback) {
+    base::OnceClosure unthrottle_callback) {
   peripheral_plugins_.push_back(
-      PeripheralPlugin(content_origin, unthrottle_callback));
+      PeripheralPlugin(content_origin, std::move(unthrottle_callback)));
 }
 
 RenderFrame::PeripheralContentStatus
@@ -109,15 +104,8 @@ PluginPowerSaverHelper::GetPeripheralContentStatus(
     return RenderFrame::CONTENT_STATUS_PERIPHERAL;
   }
 
-  auto status = PeripheralContentHeuristic::GetPeripheralStatus(
+  return PeripheralContentHeuristic::GetPeripheralStatus(
       origin_whitelist_, main_frame_origin, content_origin, unobscured_size);
-
-  if (record_decision == RenderFrame::RECORD_DECISION) {
-    UMA_HISTOGRAM_ENUMERATION(kPeripheralHeuristicHistogram, status,
-                              RenderFrame::CONTENT_STATUS_NUM_ITEMS);
-  }
-
-  return status;
 }
 
 void PluginPowerSaverHelper::WhitelistContentOrigin(

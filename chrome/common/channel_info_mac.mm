@@ -8,12 +8,13 @@
 
 #include "base/mac/bundle_locations.h"
 #include "base/strings/sys_string_conversions.h"
+#include "build/branding_buildflags.h"
 #include "components/version_info/version_info.h"
 
 namespace chrome {
 
 std::string GetChannelName() {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Use the main Chrome application bundle and not the framework bundle.
   // Keystone keys don't live in the framework.
   NSBundle* bundle = base::mac::OuterBundle();
@@ -42,7 +43,7 @@ std::string GetChannelName() {
 }
 
 version_info::Channel GetChannelByName(const std::string& channel) {
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (channel.empty())
     return version_info::Channel::STABLE;
   if (channel == "beta")

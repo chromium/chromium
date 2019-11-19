@@ -11,7 +11,7 @@
 
 #include "base/logging.h"
 #include "net/base/net_export.h"
-#include "net/third_party/quic/core/quic_tag.h"
+#include "net/third_party/quiche/src/quic/core/quic_tag.h"
 
 namespace net {
 
@@ -61,7 +61,7 @@ const typename Collection::value_type::second_type* FindOrNull(
     const typename Collection::value_type::first_type& key) {
   typename Collection::const_iterator it = collection.find(key);
   if (it == collection.end()) {
-    return 0;
+    return nullptr;
   }
   return &it->second;
 }
@@ -73,7 +73,7 @@ typename Collection::value_type::second_type* FindOrNull(
     const typename Collection::value_type::first_type& key) {
   typename Collection::iterator it = collection.find(key);
   if (it == collection.end()) {
-    return 0;
+    return nullptr;
   }
   return &it->second;
 }

@@ -5,48 +5,78 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_GLOBAL_MENU_BAR_REGISTRAR_X11_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_GLOBAL_MENU_BAR_REGISTRAR_X11_H_
 
-#include <gio/gio.h>
-
-#include <set>
+#include <map>
+#include <string>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
-#include "ui/base/glib/glib_signal.h"
+#include "base/memory/weak_ptr.h"
 
-// Advertises our menu bars to Unity.
+namespace dbus {
+class Bus;
+class ObjectProxy;
+}  // namespace dbus
+
+class GlobalMenuBarX11;
+
+// Advertises our menu bars to com.canonical.AppMenu.Registrar.
 //
-// GlobalMenuBarX11 is responsible for managing the DbusmenuServer for each
-// XID. We need a separate object to own the dbus channel to
-// com.canonical.AppMenu.Registrar and to register/unregister the mapping
-// between a XID and the DbusmenuServer instance we are offering.
+// GlobalMenuBarRegistrarX11 is responsible for managing the dbus::Bus shared by
+// each menu. We need a separate object to own the dbus channel and to
+// register/unregister the mapping between a menu and the com.canonical.dbusmenu
+// instance we are offering.
 class GlobalMenuBarRegistrarX11 {
  public:
   static GlobalMenuBarRegistrarX11* GetInstance();
 
-  void OnWindowMapped(unsigned long xid);
-  void OnWindowUnmapped(unsigned long xid);
+  void OnMenuBarCreated(GlobalMenuBarX11* menu);
+  void OnMenuBarDestroyed(GlobalMenuBarX11* menu);
+
+  dbus::Bus* bus() { return bus_.get(); }
 
  private:
   friend struct base::DefaultSingletonTraits<GlobalMenuBarRegistrarX11>;
 
+  enum MenuState {
+    // Initialize() hasn't been called.
+    kUninitialized,
+
+    // Initialize() has been called and we're waiting for an async result.
+    kInitializing,
+
+    // Initialize() failed, and the window will not be registered.
+    kInitializeFailed,
+
+    // Initialize() succeeded and we will register the window once the appmenu
+    // registrar has an owner.
+    kInitializeSucceeded,
+
+    // Initialize() succeeded and RegisterMenu has been sent.
+    kRegistered,
+  };
+
   GlobalMenuBarRegistrarX11();
   ~GlobalMenuBarRegistrarX11();
 
+  void InitializeMenu(GlobalMenuBarX11* menu);
+
   // Sends the actual message.
-  void RegisterXID(unsigned long xid);
-  void UnregisterXID(unsigned long xid);
+  void RegisterMenu(GlobalMenuBarX11* menu);
 
-  CHROMEG_CALLBACK_1(GlobalMenuBarRegistrarX11, void, OnProxyCreated,
-                     GObject*, GAsyncResult*);
-  CHROMEG_CALLBACK_1(GlobalMenuBarRegistrarX11, void, OnNameOwnerChanged,
-                     GObject*, GParamSpec*);
+  void OnMenuInitialized(GlobalMenuBarX11* menu, bool success);
 
-  GDBusProxy* registrar_proxy_;
+  void OnNameOwnerChanged(const std::string& service_owner);
 
-  // Window XIDs which want to be registered, but haven't yet been because
-  // we're waiting for the proxy to become available.
-  std::set<unsigned long> live_xids_;
+  scoped_refptr<dbus::Bus> bus_;
+  dbus::ObjectProxy* registrar_proxy_;
+  bool service_has_owner_ = false;
+
+  // Maps menus to flags that indicate if the menu has been successfully
+  // initialized.
+  std::map<GlobalMenuBarX11*, MenuState> menus_;
+
+  base::WeakPtrFactory<GlobalMenuBarRegistrarX11> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(GlobalMenuBarRegistrarX11);
 };

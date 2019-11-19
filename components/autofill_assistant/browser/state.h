@@ -10,20 +10,49 @@
 namespace autofill_assistant {
 
 // High-level states the Autofill Assistant can be in.
+//
+// A typical run, when started from CCT, autostarts a script, then displays a
+// prompt and continues until a script sends the Stop action:
+//
+// INACTIVE -> STARTING -> RUNNING -> PROMPT -> RUNNING -> .. -> STOPPED
+//
+// A typical run, when started from a direct action, goes into tracking mode,
+// execute a script, the goes back to tracking mode:
+//
+// INACTIVE -> TRACKING -> RUNNING -> TRACKING -> ... -> STOPPED
+//
+// See the individual state for possible state transitions.
 enum class AutofillAssistantState {
   // Autofill assistant is not doing or showing anything.
+  //
   // Initial state.
+  // Next states: STARTING, TRACKING, STOPPED
   INACTIVE = 0,
+
+  // Autofill assistant is keeping track of script availability.
+  //
+  // In this mode, no UI is shown and scripts are not autostarted. User
+  // actions might be available.
+  //
+  // Note that it is possible to go from TRACKING to STARTING to trigger
+  // whatever autostartable scripts is defined for a page.
+  //
+  // Next states: STARTING, RUNNING, STOPPED
+  TRACKING,
 
   // Autofill assistant is waiting for an autostart script.
   //
   // Status message, progress and details are initialized to useful values.
+  //
+  // Next states: RUNNING, AUTOSTART_FALLBACK_PROMPT, STOPPED
   STARTING,
 
   // Autofill assistant is manipulating the website.
   //
   // Status message, progress and details kept up-to-date by the running
   // script.
+  //
+  // Next states: PROMPT, MODAL_DIALOG, TRACKING, STARTING, STOPPED
   RUNNING,
 
   // Autofill assistant is waiting for the user to make a choice.
@@ -31,22 +60,34 @@ enum class AutofillAssistantState {
   // Status message is initialized to a useful value. Chips are set and might be
   // empty. A touchable area must be configured. The user might be filling in
   // the data for a payment request.
+  //
+  // Next states: RUNNING, TRACKING, STOPPED
   PROMPT,
 
   // Autofill assistant is waiting for the user to make the first choice.
   //
   // When autostartable scripts are expected, this is only triggered as a
   // fallback if there are non-autostartable scripts to choose from instead.
+  //
+  // Next states: RUNNING, STOPPED
   AUTOSTART_FALLBACK_PROMPT,
 
   // Autofill assistant is expecting a modal dialog, such as the one asking for
   // CVC.
+  //
+  // Next states: RUNNING
   MODAL_DIALOG,
 
-  // Autofill assistant is stopped, but still visible to the user.
+  // Autofill assistant is stopped, but the controller is still available.
   //
-  // Status message contains the final message.
-  STOPPED
+  // This is a final state for the UI, which, when entering this state, detaches
+  // itself from the controller and lets the user read  the message.
+  //
+  // In that scenario, the status message at the time of transition to STOPPED
+  // is supposed to contain the final message.
+  //
+  // Next states: TRACKING
+  STOPPED,
 };
 
 inline std::ostream& operator<<(std::ostream& out,
@@ -60,6 +101,9 @@ inline std::ostream& operator<<(std::ostream& out,
   switch (state) {
     case AutofillAssistantState::INACTIVE:
       out << "INACTIVE";
+      break;
+    case AutofillAssistantState::TRACKING:
+      out << "TRACKING";
       break;
     case AutofillAssistantState::STARTING:
       out << "STARTING";

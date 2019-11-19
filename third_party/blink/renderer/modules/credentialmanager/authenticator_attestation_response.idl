@@ -10,5 +10,5 @@
     Exposed=Window
 ] interface AuthenticatorAttestationResponse : AuthenticatorResponse {
     [SameObject] readonly attribute ArrayBuffer attestationObject;
-    sequence<AuthenticatorTransport> getTransports();
+    sequence<DOMString> getTransports();
 };

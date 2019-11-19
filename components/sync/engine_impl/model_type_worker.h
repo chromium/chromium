@@ -17,7 +17,6 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/sync/base/cancelation_observer.h"
-#include "components/sync/base/cryptographer.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_queue.h"
@@ -27,6 +26,7 @@
 #include "components/sync/engine_impl/cycle/data_type_debug_info_emitter.h"
 #include "components/sync/engine_impl/nudge_handler.h"
 #include "components/sync/engine_impl/update_handler.h"
+#include "components/sync/nigori/cryptographer.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 
@@ -34,7 +34,6 @@ namespace syncer {
 
 class CancelationSignal;
 class ModelTypeProcessor;
-class WorkerEntityTracker;
 
 // A smart cache for sync types that use message passing (rather than
 // transactions and the syncable::Directory) to communicate with the sync
@@ -79,6 +78,7 @@ class ModelTypeWorker : public UpdateHandler,
   // |response_data| must be not null.
   static DecryptionStatus PopulateUpdateResponseData(
       const Cryptographer* cryptographer,
+      ModelType model_type,
       const sync_pb::SyncEntity& update_entity,
       UpdateResponseData* response_data);
 
@@ -130,6 +130,11 @@ class ModelTypeWorker : public UpdateHandler,
   // clear the update data that has been added so far.
   void AbortMigration();
 
+  // Public for testing.
+  // Returns true if this type should stop communicating because of outstanding
+  // encryption issues and must wait for keys to be updated.
+  bool BlockForEncryption() const;
+
   // Returns the estimate of dynamically allocated memory in bytes.
   size_t EstimateMemoryUsage() const;
 
@@ -177,10 +182,6 @@ class ModelTypeWorker : public UpdateHandler,
   // settings in a good state.
   bool CanCommitItems() const;
 
-  // Returns true if this type should stop communicating because of outstanding
-  // encryption issues and must wait for keys to be updated.
-  bool BlockForEncryption() const;
-
   // Updates the encryption key name stored in |model_type_state_| if it differs
   // from the default encryption key name in |cryptographer_|. Returns whether
   // an update occurred.
@@ -190,16 +191,6 @@ class ModelTypeWorker : public UpdateHandler,
   // decrypt anything that has encrypted data.
   // Should only be called during a GetUpdates cycle.
   void DecryptStoredEntities();
-
-  // Returns the entity tracker for the given |tag_hash|, or nullptr.
-  WorkerEntityTracker* GetEntityTracker(const std::string& tag_hash);
-
-  // Creates an entity tracker in the map using the given |data| and returns a
-  // pointer to it. Requires that one doesn't exist for data.client_tag_hash.
-  WorkerEntityTracker* CreateEntityTracker(const std::string& tag_hash);
-
-  // Gets the entity tracker for |data| or creates one if it doesn't exist.
-  WorkerEntityTracker* GetOrCreateEntityTracker(const std::string& tag_hash);
 
   // Nudges nudge_handler_ when initial sync is done, processor has local
   // changes and either encryption is disabled for the type or cryptographer is
@@ -237,7 +228,8 @@ class ModelTypeWorker : public UpdateHandler,
 
   // A map of update responses, keyed by server_id.
   // Holds updates encrypted with pending keys.
-  std::map<std::string, UpdateResponseData> entries_pending_decryption_;
+  std::map<std::string, std::unique_ptr<UpdateResponseData>>
+      entries_pending_decryption_;
 
   // Accumulates all the updates from a single GetUpdates cycle in memory so
   // they can all be sent to the processor at once.
@@ -253,7 +245,7 @@ class ModelTypeWorker : public UpdateHandler,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<ModelTypeWorker> weak_ptr_factory_;
+  base::WeakPtrFactory<ModelTypeWorker> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ModelTypeWorker);
 };

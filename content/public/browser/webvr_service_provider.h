@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace device {
 namespace mojom {
@@ -25,11 +25,11 @@ class WebvrServiceProvider {
  public:
   static void BindWebvrService(
       RenderFrameHost* render_frame_host,
-      mojo::InterfaceRequest<device::mojom::VRService> request);
+      mojo::PendingReceiver<device::mojom::VRService> receiver);
 
   using BindWebvrServiceCallback =
       base::Callback<void(RenderFrameHost*,
-                          mojo::InterfaceRequest<device::mojom::VRService>)>;
+                          mojo::PendingReceiver<device::mojom::VRService>)>;
 
   CONTENT_EXPORT static void SetWebvrServiceCallback(
       BindWebvrServiceCallback callback);

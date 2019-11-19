@@ -13,7 +13,7 @@
 #include "content/public/common/common_param_traits_macros.h"
 #include "ipc/ipc_message_macros.h"
 #include "ipc/ipc_platform_file.h"
-#include "third_party/blink/public/platform/modules/permissions/permission_status.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
 #include "url/ipc/url_param_traits.h"
 
@@ -25,6 +25,7 @@ IPC_SYNC_MESSAGE_ROUTED1_1(WebTestHostMsg_ReadFileToString,
 IPC_SYNC_MESSAGE_ROUTED1_1(WebTestHostMsg_RegisterIsolatedFileSystem,
                            std::vector<base::FilePath> /* absolute_filenames */,
                            std::string /* filesystem_id */)
+
 IPC_MESSAGE_ROUTED0(WebTestHostMsg_ClearAllDatabases)
 IPC_MESSAGE_ROUTED1(WebTestHostMsg_SetDatabaseQuota, int /* quota */)
 IPC_MESSAGE_ROUTED3(WebTestHostMsg_SimulateWebNotificationClick,
@@ -34,6 +35,8 @@ IPC_MESSAGE_ROUTED3(WebTestHostMsg_SimulateWebNotificationClick,
 IPC_MESSAGE_ROUTED2(WebTestHostMsg_SimulateWebNotificationClose,
                     std::string /* title */,
                     bool /* by_user */)
+IPC_MESSAGE_ROUTED1(WebTestHostMsg_SimulateWebContentIndexDelete,
+                    std::string /* id */)
 IPC_MESSAGE_ROUTED1(WebTestHostMsg_BlockThirdPartyCookies, bool /* block */)
 IPC_MESSAGE_ROUTED0(WebTestHostMsg_DeleteAllCookies)
 IPC_MESSAGE_ROUTED4(WebTestHostMsg_SetPermission,

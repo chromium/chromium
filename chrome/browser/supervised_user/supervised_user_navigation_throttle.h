@@ -10,18 +10,14 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "chrome/browser/supervised_user/supervised_user_url_filter.h"
 #include "chrome/browser/supervised_user/supervised_users.h"
-#include "components/supervised_user_error_page/supervised_user_error_page.h"
 #include "content/public/browser/navigation_throttle.h"
 
 class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
  public:
-  enum CallbackActions {
-    kContinueNavigation = 0,
-    kCancelNavigation,
-    kCancelWithInterstitial
-  };
+  enum CallbackActions { kCancelNavigation = 0, kCancelWithInterstitial };
 
   // Returns a new throttle for the given navigation, or nullptr if no
   // throttling is required.
@@ -62,7 +58,8 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
   bool deferred_;
   supervised_user_error_page::FilteringBehaviorReason reason_;
   SupervisedUserURLFilter::FilteringBehavior behavior_;
-  base::WeakPtrFactory<SupervisedUserNavigationThrottle> weak_ptr_factory_;
+  base::WeakPtrFactory<SupervisedUserNavigationThrottle> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(SupervisedUserNavigationThrottle);
 };

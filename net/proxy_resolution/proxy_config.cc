@@ -20,9 +20,9 @@ namespace {
 // If |proxies| is non-empty, sets it in |dict| under the key |name|.
 void AddProxyListToValue(const char* name,
                          const ProxyList& proxies,
-                         base::DictionaryValue* dict) {
+                         base::Value* dict) {
   if (!proxies.IsEmpty())
-    dict->Set(name, proxies.ToValue());
+    dict->SetKey(name, proxies.ToValue());
 }
 
 // Split the |uri_list| on commas and add each entry to |proxy_list| in turn.
@@ -150,7 +150,7 @@ const ProxyList* ProxyConfig::ProxyRules::MapUrlSchemeToProxyList(
     return GetProxyListForWebSocketScheme();
   if (!fallback_proxies.IsEmpty())
     return &fallback_proxies;
-  return NULL;  // No mapping for this scheme. Use direct.
+  return nullptr;  // No mapping for this scheme. Use direct.
 }
 
 bool ProxyConfig::ProxyRules::Equals(const ProxyRules& other) const {
@@ -172,18 +172,39 @@ ProxyList* ProxyConfig::ProxyRules::MapUrlSchemeToProxyListNoFallback(
     return &proxies_for_https;
   if (scheme == "ftp")
     return &proxies_for_ftp;
-  return NULL;  // No mapping for this scheme.
+  return nullptr;  // No mapping for this scheme.
 }
 
 const ProxyList* ProxyConfig::ProxyRules::GetProxyListForWebSocketScheme()
     const {
+  // Follow the recommendation from RFC 6455 section 4.1.3:
+  //
+  //       NOTE: Implementations that do not expose explicit UI for
+  //       selecting a proxy for WebSocket connections separate from other
+  //       proxies are encouraged to use a SOCKS5 [RFC1928] proxy for
+  //       WebSocket connections, if available, or failing that, to prefer
+  //       the proxy configured for HTTPS connections over the proxy
+  //       configured for HTTP connections.
+  //
+  // This interpretation is a bit different from the RFC, in
+  // that it favors both SOCKSv4 and SOCKSv5.
+  //
+  // When the net::ProxyRules came from system proxy settings,
+  // "fallback_proxies" will be empty, or a a single SOCKS
+  // proxy, making this ordering match the RFC.
+  //
+  // However for other configurations it is possible for
+  // "fallback_proxies" to be a list of any ProxyServer,
+  // including non-SOCKS. In this case "fallback_proxies" is
+  // still prioritized over proxies_for_http and
+  // proxies_for_https.
   if (!fallback_proxies.IsEmpty())
     return &fallback_proxies;
   if (!proxies_for_https.IsEmpty())
     return &proxies_for_https;
   if (!proxies_for_http.IsEmpty())
     return &proxies_for_http;
-  return NULL;
+  return nullptr;
 }
 
 ProxyConfig::ProxyConfig() : auto_detect_(false), pac_mandatory_(false) {}
@@ -210,35 +231,31 @@ void ProxyConfig::ClearAutomaticSettings() {
   pac_url_ = GURL();
 }
 
-std::unique_ptr<base::DictionaryValue> ProxyConfig::ToValue() const {
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
+base::Value ProxyConfig::ToValue() const {
+  base::Value dict(base::Value::Type::DICTIONARY);
 
   // Output the automatic settings.
   if (auto_detect_)
-    dict->SetBoolean("auto_detect", auto_detect_);
+    dict.SetBoolKey("auto_detect", auto_detect_);
   if (has_pac_url()) {
-    dict->SetString("pac_url", pac_url_.possibly_invalid_spec());
+    dict.SetStringKey("pac_url", pac_url_.possibly_invalid_spec());
     if (pac_mandatory_)
-      dict->SetBoolean("pac_mandatory", pac_mandatory_);
+      dict.SetBoolKey("pac_mandatory", pac_mandatory_);
   }
 
   // Output the manual settings.
   if (proxy_rules_.type != ProxyRules::Type::EMPTY) {
     switch (proxy_rules_.type) {
       case ProxyRules::Type::PROXY_LIST:
-        AddProxyListToValue("single_proxy", proxy_rules_.single_proxies,
-                            dict.get());
+        AddProxyListToValue("single_proxy", proxy_rules_.single_proxies, &dict);
         break;
       case ProxyRules::Type::PROXY_LIST_PER_SCHEME: {
-        std::unique_ptr<base::DictionaryValue> dict2(
-            new base::DictionaryValue());
-        AddProxyListToValue("http", proxy_rules_.proxies_for_http, dict2.get());
-        AddProxyListToValue("https", proxy_rules_.proxies_for_https,
-                            dict2.get());
-        AddProxyListToValue("ftp", proxy_rules_.proxies_for_ftp, dict2.get());
-        AddProxyListToValue("fallback", proxy_rules_.fallback_proxies,
-                            dict2.get());
-        dict->Set("proxy_per_scheme", std::move(dict2));
+        base::Value dict2(base::Value::Type::DICTIONARY);
+        AddProxyListToValue("http", proxy_rules_.proxies_for_http, &dict2);
+        AddProxyListToValue("https", proxy_rules_.proxies_for_https, &dict2);
+        AddProxyListToValue("ftp", proxy_rules_.proxies_for_ftp, &dict2);
+        AddProxyListToValue("fallback", proxy_rules_.fallback_proxies, &dict2);
+        dict.SetKey("proxy_per_scheme", std::move(dict2));
         break;
       }
       default:
@@ -249,15 +266,14 @@ std::unique_ptr<base::DictionaryValue> ProxyConfig::ToValue() const {
     const ProxyBypassRules& bypass = proxy_rules_.bypass_rules;
     if (!bypass.rules().empty()) {
       if (proxy_rules_.reverse_bypass)
-        dict->SetBoolean("reverse_bypass", true);
+        dict.SetBoolKey("reverse_bypass", true);
 
-      auto list = std::make_unique<base::ListValue>();
+      base::Value list(base::Value::Type::LIST);
 
-      for (auto it = bypass.rules().begin(); it != bypass.rules().end(); ++it) {
-        list->AppendString((*it)->ToString());
-      }
+      for (const auto& bypass_rule : bypass.rules())
+        list.Append(bypass_rule->ToString());
 
-      dict->Set("bypass_list", std::move(list));
+      dict.SetKey("bypass_list", std::move(list));
     }
   }
 

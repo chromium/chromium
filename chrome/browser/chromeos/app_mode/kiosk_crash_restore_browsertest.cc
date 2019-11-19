@@ -24,8 +24,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "components/ownership/mock_owner_key_util.h"
 #include "extensions/common/value_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -59,7 +58,16 @@ class KioskCrashRestoreTest : public InProcessBrowserTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    OverrideDevicePolicy();
+    // Override device policy.
+    OwnerSettingsServiceChromeOSFactory::GetInstance()
+        ->SetOwnerKeyUtilForTesting(owner_key_util_);
+    owner_key_util_->SetPublicKeyFromPrivateKey(
+        *device_policy_.GetSigningKey());
+
+    // SessionManagerClient will be destroyed in ChromeBrowserMain.
+    chromeos::SessionManagerClient::InitializeFakeInMemory();
+    chromeos::FakeSessionManagerClient::Get()->set_device_policy(
+        device_policy_.GetBlob());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -128,24 +136,10 @@ class KioskCrashRestoreTest : public InProcessBrowserTest {
                     local_state_json.size());
   }
 
-  void OverrideDevicePolicy() {
-    OwnerSettingsServiceChromeOSFactory::GetInstance()
-        ->SetOwnerKeyUtilForTesting(owner_key_util_);
-    owner_key_util_->SetPublicKeyFromPrivateKey(
-        *device_policy_.GetSigningKey());
-
-    session_manager_client_ = new FakeSessionManagerClient;
-    session_manager_client_->set_device_policy(device_policy_.GetBlob());
-
-    DBusThreadManager::GetSetterForTesting()->SetSessionManagerClient(
-        std::unique_ptr<SessionManagerClient>(session_manager_client_));
-  }
-
   std::string test_app_id_ = kTestKioskApp;
 
   policy::DevicePolicyBuilder device_policy_;
   scoped_refptr<ownership::MockOwnerKeyUtil> owner_key_util_;
-  FakeSessionManagerClient* session_manager_client_;
   std::unique_ptr<FakeCWS> fake_cws_;
 
   DISALLOW_COPY_AND_ASSIGN(KioskCrashRestoreTest);

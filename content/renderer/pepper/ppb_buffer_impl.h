@@ -11,7 +11,8 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "ppapi/shared_impl/resource.h"
 #include "ppapi/thunk/ppb_buffer_api.h"
 
@@ -26,7 +27,9 @@ class PPB_Buffer_Impl : public ppapi::Resource,
 
   virtual PPB_Buffer_Impl* AsPPB_Buffer_Impl();
 
-  base::SharedMemory* shared_memory() const { return shared_memory_.get(); }
+  const base::UnsafeSharedMemoryRegion& shared_memory() const {
+    return shared_memory_;
+  }
   uint32_t size() const { return size_; }
 
   // Resource overrides.
@@ -39,7 +42,7 @@ class PPB_Buffer_Impl : public ppapi::Resource,
   void Unmap() override;
 
   // Trusted.
-  int32_t GetSharedMemory(base::SharedMemory** shm) override;
+  int32_t GetSharedMemory(base::UnsafeSharedMemoryRegion** shm) override;
 
  private:
   ~PPB_Buffer_Impl() override;
@@ -47,7 +50,8 @@ class PPB_Buffer_Impl : public ppapi::Resource,
   explicit PPB_Buffer_Impl(PP_Instance instance);
   bool Init(uint32_t size);
 
-  std::unique_ptr<base::SharedMemory> shared_memory_;
+  base::UnsafeSharedMemoryRegion shared_memory_;
+  base::WritableSharedMemoryMapping shared_mapping_;
   uint32_t size_;
   int map_count_;
 

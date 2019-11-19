@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/loader/resource/multipart_image_resource_parser.h"
 
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
-#include "third_party/blink/renderer/platform/wtf/not_found.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 #include <algorithm>
 
@@ -147,7 +147,7 @@ bool MultipartImageResourceParser::ParseHeaders() {
       original_response_.WasFetchedViaServiceWorker());
   response.SetType(original_response_.GetType());
   for (const auto& header : original_response_.HttpHeaderFields())
-    response.AddHTTPHeaderField(header.key, header.value);
+    response.AddHttpHeaderField(header.key, header.value);
 
   wtf_size_t end = 0;
   if (!ParseMultipartHeadersFromBody(data_.data() + pos, data_.size() - pos,

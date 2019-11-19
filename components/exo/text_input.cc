@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -14,7 +15,6 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/events/event.h"
-#include "ui/keyboard/keyboard_controller.h"
 
 namespace exo {
 
@@ -40,8 +40,8 @@ TextInput::TextInput(std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {}
 
 TextInput::~TextInput() {
-  if (keyboard_controller_)
-    keyboard_controller_->RemoveObserver(this);
+  if (keyboard_ui_controller_)
+    keyboard_ui_controller_->RemoveObserver(this);
   if (input_method_)
     Deactivate();
 }
@@ -69,8 +69,8 @@ void TextInput::ShowVirtualKeyboardIfEnabled() {
 }
 
 void TextInput::HideVirtualKeyboard() {
-  if (keyboard_controller_)
-    keyboard_controller_->HideKeyboardByUser();
+  if (keyboard_ui_controller_)
+    keyboard_ui_controller_->HideKeyboardByUser();
   pending_vk_visible_ = false;
 }
 
@@ -119,7 +119,12 @@ void TextInput::SetCompositionText(const ui::CompositionText& composition) {
   delegate_->SetCompositionText(composition);
 }
 
-void TextInput::ConfirmCompositionText() {
+void TextInput::ConfirmCompositionText(bool keep_selection) {
+  // TODO(b/134473433) Modify this function so that when keep_selection is
+  // true, the selection is not changed when text committed
+  if (keep_selection) {
+    NOTIMPLEMENTED_LOG_ONCE();
+  }
   delegate_->Commit(composition_.text);
 }
 
@@ -311,7 +316,15 @@ bool TextInput::ShouldDoLearning() {
   return should_do_learning_;
 }
 
-void TextInput::OnKeyboardVisibilityStateChanged(bool is_visible) {
+bool TextInput::SetCompositionFromExistingText(
+    const gfx::Range& range,
+    const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
+  // TODO(https://crbug.com/952757): Implement this method.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+
+void TextInput::OnKeyboardVisibilityChanged(bool is_visible) {
   delegate_->OnVirtualKeyboardVisibilityChanged(is_visible);
 }
 
@@ -330,11 +343,12 @@ void TextInput::AttachInputMethod() {
   input_method_->SetFocusedTextInputClient(this);
   delegate_->Activated();
 
-  if (!keyboard_controller_ && keyboard::KeyboardController::HasInstance()) {
-    auto* keyboard_controller = keyboard::KeyboardController::Get();
-    if (keyboard_controller->IsEnabled()) {
-      keyboard_controller_ = keyboard_controller;
-      keyboard_controller_->AddObserver(this);
+  if (!keyboard_ui_controller_ &&
+      keyboard::KeyboardUIController::HasInstance()) {
+    auto* keyboard_ui_controller = keyboard::KeyboardUIController::Get();
+    if (keyboard_ui_controller->IsEnabled()) {
+      keyboard_ui_controller_ = keyboard_ui_controller;
+      keyboard_ui_controller_->AddObserver(this);
     }
   }
 

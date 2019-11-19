@@ -28,8 +28,9 @@ enum class AssistantEntryPoint {
   kStylus = 7,
   kLauncherSearchResult = 8,
   kLauncherSearchBoxMic = 9,
+  kProactiveSuggestions = 10,
   // Special enumerator value used by histogram macros.
-  kMaxValue = kLauncherSearchBoxMic
+  kMaxValue = kProactiveSuggestions
 };
 
 // Enumeration of Assistant exit points. These values are persisted to logs.
@@ -49,16 +50,18 @@ enum class AssistantExitPoint {
   kBackInLauncher = 8,
   kLauncherClose = 9,
   kLauncherOpen = 10,
+  kScreenshot = 11,
   // Special enumerator value used by histogram macros.
-  kMaxValue = kLauncherOpen
+  kMaxValue = kScreenshot
 };
 
 // Enumeration of Assistant UI modes.
 enum class AssistantUiMode {
+  kAmbientUi,
+  kLauncherEmbeddedUi,
   kMainUi,
   kMiniUi,
   kWebUi,
-  kLauncherEmbeddedUi,
 };
 
 // Enumeration of Assistant visibility states.
@@ -92,8 +95,9 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
   void AddObserver(AssistantUiModelObserver* observer);
   void RemoveObserver(AssistantUiModelObserver* observer);
 
-  // Sets the UI mode.
-  void SetUiMode(AssistantUiMode ui_mode);
+  // Sets the UI mode. If |due_to_interaction| is true, the UI mode was changed
+  // as a result of an Assistant interaction.
+  void SetUiMode(AssistantUiMode ui_mode, bool due_to_interaction = false);
 
   // Returns the UI mode.
   AssistantUiMode ui_mode() const { return ui_mode_; }
@@ -119,14 +123,14 @@ class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantUiModel {
                      base::Optional<AssistantEntryPoint> entry_point,
                      base::Optional<AssistantExitPoint> exit_point);
 
-  void NotifyUiModeChanged();
+  void NotifyUiModeChanged(bool due_to_interaction);
   void NotifyUiVisibilityChanged(
       AssistantVisibility old_visibility,
       base::Optional<AssistantEntryPoint> entry_point,
       base::Optional<AssistantExitPoint> exit_point);
   void NotifyUsableWorkAreaChanged();
 
-  AssistantUiMode ui_mode_ = AssistantUiMode::kMainUi;
+  AssistantUiMode ui_mode_;
 
   AssistantVisibility visibility_ = AssistantVisibility::kClosed;
 

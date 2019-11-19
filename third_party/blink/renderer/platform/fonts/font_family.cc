@@ -44,6 +44,12 @@ bool operator==(const FontFamily& a, const FontFamily& b) {
   return true;
 }
 
+void FontFamily::AppendFamily(AtomicString family) {
+  scoped_refptr<SharedFontFamily> appended_family = SharedFontFamily::Create();
+  appended_family->SetFamily(family);
+  AppendFamily(appended_family);
+}
+
 String FontFamily::ToString() const {
   StringBuilder builder;
   builder.Append(family_);

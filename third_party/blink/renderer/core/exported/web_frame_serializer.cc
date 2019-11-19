@@ -64,21 +64,21 @@
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_archive.h"
 #include "third_party/blink/renderer/platform/mhtml/mhtml_parser.h"
 #include "third_party/blink/renderer/platform/mhtml/serialized_resource.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_concatenate.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -105,7 +105,7 @@ class MHTMLFrameSerializerDelegate final : public FrameSerializer::Delegate {
   MHTMLFrameSerializerDelegate(
       WebFrameSerializer::MHTMLPartsGenerationDelegate&,
       HeapHashSet<WeakMember<const Element>>&);
-  ~MHTMLFrameSerializerDelegate() override;
+  ~MHTMLFrameSerializerDelegate() override = default;
   bool ShouldIgnoreElement(const Element&) override;
   bool ShouldIgnoreAttribute(const Element&, const Attribute&) override;
   bool RewriteLink(const Element&, String& rewritten_link) override;
@@ -135,14 +135,6 @@ MHTMLFrameSerializerDelegate::MHTMLFrameSerializerDelegate(
       shadow_template_elements_(shadow_template_elements),
       popup_overlays_skipped_(false) {}
 
-MHTMLFrameSerializerDelegate::~MHTMLFrameSerializerDelegate() {
-  if (web_delegate_.RemovePopupOverlay()) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "PageSerialization.MhtmlGeneration.PopupOverlaySkipped",
-        popup_overlays_skipped_);
-  }
-}
-
 bool MHTMLFrameSerializerDelegate::ShouldIgnoreElement(const Element& element) {
   if (ShouldIgnoreHiddenElement(element))
     return true;
@@ -167,7 +159,7 @@ bool MHTMLFrameSerializerDelegate::ShouldIgnoreHiddenElement(
   // being loaded. But if an iframe is injected into the head later, it will
   // stay there and not been displayed. To prevent it from being brought to the
   // saved page and cause it being displayed, we should not include it.
-  if (IsHTMLIFrameElement(element) &&
+  if (IsA<HTMLIFrameElement>(element) &&
       Traversal<HTMLHeadElement>::FirstAncestor(element)) {
     return true;
   }
@@ -189,7 +181,7 @@ bool MHTMLFrameSerializerDelegate::ShouldIgnoreMetaElement(
   // the saved MHTML page, there is no need to carry the directives. If they
   // are still kept in the MHTML, child frames that are referred to using cid:
   // scheme could be prevented from loading.
-  if (!IsHTMLMetaElement(element))
+  if (!IsA<HTMLMetaElement>(element))
     return false;
   if (!element.FastHasAttribute(html_names::kContentAttr))
     return false;
@@ -212,8 +204,10 @@ bool MHTMLFrameSerializerDelegate::ShouldIgnorePopupOverlayElement(
   int center_x = window->innerWidth() / 2;
   int center_y = window->innerHeight() / 2;
   if (Page* page = element.GetDocument().GetPage()) {
-    center_x = page->GetChromeClient().WindowToViewportScalar(center_x);
-    center_y = page->GetChromeClient().WindowToViewportScalar(center_y);
+    center_x = page->GetChromeClient().WindowToViewportScalar(
+        window->GetFrame(), center_x);
+    center_y = page->GetChromeClient().WindowToViewportScalar(
+        window->GetFrame(), center_y);
   }
   LayoutPoint center_point(center_x, center_y);
   if (!box->FrameRect().Contains(center_point))
@@ -235,12 +229,15 @@ bool MHTMLFrameSerializerDelegate::ShouldIgnoreAttribute(
   // images, as only the value of src is pulled into the archive. Discarding
   // srcset prevents the problem. Long term we should make sure to MHTML plays
   // nicely with srcset.
-  if (attribute.LocalName() == html_names::kSrcsetAttr)
+  if (IsHTMLImageElement(element) &&
+      (attribute.LocalName() == html_names::kSrcsetAttr ||
+       attribute.LocalName() == html_names::kSizesAttr)) {
     return true;
+  }
 
   // Do not save ping attribute since anyway the ping will be blocked from
   // MHTML.
-  if (IsHTMLAnchorElement(element) &&
+  if (IsA<HTMLAnchorElement>(element) &&
       attribute.LocalName() == html_names::kPingAttr) {
     return true;
   }
@@ -248,7 +245,7 @@ bool MHTMLFrameSerializerDelegate::ShouldIgnoreAttribute(
   // The special attribute in a template element to denote the shadow DOM
   // should only be generated from MHTML serialization. If it is found in the
   // original page, it should be ignored.
-  if (IsHTMLTemplateElement(element) &&
+  if (IsA<HTMLTemplateElement>(element) &&
       (attribute.LocalName() == kShadowModeAttributeName ||
        attribute.LocalName() == kShadowDelegatesFocusAttributeName) &&
       !shadow_template_elements_.Contains(&element)) {
@@ -406,7 +403,7 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLHeader(
   scoped_refptr<RawData> buffer = RawData::Create();
   MHTMLArchive::GenerateMHTMLHeader(
       boundary, document->Url(), document->title(),
-      document->SuggestedMIMEType(), WTF::Time::Now(), *buffer->MutableData());
+      document->SuggestedMIMEType(), base::Time::Now(), *buffer->MutableData());
   return WebThreadSafeData(buffer);
 }
 
@@ -441,8 +438,7 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLParts(
 
   TRACE_EVENT_END1("page-serialization",
                    "WebFrameSerializer::generateMHTMLParts serializing",
-                   "resource count",
-                   static_cast<unsigned long long>(resources.size()));
+                   "resource count", static_cast<uint64_t>(resources.size()));
 
   // There was an error serializing the frame (e.g. of an image resource).
   if (resources.IsEmpty())
@@ -472,8 +468,10 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLParts(
 bool WebFrameSerializer::Serialize(
     WebLocalFrame* frame,
     WebFrameSerializerClient* client,
-    WebFrameSerializer::LinkRewritingDelegate* delegate) {
-  WebFrameSerializerImpl serializer_impl(frame, client, delegate);
+    WebFrameSerializer::LinkRewritingDelegate* delegate,
+    bool save_with_empty_url) {
+  WebFrameSerializerImpl serializer_impl(frame, client, delegate,
+                                         save_with_empty_url);
   return serializer_impl.Serialize();
 }
 
@@ -493,16 +491,6 @@ WebString WebFrameSerializer::GenerateMarkOfTheWebDeclaration(
   builder.Append(FrameSerializer::MarkOfTheWebDeclaration(url));
   builder.Append(" -->\n");
   return builder.ToString();
-}
-
-WebString WebFrameSerializer::GenerateBaseTagDeclaration(
-    const WebString& base_target) {
-  // TODO(yosin) We should call |FrameSerializer::baseTagDeclarationOf()|.
-  if (base_target.IsEmpty())
-    return String("<base href=\".\">");
-  String base_string = "<base href=\".\" target=\"" +
-                       static_cast<const String&>(base_target) + "\">";
-  return base_string;
 }
 
 }  // namespace blink

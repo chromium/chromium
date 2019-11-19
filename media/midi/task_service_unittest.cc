@@ -139,7 +139,7 @@ class MidiTaskServiceTest : public ::testing::Test {
 
   void TearDown() override {
     thread_task_runner_handle_.reset();
-    task_runner_ = NULL;
+    task_runner_.reset();
   }
 
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;

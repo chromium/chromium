@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace blink {
@@ -124,9 +124,13 @@ class CORE_EXPORT SVGImage final : public Image {
 
   PaintImage PaintImageForCurrentFrame() override;
 
+  DarkModeClassification CheckTypeSpecificConditionsForDarkMode(
+      const FloatRect& dest_rect,
+      DarkModeImageClassifier* classifier) override;
+
  protected:
   // Whether or not size is available yet.
-  bool IsSizeAvailable() override { return !!page_; }
+  bool IsSizeAvailable() override;
 
  private:
   // Accesses m_page.
@@ -236,9 +240,12 @@ class CORE_EXPORT SVGImage final : public Image {
   LoadState load_state_ = kDataChangedNotStarted;
 
   Persistent<SVGImageLocalFrameClient> frame_client_;
+  FRIEND_TEST_ALL_PREFIXES(ElementFragmentAnchorTest,
+                           SVGDocumentDoesntCreateFragment);
   FRIEND_TEST_ALL_PREFIXES(SVGImageTest, SupportsSubsequenceCaching);
-  FRIEND_TEST_ALL_PREFIXES(SVGImageTest, JankTrackerDisabled);
+  FRIEND_TEST_ALL_PREFIXES(SVGImageTest, LayoutShiftTrackerDisabled);
   FRIEND_TEST_ALL_PREFIXES(SVGImageTest, SetSizeOnVisualViewport);
+  FRIEND_TEST_ALL_PREFIXES(SVGImageTest, IsSizeAvailable);
 };
 
 DEFINE_IMAGE_TYPE_CASTS(SVGImage);

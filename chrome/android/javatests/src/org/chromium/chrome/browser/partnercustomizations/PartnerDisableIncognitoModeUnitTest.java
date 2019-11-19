@@ -19,10 +19,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsDelayedProvider;
 import org.chromium.chrome.test.partnercustomizations.TestPartnerBrowserCustomizationsProvider;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Unit tests for the partner disabling incognito mode functionality.
@@ -44,7 +45,7 @@ public class PartnerDisableIncognitoModeUnitTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         PartnerBrowserCustomizations.ignoreBrowserProviderSystemPackageCheckForTests(true);
     }
 
@@ -57,12 +58,9 @@ public class PartnerDisableIncognitoModeUnitTest {
         PartnerBrowserCustomizations.ignoreBrowserProviderSystemPackageCheckForTests(false);
         PartnerBrowserCustomizations.setProviderAuthorityForTests(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                PartnerBrowserCustomizations.initializeAsync(
-                        mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PartnerBrowserCustomizations.initializeAsync(
+                    mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
         });
         PartnerBrowserCustomizations.setOnInitializeAsyncFinished(
                 mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
@@ -79,12 +77,9 @@ public class PartnerDisableIncognitoModeUnitTest {
     public void testNoProvider() throws InterruptedException {
         PartnerBrowserCustomizations.setProviderAuthorityForTests(
                 PARTNER_BROWSER_CUSTOMIZATIONS_NO_PROVIDER);
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                PartnerBrowserCustomizations.initializeAsync(
-                        mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PartnerBrowserCustomizations.initializeAsync(
+                    mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
         });
         PartnerBrowserCustomizations.setOnInitializeAsyncFinished(
                 mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
@@ -101,12 +96,9 @@ public class PartnerDisableIncognitoModeUnitTest {
         PartnerBrowserCustomizations.setProviderAuthorityForTests(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         setParentalControlsEnabled(false);
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                PartnerBrowserCustomizations.initializeAsync(
-                        mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PartnerBrowserCustomizations.initializeAsync(
+                    mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
         });
         PartnerBrowserCustomizations.setOnInitializeAsyncFinished(
                 mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
@@ -124,12 +116,9 @@ public class PartnerDisableIncognitoModeUnitTest {
         PartnerBrowserCustomizations.setProviderAuthorityForTests(
                 PARTNER_BROWSER_CUSTOMIZATIONS_PROVIDER);
         setParentalControlsEnabled(true);
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                PartnerBrowserCustomizations.initializeAsync(
-                        mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PartnerBrowserCustomizations.initializeAsync(
+                    mTestRule.getContextWrapper(), DEFAULT_TIMEOUT_MS);
         });
         PartnerBrowserCustomizations.setOnInitializeAsyncFinished(
                 mTestRule.getCallback(), DEFAULT_TIMEOUT_MS);
@@ -149,19 +138,15 @@ public class PartnerDisableIncognitoModeUnitTest {
         mTestRule.setDelayProviderUriPathForDelay(
                 PartnerBrowserCustomizations.PARTNER_DISABLE_INCOGNITO_MODE_PATH);
         setParentalControlsEnabled(true);
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                PartnerBrowserCustomizations.initializeAsync(mTestRule.getContextWrapper(), 2000);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PartnerBrowserCustomizations.initializeAsync(mTestRule.getContextWrapper(), 2000);
         });
-        PartnerBrowserCustomizations.setOnInitializeAsyncFinished(mTestRule.getCallback(), 300);
-
-        mTestRule.getCallbackLock().acquire();
+        PartnerBrowserCustomizations.setOnInitializeAsyncFinished(mTestRule.getCallback());
 
         Assert.assertFalse(PartnerBrowserCustomizations.isInitialized());
         Assert.assertFalse(PartnerBrowserCustomizations.isIncognitoDisabled());
 
+        TestPartnerBrowserCustomizationsDelayedProvider.unblockQuery();
         PartnerBrowserCustomizations.setOnInitializeAsyncFinished(mTestRule.getCallback(), 3000);
 
         mTestRule.getCallbackLock().acquire();

@@ -12,6 +12,7 @@
 #include "components/language/content/browser/language_code_locator_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/public/mojom/constants.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
@@ -32,8 +33,9 @@ const char GeoLanguageProvider::kCachedGeoLanguagesPref[] =
 
 GeoLanguageProvider::GeoLanguageProvider()
     : creation_task_runner_(base::SequencedTaskRunnerHandle::Get()),
-      background_task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      background_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       prefs_(nullptr) {
   // Constructor is not required to run on |background_task_runner_|:
@@ -104,9 +106,11 @@ void GeoLanguageProvider::BindIpGeolocationService() {
   DCHECK(!geolocation_provider_.is_bound());
 
   // Bind a PublicIpAddressGeolocationProvider.
-  device::mojom::PublicIpAddressGeolocationProviderPtr ip_geolocation_provider;
-  service_manager_connector_->BindInterface(
-      device::mojom::kServiceName, mojo::MakeRequest(&ip_geolocation_provider));
+  mojo::Remote<device::mojom::PublicIpAddressGeolocationProvider>
+      ip_geolocation_provider;
+  service_manager_connector_->Connect(
+      device::mojom::kServiceName,
+      ip_geolocation_provider.BindNewPipeAndPassReceiver());
 
   net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation =
       net::DefinePartialNetworkTrafficAnnotation("geo_language_provider",
@@ -132,7 +136,7 @@ void GeoLanguageProvider::BindIpGeolocationService() {
   ip_geolocation_provider->CreateGeolocation(
       static_cast<net::MutablePartialNetworkTrafficAnnotationTag>(
           partial_traffic_annotation),
-      mojo::MakeRequest(&geolocation_provider_));
+      geolocation_provider_.BindNewPipeAndPassReceiver());
   // No error handler required: If the connection is broken, QueryNextPosition
   // will bind it again.
 }
@@ -140,7 +144,7 @@ void GeoLanguageProvider::BindIpGeolocationService() {
 void GeoLanguageProvider::QueryNextPosition() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
 
-  if (geolocation_provider_.encountered_error())
+  if (geolocation_provider_.is_bound() && !geolocation_provider_.is_connected())
     geolocation_provider_.reset();
   if (!geolocation_provider_.is_bound())
     BindIpGeolocationService();
@@ -153,14 +157,14 @@ void GeoLanguageProvider::OnIpGeolocationResponse(
     device::mojom::GeopositionPtr geoposition) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(background_sequence_checker_);
 
-  const std::vector<std::string> languages =
-      language_code_locator_->GetLanguageCodes(geoposition->latitude,
-                                               geoposition->longitude);
-
-  // Update current languages on UI thread.
+  // Update current languages on UI thread. We pass the lat/long pair so that
+  // SetGeoLanguages can do the lookup on the UI thread. This is because the
+  // language provider could decide to cache the values, requiring interaction
+  // with the pref service.
   creation_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&GeoLanguageProvider::SetGeoLanguages,
-                                base::Unretained(this), languages));
+      FROM_HERE, base::BindOnce(&GeoLanguageProvider::LookupAndSetLanguages,
+                                base::Unretained(this), geoposition->latitude,
+                                geoposition->longitude));
 
   // Post a task to request a fresh lookup after |kMinUpdatePeriod|.
   background_task_runner_->PostDelayedTask(
@@ -170,10 +174,20 @@ void GeoLanguageProvider::OnIpGeolocationResponse(
       kMinUpdatePeriod);
 }
 
+void GeoLanguageProvider::LookupAndSetLanguages(double lat, double lon) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(creation_sequence_checker_);
+  // Perform the lookup here (as opposed to the geolocation callback), as the
+  // locator could cache the value in a pref, which must happen on the UI thread
+  // This behavior is factored out in this function in order for tests to be
+  // able to call SetGeoLanguages directly.
+  SetGeoLanguages(language_code_locator_->GetLanguageCodes(lat, lon));
+}
+
 void GeoLanguageProvider::SetGeoLanguages(
     const std::vector<std::string>& languages) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(creation_sequence_checker_);
   languages_ = languages;
+
   base::ListValue cache_list;
   for (size_t i = 0; i < languages_.size(); ++i) {
     cache_list.Set(i, std::make_unique<base::Value>(languages_[i]));

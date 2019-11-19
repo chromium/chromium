@@ -34,7 +34,7 @@ const char kProcDir[] = "/proc";
 const char kStatFile[] = "psinfo";  // AIX specific
 
 FilePath GetProcPidDir(pid_t pid) {
-  return FilePath(kProcDir).Append(IntToString(pid));
+  return FilePath(kProcDir).Append(NumberToString(pid));
 }
 
 pid_t ProcDirSlotToPid(const char* d_name) {
@@ -87,16 +87,16 @@ bool ParseProcStats(struct psinfo& stats_data,
   // https://www.ibm.com/support/knowledgecenter/ssw_aix_71/com.ibm.aix.files/proc.htm
   proc_stats->clear();
   // PID.
-  proc_stats->push_back(IntToString(stats_data.pr_pid));
+  proc_stats->push_back(NumberToString(stats_data.pr_pid));
   // Process name without parentheses. // 1
   proc_stats->push_back(stats_data.pr_fname);
   // Process State (Not available)  // 2
   proc_stats->push_back("0");
   // Process id of parent  // 3
-  proc_stats->push_back(IntToString(stats_data.pr_ppid));
+  proc_stats->push_back(NumberToString(stats_data.pr_ppid));
 
   // Process group id // 4
-  proc_stats->push_back(IntToString(stats_data.pr_pgid));
+  proc_stats->push_back(NumberToString(stats_data.pr_pgid));
 
   return true;
 }

@@ -9,6 +9,7 @@ source_set("gcm") {
   ]
   deps = [
     "//base",
+    "//build:branding_buildflags",
     "//components/gcm_driver",
     "//components/keyed_service/ios",
     "//ios/chrome/browser",

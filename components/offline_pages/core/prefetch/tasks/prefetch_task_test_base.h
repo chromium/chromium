@@ -76,10 +76,10 @@ class PrefetchTaskTestBase : public TaskTestBase {
 
  protected:
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
   TestPrefetchNetworkRequestFactory prefetch_request_factory_;
-  network::TestURLLoaderFactory test_url_loader_factory_;
   PrefetchStoreTestUtil store_test_util_;
   MockPrefetchItemGenerator item_generator_;
 };

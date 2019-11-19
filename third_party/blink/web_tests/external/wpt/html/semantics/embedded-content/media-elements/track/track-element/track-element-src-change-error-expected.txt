@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL HTMLTrackElement 'src' attribute mutations assert_equals: cues list is reset immediately after 'src' mutation with the new URL expected 0 but got 4
+Harness: the test ran to completion.
+

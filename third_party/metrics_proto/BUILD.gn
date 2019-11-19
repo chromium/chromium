@@ -4,29 +4,45 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+_proto_files = [
+  "call_stack_profile.proto",
+  "cast_logs.proto",
+  "chrome_os_app_list_launch_event.proto",
+  "chrome_user_metrics_extension.proto",
+  "execution_context.proto",
+  "extension_install.proto",
+  "histogram_event.proto",
+  "memory_leak_report.proto",
+  "omnibox_event.proto",
+  "omnibox_input_type.proto",
+  "perf_data.proto",
+  "perf_stat.proto",
+  "printer_event.proto",
+  "reporting_info.proto",
+  "sampled_profile.proto",
+  "system_profile.proto",
+  "trace_log.proto",
+  "translate_event.proto",
+  "ukm/aggregate.proto",
+  "ukm/entry.proto",
+  "ukm/report.proto",
+  "ukm/source.proto",
+  "user_action_event.proto",
+  "user_demographics.proto",
+]
+
 proto_library("metrics_proto") {
-  sources = [
-    "call_stack_profile.proto",
-    "cast_logs.proto",
-    "chrome_user_metrics_extension.proto",
-    "execution_context.proto",
-    "extension_install.proto",
-    "histogram_event.proto",
-    "memory_leak_report.proto",
-    "omnibox_event.proto",
-    "omnibox_input_type.proto",
-    "perf_data.proto",
-    "perf_stat.proto",
-    "printer_event.proto",
-    "reporting_info.proto",
-    "sampled_profile.proto",
-    "system_profile.proto",
-    "translate_event.proto",
-    "ukm/aggregate.proto",
-    "ukm/entry.proto",
-    "ukm/report.proto",
-    "ukm/source.proto",
-    "user_action_event.proto",
-  ]
+  sources = _proto_files
   proto_in_dir = "."
+}
+
+if (is_android) {
+  proto_java_library("metrics_proto_java") {
+    proto_path = "."
+    sources = _proto_files
+  }
 }

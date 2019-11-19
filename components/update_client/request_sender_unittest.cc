@@ -13,7 +13,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/update_client/net/url_loader_post_interceptor.h"
 #include "components/update_client/test_configurator.h"
@@ -57,7 +57,7 @@ class RequestSenderTest : public testing::Test,
   void Quit();
   void RunThreads();
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   scoped_refptr<TestConfigurator> config_;
   std::unique_ptr<RequestSender> request_sender_;
@@ -76,8 +76,7 @@ class RequestSenderTest : public testing::Test,
 INSTANTIATE_TEST_SUITE_P(IsForeground, RequestSenderTest, ::testing::Bool());
 
 RequestSenderTest::RequestSenderTest()
-    : scoped_task_environment_(
-          base::test::ScopedTaskEnvironment::MainThreadType::IO) {}
+    : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
 RequestSenderTest::~RequestSenderTest() {}
 
@@ -101,7 +100,7 @@ void RequestSenderTest::TearDown() {
 
   // Run the threads until they are idle to allow the clean up
   // of the network interceptors on the IO thread.
-  scoped_task_environment_.RunUntilIdle();
+  task_environment_.RunUntilIdle();
   config_ = nullptr;
 }
 
@@ -130,7 +129,7 @@ void RequestSenderTest::RequestSenderComplete(int error,
 TEST_P(RequestSenderTest, RequestSendSuccess) {
   EXPECT_TRUE(
       post_interceptor_->ExpectRequest(std::make_unique<PartialMatch>("test"),
-                                       test_file("updatecheck_reply_1.xml")));
+                                       test_file("updatecheck_reply_1.json")));
 
   const bool is_foreground = GetParam();
   request_sender_->Send(
@@ -154,10 +153,7 @@ TEST_P(RequestSenderTest, RequestSendSuccess) {
 
   // Check the response post conditions.
   EXPECT_EQ(0, error_);
-  EXPECT_TRUE(base::StartsWith(response_,
-                               "<?xml version='1.0' encoding='UTF-8'?>",
-                               base::CompareCase::SENSITIVE));
-  EXPECT_EQ(505ul, response_.size());
+  EXPECT_EQ(419ul, response_.size());
 
   // Check the interactivity header value.
   const auto extra_request_headers =
@@ -242,7 +238,7 @@ TEST_F(RequestSenderTest, RequestSendFailedNoUrls) {
 TEST_F(RequestSenderTest, RequestSendCupError) {
   EXPECT_TRUE(
       post_interceptor_->ExpectRequest(std::make_unique<PartialMatch>("test"),
-                                       test_file("updatecheck_reply_1.xml")));
+                                       test_file("updatecheck_reply_1.json")));
 
   const std::vector<GURL> urls = {GURL(kUrl1)};
   request_sender_ = std::make_unique<RequestSender>(config_);

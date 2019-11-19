@@ -22,8 +22,10 @@
 
 #include <dia2.h>
 #include <stdio.h>
+#include <wrl/client.h>
 
 #include <algorithm>
+#include <string>
 #include <vector>
 
 #include "base/win/atl.h"
@@ -92,7 +94,7 @@ bool DumpInterestingGlobals(IDiaSymbol* global, const wchar_t* filename) {
   std::vector<SymbolData> symbols;
   std::vector<RepeatData> repeats;
 
-  CComPtr<IDiaEnumSymbols> enum_symbols;
+  Microsoft::WRL::ComPtr<IDiaEnumSymbols> enum_symbols;
   HRESULT result =
       global->findChildren(SymTagData, NULL, nsNone, &enum_symbols);
   if (FAILED(result)) {
@@ -100,12 +102,9 @@ bool DumpInterestingGlobals(IDiaSymbol* global, const wchar_t* filename) {
     return false;
   }
 
-  CComPtr<IDiaSymbol> symbol;
-  // Must call symbol.Release() at end of loop to prepare for reuse of symbol
-  // smart pointer, because DIA2 is not smart-pointer aware.
+  Microsoft::WRL::ComPtr<IDiaSymbol> symbol;
   for (ULONG celt = 0;
-       SUCCEEDED(enum_symbols->Next(1, &symbol, &celt)) && (celt == 1);
-       symbol.Release()) {
+       SUCCEEDED(enum_symbols->Next(1, &symbol, &celt)) && (celt == 1);) {
     DWORD location_type = 0;
     // If we can't get the location type then we assume the variable is not of
     // interest.
@@ -120,7 +119,7 @@ bool DumpInterestingGlobals(IDiaSymbol* global, const wchar_t* filename) {
     // If we call get_length on symbol it works for functions but not for
     // data. For some reason for data we have to call get_type() to get
     // another IDiaSymbol object which we can query for length.
-    CComPtr<IDiaSymbol> type_symbol;
+    Microsoft::WRL::ComPtr<IDiaSymbol> type_symbol;
     if (FAILED(symbol->get_type(&type_symbol))) {
       wprintf(L"Get_type failed.\n");
       continue;
@@ -195,9 +194,9 @@ bool DumpInterestingGlobals(IDiaSymbol* global, const wchar_t* filename) {
 }
 
 bool Initialize(const wchar_t* filename,
-                CComPtr<IDiaDataSource>& source,
-                CComPtr<IDiaSession>& session,
-                CComPtr<IDiaSymbol>& global) {
+                Microsoft::WRL::ComPtr<IDiaDataSource>& source,
+                Microsoft::WRL::ComPtr<IDiaSession>& session,
+                Microsoft::WRL::ComPtr<IDiaSymbol>& global) {
   // Initialize DIA2
   HRESULT hr = CoCreateInstance(__uuidof(DiaSource), NULL, CLSCTX_INPROC_SERVER,
                                 __uuidof(IDiaDataSource), (void**)&source);
@@ -246,13 +245,13 @@ int wmain(int argc, wchar_t* argv[]) {
   // Extra scope so that we can call CoUninitialize after we destroy our local
   // variables.
   {
-    CComPtr<IDiaDataSource> source;
-    CComPtr<IDiaSession> session;
-    CComPtr<IDiaSymbol> global;
+    Microsoft::WRL::ComPtr<IDiaDataSource> source;
+    Microsoft::WRL::ComPtr<IDiaSession> session;
+    Microsoft::WRL::ComPtr<IDiaSymbol> global;
     if (!(Initialize(filename, source, session, global)))
       return -1;
 
-    DumpInterestingGlobals(global, filename);
+    DumpInterestingGlobals(global.Get(), filename);
   }
 
   CoUninitialize();

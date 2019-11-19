@@ -32,9 +32,9 @@ bool GetColor(const CSSProperty& property,
               const ComputedStyle& style,
               StyleColor& result) {
   switch (property.PropertyID()) {
-    case CSSPropertyFill:
+    case CSSPropertyID::kFill:
       return GetColorFromPaint(style.SvgStyle().FillPaint(), result);
-    case CSSPropertyStroke:
+    case CSSPropertyID::kStroke:
       return GetColorFromPaint(style.SvgStyle().StrokePaint(), result);
     default:
       NOTREACHED();
@@ -64,22 +64,12 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertInitial(
 class InheritedPaintChecker
     : public CSSInterpolationType::CSSConversionChecker {
  public:
-  static std::unique_ptr<InheritedPaintChecker> Create(
-      const CSSProperty& property,
-      const StyleColor& color) {
-    return base::WrapUnique(new InheritedPaintChecker(property, color));
-  }
-  static std::unique_ptr<InheritedPaintChecker> Create(
-      const CSSProperty& property) {
-    return base::WrapUnique(new InheritedPaintChecker(property));
-  }
-
- private:
   InheritedPaintChecker(const CSSProperty& property)
       : property_(property), valid_color_(false) {}
   InheritedPaintChecker(const CSSProperty& property, const StyleColor& color)
       : property_(property), valid_color_(true), color_(color) {}
 
+ private:
   bool IsValid(const StyleResolverState& state,
                const InterpolationValue& underlying) const final {
     StyleColor parent_color;
@@ -100,11 +90,12 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertInherit(
     return nullptr;
   StyleColor parent_color;
   if (!GetColor(CssProperty(), *state.ParentStyle(), parent_color)) {
-    conversion_checkers.push_back(InheritedPaintChecker::Create(CssProperty()));
+    conversion_checkers.push_back(
+        std::make_unique<InheritedPaintChecker>(CssProperty()));
     return nullptr;
   }
   conversion_checkers.push_back(
-      InheritedPaintChecker::Create(CssProperty(), parent_color));
+      std::make_unique<InheritedPaintChecker>(CssProperty(), parent_color));
   return InterpolationValue(
       CSSColorInterpolationType::CreateInterpolableColor(parent_color));
 }
@@ -140,13 +131,13 @@ void CSSPaintInterpolationType::ApplyStandardPropertyValue(
       interpolable_color, state);
   SVGComputedStyle& mutable_svg_style = state.Style()->AccessSVGStyle();
   switch (CssProperty().PropertyID()) {
-    case CSSPropertyFill:
+    case CSSPropertyID::kFill:
       mutable_svg_style.SetFillPaint(SVGPaint(color));
-      mutable_svg_style.SetVisitedLinkFillPaint(SVGPaint(color));
+      mutable_svg_style.SetInternalVisitedFillPaint(SVGPaint(color));
       break;
-    case CSSPropertyStroke:
+    case CSSPropertyID::kStroke:
       mutable_svg_style.SetStrokePaint(SVGPaint(color));
-      mutable_svg_style.SetVisitedLinkStrokePaint(SVGPaint(color));
+      mutable_svg_style.SetInternalVisitedStrokePaint(SVGPaint(color));
       break;
     default:
       NOTREACHED();

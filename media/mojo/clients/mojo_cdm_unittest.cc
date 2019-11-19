@@ -17,10 +17,11 @@
 #include "media/base/mock_filters.h"
 #include "media/cdm/default_cdm_factory.h"
 #include "media/mojo/clients/mojo_cdm.h"
-#include "media/mojo/interfaces/content_decryption_module.mojom.h"
+#include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/services/mojo_cdm_service.h"
 #include "media/mojo/services/mojo_cdm_service_context.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -80,10 +81,9 @@ class MojoCdmTest : public ::testing::Test {
     // TODO(xhwang): Add pending init support.
     DCHECK_NE(PENDING, expected_result);
 
-    mojom::ContentDecryptionModulePtr remote_cdm;
-    auto cdm_request = mojo::MakeRequest(&remote_cdm);
+    mojo::PendingRemote<mojom::ContentDecryptionModule> remote_cdm;
 
-    cdm_binding_.Bind(std::move(cdm_request));
+    cdm_binding_.Bind(remote_cdm.InitWithNewPipeAndPassReceiver());
 
     std::string key_system;
     if (expected_result == CONNECTION_ERROR_BEFORE) {
@@ -613,6 +613,17 @@ TEST_F(MojoCdmTest, SessionKeysChangeCB_Success) {
   remote_cdm_->CallSessionKeysChangeCB(session_id, has_additional_usable_key,
                                        std::move(keys_info));
   base::RunLoop().RunUntilIdle();
+}
+
+// TODO(xhwang): Refactor MockCdmFactory to mock CdmFactory::Create() so that we
+// can set expectations and default actions on the created MockCdm, e.g. return
+// a non-null Decryptor to test the HasDecryptor case.
+TEST_F(MojoCdmTest, NoDecryptor) {
+  Initialize(SUCCESS);
+  auto* cdm_context = mojo_cdm_->GetCdmContext();
+  EXPECT_TRUE(cdm_context) << "All CDMs should support CdmContext";
+  auto* decryptor = cdm_context->GetDecryptor();
+  EXPECT_FALSE(decryptor);
 }
 
 }  // namespace media

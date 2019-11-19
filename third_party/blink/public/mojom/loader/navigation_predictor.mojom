@@ -5,6 +5,7 @@
 module blink.mojom;
 
 import "url/mojom/url.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // This mojom file is for user navigation prediction experiment, using anchor
 // element metrics gathered from the renderer process. See crbug.com/850624.
@@ -62,5 +63,7 @@ interface AnchorElementMetricsHost {
 
   // This is called after a web page is loaded. The renderer extracts and sends
   // |metrics| of anchor elements in the first viewport.
-  ReportAnchorElementMetricsOnLoad(array<AnchorElementMetrics> metrics);
+  ReportAnchorElementMetricsOnLoad(
+        array<AnchorElementMetrics> metrics,
+        gfx.mojom.Size viewport_size);
 };

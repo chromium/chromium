@@ -21,13 +21,13 @@ namespace {
 // has three fields. The first is the current char. The second is the offset of
 // the current char in terms of the original text of the TokenizedString. The
 // last one is optional and only shows up when IsFirstCharOfToken returns true.
-std::string GetIterateState(const TokenizedStringCharIterator& iter) {
+std::string GetIterateState(const ash::TokenizedStringCharIterator& iter) {
   return base::StringPrintf(
       "%s%d%s", base::UTF16ToUTF8(base::string16(1, iter.Get())).c_str(),
       iter.GetArrayPos(), iter.IsFirstCharOfToken() ? "!" : "");
 }
 
-void TestBeyondTheEnd(TokenizedStringCharIterator* iter) {
+void TestBeyondTheEnd(ash::TokenizedStringCharIterator* iter) {
   ASSERT_TRUE(iter->end());
   ASSERT_FALSE(iter->NextChar());
   ASSERT_FALSE(iter->NextToken());
@@ -37,8 +37,8 @@ void TestBeyondTheEnd(TokenizedStringCharIterator* iter) {
 }
 
 void TestEveryChar(const std::string& text, const std::string& expects) {
-  TokenizedString tokens(base::UTF8ToUTF16(text));
-  TokenizedStringCharIterator iter(tokens);
+  ash::TokenizedString tokens(base::UTF8ToUTF16(text));
+  ash::TokenizedStringCharIterator iter(tokens);
 
   std::vector<std::string> results;
   while (!iter.end()) {
@@ -51,8 +51,8 @@ void TestEveryChar(const std::string& text, const std::string& expects) {
 }
 
 void TestNextToken(const std::string& text, const std::string& expects) {
-  TokenizedString tokens(base::UTF8ToUTF16(text));
-  TokenizedStringCharIterator iter(tokens);
+  ash::TokenizedString tokens(base::UTF8ToUTF16(text));
+  ash::TokenizedStringCharIterator iter(tokens);
 
   std::vector<std::string> results;
   while (!iter.end()) {
@@ -66,8 +66,8 @@ void TestNextToken(const std::string& text, const std::string& expects) {
 
 void TestFirstTwoCharInEveryToken(const std::string& text,
                                   const std::string& expects) {
-  TokenizedString tokens(base::UTF8ToUTF16(text));
-  TokenizedStringCharIterator iter(tokens);
+  ash::TokenizedString tokens(base::UTF8ToUTF16(text));
+  ash::TokenizedStringCharIterator iter(tokens);
 
   std::vector<std::string> results;
   while (!iter.end()) {

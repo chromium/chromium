@@ -15,8 +15,9 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/find_bar/find_tab_helper.h"
+#include "chrome/browser/ui/find_bar/find_types.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/test/base/find_in_page_observer.h"
+#include "chrome/test/base/find_result_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -196,9 +197,7 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
   ASSERT_TRUE(chrome::ExecuteCommand(browser_incognito, IDC_FIND_NEXT));
   content::WebContents* web_contents_incognito =
       browser_incognito->tab_strip_model()->GetActiveWebContents();
-  ui_test_utils::FindInPageNotificationObserver observer(
-      web_contents_incognito);
-  observer.Wait();
+  ui_test_utils::FindResultWaiter(web_contents_incognito).Wait();
 
   FindBarController* find_bar_controller =
       browser_incognito->GetFindBarController();
@@ -256,8 +255,8 @@ IN_PROC_BROWSER_TEST_F(FindBarPlatformHelperMacInteractiveUITest,
 
   // Go back to the first tab and end the search.
   browser()->tab_strip_model()->ActivateTabAt(0);
-  find_bar_controller->EndFindSession(FindBarController::kKeepSelectionOnPage,
-                                      FindBarController::kKeepResultsInFindBox);
+  find_bar_controller->EndFindSession(FindOnPageSelectionAction::kKeep,
+                                      FindBoxResultAction::kKeep);
   // Simulate F3.
   ui_test_utils::FindInPage(first_active_web_contents, base::string16(), true,
                             false, nullptr, nullptr);

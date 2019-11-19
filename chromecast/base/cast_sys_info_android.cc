@@ -16,8 +16,8 @@
 #include "base/system/sys_info.h"
 #include "chromecast/base/cast_sys_info_util.h"
 #include "chromecast/base/version.h"
+#include "chromecast/browser/jni_headers/CastSysInfoAndroid_jni.h"
 #include "chromecast/chromecast_buildflags.h"
-#include "jni/CastSysInfoAndroid_jni.h"
 
 namespace chromecast {
 
@@ -29,7 +29,7 @@ std::string GetAndroidProperty(const std::string& key,
   char value[PROP_VALUE_MAX];
   int ret = __system_property_get(key.c_str(), value);
   if (ret <= 0) {
-    VLOG(1) << "No value set for property: " << key;
+    DVLOG(1) << "No value set for property: " << key;
     return default_value;
   }
 
@@ -105,21 +105,21 @@ std::string CastSysInfoAndroid::GetFactoryCountry() {
   return GetAndroidProperty("ro.boot.wificountrycode", "");
 }
 
-std::string CastSysInfoAndroid::GetFactoryLocale(std::string* second_locale) {
+std::vector<std::string> CastSysInfoAndroid::GetFactoryLocaleList() {
   // This duplicates the read-only property portion of
   // frameworks/base/core/jni/AndroidRuntime.cpp in the Android tree, which is
   // effectively the "factory locale", i.e. the locale chosen by Android
   // assuming the other persist.sys.* properties are not set.
   const std::string locale = GetAndroidProperty("ro.product.locale", "");
   if (!locale.empty()) {
-    return locale;
+    return {locale};
   }
 
   const std::string language =
       GetAndroidProperty("ro.product.locale.language", "en");
   const std::string region =
       GetAndroidProperty("ro.product.locale.region", "US");
-  return language + "-" + region;
+  return {language + "-" + region};
 }
 
 std::string CastSysInfoAndroid::GetWifiInterface() {

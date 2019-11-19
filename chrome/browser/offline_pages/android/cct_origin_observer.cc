@@ -6,8 +6,8 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/CctOfflinePageModelObserver_jni.h"
 #include "components/offline_pages/core/offline_page_feature.h"
-#include "jni/CctOfflinePageModelObserver_jni.h"
 
 using base::android::ConvertUTF8ToJavaString;
 
@@ -40,12 +40,11 @@ void CctOriginObserver::OfflinePageAdded(OfflinePageModel* model,
       ConvertUTF8ToJavaString(env, added_page.url.spec()));
 }
 
-void CctOriginObserver::OfflinePageDeleted(
-    const OfflinePageModel::DeletedPageInfo& page_info) {
+void CctOriginObserver::OfflinePageDeleted(const OfflinePageItem& item) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_CctOfflinePageModelObserver_onPageChanged(
-      env, ConvertUTF8ToJavaString(env, page_info.request_origin), false,
-      ConvertUTF8ToJavaString(env, page_info.url.spec()));
+      env, ConvertUTF8ToJavaString(env, item.request_origin), false,
+      ConvertUTF8ToJavaString(env, item.url.spec()));
 }
 
 }  // namespace offline_pages

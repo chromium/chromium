@@ -97,11 +97,12 @@ KeyboardEvent* KeyboardEvent::Create(ScriptState* script_state,
 KeyboardEvent::KeyboardEvent() : location_(kDomKeyLocationStandard) {}
 
 KeyboardEvent::KeyboardEvent(const WebKeyboardEvent& key,
-                             LocalDOMWindow* dom_window)
+                             LocalDOMWindow* dom_window,
+                             bool cancellable)
     : UIEventWithKeyState(
           EventTypeForKeyboardEventType(key.GetType()),
           Bubbles::kYes,
-          Cancelable::kYes,
+          cancellable ? Cancelable::kYes : Cancelable::kNo,
           dom_window,
           0,
           static_cast<WebInputEvent::Modifiers>(key.GetModifiers()),

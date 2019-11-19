@@ -41,8 +41,7 @@ MockQuotaManager::MockQuotaManager(
                    profile_path,
                    std::move(io_thread),
                    std::move(special_storage_policy),
-                   storage::GetQuotaSettingsFunc()),
-      weak_factory_(this) {}
+                   storage::GetQuotaSettingsFunc()) {}
 
 void MockQuotaManager::GetUsageAndQuota(const url::Origin& origin,
                                         StorageType type,

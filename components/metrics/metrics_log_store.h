@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "components/metrics/log_store.h"
 #include "components/metrics/metrics_log.h"
-#include "components/metrics/persisted_logs.h"
+#include "components/metrics/unsent_log_store.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -19,7 +19,7 @@ namespace metrics {
 
 // A LogStore implementation for storing UMA logs.
 // This implementation keeps track of two types of logs, initial and ongoing,
-// each stored in PersistedLogs.  It prioritizes staging initial logs over
+// each stored in UnsentLogStore. It prioritizes staging initial logs over
 // ongoing logs.
 class MetricsLogStore : public LogStore {
  public:
@@ -59,9 +59,9 @@ class MetricsLogStore : public LogStore {
 
   // Logs stored with the INITIAL_STABILITY_LOG type that haven't been sent yet.
   // These logs will be staged first when staging new logs.
-  PersistedLogs initial_log_queue_;
+  UnsentLogStore initial_log_queue_;
   // Logs stored with the ONGOING_LOG type that haven't been sent yet.
-  PersistedLogs ongoing_log_queue_;
+  UnsentLogStore ongoing_log_queue_;
 
   DISALLOW_COPY_AND_ASSIGN(MetricsLogStore);
 };

@@ -58,12 +58,14 @@ struct GlobalCurveFromJson {
 
 struct ModelConfigFromJson {
   double auto_brightness_als_horizon_seconds;
+  bool enabled;
   GlobalCurveFromJson global_curve;
   std::string metrics_key;
   double model_als_horizon_seconds;
 
   ModelConfigFromJson()
       : auto_brightness_als_horizon_seconds(-1.0),
+        enabled(false),
         model_als_horizon_seconds(-1.0) {}
 
   static void RegisterJSONConverter(
@@ -71,6 +73,7 @@ struct ModelConfigFromJson {
     converter->RegisterDoubleField(
         "auto_brightness_als_horizon_seconds",
         &ModelConfigFromJson::auto_brightness_als_horizon_seconds);
+    converter->RegisterBoolField("enabled", &ModelConfigFromJson::enabled);
     converter->RegisterNestedField("global_curve",
                                    &ModelConfigFromJson::global_curve);
     converter->RegisterStringField("metrics_key",
@@ -87,8 +90,9 @@ ModelConfigLoaderImpl::ModelConfigLoaderImpl()
     : ModelConfigLoaderImpl(
           base::FilePath(
               "/usr/share/chromeos-assets/autobrightness/model_params.json"),
-          base::CreateSequencedTaskRunnerWithTraits(
-              {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
+          base::CreateSequencedTaskRunner(
+              {base::ThreadPool(), base::TaskPriority::USER_VISIBLE,
+               base::MayBlock(),
                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
           false /* is_testing */) {}
 
@@ -127,8 +131,7 @@ ModelConfigLoaderImpl::ModelConfigLoaderImpl(
     bool is_testing)
     : model_params_path_(model_params_path),
       blocking_task_runner_(blocking_task_runner),
-      is_testing_(is_testing),
-      weak_ptr_factory_(this) {
+      is_testing_(is_testing) {
   Init();
 }
 
@@ -157,6 +160,9 @@ void ModelConfigLoaderImpl::InitFromParams() {
           features::kAutoScreenBrightness,
           "auto_brightness_als_horizon_seconds",
           model_config_.auto_brightness_als_horizon_seconds);
+
+  model_config_.enabled = GetFieldTrialParamByFeatureAsBool(
+      features::kAutoScreenBrightness, "enabled", model_config_.enabled);
 
   model_config_.model_als_horizon_seconds = GetFieldTrialParamByFeatureAsInt(
       features::kAutoScreenBrightness, "model_als_horizon_seconds",
@@ -227,6 +233,8 @@ void ModelConfigLoaderImpl::OnModelParamsLoadedFromDisk(
 
   model_config_.auto_brightness_als_horizon_seconds =
       loaded_model_configs.auto_brightness_als_horizon_seconds;
+
+  model_config_.enabled = loaded_model_configs.enabled;
 
   std::vector<double> log_lux;
   for (const auto& log_lux_val : loaded_model_configs.global_curve.log_lux) {

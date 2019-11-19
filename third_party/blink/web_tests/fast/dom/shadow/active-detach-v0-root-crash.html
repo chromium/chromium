@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<div id="host">
+  <div id="child">Clicking this text should not crash</div>
+</div>
+<script>
+  promise_test(async () => {
+    child.addEventListener("mousedown", () => {
+      host.createShadowRoot();
+      child.remove();
+    });
+    await mouseDownAt(16, 16);
+  }, "Test that removing an :active v0 shadow host child on mousedown does not crash.");
+</script>

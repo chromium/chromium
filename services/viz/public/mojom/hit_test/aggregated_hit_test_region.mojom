@@ -1,0 +1,24 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/transform.mojom";
+
+// Corresponds to viz::AggregatedHitTestRegion.
+struct AggregatedHitTestRegion {
+  FrameSinkId frame_sink_id;
+
+  uint32 flags;
+
+  uint32 async_hit_test_reasons;
+
+  gfx.mojom.Rect rect;
+
+  uint32 child_count;
+
+  gfx.mojom.Transform transform;
+};

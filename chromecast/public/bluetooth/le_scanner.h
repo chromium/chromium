@@ -36,11 +36,14 @@ class CHROMECAST_EXPORT LeScanner {
   };
 
   // Returns true if this interface is implemented.
-  static bool IsSupported() __attribute__((weak));
-  static void SetDelegate(Delegate* delegate) __attribute__((weak));
+  static bool IsSupported();
+  static void SetDelegate(Delegate* delegate);
 
-  static bool StartScan() __attribute__((weak));
-  static bool StopScan() __attribute__((weak));
+  static bool StartScan();
+  static bool StopScan();
+
+  static bool SetScanParameters(int scan_interval_ms, int scan_window_ms)
+      __attribute__((__weak__));
 };
 
 inline LeScanner::ScanResult::ScanResult() = default;

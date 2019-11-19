@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_ARC_INTENT_HELPER_OPEN_URL_DELEGATE_H_
 #define COMPONENTS_ARC_INTENT_HELPER_OPEN_URL_DELEGATE_H_
 
-#include "components/arc/common/intent_helper.mojom.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
 
 class GURL;
 
@@ -29,6 +29,10 @@ class OpenUrlDelegate {
       int32_t surface_id,
       int32_t top_margin,
       mojom::IntentHelperHost::OnOpenCustomTabCallback callback) = 0;
+
+  // Opens the requested |chrome_page|. If |chrome_page| is a settings page,
+  // this will open the settings window.
+  virtual void OpenChromePageFromArc(mojom::ChromePage chrome_page) = 0;
 };
 
 }  // namespace arc

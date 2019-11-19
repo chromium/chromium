@@ -6,23 +6,24 @@ package org.chromium.chrome.browser.widget;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.test.filters.SmallTest;
 import android.support.v4.util.Pair;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.util.ConversionUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -156,19 +157,15 @@ public class ThumbnailDiskStorageTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         RecordHistogram.setDisabledForTests(true);
         mTestThumbnailStorageDelegate = new TestThumbnailStorageDelegate();
         mTestThumbnailGenerator = new TestThumbnailGenerator();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mTestThumbnailDiskStorage =
-                        new TestThumbnailDiskStorage(mTestThumbnailStorageDelegate,
-                                mTestThumbnailGenerator, TEST_MAX_CACHE_BYTES);
-                // Clear the disk cache so that cached entries from previous runs won't show up.
-                mTestThumbnailDiskStorage.clear();
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTestThumbnailDiskStorage = new TestThumbnailDiskStorage(
+                    mTestThumbnailStorageDelegate, mTestThumbnailGenerator, TEST_MAX_CACHE_BYTES);
+            // Clear the disk cache so that cached entries from previous runs won't show up.
+            mTestThumbnailDiskStorage.clear();
         });
         assertInitialized();
         assertDiskSizeBytes(0);
@@ -180,7 +177,7 @@ public class ThumbnailDiskStorageTest {
      */
     @Test
     @SmallTest
-    public void testCanInsertAndGet() throws Throwable {
+    public void testCanInsertAndGet() {
         mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
         Assert.assertEquals(1, mTestThumbnailDiskStorage.getCacheCount());
 
@@ -203,7 +200,7 @@ public class ThumbnailDiskStorageTest {
      */
     @Test
     @SmallTest
-    public void testRepeatedInsertShouldBeUpdated() throws Throwable {
+    public void testRepeatedInsertShouldBeUpdated() {
         mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
         mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP2, ICON_WIDTH1);
 
@@ -222,7 +219,7 @@ public class ThumbnailDiskStorageTest {
      */
     @Test
     @SmallTest
-    public void testRetrieveThumbnailShouldMakeEntryMostRecent() throws Throwable {
+    public void testRetrieveThumbnailShouldMakeEntryMostRecent() {
         mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
         mTestThumbnailDiskStorage.addToDisk(CONTENT_ID2, BITMAP1, ICON_WIDTH1);
         mTestThumbnailDiskStorage.addToDisk(CONTENT_ID3, BITMAP1, ICON_WIDTH1);
@@ -253,7 +250,7 @@ public class ThumbnailDiskStorageTest {
      */
     @Test
     @SmallTest
-    public void testExceedLimitShouldTrim() throws Throwable {
+    public void testExceedLimitShouldTrim() {
         // Add thumbnails up to cache limit to get 1 entry trimmed
         int count = 0;
         while (mTestThumbnailDiskStorage.removeCount.get() == 0) {
@@ -280,7 +277,7 @@ public class ThumbnailDiskStorageTest {
      */
     @Test
     @SmallTest
-    public void testRemoveAllThumbnailsWithSameContentId() throws Throwable {
+    public void testRemoveAllThumbnailsWithSameContentId() {
         mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH1);
         mTestThumbnailDiskStorage.addToDisk(CONTENT_ID1, BITMAP1, ICON_WIDTH2);
         Assert.assertEquals(2, mTestThumbnailDiskStorage.getCacheCount());
@@ -312,14 +309,9 @@ public class ThumbnailDiskStorageTest {
     /**
      * Retrieve thumbnail and assert that {@link ThumbnailStorageDelegate} has received it.
      */
-    private void retrieveThumbnailAndAssertRetrieved(final TestThumbnailRequest request)
-            throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mTestThumbnailDiskStorage.retrieveThumbnail(request);
-            }
-        });
+    private void retrieveThumbnailAndAssertRetrieved(final TestThumbnailRequest request) {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mTestThumbnailDiskStorage.retrieveThumbnail(request); });
 
         CriteriaHelper.pollInstrumentationThread(new Criteria() {
             @Override
@@ -329,7 +321,7 @@ public class ThumbnailDiskStorageTest {
         }, TIMEOUT_MS, INTERVAL_MS);
     }
 
-    private void assertInitialized() throws Exception {
+    private void assertInitialized() {
         CriteriaHelper.pollInstrumentationThread(new Criteria() {
             @Override
             public boolean isSatisfied() {
@@ -344,12 +336,8 @@ public class ThumbnailDiskStorageTest {
      * @param expectedRemoveCount The expected removeCount.
      */
     private void removeThumbnailAndExpectedCount(String contentId, int expectedRemoveCount) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                mTestThumbnailDiskStorage.removeFromDisk(contentId);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mTestThumbnailDiskStorage.removeFromDisk(contentId); });
 
         CriteriaHelper.pollInstrumentationThread(new Criteria() {
             @Override

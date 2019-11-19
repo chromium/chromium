@@ -34,7 +34,7 @@ class CloudServicesDialogViewTest : public ChromeViewsTestBase {
     widget_params.ownership =
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
     anchor_widget_ = std::make_unique<views::Widget>();
-    anchor_widget_->Init(widget_params);
+    anchor_widget_->Init(std::move(widget_params));
     anchor_widget_->Show();
   }
 

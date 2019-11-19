@@ -11,14 +11,18 @@ enum SSLVersion {
   kTLS13,
 };
 
-// This contains the subset of net::SSLConfig members that are managed by the
-// net::SSLConfigService. See net::SSLConfig for field descriptions.
+// This is a combination of net::SSLContextConfig and
+// net::CertVerifier::Config's fields. See those two classes for descriptions.
 struct SSLConfig {
   bool rev_checking_enabled = false;
   bool rev_checking_required_local_anchors = false;
 
   bool sha1_local_anchors_enabled = false;
   bool symantec_enforcement_disabled = false;
+
+  // If true, enables TLS 1.3 downgrade hardening for connections using local
+  // trust anchors. (Hardening for known roots is always enabled.)
+  bool tls13_hardening_for_local_anchors_enabled = false;
 
   // SSL 2.0 and 3.0 are not supported. Note these lines must be kept in sync
   // with net/ssl/ssl_config.cc.

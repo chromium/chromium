@@ -15,9 +15,11 @@ AssistantContainerViewAnimator::AssistantContainerViewAnimator(
     AssistantContainerView* assistant_container_view)
     : delegate_(delegate), assistant_container_view_(assistant_container_view) {
   static_cast<views::View*>(assistant_container_view_)->AddObserver(this);
+  delegate_->AddUiModelObserver(this);
 }
 
 AssistantContainerViewAnimator::~AssistantContainerViewAnimator() {
+  delegate_->RemoveUiModelObserver(this);
   static_cast<views::View*>(assistant_container_view_)->RemoveObserver(this);
 }
 
@@ -32,6 +34,12 @@ AssistantContainerViewAnimator::Create(
 }
 
 void AssistantContainerViewAnimator::Init() {}
+
+void AssistantContainerViewAnimator::OnUiVisibilityChanged(
+    AssistantVisibility new_visibility,
+    AssistantVisibility old_visibility,
+    base::Optional<AssistantEntryPoint> entry_point,
+    base::Optional<AssistantExitPoint> exit_point) {}
 
 void AssistantContainerViewAnimator::OnBoundsChanged() {}
 

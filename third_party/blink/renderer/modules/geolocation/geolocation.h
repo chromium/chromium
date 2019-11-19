@@ -27,17 +27,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_H_
 
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/geolocation.mojom-blink.h"
-#include "third_party/blink/public/platform/modules/geolocation/geolocation_service.mojom-blink.h"
+#include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_position_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_position_error_callback.h"
 #include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/geolocation/geo_notifier.h"
+#include "third_party/blink/renderer/modules/geolocation/geolocation_position_error.h"
 #include "third_party/blink/renderer/modules/geolocation/geolocation_watchers.h"
 #include "third_party/blink/renderer/modules/geolocation/geoposition.h"
-#include "third_party/blink/renderer/modules/geolocation/position_error.h"
 #include "third_party/blink/renderer/modules/geolocation/position_options.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -45,6 +46,10 @@
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
+
+namespace mojom {
+enum class PermissionStatus;
+}  // namespace mojom
 
 class Document;
 class LocalFrame;
@@ -114,8 +119,8 @@ class MODULES_EXPORT Geolocation final
  private:
   // Customized HeapHashSet class that checks notifiers' timers. Notifier's
   // timer may be active only when the notifier is owned by the Geolocation.
-  class GeoNotifierSet : private HeapHashSet<TraceWrapperMember<GeoNotifier>> {
-    using BaseClass = HeapHashSet<TraceWrapperMember<GeoNotifier>>;
+  class GeoNotifierSet : private HeapHashSet<Member<GeoNotifier>> {
+    using BaseClass = HeapHashSet<Member<GeoNotifier>>;
 
    public:
     using BaseClass::Trace;
@@ -168,26 +173,26 @@ class MODULES_EXPORT Geolocation final
   // Sends the given error to all notifiers, unless the error is not fatal and
   // the notifier is due to receive a cached position. Clears the oneshots,
   // and also  clears the watchers if the error is fatal.
-  void HandleError(PositionError*);
+  void HandleError(GeolocationPositionError*);
 
   // Connects to the Geolocation mojo service and starts polling for updates.
   void StartUpdating(GeoNotifier*);
 
   void StopUpdating();
 
-  void UpdateGeolocationConnection();
+  void UpdateGeolocationConnection(GeoNotifier*);
   void QueryNextPosition();
 
   // Attempts to obtain a position for the given notifier, either by using
-  // the cached position or by requesting one from the Geolocation.
+  // the cached position or by requesting one from the Geolocation service.
   // Sets a fatal error if permission is denied or no position can be
   // obtained.
   void StartRequest(GeoNotifier*);
 
   bool HaveSuitableCachedPosition(const PositionOptions*);
 
-  // Record whether the origin trying to access Geolocation would be allowed
-  // to access a feature that can only be accessed by secure origins.
+  // Record whether the origin trying to access Geolocation would be
+  // allowed to access a feature that can only be accessed by secure origins.
   // See https://goo.gl/Y0ZkNV
   void RecordOriginTypeAccess() const;
 
@@ -195,25 +200,28 @@ class MODULES_EXPORT Geolocation final
 
   void OnGeolocationConnectionError();
 
+  void OnGeolocationPermissionStatusUpdated(GeoNotifier*,
+                                            mojom::PermissionStatus);
+
   GeoNotifierSet one_shots_;
-  TraceWrapperMember<GeolocationWatchers> watchers_;
+  Member<GeolocationWatchers> watchers_;
   // GeoNotifiers that are in the middle of invocation.
   //
   // |HandleError(error)| and |MakeSuccessCallbacks| need to clear |one_shots_|
   // (and optionally |watchers_|) before invoking the callbacks, in order to
-  // avoid clearing notifiers added by calls to Geolocation methods from the
-  // callbacks. Thus, something else needs to make the notifiers being invoked
-  // alive with wrapper-tracing because V8 GC may run during the callbacks.
-  // |one_shots_being_invoked_| and |watchers_being_invoked_| perform
+  // avoid clearing notifiers added by calls to Geolocation methods
+  // from the callbacks. Thus, something else needs to make the notifiers being
+  // invoked alive with wrapper-tracing because V8 GC may run during the
+  // callbacks. |one_shots_being_invoked_| and |watchers_being_invoked_| perform
   // wrapper-tracing.
   // TODO(https://crbug.com/796145): Remove this hack once on-stack objects
   // get supported by either of wrapper-tracing or unified GC.
   GeoNotifierSet one_shots_being_invoked_;
-  HeapVector<TraceWrapperMember<GeoNotifier>> watchers_being_invoked_;
+  HeapVector<Member<GeoNotifier>> watchers_being_invoked_;
   Member<Geoposition> last_position_;
 
-  device::mojom::blink::RevocableGeolocationPtr geolocation_;
-  mojom::blink::RevocableGeolocationServicePtr geolocation_service_;
+  mojo::Remote<device::mojom::blink::Geolocation> geolocation_;
+  mojo::Remote<mojom::blink::GeolocationService> geolocation_service_;
   bool enable_high_accuracy_ = false;
 
   // Whether a GeoNotifier is waiting for a position update.

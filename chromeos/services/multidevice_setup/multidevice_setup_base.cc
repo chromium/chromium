@@ -12,12 +12,13 @@ MultiDeviceSetupBase::MultiDeviceSetupBase() = default;
 
 MultiDeviceSetupBase::~MultiDeviceSetupBase() = default;
 
-void MultiDeviceSetupBase::BindRequest(mojom::MultiDeviceSetupRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void MultiDeviceSetupBase::BindReceiver(
+    mojo::PendingReceiver<mojom::MultiDeviceSetup> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
-void MultiDeviceSetupBase::CloseAllBindings() {
-  bindings_.CloseAllBindings();
+void MultiDeviceSetupBase::CloseAllReceivers() {
+  receivers_.Clear();
 }
 
 }  // namespace multidevice_setup

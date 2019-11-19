@@ -22,7 +22,7 @@
 </style>
 <div id='player'>
   <div id='container'>
-    <video></video>
+    <video preload="auto"></video>
   </div>
   <div id='controls'>
     <button>foo</button><button>bar</button>
@@ -40,7 +40,7 @@
   if (window.testRunner && window.eventSender && window.internals) {
     testRunner.waitUntilDone();
 
-    video.addEventListener('loadedmetadata', e => {
+    video.addEventListener('canplaythrough', e => {
       var bounding = document.querySelector('#fs').getBoundingClientRect();
       eventSender.mouseMoveTo(bounding.left + bounding.width / 2,
                               bounding.top + bounding.height / 2);

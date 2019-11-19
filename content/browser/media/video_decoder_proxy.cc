@@ -6,9 +6,10 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "content/public/common/service_manager_connection.h"
-#include "media/mojo/interfaces/constants.mojom.h"
-#include "media/mojo/interfaces/media_service.mojom.h"
+#include "content/public/browser/system_connector.h"
+#include "media/mojo/mojom/constants.mojom.h"
+#include "media/mojo/mojom/media_service.mojom.h"
+#include "media/mojo/mojom/renderer_extensions.mojom.h"
 #include "services/service_manager/public/cpp/connector.h"
 
 namespace content {
@@ -22,81 +23,92 @@ VideoDecoderProxy::~VideoDecoderProxy() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-void VideoDecoderProxy::Add(media::mojom::InterfaceFactoryRequest request) {
+void VideoDecoderProxy::Add(
+    mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  bindings_.AddBinding(this, std::move(request));
+  receivers_.Add(this, std::move(receiver));
 }
 
 void VideoDecoderProxy::CreateAudioDecoder(
-    media::mojom::AudioDecoderRequest request) {}
+    mojo::PendingReceiver<media::mojom::AudioDecoder> receiver) {}
 
 void VideoDecoderProxy::CreateVideoDecoder(
-    media::mojom::VideoDecoderRequest request) {
+    mojo::PendingReceiver<media::mojom::VideoDecoder> receiver) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   InterfaceFactory* factory = GetMediaInterfaceFactory();
   if (factory)
-    factory->CreateVideoDecoder(std::move(request));
+    factory->CreateVideoDecoder(std::move(receiver));
 }
 
 void VideoDecoderProxy::CreateDefaultRenderer(
     const std::string& audio_device_id,
-    media::mojom::RendererRequest request) {}
+    mojo::PendingReceiver<media::mojom::Renderer> receiver) {}
 
-// TODO(https://crbug.com/936528): remove this method.
-void VideoDecoderProxy::CreateRenderer(media::mojom::HostedRendererType type,
-                                       const std::string& audio_device_id,
-                                       media::mojom::RendererRequest request) {}
+#if BUILDFLAG(ENABLE_CAST_RENDERER)
+void VideoDecoderProxy::CreateCastRenderer(
+    const base::UnguessableToken& overlay_plane_id,
+    mojo::PendingReceiver<media::mojom::Renderer> receiver) {}
+#endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
 #if defined(OS_ANDROID)
 void VideoDecoderProxy::CreateFlingingRenderer(
     const std::string& audio_device_id,
-    media::mojom::RendererRequest request) {}
+    mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
+        client_extenion,
+    mojo::PendingReceiver<media::mojom::Renderer> receiver) {}
 
 void VideoDecoderProxy::CreateMediaPlayerRenderer(
-    media::mojom::RendererRequest request) {}
+    mojo::PendingRemote<media::mojom::MediaPlayerRendererClientExtension>
+        client_extension_remote,
+    mojo::PendingReceiver<media::mojom::Renderer> receiver,
+    mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
+        renderer_extension_receiver) {}
 #endif  // defined(OS_ANDROID)
 
 void VideoDecoderProxy::CreateCdm(
     const std::string& key_system,
-    media::mojom::ContentDecryptionModuleRequest request) {}
+    mojo::PendingReceiver<media::mojom::ContentDecryptionModule> receiver) {}
 
 void VideoDecoderProxy::CreateDecryptor(
     int cdm_id,
-    media::mojom::DecryptorRequest request) {}
+    mojo::PendingReceiver<media::mojom::Decryptor> receiver) {}
 
-void VideoDecoderProxy::CreateCdmProxy(const base::Token& cdm_guid,
-                                       media::mojom::CdmProxyRequest request) {}
+#if BUILDFLAG(ENABLE_CDM_PROXY)
+void VideoDecoderProxy::CreateCdmProxy(
+    const base::Token& cdm_guid,
+    mojo::PendingReceiver<media::mojom::CdmProxy> receiver) {}
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 media::mojom::InterfaceFactory* VideoDecoderProxy::GetMediaInterfaceFactory() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (!interface_factory_ptr_)
+  if (!interface_factory_remote_)
     ConnectToMediaService();
 
-  return interface_factory_ptr_.get();
+  return interface_factory_remote_.get();
 }
 
 void VideoDecoderProxy::ConnectToMediaService() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!interface_factory_ptr_);
+  DCHECK(!interface_factory_remote_);
 
   media::mojom::MediaServicePtr media_service;
   // TODO(slan): Use the BrowserContext Connector instead.
   // See https://crbug.com/638950.
-  service_manager::Connector* connector =
-      ServiceManagerConnection::GetForProcess()->GetConnector();
-  connector->BindInterface(media::mojom::kMediaServiceName, &media_service);
+  GetSystemConnector()->BindInterface(media::mojom::kMediaServiceName,
+                                      &media_service);
 
-  // TODO(sandersd): Do we need to bind an empty |interfaces| implementation?
-  service_manager::mojom::InterfaceProviderPtr interfaces;
-  media_service->CreateInterfaceFactory(MakeRequest(&interface_factory_ptr_),
-                                        std::move(interfaces));
+  mojo::PendingRemote<service_manager::mojom::InterfaceProvider> interfaces;
+  ignore_result(interfaces.InitWithNewPipeAndPassReceiver());
+  media_service->CreateInterfaceFactory(
+      interface_factory_remote_.BindNewPipeAndPassReceiver(),
+      std::move(interfaces));
 
-  interface_factory_ptr_.set_connection_error_handler(
+  interface_factory_remote_.set_disconnect_handler(
       base::BindOnce(&VideoDecoderProxy::OnMediaServiceConnectionError,
                      base::Unretained(this)));
 }
@@ -105,7 +117,7 @@ void VideoDecoderProxy::OnMediaServiceConnectionError() {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  interface_factory_ptr_.reset();
+  interface_factory_remote_.reset();
 }
 
 }  // namespace content

@@ -31,7 +31,8 @@ struct InternalFormatType {
 
 // Convert a gfx::BufferFormat to a (internal format, type) combination from the
 // EGL_ANGLE_iosurface_client_buffer extension spec.
-InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format) {
+InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format,
+                                                    bool emulate_rgb) {
   switch (format) {
     case gfx::BufferFormat::R_8:
       return {GL_RED, GL_UNSIGNED_BYTE};
@@ -39,13 +40,17 @@ InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format) {
       return {GL_RED_INTEGER, GL_UNSIGNED_SHORT};
     case gfx::BufferFormat::RG_88:
       return {GL_RG, GL_UNSIGNED_BYTE};
+    case gfx::BufferFormat::BGRX_8888:
+      if (emulate_rgb) {
+        return {GL_BGRA_EXT, GL_UNSIGNED_BYTE};
+      } else {
+        return {GL_RGB, GL_UNSIGNED_BYTE};
+      }
     case gfx::BufferFormat::BGRA_8888:
-    case gfx::BufferFormat::BGRX_8888:  // See https://crbug.com/595948.
     case gfx::BufferFormat::RGBA_8888:
       return {GL_BGRA_EXT, GL_UNSIGNED_BYTE};
     case gfx::BufferFormat::RGBA_F16:
       return {GL_RGBA, GL_HALF_FLOAT};
-    case gfx::BufferFormat::UYVY_422:
     case gfx::BufferFormat::YUV_420_BIPLANAR:
     case gfx::BufferFormat::BGRX_1010102:
       NOTIMPLEMENTED();
@@ -55,6 +60,7 @@ InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format) {
     case gfx::BufferFormat::RGBX_8888:
     case gfx::BufferFormat::RGBX_1010102:
     case gfx::BufferFormat::YVU_420:
+    case gfx::BufferFormat::P010:
       NOTREACHED();
       return {GL_NONE, GL_NONE};
   }
@@ -66,8 +72,10 @@ InternalFormatType BufferFormatToInternalFormatType(gfx::BufferFormat format) {
 }  // anonymous namespace
 
 GLImageIOSurfaceEGL::GLImageIOSurfaceEGL(const gfx::Size& size,
-                                         unsigned internalformat)
+                                         unsigned internalformat,
+                                         bool emulate_rgb)
     : GLImageIOSurface(size, internalformat),
+      emulate_rgb_(emulate_rgb),
       display_(GLSurfaceEGL::GetHardwareDisplay()),
       pbuffer_(EGL_NO_SURFACE),
       dummy_config_(nullptr),
@@ -93,12 +101,13 @@ GLImageIOSurfaceEGL::~GLImageIOSurfaceEGL() {
 
 void GLImageIOSurfaceEGL::ReleaseTexImage(unsigned target) {
   DCHECK(target == GL_TEXTURE_RECTANGLE_ARB);
-  DCHECK(pbuffer_ != EGL_NO_SURFACE);
-  DCHECK(texture_bound_);
+  if (texture_bound_) {
+    DCHECK(pbuffer_ != EGL_NO_SURFACE);
 
-  EGLBoolean result = eglReleaseTexImage(display_, pbuffer_, EGL_BACK_BUFFER);
-  DCHECK(result == EGL_TRUE);
-  texture_bound_ = false;
+    EGLBoolean result = eglReleaseTexImage(display_, pbuffer_, EGL_BACK_BUFFER);
+    DCHECK(result == EGL_TRUE);
+    texture_bound_ = false;
+  }
 }
 
 bool GLImageIOSurfaceEGL::BindTexImageImpl(unsigned internalformat) {
@@ -115,7 +124,8 @@ bool GLImageIOSurfaceEGL::BindTexImageImpl(unsigned internalformat) {
   // in the constructor if we're going to be used to bind plane 0 to a texture,
   // or to transform YUV to RGB.
   if (pbuffer_ == EGL_NO_SURFACE) {
-    InternalFormatType formatType = BufferFormatToInternalFormatType(format_);
+    InternalFormatType formatType =
+        BufferFormatToInternalFormatType(format_, emulate_rgb_);
 
     // clang-format off
     const EGLint attribs[] = {

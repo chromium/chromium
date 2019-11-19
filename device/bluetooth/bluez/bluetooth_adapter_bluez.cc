@@ -29,7 +29,6 @@
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session_outcome.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
-#include "device/bluetooth/bluetooth_uuid.h"
 #include "device/bluetooth/bluez/bluetooth_adapter_profile_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_advertisement_bluez.h"
 #include "device/bluetooth/bluez/bluetooth_device_bluez.h"
@@ -47,10 +46,13 @@
 #include "device/bluetooth/dbus/bluetooth_input_client.h"
 #include "device/bluetooth/dbus/bluetooth_le_advertising_manager_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 #if defined(OS_CHROMEOS)
 #include "chromeos/constants/devicetype.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #endif
 
 using device::BluetoothAdapter;
@@ -67,6 +69,12 @@ namespace {
 // exist per D-Bus connection, it just has to be unique within Chromium.
 const char kAgentPath[] = "/org/chromium/bluetooth_agent";
 const char kGattApplicationObjectPath[] = "/gatt_application";
+
+#if defined(OS_CHROMEOS)
+// Twice the period that field trial configs are fetched at.
+constexpr base::TimeDelta kSetLongTermKeysAfterFirstTimeInstallDuration =
+    base::TimeDelta::FromMinutes(60);
+#endif
 
 void OnUnregisterAgentError(const std::string& error_name,
                             const std::string& error_message) {
@@ -97,6 +105,24 @@ UMABluetoothDiscoverySessionOutcome TranslateDiscoveryErrorToUMA(
     return UMABluetoothDiscoverySessionOutcome::UNKNOWN;
   }
 }
+
+#if defined(OS_CHROMEOS)
+device::BluetoothDevice::ServiceDataMap ConvertServiceDataMap(
+    const base::flat_map<std::string, std::vector<uint8_t>>& input) {
+  device::BluetoothDevice::ServiceDataMap output;
+  for (auto& i : input) {
+    output[BluetoothUUID(i.first)] = i.second;
+  }
+
+  return output;
+}
+
+device::BluetoothDevice::ManufacturerDataMap ConvertManufacturerDataMap(
+    const base::flat_map<uint16_t, std::vector<uint8_t>>& input) {
+  return device::BluetoothDevice::ManufacturerDataMap(input.begin(),
+                                                      input.end());
+}
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace
 
@@ -235,11 +261,7 @@ void BluetoothAdapterBlueZ::Shutdown() {
 BluetoothAdapterBlueZ::BluetoothAdapterBlueZ(InitCallback init_callback)
     : init_callback_(std::move(init_callback)),
       initialized_(false),
-      dbus_is_shutdown_(false),
-      num_discovery_sessions_(0),
-      discovery_request_pending_(false),
-      force_deactivate_discovery_(false),
-      weak_ptr_factory_(this) {
+      dbus_is_shutdown_(false) {
   ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
   socket_thread_ = device::BluetoothSocketThread::Get();
 
@@ -430,7 +452,6 @@ bool BluetoothAdapterBlueZ::IsDiscovering() const {
       bluez::BluezDBusManager::Get()
           ->GetBluetoothAdapterClient()
           ->GetProperties(object_path_);
-
   return properties->discovering.value();
 }
 
@@ -449,7 +470,7 @@ BluetoothAdapterBlueZ::RetrieveGattConnectedDevicesWithDiscoveryFilter(
 
       UUIDSet intersection;
       for (const BluetoothUUID& uuid : filter_uuids) {
-        if (base::ContainsKey(device_uuids, uuid)) {
+        if (base::Contains(device_uuids, uuid)) {
           intersection.insert(uuid);
         }
       }
@@ -464,6 +485,9 @@ BluetoothAdapterBlueZ::RetrieveGattConnectedDevicesWithDiscoveryFilter(
 }
 
 BluetoothAdapterBlueZ::UUIDList BluetoothAdapterBlueZ::GetUUIDs() const {
+  if (!IsPresent())
+    return UUIDList();
+
   bluez::BluetoothAdapterClient::Properties* properties =
       bluez::BluezDBusManager::Get()
           ->GetBluetoothAdapterClient()
@@ -773,18 +797,18 @@ void BluetoothAdapterBlueZ::Released() {
 }
 
 void BluetoothAdapterBlueZ::RequestPinCode(const dbus::ObjectPath& device_path,
-                                           const PinCodeCallback& callback) {
+                                           PinCodeCallback callback) {
   DCHECK(IsPresent());
   DCHECK(agent_.get());
   BLUETOOTH_LOG(EVENT) << device_path.value() << ": RequestPinCode";
 
   BluetoothPairingBlueZ* pairing = GetPairing(device_path);
   if (!pairing) {
-    callback.Run(REJECTED, "");
+    std::move(callback).Run(REJECTED, "");
     return;
   }
 
-  pairing->RequestPinCode(callback);
+  pairing->RequestPinCode(std::move(callback));
 }
 
 void BluetoothAdapterBlueZ::DisplayPinCode(const dbus::ObjectPath& device_path,
@@ -802,18 +826,18 @@ void BluetoothAdapterBlueZ::DisplayPinCode(const dbus::ObjectPath& device_path,
 }
 
 void BluetoothAdapterBlueZ::RequestPasskey(const dbus::ObjectPath& device_path,
-                                           const PasskeyCallback& callback) {
+                                           PasskeyCallback callback) {
   DCHECK(IsPresent());
   DCHECK(agent_.get());
   BLUETOOTH_LOG(EVENT) << device_path.value() << ": RequestPasskey";
 
   BluetoothPairingBlueZ* pairing = GetPairing(device_path);
   if (!pairing) {
-    callback.Run(REJECTED, 0);
+    std::move(callback).Run(REJECTED, 0);
     return;
   }
 
-  pairing->RequestPasskey(callback);
+  pairing->RequestPasskey(std::move(callback));
 }
 
 void BluetoothAdapterBlueZ::DisplayPasskey(const dbus::ObjectPath& device_path,
@@ -837,7 +861,7 @@ void BluetoothAdapterBlueZ::DisplayPasskey(const dbus::ObjectPath& device_path,
 void BluetoothAdapterBlueZ::RequestConfirmation(
     const dbus::ObjectPath& device_path,
     uint32_t passkey,
-    const ConfirmationCallback& callback) {
+    ConfirmationCallback callback) {
   DCHECK(IsPresent());
   DCHECK(agent_.get());
   BLUETOOTH_LOG(EVENT) << device_path.value()
@@ -845,40 +869,40 @@ void BluetoothAdapterBlueZ::RequestConfirmation(
 
   BluetoothPairingBlueZ* pairing = GetPairing(device_path);
   if (!pairing) {
-    callback.Run(REJECTED);
+    std::move(callback).Run(REJECTED);
     return;
   }
 
-  pairing->RequestConfirmation(passkey, callback);
+  pairing->RequestConfirmation(passkey, std::move(callback));
 }
 
 void BluetoothAdapterBlueZ::RequestAuthorization(
     const dbus::ObjectPath& device_path,
-    const ConfirmationCallback& callback) {
+    ConfirmationCallback callback) {
   DCHECK(IsPresent());
   DCHECK(agent_.get());
   BLUETOOTH_LOG(EVENT) << device_path.value() << ": RequestAuthorization";
 
   BluetoothPairingBlueZ* pairing = GetPairing(device_path);
   if (!pairing) {
-    callback.Run(REJECTED);
+    std::move(callback).Run(REJECTED);
     return;
   }
 
-  pairing->RequestAuthorization(callback);
+  pairing->RequestAuthorization(std::move(callback));
 }
 
 void BluetoothAdapterBlueZ::AuthorizeService(
     const dbus::ObjectPath& device_path,
     const std::string& uuid,
-    const ConfirmationCallback& callback) {
+    ConfirmationCallback callback) {
   DCHECK(IsPresent());
   DCHECK(agent_.get());
   BLUETOOTH_LOG(EVENT) << device_path.value() << ": AuthorizeService: " << uuid;
 
   BluetoothDeviceBlueZ* device_bluez = GetDeviceWithPath(device_path);
   if (!device_bluez) {
-    callback.Run(CANCELLED);
+    std::move(callback).Run(CANCELLED);
     return;
   }
 
@@ -887,7 +911,7 @@ void BluetoothAdapterBlueZ::AuthorizeService(
   // our "Set('Trusted', true)" method call is still pending in the Bluetooth
   // daemon because it's busy handling the incoming connection.
   if (device_bluez->IsPaired()) {
-    callback.Run(SUCCESS);
+    std::move(callback).Run(SUCCESS);
     return;
   }
 
@@ -895,7 +919,7 @@ void BluetoothAdapterBlueZ::AuthorizeService(
   // whether this is acceptable long-term.
   BLUETOOTH_LOG(ERROR) << "Rejecting service connection from unpaired device "
                        << device_bluez->GetAddress() << " for UUID " << uuid;
-  callback.Run(REJECTED);
+  std::move(callback).Run(REJECTED);
 }
 
 void BluetoothAdapterBlueZ::Cancel() {
@@ -1115,27 +1139,33 @@ void BluetoothAdapterBlueZ::DiscoveringChanged(bool discovering) {
   // If the adapter stopped discovery due to a reason other than a request by
   // us, reset the count to 0.
   BLUETOOTH_LOG(EVENT) << "Discovering changed: " << discovering;
-  if (!discovering && num_discovery_sessions_ > 0) {
-    if (discovery_request_pending_) {
-      // If there is discovery request pending, this is guaranteed to be a
-      // Stop() of the last discovery session (num_discovery_sessions_ == 1).
-      // That last Stop() may fail due to adapter not being present, in which
-      // case there will be dangling discovery count. So we are setting a flag
-      // so that the failing Stop() assumes that there is no more discovery
-      // session.
-      BLUETOOTH_LOG(DEBUG) << "Forcing to deactivate discovery.";
-      force_deactivate_discovery_ = true;
-    } else {
-      BLUETOOTH_LOG(DEBUG) << "Marking sessions as inactive.";
-      num_discovery_sessions_ = 0;
-      MarkDiscoverySessionsAsInactive();
-    }
+  if (!discovering && NumDiscoverySessions() > 0) {
+    BLUETOOTH_LOG(DEBUG) << "Marking sessions as inactive.";
+    MarkDiscoverySessionsAsInactive();
   }
+
   for (auto& observer : observers_)
     observer.AdapterDiscoveringChanged(this, discovering);
 }
 
 void BluetoothAdapterBlueZ::PresentChanged(bool present) {
+#if defined(OS_CHROMEOS)
+  if (present) {
+    SetLongTermKeys();
+
+    if (!set_long_term_keys_after_first_time_install_timer_.IsRunning()) {
+      // The LTK list in field trials would not yet have been available if we
+      // are in a first-time install situation. Schedule SetLongTermKeys() to be
+      // called again in the future when the field trials will definitely be
+      // available.
+      set_long_term_keys_after_first_time_install_timer_.Start(
+          FROM_HERE, kSetLongTermKeysAfterFirstTimeInstallDuration,
+          base::Bind(&BluetoothAdapterBlueZ::SetLongTermKeys,
+                     weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
+#endif
+
   for (auto& observer : observers_)
     observer.AdapterPresentChanged(this, present);
 }
@@ -1165,7 +1195,40 @@ void BluetoothAdapterBlueZ::NotifyDeviceAdvertisementReceived(
 
   for (auto& observer : observers_)
     observer.DeviceAdvertisementReceived(this, device, rssi, eir);
+
+#if defined(OS_CHROMEOS)
+  if (ble_scan_parser_.is_bound()) {
+    ScanRecordCallback callback =
+        base::BindOnce(&BluetoothAdapterBlueZ::OnAdvertisementReceived,
+                       weak_ptr_factory_.GetWeakPtr(), device->GetAddress(),
+                       device->GetName() ? *(device->GetName()) : std::string(),
+                       rssi, device->GetAppearance());
+    ble_scan_parser_->Parse(eir, std::move(callback));
+  }
+#endif  // defined(OS_CHROMEOS)
 }
+
+#if defined(OS_CHROMEOS)
+void BluetoothAdapterBlueZ::OnAdvertisementReceived(std::string device_address,
+                                                    std::string device_name,
+                                                    uint8_t rssi,
+                                                    uint16_t device_appearance,
+                                                    ScanRecordPtr scan_record) {
+  // Ignore the packet if it could not be parsed successfully.
+  if (!scan_record)
+    return;
+
+  auto service_data_map = ConvertServiceDataMap(scan_record->service_data_map);
+  auto manufacturer_data_map =
+      ConvertManufacturerDataMap(scan_record->manufacturer_data_map);
+  for (auto& observer : observers_) {
+    observer.DeviceAdvertisementReceived(
+        device_address, device_name, scan_record->advertisement_name, rssi,
+        scan_record->tx_power, device_appearance, scan_record->service_uuids,
+        service_data_map, manufacturer_data_map);
+  }
+}
+#endif  // defined(OS_CHROMEOS)
 
 void BluetoothAdapterBlueZ::NotifyDeviceConnectedStateChanged(
     BluetoothDeviceBlueZ* device,
@@ -1413,142 +1476,122 @@ void BluetoothAdapterBlueZ::OnPropertyChangeCompleted(
   }
 }
 
+base::WeakPtr<BluetoothAdapter> BluetoothAdapterBlueZ::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 // BluetoothAdapterBlueZ should override SetPowered() instead.
 bool BluetoothAdapterBlueZ::SetPoweredImpl(bool powered) {
   NOTREACHED();
   return false;
 }
 
-void BluetoothAdapterBlueZ::AddDiscoverySession(
-    BluetoothDiscoveryFilter* discovery_filter,
-    const base::Closure& callback,
-    DiscoverySessionErrorCallback error_callback) {
+void BluetoothAdapterBlueZ::UpdateFilter(
+    std::unique_ptr<device::BluetoothDiscoveryFilter> discovery_filter,
+    DiscoverySessionResultCallback callback) {
+  DCHECK_GT(NumDiscoverySessions(), 0);
   if (!IsPresent()) {
-    std::move(error_callback)
-        .Run(UMABluetoothDiscoverySessionOutcome::ADAPTER_NOT_PRESENT);
+    std::move(callback).Run(
+        true, UMABluetoothDiscoverySessionOutcome::ADAPTER_NOT_PRESENT);
     return;
   }
+
   BLUETOOTH_LOG(EVENT) << __func__;
-  if (discovery_request_pending_) {
-    // The pending request is either to stop a previous session or to start a
-    // new one. Either way, queue this one.
-    DCHECK(num_discovery_sessions_ == 1 || num_discovery_sessions_ == 0);
-    BLUETOOTH_LOG(DEBUG)
-        << "Pending request to start/stop device discovery. Queueing "
-        << "request to start a new discovery session.";
-    discovery_request_queue_.push(
-        std::make_tuple(discovery_filter, callback, std::move(error_callback)));
+
+  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+
+  // DCHECK(IsDiscovering()) is removed due to BlueZ bug
+  // (https://crbug.com/822104).
+  // TODO(sonnysasaka): Put it back here when BlueZ bug is fixed.
+  SetDiscoveryFilter(
+      std::move(discovery_filter),
+      base::BindRepeating(copyable_callback, /*is_error*/ false,
+                          UMABluetoothDiscoverySessionOutcome::SUCCESS),
+      base::BindOnce(copyable_callback, true));
+  return;
+}
+
+void BluetoothAdapterBlueZ::StartScanWithFilter(
+    std::unique_ptr<device::BluetoothDiscoveryFilter> discovery_filter,
+    DiscoverySessionResultCallback callback) {
+  if (!IsPresent()) {
+    std::move(callback).Run(
+        true, UMABluetoothDiscoverySessionOutcome::ADAPTER_NOT_PRESENT);
     return;
   }
 
-  // The adapter is already discovering.
-  if (num_discovery_sessions_ > 0) {
-    // DCHECK(IsDiscovering()) is removed due to BlueZ bug
-    // (https://crbug.com/822104).
-    // TODO(sonnysasaka): Put it back here when BlueZ bug is fixed.
-    DCHECK(!discovery_request_pending_);
-    num_discovery_sessions_++;
-    SetDiscoveryFilter(BluetoothDiscoveryFilter::Merge(
-                           GetMergedDiscoveryFilter().get(), discovery_filter),
-                       callback, std::move(error_callback));
-    return;
-  }
+  BLUETOOTH_LOG(EVENT) << __func__;
 
-  // There are no active discovery sessions.
-  DCHECK_EQ(num_discovery_sessions_, 0);
+  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
 
-  if (discovery_filter) {
-    discovery_request_pending_ = true;
-
+  if (discovery_filter && !discovery_filter->IsDefault()) {
     std::unique_ptr<BluetoothDiscoveryFilter> df(
         new BluetoothDiscoveryFilter(device::BLUETOOTH_TRANSPORT_DUAL));
     df->CopyFrom(*discovery_filter);
-    auto copyable_error_callback =
-        base::AdaptCallbackForRepeating(std::move(error_callback));
     SetDiscoveryFilter(
         std::move(df),
-        base::Bind(&BluetoothAdapterBlueZ::OnPreSetDiscoveryFilter,
-                   weak_ptr_factory_.GetWeakPtr(), callback,
-                   copyable_error_callback),
-        base::Bind(&BluetoothAdapterBlueZ::OnPreSetDiscoveryFilterError,
-                   weak_ptr_factory_.GetWeakPtr(), callback,
-                   copyable_error_callback));
+        base::BindRepeating(
+            &BluetoothAdapterBlueZ::OnPreSetDiscoveryFilter,
+            weak_ptr_factory_.GetWeakPtr(),
+            base::BindRepeating(copyable_callback, /*is_error=*/false,
+                                UMABluetoothDiscoverySessionOutcome::SUCCESS),
+            base::BindRepeating(copyable_callback, true)),
+        base::BindOnce(
+            &BluetoothAdapterBlueZ::OnPreSetDiscoveryFilterError,
+            weak_ptr_factory_.GetWeakPtr(),
+            base::BindRepeating(copyable_callback, /*is_error=*/false,
+                                UMABluetoothDiscoverySessionOutcome::SUCCESS),
+            base::BindOnce(copyable_callback, true)));
     return;
-  } else {
-    current_filter_.reset();
   }
 
   // This is the first request to start device discovery.
-  discovery_request_pending_ = true;
-  auto copyable_error_callback =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
   bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient()->StartDiscovery(
       object_path_,
-      base::Bind(&BluetoothAdapterBlueZ::OnStartDiscovery,
-                 weak_ptr_factory_.GetWeakPtr(), callback,
-                 copyable_error_callback),
-      base::Bind(&BluetoothAdapterBlueZ::OnStartDiscoveryError,
-                 weak_ptr_factory_.GetWeakPtr(), callback,
-                 copyable_error_callback));
+      base::BindRepeating(
+          &BluetoothAdapterBlueZ::OnStartDiscovery,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindRepeating(copyable_callback, /*is_error=*/false,
+                              UMABluetoothDiscoverySessionOutcome::SUCCESS),
+          base::BindRepeating(copyable_callback, true)),
+      base::BindOnce(
+          &BluetoothAdapterBlueZ::OnStartDiscoveryError,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindRepeating(copyable_callback, /*is_error=*/false,
+                              UMABluetoothDiscoverySessionOutcome::SUCCESS),
+          base::BindOnce(copyable_callback, true)));
 }
 
-void BluetoothAdapterBlueZ::RemoveDiscoverySession(
-    BluetoothDiscoveryFilter* discovery_filter,
-    const base::Closure& callback,
-    DiscoverySessionErrorCallback error_callback) {
+void BluetoothAdapterBlueZ::StopScan(DiscoverySessionResultCallback callback) {
+#if defined(OS_CHROMEOS)
+  ble_scan_parser_.reset();
+#endif  // defined(OS_CHROMEOS)
+
+  // Not having an adapter qualifies as not scanning so we callback a success
   if (!IsPresent()) {
-    std::move(error_callback)
-        .Run(UMABluetoothDiscoverySessionOutcome::ADAPTER_NOT_PRESENT);
+    std::move(callback).Run(
+        /*is_error=*/false,
+        UMABluetoothDiscoverySessionOutcome::ADAPTER_NOT_PRESENT);
     return;
   }
 
   BLUETOOTH_LOG(EVENT) << __func__;
-  // There are active sessions other than the one currently being removed.
-  if (num_discovery_sessions_ > 1) {
-    // DCHECK(IsDiscovering()) is removed due to BlueZ bug
-    // (https://crbug.com/822104).
-    // TODO(sonnysasaka): Put it back here when BlueZ bug is fixed.
-    DCHECK(!discovery_request_pending_);
-    num_discovery_sessions_--;
 
-    SetDiscoveryFilter(GetMergedDiscoveryFilterMasked(discovery_filter),
-                       callback, std::move(error_callback));
-    return;
-  }
+  DCHECK_EQ(NumDiscoverySessions(), 0);
 
-  // If there is a pending request to BlueZ, then queue this request.
-  if (discovery_request_pending_) {
-    BLUETOOTH_LOG(DEBUG)
-        << "Pending request to start/stop device discovery. Queueing "
-        << "request to stop discovery session.";
-    std::move(error_callback)
-        .Run(UMABluetoothDiscoverySessionOutcome::REMOVE_WITH_PENDING_REQUEST);
-    return;
-  }
-
-  // There are no active sessions. Return error.
-  if (num_discovery_sessions_ == 0) {
-    // TODO(armansito): This should never happen once we have the
-    // DiscoverySession API. Replace this case with an assert once it's
-    // the deprecated methods have been removed. (See crbug.com/3445008).
-    BLUETOOTH_LOG(DEBUG) << "No active discovery sessions. Returning error.";
-    std::move(error_callback)
-        .Run(
-            UMABluetoothDiscoverySessionOutcome::ACTIVE_SESSION_NOT_IN_ADAPTER);
-    return;
-  }
-
-  // There is exactly one active discovery session. Request BlueZ to stop
-  // discovery.
-  DCHECK_EQ(num_discovery_sessions_, 1);
-  discovery_request_pending_ = true;
+  // Confirm that there are no more discovery sessions left.
+  DCHECK_EQ(NumDiscoverySessions(), 0);
+  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
   bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient()->StopDiscovery(
       object_path_,
-      base::Bind(&BluetoothAdapterBlueZ::OnStopDiscovery,
-                 weak_ptr_factory_.GetWeakPtr(), callback),
+      base::BindRepeating(
+          &BluetoothAdapterBlueZ::OnStopDiscovery,
+          weak_ptr_factory_.GetWeakPtr(),
+          base::BindRepeating(copyable_callback, /*is_error=*/false,
+                              UMABluetoothDiscoverySessionOutcome::SUCCESS)),
       base::BindOnce(&BluetoothAdapterBlueZ::OnStopDiscoveryError,
                      weak_ptr_factory_.GetWeakPtr(),
-                     std::move(error_callback)));
+                     base::BindOnce(copyable_callback, /*is_error=*/true)));
 }
 
 void BluetoothAdapterBlueZ::SetDiscoveryFilter(
@@ -1561,33 +1604,21 @@ void BluetoothAdapterBlueZ::SetDiscoveryFilter(
     return;
   }
 
-  // If the old and new filter are both null then don't make the request, and
-  // just call the success callback.
-  // Do the same if the old and new filter are both not null and equal.
-  if ((!current_filter_ && !discovery_filter.get()) ||
-      (current_filter_ && discovery_filter &&
-       current_filter_->Equals(*discovery_filter))) {
-    callback.Run();
-    return;
-  }
-
-  current_filter_ = std::move(discovery_filter);
-
   bluez::BluetoothAdapterClient::DiscoveryFilter dbus_discovery_filter;
 
-  if (current_filter_.get()) {
+  if (discovery_filter.get() && !discovery_filter->IsDefault()) {
     uint16_t pathloss;
     int16_t rssi;
     uint8_t transport;
     std::set<device::BluetoothUUID> uuids;
 
-    if (current_filter_->GetPathloss(&pathloss))
+    if (discovery_filter->GetPathloss(&pathloss))
       dbus_discovery_filter.pathloss.reset(new uint16_t(pathloss));
 
-    if (current_filter_->GetRSSI(&rssi))
+    if (discovery_filter->GetRSSI(&rssi))
       dbus_discovery_filter.rssi.reset(new int16_t(rssi));
 
-    transport = current_filter_->GetTransport();
+    transport = discovery_filter->GetTransport();
     if (transport == device::BLUETOOTH_TRANSPORT_LE) {
       dbus_discovery_filter.transport.reset(new std::string("le"));
     } else if (transport == device::BLUETOOTH_TRANSPORT_CLASSIC) {
@@ -1596,7 +1627,7 @@ void BluetoothAdapterBlueZ::SetDiscoveryFilter(
       dbus_discovery_filter.transport.reset(new std::string("auto"));
     }
 
-    current_filter_->GetUUIDs(uuids);
+    discovery_filter->GetUUIDs(uuids);
     if (uuids.size()) {
       dbus_discovery_filter.uuids = std::unique_ptr<std::vector<std::string>>(
           new std::vector<std::string>);
@@ -1612,12 +1643,12 @@ void BluetoothAdapterBlueZ::SetDiscoveryFilter(
       ->GetBluetoothAdapterClient()
       ->SetDiscoveryFilter(
           object_path_, dbus_discovery_filter,
-          base::Bind(&BluetoothAdapterBlueZ::OnSetDiscoveryFilter,
-                     weak_ptr_factory_.GetWeakPtr(), callback,
-                     copyable_error_callback),
-          base::Bind(&BluetoothAdapterBlueZ::OnSetDiscoveryFilterError,
-                     weak_ptr_factory_.GetWeakPtr(), callback,
-                     copyable_error_callback));
+          base::BindRepeating(&BluetoothAdapterBlueZ::OnSetDiscoveryFilter,
+                              weak_ptr_factory_.GetWeakPtr(), callback,
+                              copyable_error_callback),
+          base::BindOnce(&BluetoothAdapterBlueZ::OnSetDiscoveryFilterError,
+                         weak_ptr_factory_.GetWeakPtr(), callback,
+                         copyable_error_callback));
 }
 
 void BluetoothAdapterBlueZ::OnStartDiscovery(
@@ -1625,19 +1656,33 @@ void BluetoothAdapterBlueZ::OnStartDiscovery(
     DiscoverySessionErrorCallback error_callback) {
   // Report success on the original request and increment the count.
   BLUETOOTH_LOG(EVENT) << __func__;
-  DCHECK(discovery_request_pending_);
-  DCHECK_EQ(num_discovery_sessions_, 0);
-  discovery_request_pending_ = false;
-  num_discovery_sessions_++;
+
+#if defined(OS_CHROMEOS)
+  device::BluetoothAdapterFactory::BleScanParserCallback
+      ble_scan_parser_callback =
+          device::BluetoothAdapterFactory::GetBleScanParserCallback();
+  if (ble_scan_parser_callback) {
+    // To avoid repeatedly restarting a crashed data decoder service,
+    // don't add a connection error handler here. Wait to establish a
+    // new connection after all discovery sessions are stopped.
+    ble_scan_parser_.Bind(ble_scan_parser_callback.Run());
+  } else {
+#if DCHECK_IS_ON()
+    static bool logged_once = false;
+    DLOG_IF(ERROR, !logged_once)
+        << "Attempted to connect to "
+           "unconfigured BluetoothAdapterFactory::GetBleScanParserCallback()";
+    logged_once = true;
+#endif  // DCHECK_IS_ON()
+  }
+#endif  // defined(OS_CHROMEOS)
+
   if (IsPresent()) {
     callback.Run();
   } else {
     std::move(error_callback)
         .Run(UMABluetoothDiscoverySessionOutcome::ADAPTER_REMOVED);
   }
-
-  // Try to add a new discovery session for each queued request.
-  ProcessQueuedDiscoveryRequests();
 }
 
 void BluetoothAdapterBlueZ::OnStartDiscoveryError(
@@ -1649,82 +1694,41 @@ void BluetoothAdapterBlueZ::OnStartDiscoveryError(
                        << ": Failed to start discovery: " << error_name << ": "
                        << error_message;
 
-  // Failed to start discovery. This can only happen if the count is at 0.
-  DCHECK_EQ(num_discovery_sessions_, 0);
-  DCHECK(discovery_request_pending_);
-  discovery_request_pending_ = false;
-
   std::move(error_callback).Run(TranslateDiscoveryErrorToUMA(error_name));
-
-  // Try to add a new discovery session for each queued request.
-  ProcessQueuedDiscoveryRequests();
 }
 
 void BluetoothAdapterBlueZ::OnStopDiscovery(const base::Closure& callback) {
   // Report success on the original request and decrement the count.
   BLUETOOTH_LOG(EVENT) << __func__;
-  DCHECK(discovery_request_pending_);
-  DCHECK_EQ(num_discovery_sessions_, 1);
-  discovery_request_pending_ = false;
-  num_discovery_sessions_--;
+  DCHECK_GE(NumDiscoverySessions(), 0);
   callback.Run();
-
-  force_deactivate_discovery_ = false;
-
-  current_filter_.reset();
-
-  // Try to add a new discovery session for each queued request.
-  ProcessQueuedDiscoveryRequests();
 }
 
 void BluetoothAdapterBlueZ::OnStopDiscoveryError(
     DiscoverySessionErrorCallback error_callback,
     const std::string& error_name,
     const std::string& error_message) {
-  // Failed to stop discovery. This can only happen if the count is at 1.
-  DCHECK(discovery_request_pending_);
-  DCHECK_EQ(num_discovery_sessions_, 1);
-  discovery_request_pending_ = false;
-
-  if (force_deactivate_discovery_) {
-    BLUETOOTH_LOG(DEBUG) << "Forced to mark sessions as inactive";
-    force_deactivate_discovery_ = false;
-    num_discovery_sessions_ = 0;
-    MarkDiscoverySessionsAsInactive();
-    // Do not consider this situation as error as the error from Stop()
-    // discovery session was expected. So log with DEBUG instead of ERROR.
-    BLUETOOTH_LOG(DEBUG) << object_path_.value()
-                         << ": Failed to stop discovery: " << error_name << ": "
-                         << error_message;
-  } else {
-    BLUETOOTH_LOG(ERROR) << object_path_.value()
-                         << ": Failed to stop discovery: " << error_name << ": "
-                         << error_message;
-  }
+  BLUETOOTH_LOG(ERROR) << object_path_.value()
+                       << ": Failed to stop discovery: " << error_name << ": "
+                       << error_message;
 
   std::move(error_callback).Run(TranslateDiscoveryErrorToUMA(error_name));
-
-  // Try to add a new discovery session for each queued request.
-  ProcessQueuedDiscoveryRequests();
 }
 
 void BluetoothAdapterBlueZ::OnPreSetDiscoveryFilter(
     const base::Closure& callback,
     DiscoverySessionErrorCallback error_callback) {
-  // This is the first request to start device discovery.
-  DCHECK(discovery_request_pending_);
-  DCHECK_EQ(num_discovery_sessions_, 0);
 
   auto copyable_error_callback =
       base::AdaptCallbackForRepeating(std::move(error_callback));
   bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient()->StartDiscovery(
       object_path_,
-      base::Bind(&BluetoothAdapterBlueZ::OnStartDiscovery,
-                 weak_ptr_factory_.GetWeakPtr(), callback,
-                 copyable_error_callback),
-      base::Bind(&BluetoothAdapterBlueZ::OnStartDiscoveryError,
-                 weak_ptr_factory_.GetWeakPtr(), callback,
-                 copyable_error_callback));
+      base::BindRepeating(&BluetoothAdapterBlueZ::OnStartDiscovery,
+                          weak_ptr_factory_.GetWeakPtr(), callback,
+                          copyable_error_callback),
+      base::BindOnce(&BluetoothAdapterBlueZ::OnStartDiscoveryError,
+                     weak_ptr_factory_.GetWeakPtr(), callback,
+                     copyable_error_callback));
 }
 
 void BluetoothAdapterBlueZ::OnPreSetDiscoveryFilterError(
@@ -1734,15 +1738,7 @@ void BluetoothAdapterBlueZ::OnPreSetDiscoveryFilterError(
   BLUETOOTH_LOG(ERROR) << object_path_.value()
                        << ": Failed to pre set discovery filter.";
 
-  // Failed to start discovery. This can only happen if the count is at 0.
-  DCHECK_EQ(num_discovery_sessions_, 0);
-  DCHECK(discovery_request_pending_);
-  discovery_request_pending_ = false;
-
   std::move(error_callback).Run(outcome);
-
-  // Try to add a new discovery session for each queued request.
-  ProcessQueuedDiscoveryRequests();
 }
 
 void BluetoothAdapterBlueZ::OnSetDiscoveryFilter(
@@ -1777,25 +1773,6 @@ void BluetoothAdapterBlueZ::OnSetDiscoveryFilterError(
         BLUEZ_DBUS_FAILED_MAYBE_UNSUPPORTED_TRANSPORT;
   }
   std::move(error_callback).Run(outcome);
-
-  // Try to add a new discovery session for each queued request.
-  ProcessQueuedDiscoveryRequests();
-}
-
-void BluetoothAdapterBlueZ::ProcessQueuedDiscoveryRequests() {
-  while (!discovery_request_queue_.empty()) {
-    BLUETOOTH_LOG(EVENT) << "Process queued discovery request.";
-    DiscoveryParamTuple params = std::move(discovery_request_queue_.front());
-    discovery_request_queue_.pop();
-    AddDiscoverySession(std::get<0>(params), std::get<1>(params),
-                        std::move(std::get<2>(params)));
-
-    // If the queued request resulted in a pending call, then let it
-    // asynchonously process the remaining queued requests once the pending
-    // call returns.
-    if (discovery_request_pending_)
-      return;
-  }
 }
 
 void BluetoothAdapterBlueZ::UpdateRegisteredApplication(
@@ -1873,5 +1850,26 @@ void BluetoothAdapterBlueZ::ServiceRecordErrorConnector(
 
   error_callback.Run(code);
 }
+
+#if defined(OS_CHROMEOS)
+void BluetoothAdapterBlueZ::SetLongTermKeys() {
+  // This method will be called and also queued up again when the adapter
+  // becomes present. See PresentChanged().
+  if (!IsPresent())
+    return;
+
+  bluez::BluezDBusManager::Get()->GetBluetoothAdapterClient()->SetLongTermKeys(
+      object_path_, device::GetBlockedLongTermKeys(),
+      base::Bind(&BluetoothAdapterBlueZ::SetLongTermKeysError,
+                 weak_ptr_factory_.GetWeakPtr()));
+}
+
+void BluetoothAdapterBlueZ::SetLongTermKeysError(
+    const std::string& error_name,
+    const std::string& error_message) {
+  BLUETOOTH_LOG(ERROR) << "Setting long term keys failed: error: " << error_name
+                       << " - " << error_message;
+}
+#endif
 
 }  // namespace bluez

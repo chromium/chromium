@@ -54,7 +54,7 @@ void PDFiumRange::SetCharCount(int char_count) {
 const std::vector<pp::Rect>& PDFiumRange::GetScreenRects(
     const pp::Point& offset,
     double zoom,
-    int rotation) {
+    PageOrientation orientation) const {
   if (offset == cached_screen_rects_offset_ &&
       zoom == cached_screen_rects_zoom_) {
     return cached_screen_rects_;
@@ -82,8 +82,8 @@ const std::vector<pp::Rect>& PDFiumRange::GetScreenRects(
     double right;
     double bottom;
     FPDFText_GetRect(page_->GetTextPage(), i, &left, &top, &right, &bottom);
-    pp::Rect rect =
-        page_->PageToScreen(offset, zoom, left, top, right, bottom, rotation);
+    pp::Rect rect = page_->PageToScreen(offset, zoom, left, top, right, bottom,
+                                        orientation);
     if (rect.IsEmpty())
       continue;
     cached_screen_rects_.push_back(rect);

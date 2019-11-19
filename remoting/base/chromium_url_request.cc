@@ -5,9 +5,9 @@
 #include "remoting/base/chromium_url_request.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -33,8 +33,7 @@ ChromiumUrlRequest::ChromiumUrlRequest(
   resource_request_ = std::make_unique<network::ResourceRequest>();
   resource_request_->url = GURL(url);
   resource_request_->method = request_type;
-  resource_request_->load_flags =
-      net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_DO_NOT_SEND_COOKIES;
+  resource_request_->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request_->referrer = GURL("https://chrome.google.com/remotedesktop");
 }
 
@@ -83,7 +82,7 @@ void ChromiumUrlRequest::OnURLLoadComplete(
   }
 
   DCHECK(!on_result_callback_.is_null());
-  base::ResetAndReturn(&on_result_callback_).Run(result);
+  std::move(on_result_callback_).Run(result);
 }
 
 ChromiumUrlRequestFactory::ChromiumUrlRequestFactory(

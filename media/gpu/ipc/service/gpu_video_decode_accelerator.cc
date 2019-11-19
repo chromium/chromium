@@ -177,8 +177,7 @@ GpuVideoDecodeAccelerator::GpuVideoDecodeAccelerator(
                       base::WaitableEvent::InitialState::NOT_SIGNALED),
       child_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       io_task_runner_(io_task_runner),
-      overlay_factory_cb_(overlay_factory_cb),
-      weak_factory_for_io_(this) {
+      overlay_factory_cb_(overlay_factory_cb) {
   DCHECK(stub_);
   stub_->AddDestructionObserver(this);
   get_gl_context_cb_ = base::BindRepeating(&GetGLContext, stub_->AsWeakPtr());
@@ -408,10 +407,9 @@ bool GpuVideoDecodeAccelerator::Initialize(
 
 // Runs on IO thread if VDA::TryToSetupDecodeOnSeparateThread() succeeded,
 // otherwise on the main thread.
-void GpuVideoDecodeAccelerator::OnDecode(
-    const BitstreamBuffer& bitstream_buffer) {
+void GpuVideoDecodeAccelerator::OnDecode(BitstreamBuffer bitstream_buffer) {
   DCHECK(video_decode_accelerator_);
-  video_decode_accelerator_->Decode(bitstream_buffer);
+  video_decode_accelerator_->Decode(std::move(bitstream_buffer));
 }
 
 void GpuVideoDecodeAccelerator::OnAssignPictureBuffers(

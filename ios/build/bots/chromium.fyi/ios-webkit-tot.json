@@ -1,0 +1,106 @@
+{
+  "comments": [
+    "Run tests against ToT webkit."
+  ],
+  "xcode build version": "11a1027wk",
+  "gn_args": [
+    "goma_dir=\"$(goma_dir)\"",
+    "is_component_build=false",
+    "is_debug=true",
+    "symbol_level=1",
+    "target_cpu=\"x64\"",
+    "target_os=\"ios\"",
+    "use_goma=true"
+  ],
+  "configuration": "Debug",
+  "tests": [
+    {
+      "include": "common_tests.json",
+      "device type": "iPhone X",
+      "os": "13.1",
+      "xcode build version": "11a1027",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "test args": [
+        "--run-with-custom-webkit"
+      ]
+    },
+    {
+      "include": "screen_size_dependent_tests.json",
+      "device type": "iPhone X",
+      "os": "13.1",
+      "xcode build version": "11a1027",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "test args": [
+        "--run-with-custom-webkit"
+      ]
+    },
+    {
+      "include": "eg_tests.json",
+      "device type": "iPhone X",
+      "os": "13.1",
+      "xcode build version": "11a1027",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "test args": [
+        "--run-with-custom-webkit"
+      ]
+    },
+    {
+      "include": "eg_cq_tests.json",
+      "device type": "iPhone X",
+      "os": "13.1",
+      "xcode build version": "11a1027",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "test args": [
+        "--run-with-custom-webkit"
+      ]
+    },
+    {
+      "include": "common_tests.json",
+      "device type": "iPad Air 2",
+      "os": "13.1",
+      "xcode build version": "11a1027",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "test args": [
+        "--run-with-custom-webkit"
+      ]
+    },
+    {
+      "include": "screen_size_dependent_tests.json",
+      "device type": "iPad Air 2",
+      "os": "13.1",
+      "xcode build version": "11a1027",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "test args": [
+        "--run-with-custom-webkit"
+      ]
+    },
+    {
+      "include": "eg_tests.json",
+      "device type": "iPad Air 2",
+      "os": "13.1",
+      "xcode build version": "11a1027",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "test args": [
+        "--run-with-custom-webkit"
+      ]
+    },
+    {
+      "include": "eg_cq_tests.json",
+      "device type": "iPad Air 2",
+      "os": "13.1",
+      "xcode build version": "11a1027",
+      "host os": "Mac-10.14.6",
+      "pool":"chromium.tests",
+      "test args": [
+        "--run-with-custom-webkit"
+      ]
+    }
+  ]
+}

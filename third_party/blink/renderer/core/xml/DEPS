@@ -1,0 +1,4 @@
+include_rules = [
+  # For Unicode collation in XSLT transformation
+  "+third_party/icu",
+]

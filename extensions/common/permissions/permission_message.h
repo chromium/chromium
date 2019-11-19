@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_COMMON_PERMISSIONS_PERMISSION_MESSAGE_H_
 #define EXTENSIONS_COMMON_PERMISSIONS_PERMISSION_MESSAGE_H_
 
-#include <list>
 #include <string>
 #include <vector>
 
@@ -59,9 +58,7 @@ class PermissionMessage {
   const std::vector<base::string16> submessages_;
 };
 
-// TODO(treib): Make this an std::vector when we have C++11 library support on
-// all platforms. (In C++03, std::vector's elements must be copy-assignable...)
-typedef std::list<PermissionMessage> PermissionMessages;
+using PermissionMessages = std::vector<PermissionMessage>;
 
 }  // namespace extensions
 

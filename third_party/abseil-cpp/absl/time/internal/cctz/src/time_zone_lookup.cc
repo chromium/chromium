@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,16 @@
 
 #if defined(__ANDROID__)
 #include <sys/system_properties.h>
-#if __ANDROID_API__ >= 21
+#if defined(__ANDROID_API__) && __ANDROID_API__ >= 21
 #include <dlfcn.h>
 #endif
 #endif
+
+#if defined(__APPLE__)
+#include <CoreFoundation/CFTimeZone.h>
+#include <vector>
+#endif
+
 #include <cstdlib>
 #include <cstring>
 #include <string>
@@ -31,7 +37,7 @@ namespace absl {
 namespace time_internal {
 namespace cctz {
 
-#if defined(__ANDROID__) && __ANDROID_API__ >= 21
+#if defined(__ANDROID__) && defined(__ANDROID_API__) && __ANDROID_API__ >= 21
 namespace {
 // Android 'L' removes __system_property_get() from the NDK, however
 // it is still a hidden symbol in libc so we use dlsym() to access it.
@@ -116,6 +122,25 @@ time_zone fixed_time_zone(const seconds& offset) {
 
 time_zone local_time_zone() {
   const char* zone = ":localtime";
+#if defined(__ANDROID__)
+  char sysprop[PROP_VALUE_MAX];
+  if (__system_property_get("persist.sys.timezone", sysprop) > 0) {
+    zone = sysprop;
+  }
+#endif
+#if defined(__APPLE__)
+  std::vector<char> buffer;
+  CFTimeZoneRef tz_default = CFTimeZoneCopyDefault();
+  if (CFStringRef tz_name = CFTimeZoneGetName(tz_default)) {
+    CFStringEncoding encoding = kCFStringEncodingUTF8;
+    CFIndex length = CFStringGetLength(tz_name);
+    buffer.resize(CFStringGetMaximumSizeForEncoding(length, encoding) + 1);
+    if (CFStringGetCString(tz_name, &buffer[0], buffer.size(), encoding)) {
+      zone = &buffer[0];
+    }
+  }
+  CFRelease(tz_default);
+#endif
 
   // Allow ${TZ} to override to default zone.
   char* tz_env = nullptr;
@@ -123,12 +148,6 @@ time_zone local_time_zone() {
   _dupenv_s(&tz_env, nullptr, "TZ");
 #else
   tz_env = std::getenv("TZ");
-#endif
-#if defined(__ANDROID__)
-  char sysprop[PROP_VALUE_MAX];
-  if (tz_env == nullptr)
-    if (__system_property_get("persist.sys.timezone", sysprop) > 0)
-      tz_env = sysprop;
 #endif
   if (tz_env) zone = tz_env;
 

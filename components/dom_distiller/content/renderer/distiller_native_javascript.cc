@@ -8,11 +8,11 @@
 
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/dom_distiller/content/common/distiller_javascript_service.mojom.h"
+#include "components/dom_distiller/content/common/mojom/distiller_javascript_service.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "gin/arguments.h"
 #include "gin/function_template.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/blink.h"
 #include "v8/include/v8.h"
 
@@ -65,8 +65,9 @@ void DistillerNativeJavaScript::BindFunctionToObject(
 }
 
 void DistillerNativeJavaScript::EnsureServiceConnected() {
-  if (!distiller_js_service_ || !distiller_js_service_.is_bound()) {
-    render_frame_->GetRemoteInterfaces()->GetInterface(&distiller_js_service_);
+  if (!distiller_js_service_) {
+    render_frame_->GetBrowserInterfaceBroker()->GetInterface(
+        distiller_js_service_.BindNewPipeAndPassReceiver());
   }
 }
 

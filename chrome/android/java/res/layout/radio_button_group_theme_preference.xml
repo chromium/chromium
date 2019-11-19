@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:focusable="false">
+    <org.chromium.chrome.browser.ui.widget.RadioButtonWithDescriptionLayout
+        android:id="@+id/radio_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+      <org.chromium.chrome.browser.ui.widget.RadioButtonWithDescription
+          android:id="@+id/system_default"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:background="?attr/selectableItemBackground"
+          app:titleText="@string/themes_system_default_title"
+          app:descriptionText="@string/themes_system_default_summary" />
+
+      <!-- override default padding top and bottom -->
+      <org.chromium.chrome.browser.ui.widget.RadioButtonWithDescription
+          android:id="@+id/light"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:paddingTop="8dp"
+          android:paddingBottom="8dp"
+          android:background="?attr/selectableItemBackground"
+          app:titleText="@string/light_mode" />
+
+      <org.chromium.chrome.browser.ui.widget.RadioButtonWithDescription
+          android:id="@+id/dark"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:minHeight="@dimen/min_touch_target_size"
+          android:paddingTop="8dp"
+          android:paddingBottom="8dp"
+          android:background="?attr/selectableItemBackground"
+          app:titleText="@string/dark_mode" />
+
+    </org.chromium.chrome.browser.ui.widget.RadioButtonWithDescriptionLayout>
+
+    <!-- Make the row clickable -->
+    <LinearLayout
+        android:id="@+id/checkbox_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:gravity="center_vertical"
+        android:clickable="true"
+        android:focusable="true"
+        android:paddingStart="@dimen/theme_preferences_checkbox_container_padding_start"
+        android:paddingEnd="@dimen/theme_preferences_checkbox_container_padding_end"
+        android:visibility="gone"
+        android:background="?attr/selectableItemBackground">
+
+        <CheckBox
+            android:id="@+id/darken_websites"
+            android:clickable="false"
+            android:focusable="false"
+            android:layout_marginEnd="@dimen/theme_preferences_checkbox_margin_end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/darken_websites"
+            android:textAppearance="@style/TextAppearance.BlackTitle1" />
+    </LinearLayout>
+</LinearLayout>

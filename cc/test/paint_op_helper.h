@@ -514,8 +514,8 @@ class PaintOpHelper {
     str << ", flags=" << shader->flags_;
     str << ", end_radius=" << shader->end_radius_;
     str << ", start_radius=" << shader->start_radius_;
-    str << ", tx=" << shader->tx_;
-    str << ", ty=" << shader->ty_;
+    str << ", tx=" << static_cast<unsigned>(shader->tx_);
+    str << ", ty=" << static_cast<unsigned>(shader->ty_);
     str << ", fallback_color=" << shader->fallback_color_;
     str << ", scaling_behavior=" << EnumToString(shader->scaling_behavior_);
     if (shader->local_matrix_.has_value()) {

@@ -35,8 +35,7 @@ SessionDesktopEnvironment::CreateInputInjector() {
 
   return std::make_unique<SessionInputInjectorWin>(
       input_task_runner(),
-      InputInjector::Create(input_task_runner(), ui_task_runner(),
-                            system_input_injector_factory()),
+      InputInjector::Create(input_task_runner(), ui_task_runner()),
       ui_task_runner(), inject_sas_, lock_workstation_);
 }
 
@@ -45,7 +44,6 @@ SessionDesktopEnvironment::SessionDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    ui::SystemInputInjectorFactory* system_input_injector_factory,
     base::WeakPtr<ClientSessionControl> client_session_control,
     const base::RepeatingClosure& inject_sas,
     const base::RepeatingClosure& lock_workstation,
@@ -54,7 +52,6 @@ SessionDesktopEnvironment::SessionDesktopEnvironment(
                               video_capture_task_runner,
                               input_task_runner,
                               ui_task_runner,
-                              system_input_injector_factory,
                               client_session_control,
                               options),
       inject_sas_(inject_sas),
@@ -65,14 +62,12 @@ SessionDesktopEnvironmentFactory::SessionDesktopEnvironmentFactory(
     scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
-    ui::SystemInputInjectorFactory* system_input_injector_factory,
     const base::RepeatingClosure& inject_sas,
     const base::RepeatingClosure& lock_workstation)
     : Me2MeDesktopEnvironmentFactory(caller_task_runner,
                                      video_capture_task_runner,
                                      input_task_runner,
-                                     ui_task_runner,
-                                     system_input_injector_factory),
+                                     ui_task_runner),
       inject_sas_(inject_sas),
       lock_workstation_(lock_workstation) {
   DCHECK(caller_task_runner->BelongsToCurrentThread());
@@ -88,9 +83,8 @@ std::unique_ptr<DesktopEnvironment> SessionDesktopEnvironmentFactory::Create(
   std::unique_ptr<SessionDesktopEnvironment> desktop_environment(
       new SessionDesktopEnvironment(
           caller_task_runner(), video_capture_task_runner(),
-          input_task_runner(), ui_task_runner(),
-          system_input_injector_factory(), client_session_control, inject_sas_,
-          lock_workstation_, options));
+          input_task_runner(), ui_task_runner(), client_session_control,
+          inject_sas_, lock_workstation_, options));
   if (!desktop_environment->InitializeSecurity(client_session_control)) {
     return nullptr;
   }

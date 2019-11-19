@@ -7,20 +7,22 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "content/browser/browser_process_sub_thread.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/startup_data.h"
+#include "mojo/core/embedder/scoped_ipc_support.h"
 
 namespace content {
 
-class ServiceManagerContext;
-
 // The browser implementation of StartupData.
-struct StartupDataImpl : public StartupData {
+struct CONTENT_EXPORT StartupDataImpl : public StartupData {
   StartupDataImpl();
   ~StartupDataImpl() override;
 
-  std::unique_ptr<BrowserProcessSubThread> thread;
-  ServiceManagerContext* service_manager_context;
+  std::unique_ptr<BrowserProcessSubThread> ipc_thread;
+  std::unique_ptr<mojo::core::ScopedIPCSupport> mojo_ipc_support;
+  base::OnceClosure service_manager_shutdown_closure;
 };
 
 }  // namespace content

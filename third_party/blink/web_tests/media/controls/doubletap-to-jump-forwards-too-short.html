@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<title>Test that player will jump to the end if less than 10 seconds remaining.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../media-controls.js"></script>
+<video controls width=400 src="../content/60_sec_video.webm"></video>
+<script>
+async_test(t => {
+  const video = document.querySelector('video');
+
+  video.addEventListener('playing', () => {
+    // Seek the video to the end
+    if (video.currentTime < 55) {
+      video.currentTime = 55;
+
+      // Double tap on the right side.
+      const coordinates = videoRightEdgeCoordinates(video);
+      doubleTouchAtCoordinates(coordinates[0], coordinates[1]);
+    }
+  }, { once: true });
+
+  video.ontimeupdate = t.step_func(() => {
+    // The time should never reach 57 seconds as we skipped over it
+    assert_not_equals(57, Math.round(video.currentTime));
+  });
+
+  video.addEventListener('ended', t.step_func_done(), { once: true });
+
+  video.play();
+});
+</script>
+</html>

@@ -1,0 +1,41 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [
+    "accelerator.mojom",
+  ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/events/mojom",
+  ]
+}
+
+source_set("mojom_traits") {
+  sources = [
+    "accelerator_mojom_traits.h",
+  ]
+  public_deps = [
+    ":mojom_shared_cpp_sources",
+    "//mojo/public/mojom/base",
+    "//ui/base",
+    "//ui/events",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [
+    "accelerator_mojom_traits_unittest.cc",
+  ]
+  deps = [
+    ":mojom",
+    ":mojom_traits",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events",
+  ]
+}

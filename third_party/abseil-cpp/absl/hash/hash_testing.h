@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -190,7 +190,9 @@ VerifyTypeImplementsAbslHashCorrectly(const Container& values, Eq equals) {
   struct Info {
     const V& value;
     size_t index;
-    std::string ToString() const { return absl::visit(PrintVisitor{index}, value); }
+    std::string ToString() const {
+      return absl::visit(PrintVisitor{index}, value);
+    }
     SpyHashState expand() const { return absl::visit(ExpandVisitor{}, value); }
   };
 

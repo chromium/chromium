@@ -33,10 +33,8 @@ namespace extensions {
 
 InstallLimiter::DeferredInstall::DeferredInstall(
     const scoped_refptr<CrxInstaller>& installer,
-    const base::FilePath& path)
-    : installer(installer),
-      path(path) {
-}
+    const CRXFileInfo& file_info)
+    : installer(installer), file_info(file_info) {}
 
 InstallLimiter::DeferredInstall::DeferredInstall(const DeferredInstall& other) =
     default;
@@ -71,30 +69,32 @@ void InstallLimiter::DisableForTest() {
 }
 
 void InstallLimiter::Add(const scoped_refptr<CrxInstaller>& installer,
-                         const base::FilePath& path) {
+                         const CRXFileInfo& file_info) {
   // No deferred installs when disabled for test.
   if (disabled_for_test_) {
-    installer->InstallCrx(path);
+    installer->InstallCrxFile(file_info);
     return;
   }
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::Bind(&GetFileSize, path),
-      base::Bind(&InstallLimiter::AddWithSize, AsWeakPtr(), installer, path));
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+      base::BindOnce(&GetFileSize, file_info.path),
+      base::BindOnce(&InstallLimiter::AddWithSize, AsWeakPtr(), installer,
+                     file_info));
 }
 
 void InstallLimiter::AddWithSize(const scoped_refptr<CrxInstaller>& installer,
-                                 const base::FilePath& path,
+                                 const CRXFileInfo& file_info,
                                  int64_t size) {
   if (!ShouldDeferInstall(size, installer->expected_id())) {
-    RunInstall(installer, path);
+    RunInstall(installer, file_info);
 
     // Stop wait timer and let install notification drive deferred installs.
     wait_timer_.Stop();
     return;
   }
 
-  deferred_installs_.push(DeferredInstall(installer, path));
+  deferred_installs_.push(DeferredInstall(installer, file_info));
 
   // When there are no running installs, wait a bit before running deferred
   // installs to allow small app install to take precedence, especially when a
@@ -113,17 +113,17 @@ void InstallLimiter::CheckAndRunDeferrredInstalls() {
     return;
 
   const DeferredInstall& deferred = deferred_installs_.front();
-  RunInstall(deferred.installer, deferred.path);
+  RunInstall(deferred.installer, deferred.file_info);
   deferred_installs_.pop();
 }
 
 void InstallLimiter::RunInstall(const scoped_refptr<CrxInstaller>& installer,
-                                const base::FilePath& path) {
+                                const CRXFileInfo& file_info) {
   registrar_.Add(this,
                  extensions::NOTIFICATION_CRX_INSTALLER_DONE,
                  content::Source<CrxInstaller>(installer.get()));
 
-  installer->InstallCrx(path);
+  installer->InstallCrxFile(file_info);
   running_installers_.insert(installer);
 }
 

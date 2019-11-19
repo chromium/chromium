@@ -12,41 +12,37 @@
 
 namespace net {
 
-namespace {
-class HttpUtilTest : public testing::Test {};
-}
-
 TEST(HttpUtilTest, IsSafeHeader) {
   static const char* const unsafe_headers[] = {
-    "sec-",
-    "sEc-",
-    "sec-foo",
-    "sEc-FoO",
-    "proxy-",
-    "pRoXy-",
-    "proxy-foo",
-    "pRoXy-FoO",
-    "accept-charset",
-    "accept-encoding",
-    "access-control-request-headers",
-    "access-control-request-method",
-    "connection",
-    "content-length",
-    "cookie",
-    "cookie2",
-    "content-transfer-encoding",
-    "date",
-    "expect",
-    "host",
-    "keep-alive",
-    "origin",
-    "referer",
-    "te",
-    "trailer",
-    "transfer-encoding",
-    "upgrade",
-    "user-agent",
-    "via",
+      "sec-",
+      "sEc-",
+      "sec-foo",
+      "sEc-FoO",
+      "proxy-",
+      "pRoXy-",
+      "proxy-foo",
+      "pRoXy-FoO",
+      "accept-charset",
+      "accept-encoding",
+      "access-control-request-headers",
+      "access-control-request-method",
+      "connection",
+      "content-length",
+      "cookie",
+      "cookie2",
+      "date",
+      "dnt",
+      "expect",
+      "host",
+      "keep-alive",
+      "origin",
+      "referer",
+      "te",
+      "trailer",
+      "transfer-encoding",
+      "upgrade",
+      "user-agent",
+      "via",
   };
   for (size_t i = 0; i < base::size(unsafe_headers); ++i) {
     EXPECT_FALSE(HttpUtil::IsSafeHeader(unsafe_headers[i]))
@@ -55,44 +51,45 @@ TEST(HttpUtilTest, IsSafeHeader) {
         << unsafe_headers[i];
   }
   static const char* const safe_headers[] = {
-    "foo",
-    "x-",
-    "x-foo",
-    "content-disposition",
-    "update",
-    "accept-charseta",
-    "accept_charset",
-    "accept-encodinga",
-    "accept_encoding",
-    "access-control-request-headersa",
-    "access-control-request-header",
-    "access_control_request_header",
-    "access-control-request-methoda",
-    "access_control_request_method",
-    "connectiona",
-    "content-lengtha",
-    "content_length",
-    "cookiea",
-    "cookie2a",
-    "cookie3",
-    "content-transfer-encodinga",
-    "content_transfer_encoding",
-    "datea",
-    "expecta",
-    "hosta",
-    "keep-alivea",
-    "keep_alive",
-    "origina",
-    "referera",
-    "referrer",
-    "tea",
-    "trailera",
-    "transfer-encodinga",
-    "transfer_encoding",
-    "upgradea",
-    "user-agenta",
-    "user_agent",
-    "viaa",
+      "foo",
+      "x-",
+      "x-foo",
+      "content-disposition",
+      "update",
+      "accept-charseta",
+      "accept_charset",
+      "accept-encodinga",
+      "accept_encoding",
+      "access-control-request-headersa",
+      "access-control-request-header",
+      "access_control_request_header",
+      "access-control-request-methoda",
+      "access_control_request_method",
+      "connectiona",
+      "content-lengtha",
+      "content_length",
+      "content-transfer-encoding",
+      "cookiea",
+      "cookie2a",
+      "cookie3",
+      "content-transfer-encodinga",
+      "content_transfer_encoding",
+      "datea",
+      "expecta",
+      "hosta",
+      "keep-alivea",
+      "keep_alive",
+      "origina",
+      "referera",
+      "referrer",
+      "tea",
+      "trailera",
+      "transfer-encodinga",
+      "transfer_encoding",
+      "upgradea",
+      "user-agenta",
+      "user_agent",
+      "viaa",
   };
   for (size_t i = 0; i < base::size(safe_headers); ++i) {
     EXPECT_TRUE(HttpUtil::IsSafeHeader(safe_headers[i])) << safe_headers[i];
@@ -691,7 +688,7 @@ TEST(HttpUtilTest, AssembleRawHeaders) {
   for (size_t i = 0; i < base::size(tests); ++i) {
     std::string input = tests[i].input;
     std::replace(input.begin(), input.end(), '|', '\0');
-    std::string raw = HttpUtil::AssembleRawHeaders(input.data(), input.size());
+    std::string raw = HttpUtil::AssembleRawHeaders(input);
     std::replace(raw.begin(), raw.end(), '\0', '|');
     EXPECT_EQ(tests[i].expected_result, raw);
   }
@@ -736,13 +733,6 @@ TEST(HttpUtilTest, RequestUrlSanitize) {
 
     EXPECT_EQ(expected_spec, HttpUtil::SpecForRequest(url));
   }
-}
-
-// Test SpecForRequest() for "ftp" scheme.
-TEST(HttpUtilTest, SpecForRequestForUrlWithFtpScheme) {
-  GURL ftp_url("ftp://user:pass@google.com/pub/chromium/");
-  EXPECT_EQ("ftp://google.com/pub/chromium/",
-            HttpUtil::SpecForRequest(ftp_url));
 }
 
 TEST(HttpUtilTest, GenerateAcceptLanguageHeader) {

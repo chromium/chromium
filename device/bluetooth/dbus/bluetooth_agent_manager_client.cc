@@ -24,7 +24,7 @@ const char BluetoothAgentManagerClient::kNoResponseError[] =
 class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
                                         public dbus::ObjectManager::Interface {
  public:
-  BluetoothAgentManagerClientImpl() : weak_ptr_factory_(this) {}
+  BluetoothAgentManagerClientImpl() {}
 
   ~BluetoothAgentManagerClientImpl() override = default;
 
@@ -177,7 +177,7 @@ class BluetoothAgentManagerClientImpl : public BluetoothAgentManagerClient,
   // than we do.
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothAgentManagerClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothAgentManagerClientImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothAgentManagerClientImpl);
 };

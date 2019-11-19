@@ -26,18 +26,15 @@ class PLATFORM_EXPORT NonMainThreadTaskQueue
 
   void OnTaskCompleted(
       const base::sequence_manager::Task& task,
-      const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
+      base::sequence_manager::TaskQueue::TaskTiming* task_timing,
+      base::sequence_manager::LazyNow* lazy_now);
 
   scoped_refptr<base::SingleThreadTaskRunner> CreateTaskRunner(
       TaskType task_type) {
     return TaskQueue::CreateTaskRunner(static_cast<int>(task_type));
   }
 
-  void SetPaused(bool paused);
-
  private:
-  std::unique_ptr<QueueEnabledVoter> task_queue_voter_;
-
   // Not owned.
   NonMainThreadSchedulerImpl* non_main_thread_scheduler_;
 };

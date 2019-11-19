@@ -15,16 +15,24 @@
 namespace font_service {
 namespace internal {
 
-FontServiceThread::FontServiceThread(mojom::FontServicePtr font_service)
-    : font_service_info_(font_service.PassInterface()),
-      task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::TaskPriority::USER_VISIBLE, base::MayBlock()})),
-      weak_factory_(this) {
-  task_runner_->PostTask(FROM_HERE, base::BindOnce(&FontServiceThread::Init,
-                                                   weak_factory_.GetWeakPtr()));
+FontServiceThread::FontServiceThread()
+    : task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::TaskPriority::USER_VISIBLE,
+           base::MayBlock()})) {}
+
+FontServiceThread::~FontServiceThread() {
+  // Ensure the remote is unbound on the appropriate sequence.
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce([](mojo::Remote<mojom::FontService>) {},
+                                        std::move(font_service_)));
 }
 
-FontServiceThread::~FontServiceThread() {}
+void FontServiceThread::Init(
+    mojo::PendingRemote<mojom::FontService> pending_font_service) {
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&FontServiceThread::InitImpl, this,
+                                        std::move(pending_font_service)));
+}
 
 bool FontServiceThread::MatchFamilyName(
     const char family_name[],
@@ -157,7 +165,7 @@ void FontServiceThread::MatchFamilyNameImpl(
     SkFontStyle* out_style) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  if (font_service_.encountered_error()) {
+  if (!font_service_.is_connected()) {
     *out_valid = false;
     done_event->Signal();
     return;
@@ -212,7 +220,7 @@ void FontServiceThread::OpenStreamImpl(base::WaitableEvent* done_event,
                                        const uint32_t id_number) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  if (font_service_.encountered_error()) {
+  if (!font_service_.is_connected()) {
     done_event->Signal();
     return;
   }
@@ -244,7 +252,7 @@ void FontServiceThread::FallbackFontForCharacterImpl(
     bool* out_is_italic) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  if (font_service_.encountered_error()) {
+  if (!font_service_.is_connected()) {
     *out_valid = false;
     done_event->Signal();
     return;
@@ -294,7 +302,7 @@ void FontServiceThread::FontRenderStyleForStrikeImpl(
     mojom::FontRenderStylePtr* out_font_render_style) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  if (font_service_.encountered_error()) {
+  if (!font_service_.is_connected()) {
     *out_valid = false;
     done_event->Signal();
     return;
@@ -330,7 +338,7 @@ void FontServiceThread::MatchFontByPostscriptNameOrFullFontNameImpl(
     mojom::FontIdentityPtr* out_font_identity) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
-  if (font_service_.encountered_error()) {
+  if (!font_service_.is_connected()) {
     *out_valid = false;
     done_event->Signal();
     return;
@@ -371,7 +379,7 @@ void FontServiceThread::MatchFontWithFallbackImpl(
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   *out_font_file_handle = base::File();
-  if (font_service_.encountered_error()) {
+  if (!font_service_.is_connected()) {
     done_event->Signal();
     return;
   }
@@ -394,18 +402,21 @@ void FontServiceThread::OnMatchFontWithFallbackComplete(
   done_event->Signal();
 }
 
-void FontServiceThread::OnFontServiceConnectionError() {
+void FontServiceThread::OnFontServiceDisconnected() {
   std::set<base::WaitableEvent*> events;
   events.swap(pending_waitable_events_);
   for (base::WaitableEvent* event : events)
     event->Signal();
 }
 
-void FontServiceThread::Init() {
-  font_service_.Bind(std::move(font_service_info_));
-  font_service_.set_connection_error_handler(
-      base::BindOnce(&FontServiceThread::OnFontServiceConnectionError,
-                     weak_factory_.GetWeakPtr()));
+void FontServiceThread::InitImpl(
+    mojo::PendingRemote<mojom::FontService> pending_font_service) {
+  font_service_.Bind(std::move(pending_font_service));
+
+  // NOTE: Unretained is safe here because the callback can never be invoked
+  // past |font_service_|'s lifetime.
+  font_service_.set_disconnect_handler(base::BindOnce(
+      &FontServiceThread::OnFontServiceDisconnected, base::Unretained(this)));
 }
 
 }  // namespace internal

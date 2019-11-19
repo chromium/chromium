@@ -9,13 +9,20 @@
 
 namespace gfx {
 
-ScopedRTLFlipCanvas::ScopedRTLFlipCanvas(gfx::Canvas* canvas,
-                                         int width,
-                                         bool flip)
-    : canvas_(canvas) {
-  if (flip && base::i18n::IsRTL()) {
-    canvas->Translate(gfx::Vector2d(width, 0));
-    canvas->Scale(-1, 1);
+ScopedCanvas::ScopedCanvas(gfx::Canvas* canvas) : canvas_(canvas) {
+  if (canvas_)
+    canvas_->Save();
+}
+
+ScopedCanvas::~ScopedCanvas() {
+  if (canvas_)
+    canvas_->Restore();
+}
+
+void ScopedCanvas::FlipIfRTL(int width) {
+  if (base::i18n::IsRTL()) {
+    canvas_->Translate(gfx::Vector2d(width, 0));
+    canvas_->Scale(-1, 1);
   }
 }
 

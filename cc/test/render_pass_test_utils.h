@@ -64,8 +64,8 @@ viz::SolidColorDrawQuad* AddTransformedQuad(viz::RenderPass* pass,
                                             const gfx::Transform& transform);
 
 // Adds a render pass quad to an existing render pass.
-void AddRenderPassQuad(viz::RenderPass* to_pass,
-                       viz::RenderPass* contributing_pass);
+viz::RenderPassDrawQuad* AddRenderPassQuad(viz::RenderPass* to_pass,
+                                           viz::RenderPass* contributing_pass);
 
 // Adds a render pass quad with the given mask resource, filter, and transform.
 void AddRenderPassQuad(viz::RenderPass* to_pass,

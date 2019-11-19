@@ -126,7 +126,7 @@ class CORE_EXPORT FontFaceSet : public EventTargetWithInlineData,
   };
 
   class LoadFontPromiseResolver final
-      : public GarbageCollectedFinalized<LoadFontPromiseResolver>,
+      : public GarbageCollected<LoadFontPromiseResolver>,
         public FontFace::LoadFontCallback {
     USING_GARBAGE_COLLECTED_MIXIN(LoadFontPromiseResolver);
 
@@ -139,7 +139,7 @@ class CORE_EXPORT FontFaceSet : public EventTargetWithInlineData,
     LoadFontPromiseResolver(FontFaceArray faces, ScriptState* script_state)
         : num_loading_(faces.size()),
           error_occured_(false),
-          resolver_(ScriptPromiseResolver::Create(script_state)) {
+          resolver_(MakeGarbageCollected<ScriptPromiseResolver>(script_state)) {
       font_faces_.swap(faces);
     }
 

@@ -44,6 +44,9 @@ std::ostream& operator<<(std::ostream& stream, const ScreenlockState& state) {
     case ScreenlockState::PASSWORD_REAUTH:
       stream << "[password reauth]";
       break;
+    case ScreenlockState::PRIMARY_USER_ABSENT:
+      stream << "[primary user absent]";
+      break;
   }
 
   return stream;

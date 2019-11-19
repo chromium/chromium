@@ -9,13 +9,12 @@
 
 #include "ash/ash_export.h"
 #include "ash/bluetooth_devices_observer.h"
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/session/session_observer.h"
-#include "ash/wm/tablet_mode/tablet_mode_observer.h"
 #include "base/macros.h"
-#include "ui/base/ime/chromeos/public/interfaces/ime_keyset.mojom.h"
+#include "ui/base/ime/chromeos/public/mojom/ime_keyset.mojom.h"
 #include "ui/events/devices/input_device_event_observer.h"
-#include "ui/keyboard/keyboard_controller_observer.h"
-#include "ui/keyboard/keyboard_layout_delegate.h"
 
 namespace ash {
 
@@ -26,8 +25,7 @@ namespace ash {
 class ASH_EXPORT VirtualKeyboardController
     : public TabletModeObserver,
       public ui::InputDeviceEventObserver,
-      public keyboard::KeyboardLayoutDelegate,
-      public keyboard::KeyboardControllerObserver,
+      public KeyboardControllerObserver,
       public SessionObserver {
  public:
   VirtualKeyboardController();
@@ -48,12 +46,7 @@ class ASH_EXPORT VirtualKeyboardController
   // when determining whether or not to show the on-screen keyboard.
   void ToggleIgnoreExternalKeyboard();
 
-  // keyboard::KeyboardLayoutDelegate:
-  aura::Window* GetContainerForDefaultDisplay() override;
-  aura::Window* GetContainerForDisplay(
-      const display::Display& display) override;
-
-  // keyboard::KeyboardControllerObserver:
+  // KeyboardControllerObserver:
   void OnKeyboardEnabledChanged(bool is_enabled) override;
   void OnKeyboardHidden(bool is_temporary_hide) override;
 
@@ -66,9 +59,6 @@ class ASH_EXPORT VirtualKeyboardController
 
   // Updates the keyboard state.
   void UpdateKeyboardEnabled();
-
-  // Creates the keyboard if |enabled|, else destroys it.
-  void SetKeyboardEnabled(bool enabled);
 
   // Force enable the keyboard and show it, even in laptop mode.
   void ForceShowKeyboard();

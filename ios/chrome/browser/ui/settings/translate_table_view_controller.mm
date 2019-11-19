@@ -15,6 +15,7 @@
 #include "components/translate/core/browser/translate_prefs.h"
 #include "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
@@ -178,7 +179,7 @@ NSString* const kTranslateSettingsCategory = @"ChromeTranslateSettings";
     MDCSnackbarMessage* message =
         [MDCSnackbarMessage messageWithText:messageText];
     message.category = kTranslateSettingsCategory;
-    [MDCSnackbarManager showMessage:message];
+    [self.dispatcher showSnackbarMessage:message bottomOffset:0];
   }
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }

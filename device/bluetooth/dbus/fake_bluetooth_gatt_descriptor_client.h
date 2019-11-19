@@ -50,12 +50,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattDescriptorClient
   std::vector<dbus::ObjectPath> GetDescriptors() override;
   Properties* GetProperties(const dbus::ObjectPath& object_path) override;
   void ReadValue(const dbus::ObjectPath& object_path,
-                 const ValueCallback& callback,
-                 const ErrorCallback& error_callback) override;
+                 ValueCallback callback,
+                 ErrorCallback error_callback) override;
   void WriteValue(const dbus::ObjectPath& object_path,
                   const std::vector<uint8_t>& value,
-                  const base::Closure& callback,
-                  const ErrorCallback& error_callback) override;
+                  base::OnceClosure callback,
+                  ErrorCallback error_callback) override;
 
   // Makes the descriptor with the UUID |uuid| visible under the characteristic
   // with object path |characteristic_path|. Descriptor object paths are
@@ -97,7 +97,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattDescriptorClient
   // than we do.
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<FakeBluetoothGattDescriptorClient> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeBluetoothGattDescriptorClient> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeBluetoothGattDescriptorClient);
 };

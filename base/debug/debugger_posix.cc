@@ -19,7 +19,6 @@
 
 #include "base/clang_coverage_buildflags.h"
 #include "base/stl_util.h"
-#include "base/test/clang_coverage.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -43,16 +42,21 @@
 #include <ostream>
 
 #include "base/debug/alias.h"
+#include "base/debug/debugging_buildflags.h"
+#include "base/environment.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/process/process.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+
+#if BUILDFLAG(CLANG_COVERAGE)
+#include "base/test/clang_coverage.h"
+#endif
 
 #if defined(USE_SYMBOLIZE)
 #include "base/third_party/symbolize/symbolize.h"
-#endif
-
-#if defined(OS_ANDROID)
-#include "base/threading/platform_thread.h"
 #endif
 
 namespace base {
@@ -124,6 +128,23 @@ bool BeingDebugged() {
   return being_debugged;
 }
 
+void VerifyDebugger() {
+#if BUILDFLAG(ENABLE_LLDBINIT_WARNING)
+  if (Environment::Create()->HasVar("CHROMIUM_LLDBINIT_SOURCED"))
+    return;
+  if (!BeingDebugged())
+    return;
+  DCHECK(false)
+      << "Detected lldb without sourcing //tools/lldb/lldbinit.py. lldb may "
+         "not be able to find debug symbols. Please see debug instructions for "
+         "using //tools/lldb/lldbinit.py:\n"
+         "https://chromium.googlesource.com/chromium/src/+/master/docs/"
+         "lldbinit.md\n"
+         "To continue anyway, type 'continue' in lldb. To always skip this "
+         "check, define an environment variable CHROMIUM_LLDBINIT_SOURCED=1";
+#endif
+}
+
 #elif defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_AIX)
 
 // We can look in /proc/self/status for TracerPid.  We are likely used in crash
@@ -131,13 +152,13 @@ bool BeingDebugged() {
 // Another option that is common is to try to ptrace yourself, but then we
 // can't detach without forking(), and that's not so great.
 // static
-bool BeingDebugged() {
+Process GetDebuggerProcess() {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
   int status_fd = open("/proc/self/status", O_RDONLY);
   if (status_fd == -1)
-    return false;
+    return Process();
 
   // We assume our line will be in the first 1024 characters and that we can
   // read this much all at once.  In practice this will generally be true.
@@ -146,21 +167,64 @@ bool BeingDebugged() {
 
   ssize_t num_read = HANDLE_EINTR(read(status_fd, buf, sizeof(buf)));
   if (IGNORE_EINTR(close(status_fd)) < 0)
-    return false;
+    return Process();
 
   if (num_read <= 0)
-    return false;
+    return Process();
 
   StringPiece status(buf, num_read);
   StringPiece tracer("TracerPid:\t");
 
   StringPiece::size_type pid_index = status.find(tracer);
   if (pid_index == StringPiece::npos)
-    return false;
-
-  // Our pid is 0 without a debugger, assume this for any pid starting with 0.
+    return Process();
   pid_index += tracer.size();
-  return pid_index < status.size() && status[pid_index] != '0';
+  StringPiece::size_type pid_end_index = status.find('\n', pid_index);
+  if (pid_end_index == StringPiece::npos)
+    return Process();
+
+  StringPiece pid_str(buf + pid_index, pid_end_index - pid_index);
+  int pid = 0;
+  if (!StringToInt(pid_str, &pid))
+    return Process();
+
+  return Process(pid);
+}
+
+bool BeingDebugged() {
+  return GetDebuggerProcess().IsValid();
+}
+
+void VerifyDebugger() {
+#if BUILDFLAG(ENABLE_GDBINIT_WARNING)
+  // Quick check before potentially slower GetDebuggerProcess().
+  if (Environment::Create()->HasVar("CHROMIUM_GDBINIT_SOURCED"))
+    return;
+
+  Process proc = GetDebuggerProcess();
+  if (!proc.IsValid())
+    return;
+
+  FilePath cmdline_file =
+      FilePath("/proc").Append(NumberToString(proc.Handle())).Append("cmdline");
+  std::string cmdline;
+  if (!ReadFileToString(cmdline_file, &cmdline))
+    return;
+
+  // /proc/*/cmdline separates arguments with null bytes, but we only care about
+  // the executable name, so interpret |cmdline| as a null-terminated C string
+  // to extract the exe portion.
+  StringPiece exe(cmdline.c_str());
+
+  DCHECK(ToLowerASCII(exe).find("gdb") == std::string::npos)
+      << "Detected gdb without sourcing //tools/gdb/gdbinit.  gdb may not be "
+         "able to find debug symbols, and pretty-printing of STL types may not "
+         "work.  Please see debug instructions for using //tools/gdb/gdbinit:\n"
+         "https://chromium.googlesource.com/chromium/src/+/master/docs/"
+         "gdbinit.md\n"
+         "To continue anyway, type 'continue' in gdb.  To always skip this "
+         "check, define an environment variable CHROMIUM_GDBINIT_SOURCED=1";
+#endif
 }
 
 #elif defined(OS_FUCHSIA)
@@ -170,12 +234,16 @@ bool BeingDebugged() {
   return false;
 }
 
+void VerifyDebugger() {}
+
 #else
 
 bool BeingDebugged() {
   NOTIMPLEMENTED();
   return false;
 }
+
+void VerifyDebugger() {}
 
 #endif
 
@@ -233,9 +301,8 @@ void DebugBreak() {
     DEBUG_BREAK_ASM();
 #else
     volatile int go = 0;
-    while (!go) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(100));
-    }
+    while (!go)
+      PlatformThread::Sleep(TimeDelta::FromMilliseconds(100));
 #endif
   }
 }
@@ -259,7 +326,7 @@ void BreakDebugger() {
   // same definition (e.g. any function whose sole job is to call abort()) and
   // it may confuse the crash report processing system. http://crbug.com/508489
   static int static_variable_to_make_this_function_unique = 0;
-  base::debug::Alias(&static_variable_to_make_this_function_unique);
+  Alias(&static_variable_to_make_this_function_unique);
 
   DEBUG_BREAK();
 #if defined(OS_ANDROID) && !defined(OFFICIAL_BUILD)

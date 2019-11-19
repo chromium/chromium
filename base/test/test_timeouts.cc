@@ -5,7 +5,9 @@
 #include "base/test/test_timeouts.h"
 
 #include <algorithm>
+#include <string>
 
+#include "base/clang_coverage_buildflags.h"
 #include "base/command_line.h"
 #include "base/debug/debugger.h"
 #include "base/logging.h"
@@ -55,6 +57,9 @@ void InitializeTimeout(const char* switch_name, int min_value, int* value) {
   constexpr int kTimeoutMultiplier = 3;
 #elif defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
   constexpr int kTimeoutMultiplier = 2;
+#elif BUILDFLAG(CLANG_COVERAGE)
+  // On coverage build, tests run 3x slower.
+  constexpr int kTimeoutMultiplier = 3;
 #else
   constexpr int kTimeoutMultiplier = 1;
 #endif
@@ -72,12 +77,7 @@ bool TestTimeouts::initialized_ = false;
 // static
 int TestTimeouts::tiny_timeout_ms_ = 100;
 int TestTimeouts::action_timeout_ms_ = 10000;
-#ifndef NDEBUG
-int TestTimeouts::action_max_timeout_ms_ = 45000;
-#else
 int TestTimeouts::action_max_timeout_ms_ = 30000;
-#endif  // NDEBUG
-
 int TestTimeouts::test_launcher_timeout_ms_ = 45000;
 
 // static
@@ -85,7 +85,8 @@ void TestTimeouts::Initialize() {
   DCHECK(!initialized_);
   initialized_ = true;
 
-  if (base::debug::BeingDebugged()) {
+  const bool being_debugged = base::debug::BeingDebugged();
+  if (being_debugged) {
     fprintf(stdout,
         "Detected presence of a debugger, running without test timeouts.\n");
   }
@@ -104,9 +105,8 @@ void TestTimeouts::Initialize() {
   // causes problems for some iOS device tests, which are always run inside a
   // debugger (thus BeingDebugged() is true even on the bots).
   int min_ui_test_action_timeout = tiny_timeout_ms_;
-  if (base::debug::BeingDebugged() ||
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kTestLauncherInteractive)) {
+  if (being_debugged || base::CommandLine::ForCurrentProcess()->HasSwitch(
+                            switches::kTestLauncherInteractive)) {
     constexpr int kVeryLargeTimeoutMs = 100'000'000;
     min_ui_test_action_timeout = kVeryLargeTimeoutMs;
   }

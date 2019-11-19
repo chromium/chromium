@@ -5,17 +5,21 @@
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/unified_consent/feature.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view.h"
+#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
+#include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_provider.h"
-#import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
 #include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::SysNSStringToUTF16;
+using l10n_util::GetNSString;
+using l10n_util::GetNSStringF;
 
 @interface SigninPromoViewConfigurator ()
 
@@ -60,25 +64,24 @@
   signinPromoView.closeButton.hidden = !self.hasCloseButton;
   if (!self.userEmail) {
     signinPromoView.mode = SigninPromoViewModeColdState;
+    NSString* signInString =
+        GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
+    signinPromoView.accessibilityLabel = signInString;
+    [signinPromoView.primaryButton setTitle:signInString
+                                   forState:UIControlStateNormal];
   } else {
     signinPromoView.mode = SigninPromoViewModeWarmState;
     NSString* name =
         self.userFullName.length ? self.userFullName : self.userEmail;
+    base::string16 name16 = SysNSStringToUTF16(name);
     [signinPromoView.primaryButton
-        setTitle:l10n_util::GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS,
-                                         base::SysNSStringToUTF16(name))
+        setTitle:GetNSStringF(IDS_IOS_SIGNIN_PROMO_CONTINUE_AS, name16)
         forState:UIControlStateNormal];
-    if (unified_consent::IsUnifiedConsentFeatureEnabled()) {
-      [signinPromoView.secondaryButton
-          setTitle:l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
-          forState:UIControlStateNormal];
-    } else {
-      [signinPromoView.secondaryButton
-          setTitle:l10n_util::GetNSStringF(
-                       IDS_IOS_SIGNIN_PROMO_NOT,
-                       base::SysNSStringToUTF16(self.userEmail))
-          forState:UIControlStateNormal];
-    }
+    signinPromoView.accessibilityLabel =
+        GetNSStringF(IDS_IOS_SIGNIN_PROMO_ACCESSIBILITY_LABEL, name16);
+    [signinPromoView.secondaryButton
+        setTitle:GetNSString(IDS_IOS_SIGNIN_PROMO_CHANGE_ACCOUNT)
+        forState:UIControlStateNormal];
     UIImage* image = self.userImage;
     if (!image) {
       image = ios::GetChromeBrowserProvider()

@@ -11,40 +11,23 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
-#include "chrome/browser/sync/profile_sync_test_util.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/sync/driver/test_sync_service.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 
 namespace {
 
-class TestSyncService : public browser_sync::ProfileSyncServiceMock {
+class TestSyncService : public syncer::TestSyncService {
  public:
-  enum class SyncedTypes { ALL, NONE };
-
-  explicit TestSyncService(Profile* profile)
-      : browser_sync::ProfileSyncServiceMock(
-            CreateProfileSyncServiceParamsForTest(profile)),
-        synced_types_(SyncedTypes::NONE) {}
+  TestSyncService() {}
   ~TestSyncService() override {}
 
-  // FakeSyncService:
-  int GetDisableReasons() const override { return disable_reasons_; }
-  syncer::ModelTypeSet GetActiveDataTypes() const override {
-    switch (synced_types_) {
-      case SyncedTypes::ALL:
-        return syncer::ModelTypeSet::All();
-      case SyncedTypes::NONE:
-        return syncer::ModelTypeSet();
-    }
-    NOTREACHED();
-    return syncer::ModelTypeSet();
-  }
+  // syncer::SyncService:
   void AddObserver(syncer::SyncServiceObserver* observer) override {
     ASSERT_FALSE(observer_);
     observer_ = observer;
@@ -53,26 +36,20 @@ class TestSyncService : public browser_sync::ProfileSyncServiceMock {
     EXPECT_EQ(observer_, observer);
   }
 
-  void SetDisableReasons(int disable_reasons) {
-    disable_reasons_ = disable_reasons;
-  }
-
-  void FireOnStateChanged(browser_sync::ProfileSyncService* service) {
+  void FireOnStateChanged() {
     ASSERT_TRUE(observer_);
-    observer_->OnStateChanged(service);
+    observer_->OnStateChanged(this);
   }
 
  private:
   syncer::SyncServiceObserver* observer_ = nullptr;
-  int disable_reasons_ = DISABLE_REASON_NONE;
 
-  SyncedTypes synced_types_;
   DISALLOW_COPY_AND_ASSIGN(TestSyncService);
 };
 
 std::unique_ptr<KeyedService> TestingSyncFactoryFunction(
     content::BrowserContext* context) {
-  return std::make_unique<TestSyncService>(static_cast<Profile*>(context));
+  return std::make_unique<TestSyncService>();
 }
 
 }  // namespace
@@ -90,8 +67,8 @@ class TestExternalPrefLoader : public ExternalPrefLoader {
         load_callback_(std::move(load_callback)) {}
 
   void LoadOnFileThread() override {
-    base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                             std::move(load_callback_));
+    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                   std::move(load_callback_));
   }
 
  private:
@@ -113,7 +90,7 @@ class ExternalPrefLoaderTest : public testing::Test {
   Profile* profile() { return profile_.get(); }
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
   DISALLOW_COPY_AND_ASSIGN(ExternalPrefLoaderTest);
@@ -128,8 +105,7 @@ TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
   TestSyncService* test_service = static_cast<TestSyncService*>(
       ProfileSyncServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           profile(), base::BindRepeating(&TestingSyncFactoryFunction)));
-  ON_CALL(*test_service->GetUserSettingsMock(), IsFirstSetupComplete())
-      .WillByDefault(testing::Return(true));
+  test_service->SetFirstSetupComplete(true);
 
   base::RunLoop run_loop;
   scoped_refptr<ExternalPrefLoader> loader(
@@ -144,7 +120,7 @@ TEST_F(ExternalPrefLoaderTest, PrefReadInitiatesCorrectly) {
   test_service->SetDisableReasons(
       syncer::SyncService::DISABLE_REASON_USER_CHOICE);
   ASSERT_FALSE(test_service->CanSyncFeatureStart());
-  test_service->FireOnStateChanged(test_service);
+  test_service->FireOnStateChanged();
   run_loop.Run();
 }
 

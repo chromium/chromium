@@ -18,6 +18,7 @@
 #include "base/scoped_observer.h"
 #include "base/sequenced_task_runner.h"
 #include "extensions/browser/api/lock_screen_data/data_item.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 
@@ -35,7 +36,6 @@ class BrowserContext;
 namespace extensions {
 
 class Extension;
-class ExtensionRegistry;
 class LocalValueStoreCache;
 
 namespace lock_screen_data {
@@ -310,7 +310,7 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
   SessionLockedState session_locked_state_ = SessionLockedState::kUnknown;
 
   ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   // The deprecated (shared) lock screen data value store cache. Items in this
   // value store should be migrated to |value_store_cache_|.
@@ -329,7 +329,7 @@ class LockScreenItemStorage : public ExtensionRegistryObserver {
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::WeakPtrFactory<LockScreenItemStorage> weak_ptr_factory_;
+  base::WeakPtrFactory<LockScreenItemStorage> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LockScreenItemStorage);
 };

@@ -32,20 +32,15 @@
 
 namespace blink {
 
-using namespace vector_math;
-
 ReverbAccumulationBuffer::ReverbAccumulationBuffer(size_t length)
     : buffer_(length), read_index_(0), read_time_frame_(0) {}
 
 void ReverbAccumulationBuffer::ReadAndClear(float* destination,
                                             size_t number_of_frames) {
   size_t buffer_length = buffer_.size();
-  bool is_copy_safe =
-      read_index_ <= buffer_length && number_of_frames <= buffer_length;
 
-  DCHECK(is_copy_safe);
-  if (!is_copy_safe)
-    return;
+  DCHECK_LE(read_index_, buffer_length);
+  DCHECK_LE(number_of_frames, buffer_length);
 
   size_t frames_available = buffer_length - read_index_;
   size_t number_of_frames1 = std::min(number_of_frames, frames_available);
@@ -89,20 +84,18 @@ int ReverbAccumulationBuffer::Accumulate(float* source,
 
   float* destination = buffer_.Data();
 
-  bool is_safe = write_index <= buffer_length &&
-                 number_of_frames1 + write_index <= buffer_length &&
-                 number_of_frames2 <= buffer_length;
-  DCHECK(is_safe);
-  if (!is_safe)
-    return 0;
+  DCHECK_LE(write_index, buffer_length);
+  DCHECK_LE(number_of_frames1 + write_index, buffer_length);
+  DCHECK_LE(number_of_frames2, buffer_length);
 
-  Vadd(source, 1, destination + write_index, 1, destination + write_index, 1,
-       number_of_frames1);
+  vector_math::Vadd(source, 1, destination + write_index, 1,
+                    destination + write_index, 1, number_of_frames1);
 
   // Handle wrap-around if necessary
-  if (number_of_frames2 > 0)
-    Vadd(source + number_of_frames1, 1, destination, 1, destination, 1,
-         number_of_frames2);
+  if (number_of_frames2 > 0) {
+    vector_math::Vadd(source + number_of_frames1, 1, destination, 1,
+                      destination, 1, number_of_frames2);
+  }
 
   return write_index;
 }

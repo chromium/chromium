@@ -11,9 +11,9 @@ const puppeteer = require('puppeteer');
 async function runOctane(samplingRate) {
   const args = ['--enable-devtools-experiments'];
   if (samplingRate)
-    args.push(`--sampling-heap-profiler=${samplingRate}`);
+    args.push(`--memlog=all`, `--memlog-sampling-rate=${samplingRate}`);
   while (true) {
-    let brower;
+    let browser;
     try {
       browser = await puppeteer.launch({
           executablePath: process.env.CHROME_PATH, args, headless: true});

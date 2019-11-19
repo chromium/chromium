@@ -4,12 +4,8 @@
 
 #include "third_party/blink/public/platform/web_document_subresource_filter.h"
 
-#include <string>
-#include <vector>
-
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_cache.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -33,7 +29,7 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
 
   LoadPolicy GetLoadPolicy(const WebURL& resource_url,
                            mojom::RequestContextType) override {
-    std::string resource_path = WebString(KURL(resource_url).GetPath()).Utf8();
+    String resource_path = KURL(resource_url).GetPath();
     if (std::find(queried_subresource_paths_.begin(),
                   queried_subresource_paths_.end(),
                   resource_path) == queried_subresource_paths_.end()) {
@@ -59,13 +55,13 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
     blacklisted_suffixes_.push_back(suffix);
   }
 
-  const std::vector<std::string>& QueriedSubresourcePaths() const {
+  const Vector<String>& QueriedSubresourcePaths() const {
     return queried_subresource_paths_;
   }
 
  private:
   // Using STL types for compatibility with gtest/gmock.
-  std::vector<std::string> queried_subresource_paths_;
+  Vector<String> queried_subresource_paths_;
   Vector<String> blacklisted_suffixes_;
   LoadPolicy load_policy_;
 };
@@ -110,38 +106,38 @@ class WebDocumentSubresourceFilterTest : public testing::Test {
   void LoadDocument(TestDocumentSubresourceFilter::LoadPolicy policy) {
     client_.SetLoadPolicyFromNextLoad(policy);
     frame_test_helpers::LoadFrame(MainFrame(),
-                                  BaseURL() + "foo_with_image.html");
+                                  BaseURL().Utf8() + "foo_with_image.html");
   }
 
   void ExpectSubresourceWasLoaded(bool loaded) {
     WebElement web_element = MainFrame()->GetDocument().QuerySelector("img");
-    HTMLImageElement* image_element = ToHTMLImageElement(web_element);
+    HTMLImageElement* image_element =
+        ToHTMLImageElement(web_element.Unwrap<Node>());
     EXPECT_EQ(loaded, !!image_element->naturalWidth());
   }
 
-  const std::string& BaseURL() const { return base_url_; }
+  const String& BaseURL() const { return base_url_; }
   WebLocalFrameImpl* MainFrame() { return web_view_helper_.LocalMainFrame(); }
-  const std::vector<std::string>& QueriedSubresourcePaths() const {
+  const Vector<String>& QueriedSubresourcePaths() const {
     return client_.SubresourceFilter()->QueriedSubresourcePaths();
   }
 
  private:
-  void RegisterMockedHttpURLLoad(const std::string& file_name) {
+  void RegisterMockedHttpURLLoad(const String& file_name) {
+    // TODO(crbug.com/751425): We should use the mock functionality
+    // via |web_view_helper_|.
     url_test_helpers::RegisterMockedURLLoadFromBase(
-        WebString::FromUTF8(base_url_), test::CoreTestDataPath(),
-        WebString::FromUTF8(file_name));
+        WebString(base_url_), test::CoreTestDataPath(), WebString(file_name));
   }
 
   // testing::Test:
   void TearDown() override {
-    Platform::Current()
-        ->GetURLLoaderMockFactory()
-        ->UnregisterAllURLsAndClearMemoryCache();
+    url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
   }
 
   SubresourceFilteringWebFrameClient client_;
   frame_test_helpers::WebViewHelper web_view_helper_;
-  std::string base_url_;
+  String base_url_;
 };
 
 TEST_F(WebDocumentSubresourceFilterTest, AllowedSubresource) {

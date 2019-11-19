@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "components/arc/common/midis.mojom.h"
+#include "components/arc/mojom/midis.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -46,7 +46,7 @@ class ArcMidisBridge : public KeyedService,
   mojom::MidisHostPtr midis_host_ptr_;
 
   // WeakPtrFactory to use for callbacks.
-  base::WeakPtrFactory<ArcMidisBridge> weak_factory_;
+  base::WeakPtrFactory<ArcMidisBridge> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcMidisBridge);
 };

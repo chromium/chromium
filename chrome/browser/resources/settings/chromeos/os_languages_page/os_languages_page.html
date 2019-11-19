@@ -1,0 +1,280 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/cr_elements/action_link_css.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/cr.html">
+<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
+<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
+<link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="os_add_languages_dialog.html">
+<link rel="import" href="../../controls/controlled_radio_button.html">
+<link rel="import" href="../../controls/settings_radio_group.html">
+<link rel="import" href="../../controls/settings_toggle_button.html">
+<link rel="import" href="../../icons.html">
+<link rel="import" href="../../lifetime_browser_proxy.html">
+<link rel="import" href="../../prefs/prefs_behavior.html">
+<link rel="import" href="../../route.html">
+<link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../../settings_vars_css.html">
+
+<dom-module id="os-settings-languages-page">
+  <template>
+    <style include="settings-shared action-link">
+      h2 {
+        padding-inline-start: var(--cr-section-padding);
+      }
+
+      .explain-selected {
+        color: var(--cros-success-color);
+        font-weight: initial;
+        margin-top: 4px;
+      }
+
+      cr-action-menu.complex .dropdown-item {
+        min-height: 36px;
+      }
+
+      cr-action-menu:not(.complex) hr {
+        display: none;
+      }
+
+      cr-action-menu.complex hr {
+        /* Override user-agent border and margin. */
+        border: none;
+        /* TODO(michaelpg): Update to whatever variable is used for the darker,
+         * full-width separators: crbug.com/649547. */
+        border-top: var(--cr-separator-line);
+        margin: 6px 0 0 0;
+      }
+
+      cr-checkbox.dropdown-item {
+        --cr-action-menu-disabled-item-opacity: 0.38;
+        margin-inline-start: 0;
+      }
+
+      .icon-external {
+        /* The negative margin messes up the outline border. These are in an
+           indented list so this looks fine until moved: crbug.com/708286. */
+        margin-inline-end: 0;
+      }
+
+      #uiLanguageItem:focus {
+        background-color: transparent;
+      }
+
+      #uiLanguageItem span {
+        line-height: 20px;
+      }
+
+      #uiLanguageItem cr-policy-indicator {
+        float: right;
+        margin-inline-start: 20px;
+      }
+
+      .name-with-error-list {
+        padding: 14px 0;
+      }
+
+      .name-with-error-list div {
+        color: var(--cros-error-color);
+        margin-top: 8px;
+      }
+
+      iron-icon[icon='cr:error'] {
+        @apply --cr-icon-height-width;
+        --iron-icon-fill-color: var(--cros-error-color);
+        margin-inline-end: 8px;
+      }
+
+      .name-with-error-list[disabled] {
+        pointer-events: none;
+      }
+
+      iron-icon.policy {
+        margin-inline-start: 10px;
+      }
+
+      cr-policy-pref-indicator {
+        margin-inline-end: var(--settings-controlled-by-spacing);
+      }
+
+      div.list-item.non-target .target-info {
+        display: none;
+      }
+
+      /* Any .target.target-info following another .target element needs to
+      be hidden. We only want to show the _first_ .target-info of the list.
+      This is a way to do a :first-of-class selector. */
+      div.list-item.target ~  div.list-item.target .target-info {
+        display: none;
+      }
+
+      /* The default implementation of the actionable list item makes the entire
+      list item row a button such that clicking anywhere will activate the
+      action of the list item. The input method list behaves differently in that
+      clicking the list item sets that item as the input method, and the
+      selected list item should not react to selection after being selected.
+      Set the cursor to auto to override the default implementation which would
+      otherwise make the entire row appear clickable when it is not. */
+      div.list-item.selected[actionable] {
+        cursor: auto;
+      }
+
+      #restartButton {
+        margin-inline-start: var(--settings-controlled-by-spacing);
+      }
+
+      .external-wrapper {
+        display: flex;
+      }
+    </style>
+
+    <div route-path="default">
+
+      <h2>$i18n{osLanguagesListTitle}</h2>
+
+      <span class="settings-box first"
+          hidden="[[isHelpTextHidden_(languages.enabled.*)]]">
+        <span>$i18n{orderLanguagesInstructions}</span>
+        <a href="$i18n{languagesLearnMoreURL}" target="_blank">
+          $i18n{learnMore}
+        </a>
+      </span>
+      <div class="list-frame vertical-list" id="languagesList">
+        <template is="dom-repeat" items="[[languages.enabled]]">
+          <div class$="list-item [[getLanguageItemClass_(
+              item.language.code, language.prospectiveUILanguage)]]">
+            <div class="start">
+              <div title="[[item.language.nativeDisplayName]]">
+                [[item.language.displayName]]
+              </div>
+              <div class="explain-selected"
+                  hidden="[[!isProspectiveUILanguage_(
+                      item.language.code,
+                      languages.prospectiveUILanguage)]]">
+                $i18n{isDisplayedInThisLanguage}
+              </div>
+            </div>
+            <template is="dom-if" if="[[isRestartRequired_(
+                item.language.code, languages.prospectiveUILanguage)]]"
+                restamp>
+              <cr-button id="restartButton" on-click="onRestartTap_">
+                $i18n{restart}
+              </cr-button>
+            </template>
+            <cr-icon-button class="icon-more-vert"
+                title="$i18n{moreActions}" id="more-[[item.language.code]]"
+                on-click="onDotsTap_"></cr-icon-button>
+          </div>
+        </template>
+        <div class="list-item">
+          <a is="action-link" class="list-button" id="addLanguages"
+              disabled="[[!canEnableSomeSupportedLanguage_(languages)]]"
+              on-click="onAddLanguagesTap_">
+            $i18n{addLanguages}
+          </a>
+        </div>
+      </div>
+
+      <h2>$i18n{inputMethodsListTitle}</h2>
+
+      <div class="list-frame vertical-list" id="inputMethodsList">
+        <template is="dom-repeat"
+            items="[[languages.inputMethods.enabled]]">
+          <div class$="list-item [[getInputMethodItemClass_(
+              item.id, languages.inputMethods.currentId)]]"
+              actionable on-click="onInputMethodTap_"
+              on-keypress="onInputMethodTap_" on-mousedown="onMouseDown_"
+              tabindex$="[[getInputMethodTabIndex_(
+                  item.id, languages.inputMethods.currentId)]]">
+            <div class="start">
+              <div class="display-name">[[item.displayName]]</div>
+              <div class="explain-selected"
+                  hidden="[[!isCurrentInputMethod_(
+                      item.id, languages.inputMethods.currentId)]]">
+                $i18n{inputMethodEnabled}
+              </div>
+            </div>
+            <div class="external-wrapper" hidden="[[!item.hasOptionsPage]]">
+              <div class="separator"></div>
+              <cr-icon-button class="icon-external"
+                  on-click="onInputMethodOptionsTap_"></cr-icon-button>
+            </div>
+          </div>
+        </template>
+        <cr-link-row class="hr list-item" id="manageInputMethods"
+            on-click="onManageInputMethodsTap_"
+            label="$i18n{manageInputMethods}"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+      </div>
+      <settings-toggle-button
+          pref="{{prefs.settings.language.ime_menu_activated}}"
+          label="$i18n{showImeMenu}">
+      </settings-toggle-button>
+
+      <cr-lazy-render id="menu">
+        <template>
+          <cr-action-menu class="complex" on-close="onCloseMenu_"
+              role-description="$i18n{menu}">
+            <cr-checkbox id="uiLanguageItem" class="dropdown-item"
+                hidden="[[isGuest_]]"
+                disabled="[[disableUILanguageCheckbox_(
+                    detailLanguage_, languages.prospectiveUILanguage)]]"
+                checked="[[isProspectiveUILanguage_(
+                    detailLanguage_.language.code,
+                    languages.prospectiveUILanguage)]]"
+                on-change="onUILanguageChange_">
+              <span>$i18n{displayInThisLanguage}</span>
+              <iron-icon class="policy" icon="cr20:domain" hidden$="[[
+                  !detailLanguage_.language.isProhibitedLanguage]]">
+              </iron-icon>
+            </cr-checkbox>
+            <hr hidden="[[!shouldShowDialogSeparator_(languages.enabled.*)]]">
+            <button class="dropdown-item" role="menuitem"
+                on-click="onMoveToTopTap_"
+                hidden="[[isNthLanguage_(
+                    0, detailLanguage_, languages.enabled.*)]]">
+              $i18n{moveToTop}
+            </button>
+            <button class="dropdown-item" role="menuitem"
+                on-click="onMoveUpTap_"
+                hidden="[[!showMoveUp_(detailLanguage_,
+                    languages.enabled.*)]]">
+              $i18n{moveUp}
+            </button>
+            <button class="dropdown-item" role="menuitem"
+                on-click="onMoveDownTap_"
+                hidden="[[!showMoveDown_(
+                    detailLanguage_, languages.enabled.*)]]">
+              $i18n{moveDown}
+            </button>
+            <button class="dropdown-item" role="menuitem"
+                on-click="onRemoveLanguageTap_"
+                hidden="[[!detailLanguage_.removable]]">
+              $i18n{removeLanguage}
+            </button>
+          </cr-action-menu>
+        </template>
+      </cr-lazy-render>
+    </div>
+
+    <template is="dom-if" if="[[showAddLanguagesDialog_]]" restamp>
+      <os-settings-add-languages-dialog languages="{{languages}}"
+          language-helper="[[languageHelper]]"
+          on-close="onAddLanguagesDialogClose_">
+      </os-settings-add-languages-dialog>
+    </template>
+  </template>
+  <script src="os_languages_page.js"></script>
+</dom-module>

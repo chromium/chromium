@@ -50,48 +50,50 @@ BluetoothRemoteGattDescriptorCast::GetCharacteristic() const {
 }
 
 void BluetoothRemoteGattDescriptorCast::ReadRemoteDescriptor(
-    const ValueCallback& callback,
-    const ErrorCallback& error_callback) {
+    ValueCallback callback,
+    ErrorCallback error_callback) {
   remote_descriptor_->Read(
       base::BindOnce(&BluetoothRemoteGattDescriptorCast::OnReadRemoteDescriptor,
-                     weak_factory_.GetWeakPtr(), callback, error_callback));
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(error_callback)));
 }
 
 void BluetoothRemoteGattDescriptorCast::WriteRemoteDescriptor(
     const std::vector<uint8_t>& new_value,
-    const base::Closure& callback,
-    const ErrorCallback& error_callback) {
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
   remote_descriptor_->Write(
       new_value,
       base::BindOnce(
           &BluetoothRemoteGattDescriptorCast::OnWriteRemoteDescriptor,
-          weak_factory_.GetWeakPtr(), new_value, callback, error_callback));
+          weak_factory_.GetWeakPtr(), new_value, std::move(callback),
+          std::move(error_callback)));
 }
 
 void BluetoothRemoteGattDescriptorCast::OnReadRemoteDescriptor(
-    const ValueCallback& callback,
-    const ErrorCallback& error_callback,
+    ValueCallback callback,
+    ErrorCallback error_callback,
     bool success,
     const std::vector<uint8_t>& result) {
   if (success) {
     value_ = result;
-    callback.Run(result);
+    std::move(callback).Run(result);
     return;
   }
-  error_callback.Run(BluetoothGattService::GATT_ERROR_FAILED);
+  std::move(error_callback).Run(BluetoothGattService::GATT_ERROR_FAILED);
 }
 
 void BluetoothRemoteGattDescriptorCast::OnWriteRemoteDescriptor(
     const std::vector<uint8_t>& written_value,
-    const base::Closure& callback,
-    const ErrorCallback& error_callback,
+    base::OnceClosure callback,
+    ErrorCallback error_callback,
     bool success) {
   if (success) {
     value_ = written_value;
-    callback.Run();
+    std::move(callback).Run();
     return;
   }
-  error_callback.Run(BluetoothGattService::GATT_ERROR_FAILED);
+  std::move(error_callback).Run(BluetoothGattService::GATT_ERROR_FAILED);
 }
 
 }  // namespace device

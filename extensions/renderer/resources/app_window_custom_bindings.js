@@ -16,23 +16,6 @@ var currentWindowInternal = null;
 var kSetBoundsFunction = 'setBounds';
 var kSetSizeConstraintsFunction = 'setSizeConstraints';
 
-if (!apiBridge)
-  var binding = require('binding').Binding;
-
-var jsEvent;
-function createAnonymousEvent() {
-  if (bindingUtil) {
-    var supportsFilters = false;
-    var supportsLazyListeners = false;
-    // Native custom events ignore schema.
-    return bindingUtil.createCustomEvent(undefined, undefined, supportsFilters,
-                                         supportsLazyListeners);
-  }
-  if (!jsEvent)
-    jsEvent = require('event_bindings').Event;
-  return new jsEvent();
-}
-
 // Bounds class definition.
 var Bounds = function(boundsKey) {
   privates(this).boundsKey_ = boundsKey;
@@ -124,8 +107,7 @@ Bounds.prototype.setMaximumSize = function(maxWidth, maxHeight) {
                         { maxWidth: maxWidth, maxHeight: maxHeight });
 };
 
-var appWindow = apiBridge || binding.create('app.window');
-appWindow.registerCustomHook(function(bindingsAPI) {
+apiBridge.registerCustomHook(function(bindingsAPI) {
   var apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setCustomCallback('create',
@@ -218,10 +200,7 @@ appWindow.registerCustomHook(function(bindingsAPI) {
   // so the correct JS context is used for global variables such as
   // currentWindowInternal, appWindowData, etc.
   apiFunctions.setHandleRequest('initializeAppWindow', function(params) {
-    currentWindowInternal =
-        getInternalApi ?
-            getInternalApi('app.currentWindowInternal') :
-            binding.create('app.currentWindowInternal').generate();
+    currentWindowInternal = getInternalApi('app.currentWindowInternal');
     var AppWindow = function() {
       this.innerBounds = new Bounds('innerBounds');
       this.outerBounds = new Bounds('outerBounds');
@@ -235,7 +214,12 @@ appWindow.registerCustomHook(function(bindingsAPI) {
     AppWindow.prototype.moveTo = $Function.bind(window.moveTo, window);
     AppWindow.prototype.resizeTo = $Function.bind(window.resizeTo, window);
     AppWindow.prototype.contentWindow = window;
-    AppWindow.prototype.onClosed = createAnonymousEvent();
+    var supportsFilters = false;
+    var supportsLazyListeners = false;
+    AppWindow.prototype.onClosed =
+        bindingUtil.createCustomEvent(undefined /* name */,
+                                      supportsFilters,
+                                      supportsLazyListeners);
     AppWindow.prototype.close = function() {
       this.contentWindow.close();
     };
@@ -398,7 +382,5 @@ function updateSizeConstraints(boundsType, constraints) {
   currentWindowInternal.setSizeConstraints(boundsType, constraints);
 }
 
-if (!apiBridge)
-  exports.$set('binding', appWindow.generate());
 exports.$set('onAppWindowClosed', onAppWindowClosed);
 exports.$set('updateAppWindowProperties', updateAppWindowProperties);

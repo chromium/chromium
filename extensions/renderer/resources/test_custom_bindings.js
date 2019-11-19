@@ -5,8 +5,6 @@
 // test_custom_bindings.js
 // mini-framework for ExtensionApiTest browser tests
 
-var binding = apiBridge || require('binding').Binding.create('test');
-
 var environmentSpecificBindings = require('test_environment_specific_bindings');
 var GetExtensionAPIDefinitionsForTest =
     requireNative('apiDefinitions').GetExtensionAPIDefinitionsForTest;
@@ -16,23 +14,11 @@ var userGestures = requireNative('user_gestures');
 
 var GetModuleSystem = requireNative('v8_context').GetModuleSystem;
 
-var jsExceptionHandler =
-    bindingUtil ? undefined : require('uncaught_exception_handler');
-function setExceptionHandler(handler) {
-  if (bindingUtil)
-    bindingUtil.setExceptionHandler(handler);
-  else
-    jsExceptionHandler.setHandler(handler);
-}
-
 function handleException(message, error) {
-  if (bindingUtil)
-    bindingUtil.handleException(message || 'Unknown error', error);
-  else
-    jsExceptionHandler.handle(message, error);
+  bindingUtil.handleException(message || 'Unknown error', error);
 }
 
-binding.registerCustomHook(function(api) {
+apiBridge.registerCustomHook(function(api) {
   var chromeTest = api.compiledApi;
   var apiFunctions = api.apiFunctions;
 
@@ -103,7 +89,7 @@ binding.registerCustomHook(function(api) {
 
     try {
       chromeTest.log("( RUN      ) " + testName(currentTest));
-      setExceptionHandler(function(message, e) {
+      bindingUtil.setExceptionHandler(function(message, e) {
         if (e !== failureException)
           chromeTest.fail('uncaught exception: ' + message);
       });
@@ -377,7 +363,7 @@ binding.registerCustomHook(function(api) {
 
   apiFunctions.setHandleRequest('setExceptionHandler', function(callback) {
     chromeTest.assertEq(typeof(callback), 'function');
-    setExceptionHandler(callback);
+    bindingUtil.setExceptionHandler(callback);
   });
 
   apiFunctions.setHandleRequest('getWakeEventPage', function() {
@@ -386,6 +372,3 @@ binding.registerCustomHook(function(api) {
 
   environmentSpecificBindings.registerHooks(api);
 });
-
-if (!apiBridge)
-  exports.$set('binding', binding.generate());

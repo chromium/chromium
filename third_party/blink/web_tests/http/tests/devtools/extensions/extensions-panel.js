@@ -198,7 +198,7 @@
         extension_showPanel("extension");
 
         function performSearch(query) {
-          UI.inspectorView.panel(extensionsOrigin + "TestPanelforsearch").then(panel => {
+          UI.inspectorView.panel(Extensions.extensionsOrigin + "TestPanelforsearch").then(panel => {
             panel.searchableView().showSearchField();
             panel.searchableView()._searchInputElement.value = query;
             panel.searchableView()._performSearch(true, true);

@@ -20,7 +20,7 @@ namespace content {
 // A startup task is a void function returning the status on completion.
 // a status of > 0 indicates a failure, and that no further startup tasks should
 // be run.
-typedef base::Callback<int(void)> StartupTask;
+typedef base::OnceCallback<int(void)> StartupTask;
 
 // This class runs startup tasks. The tasks are either run immediately inline,
 // or are queued one at a time on the UI thread's message loop. If the events

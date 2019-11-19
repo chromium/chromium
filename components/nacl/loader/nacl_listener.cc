@@ -19,7 +19,8 @@
 
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
+#include "base/memory/read_only_shared_memory_region.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -35,6 +36,7 @@
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_sync_channel.h"
 #include "ipc/ipc_sync_message_filter.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "native_client/src/public/chrome_main.h"
 #include "native_client/src/public/nacl_app.h"
 #include "native_client/src/public/nacl_desc.h"
@@ -77,13 +79,7 @@ void LoadStatusCallback(int load_status) {
       static_cast<NaClErrorCode>(load_status));
 }
 
-#if defined(OS_LINUX)
-
-int CreateMemoryObject(size_t size, int executable) {
-  return service_manager::MakeSharedMemorySegmentViaIPC(size, executable);
-}
-
-#elif defined(OS_WIN)
+#if defined(OS_WIN)
 int AttachDebugExceptionHandler(const void* info, size_t info_size) {
   std::string info_string(reinterpret_cast<const char*>(info), info_size);
   bool result = false;
@@ -168,7 +164,7 @@ NaClListener::NaClListener()
 #endif
       is_started_(false) {
   io_thread_.StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
+      base::Thread::Options(base::MessagePumpType::IO, 0));
   DCHECK(g_listener == NULL);
   g_listener = this;
 }
@@ -218,17 +214,25 @@ class FileTokenMessageFilter : public IPC::MessageFilter {
 };
 
 void NaClListener::Listen() {
+  NaClService service(io_thread_.task_runner());
   channel_ = IPC::SyncChannel::Create(this, io_thread_.task_runner().get(),
                                       base::ThreadTaskRunnerHandle::Get(),
                                       &shutdown_event_);
   filter_ = channel_->CreateSyncMessageFilter();
   channel_->AddFilter(new FileTokenMessageFilter());
-  mojo::ScopedMessagePipeHandle channel_handle;
-  auto service = CreateNaClService(io_thread_.task_runner(), &channel_handle);
-  channel_->Init(channel_handle.release(), IPC::Channel::MODE_CLIENT, true);
+  channel_->Init(service.TakeChannelPipe().release(), IPC::Channel::MODE_CLIENT,
+                 true);
   main_task_runner_ = base::ThreadTaskRunnerHandle::Get();
   base::RunLoop().Run();
 }
+
+#if defined(OS_LINUX)
+// static
+int NaClListener::MakeSharedMemorySegment(size_t length, int executable) {
+  return service_manager::SharedMemoryIPCSupport::MakeSharedMemorySegment(
+      length, executable);
+}
+#endif
 
 bool NaClListener::OnMessageReceived(const IPC::Message& msg) {
   bool handled = true;
@@ -282,7 +286,7 @@ void NaClListener::OnAddPrefetchedResource(
   }
 }
 
-void NaClListener::OnStart(const nacl::NaClStartParams& params) {
+void NaClListener::OnStart(nacl::NaClStartParams params) {
   is_started_ = true;
 #if defined(OS_LINUX) || defined(OS_MACOSX)
   int urandom_fd = HANDLE_EINTR(dup(base::GetUrandomFD()));
@@ -294,10 +298,13 @@ void NaClListener::OnStart(const nacl::NaClStartParams& params) {
   struct NaClApp* nap = NULL;
   NaClChromeMainInit();
 
-  CHECK(base::SharedMemory::IsHandleValid(params.crash_info_shmem_handle));
-  crash_info_shmem_.reset(new base::SharedMemory(
-      params.crash_info_shmem_handle, false /* not readonly */));
-  CHECK(crash_info_shmem_->Map(nacl::kNaClCrashInfoShmemSize));
+  CHECK(params.crash_info_shmem_region.IsValid());
+  crash_info_shmem_mapping_ = params.crash_info_shmem_region.Map();
+  base::ReadOnlySharedMemoryRegion ro_shmem_region =
+      base::WritableSharedMemoryRegion::ConvertToReadOnly(
+          std::move(params.crash_info_shmem_region));
+  CHECK(crash_info_shmem_mapping_.IsValid());
+  CHECK(ro_shmem_region.IsValid());
   NaClSetFatalErrorCallback(&FatalLogHandler);
 
   nap = NaClAppCreate();
@@ -326,11 +333,11 @@ void NaClListener::OnStart(const nacl::NaClStartParams& params) {
       base::Bind(&NaClListener::ResolveFileToken, base::Unretained(this)),
       base::Bind(&NaClListener::OnOpenResource, base::Unretained(this)));
 
-  nacl::mojom::NaClRendererHostPtr renderer_host;
+  mojo::PendingRemote<nacl::mojom::NaClRendererHost> renderer_host;
   if (!Send(new NaClProcessHostMsg_PpapiChannelsCreated(
           browser_handle, ppapi_renderer_handle,
-          MakeRequest(&renderer_host).PassMessagePipe().release(),
-          manifest_service_handle)))
+          renderer_host.InitWithNewPipeAndPassReceiver().PassPipe().release(),
+          manifest_service_handle, ro_shmem_region)))
     LOG(FATAL) << "Failed to send IPC channel handle to NaClProcessHost.";
 
   trusted_listener_ = std::make_unique<NaClTrustedListener>(
@@ -345,7 +352,7 @@ void NaClListener::OnStart(const nacl::NaClStartParams& params) {
 #endif
 
 #if defined(OS_LINUX)
-  args->create_memory_object_func = CreateMemoryObject;
+  args->create_memory_object_func = &MakeSharedMemorySegment;
 #endif
 
   DCHECK(params.process_type != nacl::kUnknownNaClProcessType);

@@ -42,25 +42,25 @@ namespace blink {
 class MODULES_EXPORT FileWriterBase : public GarbageCollectedMixin {
  public:
   virtual ~FileWriterBase();
-  void Initialize(const KURL& path, long long length);
+  void Initialize(const KURL& path, int64_t length);
 
-  long long position() const { return position_; }
-  long long length() const { return length_; }
+  int64_t position() const { return position_; }
+  int64_t length() const { return length_; }
 
   void Trace(blink::Visitor* visitor) override {}
 
-  virtual void Truncate(long long length);
-  virtual void Write(long long position, const String& id);
+  virtual void Truncate(int64_t length);
+  virtual void Write(int64_t position, const String& id);
   virtual void Cancel();
 
  protected:
   FileWriterBase();
 
-  void SetPosition(long long position) { position_ = position; }
+  void SetPosition(int64_t position) { position_ = position; }
 
-  void SetLength(long long length) { length_ = length; }
+  void SetLength(int64_t length) { length_ = length; }
 
-  void SeekInternal(long long position);
+  void SeekInternal(int64_t position);
 
   // This calls DidSucceed() or DidFail() based on the value of |error_code|.
   void DidFinish(base::File::Error error_code);
@@ -93,8 +93,8 @@ class MODULES_EXPORT FileWriterBase : public GarbageCollectedMixin {
 
   void FinishCancel();
 
-  long long position_;
-  long long length_;
+  int64_t position_;
+  int64_t length_;
   KURL path_;
   OperationType operation_;
   CancelState cancel_state_;

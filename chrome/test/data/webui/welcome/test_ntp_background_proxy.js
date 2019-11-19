@@ -2,18 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {TestBrowserProxy} from '../test_browser_proxy.m.js';
+
 /** @implements {NtpBackgroundProxy} */
-class TestNtpBackgroundProxy extends TestBrowserProxy {
+export class TestNtpBackgroundProxy extends TestBrowserProxy {
   constructor() {
     super([
       'clearBackground',
       'getBackgrounds',
       'preloadImage',
+      'recordBackgroundImageFailedToLoad',
+      'recordBackgroundImageLoadTime',
       'setBackground',
     ]);
 
-    /** @private {!Array<!nux.NtpBackgroundData} */
+    /** @private {!Array<!NtpBackgroundData} */
     this.backgroundsList_ = [];
+
+    /** @private {boolean} */
+    this.preloadImageSuccess_ = true;
   }
 
   /** @override */
@@ -30,7 +37,17 @@ class TestNtpBackgroundProxy extends TestBrowserProxy {
   /** @override */
   preloadImage(url) {
     this.methodCalled('preloadImage');
-    return Promise.resolve();
+    return this.preloadImageSuccess_ ? Promise.resolve() : Promise.reject();
+  }
+
+  /** @override */
+  recordBackgroundImageFailedToLoad() {
+    this.methodCalled('recordBackgroundImageFailedToLoad');
+  }
+
+  /** @override */
+  recordBackgroundImageLoadTime(loadTime) {
+    this.methodCalled('recordBackgroundImageLoadTime', loadTime);
   }
 
   /** @override */
@@ -38,7 +55,12 @@ class TestNtpBackgroundProxy extends TestBrowserProxy {
     this.methodCalled('setBackground', id);
   }
 
-  /** @param {!Array<!nux.NtpBackgroundData>} backgroundsList */
+  /** @param {boolean} success */
+  setPreloadImageSuccess(success) {
+    this.preloadImageSuccess_ = success;
+  }
+
+  /** @param {!Array<!NtpBackgroundData>} backgroundsList */
   setBackgroundsList(backgroundsList) {
     this.backgroundsList_ = backgroundsList;
   }

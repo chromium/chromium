@@ -16,7 +16,7 @@ namespace blink {
 class HTMLObjectElementTest : public testing::Test {
  protected:
   void SetUp() final {
-    dummy_page_holder_ = DummyPageHolder::Create(IntSize(800, 600));
+    dummy_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   }
   Document& GetDocument() { return dummy_page_holder_->GetDocument(); }
 
@@ -41,10 +41,8 @@ TEST_F(HTMLObjectElementTest, FallbackRecalcForReattach) {
 
   object->RenderFallbackContent(nullptr);
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
-  StyleRecalcChange change;
-  change = change.ForceRecalcDescendants();
-  GetDocument().GetStyleEngine().RecalcStyle(change);
-  EXPECT_TRUE(IsHTMLSlotElement(slot));
+  GetDocument().GetStyleEngine().RecalcStyle();
+  EXPECT_TRUE(IsA<HTMLSlotElement>(slot));
   EXPECT_TRUE(object->UseFallbackContent());
   EXPECT_TRUE(object->GetComputedStyle());
   EXPECT_TRUE(slot->GetComputedStyle());

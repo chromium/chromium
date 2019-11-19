@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [600, 250],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [600, 235],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [913, 235],
       "contentsOpaque": true,
@@ -24,6 +13,12 @@
         }
       ],
       "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 235],
+      "bounds": [600, 15],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -34,24 +29,12 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [-313, 0, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }
 {
   "layers": [
-    {
-      "name": "LayoutView #document",
-      "bounds": [400, 250],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [400, 235],
-      "drawsContent": false
-    },
     {
       "name": "Scrolling Contents Layer",
       "bounds": [913, 235],
@@ -65,6 +48,12 @@
         }
       ],
       "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "position": [0, 235],
+      "bounds": [400, 15],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -75,24 +64,12 @@
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [-513, 0, 0, 1]
-      ],
-      "flattenInheritedTransform": false
+      ]
     }
   ]
 }
 {
   "layers": [
-    {
-      "name": "LayoutView #document",
-      "bounds": [400, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [400, 600],
-      "drawsContent": false
-    },
     {
       "name": "Scrolling Contents Layer",
       "bounds": [400, 600],
@@ -111,17 +88,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -133,52 +99,52 @@
           "reason": "incremental"
         },
         {
-          "object": "InlineTextBox 'AAAA BBBB CCCC'",
+          "object": "NGPhysicalTextFragment 'AAAA BBBB CCCC'",
           "rect": [447, 8, 345, 565],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'DDDD EEEE FFFF'",
+          "object": "NGPhysicalTextFragment 'DDDD EEEE FFFF'",
           "rect": [447, 8, 345, 565],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'GGGG HHHH IIII JJJJ'",
+          "object": "NGPhysicalTextFragment 'GGGG HHHH IIII JJJJ'",
           "rect": [447, 8, 345, 565],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'KKKK LLLL MMMM'",
+          "object": "NGPhysicalTextFragment 'KKKK LLLL MMMM'",
           "rect": [447, 8, 345, 565],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'NNNN'",
+          "object": "NGPhysicalTextFragment 'NNNN'",
           "rect": [447, 8, 345, 565],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'AAAA BBBB CCCC'",
+          "object": "NGPhysicalTextFragment 'AAAA BBBB CCCC'",
           "rect": [47, 8, 345, 565],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'DDDD EEEE FFFF'",
+          "object": "NGPhysicalTextFragment 'DDDD EEEE FFFF'",
           "rect": [47, 8, 345, 565],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'GGGG HHHH IIII JJJJ'",
+          "object": "NGPhysicalTextFragment 'GGGG HHHH IIII JJJJ'",
           "rect": [47, 8, 345, 565],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'KKKK LLLL MMMM'",
+          "object": "NGPhysicalTextFragment 'KKKK LLLL MMMM'",
           "rect": [47, 8, 345, 565],
           "reason": "geometry"
         },
         {
-          "object": "InlineTextBox 'NNNN'",
+          "object": "NGPhysicalTextFragment 'NNNN'",
           "rect": [47, 8, 345, 565],
           "reason": "geometry"
         }

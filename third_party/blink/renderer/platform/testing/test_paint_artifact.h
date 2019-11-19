@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_list.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace cc {
@@ -94,9 +94,11 @@ class TestPaintArtifact {
   // automatically created client.
   TestPaintArtifact& RectDrawing(const FloatRect& bounds, Color color);
   TestPaintArtifact& ScrollHitTest(
-      const TransformPaintPropertyNode& scroll_offset);
+      const TransformPaintPropertyNode* scroll_offset,
+      const IntRect& scroll_container_bounds);
 
-  TestPaintArtifact& ForeignLayer(scoped_refptr<cc::Layer> layer);
+  TestPaintArtifact& ForeignLayer(scoped_refptr<cc::Layer> layer,
+                                  const FloatPoint& offset);
 
   // Add display item with the specified client in the chunk.
   TestPaintArtifact& RectDrawing(FakeDisplayItemClient&,
@@ -104,13 +106,15 @@ class TestPaintArtifact {
                                  Color);
   TestPaintArtifact& ScrollHitTest(
       FakeDisplayItemClient&,
-      const TransformPaintPropertyNode& scroll_offset);
+      const TransformPaintPropertyNode* scroll_offset,
+      const IntRect& scroll_container_bounds);
 
   // Sets fake bounds for the last paint chunk. Note that the bounds will be
   // overwritten when the PaintArtifact is constructed if the chunk has any
   // display items.
-  TestPaintArtifact& Bounds(const FloatRect&);
+  TestPaintArtifact& Bounds(const IntRect&);
 
+  TestPaintArtifact& OutsetForRasterEffects(float);
   TestPaintArtifact& KnownToBeOpaque();
   TestPaintArtifact& Uncacheable();
 

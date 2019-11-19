@@ -32,7 +32,7 @@ class DownloadUrlSBClient : public SafeBrowsingDatabaseManager::Client,
   DownloadUrlSBClient(
       download::DownloadItem* item,
       DownloadProtectionService* service,
-      const CheckDownloadCallback& callback,
+      CheckDownloadCallback callback,
       const scoped_refptr<SafeBrowsingUIManager>& ui_manager,
       const scoped_refptr<SafeBrowsingDatabaseManager>& database_manager);
 

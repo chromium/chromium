@@ -12,7 +12,7 @@
 #include "base/json/json_writer.h"
 #include "base/task/post_task.h"
 #include "base/values.h"
-#include "ios/web/public/web_task_traits.h"
+#include "ios/web/public/thread/web_task_traits.h"
 
 namespace web {
 
@@ -44,23 +44,24 @@ bool FakeWebFrame::CallJavaScriptFunction(
   if (!can_call_function_) {
     return false;
   }
-  last_javascript_call_ = std::string("__gCrWeb." + name + "(");
+  std::string javascript_call = std::string("__gCrWeb." + name + "(");
   bool first = true;
   for (auto& param : parameters) {
     if (!first) {
-      last_javascript_call_ += ", ";
+      javascript_call += ", ";
     }
     first = false;
     std::string paramString;
     base::JSONWriter::Write(param, &paramString);
-    last_javascript_call_ += paramString;
+    javascript_call += paramString;
   }
-  last_javascript_call_ += ");";
+  javascript_call += ");";
+  java_script_calls_.push_back(javascript_call);
   return can_call_function_;
 }
 
 bool FakeWebFrame::CallJavaScriptFunction(
-    std::string name,
+    const std::string& name,
     const std::vector<base::Value>& parameters,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
@@ -69,8 +70,8 @@ bool FakeWebFrame::CallJavaScriptFunction(
     return false;
   }
   const base::Value* js_result = result_map_[name].get();
-  base::PostTaskWithTraits(FROM_HERE, {WebThread::UI},
-                           base::BindOnce(std::move(callback), js_result));
+  base::PostTask(FROM_HERE, {WebThread::UI},
+                 base::BindOnce(std::move(callback), js_result));
   return true;
 }
 

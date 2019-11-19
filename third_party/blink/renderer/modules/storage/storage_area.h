@@ -38,8 +38,6 @@ namespace blink {
 
 class ExceptionState;
 class LocalFrame;
-class WebStorageArea;
-class WebStorageNamespace;
 
 class StorageArea final : public ScriptWrappable,
                           public ContextClient,
@@ -50,12 +48,6 @@ class StorageArea final : public ScriptWrappable,
  public:
   enum class StorageType { kLocalStorage, kSessionStorage };
 
-  // TODO(dmurph): Remove this after onion souping. crbug.com/781870
-  static StorageArea* Create(LocalFrame*,
-                             std::unique_ptr<WebStorageArea>,
-                             StorageType);
-
-  // Creates the onion-souped version.
   static StorageArea* Create(LocalFrame*,
                              scoped_refptr<CachedStorageArea>,
                              StorageType);
@@ -65,9 +57,6 @@ class StorageArea final : public ScriptWrappable,
   static StorageArea* CreateForInspectorAgent(LocalFrame*,
                                               scoped_refptr<CachedStorageArea>,
                                               StorageType);
-
-  // TODO(dmurph): Remove this after onion souping. crbug.com/781870
-  StorageArea(LocalFrame*, std::unique_ptr<WebStorageArea>, StorageType);
 
   StorageArea(LocalFrame*,
               scoped_refptr<CachedStorageArea>,
@@ -81,8 +70,6 @@ class StorageArea final : public ScriptWrappable,
   DeleteResult removeItem(const String& key, ExceptionState&);
   void clear(ExceptionState&);
   bool Contains(const String& key, ExceptionState& ec) const;
-
-  WebStorageArea* Area() const { return storage_area_.get(); }
 
   void NamedPropertyEnumerator(Vector<String>&, ExceptionState&);
   bool NamedPropertyQuery(const AtomicString&, ExceptionState&);
@@ -102,27 +89,8 @@ class StorageArea final : public ScriptWrappable,
       const char* name,
       WebScopedVirtualTimePauser::VirtualTaskDuration duration) override;
 
-  // TODO(dmurph): Remove this after onion souping. crbug.com/781870
-  static void DispatchLocalStorageEvent(const String& key,
-                                        const String& old_value,
-                                        const String& new_value,
-                                        const SecurityOrigin*,
-                                        const KURL& page_url,
-                                        WebStorageArea* source_area_instance);
-  // TODO(dmurph): Remove this after onion souping. crbug.com/781870
-  static void DispatchSessionStorageEvent(const String& key,
-                                          const String& old_value,
-                                          const String& new_value,
-                                          const SecurityOrigin*,
-                                          const KURL& page_url,
-                                          const WebStorageNamespace&,
-                                          WebStorageArea* source_area_instance);
-
  private:
-  // TODO(dmurph): Remove this after onion souping. crbug.com/781870
-  std::unique_ptr<WebStorageArea> storage_area_;
-
-  scoped_refptr<CachedStorageArea> cached_area_;
+  const scoped_refptr<CachedStorageArea> cached_area_;
   StorageType storage_type_;
   const bool should_enqueue_events_;
 

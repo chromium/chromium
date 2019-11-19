@@ -8,8 +8,8 @@
  */
 
 cr.define('expandable_list', function() {
-  /** @const */ var List = cr.ui.List;
-  /** @const */ var ListItem = cr.ui.ListItem;
+  const List = cr.ui.List;
+  const ListItem = cr.ui.ListItem;
 
   /**
    * A list item that has expandable content that toggles when the item is
@@ -17,7 +17,7 @@ cr.define('expandable_list', function() {
    * @constructor
    * @extends {cr.ui.ListItem}
    */
-  var ExpandableListItem = cr.ui.define('li');
+  const ExpandableListItem = cr.ui.define('li');
 
   ExpandableListItem.prototype = {
     __proto__: ListItem.prototype,
@@ -59,7 +59,7 @@ cr.define('expandable_list', function() {
    * @constructor
    * @extends {cr.ui.List}
    */
-  var ExpandableList = cr.ui.define('list');
+  const ExpandableList = cr.ui.define('list');
 
   ExpandableList.prototype = {
     __proto__: List.prototype,

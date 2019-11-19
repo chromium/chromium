@@ -7,7 +7,7 @@
 namespace content {
 
 bool IsResourceTypeFrame(ResourceType type) {
-  return type == RESOURCE_TYPE_MAIN_FRAME || type == RESOURCE_TYPE_SUB_FRAME;
+  return type == ResourceType::kMainFrame || type == ResourceType::kSubFrame;
 }
 
 }  // namespace content

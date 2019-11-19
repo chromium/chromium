@@ -30,9 +30,8 @@ class Size;
 namespace blink {
 
 class PLATFORM_EXPORT ImageLayerBridge
-    : public GarbageCollectedFinalized<ImageLayerBridge>,
+    : public GarbageCollected<ImageLayerBridge>,
       public cc::TextureLayerClient {
-
  public:
   ImageLayerBridge(OpacityMode);
   ~ImageLayerBridge() override;
@@ -56,7 +55,7 @@ class PLATFORM_EXPORT ImageLayerBridge
   }
   void SetUV(const FloatPoint& left_top, const FloatPoint& right_bottom);
 
-  bool IsAccelerated() { return image_->IsTextureBacked(); }
+  bool IsAccelerated() { return image_ && image_->IsTextureBacked(); }
 
   void Trace(blink::Visitor* visitor) {}
 

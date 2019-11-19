@@ -17,10 +17,10 @@
   OP(GetError)                                   /* 258 */ \
   OP(GenQueriesEXTImmediate)                     /* 259 */ \
   OP(DeleteQueriesEXTImmediate)                  /* 260 */ \
-  OP(BeginQueryEXT)                              /* 261 */ \
-  OP(EndQueryEXT)                                /* 262 */ \
-  OP(LoseContextCHROMIUM)                        /* 263 */ \
-  OP(InsertFenceSyncCHROMIUM)                    /* 264 */ \
+  OP(QueryCounterEXT)                            /* 261 */ \
+  OP(BeginQueryEXT)                              /* 262 */ \
+  OP(EndQueryEXT)                                /* 263 */ \
+  OP(LoseContextCHROMIUM)                        /* 264 */ \
   OP(BeginRasterCHROMIUMImmediate)               /* 265 */ \
   OP(RasterCHROMIUM)                             /* 266 */ \
   OP(EndRasterCHROMIUM)                          /* 267 */ \

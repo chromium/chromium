@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_PREFETCH_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_OFFLINE_PAGES_PREFETCH_PREFETCH_SERVICE_FACTORY_H_
 
+#include <memory>
+
 #include "base/macros.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/simple_keyed_service_factory.h"
 
 namespace base {
 template <typename T>
@@ -20,11 +22,10 @@ class PrefetchService;
 // A factory to create one PrefetchServiceImpl per browser context. Prefetching
 // Offline Pages is not supported in incognito, so this class uses default
 // implementation of |GetBrowserContextToUse|.
-class PrefetchServiceFactory : public BrowserContextKeyedServiceFactory {
+class PrefetchServiceFactory : public SimpleKeyedServiceFactory {
  public:
   static PrefetchServiceFactory* GetInstance();
-  static PrefetchService* GetForBrowserContext(
-      content::BrowserContext* context);
+  static PrefetchService* GetForKey(SimpleFactoryKey* key);
 
  private:
   friend struct base::DefaultSingletonTraits<PrefetchServiceFactory>;
@@ -32,8 +33,8 @@ class PrefetchServiceFactory : public BrowserContextKeyedServiceFactory {
   PrefetchServiceFactory();
   ~PrefetchServiceFactory() override {}
 
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      SimpleFactoryKey* key) const override;
 
   DISALLOW_COPY_AND_ASSIGN(PrefetchServiceFactory);
 };

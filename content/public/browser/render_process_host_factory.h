@@ -19,7 +19,7 @@ class RenderProcessHostFactory {
   virtual ~RenderProcessHostFactory() {}
   virtual RenderProcessHost* CreateRenderProcessHost(
       BrowserContext* browser_context,
-      SiteInstance* site_instance) const = 0;
+      SiteInstance* site_instance) = 0;
 };
 
 }  // namespace content

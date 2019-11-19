@@ -4,6 +4,8 @@
 
 #include "content/browser/indexed_db/indexed_db_blob_info.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"

@@ -4,15 +4,15 @@ PASS Idle -> Before
 PASS Idle or Pending -> Active
 PASS Idle or Pending -> After
 PASS Before -> Idle (display: none)
-FAIL Before -> Idle (Animation.timeline = null) promise_test: Unhandled rejection with value: object "TypeError: Cannot assign to read only property 'timeline' of object '#<Animation>'"
+FAIL Before -> Idle (Animation.timeline = null) promise_test: Unhandled rejection with value: object "TypeError: Cannot assign to read only property 'timeline' of object '#<CSSTransition>'"
 PASS Before -> Active
 PASS Before -> After
 PASS Active -> Idle, no delay (display: none)
-FAIL Active -> Idle, no delay (Animation.timeline = null) promise_test: Unhandled rejection with value: object "TypeError: Cannot assign to read only property 'timeline' of object '#<Animation>'"
+FAIL Active -> Idle, no delay (Animation.timeline = null) promise_test: Unhandled rejection with value: object "TypeError: Cannot assign to read only property 'timeline' of object '#<CSSTransition>'"
 PASS Active -> Idle, with positive delay (display: none)
-FAIL Active -> Idle, with positive delay (Animation.timeline = null) promise_test: Unhandled rejection with value: object "TypeError: Cannot assign to read only property 'timeline' of object '#<Animation>'"
+FAIL Active -> Idle, with positive delay (Animation.timeline = null) promise_test: Unhandled rejection with value: object "TypeError: Cannot assign to read only property 'timeline' of object '#<CSSTransition>'"
 PASS Active -> Idle, with negative delay (display: none)
-FAIL Active -> Idle, with negative delay (Animation.timeline = null) promise_test: Unhandled rejection with value: object "TypeError: Cannot assign to read only property 'timeline' of object '#<Animation>'"
+FAIL Active -> Idle, with negative delay (Animation.timeline = null) promise_test: Unhandled rejection with value: object "TypeError: Cannot assign to read only property 'timeline' of object '#<CSSTransition>'"
 PASS Active -> Before
 PASS Active -> After
 PASS After -> Before
@@ -22,7 +22,7 @@ FAIL Calculating the interval start and end time with negative end delay. assert
 PASS Call Animation.cancel after canceling transition.
 FAIL Restart transition after canceling transition immediately assert_true: Timed out waiting for transitioncancel, transitionrun expected true got false
 PASS Call Animation.cancel after restarting transition immediately
-FAIL Set timeline and play transition after clear the timeline promise_test: Unhandled rejection with value: object "TypeError: Cannot assign to read only property 'timeline' of object '#<Animation>'"
+FAIL Set timeline and play transition after clear the timeline promise_test: Unhandled rejection with value: object "TypeError: Cannot assign to read only property 'timeline' of object '#<CSSTransition>'"
 PASS Set null target effect after canceling the transition
 FAIL Cancel the transition after clearing the target effect assert_true: Timed out waiting for transitionend expected true got false
 Harness: the test ran to completion.

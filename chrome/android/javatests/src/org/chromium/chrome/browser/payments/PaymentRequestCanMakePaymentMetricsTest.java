@@ -13,11 +13,11 @@ import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.NEXT_Y
 import android.support.test.filters.MediumTest;
 
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
@@ -29,25 +29,28 @@ import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityS
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ui.DisableAnimationsTestRule;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /**
  * A payment integration test for the correct log of the CanMakePayment metrics.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-        "enable-features=PaymentRequestHasEnrolledInstrument"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStartCallback {
+    // Disable animations to reduce flakiness.
+    @ClassRule
+    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
+
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule =
             new PaymentRequestTestRule("payment_request_can_make_payment_metrics_test.html", this);
 
     @Override
-    public void onMainActivityStarted()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         helper.setProfile(new AutofillProfile("", "https://example.com", true, "Jon Doe", "Google",
                 "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "310-310-6000",
@@ -62,24 +65,25 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testCannotMakePayment_UserAbort()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    @CommandLineFlags.Add("disable-features=NoCreditCardAbort")
+    public void testCannotMakePayment_UserAbort() throws TimeoutException {
         // Initiate a payment request.
         mPaymentRequestTestRule.triggerUIAndWait(
                 "queryShow", mPaymentRequestTestRule.getReadyForInput());
 
         // Press the back button.
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mPaymentRequestTestRule.getPaymentRequestUI().getDialogForTest()
                         .onBackPressed());
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
-        mPaymentRequestTestRule.expectResultContains(new String[] {"Request cancelled"});
+        mPaymentRequestTestRule.expectResultContains(
+                new String[] {"User closed the Payment Request UI."});
 
         // Make sure the canMakePayment events were logged correctly.
         int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.CAN_MAKE_PAYMENT_TRUE
                 | Event.HAS_ENROLLED_INSTRUMENT_FALSE | Event.REQUEST_METHOD_BASIC_CARD
-                | Event.REQUEST_METHOD_OTHER;
+                | Event.REQUEST_METHOD_OTHER | Event.NEEDS_COMPLETION_PAYMENT;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
@@ -93,8 +97,8 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testCannotMakePayment_Complete()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    @CommandLineFlags.Add("disable-features=NoCreditCardAbort")
+    public void testCannotMakePayment_Complete() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(
                 "queryShow", mPaymentRequestTestRule.getReadyForInput());
 
@@ -122,7 +126,8 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
         int expectedSample = Event.SHOWN | Event.PAY_CLICKED | Event.RECEIVED_INSTRUMENT_DETAILS
                 | Event.COMPLETED | Event.CAN_MAKE_PAYMENT_TRUE
                 | Event.HAS_ENROLLED_INSTRUMENT_FALSE | Event.REQUEST_METHOD_BASIC_CARD
-                | Event.REQUEST_METHOD_OTHER | Event.SELECTED_CREDIT_CARD;
+                | Event.REQUEST_METHOD_OTHER | Event.SELECTED_CREDIT_CARD
+                | Event.NEEDS_COMPLETION_PAYMENT;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
@@ -136,8 +141,7 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testCanMakePayment_MerchantAbort()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testCanMakePayment_MerchantAbort() throws TimeoutException {
         // Install the app so CanMakePayment returns true.
         mPaymentRequestTestRule.installPaymentApp(HAVE_INSTRUMENTS, IMMEDIATE_RESPONSE);
 
@@ -153,7 +157,7 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
         int expectedSample = Event.SHOWN | Event.OTHER_ABORTED | Event.HAD_INITIAL_FORM_OF_PAYMENT
                 | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.CAN_MAKE_PAYMENT_TRUE
                 | Event.HAS_ENROLLED_INSTRUMENT_TRUE | Event.REQUEST_METHOD_BASIC_CARD
-                | Event.REQUEST_METHOD_OTHER;
+                | Event.REQUEST_METHOD_OTHER | Event.AVAILABLE_METHOD_OTHER;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
@@ -167,8 +171,7 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testCanMakePayment_Complete()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testCanMakePayment_Complete() throws TimeoutException {
         // Install the app so CanMakePayment returns true.
         mPaymentRequestTestRule.installPaymentApp(HAVE_INSTRUMENTS, IMMEDIATE_RESPONSE);
 
@@ -183,7 +186,7 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
                 | Event.COMPLETED | Event.HAD_INITIAL_FORM_OF_PAYMENT
                 | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.CAN_MAKE_PAYMENT_TRUE
                 | Event.HAS_ENROLLED_INSTRUMENT_TRUE | Event.REQUEST_METHOD_BASIC_CARD
-                | Event.REQUEST_METHOD_OTHER | Event.SELECTED_OTHER;
+                | Event.REQUEST_METHOD_OTHER | Event.SELECTED_OTHER | Event.AVAILABLE_METHOD_OTHER;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
@@ -197,9 +200,8 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testCanMakePaymentDisabled_Complete()
-            throws InterruptedException, ExecutionException, TimeoutException {
-        ThreadUtils.runOnUiThreadBlocking((Runnable) () -> {
+    public void testCanMakePaymentDisabled_Complete() throws TimeoutException {
+        TestThreadUtils.runOnUiThreadBlocking((Runnable) () -> {
             PrefServiceBridge.getInstance().setBoolean(Pref.CAN_MAKE_PAYMENT_ENABLED, false);
         });
 
@@ -217,7 +219,7 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
                 | Event.COMPLETED | Event.HAD_INITIAL_FORM_OF_PAYMENT
                 | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.CAN_MAKE_PAYMENT_FALSE
                 | Event.HAS_ENROLLED_INSTRUMENT_FALSE | Event.REQUEST_METHOD_BASIC_CARD
-                | Event.REQUEST_METHOD_OTHER | Event.SELECTED_OTHER;
+                | Event.REQUEST_METHOD_OTHER | Event.SELECTED_OTHER | Event.AVAILABLE_METHOD_OTHER;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
@@ -230,23 +232,24 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testNoQuery_UserAbort()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    @CommandLineFlags.Add("disable-features=NoCreditCardAbort")
+    public void testNoQuery_UserAbort() throws TimeoutException {
         // Initiate a payment request.
         mPaymentRequestTestRule.triggerUIAndWait(
                 "noQueryShow", mPaymentRequestTestRule.getReadyForInput());
 
         // Press the back button.
         int callCount = mPaymentRequestTestRule.getDismissed().getCallCount();
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mPaymentRequestTestRule.getPaymentRequestUI().getDialogForTest()
                         .onBackPressed());
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
-        mPaymentRequestTestRule.expectResultContains(new String[] {"Request cancelled"});
+        mPaymentRequestTestRule.expectResultContains(
+                new String[] {"User closed the Payment Request UI."});
 
         // Make sure no canMakePayment events were logged.
         int expectedSample = Event.SHOWN | Event.USER_ABORTED | Event.REQUEST_METHOD_BASIC_CARD
-                | Event.REQUEST_METHOD_OTHER;
+                | Event.REQUEST_METHOD_OTHER | Event.NEEDS_COMPLETION_PAYMENT;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));
@@ -259,8 +262,7 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testNoQuery_Complete()
-            throws InterruptedException, ExecutionException, TimeoutException {
+    public void testNoQuery_Complete() throws TimeoutException {
         // Install the app so the user can complete the Payment Request.
         mPaymentRequestTestRule.installPaymentApp(HAVE_INSTRUMENTS, IMMEDIATE_RESPONSE);
 
@@ -274,7 +276,7 @@ public class PaymentRequestCanMakePaymentMetricsTest implements MainActivityStar
         int expectedSample = Event.SHOWN | Event.PAY_CLICKED | Event.RECEIVED_INSTRUMENT_DETAILS
                 | Event.COMPLETED | Event.HAD_INITIAL_FORM_OF_PAYMENT
                 | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS | Event.REQUEST_METHOD_BASIC_CARD
-                | Event.REQUEST_METHOD_OTHER | Event.SELECTED_OTHER;
+                | Event.REQUEST_METHOD_OTHER | Event.SELECTED_OTHER | Event.AVAILABLE_METHOD_OTHER;
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "PaymentRequest.Events", expectedSample));

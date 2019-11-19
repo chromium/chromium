@@ -73,8 +73,7 @@ DownloadFeedbackService::DownloadFeedbackService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::TaskRunner* file_task_runner)
     : url_loader_factory_(url_loader_factory),
-      file_task_runner_(file_task_runner),
-      weak_ptr_factory_(this) {
+      file_task_runner_(file_task_runner) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -95,13 +94,9 @@ void DownloadFeedbackService::MaybeStorePingsForDownload(
     return;
   }
 
-  UMA_HISTOGRAM_BOOLEAN("SBDownloadFeedback.UploadRequestedByServer",
-                        upload_requested);
   if (!upload_requested)
     return;
 
-  UMA_HISTOGRAM_COUNTS_1M("SBDownloadFeedback.SizeEligibleKB",
-                          download->GetReceivedBytes() / 1024);
   if (download->GetReceivedBytes() > DownloadFeedback::kMaxUploadSize)
     return;
 
@@ -139,9 +134,6 @@ void DownloadFeedbackService::BeginFeedbackForDownload(
     download::DownloadItem* download,
     DownloadCommands::Command download_command) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  UMA_HISTOGRAM_ENUMERATION("SBDownloadFeedback.Activations",
-                            download->GetDangerType(),
-                            download::DOWNLOAD_DANGER_TYPE_MAX);
 
   DownloadFeedbackPings* pings = DownloadFeedbackPings::FromDownload(*download);
   DCHECK(pings);
@@ -165,10 +157,7 @@ void DownloadFeedbackService::BeginFeedbackOrDeleteFile(
     const std::string& ping_response,
     const base::FilePath& path) {
   if (service) {
-    bool is_path_empty = path.empty();
-    UMA_HISTOGRAM_BOOLEAN("SBDownloadFeedback.EmptyFilePathFailure",
-                          is_path_empty);
-    if (is_path_empty)
+    if (path.empty())
       return;
     service->BeginFeedback(ping_request, ping_response, path);
   } else {

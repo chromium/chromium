@@ -878,7 +878,7 @@ TEST_F(VideoRendererAlgorithmTest, BestFrameByCadence) {
     RunFramePumpTest(
         true, &frame_tg, &display_tg,
         [&current_frame, &actual_frame_pattern, desired_frame_pattern, this](
-            const scoped_refptr<VideoFrame>& frame, size_t frames_dropped) {
+            scoped_refptr<VideoFrame> frame, size_t frames_dropped) {
           ASSERT_TRUE(frame);
           ASSERT_EQ(0u, frames_dropped);
 
@@ -1124,18 +1124,18 @@ TEST_F(VideoRendererAlgorithmTest, BestFrameByFractionalCadence) {
     TickGenerator display_tg(tick_clock_->NowTicks(), test_rate[1]);
 
     scoped_refptr<VideoFrame> current_frame;
-    RunFramePumpTest(
-        true, &frame_tg, &display_tg,
-        [&current_frame, this](const scoped_refptr<VideoFrame>& frame,
-                               size_t frames_dropped) {
-          ASSERT_TRUE(frame);
+    RunFramePumpTest(true, &frame_tg, &display_tg,
+                     [&current_frame, this](scoped_refptr<VideoFrame> frame,
+                                            size_t frames_dropped) {
+                       ASSERT_TRUE(frame);
 
-          // We don't count frames dropped that cadence says we should skip.
-          ASSERT_EQ(0u, frames_dropped);
-          ASSERT_NE(current_frame, frame);
-          ASSERT_TRUE(is_using_cadence());
-          current_frame = frame;
-        });
+                       // We don't count frames dropped that cadence says we
+                       // should skip.
+                       ASSERT_EQ(0u, frames_dropped);
+                       ASSERT_NE(current_frame, frame);
+                       ASSERT_TRUE(is_using_cadence());
+                       current_frame = frame;
+                     });
 
     if (HasFatalFailure())
       return;
@@ -1157,7 +1157,7 @@ TEST_F(VideoRendererAlgorithmTest, FilmCadence) {
     RunFramePumpTest(
         true, &frame_tg, &display_tg,
         [&current_frame, &actual_frame_pattern, &desired_frame_pattern, this](
-            const scoped_refptr<VideoFrame>& frame, size_t frames_dropped) {
+            scoped_refptr<VideoFrame> frame, size_t frames_dropped) {
           ASSERT_TRUE(frame);
           ASSERT_EQ(0u, frames_dropped);
 
@@ -1362,7 +1362,7 @@ TEST_P(VideoRendererAlgorithmCadenceTest, CadenceTest) {
   TickGenerator display_tg(tick_clock_->NowTicks(), display_rate);
   RunFramePumpTest(
       true, &frame_tg, &display_tg,
-      [](const scoped_refptr<VideoFrame>& frame, size_t frames_dropped) {});
+      [](scoped_refptr<VideoFrame> frame, size_t frames_dropped) {});
 }
 
 // Common display rates.
@@ -1399,7 +1399,7 @@ TEST_F(VideoRendererAlgorithmTest, VariablePlaybackRateCadence) {
     time_source_.SetPlaybackRate(playback_rate);
     RunFramePumpTest(
         false, &frame_tg, &display_tg,
-        [](const scoped_refptr<VideoFrame>& frame, size_t frames_dropped) {});
+        [](scoped_refptr<VideoFrame> frame, size_t frames_dropped) {});
     if (HasFatalFailure())
       return;
 

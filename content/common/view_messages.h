@@ -23,9 +23,9 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/resources/shared_bitmap.h"
+#include "content/common/common_param_traits_macros.h"
 #include "content/common/content_export.h"
 #include "content/common/content_param_traits.h"
-#include "content/common/date_time_suggestion.h"
 #include "content/common/frame_replication_state.h"
 #include "content/common/navigation_gesture.h"
 #include "content/public/common/common_param_traits.h"
@@ -41,11 +41,11 @@
 #include "media/base/ipc/media_param_traits.h"
 #include "net/base/network_change_notifier.h"
 #include "ppapi/buildflags/buildflags.h"
-#include "third_party/blink/public/common/manifest/web_display_mode.h"
+#include "third_party/blink/public/common/plugin/plugin_action.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
-#include "third_party/blink/public/web/web_plugin_action.h"
+#include "third_party/blink/public/platform/web_text_autosizer_page_info.h"
 #include "third_party/blink/public/web/web_text_direction.h"
-#include "ui/base/ime/text_input_mode.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/point.h"
@@ -56,6 +56,7 @@
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
 #include "ui/gfx/ipc/gfx_param_traits.h"
 #include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
+#include "ui/native_theme/native_theme.h"
 
 #if defined(OS_MACOSX)
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
@@ -67,8 +68,8 @@
 
 #define IPC_MESSAGE_START ViewMsgStart
 
-IPC_ENUM_TRAITS_MAX_VALUE(blink::WebPluginAction::Type,
-                          blink::WebPluginAction::Type::kTypeLast)
+IPC_ENUM_TRAITS_MAX_VALUE(blink::PluginAction::Type,
+                          blink::PluginAction::Type::kTypeLast)
 IPC_ENUM_TRAITS_MAX_VALUE(content::MenuItem::Type, content::MenuItem::TYPE_LAST)
 IPC_ENUM_TRAITS_MAX_VALUE(content::NavigationGesture,
                           content::NavigationGestureLast)
@@ -87,7 +88,12 @@ IPC_ENUM_TRAITS_MAX_VALUE(
 IPC_ENUM_TRAITS_MAX_VALUE(blink::ScrollerStyle, blink::kScrollerStyleOverlay)
 #endif
 
-IPC_STRUCT_TRAITS_BEGIN(blink::WebPluginAction)
+IPC_ENUM_TRAITS_MAX_VALUE(ui::NativeTheme::PreferredColorScheme,
+                          ui::NativeTheme::PreferredColorScheme::kMaxValue)
+IPC_ENUM_TRAITS_MAX_VALUE(ui::NativeTheme::SystemThemeColor,
+                          ui::NativeTheme::SystemThemeColor::kMaxValue)
+
+IPC_STRUCT_TRAITS_BEGIN(blink::PluginAction)
   IPC_STRUCT_TRAITS_MEMBER(type)
   IPC_STRUCT_TRAITS_MEMBER(enable)
 IPC_STRUCT_TRAITS_END()
@@ -104,38 +110,10 @@ IPC_STRUCT_TRAITS_BEGIN(content::MenuItem)
   IPC_STRUCT_TRAITS_MEMBER(submenu)
 IPC_STRUCT_TRAITS_END()
 
-IPC_STRUCT_TRAITS_BEGIN(content::DateTimeSuggestion)
-  IPC_STRUCT_TRAITS_MEMBER(value)
-  IPC_STRUCT_TRAITS_MEMBER(localized_value)
-  IPC_STRUCT_TRAITS_MEMBER(label)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_BEGIN(ViewHostMsg_DateTimeDialogValue_Params)
-  IPC_STRUCT_MEMBER(ui::TextInputType, dialog_type)
-  IPC_STRUCT_MEMBER(double, dialog_value)
-  IPC_STRUCT_MEMBER(double, minimum)
-  IPC_STRUCT_MEMBER(double, maximum)
-  IPC_STRUCT_MEMBER(double, step)
-  IPC_STRUCT_MEMBER(std::vector<content::DateTimeSuggestion>, suggestions)
-IPC_STRUCT_END()
-
 // Messages sent from the browser to the renderer.
-
-#if defined(OS_ANDROID)
-// Tells the renderer to cancel an opened date/time dialog.
-IPC_MESSAGE_ROUTED0(ViewMsg_CancelDateTimeDialog)
-
-// Replaces a date time input field.
-IPC_MESSAGE_ROUTED1(ViewMsg_ReplaceDateTime,
-                    double /* dialog_value */)
-
-#endif
 
 // Make the RenderWidget background transparent or opaque.
 IPC_MESSAGE_ROUTED1(ViewMsg_SetBackgroundOpaque, bool /* opaque */)
-
-// Sends updated preferences to the renderer.
-IPC_MESSAGE_ROUTED1(ViewMsg_SetRendererPrefs, blink::mojom::RendererPreferences)
 
 // This passes a set of webkit preferences down to the renderer.
 IPC_MESSAGE_ROUTED1(ViewMsg_UpdateWebPreferences,
@@ -150,16 +128,10 @@ IPC_MESSAGE_ROUTED1(ViewMsg_SetInitialFocus,
 // the given point.
 IPC_MESSAGE_ROUTED2(ViewMsg_PluginActionAt,
                     gfx::Point, /* location */
-                    blink::WebPluginAction)
+                    blink::PluginAction)
 
 // Sets the page scale for the current main frame to the given page scale.
 IPC_MESSAGE_ROUTED1(ViewMsg_SetPageScale, float /* page_scale_factor */)
-
-// Tell the renderer to add a property to the WebUI binding object.  This
-// only works if we allowed WebUI bindings.
-IPC_MESSAGE_ROUTED2(ViewMsg_SetWebUIProperty,
-                    std::string /* property_name */,
-                    std::string /* property_value_json */)
 
 // Used to notify the render-view that we have received a target URL. Used
 // to prevent target URLs spamming the browser.
@@ -177,33 +149,6 @@ IPC_MESSAGE_ROUTED0(ViewMsg_MoveOrResizeStarted)
 
 // Used to instruct the RenderView to send back updates to the preferred size.
 IPC_MESSAGE_ROUTED0(ViewMsg_EnablePreferredSizeChangedMode)
-
-// Response message to ViewHostMsg_CreateWorker.
-// Sent when the worker has started.
-IPC_MESSAGE_ROUTED0(ViewMsg_WorkerCreated)
-
-// Sent when the worker failed to load the worker script.
-// In normal cases, this message is sent after ViewMsg_WorkerCreated is sent.
-// But if the shared worker of the same URL already exists and it has failed
-// to load the script, when the renderer send ViewHostMsg_CreateWorker before
-// the shared worker is killed only ViewMsg_WorkerScriptLoadFailed is sent.
-IPC_MESSAGE_ROUTED0(ViewMsg_WorkerScriptLoadFailed)
-
-// Sent when the worker has connected.
-// This message is sent only if the worker successfully loaded the script.
-// |used_features| is the set of features that the worker has used. The values
-// must be from blink::UseCounter::Feature enum.
-IPC_MESSAGE_ROUTED1(ViewMsg_WorkerConnected,
-                    std::set<uint32_t> /* used_features */)
-
-// Sent when the worker is destroyed.
-IPC_MESSAGE_ROUTED0(ViewMsg_WorkerDestroyed)
-
-// Sent when the worker calls API that should be recored in UseCounter.
-// |feature| must be one of the values from blink::UseCounter::Feature
-// enum.
-IPC_MESSAGE_ROUTED1(ViewMsg_CountFeatureOnSharedWorker,
-                    uint32_t /* feature */)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Reply to ViewHostMsg_OpenChannelToPpapiBroker
@@ -244,6 +189,13 @@ IPC_MESSAGE_ROUTED2(ViewHostMsg_ShowWidget,
 IPC_MESSAGE_ROUTED1(ViewHostMsg_ShowFullscreenWidget,
                     int /* route_id */)
 
+// Sent from an inactive renderer for the browser to route to the active
+// renderer, instructing it to close.
+//
+// TODO(http://crbug.com/419087): Move this thing to Frame as it's a signal
+// from a swapped out frame to the mainframe of the frame tree.
+IPC_MESSAGE_ROUTED0(ViewHostMsg_RouteCloseEvent)
+
 // Indicates that the current page has been closed, after a ClosePage
 // message.
 IPC_MESSAGE_ROUTED0(ViewHostMsg_ClosePage_ACK)
@@ -268,12 +220,6 @@ IPC_SYNC_MESSAGE_CONTROL1_2(ViewHostMsg_ResolveProxy,
                             bool /* result */,
                             std::string /* proxy list */)
 
-// Used to go to the session history entry at the given offset (ie, -1 will
-// return the "back" item).
-IPC_MESSAGE_ROUTED2(ViewHostMsg_GoToEntryAtOffset,
-                    int /* offset (from current) of history item to get */,
-                    bool /* has_user_gesture */)
-
 // Notifies that the preferred size of the content changed.
 IPC_MESSAGE_ROUTED1(ViewHostMsg_DidContentsPreferredSizeChange,
                     gfx::Size /* pref_size */)
@@ -295,21 +241,13 @@ IPC_MESSAGE_ROUTED3(ViewHostMsg_RequestPpapiBrokerPermission,
 IPC_MESSAGE_ROUTED1(ViewHostMsg_TakeFocus,
                     bool /* reverse */)
 
-// Required for opening a date/time dialog
-IPC_MESSAGE_ROUTED1(ViewHostMsg_OpenDateTimeDialog,
-                    ViewHostMsg_DateTimeDialogValue_Params /* value */)
-
 // Sent when the renderer changes its page scale factor.
 IPC_MESSAGE_ROUTED1(ViewHostMsg_PageScaleFactorChanged,
                     float /* page_scale_factor */)
 
-// Updates the minimum/maximum allowed zoom percent for this tab from the
-// default values.  If |remember| is true, then the zoom setting is applied to
-// other pages in the site and is saved, otherwise it only applies to this
-// tab.
-IPC_MESSAGE_ROUTED2(ViewHostMsg_UpdateZoomLimits,
-                    int /* minimum_percent */,
-                    int /* maximum_percent */)
+IPC_MESSAGE_ROUTED1(
+    ViewHostMsg_NotifyTextAutosizerPageInfoChangedInLocalMainFrame,
+    blink::WebTextAutosizerPageInfo /* page_info */)
 
 // Send back a string to be recorded by UserMetrics.
 IPC_MESSAGE_CONTROL1(ViewHostMsg_UserMetricsRecordAction,

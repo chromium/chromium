@@ -11,9 +11,9 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "components/autofill/core/browser/geo/subkey_requester.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager_observer.h"
-#include "components/autofill/core/browser/subkey_requester.h"
 
 namespace autofill {
 
@@ -24,10 +24,15 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
  public:
   PersonalDataManagerAndroid(JNIEnv* env, jobject obj);
 
+  static base::android::ScopedJavaLocalRef<jobject>
+  CreateJavaCreditCardFromNative(JNIEnv* env, const CreditCard& card);
   static void PopulateNativeCreditCardFromJava(
       const base::android::JavaRef<jobject>& jcard,
       JNIEnv* env,
       CreditCard* card);
+  static base::android::ScopedJavaLocalRef<jobject> CreateJavaProfileFromNative(
+      JNIEnv* env,
+      const AutofillProfile& profile);
   static void PopulateNativeProfileFromJava(
       const base::android::JavaParamRef<jobject>& jprofile,
       JNIEnv* env,
@@ -320,13 +325,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaParamRef<jobject>& jdelegate);
 
   // Checks whether the Autofill PersonalDataManager has profiles.
-  jboolean HasProfiles(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& unused_obj);
+  jboolean HasProfiles(JNIEnv* env);
 
   // Checks whether the Autofill PersonalDataManager has credit cards.
-  jboolean HasCreditCards(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj);
+  jboolean HasCreditCards(JNIEnv* env);
 
   // Gets the subkeys for the region with |jregion_code| code, if the
   // |jregion_code| rules have finished loading. Otherwise, sets up a task to
@@ -339,15 +341,9 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       const base::android::JavaParamRef<jobject>& jdelegate);
 
   // Cancels the pending subkey request task.
-  void CancelPendingGetSubKeys(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj);
+  void CancelPendingGetSubKeys(JNIEnv* env);
 
-  void SetSyncServiceForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& unused_obj);
-
-  static const char* GetPrefNameExposedToJava(int pref_index);
+  void SetSyncServiceForTesting(JNIEnv* env);
 
  private:
   ~PersonalDataManagerAndroid() override;

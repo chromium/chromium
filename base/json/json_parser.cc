@@ -26,28 +26,6 @@ namespace internal {
 namespace {
 
 const int32_t kExtendedASCIIStart = 0x80;
-
-// Simple class that checks for maximum recursion/"stack overflow."
-class StackMarker {
- public:
-  StackMarker(int max_depth, int* depth)
-      : max_depth_(max_depth), depth_(depth) {
-    ++(*depth_);
-    DCHECK_LE(*depth_, max_depth_);
-  }
-  ~StackMarker() {
-    --(*depth_);
-  }
-
-  bool IsTooDeep() const { return *depth_ >= max_depth_; }
-
- private:
-  const int max_depth_;
-  int* const depth_;
-
-  DISALLOW_COPY_AND_ASSIGN(StackMarker);
-};
-
 constexpr uint32_t kUnicodeReplacementPoint = 0xFFFD;
 
 }  // namespace
@@ -55,7 +33,7 @@ constexpr uint32_t kUnicodeReplacementPoint = 0xFFFD;
 // This is U+FFFD.
 const char kUnicodeReplacementString[] = "\xEF\xBF\xBD";
 
-JSONParser::JSONParser(int options, int max_depth)
+JSONParser::JSONParser(int options, size_t max_depth)
     : options_(options),
       max_depth_(max_depth),
       index_(0),
@@ -65,7 +43,7 @@ JSONParser::JSONParser(int options, int max_depth)
       error_code_(JSONReader::JSON_NO_ERROR),
       error_line_(0),
       error_column_(0) {
-  CHECK_LE(max_depth, JSONReader::kStackMaxDepth);
+  CHECK_LE(max_depth, kAbsoluteMaxDepth);
 }
 
 JSONParser::~JSONParser() = default;
@@ -385,8 +363,10 @@ Optional<Value> JSONParser::ConsumeDictionary() {
   }
 
   ConsumeChar();  // Closing '}'.
-
-  return Value(Value::DictStorage(std::move(dict_storage), KEEP_LAST_OF_DUPES));
+  // Reverse |dict_storage| to keep the last of elements with the same key in
+  // the input.
+  std::reverse(dict_storage.begin(), dict_storage.end());
+  return Value(Value::DictStorage(std::move(dict_storage)));
 }
 
 Optional<Value> JSONParser::ConsumeList() {

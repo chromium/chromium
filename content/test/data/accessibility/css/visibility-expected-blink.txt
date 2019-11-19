@@ -1,0 +1,8 @@
+rootWebArea
+++genericContainer ignored
+++++paragraph ignored invisible name=' Hidden paragraph with visible link'
+++++++staticText name='visible link'
+++++++++inlineTextBox name='visible link'
+++++paragraph ignored invisible name=' Collapsed paragraph with visible link'
+++++++staticText name='visible link'
+++++++++inlineTextBox name='visible link'

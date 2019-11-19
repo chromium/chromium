@@ -16,7 +16,8 @@
 #include "content/common/content_export.h"
 #include "content/renderer/render_frame_impl.h"
 #include "media/base/media_permission.h"
-#include "third_party/blink/public/platform/modules/permissions/permission.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -37,10 +38,9 @@ class CONTENT_EXPORT MediaPermissionDispatcher : public media::MediaPermission {
   // Note: Can be called on any thread. The |permission_status_cb| will always
   // be fired on the thread where these methods are called.
   void HasPermission(Type type,
-                     const PermissionStatusCB& permission_status_cb) override;
-  void RequestPermission(
-      Type type,
-      const PermissionStatusCB& permission_status_cb) override;
+                     PermissionStatusCB permission_status_cb) override;
+  void RequestPermission(Type type,
+                         PermissionStatusCB permission_status_cb) override;
   bool IsEncryptedMediaEnabled() override;
 
  private:
@@ -49,7 +49,7 @@ class CONTENT_EXPORT MediaPermissionDispatcher : public media::MediaPermission {
 
   // Register PermissionStatusCBs. Returns |request_id| that can be used to make
   // PermissionService calls.
-  uint32_t RegisterCallback(const PermissionStatusCB& permission_status_cb);
+  uint32_t RegisterCallback(PermissionStatusCB permission_status_cb);
 
   // Ensure there is a connection to the permission service and return it.
   blink::mojom::PermissionService* GetPermissionService();
@@ -64,7 +64,7 @@ class CONTENT_EXPORT MediaPermissionDispatcher : public media::MediaPermission {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   uint32_t next_request_id_;
   RequestMap requests_;
-  blink::mojom::PermissionServicePtr permission_service_;
+  mojo::Remote<blink::mojom::PermissionService> permission_service_;
 
   // The |RenderFrameImpl| that owns this MediaPermissionDispatcher.  It's okay
   // to hold a raw pointer here because the lifetime of this object is bounded
@@ -74,7 +74,7 @@ class CONTENT_EXPORT MediaPermissionDispatcher : public media::MediaPermission {
   // Used to safely post MediaPermission calls for execution on |task_runner_|.
   base::WeakPtr<MediaPermissionDispatcher> weak_ptr_;
 
-  base::WeakPtrFactory<MediaPermissionDispatcher> weak_factory_;
+  base::WeakPtrFactory<MediaPermissionDispatcher> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaPermissionDispatcher);
 };

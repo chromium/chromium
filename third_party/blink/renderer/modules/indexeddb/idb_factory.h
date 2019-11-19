@@ -46,12 +46,6 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static IDBFactory* Create() { return MakeGarbageCollected<IDBFactory>(); }
-  static IDBFactory* CreateForTest(
-      std::unique_ptr<WebIDBFactory> web_idb_factory) {
-    return MakeGarbageCollected<IDBFactory>(std::move(web_idb_factory));
-  }
-
   IDBFactory();
   IDBFactory(std::unique_ptr<WebIDBFactory>);
 
@@ -90,7 +84,11 @@ class MODULES_EXPORT IDBFactory final : public ScriptWrappable {
                                            ExceptionState&,
                                            bool);
 
+  bool AllowIndexedDB(ScriptState* script_state);
+  bool CachedAllowIndexedDB(ScriptState* script_state);
+
   std::unique_ptr<WebIDBFactory> web_idb_factory_;
+  base::Optional<bool> cached_allowed_;
 };
 
 }  // namespace blink

@@ -6,7 +6,7 @@
 
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
-#import "content/browser/web_contents/web_contents_view_cocoa.h"
+#import "content/app_shim_remote_cocoa/web_contents_view_cocoa.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,12 +19,11 @@ namespace content {
 
 namespace {
 
-class WebContentsViewCocoaTest : public ui::CocoaTest {
-};
+class WebContentsNSViewTest : public ui::CocoaTest {};
 
 }  // namespace
 
-TEST_F(WebContentsViewCocoaTest, NonWebDragSourceTest) {
+TEST_F(WebContentsNSViewTest, NonWebDragSourceTest) {
   // The designated initializer is private but init should be fine in this case.
   base::scoped_nsobject<WebContentsViewCocoa> view(
       [[WebContentsViewCocoa alloc] init]);
@@ -38,33 +37,6 @@ TEST_F(WebContentsViewCocoaTest, NonWebDragSourceTest) {
   EXPECT_EQ(NSDragOperationCopy,
       [view draggingSourceOperationMaskForLocal:NO]);
 }
-
-// This test uses deprecated NSObject accessibility APIs - see
-// https://crbug.com/921109.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-TEST_F(WebContentsViewCocoaTest, AccessibilityParentTest) {
-  // The designated initializer is private but init should be fine in this case.
-  base::scoped_nsobject<WebContentsViewCocoa> view(
-      [[WebContentsViewCocoa alloc] init]);
-
-  // NSBox so it participates in the a11y hierarchy.
-  base::scoped_nsobject<NSView> parent_view([[NSBox alloc] init]);
-  base::scoped_nsobject<NSView> accessibility_parent([[NSView alloc] init]);
-
-  [parent_view addSubview:view];
-  EXPECT_NSEQ([view accessibilityAttributeValue:NSAccessibilityParentAttribute],
-              parent_view);
-
-  [view setAccessibilityParentElement:accessibility_parent];
-  EXPECT_NSEQ([view accessibilityAttributeValue:NSAccessibilityParentAttribute],
-              accessibility_parent);
-
-  [view setAccessibilityParentElement:nil];
-  EXPECT_NSEQ([view accessibilityAttributeValue:NSAccessibilityParentAttribute],
-              parent_view);
-}
-#pragma clang diagnostic pop
 
 namespace {
 

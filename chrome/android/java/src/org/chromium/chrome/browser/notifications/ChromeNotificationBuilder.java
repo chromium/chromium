@@ -31,6 +31,8 @@ public interface ChromeNotificationBuilder {
 
     ChromeNotificationBuilder setSmallIcon(Icon icon);
 
+    ChromeNotificationBuilder setColor(int argb);
+
     ChromeNotificationBuilder setTicker(CharSequence text);
 
     ChromeNotificationBuilder setLocalOnly(boolean localOnly);
@@ -99,9 +101,9 @@ public interface ChromeNotificationBuilder {
 
     ChromeNotificationBuilder setCategory(String category);
 
-    Notification buildWithBigContentView(RemoteViews bigView);
+    ChromeNotification buildWithBigContentView(RemoteViews bigView);
 
-    Notification buildWithBigTextStyle(String bigText);
+    ChromeNotification buildWithBigTextStyle(String bigText);
 
     @Deprecated
     Notification build();

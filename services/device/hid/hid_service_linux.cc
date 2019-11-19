@@ -34,8 +34,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "base/system/sys_info.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/permission_broker_client.h"
+#include "chromeos/dbus/permission_broker/permission_broker_client.h"
 #endif  // defined(OS_CHROMEOS)
 
 namespace device {
@@ -57,7 +56,7 @@ struct HidServiceLinux::ConnectParams {
         callback(callback),
         task_runner(base::SequencedTaskRunnerHandle::Get()),
         blocking_task_runner(
-            base::CreateSequencedTaskRunnerWithTraits(kBlockingTaskTraits)) {}
+            base::CreateSequencedTaskRunner(kBlockingTaskTraits)) {}
   ~ConnectParams() {}
 
   scoped_refptr<HidDeviceInfo> device_info;
@@ -67,15 +66,15 @@ struct HidServiceLinux::ConnectParams {
   base::ScopedFD fd;
 };
 
-class HidServiceLinux::BlockingTaskHelper : public UdevWatcher::Observer {
+class HidServiceLinux::BlockingTaskRunnerHelper : public UdevWatcher::Observer {
  public:
-  BlockingTaskHelper(base::WeakPtr<HidServiceLinux> service)
+  BlockingTaskRunnerHelper(base::WeakPtr<HidServiceLinux> service)
       : service_(std::move(service)),
         task_runner_(base::SequencedTaskRunnerHandle::Get()) {
     DETACH_FROM_SEQUENCE(sequence_checker_);
   }
 
-  ~BlockingTaskHelper() override {
+  ~BlockingTaskRunnerHelper() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   }
 
@@ -181,6 +180,8 @@ class HidServiceLinux::BlockingTaskHelper : public UdevWatcher::Observer {
     }
   }
 
+  void OnDeviceChanged(ScopedUdevDevicePtr) override {}
+
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<UdevWatcher> watcher_;
 
@@ -188,22 +189,22 @@ class HidServiceLinux::BlockingTaskHelper : public UdevWatcher::Observer {
   base::WeakPtr<HidServiceLinux> service_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  DISALLOW_COPY_AND_ASSIGN(BlockingTaskHelper);
+  DISALLOW_COPY_AND_ASSIGN(BlockingTaskRunnerHelper);
 };
 
 HidServiceLinux::HidServiceLinux()
     : blocking_task_runner_(
-          base::CreateSequencedTaskRunnerWithTraits(kBlockingTaskTraits)),
-      weak_factory_(this) {
-  helper_ = std::make_unique<BlockingTaskHelper>(weak_factory_.GetWeakPtr());
+          base::CreateSequencedTaskRunner(kBlockingTaskTraits)),
+      helper_(nullptr, base::OnTaskRunnerDeleter(blocking_task_runner_)) {
+  // We need to properly initialize |blocking_task_helper_| here because we need
+  // |weak_factory_| to be created first.
+  helper_.reset(new BlockingTaskRunnerHelper(weak_factory_.GetWeakPtr()));
   blocking_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&BlockingTaskHelper::Start,
+      FROM_HERE, base::BindOnce(&BlockingTaskRunnerHelper::Start,
                                 base::Unretained(helper_.get())));
 }
 
-HidServiceLinux::~HidServiceLinux() {
-  blocking_task_runner_->DeleteSoon(FROM_HERE, helper_.release());
-}
+HidServiceLinux::~HidServiceLinux() = default;
 
 base::WeakPtr<HidService> HidServiceLinux::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
@@ -224,16 +225,13 @@ void HidServiceLinux::Connect(const std::string& device_guid,
   auto params = std::make_unique<ConnectParams>(device_info, callback);
 
 #if defined(OS_CHROMEOS)
-  chromeos::PermissionBrokerClient* client =
-      chromeos::DBusThreadManager::Get()->GetPermissionBrokerClient();
-  DCHECK(client) << "Could not get permission broker client.";
   chromeos::PermissionBrokerClient::ErrorCallback error_callback =
-      base::Bind(&HidServiceLinux::OnPathOpenError,
-                 params->device_info->device_node(), params->callback);
-  client->OpenPath(
+      base::BindOnce(&HidServiceLinux::OnPathOpenError,
+                     params->device_info->device_node(), params->callback);
+  chromeos::PermissionBrokerClient::Get()->OpenPath(
       device_info->device_node(),
-      base::Bind(&HidServiceLinux::OnPathOpenComplete, base::Passed(&params)),
-      error_callback);
+      base::BindOnce(&HidServiceLinux::OnPathOpenComplete, std::move(params)),
+      std::move(error_callback));
 #else
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
       params->blocking_task_runner;

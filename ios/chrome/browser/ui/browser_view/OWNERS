@@ -1,0 +1,13 @@
+marq@chromium.org
+rohitrao@chromium.org
+
+per-file browser_coordinator.*=edchin@chromium.org
+
+# BVC OWNERS for small changes. Please refer larger changes to one
+# of the above OWNERs.
+per-file browser_view_controller*=edchin@chromium.org
+per-file browser_view_controller*=kkhorimoto@chromium.org
+per-file browser_view_controller*=gambard@chromium.org
+
+# TEAM: ios-directory-owners@chromium.org
+# OS: iOS

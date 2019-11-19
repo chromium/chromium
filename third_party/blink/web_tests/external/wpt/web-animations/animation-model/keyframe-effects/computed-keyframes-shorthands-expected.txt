@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL It should be possible to animate the all shorthand assert_approx_equals: Should be half way through an opacity animation expected 0.5 +/- 0.0001 but got 0
+Harness: the test ran to completion.
+

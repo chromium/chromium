@@ -53,31 +53,31 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicClient
   std::vector<dbus::ObjectPath> GetCharacteristics() override;
   Properties* GetProperties(const dbus::ObjectPath& object_path) override;
   void ReadValue(const dbus::ObjectPath& object_path,
-                 const ValueCallback& callback,
-                 const ErrorCallback& error_callback) override;
+                 ValueCallback callback,
+                 ErrorCallback error_callback) override;
   void WriteValue(const dbus::ObjectPath& object_path,
                   const std::vector<uint8_t>& value,
-                  const base::Closure& callback,
-                  const ErrorCallback& error_callback) override;
+                  base::OnceClosure callback,
+                  ErrorCallback error_callback) override;
   void PrepareWriteValue(const dbus::ObjectPath& object_path,
                          const std::vector<uint8_t>& value,
-                         const base::Closure& callback,
-                         const ErrorCallback& error_callback) override;
+                         base::OnceClosure callback,
+                         ErrorCallback error_callback) override;
 #if defined(OS_CHROMEOS)
   void StartNotify(
       const dbus::ObjectPath& object_path,
       device::BluetoothGattCharacteristic::NotificationType notification_type,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback) override;
+      base::OnceClosure callback,
+      ErrorCallback error_callback) override;
 #else
   void StartNotify(const dbus::ObjectPath& object_path,
-                   const base::Closure& callback,
-                   const ErrorCallback& error_callback) override;
+                   base::OnceClosure callback,
+                   ErrorCallback error_callback) override;
 #endif
 
   void StopNotify(const dbus::ObjectPath& object_path,
-                  const base::Closure& callback,
-                  const ErrorCallback& error_callback) override;
+                  base::OnceClosure callback,
+                  ErrorCallback error_callback) override;
 
   // Makes the group of characteristics belonging to a particular GATT based
   // profile available under the GATT service with object path |service_path|.
@@ -148,7 +148,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicClient
   // Callback that executes a delayed ReadValue action by updating the
   // appropriate "Value" property and invoking the ValueCallback.
   void DelayedReadValueCallback(const dbus::ObjectPath& object_path,
-                                const ValueCallback& callback,
+                                ValueCallback callback,
                                 const std::vector<uint8_t>& value);
 
   // If true, characteristics of the Heart Rate Service are visible. Use
@@ -184,10 +184,10 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicClient
   // Current countdowns for extra requests for various actions.
   struct DelayedCallback {
    public:
-    DelayedCallback(base::Closure callback, size_t delay);
+    DelayedCallback(base::OnceClosure callback, size_t delay);
     ~DelayedCallback();
 
-    base::Closure callback_;
+    base::OnceClosure callback_;
     size_t delay_;
   };
 
@@ -201,7 +201,8 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattCharacteristicClient
   // than we do.
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<FakeBluetoothGattCharacteristicClient> weak_ptr_factory_;
+  base::WeakPtrFactory<FakeBluetoothGattCharacteristicClient> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeBluetoothGattCharacteristicClient);
 };

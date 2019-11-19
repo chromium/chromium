@@ -5,7 +5,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/info_map.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -22,9 +22,10 @@ scoped_refptr<Extension> LoadManifest(const std::string& dir,
   path = path.AppendASCII("extensions").AppendASCII(dir).AppendASCII(test_file);
 
   JSONFileValueDeserializer deserializer(path);
-  std::unique_ptr<base::Value> result = deserializer.Deserialize(NULL, NULL);
+  std::unique_ptr<base::Value> result =
+      deserializer.Deserialize(nullptr, nullptr);
   if (!result)
-    return NULL;
+    return nullptr;
 
   std::string error;
   scoped_refptr<Extension> extension =
@@ -47,7 +48,7 @@ class ChromeInfoMapTest : public testing::Test {
   ChromeInfoMapTest() = default;
 
  private:
-  content::TestBrowserThreadBundle test_browser_thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 // Tests API access permissions given both extension and app URLs.

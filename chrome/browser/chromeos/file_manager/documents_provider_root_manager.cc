@@ -17,7 +17,7 @@
 #include "chrome/browser/chromeos/arc/fileapi/arc_file_system_operation_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/arc/arc_features.h"
-#include "components/arc/common/bitmap.mojom.h"
+#include "components/arc/mojom/bitmap.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -86,7 +86,7 @@ class BitmapWrapper {
 DocumentsProviderRootManager::DocumentsProviderRootManager(
     Profile* profile,
     arc::ArcFileSystemOperationRunner* runner)
-    : profile_(profile), runner_(runner), weak_ptr_factory_(this) {}
+    : profile_(profile), runner_(runner) {}
 
 DocumentsProviderRootManager::~DocumentsProviderRootManager() {
   arc::ArcFileSystemBridge* bridge =
@@ -189,6 +189,9 @@ void DocumentsProviderRootManager::OnGetRoots(
       root_info.summary = root->summary.value();
     if (root->icon.has_value())
       root_info.icon = root->icon.value();
+    root_info.supports_create = root->supports_create;
+    if (root->mime_types.has_value())
+      root_info.mime_types = root->mime_types.value();
 
     roots_info.emplace_back(std::move(root_info));
   }
@@ -228,7 +231,8 @@ void DocumentsProviderRootManager::NotifyRootAdded(const RootInfo& info) {
     observer.OnDocumentsProviderRootAdded(
         info.authority, info.root_id, info.document_id, info.title,
         info.summary,
-        !info.icon.empty() ? EncodeIconAsUrl(info.icon) : GURL::EmptyGURL());
+        !info.icon.empty() ? EncodeIconAsUrl(info.icon) : GURL::EmptyGURL(),
+        !info.supports_create, info.mime_types);
   }
 }
 

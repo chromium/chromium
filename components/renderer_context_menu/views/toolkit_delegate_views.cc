@@ -18,11 +18,11 @@ ToolkitDelegateViews::~ToolkitDelegateViews() {}
 void ToolkitDelegateViews::RunMenuAt(views::Widget* parent,
                                      const gfx::Point& point,
                                      ui::MenuSourceType type) {
-  views::MenuAnchorPosition anchor_position =
-      (type == ui::MENU_SOURCE_TOUCH ||
-       type == ui::MENU_SOURCE_TOUCH_EDIT_MENU)
-      ? views::MENU_ANCHOR_BOTTOMCENTER
-      : views::MENU_ANCHOR_TOPLEFT;
+  using Position = views::MenuAnchorPosition;
+  Position anchor_position =
+      (type == ui::MENU_SOURCE_TOUCH || type == ui::MENU_SOURCE_TOUCH_EDIT_MENU)
+          ? Position::kBottomCenter
+          : Position::kTopLeft;
   menu_runner_->RunMenuAt(parent, nullptr, gfx::Rect(point, gfx::Size()),
                           anchor_position, type);
 }

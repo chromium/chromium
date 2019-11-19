@@ -14,8 +14,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "jni/VideoCapture_jni.h"
 #include "media/capture/mojom/image_capture_types.h"
+#include "media/capture/video/android/capture_jni_headers/VideoCapture_jni.h"
 #include "media/capture/video/android/photo_capabilities.h"
 #include "media/capture/video/android/video_capture_device_factory_android.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -45,6 +45,7 @@ mojom::MeteringMode ToMojomMeteringMode(
     case PhotoCapabilities::AndroidMeteringMode::NONE:
       return mojom::MeteringMode::NONE;
     case PhotoCapabilities::AndroidMeteringMode::NOT_SET:
+    case PhotoCapabilities::AndroidMeteringMode::NUM_ENTRIES:
       NOTREACHED();
   }
   return mojom::MeteringMode::NONE;
@@ -76,6 +77,7 @@ mojom::FillLightMode ToMojomFillLightMode(
     case PhotoCapabilities::AndroidFillLightMode::OFF:
       return mojom::FillLightMode::OFF;
     case PhotoCapabilities::AndroidFillLightMode::NOT_SET:
+    case PhotoCapabilities::AndroidFillLightMode::NUM_ENTRIES:
       NOTREACHED();
   }
   NOTREACHED();
@@ -101,8 +103,7 @@ PhotoCapabilities::AndroidFillLightMode ToAndroidFillLightMode(
 VideoCaptureDeviceAndroid::VideoCaptureDeviceAndroid(
     const VideoCaptureDeviceDescriptor& device_descriptor)
     : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      device_descriptor_(device_descriptor),
-      weak_ptr_factory_(this) {}
+      device_descriptor_(device_descriptor) {}
 
 VideoCaptureDeviceAndroid::~VideoCaptureDeviceAndroid() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
@@ -142,6 +143,11 @@ void VideoCaptureDeviceAndroid::AllocateAndStart(
                   "failed to allocate");
     return;
   }
+
+  // TODO(julien.isorce): Use Camera.SENSOR_COLOR_TRANSFORM2 to build a
+  // gfx::ColorSpace, and rename VideoCaptureDeviceAndroid::GetColorspace()
+  // to GetPixelFormat, see http://crbug.com/959901.
+  capture_color_space_ = gfx::ColorSpace();
 
   capture_format_.frame_size.SetSize(
       Java_VideoCapture_queryWidth(env, j_capture_),
@@ -407,63 +413,82 @@ void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(
   // PhotoCapabilities to mojom::PhotoStatePtr, https://crbug.com/622002.
   mojom::PhotoStatePtr photo_capabilities = mojo::CreateEmptyPhotoState();
 
-  const auto jni_white_balance_modes = caps.getWhiteBalanceModes();
+  const auto jni_white_balance_modes = caps.getMeteringModeArray(
+      PhotoCapabilities::MeteringModeType::WHITE_BALANCE);
   std::vector<mojom::MeteringMode> white_balance_modes;
   for (const auto& white_balance_mode : jni_white_balance_modes)
     white_balance_modes.push_back(ToMojomMeteringMode(white_balance_mode));
   photo_capabilities->supported_white_balance_modes = white_balance_modes;
-  photo_capabilities->current_white_balance_mode =
-      ToMojomMeteringMode(caps.getWhiteBalanceMode());
+  photo_capabilities->current_white_balance_mode = ToMojomMeteringMode(
+      caps.getMeteringMode(PhotoCapabilities::MeteringModeType::WHITE_BALANCE));
 
-  const auto jni_exposure_modes = caps.getExposureModes();
+  const auto jni_exposure_modes =
+      caps.getMeteringModeArray(PhotoCapabilities::MeteringModeType::EXPOSURE);
   std::vector<mojom::MeteringMode> exposure_modes;
   for (const auto& exposure_mode : jni_exposure_modes)
     exposure_modes.push_back(ToMojomMeteringMode(exposure_mode));
   photo_capabilities->supported_exposure_modes = exposure_modes;
-  photo_capabilities->current_exposure_mode =
-      ToMojomMeteringMode(caps.getExposureMode());
+  photo_capabilities->current_exposure_mode = ToMojomMeteringMode(
+      caps.getMeteringMode(PhotoCapabilities::MeteringModeType::EXPOSURE));
 
-  const auto jni_focus_modes = caps.getFocusModes();
+  const auto jni_focus_modes =
+      caps.getMeteringModeArray(PhotoCapabilities::MeteringModeType::FOCUS);
   std::vector<mojom::MeteringMode> focus_modes;
   for (const auto& focus_mode : jni_focus_modes)
     focus_modes.push_back(ToMojomMeteringMode(focus_mode));
   photo_capabilities->supported_focus_modes = focus_modes;
-  photo_capabilities->current_focus_mode =
-      ToMojomMeteringMode(caps.getFocusMode());
+  photo_capabilities->current_focus_mode = ToMojomMeteringMode(
+      caps.getMeteringMode(PhotoCapabilities::MeteringModeType::FOCUS));
 
   photo_capabilities->focus_distance = mojom::Range::New();
-  photo_capabilities->focus_distance->current = caps.getCurrentFocusDistance();
-  photo_capabilities->focus_distance->max = caps.getMaxFocusDistance();
-  photo_capabilities->focus_distance->min = caps.getMinFocusDistance();
-  photo_capabilities->focus_distance->step = caps.getStepFocusDistance();
+  photo_capabilities->focus_distance->current = caps.getDouble(
+      PhotoCapabilities::PhotoCapabilityDouble::CURRENT_FOCUS_DISTANCE);
+  photo_capabilities->focus_distance->max = caps.getDouble(
+      PhotoCapabilities::PhotoCapabilityDouble::MAX_FOCUS_DISTANCE);
+  photo_capabilities->focus_distance->min = caps.getDouble(
+      PhotoCapabilities::PhotoCapabilityDouble::MIN_FOCUS_DISTANCE);
+  photo_capabilities->focus_distance->step = caps.getDouble(
+      PhotoCapabilities::PhotoCapabilityDouble::STEP_FOCUS_DISTANCE);
 
   photo_capabilities->exposure_compensation = mojom::Range::New();
-  photo_capabilities->exposure_compensation->current =
-      caps.getCurrentExposureCompensation();
-  photo_capabilities->exposure_compensation->max =
-      caps.getMaxExposureCompensation();
-  photo_capabilities->exposure_compensation->min =
-      caps.getMinExposureCompensation();
-  photo_capabilities->exposure_compensation->step =
-      caps.getStepExposureCompensation();
+  photo_capabilities->exposure_compensation->current = caps.getDouble(
+      PhotoCapabilities::PhotoCapabilityDouble::CURRENT_EXPOSURE_COMPENSATION);
+  photo_capabilities->exposure_compensation->max = caps.getDouble(
+      PhotoCapabilities::PhotoCapabilityDouble::MAX_EXPOSURE_COMPENSATION);
+  photo_capabilities->exposure_compensation->min = caps.getDouble(
+      PhotoCapabilities::PhotoCapabilityDouble::MIN_EXPOSURE_COMPENSATION);
+  photo_capabilities->exposure_compensation->step = caps.getDouble(
+      PhotoCapabilities::PhotoCapabilityDouble::STEP_EXPOSURE_COMPENSATION);
 
   photo_capabilities->exposure_time = mojom::Range::New();
-  photo_capabilities->exposure_time->current = caps.getCurrentExposureTime();
-  photo_capabilities->exposure_time->max = caps.getMaxExposureTime();
-  photo_capabilities->exposure_time->min = caps.getMinExposureTime();
-  photo_capabilities->exposure_time->step = caps.getStepExposureTime();
+  photo_capabilities->exposure_time->current = caps.getDouble(
+      PhotoCapabilities::PhotoCapabilityDouble::CURRENT_EXPOSURE_TIME);
+  photo_capabilities->exposure_time->max = caps.getDouble(
+      PhotoCapabilities::PhotoCapabilityDouble::MAX_EXPOSURE_TIME);
+  photo_capabilities->exposure_time->min = caps.getDouble(
+      PhotoCapabilities::PhotoCapabilityDouble::MIN_EXPOSURE_TIME);
+  photo_capabilities->exposure_time->step = caps.getDouble(
+      PhotoCapabilities::PhotoCapabilityDouble::STEP_EXPOSURE_TIME);
 
   photo_capabilities->color_temperature = mojom::Range::New();
-  photo_capabilities->color_temperature->current =
-      caps.getCurrentColorTemperature();
-  photo_capabilities->color_temperature->max = caps.getMaxColorTemperature();
-  photo_capabilities->color_temperature->min = caps.getMinColorTemperature();
-  photo_capabilities->color_temperature->step = caps.getStepColorTemperature();
+  photo_capabilities->color_temperature->current = caps.getInt(
+      PhotoCapabilities::PhotoCapabilityInt::CURRENT_COLOR_TEMPERATURE);
+  photo_capabilities->color_temperature->max =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::MAX_COLOR_TEMPERATURE);
+  photo_capabilities->color_temperature->min =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::MIN_COLOR_TEMPERATURE);
+  photo_capabilities->color_temperature->step = caps.getInt(
+      PhotoCapabilities::PhotoCapabilityInt::STEP_COLOR_TEMPERATURE);
+
   photo_capabilities->iso = mojom::Range::New();
-  photo_capabilities->iso->current = caps.getCurrentIso();
-  photo_capabilities->iso->max = caps.getMaxIso();
-  photo_capabilities->iso->min = caps.getMinIso();
-  photo_capabilities->iso->step = caps.getStepIso();
+  photo_capabilities->iso->current =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::CURRENT_ISO);
+  photo_capabilities->iso->max =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::MAX_ISO);
+  photo_capabilities->iso->min =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::MIN_ISO);
+  photo_capabilities->iso->step =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::STEP_ISO);
 
   photo_capabilities->brightness = mojom::Range::New();
   photo_capabilities->contrast = mojom::Range::New();
@@ -471,28 +496,43 @@ void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(
   photo_capabilities->sharpness = mojom::Range::New();
 
   photo_capabilities->zoom = mojom::Range::New();
-  photo_capabilities->zoom->current = caps.getCurrentZoom();
-  photo_capabilities->zoom->max = caps.getMaxZoom();
-  photo_capabilities->zoom->min = caps.getMinZoom();
-  photo_capabilities->zoom->step = caps.getStepZoom();
+  photo_capabilities->zoom->current =
+      caps.getDouble(PhotoCapabilities::PhotoCapabilityDouble::CURRENT_ZOOM);
+  photo_capabilities->zoom->max =
+      caps.getDouble(PhotoCapabilities::PhotoCapabilityDouble::MAX_ZOOM);
+  photo_capabilities->zoom->min =
+      caps.getDouble(PhotoCapabilities::PhotoCapabilityDouble::MIN_ZOOM);
+  photo_capabilities->zoom->step =
+      caps.getDouble(PhotoCapabilities::PhotoCapabilityDouble::STEP_ZOOM);
 
-  photo_capabilities->supports_torch = caps.getSupportsTorch();
-  photo_capabilities->torch = caps.getTorch();
+  photo_capabilities->supports_torch =
+      caps.getBool(PhotoCapabilities::PhotoCapabilityBool::SUPPORTS_TORCH);
+  photo_capabilities->torch =
+      caps.getBool(PhotoCapabilities::PhotoCapabilityBool::TORCH);
 
   photo_capabilities->red_eye_reduction =
-      caps.getRedEyeReduction() ? mojom::RedEyeReduction::CONTROLLABLE
-                                : mojom::RedEyeReduction::NEVER;
+      caps.getBool(PhotoCapabilities::PhotoCapabilityBool::RED_EYE_REDUCTION)
+          ? mojom::RedEyeReduction::CONTROLLABLE
+          : mojom::RedEyeReduction::NEVER;
   photo_capabilities->height = mojom::Range::New();
-  photo_capabilities->height->current = caps.getCurrentHeight();
-  photo_capabilities->height->max = caps.getMaxHeight();
-  photo_capabilities->height->min = caps.getMinHeight();
-  photo_capabilities->height->step = caps.getStepHeight();
+  photo_capabilities->height->current =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::CURRENT_HEIGHT);
+  photo_capabilities->height->max =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::MAX_HEIGHT);
+  photo_capabilities->height->min =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::MIN_HEIGHT);
+  photo_capabilities->height->step =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::STEP_HEIGHT);
   photo_capabilities->width = mojom::Range::New();
-  photo_capabilities->width->current = caps.getCurrentWidth();
-  photo_capabilities->width->max = caps.getMaxWidth();
-  photo_capabilities->width->min = caps.getMinWidth();
-  photo_capabilities->width->step = caps.getStepWidth();
-  const auto fill_light_modes = caps.getFillLightModes();
+  photo_capabilities->width->current =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::CURRENT_WIDTH);
+  photo_capabilities->width->max =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::MAX_WIDTH);
+  photo_capabilities->width->min =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::MIN_WIDTH);
+  photo_capabilities->width->step =
+      caps.getInt(PhotoCapabilities::PhotoCapabilityInt::STEP_WIDTH);
+  const auto fill_light_modes = caps.getFillLightModeArray();
   std::vector<mojom::FillLightMode> modes;
   for (const auto& fill_light_mode : fill_light_modes)
     modes.push_back(ToMojomFillLightMode(fill_light_mode));
@@ -588,8 +628,9 @@ void VideoCaptureDeviceAndroid::SendIncomingDataToClient(
   base::AutoLock lock(lock_);
   if (!client_)
     return;
-  client_->OnIncomingCapturedData(data, length, capture_format_, rotation,
-                                  reference_time, timestamp);
+  client_->OnIncomingCapturedData(
+      data, length, capture_format_, capture_color_space_, rotation,
+      false /* flip_y */, reference_time, timestamp);
 }
 
 VideoPixelFormat VideoCaptureDeviceAndroid::GetColorspace() {
@@ -700,13 +741,13 @@ void VideoCaptureDeviceAndroid::DoSetPhotoOptions(
   const double width = settings->has_width ? settings->width : 0.0;
   const double height = settings->has_height ? settings->height : 0.0;
 
-  std::vector<float> points_of_interest_marshalled;
+  std::vector<double> points_of_interest_marshalled;
   for (const auto& point : settings->points_of_interest) {
     points_of_interest_marshalled.push_back(point->x);
     points_of_interest_marshalled.push_back(point->y);
   }
-  ScopedJavaLocalRef<jfloatArray> points_of_interest =
-      base::android::ToJavaFloatArray(env, points_of_interest_marshalled);
+  ScopedJavaLocalRef<jdoubleArray> points_of_interest =
+      base::android::ToJavaDoubleArray(env, points_of_interest_marshalled);
 
   const double exposure_compensation = settings->has_exposure_compensation
                                            ? settings->exposure_compensation

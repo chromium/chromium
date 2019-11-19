@@ -62,7 +62,7 @@ class SessionStateNotificationBlockerTest
         message_center::NOTIFICATION_TYPE_SIMPLE, "chromeos-id",
         UTF8ToUTF16("chromeos-title"), UTF8ToUTF16("chromeos-message"),
         gfx::Image(), UTF8ToUTF16("chromeos-source"), GURL(), notifier_id,
-        message_center::RichNotificationData(), NULL);
+        message_center::RichNotificationData(), nullptr);
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);
     return blocker_->ShouldShowNotificationAsPopup(notification);

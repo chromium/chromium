@@ -19,11 +19,12 @@ deps = [
   "//base",
 ]
 type_mappings = [
-  "memory_instrumentation.mojom.DumpType=base::trace_event::MemoryDumpType",
-  "memory_instrumentation.mojom.LevelOfDetail=base::trace_event::MemoryDumpLevelOfDetail",
-  "memory_instrumentation.mojom.RequestArgs=base::trace_event::MemoryDumpRequestArgs",
-  "memory_instrumentation.mojom.RawAllocatorDumpEdge=base::trace_event::ProcessMemoryDump::MemoryAllocatorDumpEdge",
-  "memory_instrumentation.mojom.RawAllocatorDumpEntry=base::trace_event::MemoryAllocatorDump::Entry[move_only]",
-  "memory_instrumentation.mojom.RawAllocatorDump=std::unique_ptr<base::trace_event::MemoryAllocatorDump>[move_only]",
-  "memory_instrumentation.mojom.RawProcessMemoryDump=std::unique_ptr<base::trace_event::ProcessMemoryDump>[move_only,nullable_is_same_type]",
+  "memory_instrumentation.mojom.DumpType=::base::trace_event::MemoryDumpType",
+  "memory_instrumentation.mojom.LevelOfDetail=::base::trace_event::MemoryDumpLevelOfDetail",
+  "memory_instrumentation.mojom.Determinism=::base::trace_event::MemoryDumpDeterminism",
+  "memory_instrumentation.mojom.RequestArgs=::base::trace_event::MemoryDumpRequestArgs",
+  "memory_instrumentation.mojom.RawAllocatorDumpEdge=::base::trace_event::ProcessMemoryDump::MemoryAllocatorDumpEdge",
+  "memory_instrumentation.mojom.RawAllocatorDumpEntry=::base::trace_event::MemoryAllocatorDump::Entry[move_only]",
+  "memory_instrumentation.mojom.RawAllocatorDump=::std::unique_ptr<::base::trace_event::MemoryAllocatorDump>[move_only]",
+  "memory_instrumentation.mojom.RawProcessMemoryDump=::std::unique_ptr<::base::trace_event::ProcessMemoryDump>[move_only,nullable_is_same_type]",
 ]

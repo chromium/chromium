@@ -38,15 +38,13 @@
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 
 namespace blink {
-
-using namespace html_names;
 
 struct PresentationAttributeCacheKey {
   PresentationAttributeCacheKey() : tag_name(nullptr) {}
@@ -62,7 +60,7 @@ static bool operator!=(const PresentationAttributeCacheKey& a,
 }
 
 struct PresentationAttributeCacheEntry final
-    : public GarbageCollectedFinalized<PresentationAttributeCacheEntry> {
+    : public GarbageCollected<PresentationAttributeCacheEntry> {
  public:
   void Trace(Visitor* visitor) { visitor->Trace(value); }
 
@@ -105,7 +103,7 @@ static void MakePresentationAttributeCacheKey(
       return;
     // FIXME: Background URL may depend on the base URL and can't be shared.
     // Disallow caching.
-    if (attr.GetName() == kBackgroundAttr)
+    if (attr.GetName() == html_names::kBackgroundAttr)
       return;
     result.attributes_and_values.push_back(
         std::make_pair(attr.LocalName().Impl(), attr.Value()));
@@ -169,7 +167,7 @@ CSSPropertyValueSet* ComputePresentationAttributeStyle(Element& element) {
       GetPresentationAttributeCache().clear();
     }
   } else {
-    style = MutableCSSPropertyValueSet::Create(
+    style = MakeGarbageCollected<MutableCSSPropertyValueSet>(
         element.IsSVGElement() ? kSVGAttributeMode : kHTMLStandardMode);
     AttributeCollection attributes = element.AttributesWithoutUpdate();
     for (const Attribute& attr : attributes) {

@@ -1,0 +1,44 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: anchor links</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+<div id="outer">
+  Outer
+  <div id="inner">
+    Inner
+    <div id="innermost">
+      Innermost
+    </div>
+  </div>
+</div>
+<a id="innerLink" href="#inner">Click</a>
+<a id="innermostLink" href ="#innermost">Click</a>
+<script>
+'use strict';
+function prepareTest() {
+  innermost.onbeforeactivate = inner.onbeforeactivate = outer.onbeforeactivate = null;
+  return Promise.all([
+    setInvisibleActivatable(outer),
+    setInvisibleActivatable(inner)]);
+}
+
+promise_test(() => {
+  return new Promise((resolve, reject) => {
+    prepareTest().then(() => {
+      assert_equals(inner.renderSubtree, INVISIBLE_ACTIVATABLE);
+      inner.onbeforeactivate = (e) => {
+        assert_equals(e.activatedElement, inner);
+        resolve();
+      }
+      innerLink.click();
+    });
+  });
+}, "Activation through anchor link fires beforeactivate on locked element");
+</script>
+</html>

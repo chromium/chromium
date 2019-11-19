@@ -66,7 +66,7 @@ NSString* const kUseCaseKey = @"useCase";
   self.searchController =
       [[UISearchController alloc] initWithSearchResultsController:nil];
   self.searchController.searchResultsUpdater = self;
-  self.searchController.dimsBackgroundDuringPresentation = NO;
+  self.searchController.obscuresBackgroundDuringPresentation = NO;
   self.tableView.tableHeaderView = self.searchController.searchBar;
   self.navigationController.navigationBar.translucent = NO;
 

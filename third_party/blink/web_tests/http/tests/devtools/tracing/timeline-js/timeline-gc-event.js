@@ -6,9 +6,7 @@
   TestRunner.addResult(`Tests the Timeline API instrumentation of a gc event\n`);
   await TestRunner.loadModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
-  await TestRunner.loadHTML(`
-    <script src="../../../resources/run-after-layout-and-paint.js"></script>
-  `);
+  await TestRunner.addScriptTag('../../../resources/run-after-layout-and-paint.js');
   await TestRunner.evaluateInPagePromise(`
       function produceGarbageForGCEvents()
       {

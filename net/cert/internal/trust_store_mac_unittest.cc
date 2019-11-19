@@ -92,6 +92,11 @@ std::vector<std::string> ParsedCertificateListAsDER(
   return result;
 }
 
+class DebugData : public base::SupportsUserData {
+ public:
+  ~DebugData() override = default;
+};
+
 }  // namespace
 
 // Test the trust store using known test certificates in a keychain.  Tests
@@ -197,8 +202,11 @@ TEST(TrustStoreMacTest, MultiRootNotTrusted) {
   for (const auto& cert :
        {a_by_b, b_by_c, b_by_f, c_by_d, c_by_e, f_by_e, d_by_d, e_by_e}) {
     CertificateTrust trust = CertificateTrust::ForTrustAnchor();
-    trust_store.GetTrust(cert.get(), &trust);
+    DebugData debug_data;
+    trust_store.GetTrust(cert.get(), &trust, &debug_data);
     EXPECT_EQ(CertificateTrustType::UNSPECIFIED, trust.type);
+    // Certs without trust settings should not add debug info to debug_data.
+    EXPECT_FALSE(TrustStoreMac::ResultDebugData::Get(&debug_data));
   }
 }
 
@@ -210,6 +218,8 @@ TEST(TrustStoreMacTest, SystemCerts) {
   //
   // The output contains zero or more repetitions of:
   // "SHA-1 hash: <hash>\n<PEM encoded cert>\n"
+  // Starting with macOS 10.15, it includes both SHA-256 and SHA-1 hashes:
+  // "SHA-256 hash: <hash>\nSHA-1 hash: <hash>\n<PEM encoded cert>\n"
   std::string find_certificate_default_search_list_output;
   ASSERT_TRUE(
       base::GetAppOutput({"security", "find-certificate", "-a", "-p", "-Z"},
@@ -226,16 +236,26 @@ TEST(TrustStoreMacTest, SystemCerts) {
 
   base::ScopedCFTypeRef<SecPolicyRef> sec_policy(SecPolicyCreateBasicX509());
   ASSERT_TRUE(sec_policy);
-
-  for (const std::string& hash_and_pem : base::SplitStringUsingSubstr(
+  for (const std::string& hash_and_pem_partial : base::SplitStringUsingSubstr(
            find_certificate_system_roots_output +
                find_certificate_default_search_list_output,
-           "SHA-1 hash: ", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+           "-----END CERTIFICATE-----", base::TRIM_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    // Re-add the PEM ending mark, since SplitStringUsingSubstr eats it.
+    const std::string hash_and_pem =
+        hash_and_pem_partial + "\n-----END CERTIFICATE-----\n";
+
+    // Use the first hash value found in the text. This might be SHA-256 or
+    // SHA-1, but it's only for debugging purposes so it doesn't matter as long
+    // as one exists.
+    std::string::size_type hash_pos = hash_and_pem.find("hash: ");
+    ASSERT_NE(std::string::npos, hash_pos);
+    hash_pos += 6;
     std::string::size_type eol_pos = hash_and_pem.find_first_of("\r\n");
     ASSERT_NE(std::string::npos, eol_pos);
-    // Extract the SHA-1 hash of the certificate. This isn't necessary for the
+    // Extract the hash of the certificate. This isn't necessary for the
     // test, but is a convenient identifier to use in any error messages.
-    std::string hash_text = hash_and_pem.substr(0, eol_pos);
+    std::string hash_text = hash_and_pem.substr(hash_pos, eol_pos - hash_pos);
 
     SCOPED_TRACE(hash_text);
     // TODO(mattm): The same cert might exist in both lists, could de-dupe
@@ -265,7 +285,8 @@ TEST(TrustStoreMacTest, SystemCerts) {
     }
     // Check if this cert is considered a trust anchor by TrustStoreMac.
     CertificateTrust cert_trust;
-    trust_store.GetTrust(cert, &cert_trust);
+    DebugData debug_data;
+    trust_store.GetTrust(cert, &cert_trust, &debug_data);
     bool is_trust_anchor = cert_trust.IsTrustAnchor();
 
     // Check if this cert is considered a trust anchor by the OS.
@@ -294,6 +315,15 @@ TEST(TrustStoreMacTest, SystemCerts) {
            (trust_result == kSecTrustResultUnspecified)) &&
           (SecTrustGetCertificateCount(trust) == 1);
       EXPECT_EQ(expected_trust_anchor, is_trust_anchor);
+      if (is_trust_anchor) {
+        auto* trust_debug_data =
+            TrustStoreMac::ResultDebugData::Get(&debug_data);
+        ASSERT_TRUE(trust_debug_data);
+        // Since this test queries the real trust store, can't know exactly
+        // what bits should be set in the trust debug info, but it should at
+        // least have something set.
+        EXPECT_NE(0, trust_debug_data->combined_trust_debug_info());
+      }
     }
   }
 }

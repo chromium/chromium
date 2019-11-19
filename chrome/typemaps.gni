@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 typemaps = [
-  "//chrome/common/browser_controls_state.typemap",
   "//chrome/common/mac/app_shim.typemap",
   "//chrome/common/search.typemap",
   "//chrome/common/web_application_info_provider.typemap",
+  "//chrome/services/cups_proxy/public/mojom/proxy.typemap",
   "//chrome/services/file_util/public/mojom/safe_archive_analyzer.typemap",
   "//chrome/services/media_gallery_util/public/mojom/media_parser.typemap",
   "//chrome/services/printing/public/mojom/pdf_render_settings.typemap",

@@ -41,9 +41,9 @@ class CONTENT_EXPORT PepperWebSocketHost
   void DidReceiveMessage(const blink::WebString& message) override;
   void DidReceiveArrayBuffer(const blink::WebArrayBuffer& binaryData) override;
   void DidReceiveMessageError() override;
-  void DidUpdateBufferedAmount(unsigned long buffered_amount) override;
+  void DidUpdateBufferedAmount(uint64_t buffered_amount) override;
   void DidStartClosingHandshake() override;
-  void DidClose(unsigned long unhandled_buffered_amount,
+  void DidClose(uint64_t unhandled_buffered_amount,
                 ClosingHandshakeCompletionStatus status,
                 uint16_t code,
                 const blink::WebString& reason) override;

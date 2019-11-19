@@ -1,0 +1,18 @@
+Tests list of user metrics performance codes and invocations.
+
+recordPanelLoaded:
+Performance mark: DevTools.Launch.Console
+Performance histogram: DevTools.Launch.Console - positive duration?: true
+Performance mark: DevTools.Launch.Elements
+Performance histogram: DevTools.Launch.Elements - positive duration?: true
+Performance mark: DevTools.Launch.Network
+Performance histogram: DevTools.Launch.Network - positive duration?: true
+Performance mark: DevTools.Launch.Sources
+Performance histogram: DevTools.Launch.Sources - positive duration?: true
+
+Test that loading the tool only triggers the marker:
+Performance mark: DevTools.Launch.Console
+Performance mark: DevTools.Launch.Elements
+Performance mark: DevTools.Launch.Network
+Performance mark: DevTools.Launch.Sources
+

@@ -10,9 +10,10 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/disks/disk_mount_manager.h"
-#include "components/arc/common/volume_mounter.mojom.h"
-#include "components/arc/connection_observer.h"
+#include "components/arc/mojom/volume_mounter.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/binding.h"
 
 namespace content {
@@ -34,6 +35,8 @@ class ArcVolumeMounterBridge
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcVolumeMounterBridge* GetForBrowserContext(
+      content::BrowserContext* context);
+  static ArcVolumeMounterBridge* GetForBrowserContextForTesting(
       content::BrowserContext* context);
 
   ArcVolumeMounterBridge(content::BrowserContext* context,
@@ -57,9 +60,15 @@ class ArcVolumeMounterBridge
 
   void SendMountEventForMyFiles();
 
+  bool IsVisibleToAndroidApps(const std::string& uuid) const;
+  void OnVisibleStoragesChanged();
+
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  base::WeakPtrFactory<ArcVolumeMounterBridge> weak_ptr_factory_;
+  PrefService* const pref_service_;
+  PrefChangeRegistrar change_registerar_;
+
+  base::WeakPtrFactory<ArcVolumeMounterBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcVolumeMounterBridge);
 };

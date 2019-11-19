@@ -6,9 +6,24 @@ source_set("safe_search_api") {
   sources = [
     "url_checker.cc",
     "url_checker.h",
+    "url_checker_client.h",
   ]
 
   deps = [
+    "//base",
+    "//components/google/core/common",
+    "//url",
+  ]
+}
+
+source_set("safe_search_client") {
+  sources = [
+    "safe_search/safe_search_url_checker_client.cc",
+    "safe_search/safe_search_url_checker_client.h",
+  ]
+
+  deps = [
+    ":safe_search_api",
     "//base",
     "//components/google/core/common",
     "//google_apis",
@@ -21,11 +36,14 @@ source_set("safe_search_api") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "fake_url_checker_client.cc",
+    "fake_url_checker_client.h",
     "stub_url_checker.cc",
     "stub_url_checker.h",
   ]
   deps = [
     ":safe_search_api",
+    ":safe_search_client",
     "//base",
     "//base/test:test_support",
     "//net",
@@ -39,14 +57,19 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "safe_search/safe_search_url_checker_client_unittest.cc",
     "url_checker_unittest.cc",
   ]
   deps = [
     ":safe_search_api",
+    ":safe_search_client",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

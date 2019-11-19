@@ -24,7 +24,7 @@ class SingleThreadTaskRunner;
 // The FileDescriptorWatcher API allows callbacks to be invoked when file
 // descriptors are readable or writable without blocking.
 //
-// To enable this API in unit tests, use a ScopedTaskEnvironment with
+// To enable this API in unit tests, use a TaskEnvironment with
 // MainThreadType::IO.
 //
 // Note: Prefer FileDescriptorWatcher to MessageLoopForIO::WatchFileDescriptor()
@@ -48,7 +48,9 @@ class BASE_EXPORT FileDescriptorWatcher {
 
     // Registers |callback| to be invoked when |fd| is readable or writable
     // without blocking (depending on |mode|).
-    Controller(MessagePumpForIO::Mode mode, int fd, const Closure& callback);
+    Controller(MessagePumpForIO::Mode mode,
+               int fd,
+               const RepeatingClosure& callback);
 
     // Starts watching the file descriptor.
     void StartWatching();
@@ -58,7 +60,7 @@ class BASE_EXPORT FileDescriptorWatcher {
 
     // The callback to run when the watched file descriptor is readable or
     // writable without blocking.
-    Closure callback_;
+    RepeatingClosure callback_;
 
     // TaskRunner associated with the MessageLoopForIO that watches the file
     // descriptor.
@@ -77,7 +79,7 @@ class BASE_EXPORT FileDescriptorWatcher {
     // instantiated.
     SequenceChecker sequence_checker_;
 
-    WeakPtrFactory<Controller> weak_factory_;
+    WeakPtrFactory<Controller> weak_factory_{this};
 
     DISALLOW_COPY_AND_ASSIGN(Controller);
   };
@@ -95,15 +97,22 @@ class BASE_EXPORT FileDescriptorWatcher {
   // Registers |callback| to be posted on the current sequence when |fd| is
   // readable or writable without blocking. |callback| is unregistered when the
   // returned Controller is deleted (deletion must happen on the current
-  // sequence). To call these methods, a FileDescriptorWatcher must have been
+  // sequence).
+  // Usage note: To call these methods, a FileDescriptorWatcher must have been
   // instantiated on the current thread and SequencedTaskRunnerHandle::IsSet()
-  // must return true (these conditions are met at least on all TaskScheduler
+  // must return true (these conditions are met at least on all ThreadPool
   // threads as well as on threads backed by a MessageLoopForIO). |fd| must
   // outlive the returned Controller.
-  static std::unique_ptr<Controller> WatchReadable(int fd,
-                                                   const Closure& callback);
-  static std::unique_ptr<Controller> WatchWritable(int fd,
-                                                   const Closure& callback);
+  // Shutdown note: notifications aren't guaranteed to be emitted once the bound
+  // (current) SequencedTaskRunner enters its shutdown phase (i.e.
+  // ThreadPool::Shutdown() or Thread::Stop()) regardless of the
+  // SequencedTaskRunner's TaskShutdownBehavior.
+  static std::unique_ptr<Controller> WatchReadable(
+      int fd,
+      const RepeatingClosure& callback);
+  static std::unique_ptr<Controller> WatchWritable(
+      int fd,
+      const RepeatingClosure& callback);
 
   // Asserts that usage of this API is allowed on this thread.
   static void AssertAllowed()

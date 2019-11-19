@@ -33,11 +33,11 @@ var IS_PWD_CREATION_VALUE = 'False';
 var steps = [];
 
 /**
- * The index of the last visited site from |sites_to_visit| (sites_to_visit.js).
+ * The index of the last visited site from |sitesToVisit| (sites_to_visit.js).
  *
  * @type {number}
  */
-var last_visited_site_index = 0;
+var lastVisitedSiteIndex = 0;
 
 /**
  * Generated Python tests.
@@ -51,7 +51,7 @@ var last_visited_site_index = 0;
  *
  * @type {string}
  */
-var all_tests = '\n';
+var allTests = '\n';
 
 /**
  * Return the name of the test based on the form's url |url|
@@ -116,7 +116,7 @@ function switchToIframeIfNecessary(step) {
 
 /**
  * Outputs to the console the code of a Python test based on script steps
- * accumulated in |steps|. Also appends the test code to |all_tests|.
+ * accumulated in |steps|. Also appends the test code to |allTests|.
  */
 function outputPythonTestCode() {
   var lastStepUrl = stripUrl(steps[steps.length - 1].url);
@@ -139,7 +139,7 @@ function outputPythonTestCode() {
   test += '\n';
 
   console.log(test);
-  all_tests += test;
+  allTests += test;
   steps = [];
 }
 
@@ -147,12 +147,12 @@ function outputPythonTestCode() {
  * Moves the current tab to the next site.
  */
 function visitNextSite() {
-  console.log('next site: ' + sites_to_visit[last_visited_site_index] + ' ' +
-              last_visited_site_index);
-  chrome.tabs.update(
-      {url: 'http://' + sites_to_visit[last_visited_site_index]});
+  console.log(
+      'next site: ' + sitesToVisit[lastVisitedSiteIndex] + ' ' +
+      lastVisitedSiteIndex);
+  chrome.tabs.update({url: 'http://' + sitesToVisit[lastVisitedSiteIndex]});
   steps = [];
-  last_visited_site_index += 1;
+  lastVisitedSiteIndex += 1;
 }
 
 /**

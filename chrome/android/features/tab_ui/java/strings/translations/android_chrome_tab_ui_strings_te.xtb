@@ -1,0 +1,29 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="te">
+<translation id="1075622780330595106">మీ <ph name="NUMBER_OF_TABS" /> ట్యాబ్‌లు ఇటీవల ఉపయోగించబడలేదు. వాటిని మూసివేయాలా?</translation>
+<translation id="1181037720776840403">తీసివేయి</translation>
+<translation id="125153950246128346">మరొక ట్యాబ్‌ను చూడటానికి నొక్కండి</translation>
+<translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ట్యాబ్}other{<ph name="TABS_COUNT_MANY" /> ట్యాబ్‌లు}}</translation>
+<translation id="257674075312929031">సమూహం</translation>
+<translation id="2613747923081026172">సమూహాన్ని సృష్టించు</translation>
+<translation id="2671423594960767771">సమూహాన్ని షేర్ చేయండి</translation>
+<translation id="2977480621796371840">గుంపు నుండి తీసివేయి</translation>
+<translation id="4212246570487010370">బ్రౌజింగ్‌ను కొనసాగించండి</translation>
+<translation id="4648718555153979859">మీ ట్యాబ్‌లు ఇక్కడ సమూహంగా కలిపి అందించబడతాయి</translation>
+<translation id="5007392906805964215">సమీక్షించు</translation>
+<translation id="5073204694187207510">పూర్తి స్క్రీన్ గ్రిడ్‌‌ను దాచిపెట్టు</translation>
+<translation id="5082793167783849073">పేజీలను సమూహంగా వర్గీకరించడం ద్వారా వేగంగా సరిపోల్చండి. ప్రారంభించడానికి, లింక్‌ను తాకి &amp; అలాగే నొక్కి ఉంచండి.</translation>
+<translation id="5580090775658607195"><ph name="TAB_COUNT" /> ట్యాబ్‌లు సమూహంగా వర్గీకరించబడ్డాయి</translation>
+<translation id="5792534911093536736">మరిన్ని ట్యాబ్‌లు</translation>
+<translation id="58326064309361797">సమూహంగా చేయడానికి ట్యాబ్‌లను లాగండి</translation>
+<translation id="6040143037577758943">మూసివేయి</translation>
+<translation id="6193448654517602979">ట్యాబ్‌లను ఎంచుకోండి</translation>
+<translation id="6615455863669487791">నాకు చూపించు</translation>
+<translation id="6840760312327750441">ట్యాబ్‌లను సమూహంగా చేయడానికి, ట్యాబ్‌ను తాకి &amp; అలాగే నొక్కి ఉంచండి. ట్యాబ్‌ను మరొక ట్యాబ్‌ మీదకు లాగండి.</translation>
+<translation id="7151209024774799310">గ్రూప్ నుండి ట్యాబ్‌లు తీసేయి</translation>
+<translation id="7559245342362162951">సమూహంలోని ట్యాబ్‌లను పూర్తి స్క్రీన్ గ్రిడ్‌లో చూపు</translation>
+<translation id="9150694013019234766">స్క్రీన్ దిగువ భాగం దగ్గరలో ఉండే మీ ట్యాబ్ సమూహంలో కోరుకునే ట్యాబ్‌లకు మారండి</translation>
+<translation id="9169594135889675189">సమూహానికి కొత్త ట్యాబ్‌ను జోడించు</translation>
+<translation id="959682366969460160">అన్నింటిని క్రమ పద్దతిలో అమర్చండి</translation>
+</translationbundle>

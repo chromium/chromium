@@ -16,6 +16,7 @@
 #include "components/invalidation/impl/status.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "net/http/http_request_headers.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
@@ -25,10 +26,10 @@ namespace syncer {
 class PerUserTopicRegistrationRequest {
  public:
   // The request result consists of the request status and name of the private
-  // topic. The |private_topic_name| will be empty in the case of error.
+  // topic. The |topic_name| will be empty in the case of error.
   using CompletedCallback =
       base::OnceCallback<void(const Status& status,
-                              const std::string& private_topic_name)>;
+                              const std::string& topic_name)>;
   enum RequestType { SUBSCRIBE, UNSUBSCRIBE };
 
   // Builds authenticated PerUserTopicRegistrationRequests.
@@ -41,16 +42,16 @@ class PerUserTopicRegistrationRequest {
     // Builds a Request object in order to perform the registration.
     std::unique_ptr<PerUserTopicRegistrationRequest> Build() const;
 
-    Builder& SetToken(const std::string& token);
+    Builder& SetInstanceIdToken(const std::string& token);
     Builder& SetScope(const std::string& scope);
     Builder& SetAuthenticationHeader(const std::string& auth_header);
 
-    Builder& SetPublicTopicName(const std::string& topic);
+    Builder& SetPublicTopicName(const Topic& topic);
     Builder& SetProjectId(const std::string& project_id);
 
     Builder& SetType(RequestType type);
 
-    enum RegistrationState { REGISTERED, UNREGISTERED };
+    Builder& SetTopicIsPublic(bool topic_is_public);
 
    private:
     net::HttpRequestHeaders BuildHeaders() const;
@@ -61,13 +62,14 @@ class PerUserTopicRegistrationRequest {
         const GURL& url) const;
 
     // GCM subscription token obtained from GCM driver (instanceID::getToken()).
-    std::string token_;
-    std::string topic_;
+    std::string instance_id_token_;
+    Topic topic_;
     std::string project_id_;
 
     std::string scope_;
     std::string auth_header_;
     RequestType type_;
+    bool topic_is_public_ = false;
 
     DISALLOW_COPY_AND_ASSIGN(Builder);
   };
@@ -77,23 +79,18 @@ class PerUserTopicRegistrationRequest {
   // Starts an async request. The callback is invoked when the request succeeds
   // or fails. The callback is not called if the request is destroyed.
   void Start(CompletedCallback callback,
-             const ParseJSONCallback& parsed_json,
              network::mojom::URLLoaderFactory* loader_factory);
 
- private:
-  friend class PerUserTopicRegistrationRequestTest;
+  GURL GetUrlForTesting() const { return url_; }
 
+ private:
   PerUserTopicRegistrationRequest();
   void OnURLFetchComplete(std::unique_ptr<std::string> response_body);
   void OnURLFetchCompleteInternal(int net_error,
                                   int response_code,
                                   std::unique_ptr<std::string> response_body);
 
-  void OnJsonParseFailure(const std::string& error);
-  void OnJsonParseSuccess(std::unique_ptr<base::Value> parsed_json);
-
-  // For tests only. Returns the full URL of the request.
-  GURL getUrl() const { return url_; }
+  void OnJsonParse(data_decoder::DataDecoder::ValueOrError result);
 
   // The fetcher for subscribing.
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
@@ -102,15 +99,12 @@ class PerUserTopicRegistrationRequest {
   // When the request is finished/aborted/destroyed, it's called in the dtor!
   CompletedCallback request_completed_callback_;
 
-  // The callback for Parsing JSON.
-  ParseJSONCallback parse_json_;
-
   // Full URL. Used in tests only.
   GURL url_;
   RequestType type_;
   std::string topic_;
 
-  base::WeakPtrFactory<PerUserTopicRegistrationRequest> weak_ptr_factory_;
+  base::WeakPtrFactory<PerUserTopicRegistrationRequest> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PerUserTopicRegistrationRequest);
 };

@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/core/fetch/fetch_response_data.h"
 
-#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_response.h"
+#include "services/network/public/cpp/content_security_policy.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -13,6 +16,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_utils.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 using Type = network::mojom::FetchResponseType;
 using ResponseSource = network::mojom::FetchResponseSource;
@@ -20,16 +24,6 @@ using ResponseSource = network::mojom::FetchResponseSource;
 namespace blink {
 
 namespace {
-
-WebVector<WebString> HeaderSetToWebVector(const WebHTTPHeaderSet& headers) {
-  // Can't just pass *headers to the WebVector constructor because HashSet
-  // iterators are not stl iterator compatible.
-  WebVector<WebString> result(static_cast<size_t>(headers.size()));
-  int idx = 0;
-  for (const auto& header : headers)
-    result[idx++] = WebString::FromASCII(header);
-  return result;
-}
 
 Vector<String> HeaderSetToVector(const WebHTTPHeaderSet& headers) {
   Vector<String> result;
@@ -99,8 +93,8 @@ FetchResponseData* FetchResponseData::CreateCorsFilteredResponse(
   response->SetURLList(url_list_);
   for (const auto& header : header_list_->List()) {
     const String& name = header.first;
-    if (cors::IsOnAccessControlResponseHeaderWhitelist(name) ||
-        (exposed_headers.find(name.Ascii().data()) != exposed_headers.end() &&
+    if (cors::IsCorsSafelistedResponseHeader(name) ||
+        (exposed_headers.find(name.Ascii()) != exposed_headers.end() &&
          !FetchUtils::IsForbiddenResponseHeaderName(name))) {
       response->header_list_->Append(name, header.second);
     }
@@ -147,6 +141,13 @@ const KURL* FetchResponseData::Url() const {
   if (url_list_.IsEmpty())
     return nullptr;
   return &url_list_.back();
+}
+
+FetchHeaderList* FetchResponseData::InternalHeaderList() const {
+  if (internal_response_) {
+    return internal_response_->HeaderList();
+  }
+  return HeaderList();
 }
 
 String FetchResponseData::MimeType() const {
@@ -240,35 +241,11 @@ FetchResponseData* FetchResponseData::Clone(ScriptState* script_state,
   return new_response;
 }
 
-void FetchResponseData::PopulateWebServiceWorkerResponse(
-    WebServiceWorkerResponse& response) {
-  if (internal_response_) {
-    internal_response_->PopulateWebServiceWorkerResponse(response);
-    response.SetResponseType(type_);
-    response.SetResponseSource(response_source_);
-    response.SetCorsExposedHeaderNames(
-        HeaderSetToWebVector(cors_exposed_header_names_));
-    return;
-  }
-  response.SetURLList(url_list_);
-  response.SetStatus(Status());
-  response.SetStatusText(StatusMessage());
-  response.SetResponseType(type_);
-  response.SetResponseSource(response_source_);
-  response.SetResponseTime(ResponseTime());
-  response.SetCacheStorageCacheName(CacheStorageCacheName());
-  response.SetCorsExposedHeaderNames(
-      HeaderSetToWebVector(cors_exposed_header_names_));
-  for (const auto& header : HeaderList()->List()) {
-    response.AppendHeader(header.first, header.second);
-  }
-}
-
-mojom::blink::FetchAPIResponsePtr
-FetchResponseData::PopulateFetchAPIResponse() {
+mojom::blink::FetchAPIResponsePtr FetchResponseData::PopulateFetchAPIResponse(
+    const KURL& request_url) {
   if (internal_response_) {
     mojom::blink::FetchAPIResponsePtr response =
-        internal_response_->PopulateFetchAPIResponse();
+        internal_response_->PopulateFetchAPIResponse(request_url);
     response->response_type = type_;
     response->response_source = response_source_;
     response->cors_exposed_header_names =
@@ -286,8 +263,58 @@ FetchResponseData::PopulateFetchAPIResponse() {
   response->cache_storage_cache_name = cache_storage_cache_name_;
   response->cors_exposed_header_names =
       HeaderSetToVector(cors_exposed_header_names_);
+  response->side_data_blob = side_data_blob_;
   for (const auto& header : HeaderList()->List())
     response->headers.insert(header.first, header.second);
+
+  // Check if there's a Content-Security-Policy header and parse it if
+  // necessary.
+  if (base::FeatureList::IsEnabled(
+          network::features::kOutOfBlinkFrameAncestors)) {
+    String content_security_policy_header;
+    if (HeaderList()->Get("content-security-policy",
+                          content_security_policy_header)) {
+      network::ContentSecurityPolicy policy;
+      if (policy.Parse(request_url,
+                       StringUTF8Adaptor(content_security_policy_header)
+                           .AsStringPiece())) {
+        // Convert network::mojom::ContentSecurityPolicy to
+        // network::mojom::blink::ContentSecurityPolicy.
+        auto blink_frame_ancestors =
+            network::mojom::blink::CSPSourceList::New();
+        WTF::Vector<KURL> report_endpoints;
+
+        const network::mojom::CSPSourceListPtr& frame_ancestors_directive =
+            policy.content_security_policy_ptr()->frame_ancestors;
+        if (frame_ancestors_directive) {
+          for (auto& csp_source : frame_ancestors_directive->sources) {
+            blink_frame_ancestors->sources.push_back(
+                network::mojom::blink::CSPSource::New(
+                    String::FromUTF8(csp_source->scheme),
+                    String::FromUTF8(csp_source->host), csp_source->port,
+                    String::FromUTF8(csp_source->path),
+                    csp_source->is_host_wildcard,
+                    csp_source->is_port_wildcard));
+          }
+          blink_frame_ancestors->allow_self =
+              frame_ancestors_directive->allow_self;
+          blink_frame_ancestors->allow_star =
+              frame_ancestors_directive->allow_star;
+        }
+
+        for (auto& endpoints :
+             policy.content_security_policy_ptr()->report_endpoints) {
+          report_endpoints.push_back(endpoints);
+        }
+
+        response->content_security_policy =
+            network::mojom::blink::ContentSecurityPolicy::New(
+                std::move(blink_frame_ancestors),
+                policy.content_security_policy_ptr()->use_reporting_api,
+                std::move(report_endpoints));
+      }
+    }
+  }
   return response;
 }
 
@@ -299,7 +326,7 @@ FetchResponseData::FetchResponseData(Type type,
       response_source_(source),
       status_(status),
       status_message_(status_message),
-      header_list_(FetchHeaderList::Create()),
+      header_list_(MakeGarbageCollected<FetchHeaderList>()),
       response_time_(base::Time::Now()) {}
 
 void FetchResponseData::ReplaceBodyStreamBuffer(BodyStreamBuffer* buffer) {

@@ -7,6 +7,7 @@
 #include <winstring.h>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/process/memory.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -17,7 +18,8 @@ namespace {
 static bool g_load_succeeded = false;
 
 FARPROC LoadComBaseFunction(const char* function_name) {
-  static HMODULE const handle = ::LoadLibrary(L"combase.dll");
+  static HMODULE const handle =
+      ::LoadLibraryEx(L"combase.dll", nullptr, LOAD_LIBRARY_SEARCH_SYSTEM32);
   return handle ? ::GetProcAddress(handle, function_name) : nullptr;
 }
 
@@ -83,6 +85,10 @@ void ScopedHStringTraits::Free(HSTRING hstr) {
 
 namespace win {
 
+ScopedHString::ScopedHString(HSTRING hstr) : ScopedGeneric(hstr) {
+  DCHECK(g_load_succeeded);
+}
+
 // static
 ScopedHString ScopedHString::Create(WStringPiece str) {
   DCHECK(g_load_succeeded);
@@ -91,16 +97,18 @@ ScopedHString ScopedHString::Create(WStringPiece str) {
       str.data(), checked_cast<UINT32>(str.length()), &hstr);
   if (SUCCEEDED(hr))
     return ScopedHString(hstr);
+  if (hr == E_OUTOFMEMORY) {
+    // This size is an approximation. The actual size likely includes
+    // sizeof(HSTRING_HEADER) as well.
+    base::TerminateBecauseOutOfMemory((str.length() + 1) * sizeof(wchar_t));
+  }
   DLOG(ERROR) << "Failed to create HSTRING" << std::hex << hr;
   return ScopedHString(nullptr);
 }
 
+// static
 ScopedHString ScopedHString::Create(StringPiece str) {
   return Create(UTF8ToWide(str));
-}
-
-ScopedHString::ScopedHString(HSTRING hstr) : ScopedGeneric(hstr) {
-  DCHECK(g_load_succeeded);
 }
 
 // static

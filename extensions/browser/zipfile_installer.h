@@ -17,10 +17,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
-
-namespace service_manager {
-class Connector;
-}
+#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace extensions {
 
@@ -38,9 +35,7 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
                                                const std::string& error)>;
 
   // Creates a ZipFileInstaller that invokes |done_callback| when done.
-  static scoped_refptr<ZipFileInstaller> Create(
-      service_manager::Connector* connector,
-      DoneCallback done_callback);
+  static scoped_refptr<ZipFileInstaller> Create(DoneCallback done_callback);
 
   // Creates a temporary directory and unzips the extension in it.
   void LoadFromZipFile(const base::FilePath& zip_file);
@@ -55,8 +50,7 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
   FRIEND_TEST_ALL_PREFIXES(ZipFileInstallerTest, Theme_FileExtractionFilter);
   FRIEND_TEST_ALL_PREFIXES(ZipFileInstallerTest, ManifestExtractionFilter);
 
-  ZipFileInstaller(service_manager::Connector* connector,
-                   DoneCallback done_callback);
+  explicit ZipFileInstaller(DoneCallback done_callback);
   ~ZipFileInstaller();
 
   void LoadFromZipFileImpl(const base::FilePath& zip_file,
@@ -67,9 +61,8 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
   void ManifestUnzipped(const base::FilePath& unzip_dir, bool success);
   void ManifestRead(const base::FilePath& unzip_dir,
                     base::Optional<std::string> manifest_content);
-  void ManifestParsingFailed(const std::string& error);
   void ManifestParsed(const base::FilePath& unzip_dir,
-                      std::unique_ptr<base::Value> manifest);
+                      data_decoder::DataDecoder::ValueOrError result);
   void UnzipDone(const base::FilePath& unzip_dir, bool success);
 
   // On failure, report the |error| reason.
@@ -87,9 +80,6 @@ class ZipFileInstaller : public base::RefCountedThreadSafe<ZipFileInstaller> {
 
   // File containing the extension to unzip.
   base::FilePath zip_file_;
-
-  // Connector to the ServiceManager. Bound to the UI thread.
-  service_manager::Connector* connector_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

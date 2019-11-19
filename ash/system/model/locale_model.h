@@ -5,10 +5,11 @@
 #ifndef ASH_SYSTEM_MODEL_LOCALE_MODEL_H_
 #define ASH_SYSTEM_MODEL_LOCALE_MODEL_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
-#include "ash/public/interfaces/system_tray.mojom.h"
+#include "ash/public/cpp/locale_update_controller.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
 
@@ -32,21 +33,19 @@ class LocaleModel {
 
   void RemoveObserver(Observer* observer);
 
-  void SetLocaleList(std::vector<mojom::LocaleInfoPtr> locale_list,
+  void SetLocaleList(std::vector<LocaleInfo> locale_list,
                      const std::string& current_locale_iso_code);
 
   bool ShouldShowCurrentLocaleInStatusArea() const;
 
-  const std::vector<mojom::LocaleInfoPtr>& locale_list() {
-    return locale_list_;
-  }
+  const std::vector<LocaleInfo>& locale_list() { return locale_list_; }
 
   std::string current_locale_iso_code() const {
     return current_locale_iso_code_;
   }
 
  private:
-  std::vector<mojom::LocaleInfoPtr> locale_list_;
+  std::vector<LocaleInfo> locale_list_;
 
   std::string current_locale_iso_code_;
 

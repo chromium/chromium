@@ -11,10 +11,12 @@
 #include "base/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/macros.h"
+#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/identity/identity_api.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/localized_string.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -24,17 +26,8 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/browser/extension_registry.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
-#include "ui/base/l10n/l10n_util.h"
 
 namespace {
-
-// Properties of the Javascript object representing a token.
-const char kExtensionId[] = "extensionId";
-const char kExtensionName[] = "extensionName";
-const char kScopes[] = "scopes";
-const char kStatus[] = "status";
-const char kTokenExpirationTime[] = "expirationTime";
-const char kAccessToken[] = "accessToken";
 
 // RevokeToken message parameter offsets.
 const int kRevokeTokenExtensionOffset = 0;
@@ -67,18 +60,17 @@ class IdentityInternalsUIMessageHandler : public content::WebUIMessageHandler {
   std::unique_ptr<base::ListValue> GetScopes(
       const extensions::ExtensionTokenKey& token_cache_key);
 
-  // Gets a localized status of the access token in |token_cache_value|.
-  const base::string16 GetStatus(
+  // Gets a status of the access token in |token_cache_value|.
+  std::string GetStatus(
       const extensions::IdentityTokenCacheValue& token_cache_value);
 
   // Gets a string representation of an expiration time of the access token in
   // |token_cache_value|.
-  const std::string GetExpirationTime(
+  base::string16 GetExpirationTime(
       const extensions::IdentityTokenCacheValue& token_cache_value);
 
   // Converts a pair of |token_cache_key| and |token_cache_value| to a
-  // DictionaryValue object with corresponding information in a localized and
-  // readable form and returns a pointer to created object.
+  // DictionaryValue object with corresponding information.
   std::unique_ptr<base::DictionaryValue> GetInfoForToken(
       const extensions::ExtensionTokenKey& token_cache_key,
       const extensions::IdentityTokenCacheValue& token_cache_value);
@@ -190,41 +182,37 @@ std::unique_ptr<base::ListValue> IdentityInternalsUIMessageHandler::GetScopes(
   return scopes_value;
 }
 
-const base::string16 IdentityInternalsUIMessageHandler::GetStatus(
+std::string IdentityInternalsUIMessageHandler::GetStatus(
     const extensions::IdentityTokenCacheValue& token_cache_value) {
   switch (token_cache_value.status()) {
     case extensions::IdentityTokenCacheValue::CACHE_STATUS_ADVICE:
       // Fallthrough to NOT FOUND case, as ADVICE is short lived.
     case extensions::IdentityTokenCacheValue::CACHE_STATUS_NOTFOUND:
-      return l10n_util::GetStringUTF16(
-          IDS_IDENTITY_INTERNALS_TOKEN_NOT_FOUND);
+      return "Not Found";
     case extensions::IdentityTokenCacheValue::CACHE_STATUS_TOKEN:
-      return l10n_util::GetStringUTF16(
-          IDS_IDENTITY_INTERNALS_TOKEN_PRESENT);
+      return "Token Present";
   }
   NOTREACHED();
-  return base::string16();
+  return std::string();
 }
 
-const std::string IdentityInternalsUIMessageHandler::GetExpirationTime(
+base::string16 IdentityInternalsUIMessageHandler::GetExpirationTime(
     const extensions::IdentityTokenCacheValue& token_cache_value) {
-  return base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(
-      token_cache_value.expiration_time()));
+  return base::TimeFormatFriendlyDateAndTime(
+      token_cache_value.expiration_time());
 }
 
 std::unique_ptr<base::DictionaryValue>
 IdentityInternalsUIMessageHandler::GetInfoForToken(
     const extensions::ExtensionTokenKey& token_cache_key,
     const extensions::IdentityTokenCacheValue& token_cache_value) {
-  std::unique_ptr<base::DictionaryValue> token_data(
-      new base::DictionaryValue());
-  token_data->SetString(kExtensionId, token_cache_key.extension_id);
-  token_data->SetString(kExtensionName, GetExtensionName(token_cache_key));
-  token_data->Set(kScopes, GetScopes(token_cache_key));
-  token_data->SetString(kStatus, GetStatus(token_cache_value));
-  token_data->SetString(kAccessToken, token_cache_value.token());
-  token_data->SetString(kTokenExpirationTime,
-                        GetExpirationTime(token_cache_value));
+  auto token_data = std::make_unique<base::DictionaryValue>();
+  token_data->SetString("extensionId", token_cache_key.extension_id);
+  token_data->SetString("extensionName", GetExtensionName(token_cache_key));
+  token_data->Set("scopes", GetScopes(token_cache_key));
+  token_data->SetString("status", GetStatus(token_cache_value));
+  token_data->SetString("accessToken", token_cache_value.token());
+  token_data->SetString("expirationTime", GetExpirationTime(token_cache_value));
   return token_data;
 }
 
@@ -295,26 +283,7 @@ IdentityInternalsUI::IdentityInternalsUI(content::WebUI* web_ui)
   : content::WebUIController(web_ui) {
   // chrome://identity-internals source.
   content::WebUIDataSource* html_source =
-    content::WebUIDataSource::Create(chrome::kChromeUIIdentityInternalsHost);
-
-  // Localized strings
-  html_source->AddLocalizedString("tokenCacheHeader",
-      IDS_IDENTITY_INTERNALS_TOKEN_CACHE_TEXT);
-  html_source->AddLocalizedString("accessToken",
-      IDS_IDENTITY_INTERNALS_ACCESS_TOKEN);
-  html_source->AddLocalizedString("extensionName",
-      IDS_IDENTITY_INTERNALS_EXTENSION_NAME);
-  html_source->AddLocalizedString("extensionId",
-      IDS_IDENTITY_INTERNALS_EXTENSION_ID);
-  html_source->AddLocalizedString("tokenStatus",
-      IDS_IDENTITY_INTERNALS_TOKEN_STATUS);
-  html_source->AddLocalizedString("expirationTime",
-      IDS_IDENTITY_INTERNALS_EXPIRATION_TIME);
-  html_source->AddLocalizedString("scopes",
-      IDS_IDENTITY_INTERNALS_SCOPES);
-  html_source->AddLocalizedString("revoke",
-      IDS_IDENTITY_INTERNALS_REVOKE);
-  html_source->SetJsonPath("strings.js");
+      content::WebUIDataSource::Create(chrome::kChromeUIIdentityInternalsHost);
 
   // Required resources
   html_source->AddResourcePath("identity_internals.css",

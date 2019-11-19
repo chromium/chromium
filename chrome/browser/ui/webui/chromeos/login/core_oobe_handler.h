@@ -9,18 +9,21 @@
 #include <string>
 #include <vector>
 
-#include "ash/public/interfaces/cros_display_config.mojom.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_mode_detector.h"
+#include "chrome/browser/chromeos/login/help_app_launcher.h"
 #include "chrome/browser/chromeos/login/oobe_configuration.h"
-#include "chrome/browser/chromeos/login/screens/core_oobe_view.h"
 #include "chrome/browser/chromeos/login/version_info_updater.h"
-#include "chrome/browser/ui/ash/tablet_mode_client_observer.h"
+#include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_webui_handler.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/events/event_source.h"
 
 namespace base {
@@ -34,14 +37,57 @@ class EventSink;
 
 namespace chromeos {
 
-class HelpAppLauncher;
+class CoreOobeView {
+ public:
+  // Enum that specifies how inner padding of OOBE dialog should be calculated.
+  enum class DialogPaddingMode {
+    // Oobe dialog is displayed full screen, padding will be calculated
+    // via css depending on media size.
+    MODE_AUTO,
+    // Oobe dialog have enough free space around and should use wide padding.
+    MODE_WIDE,
+    // Oobe dialog is positioned in limited space and should use narrow padding.
+    MODE_NARROW,
+  };
+
+  virtual ~CoreOobeView() {}
+
+  virtual void ShowSignInError(int login_attempts,
+                               const std::string& error_text,
+                               const std::string& help_link_text,
+                               HelpAppLauncher::HelpTopic help_topic_id) = 0;
+  virtual void ShowTpmError() = 0;
+  virtual void ShowSignInUI(const std::string& email) = 0;
+  virtual void ResetSignInUI(bool force_online) = 0;
+  virtual void ClearUserPodPassword() = 0;
+  virtual void RefocusCurrentPod() = 0;
+  virtual void ShowPasswordChangedScreen(bool show_password_error,
+                                         const std::string& email) = 0;
+  virtual void SetUsageStats(bool checked) = 0;
+  virtual void SetTpmPassword(const std::string& tmp_password) = 0;
+  virtual void ClearErrors() = 0;
+  virtual void ReloadContent(const base::DictionaryValue& dictionary) = 0;
+  virtual void ReloadEulaContent(const base::DictionaryValue& dictionary) = 0;
+  virtual void SetVirtualKeyboardShown(bool shown) = 0;
+  virtual void SetClientAreaSize(int width, int height) = 0;
+  virtual void SetShelfHeight(int height) = 0;
+  virtual void SetDialogPaddingMode(DialogPaddingMode mode) = 0;
+  virtual void ShowDeviceResetScreen() = 0;
+  virtual void ShowEnableAdbSideloadingScreen() = 0;
+  virtual void ShowEnableDebuggingScreen() = 0;
+  virtual void InitDemoModeDetection() = 0;
+  virtual void StopDemoModeDetection() = 0;
+  virtual void UpdateKeyboardState() = 0;
+  virtual void ShowActiveDirectoryPasswordChangeScreen(
+      const std::string& username) = 0;
+};
 
 // The core handler for Javascript messages related to the "oobe" view.
 class CoreOobeHandler : public BaseWebUIHandler,
                         public VersionInfoUpdater::Delegate,
                         public CoreOobeView,
                         public ui::EventSource,
-                        public TabletModeClientObserver,
+                        public ash::TabletModeObserver,
                         public OobeConfiguration::Observer {
  public:
   explicit CoreOobeHandler(JSCallsContainer* js_calls_container);
@@ -64,6 +110,7 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void OnEnterpriseInfoUpdated(const std::string& message_text,
                                const std::string& asset_id) override;
   void OnDeviceInfoUpdated(const std::string& bluetooth_name) override;
+  void OnAdbSideloadStatusUpdated(bool enabled) override {}
 
   // ui::EventSource implementation:
   ui::EventSink* GetEventSink() override;
@@ -104,10 +151,12 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void ClearErrors() override;
   void ReloadContent(const base::DictionaryValue& dictionary) override;
   void ReloadEulaContent(const base::DictionaryValue& dictionary) override;
-  void ShowControlBar(bool show) override;
   void SetVirtualKeyboardShown(bool displayed) override;
   void SetClientAreaSize(int width, int height) override;
+  void SetShelfHeight(int height) override;
+  void SetDialogPaddingMode(CoreOobeView::DialogPaddingMode mode) override;
   void ShowDeviceResetScreen() override;
+  void ShowEnableAdbSideloadingScreen() override;
   void ShowEnableDebuggingScreen() override;
   void ShowActiveDirectoryPasswordChangeScreen(
       const std::string& username) override;
@@ -116,8 +165,9 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void StopDemoModeDetection() override;
   void UpdateKeyboardState() override;
 
-  // TabletModeClientObserver:
-  void OnTabletModeToggled(bool enabled) override;
+  // ash::TabletModeObserver:
+  void OnTabletModeStarted() override;
+  void OnTabletModeEnded() override;
 
   // OobeConfiguration::Observer:
   void OnOobeConfigurationChanged() override;
@@ -134,13 +184,11 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void HandleSkipUpdateEnrollAfterEula();
   void HandleUpdateCurrentScreen(const std::string& screen);
   void HandleSetDeviceRequisition(const std::string& requisition);
-  void HandleScreenAssetsLoaded(const std::string& screen_async_load_id);
   void HandleSkipToLoginForTesting(const base::ListValue* args);
   void HandleSkipToUpdateForTesting();
   void HandleLaunchHelpApp(double help_topic_id);
   void HandleToggleResetScreen();
   void HandleEnableDebuggingScreen();
-  void HandleHeaderBarVisible();
   void HandleSetOobeBootstrappingSlave();
   void HandleGetPrimaryDisplayNameForTesting(const base::ListValue* args);
   void GetPrimaryDisplayNameCallback(
@@ -150,6 +198,12 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // Handles demo mode setup for tests. Accepts 'online' and 'offline' as
   // |demo_config|.
   void HandleStartDemoModeSetupForTesting(const std::string& demo_config);
+
+  // Shows the reset screen if |is_reset_allowed| and updates the
+  // tpm_firmware_update in settings.
+  void HandleToggleResetScreenCallback(
+      bool is_reset_allowed,
+      base::Optional<tpm_firmware_update::Mode> tpm_firmware_update_mode);
 
   // When keyboard_utils.js arrow key down event is reached, raise it
   // to tab/shift-tab event.
@@ -187,9 +241,9 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
   DemoModeDetector demo_mode_detector_;
 
-  ash::mojom::CrosDisplayConfigControllerPtr cros_display_config_ptr_;
+  mojo::Remote<ash::mojom::CrosDisplayConfigController> cros_display_config_;
 
-  base::WeakPtrFactory<CoreOobeHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<CoreOobeHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CoreOobeHandler);
 };

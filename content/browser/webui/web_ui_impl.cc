@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/bind_helpers.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_util.h"
@@ -149,15 +150,15 @@ void WebUIImpl::RenderFrameHostSwappingOut() {
   DisallowJavascriptOnAllHandlers();
 }
 
-WebContents* WebUIImpl::GetWebContents() const {
+WebContents* WebUIImpl::GetWebContents() {
   return web_contents_;
 }
 
-float WebUIImpl::GetDeviceScaleFactor() const {
+float WebUIImpl::GetDeviceScaleFactor() {
   return GetScaleFactorForView(web_contents_->GetRenderWidgetHostView());
 }
 
-const base::string16& WebUIImpl::GetOverriddenTitle() const {
+const base::string16& WebUIImpl::GetOverriddenTitle() {
   return overridden_title_;
 }
 
@@ -165,7 +166,7 @@ void WebUIImpl::OverrideTitle(const base::string16& title) {
   overridden_title_ = title;
 }
 
-int WebUIImpl::GetBindings() const {
+int WebUIImpl::GetBindings() {
   return bindings_;
 }
 
@@ -173,7 +174,7 @@ void WebUIImpl::SetBindings(int bindings) {
   bindings_ = bindings;
 }
 
-WebUIController* WebUIImpl::GetController() const {
+WebUIController* WebUIImpl::GetController() {
   return controller_.get();
 }
 
@@ -291,7 +292,8 @@ void WebUIImpl::ExecuteJavascript(const base::string16& javascript) {
   if (!CanCallJavascript())
     return;
 
-  web_contents_->GetMainFrame()->ExecuteJavaScript(javascript);
+  web_contents_->GetMainFrame()->ExecuteJavaScript(javascript,
+                                                   base::NullCallback());
 }
 
 void WebUIImpl::DisallowJavascriptOnAllHandlers() {

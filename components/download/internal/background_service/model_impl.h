@@ -64,7 +64,7 @@ class ModelImpl : public Model {
   // entries saved in Store.
   OwnedEntryMap entries_;
 
-  base::WeakPtrFactory<ModelImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ModelImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ModelImpl);
 };

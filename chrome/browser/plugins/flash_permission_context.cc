@@ -8,7 +8,6 @@
 #include "chrome/browser/permissions/permission_request_id.h"
 #include "chrome/browser/plugins/flash_temporary_permission_tracker.h"
 #include "chrome/browser/plugins/plugin_utils.h"
-#include "chrome/browser/plugins/plugins_field_trial.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/site_settings_helper.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -24,7 +23,7 @@ bool PluginsEnterpriseSettingEnabled(
     HostContentSettingsMap* host_content_settings_map) {
   std::string provider_id;
   host_content_settings_map->GetDefaultContentSetting(
-      CONTENT_SETTINGS_TYPE_PLUGINS, &provider_id);
+      ContentSettingsType::PLUGINS, &provider_id);
   return HostContentSettingsMap::GetProviderTypeFromSource(provider_id) ==
          HostContentSettingsMap::POLICY_PROVIDER;
 }
@@ -33,7 +32,7 @@ bool PluginsEnterpriseSettingEnabled(
 
 FlashPermissionContext::FlashPermissionContext(Profile* profile)
     : PermissionContextBase(profile,
-                            CONTENT_SETTINGS_TYPE_PLUGINS,
+                            ContentSettingsType::PLUGINS,
                             blink::mojom::FeaturePolicyFeature::kNotFound) {}
 
 FlashPermissionContext::~FlashPermissionContext() {}
@@ -47,8 +46,6 @@ ContentSetting FlashPermissionContext::GetPermissionStatusInternal(
   ContentSetting flash_setting = PluginUtils::GetFlashPluginContentSetting(
       host_content_settings_map, url::Origin::Create(embedding_origin),
       requesting_origin, nullptr);
-  flash_setting = PluginsFieldTrial::EffectiveContentSetting(
-      host_content_settings_map, content_settings_type(), flash_setting);
   if (flash_setting == CONTENT_SETTING_DETECT_IMPORTANT_CONTENT)
     return CONTENT_SETTING_ASK;
   return flash_setting;

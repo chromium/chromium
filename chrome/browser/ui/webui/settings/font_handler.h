@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 
 namespace base {
@@ -24,7 +25,6 @@ class WebUI;
 
 namespace extensions {
 class Extension;
-class ExtensionRegistry;
 }
 
 class Profile;
@@ -71,11 +71,11 @@ class FontHandler : public SettingsPageUIHandler,
 
   ScopedObserver<extensions::ExtensionRegistry,
                  extensions::ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   Profile* profile_;  // Weak pointer.
 
-  base::WeakPtrFactory<FontHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<FontHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FontHandler);
 };

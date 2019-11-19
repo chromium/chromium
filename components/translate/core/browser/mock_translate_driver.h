@@ -6,6 +6,7 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_MOCK_TRANSLATE_DRIVER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/macros.h"
 #include "components/translate/core/browser/language_state.h"
@@ -38,6 +39,7 @@ class MockTranslateDriver : public TranslateDriver {
   const std::string& GetContentsMimeType() override;
   const GURL& GetLastCommittedURL() override;
   const GURL& GetVisibleURL() override;
+  ukm::SourceId GetUkmSourceId() override;
   bool HasCurrentPage() override;
   void OpenUrlInNewTab(const GURL& url) override {}
 

@@ -22,6 +22,7 @@
 
 #if defined(OS_CHROMEOS)
 #include "chromeos/audio/cras_audio_handler.h"
+#include "chromeos/dbus/audio/cras_audio_client.h"
 #endif
 
 namespace content {
@@ -134,7 +135,8 @@ OutOfProcessPPAPITest::OutOfProcessPPAPITest() {
 
 void OutOfProcessPPAPITest::SetUp() {
 #if defined(OS_CHROMEOS)
-    chromeos::CrasAudioHandler::InitializeForTesting();
+  chromeos::CrasAudioClient::InitializeFake();
+  chromeos::CrasAudioHandler::InitializeForTesting();
 #endif
   ContentBrowserTest::SetUp();
 }
@@ -142,7 +144,8 @@ void OutOfProcessPPAPITest::SetUp() {
 void OutOfProcessPPAPITest::TearDown() {
   ContentBrowserTest::TearDown();
 #if defined(OS_CHROMEOS)
-    chromeos::CrasAudioHandler::Shutdown();
+  chromeos::CrasAudioHandler::Shutdown();
+  chromeos::CrasAudioClient::Shutdown();
 #endif
 }
 

@@ -24,6 +24,7 @@ using offline_pages::TaskTestBase;
 
 namespace explore_sites {
 namespace {
+using InitializationStatus = ExploreSitesStore::InitializationStatus;
 
 void ValidateTestingCatalog(GetCatalogTask::CategoryList* catalog) {
   EXPECT_FALSE(catalog == nullptr);
@@ -271,7 +272,8 @@ void ExploreSitesGetCatalogTaskTest::BlacklistSite(std::string url) {
 }
 
 TEST_F(ExploreSitesGetCatalogTaskTest, StoreFailure) {
-  store()->SetInitializationStatusForTest(InitializationStatus::FAILURE);
+  store()->SetInitializationStatusForTesting(InitializationStatus::kFailure,
+                                             false);
 
   GetCatalogTask task(store(), false,
                       base::BindOnce(&ExpectFailedGetCatalogResult));

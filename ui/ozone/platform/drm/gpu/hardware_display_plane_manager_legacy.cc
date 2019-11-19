@@ -6,6 +6,8 @@
 
 #include <errno.h>
 #include <sync/sync.h>
+#include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/posix/eintr_wrapper.h"
@@ -119,10 +121,11 @@ bool HardwareDisplayPlaneManagerLegacy::ValidatePrimarySize(
 void HardwareDisplayPlaneManagerLegacy::RequestPlanesReadyCallback(
     DrmOverlayPlaneList planes,
     base::OnceCallback<void(DrmOverlayPlaneList planes)> callback) {
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&WaitForPlaneFences, base::Passed(&planes)),
+      {base::ThreadPool(), base::MayBlock(),
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&WaitForPlaneFences, std::move(planes)),
       std::move(callback));
 }
 

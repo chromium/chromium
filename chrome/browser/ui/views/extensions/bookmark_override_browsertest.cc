@@ -49,7 +49,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkOverrideTest, DISABLED_NonOverrideStarClick) {
   // Check that the BookmarkBubbleView is shown when clicking on the star.
   BrowserView* browser_view = reinterpret_cast<BrowserView*>(
       browser()->window());
-  views::View* star_view = browser_view->toolbar()->location_bar()->star_view();
+  views::View* star_view =
+      browser_view->toolbar_button_provider()->GetPageActionIconView(
+          PageActionIconType::kBookmarkStar);
 
   ui::MouseEvent pressed_event(
       ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
@@ -66,11 +68,11 @@ IN_PROC_BROWSER_TEST_F(BookmarkOverrideTest, DISABLED_NonOverrideStarClick) {
   EXPECT_TRUE(BookmarkBubbleView::bookmark_bubble());
 }
 
-// Test that invoking the IDC_BOOKMARK_PAGE command (as done by the app menu)
-// brings up the bookmark UI, if no extension requests to override ctrl-D and
-// the user has assigned it to an extension.
-// Flaky on all platforms: https://crbug.com/448956.
-IN_PROC_BROWSER_TEST_F(BookmarkOverrideTest, DISABLED_NonOverrideBookmarkPage) {
+// Test that invoking the IDC_BOOKMARK_THIS_TAB command (as done by the app
+// menu) brings up the bookmark UI, if no extension requests to override ctrl-D
+// and the user has assigned it to an extension. Flaky on all platforms:
+// https://crbug.com/448956.
+IN_PROC_BROWSER_TEST_F(BookmarkOverrideTest, DISABLED_NonOverrideBookmarkTab) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(RunExtensionTest("keybinding/basics")) << message_;
   const extensions::Extension* extension = GetSingleLoadedExtension();
@@ -84,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkOverrideTest, DISABLED_NonOverrideBookmarkPage) {
       kBookmarkKeybinding);
 
   // Check that the BookmarkBubbleView is shown when executing
-  // IDC_BOOKMARK_PAGE.
+  // IDC_BOOKMARK_THIS_TAB.
   EXPECT_FALSE(BookmarkBubbleView::bookmark_bubble());
-  chrome::ExecuteCommand(browser(), IDC_BOOKMARK_PAGE);
+  chrome::ExecuteCommand(browser(), IDC_BOOKMARK_THIS_TAB);
   EXPECT_TRUE(BookmarkBubbleView::bookmark_bubble());
 }

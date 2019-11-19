@@ -5,11 +5,12 @@
 #ifndef IOS_WEB_PUBLIC_TEST_NATIVE_CONTROLLER_TEST_UTIL_H_
 #define IOS_WEB_PUBLIC_TEST_NATIVE_CONTROLLER_TEST_UTIL_H_
 
-#import "ios/web/public/web_state/web_state.h"
-
 @protocol CRWNativeContent;
 
 namespace web {
+
+class WebState;
+
 namespace test {
 
 // Returns the native controller of the given |web_state|.

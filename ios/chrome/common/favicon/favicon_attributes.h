@@ -24,6 +24,8 @@
 // no image.
 @property(nonatomic, readonly, assign, getter=isDefaultBackgroundColor)
     BOOL defaultBackgroundColor;
+// Whether the attributes are using the default image.
+@property(nonatomic, readonly, assign) BOOL usesDefaultImage;
 
 + (nullable instancetype)attributesWithImage:(nonnull UIImage*)image;
 + (nullable instancetype)attributesWithMonogram:(nonnull NSString*)monogram
@@ -31,6 +33,9 @@
                                 backgroundColor:
                                     (nonnull UIColor*)backgroundColor
                          defaultBackgroundColor:(BOOL)defaultBackgroundColor;
+
+// Returns attributes with a placeholder favicon image and no monogram.
++ (nullable instancetype)attributesWithDefaultImage;
 
 - (nullable instancetype)init NS_UNAVAILABLE;
 

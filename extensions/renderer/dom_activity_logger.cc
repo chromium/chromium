@@ -47,7 +47,7 @@ DOMActivityLogger::DOMActivityLogger(const std::string& extension_id)
 
 DOMActivityLogger::~DOMActivityLogger() {}
 
-void DOMActivityLogger::AttachToWorld(int world_id,
+void DOMActivityLogger::AttachToWorld(int32_t world_id,
                                       const std::string& extension_id) {
   // If there is no logger registered for world_id, construct a new logger
   // and register it with world_id.

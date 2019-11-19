@@ -14,11 +14,16 @@
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "net/http/http_status_code.h"
-#include "remoting/ios/facade/host_info.h"
+#include "remoting/proto/remoting/v1/directory_messages.pb.h"
+
+namespace grpc {
+class Status;
+}  // namespace grpc
 
 namespace remoting {
 
-class HostListFetcher;
+class DirectoryClient;
+class OAuthTokenGetter;
 
 // |HostListService| is the centralized place to retrieve the current signed in
 // user's host list.
@@ -36,13 +41,11 @@ class HostListService {
   enum class FetchFailureReason {
     NETWORK_ERROR,
     AUTH_ERROR,
-    REQUEST_ERROR,
+    UNKNOWN_ERROR,
   };
 
   struct FetchFailureInfo {
     FetchFailureReason reason;
-    // error_code is only used if the reason is |REQUEST_ERROR|.
-    int error_code;
     std::string localized_description;
   };
 
@@ -67,7 +70,7 @@ class HostListService {
 
   // Returns the host list. Returns an empty vector if the host list state is
   // not |FETCHED|.
-  const std::vector<remoting::HostInfo>& hosts() const { return hosts_; }
+  const std::vector<apis::v1::HostInfo>& hosts() const { return hosts_; }
 
   State state() const { return state_; }
 
@@ -77,26 +80,23 @@ class HostListService {
     return last_fetch_failure_.get();
   }
 
-  // Allow creating instace for each test so that states don't get carried over.
-  static std::unique_ptr<HostListService> CreateInstanceForTesting();
-
-  void SetHostListFetcherForTesting(std::unique_ptr<HostListFetcher> fetcher);
-
  private:
   friend class base::NoDestructor<HostListService>;
-  friend std::unique_ptr<HostListService> std::make_unique<HostListService>();
+  friend class HostListServiceTest;
 
   HostListService();
+
+  // For test.
+  explicit HostListService(std::unique_ptr<DirectoryClient> directory_client);
+
+  void Init();
 
   // Changes the host list state and notifies callbacks.
   void SetState(State state);
 
-  void StartHostListFetch(const std::string& access_token);
-
-  void HandleHostListResult(int responseCode,
-                            const std::vector<remoting::HostInfo>& hostlist);
-
-  void HandleFetchFailure(FetchFailureReason reason, int error_code);
+  void HandleHostListResult(const grpc::Status& status,
+                            const apis::v1::GetHostListResponse& response);
+  void HandleFetchFailure(const grpc::Status& status);
 
   void OnUserUpdated(bool is_user_signed_in);
 
@@ -105,9 +105,10 @@ class HostListService {
   base::CallbackList<void()> host_list_state_callbacks_;
   base::CallbackList<void()> fetch_failure_callbacks_;
 
-  std::unique_ptr<HostListFetcher> host_list_fetcher_;
+  std::unique_ptr<OAuthTokenGetter> token_getter_;
+  std::unique_ptr<DirectoryClient> directory_client_;
 
-  std::vector<remoting::HostInfo> hosts_;
+  std::vector<apis::v1::HostInfo> hosts_;
   State state_ = State::NOT_FETCHED;
   std::unique_ptr<FetchFailureInfo> last_fetch_failure_;
 

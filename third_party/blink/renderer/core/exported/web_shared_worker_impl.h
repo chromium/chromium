@@ -37,138 +37,76 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "services/service_manager/public/mojom/interface_provider.mojom-blink.h"
-#include "third_party/blink/public/common/privacy_preferences.h"
-#include "third_party/blink/public/mojom/csp/content_security_policy.mojom-blink.h"
-#include "third_party/blink/public/mojom/net/ip_address_space.mojom-shared.h"
-#include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom-blink.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
+#include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_shared_worker_client.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/exported/worker_shadow_page.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 
-namespace base {
-class SingleThreadTaskRunner;
-}
-
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 namespace blink {
 
-class WebApplicationCacheHost;
-class WebApplicationCacheHostClient;
+class SharedWorkerThread;
 class WebSharedWorkerClient;
 class WebString;
 class WebURL;
-class WorkerClassicScriptLoader;
 
 // This class is used by the worker process code to talk to the SharedWorker
 // implementation. This is basically accessed on the main thread, but some
 // methods must be called from a worker thread. Such methods are suffixed with
 // *OnWorkerThread or have header comments.
 //
-// Owned by WebSharedWorkerClient.
-class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker,
-                                              public WorkerShadowPage::Client {
+// Owned by WebSharedWorkerClient. Destroyed in TerminateWorkerThread() or
+// DidTerminateWorkerThread() via
+// WebSharedWorkerClient::WorkerContextDestroyed().
+class CORE_EXPORT WebSharedWorkerImpl final : public WebSharedWorker {
  public:
   explicit WebSharedWorkerImpl(WebSharedWorkerClient*);
   ~WebSharedWorkerImpl() override;
-
-  // WorkerShadowPage::Client overrides.
-  std::unique_ptr<WebApplicationCacheHost> CreateApplicationCacheHost(
-      WebApplicationCacheHostClient*) override;
-  void OnShadowPageInitialized() override;
-
-  // WebDevToolsAgentImpl::Client overrides.
-  void ResumeStartup() override;
-  const base::UnguessableToken& GetDevToolsWorkerToken() override;
 
   // WebSharedWorker methods:
   void StartWorkerContext(
       const WebURL&,
       const WebString& name,
+      const WebString& user_agent,
       const WebString& content_security_policy,
-      mojom::ContentSecurityPolicyType,
-      mojom::IPAddressSpace,
+      network::mojom::ContentSecurityPolicyType,
+      network::mojom::IPAddressSpace,
+      const base::UnguessableToken& appcache_host_id,
       const base::UnguessableToken& devtools_worker_token,
-      PrivacyPreferences privacy_preferences,
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       mojo::ScopedMessagePipeHandle content_settings_handle,
-      mojo::ScopedMessagePipeHandle interface_provider) override;
+      mojo::ScopedMessagePipeHandle interface_provider,
+      mojo::ScopedMessagePipeHandle browser_interface_broker,
+      bool pause_worker_context_on_start) override;
   void Connect(MessagePortChannel) override;
   void TerminateWorkerContext() override;
-  void PauseWorkerContextOnStart() override;
-  void BindDevToolsAgent(
-      mojo::ScopedInterfaceEndpointHandle devtools_agent_host_ptr_info,
-      mojo::ScopedInterfaceEndpointHandle devtools_agent_request) override;
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override;
 
   // Callback methods for SharedWorkerReportingProxy.
   void CountFeature(WebFeature);
-  void DidFetchScript();
   void DidFailToFetchClassicScript();
   void DidEvaluateClassicScript(bool success);
   void DidCloseWorkerGlobalScope();
+  // This synchronously destroys |this|.
   void DidTerminateWorkerThread();
 
  private:
-  WorkerThread* GetWorkerThread() { return worker_thread_.get(); }
+  SharedWorkerThread* GetWorkerThread() { return worker_thread_.get(); }
 
-  // Shuts down the worker thread.
+  // Shuts down the worker thread. This may synchronously destroy |this|.
   void TerminateWorkerThread();
-
-  void DidReceiveScriptLoaderResponse();
-  void OnScriptLoaderFinished();
-  void ContinueStartWorkerContext();
-  void StartWorkerThread(
-      std::unique_ptr<GlobalScopeCreationParams>,
-      const KURL& script_response_url,
-      const String& source_code,
-      const FetchClientSettingsObjectSnapshot& outside_settings_object);
-  WorkerClients* CreateWorkerClients();
 
   void ConnectTaskOnWorkerThread(MessagePortChannel);
 
-  std::unique_ptr<WorkerShadowPage> shadow_page_;
-  // Unique worker token used by DevTools to attribute different instrumentation
-  // to the same worker.
-  base::UnguessableToken devtools_worker_token_;
-
   Persistent<SharedWorkerReportingProxy> reporting_proxy_;
-  std::unique_ptr<WorkerThread> worker_thread_;
-  mojom::blink::WorkerContentSettingsProxyPtrInfo content_settings_info_;
+  std::unique_ptr<SharedWorkerThread> worker_thread_;
 
   // |client_| owns |this|.
   WebSharedWorkerClient* client_;
 
   bool asked_to_terminate_ = false;
-  bool pause_worker_context_on_start_ = false;
-  bool is_paused_on_start_ = false;
 
-  // Kept around only while main script loading is ongoing.
-  Persistent<WorkerClassicScriptLoader> main_script_loader_;
-
-  WebURL script_request_url_;
-  WebString name_;
-  mojom::IPAddressSpace creation_address_space_;
-
-  service_manager::mojom::blink::InterfaceProviderPtrInfo
-      pending_interface_provider_;
-
-  // SharedWorker can sometimes run tasks that are initiated by/associated with
-  // a document's frame but these documents can be from a different process. So
-  // we intentionally populate the task runners with default task runners of the
-  // main thread. Note that |shadow_page_| should not be used as it's a dummy
-  // document for loading that doesn't represent the frame of any associated
-  // document.
-  Persistent<ParentExecutionContextTaskRunners>
-      parent_execution_context_task_runners_;
-
-  base::WeakPtrFactory<WebSharedWorkerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<WebSharedWorkerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace blink

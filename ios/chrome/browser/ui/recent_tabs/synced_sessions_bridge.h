@@ -11,13 +11,13 @@
 
 #include "base/callback_list.h"
 #include "base/macros.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace ios {
 class ChromeBrowserState;
 }
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -30,13 +30,12 @@ namespace synced_sessions {
 
 // Bridge class that will notify the panel when the remote sessions content
 // change.
-class SyncedSessionsObserverBridge
-    : public identity::IdentityManager::Observer {
+class SyncedSessionsObserverBridge : public signin::IdentityManager::Observer {
  public:
   SyncedSessionsObserverBridge(id<SyncedSessionsObserver> owner,
                                ios::ChromeBrowserState* browserState);
   ~SyncedSessionsObserverBridge() override;
-  // identity::IdentityManager::Observer implementation.
+  // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountCleared(
       const CoreAccountInfo& previous_primary_account_info) override;
 
@@ -47,8 +46,8 @@ class SyncedSessionsObserverBridge
   void OnForeignSessionChanged();
 
   __weak id<SyncedSessionsObserver> owner_ = nil;
-  identity::IdentityManager* identity_manager_ = nullptr;
-  ScopedObserver<identity::IdentityManager, identity::IdentityManager::Observer>
+  signin::IdentityManager* identity_manager_ = nullptr;
+  ScopedObserver<signin::IdentityManager, signin::IdentityManager::Observer>
       identity_manager_observer_;
   std::unique_ptr<base::CallbackList<void()>::Subscription>
       foreign_session_updated_subscription_;

@@ -64,14 +64,16 @@ NetworkCertificateHandler::~NetworkCertificateHandler() {
   NetworkCertLoader::Get()->RemoveObserver(this);
 }
 
-void NetworkCertificateHandler::AddObserver(
-    NetworkCertificateHandler::Observer* observer) {
+void NetworkCertificateHandler::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
 
-void NetworkCertificateHandler::RemoveObserver(
-    NetworkCertificateHandler::Observer* observer) {
+void NetworkCertificateHandler::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
+}
+
+bool NetworkCertificateHandler::HasObserver(Observer* observer) {
+  return observer_list_.HasObserver(observer);
 }
 
 void NetworkCertificateHandler::AddAuthorityCertificateForTest(

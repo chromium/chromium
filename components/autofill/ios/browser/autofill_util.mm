@@ -18,17 +18,16 @@
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "components/autofill/ios/browser/autofill_switches.h"
-#import "ios/web/public/navigation_item.h"
-#import "ios/web/public/navigation_manager.h"
-#include "ios/web/public/ssl_status.h"
-#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
+#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#include "ios/web/public/security/ssl_status.h"
+#import "ios/web/public/web_state.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace {
 // The timeout for any JavaScript call in this file.
-// It is only used if IsAutofillIFrameMessagingEnabled is enabled.
 const int64_t kJavaScriptExecutionTimeoutInSeconds = 5;
 }
 
@@ -46,8 +45,7 @@ bool IsContextSecureForWebState(web::WebState* web_state) {
 
   const web::SSLStatus& ssl = nav_item->GetSSL();
   return nav_item->GetURL().SchemeIsCryptographic() && ssl.certificate &&
-         (!net::IsCertStatusError(ssl.cert_status) ||
-          net::IsCertStatusMinorError(ssl.cert_status));
+         !net::IsCertStatusError(ssl.cert_status);
 }
 
 std::unique_ptr<base::Value> ParseJson(NSString* json_string) {
@@ -115,8 +113,8 @@ bool ExtractFormData(const base::Value& form_value,
     return false;
 
   // Use GURL object to verify origin of host frame URL.
-  form_data->origin = GURL(origin);
-  if (form_data->origin.GetOrigin() != form_frame_origin)
+  form_data->url = GURL(origin);
+  if (form_data->url.GetOrigin() != form_frame_origin)
     return false;
 
   // main_frame_origin is used for logging UKM.
@@ -180,12 +178,12 @@ bool ExtractFormFieldData(const base::DictionaryValue& field,
   field.GetBoolean("is_focusable", &field_data->is_focusable);
   field.GetBoolean("should_autocomplete", &field_data->should_autocomplete);
 
-  // ROLE_ATTRIBUTE_OTHER is the default value. The only other value as of this
-  // writing is ROLE_ATTRIBUTE_PRESENTATION.
+  // RoleAttribute::kOther is the default value. The only other value as of this
+  // writing is RoleAttribute::kPresentation.
   int role = 0;
   if (field.GetInteger("role", &role) &&
-      role == autofill::AutofillField::ROLE_ATTRIBUTE_PRESENTATION) {
-    field_data->role = autofill::AutofillField::ROLE_ATTRIBUTE_PRESENTATION;
+      role == static_cast<int>(FormFieldData::RoleAttribute::kPresentation)) {
+    field_data->role = FormFieldData::RoleAttribute::kPresentation;
   }
 
   // TODO(crbug.com/427614): Extract |text_direction|.
@@ -218,72 +216,30 @@ void ExecuteJavaScriptFunction(const std::string& name,
                                web::WebFrame* frame,
                                CRWJSInjectionReceiver* js_injection_receiver,
                                base::OnceCallback<void(NSString*)> callback) {
-  if (autofill::switches::IsAutofillIFrameMessagingEnabled()) {
-    ExecuteJavaScriptFunctionInWebFrame(name, parameters, frame,
-                                        std::move(callback));
-  } else {
-    ExecuteJavaScriptFunctionInWebState(name, parameters, js_injection_receiver,
-                                        std::move(callback));
-  }
-}
-
-void ExecuteJavaScriptFunctionInWebFrame(
-    const std::string& name,
-    const std::vector<base::Value>& parameters,
-    web::WebFrame* frame,
-    base::OnceCallback<void(NSString*)> cb) {
-  __block base::OnceCallback<void(NSString*)> callback = std::move(cb);
+  __block base::OnceCallback<void(NSString*)> cb = std::move(callback);
 
   if (!frame) {
-    if (!callback.is_null()) {
-      std::move(callback).Run(nil);
+    if (!cb.is_null()) {
+      std::move(cb).Run(nil);
     }
     return;
   }
   DCHECK(frame->CanCallJavaScriptFunction());
-  if (!callback.is_null()) {
+  if (!cb.is_null()) {
     bool called = frame->CallJavaScriptFunction(
         name, parameters, base::BindOnce(^(const base::Value* res) {
           NSString* result = nil;
           if (res && res->is_string()) {
             result = base::SysUTF8ToNSString(res->GetString());
           }
-          std::move(callback).Run(result);
+          std::move(cb).Run(result);
         }),
         base::TimeDelta::FromSeconds(kJavaScriptExecutionTimeoutInSeconds));
     if (!called) {
-      std::move(callback).Run(nil);
+      std::move(cb).Run(nil);
     }
   } else {
     frame->CallJavaScriptFunction(name, parameters);
-  }
-}
-
-void ExecuteJavaScriptFunctionInWebState(
-    const std::string& name,
-    const std::vector<base::Value>& parameters,
-    CRWJSInjectionReceiver* js_injection_receiver,
-    base::OnceCallback<void(NSString*)> cb) {
-  __block base::OnceCallback<void(NSString*)> callback = std::move(cb);
-
-  std::string function_name = "__gCrWeb." + name;
-  NSMutableArray* json_parameters = [[NSMutableArray alloc] init];
-  for (auto& value : parameters) {
-    std::string dataString;
-    base::JSONWriter::Write(value, &dataString);
-    [json_parameters addObject:base::SysUTF8ToNSString(dataString)];
-  }
-  NSString* command = [NSString
-      stringWithFormat:@"%s(%@);", function_name.c_str(),
-                       [json_parameters componentsJoinedByString:@", "]];
-  if (!callback.is_null()) {
-    [js_injection_receiver
-        executeJavaScript:command
-        completionHandler:^(id result, NSError* error) {
-          std::move(callback).Run(base::mac::ObjCCastStrict<NSString>(result));
-        }];
-  } else {
-    [js_injection_receiver executeJavaScript:command completionHandler:nil];
   }
 }
 

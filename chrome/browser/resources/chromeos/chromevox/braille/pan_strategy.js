@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Logic for panning a braille display within a line of braille
+/**
+ * @fileoverview Logic for panning a braille display within a line of braille
  * content that might not fit on a single display.
  */
 
-goog.provide('cvox.PanStrategy');
+goog.provide('PanStrategy');
 
 /**
  * @constructor
@@ -14,7 +15,7 @@ goog.provide('cvox.PanStrategy');
  * A stateful class that keeps track of the current 'viewport' of a braille
  * display in a line of content.
  */
-cvox.PanStrategy = function() {
+PanStrategy = function() {
   /**
    * @type {{rows: number, columns: number}}
    * @private
@@ -23,7 +24,7 @@ cvox.PanStrategy = function() {
 
   /**
    * Start and end are both inclusive.
-   * @type {!cvox.PanStrategy.Range}
+   * @type {!PanStrategy.Range}
    * @private
    */
   this.viewPort_ = {firstRow: 0, lastRow: 0};
@@ -87,14 +88,14 @@ cvox.PanStrategy = function() {
  * end position.
  * @typedef {{firstRow: number, lastRow: number}}
  */
-cvox.PanStrategy.Range;
+PanStrategy.Range;
 
-cvox.PanStrategy.prototype = {
+PanStrategy.prototype = {
   /**
    * Gets the current viewport which is never larger than the current
    * display size and whose end points are always within the limits of
    * the current content.
-   * @type {!cvox.PanStrategy.Range}
+   * @type {!PanStrategy.Range}
    */
   get viewPort() {
     return this.viewPort_;
@@ -140,10 +141,11 @@ cvox.PanStrategy.prototype = {
    *    corresponding text character.
    */
   get brailleToText() {
-    if (this.panStrategyWrapped_)
+    if (this.panStrategyWrapped_) {
       return this.wrappedBrailleToText_;
-    else
+    } else {
       return this.fixedBrailleToText_;
+    }
   },
 
   /**
@@ -171,9 +173,9 @@ cvox.PanStrategy.prototype = {
       while (startIndex < endIndex) {
         var value = dataView.getUint8(startIndex);
         if (opt_showCursor) {
-          value |= cvox.BrailleDisplayManager.CURSOR_DOTS;
+          value |= BrailleDisplayManager.CURSOR_DOTS;
         } else {
-          value &= ~cvox.BrailleDisplayManager.CURSOR_DOTS;
+          value &= ~BrailleDisplayManager.CURSOR_DOTS;
         }
         dataView.setUint8(startIndex, value);
         startIndex++;
@@ -342,10 +344,11 @@ cvox.PanStrategy.prototype = {
     if (this.cursor_.start != unwrappedIndex &&
         this.cursor_.end != unwrappedIndex)
       return;
-    if (this.cursor_.start == unwrappedIndex)
+    if (this.cursor_.start == unwrappedIndex) {
       this.wrappedCursor_.start = wrappedIndex;
-    else if (this.cursor_.end == unwrappedIndex)
+    } else if (this.cursor_.end == unwrappedIndex) {
       this.wrappedCursor_.end = wrappedIndex;
+    }
   },
 
   /**

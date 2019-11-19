@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/public/cpp/session/session_activation_observer.h"
+#include "base/logging.h"
 #include "base/stl_util.h"
 
 namespace ash {
@@ -14,15 +16,26 @@ SessionActivationObserverHolder::SessionActivationObserverHolder() = default;
 
 SessionActivationObserverHolder::~SessionActivationObserverHolder() = default;
 
-void SessionActivationObserverHolder ::AddSessionActivationObserverForAccountId(
+void SessionActivationObserverHolder::AddForAccountId(
     const AccountId& account_id,
-    mojom::SessionActivationObserverPtr observer) {
+    SessionActivationObserver* observer) {
   if (!account_id.is_valid())
     return;
   auto& observers = observer_map_[account_id];
   if (!observers)
-    observers = std::make_unique<ObserverSet>();
-  observers->AddPtr(std::move(observer));
+    observers = std::make_unique<Observers>();
+  observers->AddObserver(observer);
+}
+
+void SessionActivationObserverHolder::RemoveForAccountId(
+    const AccountId& account_id,
+    SessionActivationObserver* observer) {
+  auto it = observer_map_.find(account_id);
+  if (it == observer_map_.end()) {
+    NOTREACHED();
+    return;
+  }
+  it->second->RemoveObserver(observer);
 }
 
 void SessionActivationObserverHolder::NotifyActiveSessionChanged(
@@ -30,24 +43,32 @@ void SessionActivationObserverHolder::NotifyActiveSessionChanged(
     const AccountId& to) {
   auto it = observer_map_.find(from);
   if (it != observer_map_.end()) {
-    it->second->ForAllPtrs([](auto* ptr) { ptr->OnSessionActivated(false); });
+    for (auto& observer : *it->second)
+      observer.OnSessionActivated(false);
   }
 
   it = observer_map_.find(to);
   if (it != observer_map_.end()) {
-    it->second->ForAllPtrs([](auto* ptr) { ptr->OnSessionActivated(true); });
+    for (auto& observer : *it->second)
+      observer.OnSessionActivated(true);
   }
 
-  base::EraseIf(observer_map_, [](auto& item) { return item.second->empty(); });
+  PruneObserverMap();
 }
 
 void SessionActivationObserverHolder::NotifyLockStateChanged(bool locked) {
   for (const auto& it : observer_map_) {
-    it.second->ForAllPtrs(
-        [locked](auto* ptr) { ptr->OnLockStateChanged(locked); });
+    for (auto& observer : *it.second)
+      observer.OnLockStateChanged(locked);
   }
 
-  base::EraseIf(observer_map_, [](auto& item) { return item.second->empty(); });
+  PruneObserverMap();
+}
+
+void SessionActivationObserverHolder::PruneObserverMap() {
+  base::EraseIf(observer_map_, [](auto& item) {
+    return !item.second->might_have_observers();
+  });
 }
 
 }  // namespace ash

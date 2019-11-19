@@ -19,7 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "client/crashpad_info.h"
 #include "client/simple_address_range_bag.h"
-#include "snapshot/win/memory_snapshot_win.h"
+#include "snapshot/memory_snapshot_generic.h"
 #include "snapshot/win/pe_image_annotations_reader.h"
 #include "snapshot/win/pe_image_reader.h"
 #include "util/misc/tri_state.h"
@@ -44,8 +44,7 @@ ModuleSnapshotWin::ModuleSnapshotWin()
       age_(0),
       initialized_() {}
 
-ModuleSnapshotWin::~ModuleSnapshotWin() {
-}
+ModuleSnapshotWin::~ModuleSnapshotWin() {}
 
 bool ModuleSnapshotWin::Initialize(
     ProcessReaderWin* process_reader,
@@ -195,6 +194,11 @@ std::string ModuleSnapshotWin::DebugFileName() const {
   return pdb_name_;
 }
 
+std::vector<uint8_t> ModuleSnapshotWin::BuildID() const {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  return std::vector<uint8_t>();
+}
+
 std::vector<std::string> ModuleSnapshotWin::AnnotationsVector() const {
   INITIALIZATION_STATE_DCHECK_VALID(initialized_);
   // These correspond to system-logged things on Mac. We don't currently track
@@ -323,10 +327,10 @@ void ModuleSnapshotWin::GetCrashpadUserMinidumpStreams(
     }
 
     if (list_entry.size != 0) {
-      std::unique_ptr<internal::MemorySnapshotWin> memory(
-          new internal::MemorySnapshotWin());
+      std::unique_ptr<internal::MemorySnapshotGeneric> memory(
+          new internal::MemorySnapshotGeneric());
       memory->Initialize(
-          process_reader_, list_entry.base_address, list_entry.size);
+          process_reader_->Memory(), list_entry.base_address, list_entry.size);
       streams->push_back(std::make_unique<UserMinidumpStream>(
           list_entry.stream_type, memory.release()));
     }

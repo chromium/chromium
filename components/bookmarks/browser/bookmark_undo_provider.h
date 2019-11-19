@@ -17,7 +17,7 @@ class BookmarkUndoProvider {
   // Restores the previously removed |node| at |parent| in the specified
   // |index|.
   virtual void RestoreRemovedNode(const BookmarkNode* parent,
-                                  int index,
+                                  size_t index,
                                   std::unique_ptr<BookmarkNode> node) = 0;
 
  protected:

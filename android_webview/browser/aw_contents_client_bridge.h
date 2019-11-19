@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "android_webview/browser/net/aw_web_resource_request.h"
+#include "android_webview/browser/network_service/aw_web_resource_request.h"
 #include "android_webview/browser/safe_browsing/aw_url_checker_delegate_impl.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
@@ -17,7 +17,7 @@
 #include "components/security_interstitials/content/unsafe_resource.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/javascript_dialog_manager.h"
-#include "content/public/browser/resource_request_info.h"
+#include "content/public/browser/web_contents.h"
 #include "net/http/http_response_headers.h"
 
 class GURL;
@@ -69,8 +69,7 @@ class AwContentsClientBridge {
   static AwContentsClientBridge* FromWebContents(
       content::WebContents* web_contents);
   static AwContentsClientBridge* FromWebContentsGetter(
-      const content::ResourceRequestInfo::WebContentsGetter&
-          web_contents_getter);
+      const content::WebContents::Getter& web_contents_getter);
   static AwContentsClientBridge* FromID(int render_process_id,
                                         int render_frame_id);
   AwContentsClientBridge(JNIEnv* env,

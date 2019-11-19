@@ -7,10 +7,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/multiprocess_test.h"
+#include "base/test/task_environment.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/shortcut.h"
-#include "chrome/chrome_cleaner/interfaces/parser_interface.mojom.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
+#include "chrome/chrome_cleaner/mojom/parser_interface.mojom.h"
 #include "chrome/chrome_cleaner/parsers/broker/sandbox_setup_hooks.h"
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/broker/sandboxed_shortcut_parser.h"
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/broker/shortcut_parser_api.h"
@@ -27,7 +28,7 @@ namespace chrome_cleaner {
 class LnkParserSandboxSetupTest : public base::MultiProcessTest {
  public:
   LnkParserSandboxSetupTest()
-      : parser_ptr_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
+      : parser_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
 
   void SetUp() override {
     mojo_task_runner_ = MojoTaskRunner::Create();
@@ -37,9 +38,9 @@ class LnkParserSandboxSetupTest : public base::MultiProcessTest {
     ASSERT_EQ(RESULT_CODE_SUCCESS,
               StartSandboxTarget(MakeCmdLine("LnkParserSandboxTargetMain"),
                                  &setup_hooks, SandboxType::kTest));
-    parser_ptr_ = setup_hooks.TakeParserPtr();
+    parser_ = setup_hooks.TakeParserRemote();
     shortcut_parser_ = std::make_unique<SandboxedShortcutParser>(
-        mojo_task_runner_.get(), parser_ptr_.get());
+        mojo_task_runner_.get(), parser_.get());
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(base::CreateTemporaryFileInDir(temp_dir_.GetPath(),
@@ -48,13 +49,13 @@ class LnkParserSandboxSetupTest : public base::MultiProcessTest {
 
  protected:
   scoped_refptr<MojoTaskRunner> mojo_task_runner_;
-  UniqueParserPtr parser_ptr_;
+  RemoteParserPtr parser_;
 
   std::unique_ptr<ShortcutParserAPI> shortcut_parser_;
   ParsedLnkFile test_parsed_shortcut_;
   mojom::LnkParsingResult test_result_code_;
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   base::FilePath not_lnk_file_path_;
   base::ScopedTempDir temp_dir_;

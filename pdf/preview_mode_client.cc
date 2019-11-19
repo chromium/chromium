@@ -7,10 +7,16 @@
 #include <stdint.h>
 
 #include "base/logging.h"
+#include "pdf/document_layout.h"
 
 namespace chrome_pdf {
 
 PreviewModeClient::PreviewModeClient(Client* client) : client_(client) {}
+
+void PreviewModeClient::ProposeDocumentLayout(const DocumentLayout& layout) {
+  // This will be invoked if the PreviewModeClient is used, which currently
+  // occurs if and only if loading a non-PDF document with more than 1 page.
+}
 
 void PreviewModeClient::Invalidate(const pp::Rect& rect) {
   NOTREACHED();
@@ -118,8 +124,7 @@ PreviewModeClient::SearchString(const base::char16* string,
 }
 
 void PreviewModeClient::DocumentLoadComplete(
-    const PDFEngine::DocumentFeatures& document_features,
-    uint32_t file_size) {
+    const PDFEngine::DocumentFeatures& document_features) {
   client_->PreviewDocumentLoadComplete();
 }
 
@@ -133,10 +138,6 @@ pp::Instance* PreviewModeClient::GetPluginInstance() {
 
 void PreviewModeClient::DocumentHasUnsupportedFeature(
     const std::string& feature) {
-  NOTREACHED();
-}
-
-void PreviewModeClient::FontSubstituted() {
   NOTREACHED();
 }
 

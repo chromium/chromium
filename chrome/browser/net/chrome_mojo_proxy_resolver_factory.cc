@@ -8,10 +8,65 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/public/common/service_manager_connection.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "build/build_config.h"
+#include "content/public/common/child_process_host.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
+
+#if defined(OS_ANDROID)
+#include "services/proxy_resolver/proxy_resolver_factory_impl.h"
+#else
+#include "content/public/browser/service_process_host.h"
+#include "services/strings/grit/services_strings.h"
+#endif
+
+namespace {
+
+proxy_resolver::mojom::ProxyResolverFactory* GetProxyResolverFactory() {
+  static base::NoDestructor<
+      mojo::Remote<proxy_resolver::mojom::ProxyResolverFactory>>
+      remote;
+  if (!remote->is_bound()) {
+#if defined(OS_ANDROID)
+    // For Android we just lazily initialize a single factory instance and keep
+    // it around forever.
+    static base::NoDestructor<proxy_resolver::ProxyResolverFactoryImpl> factory(
+        remote->BindNewPipeAndPassReceiver());
+#else
+    // For other platforms we launch the resolver in its own sandboxed service
+    // process.
+    content::ServiceProcessHost::Launch(
+        remote->BindNewPipeAndPassReceiver(),
+        content::ServiceProcessHost::Options()
+#if defined(OS_MACOSX)
+            // The proxy_resolver service runs V8, so it needs to run in the
+            // helper application that has the com.apple.security.cs.allow-jit
+            // code signing entitlement, which is CHILD_RENDERER. The service
+            // still runs under the utility process sandbox.
+            .WithChildFlags(content::ChildProcessHost::CHILD_RENDERER)
+#endif
+            .WithDisplayName(IDS_PROXY_RESOLVER_DISPLAY_NAME)
+            .Pass());
+
+    // The service will report itself idle once there are no more bound
+    // ProxyResolver instances. We drop the Remote at that point to initiate
+    // service process termination. Any subsequent call to
+    // |GetProxyResolverFactory()| will launch a new process.
+    remote->reset_on_idle_timeout(base::TimeDelta());
+
+    // Also reset on disconnection in case, e.g., the service crashes.
+    remote->reset_on_disconnect();
+#endif
+  }
+
+  return remote->get();
+}
+
+}  // namespace
 
 ChromeMojoProxyResolverFactory::ChromeMojoProxyResolverFactory() = default;
 
@@ -19,28 +74,21 @@ ChromeMojoProxyResolverFactory::~ChromeMojoProxyResolverFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-proxy_resolver::mojom::ProxyResolverFactoryPtr
-ChromeMojoProxyResolverFactory::CreateWithStrongBinding() {
-  proxy_resolver::mojom::ProxyResolverFactoryPtr proxy_resolver_factory;
-  mojo::MakeStrongBinding(std::make_unique<ChromeMojoProxyResolverFactory>(),
-                          mojo::MakeRequest(&proxy_resolver_factory));
-  return proxy_resolver_factory;
+mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory>
+ChromeMojoProxyResolverFactory::CreateWithSelfOwnedReceiver() {
+  mojo::PendingRemote<proxy_resolver::mojom::ProxyResolverFactory> remote;
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<ChromeMojoProxyResolverFactory>(),
+      remote.InitWithNewPipeAndPassReceiver());
+  return remote;
 }
 
 void ChromeMojoProxyResolverFactory::CreateResolver(
     const std::string& pac_script,
-    proxy_resolver::mojom::ProxyResolverRequest req,
-    proxy_resolver::mojom::ProxyResolverFactoryRequestClientPtr client) {
+    mojo::PendingReceiver<proxy_resolver::mojom::ProxyResolver> receiver,
+    mojo::PendingRemote<
+        proxy_resolver::mojom::ProxyResolverFactoryRequestClient> client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // Bind a ProxyResolverFactory backed by the proxy resolver service, have it
-  // create a ProxyResolverFactory and then destroy the factory, to avoid
-  // keeping the service alive after all resolvers have been destroyed.
-  proxy_resolver::mojom::ProxyResolverFactoryPtr resolver_factory;
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(proxy_resolver::mojom::kProxyResolverServiceName,
-                      mojo::MakeRequest(&resolver_factory));
-  resolver_factory->CreateResolver(pac_script, std::move(req),
-                                   std::move(client));
+  GetProxyResolverFactory()->CreateResolver(pac_script, std::move(receiver),
+                                            std::move(client));
 }

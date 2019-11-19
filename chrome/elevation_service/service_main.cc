@@ -11,11 +11,11 @@
 
 #include "chrome/elevation_service/service_main.h"
 
-#include <type_traits>
-
 #include <atlsecurity.h>
 #include <sddl.h>
 #include <wrl/module.h>
+
+#include <type_traits>
 
 #include "base/command_line.h"
 #include "base/stl_util.h"
@@ -59,12 +59,15 @@ int ServiceMain::Start() {
   return (this->*run_routine_)();
 }
 
+void ServiceMain::CreateWRLModule() {
+  Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::Create(
+      this, &ServiceMain::SignalExit);
+}
+
 // When _ServiceMain gets called, it initializes COM, and then calls Run().
 // Run() initializes security, then calls RegisterClassObject().
 HRESULT ServiceMain::RegisterClassObject() {
-  // Create an out-of-proc COM module with caching disabled.
-  auto& module = Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::Create(
-      this, &ServiceMain::SignalExit);
+  auto& module = Microsoft::WRL::Module<Microsoft::WRL::OutOfProc>::GetModule();
 
   // We hand-register a unique CLSID for each Chrome channel.
   Microsoft::WRL::ComPtr<IUnknown> factory;
@@ -116,6 +119,10 @@ void ServiceMain::UnregisterClassObject() {
 
 bool ServiceMain::IsExitSignaled() {
   return exit_signal_.IsSignaled();
+}
+
+void ServiceMain::ResetExitSignaled() {
+  exit_signal_.Reset();
 }
 
 ServiceMain::ServiceMain()
@@ -212,6 +219,7 @@ HRESULT ServiceMain::Run() {
   if (FAILED(hr))
     return hr;
 
+  CreateWRLModule();
   hr = RegisterClassObject();
   if (SUCCEEDED(hr)) {
     WaitForExitSignal();

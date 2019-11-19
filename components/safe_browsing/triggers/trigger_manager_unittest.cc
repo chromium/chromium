@@ -12,8 +12,8 @@
 #include "components/safe_browsing/browser/threat_details.h"
 #include "components/safe_browsing/features.h"
 #include "components/safe_browsing/triggers/trigger_throttler.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -151,7 +151,7 @@ class TriggerManagerTest : public ::testing::Test {
  private:
   TriggerManager trigger_manager_;
   MockThreatDetailsFactory mock_threat_details_factory_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
   content::TestWebContentsFactory web_contents_factory_;
   TestingPrefServiceSimple pref_service_;

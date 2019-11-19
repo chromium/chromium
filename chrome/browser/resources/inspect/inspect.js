@@ -10,8 +10,8 @@ const WEBRTC_SERIAL = 'WEBRTC';
 let HOST_CHROME_VERSION;
 
 const queryParamsObject = {};
-let browserInspector;
-let browserInspectorTitle;
+let browserInspector = 'chrome://tracing';
+let browserInspectorTitle = 'trace';
 
 (function() {
 const chromeMatch = navigator.userAgent.match(/(?:^|\W)Chrome\/(\S+)/);
@@ -29,10 +29,7 @@ for (let i = 0; i < params.length; ++i) {
   queryParamsObject[pair[0]] = pair[1];
 }
 
-if ('trace' in queryParamsObject || 'tracing' in queryParamsObject) {
-  browserInspector = 'chrome://tracing';
-  browserInspectorTitle = 'trace';
-} else {
+if ('browser-inspector' in queryParamsObject) {
   browserInspector = queryParamsObject['browser-inspector'];
   browserInspectorTitle = 'inspect';
 }
@@ -197,8 +194,7 @@ function alreadyDisplayed(element, data) {
 function updateBrowserVisibility(browserSection) {
   const icon = browserSection.querySelector('.used-for-port-forwarding');
   browserSection.hidden = !browserSection.querySelector('.open') &&
-      !browserSection.querySelector('.row') && !browserInspector &&
-      (!icon || icon.hidden);
+      !browserSection.querySelector('.row') && (!icon || icon.hidden);
 }
 
 function updateUsernameVisibility(deviceSection) {
@@ -410,19 +406,17 @@ function populateRemoteTargets(devices) {
             'forwarding. Closing it will drop current connections.';
         browserHeader.appendChild(portForwardingInfo);
 
-        if (browserInspector) {
-          const link = document.createElement('span');
-          link.classList.add('action');
-          link.setAttribute('tabindex', 1);
-          link.textContent = browserInspectorTitle;
-          browserHeader.appendChild(link);
-          link.addEventListener(
-              'click',
-              sendCommand.bind(
-                  null, 'inspect-browser', browser.source, browser.id,
-                  browserInspector),
-              false);
-        }
+        const link = document.createElement('span');
+        link.classList.add('action');
+        link.setAttribute('tabindex', 1);
+        link.textContent = browserInspectorTitle;
+        browserHeader.appendChild(link);
+        link.addEventListener(
+            'click',
+            sendCommand.bind(
+                null, 'inspect-browser', browser.source, browser.id,
+                browserInspector),
+            false);
 
         pageList = document.createElement('div');
         pageList.className = 'list pages';

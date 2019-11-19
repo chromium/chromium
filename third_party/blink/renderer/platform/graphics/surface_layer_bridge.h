@@ -11,8 +11,9 @@
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "third_party/blink/public/platform/modules/frame_sinks/embedded_frame_sink.mojom-blink.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-blink.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
@@ -21,13 +22,7 @@ class SolidColorLayer;
 class SurfaceLayer;
 }  // namespace cc
 
-namespace viz {
-class SurfaceInfo;
-}  // namespace viz
-
 namespace blink {
-
-class WebLayerTreeView;
 
 // The SurfaceLayerBridge facilitates communication about changes to a Surface
 // between the Render and Browser processes.
@@ -37,7 +32,7 @@ class PLATFORM_EXPORT SurfaceLayerBridge
       public WebSurfaceLayerBridge {
  public:
   SurfaceLayerBridge(
-      WebLayerTreeView*,
+      viz::FrameSinkId parent_frame_sink_id,
       WebSurfaceLayerBridgeObserver*,
       cc::UpdateSubmissionStateCB update_submission_state_callback);
   ~SurfaceLayerBridge() override;
@@ -45,9 +40,8 @@ class PLATFORM_EXPORT SurfaceLayerBridge
   void CreateSolidColorLayer();
 
   // Implementation of blink::mojom::blink::EmbeddedFrameSinkClient
-  void OnFirstSurfaceActivation(const viz::SurfaceInfo&) override;
   void BindSurfaceEmbedder(
-      mojom::blink::SurfaceEmbedderRequest request) override;
+      mojo::PendingReceiver<mojom::blink::SurfaceEmbedder> receiver) override;
 
   void EmbedSurface(const viz::SurfaceId& surface_id);
 
@@ -75,10 +69,10 @@ class PLATFORM_EXPORT SurfaceLayerBridge
   WebSurfaceLayerBridgeObserver* observer_;
   cc::UpdateSubmissionStateCB update_submission_state_callback_;
   viz::ParentLocalSurfaceIdAllocator parent_local_surface_id_allocator_;
-  mojo::Binding<blink::mojom::blink::EmbeddedFrameSinkClient> binding_;
-  mojo::Binding<blink::mojom::blink::SurfaceEmbedder> surface_embedder_binding_;
+  mojo::Receiver<blink::mojom::blink::EmbeddedFrameSinkClient> receiver_{this};
+  mojo::Receiver<blink::mojom::blink::SurfaceEmbedder>
+      surface_embedder_receiver_{this};
 
-  const bool enable_surface_synchronization_;
   const viz::FrameSinkId frame_sink_id_;
   viz::SurfaceId current_surface_id_;
   const viz::FrameSinkId parent_frame_sink_id_;

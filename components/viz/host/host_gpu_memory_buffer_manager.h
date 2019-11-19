@@ -99,14 +99,6 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
                                             PendingBufferInfo,
                                             std::hash<gfx::GpuMemoryBufferId>>;
 
-  struct AllocatedBufferInfo {
-    AllocatedBufferInfo();
-    ~AllocatedBufferInfo();
-
-    gfx::GpuMemoryBufferType type = gfx::EMPTY_BUFFER;
-    size_t buffer_size_in_bytes = 0;
-    base::UnguessableToken shared_memory_guid;
-  };
   using AllocatedBuffers =
       std::unordered_map<gfx::GpuMemoryBufferId,
                          AllocatedBufferInfo,
@@ -143,7 +135,7 @@ class VIZ_HOST_EXPORT HostGpuMemoryBufferManager
   const gpu::GpuMemoryBufferConfigurationSet native_configurations_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::WeakPtr<HostGpuMemoryBufferManager> weak_ptr_;
-  base::WeakPtrFactory<HostGpuMemoryBufferManager> weak_factory_;
+  base::WeakPtrFactory<HostGpuMemoryBufferManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HostGpuMemoryBufferManager);
 };

@@ -130,9 +130,9 @@ TEST(VariableExpanderTest, EdgeCases) {
 TEST(VariableExpanderTest, ExpandValueSucceeds) {
   base::Value root(base::Value::Type::DICTIONARY);
   base::ListValue list;
-  list.GetList().push_back(base::Value(123));
-  list.GetList().push_back(base::Value("${machine_name}"));
-  list.GetList().push_back(base::Value(true));
+  list.Append(base::Value(123));
+  list.Append(base::Value("${machine_name}"));
+  list.Append(base::Value(true));
   root.SetKey("list", std::move(list));
   root.SetKey("str", base::Value("${machine_name}"));
   root.SetKey("double", base::Value(123.45));
@@ -140,8 +140,7 @@ TEST(VariableExpanderTest, ExpandValueSucceeds) {
   VariableExpander expander({{"machine_name", "chromebook"}});
   EXPECT_TRUE(expander.ExpandValue(&root));
 
-  const base::Value::ListStorage& expanded_list =
-      root.FindKey("list")->GetList();
+  base::span<const base::Value> expanded_list = root.FindKey("list")->GetList();
   EXPECT_EQ(expanded_list[0].GetInt(), 123);
   EXPECT_EQ(expanded_list[1].GetString(), "chromebook");
   EXPECT_EQ(expanded_list[2].GetBool(), true);

@@ -241,7 +241,7 @@ bool SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::HandleTextNode() {
   const int text_length = position_end_offset - position_start_offset;
   const int text_offset = position_start_offset - offset_in_node;
   CHECK_LE(static_cast<unsigned>(text_offset + text_length), text.length());
-  text_state_.EmitText(ToText(*node_), position_start_offset,
+  text_state_.EmitText(To<Text>(*node_), position_start_offset,
                        position_end_offset, text, text_offset,
                        text_offset + text_length);
   return !should_handle_first_letter_;
@@ -338,7 +338,7 @@ void SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::ExitNode() {
     // TODO(editing-dev): The start of this emitted range is wrong. Ensuring
     // correctness would require |VisiblePositions| and so would be slow.
     // previousBoundary expects this.
-    text_state_.EmitChar16BeforeChildren('\n', ToContainerNode(*node_));
+    text_state_.EmitChar16BeforeChildren('\n', To<ContainerNode>(*node_));
   }
 }
 
@@ -411,35 +411,6 @@ UChar SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::CharacterAt(
   if (index >= text_state_.length())
     return 0;
   return text_state_.CharacterAt(text_state_.length() - index - 1);
-}
-
-template <typename Strategy>
-bool SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::IsBetweenSurrogatePair(
-    int position) const {
-  DCHECK_GE(position, 0);
-  return position > 0 && position < length() &&
-         U16_IS_TRAIL(CharacterAt(position - 1)) &&
-         U16_IS_LEAD(CharacterAt(position));
-}
-
-template <typename Strategy>
-int SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::CopyTextTo(
-    BackwardsTextBuffer* output,
-    int position,
-    int min_length) const {
-  int end = std::min(length(), position + min_length);
-  if (IsBetweenSurrogatePair(end))
-    ++end;
-  int copied_length = end - position;
-  text_state_.PrependTextTo(output, position, copied_length);
-  return copied_length;
-}
-
-template <typename Strategy>
-int SimplifiedBackwardsTextIteratorAlgorithm<Strategy>::CopyTextTo(
-    BackwardsTextBuffer* output,
-    int position) const {
-  return CopyTextTo(output, position, text_state_.length() - position);
 }
 
 template class CORE_TEMPLATE_EXPORT

@@ -11,7 +11,6 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 
 namespace content {
-
 namespace background_fetch {
 
 GetDeveloperIdsTask::GetDeveloperIdsTask(
@@ -22,8 +21,7 @@ GetDeveloperIdsTask::GetDeveloperIdsTask(
     : DatabaseTask(host),
       service_worker_registration_id_(service_worker_registration_id),
       origin_(origin),
-      callback_(std::move(callback)),
-      weak_factory_(this) {}
+      callback_(std::move(callback)) {}
 
 GetDeveloperIdsTask::~GetDeveloperIdsTask() = default;
 
@@ -67,5 +65,4 @@ std::string GetDeveloperIdsTask::HistogramName() const {
 }
 
 }  // namespace background_fetch
-
 }  // namespace content

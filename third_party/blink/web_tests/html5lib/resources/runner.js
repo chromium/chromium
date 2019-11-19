@@ -190,7 +190,7 @@ function run_test(input, contextElement, expected)
             }
             process_result(input, iframe.contentWindow.document, expected);
         }
-        iframe.src = "data:text/html," + encodeURIComponent(input);
+        iframe.srcdoc = input;
     }
 }
 

@@ -35,15 +35,15 @@ class NtpIconSource : public content::URLDataSource {
   ~NtpIconSource() override;
 
   // content::URLDataSource implementation.
-  std::string GetSource() const override;
+  std::string GetSource() override;
   void StartDataRequest(
-      const std::string& path,
-      const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+      const GURL& url,
+      const content::WebContents::Getter& wc_getter,
       const content::URLDataSource::GotDataCallback& callback) override;
-  std::string GetMimeType(const std::string& path) const override;
+  std::string GetMimeType(const std::string& path) override;
   bool ShouldServiceRequest(const GURL& url,
                             content::ResourceContext* resource_context,
-                            int render_process_id) const override;
+                            int render_process_id) override;
 
  private:
   struct NtpIconRequest;
@@ -67,7 +67,7 @@ class NtpIconSource : public content::URLDataSource {
   Profile* profile_;
   std::unique_ptr<image_fetcher::ImageFetcher> const image_fetcher_;
 
-  base::WeakPtrFactory<NtpIconSource> weak_ptr_factory_;
+  base::WeakPtrFactory<NtpIconSource> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NtpIconSource);
 };

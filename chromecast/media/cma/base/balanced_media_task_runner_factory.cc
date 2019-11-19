@@ -5,9 +5,9 @@
 #include "chromecast/media/cma/base/balanced_media_task_runner_factory.h"
 
 #include <map>
+#include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
@@ -135,7 +135,7 @@ void BalancedMediaTaskRunner::ScheduleWork(base::TimeDelta max_media_time) {
       return;
     }
 
-    task = base::ResetAndReturn(&pending_task_);
+    task = std::move(pending_task_);
   }
   task_runner_->PostTask(from_here_, task);
 }

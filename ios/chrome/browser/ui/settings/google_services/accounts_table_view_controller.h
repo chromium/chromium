@@ -19,20 +19,18 @@ extern NSString* const kSettingsAccountsTableViewSyncCellId;
 
 @protocol ApplicationCommands;
 @protocol ApplicationSettingsCommands;
-namespace ios {
-class ChromeBrowserState;
-}  // namespace ios
+class Browser;
 
 // TableView that handles the settings for accounts when the user is signed in
 // to Chrome.
 @interface AccountsTableViewController
     : SettingsRootTableViewController <SettingsControllerProtocol>
 
-// |browserState| must not be nil.
+// |browser| must not be nil.
 // If |closeSettingsOnAddAccount| is YES, then this account table view
-// controller will close the setting screen when an account is added.
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-           closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
+// controller will close the settings view when an account is added.
+- (instancetype)initWithBrowser:(Browser*)browser
+      closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithTableViewStyle:(UITableViewStyle)style

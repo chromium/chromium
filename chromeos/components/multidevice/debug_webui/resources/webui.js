@@ -6,7 +6,7 @@
 /**
  * JavaScript hooks into the native WebUI handler.
  */
-WebUI = {
+const WebUI = {
   getLogMessages: function() {
     chrome.send('getLogMessages');
   },

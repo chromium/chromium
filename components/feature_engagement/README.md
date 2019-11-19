@@ -589,13 +589,14 @@ that you can start Chrome and verify that it behaves correctly.
     python ./tools/variations/fieldtrial_util.py DownloadStudy.json android shell_cmd
     ```
 
-1.  Pass the command line along to the binary you are planning on running or the
-    command line utility for the Android platform.
+1.  Pass the command line along to the binary you are planning on running.
 
-    For the target `chrome_public_apk` it would be:
+    Note: For Android you need to ensure that all arguments are are within one
+    set of double quotes. In particular, for the Android target
+    `chrome_public_apk` it would be:
 
     ```bash
-    ./build/android/adb_chrome_public_command_line "--force-fieldtrials=DownloadStudy/DownloadExperiment" "--force-fieldtrial-params=DownloadStudy.DownloadExperiment:availability/>=30/event_1/name%3Adownload_completed;comparator%3A>=1;window%3A120;storage%3A180/event_trigger/name%3Adownload_home_iph_trigger;comparator%3Aany;window%3A90;storage%3A360/event_used/name%3Adownload_home_opened;comparator%3Aany;window%3A90;storage%3A360/session_rate/<1" "--enable-features=IPH_DownloadHome<DownloadStudy"
+    ./out/Debug/bin/chrome_public_apk run --args "--force-fieldtrials=DownloadStudy/DownloadExperiment --force-fieldtrial-params=DownloadStudy.DownloadExperiment:availability/>=30/event_1/name%3Adownload_completed;comparator%3A>=1;window%3A120;storage%3A180/event_trigger/name%3Adownload_home_iph_trigger;comparator%3Aany;window%3A90;storage%3A360/event_used/name%3Adownload_home_opened;comparator%3Aany;window%3A90;storage%3A360/session_rate/<1 --enable-features=IPH_DownloadHome<DownloadStudy"
     ```
 
 ### Printf debugging

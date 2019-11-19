@@ -6,12 +6,14 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class MediaListDirectiveTest : public testing::Test {
  public:
-  MediaListDirectiveTest() : csp(ContentSecurityPolicy::Create()) {}
+  MediaListDirectiveTest()
+      : csp(MakeGarbageCollected<ContentSecurityPolicy>()) {}
 
  protected:
   Persistent<ContentSecurityPolicy> csp;
@@ -25,12 +27,12 @@ TEST_F(MediaListDirectiveTest, GetIntersect) {
 
   struct TestCase {
     const char* policy_b;
-    const std::vector<const char*> expected;
+    const Vector<const char*> expected;
   } cases[] = {
-      {"", std::vector<const char*>()},
-      {"text/", std::vector<const char*>()},
-      {"text/*", std::vector<const char*>()},
-      {"*/plain", std::vector<const char*>()},
+      {"", Vector<const char*>()},
+      {"text/", Vector<const char*>()},
+      {"text/*", Vector<const char*>()},
+      {"*/plain", Vector<const char*>()},
       {"text/plain */plain", {"text/plain"}},
       {"text/plain application/*", {"text/plain"}},
       {"text/plain", {"text/plain"}},
@@ -72,7 +74,7 @@ TEST_F(MediaListDirectiveTest, Subsumes) {
       csp.Get());
 
   struct TestCase {
-    const std::vector<const char*> policies_b;
+    const Vector<const char*> policies_b;
     bool subsumed;
     bool subsumed_by_empty_a;
   } cases[] = {
@@ -118,7 +120,7 @@ TEST_F(MediaListDirectiveTest, Subsumes) {
        true,
        true},
       // `A` does not subsumes `policiesB`.
-      {std::vector<const char*>(), false, false},
+      {Vector<const char*>(), false, false},
       {{"application/x-blink-test-plugin"}, false, false},
       {{"application/x-shockwave-flash text/plain "
         "application/x-blink-test-plugin"},

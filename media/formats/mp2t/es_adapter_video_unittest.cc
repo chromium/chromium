@@ -32,10 +32,10 @@ VideoDecoderConfig CreateFakeVideoConfig() {
   gfx::Size coded_size(320, 240);
   gfx::Rect visible_rect(0, 0, 320, 240);
   gfx::Size natural_size(320, 240);
-  return VideoDecoderConfig(kCodecH264, H264PROFILE_MAIN, PIXEL_FORMAT_I420,
-                            VideoColorSpace(), VIDEO_ROTATION_0, coded_size,
-                            visible_rect, natural_size, EmptyExtraData(),
-                            Unencrypted());
+  return VideoDecoderConfig(
+      kCodecH264, H264PROFILE_MAIN, VideoDecoderConfig::AlphaMode::kIsOpaque,
+      VideoColorSpace(), kNoTransformation, coded_size, visible_rect,
+      natural_size, EmptyExtraData(), EncryptionScheme::kUnencrypted);
 }
 
 BufferQueue GenerateFakeBuffers(const int* frame_pts_ms,
@@ -58,7 +58,7 @@ BufferQueue GenerateFakeBuffers(const int* frame_pts_ms,
   return buffers;
 }
 
-}
+}  // namespace
 
 class EsAdapterVideoTest : public testing::Test {
  public:

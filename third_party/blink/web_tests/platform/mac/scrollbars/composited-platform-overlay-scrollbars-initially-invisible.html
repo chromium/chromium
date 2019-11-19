@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <script>
-if (window.internals) {
-  internals.runtimeFlags.overlayScrollbarsEnabled = true;
-  internals.settings.setMockScrollbarsEnabled(false);
+if (window.internals)
   internals.settings.setPreferCompositingToLCDTextEnabled(true);
-}
 </script>
 The overlay scrollbars should be hidden initially.
 <div style="width: 200px; height: 200px; border: 1px solid black; overflow: auto">

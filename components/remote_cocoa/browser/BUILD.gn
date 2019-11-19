@@ -1,0 +1,28 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+# This component is for code that is to run in the app shim process.
+component("browser") {
+  assert(is_mac)
+
+  sources = [
+    "application_host.h",
+    "application_host.mm",
+    "ns_view_ids.cc",
+    "ns_view_ids.h",
+    "remote_cocoa_browser_export.h",
+    "window.h",
+    "window.mm",
+  ]
+  defines = [ "REMOTE_COCOA_BROWSER_IMPLEMENTATION" ]
+  deps = [
+    "//base",
+    "//components/remote_cocoa/common:mojo",
+    "//mojo/public/cpp/bindings:bindings",
+    "//ui/gfx",
+  ]
+  libs = [ "Cocoa.framework" ]
+}

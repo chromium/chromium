@@ -1,0 +1,57 @@
+Tests that audits panel renders View Trace button.
+
+
+========== Audits Start Audit State ==========
+[x] Performance
+[ ] Progressive Web App
+[ ] Best practices
+[ ] Accessibility
+[ ] SEO
+[x] Clear storage
+Run audits: enabled visible
+
+=============== Audits run ===============
+bootup-time
+critical-request-chains
+diagnostics
+dom-size
+efficient-animated-content
+estimated-input-latency
+final-screenshot
+first-contentful-paint
+first-cpu-idle
+first-meaningful-paint
+font-display
+interactive
+main-thread-tasks
+mainthread-work-breakdown
+max-potential-fid
+metrics
+network-requests
+network-rtt
+network-server-latency
+offscreen-images
+performance-budget
+redirects
+render-blocking-resources
+resource-summary
+screenshot-thumbnails
+speed-index
+third-party-summary
+time-to-first-byte
+total-blocking-time
+total-byte-weight
+unminified-css
+unminified-javascript
+unused-css-rules
+user-timings
+uses-long-cache-ttl
+uses-optimized-images
+uses-rel-preconnect
+uses-rel-preload
+uses-responsive-images
+uses-text-compression
+uses-webp-images
+
+Showing view: timeline
+

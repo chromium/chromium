@@ -6,11 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_APPLIED_TEXT_DECORATION_LIST_H_
 
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
-#include "third_party/blink/renderer/platform/wtf/ref_vector.h"
 
 namespace blink {
 
-typedef RefVector<AppliedTextDecoration> AppliedTextDecorationList;
+typedef base::RefCountedData<WTF::Vector<AppliedTextDecoration>>
+    AppliedTextDecorationList;
 
 }  // namespace blink
 

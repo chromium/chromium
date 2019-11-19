@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf8">
+<title>Display Locking: writing modes (reference)</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+
+<style>
+.sized {
+  width: 12px;
+  height: 34px;
+  background: lightblue;
+  border-color: blue;
+  border-style: solid;
+  border-width: 1px 2px 3px 4px;
+  padding: 5px 6px 7px 8px;
+}
+.border {
+  border: 1px solid black;
+  width: max-content;
+  margin: 5px;
+}
+</style>
+
+<div class="border">
+    <div class="sized"></div>
+</div>
+<div class="border">
+    <div class="sized"></div>
+</div>
+<div class="border">
+    <div class="sized"></div>
+</div>
+<div class="border">
+    <div class="sized"></div>
+</div>
+<div class="border">
+    <div class="sized"></div>
+</div>
+</html>

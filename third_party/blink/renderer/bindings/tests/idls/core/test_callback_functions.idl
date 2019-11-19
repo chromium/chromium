@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Blink-specific forEach iterator's callback
+// https://heycam.github.io/webidl/#es-forEach
+callback ForEachIteratorCallback = void (any value, any key, any obj);
+
 callback VoidCallbackFunction = void ();
 callback AnyCallbackFunctionOptionalAnyArg = any (optional any optionalAnyArg);
 // |AnyCallbackFunctionVariadicAnyArgs| is the same as Function.

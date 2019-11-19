@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+FAIL e.style['stroke-width'] = "0" should set the property value assert_equals: serialization should be canonical expected "0px" but got "0"
+FAIL e.style['stroke-width'] = "10" should set the property value assert_equals: serialization should be canonical expected "10px" but got "10"
+PASS e.style['stroke-width'] = "1px" should set the property value
+PASS e.style['stroke-width'] = "calc(2em + 3ex)" should set the property value
+PASS e.style['stroke-width'] = "4%" should set the property value
+PASS e.style['stroke-width'] = "5vmin" should set the property value
+PASS e.style['stroke-width'] = "calc(50% + 60px)" should set the property value
+Harness: the test ran to completion.
+

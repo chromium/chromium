@@ -1,0 +1,45 @@
+[document web] size=7.5pt size=8.5pt size=9pt size=10pt size=10.5pt size=11.5pt size=15pt size=30pt size=37.5pt size=75pt size=10pt size=11pt size=12pt size=13pt size=14pt size=15pt size=20pt size=40pt size=50pt size=100pt
+++[paragraph] size=7.5pt
+++++[static] name='10.2340920823px' size=7.5pt
+++[paragraph] size=7.5pt
+++++[static] name='10px' size=7.5pt
+++[paragraph] size=8.5pt
+++++[static] name='11px' size=8.5pt
+++[paragraph] size=9pt
+++++[static] name='12px' size=9pt
+++[paragraph] size=10pt
+++++[static] name='13px' size=10pt
+++[paragraph] size=10.5pt
+++++[static] name='14px' size=10.5pt
+++[paragraph] size=11.5pt
+++++[static] name='15px' size=11.5pt
+++[paragraph] size=15pt
+++++[static] name='20px' size=15pt
+++[paragraph] size=30pt
+++++[static] name='40px' size=30pt
+++[paragraph] size=37.5pt
+++++[static] name='50px' size=37.5pt
+++[paragraph] size=75pt
+++++[static] name='100px' size=75pt
+++[paragraph] size=10pt
+++++[static] name='10.2340920823pt' size=10pt
+++[paragraph] size=10pt
+++++[static] name='10pt' size=10pt
+++[paragraph] size=11pt
+++++[static] name='11pt' size=11pt
+++[paragraph] size=12pt
+++++[static] name='12pt' size=12pt
+++[paragraph] size=13pt
+++++[static] name='13pt' size=13pt
+++[paragraph] size=14pt
+++++[static] name='14pt' size=14pt
+++[paragraph] size=15pt
+++++[static] name='15pt' size=15pt
+++[paragraph] size=20pt
+++++[static] name='20pt' size=20pt
+++[paragraph] size=40pt
+++++[static] name='40pt' size=40pt
+++[paragraph] size=50pt
+++++[static] name='50pt' size=50pt
+++[paragraph] size=100pt
+++++[static] name='100pt' size=100pt

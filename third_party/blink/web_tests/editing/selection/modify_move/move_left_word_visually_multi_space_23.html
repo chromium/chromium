@@ -1,0 +1,206 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">|    abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">|    abc    def    hij    opq    </div>',
+  '23-0 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre"> |   abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">|    abc    def    hij    opq    </div>',
+  '23-1 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">  |  abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">|    abc    def    hij    opq    </div>',
+  '23-2 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">   | abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">|    abc    def    hij    opq    </div>',
+  '23-3 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">|    abc    def    hij    opq    </div>',
+  '23-4 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    a|bc    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    def    hij    opq    </div>',
+  '23-5 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    ab|c    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    def    hij    opq    </div>',
+  '23-6 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc|    def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    def    hij    opq    </div>',
+  '23-7 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc |   def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    def    hij    opq    </div>',
+  '23-8 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc  |  def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    def    hij    opq    </div>',
+  '23-9 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc   | def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    def    hij    opq    </div>',
+  '23-10 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |def    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    |abc    def    hij    opq    </div>',
+  '23-11 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    d|ef    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |def    hij    opq    </div>',
+  '23-12 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    de|f    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |def    hij    opq    </div>',
+  '23-13 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def|    hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |def    hij    opq    </div>',
+  '23-14 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def |   hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |def    hij    opq    </div>',
+  '23-15 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def  |  hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |def    hij    opq    </div>',
+  '23-16 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def   | hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |def    hij    opq    </div>',
+  '23-17 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    |hij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    |def    hij    opq    </div>',
+  '23-18 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    h|ij    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    |hij    opq    </div>',
+  '23-19 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hi|j    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    |hij    opq    </div>',
+  '23-20 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij|    opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    |hij    opq    </div>',
+  '23-21 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij |   opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    |hij    opq    </div>',
+  '23-22 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij  |  opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    |hij    opq    </div>',
+  '23-23 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij   | opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    |hij    opq    </div>',
+  '23-24 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    |opq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    |hij    opq    </div>',
+  '23-25 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    o|pq    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    |opq    </div>',
+  '23-26 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    op|q    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    |opq    </div>',
+  '23-27 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    opq|    </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    |opq    </div>',
+  '23-28 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    opq |   </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    |opq    </div>',
+  '23-29 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    opq  |  </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    |opq    </div>',
+  '23-30 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    opq   | </div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    |opq    </div>',
+  '23-31 left word');
+
+selection_test(
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    opq    |</div>',
+  selection => selection.modify('move', 'left', 'word'),
+  '<div contenteditable dir="ltr" style="white-space:pre">    abc    def    hij    |opq    </div>',
+  '23-32 left word');
+</script>

@@ -2,23 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const server = new Map([
-  ['http://test.com/index.html', '<html></html>'],
-  ['http://test.com/fetch', 'HTTP/1.1 200 OK\r\nCache-Control: no-store\r\n\r\n<some data>']]);
-
 (async function(testRunner) {
-  var {page, session, dp} = await testRunner.startBlank(
+  const {page, session, dp} = await testRunner.startBlank(
       'Tests that fetching a stream with back pressure ' +
       'does not stall with virtual time enabled.');
-  await dp.Network.enable();
-  await dp.Network.setRequestInterception({ patterns: [{ urlPattern: '*' }] });
-  dp.Network.onRequestIntercepted(event => {
-    let body = server.get(event.params.request.url);
-    dp.Network.continueInterceptedRequest({
-      interceptionId: event.params.interceptionId,
-      rawResponse: btoa(body)
-    });
-  });
+
+  const FetchHelper = await testRunner.loadScriptAbsolute(
+      '../fetch/resources/fetch-test.js');
+  const helper = new FetchHelper(testRunner, dp);
+  await helper.enable();
+
+  helper.onceRequest('http://test.com/index.html').fulfill(
+      FetchHelper.makeContentResponse(`<html></html>`)
+  );
+
+  helper.onceRequest('http://test.com/fetch').fulfill(
+      FetchHelper.makeResponse('<some data>',
+          ["Cache-Control: no-store"])
+  );
 
   dp.Emulation.onVirtualTimeBudgetExpired(async data => {
     testRunner.log(await session.evaluate('document.title'));

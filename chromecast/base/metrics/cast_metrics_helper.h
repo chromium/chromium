@@ -92,6 +92,10 @@ class CastMetricsHelper {
 
   // Logs application specific events.
   virtual void RecordApplicationEvent(const std::string& event);
+  virtual void RecordApplicationEvent(const std::string& app_id,
+                                      const std::string& session_id,
+                                      const std::string& sdk_version,
+                                      const std::string& event);
   virtual void RecordApplicationEventWithValue(const std::string& event,
                                                int value);
 

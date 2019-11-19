@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "base/containers/stack_container.h"
-#include "base/macros.h"
 #include "cc/cc_export.h"
 #include "cc/tiles/picture_layer_tiling_set.h"
 #include "cc/tiles/prioritized_tile.h"
@@ -24,7 +23,10 @@ class CC_EXPORT TilingSetRasterQueueAll {
   TilingSetRasterQueueAll(PictureLayerTilingSet* tiling_set,
                           bool prioritize_low_res,
                           bool is_drawing_layer);
+  TilingSetRasterQueueAll(const TilingSetRasterQueueAll&) = delete;
   ~TilingSetRasterQueueAll();
+
+  TilingSetRasterQueueAll& operator=(const TilingSetRasterQueueAll&) = delete;
 
   const PrioritizedTile& Top() const;
   void Pop();
@@ -193,8 +195,6 @@ class CC_EXPORT TilingSetRasterQueueAll {
   base::StackVector<IterationStage, 6> stages_;
   TilingIterator iterators_[NUM_ITERATORS];
   bool is_drawing_layer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TilingSetRasterQueueAll);
 };
 
 }  // namespace cc

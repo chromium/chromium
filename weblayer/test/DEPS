@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/security_interstitials",
+  "+content/public/common",
+  "+content/public/test",
+  "+net/test",
+]

@@ -50,7 +50,7 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
                                      const gfx::Rect& new_bounds) {}
 
  protected:
-  ~WidgetObserver() override {}
+  ~WidgetObserver() override = default;
 };
 
 }  // namespace views

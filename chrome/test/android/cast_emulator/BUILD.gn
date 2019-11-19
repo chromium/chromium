@@ -23,6 +23,6 @@ android_library("cast_emulator_java") {
     "$google_play_services_package:google_play_services_cast_java",
     "//base:base_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
-    "//third_party/android_deps:android_support_v7_mediarouter_java",
+    "//third_party/android_deps:com_android_support_mediarouter_v7_java",
   ]
 }

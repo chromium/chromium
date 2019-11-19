@@ -69,9 +69,7 @@ class SyncSchedulerImpl : public SyncScheduler {
                         const base::TimeDelta& throttle_duration) override;
   void OnTypesBackedOff(ModelTypeSet types) override;
   bool IsAnyThrottleOrBackoff() override;
-  void OnReceivedShortPollIntervalUpdate(
-      const base::TimeDelta& new_interval) override;
-  void OnReceivedLongPollIntervalUpdate(
+  void OnReceivedPollIntervalUpdate(
       const base::TimeDelta& new_interval) override;
   void OnReceivedCustomNudgeDelays(
       const std::map<ModelType, base::TimeDelta>& nudge_delays) override;
@@ -225,10 +223,9 @@ class SyncSchedulerImpl : public SyncScheduler {
   // Set in Start(), unset in Stop().
   bool started_;
 
-  // Modifiable versions of kDefaultLongPollIntervalSeconds which can be
+  // Modifiable versions of kDefaultPollIntervalSeconds which can be
   // updated by the server.
-  base::TimeDelta syncer_short_poll_interval_seconds_;
-  base::TimeDelta syncer_long_poll_interval_seconds_;
+  base::TimeDelta syncer_poll_interval_seconds_;
 
   // Timer for polling. Restarted on each successful poll, and when entering
   // normal sync mode or exiting an error state. Not active in configuration
@@ -262,10 +259,6 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   SyncCycleContext* cycle_context_;
 
-  // The last time we ran a sync cycle. Null if we haven't ran one since Chrome
-  // startup. Used for metrics.
-  base::TimeTicks last_sync_cycle_start_;
-
   // TryJob might get called for multiple reasons. It should only call
   // DoPollSyncCycleJob after some time since the last attempt.
   // last_poll_reset_ keeps track of when was last attempt.
@@ -290,7 +283,7 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<SyncSchedulerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<SyncSchedulerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SyncSchedulerImpl);
 };

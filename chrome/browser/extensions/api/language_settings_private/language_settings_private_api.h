@@ -14,7 +14,7 @@ namespace extensions {
 
 // Implements the languageSettingsPrivate.getLanguageList method.
 class LanguageSettingsPrivateGetLanguageListFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   LanguageSettingsPrivateGetLanguageListFunction();
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.getLanguageList",
@@ -33,8 +33,7 @@ class LanguageSettingsPrivateGetLanguageListFunction
 };
 
 // Implements the languageSettingsPrivate.enableLanguage method.
-class LanguageSettingsPrivateEnableLanguageFunction
-    : public UIThreadExtensionFunction {
+class LanguageSettingsPrivateEnableLanguageFunction : public ExtensionFunction {
  public:
   LanguageSettingsPrivateEnableLanguageFunction();
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.enableLanguage",
@@ -54,7 +53,7 @@ class LanguageSettingsPrivateEnableLanguageFunction
 
 // Implements the languageSettingsPrivate.disableLanguage method.
 class LanguageSettingsPrivateDisableLanguageFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   LanguageSettingsPrivateDisableLanguageFunction();
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.disableLanguage",
@@ -75,7 +74,7 @@ class LanguageSettingsPrivateDisableLanguageFunction
 // Implements the languageSettingsPrivate.setEnableTranslationForLanguage
 // method.
 class LanguageSettingsPrivateSetEnableTranslationForLanguageFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   LanguageSettingsPrivateSetEnableTranslationForLanguageFunction();
   DECLARE_EXTENSION_FUNCTION(
@@ -95,8 +94,7 @@ class LanguageSettingsPrivateSetEnableTranslationForLanguageFunction
 };
 
 // Implements the languageSettingsPrivate.moveLanguage method.
-class LanguageSettingsPrivateMoveLanguageFunction
-    : public UIThreadExtensionFunction {
+class LanguageSettingsPrivateMoveLanguageFunction : public ExtensionFunction {
  public:
   LanguageSettingsPrivateMoveLanguageFunction();
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.moveLanguage",
@@ -116,7 +114,7 @@ class LanguageSettingsPrivateMoveLanguageFunction
 // Implements the languageSettingsPrivate.getSpellcheckDictionaryStatuses
 // method.
 class LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction();
   DECLARE_EXTENSION_FUNCTION(
@@ -136,7 +134,7 @@ class LanguageSettingsPrivateGetSpellcheckDictionaryStatusesFunction
 
 // Implements the languageSettingsPrivate.getSpellcheckWords method.
 class LanguageSettingsPrivateGetSpellcheckWordsFunction
-    : public UIThreadExtensionFunction,
+    : public ExtensionFunction,
       public SpellcheckCustomDictionary::Observer {
  public:
   LanguageSettingsPrivateGetSpellcheckWordsFunction();
@@ -163,7 +161,7 @@ class LanguageSettingsPrivateGetSpellcheckWordsFunction
 
 // Implements the languageSettingsPrivate.addSpellcheckWord method.
 class LanguageSettingsPrivateAddSpellcheckWordFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   LanguageSettingsPrivateAddSpellcheckWordFunction();
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.addSpellcheckWord",
@@ -181,7 +179,7 @@ class LanguageSettingsPrivateAddSpellcheckWordFunction
 
 // Implements the languageSettingsPrivate.removeSpellcheckWord method.
 class LanguageSettingsPrivateRemoveSpellcheckWordFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   LanguageSettingsPrivateRemoveSpellcheckWordFunction();
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.removeSpellcheckWord",
@@ -199,7 +197,7 @@ class LanguageSettingsPrivateRemoveSpellcheckWordFunction
 
 // Implements the languageSettingsPrivate.getTranslateTargetLanguage method.
 class LanguageSettingsPrivateGetTranslateTargetLanguageFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   LanguageSettingsPrivateGetTranslateTargetLanguageFunction();
   DECLARE_EXTENSION_FUNCTION(
@@ -221,7 +219,7 @@ class LanguageSettingsPrivateGetTranslateTargetLanguageFunction
 
 // Implements the languageSettingsPrivate.getInputMethodLists method.
 class LanguageSettingsPrivateGetInputMethodListsFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   LanguageSettingsPrivateGetInputMethodListsFunction();
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.getInputMethodLists",
@@ -238,8 +236,7 @@ class LanguageSettingsPrivateGetInputMethodListsFunction
 };
 
 // Implements the languageSettingsPrivate.addInputMethod method.
-class LanguageSettingsPrivateAddInputMethodFunction
-    : public UIThreadExtensionFunction {
+class LanguageSettingsPrivateAddInputMethodFunction : public ExtensionFunction {
  public:
   LanguageSettingsPrivateAddInputMethodFunction();
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.addInputMethod",
@@ -259,7 +256,7 @@ class LanguageSettingsPrivateAddInputMethodFunction
 
 // Implements the languageSettingsPrivate.removeInputMethod method.
 class LanguageSettingsPrivateRemoveInputMethodFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   LanguageSettingsPrivateRemoveInputMethodFunction();
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.removeInputMethod",
@@ -279,7 +276,7 @@ class LanguageSettingsPrivateRemoveInputMethodFunction
 
 // Implements the languageSettingsPrivate.retryDownloadDictionary method.
 class LanguageSettingsPrivateRetryDownloadDictionaryFunction
-    : public UIThreadExtensionFunction {
+    : public ExtensionFunction {
  public:
   LanguageSettingsPrivateRetryDownloadDictionaryFunction();
   DECLARE_EXTENSION_FUNCTION("languageSettingsPrivate.retryDownloadDictionary",

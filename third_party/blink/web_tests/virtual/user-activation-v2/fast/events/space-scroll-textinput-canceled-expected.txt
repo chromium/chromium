@@ -1,7 +1,0 @@
-Tests that page shouldn't scroll when you hit space key on input field and 'textInput' event was canceled.
-
-PASS document.scrollingElement.scrollTop became 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

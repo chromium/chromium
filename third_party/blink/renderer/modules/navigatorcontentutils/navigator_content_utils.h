@@ -29,7 +29,6 @@
 
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/navigatorcontentutils/navigator_content_utils_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -37,9 +36,12 @@
 namespace blink {
 
 class ExceptionState;
+class NavigatorContentUtilsClient;
 
+// It is owned by Navigator, and an instance is created lazily by calling
+// NavigatorContentUtils::From() via [register/unregister]ProtocolHandler.
 class MODULES_EXPORT NavigatorContentUtils final
-    : public GarbageCollectedFinalized<NavigatorContentUtils>,
+    : public GarbageCollected<NavigatorContentUtils>,
       public Supplement<Navigator> {
   USING_GARBAGE_COLLECTED_MIXIN(NavigatorContentUtils);
 
@@ -51,8 +53,6 @@ class MODULES_EXPORT NavigatorContentUtils final
       : Supplement<Navigator>(navigator), client_(client) {}
   virtual ~NavigatorContentUtils();
 
-  static NavigatorContentUtils* From(Navigator&);
-
   static void registerProtocolHandler(Navigator&,
                                       const String& scheme,
                                       const String& url,
@@ -63,8 +63,6 @@ class MODULES_EXPORT NavigatorContentUtils final
                                         const String& url,
                                         ExceptionState&);
 
-  static void ProvideTo(Navigator&, NavigatorContentUtilsClient*);
-
   void Trace(blink::Visitor*) override;
 
   void SetClientForTest(NavigatorContentUtilsClient* client) {
@@ -72,6 +70,8 @@ class MODULES_EXPORT NavigatorContentUtils final
   }
 
  private:
+  static NavigatorContentUtils& From(Navigator&, LocalFrame& frame);
+
   NavigatorContentUtilsClient* Client() { return client_.Get(); }
 
   Member<NavigatorContentUtilsClient> client_;

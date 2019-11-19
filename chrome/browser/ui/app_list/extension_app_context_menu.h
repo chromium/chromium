@@ -42,7 +42,8 @@ class ExtensionAppContextMenu : public AppContextMenu {
 
   // ui::SimpleMenuModel::Delegate overrides:
   base::string16 GetLabelForCommandId(int command_id) const override;
-  bool GetIconForCommandId(int command_id, gfx::Image* icon) const override;
+  const gfx::VectorIcon* GetVectorIconForCommandId(
+      int command_id) const override;
   bool IsItemForCommandIdDynamic(int command_id) const override;
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;

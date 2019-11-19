@@ -12,6 +12,9 @@ namespace GaiaConstants {
 // Gaia sources for accounting
 extern const char kChromeOSSource[];
 extern const char kChromeSource[];
+// Used as Gaia source suffix to detect retry requests because of
+// |GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE|.
+extern const char kUnexpectedServiceResponse[];
 
 // Gaia services for requesting
 extern const char kGaiaService[];  // uber token
@@ -26,9 +29,14 @@ extern const char kDeviceManagementServiceOAuth[];
 extern const char kAnyApiOAuth2Scope[];
 extern const char kChromeSyncOAuth2Scope[];
 extern const char kChromeSyncSupervisedOAuth2Scope[];
+extern const char kKidsSupervisionSetupChildOAuth2Scope[];
 extern const char kGoogleTalkOAuth2Scope[];
 extern const char kGoogleUserInfoEmail[];
 extern const char kGoogleUserInfoProfile[];
+extern const char kPeopleApiReadOnlyOAuth2Scope[];
+extern const char kAccountsReauthOAuth2Scope[];
+extern const char kAuditRecordingOAuth2Scope[];
+extern const char kClearCutOAuth2Scope[];
 
 // Used with uber auth tokens when needed.
 extern const char kGaiaSid[];
@@ -44,6 +52,8 @@ extern const char kObfuscatedGaiaId[];
 // Used by wallet sign in helper.
 extern const char kClientOAuthEmailKey[];
 
+// Refresh token that is guaranteed to be invalid.
+extern const char kInvalidRefreshToken[];
 }  // namespace GaiaConstants
 
 #endif  // GOOGLE_APIS_GAIA_GAIA_CONSTANTS_H_

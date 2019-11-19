@@ -272,7 +272,7 @@ class SandboxWinTest : public ::testing::Test {
 }  // namespace
 
 TEST_F(SandboxWinTest, IsGpuAppContainerEnabled) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS1)
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   EXPECT_FALSE(service_manager::SandboxWin::IsAppContainerEnabledForSandbox(
@@ -288,7 +288,7 @@ TEST_F(SandboxWinTest, IsGpuAppContainerEnabled) {
 }
 
 TEST_F(SandboxWinTest, AppContainerAccessCheckFail) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS1)
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   scoped_refptr<sandbox::AppContainerProfileBase> profile;
@@ -300,7 +300,7 @@ TEST_F(SandboxWinTest, AppContainerAccessCheckFail) {
 }
 
 TEST_F(SandboxWinTest, AppContainerCheckProfile) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS1)
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   scoped_refptr<sandbox::AppContainerProfileBase> profile;
@@ -317,7 +317,7 @@ TEST_F(SandboxWinTest, AppContainerCheckProfile) {
 }
 
 TEST_F(SandboxWinTest, AppContainerCheckProfileDisableLpac) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS1)
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitch(switches::kDisableGpuLpac);
@@ -330,7 +330,7 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileDisableLpac) {
 }
 
 TEST_F(SandboxWinTest, AppContainerCheckProfileAddCapabilities) {
-  if (base::win::GetVersion() < base::win::VERSION_WIN10_RS1)
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
     return;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAddGpuAppContainerCaps,

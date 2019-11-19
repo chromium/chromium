@@ -96,18 +96,18 @@ public class JavaBridgeActivityTestRule
         });
     }
 
-    public void injectObjectAndReload(Object object, String name) throws Exception {
+    public void injectObjectAndReload(Object object, String name) {
         injectObjectAndReload(object, name, null);
     }
 
-    public void injectObjectAndReload(Object object, String name,
-            Class<? extends Annotation> requiredAnnotation) throws Exception {
+    public void injectObjectAndReload(
+            Object object, String name, Class<? extends Annotation> requiredAnnotation) {
         injectObjectsAndReload(object, name, null, null, requiredAnnotation);
     }
 
     public void injectObjectsAndReload(final Object object1, final String name1,
             final Object object2, final String name2,
-            final Class<? extends Annotation> requiredAnnotation) throws Exception {
+            final Class<? extends Annotation> requiredAnnotation) {
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mTestCallbackHelperContainer.getOnPageFinishedHelper();
         int currentCallCount = onPageFinishedHelper.getCallCount();

@@ -1,11 +1,12 @@
 rootWebArea
-++paragraph
-++++staticText name='The aside tag defines some content aside from the content it is placed in.'
-++++++inlineTextBox name='The aside tag defines some content aside from the content it is placed in.'
-++complementary
-++++heading name='Aside tag' hierarchicalLevel=4
-++++++staticText name='Aside tag'
-++++++++inlineTextBox name='Aside tag'
+++genericContainer ignored
 ++++paragraph
-++++++staticText name='The aside content should be related to the surrounding content.'
-++++++++inlineTextBox name='The aside content should be related to the surrounding content.'
+++++++staticText name='The aside tag defines some content aside from the content it is placed in.'
+++++++++inlineTextBox name='The aside tag defines some content aside from the content it is placed in.'
+++++complementary
+++++++heading name='Aside tag' hierarchicalLevel=4
+++++++++staticText name='Aside tag'
+++++++++++inlineTextBox name='Aside tag'
+++++++paragraph
+++++++++staticText name='The aside content should be related to the surrounding content.'
+++++++++++inlineTextBox name='The aside content should be related to the surrounding content.'

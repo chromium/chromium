@@ -7,8 +7,8 @@
 
 #include "base/callback.h"
 #include "base/optional.h"
-#include "content/common/navigation_subresource_loader_params.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "content/browser/navigation_subresource_loader_params.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -19,20 +19,24 @@ struct ResourceResponseHead;
 struct ResourceRequest;
 }  // namespace network
 
-namespace content {
-
+namespace blink {
 class ThrottlingURLLoader;
 class URLLoaderThrottle;
+}  // namespace blink
+
+namespace content {
+
 class WorkerScriptLoaderFactory;
 
 // NetworkService (PlzWorker):
 // This is an implementation of the URLLoaderClient for web worker's main script
 // fetch. The loader and client bounded with this class are to be unbound and
-// forwarded to the renderer process on OnReceiveResponse, and the resource
-// loader in the renderer process will take them over.
+// forwarded to the renderer process on OnStartLoadingResponseBody, and the
+// resource loader in the renderer process will take them over.
 //
 // WorkerScriptFetcher deletes itself when the ownership of the loader and
-// client is passed to the renderer, or on failure. It lives on the IO thread.
+// client is passed to the renderer, or on failure. It lives on the UI
+// thread.
 class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
  public:
   using CreateAndStartCallback =
@@ -44,7 +48,7 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
   // OnReceiveResponse is called on |this|.
   static void CreateAndStart(
       std::unique_ptr<WorkerScriptLoaderFactory> script_loader_factory,
-      std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       std::unique_ptr<network::ResourceRequest> resource_request,
       CreateAndStartCallback callback);
 
@@ -56,16 +60,16 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
 
   ~WorkerScriptFetcher() override;
 
-  void Start(std::vector<std::unique_ptr<URLLoaderThrottle>> throttles);
+  void Start(std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles);
 
   // network::mojom::URLLoaderClient
-  void OnReceiveResponse(const network::ResourceResponseHead& head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
-                         const network::ResourceResponseHead& head) override;
+                         network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback callback) override;
-  void OnReceiveCachedMetadata(const std::vector<uint8_t>& data) override;
+  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
@@ -78,18 +82,20 @@ class WorkerScriptFetcher : public network::mojom::URLLoaderClient {
 
   // URLLoader instance backed by a request interceptor (e.g.,
   // AppCacheRequestHandler) or the network service.
-  std::unique_ptr<ThrottlingURLLoader> url_loader_;
+  std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
 
   // URLLoader instance for handling a response received from the default
   // network loader. This can be provided by an interceptor. For example,
   // AppCache's interceptor creates this for AppCache's fallback case.
   network::mojom::URLLoaderPtr response_url_loader_;
-  mojo::Binding<network::mojom::URLLoaderClient> response_url_loader_binding_;
+  mojo::Receiver<network::mojom::URLLoaderClient> response_url_loader_receiver_{
+      this};
 
   base::Optional<SubresourceLoaderParams> subresource_loader_params_;
 
   std::vector<net::RedirectInfo> redirect_infos_;
   std::vector<network::ResourceResponseHead> redirect_response_heads_;
+  network::ResourceResponseHead response_head_;
 };
 
 }  // namespace content

@@ -239,10 +239,11 @@ void OSCrypt::RegisterLocalPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(os_crypt::prefs::kKeyCreated, false);
 }
 
-void OSCrypt::Init(PrefService* local_state) {
+bool OSCrypt::Init(PrefService* local_state) {
   base::AutoLock auto_lock(g_lock.Get());
   g_key_creation_util = new os_crypt::EncryptionKeyCreationUtilMac(
       local_state, base::ThreadTaskRunnerHandle::Get());
+  return true;
 }
 #endif
 

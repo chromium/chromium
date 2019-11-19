@@ -16,10 +16,10 @@ cr.define('cr.ui', function() {
 
   /**
    * Creates a new menu separator element.
-   * @return {cr.ui.MenuItem} The new separator element.
+   * @return {!cr.ui.MenuItem} The new separator element.
    */
   MenuItem.createSeparator = function() {
-    const el = cr.doc.createElement('hr');
+    const el = /** @type {!cr.ui.MenuItem} */ (document.createElement('hr'));
     MenuItem.decorate(el);
     return el;
   };
@@ -46,6 +46,7 @@ cr.define('cr.ui', function() {
       // it is used in element's aria-activedescendant attribute.
       if (!this.isSeparator()) {
         this.setAttribute('role', 'menuitem');
+        this.setAttribute('tabindex', this.getAttribute('tabindex') || -1);
       }
 
       let iconUrl;
@@ -73,7 +74,7 @@ cr.define('cr.ui', function() {
       }
 
       if (typeof command == 'string' && command[0] == '#') {
-        command = assert(this.ownerDocument.getElementById(command.slice(1)));
+        command = assert(this.ownerDocument.body.querySelector(command));
         cr.ui.decorate(command, Command);
       }
 
@@ -205,7 +206,7 @@ cr.define('cr.ui', function() {
         const contextElement =
             /** @type {{contextElement: Element}} */ (this.parentNode)
                 .contextElement;
-        const activationEvent = cr.doc.createEvent('Event');
+        const activationEvent = document.createEvent('Event');
         activationEvent.initEvent('activate', true, true);
         activationEvent.originalEvent = e;
         // Dispatch command event followed by executing the command object.

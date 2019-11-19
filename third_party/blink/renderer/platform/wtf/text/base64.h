@@ -27,7 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_BASE64_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_BASE64_H_
 
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
@@ -38,25 +38,12 @@ enum Base64EncodePolicy { kBase64DoNotInsertLFs, kBase64InsertLFs };
 
 enum Base64DecodePolicy { kBase64DoNotValidatePadding, kBase64ValidatePadding };
 
-WTF_EXPORT void Base64Encode(const char*,
-                             unsigned,
+WTF_EXPORT void Base64Encode(base::span<const uint8_t>,
                              Vector<char>&,
                              Base64EncodePolicy = kBase64DoNotInsertLFs);
-WTF_EXPORT void Base64Encode(const Vector<char>&,
-                             Vector<char>&,
-                             Base64EncodePolicy = kBase64DoNotInsertLFs);
-WTF_EXPORT void Base64Encode(const CString&,
-                             Vector<char>&,
-                             Base64EncodePolicy = kBase64DoNotInsertLFs);
-WTF_EXPORT String Base64Encode(const char*,
-                               unsigned,
-                               Base64EncodePolicy = kBase64DoNotInsertLFs);
-WTF_EXPORT String Base64Encode(const Vector<char>&,
-                               Base64EncodePolicy = kBase64DoNotInsertLFs);
-WTF_EXPORT String Base64Encode(const Vector<unsigned char>&,
-                               Base64EncodePolicy = kBase64DoNotInsertLFs);
-WTF_EXPORT String Base64Encode(const CString&,
-                               Base64EncodePolicy = kBase64DoNotInsertLFs);
+WTF_EXPORT String Base64Encode(base::span<const uint8_t>,
+                               Base64EncodePolicy = kBase64DoNotInsertLFs)
+    WARN_UNUSED_RESULT;
 
 WTF_EXPORT bool Base64Decode(
     const String&,
@@ -80,6 +67,11 @@ WTF_EXPORT bool Base64Decode(
     Vector<char>&,
     CharacterMatchFunctionPtr should_ignore_character = nullptr,
     Base64DecodePolicy = kBase64DoNotValidatePadding);
+WTF_EXPORT bool Base64UnpaddedURLDecode(
+    const String& in,
+    Vector<char>&,
+    CharacterMatchFunctionPtr should_ignore_character = nullptr,
+    Base64DecodePolicy = kBase64DoNotValidatePadding);
 
 // Given an encoding in either base64 or base64url, returns a normalized
 // encoding in plain base64.
@@ -88,32 +80,6 @@ WTF_EXPORT String NormalizeToBase64(const String&);
 WTF_EXPORT String Base64URLEncode(const char*,
                                   unsigned,
                                   Base64EncodePolicy = kBase64DoNotInsertLFs);
-
-inline void Base64Encode(const Vector<char>& in,
-                         Vector<char>& out,
-                         Base64EncodePolicy policy) {
-  Base64Encode(in.data(), in.size(), out, policy);
-}
-
-inline void Base64Encode(const CString& in,
-                         Vector<char>& out,
-                         Base64EncodePolicy policy) {
-  Base64Encode(in.data(), in.length(), out, policy);
-}
-
-inline String Base64Encode(const Vector<char>& in, Base64EncodePolicy policy) {
-  return Base64Encode(in.data(), in.size(), policy);
-}
-
-inline String Base64Encode(const Vector<unsigned char>& in,
-                           Base64EncodePolicy policy) {
-  return Base64Encode(reinterpret_cast<const char*>(in.data()), in.size(),
-                      policy);
-}
-
-inline String Base64Encode(const CString& in, Base64EncodePolicy policy) {
-  return Base64Encode(in.data(), in.length(), policy);
-}
 
 }  // namespace WTF
 

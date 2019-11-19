@@ -5,13 +5,15 @@
 package org.chromium.chrome.browser.widget;
 
 import android.graphics.Bitmap;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 
 /**
  * This class generates thumbnails for a given {@link ThumbnailRequest} by calling the native
@@ -26,7 +28,7 @@ public class ThumbnailGenerator {
 
     private long getNativeThumbnailGenerator() {
         if (mNativeThumbnailGenerator == 0) {
-            mNativeThumbnailGenerator = nativeInit();
+            mNativeThumbnailGenerator = ThumbnailGeneratorJni.get().init(ThumbnailGenerator.this);
         }
         return mNativeThumbnailGenerator;
     }
@@ -41,8 +43,9 @@ public class ThumbnailGenerator {
         ThreadUtils.assertOnUiThread();
         boolean hasFilePath = !TextUtils.isEmpty(request.getFilePath());
         assert hasFilePath;
-        nativeRetrieveThumbnail(getNativeThumbnailGenerator(), request.getContentId(),
-                request.getFilePath(), request.getMimeType(), request.getIconSize(), callback);
+        ThumbnailGeneratorJni.get().retrieveThumbnail(getNativeThumbnailGenerator(),
+                ThumbnailGenerator.this, request.getContentId(), request.getFilePath(),
+                request.getMimeType(), request.getIconSize(), callback);
     }
 
     /**
@@ -51,7 +54,7 @@ public class ThumbnailGenerator {
     public void destroy() {
         ThreadUtils.assertOnUiThread();
         if (mNativeThumbnailGenerator == 0) return;
-        nativeDestroy(mNativeThumbnailGenerator);
+        ThumbnailGeneratorJni.get().destroy(mNativeThumbnailGenerator, ThumbnailGenerator.this);
         mNativeThumbnailGenerator = 0;
     }
 
@@ -77,9 +80,12 @@ public class ThumbnailGenerator {
         callback.onThumbnailRetrieved(contentId, bitmap, requestedIconSizePx);
     }
 
-    private native long nativeInit();
-    private native void nativeDestroy(long nativeThumbnailGenerator);
-    private native void nativeRetrieveThumbnail(long nativeThumbnailGenerator, String contentId,
-            String filePath, String mimeType, int thumbnailSize,
-            ThumbnailGeneratorCallback callback);
+    @NativeMethods
+    interface Natives {
+        long init(ThumbnailGenerator caller);
+        void destroy(long nativeThumbnailGenerator, ThumbnailGenerator caller);
+        void retrieveThumbnail(long nativeThumbnailGenerator, ThumbnailGenerator caller,
+                String contentId, String filePath, String mimeType, int thumbnailSize,
+                ThumbnailGeneratorCallback callback);
+    }
 }

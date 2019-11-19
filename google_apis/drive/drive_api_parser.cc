@@ -49,14 +49,14 @@ bool GetParentsFromValue(const base::Value* value,
   DCHECK(value);
   DCHECK(result);
 
-  const base::ListValue* list_value = NULL;
+  const base::ListValue* list_value = nullptr;
   if (!value->GetAsList(&list_value))
     return false;
 
   base::JSONValueConverter<ParentReference> converter;
   result->resize(list_value->GetSize());
   for (size_t i = 0; i < list_value->GetSize(); ++i) {
-    const base::Value* parent_value = NULL;
+    const base::Value* parent_value = nullptr;
     if (!list_value->Get(i, &parent_value) ||
         !converter.Convert(*parent_value, &(*result)[i]))
       return false;
@@ -218,7 +218,7 @@ constexpr ChangeTypeMap kChangeTypeMap[] = {
 // |kind| property which denotes the type of the structure (e.g. "drive#file").
 bool IsResourceKindExpected(const base::Value& value,
                             const std::string& expected_kind) {
-  const base::DictionaryValue* as_dict = NULL;
+  const base::DictionaryValue* as_dict = nullptr;
   std::string kind;
   return value.GetAsDictionary(&as_dict) &&
       as_dict->HasKey(kKind) &&

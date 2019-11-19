@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 # The proto files need to be a component to avoid duplicate symbols the way the
@@ -12,6 +13,21 @@ component("proto") {
   public_deps = [
     ":proto_internal",
   ]
+}
+
+proto_library("policy_common_definitions_compile_proto") {
+  visibility = [
+    "//components/policy:cloud_policy_proto_generated_compile_proto",
+    "//components/policy:chrome_settings_proto_generated_compile_proto",
+    "//components/policy:generated",
+    ":proto_internal",
+  ]
+
+  sources = [
+    "policy_common_definitions.proto",
+  ]
+
+  proto_out_dir = "components/policy/proto"
 }
 
 proto_library("proto_internal") {
@@ -33,8 +49,20 @@ proto_library("proto_internal") {
     sources += [ "chrome_extension_policy.proto" ]
   }
 
+  link_deps = [ ":policy_common_definitions_compile_proto" ]
   cc_generator_options = "dllexport_decl=POLICY_PROTO_EXPORT:"
   cc_include = "components/policy/proto/policy_proto_export.h"
   component_build_force_source_set = true
   defines = [ "POLICY_PROTO_COMPILATION" ]
+}
+
+if (use_libfuzzer) {
+  fuzzable_proto_library("chrome_device_policy_full_runtime_proto") {
+    proto_out_dir = "components/policy/proto/fuzzer"
+
+    sources = [
+      "chrome_device_policy.proto",
+      "policy_common_definitions.proto",
+    ]
+  }
 }

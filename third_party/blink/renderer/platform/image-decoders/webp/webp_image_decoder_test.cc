@@ -37,9 +37,7 @@
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
-#include "third_party/blink/renderer/platform/wtf/dtoa/utils.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -50,7 +48,7 @@ struct AnimParam {
   int x_offset, y_offset, width, height;
   ImageFrame::DisposalMethod disposal_method;
   ImageFrame::AlphaBlendSource alpha_blend_source;
-  TimeDelta duration;
+  base::TimeDelta duration;
   bool has_alpha;
 };
 
@@ -119,14 +117,14 @@ TEST(AnimatedWebPTests, verifyAnimationParametersTransparentImage) {
   const int kCanvasHeight = 29;
   const AnimParam kFrameParameters[] = {
       {0, 0, 11, 29, ImageFrame::kDisposeKeep,
-       ImageFrame::kBlendAtopPreviousFrame, TimeDelta::FromMilliseconds(1000),
-       true},
+       ImageFrame::kBlendAtopPreviousFrame,
+       base::TimeDelta::FromMilliseconds(1000), true},
       {2, 10, 7, 17, ImageFrame::kDisposeKeep,
-       ImageFrame::kBlendAtopPreviousFrame, TimeDelta::FromMilliseconds(500),
-       true},
+       ImageFrame::kBlendAtopPreviousFrame,
+       base::TimeDelta::FromMilliseconds(500), true},
       {2, 2, 7, 16, ImageFrame::kDisposeKeep,
-       ImageFrame::kBlendAtopPreviousFrame, TimeDelta::FromMilliseconds(1000),
-       true},
+       ImageFrame::kBlendAtopPreviousFrame,
+       base::TimeDelta::FromMilliseconds(1000), true},
   };
 
   for (size_t i = 0; i < base::size(kFrameParameters); ++i) {
@@ -163,17 +161,17 @@ TEST(AnimatedWebPTests,
   const int kCanvasHeight = 87;
   const AnimParam kFrameParameters[] = {
       {4, 10, 33, 32, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopPreviousFrame, TimeDelta::FromMilliseconds(1000),
-       true},
+       ImageFrame::kBlendAtopPreviousFrame,
+       base::TimeDelta::FromMilliseconds(1000), true},
       {34, 30, 33, 32, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopPreviousFrame, TimeDelta::FromMilliseconds(1000),
-       true},
+       ImageFrame::kBlendAtopPreviousFrame,
+       base::TimeDelta::FromMilliseconds(1000), true},
       {62, 50, 32, 32, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopPreviousFrame, TimeDelta::FromMilliseconds(1000),
-       true},
+       ImageFrame::kBlendAtopPreviousFrame,
+       base::TimeDelta::FromMilliseconds(1000), true},
       {10, 54, 32, 33, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopPreviousFrame, TimeDelta::FromMilliseconds(1000),
-       true},
+       ImageFrame::kBlendAtopPreviousFrame,
+       base::TimeDelta::FromMilliseconds(1000), true},
   };
 
   for (size_t i = 0; i < base::size(kFrameParameters); ++i) {
@@ -209,13 +207,17 @@ TEST(AnimatedWebPTests, verifyAnimationParametersBlendOverwrite) {
   const int kCanvasHeight = 87;
   const AnimParam kFrameParameters[] = {
       {4, 10, 33, 32, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopBgcolor, TimeDelta::FromMilliseconds(1000), true},
+       ImageFrame::kBlendAtopBgcolor, base::TimeDelta::FromMilliseconds(1000),
+       true},
       {34, 30, 33, 32, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopBgcolor, TimeDelta::FromMilliseconds(1000), true},
+       ImageFrame::kBlendAtopBgcolor, base::TimeDelta::FromMilliseconds(1000),
+       true},
       {62, 50, 32, 32, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopBgcolor, TimeDelta::FromMilliseconds(1000), true},
+       ImageFrame::kBlendAtopBgcolor, base::TimeDelta::FromMilliseconds(1000),
+       true},
       {10, 54, 32, 33, ImageFrame::kDisposeOverwriteBgcolor,
-       ImageFrame::kBlendAtopBgcolor, TimeDelta::FromMilliseconds(1000), true},
+       ImageFrame::kBlendAtopBgcolor, base::TimeDelta::FromMilliseconds(1000),
+       true},
   };
 
   for (size_t i = 0; i < base::size(kFrameParameters); ++i) {
@@ -349,20 +351,22 @@ TEST(AnimatedWebPTests, frameIsCompleteAndDuration) {
   EXPECT_EQ(2u, decoder->FrameCount());
   EXPECT_FALSE(decoder->Failed());
   EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(0));
-  EXPECT_EQ(TimeDelta::FromMilliseconds(1000),
+  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000),
             decoder->FrameDurationAtIndex(0));
   EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(1));
-  EXPECT_EQ(TimeDelta::FromMilliseconds(500), decoder->FrameDurationAtIndex(1));
+  EXPECT_EQ(base::TimeDelta::FromMilliseconds(500),
+            decoder->FrameDurationAtIndex(1));
 
   decoder->SetData(data_buffer.get(), true);
   EXPECT_EQ(3u, decoder->FrameCount());
   EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(0));
-  EXPECT_EQ(TimeDelta::FromMilliseconds(1000),
+  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000),
             decoder->FrameDurationAtIndex(0));
   EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(1));
-  EXPECT_EQ(TimeDelta::FromMilliseconds(500), decoder->FrameDurationAtIndex(1));
+  EXPECT_EQ(base::TimeDelta::FromMilliseconds(500),
+            decoder->FrameDurationAtIndex(1));
   EXPECT_TRUE(decoder->FrameIsReceivedAtIndex(2));
-  EXPECT_EQ(TimeDelta::FromMilliseconds(1000),
+  EXPECT_EQ(base::TimeDelta::FromMilliseconds(1000),
             decoder->FrameDurationAtIndex(2));
 }
 

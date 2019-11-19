@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS CSP test for default-src in ServiceWorkerGlobalScope
-FAIL importScripts test for default-src assert_true: Importing the other origins script should fail. expected true got false
-FAIL Fetch test for default-src assert_unreached: unexpected rejection: assert_unreached: fetch should fail. Reached unreachable code Reached unreachable code
-FAIL Redirected fetch test for default-src assert_unreached: unexpected rejection: assert_unreached: Redirected fetch should fail. Reached unreachable code Reached unreachable code
-Harness: the test ran to completion.
-

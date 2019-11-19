@@ -17,7 +17,10 @@
 #include "content/browser/appcache/appcache_storage.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
@@ -28,7 +31,6 @@ class NetToMojoPendingBuffer;
 namespace content {
 
 class AppCacheRequest;
-class AppCacheURLLoaderRequest;
 
 // AppCacheJob wrapper for a network::mojom::URLLoader implementation which
 // returns responses stored in the AppCache.
@@ -36,12 +38,22 @@ class CONTENT_EXPORT AppCacheURLLoaderJob : public AppCacheJob,
                                             public AppCacheStorage::Delegate,
                                             public network::mojom::URLLoader {
  public:
+  // Use AppCacheRequestHandler::CreateJob() instead of calling the constructor
+  // directly.
+  //
+  // The constructor is exposed for std::make_unique.
+  AppCacheURLLoaderJob(
+      AppCacheRequest* appcache_request,
+      AppCacheStorage* storage,
+      AppCacheRequestHandler::AppCacheLoaderCallback loader_callback);
+
   ~AppCacheURLLoaderJob() override;
 
   // Sets up the bindings.
-  void Start(const network::ResourceRequest& resource_request,
-             network::mojom::URLLoaderRequest request,
-             network::mojom::URLLoaderClientPtr client);
+  void Start(base::OnceClosure continuation,
+             const network::ResourceRequest& resource_request,
+             mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+             mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
   // AppCacheJob overrides.
   bool IsStarted() const override;
@@ -59,7 +71,6 @@ class CONTENT_EXPORT AppCacheURLLoaderJob : public AppCacheJob,
   void FollowRedirect(const std::vector<std::string>& removed_headers,
                       const net::HttpRequestHeaders& modified_headers,
                       const base::Optional<GURL>& new_url) override;
-  void ProceedWithResponse() override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -68,20 +79,14 @@ class CONTENT_EXPORT AppCacheURLLoaderJob : public AppCacheJob,
   void DeleteIfNeeded();
 
  protected:
-  // AppCacheRequestHandler::CreateJob() creates this instance.
-  friend class AppCacheRequestHandler;
-
-  AppCacheURLLoaderJob(
-      AppCacheURLLoaderRequest* appcache_request,
-      AppCacheStorage* storage,
-      NavigationLoaderInterceptor::LoaderCallback loader_callback);
-
   // Invokes the loader callback which is expected to setup the mojo binding.
-  void CallLoaderCallback();
+  void CallLoaderCallback(base::OnceClosure continuation);
 
   // AppCacheStorage::Delegate methods
   void OnResponseInfoLoaded(AppCacheResponseInfo* response_info,
                             int64_t response_id) override;
+  void ContinueOnResponseInfoLoaded(
+      scoped_refptr<AppCacheResponseInfo> response_info);
 
   // AppCacheResponseReader completion callback.
   void OnReadComplete(int result);
@@ -111,12 +116,12 @@ class CONTENT_EXPORT AppCacheURLLoaderJob : public AppCacheJob,
   AppCacheEntry entry_;
   bool is_fallback_;
 
-  // Binds the URLLoaderClient with us.
-  mojo::Binding<network::mojom::URLLoader> binding_;
+  // Receiver of the URLLoaderClient with us.
+  mojo::Receiver<network::mojom::URLLoader> receiver_{this};
 
-  // The URLLoaderClient pointer. We call this interface with notifications
+  // The URLLoaderClient remote. We call this interface with notifications
   // about the URL load
-  network::mojom::URLLoaderClientPtr client_;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
 
   // The data pipe used to transfer AppCache data to the client.
   mojo::DataPipe data_pipe_;
@@ -126,16 +131,16 @@ class CONTENT_EXPORT AppCacheURLLoaderJob : public AppCacheJob,
 
   // The Callback to be invoked in the network service land to indicate if
   // the resource request can be serviced via the AppCache.
-  NavigationLoaderInterceptor::LoaderCallback loader_callback_;
+  AppCacheRequestHandler::AppCacheLoaderCallback loader_callback_;
 
   // The AppCacheRequest instance, used to inform the loader job about range
   // request headers. Not owned by this class.
-  base::WeakPtr<AppCacheURLLoaderRequest> appcache_request_;
+  base::WeakPtr<AppCacheRequest> appcache_request_;
 
   bool is_deleting_soon_ = false;
   bool is_main_resource_load_;
 
-  base::WeakPtrFactory<AppCacheURLLoaderJob> weak_factory_;
+  base::WeakPtrFactory<AppCacheURLLoaderJob> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(AppCacheURLLoaderJob);
 };
 

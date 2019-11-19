@@ -10,7 +10,7 @@
 
     #trigger {
       /* Only overlap with the contents element, not the stretch element */
-      transform:translateZ(0);
+      will-change:transform;
       position: absolute;
       top: 0px;
       left: 0px;
@@ -48,18 +48,11 @@
 
   </style>
   <script>
-    if (window.testRunner) {
-      testRunner.waitUntilDone();
-      testRunner.dumpAsTextWithPixelResults();
-    }
-
     function doTest()
     {
       runAfterLayoutAndPaint(function() {
         document.getElementById("stretch").style.left = "-100px";
-        if (window.testRunner)
-          testRunner.notifyDone();
-      });
+      }, true);
     }
 
     window.addEventListener('load', doTest, false);

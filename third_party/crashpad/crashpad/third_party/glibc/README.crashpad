@@ -1,0 +1,16 @@
+Name: GNU C Library
+Short Name: glibc
+URL: https://www.gnu.org/software/libc/
+URL: https://sourceware.org/git/?p=glibc.git
+Version: 2.29
+License: GNU LGPL 2.1
+License File: COPYING.LIB
+Security Critical: no
+
+Description:
+glibc is the GNU Project’s implementation of the C standard library.
+
+Local Modifications:
+ - Only elf/elf.h is included. Its #include of <features.h> has been removed,
+   and it uses of __BEGIN_DECLS and __END_DECLS have been replaced with inline
+   versions in the manner that misc/sys/cdefs.h defines those macros.

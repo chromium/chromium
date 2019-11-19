@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <dimen name="touch_to_fill_favicon_size">24dp</dimen>
+    <dimen name="touch_to_fill_sheet_margin">16dp</dimen>
+
+    <!-- Below are the different Half-state peeking heights. The height is the
+         sum of all components. It varies depending on the suggestion count. The
+         base height is 282dp:
+         Bottom sheet shadows and padding (18dp)
+         + Handlebar (16dp)
+         + Header size (112 dp)
+         + Title size and margin (48+16dp)
+         + First suggestion (72dp) -->
+    <!-- Base height (282dp) plus padding (8dp) plus half suggestion (36dp) -->
+    <dimen name="touch_to_fill_sheet_height_multiple_credentials">326dp</dimen>
+    <!-- Base height (282dp) plus bottom padding (16dp) -->
+    <dimen name="touch_to_fill_sheet_height_single_credential">298dp</dimen>
+    <!-- Base height (282dp) + confirm button with paddings (48+2*16dp) -->
+    <dimen name="touch_to_fill_sheet_height_single_credential_with_button">
+      362dp
+    </dimen>
+</resources>

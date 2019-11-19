@@ -122,10 +122,10 @@ array: Array(300)
     length: 300
     __proto__: Array(0)
 func: function() {return a + b;}
-    arguments: null
-    caller: null
     length: 0
     name: 
+    arguments: null
+    caller: null
     prototype: Object
     __proto__: function () { [native code] }
     [[FunctionLocation]]: Object
@@ -249,10 +249,10 @@ array: Array(300)
     length: 300
     __proto__: Array(0)
 func: function() {return a + b;}
-    arguments: null
-    caller: null
     length: 0
     name: 
+    arguments: null
+    caller: null
     prototype: Object
     __proto__: function () { [native code] }
     [[FunctionLocation]]: Object

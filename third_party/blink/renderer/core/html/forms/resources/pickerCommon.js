@@ -74,7 +74,8 @@ Rectangle.prototype = {
     return this.y + this.height;
   },
   toString: function() {
-    return 'Rectangle(' + this.x + ',' + this.y + ',' + this.width + ',' + this.height + ')';
+    return 'Rectangle(' + this.x + ',' + this.y + ',' + this.width + ',' +
+        this.height + ')';
   }
 };
 
@@ -101,7 +102,8 @@ Rectangle.intersection = function(rect1, rect2) {
  */
 function resizeWindow(width, height) {
   var zoom = global.params.zoomFactor ? global.params.zoomFactor : 1;
-  setWindowRect(adjustWindowRect(width * zoom, height * zoom, width * zoom, height * zoom));
+  setWindowRect(adjustWindowRect(
+      width * zoom, height * zoom, width * zoom, height * zoom));
 }
 
 /**
@@ -124,7 +126,8 @@ function adjustWindowRect(width, height, minWidth, minHeight) {
 
   var anchorRect = new Rectangle(global.params.anchorRectInScreen);
   var availRect = new Rectangle(
-      window.screen.availLeft, window.screen.availTop, window.screen.availWidth, window.screen.availHeight);
+      window.screen.availLeft, window.screen.availTop, window.screen.availWidth,
+      window.screen.availHeight);
 
   _adjustWindowRectVertically(windowRect, availRect, anchorRect, minHeight);
   _adjustWindowRectHorizontally(windowRect, availRect, anchorRect, minWidth);
@@ -135,12 +138,15 @@ function adjustWindowRect(width, height, minWidth, minHeight) {
 /**
  * Arguments are DIPs.
  */
-function _adjustWindowRectVertically(windowRect, availRect, anchorRect, minHeight) {
+function _adjustWindowRectVertically(
+    windowRect, availRect, anchorRect, minHeight) {
   var availableSpaceAbove = anchorRect.y - availRect.y;
-  availableSpaceAbove = Math.max(0, Math.min(availRect.height, availableSpaceAbove));
+  availableSpaceAbove =
+      Math.max(0, Math.min(availRect.height, availableSpaceAbove));
 
   var availableSpaceBelow = availRect.maxY - anchorRect.maxY;
-  availableSpaceBelow = Math.max(0, Math.min(availRect.height, availableSpaceBelow));
+  availableSpaceBelow =
+      Math.max(0, Math.min(availRect.height, availableSpaceBelow));
 
   // In some situations, there may be no space available.  This can happen on
   // Linux when using a buggy window manager (https://crbug.com/774232).  When
@@ -148,7 +154,9 @@ function _adjustWindowRectVertically(windowRect, availRect, anchorRect, minHeigh
   if (availableSpaceAbove == 0 && availableSpaceBelow == 0) {
     windowRect.height = Math.max(minHeight, windowRect.height);
     windowRect.y = anchorRect.maxY;
-  } else if (windowRect.height > availableSpaceBelow && availableSpaceBelow < availableSpaceAbove) {
+  } else if (
+      windowRect.height > availableSpaceBelow &&
+      availableSpaceBelow < availableSpaceAbove) {
     windowRect.height = Math.min(windowRect.height, availableSpaceAbove);
     windowRect.height = Math.max(windowRect.height, minHeight);
     windowRect.y = anchorRect.y - windowRect.height;
@@ -162,7 +170,8 @@ function _adjustWindowRectVertically(windowRect, availRect, anchorRect, minHeigh
 /**
  * Arguments are DIPs.
  */
-function _adjustWindowRectHorizontally(windowRect, availRect, anchorRect, minWidth) {
+function _adjustWindowRectHorizontally(
+    windowRect, availRect, anchorRect, minWidth) {
   if (anchorRect.maxX <= availRect.x || availRect.maxX <= anchorRect.x) {
     windowRect.width = Math.max(minWidth, windowRect.width);
     windowRect.x = anchorRect.x
@@ -174,7 +183,8 @@ function _adjustWindowRectHorizontally(windowRect, availRect, anchorRect, minWid
   // If we are getting clipped, we want to switch alignment to the right side
   // of the anchor rect as long as doing so will make the popup not clipped.
   var rightAlignedX = windowRect.x + anchorRect.width - windowRect.width;
-  if (rightAlignedX >= availRect.x && (windowRect.maxX > availRect.maxX || global.params.isRTL))
+  if (rightAlignedX >= availRect.x &&
+      (windowRect.maxX > availRect.maxX || global.params.isRTL))
     windowRect.x = rightAlignedX;
 }
 
@@ -186,7 +196,8 @@ function setWindowRect(rect) {
     window.frameElement.style.width = rect.width + 'px';
     window.frameElement.style.height = rect.height + 'px';
   } else {
-    window.pagePopupController.setWindowRect(rect.x, rect.y, rect.width, rect.height);
+    window.pagePopupController.setWindowRect(
+        rect.x, rect.y, rect.width, rect.height);
   }
 }
 
@@ -233,8 +244,10 @@ function getScrollbarWidth() {
  * @return {?Element}
  */
 function enclosingNodeOrSelfWithClass(selfNode, className) {
-  for (var node = selfNode; node && node !== selfNode.ownerDocument; node = node.parentNode) {
-    if (node.nodeType === Node.ELEMENT_NODE && node.classList.contains(className))
+  for (var node = selfNode; node && node !== selfNode.ownerDocument;
+       node = node.parentNode) {
+    if (node.nodeType === Node.ELEMENT_NODE &&
+        node.classList.contains(className))
       return node;
   }
   return null;
@@ -243,7 +256,8 @@ function enclosingNodeOrSelfWithClass(selfNode, className) {
 /**
  * @constructor
  */
-function EventEmitter(){};
+function EventEmitter() {
+}
 
 /**
  * @param {!string} type
@@ -333,7 +347,8 @@ Picker.prototype.handleCancel = function() {
 };
 
 Picker.prototype.chooseOtherColor = function() {
-  window.pagePopupController.setValueAndClosePopup(Picker.Actions.ChooseOtherColor, '');
+  window.pagePopupController.setValueAndClosePopup(
+      Picker.Actions.ChooseOtherColor, '');
 };
 
 Picker.prototype.cleanup = function() {};

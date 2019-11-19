@@ -114,7 +114,7 @@ class VolumeMountWatcherWin {
   // removable devices will be notified.
   StorageMonitor::Receiver* notifications_;
 
-  base::WeakPtrFactory<VolumeMountWatcherWin> weak_factory_;
+  base::WeakPtrFactory<VolumeMountWatcherWin> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VolumeMountWatcherWin);
 };

@@ -55,16 +55,13 @@ class CORE_EXPORT StyleTraversalRoot {
   // Return the parent node for type of traversal for which the implementation
   // is a root.
   virtual ContainerNode* Parent(const Node&) const = 0;
-
-  // Return true if the given node has dirty descendants.
-  virtual bool IsChildDirty(const ContainerNode&) const = 0;
 #endif  // DCHECK_IS_ON()
 
   // Return true if the given node is dirty.
   virtual bool IsDirty(const Node&) const = 0;
 
-  // Clear the child-dirty flag on the ancestors of the given node.
-  virtual void ClearChildDirtyForAncestors(ContainerNode& parent) const = 0;
+  // Update the root node when removed.
+  virtual void RootRemoved(ContainerNode& parent) = 0;
 
   bool IsSingleRoot() const { return root_type_ == RootType::kSingleRoot; }
 

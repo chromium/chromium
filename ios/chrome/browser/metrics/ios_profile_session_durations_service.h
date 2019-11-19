@@ -9,7 +9,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/driver/sync_session_durations_metrics_recorder.h"
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 namespace syncer {
@@ -23,9 +23,8 @@ class IOSProfileSessionDurationsService : public KeyedService {
   // Callers must ensure that the parameters outlive this object.
   // If |sync_service| and |identity_manager| are null, then this object does
   // not monitor profile session durations.
-  IOSProfileSessionDurationsService(
-      syncer::SyncService* sync_service,
-      identity::IdentityManager* identity_manager);
+  IOSProfileSessionDurationsService(syncer::SyncService* sync_service,
+                                    signin::IdentityManager* identity_manager);
   ~IOSProfileSessionDurationsService() override;
 
   // KeyedService:

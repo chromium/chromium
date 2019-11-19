@@ -31,8 +31,10 @@
 #include "third_party/blink/renderer/core/html/time_ranges.h"
 
 #include <sstream>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -51,11 +53,11 @@ static std::string ToString(const TimeRanges& ranges) {
 #define ASSERT_RANGE(expected, range) ASSERT_EQ(expected, ToString(*range))
 
 TEST(TimeRangesTest, Empty) {
-  ASSERT_RANGE("{ }", TimeRanges::Create());
+  ASSERT_RANGE("{ }", MakeGarbageCollected<TimeRanges>());
 }
 
 TEST(TimeRangesTest, SingleRange) {
-  ASSERT_RANGE("{ [1,2) }", TimeRanges::Create(1, 2));
+  ASSERT_RANGE("{ [1,2) }", MakeGarbageCollected<TimeRanges>(1, 2));
 }
 
 TEST(TimeRangesTest, CreateFromWebTimeRanges) {
@@ -64,12 +66,12 @@ TEST(TimeRangesTest, CreateFromWebTimeRanges) {
   web_ranges[0].end = 1;
   web_ranges[1].start = 2;
   web_ranges[1].end = 3;
-  ASSERT_RANGE("{ [0,1) [2,3) }", TimeRanges::Create(web_ranges));
+  ASSERT_RANGE("{ [0,1) [2,3) }", MakeGarbageCollected<TimeRanges>(web_ranges));
 }
 
 TEST(TimeRangesTest, AddOrder) {
-  TimeRanges* range_a = TimeRanges::Create();
-  TimeRanges* range_b = TimeRanges::Create();
+  auto* range_a = MakeGarbageCollected<TimeRanges>();
+  auto* range_b = MakeGarbageCollected<TimeRanges>();
 
   range_a->Add(0, 2);
   range_a->Add(3, 4);
@@ -88,7 +90,7 @@ TEST(TimeRangesTest, AddOrder) {
 }
 
 TEST(TimeRangesTest, OverlappingAdds) {
-  TimeRanges* ranges = TimeRanges::Create();
+  auto* ranges = MakeGarbageCollected<TimeRanges>();
 
   ranges->Add(0, 2);
   ranges->Add(10, 11);
@@ -117,7 +119,7 @@ TEST(TimeRangesTest, OverlappingAdds) {
 }
 
 TEST(TimeRangesTest, IntersectWith_Self) {
-  TimeRanges* ranges = TimeRanges::Create(0, 2);
+  auto* ranges = MakeGarbageCollected<TimeRanges>(0, 2);
 
   ASSERT_RANGE("{ [0,2) }", ranges);
 
@@ -127,8 +129,8 @@ TEST(TimeRangesTest, IntersectWith_Self) {
 }
 
 TEST(TimeRangesTest, IntersectWith_IdenticalRange) {
-  TimeRanges* ranges_a = TimeRanges::Create(0, 2);
-  TimeRanges* ranges_b = ranges_a->Copy();
+  auto* ranges_a = MakeGarbageCollected<TimeRanges>(0, 2);
+  auto* ranges_b = ranges_a->Copy();
 
   ASSERT_RANGE("{ [0,2) }", ranges_a);
   ASSERT_RANGE("{ [0,2) }", ranges_b);
@@ -140,8 +142,8 @@ TEST(TimeRangesTest, IntersectWith_IdenticalRange) {
 }
 
 TEST(TimeRangesTest, IntersectWith_Empty) {
-  TimeRanges* ranges_a = TimeRanges::Create(0, 2);
-  TimeRanges* ranges_b = TimeRanges::Create();
+  auto* ranges_a = MakeGarbageCollected<TimeRanges>(0, 2);
+  auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
   ASSERT_RANGE("{ [0,2) }", ranges_a);
   ASSERT_RANGE("{ }", ranges_b);
@@ -153,8 +155,8 @@ TEST(TimeRangesTest, IntersectWith_Empty) {
 }
 
 TEST(TimeRangesTest, IntersectWith_DisjointRanges1) {
-  TimeRanges* ranges_a = TimeRanges::Create();
-  TimeRanges* ranges_b = TimeRanges::Create();
+  auto* ranges_a = MakeGarbageCollected<TimeRanges>();
+  auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
   ranges_a->Add(0, 1);
   ranges_a->Add(4, 5);
@@ -172,8 +174,8 @@ TEST(TimeRangesTest, IntersectWith_DisjointRanges1) {
 }
 
 TEST(TimeRangesTest, IntersectWith_DisjointRanges2) {
-  TimeRanges* ranges_a = TimeRanges::Create();
-  TimeRanges* ranges_b = TimeRanges::Create();
+  auto* ranges_a = MakeGarbageCollected<TimeRanges>();
+  auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
   ranges_a->Add(0, 1);
   ranges_a->Add(4, 5);
@@ -191,8 +193,8 @@ TEST(TimeRangesTest, IntersectWith_DisjointRanges2) {
 }
 
 TEST(TimeRangesTest, IntersectWith_CompleteOverlap1) {
-  TimeRanges* ranges_a = TimeRanges::Create();
-  TimeRanges* ranges_b = TimeRanges::Create();
+  auto* ranges_a = MakeGarbageCollected<TimeRanges>();
+  auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
   ranges_a->Add(1, 3);
   ranges_a->Add(4, 5);
@@ -210,8 +212,8 @@ TEST(TimeRangesTest, IntersectWith_CompleteOverlap1) {
 }
 
 TEST(TimeRangesTest, IntersectWith_CompleteOverlap2) {
-  TimeRanges* ranges_a = TimeRanges::Create();
-  TimeRanges* ranges_b = TimeRanges::Create();
+  auto* ranges_a = MakeGarbageCollected<TimeRanges>();
+  auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
   ranges_a->Add(1, 3);
   ranges_a->Add(4, 5);
@@ -229,8 +231,8 @@ TEST(TimeRangesTest, IntersectWith_CompleteOverlap2) {
 }
 
 TEST(TimeRangesTest, IntersectWith_Gaps1) {
-  TimeRanges* ranges_a = TimeRanges::Create();
-  TimeRanges* ranges_b = TimeRanges::Create();
+  auto* ranges_a = MakeGarbageCollected<TimeRanges>();
+  auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
   ranges_a->Add(0, 2);
   ranges_a->Add(4, 6);
@@ -247,8 +249,8 @@ TEST(TimeRangesTest, IntersectWith_Gaps1) {
 }
 
 TEST(TimeRangesTest, IntersectWith_Gaps2) {
-  TimeRanges* ranges_a = TimeRanges::Create();
-  TimeRanges* ranges_b = TimeRanges::Create();
+  auto* ranges_a = MakeGarbageCollected<TimeRanges>();
+  auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
   ranges_a->Add(0, 2);
   ranges_a->Add(4, 6);
@@ -266,8 +268,8 @@ TEST(TimeRangesTest, IntersectWith_Gaps2) {
 }
 
 TEST(TimeRangesTest, IntersectWith_Gaps3) {
-  TimeRanges* ranges_a = TimeRanges::Create();
-  TimeRanges* ranges_b = TimeRanges::Create();
+  auto* ranges_a = MakeGarbageCollected<TimeRanges>();
+  auto* ranges_b = MakeGarbageCollected<TimeRanges>();
 
   ranges_a->Add(0, 2);
   ranges_a->Add(4, 7);
@@ -286,7 +288,7 @@ TEST(TimeRangesTest, IntersectWith_Gaps3) {
 }
 
 TEST(TimeRangesTest, Nearest) {
-  TimeRanges* ranges = TimeRanges::Create();
+  auto* ranges = MakeGarbageCollected<TimeRanges>();
   ranges->Add(0, 2);
   ranges->Add(5, 7);
 

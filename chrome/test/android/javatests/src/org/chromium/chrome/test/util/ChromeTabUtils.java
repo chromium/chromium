@@ -5,17 +5,17 @@
 package org.chromium.chrome.test.util;
 
 import android.app.Instrumentation;
-import android.support.annotation.Nullable;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 import android.view.View;
+
+import androidx.annotation.Nullable;
 
 import org.junit.Assert;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -35,7 +35,9 @@ import org.chromium.chrome.browser.tabmodel.TabSelectionType;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
@@ -51,14 +53,14 @@ import java.util.concurrent.TimeoutException;
  * A utility class that contains methods generic to all Tabs tests.
  */
 public class ChromeTabUtils {
-    private static final String TAG = "cr_ChromeTabUtils";
+    private static final String TAG = "ChromeTabUtils";
     public static final int TITLE_UPDATE_TIMEOUT_MS = 3000;
 
     /**
      * The required page load percentage for the page to be considered ready assuming the
      * TextureView is also ready.
      */
-    private static final int CONSIDERED_READY_LOAD_PERCENTAGE = 100;
+    private static final float CONSIDERED_READY_LOAD_PERCENTAGE = 1;
 
     /**
      * An observer that waits for a Tab to load a page.
@@ -128,9 +130,8 @@ public class ChromeTabUtils {
      * @param url The URL that will be waited to load for.  Pass in null if loading the
      *            current page is sufficient.
      */
-    public static void waitForTabPageLoaded(final Tab tab, @Nullable final String url)
-            throws InterruptedException {
-        waitForTabPageLoaded(tab, url, null, ScalableTimeout.scaleTimeout(10));
+    public static void waitForTabPageLoaded(final Tab tab, @Nullable final String url) {
+        waitForTabPageLoaded(tab, url, null, 10L);
     }
 
     /**
@@ -143,8 +144,8 @@ public class ChromeTabUtils {
      * @param loadTrigger The trigger action that will result in a page load finished event
      *                    to be fired (not run on the UI thread by default).
      */
-    public static void waitForTabPageLoaded(final Tab tab, @Nullable final String url,
-            @Nullable Runnable loadTrigger) throws InterruptedException {
+    public static void waitForTabPageLoaded(
+            final Tab tab, @Nullable final String url, @Nullable Runnable loadTrigger) {
         waitForTabPageLoaded(tab, url, loadTrigger, CallbackHelper.WAIT_TIMEOUT_SECONDS);
     }
 
@@ -156,8 +157,8 @@ public class ChromeTabUtils {
      *                    to be fired (not run on the UI thread by default).
      * @param secondsToWait The number of seconds to wait for the page to be loaded.
      */
-    public static void waitForTabPageLoaded(final Tab tab, Runnable loadTrigger, long secondsToWait)
-            throws InterruptedException {
+    public static void waitForTabPageLoaded(
+            final Tab tab, Runnable loadTrigger, long secondsToWait) {
         waitForTabPageLoaded(tab, null, loadTrigger, secondsToWait);
     }
 
@@ -174,21 +175,18 @@ public class ChromeTabUtils {
      * @param secondsToWait The number of seconds to wait for the page to be loaded.
      */
     public static void waitForTabPageLoaded(final Tab tab, @Nullable final String url,
-            @Nullable Runnable loadTrigger, long secondsToWait) throws InterruptedException {
+            @Nullable Runnable loadTrigger, long secondsToWait) {
         Assert.assertFalse(ThreadUtils.runningOnUiThread());
 
         final CountDownLatch loadStoppedLatch = new CountDownLatch(1);
         final CallbackHelper loadedCallback = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                // Don't check for the load being already complete if there is a trigger to run.
-                if (loadTrigger == null && loadComplete(tab, url)) {
-                    loadedCallback.notifyCalled();
-                    return;
-                }
-                tab.addObserver(new TabPageLoadedObserver(loadedCallback, url, loadStoppedLatch));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // Don't check for the load being already complete if there is a trigger to run.
+            if (loadTrigger == null && loadComplete(tab, url)) {
+                loadedCallback.notifyCalled();
+                return;
             }
+            tab.addObserver(new TabPageLoadedObserver(loadedCallback, url, loadStoppedLatch));
         });
         if (loadTrigger != null) {
             loadTrigger.run();
@@ -215,7 +213,8 @@ public class ChromeTabUtils {
                         "Page did not load.  Tab information at time of failure -- "
                                 + "expected url: '%s', actual URL: '%s', load progress: %d, is "
                                 + "loading: %b, web contents init: %b, web contents loading: %b",
-                        url, tab.getUrl(), tab.getProgress(), tab.isLoading(), webContents != null,
+                        url, tab.getUrl(), Math.round(100 * tab.getProgress()), tab.isLoading(),
+                        webContents != null,
                         webContents == null ? false : webContents.isLoadingToDifferentDocument()));
             }
         }
@@ -230,20 +229,16 @@ public class ChromeTabUtils {
      * @param secondsToWait The number of seconds to wait for the page to be load to be started.
      */
     public static void waitForTabPageLoadStart(
-            final Tab tab, Runnable loadTrigger, long secondsToWait)
-            throws InterruptedException {
+            final Tab tab, Runnable loadTrigger, long secondsToWait) {
         final CallbackHelper startedCallback = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                tab.addObserver(new EmptyTabObserver() {
-                    @Override
-                    public void onPageLoadStarted(Tab tab, String url) {
-                        startedCallback.notifyCalled();
-                        tab.removeObserver(this);
-                    }
-                });
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            tab.addObserver(new EmptyTabObserver() {
+                @Override
+                public void onPageLoadStarted(Tab tab, String url) {
+                    startedCallback.notifyCalled();
+                    tab.removeObserver(this);
+                }
+            });
         });
         loadTrigger.run();
         try {
@@ -303,26 +298,22 @@ public class ChromeTabUtils {
      *
      * @param tab The tab to wait for interactability on.
      */
-    public static void waitForInteractable(final Tab tab) throws InterruptedException {
+    public static void waitForInteractable(final Tab tab) {
         Assert.assertFalse(ThreadUtils.runningOnUiThread());
 
         final CallbackHelper interactableCallback = new CallbackHelper();
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                // If a tab is hidden, don't wait for interactivity. See note in
-                // TabPageInteractableObserver.
-                if (tab.isUserInteractable() || tab.isHidden()) {
-                    interactableCallback.notifyCalled();
-                    return;
-                }
-                tab.addObserver(new TabPageInteractableObserver(tab, interactableCallback));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            // If a tab is hidden, don't wait for interactivity. See note in
+            // TabPageInteractableObserver.
+            if (tab.isUserInteractable() || tab.isHidden()) {
+                interactableCallback.notifyCalled();
+                return;
             }
+            tab.addObserver(new TabPageInteractableObserver(tab, interactableCallback));
         });
 
         try {
-            interactableCallback.waitForCallback(
-                    0, 1, ScalableTimeout.scaleTimeout(10), TimeUnit.SECONDS);
+            interactableCallback.waitForCallback(0, 1, 10L, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             Assert.fail("Page never became interactable.");
         }
@@ -334,12 +325,8 @@ public class ChromeTabUtils {
      */
     public static void switchTabInCurrentTabModel(final ChromeActivity activity,
             final int tabIndex) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                TabModelUtils.setIndex(activity.getCurrentTabModel(), tabIndex);
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { TabModelUtils.setIndex(activity.getCurrentTabModel(), tabIndex); });
     }
 
     /**
@@ -347,8 +334,8 @@ public class ChromeTabUtils {
      * <p>
      * Does not wait for the tab to be loaded.
      */
-    public static void clickNewTabButton(Instrumentation instrumentation,
-            ChromeTabbedActivity activity) throws InterruptedException {
+    public static void clickNewTabButton(
+            Instrumentation instrumentation, ChromeTabbedActivity activity) {
         final TabModel normalTabModel = activity.getTabModelSelector().getModel(false);
         final CallbackHelper createdCallback = new CallbackHelper();
         normalTabModel.addObserver(new EmptyTabModelObserver() {
@@ -381,9 +368,8 @@ public class ChromeTabUtils {
      * <p>
      * Returns when the tab has been created and has finished navigating.
      */
-    public static void newTabFromMenu(Instrumentation instrumentation,
-            final ChromeTabbedActivity activity)
-            throws InterruptedException {
+    public static void newTabFromMenu(
+            Instrumentation instrumentation, final ChromeActivity activity) {
         newTabFromMenu(instrumentation, activity, false, true);
     }
 
@@ -393,8 +379,7 @@ public class ChromeTabUtils {
      * Returns when the tab has been created and has finished navigating.
      */
     public static void newTabFromMenu(Instrumentation instrumentation,
-            final ChromeTabbedActivity activity, boolean incognito, boolean waitForNtpLoad)
-            throws InterruptedException {
+            final ChromeActivity activity, boolean incognito, boolean waitForNtpLoad) {
         final CallbackHelper createdCallback = new CallbackHelper();
         final CallbackHelper selectedCallback = new CallbackHelper();
 
@@ -438,9 +423,8 @@ public class ChromeTabUtils {
      * New multiple tabs by invoking the 'new' menu item n times.
      * @param n The number of tabs you want to create.
      */
-    public static void newTabsFromMenu(Instrumentation instrumentation,
-            ChromeTabbedActivity activity, int n)
-            throws InterruptedException {
+    public static void newTabsFromMenu(
+            Instrumentation instrumentation, ChromeTabbedActivity activity, int n) {
         while (n > 0) {
             newTabFromMenu(instrumentation, activity);
             --n;
@@ -453,8 +437,7 @@ public class ChromeTabUtils {
      * Returns when the tab has been created and finishes loading.
      */
     public static void fullyLoadUrlInNewTab(Instrumentation instrumentation,
-            final ChromeTabbedActivity activity, final String url, final boolean incognito)
-            throws InterruptedException {
+            final ChromeTabbedActivity activity, final String url, final boolean incognito) {
         newTabFromMenu(instrumentation, activity, incognito, false);
 
         final Tab tab = activity.getActivityTab();
@@ -468,19 +451,14 @@ public class ChromeTabUtils {
     }
 
     public static void loadUrlOnUiThread(final Tab tab, final String url) {
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                tab.loadUrl(new LoadUrlParams(url));
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> { tab.loadUrl(new LoadUrlParams(url)); });
     }
 
     /**
      * Ensure that at least some given number of tabs are open.
      */
-    public static void ensureNumOpenTabs(Instrumentation instrumentation,
-            ChromeTabbedActivity activity, int newCount) throws InterruptedException {
+    public static void ensureNumOpenTabs(
+            Instrumentation instrumentation, ChromeTabbedActivity activity, int newCount) {
         int curCount = getNumOpenTabs(activity);
         if (curCount < newCount) {
             newTabsFromMenu(instrumentation, activity, newCount - curCount);
@@ -491,9 +469,9 @@ public class ChromeTabUtils {
      * Fetch the number of tabs open in the current model.
      */
     public static int getNumOpenTabs(final ChromeActivity activity) {
-        return ThreadUtils.runOnUiThreadBlockingNoException(new Callable<Integer>() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<Integer>() {
             @Override
-            public Integer call() throws Exception {
+            public Integer call() {
                 return activity.getCurrentTabModel().getCount();
             }
         });
@@ -504,9 +482,8 @@ public class ChromeTabUtils {
      * <p>
      * Returns after the tab has been closed.
      */
-    public static void closeCurrentTab(final Instrumentation instrumentation,
-            final ChromeTabbedActivity activity)
-            throws InterruptedException {
+    public static void closeCurrentTab(
+            final Instrumentation instrumentation, final ChromeActivity activity) {
         closeTabWithAction(instrumentation, activity, new Runnable() {
             @Override
             public void run() {
@@ -523,8 +500,8 @@ public class ChromeTabUtils {
     /**
      * Closes a tab with the given action and waits for a tab closure to be observed.
      */
-    public static void closeTabWithAction(Instrumentation instrumentation,
-            final ChromeTabbedActivity activity, Runnable action) throws InterruptedException {
+    public static void closeTabWithAction(
+            Instrumentation instrumentation, final ChromeActivity activity, Runnable action) {
         final CallbackHelper closeCallback = new CallbackHelper();
         final TabModelObserver observer = new EmptyTabModelObserver() {
             @Override
@@ -565,12 +542,12 @@ public class ChromeTabUtils {
     /**
      * Close all tabs and waits for all tabs pending closure to be observed.
      */
-    public static void closeAllTabs(Instrumentation instrumentation,
-            final ChromeTabbedActivity activity) throws InterruptedException {
+    public static void closeAllTabs(
+            Instrumentation instrumentation, final ChromeTabbedActivity activity) {
         final CallbackHelper closeCallback = new CallbackHelper();
         final TabModelObserver observer = new EmptyTabModelObserver() {
             @Override
-            public void allTabsPendingClosure(List<Tab> tabs) {
+            public void multipleTabsPendingClosure(List<Tab> tabs, boolean isAllTabs) {
                 closeCallback.notifyCalled();
             }
         };
@@ -584,12 +561,8 @@ public class ChromeTabUtils {
             }
         });
 
-        ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-            @Override
-            public void run() {
-                activity.getTabModelSelector().closeAllTabs();
-            }
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { activity.getTabModelSelector().closeAllTabs(); });
 
         try {
             closeCallback.waitForCallback(0);
@@ -611,8 +584,8 @@ public class ChromeTabUtils {
     /**
      * Selects a tab with the given action and waits for the selection event to be observed.
      */
-    public static void selectTabWithAction(Instrumentation instrumentation,
-            final ChromeTabbedActivity activity, Runnable action) throws InterruptedException {
+    public static void selectTabWithAction(
+            Instrumentation instrumentation, final ChromeTabbedActivity activity, Runnable action) {
         final CallbackHelper selectCallback = new CallbackHelper();
         final TabModelObserver observer = new EmptyTabModelObserver() {
             @Override
@@ -662,7 +635,7 @@ public class ChromeTabUtils {
      */
     public static void invokeContextMenuAndOpenInANewTab(ChromeTabbedActivityTestRule testRule,
             View view, int contextMenuItemId, boolean expectIncognito, final String expectedUrl)
-            throws InterruptedException, ExecutionException {
+            throws ExecutionException {
         final CallbackHelper createdCallback = new CallbackHelper();
         final TabModel tabModel =
                 testRule.getActivity().getTabModelSelector().getModel(expectIncognito);
@@ -711,7 +684,7 @@ public class ChromeTabUtils {
     public static void invokeContextMenuAndOpenInOtherWindow(
             ChromeTabbedActivity foregroundActivity, ChromeTabbedActivity backgroundActivity,
             View view, int contextMenuItemId, boolean expectIncognito, final String expectedUrl)
-            throws InterruptedException, ExecutionException {
+            throws ExecutionException {
         final CallbackHelper createdCallback = new CallbackHelper();
         final TabModel tabModel =
                 backgroundActivity.getTabModelSelector().getModel(expectIncognito);
@@ -757,7 +730,7 @@ public class ChromeTabUtils {
         }
     }
 
-    public static void waitForTitle(Tab tab, String newTitle) throws InterruptedException {
+    public static void waitForTitle(Tab tab, String newTitle) {
         TabTitleObserver titleObserver = new TabTitleObserver(tab, newTitle);
         try {
             titleObserver.waitForTitleUpdate(TITLE_UPDATE_TIMEOUT_MS);
@@ -771,6 +744,18 @@ public class ChromeTabUtils {
      * @return Whether or not the loading and rendering of the page is done.
      */
     public static boolean isLoadingAndRenderingDone(Tab tab) {
-        return tab.isReady() && tab.getProgress() >= CONSIDERED_READY_LOAD_PERCENTAGE;
+        return isRendererReady(tab) && tab.getProgress() >= CONSIDERED_READY_LOAD_PERCENTAGE;
+    }
+
+    /**
+     * @return Whether or not the tab has something valid to render.
+     */
+    public static boolean isRendererReady(Tab tab) {
+        if (tab.getNativePage() != null) return true;
+        WebContents webContents = tab.getWebContents();
+        if (webContents == null) return false;
+
+        RenderWidgetHostView rwhv = webContents.getRenderWidgetHostView();
+        return rwhv != null && rwhv.isReady();
     }
 }

@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/button/image_button.h"
@@ -34,13 +35,15 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantButton
   ~AssistantButton() override;
 
   // Creates an ImageButton with the default Assistant styles.
-  static views::ImageButton* Create(views::ButtonListener* listener,
-                                    const gfx::VectorIcon& icon,
-                                    int size_in_dip,
-                                    int icon_size_in_dip,
-                                    int accessible_name_id,
-                                    AssistantButtonId button_id,
-                                    SkColor icon_color = gfx::kGoogleGrey700);
+  static views::ImageButton* Create(
+      views::ButtonListener* listener,
+      const gfx::VectorIcon& icon,
+      int size_in_dip,
+      int icon_size_in_dip,
+      int accessible_name_id,
+      AssistantButtonId button_id,
+      base::Optional<int> tooltip_id = base::nullopt,
+      SkColor icon_color = gfx::kGoogleGrey700);
 
   // views::Button:
   const char* GetClassName() const override;

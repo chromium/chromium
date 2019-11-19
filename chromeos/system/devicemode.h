@@ -5,13 +5,13 @@
 #ifndef CHROMEOS_SYSTEM_DEVICEMODE_H_
 #define CHROMEOS_SYSTEM_DEVICEMODE_H_
 
-#include "chromeos/chromeos_export.h"
+#include "base/component_export.h"
 
 namespace chromeos {
 
 // Returns true when running as system compositor. Ie. using libudev, kms and
 // evdev for input and output.
-CHROMEOS_EXPORT bool IsRunningAsSystemCompositor();
+COMPONENT_EXPORT(CHROMEOS_SYSTEM) bool IsRunningAsSystemCompositor();
 
 }  // namespace chromeos
 

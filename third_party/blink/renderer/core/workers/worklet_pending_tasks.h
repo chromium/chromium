@@ -11,6 +11,7 @@
 
 namespace blink {
 
+class SerializedScriptValue;
 class Worklet;
 
 // Implementation of the "pending tasks struct":
@@ -31,7 +32,7 @@ class CORE_EXPORT WorkletPendingTasks final
   void InitializeCounter(int counter);
 
   // Sets |counter_| to -1 and rejects the promise.
-  void Abort();
+  void Abort(scoped_refptr<SerializedScriptValue> error_to_rethrow);
 
   // Decrements |counter_| and resolves the promise if the counter becomes 0.
   void DecrementCounter();

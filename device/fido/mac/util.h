@@ -15,6 +15,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/mac/availability.h"
+#include "device/fido/attested_credential_data.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/ec_public_key.h"
 #include "device/fido/fido_constants.h"
@@ -23,14 +24,21 @@ namespace device {
 namespace fido {
 namespace mac {
 
-// MakeAuthenticatorData returns an AuthenticatorData instance for the Touch ID
-// authenticator with the given Relying Party ID, credential ID and public key.
-// It returns |base::nullopt| on failure.
+// MakeAttestedCredentialData returns an AttestedCredentialData instance for
+// the Touch ID authenticator credential ID and public key or |base::nullopt|
+// on failure.
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<AuthenticatorData> MakeAuthenticatorData(
-    const std::string& rp_id,
+base::Optional<AttestedCredentialData> MakeAttestedCredentialData(
     std::vector<uint8_t> credential_id,
     std::unique_ptr<ECPublicKey> public_key);
+
+// MakeAuthenticatorData returns an AuthenticatorData instance for the Touch ID
+// authenticator with the given Relying Party ID and AttestedCredentialData,
+// which may be |base::nullopt| in GetAssertion operations.
+COMPONENT_EXPORT(DEVICE_FIDO)
+AuthenticatorData MakeAuthenticatorData(
+    const std::string& rp_id,
+    base::Optional<AttestedCredentialData> attested_credential_data);
 
 // GenerateSignature signs the concatenation of the serialization of the given
 // authenticator data and the given client data hash, as required for

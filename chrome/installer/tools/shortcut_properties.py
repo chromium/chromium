@@ -15,6 +15,18 @@ from win32com.propsys import propsys
 from win32com.propsys import pscon
 
 
+def BuildPKeyToNameMapping():
+  """Returns a dict mapping PKey values (a tuple of an IID and an int) to their
+  names."""
+  # The pscon module contains a number of well-known PKey values. Scan through
+  # the module picking out anything that looks plausibly like a PROPERTYKEY (a
+  # tuple of a PyIID and an int), and map it to its name in the module.
+  return {item: name for (name, item) in pscon.__dict__.iteritems() if (
+             isinstance(item, tuple) and
+             len(item) == 2 and
+             isinstance(item[1], int))}
+
+
 def PrintShortcutProperties(shortcut_path, dump_all):
   properties = propsys.SHGetPropertyStoreFromParsingName(shortcut_path)
 
@@ -33,11 +45,18 @@ def PrintShortcutProperties(shortcut_path, dump_all):
   # over time as we explicitly care about more properties, see propkey.h or
   # pscon.py for a reference of existing PKEYs' meaning.
   if dump_all:
+    key_to_name = BuildPKeyToNameMapping()
     print '\nOther properties:'
     for i in range(0, properties.GetCount()):
       property_key = properties.GetAt(i)
+      # |property_key| is a tuple of an IID identifying the format and an int
+      # (a.k.a. a PROPERTYKEY struct). If this key is one of the predefined ones
+      # in the pscon module, display the name given to it by the module. If not,
+      # show the key's IID and int -- the viewer may be able to find it in
+      # propkey.h.
+      key_name = key_to_name.get(property_key, str(property_key))
       property_value = properties.GetValue(property_key).GetValue()
-      print '\t%s => "%s"' % (property_key, property_value)
+      print '\t%s => "%s"' % (key_name, property_value)
 
 
 def main():

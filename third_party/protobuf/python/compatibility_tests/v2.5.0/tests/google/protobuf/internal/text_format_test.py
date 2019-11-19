@@ -248,7 +248,7 @@ class TextFormatTest(unittest.TestCase):
                .replace('e-0','e-').replace('e-0','e-')
     # Floating point fields are printed with .0 suffix even if they are
     # actualy integer numbers.
-    text = re.compile('\.0$', re.MULTILINE).sub('', text)
+    text = re.compile(r'\.0$', re.MULTILINE).sub('', text)
     return text
 
   def testMergeGolden(self):
@@ -410,7 +410,8 @@ class TextFormatTest(unittest.TestCase):
     text = 'optional_nested_enum: BARR'
     self.assertRaisesWithMessage(
         text_format.ParseError,
-        ('1:23 : Enum type "protobuf_unittest.TestAllTypes.NestedEnum" '
+        ('1:23 : \'optional_nested_enum: BARR\': '
+         'Enum type "protobuf_unittest.TestAllTypes.NestedEnum" '
          'has no value named BARR.'),
         text_format.Merge, text, message)
 
@@ -418,7 +419,8 @@ class TextFormatTest(unittest.TestCase):
     text = 'optional_nested_enum: 100'
     self.assertRaisesWithMessage(
         text_format.ParseError,
-        ('1:23 : Enum type "protobuf_unittest.TestAllTypes.NestedEnum" '
+        ('1:23 : \'optional_nested_enum: 100\': '
+         'Enum type "protobuf_unittest.TestAllTypes.NestedEnum" '
          'has no value with number 100.'),
         text_format.Merge, text, message)
 
@@ -427,7 +429,8 @@ class TextFormatTest(unittest.TestCase):
     text = 'optional_int32: bork'
     self.assertRaisesWithMessage(
         text_format.ParseError,
-        ('1:17 : Couldn\'t parse integer: bork'),
+        ('1:17 : \'optional_int32: bork\': '
+         'Couldn\'t parse integer: bork'),
         text_format.Merge, text, message)
 
   def testMergeStringFieldUnescape(self):

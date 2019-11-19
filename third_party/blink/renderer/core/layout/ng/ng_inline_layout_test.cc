@@ -8,27 +8,27 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
 class NGInlineLayoutTest : public SimTest {
  public:
   NGConstraintSpace ConstraintSpaceForElement(LayoutBlockFlow* block_flow) {
-    return NGConstraintSpaceBuilder(
-               block_flow->Style()->GetWritingMode(),
-               block_flow->Style()->GetWritingMode(),
-               /* is_new_fc */ false)
-        .SetAvailableSize(NGLogicalSize(LayoutUnit(), LayoutUnit()))
-        .SetPercentageResolutionSize(NGLogicalSize(LayoutUnit(), LayoutUnit()))
-        .SetTextDirection(block_flow->Style()->Direction())
-        .ToConstraintSpace();
+    NGConstraintSpaceBuilder builder(block_flow->Style()->GetWritingMode(),
+                                     block_flow->Style()->GetWritingMode(),
+                                     /* is_new_fc */ false);
+    builder.SetAvailableSize(LogicalSize(LayoutUnit(), LayoutUnit()));
+    builder.SetPercentageResolutionSize(
+        LogicalSize(LayoutUnit(), LayoutUnit()));
+    builder.SetTextDirection(block_flow->Style()->Direction());
+    return builder.ToConstraintSpace();
   }
 };
 
@@ -44,16 +44,19 @@ TEST_F(NGInlineLayoutTest, BlockWithSingleTextNode) {
   ASSERT_FALSE(Compositor().NeedsBeginFrame());
 
   Element* target = GetDocument().getElementById("target");
-  LayoutBlockFlow* block_flow = ToLayoutBlockFlow(target->GetLayoutObject());
+  auto* block_flow = To<LayoutBlockFlow>(target->GetLayoutObject());
   NGConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
   NGBlockNode node(block_flow);
 
+  NGFragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(constraint_space, node);
   scoped_refptr<const NGLayoutResult> result =
-      NGBlockLayoutAlgorithm(node, constraint_space).Layout();
+      NGBlockLayoutAlgorithm({node, fragment_geometry, constraint_space})
+          .Layout();
   EXPECT_TRUE(result);
 
   String expected_text("Hello World!");
-  NGInlineNode first_child = ToNGInlineNode(node.FirstChild());
+  auto first_child = To<NGInlineNode>(node.FirstChild());
   EXPECT_EQ(expected_text,
             StringView(first_child.ItemsData(false).text_content, 0, 12));
 }
@@ -69,19 +72,23 @@ TEST_F(NGInlineLayoutTest, BlockWithTextAndAtomicInline) {
   ASSERT_FALSE(Compositor().NeedsBeginFrame());
 
   Element* target = GetDocument().getElementById("target");
-  LayoutBlockFlow* block_flow = ToLayoutBlockFlow(target->GetLayoutObject());
+  auto* block_flow = To<LayoutBlockFlow>(target->GetLayoutObject());
   NGConstraintSpace constraint_space = ConstraintSpaceForElement(block_flow);
   NGBlockNode node(block_flow);
 
+  NGFragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(constraint_space, node);
   scoped_refptr<const NGLayoutResult> result =
-      NGBlockLayoutAlgorithm(node, constraint_space).Layout();
+      NGBlockLayoutAlgorithm({node, fragment_geometry, constraint_space})
+          .Layout();
   EXPECT_TRUE(result);
 
-  String expected_text("Hello ");
-  expected_text.append(kObjectReplacementCharacter);
-  expected_text.append(".");
-  NGInlineNode first_child = ToNGInlineNode(node.FirstChild());
-  EXPECT_EQ(expected_text,
+  StringBuilder expected_text;
+  expected_text.Append("Hello ");
+  expected_text.Append(kObjectReplacementCharacter);
+  expected_text.Append('.');
+  auto first_child = To<NGInlineNode>(node.FirstChild());
+  EXPECT_EQ(expected_text.ToString(),
             StringView(first_child.ItemsData(false).text_content, 0, 8));
 
   // Delete the line box tree to avoid leaks in the test.

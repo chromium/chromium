@@ -20,7 +20,7 @@
     await TestRunner.evaluateInPageAnonymously(content);
     await new Promise(resolve => TestRunner.addSniffer(Bindings.CompilerScriptMapping.prototype, "_sourceMapAttachedForTest", resolve));
     var uiSourceCode = await TestRunner.waitForUISourceCode("eval-in");
-    TestRunner.addResult(await uiSourceCode.requestContent());
+    TestRunner.addResult((await uiSourceCode.requestContent()).content);
   }
   TestRunner.completeTest();
 })();

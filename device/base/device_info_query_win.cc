@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "base/strings/string_util.h"
-#include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace device {
 
@@ -53,15 +53,15 @@ bool DeviceInfoQueryWin::GetDeviceStringProperty(const DEVPROPKEY& property,
     return false;
   }
 
-  std::wstring wide_buffer;
+  base::string16 buffer16;
   if (!SetupDiGetDeviceProperty(
           device_info_list_, &device_info_data_, &property, &property_type,
-          reinterpret_cast<PBYTE>(base::WriteInto(&wide_buffer, required_size)),
+          reinterpret_cast<PBYTE>(base::WriteInto(&buffer16, required_size)),
           required_size, nullptr, 0)) {
     return false;
   }
 
-  *property_buffer = base::SysWideToUTF8(wide_buffer);
+  *property_buffer = base::UTF16ToUTF8(buffer16);
   return true;
 }
 

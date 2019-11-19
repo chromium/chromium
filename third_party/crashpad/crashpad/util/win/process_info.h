@@ -24,6 +24,7 @@
 #include "base/macros.h"
 #include "util/misc/initialization_state_dcheck.h"
 #include "util/numeric/checked_range.h"
+#include "util/process/process_id.h"
 #include "util/stdlib/aligned_allocator.h"
 #include "util/win/address_types.h"
 
@@ -105,10 +106,10 @@ class ProcessInfo {
   bool IsWow64() const;
 
   //! \return The target process's process ID.
-  pid_t ProcessID() const;
+  crashpad::ProcessID ProcessID() const;
 
   //! \return The target process's parent process ID.
-  pid_t ParentProcessID() const;
+  crashpad::ProcessID ParentProcessID() const;
 
   //! \return The command line from the target process's Process Environment
   //!     Block.
@@ -173,8 +174,8 @@ class ProcessInfo {
   // This function is best-effort under low memory conditions.
   std::vector<Handle> BuildHandleVector(HANDLE process) const;
 
-  pid_t process_id_;
-  pid_t inherited_from_process_id_;
+  crashpad::ProcessID process_id_;
+  crashpad::ProcessID inherited_from_process_id_;
   HANDLE process_;
   std::wstring command_line_;
   WinVMAddress peb_address_;

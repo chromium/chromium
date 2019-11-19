@@ -20,8 +20,7 @@ namespace settings {
 AndroidAppsHandler::AndroidAppsHandler(Profile* profile)
     : arc_prefs_observer_(this),
       arc_session_manager_observer_(this),
-      profile_(profile),
-      weak_ptr_factory_(this) {}
+      profile_(profile) {}
 
 AndroidAppsHandler::~AndroidAppsHandler() {}
 

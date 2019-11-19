@@ -25,7 +25,7 @@ class LoadTerminationListenerImpl : public LoadTerminationListener {
   // An instance of Android AppListener.
   std::unique_ptr<base::android::ApplicationStatusListener> app_listener_;
 
-  base::WeakPtrFactory<LoadTerminationListenerImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<LoadTerminationListenerImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(LoadTerminationListenerImpl);
 };

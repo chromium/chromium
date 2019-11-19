@@ -39,6 +39,19 @@ inline int vswprintf(wchar_t* buffer, size_t size,
   return length;
 }
 
+// Windows only overload of base::WriteInto for std::wstring. See the comment
+// above the cross-platform version in //base/strings/string_util.h for details.
+// TODO(crbug.com/911896): Rename this to WriteInto once base::string16 is
+// std::u16string on all platforms and using the name WriteInto here no longer
+// causes redefinition errors.
+inline wchar_t* WriteIntoW(std::wstring* str, size_t length_with_null) {
+  // Note: As of C++11 std::strings are guaranteed to be 0-terminated. Thus it
+  // is enough to reserve space for one char less.
+  DCHECK_GE(length_with_null, 1u);
+  str->resize(length_with_null - 1);
+  return &((*str)[0]);
+}
+
 }  // namespace base
 
 #endif  // BASE_STRINGS_STRING_UTIL_WIN_H_

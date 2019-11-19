@@ -24,41 +24,11 @@
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_pixmap.h"
 
-#if defined(OS_CHROMEOS)
-namespace ui {
-class OzoneGpuTestHelper;
-}  // namespace ui
-#endif
-
 namespace media {
 namespace test {
 
-// Initialize the GPU thread for rendering. We only need to setup once
-// for all test cases.
-class VideoDecodeAcceleratorTestEnvironment : public ::testing::Environment {
- public:
-  explicit VideoDecodeAcceleratorTestEnvironment(bool use_gl_renderer);
-
-  virtual ~VideoDecodeAcceleratorTestEnvironment();
-
-  void SetUp() override;
-  void TearDown() override;
-  scoped_refptr<base::SingleThreadTaskRunner> GetRenderingTaskRunner() const;
-
- private:
-  bool use_gl_renderer_;
-  base::Thread rendering_thread_;
-#if defined(OS_CHROMEOS)
-  std::unique_ptr<ui::OzoneGpuTestHelper> gpu_helper_;
-#endif
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecodeAcceleratorTestEnvironment);
-};
-
 class EncodedDataHelper {
  public:
-  // TODO(dstaessens@) Remove this constructor once the VDA tests are migrated.
-  EncodedDataHelper(const std::string& encoded_data, VideoCodecProfile profile);
   EncodedDataHelper(const std::vector<uint8_t>& stream,
                     VideoCodecProfile profile);
   ~EncodedDataHelper();
@@ -93,15 +63,6 @@ class EncodedDataHelper {
   size_t next_pos_to_decode_ = 0;
   size_t num_skipped_fragments_ = 0;
 };
-
-// Read in golden MD5s for the thumbnailed rendering of this video
-std::vector<std::string> ReadGoldenThumbnailMD5s(
-    const base::FilePath& md5_file_path);
-
-// Convert from RGBA to RGB.
-// Return false if any alpha channel is not 0xff, otherwise true.
-bool ConvertRGBAToRGB(const std::vector<unsigned char>& rgba,
-                      std::vector<unsigned char>* rgb);
 
 }  // namespace test
 }  // namespace media

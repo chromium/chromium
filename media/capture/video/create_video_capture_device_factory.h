@@ -13,9 +13,18 @@
 
 namespace media {
 
+class CameraAppDeviceBridgeImpl;
+
 std::unique_ptr<VideoCaptureDeviceFactory> CAPTURE_EXPORT
 CreateVideoCaptureDeviceFactory(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner);
+
+#if defined(OS_CHROMEOS)
+std::unique_ptr<VideoCaptureDeviceFactory> CAPTURE_EXPORT
+CreateVideoCaptureDeviceFactory(
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+    media::CameraAppDeviceBridgeImpl* camera_app_device_bridge);
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace media
 

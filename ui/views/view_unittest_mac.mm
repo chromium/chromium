@@ -49,7 +49,7 @@ namespace {
 // |last_swipe_gesture()|.
 class ThreeFingerSwipeView : public View {
  public:
-  ThreeFingerSwipeView() {}
+  ThreeFingerSwipeView() = default;
 
   // View:
   void OnGestureEvent(ui::GestureEvent* event) override {
@@ -89,7 +89,7 @@ class ThreeFingerSwipeView : public View {
 
 class ViewMacTest : public test::WidgetTest {
  public:
-  ViewMacTest() {}
+  ViewMacTest() = default;
 
   base::Optional<gfx::Point> SwipeGestureVector(int dx, int dy) {
     base::scoped_nsobject<FakeSwipeEvent> swipe_event(

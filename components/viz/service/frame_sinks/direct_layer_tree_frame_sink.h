@@ -6,16 +6,22 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_DIRECT_LAYER_TREE_FRAME_SINK_H_
 
 #include "base/macros.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/viz_service_export.h"
-#include "services/viz/privileged/interfaces/compositing/display_private.mojom.h"
-#include "services/viz/public/interfaces/compositing/compositor_frame_sink.mojom.h"
+#include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
+#include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+
+namespace base {
+class HistogramBase;
+}  // namespace base
 
 namespace viz {
 class CompositorFrameSinkSupportManager;
@@ -34,7 +40,9 @@ class VIZ_SERVICE_EXPORT DirectLayerTreeFrameSink
   // reporting.
   class PipelineReporting {
    public:
-    PipelineReporting(BeginFrameArgs args, base::TimeTicks now);
+    PipelineReporting(BeginFrameArgs args,
+                      base::TimeTicks now,
+                      base::HistogramBase* submit_begin_frame_histogram);
     ~PipelineReporting();
 
     void Report();
@@ -48,6 +56,10 @@ class VIZ_SERVICE_EXPORT DirectLayerTreeFrameSink
 
     // The time stamp for the begin frame to arrive on client side.
     base::TimeTicks frame_time_;
+
+    // Histogram metrics used to record
+    // GraphicsPipeline.ClientName.SubmitCompositorFrameAfterBeginFrame
+    base::HistogramBase* submit_begin_frame_histogram_;
   };
 
   // The underlying Display, FrameSinkManagerImpl, and LocalSurfaceIdAllocator
@@ -62,7 +74,7 @@ class VIZ_SERVICE_EXPORT DirectLayerTreeFrameSink
       scoped_refptr<RasterContextProvider> worker_context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-      bool use_viz_hit_test);
+      bool hit_test_data_from_surface_layer);
   ~DirectLayerTreeFrameSink() override;
 
   // LayerTreeFrameSink implementation.
@@ -72,7 +84,7 @@ class VIZ_SERVICE_EXPORT DirectLayerTreeFrameSink
                              bool hit_test_data_changed,
                              bool show_hit_test_borders) override;
   void DidNotProduceFrame(const BeginFrameAck& ack) override;
-  void DidAllocateSharedBitmap(mojo::ScopedSharedBufferHandle buffer,
+  void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
                                const SharedBitmapId& id) override;
   void DidDeleteSharedBitmap(const SharedBitmapId& id) override;
 
@@ -84,16 +96,16 @@ class VIZ_SERVICE_EXPORT DirectLayerTreeFrameSink
   void DisplayDidReceiveCALayerParams(
       const gfx::CALayerParams& ca_layer_params) override;
   void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) override;
-  void DidSwapAfterSnapshotRequestReceived(
-      const std::vector<ui::LatencyInfo>& latency_info) override;
+  void SetPreferredFrameInterval(base::TimeDelta interval) override;
+  base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
+      const FrameSinkId& id) override;
 
  private:
   // mojom::CompositorFrameSinkClient implementation:
   void DidReceiveCompositorFrameAck(
       const std::vector<ReturnedResource>& resources) override;
   void OnBeginFrame(const BeginFrameArgs& args,
-                    const base::flat_map<uint32_t, gfx::PresentationFeedback>&
-                        feedbacks) override;
+                    const FrameTimingDetailsMap& timing_details) override;
   void ReclaimResources(
       const std::vector<ReturnedResource>& resources) override;
   void OnBeginFramePausedChanged(bool paused) override;
@@ -120,7 +132,6 @@ class VIZ_SERVICE_EXPORT DirectLayerTreeFrameSink
   Display* display_;
   // |display_client_| may be nullptr on platforms that do not use it.
   mojom::DisplayClient* display_client_ = nullptr;
-  bool use_viz_hit_test_ = false;
   gfx::Size last_swap_frame_size_;
   float device_scale_factor_ = 1.f;
   bool is_lost_ = false;
@@ -130,7 +141,18 @@ class VIZ_SERVICE_EXPORT DirectLayerTreeFrameSink
 
   // Use this map to record the time when client received the BeginFrameArgs.
   base::flat_map<int64_t, PipelineReporting> pipeline_reporting_frame_times_;
-  base::WeakPtrFactory<DirectLayerTreeFrameSink> weak_factory_;
+
+  // Histogram metrics used to record
+  // GraphicsPipeline.ClientName.ReceivedBeginFrame
+  base::HistogramBase* const receive_begin_frame_histogram_;
+
+  // Histogram metrics used to record
+  // GraphicsPipeline.ClientName.SubmitCompositorFrameAfterBeginFrame
+  base::HistogramBase* const submit_begin_frame_histogram_;
+
+  const bool hit_test_data_from_surface_layer_;
+
+  base::WeakPtrFactory<DirectLayerTreeFrameSink> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DirectLayerTreeFrameSink);
 };

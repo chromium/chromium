@@ -57,7 +57,6 @@ login.createScreen(
         onBeforeShow: function(data) {
           // Active Directory password change screen is similar to Active
           // Directory login screen. So we restore bottom bar controls.
-          Oobe.getInstance().headerHidden = false;
           this.adPasswordChanged_.reset();
           if ('username' in data)
             this.adPasswordChanged_.username = data.username;
@@ -75,5 +74,14 @@ login.createScreen(
               $('ad-password-change'), cr.ui.Bubble.Attachment.BOTTOM, error,
               BUBBLE_HORIZONTAL_PADDING, BUBBLE_VERTICAL_PADDING);
         },
+
+        /**
+         * Updates localized content of the screen that is not updated via
+         * template.
+         */
+        updateLocalizedContent: function() {
+          $('active-directory-password-change').i18nUpdateLocale();
+        },
+
       };
     });

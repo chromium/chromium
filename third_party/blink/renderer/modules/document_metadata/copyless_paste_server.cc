@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/document_metadata/copyless_paste_extractor.h"
 
@@ -15,15 +15,16 @@ namespace blink {
 
 CopylessPasteServer::CopylessPasteServer(LocalFrame& frame) : frame_(frame) {}
 
-void CopylessPasteServer::BindMojoRequest(
+void CopylessPasteServer::BindMojoReceiver(
     LocalFrame* frame,
-    mojom::document_metadata::blink::CopylessPasteRequest request) {
+    mojo::PendingReceiver<mojom::document_metadata::blink::CopylessPaste>
+        receiver) {
   DCHECK(frame);
 
-  // TODO(wychen): remove bindMojoRequest pattern, and make this a service
+  // TODO(wychen): remove BindMojoReceiver pattern, and make this a service
   // associated with frame lifetime.
-  mojo::MakeStrongBinding(std::make_unique<CopylessPasteServer>(*frame),
-                          std::move(request));
+  mojo::MakeSelfOwnedReceiver(std::make_unique<CopylessPasteServer>(*frame),
+                              std::move(receiver));
 }
 
 void CopylessPasteServer::GetEntities(GetEntitiesCallback callback) {
@@ -32,7 +33,7 @@ void CopylessPasteServer::GetEntities(GetEntitiesCallback callback) {
     return;
   }
   std::move(callback).Run(
-      CopylessPasteExtractor::extract(*frame_->GetDocument()));
+      CopylessPasteExtractor::Extract(*frame_->GetDocument()));
 }
 
 }  // namespace blink

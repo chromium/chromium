@@ -39,8 +39,7 @@ TouchAccessibilityEnabler::TouchAccessibilityEnabler(
     : root_window_(root_window),
       delegate_(delegate),
       state_(NO_FINGERS_DOWN),
-      tick_clock_(nullptr),
-      weak_factory_(this) {
+      tick_clock_(nullptr) {
   DCHECK(root_window);
   DCHECK(delegate);
   AddEventHandler();

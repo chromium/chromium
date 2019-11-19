@@ -9,6 +9,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_export.h"
+#include "ui/gl/gpu_preference.h"
 #include "ui/gl/gpu_switching_observer.h"
 
 namespace ui {
@@ -26,7 +27,11 @@ class GL_EXPORT GpuSwitchingManager {
   // occurs as a result of an IPC from the browser. The system observer is kept
   // in the browser process only so that any workarounds or blacklisting can
   // be applied there.
-  void NotifyGpuSwitched();
+  //
+  // The GpuPreference argument is a heuristic indicating whether the
+  // system is known to be on the low-power or high-performance GPU.
+  // If this heuristic fails, then kDefault is passed as argument.
+  void NotifyGpuSwitched(gl::GpuPreference active_gpu_heuristic);
 
  private:
   friend struct base::DefaultSingletonTraits<GpuSwitchingManager>;

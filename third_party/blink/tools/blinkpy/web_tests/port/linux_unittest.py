@@ -72,6 +72,10 @@ class LinuxPortTest(port_testcase.PortTestCase, LoggingTestCase):
         for i, path in enumerate(expected_paths):
             self.assertTrue(port.baseline_search_path()[i].endswith(path))
 
+    def test_get_platform_tags(self):
+        port = self.make_port()
+        self.assertEqual(port.get_platform_tags(), {'linux', 'trusty', 'x86_64', 'release'})
+
     def test_baseline_paths(self):
         self.assert_baseline_paths('linux', 'trusty', 'linux', '/win')
         self.assert_baseline_paths('linux-trusty', None, 'linux', '/win')

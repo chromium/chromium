@@ -10,6 +10,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
@@ -17,27 +18,17 @@
 #include "chrome/grit/locale_settings.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
 using base::UserMetricsAction;
-
-namespace {
-
-// How long to give the user until auto-restart if no action is taken. The code
-// assumes this to be less than a minute.
-const int kCountdownDuration = 30;  // Seconds.
-
-// How often to refresh the bubble UI to update the counter. As long as the
-// countdown is in seconds, this should be 1000 or lower.
-const int kRefreshBubbleEvery = 1000;  // Millisecond.
-
-}  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // CriticalNotificationBubbleView
@@ -45,6 +36,11 @@ const int kRefreshBubbleEvery = 1000;  // Millisecond.
 CriticalNotificationBubbleView::CriticalNotificationBubbleView(
     views::View* anchor_view)
     : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT) {
+  DialogDelegate::set_button_label(
+      ui::DIALOG_BUTTON_OK,
+      l10n_util::GetStringUTF16(IDS_CRITICAL_NOTIFICATION_RESTART));
+  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_CANCEL,
+                                   l10n_util::GetStringUTF16(IDS_CANCEL));
   set_close_on_deactivate(false);
   chrome::RecordDialogCreation(chrome::DialogIdentifier::CRITICAL_NOTIFICATION);
 }
@@ -52,9 +48,11 @@ CriticalNotificationBubbleView::CriticalNotificationBubbleView(
 CriticalNotificationBubbleView::~CriticalNotificationBubbleView() {
 }
 
-int CriticalNotificationBubbleView::GetRemainingTime() const {
-  base::TimeDelta time_lapsed = base::TimeTicks::Now() - bubble_created_;
-  return kCountdownDuration - time_lapsed.InSeconds();
+base::TimeDelta CriticalNotificationBubbleView::GetRemainingTime() const {
+  // How long to give the user until auto-restart if no action is taken.
+  constexpr auto kCountdownDuration = base::TimeDelta::FromSeconds(30);
+  const base::TimeDelta time_lapsed = base::TimeTicks::Now() - bubble_created_;
+  return kCountdownDuration - time_lapsed;
 }
 
 void CriticalNotificationBubbleView::OnCountdown() {
@@ -65,8 +63,7 @@ void CriticalNotificationBubbleView::OnCountdown() {
     return;
   }
 
-  int seconds = GetRemainingTime();
-  if (seconds <= 0) {
+  if (GetRemainingTime() <= base::TimeDelta()) {
     // Time's up!
     upgrade_detector->acknowledge_critical_update();
 
@@ -83,11 +80,12 @@ void CriticalNotificationBubbleView::OnCountdown() {
 }
 
 base::string16 CriticalNotificationBubbleView::GetWindowTitle() const {
-  int seconds = GetRemainingTime();
-  return seconds > 0 ? l10n_util::GetPluralStringFUTF16(
-                           IDS_CRITICAL_NOTIFICATION_TITLE, seconds)
-                     : l10n_util::GetStringUTF16(
-                           IDS_CRITICAL_NOTIFICATION_TITLE_ALTERNATE);
+  const auto remaining_time = GetRemainingTime();
+  return remaining_time > base::TimeDelta()
+             ? l10n_util::GetPluralStringFUTF16(IDS_CRITICAL_NOTIFICATION_TITLE,
+                                                remaining_time.InSeconds())
+             : l10n_util::GetStringUTF16(
+                   IDS_CRITICAL_NOTIFICATION_TITLE_ALTERNATE);
 }
 
 void CriticalNotificationBubbleView::WindowClosing() {
@@ -113,42 +111,36 @@ bool CriticalNotificationBubbleView::Accept() {
   return true;
 }
 
-base::string16 CriticalNotificationBubbleView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  return l10n_util::GetStringUTF16(button == ui::DIALOG_BUTTON_CANCEL
-                                       ? IDS_CANCEL
-                                       : IDS_CRITICAL_NOTIFICATION_RESTART);
-}
-
 void CriticalNotificationBubbleView::Init() {
   bubble_created_ = base::TimeTicks::Now();
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  views::Label* message = new views::Label();
+  auto message = std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_CRITICAL_NOTIFICATION_TEXT),
+      views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT,
+      views::style::STYLE_SECONDARY);
   message->SetMultiLine(true);
   message->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  message->SetText(l10n_util::GetStringUTF16(IDS_CRITICAL_NOTIFICATION_TEXT));
   message->SizeToFit(
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           ChromeDistanceMetric::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
       margins().width());
-  AddChildView(message);
+  AddChildView(std::move(message));
 
-  refresh_timer_.Start(FROM_HERE,
-      base::TimeDelta::FromMilliseconds(kRefreshBubbleEvery),
-      this, &CriticalNotificationBubbleView::OnCountdown);
+  refresh_timer_.Start(FROM_HERE, base::TimeDelta::FromSeconds(1), this,
+                       &CriticalNotificationBubbleView::OnCountdown);
 
   base::RecordAction(UserMetricsAction("CriticalNotificationShown"));
 }
 
 void CriticalNotificationBubbleView::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kAlert;
+  node_data->role = ax::mojom::Role::kAlertDialog;
 }
 
 void CriticalNotificationBubbleView::ViewHierarchyChanged(
-    const ViewHierarchyChangedDetails& details) {
+    const views::ViewHierarchyChangedDetails& details) {
   if (details.is_add && details.child == this)
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
 }

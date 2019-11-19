@@ -4,11 +4,12 @@
 
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 
-#include "base/base64.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
+#include "base/values.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/device_sync/cryptauth_constants.h"
+#include "chromeos/services/device_sync/cryptauth_enrollment_constants.h"
+#include "chromeos/services/device_sync/value_string_encoding.h"
 
 namespace chromeos {
 
@@ -16,33 +17,11 @@ namespace device_sync {
 
 namespace {
 
+const char kDeviceSyncBetterTogetherGroupKeyName[] =
+    "DeviceSyncBetterTogetherGroupKey";
 const char kBundleNameDictKey[] = "name";
 const char kKeyListDictKey[] = "keys";
 const char kKeyDirectiveDictKey[] = "key_directive";
-
-base::Optional<cryptauthv2::KeyDirective> KeyDirectiveFromPrefString(
-    const std::string& encoded_serialized_key_directive) {
-  std::string decoded_serialized_key_directive;
-  base::Base64Decode(encoded_serialized_key_directive,
-                     &decoded_serialized_key_directive);
-
-  cryptauthv2::KeyDirective key_directive;
-  if (!key_directive.ParseFromString(decoded_serialized_key_directive)) {
-    PA_LOG(ERROR) << "Error parsing KeyDirective from pref string";
-    return base::nullopt;
-  }
-
-  return key_directive;
-}
-
-std::string KeyDirectiveToPrefString(
-    const cryptauthv2::KeyDirective& key_directive) {
-  std::string encoded_serialized_key_directive;
-  base::Base64Encode(key_directive.SerializeAsString(),
-                     &encoded_serialized_key_directive);
-
-  return encoded_serialized_key_directive;
-}
 
 }  // namespace
 
@@ -50,7 +29,18 @@ std::string KeyDirectiveToPrefString(
 const base::flat_set<CryptAuthKeyBundle::Name>& CryptAuthKeyBundle::AllNames() {
   static const base::NoDestructor<base::flat_set<CryptAuthKeyBundle::Name>>
       name_list({CryptAuthKeyBundle::Name::kUserKeyPair,
-                 CryptAuthKeyBundle::Name::kLegacyMasterKey});
+                 CryptAuthKeyBundle::Name::kLegacyMasterKey,
+                 CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether,
+                 CryptAuthKeyBundle::Name::kDeviceSyncBetterTogetherGroupKey});
+  return *name_list;
+}
+
+const base::flat_set<CryptAuthKeyBundle::Name>&
+CryptAuthKeyBundle::AllEnrollableNames() {
+  static const base::NoDestructor<base::flat_set<CryptAuthKeyBundle::Name>>
+      name_list({CryptAuthKeyBundle::Name::kUserKeyPair,
+                 CryptAuthKeyBundle::Name::kLegacyMasterKey,
+                 CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether});
   return *name_list;
 }
 
@@ -62,6 +52,10 @@ std::string CryptAuthKeyBundle::KeyBundleNameEnumToString(
       return kCryptAuthUserKeyPairName;
     case CryptAuthKeyBundle::Name::kLegacyMasterKey:
       return kCryptAuthLegacyMasterKeyName;
+    case CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether:
+      return kCryptAuthDeviceSyncBetterTogetherKeyName;
+    case CryptAuthKeyBundle::Name::kDeviceSyncBetterTogetherGroupKey:
+      return kDeviceSyncBetterTogetherGroupKeyName;
   }
 }
 
@@ -72,6 +66,10 @@ CryptAuthKeyBundle::KeyBundleNameStringToEnum(const std::string& name) {
     return CryptAuthKeyBundle::Name::kUserKeyPair;
   if (name == kCryptAuthLegacyMasterKeyName)
     return CryptAuthKeyBundle::Name::kLegacyMasterKey;
+  if (name == kCryptAuthDeviceSyncBetterTogetherKeyName)
+    return CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether;
+  if (name == kDeviceSyncBetterTogetherGroupKeyName)
+    return CryptAuthKeyBundle::Name::kDeviceSyncBetterTogetherGroupKey;
 
   return base::nullopt;
 }
@@ -112,17 +110,18 @@ base::Optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
     }
 
     // Return nullopt if duplicate handles exist.
-    if (base::ContainsKey(bundle.handle_to_key_map(), key->handle()))
+    if (base::Contains(bundle.handle_to_key_map(), key->handle()))
       return base::nullopt;
 
     bundle.AddKey(*key);
   }
 
-  const std::string* encoded_serialized_key_directive =
-      dict.FindStringKey(kKeyDirectiveDictKey);
+  const base::Value* encoded_serialized_key_directive =
+      dict.FindKey(kKeyDirectiveDictKey);
   if (encoded_serialized_key_directive) {
     base::Optional<cryptauthv2::KeyDirective> key_directive =
-        KeyDirectiveFromPrefString(*encoded_serialized_key_directive);
+        util::DecodeProtoMessageFromValueString<cryptauthv2::KeyDirective>(
+            encoded_serialized_key_directive);
     if (!key_directive)
       return base::nullopt;
 
@@ -152,8 +151,12 @@ const CryptAuthKey* CryptAuthKeyBundle::GetActiveKey() const {
 }
 
 void CryptAuthKeyBundle::AddKey(const CryptAuthKey& key) {
+  DCHECK(name_ != Name::kUserKeyPair ||
+         key.handle() == kCryptAuthFixedUserKeyPairHandle);
+
   if (key.status() == CryptAuthKey::Status::kActive)
     DeactivateKeys();
+
   handle_to_key_map_.insert_or_assign(key.handle(), key);
 }
 
@@ -165,7 +168,7 @@ void CryptAuthKeyBundle::SetActiveKey(const std::string& handle) {
 }
 
 void CryptAuthKeyBundle::DeleteKey(const std::string& handle) {
-  DCHECK(base::ContainsKey(handle_to_key_map_, handle));
+  DCHECK(base::Contains(handle_to_key_map_, handle));
   handle_to_key_map_.erase(handle);
 }
 
@@ -195,7 +198,7 @@ base::Value CryptAuthKeyBundle::AsDictionary() const {
 
   if (key_directive_) {
     dict.SetKey(kKeyDirectiveDictKey,
-                base::Value(KeyDirectiveToPrefString(*key_directive_)));
+                util::EncodeProtoMessageAsValueString(&key_directive_.value()));
   }
 
   return dict;

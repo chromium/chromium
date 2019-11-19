@@ -8,8 +8,6 @@
 #include "base/no_destructor.h"
 #include "base/task_runner.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_attempt_impl.h"
-#include "chromeos/services/secure_channel/public/mojom/constants.mojom.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace chromeos {
 
@@ -38,17 +36,16 @@ SecureChannelClientImpl::Factory::~Factory() = default;
 
 std::unique_ptr<SecureChannelClient>
 SecureChannelClientImpl::Factory::BuildInstance(
-    service_manager::Connector* connector,
+    mojo::PendingRemote<mojom::SecureChannel> channel,
     scoped_refptr<base::TaskRunner> task_runner) {
-  return base::WrapUnique(new SecureChannelClientImpl(connector, task_runner));
+  return base::WrapUnique(
+      new SecureChannelClientImpl(std::move(channel), task_runner));
 }
 
 SecureChannelClientImpl::SecureChannelClientImpl(
-    service_manager::Connector* connector,
+    mojo::PendingRemote<mojom::SecureChannel> channel,
     scoped_refptr<base::TaskRunner> task_runner)
-    : task_runner_(task_runner), weak_ptr_factory_(this) {
-  connector->BindInterface(mojom::kServiceName, &secure_channel_ptr_);
-}
+    : secure_channel_remote_(std::move(channel)), task_runner_(task_runner) {}
 
 SecureChannelClientImpl::~SecureChannelClientImpl() = default;
 
@@ -68,8 +65,7 @@ SecureChannelClientImpl::InitiateConnectionToDevice(
       base::BindOnce(
           &SecureChannelClientImpl::PerformInitiateConnectionToDevice,
           weak_ptr_factory_.GetWeakPtr(), device_to_connect, local_device,
-          feature, connection_priority,
-          connection_attempt->GenerateInterfacePtr()));
+          feature, connection_priority, connection_attempt->GenerateRemote()));
 
   return connection_attempt;
 }
@@ -91,8 +87,7 @@ SecureChannelClientImpl::ListenForConnectionFromDevice(
       base::BindOnce(
           &SecureChannelClientImpl::PerformListenForConnectionFromDevice,
           weak_ptr_factory_.GetWeakPtr(), device_to_connect, local_device,
-          feature, connection_priority,
-          connection_attempt->GenerateInterfacePtr()));
+          feature, connection_priority, connection_attempt->GenerateRemote()));
 
   return connection_attempt;
 }
@@ -102,10 +97,10 @@ void SecureChannelClientImpl::PerformInitiateConnectionToDevice(
     multidevice::RemoteDeviceRef local_device,
     const std::string& feature,
     ConnectionPriority connection_priority,
-    mojom::ConnectionDelegatePtr connection_delegate_ptr) {
-  secure_channel_ptr_->InitiateConnectionToDevice(
+    mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote) {
+  secure_channel_remote_->InitiateConnectionToDevice(
       device_to_connect.GetRemoteDevice(), local_device.GetRemoteDevice(),
-      feature, connection_priority, std::move(connection_delegate_ptr));
+      feature, connection_priority, std::move(connection_delegate_remote));
 }
 
 void SecureChannelClientImpl::PerformListenForConnectionFromDevice(
@@ -113,14 +108,14 @@ void SecureChannelClientImpl::PerformListenForConnectionFromDevice(
     multidevice::RemoteDeviceRef local_device,
     const std::string& feature,
     ConnectionPriority connection_priority,
-    mojom::ConnectionDelegatePtr connection_delegate_ptr) {
-  secure_channel_ptr_->ListenForConnectionFromDevice(
+    mojo::PendingRemote<mojom::ConnectionDelegate> connection_delegate_remote) {
+  secure_channel_remote_->ListenForConnectionFromDevice(
       device_to_connect.GetRemoteDevice(), local_device.GetRemoteDevice(),
-      feature, connection_priority, std::move(connection_delegate_ptr));
+      feature, connection_priority, std::move(connection_delegate_remote));
 }
 
 void SecureChannelClientImpl::FlushForTesting() {
-  secure_channel_ptr_.FlushForTesting();
+  secure_channel_remote_.FlushForTesting();
 }
 
 }  // namespace secure_channel

@@ -11,7 +11,9 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/token.h"
 #include "components/sessions/core/base_session_service.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
@@ -44,6 +46,13 @@ CreateSetSelectedNavigationIndexCommand(const SessionID& tab_id, int index);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateSetWindowTypeCommand(
     const SessionID& window_id,
     SessionWindow::WindowType type);
+SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreateTabGroupCommand(
+    const SessionID& tab_id,
+    base::Optional<base::Token> group);
+SESSIONS_EXPORT std::unique_ptr<SessionCommand>
+CreateTabGroupMetadataUpdateCommand(const base::Token& group,
+                                    const base::string16& title,
+                                    SkColor color);
 SESSIONS_EXPORT std::unique_ptr<SessionCommand> CreatePinnedStateCommand(
     const SessionID& tab_id,
     bool is_pinned);

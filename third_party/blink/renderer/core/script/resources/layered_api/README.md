@@ -22,11 +22,27 @@ and commit these files together with the changes under resources/layered_api/.
 
 ## Which files are bundled
 
-All files under this directory will be included in the grdp and thus bundled
-in the Chromium binary, except for
+All files under
 
-- Files directly under `core/script/resources/layered_api`, or
-- Files starting with '.', 'README', or 'OWNERS'.
+- Sub-directories which have 'index.mjs' or
+- Directories of which last path component is 'internal'
+
+will be included in the grdp and thus bundled in the Chrome binary,
+except for files starting with '.', 'README', or 'OWNERS'.
 
 So be careful about binary size increase when you add new files or add more
 contents to existing files.
+
+## What are exposed
+
+All bundled resources are mapped to `std-internal://path-relative-to-here`, and
+`std-internal:` resources are not accessible from the web.  Resources loaded as
+`std-internal:` can import other `std-internal:` resources.
+
+For example, `layered_api/foo/bar/baz.mjs` is mapped to
+`std-internal://foo/bar/baz.mjs`.
+
+All `index.mjs` resources are mapped to `std:directory-name-relative-to-here`
+too, and they are web-exposed.  For example,
+`layered_api/elements/toast/index.mjs` is mapped to `std:elements/toast` as
+well as `std-internal://elements/toast/index.mjs`.

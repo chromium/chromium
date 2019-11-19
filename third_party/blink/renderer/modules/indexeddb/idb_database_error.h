@@ -30,18 +30,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_DATABASE_ERROR_H_
 
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class IDBDatabaseError {
-  // The code refers to the DOMException error names table here:
-  // https://heycam.github.io/webidl/#idl-DOMException-error-names
-  // TODO(dmurph): Make |code| a DOMExceptionCode
  public:
-  explicit IDBDatabaseError(int32_t code) : code_(code) {}
+  explicit IDBDatabaseError(DOMExceptionCode code) : code_(code) {}
 
-  IDBDatabaseError(int32_t code, String message)
+  IDBDatabaseError(DOMExceptionCode code, String message)
       : code_(code), message_(std::move(message)) {}
 
   IDBDatabaseError(const IDBDatabaseError& error) = default;
@@ -50,11 +48,11 @@ class IDBDatabaseError {
 
   IDBDatabaseError& operator=(const IDBDatabaseError& error) = default;
 
-  int32_t Code() const { return code_; }
+  DOMExceptionCode Code() const { return code_; }
   const String& Message() const { return message_; }
 
  private:
-  int32_t code_;
+  DOMExceptionCode code_;
   String message_;
 };
 

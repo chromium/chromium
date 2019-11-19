@@ -22,7 +22,7 @@ public class QuicExceptionImpl extends QuicException {
      * this list</a>.
      * @param quicDetailedErrorCode Detailed <a href="https://www.chromium.org/quic">QUIC</a> error
      * code from <a
-     * href=https://cs.chromium.org/chromium/src/net/quic/quic_protocol.h?type=cs&q=%22enum+QuicErrorCode+%7B%22+file:src/net/quic/quic_protocol.h>
+     * href="https://cs.chromium.org/search/?q=symbol:%5CbQuicErrorCode%5Cb">
      * QuicErrorCode</a>.
      */
     public QuicExceptionImpl(

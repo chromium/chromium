@@ -37,8 +37,9 @@ PredictorDatabaseFactory::~PredictorDatabaseFactory() {
 KeyedService* PredictorDatabaseFactory::BuildServiceInstanceFor(
     content::BrowserContext* profile) const {
   scoped_refptr<base::SequencedTaskRunner> db_task_runner =
-      base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
   return new PredictorDatabase(static_cast<Profile*>(profile),
                                std::move(db_task_runner));

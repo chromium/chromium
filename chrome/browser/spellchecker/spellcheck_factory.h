@@ -12,10 +12,6 @@
 
 class SpellcheckService;
 
-namespace service_manager {
-class Identity;
-}
-
 // Entry into the SpellCheck system.
 //
 // Internally, this owns all SpellcheckService objects.
@@ -24,9 +20,6 @@ class SpellcheckServiceFactory : public BrowserContextKeyedServiceFactory {
   // Returns the spell check host. This will create the SpellcheckService
   // if it does not already exist. This can return NULL.
   static SpellcheckService* GetForContext(content::BrowserContext* context);
-
-  static SpellcheckService* GetForRenderer(
-      const service_manager::Identity& renderer_identity);
 
   static SpellcheckServiceFactory* GetInstance();
 

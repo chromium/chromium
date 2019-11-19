@@ -41,8 +41,13 @@ void ClientTransferCache::UnmapAndCreateEntry(uint32_t type, uint32_t id) {
 
   base::AutoLock hold(lock_);
   auto handle = CreateDiscardableHandle(key);
-  if (!handle.IsValid())
+  if (!handle.IsValid()) {
+    // Release any data pointers. Keeping these alive longer can lead to issues
+    // with transfer buffer reallocation.
+    mapped_ptr_ = base::nullopt;
+    transfer_buffer_ptr_ = base::nullopt;
     return;
+  }
 
   if (mapped_ptr_) {
     DCHECK(!transfer_buffer_ptr_);

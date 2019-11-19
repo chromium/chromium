@@ -23,25 +23,22 @@ class FakeConsentAuditor : public ConsentAuditor {
 
   // ConsentAuditor implementation.
   void RecordSyncConsent(
-      const std::string& account_id,
+      const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::SyncConsent& consent) override;
   MOCK_METHOD2(
       RecordArcPlayConsent,
-      void(const std::string&,
+      void(const CoreAccountId&,
            const sync_pb::UserConsentTypes::ArcPlayTermsOfServiceConsent&));
   MOCK_METHOD2(
       RecordArcBackupAndRestoreConsent,
-      void(const std::string&,
+      void(const CoreAccountId&,
            const sync_pb::UserConsentTypes::ArcBackupAndRestoreConsent&));
   MOCK_METHOD2(
       RecordArcGoogleLocationServiceConsent,
-      void(const std::string&,
+      void(const CoreAccountId&,
            const sync_pb::UserConsentTypes::ArcGoogleLocationServiceConsent&));
-  void RecordUnifiedConsent(
-      const std::string& account_id,
-      const sync_pb::UserConsentTypes::UnifiedConsent& consent) override;
   void RecordAssistantActivityControlConsent(
-      const std::string& account_id,
+      const CoreAccountId& account_id,
       const sync_pb::UserConsentTypes::AssistantActivityControlConsent& consent)
       override;
 
@@ -53,13 +50,13 @@ class FakeConsentAuditor : public ConsentAuditor {
 
   // Methods for fake.
   // TODO(markusheintz): Replace the usage of this methods in all tests.
-  void RecordGaiaConsent(const std::string& account_id,
+  void RecordGaiaConsent(const CoreAccountId& account_id,
                          consent_auditor::Feature feature,
                          const std::vector<int>& description_grd_ids,
                          int confirmation_grd_id,
                          consent_auditor::ConsentStatus status);
 
-  const std::string& account_id() const { return account_id_; }
+  const CoreAccountId& account_id() const { return account_id_; }
 
   const sync_pb::UserConsentTypes::SyncConsent& recorded_sync_consent() const {
     return recorded_sync_consent_;
@@ -85,7 +82,7 @@ class FakeConsentAuditor : public ConsentAuditor {
   }
 
  private:
-  std::string account_id_;
+  CoreAccountId account_id_;
 
   sync_pb::UserConsentTypes::SyncConsent recorded_sync_consent_;
   sync_pb::UserConsentTypes_ArcPlayTermsOfServiceConsent recorded_play_consent_;

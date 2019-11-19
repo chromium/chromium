@@ -12,7 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_backend_client.h"
@@ -31,7 +31,6 @@ using syncer::DataBatch;
 using syncer::EntityChange;
 using syncer::EntityChangeList;
 using syncer::EntityData;
-using syncer::EntityDataPtr;
 using syncer::KeyAndData;
 using syncer::MetadataBatch;
 using syncer::MetadataChangeList;
@@ -379,7 +378,8 @@ class TypedURLSyncBridgeTest : public testing::Test {
       metadata_changes->UpdateMetadata(storage_key, metadata);
     }
 
-    bridge()->ApplySyncChanges(std::move(metadata_changes), entity_changes);
+    bridge()->ApplySyncChanges(std::move(metadata_changes),
+                               std::move(entity_changes));
     return visits;
   }
 
@@ -400,11 +400,11 @@ class TypedURLSyncBridgeTest : public testing::Test {
     return bridge()->GetStorageKeyInternal(url);
   }
 
-  EntityDataPtr SpecificsToEntity(const TypedUrlSpecifics& specifics) {
-    EntityData data;
-    data.client_tag_hash = "ignored";
-    *data.specifics.mutable_typed_url() = specifics;
-    return data.PassToPtr();
+  std::unique_ptr<EntityData> SpecificsToEntity(
+      const TypedUrlSpecifics& specifics) {
+    auto data = std::make_unique<EntityData>();
+    *data->specifics.mutable_typed_url() = specifics;
+    return data;
   }
 
   EntityChangeList CreateEntityChangeList(
@@ -512,7 +512,7 @@ class TypedURLSyncBridgeTest : public testing::Test {
   RecordingModelTypeChangeProcessor& processor() { return *processor_; }
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir test_dir_;
   scoped_refptr<TestHistoryBackend> fake_history_backend_;
   TypedURLSyncBridge* typed_url_sync_bridge_;

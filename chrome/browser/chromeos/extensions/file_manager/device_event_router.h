@@ -13,7 +13,7 @@
 #include "base/threading/thread_checker.h"
 #include "chrome/browser/chromeos/file_manager/volume_manager_observer.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace file_manager {
 
@@ -98,7 +98,7 @@ class DeviceEventRouter : public VolumeManagerObserver,
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<DeviceEventRouter> weak_factory_;
+  base::WeakPtrFactory<DeviceEventRouter> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(DeviceEventRouter);
 };
 }  // namespace file_manager

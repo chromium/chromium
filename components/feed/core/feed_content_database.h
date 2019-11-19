@@ -14,22 +14,24 @@
 #include "base/sequenced_task_runner.h"
 #include "components/leveldb_proto/public/proto_database.h"
 
+namespace leveldb_proto {
+class ProtoDatabaseProvider;
+}  // namespace leveldb_proto
+
 namespace feed {
 
 class ContentMutation;
 class ContentOperation;
 class ContentStorageProto;
 
+using InitStatus = leveldb_proto::Enums::InitStatus;
+
 // FeedContentDatabase is leveldb backend store for Feed's content storage data.
-// Feed's content data are key-value pairs.
+// Feed's content data are key-value pairs. In order to support callers from
+// different threads, this class posts all database operations to an owned
+// sequenced task runner.
 class FeedContentDatabase {
  public:
-  enum State {
-    UNINITIALIZED,
-    INITIALIZED,
-    INIT_FAILURE,
-  };
-
   using KeyAndData = std::pair<std::string, std::string>;
 
   // Returns the storage data as a vector of key-value pairs when calling
@@ -46,15 +48,21 @@ class FeedContentDatabase {
   // the entry's existence.
   using ConfirmationCallback = base::OnceCallback<void(bool)>;
 
-  // Initializes the database with |database_folder|.
-  explicit FeedContentDatabase(const base::FilePath& database_folder);
+  using StorageEntryVector =
+      leveldb_proto::ProtoDatabase<ContentStorageProto>::KeyEntryVector;
 
-  // Initializes the database with |database_folder|. Creates storage using the
-  // given |storage_database| for local storage. Useful for testing.
+  // Initializes the database with |proto_database_provider| and
+  // |database_folder|.
   FeedContentDatabase(
-      const base::FilePath& database_folder,
+      leveldb_proto::ProtoDatabaseProvider* proto_database_provider,
+      const base::FilePath& database_folder);
+
+  // Creates storage using the given |storage_database| for local storage.
+  // Useful for testing.
+  explicit FeedContentDatabase(
       std::unique_ptr<leveldb_proto::ProtoDatabase<ContentStorageProto>>
-          storage_database);
+          storage_database,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   ~FeedContentDatabase();
 
@@ -100,8 +108,23 @@ class FeedContentDatabase {
                         std::unique_ptr<ContentMutation> content_mutation,
                         ConfirmationCallback callback);
 
+  // The following *Internal methods must be executed from |task_runner_|.
+  void InitInternal();
+  void LoadEntriesWithFilterInternal(const leveldb_proto::KeyFilter& key_filter,
+                                     ContentLoadCallback callback);
+  void LoadKeysInternal(ContentKeyCallback callback);
+  void UpdateEntriesInternal(
+      std::unique_ptr<StorageEntryVector> entries_to_save,
+      std::unique_ptr<std::vector<std::string>> keys_to_remove,
+      std::unique_ptr<ContentMutation> content_mutation,
+      ConfirmationCallback callback);
+  void UpdateEntriesWithRemoveFilterInternal(
+      const leveldb_proto::KeyFilter& key_filter,
+      std::unique_ptr<ContentMutation> content_mutation,
+      ConfirmationCallback callback);
+
   // Callback methods given to |storage_database_| for async responses.
-  void OnDatabaseInitialized(bool success);
+  void OnDatabaseInitialized(InitStatus status);
   void OnLoadEntriesForLoadContent(
       base::TimeTicks start_time,
       ContentLoadCallback callback,
@@ -117,15 +140,16 @@ class FeedContentDatabase {
                             bool success);
 
   // Status of the database initialization.
-  State database_status_;
+  InitStatus database_status_;
+
+  // Task runner on which to execute database calls.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // The database for storing content storage information.
   std::unique_ptr<leveldb_proto::ProtoDatabase<ContentStorageProto>>
       storage_database_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
-  base::WeakPtrFactory<FeedContentDatabase> weak_ptr_factory_;
+  base::WeakPtrFactory<FeedContentDatabase> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FeedContentDatabase);
 };

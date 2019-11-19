@@ -12,4 +12,9 @@ Invalidator::Invalidator() {
 Invalidator::~Invalidator() {
 }
 
+bool Invalidator::UpdateRegisteredIds(InvalidationHandler* handler,
+                                      const Topics& ids) {
+  NOTREACHED();
+  return false;
+}
 }  // namespace syncer

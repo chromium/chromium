@@ -18,12 +18,13 @@
         "description": "See http://www.w3.org/TR/DOM-Level-3-Events/#events-KeyboardEvent",
         "properties": {
           "type": {"$ref": "KeyboardEventType", "description": "One of keyup or keydown."},
-          "requestId": {"type": "string", "description": "The ID of the request."},
+          "requestId": {"type": "string", "optional": true, "description": "(Deprecated) The ID of the request. Use the <code>requestId</code> param from the <code>onKeyEvent</code> event instead."},
           "extensionId": {"type": "string", "optional": true, "description": "The extension ID of the sender of this keyevent."},
           "key": {"type": "string", "description": "Value of the key being pressed"},
           "code": {"type": "string", "description": "Value of the physical key being pressed. The value is not affected by current keyboard layout or modifier state."},
           "keyCode": {"type": "integer", "optional": true, "description": "The deprecated HTML keyCode, which is system- and implementation-dependent numerical code signifying the unmodified identifier associated with the key pressed."},
           "altKey": {"type": "boolean", "optional": true, "description": "Whether or not the ALT key is pressed."},
+          "altgrKey": {"type": "boolean", "optional": true, "description": "Whether or not the ALTGR key is pressed."},
           "ctrlKey": {"type": "boolean", "optional": true, "description": "Whether or not the CTRL key is pressed."},
           "shiftKey": {"type": "boolean", "optional": true, "description": "Whether or not the SHIFT key is pressed."},
           "capsLock": {"type": "boolean", "optional": true, "description": "Whether or not the CAPS_LOCK is enabled."}
@@ -765,6 +766,11 @@
             "$ref": "KeyboardEvent",
             "name": "keyData",
             "description": "Data on the key event"
+          },
+          {
+            "type": "string",
+            "name": "requestId",
+            "description": "ID of the request. If the event listener returns undefined, then <code>keyEventHandled</code> must be called later with this <code>requestId</code>."
           }
         ],
         "returns": {

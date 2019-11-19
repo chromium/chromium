@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL 'grid' with: grid-template-columns: minmax(0, 1fr) auto auto auto; and grid-template-rows: minmax(0, 1fr) auto auto auto; assert_in_array: gridTemplateColumns value "0px 50px 50px 50px" not in array ["0px 60px 45px 45px"]
+FAIL 'grid' with: grid-template-columns: 1fr auto auto auto; and grid-template-rows: 1fr auto auto auto; assert_in_array: gridTemplateColumns value "0px 50px 50px 50px" not in array ["10px 50px 50px 50px"]
+FAIL 'grid' with: grid-template-columns: 1fr 1fr 1fr 1fr; and grid-template-rows: 1fr 1fr 1fr 1fr; assert_in_array: gridTemplateColumns value "12.5px 12.5px 12.5px 12.5px" not in array ["30px 50px 50px 50px"]
+FAIL 'grid' with: grid-template-columns: 1fr 1fr 1fr 4fr; and grid-template-rows: 1fr 1fr 1fr 4fr; assert_in_array: gridTemplateColumns value "7.14062px 7.14062px 7.14062px 28.5625px" not in array ["30px 30px 25px 100px"]
+FAIL 'grid' with: grid-template-columns: 1fr 1fr 1fr; and grid-template-rows: 1fr 1fr 1fr; assert_in_array: gridTemplateColumns value "60px 0px 0px" not in array ["60px 50px 50px"]
+Harness: the test ran to completion.
+

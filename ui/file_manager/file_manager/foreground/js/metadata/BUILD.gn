@@ -4,6 +4,7 @@
 
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/closure_compiler/js_unit_tests.gni")
+import("//ui/file_manager/base/gn/js_test_gen_html.gni")
 
 # TODO(tapted): This entire folder should move to //ui/file_manager/base.
 visibility = [ "//ui/file_manager/*" ]
@@ -12,7 +13,7 @@ group("closure_compile") {
   testonly = true
   deps = [
     ":closure_compile_module",
-    ":unit_tests_type_check",
+    ":js_test_gen_html_type_check_auto",
   ]
 }
 
@@ -49,8 +50,9 @@ js_library("byte_reader") {
 js_library("content_metadata_provider") {
   deps = [
     ":metadata_provider",
-    "../../../common/js:file_type",
-    "../../../common/js:util",
+    "//ui/file_manager/file_manager/common/js:file_type",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/foreground/js:thumbnail_loader",
   ]
 }
 
@@ -69,7 +71,7 @@ js_library("exif_parser") {
     ":exif_constants",
     ":image_parsers",
   ]
-  externs_list = [ "../../../../externs/exif_entry.js" ]
+  externs_list = [ "//ui/file_manager/externs/exif_entry.js" ]
 }
 
 js_unittest("exif_parser_unittest") {
@@ -143,7 +145,7 @@ js_library("image_parsers") {
   deps = [
     ":metadata_parser",
   ]
-  externs_list = [ "../../../../externs/metadata_worker_window.js" ]
+  externs_list = [ "//ui/file_manager/externs/metadata_worker_window.js" ]
 }
 
 js_library("metadata_cache_item") {
@@ -165,8 +167,8 @@ js_library("metadata_cache_set") {
     ":metadata_cache_item",
     ":metadata_item",
     ":metadata_request",
-    "../../../common/js:lru_cache",
-    "../../../common/js:util",
+    "//ui/file_manager/file_manager/common/js:lru_cache",
+    "//ui/file_manager/file_manager/common/js:util",
     "//ui/webui/resources/js/cr:event_target",
   ]
 }
@@ -180,9 +182,14 @@ js_unittest("metadata_cache_set_unittest") {
 
 js_library("metadata_dispatcher") {
   deps = [
+    ":byte_reader",
+    ":exif_parser",
+    ":id3_parser",
+    ":image_parsers",
     ":metadata_parser",
+    ":mpeg_parser",
   ]
-  externs_list = [ "../../../../externs/platform.js" ]
+  externs_list = [ "//ui/file_manager/externs/platform.js" ]
 }
 
 js_library("metadata_item") {
@@ -197,8 +204,8 @@ js_library("metadata_model") {
     ":metadata_item",
     ":metadata_provider",
     ":multi_metadata_provider",
-    "../../../common/js:util",
     "//ui/file_manager/externs:volume_manager",
+    "//ui/file_manager/file_manager/common/js:util",
   ]
 }
 
@@ -269,7 +276,7 @@ js_unittest("thumbnail_model_unittest") {
   ]
 }
 
-js_unit_tests("unit_tests") {
+js_test_gen_html("js_test_gen_html") {
   deps = [
     ":content_metadata_provider_unittest",
     ":exif_parser_unittest",
@@ -282,4 +289,5 @@ js_unit_tests("unit_tests") {
     ":multi_metadata_provider_unittest",
     ":thumbnail_model_unittest",
   ]
+  mocks = [ "metadata_dispatcher_mock_deps.js" ]
 }

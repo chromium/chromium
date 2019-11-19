@@ -33,4 +33,4 @@ interface SVGFEGaussianBlurElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] void setStdDeviation(float stdDeviationX, float stdDeviationY);
 };
 
-SVGFEGaussianBlurElement implements SVGFilterPrimitiveStandardAttributes;
+SVGFEGaussianBlurElement includes SVGFilterPrimitiveStandardAttributes;

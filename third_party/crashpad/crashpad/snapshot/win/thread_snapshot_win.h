@@ -24,8 +24,8 @@
 #include "build/build_config.h"
 #include "snapshot/cpu_context.h"
 #include "snapshot/memory_snapshot.h"
+#include "snapshot/memory_snapshot_generic.h"
 #include "snapshot/thread_snapshot.h"
-#include "snapshot/win/memory_snapshot_win.h"
 #include "snapshot/win/process_reader_win.h"
 #include "util/misc/initialization_state_dcheck.h"
 
@@ -82,11 +82,11 @@ class ThreadSnapshotWin final : public ThreadSnapshot {
 #endif
   } context_union_;
   CPUContext context_;
-  MemorySnapshotWin stack_;
-  MemorySnapshotWin teb_;
+  MemorySnapshotGeneric stack_;
+  MemorySnapshotGeneric teb_;
   ProcessReaderWin::Thread thread_;
   InitializationStateDcheck initialized_;
-  std::vector<std::unique_ptr<MemorySnapshotWin>> pointed_to_memory_;
+  std::vector<std::unique_ptr<MemorySnapshotGeneric>> pointed_to_memory_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadSnapshotWin);
 };

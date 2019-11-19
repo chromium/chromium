@@ -12,7 +12,10 @@ GuideName* const kContentAreaGuide = @"ContentAreaGuide";
 GuideName* const kSecondaryToolbarGuide = @"kSecondaryToolbarGuide";
 GuideName* const kSecondaryToolbarNoFullscreenGuide =
     @"kSecondaryToolbarNoFullscreenGuide";
+GuideName* const kBadgeOverflowMenuGuide = @"kBadgeOverflowMenuGuide";
 GuideName* const kOmniboxGuide = @"kOmniboxGuide";
+GuideName* const kOmniboxLeadingImageGuide = @"kOmniboxLeadingImageGuide";
+GuideName* const kOmniboxTextFieldGuide = @"kOmniboxTextFieldGuide";
 GuideName* const kBackButtonGuide = @"kBackButtonGuide";
 GuideName* const kForwardButtonGuide = @"kForwardButtonGuide";
 GuideName* const kSearchButtonGuide = @"kSearchButtonGuide";

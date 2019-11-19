@@ -1,17 +1,18 @@
 rootWebArea
-++grid
-++++row
-++++++columnHeader name='Turtle' tableCellRowIndex=0
-++++++columnHeader name='Weapon' tableCellRowIndex=0
-++++row
-++++++cell name='Donatello' tableCellRowIndex=1
-++++++cell name='Bo' tableCellRowIndex=1
-++++row
-++++++cell name='Leonardo' tableCellRowIndex=2
-++++++cell name='Twin Katana' tableCellRowIndex=2
-++++row
-++++++cell name='Michelangelo' tableCellRowIndex=3
-++++++cell name='Nunchaku' tableCellRowIndex=3
-++++row
-++++++cell name='Raphael' tableCellRowIndex=4
-++++++cell name='Sai' tableCellRowIndex=4
+++genericContainer ignored
+++++grid
+++++++row
+++++++++columnHeader name='Turtle' tableCellRowIndex=0
+++++++++columnHeader name='Weapon' tableCellRowIndex=0
+++++++row
+++++++++cell name='Donatello' tableCellRowIndex=1
+++++++++cell name='Bo' tableCellRowIndex=1
+++++++row
+++++++++cell name='Leonardo' tableCellRowIndex=2
+++++++++cell name='Twin Katana' tableCellRowIndex=2
+++++++row
+++++++++cell name='Michelangelo' tableCellRowIndex=3
+++++++++cell name='Nunchaku' tableCellRowIndex=3
+++++++row
+++++++++cell name='Raphael' tableCellRowIndex=4
+++++++++cell name='Sai' tableCellRowIndex=4

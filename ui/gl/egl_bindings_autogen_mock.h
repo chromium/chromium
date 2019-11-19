@@ -138,9 +138,9 @@ Mock_eglGetNextFrameIdANDROID(EGLDisplay dpy,
                               EGLSurface surface,
                               EGLuint64KHR* frameId);
 static EGLDisplay GL_BINDING_CALL
-Mock_eglGetPlatformDisplayEXT(EGLenum platform,
-                              void* native_display,
-                              const EGLint* attrib_list);
+Mock_eglGetPlatformDisplay(EGLenum platform,
+                           void* native_display,
+                           const EGLAttrib* attrib_list);
 static __eglMustCastToProperFunctionPointerType GL_BINDING_CALL
 Mock_eglGetProcAddress(const char* procname);
 static EGLBoolean GL_BINDING_CALL Mock_eglGetSyncAttribKHR(EGLDisplay dpy,
@@ -181,6 +181,10 @@ static EGLBoolean GL_BINDING_CALL Mock_eglQueryContext(EGLDisplay dpy,
                                                        EGLint* value);
 static EGLBoolean GL_BINDING_CALL Mock_eglQueryDebugKHR(EGLint attribute,
                                                         EGLAttrib* value);
+static EGLBoolean GL_BINDING_CALL
+Mock_eglQueryDisplayAttribANGLE(EGLDisplay dpy,
+                                EGLint attribute,
+                                EGLAttrib* value);
 static EGLBoolean GL_BINDING_CALL Mock_eglQueryStreamKHR(EGLDisplay dpy,
                                                          EGLStreamKHR stream,
                                                          EGLenum attribute,
@@ -192,6 +196,9 @@ Mock_eglQueryStreamu64KHR(EGLDisplay dpy,
                           EGLuint64KHR* value);
 static const char* GL_BINDING_CALL Mock_eglQueryString(EGLDisplay dpy,
                                                        EGLint name);
+static const char* GL_BINDING_CALL Mock_eglQueryStringiANGLE(EGLDisplay dpy,
+                                                             EGLint name,
+                                                             EGLint index);
 static EGLBoolean GL_BINDING_CALL Mock_eglQuerySurface(EGLDisplay dpy,
                                                        EGLSurface surface,
                                                        EGLint attribute,

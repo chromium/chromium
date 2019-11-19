@@ -1,0 +1,321 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module autofill.mojom;
+
+import "mojo/public/mojom/base/text_direction.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// Events observed by the Password Manager that indicate either that a form is
+// potentially being submitted, or that a form has already been successfully
+// submitted. Recorded into a UMA histogram, so order of enumerators should
+// not be changed.
+enum SubmissionIndicatorEvent {
+    NONE = 0,
+    HTML_FORM_SUBMISSION = 1,
+    SAME_DOCUMENT_NAVIGATION = 2,
+    XHR_SUCCEEDED = 3,
+    FRAME_DETACHED = 4,
+    // DEPRECATED_MANUAL_SAVE,
+    DOM_MUTATION_AFTER_XHR = 6,
+    PROVISIONALLY_SAVED_FORM_ON_START_PROVISIONAL_LOAD = 7,
+    // DEPRECATED_FILLED_FORM_ON_START_PROVISIONAL_LOAD,
+    // DEPRECATED_FILLED_INPUT_ELEMENTS_ON_START_PROVISIONAL_LOAD,
+    PROBABLE_FORM_SUBMISSION = 10,
+};
+
+// This enum lists form field types as understood by the password manager,
+// essentially a digest of |autofill::ServerFieldType|. Note that we cannot
+// simply reuse |autofill::ServerFieldType| as it is defined in the browser,
+// while this enum will be used by both the browser and renderer.
+enum PasswordFormFieldPredictionType {
+  kUsername,
+  kCurrentPassword,
+  kNewPassword,
+  kNotPassword,
+};
+
+enum SubmissionSource {
+  NONE,                      // No submission signal was detected.
+  SAME_DOCUMENT_NAVIGATION,  // The form was removed in same document
+                             // navigation.
+  XHR_SUCCEEDED,             // The form was removed whem XHR succeeded.
+  FRAME_DETACHED,            // The subframe which has form was detached.
+  DOM_MUTATION_AFTER_XHR,    // The form was removed after XHR.
+  PROBABLY_FORM_SUBMITTED,   // The form was probably submitted since new page
+                             // is loaded.
+  FORM_SUBMISSION,           // Normal form submission.
+};
+
+enum FocusedFieldType {
+  kUnknown,
+  kUnfillableElement,
+  kFillableTextArea,
+  kFillableSearchField,
+  kFillableNonSearchField,
+  kFillableUsernameField,
+  kFillablePasswordField,
+};
+
+// Describes how a form button is implemented in HTML source. Should be
+// synced with |ButtonTitleType| in
+// components/autofill/core/browser/proto/server.proto.
+enum ButtonTitleType {
+  NONE = 0,
+  BUTTON_ELEMENT_SUBMIT_TYPE = 1,  // <button type='submit'>
+  BUTTON_ELEMENT_BUTTON_TYPE = 2,  // <button type='button'>
+  INPUT_ELEMENT_SUBMIT_TYPE = 3,   // <input type='submit'>
+  INPUT_ELEMENT_BUTTON_TYPE = 4,   // <input type='button'>
+  HYPERLINK = 5,                   // e.g. <a class='button'>
+  DIV = 6,                         // e.g. <div id='submit'>
+  SPAN = 7                         // e.g. <span name='btn'>
+};
+
+// autofill::FormFieldData
+struct FormFieldData {
+  enum CheckStatus {
+    kNotCheckable,
+    kCheckableButUnchecked,
+    kChecked,
+  };
+
+  // Copied to components/autofill/ios/browser/resources/autofill_controller.js.
+  enum RoleAttribute {
+    // "presentation"
+    kPresentation,
+    // Anything else.
+    kOther,
+  };
+
+  // From which source the label is inferred.
+  enum LabelSource {
+    kUnknown,  // The source is unknown.
+    kLabelTag,
+    kPTag,
+    kDivTable,
+    kTdTag,
+    kDdTag,
+    kLiTag,
+    kPlaceHolder,
+    kAriaLabel,
+    kCombined,  // Combined with various elements.
+    kValue,     // label is the value of element.
+  };
+
+  mojo_base.mojom.String16 label;
+  mojo_base.mojom.String16 name;
+  mojo_base.mojom.String16 id_attribute;
+  mojo_base.mojom.String16 name_attribute;
+  mojo_base.mojom.String16 value;
+  string form_control_type;
+  string autocomplete_attribute;
+  mojo_base.mojom.String16 placeholder;
+  mojo_base.mojom.String16 css_classes;
+  mojo_base.mojom.String16 aria_label;
+  mojo_base.mojom.String16 aria_description;
+  uint32 unique_renderer_id;
+  uint32 properties_mask;
+  int32 form_control_ax_id;
+
+  uint64 max_length;
+  bool is_autofilled;
+  string section;
+  CheckStatus check_status;
+  bool is_focusable;
+  bool should_autocomplete;
+  RoleAttribute role;
+  mojo_base.mojom.TextDirection text_direction;
+  bool is_enabled;
+  bool is_readonly;
+  mojo_base.mojom.String16 typed_value;
+
+  array<mojo_base.mojom.String16> option_values;
+  array<mojo_base.mojom.String16> option_contents;
+
+  LabelSource label_source;
+};
+
+struct ButtonTitleInfo {
+  mojo_base.mojom.String16 title;
+  ButtonTitleType type;
+};
+
+// autofill::FormData
+struct FormData {
+  mojo_base.mojom.String16 id_attribute;
+  mojo_base.mojom.String16 name_attribute;
+  mojo_base.mojom.String16 name;
+  array<ButtonTitleInfo> button_titles;
+  url.mojom.Url url;
+  url.mojom.Url action;
+  bool is_action_empty;
+  url.mojom.Origin main_frame_origin;
+  bool is_form_tag;
+  bool is_formless_checkout;
+  uint32 unique_renderer_id;
+  SubmissionIndicatorEvent submission_event;
+  array<FormFieldData> fields;
+  array<uint32> username_predictions;
+  bool is_gaia_with_skip_save_password_form;
+};
+
+// autofill::FormFieldDataPredictions
+struct FormFieldDataPredictions {
+  FormFieldData field;
+  string signature;
+  string heuristic_type;
+  string server_type;
+  string overall_type;
+  string parseable_name;
+  string section;
+};
+
+// autofill::FormDataPredictions
+struct FormDataPredictions {
+  FormData data;
+  string signature;
+  array<FormFieldDataPredictions> fields;
+};
+
+// autofill::PasswordAndMetadata
+struct PasswordAndMetadata {
+  mojo_base.mojom.String16 password;
+  string realm;
+  bool uses_account_store;
+};
+
+// autofill::PasswordFormFillData
+struct PasswordFormFillData {
+  uint32 form_renderer_id;
+  url.mojom.Url origin;
+  url.mojom.Url action;
+  FormFieldData username_field;
+  FormFieldData password_field;
+  bool username_may_use_prefilled_placeholder;
+  string preferred_realm;
+  bool uses_account_store;
+  map<mojo_base.mojom.String16, PasswordAndMetadata> additional_logins;
+  bool wait_for_username;
+  bool has_renderer_ids;
+};
+
+// autofill::PasswordFormGenerationData
+struct PasswordFormGenerationData {
+   uint32 new_password_renderer_id;
+   uint32 confirmation_password_renderer_id;
+};
+
+// autofill::password_generation::PasswordGenerationUIData
+struct PasswordGenerationUIData {
+  gfx.mojom.RectF bounds;
+  int32 max_length;
+  mojo_base.mojom.String16 generation_element;
+  uint32 generation_element_id;
+  bool is_generation_element_password_type;
+  mojo_base.mojom.TextDirection text_direction;
+  PasswordForm password_form;
+};
+
+// autofill::ValueElementPair
+struct ValueElementPair {
+  mojo_base.mojom.String16 value;
+  mojo_base.mojom.String16 field_name;
+};
+
+// autofill::PasswordForm
+struct PasswordForm {
+  // Enum to differentiate between HTML form based authentication, and dialogs
+  // using basic or digest schemes. Default is kHtml. Only PasswordForms of the
+  // same Scheme will be matched/autofilled against each other.
+  enum Scheme {
+    kHtml,
+    kBasic,
+    kDigest,
+    kOther,
+    kUsernameOnly,
+  };
+
+  // Enum to differentiate between manually filled forms, forms with auto-
+  // generated passwords, and forms generated from the DOM API.
+  //
+  // Always append new types at the end. This enum is converted to int and
+  // stored in password store backends, so it is important to keep each
+  // value assigned to the same integer.
+  enum Type {
+    kManual,
+    kGenerated,
+    kApi,
+  };
+
+  // Enum to keep track of what information has been sent to the server about
+  // this form regarding password generation.
+  enum GenerationUploadStatus {
+    kNoSignalSent,
+    kPositiveSignalSent,
+    kNegativeSignalSent,
+    // Reserve a few values for future use.
+    kUnknownStatus = 10,
+  };
+
+  Scheme scheme;
+  string signon_realm;
+  url.mojom.Url origin_with_path;
+  url.mojom.Url action;
+  string affiliated_web_realm;
+  mojo_base.mojom.String16 submit_element;
+  mojo_base.mojom.String16 username_element;
+  bool username_marked_by_site;
+  mojo_base.mojom.String16 username_value;
+  array<ValueElementPair> all_possible_usernames;
+  array<ValueElementPair> all_possible_passwords;
+  bool form_has_autofilled_value;
+  mojo_base.mojom.String16 password_element;
+  mojo_base.mojom.String16 password_value;
+  mojo_base.mojom.String16 new_password_element;
+  mojo_base.mojom.String16 new_password_value;
+  bool new_password_marked_by_site;
+  mojo_base.mojom.String16 confirmation_password_element;
+  bool preferred;
+  mojo_base.mojom.Time date_created;
+  mojo_base.mojom.Time date_synced;
+  bool blacklisted_by_user;
+  Type type;
+  int32 times_used;
+  FormData form_data;
+  GenerationUploadStatus generation_upload_status;
+  mojo_base.mojom.String16 display_name;
+  url.mojom.Url icon_url;
+  url.mojom.Origin federation_origin;
+  bool skip_zero_click;
+  bool was_parsed_using_autofill_predictions;
+  bool is_public_suffix_match;
+  bool is_affiliation_based_match;
+  SubmissionIndicatorEvent submission_event;
+  bool only_for_fallback;
+};
+
+// autofill::ParsingResult
+struct ParsingResult {
+  uint32 username_renderer_id;
+  uint32 password_renderer_id;
+  uint32 new_password_renderer_id;
+  uint32 confirm_password_renderer_id;
+};
+
+// Represents the autofill state.
+enum AutofillState {
+  // There are no available suggestions, neither autofill nor autocomplete, for
+  // the input.
+  kNoSuggestions,
+  // There are available autofill suggestions for the input. Autofill fills in
+  // an entire form.
+  kAutofillAvailable,
+  // There are available autocomplete suggestions for the input. Autocomplete
+  // only fills in a single input.
+  kAutocompleteAvailable,
+};

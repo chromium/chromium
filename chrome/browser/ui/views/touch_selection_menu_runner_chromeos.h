@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "components/arc/common/intent_helper.mojom.h"
+#include "components/arc/mojom/intent_helper.mojom.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/views/touchui/touch_selection_menu_runner_views.h"
 

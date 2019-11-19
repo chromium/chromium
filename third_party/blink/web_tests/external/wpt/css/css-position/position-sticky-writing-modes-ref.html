@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <title>Reference for position:sticky constraints are independent of writing mode</title>
 
+<link rel="stylesheet" type="text/css" href="/fonts/ahem.css" />
 <style>
 .group {
   display: inline-block;
@@ -34,7 +35,7 @@ window.addEventListener('load', function() {
   document.getElementById('scroller1').scrollTop = 50;
   document.getElementById('scroller1').scrollLeft = 20;
   document.getElementById('scroller2').scrollTop = 50;
-  document.getElementById('scroller2').scrollLeft = 60;
+  document.getElementById('scroller2').scrollLeft = -25;
 });
 </script>
 

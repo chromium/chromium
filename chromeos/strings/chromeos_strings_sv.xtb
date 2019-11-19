@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
+<translation id="1482734542997480527">Den här enheten hanteras av <ph name="ENROLLMENT_DOMAIN" />, som kan ha möjlighet att övervaka din aktivitet.</translation>
 <translation id="1510238584712386396">Startprogram</translation>
 <translation id="1734367976349034509">Enheten är företagshanterad</translation>
+<translation id="1930797645656624981">Tjänst för inmatningsmetod för Chrome OS</translation>
+<translation id="1979103255016296513">Tiden för att ändra lösenordet har gått ut</translation>
 <translation id="2049639323467105390">Den här enheten hanteras av <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">Ingenting hittades på skärmen</translation>
 <translation id="2338501278241028356">Aktivera Bluetooth så att det går att upptäcka enheter i närheten</translation>
 <translation id="2805756323405976993">Appar</translation>
 <translation id="2872961005593481000">Stäng av</translation>
-<translation id="3147142846278915599">Översikt (appar synkroniseras …)</translation>
+<translation id="3008341117444806826">UPPDATERA</translation>
+<translation id="3838338534323494292">Nytt lösenord</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> hanterar den här enheten och har tillgång till all användaraktivitet, inklusive besökta webbsidor, lösenord och e-post.</translation>
+<translation id="4227825898293920515">Lösenordet upphör att gälla om <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Kerberos-biljetten upphör snart att gälla</translation>
+<translation id="445059817448385655">Gammalt lösenord</translation>
+<translation id="467510802200863975">Lösenorden matchar inte</translation>
 <translation id="4731797938093519117">Föräldraåtkomst</translation>
+<translation id="4890353053343094602">Välj ett nytt omedelbart</translation>
 <translation id="5212543919916444558">Det finns inget på skärmen som jag kan hjälpa till med.
 Tryck på mikrofonen och fråga om något.</translation>
 <translation id="5222676887888702881">Logga ut</translation>
+<translation id="5317780077021120954">Spara</translation>
+<translation id="5332948983412042822">Välj ett nytt nu</translation>
 <translation id="5457599981699367932">Använd som gäst</translation>
 <translation id="54609108002486618">Hanterade</translation>
 <translation id="5832805196449965646">Lägg till person</translation>
 <translation id="5895138241574237353">Starta om</translation>
+<translation id="6058625436358447366">Slutför genom att ange det gamla och det nya lösenordet</translation>
+<translation id="6106186594183574873">Slutför genom att ange det gamla lösenordet</translation>
+<translation id="6146993107019042706">Slutför genom att ange det nya lösenordet</translation>
 <translation id="7658239707568436148">Avbryt</translation>
+<translation id="7690294790491645610">Bekräfta det nya lösenordet</translation>
+<translation id="808894953321890993">Ändra lösenord</translation>
+<translation id="8747900814994928677">Bekräfta ändring</translation>
+<translation id="910415269708673980">Uppdatera biljetten för <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Lås upp</translation>
 </translationbundle>

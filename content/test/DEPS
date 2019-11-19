@@ -1,7 +1,6 @@
 include_rules = [
   # Allow inclusion of specific components that we depend on.
   # See comment in content/DEPS for which components are allowed.
-  "+components/services/leveldb",
   "+components/network_session_configurator/common",
   "+components/scheduler/renderer",
   "+components/scheduler/test",
@@ -9,9 +8,14 @@ include_rules = [
   "+components/viz/host",
   "+components/viz/service",
   "+components/viz/test",
-  "+services/viz/public/interfaces",
+  "+services/viz/public/mojom",
 
-  "+chromeos/audio", # For WebRTC tests.
+  # For WebRTC tests.
+  "+chromeos/audio",
+  "+chromeos/dbus/audio",
+  "+chromeos/network/network_handler.h",
+  "+chromeos/network/network_state.h",
+  "+chromeos/network/network_state_handler.h",
   # Testing utilities can access anything in content/
   "+content",
   "+device/bluetooth", # For WebBluetooth tests
@@ -22,6 +26,7 @@ include_rules = [
   "+services/network/public/cpp",
   "+services/network/public/mojom",
   "+services/network/test",
+  "+services/network/mock_mojo_dhcp_wpad_url_client.h",
   "+services/network/url_request_context_builder_mojo.h",
   "+services/proxy_resolver",
   "+services/service_manager/public",
@@ -43,10 +48,10 @@ specific_include_rules = {
   "web_test_support.cc": [
     "+content/shell/test_runner",
     "+content/shell/common/shell_switches.h",
-    "+services/ws/public/cpp/gpu",
+    "+services/viz/public/cpp/gpu",
   ],
   "gpu_browsertest_helpers.cc": [
-    "+services/ws/public/cpp/gpu/command_buffer_metrics.h",
-    "+services/ws/public/cpp/gpu/context_provider_command_buffer.h",
+    "+services/viz/public/cpp/gpu/command_buffer_metrics.h",
+    "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
   ],
 }

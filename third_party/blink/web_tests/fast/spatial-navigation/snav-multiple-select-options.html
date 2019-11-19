@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!--
+    This test ensures the operation of selecting on multiple select element on Spatial Navigation (SNav) mode.
+
+    * Pre-conditions:
+    1) DRT support for SNav enable/disable.
+
+    * Navigation steps:
+    1) Loads this page, focus goes to "start" automatically.
+    2) Some options are selected by Up/Down and space-bar key.
+  -->
+
+<select id="start" multiple>
+  <option>1</option>
+  <option>2</option>
+  <option disabled>3</option>
+  <option>4</option>
+</select>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/snav-testharness.js"></script>
+
+<script>
+  snav.assertSnavEnabledAndTestable();
+  test(() => {
+    const start = document.getElementById("start");
+    const options = start.options;
+    start.focus();
+
+    assert_false(options[0].selected, "options[0].selected should be false.");
+    assert_false(options[1].selected, "options[1].selected should be false.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_false(options[3].selected, "options[3].selected should be false.");
+
+    eventSender.keyDown(" ");                         //select 1st item
+    assert_true(options[0].selected, "options[0].selected should be true.");
+    assert_false(options[1].selected, "options[1].selected should be false.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_false(options[3].selected, "options[3].selected should be false.");
+
+    eventSender.keyDown(" ");                         //deselect 1st item
+    assert_false(options[0].selected, "options[0].selected should be false.");
+    assert_false(options[1].selected, "options[1].selected should be false.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_false(options[3].selected, "options[3].selected should be false.");
+
+    eventSender.keyDown("ArrowDown");                 //move to 2nd item
+    assert_false(options[0].selected, "options[0].selected should be false.");
+    assert_false(options[1].selected, "options[1].selected should be false.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_false(options[3].selected, "options[3].selected should be false.");
+
+    eventSender.keyDown(" ");                         //select 2nd item
+    assert_false(options[0].selected, "options[0].selected should be false.");
+    assert_true(options[1].selected, "options[1].selected should be true.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_false(options[3].selected, "options[3].selected should be false.");
+
+    eventSender.keyDown("ArrowDown");                 //move to 4th item (3rd item is disabled)
+    assert_false(options[0].selected, "options[0].selected should be false.");
+    assert_true(options[1].selected, "options[1].selected should be true.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_false(options[3].selected, "options[3].selected should be false.");
+
+    eventSender.keyDown(" ");                         //select 4th item
+    assert_false(options[0].selected, "options[0].selected should be false.");
+    assert_true(options[1].selected, "options[1].selected should be true.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_true(options[3].selected, "options[3].selected should be true.");
+
+    eventSender.keyDown("ArrowUp");                   //move back to 2nd item
+    assert_false(options[0].selected, "options[0].selected should be false.");
+    assert_true(options[1].selected, "options[1].selected should be true.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_true(options[3].selected, "options[3].selected should be true.");
+
+    eventSender.keyDown(" ");                         //deselect 2nd item
+    assert_false(options[0].selected, "options[0].selected should be false.");
+    assert_false(options[1].selected, "options[1].selected should be false.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_true(options[3].selected, "options[3].selected should be true.");
+
+    eventSender.keyDown("ArrowUp");                   //move back to 1st item
+    assert_false(options[0].selected, "options[0].selected should be false.");
+    assert_false(options[1].selected, "options[1].selected should be false.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_true(options[3].selected, "options[3].selected should be true.");
+
+    eventSender.keyDown("ArrowDown", ["shiftKey"]);   //shift-down to 2nd item
+    assert_false(options[0].selected, "options[0].selected should be false.");
+    assert_true(options[1].selected, "options[1].selected should be true.");
+    assert_false(options[2].selected, "options[2].selected should be false.");
+    assert_true(options[3].selected, "options[3].selected should be true.");
+  });
+</script>

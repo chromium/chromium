@@ -15,7 +15,6 @@ component("app_list_model") {
     "app_list_model.cc",
     "app_list_model.h",
     "app_list_model_observer.h",
-    "app_list_view_state.h",
     "folder_image.cc",
     "folder_image.h",
   ]

@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="bg">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> управлява това устройство и може да е в състояние да наблюдава активността ви.</translation>
 <translation id="1510238584712386396">Стартов панел</translation>
 <translation id="1734367976349034509">Това устройство се управлява корпоративно</translation>
+<translation id="1930797645656624981">Услуга за метод на въвеждане в Chrome OS</translation>
+<translation id="1979103255016296513">Срокът за промяна на паролата е изтекъл</translation>
 <translation id="2049639323467105390">Това устройство се управлява от <ph name="DOMAIN" />.</translation>
 <translation id="2083960536266308407">На екрана не бе намерено нищо</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2872961005593481000">Изключване</translation>
-<translation id="3147142846278915599">Стартов панел (приложенията се синхронизират...)</translation>
+<translation id="3008341117444806826">ОПРЕСНЯВАНЕ</translation>
+<translation id="3838338534323494292">Нова парола</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
+<translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Пропускът за Kerberos изтича скоро</translation>
+<translation id="445059817448385655">Стара парола</translation>
+<translation id="467510802200863975">Паролите не са идентични</translation>
 <translation id="4731797938093519117">Достъп на родител</translation>
+<translation id="4890353053343094602">Изберете нова незабавно</translation>
 <translation id="5212543919916444558">На екрана ви не намирам нищо, за което да мога да ви помогна.
 Докоснете иконата на микрофон, за да ме попитате каквото и да е.</translation>
 <translation id="5222676887888702881">Изход</translation>
+<translation id="5317780077021120954">Запазване</translation>
+<translation id="5332948983412042822">Изберете нова сега</translation>
 <translation id="5457599981699367932">Сърфиране като гост</translation>
 <translation id="54609108002486618">Управляван</translation>
 <translation id="5832805196449965646">Добавяне на човек</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
+<translation id="6058625436358447366">За да завършите процеса, въведете старата и новата си парола</translation>
+<translation id="6106186594183574873">За да завършите процеса, въведете старата си парола</translation>
+<translation id="6146993107019042706">За да завършите процеса, въведете новата си парола</translation>
 <translation id="7658239707568436148">Отказ</translation>
+<translation id="7690294790491645610">Потвърдете новата парола</translation>
+<translation id="808894953321890993">Промяна на паролата</translation>
+<translation id="8747900814994928677">Потвърждаване на промяната</translation>
+<translation id="910415269708673980">Опресняване на пропуска за <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Отключване</translation>
 </translationbundle>

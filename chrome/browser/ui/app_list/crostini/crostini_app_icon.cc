@@ -198,8 +198,7 @@ CrostiniAppIcon::CrostiniAppIcon(Profile* profile,
               ->GetWeakPtr()),
       app_id_(app_id),
       resource_size_in_dip_(resource_size_in_dip),
-      observer_(observer),
-      weak_ptr_factory_(this) {
+      observer_(observer) {
   DCHECK_NE(observer_, nullptr);
   auto source = std::make_unique<Source>(weak_ptr_factory_.GetWeakPtr(),
                                          resource_size_in_dip);
@@ -216,8 +215,9 @@ void CrostiniAppIcon::LoadForScaleFactor(ui::ScaleFactor scale_factor) {
       registry_service_->GetIconPath(app_id_, scale_factor);
   DCHECK(!path.empty());
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&CrostiniAppIcon::ReadOnFileThread, scale_factor, path),
       base::BindOnce(&CrostiniAppIcon::OnIconRead,
                      weak_ptr_factory_.GetWeakPtr()));

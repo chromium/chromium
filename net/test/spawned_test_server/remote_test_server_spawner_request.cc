@@ -12,16 +12,14 @@
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "net/base/elements_upload_data_stream.h"
 #include "net/base/io_buffer.h"
 #include "net/base/port_util.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/http/http_response_headers.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_test_util.h"
 #include "url/gurl.h"
@@ -49,7 +47,6 @@ class RemoteTestServerSpawnerRequest::Core : public URLRequest::Delegate {
 
   void ReadResponse();
   void OnCommandCompleted(int net_error);
-  void OnTimeout();
 
   // Request results.
   int result_code_ = 0;
@@ -62,8 +59,6 @@ class RemoteTestServerSpawnerRequest::Core : public URLRequest::Delegate {
   std::unique_ptr<URLRequest> request_;
 
   scoped_refptr<IOBuffer> read_buffer_;
-
-  std::unique_ptr<base::OneShotTimer> timeout_timer_;
 
   THREAD_CHECKER(thread_checker_);
 
@@ -85,7 +80,8 @@ void RemoteTestServerSpawnerRequest::Core::SendRequest(
   // Prepare the URLRequest for sending the command.
   DCHECK(!request_.get());
   context_.reset(new TestURLRequestContext);
-  request_ = context_->CreateRequest(url, DEFAULT_PRIORITY, this);
+  request_ = context_->CreateRequest(url, DEFAULT_PRIORITY, this,
+                                     TRAFFIC_ANNOTATION_FOR_TESTS);
 
   if (post_data.empty()) {
     request_->set_method("GET");
@@ -99,10 +95,6 @@ void RemoteTestServerSpawnerRequest::Core::SendRequest(
                                           "application/json",
                                           /*override=*/true);
   }
-
-  timeout_timer_ = std::make_unique<base::OneShotTimer>();
-  timeout_timer_->Start(FROM_HERE, TestTimeouts::action_max_timeout(),
-                        base::Bind(&Core::OnTimeout, base::Unretained(this)));
 
   request_->Start();
 }
@@ -120,13 +112,6 @@ bool RemoteTestServerSpawnerRequest::Core::WaitForCompletion(
   if (response)
     *response = data_received_;
   return result_code_ == OK;
-}
-
-void RemoteTestServerSpawnerRequest::Core::OnTimeout() {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-
-  int result = request_->CancelWithError(ERR_TIMED_OUT);
-  OnCommandCompleted(result);
 }
 
 void RemoteTestServerSpawnerRequest::Core::OnCommandCompleted(int net_error) {
@@ -150,7 +135,6 @@ void RemoteTestServerSpawnerRequest::Core::OnCommandCompleted(int net_error) {
 
   request_.reset();
   context_.reset();
-  timeout_timer_.reset();
 
   event_.Signal();
 }

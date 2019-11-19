@@ -5,6 +5,7 @@
 
 """Simple testing utility to just run the mojom parser."""
 
+from __future__ import print_function
 
 import os.path
 import sys
@@ -17,16 +18,16 @@ from mojom.parse.parser import Parse, ParseError
 
 def main(argv):
   if len(argv) < 2:
-    print "usage: %s filename" % argv[0]
+    print("usage: %s filename" % argv[0])
     return 0
 
   for filename in argv[1:]:
     with open(filename) as f:
-      print "%s:" % filename
+      print("%s:" % filename)
       try:
-        print Parse(f.read(), filename)
+        print(Parse(f.read(), filename))
       except ParseError, e:
-        print e
+        print(e)
         return 1
 
   return 0

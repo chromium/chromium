@@ -69,9 +69,7 @@ DownloadTestObserver::DownloadTestObserver(
       wait_count_(wait_count),
       finished_downloads_at_construction_(0),
       waiting_(false),
-      dangerous_download_action_(dangerous_download_action),
-      weak_factory_(this) {
-}
+      dangerous_download_action_(dangerous_download_action) {}
 
 DownloadTestObserver::~DownloadTestObserver() {
   for (DownloadSet::iterator it = downloads_observed_.begin();
@@ -140,7 +138,7 @@ void DownloadTestObserver::OnDownloadDestroyed(
 void DownloadTestObserver::OnDownloadUpdated(download::DownloadItem* download) {
   // Real UI code gets the user's response after returning from the observer.
   if (download->IsDangerous() &&
-      !base::ContainsKey(dangerous_downloads_seen_, download->GetId())) {
+      !base::Contains(dangerous_downloads_seen_, download->GetId())) {
     dangerous_downloads_seen_.insert(download->GetId());
 
     // Calling ValidateDangerousDownload() at this point will
@@ -150,7 +148,7 @@ void DownloadTestObserver::OnDownloadUpdated(download::DownloadItem* download) {
       case ON_DANGEROUS_DOWNLOAD_ACCEPT:
         // Fake user click on "Accept".  Delay the actual click, as the
         // real UI would.
-        base::PostTaskWithTraits(
+        base::PostTask(
             FROM_HERE, {BrowserThread::UI},
             base::BindOnce(&DownloadTestObserver::AcceptDangerousDownload,
                            weak_factory_.GetWeakPtr(), download->GetId()));
@@ -159,7 +157,7 @@ void DownloadTestObserver::OnDownloadUpdated(download::DownloadItem* download) {
       case ON_DANGEROUS_DOWNLOAD_DENY:
         // Fake a user click on "Deny".  Delay the actual click, as the
         // real UI would.
-        base::PostTaskWithTraits(
+        base::PostTask(
             FROM_HERE, {BrowserThread::UI},
             base::BindOnce(&DownloadTestObserver::DenyDangerousDownload,
                            weak_factory_.GetWeakPtr(), download->GetId()));
@@ -313,9 +311,8 @@ void PingIOThread(int cycle, base::OnceClosure callback);
 // Helper method to post a task to IO thread to ensure remaining operations on
 // the IO thread complete.
 void PingFileThread(int cycle, base::OnceClosure callback) {
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&PingIOThread, cycle, std::move(callback)));
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&PingIOThread, cycle, std::move(callback)));
 }
 
 // Post a task to file thread, and wait for it to be posted back on to the IO
@@ -326,8 +323,7 @@ void PingIOThread(int cycle, base::OnceClosure callback) {
     DownloadManager::GetTaskRunner()->PostTask(
         FROM_HERE, base::BindOnce(&PingFileThread, cycle, std::move(callback)));
   } else {
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                             std::move(callback));
+    base::PostTask(FROM_HERE, {BrowserThread::UI}, std::move(callback));
   }
 }
 
@@ -459,9 +455,9 @@ void DownloadTestItemCreationObserver::DownloadItemCreationCallback(
     base::RunLoop::QuitCurrentWhenIdleDeprecated();
 }
 
-const download::DownloadUrlParameters::OnStartedCallback
+download::DownloadUrlParameters::OnStartedCallback
 DownloadTestItemCreationObserver::callback() {
-  return base::Bind(
+  return base::BindOnce(
       &DownloadTestItemCreationObserver::DownloadItemCreationCallback, this);
 }
 

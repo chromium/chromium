@@ -550,8 +550,8 @@ void DataPipeConsumerDispatcher::UpdateSignalsStateNoLock() {
   } else if (rv == ports::OK && port_status.has_messages && !in_transit_) {
     std::unique_ptr<ports::UserMessageEvent> message_event;
     do {
-      int rv = node_controller_->node()->GetMessage(control_port_,
-                                                    &message_event, nullptr);
+      rv = node_controller_->node()->GetMessage(control_port_, &message_event,
+                                                nullptr);
       if (rv != ports::OK)
         peer_closed_ = true;
       if (message_event) {

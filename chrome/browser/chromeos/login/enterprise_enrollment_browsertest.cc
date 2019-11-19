@@ -7,10 +7,10 @@
 #include "base/json/json_reader.h"
 #include "base/json/string_escape.h"
 #include "base/stl_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_setup_test_utils.h"
 #include "chrome/browser/chromeos/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/chromeos/login/enrollment/enterprise_enrollment_helper.h"
 #include "chrome/browser/chromeos/login/enrollment/enterprise_enrollment_helper_impl.h"
@@ -18,29 +18,19 @@
 #include "chrome/browser/chromeos/login/login_manager_test.h"
 #include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/test/enrollment_helper_mixin.h"
-#include "chrome/browser/chromeos/login/test/hid_controller_mixin.h"
+#include "chrome/browser/chromeos/login/test/enrollment_ui_mixin.h"
 #include "chrome/browser/chromeos/login/test/js_checker.h"
-#include "chrome/browser/chromeos/login/test/oobe_configuration_waiter.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/chromeos/policy/enrollment_status_chromeos.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/dbus/auth_policy/fake_auth_policy_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_auth_policy_client.h"
-#include "chromeos/dbus/fake_update_engine_client.h"
-#include "chromeos/dbus/shill_manager_client.h"
-#include "chromeos/dbus/upstart_client.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/test/chromeos_test_utils.h"
-#include "components/language/core/browser/pref_names.h"
-#include "components/prefs/pref_service.h"
+#include "chromeos/dbus/upstart/upstart_client.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
-#include "ui/base/ime/chromeos/input_method_manager.h"
-#include "ui/base/ime/chromeos/input_method_util.h"
 
 using testing::_;
 using testing::Invoke;
@@ -50,26 +40,32 @@ namespace chromeos {
 
 namespace {
 
-#define AD_JS_ELEMENT "document.querySelector('#oauth-enroll-ad-join-ui')."
-constexpr char kAdMachineNameInput[] = AD_JS_ELEMENT "$.machineNameInput";
-constexpr char kAdMachineOrgUnitInput[] = AD_JS_ELEMENT "$.orgUnitInput";
-constexpr char kAdEncryptionTypesSelect[] = AD_JS_ELEMENT "$.encryptionList";
-constexpr char kAdMoreOptionsSave[] = AD_JS_ELEMENT "$.moreOptionsSave.click()";
-constexpr char kAdUsernameInput[] = AD_JS_ELEMENT "$.userInput";
-constexpr char kAdPasswordInput[] = AD_JS_ELEMENT "$.passwordInput";
-constexpr char kAdSubmitCreds[] = AD_JS_ELEMENT "$$('#nextButton').click()";
-constexpr char kAdConfigurationSelect[] = AD_JS_ELEMENT "$.joinConfigSelect";
-constexpr char kAdCredentialsStep[] = AD_JS_ELEMENT "$.credsStep";
-constexpr char kAdJoinConfigurationForm[] = AD_JS_ELEMENT "$.joinConfig";
-constexpr char kAdUnlockConfigurationStep[] = AD_JS_ELEMENT "$.unlockStep";
-constexpr char kAdUnlockConfigurationSkipButtonTap[] =
-    AD_JS_ELEMENT "$$('#skipButton').click()";
-constexpr char kAdUnlockConfigurationSubmitButtonTap[] =
-    AD_JS_ELEMENT "$$('#unlockButton').click()";
-constexpr char kAdUnlockPasswordInput[] = AD_JS_ELEMENT "$.unlockPasswordInput";
-constexpr char kAdBackToUnlockConfigurationButtonTap[] =
-    AD_JS_ELEMENT "$$('#backToUnlockButton').click()";
-#undef AD_JS_ELEMENT
+constexpr char kEnrollmentUI[] = "enterprise-enrollment";
+constexpr char kAdDialog[] = "oauth-enroll-ad-join-ui";
+constexpr char kAdErrorCard[] = "oauth-enroll-error-card";
+
+constexpr char kAdUnlockConfigurationStep[] = "unlockStep";
+constexpr char kAdUnlockPasswordInput[] = "unlockPasswordInput";
+constexpr char kAdUnlockButton[] = "unlockButton";
+constexpr char kSkipButton[] = "skipButton";
+
+constexpr char kAdCredentialsStep[] = "credsStep";
+constexpr char kAdJoinConfigurationForm[] = "joinConfig";
+constexpr char kAdBackToUnlockButton[] = "backToUnlockButton";
+constexpr char kAdMachineNameInput[] = "machineNameInput";
+constexpr char kAdUsernameInput[] = "userInput";
+constexpr char kAdPasswordInput[] = "passwordInput";
+constexpr char kAdConfigurationSelect[] = "joinConfigSelect";
+constexpr char kSubmitButton[] = "submitButton";
+constexpr char kNextButton[] = "nextButton";
+constexpr char kWebview[] = "oauth-enroll-auth-view";
+constexpr char kPartitionAttribute[] = ".partition";
+
+constexpr char kAdEncryptionTypesSelect[] = "encryptionList";
+constexpr char kAdMachineOrgUnitInput[] = "orgUnitInput";
+constexpr char kAdMoreOptionsButton[] = "moreOptionsBtn";
+constexpr char kAdMoreOptionsSaveButton[] = "moreOptionsSave";
+
 constexpr char kAdUserDomain[] = "user.domain.com";
 constexpr char kAdMachineDomain[] = "machine.domain.com";
 constexpr char kAdMachineDomainDN[] =
@@ -147,24 +143,13 @@ class EnterpriseEnrollmentTestBase : public LoginManagerTest {
  public:
   explicit EnterpriseEnrollmentTestBase(bool should_initialize_webui)
       : LoginManagerTest(true /*should_launch_browser*/,
-                         should_initialize_webui) {
-  }
-
+                         should_initialize_webui) {}
 
   // Submits regular enrollment credentials.
   void SubmitEnrollmentCredentials() {
     enrollment_screen()->OnLoginDone(
         "testuser@test.com", test::EnrollmentHelperMixin::kTestAuthCode);
-  }
-
-  // Fills out the UI with device attribute information and submits it.
-  void SubmitAttributePromptUpdate() {
-    // Fill out the attribute prompt info and submit it.
-    test::OobeJS().ExecuteAsync(
-        "$('oauth-enroll-asset-id').value = 'asset_id'");
-    test::OobeJS().ExecuteAsync(
-        "$('oauth-enroll-location').value = 'location'");
-    test::OobeJS().Evaluate("$('enroll-attributes-submit-button').fire('tap')");
+    ExecutePendingJavaScript();
   }
 
   // Completes the enrollment process.
@@ -182,21 +167,12 @@ class EnterpriseEnrollmentTestBase : public LoginManagerTest {
   // and the test code.
   void ExecutePendingJavaScript() { test::OobeJS().Evaluate(";"); }
 
-  // Returns true if there are any DOM elements with the given class.
-  bool IsStepDisplayed(const std::string& step) {
-    const std::string js =
-        "document.getElementsByClassName('oauth-enroll-state-" + step +
-        "').length";
-    int count = test::OobeJS().GetInt(js);
-    return count > 0;
-  }
-
   // Setup the enrollment screen.
   void ShowEnrollmentScreen() {
     LoginDisplayHost* host = LoginDisplayHost::default_host();
     ASSERT_TRUE(host != nullptr);
-    host->StartWizard(OobeScreen::SCREEN_OOBE_ENROLLMENT);
-    OobeScreenWaiter(OobeScreen::SCREEN_OOBE_ENROLLMENT).Wait();
+    host->StartWizard(EnrollmentScreenView::kScreenId);
+    OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
     ASSERT_TRUE(enrollment_screen() != nullptr);
     ASSERT_TRUE(WizardController::default_controller() != nullptr);
     ASSERT_FALSE(StartupUtils::IsOobeCompleted());
@@ -209,6 +185,7 @@ class EnterpriseEnrollmentTestBase : public LoginManagerTest {
   }
 
  protected:
+  test::EnrollmentUIMixin enrollment_ui_{&mixin_host_};
   test::EnrollmentHelperMixin enrollment_helper_{&mixin_host_};
 
  private:
@@ -229,60 +206,49 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
   ActiveDirectoryJoinTest() = default;
 
   void SetUp() override {
-    DBusThreadManager::GetSetterForTesting()->SetAuthPolicyClient(
-        std::make_unique<MockAuthPolicyClient>());
+    mock_auth_policy_client_ = new MockAuthPolicyClient();
     mock_auth_policy_client()->DisableOperationDelayForTesting();
+
     EnterpriseEnrollmentTestBase::SetUp();
   }
 
+  std::string AdElement(const std::string& inner_id) {
+    return test::GetOobeElementPath({kEnrollmentUI, kAdDialog, inner_id});
+  }
+
+  void ExpectElementValid(const std::string& inner_id, bool is_valid) {
+    test::OobeJS().ExpectNE(AdElement(inner_id) + ".invalid", is_valid);
+  }
+
   void CheckActiveDirectoryCredentialsShown() {
-    EXPECT_TRUE(IsStepDisplayed("ad-join"));
-    test::OobeJS().ExpectFalse(std::string(kAdCredentialsStep) + ".hidden");
-    test::OobeJS().ExpectTrue(std::string(kAdUnlockConfigurationStep) +
-                              ".hidden");
+    enrollment_ui_.ExpectStepVisibility(true, test::ui::kEnrollmentStepADJoin);
+
+    std::initializer_list<base::StringPiece> ad_credentials{
+        kEnrollmentUI, kAdDialog, kAdCredentialsStep};
+    test::OobeJS().ExpectVisiblePath(ad_credentials);
+    test::OobeJS().ExpectNE(
+        test::GetOobeElementPath(ad_credentials) + ".clientWidth", 0);
+    test::OobeJS().ExpectNE(
+        test::GetOobeElementPath(ad_credentials) + ".clientHeight", 0);
+    test::OobeJS().ExpectHiddenPath(
+        {kEnrollmentUI, kAdDialog, kAdUnlockConfigurationStep});
   }
 
   void CheckConfigurationSelectionVisible(bool visible) {
-    test::OobeJS().ExpectNE(std::string(kAdJoinConfigurationForm) + ".hidden",
-                            visible);
+    if (visible)
+      test::OobeJS().ExpectVisiblePath(
+          {kEnrollmentUI, kAdDialog, kAdJoinConfigurationForm});
+    else
+      test::OobeJS().ExpectHiddenPath(
+          {kEnrollmentUI, kAdDialog, kAdJoinConfigurationForm});
   }
 
   void CheckActiveDirectoryUnlockConfigurationShown() {
-    EXPECT_TRUE(IsStepDisplayed("ad-join"));
-    test::OobeJS().ExpectFalse(std::string(kAdUnlockConfigurationStep) +
-                               ".hidden");
-    test::OobeJS().ExpectTrue(std::string(kAdCredentialsStep) + ".hidden");
-  }
-
-  void SkipUnlockStep() {
-    test::OobeJS().ExecuteAsync(kAdUnlockConfigurationSkipButtonTap);
-    ExecutePendingJavaScript();
-  }
-
-  void GetBackToUnlockStep() {
-    test::OobeJS().ExecuteAsync(kAdBackToUnlockConfigurationButtonTap);
-    ExecutePendingJavaScript();
-  }
-
-  void SendUnlockPassword(const std::string& password) {
-    const std::string set_unlock_password =
-        std::string(kAdUnlockPasswordInput) + ".value = '" + password + "'";
-    test::OobeJS().ExecuteAsync(set_unlock_password);
-    test::OobeJS().ExecuteAsync(kAdUnlockConfigurationSubmitButtonTap);
-    ExecutePendingJavaScript();
-  }
-
-  void CheckUnlockPasswordValid(bool is_expected_valid) {
-    test::OobeJS().ExpectNE(std::string(kAdUnlockPasswordInput) + ".invalid",
-                            is_expected_valid);
-  }
-
-  void SetConfigValue(size_t config_idx) {
-    test::OobeJS().ExecuteAsync(kAdConfigurationSelect +
-                                (".value = " + std::to_string(config_idx)));
-    // Trigger selection handler.
-    test::OobeJS().ExecuteAsync(kAdConfigurationSelect +
-                                std::string(".click()"));
+    enrollment_ui_.ExpectStepVisibility(true, test::ui::kEnrollmentStepADJoin);
+    test::OobeJS().ExpectHiddenPath(
+        {kEnrollmentUI, kAdDialog, kAdCredentialsStep});
+    test::OobeJS().ExpectVisiblePath(
+        {kEnrollmentUI, kAdDialog, kAdUnlockConfigurationStep});
   }
 
   void CheckAttributeValue(const base::Value* config_value,
@@ -311,10 +277,10 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
       EXPECT_TRUE(base::EscapeJSONString(config_value->GetString(),
                                          false /* put_in_quotes */,
                                          &escaped_pattern));
-      test::OobeJS().ExpectTrue(std::string(kAdMachineNameInput) +
+      test::OobeJS().ExpectTrue(AdElement(kAdMachineNameInput) +
                                 ".pattern  === '" + escaped_pattern + "'");
     } else {
-      test::OobeJS().ExpectTrue("typeof " + std::string(kAdMachineNameInput) +
+      test::OobeJS().ExpectTrue("typeof " + AdElement(kAdMachineNameInput) +
                                 ".pattern === 'undefined'");
     }
   }
@@ -330,30 +296,33 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
             base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
     base::DictionaryValue custom_option;
     custom_option.SetKey("name", base::Value("Custom"));
-    options->GetList().emplace_back(std::move(custom_option));
+    options->Append(std::move(custom_option));
     for (size_t i = 0; i < options->GetList().size(); ++i) {
       const base::Value& option = options->GetList()[i];
-      SetConfigValue(i);
+      // Select configuration value.
+      test::OobeJS().SelectElementInPath(
+          base::NumberToString(i),
+          {kEnrollmentUI, kAdDialog, kAdConfigurationSelect});
 
       CheckAttributeValue(
           option.FindKeyOfType("name", base::Value::Type::STRING), "",
-          std::string(kAdConfigurationSelect) + ".selectedOptions[0].label");
+          AdElement(kAdConfigurationSelect) + ".selectedOptions[0].label");
 
       CheckAttributeValueAndDisabled(
           option.FindKeyOfType("ad_username", base::Value::Type::STRING), "",
-          std::string(kAdUsernameInput));
+          AdElement(kAdUsernameInput));
 
       CheckAttributeValueAndDisabled(
           option.FindKeyOfType("ad_password", base::Value::Type::STRING), "",
-          std::string(kAdPasswordInput));
+          AdElement(kAdPasswordInput));
 
       CheckAttributeValueAndDisabled(
           option.FindKeyOfType("computer_ou", base::Value::Type::STRING), "",
-          std::string(kAdMachineOrgUnitInput));
+          AdElement(kAdMachineOrgUnitInput));
 
       CheckAttributeValueAndDisabled(
           option.FindKeyOfType("encryption_types", base::Value::Type::STRING),
-          "strong", std::string(kAdEncryptionTypesSelect));
+          "strong", AdElement(kAdEncryptionTypesSelect));
 
       CheckPatternAttribute(option.FindKeyOfType(
           "computer_name_validation_regex", base::Value::Type::STRING));
@@ -366,42 +335,30 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
                                         const std::string& encryption_types,
                                         const std::string& username,
                                         const std::string& password) {
-    EXPECT_TRUE(IsStepDisplayed("ad-join"));
-    test::OobeJS().ExpectFalse(std::string(kAdCredentialsStep) + ".hidden");
-    test::OobeJS().ExpectTrue(std::string(kAdUnlockConfigurationStep) +
-                              ".hidden");
-    test::OobeJS().ExpectFalse(std::string(kAdMachineNameInput) + ".hidden");
-    test::OobeJS().ExpectFalse(std::string(kAdUsernameInput) + ".hidden");
-    test::OobeJS().ExpectFalse(std::string(kAdPasswordInput) + ".hidden");
-    const std::string set_machine_name =
-        std::string(kAdMachineNameInput) + ".value = '" + machine_name + "'";
-    const std::string set_username =
-        std::string(kAdUsernameInput) + ".value = '" + username + "'";
-    const std::string set_password =
-        std::string(kAdPasswordInput) + ".value = '" + password + "'";
-    const std::string set_machine_dn =
-        std::string(kAdMachineOrgUnitInput) + ".value = '" + machine_dn + "'";
-    test::OobeJS().ExecuteAsync(set_machine_name);
-    test::OobeJS().ExecuteAsync(set_username);
-    test::OobeJS().ExecuteAsync(set_password);
-    test::OobeJS().ExecuteAsync(set_machine_dn);
-    if (!encryption_types.empty()) {
-      const std::string set_encryption_types =
-          std::string(kAdEncryptionTypesSelect) + ".value = '" +
-          encryption_types + "'";
-      test::OobeJS().ExecuteAsync(set_encryption_types);
-    }
-    test::OobeJS().ExecuteAsync(kAdMoreOptionsSave);
-    test::OobeJS().ExecuteAsync(kAdSubmitCreds);
-    ExecutePendingJavaScript();
-  }
+    CheckActiveDirectoryCredentialsShown();
 
-  void ClickRetryOnErrorScreen() {
-    test::OobeJS().ExecuteAsync(
-        "document.querySelector('"
-        "#oauth-enroll-active-directory-join-error-card').$.submitButton"
-        ".click()");
-    ExecutePendingJavaScript();
+    test::OobeJS().TypeIntoPath(
+        machine_name, {kEnrollmentUI, kAdDialog, kAdMachineNameInput});
+    test::OobeJS().TypeIntoPath(username,
+                                {kEnrollmentUI, kAdDialog, kAdUsernameInput});
+    test::OobeJS().TypeIntoPath(password,
+                                {kEnrollmentUI, kAdDialog, kAdPasswordInput});
+    test::OobeJS().TapOnPath({kEnrollmentUI, kAdDialog, kAdMoreOptionsButton});
+    test::OobeJS().TypeIntoPath(
+        machine_dn, {kEnrollmentUI, kAdDialog, kAdMachineOrgUnitInput});
+
+    if (!encryption_types.empty()) {
+      test::OobeJS().SelectElementInPath(
+          encryption_types,
+          {kEnrollmentUI, kAdDialog, kAdEncryptionTypesSelect});
+    }
+    test::OobeJS().TapOnPath(
+        {kEnrollmentUI, kAdDialog, kAdMoreOptionsSaveButton});
+    test::OobeJS()
+        .CreateEnabledWaiter(true /* enabled */,
+                             {kEnrollmentUI, kAdDialog, kNextButton})
+        ->Wait();
+    test::OobeJS().TapOnPath({kEnrollmentUI, kAdDialog, kNextButton});
   }
 
   void SetExpectedJoinRequest(
@@ -426,10 +383,8 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
     mock_auth_policy_client()->set_expected_request(std::move(request));
   }
 
-
   MockAuthPolicyClient* mock_auth_policy_client() {
-    return static_cast<MockAuthPolicyClient*>(
-        DBusThreadManager::Get()->GetAuthPolicyClient());
+    return mock_auth_policy_client_;
   }
 
   void SetupActiveDirectoryJSNotifications() {
@@ -474,161 +429,16 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
   }
 
  private:
+  // Owned by the AuthPolicyClient global instance.
+  MockAuthPolicyClient* mock_auth_policy_client_ = nullptr;
+
   DISALLOW_COPY_AND_ASSIGN(ActiveDirectoryJoinTest);
 };
 
-// This test case will use
-// src/chromeos/test/data/oobe_configuration/<TestName>.json file as
-// OOBE configuration for each of the tests and verify that relevant parts
-// of OOBE automation took place. OOBE WebUI will not be started until
-// LoadConfiguration() is called to allow configure relevant stubs.
-class EnterpriseEnrollmentConfigurationTest
-    : public EnterpriseEnrollmentTestBase {
- public:
-  EnterpriseEnrollmentConfigurationTest()
-      : EnterpriseEnrollmentTestBase(false) {}
-
-  void StartWizard() {
-    LoginDisplayHost* host = LoginDisplayHost::default_host();
-    ASSERT_TRUE(host != nullptr);
-    OobeScreenWaiter waiter(OobeScreen::SCREEN_OOBE_WELCOME);
-    host->StartWizard(OobeScreen::SCREEN_OOBE_WELCOME);
-
-    // Make sure that OOBE is run as an "official" build.
-    WizardController* wizard_controller =
-        WizardController::default_controller();
-    wizard_controller->is_official_build_ = true;
-
-    waiter.Wait();
-
-    ASSERT_TRUE(WizardController::default_controller() != nullptr);
-    ASSERT_FALSE(StartupUtils::IsOobeCompleted());
-  }
-
-  void LoadConfiguration() {
-    OobeConfiguration::set_skip_check_for_testing(false);
-    // Make sure configuration is loaded
-    base::RunLoop run_loop;
-    OOBEConfigurationWaiter waiter;
-
-    OobeConfiguration::Get()->CheckConfiguration();
-
-    const bool ready = waiter.IsConfigurationLoaded(run_loop.QuitClosure());
-    if (!ready)
-      run_loop.Run();
-
-    // Let screens to settle.
-    base::RunLoop().RunUntilIdle();
-  }
-
-  void SimulateOfflineEnvironment() {
-    DemoSetupController* controller =
-        WizardController::default_controller()->demo_setup_controller();
-
-    // Simulate offline data directory.
-    ASSERT_TRUE(
-        chromeos::test::SetupDummyOfflinePolicyDir("test", &fake_policy_dir_));
-    controller->SetPreinstalledOfflineResourcesPathForTesting(
-        fake_policy_dir_.GetPath());
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    OobeConfiguration::set_skip_check_for_testing(true);
-    std::unique_ptr<chromeos::DBusThreadManagerSetter> dbus_setter =
-        chromeos::DBusThreadManager::GetSetterForTesting();
-
-    fake_update_engine_client_ = new chromeos::FakeUpdateEngineClient();
-
-    dbus_setter->SetUpdateEngineClient(
-        std::unique_ptr<chromeos::UpdateEngineClient>(
-            fake_update_engine_client_));
-
-    EnterpriseEnrollmentTestBase::SetUpInProcessBrowserTestFixture();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // File name is based on the test name.
-    base::FilePath file;
-    ASSERT_TRUE(GetTestFileName(".json", &file));
-
-    command_line->AppendSwitchPath(chromeos::switches::kFakeOobeConfiguration,
-                                   file);
-
-    command_line->AppendSwitchASCII(switches::kArcAvailability,
-                                    "officially-supported");
-    EnterpriseEnrollmentTestBase::SetUpCommandLine(command_line);
-  }
-
-  // Stores a name of the configuration (actual test name followed by |prefix|)
-  // to |file|.
-  // Returns true iff |file| exists.
-  bool GetTestFileName(const std::string& suffix, base::FilePath* file) {
-    const ::testing::TestInfo* const test_info =
-        ::testing::UnitTest::GetInstance()->current_test_info();
-    const std::string filename = std::string(test_info->name()) + suffix;
-    return test_utils::GetTestDataPath("oobe_configuration", filename, file);
-  }
-
-  // Overridden from InProcessBrowserTest:
-  void SetUpOnMainThread() override {
-    // Set up fake networks.
-    // TODO(pmarko): Find a way for FakeShillManagerClient to be initialized
-    // automatically (https://crbug.com/847422).
-    DBusThreadManager::Get()
-        ->GetShillManagerClient()
-        ->GetTestInterface()
-        ->SetupDefaultEnvironment();
-
-    EnterpriseEnrollmentTestBase::SetUpOnMainThread();
-    LoadConfiguration();
-
-    // Make sure that OOBE is run as an "official" build.
-    WizardController* wizard_controller =
-        WizardController::default_controller();
-    wizard_controller->is_official_build_ = true;
-
-    // Clear portal list (as it is by default in OOBE).
-    NetworkHandler::Get()->network_state_handler()->SetCheckPortalList("");
-  }
-
- protected:
-  // Owned by DBusThreadManagerSetter
-  chromeos::FakeUpdateEngineClient* fake_update_engine_client_;
-
-  base::ScopedTempDir fake_policy_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseEnrollmentConfigurationTest);
-};
-
-// EnterpriseEnrollmentConfigurationTest with no input devices.
-class EnterpriseEnrollmentConfigurationTestNoHID
-    : public EnterpriseEnrollmentConfigurationTest {
- public:
-  EnterpriseEnrollmentConfigurationTestNoHID() = default;
-
-  ~EnterpriseEnrollmentConfigurationTestNoHID() override = default;
-
- protected:
-  test::HIDControllerMixin hid_controller_{&mixin_host_};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EnterpriseEnrollmentConfigurationTestNoHID);
-};
-
-#if defined(MEMORY_SANITIZER)
-#define TEST_DISABLED_ON_MSAN(test_fixture, test_name) \
-  IN_PROC_BROWSER_TEST_F(test_fixture, DISABLED_##test_name)
-#else
-#define TEST_DISABLED_ON_MSAN(test_fixture, test_name) \
-  IN_PROC_BROWSER_TEST_F(test_fixture, test_name)
-#endif
-
 // Shows the enrollment screen and simulates an enrollment complete event. We
 // verify that the enrollmenth helper receives the correct auth code.
-// Flaky on MSAN. https://crbug.com/876362
-TEST_DISABLED_ON_MSAN(EnterpriseEnrollmentTest,
-                      TestAuthCodeGetsProperlyReceivedFromGaia) {
+IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
+                       TestAuthCodeGetsProperlyReceivedFromGaia) {
   ShowEnrollmentScreen();
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_MANUAL);
@@ -640,9 +450,8 @@ TEST_DISABLED_ON_MSAN(EnterpriseEnrollmentTest,
 
 // Shows the enrollment screen and simulates an enrollment failure. Verifies
 // that the error screen is displayed.
-// TODO(crbug.com/690634): Disabled due to timeout flakiness.
 IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
-                       DISABLED_TestProperPageGetsLoadedOnEnrollmentFailure) {
+                       TestProperPageGetsLoadedOnEnrollmentFailure) {
   ShowEnrollmentScreen();
 
   enrollment_screen()->OnEnrollmentError(policy::EnrollmentStatus::ForStatus(
@@ -650,65 +459,118 @@ IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
   ExecutePendingJavaScript();
 
   // Verify that the error page is displayed.
-  EXPECT_TRUE(IsStepDisplayed("error"));
-  EXPECT_FALSE(IsStepDisplayed("success"));
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
 }
 
 // Shows the enrollment screen and simulates a successful enrollment. Verifies
 // that the success screen is then displayed.
-// Flaky on MSAN. https://crbug.com/876362
-TEST_DISABLED_ON_MSAN(EnterpriseEnrollmentTest,
-                      TestProperPageGetsLoadedOnEnrollmentSuccess) {
+IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
+                       TestProperPageGetsLoadedOnEnrollmentSuccess) {
   ShowEnrollmentScreen();
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_MANUAL);
   enrollment_helper_.DisableAttributePromptUpdate();
+  enrollment_helper_.ExpectSuccessfulOAuthEnrollment();
   SubmitEnrollmentCredentials();
-  CompleteEnrollment();
 
   // Verify that the success page is displayed.
-  EXPECT_TRUE(IsStepDisplayed("success"));
-  EXPECT_FALSE(IsStepDisplayed("error"));
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
 }
 
 // Shows the enrollment screen and mocks the enrollment helper to request an
 // attribute prompt screen. Verifies the attribute prompt screen is displayed.
 // Verifies that the data the user enters into the attribute prompt screen is
 // received by the enrollment helper.
-// Flaky on MSAN. https://crbug.com/876362
-TEST_DISABLED_ON_MSAN(EnterpriseEnrollmentTest,
-                      TestAttributePromptPageGetsLoaded) {
+IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest,
+                       TestAttributePromptPageGetsLoaded) {
   ShowEnrollmentScreen();
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_MANUAL);
-  enrollment_helper_.ExpectAttributePromptUpdate("asset_id", "location");
+  enrollment_helper_.ExpectAttributePromptUpdate(test::values::kAssetId,
+                                                 test::values::kLocation);
+  enrollment_helper_.ExpectSuccessfulOAuthEnrollment();
   SubmitEnrollmentCredentials();
-  CompleteEnrollment();
 
   // Make sure the attribute-prompt view is open.
-  EXPECT_TRUE(IsStepDisplayed("attribute-prompt"));
-  EXPECT_FALSE(IsStepDisplayed("success"));
-  EXPECT_FALSE(IsStepDisplayed("error"));
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepDeviceAttributes);
 
-  SubmitAttributePromptUpdate();
+  enrollment_ui_.SubmitDeviceAttributes(test::values::kAssetId,
+                                        test::values::kLocation);
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
 }
 
+// Shows the enrollment screen and mocks the enrollment helper to show license
+// selection step. Selects an option with non-zero license count, and uses that
+// license for enrollment.
+IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest, TestLicenseSelection) {
+  ShowEnrollmentScreen();
+  enrollment_helper_.ExpectEnrollmentMode(
+      policy::EnrollmentConfig::MODE_MANUAL);
+
+  enrollment_helper_.DisableAttributePromptUpdate();
+  enrollment_helper_.ExpectAvailableLicenseCount(1 /* perpetual */,
+                                                 0 /* annual */, 3 /* kiosk */);
+  enrollment_helper_.ExpectSuccessfulEnrollmentWithLicense(
+      policy::LicenseType::KIOSK);
+
+  SubmitEnrollmentCredentials();
+
+  // Make sure the license selection screen is open.
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepLicenses);
+  // Click on Kiosk option.
+  enrollment_ui_.SelectEnrollmentLicense(test::values::kLicenseTypeKiosk);
+  // Click on second option. As there is 0 annual licenses, it should not be
+  // selected.
+  enrollment_ui_.SelectEnrollmentLicense(test::values::kLicenseTypeAnnual);
+  enrollment_ui_.UseSelectedLicense();
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
+}
+
+// Verifies that the storage partition is updated when the enrollment screen is
+// shown again.
+IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentTest, StoragePartitionUpdated) {
+  ShowEnrollmentScreen();
+  ExecutePendingJavaScript();
+
+  std::string webview_partition_path =
+      test::GetOobeElementPath({kEnrollmentUI, kWebview}) + kPartitionAttribute;
+  std::string webview_partition_name_1 =
+      test::OobeJS().GetString(webview_partition_path);
+  EXPECT_FALSE(webview_partition_name_1.empty());
+
+  // Simulate navigating over the enrollment screen a second time (without using
+  // 'Back' and 'Next' buttons).
+  ShowEnrollmentScreen();
+  ExecutePendingJavaScript();
+
+  // Verify that the partition name changes.
+  const std::string partition_valid_and_changed_condition = base::StringPrintf(
+      "%s && (%s != '%s')", webview_partition_path.c_str(),
+      webview_partition_path.c_str(), webview_partition_name_1.c_str());
+  test::OobeJS().CreateWaiter(partition_valid_and_changed_condition)->Wait();
+}
+
+// Flaky in debug builds - crbug.com/1021191
+#if !defined(NDEBUG)
+#define MAYBE_TestActiveDirectoryEnrollment_Success \
+  DISABLED_TestActiveDirectoryEnrollment_Success
+#else
+#define MAYBE_TestActiveDirectoryEnrollment_Success \
+  TestActiveDirectoryEnrollment_Success
+#endif
 // Shows the enrollment screen and mocks the enrollment helper to show Active
 // Directory domain join screen. Verifies the domain join screen is displayed.
 // Submits Active Directory credentials. Verifies that the AuthpolicyClient
 // calls us back with the correct realm.
-// Timeouts on MSAN with polymer2. https://crbug.com/887577
-TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
-                      TestActiveDirectoryEnrollment_Success) {
+IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
+                       MAYBE_TestActiveDirectoryEnrollment_Success) {
   ShowEnrollmentScreen();
   enrollment_helper_.DisableAttributePromptUpdate();
   enrollment_helper_.SetupActiveDirectoryJoin(
       enrollment_screen(), kAdUserDomain, std::string(), kDMToken);
   SubmitEnrollmentCredentials();
 
-  chromeos::DBusThreadManager::Get()
-      ->GetUpstartClient()
-      ->StartAuthPolicyService();
+  chromeos::UpstartClient::Get()->StartAuthPolicyService();
 
   CheckActiveDirectoryCredentialsShown();
   CheckConfigurationSelectionVisible(false);
@@ -720,19 +582,25 @@ TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
   SubmitActiveDirectoryCredentials("machine_name", "" /* machine_dn */, "all",
                                    kAdTestUser, "password");
   WaitForMessage(&message_queue, "\"ShowSpinnerScreen\"");
-  EXPECT_FALSE(IsStepDisplayed("ad-join"));
+  enrollment_ui_.ExpectStepVisibility(false, test::ui::kEnrollmentStepADJoin);
 
   CompleteEnrollment();
   // Verify that the success page is displayed.
-  EXPECT_TRUE(IsStepDisplayed("success"));
-  EXPECT_FALSE(IsStepDisplayed("error"));
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
 }
 
+// Flaky in debug builds - crbug.com/1021191
+#if !defined(NDEBUG)
+#define MAYBE_TestActiveDirectoryEnrollment_DistinguishedName \
+  DISABLED_TestActiveDirectoryEnrollment_DistinguishedName
+#else
+#define MAYBE_TestActiveDirectoryEnrollment_DistinguishedName \
+  TestActiveDirectoryEnrollment_DistinguishedName
+#endif
 // Verifies that the distinguished name specified on the Active Directory join
 // domain screen correctly parsed and passed into AuthPolicyClient.
-// Timeouts on MSAN with polymer2. https://crbug.com/887577
-TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
-                      TestActiveDirectoryEnrollment_DistinguishedName) {
+IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
+                       MAYBE_TestActiveDirectoryEnrollment_DistinguishedName) {
   ShowEnrollmentScreen();
   enrollment_helper_.DisableAttributePromptUpdate();
   enrollment_helper_.SetupActiveDirectoryJoin(
@@ -740,9 +608,7 @@ TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
 
   SubmitEnrollmentCredentials();
 
-  chromeos::DBusThreadManager::Get()
-      ->GetUpstartClient()
-      ->StartAuthPolicyService();
+  chromeos::UpstartClient::Get()->StartAuthPolicyService();
 
   content::DOMMessageQueue message_queue;
   SetupActiveDirectoryJSNotifications();
@@ -757,29 +623,33 @@ TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
                                    "" /* encryption_types */, kAdTestUser,
                                    "password");
   WaitForMessage(&message_queue, "\"ShowSpinnerScreen\"");
-  EXPECT_FALSE(IsStepDisplayed("ad-join"));
+  enrollment_ui_.ExpectStepVisibility(false, test::ui::kEnrollmentStepADJoin);
 
   CompleteEnrollment();
   // Verify that the success page is displayed.
-  EXPECT_TRUE(IsStepDisplayed("success"));
-  EXPECT_FALSE(IsStepDisplayed("error"));
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
 }
 
+// Flaky in debug builds - crbug.com/1021191
+#if !defined(NDEBUG)
+#define MAYBE_TestActiveDirectoryEnrollment_UIErrors \
+  DISABLED_TestActiveDirectoryEnrollment_UIErrors
+#else
+#define MAYBE_TestActiveDirectoryEnrollment_UIErrors \
+  TestActiveDirectoryEnrollment_UIErrors
+#endif
 // Shows the enrollment screen and mocks the enrollment helper to show Active
 // Directory domain join screen. Verifies the domain join screen is displayed.
 // Submits Active Directory different incorrect credentials. Verifies that the
 // correct error is displayed.
-// Timeouts on MSAN with polymer2. https://crbug.com/887577
-TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
-                      TestActiveDirectoryEnrollment_UIErrors) {
+IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
+                       MAYBE_TestActiveDirectoryEnrollment_UIErrors) {
   ShowEnrollmentScreen();
   enrollment_helper_.SetupActiveDirectoryJoin(
       enrollment_screen(), kAdUserDomain, std::string(), kDMToken);
   SubmitEnrollmentCredentials();
 
-  chromeos::DBusThreadManager::Get()
-      ->GetUpstartClient()
-      ->StartAuthPolicyService();
+  chromeos::UpstartClient::Get()->StartAuthPolicyService();
 
   content::DOMMessageQueue message_queue;
   // Checking error in case of empty password. Whether password is not empty
@@ -789,45 +659,50 @@ TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
   SubmitActiveDirectoryCredentials("too_long_machine_name", "" /* machine_dn */,
                                    "" /* encryption_types */, kAdTestUser,
                                    "" /* password */);
-  EXPECT_TRUE(IsStepDisplayed("ad-join"));
-  test::OobeJS().ExpectFalse(std::string(kAdMachineNameInput) + ".invalid");
-  test::OobeJS().ExpectFalse(std::string(kAdUsernameInput) + ".invalid");
-  test::OobeJS().ExpectTrue(std::string(kAdPasswordInput) + ".invalid");
+  enrollment_ui_.ExpectStepVisibility(true, test::ui::kEnrollmentStepADJoin);
+  ExpectElementValid(kAdMachineNameInput, true);
+  ExpectElementValid(kAdUsernameInput, true);
+  ExpectElementValid(kAdPasswordInput, false);
 
   // Checking error in case of too long machine name.
   SubmitActiveDirectoryCredentials("too_long_machine_name", "" /* machine_dn */,
                                    "" /* encryption_types */, kAdTestUser,
                                    "password");
   WaitForMessage(&message_queue, "\"ShowJoinDomainError\"");
-  EXPECT_TRUE(IsStepDisplayed("ad-join"));
-  test::OobeJS().ExpectTrue(std::string(kAdMachineNameInput) + ".invalid");
-  test::OobeJS().ExpectFalse(std::string(kAdUsernameInput) + ".invalid");
-  test::OobeJS().ExpectFalse(std::string(kAdPasswordInput) + ".invalid");
+  enrollment_ui_.ExpectStepVisibility(true, test::ui::kEnrollmentStepADJoin);
+  ExpectElementValid(kAdMachineNameInput, false);
+  ExpectElementValid(kAdUsernameInput, true);
+  ExpectElementValid(kAdPasswordInput, true);
 
   // Checking error in case of bad username (without realm).
   SubmitActiveDirectoryCredentials("machine_name", "" /* machine_dn */,
                                    "" /* encryption_types */, "test_user",
                                    "password");
   WaitForMessage(&message_queue, "\"ShowJoinDomainError\"");
-  EXPECT_TRUE(IsStepDisplayed("ad-join"));
-  test::OobeJS().ExpectFalse(std::string(kAdMachineNameInput) + ".invalid");
-  test::OobeJS().ExpectTrue(std::string(kAdUsernameInput) + ".invalid");
-  test::OobeJS().ExpectFalse(std::string(kAdPasswordInput) + ".invalid");
+  enrollment_ui_.ExpectStepVisibility(true, test::ui::kEnrollmentStepADJoin);
+  ExpectElementValid(kAdMachineNameInput, true);
+  ExpectElementValid(kAdUsernameInput, false);
+  ExpectElementValid(kAdPasswordInput, true);
 }
 
+// Flaky in debug builds - crbug.com/1021191
+#if !defined(NDEBUG)
+#define MAYBE_TestActiveDirectoryEnrollment_ErrorCard \
+  DISABLED_TestActiveDirectoryEnrollment_ErrorCard
+#else
+#define MAYBE_TestActiveDirectoryEnrollment_ErrorCard \
+  TestActiveDirectoryEnrollment_ErrorCard
+#endif
 // Check that correct error card is shown (Active Directory one). Also checks
 // that hitting retry shows Active Directory screen again.
-// Timeouts on MSAN with polymer2. https://crbug.com/887577
-TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
-                      TestActiveDirectoryEnrollment_ErrorCard) {
+IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
+                       MAYBE_TestActiveDirectoryEnrollment_ErrorCard) {
   ShowEnrollmentScreen();
   enrollment_helper_.SetupActiveDirectoryJoin(
       enrollment_screen(), kAdUserDomain, std::string(), kDMToken);
   SubmitEnrollmentCredentials();
 
-  chromeos::DBusThreadManager::Get()
-      ->GetUpstartClient()
-      ->StartAuthPolicyService();
+  chromeos::UpstartClient::Get()->StartAuthPolicyService();
 
   content::DOMMessageQueue message_queue;
   SetupActiveDirectoryJSNotifications();
@@ -835,16 +710,23 @@ TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
   SubmitActiveDirectoryCredentials("machine_name", "" /* machine_dn */,
                                    "legacy", kAdTestUser, "password");
   WaitForMessage(&message_queue, "\"ShowADJoinError\"");
-  EXPECT_TRUE(IsStepDisplayed("active-directory-join-error"));
-  ClickRetryOnErrorScreen();
-  EXPECT_TRUE(IsStepDisplayed("ad-join"));
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
+  test::OobeJS().ClickOnPath({kEnrollmentUI, kAdErrorCard, kSubmitButton});
+  enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepADJoin);
 }
 
+// Flaky in debug builds - crbug.com/1021191
+#if !defined(NDEBUG)
+#define MAYBE_TestActiveDirectoryEnrollment_Streamline \
+  DISABLED_TestActiveDirectoryEnrollment_Streamline
+#else
+#define MAYBE_TestActiveDirectoryEnrollment_Streamline \
+  TestActiveDirectoryEnrollment_Streamline
+#endif
 // Check that configuration for the streamline Active Directory domain join
 // propagates correctly to the Domain Join UI.
-// Timeouts on MSAN with polymer2. https://crbug.com/887577
-TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
-                      TestActiveDirectoryEnrollment_Streamline) {
+IN_PROC_BROWSER_TEST_F(ActiveDirectoryJoinTest,
+                       MAYBE_TestActiveDirectoryEnrollment_Streamline) {
   ShowEnrollmentScreen();
   std::string binary_config;
   EXPECT_TRUE(base::Base64Decode(kAdDomainJoinEncryptedConfig, &binary_config));
@@ -852,9 +734,7 @@ TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
       enrollment_screen(), kAdUserDomain, binary_config, kDMToken);
   SubmitEnrollmentCredentials();
 
-  chromeos::DBusThreadManager::Get()
-      ->GetUpstartClient()
-      ->StartAuthPolicyService();
+  chromeos::UpstartClient::Get()->StartAuthPolicyService();
 
   ExecutePendingJavaScript();
   content::DOMMessageQueue message_queue;
@@ -862,22 +742,26 @@ TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
 
   // Unlock password step should we shown.
   CheckActiveDirectoryUnlockConfigurationShown();
-  CheckUnlockPasswordValid(true);
+  ExpectElementValid(kAdUnlockPasswordInput, true);
 
   // Test skipping the password step and getting back.
-  SkipUnlockStep();
+  test::OobeJS().TapOnPath({kEnrollmentUI, kAdDialog, kSkipButton});
   CheckActiveDirectoryCredentialsShown();
   CheckConfigurationSelectionVisible(false);
-  GetBackToUnlockStep();
+  test::OobeJS().ClickOnPath({kEnrollmentUI, kAdDialog, kAdBackToUnlockButton});
   CheckActiveDirectoryUnlockConfigurationShown();
 
   // Enter wrong unlock password.
-  SendUnlockPassword("wrong_password");
+  test::OobeJS().TypeIntoPath(
+      "wrong_password", {kEnrollmentUI, kAdDialog, kAdUnlockPasswordInput});
+  test::OobeJS().TapOnPath({kEnrollmentUI, kAdDialog, kAdUnlockButton});
   WaitForMessage(&message_queue, "\"ShowJoinDomainError\"");
-  CheckUnlockPasswordValid(false);
+  ExpectElementValid(kAdUnlockPasswordInput, false);
 
   // Enter right unlock password.
-  SendUnlockPassword("test765!");
+  test::OobeJS().TypeIntoPath(
+      "test765!", {kEnrollmentUI, kAdDialog, kAdUnlockPasswordInput});
+  test::OobeJS().TapOnPath({kEnrollmentUI, kAdDialog, kAdUnlockButton});
   WaitForMessage(&message_queue, "\"SetAdJoinConfiguration\"");
   CheckActiveDirectoryCredentialsShown();
   // Configuration selector should be visible.
@@ -885,175 +769,6 @@ TEST_DISABLED_ON_MSAN(ActiveDirectoryJoinTest,
 
   // Go through configuration.
   CheckPossibleConfiguration(kAdDomainJoinUnlockedConfig);
-}
-
-// Check that configuration lets correctly pass Welcome screen.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest,
-                       TestLeaveWelcomeScreen) {
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_NETWORK).Wait();
-}
-
-// Check that language and input methods are set correctly.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest,
-                       TestSwitchLanguageIME) {
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_NETWORK).Wait();
-
-  chromeos::input_method::InputMethodManager* imm =
-      chromeos::input_method::InputMethodManager::Get();
-
-  // Configuration specified in TestSwitchLanguageIME.json sets non-default
-  // input method fo German (xkb:de:neo:ger) to ensure that input method value
-  // is propagated correctly. We need to migrate public IME name to internal
-  // scheme to be able to compare them.
-
-  const std::string ime_id =
-      imm->GetInputMethodUtil()->MigrateInputMethod("xkb:de:neo:ger");
-  EXPECT_EQ(ime_id, imm->GetActiveIMEState()->GetCurrentInputMethod().id());
-
-  const std::string language_code = g_browser_process->local_state()->GetString(
-      language::prefs::kApplicationLocale);
-  EXPECT_EQ("de", language_code);
-}
-
-// Check that configuration lets correctly start Demo mode setup.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest,
-                       TestEnableDemoMode) {
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_DEMO_PREFERENCES).Wait();
-}
-
-// Check that configuration lets correctly pass through demo preferences.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest,
-                       TestDemoModePreferences) {
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_NETWORK).Wait();
-}
-
-// Check that configuration lets correctly use offline demo mode on network
-// screen.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest,
-                       TestDemoModeOfflineNetwork) {
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_DEMO_PREFERENCES).Wait();
-  SimulateOfflineEnvironment();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_EULA).Wait();
-}
-
-// Check that configuration lets correctly use offline demo mode on EULA
-// screen.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest,
-                       TestDemoModeAcceptEula) {
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_DEMO_PREFERENCES).Wait();
-  SimulateOfflineEnvironment();
-  OobeScreenWaiter(OobeScreen::SCREEN_ARC_TERMS_OF_SERVICE).Wait();
-}
-
-// Check that configuration lets correctly use offline demo mode on ARC++ ToS
-// screen.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest,
-                       TestDemoModeAcceptArcTos) {
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_DEMO_PREFERENCES).Wait();
-  SimulateOfflineEnvironment();
-
-  test::OobeJS().Evaluate(
-      "login.ArcTermsOfServiceScreen.setTosForTesting('Test "
-      "Play Store Terms of Service');");
-  test::OobeJS().Evaluate(
-      "$('demo-preferences-content').$$('oobe-dialog')."
-      "querySelector('oobe-text-button').click();");
-
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_DEMO_SETUP).Wait();
-}
-
-// Check that configuration lets correctly select a network by GUID.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest,
-                       TestSelectNetwork) {
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_EULA).Wait();
-}
-
-// Check that configuration would proceed if there is a connected network.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest,
-                       TestSelectConnectedNetwork) {
-  StartWizard();
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_EULA).Wait();
-}
-
-// Check that configuration would not proceed with connected network if
-// welcome screen is not automated.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest,
-                       TestConnectedNetworkNoWelcome) {
-  StartWizard();
-  LoadConfiguration();
-
-  OobeUI* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
-  ASSERT_EQ(OobeScreen::SCREEN_OOBE_WELCOME, oobe_ui->current_screen());
-}
-
-// Check that when configuration has ONC and EULA, we get to update screen.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest, TestAcceptEula) {
-  UpdateEngineClient::Status status;
-  status.status = UpdateEngineClient::UPDATE_STATUS_DOWNLOADING;
-  status.download_progress = 0.1;
-  fake_update_engine_client_->set_default_status(status);
-
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_UPDATE).Wait();
-}
-
-// Check that configuration allows to skip Update screen and get to Enrollment
-// screen.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest, TestSkipUpdate) {
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_ENROLLMENT).Wait();
-  EXPECT_TRUE(IsStepDisplayed("signin"));
-}
-
-// Check that when configuration has requisition, it gets applied at the
-// beginning.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest,
-                       TestDeviceRequisition) {
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_EULA).Wait();
-  auto* policy_manager = g_browser_process->platform_part()
-                             ->browser_policy_connector_chromeos()
-                             ->GetDeviceCloudPolicyManager();
-  EXPECT_EQ(policy_manager->GetDeviceRequisition(), "some_requisition");
-}
-
-// Check that configuration allows to skip Update screen and get to Enrollment
-// screen.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTest,
-                       TestEnrollUsingToken) {
-  enrollment_helper_.DisableAttributePromptUpdate();
-  // Token from configuration file:
-  enrollment_helper_.ExpectTokenEnrollmentSuccess(
-      "00000000-1111-2222-3333-444444444444");
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_ENROLLMENT).Wait();
-  ExecutePendingJavaScript();
-  EXPECT_TRUE(IsStepDisplayed("success"));
-}
-
-// Check that HID detection screen is shown if it is not specified by
-// configuration.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTestNoHID,
-                       TestLeaveWelcomeScreen) {
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_HID_DETECTION).Wait();
-}
-
-// Check that HID detection screen is really skipped and rest of configuration
-// is applied.
-IN_PROC_BROWSER_TEST_F(EnterpriseEnrollmentConfigurationTestNoHID,
-                       TestSkipHIDDetection) {
-  LoadConfiguration();
-  OobeScreenWaiter(OobeScreen::SCREEN_OOBE_NETWORK).Wait();
 }
 
 }  // namespace chromeos

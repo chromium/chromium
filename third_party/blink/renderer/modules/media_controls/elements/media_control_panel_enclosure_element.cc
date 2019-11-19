@@ -10,7 +10,7 @@ namespace blink {
 
 MediaControlPanelEnclosureElement::MediaControlPanelEnclosureElement(
     MediaControlsImpl& media_controls)
-    : MediaControlDivElement(media_controls, kMediaIgnore) {
+    : MediaControlDivElement(media_controls) {
   SetShadowPseudoId(AtomicString("-webkit-media-controls-enclosure"));
 }
 

@@ -16,12 +16,14 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind_test_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
+#include "components/spellcheck/common/spellcheck_features.h"
 #include "components/spellcheck/common/spellcheck_result.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -32,7 +34,17 @@
 
 namespace {
 
-const char kSpellingServiceURL[] = "https://www.googleapis.com/rpc";
+struct SpellingServiceTestCase {
+  const wchar_t* request_text;
+  std::string sanitized_request_text;
+  SpellingServiceClient::ServiceType request_type;
+  net::HttpStatusCode response_status;
+  std::string response_data;
+  bool success;
+  const char* corrected_text;
+  std::string language;
+  bool restEndpoint;
+};
 
 // A class derived from the SpellingServiceClient class used by the
 // SpellingServiceClientTest class. This class sets the URLLoaderFactory so
@@ -87,7 +99,8 @@ class TestingSpellingServiceClient : public SpellingServiceClient {
 // A test class used for testing the SpellingServiceClient class. This class
 // implements a callback function used by the SpellingServiceClient class to
 // monitor the class calls the callback with expected results.
-class SpellingServiceClientTest : public testing::Test {
+class SpellingServiceClientTest
+    : public testing::TestWithParam<SpellingServiceTestCase> {
  public:
   void OnTextCheckComplete(int tag,
                            bool success,
@@ -113,9 +126,10 @@ class SpellingServiceClientTest : public testing::Test {
     return false;
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   TestingSpellingServiceClient client_;
   TestingProfile profile_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace
@@ -123,7 +137,7 @@ class SpellingServiceClientTest : public testing::Test {
 // Verifies that SpellingServiceClient::RequestTextCheck() creates a JSON
 // request sent to the Spelling service as we expect. This test also verifies
 // that it parses a JSON response from the service and calls the callback
-// function. To avoid sending JSON-RPC requests to the service, this test uses a
+// function. To avoid sending real requests to the service, this test uses a
 // subclass of SpellingServiceClient that in turn sets the client's URL loader
 // factory to a TestURLLoaderFactory. The client thinks it is issuing real
 // network requests, but in fact the responses are entirely under our control
@@ -132,163 +146,332 @@ class SpellingServiceClientTest : public testing::Test {
 // misspelled words with ones suggested by the service so this test can compare
 // the corrected text with the expected results. (If there are not any
 // misspelled words, |corrected_text| should be equal to |request_text|.)
-TEST_F(SpellingServiceClientTest, RequestTextCheck) {
-  static const struct {
-    const wchar_t* request_text;
-    std::string sanitized_request_text;
-    SpellingServiceClient::ServiceType request_type;
-    net::HttpStatusCode response_status;
-    std::string response_data;
-    bool success;
-    const char* corrected_text;
-    std::string language;
-  } kTests[] = {
-      {
-          L"", "", SpellingServiceClient::SUGGEST, net::HttpStatusCode(500), "",
-          false, "", "af",
-      },
-      {
-          L"chromebook", "chromebook", SpellingServiceClient::SUGGEST,
-          net::HttpStatusCode(200), "{}", true, "chromebook", "af",
-      },
-      {
-          L"chrombook", "chrombook", SpellingServiceClient::SUGGEST,
-          net::HttpStatusCode(200),
-          "{\n"
-          "  \"result\": {\n"
-          "    \"spellingCheckResponse\": {\n"
-          "      \"misspellings\": [{\n"
-          "        \"charStart\": 0,\n"
-          "        \"charLength\": 9,\n"
-          "        \"suggestions\": [{ \"suggestion\": \"chromebook\" }],\n"
-          "        \"canAutoCorrect\": false\n"
-          "      }]\n"
-          "    }\n"
-          "  }\n"
-          "}",
-          true, "chromebook", "af",
-      },
-      {
-          L"", "", SpellingServiceClient::SPELLCHECK, net::HttpStatusCode(500),
-          "", false, "", "en",
-      },
-      {
-          L"I have been to USA.", "I have been to USA.",
-          SpellingServiceClient::SPELLCHECK, net::HttpStatusCode(200), "{}",
-          true, "I have been to USA.", "en",
-      },
-      {
-          L"I have bean to USA.", "I have bean to USA.",
-          SpellingServiceClient::SPELLCHECK, net::HttpStatusCode(200),
-          "{\n"
-          "  \"result\": {\n"
-          "    \"spellingCheckResponse\": {\n"
-          "      \"misspellings\": [{\n"
-          "        \"charStart\": 7,\n"
-          "        \"charLength\": 4,\n"
-          "        \"suggestions\": [{ \"suggestion\": \"been\" }],\n"
-          "        \"canAutoCorrect\": false\n"
-          "      }]\n"
-          "    }\n"
-          "  }\n"
-          "}",
-          true, "I have been to USA.", "en",
-      },
-      {
-          L"I\x2019mattheIn'n'Out.", "I'mattheIn'n'Out.",
-          SpellingServiceClient::SPELLCHECK, net::HttpStatusCode(200),
-          "{\n"
-          "  \"result\": {\n"
-          "    \"spellingCheckResponse\": {\n"
-          "      \"misspellings\": [{\n"
-          "        \"charStart\": 0,\n"
-          "        \"charLength\": 16,\n"
-          "        \"suggestions\":"
-          " [{ \"suggestion\": \"I'm at the In'N'Out\" }],\n"
-          "        \"canAutoCorrect\": false\n"
-          "      }]\n"
-          "    }\n"
-          "  }\n"
-          "}",
-          true, "I'm at the In'N'Out.", "en",
-      },
-  };
+using Redirects = std::vector<
+    std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>;
+
+TEST_P(SpellingServiceClientTest, RequestTextCheck) {
+  auto test_case = GetParam();
+  bool is_rest = test_case.restEndpoint;
+
+  if (is_rest) {
+    scoped_feature_list_.InitAndEnableFeature(
+        spellcheck::kSpellingServiceRestApi);
+  } else {
+    scoped_feature_list_.InitAndDisableFeature(
+        spellcheck::kSpellingServiceRestApi);
+  }
 
   PrefService* pref = profile_.GetPrefs();
   pref->SetBoolean(spellcheck::prefs::kSpellCheckEnable, true);
   pref->SetBoolean(spellcheck::prefs::kSpellCheckUseSpellingService, true);
 
-  for (size_t i = 0; i < base::size(kTests); ++i) {
-    client_.test_url_loader_factory()->ClearResponses();
-    net::HttpStatusCode http_status = kTests[i].response_status;
-    network::ResourceResponseHead head;
-    std::string headers(base::StringPrintf(
-        "HTTP/1.1 %d %s\nContent-type: application/json\n\n",
-        static_cast<int>(http_status), net::GetHttpReasonPhrase(http_status)));
-    head.headers = new net::HttpResponseHeaders(
-        net::HttpUtil::AssembleRawHeaders(headers.c_str(), headers.size()));
-    head.mime_type = "application/json";
-    network::URLLoaderCompletionStatus status;
-    status.decoded_body_length = kTests[i].response_data.size();
-    client_.test_url_loader_factory()->AddResponse(
-        GURL(kSpellingServiceURL), head, kTests[i].response_data, status);
-    net::HttpRequestHeaders intercepted_headers;
-    std::string intercepted_body;
-    client_.test_url_loader_factory()->SetInterceptor(
-        base::BindLambdaForTesting(
-            [&](const network::ResourceRequest& request) {
-              intercepted_headers = request.headers;
-              intercepted_body = network::GetUploadData(request);
-            }));
-    client_.SetExpectedTextCheckResult(kTests[i].success,
-                                       kTests[i].sanitized_request_text,
-                                       kTests[i].corrected_text);
-    base::ListValue dictionary;
-    dictionary.AppendString(kTests[i].language);
-    pref->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionary);
+  client_.test_url_loader_factory()->ClearResponses();
+  net::HttpStatusCode http_status = test_case.response_status;
 
-    client_.RequestTextCheck(
-        &profile_, kTests[i].request_type,
-        base::WideToUTF16(kTests[i].request_text),
-        base::BindOnce(&SpellingServiceClientTest::OnTextCheckComplete,
-                       base::Unretained(this), 0));
-    thread_bundle_.RunUntilIdle();
+  auto head = network::mojom::URLResponseHead::New();
+  std::string headers(base::StringPrintf(
+      "HTTP/1.1 %d %s\nContent-type: application/json\n\n",
+      static_cast<int>(http_status), net::GetHttpReasonPhrase(http_status)));
+  head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(headers));
+  head->mime_type = "application/json";
 
-    // Verify the request content type was JSON. (The Spelling service returns
-    // an internal server error when this content type is not JSON.)
-    std::string request_content_type;
-    ASSERT_TRUE(intercepted_headers.GetHeader(
-        net::HttpRequestHeaders::kContentType, &request_content_type));
-    EXPECT_EQ("application/json", request_content_type);
+  network::URLLoaderCompletionStatus status;
+  status.decoded_body_length = test_case.response_data.size();
+  GURL expected_request_url = client_.BuildEndpointUrl(test_case.request_type);
+  client_.test_url_loader_factory()->AddResponse(
+      expected_request_url, std::move(head), test_case.response_data, status,
+      Redirects(),
+      network::TestURLLoaderFactory::ResponseProduceFlags::
+          kSendHeadersOnNetworkError);
 
-    // Parse the JSON sent to the service, and verify its parameters.
-    std::unique_ptr<base::DictionaryValue> value(
-        static_cast<base::DictionaryValue*>(
-            base::JSONReader::ReadDeprecated(intercepted_body,
-                                             base::JSON_ALLOW_TRAILING_COMMAS)
-                .release()));
-    ASSERT_TRUE(value.get());
-    std::string method;
+  net::HttpRequestHeaders intercepted_headers;
+  std::string intercepted_body;
+  GURL requested_url;
+  client_.test_url_loader_factory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        intercepted_headers = request.headers;
+        intercepted_body = network::GetUploadData(request);
+        requested_url = request.url;
+      }));
+  client_.SetExpectedTextCheckResult(test_case.success,
+                                     test_case.sanitized_request_text,
+                                     test_case.corrected_text);
+
+  base::ListValue dictionary;
+  dictionary.AppendString(test_case.language);
+  pref->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionary);
+
+  client_.RequestTextCheck(
+      &profile_, test_case.request_type,
+      base::WideToUTF16(test_case.request_text),
+      base::BindOnce(&SpellingServiceClientTest::OnTextCheckComplete,
+                     base::Unretained(this), 0));
+  task_environment_.RunUntilIdle();
+
+  // Verify that the expected endpoint was hit (REST vs RPC).
+  ASSERT_EQ(requested_url.path(), expected_request_url.path());
+
+  // Verify the request content type was JSON. (The Spelling service returns
+  // an internal server error when this content type is not JSON.)
+  std::string request_content_type;
+  ASSERT_TRUE(intercepted_headers.GetHeader(
+      net::HttpRequestHeaders::kContentType, &request_content_type));
+  EXPECT_EQ("application/json", request_content_type);
+
+  // Parse the JSON sent to the service, and verify its parameters.
+  std::unique_ptr<base::DictionaryValue> value(
+      static_cast<base::DictionaryValue*>(
+          base::JSONReader::ReadDeprecated(intercepted_body,
+                                           base::JSON_ALLOW_TRAILING_COMMAS)
+              .release()));
+  ASSERT_TRUE(value.get());
+
+  std::string method;
+  std::string version;
+  if (is_rest) {
+    EXPECT_FALSE(value->GetString("method", &method));
+    EXPECT_FALSE(value->GetString("apiVersion", &version));
+  } else {
     EXPECT_TRUE(value->GetString("method", &method));
     EXPECT_EQ("spelling.check", method);
-    std::string version;
     EXPECT_TRUE(value->GetString("apiVersion", &version));
-    EXPECT_EQ(base::StringPrintf("v%d", kTests[i].request_type), version);
-    std::string sanitized_text;
-    EXPECT_TRUE(value->GetString("params.text", &sanitized_text));
-    EXPECT_EQ(kTests[i].sanitized_request_text, sanitized_text);
-    std::string language;
-    EXPECT_TRUE(value->GetString("params.language", &language));
-    std::string expected_language =
-        kTests[i].language.empty() ? std::string("en") : kTests[i].language;
-    EXPECT_EQ(expected_language, language);
-    std::string expected_country;
-    ASSERT_TRUE(GetExpectedCountry(language, &expected_country));
-    std::string country;
-    EXPECT_TRUE(value->GetString("params.originCountry", &country));
-    EXPECT_EQ(expected_country, country);
+    EXPECT_EQ(base::StringPrintf("v%d", test_case.request_type), version);
   }
+
+  std::string sanitized_text;
+  EXPECT_TRUE(
+      value->GetString(is_rest ? "text" : "params.text", &sanitized_text));
+  EXPECT_EQ(test_case.sanitized_request_text, sanitized_text);
+  std::string language;
+  EXPECT_TRUE(
+      value->GetString(is_rest ? "language" : "params.language", &language));
+  std::string expected_language =
+      test_case.language.empty() ? std::string("en") : test_case.language;
+  EXPECT_EQ(expected_language, language);
+  std::string expected_country;
+  ASSERT_TRUE(GetExpectedCountry(language, &expected_country));
+  std::string country;
+  EXPECT_TRUE(value->GetString(
+      is_rest ? "originCountry" : "params.originCountry", &country));
+  EXPECT_EQ(expected_country, country);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    SpellingService,
+    SpellingServiceClientTest,
+    testing::Values(
+        // Test cases for the RPC endpoint
+        SpellingServiceTestCase{
+            L"",
+            "",
+            SpellingServiceClient::SUGGEST,
+            net::HttpStatusCode(500),
+            "",
+            false,
+            "",
+            "af",
+            false,
+        },
+        SpellingServiceTestCase{
+            L"chromebook",
+            "chromebook",
+            SpellingServiceClient::SUGGEST,
+            net::HttpStatusCode(200),
+            "{}",
+            true,
+            "chromebook",
+            "af",
+            false,
+        },
+        SpellingServiceTestCase{
+            L"chrombook",
+            "chrombook",
+            SpellingServiceClient::SUGGEST,
+            net::HttpStatusCode(200),
+            "{\n"
+            "  \"result\": {\n"
+            "    \"spellingCheckResponse\": {\n"
+            "      \"misspellings\": [{\n"
+            "        \"charStart\": 0,\n"
+            "        \"charLength\": 9,\n"
+            "        \"suggestions\": [{ \"suggestion\": \"chromebook\" }],\n"
+            "        \"canAutoCorrect\": false\n"
+            "      }]\n"
+            "    }\n"
+            "  }\n"
+            "}",
+            true,
+            "chromebook",
+            "af",
+            false,
+        },
+        SpellingServiceTestCase{
+            L"",
+            "",
+            SpellingServiceClient::SPELLCHECK,
+            net::HttpStatusCode(500),
+            "",
+            false,
+            "",
+            "en",
+            false,
+        },
+        SpellingServiceTestCase{
+            L"I have been to USA.",
+            "I have been to USA.",
+            SpellingServiceClient::SPELLCHECK,
+            net::HttpStatusCode(200),
+            "{}",
+            true,
+            "I have been to USA.",
+            "en",
+            false,
+        },
+        SpellingServiceTestCase{
+            L"I have bean to USA.",
+            "I have bean to USA.",
+            SpellingServiceClient::SPELLCHECK,
+            net::HttpStatusCode(200),
+            "{\n"
+            "  \"result\": {\n"
+            "    \"spellingCheckResponse\": {\n"
+            "      \"misspellings\": [{\n"
+            "        \"charStart\": 7,\n"
+            "        \"charLength\": 4,\n"
+            "        \"suggestions\": [{ \"suggestion\": \"been\" }],\n"
+            "        \"canAutoCorrect\": false\n"
+            "      }]\n"
+            "    }\n"
+            "  }\n"
+            "}",
+            true,
+            "I have been to USA.",
+            "en",
+            false,
+        },
+        SpellingServiceTestCase{
+            L"I\x2019mattheIn'n'Out.",
+            "I'mattheIn'n'Out.",
+            SpellingServiceClient::SPELLCHECK,
+            net::HttpStatusCode(200),
+            "{\n"
+            "  \"result\": {\n"
+            "    \"spellingCheckResponse\": {\n"
+            "      \"misspellings\": [{\n"
+            "        \"charStart\": 0,\n"
+            "        \"charLength\": 16,\n"
+            "        \"suggestions\":"
+            " [{ \"suggestion\": \"I'm at the In'N'Out\" }],\n"
+            "        \"canAutoCorrect\": false\n"
+            "      }]\n"
+            "    }\n"
+            "  }\n"
+            "}",
+            true,
+            "I'm at the In'N'Out.",
+            "en",
+            false,
+        },
+
+        // Test cases for the REST endpoint
+        SpellingServiceTestCase{
+            L"",
+            "",
+            SpellingServiceClient::SUGGEST,
+            net::HttpStatusCode(500),
+            "",
+            false,
+            "",
+            "af",
+            true,
+        },
+        SpellingServiceTestCase{
+            L"chromebook",
+            "chromebook",
+            SpellingServiceClient::SUGGEST,
+            net::HttpStatusCode(200),
+            "{}",
+            true,
+            "chromebook",
+            "af",
+            true,
+        },
+        SpellingServiceTestCase{
+            L"chrombook",
+            "chrombook",
+            SpellingServiceClient::SUGGEST,
+            net::HttpStatusCode(200),
+            "{\n"
+            "  \"spellingCheckResponse\": {\n"
+            "    \"misspellings\": [{\n"
+            "      \"charStart\": 0,\n"
+            "      \"charLength\": 9,\n"
+            "      \"suggestions\": [{ \"suggestion\": \"chromebook\" }],\n"
+            "      \"canAutoCorrect\": false\n"
+            "    }]\n"
+            "  }\n"
+            "}",
+            true,
+            "chromebook",
+            "af",
+            true,
+        },
+        SpellingServiceTestCase{L"", "", SpellingServiceClient::SPELLCHECK,
+                                net::HttpStatusCode(500), "", false, "", "en",
+                                true},
+        SpellingServiceTestCase{
+            L"I have been to USA.",
+            "I have been to USA.",
+            SpellingServiceClient::SPELLCHECK,
+            net::HttpStatusCode(200),
+            "{}",
+            true,
+            "I have been to USA.",
+            "en",
+            true,
+        },
+        SpellingServiceTestCase{
+            L"I have bean to USA.",
+            "I have bean to USA.",
+            SpellingServiceClient::SPELLCHECK,
+            net::HttpStatusCode(200),
+            "{\n"
+            "  \"spellingCheckResponse\": {\n"
+            "    \"misspellings\": [{\n"
+            "      \"charStart\": 7,\n"
+            "      \"charLength\": 4,\n"
+            "      \"suggestions\": [{ \"suggestion\": \"been\" }],\n"
+            "      \"canAutoCorrect\": false\n"
+            "    }]\n"
+            "  }\n"
+            "}",
+            true,
+            "I have been to USA.",
+            "en",
+            true,
+        },
+        SpellingServiceTestCase{
+            L"I\x2019mattheIn'n'Out.",
+            "I'mattheIn'n'Out.",
+            SpellingServiceClient::SPELLCHECK,
+            net::HttpStatusCode(200),
+            "{\n"
+            "  \"spellingCheckResponse\": {\n"
+            "    \"misspellings\": [{\n"
+            "      \"charStart\": 0,\n"
+            "      \"charLength\": 16,\n"
+            "      \"suggestions\":"
+            " [{ \"suggestion\": \"I'm at the In'N'Out\" }],\n"
+            "      \"canAutoCorrect\": false\n"
+            "    }]\n"
+            "  }\n"
+            "}",
+            true,
+            "I'm at the In'N'Out.",
+            "en",
+            true,
+        }));
 
 // Verify that SpellingServiceClient::IsAvailable() returns true only when it
 // can send suggest requests or spellcheck requests.

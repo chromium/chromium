@@ -11,9 +11,9 @@
 #include "media/base/renderer.h"
 #include "media/base/video_decoder.h"
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
 #include "media/cdm/cdm_proxy.h"
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 namespace media {
 
@@ -28,7 +28,7 @@ std::unique_ptr<AudioDecoder> MojoMediaClient::CreateAudioDecoder(
   return nullptr;
 }
 
-std::vector<SupportedVideoDecoderConfig>
+SupportedVideoDecoderConfigMap
 MojoMediaClient::GetSupportedVideoDecoderConfigs() {
   return {};
 }
@@ -37,6 +37,7 @@ std::unique_ptr<VideoDecoder> MojoMediaClient::CreateVideoDecoder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     MediaLog* media_log,
     mojom::CommandBufferIdPtr command_buffer_id,
+    VideoDecoderImplementation implementation,
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space) {
   return nullptr;
@@ -50,16 +51,26 @@ std::unique_ptr<Renderer> MojoMediaClient::CreateRenderer(
   return nullptr;
 }
 
+#if BUILDFLAG(ENABLE_CAST_RENDERER)
+std::unique_ptr<Renderer> MojoMediaClient::CreateCastRenderer(
+    service_manager::mojom::InterfaceProvider* host_interfaces,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    MediaLog* media_log,
+    const base::UnguessableToken& overlay_plane_id) {
+  return nullptr;
+}
+#endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
+
 std::unique_ptr<CdmFactory> MojoMediaClient::CreateCdmFactory(
     service_manager::mojom::InterfaceProvider* host_interfaces) {
   return nullptr;
 }
 
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#if BUILDFLAG(ENABLE_CDM_PROXY)
 std::unique_ptr<CdmProxy> MojoMediaClient::CreateCdmProxy(
     const base::Token& cdm_guid) {
   return nullptr;
 }
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 }  // namespace media

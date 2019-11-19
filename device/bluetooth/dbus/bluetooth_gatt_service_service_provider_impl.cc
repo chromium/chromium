@@ -30,8 +30,7 @@ BluetoothGattServiceServiceProviderImpl::
       is_primary_(is_primary),
       includes_(includes),
       bus_(bus),
-      object_path_(object_path),
-      weak_ptr_factory_(this) {
+      object_path_(object_path) {
   VLOG(1) << "Creating Bluetooth GATT service: " << object_path_.value()
           << " UUID: " << uuid;
   if (!bus_)

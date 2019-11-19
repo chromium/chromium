@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <utility>
 
 #include "base/bind.h"
@@ -18,13 +19,16 @@
 #include "base/time/time.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/ukm_demographic_metrics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/ukm/persisted_logs_metrics_impl.h"
+#include "components/ukm/scheme_constants.h"
 #include "components/ukm/ukm_pref_names.h"
 #include "components/ukm/ukm_rotation_scheduler.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
+#include "third_party/metrics_proto/user_demographics.pb.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 namespace ukm {
 
@@ -35,7 +39,7 @@ uint64_t GenerateAndStoreClientId(PrefService* pref_service) {
   uint64_t client_id = 0;
   while (!client_id)
     client_id = base::RandUint64();
-  pref_service->SetInt64(prefs::kUkmClientId, client_id);
+  pref_service->SetUint64(prefs::kUkmClientId, client_id);
 
   // Also reset the session id counter.
   pref_service->SetInteger(prefs::kUkmSessionId, 0);
@@ -43,10 +47,26 @@ uint64_t GenerateAndStoreClientId(PrefService* pref_service) {
 }
 
 uint64_t LoadOrGenerateAndStoreClientId(PrefService* pref_service) {
-  uint64_t client_id = pref_service->GetInt64(prefs::kUkmClientId);
-  if (!client_id)
-    client_id = GenerateAndStoreClientId(pref_service);
-  return client_id;
+  uint64_t client_id = pref_service->GetUint64(prefs::kUkmClientId);
+  // The pref is stored as a string and GetUint64() uses base::StringToUint64()
+  // to convert it. base::StringToUint64() will treat a negative value as
+  // underflow, which results in 0 (the minimum Uint64 value).
+  if (client_id) {
+    UMA_HISTOGRAM_BOOLEAN("UKM.MigratedClientIdInt64ToUInt64", false);
+    return client_id;
+  }
+
+  // Since client_id was 0, the pref value may have been negative. Attempt to
+  // get it as an Int64 to migrate it to Uint64.
+  client_id = pref_service->GetInt64(prefs::kUkmClientId);
+  if (client_id) {
+    pref_service->SetUint64(prefs::kUkmClientId, client_id);
+    UMA_HISTOGRAM_BOOLEAN("UKM.MigratedClientIdInt64ToUInt64", true);
+    return client_id;
+  }
+
+  // The client_id is still 0, so it wasn't set.
+  return GenerateAndStoreClientId(pref_service);
 }
 
 int32_t LoadAndIncrementSessionId(PrefService* pref_service) {
@@ -56,37 +76,124 @@ int32_t LoadAndIncrementSessionId(PrefService* pref_service) {
   return session_id;
 }
 
+// Remove elements satisfying the predicate by moving them to the end of the
+// list then truncate.
+template <typename Predicate, typename ReadElements, typename WriteElements>
+void FilterReportElements(Predicate predicate,
+                          const ReadElements& elements,
+                          WriteElements* mutable_elements) {
+  if (elements.empty())
+    return;
+
+  int entries_size = elements.size();
+  int start = 0;
+  int end = entries_size - 1;
+  while (start < end) {
+    while (start < entries_size && !predicate(elements.Get(start))) {
+      start++;
+    }
+    while (end >= 0 && predicate(elements.Get(end))) {
+      end--;
+    }
+    if (start < end) {
+      mutable_elements->SwapElements(start, end);
+      start++;
+      end--;
+    }
+  }
+  mutable_elements->DeleteSubrange(start, entries_size - start);
+}
+
+void PurgeExtensionDataFromUnsentLogStore(
+    metrics::UnsentLogStore* ukm_log_store) {
+  for (size_t index = 0; index < ukm_log_store->size(); index++) {
+    // Uncompress log data from store back into a Report.
+    const std::string& compressed_log_data =
+        ukm_log_store->GetLogAtIndex(index);
+    std::string uncompressed_log_data;
+    const bool uncompress_successful = compression::GzipUncompress(
+        compressed_log_data, &uncompressed_log_data);
+    DCHECK(uncompress_successful);
+    Report report;
+
+    const bool report_parse_successful =
+        report.ParseFromString(uncompressed_log_data);
+    DCHECK(report_parse_successful);
+
+    std::unordered_set<SourceId> extension_source_ids;
+
+    // Grab all extension-related source ids.
+    for (const auto& source : report.sources()) {
+      // Check if any URL on the source has extension scheme. It is possible
+      // that only one of multiple URLs does due to redirect, in this case, we
+      // should still purge the source.
+      for (const auto& url_info : source.urls()) {
+        if (GURL(url_info.url()).SchemeIs(kExtensionScheme)) {
+          extension_source_ids.insert(source.id());
+          break;
+        }
+      }
+    }
+    if (extension_source_ids.empty())
+      continue;
+
+    // Remove all extension-related sources from the report.
+    FilterReportElements(
+        [&](const Source& element) {
+          return extension_source_ids.count(element.id());
+        },
+        report.sources(), report.mutable_sources());
+
+    // Remove all entries originating from extension-related sources.
+    FilterReportElements(
+        [&](const Entry& element) {
+          return extension_source_ids.count(element.source_id());
+        },
+        report.entries(), report.mutable_entries());
+
+    std::string reserialized_log_data;
+    report.SerializeToString(&reserialized_log_data);
+
+    // Replace the compressed log in the store by its filtered version.
+    const std::string old_compressed_log_data =
+        ukm_log_store->ReplaceLogAtIndex(index, reserialized_log_data);
+
+    // Reached here only if extensions were found in the log, so data should now
+    // be different after filtering.
+    DCHECK(ukm_log_store->GetLogAtIndex(index) != old_compressed_log_data);
+  }
+}
+
 }  // namespace
 
 UkmService::UkmService(PrefService* pref_service,
                        metrics::MetricsServiceClient* client,
-                       bool restrict_to_whitelist_entries)
+                       bool restrict_to_whitelist_entries,
+                       std::unique_ptr<metrics::UkmDemographicMetricsProvider>
+                           demographics_provider)
     : pref_service_(pref_service),
       restrict_to_whitelist_entries_(restrict_to_whitelist_entries),
-      client_id_(0),
-      session_id_(0),
-      report_count_(0),
       client_(client),
-      reporting_service_(client, pref_service),
-      initialize_started_(false),
-      initialize_complete_(false),
-      self_ptr_factory_(this) {
+      demographics_provider_(std::move(demographics_provider)),
+      reporting_service_(client, pref_service) {
   DCHECK(pref_service_);
   DCHECK(client_);
+  DCHECK(demographics_provider_);
   DVLOG(1) << "UkmService::Constructor";
 
   reporting_service_.Initialize();
 
-  base::Closure rotate_callback =
-      base::Bind(&UkmService::RotateLog, self_ptr_factory_.GetWeakPtr());
+  base::RepeatingClosure rotate_callback = base::BindRepeating(
+      &UkmService::RotateLog, self_ptr_factory_.GetWeakPtr());
   // MetricsServiceClient outlives UkmService, and
   // MetricsReportingScheduler is tied to the lifetime of |this|.
-  const base::Callback<base::TimeDelta(void)>& get_upload_interval_callback =
-      base::Bind(&metrics::MetricsServiceClient::GetStandardUploadInterval,
-                 base::Unretained(client_));
-  scheduler_.reset(new ukm::UkmRotationScheduler(rotate_callback,
-                                                 get_upload_interval_callback));
-
+  const base::RepeatingCallback<base::TimeDelta(void)>&
+      get_upload_interval_callback =
+          base::BindRepeating(&metrics::MetricsServiceClient::GetUploadInterval,
+                              base::Unretained(client_));
+  bool fast_startup_for_testing = client_->ShouldStartUpFastForTesting();
+  scheduler_.reset(new UkmRotationScheduler(
+      rotate_callback, fast_startup_for_testing, get_upload_interval_callback));
   StoreWhitelistedEntries();
 
   DelegatingUkmRecorder::Get()->AddDelegate(self_ptr_factory_.GetWeakPtr());
@@ -117,6 +224,7 @@ void UkmService::EnableReporting() {
   if (reporting_service_.reporting_active())
     return;
 
+  log_creation_time_ = base::TimeTicks::Now();
   metrics_providers_.OnRecordingEnabled();
 
   if (!initialize_started_)
@@ -180,6 +288,16 @@ void UkmService::Purge() {
   UkmRecorderImpl::Purge();
 }
 
+void UkmService::PurgeExtensions() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "UkmService::PurgeExtensions";
+  // Filter out any extension-related data from the serialized logs in the
+  // UnsentLogStore for uploading.
+  PurgeExtensionDataFromUnsentLogStore(reporting_service_.ukm_log_store());
+  // Purge data currently in the recordings intended for the next ukm::Report.
+  UkmRecorderImpl::PurgeExtensionRecordings();
+}
+
 void UkmService::ResetClientState(ResetReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -198,7 +316,7 @@ void UkmService::RegisterMetricsProvider(
 
 // static
 void UkmService::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterInt64Pref(prefs::kUkmClientId, 0);
+  registry->RegisterUint64Pref(prefs::kUkmClientId, 0);
   registry->RegisterIntegerPref(prefs::kUkmSessionId, 0);
   UkmReportingService::RegisterPrefs(registry);
 }
@@ -215,6 +333,9 @@ void UkmService::FinishedInitTask() {
   DVLOG(1) << "UkmService::FinishedInitTask";
   initialize_complete_ = true;
   scheduler_->InitTaskComplete();
+  if (initialization_complete_callback_) {
+    std::move(initialization_complete_callback_).Run();
+  }
 }
 
 void UkmService::RotateLog() {
@@ -224,6 +345,14 @@ void UkmService::RotateLog() {
     BuildAndStoreLog();
   reporting_service_.Start();
   scheduler_->RotationFinished();
+}
+
+void UkmService::AddSyncedUserNoiseBirthYearAndGenderToReport(Report* report) {
+  if (!base::FeatureList::IsEnabled(kReportUserNoisedUserBirthYearAndGender))
+    return;
+
+  demographics_provider_->ProvideSyncedUserNoisedBirthYearAndGenderToReport(
+      report);
 }
 
 void UkmService::BuildAndStoreLog() {
@@ -246,8 +375,10 @@ void UkmService::BuildAndStoreLog() {
   metrics::MetricsLog::RecordCoreSystemProfile(client_,
                                                report.mutable_system_profile());
 
-  metrics_providers_.ProvideSystemProfileMetrics(
-      report.mutable_system_profile());
+  metrics_providers_.ProvideSystemProfileMetricsWithLogCreationTime(
+      log_creation_time_, report.mutable_system_profile());
+
+  AddSyncedUserNoiseBirthYearAndGenderToReport(&report);
 
   std::string serialized_log;
   report.SerializeToString(&serialized_log);
@@ -257,5 +388,17 @@ void UkmService::BuildAndStoreLog() {
 bool UkmService::ShouldRestrictToWhitelistedEntries() const {
   return restrict_to_whitelist_entries_;
 }
+
+void UkmService::SetInitializationCompleteCallbackForTesting(base::OnceClosure callback) {
+  if (initialize_complete_) {
+    std::move(callback).Run();
+  } else {
+    // Store the callback to be invoked when initialization is complete later.
+    initialization_complete_callback_ = std::move(callback);
+  }
+}
+
+const base::Feature UkmService::kReportUserNoisedUserBirthYearAndGender = {
+    "UkmReportNoisedUserBirthYearAndGender", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace ukm

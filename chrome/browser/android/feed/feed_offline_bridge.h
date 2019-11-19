@@ -92,7 +92,7 @@ class FeedOfflineBridge {
   // GetKnownContent call.
   std::vector<ContentMetadata> known_content_metadata_buffer_;
 
-  base::WeakPtrFactory<FeedOfflineBridge> weak_factory_;
+  base::WeakPtrFactory<FeedOfflineBridge> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FeedOfflineBridge);
 };

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "components/language/core/browser/language_model.h"
+#include "components/language/core/browser/language_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/translate/core/browser/mock_translate_client.h"
 #include "components/translate/core/browser/mock_translate_driver.h"

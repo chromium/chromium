@@ -21,7 +21,7 @@ namespace internal {
 // specified and the RunActiveCallbacks method can be invoked to fire callbacks
 // for all active flags. Creating releasing or destroying an AtomicFlag must be
 // done on the associated thread, as must calling RunActiveCallbacks. This
-// class is thread-compatible.
+// class is thread-affine.
 class BASE_EXPORT AtomicFlagSet {
  protected:
   struct Group;
@@ -32,7 +32,7 @@ class BASE_EXPORT AtomicFlagSet {
   // AtomicFlags need to be released (or deleted) before this can be deleted.
   ~AtomicFlagSet();
 
-  // This class is thread-compatible in addition SetActive can be called
+  // This class is thread-affine in addition SetActive can be called
   // concurrently from any thread.
   class BASE_EXPORT AtomicFlag {
    public:
@@ -74,8 +74,8 @@ class BASE_EXPORT AtomicFlagSet {
   // thread.
   AtomicFlag AddFlag(RepeatingClosure callback);
 
-  // Runs the registered callback for all flags marked as active and resets all
-  // flags to inactive. Must be called on the associated thread.
+  // Runs the registered callback for all flags marked as active and atomically
+  // resets all flags to inactive. Must be called on the associated thread.
   void RunActiveCallbacks() const;
 
  protected:
@@ -96,10 +96,10 @@ class BASE_EXPORT AtomicFlagSet {
     std::atomic<size_t> flags = {0};
     size_t allocated_flags = 0;
     RepeatingClosure flag_callbacks[kNumFlags];
-    Group* prev_ = nullptr;
-    std::unique_ptr<Group> next_;
-    Group* partially_free_list_prev_ = nullptr;
-    Group* partially_free_list_next_ = nullptr;
+    Group* prev = nullptr;
+    std::unique_ptr<Group> next;
+    Group* partially_free_list_prev = nullptr;
+    Group* partially_free_list_next = nullptr;
 
     bool IsFull() const;
 

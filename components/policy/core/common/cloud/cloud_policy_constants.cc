@@ -60,10 +60,12 @@ const char kValueRequestCheckDeviceLicense[] = "check_device_license";
 const char kValueRequestAppInstallReport[] = "app_install_report";
 const char kValueRequestTokenEnrollment[] = "register_browser";
 const char kValueRequestChromeDesktopReport[] = "chrome_desktop_report";
+const char kValueRequestChromeOsUserReport[] = "chrome_os_user_report";
 const char kValueRequestInitialEnrollmentStateRetrieval[] =
     "device_initial_enrollment_state";
 const char kValueRequestUploadPolicyValidationReport[] =
     "policy_validation_report";
+const char kValueRequestPublicSamlUser[] = "public_saml_user_request";
 
 const char kChromeDevicePolicyType[] = "google/chromeos/device";
 #if defined(OS_CHROMEOS)
@@ -83,10 +85,9 @@ const char kChromeMachineLevelUserCloudPolicyType[] =
     "google/chrome/machine-level-user";
 const char kChromeMachineLevelExtensionCloudPolicyType[] =
     "google/chrome/machine-level-extension";
+const char kChromeRemoteCommandPolicyType[] = "google/chromeos/remotecommand";
 
 }  // namespace dm_protocol
-
-const char kChromePolicyHeader[] = "Chrome-Policy-Posture";
 
 const uint8_t kPolicyVerificationKey[] = {
     0x30, 0x82, 0x01, 0x22, 0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86,
@@ -117,9 +118,13 @@ const uint8_t kPolicyVerificationKey[] = {
 
 const char kPolicyVerificationKeyHash[] = "1:356l7w";
 
+const char kDemoModeDomain[] = "cros-demo-mode.com";
+
 std::string GetPolicyVerificationKey() {
   return std::string(reinterpret_cast<const char*>(kPolicyVerificationKey),
                      sizeof(kPolicyVerificationKey));
 }
+
+const char kPolicyFCMInvalidationSenderID[] = "1013309121859";
 
 }  // namespace policy

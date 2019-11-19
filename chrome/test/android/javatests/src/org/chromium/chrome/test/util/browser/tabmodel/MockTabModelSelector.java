@@ -23,17 +23,17 @@ public class MockTabModelSelector extends TabModelSelectorBase {
 
     public MockTabModelSelector(
             int tabCount, int incognitoTabCount, MockTabModel.MockTabModelDelegate delegate) {
-        super();
-        initialize(false, new MockTabModel(false, delegate), new MockTabModel(true, delegate));
+        super(null, false);
+        initialize(new MockTabModel(false, delegate), new MockTabModel(true, delegate));
         for (int i = 0; i < tabCount; i++) {
             addMockTab();
         }
-        if (tabCount > 0) TabModelUtils.setIndex(getModelAt(0), 0);
+        if (tabCount > 0) TabModelUtils.setIndex(getModel(false), 0);
 
         for (int i = 0; i < incognitoTabCount; i++) {
             addMockIncognitoTab();
         }
-        if (incognitoTabCount > 0) TabModelUtils.setIndex(getModelAt(1), 0);
+        if (incognitoTabCount > 0) TabModelUtils.setIndex(getModel(true), 0);
     }
 
     private static int nextIdOffset() {
@@ -41,11 +41,11 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     }
 
     public Tab addMockTab() {
-        return ((MockTabModel) getModelAt(0)).addTab(ID_OFFSET + nextIdOffset());
+        return ((MockTabModel) getModel(false)).addTab(ID_OFFSET + nextIdOffset());
     }
 
     public Tab addMockIncognitoTab() {
-        return ((MockTabModel) getModelAt(1)).addTab(INCOGNITO_ID_OFFSET + nextIdOffset());
+        return ((MockTabModel) getModel(true)).addTab(INCOGNITO_ID_OFFSET + nextIdOffset());
     }
 
     @Override

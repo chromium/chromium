@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {focusWithoutInk} from './focus_without_ink.m.js';
+// #import {FocusRow, FocusRowDelegate} from './focus_row.m.js';
+// clang-format on
+
 cr.define('cr.ui', function() {
   /** @implements {cr.ui.FocusRowDelegate} */
   class FocusRowBehaviorDelegate {
@@ -23,7 +30,12 @@ cr.define('cr.ui', function() {
      * @param {!Event} e
      */
     onFocus(row, e) {
-      this.listItem_.lastFocused = e.path[0];
+      const element = e.path[0];
+      const focusableElement = cr.ui.FocusRow.getFocusableElement(element);
+      if (element != focusableElement) {
+        focusableElement.focus();
+      }
+      this.listItem_.lastFocused = focusableElement;
     }
 
     /**
@@ -81,13 +93,25 @@ cr.define('cr.ui', function() {
    *
    * @polymerBehavior
    */
-  const FocusRowBehavior = {
+  /* #export */ const FocusRowBehavior = {
     properties: {
       /** @private {cr.ui.VirtualFocusRow} */
       row_: Object,
 
       /** @private {boolean} */
       mouseFocused_: Boolean,
+
+      /** Will be updated when |index| is set, unless specified elsewhere. */
+      id: {
+        type: String,
+        reflectToAttribute: true,
+      },
+
+      /** Should be bound to the index of the item from the iron-list */
+      focusRowIndex: {
+        type: Number,
+        observer: 'focusRowIndexChanged',
+      },
 
       /** @type {Element} */
       lastFocused: {
@@ -113,6 +137,31 @@ cr.define('cr.ui', function() {
       },
     },
 
+    /**
+     * Returns an ID based on the index that was passed in.
+     * @param {?number} index
+     * @return {?string}
+     */
+    computeId_: function(index) {
+      return index !== undefined ? `frb${index}` : undefined;
+    },
+
+    /**
+     * Sets |id| if it hasn't been set elsewhere. Also sets |aria-rowindex|.
+     * @param {number} newIndex
+     * @param {number} oldIndex
+     */
+    focusRowIndexChanged: function(newIndex, oldIndex) {
+      // focusRowIndex is 0-based where aria-rowindex is 1-based.
+      this.setAttribute('aria-rowindex', newIndex + 1);
+
+      // Only set ID if it matches what was previously set. This prevents
+      // overriding the ID value if it's set elsewhere.
+      if (this.id === this.computeId_(oldIndex)) {
+        this.id = this.computeId_(newIndex);
+      }
+    },
+
     /** @private {?Element} */
     firstControl_: null,
 
@@ -128,7 +177,6 @@ cr.define('cr.ui', function() {
         assert(rowContainer);
         this.row_ = new VirtualFocusRow(
             rowContainer, new FocusRowBehaviorDelegate(this));
-        this.ironListTabIndexChanged_();
         this.addItems_();
 
         // Adding listeners asynchronously to reduce blocking time, since this
@@ -190,6 +238,7 @@ cr.define('cr.ui', function() {
 
     /** @private */
     addItems_: function() {
+      this.ironListTabIndexChanged_();
       if (this.row_) {
         this.removeObservers_();
         this.row_.destroy();
@@ -276,10 +325,10 @@ cr.define('cr.ui', function() {
           this.listBlurred && e.composedPath()[0] === this;
 
       if (this.lastFocused && !restoreFocusToFirst) {
-        this.row_.getEquivalentElement(this.lastFocused).focus();
+        cr.ui.focusWithoutInk(this.row_.getEquivalentElement(this.lastFocused));
       } else {
         const firstFocusable = assert(this.firstControl_);
-        firstFocusable.focus();
+        cr.ui.focusWithoutInk(firstFocusable);
       }
       this.listBlurred = false;
     },
@@ -324,6 +373,7 @@ cr.define('cr.ui', function() {
     },
   };
 
+  // #cr_define_end
   return {
     FocusRowBehaviorDelegate,
     VirtualFocusRow,

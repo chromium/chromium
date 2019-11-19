@@ -28,9 +28,7 @@ WebGLSync::WebGLSync(WebGL2RenderingContextBase* ctx,
   ScheduleAllowCacheUpdate();
 }
 
-WebGLSync::~WebGLSync() {
-  RunDestructor();
-}
+WebGLSync::~WebGLSync() = default;
 
 void WebGLSync::UpdateCache(gpu::gles2::GLES2Interface* gl) {
   if (sync_status_ == GL_SIGNALED) {

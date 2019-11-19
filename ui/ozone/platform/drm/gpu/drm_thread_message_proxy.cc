@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/drm/gpu/drm_thread_message_proxy.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -17,7 +19,7 @@
 
 namespace ui {
 
-DrmThreadMessageProxy::DrmThreadMessageProxy() : weak_ptr_factory_(this) {}
+DrmThreadMessageProxy::DrmThreadMessageProxy() {}
 
 DrmThreadMessageProxy::~DrmThreadMessageProxy() {}
 
@@ -64,11 +66,13 @@ bool DrmThreadMessageProxy::OnMessageReceived(const IPC::Message& message) {
   return handled;
 }
 
-void DrmThreadMessageProxy::OnCreateWindow(gfx::AcceleratedWidget widget) {
+void DrmThreadMessageProxy::OnCreateWindow(gfx::AcceleratedWidget widget,
+                                           const gfx::Rect& initial_bounds) {
   DCHECK(drm_thread_->IsRunning());
   drm_thread_->task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&DrmThread::CreateWindow,
-                                base::Unretained(drm_thread_), widget));
+      FROM_HERE,
+      base::BindOnce(&DrmThread::CreateWindow, base::Unretained(drm_thread_),
+                     widget, initial_bounds));
 }
 
 void DrmThreadMessageProxy::OnDestroyWindow(gfx::AcceleratedWidget widget) {

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import bisect
 import collections
 import logging
@@ -516,12 +518,12 @@ class MemoryMap(object):
 
   def Dump(self):
     """Print memory map for debugging."""
-    print 'MEMORY MAP ['
+    print('MEMORY MAP [')
     for t in self._addr_map:
-      print '[%08x-%08x %08x %08x %s]' % (
-          t.addr_start, t.addr_start + t.file_size, t.file_size, t.file_offset,
-          t.file_path)
-    print '] MEMORY MAP'
+      print('[%08x-%08x %08x %08x %s]' %
+            (t.addr_start, t.addr_start + t.file_size, t.file_size,
+             t.file_offset, t.file_path))
+    print('] MEMORY MAP')
 
   def FindSectionForAddress(self, addr):
     """Find the map section corresponding to a specific memory address.

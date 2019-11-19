@@ -1,0 +1,11 @@
+Popup opened.
+HSL
+HEX
+RGB
+HEX
+HSL
+RGB
+HSL
+HEX
+RGB
+TEST COMPLETE

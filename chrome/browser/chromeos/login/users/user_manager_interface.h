@@ -48,12 +48,6 @@ class UserManagerInterface {
   // Resets user flow for user identified by |account_id|.
   virtual void ResetUserFlow(const AccountId& account_id) = 0;
 
-  // Returns list of users allowed for supervised user creation.
-  // Returns an empty list in cases when supervised user creation or adding new
-  // users is restricted.
-  virtual user_manager::UserList GetUsersAllowedForSupervisedUsersCreation()
-      const = 0;
-
   DISALLOW_COPY_AND_ASSIGN(UserManagerInterface);
 };
 

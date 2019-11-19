@@ -6,8 +6,12 @@ FROM ubuntu:trusty
 
 ENV DEBIAN_FRONTEND noninteractive
 
+# Don't gzip indexes. `apt-cache dumpavail` (used by install-build-deps.sh)
+# does not understand gzipped indexes.
+RUN echo "ACQUIRE { GzipIndexes \"false\"; }" > /etc/apt/apt.conf.d/no-gzip.conf
+
 RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y curl build-essential
+    apt-get install -y curl build-essential python
 
 RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections && \
     curl 'https://chromium.googlesource.com/chromium/src/+/master/build/install-build-deps.sh?format=TEXT' | \

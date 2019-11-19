@@ -1,0 +1,39 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [800, 600],
+      "drawsContent": false,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling Layer",
+      "bounds": [800, 600],
+      "drawsContent": false
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='inline-block-2' class='item'",
+          "rect": [0, 200, 100, 100],
+          "reason": "geometry"
+        },
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='inline-block-1' class='item'",
+          "rect": [0, 100, 100, 100],
+          "reason": "disappeared"
+        },
+        {
+          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV id='inline-block-2' class='item'",
+          "rect": [0, 100, 100, 100],
+          "reason": "geometry"
+        }
+      ]
+    }
+  ]
+}
+

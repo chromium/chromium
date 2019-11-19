@@ -14,6 +14,7 @@
 #include "base/stl_util.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_cursor_client.h"

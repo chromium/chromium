@@ -15,6 +15,7 @@
 #include "services/network/public/cpp/resource_response.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace {
@@ -106,9 +107,8 @@ void NetworkFetcherImpl::PostRequest(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
   resource_request->method = "POST";
-  resource_request->load_flags = net::LOAD_DO_NOT_SEND_COOKIES |
-                                 net::LOAD_DO_NOT_SAVE_COOKIES |
-                                 net::LOAD_DISABLE_CACHE;
+  resource_request->load_flags = net::LOAD_DISABLE_CACHE;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   for (const auto& header : post_additional_headers)
     resource_request->headers.SetHeader(header.first, header.second);
   simple_url_loader_ = network::SimpleURLLoader::Create(
@@ -116,7 +116,7 @@ void NetworkFetcherImpl::PostRequest(
   simple_url_loader_->SetRetryOptions(
       kMaxRetriesOnNetworkChange,
       network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
-  simple_url_loader_->AttachStringForUpload(post_data, "application/xml");
+  simple_url_loader_->AttachStringForUpload(post_data, "application/json");
   simple_url_loader_->SetOnResponseStartedCallback(base::BindOnce(
       &NetworkFetcherImpl::OnResponseStartedCallback, base::Unretained(this),
       std::move(response_started_callback)));
@@ -149,9 +149,8 @@ void NetworkFetcherImpl::DownloadToFile(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url;
   resource_request->method = "GET";
-  resource_request->load_flags = net::LOAD_DO_NOT_SEND_COOKIES |
-                                 net::LOAD_DO_NOT_SAVE_COOKIES |
-                                 net::LOAD_DISABLE_CACHE;
+  resource_request->load_flags = net::LOAD_DISABLE_CACHE;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   simple_url_loader_->SetRetryOptions(
@@ -171,7 +170,7 @@ void NetworkFetcherImpl::DownloadToFile(
              DownloadToFileCompleteCallback download_to_file_complete_callback,
              base::FilePath file_path) {
             std::move(download_to_file_complete_callback)
-                .Run(file_path, simple_url_loader->NetError(),
+                .Run(simple_url_loader->NetError(),
                      simple_url_loader->GetContentSize());
           },
           simple_url_loader_.get(),
@@ -182,10 +181,9 @@ void NetworkFetcherImpl::DownloadToFile(
 void NetworkFetcherImpl::OnResponseStartedCallback(
     ResponseStartedCallback response_started_callback,
     const GURL& final_url,
-    const network::ResourceResponseHead& response_head) {
+    const network::mojom::URLResponseHead& response_head) {
   std::move(response_started_callback)
-      .Run(final_url,
-           response_head.headers ? response_head.headers->response_code() : -1,
+      .Run(response_head.headers ? response_head.headers->response_code() : -1,
            response_head.content_length);
 }
 

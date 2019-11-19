@@ -7,6 +7,9 @@
 
 #include "base/macros.h"
 #include "base/single_thread_task_runner.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 
 namespace device {
@@ -14,20 +17,18 @@ namespace device {
 class PlatformSensorProvider;
 class PlatformSensor;
 
-// Implementation of SensorProvider mojo interface.
-// Uses PlatformSensorProvider singleton to create platform specific instances
-// of PlatformSensor which are used by SensorImpl.
+// Implementation of SensorProvider mojo interface. Owns an instance of
+// PlatformSensorProvider to create platform specific instances of
+// PlatformSensor which are used by SensorImpl. A single instance of this class
+// is owned by DeviceService.
 class SensorProviderImpl final : public mojom::SensorProvider {
  public:
-  static void Create(
-      scoped_refptr<base::SingleThreadTaskRunner> file_task_runner,
-      mojom::SensorProviderRequest request);
-
+  explicit SensorProviderImpl(std::unique_ptr<PlatformSensorProvider> provider);
   ~SensorProviderImpl() override;
 
- private:
-  explicit SensorProviderImpl(PlatformSensorProvider* provider);
+  void Bind(mojo::PendingReceiver<mojom::SensorProvider> receiver);
 
+ private:
   // SensorProvider implementation.
   void GetSensor(mojom::SensorType type,
                  GetSensorCallback callback) override;
@@ -38,8 +39,10 @@ class SensorProviderImpl final : public mojom::SensorProvider {
                      GetSensorCallback callback,
                      scoped_refptr<PlatformSensor> sensor);
 
-  PlatformSensorProvider* provider_;
-  base::WeakPtrFactory<SensorProviderImpl> weak_ptr_factory_;
+  std::unique_ptr<PlatformSensorProvider> provider_;
+  mojo::ReceiverSet<mojom::SensorProvider> receivers_;
+  mojo::UniqueReceiverSet<mojom::Sensor> sensor_receivers_;
+  base::WeakPtrFactory<SensorProviderImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SensorProviderImpl);
 };

@@ -1,0 +1,55 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow DIV",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "transform": 3
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV id='target')",
+      "position": [20, 20],
+      "bounds": [100, 100],
+      "paintInvalidations": [
+        {
+          "object": "LayoutBlockFlow (positioned) DIV id='target'",
+          "rect": [0, 0, 100, 100],
+          "reason": "background"
+        }
+      ],
+      "transform": 2
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "renderingContext": 1
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    }
+  ]
+}
+

@@ -10,7 +10,7 @@
 <script>
 'use strict';
 
-sensor_test(async sensorProvider => {
+sensor_test(async (t, sensorProvider) => {
   const motionData1 = generateMotionData(1, 2, 3,
                                          4, 5, 6,
                                          7, 8, 9);

@@ -61,6 +61,10 @@ class AudioRendererSink
   // Resumes playback after calling Pause().
   virtual void Play() = 0;
 
+  // Flushes playback.
+  // This should only be called if the sink is not playing.
+  virtual void Flush() = 0;
+
   // Sets the playback volume, with range [0.0, 1.0] inclusive.
   // Returns |true| on success.
   virtual bool SetVolume(double volume) = 0;

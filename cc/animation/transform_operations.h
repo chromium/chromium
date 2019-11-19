@@ -11,7 +11,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "cc/animation/animation_export.h"
 #include "cc/animation/transform_operation.h"
 #include "ui/gfx/transform.h"

@@ -54,9 +54,8 @@ class FakeSpeechRecognitionManager : public SpeechRecognitionManager,
   void AbortAllSessionsForRenderFrame(int render_process_id,
                                       int render_frame_id) override;
   const SpeechRecognitionSessionConfig& GetSessionConfig(
-      int session_id) const override;
-  SpeechRecognitionSessionContext GetSessionContext(
-      int session_id) const override;
+      int session_id) override;
+  SpeechRecognitionSessionContext GetSessionContext(int session_id) override;
 
   // SpeechRecognitionEventListener implementation.
   void OnRecognitionStart(int session_id) override {}

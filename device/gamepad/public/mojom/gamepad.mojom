@@ -25,6 +25,12 @@ struct GamepadButton {
   double value;
 };
 
+enum GamepadMapping {
+  GamepadMappingNone = 0,
+  GamepadMappingStandard = 1,
+  GamepadMappingXRStandard = 2
+};
+
 struct GamepadPose {
   GamepadQuaternion? orientation;
   GamepadVector? position;
@@ -60,7 +66,7 @@ struct Gamepad {
   array<double> axes;
   array<GamepadButton> buttons;
   GamepadHapticActuator? vibration_actuator;
-  array<uint16> mapping;
+  GamepadMapping mapping;
   GamepadPose? pose;
   GamepadHand hand;
   uint32 display_id;
@@ -94,7 +100,7 @@ interface GamepadMonitor {
   [Sync]
   GamepadStopPolling() => ();
 
-  SetObserver(GamepadObserver gamepad_observer);
+  SetObserver(pending_remote<GamepadObserver> gamepad_observer);
 };
 
 struct GamepadEffectParameters {

@@ -12,6 +12,8 @@
     font-weight: bold;
 }
 </style>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
 var htmlContent =
                 "<html>" +
@@ -81,65 +83,18 @@ var count = 0;
 
 function shouldSupport(content, mimeType)
 {
-    var description = document.createElement("div");
-    description.innerHTML = (++count) + ". Should support mime-type = \"" + mimeType + "\"";
-    document.body.appendChild(description);
-
     var parser = new DOMParser();
     var resultDocument = parser.parseFromString(content, mimeType);
-    if (!resultDocument) {
-        var result = document.createElement("div");
-        result.className = "fail";
-        result.textContent = "FAIL";
-        document.body.appendChild(result);
-    } else {
-        var content = document.createElement("div");
-        var docElement = resultDocument.documentElement;
-        if (mimeType.lastIndexOf("xml") === mimeType.length - 3)
-            content.innerHTML = "Root element: " + docElement.tagName;
-        else
-            content.innerHTML = "HTML content:<br>" + docElement.innerHTML;
-        document.body.appendChild(content);
-
-        var result = document.createElement("div");
-        result.className = "pass";
-        result.textContent = "PASS";
-        document.body.appendChild(result);
-    }
-    document.body.appendChild(document.createElement("br"));
+    assert_not_equals(resultDocument, null, 'Should support mime-type = ' + mimeType);
 }
 
 function shouldThrowException(content, mimeType)
 {
-    var description = document.createElement("div");
-    description.innerHTML = (++count) + ". Should THROW exception for mime-type = \"" + mimeType + "\"";
-    document.body.appendChild(description);
-
     var parser = new DOMParser();
-    try {
-        parser.parseFromString(content, mimeType);
-        var result = document.createElement("div");
-        result.className = "fail";
-        result.textContent = "FAIL";
-        document.body.appendChild(result);
-    } catch (exception) {
-        var message = document.createElement("div");
-        message.className = "pass";
-        message.textContent = exception;
-        document.body.appendChild(message);
-        var result = document.createElement("div");
-        result.className = "pass";
-        result.textContent = "PASS";
-        document.body.appendChild(result);
-    }
-    document.body.appendChild(document.createElement("br"));
+    assert_throws(new TypeError(), () => { parser.parseFromString(content, mimeType); });
 }
 
-function runTest()
-{
-    if (window.testRunner) {
-        testRunner.dumpAsText();
-    }
+test(() => {
     shouldSupport(htmlContent, "text/html");
     shouldSupport(xmlContent, "text/xml");
     shouldSupport(xmlContent, "application/xml");
@@ -149,10 +104,9 @@ function runTest()
     shouldThrowException(xmlContent, "text/dummy+xml");
     shouldThrowException(xmlContent, "text/XML");
     shouldThrowException(xmlContent, "TEXT/html");
-}
+}, "This tests DOMParser supports creating Document for HTML content with mime-type 'text/html'");
 </script>
 </head>
-<body onload="runTest();">
-<p>This tests DOMParser supports creating Document for HTML content with mime-type "text/html".</p>
+<body>
 </body>
 </html>

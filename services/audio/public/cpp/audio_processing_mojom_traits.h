@@ -59,8 +59,6 @@ struct EnumTraits<audio::mojom::EchoCancellationType,
     switch (type) {
       case media::EchoCancellationType::kDisabled:
         return audio::mojom::EchoCancellationType::kDisabled;
-      case media::EchoCancellationType::kAec2:
-        return audio::mojom::EchoCancellationType::kAec2;
       case media::EchoCancellationType::kAec3:
         return audio::mojom::EchoCancellationType::kAec3;
       case media::EchoCancellationType::kSystemAec:
@@ -75,9 +73,6 @@ struct EnumTraits<audio::mojom::EchoCancellationType,
     switch (input) {
       case audio::mojom::EchoCancellationType::kDisabled:
         *out = media::EchoCancellationType::kDisabled;
-        return true;
-      case audio::mojom::EchoCancellationType::kAec2:
-        *out = media::EchoCancellationType::kAec2;
         return true;
       case audio::mojom::EchoCancellationType::kAec3:
         *out = media::EchoCancellationType::kAec3;

@@ -6,25 +6,48 @@
 #define ASH_PUBLIC_CPP_TABLET_MODE_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/callback_forward.h"
-#include "base/macros.h"
+#include "ash/public/cpp/tablet_mode_observer.h"
+#include "base/run_loop.h"
 
 namespace ash {
 
-// A utility to allow code in //ash/public/cpp to access the tablet mode state,
-// regardless of what process it's running in.
-class TabletMode {
+// An interface implemented by Ash that allows Chrome to be informed of changes
+// to tablet mode state.
+class ASH_PUBLIC_EXPORT TabletMode {
  public:
-  using TabletModeCallback = base::RepeatingCallback<bool(void)>;
+  // Helper class to wait until the tablet mode transition is complete.
+  class Waiter : public TabletModeObserver {
+   public:
+    explicit Waiter(bool enable);
+    ~Waiter() override;
 
-  // Sets the callback to be run by IsEnabled().
-  static void ASH_PUBLIC_EXPORT SetCallback(TabletModeCallback callback);
+    void Wait();
 
-  // Returns whether the system is in tablet mode.
-  static bool IsEnabled();
+    // TabletModeObserver:
+    void OnTabletModeStarted() override;
+    void OnTabletModeEnded() override;
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TabletMode);
+   private:
+    bool enable_;
+    base::RunLoop run_loop_;
+
+    DISALLOW_COPY_AND_ASSIGN(Waiter);
+  };
+
+  // Returns the singleton instance.
+  static TabletMode* Get();
+
+  virtual void AddObserver(TabletModeObserver* observer) = 0;
+  virtual void RemoveObserver(TabletModeObserver* observer) = 0;
+
+  // Returns true if the system is in tablet mode.
+  virtual bool InTabletMode() const = 0;
+
+  virtual void SetEnabledForTest(bool enabled) = 0;
+
+ protected:
+  TabletMode();
+  virtual ~TabletMode();
 };
 
 }  // namespace ash

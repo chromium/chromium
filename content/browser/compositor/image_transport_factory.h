@@ -38,11 +38,6 @@ class CONTENT_EXPORT ImageTransportFactory {
   // disabled.
   virtual void DisableGpuCompositing() = 0;
 
-  // Whether gpu compositing is being used or is disabled for software
-  // compositing. Clients of the compositor should give resources that match
-  // the appropriate mode.
-  virtual bool IsGpuCompositingDisabled() = 0;
-
   // Gets the image transport factory as a context factory for the compositor.
   virtual ui::ContextFactory* GetContextFactory() = 0;
 

@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.website.ContentSettingValues;
@@ -28,6 +27,7 @@ import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Criteria;
 import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.base.PermissionCallback;
@@ -64,7 +64,7 @@ public class PermissionUpdateInfobarTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         mTestServer.stopAndDestroyServer();
     }
 
@@ -73,7 +73,7 @@ public class PermissionUpdateInfobarTest {
     @Test
     @MediumTest
     public void testInfobarShutsDownCleanlyForGeolocation()
-            throws IllegalArgumentException, InterruptedException, TimeoutException {
+            throws IllegalArgumentException, TimeoutException {
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
 
@@ -86,7 +86,7 @@ public class PermissionUpdateInfobarTest {
 
         final String locationUrl = mTestServer.getURL(GEOLOCATION_PAGE);
         final PermissionInfo geolocationSettings =
-                ThreadUtils.runOnUiThreadBlockingNoException(new Callable<PermissionInfo>() {
+                TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<PermissionInfo>() {
                     @Override
                     public PermissionInfo call() {
                         return new PermissionInfo(
@@ -100,21 +100,17 @@ public class PermissionUpdateInfobarTest {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
 
         try {
-            ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-                @Override
-                public void run() {
-                    geolocationSettings.setContentSetting(ContentSettingValues.ALLOW);
-                }
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> geolocationSettings.setContentSetting(ContentSettingValues.ALLOW));
 
             mActivityTestRule.loadUrl(mTestServer.getURL(GEOLOCATION_PAGE));
             mListener.addInfoBarAnimationFinished("InfoBar not added");
             Assert.assertEquals(1, mActivityTestRule.getInfoBars().size());
 
-            final WebContents webContents = ThreadUtils.runOnUiThreadBlockingNoException(
-                    new Callable<WebContents>() {
+            final WebContents webContents =
+                    TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<WebContents>() {
                         @Override
-                        public WebContents call() throws Exception {
+                        public WebContents call() {
                             return mActivityTestRule.getActivity()
                                     .getActivityTab()
                                     .getWebContents();
@@ -141,12 +137,8 @@ public class PermissionUpdateInfobarTest {
                 }
             }));
         } finally {
-            ThreadUtils.runOnUiThreadBlocking(new Runnable() {
-                @Override
-                public void run() {
-                    geolocationSettings.setContentSetting(ContentSettingValues.DEFAULT);
-                }
-            });
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> geolocationSettings.setContentSetting(ContentSettingValues.DEFAULT));
         }
     }
 

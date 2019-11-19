@@ -5,15 +5,15 @@
 #include <string>
 #include <vector>
 
-#include "base/barrier_closure.h"
+#include "ash/public/cpp/login_screen_test_api.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/files/file_path_watcher.h"
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -24,9 +24,11 @@
 #include "chrome/browser/chromeos/login/existing_user_controller.h"
 #include "chrome/browser/chromeos/login/help_app_launcher.h"
 #include "chrome/browser/chromeos/login/helper.h"
-#include "chrome/browser/chromeos/login/screens/mock_base_screen_delegate.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/chromeos/login/test/js_checker.h"
+#include "chrome/browser/chromeos/login/test/login_manager_mixin.h"
+#include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/ui/mock_login_display.h"
 #include "chrome/browser/chromeos/login/ui/mock_login_display_host.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
@@ -37,15 +39,21 @@
 #include "chrome/browser/chromeos/policy/device_policy_cros_browser_test.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/chromeos/login/terms_of_service_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/constants/chromeos_switches.h"
-#include "chromeos/dbus/fake_auth_policy_client.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
-#include "chromeos/dbus/util/tpm_util.h"
+#include "chromeos/dbus/auth_policy/fake_auth_policy_client.h"
+#include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/login/auth/key.h"
-#include "chromeos/login/auth/mock_url_fetchers.h"
+#include "chromeos/login/auth/stub_authenticator_builder.h"
 #include "chromeos/login/auth/user_context.h"
+#include "chromeos/network/network_state_test_helper.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -66,17 +74,16 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/test/mock_notification_observer.h"
 #include "content/public/test/test_utils.h"
-#include "google_apis/gaia/mock_url_fetcher_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::Invoke;
 using ::testing::InvokeWithoutArgs;
 using ::testing::Return;
 using ::testing::ReturnNull;
 using ::testing::WithArg;
-using ::testing::_;
 
 namespace em = enterprise_management;
 
@@ -90,8 +97,6 @@ const char kUserWhitelist[] = "*@gmail.com";
 const char kUserNotMatchingWhitelist[] = "user@another_mail.com";
 const char kSupervisedUserID[] = "supervised_user@locally-managed.localhost";
 const char kPassword[] = "test_password";
-const char kActiveDirectoryRealm[] = "active.directory.realm";
-const char kKrb5CCFilePrefix[] = "FILE:";
 
 const char kPublicSessionUserEmail[] = "public_session_user@localhost";
 const int kAutoLoginNoDelay = 0;
@@ -117,83 +122,23 @@ void WaitForPermanentlyUntrustedStatusAndRun(const base::Closure& callback) {
   }
 }
 
-std::string GetKerberosConfigFileName() {
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string config_file;
-  EXPECT_TRUE(env->GetVar("KRB5_CONFIG", &config_file));
-  return config_file;
+base::FilePath GetKerberosConfigPath() {
+  base::FilePath path;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_HOME, &path));
+  return path.Append("kerberos").Append("krb5.conf");
 }
 
-std::string GetKerberosCredentialsCacheFileName() {
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::string creds_file;
-  EXPECT_TRUE(env->GetVar("KRB5CCNAME", &creds_file));
-  EXPECT_EQ(kKrb5CCFilePrefix, creds_file.substr(0, strlen(kKrb5CCFilePrefix)));
-  return creds_file.substr(strlen(kKrb5CCFilePrefix));
+base::FilePath GetKerberosCredentialsCachePath() {
+  base::FilePath path;
+  EXPECT_TRUE(base::PathService::Get(base::DIR_HOME, &path));
+  return path.Append("kerberos").Append("krb5cc");
 }
-
-// Helper class to wait when both Kerberos credentials cache and config file
-// changed.
-class KerberosFilesChangeWaiter {
- public:
-  // If |files_must_exist| is true and a file already exists the class does not
-  // wait when it changes.
-  explicit KerberosFilesChangeWaiter(bool files_must_exist) {
-    barrier_closure_ = base::BarrierClosure(2, loop_.QuitClosure());
-
-    watch_callback_ = base::BindRepeating(
-        [](const base::RepeatingClosure& barrier_closure,
-           const base::FilePath& path, bool error) -> void {
-          EXPECT_FALSE(error);
-          barrier_closure.Run();
-        },
-        barrier_closure_);
-
-    config_watcher_ = std::make_unique<base::FilePathWatcher>();
-    MaybeStartWatch(&config_watcher_,
-                    base::FilePath(GetKerberosConfigFileName()),
-                    files_must_exist);
-
-    creds_watcher_ = std::make_unique<base::FilePathWatcher>();
-    MaybeStartWatch(&creds_watcher_,
-                    base::FilePath(GetKerberosCredentialsCacheFileName()),
-                    files_must_exist);
-  }
-
-  // Should be called once.
-  void Wait() {
-    base::ScopedAllowBlockingForTesting allow_io;
-    loop_.Run();
-    config_watcher_.reset();
-    creds_watcher_.reset();
-  }
-
- private:
-  void MaybeStartWatch(std::unique_ptr<base::FilePathWatcher>* watcher,
-                       const base::FilePath& path,
-                       bool files_must_exist) {
-    base::ScopedAllowBlockingForTesting allow_io;
-    (*watcher)->Watch(path, false /* recursive */, watch_callback_);
-    if (!files_must_exist && base::PathExists(path)) {
-      watch_callback_.Run(path, false /* error */);
-      watcher->reset();
-    }
-  }
-  base::RunLoop loop_;
-  base::RepeatingClosure barrier_closure_;
-
-  base::RepeatingCallback<void(const base::FilePath& path, bool error)>
-      watch_callback_;
-
-  std::unique_ptr<base::FilePathWatcher> config_watcher_;
-  std::unique_ptr<base::FilePathWatcher> creds_watcher_;
-};
 
 }  // namespace
 
 class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
  protected:
-  ExistingUserControllerTest() {}
+  ExistingUserControllerTest() = default;
 
   ExistingUserController* existing_user_controller() {
     return ExistingUserController::current_controller();
@@ -204,16 +149,12 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    SetUpSessionManager();
-
     DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
 
     mock_login_display_host_ = std::make_unique<MockLoginDisplayHost>();
     mock_login_display_ = std::make_unique<MockLoginDisplay>();
     SetUpLoginDisplay();
   }
-
-  virtual void SetUpSessionManager() {}
 
   virtual void SetUpLoginDisplay() {
     EXPECT_CALL(*mock_login_display_host_, GetLoginDisplay())
@@ -227,11 +168,13 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    policy::DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kLoginManager);
     command_line->AppendSwitch(switches::kForceLoginManagerInTests);
   }
 
   void SetUpOnMainThread() override {
+    policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
     existing_user_controller_ = std::make_unique<ExistingUserController>();
     EXPECT_CALL(*mock_login_display_host_, GetExistingUserController())
         .Times(AnyNumber())
@@ -276,6 +219,16 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
     users_pref->AppendIfNotPresent(std::make_unique<base::Value>(user_id));
   }
 
+  void MakeCrosSettingsPermanentlyUntrusted() {
+    device_policy()->policy().set_policy_data_signature("bad signature");
+    session_manager_client()->set_device_policy(device_policy()->GetBlob());
+    session_manager_client()->OnPropertyChangeComplete(true);
+
+    base::RunLoop run_loop;
+    WaitForPermanentlyUntrustedStatusAndRun(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   // ExistingUserController private member accessors.
   base::OneShotTimer* auto_login_timer() {
     return existing_user_controller()->auto_login_timer_.get();
@@ -297,9 +250,6 @@ class ExistingUserControllerTest : public policy::DevicePolicyCrosBrowserTest {
 
   std::unique_ptr<MockLoginDisplay> mock_login_display_;
   std::unique_ptr<MockLoginDisplayHost> mock_login_display_host_;
-
-  // Mock URLFetcher.
-  MockURLFetcherFactory<SuccessFetcher> factory_;
 
   const AccountId gaia_account_id_ =
       AccountId::FromUserEmailGaiaId(kUsername, kGaiaID);
@@ -326,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerTest, DISABLED_ExistingUserLogin) {
   session_manager_test_api.InjectStubUserContext(user_context);
   EXPECT_CALL(*mock_login_display_, SetUIEnabled(true)).Times(1);
   EXPECT_CALL(*mock_login_display_host_,
-              StartWizard(OobeScreen::SCREEN_TERMS_OF_SERVICE))
+              StartWizard(TermsOfServiceScreenView::kScreenId.AsId()))
       .Times(0);
 
   content::WindowedNotificationObserver profile_prepared_observer(
@@ -341,27 +291,17 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerTest, DISABLED_ExistingUserLogin) {
 // started.
 class ExistingUserControllerUntrustedTest : public ExistingUserControllerTest {
  public:
-  ExistingUserControllerUntrustedTest();
+  ExistingUserControllerUntrustedTest() = default;
 
-  void SetUpInProcessBrowserTestFixture() override;
-
-  void SetUpSessionManager() override;
+  void SetUpOnMainThread() override {
+    ExistingUserControllerTest::SetUpOnMainThread();
+    MakeCrosSettingsPermanentlyUntrusted();
+    ExpectLoginFailure();
+  }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ExistingUserControllerUntrustedTest);
 };
-
-ExistingUserControllerUntrustedTest::ExistingUserControllerUntrustedTest() {}
-
-void ExistingUserControllerUntrustedTest::SetUpInProcessBrowserTestFixture() {
-  ExistingUserControllerTest::SetUpInProcessBrowserTestFixture();
-
-  ExpectLoginFailure();
-}
-
-void ExistingUserControllerUntrustedTest::SetUpSessionManager() {
-  InstallOwnerKey();
-}
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerUntrustedTest,
                        ExistingUserLoginForbidden) {
@@ -408,7 +348,8 @@ MATCHER_P(HasDetails, expected, "") {
 }
 
 class ExistingUserControllerPublicSessionTest
-    : public ExistingUserControllerTest {
+    : public ExistingUserControllerTest,
+      public user_manager::UserManager::Observer {
  protected:
   ExistingUserControllerPublicSessionTest() {}
 
@@ -418,13 +359,13 @@ class ExistingUserControllerPublicSessionTest
     // Wait for the public session user to be created.
     if (!user_manager::UserManager::Get()->IsKnownUser(
             public_session_account_id_)) {
-      content::WindowedNotificationObserver(
-          chrome::NOTIFICATION_USER_LIST_CHANGED,
-          base::Bind(&user_manager::UserManager::IsKnownUser,
-                     base::Unretained(user_manager::UserManager::Get()),
-                     public_session_account_id_))
-          .Wait();
+      user_manager::UserManager::Get()->AddObserver(this);
+      local_state_changed_run_loop_ = std::make_unique<base::RunLoop>();
+      local_state_changed_run_loop_->Run();
+      user_manager::UserManager::Get()->RemoveObserver(this);
     }
+    EXPECT_TRUE(user_manager::UserManager::Get()->IsKnownUser(
+        public_session_account_id_));
 
     // Wait for the device local account policy to be installed.
     policy::CloudPolicyStore* store =
@@ -448,9 +389,8 @@ class ExistingUserControllerPublicSessionTest
     }
   }
 
-  void SetUpSessionManager() override {
-    InstallOwnerKey();
-
+  void SetUpInProcessBrowserTestFixture() override {
+    ExistingUserControllerTest::SetUpInProcessBrowserTestFixture();
     // Setup the device policy.
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
     em::DeviceLocalAccountInfoProto* account =
@@ -497,6 +437,11 @@ class ExistingUserControllerPublicSessionTest
       controller->current_screen()->Hide();
   }
 
+  // user_manager::UserManager::Observer:
+  void LocalStateChanged(user_manager::UserManager* user_manager) override {
+    local_state_changed_run_loop_->Quit();
+  }
+
   void ExpectSuccessfulLogin(const UserContext& user_context) {
     test::UserSessionManagerTestApi session_manager_test_api(
         UserSessionManager::GetInstance());
@@ -504,7 +449,7 @@ class ExistingUserControllerPublicSessionTest
     // There may be in-session oobe or an initial login screen created from
     // --login-manager.
     EXPECT_CALL(*mock_login_display_host_,
-                StartWizard(OobeScreen::SCREEN_TERMS_OF_SERVICE))
+                StartWizard(TermsOfServiceScreenView::kScreenId.AsId()))
         .Times(AnyNumber());
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(false)).Times(AnyNumber());
     EXPECT_CALL(*mock_login_display_, SetUIEnabled(true)).Times(AnyNumber());
@@ -560,22 +505,14 @@ class ExistingUserControllerPublicSessionTest
     existing_user_controller()->OnPublicSessionAutoLoginTimerFire();
   }
 
-  void MakeCrosSettingsPermanentlyUntrusted() {
-    device_policy()->policy().set_policy_data_signature("bad signature");
-    session_manager_client()->set_device_policy(device_policy()->GetBlob());
-    session_manager_client()->OnPropertyChangeComplete(true);
-
-    base::RunLoop run_loop;
-    WaitForPermanentlyUntrustedStatusAndRun(run_loop.QuitClosure());
-    run_loop.Run();
-  }
-
   const AccountId public_session_account_id_ =
       AccountId::FromUserEmail(policy::GenerateDeviceLocalAccountUserId(
           kPublicSessionUserEmail,
           policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
 
  private:
+  std::unique_ptr<base::RunLoop> local_state_changed_run_loop_;
+
   DISALLOW_COPY_AND_ASSIGN(ExistingUserControllerPublicSessionTest);
 };
 
@@ -811,30 +748,29 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
   FireAutoLogin();
 }
 
-IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
-                       PRE_TestLoadingPublicUsersFromLocalState) {
-  // First run propagates public accounts and stores them in Local State.
-}
-
-IN_PROC_BROWSER_TEST_F(ExistingUserControllerPublicSessionTest,
-                       TestLoadingPublicUsersFromLocalState) {
-  // Second run loads list of public accounts from Local State.
-}
-
 class ExistingUserControllerActiveDirectoryTest
     : public ExistingUserControllerTest {
  public:
   ExistingUserControllerActiveDirectoryTest() = default;
 
-  // Overriden from DevicePolicyCrosBrowserTest:
-  void MarkOwnership() override {}
-
   // Overriden from ExistingUserControllerTest:
+  void SetUp() override {
+    device_state_.SetState(
+        DeviceStateMixin::State::OOBE_COMPLETED_ACTIVE_DIRECTORY_ENROLLED);
+    ExistingUserControllerTest::SetUp();
+  }
+
   void SetUpInProcessBrowserTestFixture() override {
     ExistingUserControllerTest::SetUpInProcessBrowserTestFixture();
-    fake_authpolicy_client()->DisableOperationDelayForTesting();
-    ASSERT_TRUE(
-        tpm_util::LockDeviceActiveDirectoryForTesting(kActiveDirectoryRealm));
+
+    // This is called before ChromeBrowserMain initializes the fake dbus
+    // clients, and DisableOperationDelayForTesting() needs to be called before
+    // other ChromeBrowserMain initialization occurs.
+    AuthPolicyClient::InitializeFake();
+    FakeAuthPolicyClient::Get()->DisableOperationDelayForTesting();
+    // Required for tpm_util. Will be destroyed in browser shutdown.
+    chromeos::CryptohomeClient::InitializeFake();
+
     RefreshDevicePolicy();
     EXPECT_CALL(policy_provider_, IsInitializationComplete(_))
         .WillRepeatedly(Return(true));
@@ -848,9 +784,16 @@ class ExistingUserControllerActiveDirectoryTest
   }
 
  protected:
-  chromeos::FakeAuthPolicyClient* fake_authpolicy_client() {
-    return static_cast<chromeos::FakeAuthPolicyClient*>(
-        chromeos::DBusThreadManager::Get()->GetAuthPolicyClient());
+  // Needs to be a member because this class is a friend of
+  // AuthPolicyCredentialsManagerFactory to access GetServiceForBrowserContext.
+  KerberosFilesHandler* GetKerberosFilesHandler() {
+    auto* auth_policy_credentials_manager =
+        static_cast<AuthPolicyCredentialsManager*>(
+            AuthPolicyCredentialsManagerFactory::GetInstance()
+                ->GetServiceForBrowserContext(
+                    ProfileManager::GetLastUsedProfile(), false /* create */));
+    EXPECT_TRUE(auth_policy_credentials_manager);
+    return auth_policy_credentials_manager->GetKerberosFilesHandlerForTesting();
   }
 
   void LoginAdOnline() {
@@ -868,8 +811,15 @@ class ExistingUserControllerActiveDirectoryTest
     existing_user_controller()->CompleteLogin(user_context);
 
     profile_prepared_observer.Wait();
-    KerberosFilesChangeWaiter files_change_waiter(false /* files_must_exist */);
-    files_change_waiter.Wait();
+
+    // This only works if no RunLoop::Run() call is made after the Kerberos file
+    // writer task has been posted. Ideally, SetFilesChangedForTesting() should
+    // be called before the task is posted, but we don't have a profile yet at
+    // that point, so we can't get the files handler.
+    base::RunLoop run_loop;
+    GetKerberosFilesHandler()->SetFilesChangedForTesting(
+        run_loop.QuitClosure());
+    run_loop.Run();
     CheckKerberosFiles(true /* enable_dns_cname_lookup */);
   }
 
@@ -900,34 +850,37 @@ class ExistingUserControllerActiveDirectoryTest
   std::string GetExpectedKerberosConfig(bool enable_dns_cname_lookup) {
     std::string config(base::StringPrintf(
         kKrb5CnameSettings, enable_dns_cname_lookup ? "true" : "false"));
-    config += fake_authpolicy_client()->user_kerberos_conf();
+    config += FakeAuthPolicyClient::Get()->user_kerberos_conf();
     return config;
   }
 
   void CheckKerberosFiles(bool enable_dns_cname_lookup) {
     base::ScopedAllowBlockingForTesting allow_io;
     std::string file_contents;
-    EXPECT_TRUE(base::ReadFileToString(
-        base::FilePath(GetKerberosConfigFileName()), &file_contents));
+    EXPECT_TRUE(
+        base::ReadFileToString(GetKerberosConfigPath(), &file_contents));
     EXPECT_EQ(GetExpectedKerberosConfig(enable_dns_cname_lookup),
               file_contents);
 
-    EXPECT_TRUE(base::ReadFileToString(
-        base::FilePath(GetKerberosCredentialsCacheFileName()), &file_contents));
-    EXPECT_EQ(file_contents, fake_authpolicy_client()->user_kerberos_creds());
+    EXPECT_TRUE(base::ReadFileToString(GetKerberosCredentialsCachePath(),
+                                       &file_contents));
+    EXPECT_EQ(file_contents,
+              FakeAuthPolicyClient::Get()->user_kerberos_creds());
   }
 
   // Applies policy and waits until both config and credentials files changed.
   void ApplyPolicyAndWaitFilesChanged(bool enable_dns_cname_lookup) {
-    KerberosFilesChangeWaiter files_change_waiter(true /* files_must_exist */);
     policy::PolicyMap policies;
     policies.Set(policy::key::kDisableAuthNegotiateCnameLookup,
                  policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                  policy::POLICY_SOURCE_CLOUD,
                  std::make_unique<base::Value>(!enable_dns_cname_lookup),
                  nullptr);
+    base::RunLoop run_loop;
+    GetKerberosFilesHandler()->SetFilesChangedForTesting(
+        run_loop.QuitClosure());
     UpdateProviderPolicy(policies);
-    files_change_waiter.Wait();
+    run_loop.Run();
   }
 
  private:
@@ -945,7 +898,7 @@ class ExistingUserControllerActiveDirectoryUserWhitelistTest
     em::ChromeDeviceSettingsProto device_policy;
     device_policy.mutable_user_whitelist()->add_user_whitelist()->assign(
         kUserWhitelist);
-    fake_authpolicy_client()->set_device_policy(device_policy);
+    FakeAuthPolicyClient::Get()->set_device_policy(device_policy);
   }
 
   void SetUpLoginDisplay() override {
@@ -969,9 +922,8 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
 
 // Tests if DisabledAuthNegotiateCnameLookup changes trigger updating user
 // Kerberos files.
-// Disabled due to flakiness, see https://crbug.com/865206.
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
-                       DISABLED_PolicyChangeTriggersFileUpdate) {
+                       PolicyChangeTriggersFileUpdate) {
   LoginAdOnline();
 
   ApplyPolicyAndWaitFilesChanged(false /* enable_dns_cname_lookup */);
@@ -983,15 +935,17 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
 
 // Tests if user Kerberos files changed D-Bus signal triggers updating user
 // Kerberos files.
-// Disabled due to flakiness, see https://crbug.com/865206.
-IN_PROC_BROWSER_TEST_F(
-    ExistingUserControllerActiveDirectoryTest,
-    DISABLED_UserKerberosFilesChangedSignalTriggersFileUpdate) {
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
+                       UserKerberosFilesChangedSignalTriggersFileUpdate) {
   LoginAdOnline();
-  KerberosFilesChangeWaiter files_change_waiter(true /* files_must_exist */);
-  fake_authpolicy_client()->SetUserKerberosFiles("new_kerberos_creds",
-                                                 "new_kerberos_config");
-  files_change_waiter.Wait();
+
+  // Set authpolicyd's copy of the Kerberos files and wait until Chrome's copy
+  // has updated.
+  base::RunLoop run_loop;
+  GetKerberosFilesHandler()->SetFilesChangedForTesting(run_loop.QuitClosure());
+  FakeAuthPolicyClient::Get()->SetUserKerberosFiles("new_kerberos_creds",
+                                                    "new_kerberos_config");
+  run_loop.Run();
   CheckKerberosFiles(true /* enable_dns_cname_lookup */);
 }
 
@@ -1012,8 +966,11 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerActiveDirectoryTest,
       content::NotificationService::AllSources());
   existing_user_controller()->Login(user_context, SigninSpecifics());
   profile_prepared_observer.Wait();
-  KerberosFilesChangeWaiter files_change_waiter(false /* files_must_exist */);
-  files_change_waiter.Wait();
+
+  // Note: Can't call SetFilesChangedForTesting() earlier, see LoginAdOnline().
+  base::RunLoop run_loop;
+  GetKerberosFilesHandler()->SetFilesChangedForTesting(run_loop.QuitClosure());
+  run_loop.Run();
   CheckKerberosFiles(true /* enable_dns_cname_lookup */);
 }
 
@@ -1067,9 +1024,10 @@ class ExistingUserControllerSavePasswordHashTest
     : public ExistingUserControllerTest {
  public:
   ExistingUserControllerSavePasswordHashTest() = default;
+  ~ExistingUserControllerSavePasswordHashTest() override = default;
 
-  void SetUpSessionManager() override {
-    InstallOwnerKey();
+  void SetUpInProcessBrowserTestFixture() override {
+    ExistingUserControllerTest::SetUpInProcessBrowserTestFixture();
     RefreshDevicePolicy();
   }
 };
@@ -1116,6 +1074,113 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerSavePasswordHashTest,
       content::Details<Profile>(profile_prepared_observer.details()).ptr();
   EXPECT_TRUE(profile->GetPrefs()->HasPrefPath(
       password_manager::prefs::kPasswordHashDataList));
+}
+
+// Tests different auth failures for an existing user login attempts.
+class ExistingUserControllerAuthFailureTest
+    : public MixinBasedInProcessBrowserTest {
+ public:
+  ExistingUserControllerAuthFailureTest() = default;
+  ~ExistingUserControllerAuthFailureTest() override = default;
+
+  void SetUpStubAuthenticatorAndAttemptLogin(
+      AuthFailure::FailureReason failure_reason) {
+    const UserContext user_context =
+        LoginManagerMixin::CreateDefaultUserContext(test_user_);
+
+    auto authenticator_builder =
+        std::make_unique<StubAuthenticatorBuilder>(user_context);
+    if (failure_reason != AuthFailure::NONE)
+      authenticator_builder->SetUpAuthFailure(failure_reason);
+
+    test::UserSessionManagerTestApi(UserSessionManager::GetInstance())
+        .InjectAuthenticatorBuilder(std::move(authenticator_builder));
+
+    // Some auth failure tests verify that error bubble is shown in the login
+    // UI. Given that login UI ignores auth failures, unless it attempted a
+    // login, the login attempt cannot be shortcut by login manager mixin API -
+    // it has to go through login UI.
+    const std::string& password = user_context.GetKey()->GetSecret();
+    ash::LoginScreenTestApi::SubmitPassword(test_user_.account_id, password);
+  }
+
+  void SetUpStubAuthenticatorAndAttemptLoginWithWrongPassword() {
+    const UserContext user_context =
+        LoginManagerMixin::CreateDefaultUserContext(test_user_);
+    auto authenticator_builder =
+        std::make_unique<StubAuthenticatorBuilder>(user_context);
+    test::UserSessionManagerTestApi(UserSessionManager::GetInstance())
+        .InjectAuthenticatorBuilder(std::move(authenticator_builder));
+
+    ash::LoginScreenTestApi::SubmitPassword(test_user_.account_id,
+                                            "wrong!!!!!");
+  }
+
+  // Waits for auth error message to be shown in login UI.
+  void WaitForAuthErrorMessage() {
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(ash::LoginScreenTestApi::IsAuthErrorBubbleShown());
+  }
+
+ protected:
+  const LoginManagerMixin::TestUserInfo test_user_{
+      AccountId::FromUserEmailGaiaId("user@gmail.com", "user")};
+  LoginManagerMixin login_manager_{&mixin_host_, {test_user_}};
+};
+
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
+                       CryptohomeMissing) {
+  SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::MISSING_CRYPTOHOME);
+
+  OobeScreenWaiter(GaiaView::kScreenId).Wait();
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->FindUser(test_user_.account_id);
+  ASSERT_TRUE(user);
+  EXPECT_TRUE(user->force_online_signin());
+}
+
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest, TpmError) {
+  SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::TPM_ERROR);
+
+  OobeScreenWaiter(OobeScreen::SCREEN_TPM_ERROR).Wait();
+
+  EXPECT_EQ(0, FakePowerManagerClient::Get()->num_request_restart_calls());
+
+  test::OobeJS().ExpectVisiblePath({"tpm-error-message"});
+  test::OobeJS().ExpectVisiblePath({"tpm-restart-button"});
+  test::OobeJS().Evaluate(
+      "document.getElementById('tpm-restart-button').click()");
+
+  EXPECT_EQ(1, FakePowerManagerClient::Get()->num_request_restart_calls());
+}
+
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest, OwnerRequired) {
+  SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::OWNER_REQUIRED);
+  WaitForAuthErrorMessage();
+}
+
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest, WrongPassword) {
+  SetUpStubAuthenticatorAndAttemptLoginWithWrongPassword();
+  WaitForAuthErrorMessage();
+}
+
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
+                       WrongPasswordWhileOffline) {
+  chromeos::NetworkStateTestHelper network_state_test_helper(
+      false /*use_default_devices_and_services*/);
+  network_state_test_helper.ClearServices();
+
+  SetUpStubAuthenticatorAndAttemptLoginWithWrongPassword();
+  WaitForAuthErrorMessage();
+}
+
+IN_PROC_BROWSER_TEST_F(ExistingUserControllerAuthFailureTest,
+                       CryptohomeUnavailable) {
+  FakeCryptohomeClient::Get()->SetServiceIsAvailable(false);
+  SetUpStubAuthenticatorAndAttemptLogin(AuthFailure::NONE);
+
+  FakeCryptohomeClient::Get()->ReportServiceIsNotAvailable();
+  WaitForAuthErrorMessage();
 }
 
 }  // namespace chromeos

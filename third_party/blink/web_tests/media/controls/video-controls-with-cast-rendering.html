@@ -17,9 +17,6 @@
     <video controls style="position: absolute; width: 320px;"></video>
   </div>
   <script>
-    if (window.internals)
-        internals.settings.setMockScrollbarsEnabled(true);
-
     var videos = document.getElementsByTagName('video');
     for (var i = 0; i < videos.length; ++i) {
       enableTestMode(videos[i]);

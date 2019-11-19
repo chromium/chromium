@@ -8,7 +8,6 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "gin/v8_initializer.h"
 #include "pdf/pdf.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -23,7 +22,6 @@ void LoadV8SnapshotData() {
   if (!loaded) {
     loaded = true;
     gin::V8Initializer::LoadV8Snapshot();
-    gin::V8Initializer::LoadV8Natives();
   }
 #endif
 }

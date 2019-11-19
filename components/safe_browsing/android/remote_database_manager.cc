@@ -22,10 +22,6 @@
 
 using content::BrowserThread;
 
-namespace net {
-class URLRequestContextGetter;
-}  // namespace net
-
 namespace safe_browsing {
 
 namespace {
@@ -63,17 +59,14 @@ class RemoteSafeBrowsingDatabaseManager::ClientRequest {
   RemoteSafeBrowsingDatabaseManager* db_manager_;
   GURL url_;
   base::ElapsedTimer timer_;
-  base::WeakPtrFactory<ClientRequest> weak_factory_;
+  base::WeakPtrFactory<ClientRequest> weak_factory_{this};
 };
 
 RemoteSafeBrowsingDatabaseManager::ClientRequest::ClientRequest(
     Client* client,
     RemoteSafeBrowsingDatabaseManager* db_manager,
     const GURL& url)
-    : client_(client),
-      db_manager_(db_manager),
-      url_(url),
-      weak_factory_(this) {}
+    : client_(client), db_manager_(db_manager), url_(url) {}
 
 // Static
 void RemoteSafeBrowsingDatabaseManager::ClientRequest::OnRequestDoneWeak(
@@ -97,6 +90,11 @@ void RemoteSafeBrowsingDatabaseManager::ClientRequest::OnRequestDone(
   db_manager_->CancelCheck(client_);
 }
 
+RealTimeUrlLookupService*
+RemoteSafeBrowsingDatabaseManager::GetRealTimeUrlLookupService() {
+  return rt_url_lookup_service_.get();
+}
+
 //
 // RemoteSafeBrowsingDatabaseManager methods
 //
@@ -106,10 +104,11 @@ RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager() {
   // Avoid memory allocations growing the underlying vector. Although this
   // usually wastes a bit of memory, it will still be less than the default
   // vector allocation strategy.
-  resource_types_to_check_.reserve(content::RESOURCE_TYPE_LAST_TYPE + 1);
+  resource_types_to_check_.reserve(
+      static_cast<int>(content::ResourceType::kMaxValue) + 1);
   // Decide which resource types to check. These two are the minimum.
-  resource_types_to_check_.insert(content::RESOURCE_TYPE_MAIN_FRAME);
-  resource_types_to_check_.insert(content::RESOURCE_TYPE_SUB_FRAME);
+  resource_types_to_check_.insert(content::ResourceType::kMainFrame);
+  resource_types_to_check_.insert(content::ResourceType::kSubFrame);
 
   // The param is expected to be a comma-separated list of ints
   // corresponding to the enum types.  We're keeping this finch
@@ -118,16 +117,17 @@ RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager() {
       kAndroidFieldExperiment, kAndroidTypesToCheckParam);
   if (ints_str.empty()) {
     // By default, we check all types except a few.
-    static_assert(content::RESOURCE_TYPE_LAST_TYPE ==
-                      content::RESOURCE_TYPE_NAVIGATION_PRELOAD + 1,
+    static_assert(content::ResourceType::kMaxValue ==
+                      content::ResourceType::kNavigationPreloadSubFrame,
                   "Decide if new resource type should be skipped on mobile.");
-    for (int t_int = 0; t_int < content::RESOURCE_TYPE_LAST_TYPE; t_int++) {
+    for (int t_int = 0;
+         t_int <= static_cast<int>(content::ResourceType::kMaxValue); t_int++) {
       content::ResourceType t = static_cast<content::ResourceType>(t_int);
       switch (t) {
-        case content::RESOURCE_TYPE_STYLESHEET:
-        case content::RESOURCE_TYPE_IMAGE:
-        case content::RESOURCE_TYPE_FONT_RESOURCE:
-        case content::RESOURCE_TYPE_FAVICON:
+        case content::ResourceType::kStylesheet:
+        case content::ResourceType::kImage:
+        case content::ResourceType::kFontResource:
+        case content::ResourceType::kFavicon:
           break;
         default:
           resource_types_to_check_.insert(t);
@@ -139,7 +139,7 @@ RemoteSafeBrowsingDatabaseManager::RemoteSafeBrowsingDatabaseManager() {
              ints_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
       int i;
       if (base::StringToInt(val_str, &i) && i >= 0 &&
-          i < content::RESOURCE_TYPE_LAST_TYPE) {
+          i <= static_cast<int>(content::ResourceType::kMaxValue)) {
         resource_types_to_check_.insert(static_cast<content::ResourceType>(i));
       }
     }
@@ -234,6 +234,21 @@ bool RemoteSafeBrowsingDatabaseManager::CheckResourceUrl(const GURL& url,
   return true;
 }
 
+AsyncMatch
+RemoteSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+    const GURL& url,
+    Client* client) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!enabled_ || !CanCheckUrl(url))
+    return AsyncMatch::NO_MATCH;
+
+  // TODO(crbug.com/1014202): Make this call async.
+  SafeBrowsingApiHandler* api_handler = SafeBrowsingApiHandler::GetInstance();
+  bool is_match = api_handler->StartHighConfidenceAllowlistCheck(url);
+  return is_match ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH;
+}
+
 bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
     const GURL& url,
     Client* client) {
@@ -267,8 +282,17 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
 AsyncMatch RemoteSafeBrowsingDatabaseManager::CheckCsdWhitelistUrl(
     const GURL& url,
     Client* client) {
-  NOTREACHED();
-  return AsyncMatch::MATCH;
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  // If this URL's scheme isn't supported, call is safe.
+  if (!CanCheckUrl(url)) {
+    return AsyncMatch::MATCH;
+  }
+
+  // TODO(crbug.com/995926): Make this call async
+  SafeBrowsingApiHandler* api_handler = SafeBrowsingApiHandler::GetInstance();
+  bool is_match = api_handler->StartCSDAllowlistCheck(url);
+  return is_match ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH;
 }
 
 bool RemoteSafeBrowsingDatabaseManager::MatchDownloadWhitelistString(
@@ -295,6 +319,11 @@ safe_browsing::ThreatSource RemoteSafeBrowsingDatabaseManager::GetThreatSource()
 }
 
 std::string RemoteSafeBrowsingDatabaseManager::GetSafetyNetId() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(IsSupported());
+  if (!enabled_)
+    return std::string();
+
   SafeBrowsingApiHandler* api_handler = SafeBrowsingApiHandler::GetInstance();
   DCHECK(api_handler) << "SafeBrowsingApiHandler was never constructed";
   return api_handler->GetSafetyNetId();
@@ -313,6 +342,10 @@ void RemoteSafeBrowsingDatabaseManager::StartOnIOThread(
     const V4ProtocolConfig& config) {
   VLOG(1) << "RemoteSafeBrowsingDatabaseManager starting";
   SafeBrowsingDatabaseManager::StartOnIOThread(url_loader_factory, config);
+
+  rt_url_lookup_service_ =
+      std::make_unique<RealTimeUrlLookupService>(url_loader_factory);
+
   enabled_ = true;
 }
 
@@ -329,6 +362,8 @@ void RemoteSafeBrowsingDatabaseManager::StopOnIOThread(bool shutdown) {
     req->OnRequestDone(SB_THREAT_TYPE_SAFE, ThreatMetadata());
   }
   enabled_ = false;
+
+  rt_url_lookup_service_.reset();
 
   SafeBrowsingDatabaseManager::StopOnIOThread(shutdown);
 }

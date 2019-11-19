@@ -134,7 +134,8 @@ cr.define('mobile', function() {
       if (this.portalFrameSet_)
         return;
 
-      mobile.util.postDeviceDataToWebview($('portalFrame'), deviceInfo);
+      webviewPost.util.postDeviceDataToWebview(
+          $('portalFrame'), deviceInfo.payment_url, deviceInfo.post_data);
 
       this.portalFrameSet_ = true;
     },

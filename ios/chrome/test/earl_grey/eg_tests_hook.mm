@@ -18,10 +18,6 @@ bool DisableContentSuggestions() {
   return true;
 }
 
-bool DisableContextualSearch() {
-  return true;
-}
-
 bool DisableFirstRun() {
   return true;
 }

@@ -1,5 +1,6 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
 <link rel="import" href="../settings_shared_css.html">
 
@@ -11,9 +12,9 @@
       <div slot="title">$i18n{historyDeletionDialogTitle}</div>
       <div slot="body">$i18nRaw{historyDeletionDialogBody}</div>
       <div slot="button-container">
-        <paper-button class="action-button" on-click="onOkTap_">
+        <cr-button class="action-button" on-click="onOkTap_">
           $i18n{historyDeletionDialogOK}
-        </paper-button>
+        </cr-button>
       </div>
     </cr-dialog>
   </template>

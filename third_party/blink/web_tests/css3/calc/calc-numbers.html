@@ -11,8 +11,9 @@
     opacity: calc(2 / 4);
 }
 .float-to-rounded-int {
-    tab-size: 12345;
-    tab-size: calc(2 / 4);
+    position: absolute;
+    z-index: 12345;
+    z-index: calc(2 / 4);
 }
 .px-invalid {
     opacity: 0.9;
@@ -49,7 +50,7 @@ function getComputedValue(selector, property) {
 shouldBe('getComputedValue(".int", "tabSize")', '"8"');
 shouldBe('getComputedValue(".int-non-neg-invalid", "tabSize")', '"12345"');
 shouldBeCloseTo('Number(getComputedValue(".float", "opacity"))', 0.5, .0001);
-shouldBe('getComputedValue(".float-to-rounded-int", "tabSize")', '"1"');
+shouldBe('getComputedValue(".float-to-rounded-int", "zIndex")', '"1"');
 shouldBeCloseTo('Number(getComputedValue(".px-invalid", "opacity"))', 0.9, .0001);
 shouldBe('getComputedValue(".num-length-invalid", "tabSize")', '"12345"');
 shouldBe('getComputedValue(".px-valid", "tabSize")', '"10px"');

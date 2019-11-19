@@ -8,7 +8,6 @@
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/non_accessible_view.h"
-#include "ash/public/interfaces/login_user_info.mojom.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -47,13 +46,13 @@ class ASH_EXPORT LoginPublicAccountUserView : public NonAccessibleView,
     OnPublicAccountTapped on_public_account_tapped;
   };
 
-  LoginPublicAccountUserView(const mojom::LoginUserInfoPtr& user,
+  LoginPublicAccountUserView(const LoginUserInfo& user,
                              const Callbacks& callbacks);
   ~LoginPublicAccountUserView() override;
 
   void SetAuthEnabled(bool enabled, bool animate);
-  void UpdateForUser(const mojom::LoginUserInfoPtr& user);
-  const mojom::LoginUserInfoPtr& current_user() const;
+  void UpdateForUser(const LoginUserInfo& user);
+  const LoginUserInfo& current_user() const;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

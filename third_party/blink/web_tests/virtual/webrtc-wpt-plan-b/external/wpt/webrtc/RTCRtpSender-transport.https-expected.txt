@@ -2,7 +2,10 @@ This is a testharness.js-based test.
 PASS RTCRtpSender.transport is null when unconnected
 FAIL RTCRtpSender/receiver.transport has a value when connected assert_not_equals: got disallowed value null
 FAIL RTCRtpSender/receiver.transport at the right time, with bundle policy balanced assert_not_equals: got disallowed value null
+FAIL RTCRtpSender/receiver/SCTP transport at the right time, with bundle policy balanced assert_not_equals: got disallowed value null
 FAIL RTCRtpSender/receiver.transport at the right time, with bundle policy max-bundle assert_not_equals: got disallowed value null
+FAIL RTCRtpSender/receiver/SCTP transport at the right time, with bundle policy max-bundle assert_not_equals: got disallowed value null
 FAIL RTCRtpSender/receiver.transport at the right time, with bundle policy max-compat assert_not_equals: got disallowed value null
+FAIL RTCRtpSender/receiver/SCTP transport at the right time, with bundle policy max-compat assert_not_equals: got disallowed value null
 Harness: the test ran to completion.
 

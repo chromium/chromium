@@ -3,6 +3,9 @@
 <script>
 function log(s) {
     document.getElementById("console").appendChild(document.createTextNode(s + "\n"));
+    if (window.parent == window.top) {
+        window.parent.postMessage(s, '*');
+    }
 }
 
 window.onload = function () {

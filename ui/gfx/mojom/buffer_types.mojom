@@ -1,0 +1,116 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module gfx.mojom;
+
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// gfx::BufferFormat
+enum BufferFormat {
+  R_8,
+  R_16,
+  RG_88,
+  BGR_565,
+  RGBA_4444,
+  RGBX_8888,
+  RGBA_8888,
+  BGRX_8888,
+  BGRX_1010102,
+  RGBX_1010102,
+  BGRA_8888,
+  RGBA_F16,
+  YVU_420,
+  YUV_420_BIPLANAR,
+  P010,
+};
+
+// gfx::BufferUsage
+enum BufferUsage {
+  GPU_READ,
+  SCANOUT,
+  SCANOUT_CAMERA_READ_WRITE,
+  CAMERA_AND_CPU_READ_WRITE,
+  SCANOUT_CPU_READ_WRITE,
+  SCANOUT_VDA_WRITE,
+  GPU_READ_CPU_READ_WRITE,
+  SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE,
+};
+
+struct BufferUsageAndFormat {
+  BufferUsage usage;
+  BufferFormat format;
+};
+
+// gfx::GpuMemoryBufferId
+struct GpuMemoryBufferId {
+  int32 id;
+};
+
+// gfx::NativePixmapPlane
+[EnableIf=supports_native_pixmap]
+struct NativePixmapPlane {
+  uint32 stride;
+  uint64 offset;
+  uint64 size;
+
+  // A platform-specific handle the underlying memory object.
+  handle buffer_handle;
+};
+
+// gfx::NativePixmapHandle
+[EnableIf=supports_native_pixmap]
+struct NativePixmapHandle {
+  array<NativePixmapPlane> planes;
+
+  [EnableIf=is_linux]
+  uint64 modifier;
+  [EnableIf=is_chromeos]
+  uint64 modifier;
+
+  [EnableIf=is_fuchsia]
+  mojo_base.mojom.UnguessableToken? buffer_collection_id;
+  [EnableIf=is_fuchsia]
+  uint32 buffer_index;
+  [EnableIf=is_fuchsia]
+  bool ram_coherency;
+};
+
+[EnableIf=is_android]
+struct AHardwareBufferHandle {
+  // The actual file descriptor used to wrap the AHardwareBuffer object for
+  // serialization.
+  handle buffer_handle;
+
+  // A message pipe handle which tracks the lifetime of this
+  // AHardwareBufferHandle. The sender may use this to observe the lifetime
+  // remotely by watching the other end of this pipe. Useful for retaining a
+  // sender-side AHB ref until the receiver deserializes the AHB and acquires its
+  // own ref.
+  handle<message_pipe> tracking_pipe;
+};
+
+union GpuMemoryBufferPlatformHandle {
+  mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory_handle;
+
+  [EnableIf=supports_native_pixmap]
+  NativePixmapHandle native_pixmap_handle;
+
+  [EnableIf=is_mac]
+  handle mach_port;
+
+  [EnableIf=is_win]
+  handle dxgi_handle;
+
+  [EnableIf=is_android]
+  AHardwareBufferHandle android_hardware_buffer_handle;
+};
+
+// gfx::GpuMemoryBufferHandle
+struct GpuMemoryBufferHandle {
+  GpuMemoryBufferId id;
+  uint32 offset;
+  uint32 stride;
+  GpuMemoryBufferPlatformHandle? platform_handle;
+};

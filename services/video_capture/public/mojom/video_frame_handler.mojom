@@ -1,0 +1,55 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module video_capture.mojom;
+
+import "media/capture/mojom/video_capture_types.mojom";
+import "services/video_capture/public/mojom/scoped_access_permission.mojom";
+
+// Callback interface for receiving data and messages from a
+// video_capture.mojom.Device or
+// video_capture.mojom.PushVideoStreamSubscription.
+interface VideoFrameHandler {
+  // Indicates that the producer is going to subsequently use the provided
+  // buffer as one of possibly many for frame delivery via
+  // OnFrameReadyInBuffer(). Note, that a call to this method does not mean that
+  // the caller allows the handler to read from or write to the buffer just yet.
+  // Temporary permission to read will be given with subsequent calls to
+  // OnFrameReadyInBuffer().
+  OnNewBuffer(int32 buffer_id, media.mojom.VideoBufferHandle buffer_handle);
+
+  // Indicates that a new frame is ready for consumption in the buffer with id
+  // |buffer_id| and allows it to read the data from the buffer. The producer
+  // guarantees that the buffer and its contents stay alive and unchanged until
+  // VideoFrameHandler releases the given |access_permission|.
+  OnFrameReadyInBuffer(int32 buffer_id, int32 frame_feedback_id,
+                       pending_remote<ScopedAccessPermission> access_permission,
+                       media.mojom.VideoFrameInfo frame_info);
+
+  // Indicates that the producer is no longer going to use the buffer with id
+  // |buffer_id| for frame delivery. This may be called even while the handler
+  // is still holding |access_permission| from a call to OnFrameReadInBuffer()
+  // for the same buffer. In that case, it means that the caller is asking the
+  // VideoFrameHaVideoFrameReceiverndler to release the read permission and
+  // buffer handle at its earliest convenience. After this call, a producer may
+  // immediately reuse the retired |buffer_id| with a new buffer via a call to
+  // OnNewBuffer().
+  OnBufferRetired(int32 buffer_id);
+
+  // Indicates that an error occurred on the producer side.
+  OnError(media.mojom.VideoCaptureError error);
+
+  OnFrameDropped(media.mojom.VideoCaptureFrameDropReason reason);
+  OnLog(string message);
+
+  // Indicates that the producer side has started successfully. The producer
+  // guarantees that this is called before any call to OnFrameReadyInBuffer().
+  OnStarted();
+
+  OnStartedUsingGpuDecode();
+
+  // Indicates that the producer side has stopped and is not going to make any
+  // further calls to this VideoFrameHandler.
+  OnStopped();
+};

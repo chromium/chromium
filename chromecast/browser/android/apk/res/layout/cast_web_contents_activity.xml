@@ -5,11 +5,14 @@
      found in the LICENSE file.
  -->
 
+<!-- TODO(ziyangch): Declare web_contents_container as the layout for CastWebContentsActivity/Fragment in the AndroidManifest -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/web_contents_container"
     android:background="#FFFFFF"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_weight="1">
+    android:layout_weight="1"
+    tools:ignore="UnusedResources">
 </FrameLayout>
 

@@ -96,7 +96,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   collectionView.delegate = self;
   collectionView.backgroundView = [[UIView alloc] init];
   collectionView.backgroundView.backgroundColor =
-      UIColorFromRGB(kGridBackgroundColor);
+      [UIColor colorNamed:kGridBackgroundColor];
   // CollectionView, in contrast to TableView, doesn’t inset the
   // cell content to the safe area guide by default. We will just manage the
   // collectionView contentInset manually to fit in the safe area instead.
@@ -389,6 +389,15 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)removeItemWithID:(NSString*)removedItemID
           selectedItemID:(NSString*)selectedItemID {
+  // Disable the reordering recognizer to cancel any in-flight reordering.  The
+  // DCHECK below ensures that the gesture is re-enabled after being cancelled
+  // in |-handleItemReorderingWithGesture:|.
+  if (self.itemReorderRecognizer.state != UIGestureRecognizerStatePossible &&
+      self.itemReorderRecognizer.state != UIGestureRecognizerStateCancelled) {
+    self.itemReorderRecognizer.enabled = NO;
+    DCHECK(self.itemReorderRecognizer.enabled);
+  }
+
   NSUInteger index = [self indexOfItemWithID:removedItemID];
   auto modelUpdates = ^{
     [self.items removeObjectAtIndex:index];

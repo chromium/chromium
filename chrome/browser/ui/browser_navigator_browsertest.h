@@ -36,7 +36,8 @@ class BrowserNavigatorTest : public InProcessBrowserTest,
       bool initialize_renderer);
 
   void RunSuppressTest(WindowOpenDisposition disposition);
-  void RunUseNonIncognitoWindowTest(const GURL& url);
+  void RunUseNonIncognitoWindowTest(const GURL& url,
+                                    const ui::PageTransition& page_transition);
   void RunDoNothingIfIncognitoIsForcedTest(const GURL& url);
 
   // content::NotificationObserver:

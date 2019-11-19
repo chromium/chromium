@@ -63,8 +63,7 @@ LoadablePluginPlaceholder::LoadablePluginPlaceholder(
       power_saver_enabled_(false),
       premade_throttler_(nullptr),
       allow_loading_(false),
-      finished_loading_(false),
-      weak_factory_(this) {}
+      finished_loading_(false) {}
 
 LoadablePluginPlaceholder::~LoadablePluginPlaceholder() {
 }

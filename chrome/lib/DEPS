@@ -1,0 +1,16 @@
+noparent = True
+
+include_rules = [
+  "+base/android",
+
+  "-content/public/android",
+  "+content/public/android/java/src/org/chromium/content_public",
+
+  # Targets under chrome/lib should generally be independent from browser code.
+  "-chrome/android",
+  "-chrome/browser",
+
+  # Each directory should only cross-depend on public dirs.
+  # e.g. +chrome/lib/<name>/public for each feature they depend on.
+  "-chrome/lib",
+]

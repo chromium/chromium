@@ -7,9 +7,10 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/location.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
@@ -39,14 +40,13 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
                                HttpRequestHeaders* headers) override {
     return OK;
   }
-  void OnStartTransaction(URLRequest* request,
-                          const HttpRequestHeaders& headers) override {}
   int OnHeadersReceived(
       URLRequest* request,
       CompletionOnceCallback callback,
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
-      GURL* allowed_unsafe_redirect_url) override {
+      const net::IPEndPoint& endpoint,
+      base::Optional<GURL>* preserve_fragment_on_redirect_url) override {
     return OK;
   }
   void OnBeforeRedirect(URLRequest* request,
@@ -57,12 +57,6 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
 
   void OnPACScriptError(int line_number, const base::string16& error) override {
     got_pac_error_ = true;
-  }
-  AuthRequiredResponse OnAuthRequired(URLRequest* request,
-                                      const AuthChallengeInfo& auth_info,
-                                      AuthCallback callback,
-                                      AuthCredentials* credentials) override {
-    return AUTH_REQUIRED_RESPONSE_NO_ACTION;
   }
   bool OnCanGetCookies(const URLRequest& request,
                        const CookieList& cookie_list,
@@ -75,11 +69,6 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
                       bool allowed_from_caller) override {
     return allowed_from_caller;
   }
-  bool OnCanAccessFile(const URLRequest& request,
-                       const base::FilePath& original_path,
-                       const base::FilePath& absolute_path) const override {
-    return true;
-  }
 
   bool got_pac_error_;
 };
@@ -87,7 +76,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
 // Check that the OnPACScriptError method can be called from an arbitrary
 // thread.
 TEST(NetworkDelegateErrorObserverTest, CallOnThread) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   base::Thread thread("test_thread");
   thread.Start();
   TestNetworkDelegate network_delegate;
@@ -104,11 +93,11 @@ TEST(NetworkDelegateErrorObserverTest, CallOnThread) {
 
 // Check that passing a NULL network delegate works.
 TEST(NetworkDelegateErrorObserverTest, NoDelegate) {
-  base::test::ScopedTaskEnvironment scoped_task_environment;
+  base::test::TaskEnvironment task_environment;
   base::Thread thread("test_thread");
   thread.Start();
   NetworkDelegateErrorObserver observer(
-      NULL, base::ThreadTaskRunnerHandle::Get().get());
+      nullptr, base::ThreadTaskRunnerHandle::Get().get());
   thread.task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&NetworkDelegateErrorObserver::OnPACScriptError,

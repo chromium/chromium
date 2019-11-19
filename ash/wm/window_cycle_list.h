@@ -15,13 +15,11 @@
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display_observer.h"
+#include "ui/display/screen.h"
 
 namespace aura {
 class Window;
-}
-
-namespace display {
-class Screen;
+class ScopedWindowTargeter;
 }
 
 namespace views {
@@ -77,6 +75,10 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // Initializes and shows |cycle_view_|.
   void InitWindowCycleView();
 
+  // Selects a window, which either activates it or expands it in the case of
+  // PIP.
+  void SelectWindow(aura::Window* window);
+
   // List of weak pointers to windows to use while cycling with the keyboard.
   // List is built when the user initiates the gesture (i.e. hits alt-tab the
   // first time) and is emptied when the gesture is complete (i.e. releases the
@@ -91,6 +93,9 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // interrupting the interaction).
   bool user_did_accept_ = false;
 
+  // True if one of the windows in the list has already been selected.
+  bool window_selected_ = false;
+
   // The top level View for the window cycle UI. May be null if the UI is not
   // showing.
   WindowCycleView* cycle_view_ = nullptr;
@@ -99,10 +104,15 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   views::Widget* cycle_ui_widget_ = nullptr;
 
   // The window list will dismiss if the display metrics change.
-  ScopedObserver<display::Screen, display::DisplayObserver> screen_observer_;
+  ScopedObserver<display::Screen, display::DisplayObserver> screen_observer_{
+      this};
 
   // A timer to delay showing the UI. Quick Alt+Tab should not flash a UI.
   base::OneShotTimer show_ui_timer_;
+
+  // This is needed so that it won't leak keyboard events even if the widget is
+  // not activatable.
+  std::unique_ptr<aura::ScopedWindowTargeter> window_targeter_;
 
   DISALLOW_COPY_AND_ASSIGN(WindowCycleList);
 };

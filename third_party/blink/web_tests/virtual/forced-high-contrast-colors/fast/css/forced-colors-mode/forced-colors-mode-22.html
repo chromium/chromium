@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Forced colors mode - video control.
+  Ensures that the video control is usable in forced colors mode.
+</title>
+<link rel="help" href="https://www.w3.org/TR/css-color-adjust-1/#forced-colors-properties">
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="../../../../../media/media-controls.js"></script>
+<video controls loop></video>
+<script>
+  async_test(function(t) {
+    var video = document.querySelector("video");
+    assert_true(video.controls);
+
+    video.oncanplaythrough = t.step_func_done(function() {
+      var playCoords = elementCoordinates(enabledPlayButton(video));
+      clickAtCoordinates(playCoords[0], playCoords[1]);
+      assert_false(video.paused);
+    });
+
+    video.src = "../../../../../media/content/test.ogv";
+  });
+</script>

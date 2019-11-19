@@ -38,10 +38,13 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
                                const gpu::SyncToken& sync_token) override;
 
  private:
+  // This class is called by multiple threads at the same time. Hold this lock
+  // for the duration of all member functions, to ensure consistency.
+  // https://crbug.com/690588, https://crbug.com/859020
+  base::Lock lock_;
+
   // Buffers allocated by this manager.
   int last_gpu_memory_buffer_id_ = 1000;
-  // Use of |buffers_| must be protected by the lock.
-  base::Lock buffers_lock_;
   std::map<int, gfx::GpuMemoryBuffer*> buffers_;
 
   // Parent information for child managers.

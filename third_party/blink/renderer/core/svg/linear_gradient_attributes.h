@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/svg/gradient_attributes.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
@@ -31,10 +32,10 @@ struct LinearGradientAttributes : GradientAttributes {
 
  public:
   LinearGradientAttributes()
-      : x1_(SVGLength::Create(SVGLengthMode::kWidth)),
-        y1_(SVGLength::Create(SVGLengthMode::kHeight)),
-        x2_(SVGLength::Create(SVGLengthMode::kWidth)),
-        y2_(SVGLength::Create(SVGLengthMode::kHeight)),
+      : x1_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kWidth)),
+        y1_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kHeight)),
+        x2_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kWidth)),
+        y2_(MakeGarbageCollected<SVGLength>(SVGLengthMode::kHeight)),
         x1_set_(false),
         y1_set_(false),
         x2_set_(false),
@@ -91,13 +92,9 @@ struct LinearGradientAttributes : GradientAttributes {
 };
 
 // Wrapper object for the LinearGradientAttributes part object.
-class LinearGradientAttributesWrapper
-    : public GarbageCollectedFinalized<LinearGradientAttributesWrapper> {
+class LinearGradientAttributesWrapper final
+    : public GarbageCollected<LinearGradientAttributesWrapper> {
  public:
-  static LinearGradientAttributesWrapper* Create() {
-    return MakeGarbageCollected<LinearGradientAttributesWrapper>();
-  }
-
   LinearGradientAttributesWrapper() = default;
 
   LinearGradientAttributes& Attributes() { return attributes_; }

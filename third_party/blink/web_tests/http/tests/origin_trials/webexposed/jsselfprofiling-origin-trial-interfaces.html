@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate this token with the command:
+generate_token.py http://127.0.0.1:8000 ExperimentalJSProfiler --expire-timestamp=2000000000
+-- -->
+
+<meta http-equiv="origin-trial" content="AjfjLAG2ob7vRGForWYa9wTsLhhxfIR4iYHWmv4NRkUC/64+gtKIdKbDE/AUb4y4W/RfCMx0ULvFrYQbuDk1CwcAAABeeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRXhwZXJpbWVudGFsSlNQcm9maWxlciIsICJleHBpcnkiOiAyMDAwMDAwMDAwfQ=="/>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/origin-trials-helper.js"></script>
+
+<script>
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this,
+      {
+        'Performance': ['profile'],
+      },
+  );
+}, "JS Self-Profiling API exposed in Origin-Trial enabled document.");
+</script>

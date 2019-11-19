@@ -2,7 +2,4 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-typemaps = [
-  "//services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.typemap",
-  "//services/resource_coordinator/public/cpp/coordination_unit.typemap",
-]
+typemaps = [ "//services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.typemap" ]

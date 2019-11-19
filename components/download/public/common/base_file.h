@@ -18,13 +18,17 @@
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
+#include "components/services/quarantine/public/mojom/quarantine.mojom.h"
 #include "crypto/secure_hash.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "url/gurl.h"
 
@@ -114,6 +118,10 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
                                           const char* data,
                                           size_t data_len);
 
+  // Validates that the content starting from |offset| matches that of |data|
+  // with the given length.
+  bool ValidateDataInFile(int64_t offset, const char* data, size_t data_len);
+
   // Rename the download file. Returns a DownloadInterruptReason indicating the
   // result of the operation. A return code of NONE indicates that the rename
   // was successful. After a failure, the full_path() and in_progress() can be
@@ -148,10 +156,27 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
   //     that originated this download. Will be used to annotate source
   //     information and also to determine the relative danger level of the
   //     file.
-  DownloadInterruptReason AnnotateWithSourceInformation(
+  DownloadInterruptReason AnnotateWithSourceInformationSync(
       const std::string& client_guid,
       const GURL& source_url,
       const GURL& referrer_url);
+
+  // Callback used with AnnotateWithSourceInformation.
+  // Created by DownloadFileImpl::RenameWithRetryInternal
+  // to bind DownloadFileImpl::OnRenameComplete.
+  using OnAnnotationDoneCallback =
+      base::OnceCallback<void(DownloadInterruptReason)>;
+
+  // Called when a quarantine service is used.
+  // and the callback will be called from the service.
+  // TODO (crbug.com/973497): Remove non-service version when
+  // kPreventDownloadsWithSamePath feature is removed.
+  void AnnotateWithSourceInformation(
+      const std::string& client_guid,
+      const GURL& source_url,
+      const GURL& referrer_url,
+      mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
+      OnAnnotationDoneCallback on_annotation_done_callback);
 
 #if defined(OS_ANDROID)
   // Publishes the intermediate download to public download collection.
@@ -240,6 +265,15 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
                                              int os_error,
                                              DownloadInterruptReason reason);
 
+  // Callback invoked when quarantine service has an error.
+  void OnQuarantineServiceError(const GURL& source_url,
+                                const GURL& referrer_url);
+
+  // Callback invoked by quarantine service. Also called by
+  // OnQuarantineServiceError after manually applying mark-of-the-web.
+  void OnFileQuarantined(bool connection_error,
+                         quarantine::mojom::QuarantineFileResult result);
+
   // Full path to the file including the file name.
   base::FilePath full_path_;
 
@@ -267,7 +301,15 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
   // ID of the download, used for trace events.
   uint32_t download_id_;
 
+  // Mojo remote for quarantine service.
+  mojo::Remote<quarantine::mojom::Quarantine> quarantine_service_;
+
+  // Callback invoked after quarantine service finishes.
+  OnAnnotationDoneCallback on_annotation_done_callback_;
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<BaseFile> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BaseFile);
 };

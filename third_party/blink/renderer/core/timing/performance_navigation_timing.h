@@ -33,7 +33,7 @@ class CORE_EXPORT PerformanceNavigationTiming final
  public:
   PerformanceNavigationTiming(LocalFrame*,
                               ResourceTimingInfo*,
-                              TimeTicks time_origin,
+                              base::TimeTicks time_origin,
                               const WebVector<WebServerTimingInfo>&);
 
   // Attributes inheritted from PerformanceEntry.
@@ -78,9 +78,9 @@ class CORE_EXPORT PerformanceNavigationTiming final
   ResourceLoadTiming* GetResourceLoadTiming() const override;
   bool AllowTimingDetails() const override;
   bool DidReuseConnection() const override;
-  unsigned long long GetTransferSize() const override;
-  unsigned long long GetEncodedBodySize() const override;
-  unsigned long long GetDecodedBodySize() const override;
+  uint64_t GetTransferSize() const override;
+  uint64_t GetEncodedBodySize() const override;
+  uint64_t GetDecodedBodySize() const override;
 
   bool GetAllowRedirectDetails() const;
 

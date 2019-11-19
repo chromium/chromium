@@ -34,6 +34,9 @@ class ProtocolHandler {
   // define a ProtocolHandler.
   static bool IsValidDict(const base::DictionaryValue* value);
 
+  // Return true if the protocol handler meets security constraints.
+  bool IsValid() const;
+
   // Returns true if this handler's url has the same origin as the given one.
   bool IsSameOrigin(const ProtocolHandler& handler) const;
 

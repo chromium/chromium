@@ -5,18 +5,18 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_CACHE_STORAGE_CACHE_STORAGE_UTILS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_CACHE_STORAGE_CACHE_STORAGE_UTILS_H_
 
+#include <cstdint>
+
 #include "third_party/blink/public/common/common_export.h"
 
 namespace blink {
 namespace cache_storage {
 
-// Define the base message used when a batch operation, like addAll(),
-// has duplicate requests in its argument list.  This is populated by
-// content on the browser side.  The blink code in the renderer looks
-// for the message to record a UseCounter event.
-// TODO(crbug.com/877737): Remove this once the cache.addAll()
-// duplicate rejection finally ships.
-BLINK_COMMON_EXPORT extern const char kDuplicateOperationBaseMessage[];
+// Create a trace ID for a cache_storage operation.  The ID value is
+// guaranteed to be globally unique across all processes and threads.
+// It can be used to trace across process boundaries.  When passing to
+// a TRACE_EVENT* macro it should be wrapped in TRACE_ID_GLOBAL().
+BLINK_COMMON_EXPORT int64_t CreateTraceId();
 
 }  // namespace cache_storage
 }  // namespace blink

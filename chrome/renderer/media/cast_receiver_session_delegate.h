@@ -39,12 +39,12 @@ class CastReceiverSessionDelegate : public CastSessionDelegateBase {
 
  private:
   void OnDecodedAudioFrame(std::unique_ptr<media::AudioBus> audio_bus,
-                           const base::TimeTicks& playout_time,
-                           bool is_continous);
+                           base::TimeTicks playout_time,
+                           bool is_continuous);
 
-  void OnDecodedVideoFrame(const scoped_refptr<media::VideoFrame>& video_frame,
-                           const base::TimeTicks& playout_time,
-                           bool is_continous);
+  void OnDecodedVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
+                           base::TimeTicks playout_time,
+                           bool is_continuous);
 
   scoped_refptr<CastReceiverAudioValve> audio_valve_;
   blink::VideoCaptureDeliverFrameCB frame_callback_;
@@ -52,7 +52,7 @@ class CastReceiverSessionDelegate : public CastSessionDelegateBase {
   media::cast::VideoFrameDecodedCallback on_video_decoded_cb_;
   std::unique_ptr<media::cast::CastReceiver> cast_receiver_;
   media::VideoCaptureFormat format_;
-  base::WeakPtrFactory<CastReceiverSessionDelegate> weak_factory_;
+  base::WeakPtrFactory<CastReceiverSessionDelegate> weak_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(CastReceiverSessionDelegate);
 };
 

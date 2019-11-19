@@ -15,6 +15,7 @@
 #include "google_apis/drive/base_requests.h"
 #include "google_apis/drive/drive_api_requests.h"
 #include "google_apis/drive/drive_common_callbacks.h"
+#include "google_apis/gaia/core_account_id.h"
 
 namespace base {
 class Time;
@@ -163,7 +164,7 @@ class DriveServiceInterface : public DriveServiceBatchOperationsInterface {
   // Common service:
 
   // Initializes the documents service with |account_id|.
-  virtual void Initialize(const std::string& account_id) = 0;
+  virtual void Initialize(const CoreAccountId& account_id) = 0;
 
   // Adds an observer.
   virtual void AddObserver(DriveServiceObserver* observer) = 0;

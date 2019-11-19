@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/page_image_annotation/core/page_annotator.h"
+
 #include "base/bind.h"
 
 namespace page_image_annotation {
@@ -11,8 +12,8 @@ namespace ia_mojom = image_annotation::mojom;
 
 PageAnnotator::Observer::~Observer() {}
 
-PageAnnotator::PageAnnotator(ia_mojom::AnnotatorPtr annotator_ptr)
-    : annotator_ptr_(std::move(annotator_ptr)) {}
+PageAnnotator::PageAnnotator(mojo::PendingRemote<ia_mojom::Annotator> annotator)
+    : annotator_(std::move(annotator)) {}
 
 PageAnnotator::~PageAnnotator() {}
 
@@ -57,8 +58,11 @@ void PageAnnotator::AnnotateImage(Observer* const observer,
   if (lookup == images_.end())
     return;
 
-  annotator_ptr_->AnnotateImage(
-      lookup->second.first.source_id, lookup->second.second.GetPtr(),
+  // TODO(crbug.com/916363): get a user's preferred language and pass it here.
+  annotator_->AnnotateImage(
+      lookup->second.first.source_id,
+      std::string() /* description_language_tag */,
+      lookup->second.second.GetPendingRemote(),
       base::BindOnce(&PageAnnotator::NotifyObserver, base::Unretained(this),
                      observer, node_id));
 }

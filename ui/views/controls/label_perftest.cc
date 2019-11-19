@@ -5,8 +5,8 @@
 #include "ui/views/controls/label.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "cc/base/lap_timer.h"
-#include "testing/perf/perf_test.h"
+#include "base/timer/lap_timer.h"
+#include "testing/perf/perf_result_reporter.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace views {
@@ -28,14 +28,15 @@ TEST_F(LabelPerfTest, GetPreferredSize) {
 
   // The time limit is unused. Use kLaps for the check interval so the time is
   // only measured once.
-  cc::LapTimer timer(kWarmupLaps, base::TimeDelta(), kLaps);
+  base::LapTimer timer(kWarmupLaps, base::TimeDelta(), kLaps);
   for (int i = 0; i < kLaps + kWarmupLaps; ++i) {
     label.SetText(i % 2 == 0 ? string1 : string2);
     label.GetPreferredSize();
     timer.NextLap();
   }
-  perf_test::PrintResult("LabelPerfTest", std::string(), "GetPreferredSize",
-                         timer.LapsPerSecond(), "runs/s", true);
+  perf_test::PerfResultReporter reporter("LabelPerfTest", "GetPreferredSize");
+  reporter.RegisterImportantMetric("", "runs/s");
+  reporter.AddResult("", timer.LapsPerSecond());
 }
 
 }  // namespace views

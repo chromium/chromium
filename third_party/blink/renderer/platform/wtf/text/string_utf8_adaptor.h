@@ -32,50 +32,34 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_UTF8_ADAPTOR_H_
 
 #include "base/strings/string_piece.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {
 
 // This class lets you get UTF-8 data out of a String without mallocing a
 // separate buffer to hold the data if the String happens to be 8 bit and
 // contain only ASCII characters.
-class StringUTF8Adaptor final {
+class WTF_EXPORT StringUTF8Adaptor final {
   DISALLOW_NEW();
 
  public:
   StringUTF8Adaptor(const String& string,
-                    UTF8ConversionMode mode = kLenientUTF8Conversion)
-      : data_(nullptr), length_(0) {
-    if (string.IsEmpty())
-      return;
-    // Unfortunately, 8 bit WTFStrings are encoded in Latin-1 and GURL uses
-    // UTF-8 when processing 8 bit strings. If |relative| is entirely ASCII, we
-    // luck out and can avoid mallocing a new buffer to hold the UTF-8 data
-    // because UTF-8 and Latin-1 use the same code units for ASCII code points.
-    if (string.Is8Bit() && string.ContainsOnlyASCIIOrEmpty()) {
-      data_ = reinterpret_cast<const char*>(string.Characters8());
-      length_ = string.length();
-    } else {
-      utf8_buffer_ = string.Utf8(mode);
-      data_ = utf8_buffer_.data();
-      length_ = utf8_buffer_.length();
-    }
-  }
+                    UTF8ConversionMode mode = kLenientUTF8Conversion);
+  ~StringUTF8Adaptor();
 
-  const char* Data() const { return data_; }
-  wtf_size_t length() const { return length_; }
+  const char* data() const { return data_; }
+  wtf_size_t size() const { return size_; }
 
   base::StringPiece AsStringPiece() const {
-    return base::StringPiece(data_, length_);
+    return base::StringPiece(data_, size_);
   }
 
  private:
-  CString utf8_buffer_;
-  const char* data_;
-  wtf_size_t length_;
+  std::string utf8_buffer_;
+  const char* data_ = nullptr;
+  wtf_size_t size_ = 0;
 };
 
 }  // namespace WTF

@@ -1,0 +1,38 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+
+js_type_check("closure_compile") {
+  deps = [
+    ":cr_tabs",
+  ]
+}
+
+js_library("cr_tabs") {
+}
+
+polymer_modulizer("cr_tabs") {
+  js_file = "cr_tabs.js"
+  html_file = "cr_tabs.html"
+  html_type = "dom-module"
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":cr_tabs.m",
+  ]
+}
+
+js_library("cr_tabs.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/cr_tabs/cr_tabs.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":cr_tabs_module" ]
+}

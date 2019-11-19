@@ -72,7 +72,7 @@ Status VaapiH264Accelerator::SubmitFrameMetadata(
     const H264Picture::Vector& ref_pic_listp0,
     const H264Picture::Vector& ref_pic_listb0,
     const H264Picture::Vector& ref_pic_listb1,
-    const scoped_refptr<H264Picture>& pic) {
+    scoped_refptr<H264Picture> pic) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VAPictureParameterBufferH264 pic_param;
   memset(&pic_param, 0, sizeof(pic_param));
@@ -131,7 +131,7 @@ Status VaapiH264Accelerator::SubmitFrameMetadata(
   pic_param.frame_num = pic->frame_num;
 
   InitVAPicture(&pic_param.CurrPic);
-  FillVAPicture(&pic_param.CurrPic, pic);
+  FillVAPicture(&pic_param.CurrPic, std::move(pic));
 
   // Init reference pictures' array.
   for (int i = 0; i < 16; ++i)
@@ -185,7 +185,7 @@ Status VaapiH264Accelerator::SubmitSlice(
     const H264SliceHeader* slice_hdr,
     const H264Picture::Vector& ref_pic_list0,
     const H264Picture::Vector& ref_pic_list1,
-    const scoped_refptr<H264Picture>& pic,
+    scoped_refptr<H264Picture> pic,
     const uint8_t* data,
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
@@ -286,8 +286,7 @@ Status VaapiH264Accelerator::SubmitSlice(
              : Status::kFail;
 }
 
-Status VaapiH264Accelerator::SubmitDecode(
-    const scoped_refptr<H264Picture>& pic) {
+Status VaapiH264Accelerator::SubmitDecode(scoped_refptr<H264Picture> pic) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
@@ -295,8 +294,7 @@ Status VaapiH264Accelerator::SubmitDecode(
   return success ? Status::kOk : Status::kFail;
 }
 
-bool VaapiH264Accelerator::OutputPicture(
-    const scoped_refptr<H264Picture>& pic) {
+bool VaapiH264Accelerator::OutputPicture(scoped_refptr<H264Picture> pic) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const VaapiH264Picture* vaapi_pic = pic->AsVaapiH264Picture();

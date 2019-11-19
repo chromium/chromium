@@ -5,10 +5,11 @@
 package org.chromium.chrome.browser.signin;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.ViewTreeObserver;
 import android.widget.ScrollView;
+
+import androidx.annotation.Nullable;
 
 /**
  * ScrollView without the top edge that also sends notification when it is scrolled to the bottom.

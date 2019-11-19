@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS calls handleEvent method of event listener
+PASS rethrows errors when getting handleEvent
+PASS looks up handleEvent method on every event dispatch
+PASS doesn't look up handleEvent method on callable event listeners
+FAIL throws if handleEvent is falsy and not callable promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'name' of undefined"
+FAIL throws if handleEvent is thruthy and not callable promise_test: Unhandled rejection with value: object "TypeError: Cannot read property 'name' of undefined"
+Harness: the test ran to completion.
+

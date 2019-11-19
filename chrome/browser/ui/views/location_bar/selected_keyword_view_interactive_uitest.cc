@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(SelectedKeywordViewTest,
 
   // Verify that the label in the omnibox is the extension's shortname.
   EXPECT_EQ(extension->short_name(),
-            base::UTF16ToUTF8(selected_keyword_view->label()->text()));
+            base::UTF16ToUTF8(selected_keyword_view->label()->GetText()));
 }
 
 }  // namespace

@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+PASS e.style['border'] = "5px dotted blue" should set border-bottom-color
+PASS e.style['border'] = "5px dotted blue" should set border-bottom-style
+PASS e.style['border'] = "5px dotted blue" should set border-bottom-width
+FAIL e.style['border'] = "5px dotted blue" should set border-image-outset assert_equals: border-image-outset should be canonical expected "0" but got "initial"
+FAIL e.style['border'] = "5px dotted blue" should set border-image-repeat assert_equals: border-image-repeat should be canonical expected "stretch" but got "initial"
+FAIL e.style['border'] = "5px dotted blue" should set border-image-slice assert_equals: border-image-slice should be canonical expected "100%" but got "initial"
+FAIL e.style['border'] = "5px dotted blue" should set border-image-source assert_equals: border-image-source should be canonical expected "none" but got "initial"
+FAIL e.style['border'] = "5px dotted blue" should set border-image-width assert_equals: border-image-width should be canonical expected "1" but got "initial"
+PASS e.style['border'] = "5px dotted blue" should set border-left-color
+PASS e.style['border'] = "5px dotted blue" should set border-left-style
+PASS e.style['border'] = "5px dotted blue" should set border-left-width
+PASS e.style['border'] = "5px dotted blue" should set border-right-color
+PASS e.style['border'] = "5px dotted blue" should set border-right-style
+PASS e.style['border'] = "5px dotted blue" should set border-right-width
+PASS e.style['border'] = "5px dotted blue" should set border-top-color
+PASS e.style['border'] = "5px dotted blue" should set border-top-style
+PASS e.style['border'] = "5px dotted blue" should set border-top-width
+PASS e.style['border'] = "5px dotted blue" should not set unrelated longhands
+FAIL e.style['border-top'] = "thin" should set border-top-color assert_equals: border-top-color should be canonical expected "currentcolor" but got "initial"
+FAIL e.style['border-top'] = "thin" should set border-top-style assert_equals: border-top-style should be canonical expected "none" but got "initial"
+PASS e.style['border-top'] = "thin" should set border-top-width
+PASS e.style['border-top'] = "thin" should not set unrelated longhands
+FAIL e.style['border-right'] = "double" should set border-right-color assert_equals: border-right-color should be canonical expected "currentcolor" but got "initial"
+PASS e.style['border-right'] = "double" should set border-right-style
+FAIL e.style['border-right'] = "double" should set border-right-width assert_equals: border-right-width should be canonical expected "medium" but got "initial"
+PASS e.style['border-right'] = "double" should not set unrelated longhands
+PASS e.style['border-bottom'] = "green" should set border-bottom-color
+FAIL e.style['border-bottom'] = "green" should set border-bottom-style assert_equals: border-bottom-style should be canonical expected "none" but got "initial"
+FAIL e.style['border-bottom'] = "green" should set border-bottom-width assert_equals: border-bottom-width should be canonical expected "medium" but got "initial"
+PASS e.style['border-bottom'] = "green" should not set unrelated longhands
+PASS e.style['border-left'] = "1px dotted red" should set border-left-color
+PASS e.style['border-left'] = "1px dotted red" should set border-left-style
+PASS e.style['border-left'] = "1px dotted red" should set border-left-width
+PASS e.style['border-left'] = "1px dotted red" should not set unrelated longhands
+Harness: the test ran to completion.
+

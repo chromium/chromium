@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<style>
+body, html {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+}
+
+#root-scroller::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+#root-scroller {
+  width: 100%;
+  height: 100%;
+  overflow: scroll;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: red;
+  scroll-snap-type: y mandatory;
+}
+
+.spacer {
+  width: 100%;
+  height: 100%;
+}
+
+#snap-area {
+  width: 200px;
+  height: 50%;
+  background-color: blue;
+  scroll-snap-align: start;
+}
+</style>
+
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<div id="root-scroller">
+  <div class="spacer" style="background-color: PaleGreen"></div>
+  <div class="spacer" style="background-color: PaleGreen"></div>
+  <div id="snap-area"></div>
+</div>
+
+<script>
+if (window.internals) {
+  internals.runtimeFlags.implicitRootScrollerEnabled = true;
+}
+
+const rootscroller = document.getElementById("root-scroller");
+const snaparea = document.getElementById("snap-area");
+
+// Tests that the visual viewport is affected when scrolling the global root
+// scroller by gesture. The snap area is located at the bottom of the layout
+// viewport, so the layout viewport cannot align with the snap area.
+// However, when it becomes the global root scroller we should be scrolling the
+// visual viewport too to align with the snap area.
+//
+// TODO: There is no test for programmatic scrolling because the expected
+// behaviour of the visual viewport while scrolling the root scroller is not
+// clear [1]. The current behaviour is that the visual viewport offset does not
+// change, and only the layout viewport scrolls to the target.
+// [1] https://github.com/w3c/csswg-drafts/issues/4393
+promise_test(async function () {
+  const scale_factor = 2;
+  internals.setPageScaleFactor(scale_factor);
+  internals.setVisualViewportOffset(0, 0);
+
+  assert_equals(visualViewport.scale, 2);
+  assert_equals(visualViewport.offsetTop, 0);
+
+  await waitForCompositorCommit();
+
+  assert_equals(window.internals.effectiveRootScroller(document),
+    rootscroller,
+    "#root-scroller must be the effective root scroller");
+
+  // Scroll halfway to the snap area. This will trigger the snapping.
+  const delta = snaparea.offsetTop / 2;
+
+  // Start scroll from the middle of the viewport.
+  const initial_scroll_position = {
+    x: visualViewport.width / 2,
+    y: visualViewport.height / 2
+  }
+  await smoothScroll(
+    delta,
+    initial_scroll_position.x,
+    initial_scroll_position.y,
+    GestureSourceType.TOUCH_INPUT,
+    'down',
+    SPEED_INSTANT);
+
+  const max_frames = 500;
+  const max_unchanged_frames = 15;
+  await waitForAnimationEnd(() => {
+    return rootscroller.scrollTop;
+  }, max_frames, max_unchanged_frames);
+
+  // The offset of the visual viewport and the layout viewport combined should
+  // be at the snap point.
+  assert_equals(visualViewport.offsetTop + rootscroller.scrollTop,
+    snaparea.offsetTop, "Visual viewport offset combined with the scroller's\
+    scroll offset should add to the snap area's position.");
+
+}, "Snapping the root scroller after smooth scrolling should affect the\
+visual viewport offset.");
+</script>

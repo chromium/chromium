@@ -4,7 +4,6 @@
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
 <link rel="import" href="../icons.html">
 <link rel="import" href="../route.html">
 <link rel="import" href="../settings_shared_css.html">
@@ -24,17 +23,16 @@
         --cr-section-min-height: var(--cr-section-two-line-min-height);
       }
     </style>
-    <template is="dom-if" if="[[enableSiteSettings_]]">
-      <div class="settings-box first line-only">
-        <h2 class="first">$i18n{siteSettingsAllSites}</h2>
-      </div>
-      <cr-link-row data-route="SITE_SETTINGS_ALL" id="all-sites"
-          label="$i18n{siteSettingsAllSitesDescription}"
-          on-click="onTapNavigate_"></cr-link-row>
-      <div class="settings-box first line-only">
-        <h2>$i18n{siteSettingsPermissions}</h2>
-      </div>
-    </template>
+    <div class="settings-box first line-only">
+      <h2 class="first">$i18n{siteSettingsAllSites}</h2>
+    </div>
+    <cr-link-row data-route="SITE_SETTINGS_ALL" id="all-sites"
+        label="$i18n{siteSettingsAllSitesDescription}"
+        on-click="onTapNavigate_"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    <div class="settings-box first line-only">
+      <h2>$i18n{siteSettingsPermissions}</h2>
+    </div>
 
     <cr-link-row class="two-line" data-route="SITE_SETTINGS_COOKIES"
         id="cookies" label="$i18n{siteSettingsCookies}"
@@ -43,7 +41,8 @@
             default_.cookies,
             '$i18nPolymer{siteSettingsCookiesAllowed}',
             '$i18nPolymer{siteSettingsBlocked}',
-            '$i18nPolymer{deleteDataPostSession}')]]"></cr-link-row>
+            '$i18nPolymer{deleteDataPostSession}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_LOCATION"
         id="location" label="$i18n{siteSettingsLocation}"
@@ -51,7 +50,8 @@
         sub-label="[[defaultSettingLabel_(
             default_.location,
             '$i18nPolymer{siteSettingsAskBeforeAccessing}',
-            '$i18nPolymer{siteSettingsBlocked}')]]"></cr-link-row>
+            '$i18nPolymer{siteSettingsBlocked}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_CAMERA"
         id="camera" label="$i18n{siteSettingsCamera}" on-click="onTapNavigate_"
@@ -59,7 +59,8 @@
         sub-label="[[defaultSettingLabel_(
             default_.mediaStreamCamera,
             '$i18nPolymer{siteSettingsAskBeforeAccessing}',
-            '$i18nPolymer{siteSettingsBlocked}')]]"></cr-link-row>
+            '$i18nPolymer{siteSettingsBlocked}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_MICROPHONE"
         id="microphone" label="$i18n{siteSettingsMic}" on-click="onTapNavigate_"
@@ -67,17 +68,17 @@
         sub-label="[[defaultSettingLabel_(
             default_.mediaStreamMic,
             '$i18nPolymer{siteSettingsAskBeforeAccessing}',
-            '$i18nPolymer{siteSettingsBlocked}')]]"></cr-link-row>
+            '$i18nPolymer{siteSettingsBlocked}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
-    <template is="dom-if" if="[[enableSensorsContentSetting_]]">
-      <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_SENSORS"
-          id="sensors" label="$i18n{siteSettingsSensors}"
-          on-click="onTapNavigate_" start-icon="settings:sensors"
-          sub-label="[[defaultSettingLabel_(
-              default_.sensors,
-              '$i18nPolymer{siteSettingsSensorsAllow}',
-              '$i18nPolymer{siteSettingsSensorsBlock}')]]"></cr-link-row>
-    </template>
+    <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_SENSORS"
+        id="sensors" label="$i18n{siteSettingsSensors}"
+        on-click="onTapNavigate_" start-icon="settings:sensors"
+        sub-label="[[defaultSettingLabel_(
+            default_.sensors,
+            '$i18nPolymer{siteSettingsSensorsAllow}',
+            '$i18nPolymer{siteSettingsSensorsBlock}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_NOTIFICATIONS"
         id="notifications" label="$i18n{siteSettingsNotifications}"
@@ -85,7 +86,8 @@
         sub-label="[[defaultSettingLabel_(
             default_.notifications,
             '$i18nPolymer{siteSettingsAskBeforeSending}',
-            '$i18nPolymer{siteSettingsBlocked}')]]"></cr-link-row>
+            '$i18nPolymer{siteSettingsBlocked}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_JAVASCRIPT"
         id="javascript" label="$i18n{siteSettingsJavascript}"
@@ -93,7 +95,8 @@
         sub-label="[[defaultSettingLabel_(
             default_.javascript,
             '$i18nPolymer{siteSettingsAllowed}',
-            '$i18nPolymer{siteSettingsBlocked}')]]"></cr-link-row>
+            '$i18nPolymer{siteSettingsBlocked}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_FLASH" id="flash"
         label="$i18n{siteSettingsFlash}" on-click="onTapNavigate_"
@@ -101,7 +104,8 @@
         sub-label="[[defaultSettingLabel_(
             default_.plugins,
             '$i18nPolymer{siteSettingsFlashAskFirst}',
-            '$i18nPolymer{siteSettingsFlashBlock}')]]"></cr-link-row>
+            '$i18nPolymer{siteSettingsFlashBlock}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_IMAGES"
         id="images" label="$i18n{siteSettingsImages}" on-click="onTapNavigate_"
@@ -109,7 +113,8 @@
         sub-label="[[defaultSettingLabel_(
             default_.images,
             '$i18nPolymer{siteSettingsShowAll}',
-            '$i18nPolymer{siteSettingsDontShowImages}')]]"></cr-link-row>
+            '$i18nPolymer{siteSettingsDontShowImages}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_POPUPS"
         id="popups" label="$i18n{siteSettingsPopups}" on-click="onTapNavigate_"
@@ -117,7 +122,8 @@
         sub-label="[[defaultSettingLabel_(
             default_.popups,
             '$i18nPolymer{siteSettingsAllowed}',
-            '$i18nPolymer{siteSettingsBlocked}')]]"></cr-link-row>
+            '$i18nPolymer{siteSettingsBlocked}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <template is="dom-if" if="[[enableSafeBrowsingSubresourceFilter_]]">
       <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_ADS" id="ads"
@@ -126,7 +132,8 @@
           sub-label="[[defaultSettingLabel_(
               default_.ads,
               '$i18nPolymer{siteSettingsAllowed}',
-              '$i18nPolymer{siteSettingsAdsBlock}')]]"></cr-link-row>
+              '$i18nPolymer{siteSettingsAdsBlock}')]]"
+          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     </template>
 
     <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_BACKGROUND_SYNC"
@@ -135,17 +142,17 @@
         sub-label="[[defaultSettingLabel_(
             default_.backgroundSync,
             '$i18nPolymer{siteSettingsAllowRecentlyClosedSites}',
-            '$i18nPolymer{siteSettingsBackgroundSyncBlocked}')]]"></cr-link-row>
+            '$i18nPolymer{siteSettingsBackgroundSyncBlocked}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
-    <template is="dom-if" if="[[enableSoundContentSetting_]]">
-      <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_SOUND"
-          id="sound" label="$i18n{siteSettingsSound}" on-click="onTapNavigate_"
-          start-icon="settings:volume-up"
-          sub-label="[[defaultSettingLabel_(
-              default_.sound,
-              '$i18nPolymer{siteSettingsSoundAllow}',
-              '$i18nPolymer{siteSettingsSoundBlock}')]]"></cr-link-row>
-    </template>
+    <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_SOUND"
+        id="sound" label="$i18n{siteSettingsSound}" on-click="onTapNavigate_"
+        start-icon="settings:volume-up"
+        sub-label="[[defaultSettingLabel_(
+            default_.sound,
+            '$i18nPolymer{siteSettingsSoundAllow}',
+            '$i18nPolymer{siteSettingsSoundBlock}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr two-line"
         data-route="SITE_SETTINGS_AUTOMATIC_DOWNLOADS" id="automatic-downloads"
@@ -154,7 +161,8 @@
         sub-label="[[defaultSettingLabel_(
             default_.multipleAutomaticDownloads,
             '$i18nPolymer{siteSettingsAutoDownloadAsk}',
-            '$i18nPolymer{siteSettingsAutoDownloadBlock}')]]"></cr-link-row>
+            '$i18nPolymer{siteSettingsAutoDownloadBlock}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr two-line"
         data-route="SITE_SETTINGS_UNSANDBOXED_PLUGINS" id="unsandboxed-plugins"
@@ -163,7 +171,8 @@
         sub-label="[[defaultSettingLabel_(
             default_.ppapiBroker,
             '$i18nPolymer{siteSettingsUnsandboxedPluginsAsk}',
-            '$i18nPolymer{siteSettingsUnsandboxedPluginsBlock}')]]">
+            '$i18nPolymer{siteSettingsUnsandboxedPluginsBlock}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
 
     <template is="dom-if" if="[[!isGuest_]]">
@@ -173,7 +182,8 @@
           sub-label="[[defaultSettingLabel_(
               default_.registerProtocolHandler,
               '$i18nPolymer{siteSettingsHandlersAsk}',
-              '$i18nPolymer{siteSettingsHandlersBlocked}')]]"></cr-link-row>
+              '$i18nPolymer{siteSettingsHandlersBlocked}')]]"
+          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
     </template>
 
     <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_MIDI_DEVICES"
@@ -182,11 +192,13 @@
         sub-label="[[defaultSettingLabel_(
             default_.midiSysex,
             '$i18nPolymer{siteSettingsMidiDevicesAsk}',
-            '$i18nPolymer{siteSettingsMidiDevicesBlock}')]]"></cr-link-row>
+            '$i18nPolymer{siteSettingsMidiDevicesBlock}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr" data-route="SITE_SETTINGS_ZOOM_LEVELS"
         id="zoom-levels" label="$i18n{siteSettingsZoomLevels}"
-        on-click="onTapNavigate_" start-icon="settings:zoom-in"></cr-link-row>
+        on-click="onTapNavigate_" start-icon="settings:zoom-in"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_USB_DEVICES"
         id="usb-devices" label="$i18n{siteSettingsUsbDevices}"
@@ -194,26 +206,58 @@
         sub-label="[[defaultSettingLabel_(
             default_.usbDevices,
             '$i18nPolymer{siteSettingsUsbDevicesAsk}',
-            '$i18nPolymer{siteSettingsUsbDevicesBlock}')]]"></cr-link-row>
+            '$i18nPolymer{siteSettingsUsbDevicesBlock}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+
+    <cr-link-row
+        class="hr two-line"
+        data-route="SITE_SETTINGS_SERIAL_PORTS"
+        id="serial-ports"
+        label="$i18n{siteSettingsSerialPorts}"
+        on-click="onTapNavigate_"
+        start-icon="settings:serial-port"
+        sub-label="[[defaultSettingLabel_(
+            default_.serialPorts,
+            '$i18nPolymer{siteSettingsSerialPortsAsk}',
+            '$i18nPolymer{siteSettingsSerialPortsBlock}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+
+    <template is="dom-if" if="[[enableNativeFileSystemWriteContentSetting_]]">
+      <cr-link-row class="hr two-line"
+          data-route="SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE"
+          id="native-file-system-write"
+          label="$i18n{siteSettingsNativeFileSystemWrite}"
+          on-click="onTapNavigate_" start-icon="settings:save-original"
+          sub-label="[[defaultSettingLabel_(
+              default_.filesystem,
+              '$i18nPolymer{siteSettingsNativeFileSystemWriteAsk}',
+              '$i18nPolymer{siteSettingsNativeFileSystemWriteBlock}')]]"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
 
     <cr-link-row class="hr" data-route="SITE_SETTINGS_PDF_DOCUMENTS"
         id="pdf-documents" label="$i18n{siteSettingsPdfDocuments}"
-        on-click="onTapNavigate_" start-icon="settings:pdf"></cr-link-row>
+        on-click="onTapNavigate_" start-icon="settings:pdf"
+        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
 
     <cr-link-row class="hr" data-route="SITE_SETTINGS_PROTECTED_CONTENT"
         id="protected-content" label="$i18n{siteSettingsProtectedContent}"
-        on-click="onTapNavigate_" start-icon="settings:protected-content">
+        on-click="onTapNavigate_" start-icon="settings:protected-content"
+        role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
 
-    <template is="dom-if" if="[[enableClipboardContentSetting_]]">
-      <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_CLIPBOARD"
-          id="clipboard" label="$i18n{siteSettingsClipboard}"
-          on-click="onTapNavigate_" start-icon="settings:clipboard"
-          sub-label="[[defaultSettingLabel_(
-              default_.clipboard,
-              '$i18nPolymer{siteSettingsAskBeforeAccessing}',
-              '$i18nPolymer{siteSettingsBlocked}')]]"></cr-link-row>
-    </template>
+    <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_CLIPBOARD"
+        id="clipboard" label="$i18n{siteSettingsClipboard}"
+        on-click="onTapNavigate_" start-icon="settings:clipboard"
+        sub-label="[[defaultSettingLabel_(
+            default_.clipboard,
+            '$i18nPolymer{siteSettingsAskBeforeAccessing}',
+            '$i18nPolymer{siteSettingsBlocked}')]]"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+
     <template is="dom-if" if="[[enablePaymentHandlerContentSetting_]]">
       <cr-link-row class="hr two-line"
           data-route="SITE_SETTINGS_PAYMENT_HANDLER" id="paymentHandler"
@@ -222,7 +266,31 @@
           sub-label="[[defaultSettingLabel_(
               default_.paymentHandler,
               '$i18nPolymer{siteSettingsPaymentHandlerAllow}',
-              '$i18nPolymer{siteSettingsPaymentHandlerBlock}')]]"></cr-link-row>
+              '$i18nPolymer{siteSettingsPaymentHandlerBlock}')]]"
+          role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+    </template>
+
+    <template is="dom-if" if="[[enableInsecureContentContentSetting_]]">
+      <cr-link-row class="hr two-line" data-route="SITE_SETTINGS_MIXEDSCRIPT"
+          label="$i18n{siteSettingsInsecureContent}"
+          on-click="onTapNavigate_"
+          start-icon="settings:insecure-content"
+          sub-label="$i18n{siteSettingsInsecureContentBlock}"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+    </template>
+
+    <template is="dom-if" if="[[enableExperimentalWebPlatformFeatures_]]">
+      <cr-link-row class="hr two-line"
+          data-route="SITE_SETTINGS_BLUETOOTH_SCANNING"
+          id="bluetooth-scanning" label="$i18n{siteSettingsBluetoothScanning}"
+          on-click="onTapNavigate_" start-icon="settings:bluetooth-scanning"
+          sub-label="[[defaultSettingLabel_(
+              default_.bluetoothScanning,
+              '$i18nPolymer{siteSettingsBluetoothScanningAsk}',
+              '$i18nPolymer{siteSettingsBluetoothScanningBlock}')]]"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
     </template>
   </template>
   <script src="site_settings_page.js"></script>

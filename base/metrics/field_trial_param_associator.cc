@@ -26,7 +26,7 @@ bool FieldTrialParamAssociator::AssociateFieldTrialParams(
 
   AutoLock scoped_lock(lock_);
   const FieldTrialKey key(trial_name, group_name);
-  if (ContainsKey(field_trial_params_, key))
+  if (Contains(field_trial_params_, key))
     return false;
 
   field_trial_params_[key] = params;
@@ -57,7 +57,7 @@ bool FieldTrialParamAssociator::GetFieldTrialParamsWithoutFallback(
   AutoLock scoped_lock(lock_);
 
   const FieldTrialKey key(trial_name, group_name);
-  if (!ContainsKey(field_trial_params_, key))
+  if (!Contains(field_trial_params_, key))
     return false;
 
   *params = field_trial_params_[key];

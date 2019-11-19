@@ -11,12 +11,12 @@
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -24,7 +24,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/component_extension_resources_map.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
@@ -45,7 +45,7 @@ namespace extensions {
 namespace {
 
 scoped_refptr<base::RefCountedMemory> BitmapToMemory(const SkBitmap* image) {
-  base::RefCountedBytes* image_bytes = new base::RefCountedBytes;
+  auto image_bytes = base::MakeRefCounted<base::RefCountedBytes>();
   gfx::PNGCodec::EncodeBGRASkBitmap(*image, false, &image_bytes->data());
   return image_bytes;
 }
@@ -102,20 +102,21 @@ SkBitmap* ExtensionIconSource::LoadImageByResourceId(int resource_id) {
   return ToBitmap(data, contents.length());
 }
 
-std::string ExtensionIconSource::GetSource() const {
+std::string ExtensionIconSource::GetSource() {
   return chrome::kChromeUIExtensionIconHost;
 }
 
-std::string ExtensionIconSource::GetMimeType(const std::string&) const {
+std::string ExtensionIconSource::GetMimeType(const std::string&) {
   // We need to explicitly return a mime type, otherwise if the user tries to
   // drag the image they get no extension.
   return "image/png";
 }
 
 void ExtensionIconSource::StartDataRequest(
-    const std::string& path,
-    const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+    const GURL& url,
+    const content::WebContents::Getter& wc_getter,
     const content::URLDataSource::GotDataCallback& callback) {
+  const std::string path = content::URLDataSource::URLToRequestPath(url);
   // This is where everything gets started. First, parse the request and make
   // the request data available for later.
   static int next_id = 0;
@@ -139,7 +140,7 @@ void ExtensionIconSource::StartDataRequest(
   }
 }
 
-bool ExtensionIconSource::AllowCaching() const {
+bool ExtensionIconSource::AllowCaching() {
   // Should not be cached to reflect the latest contents that may be updated by
   // Extensions.
   return false;
@@ -301,8 +302,8 @@ bool ExtensionIconSource::ParseData(
     match_type = ExtensionIconSet::MATCH_EXACTLY;
 
   std::string extension_id = path_parts.at(0);
-  const Extension* extension = ExtensionSystem::Get(profile_)->
-      extension_service()->GetInstalledExtension(extension_id);
+  const Extension* extension =
+      ExtensionRegistry::Get(profile_)->GetInstalledExtension(extension_id);
   if (!extension)
     return false;
 

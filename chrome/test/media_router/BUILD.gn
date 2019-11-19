@@ -46,9 +46,6 @@ source_set("browser_tests") {
     ":browser_test_resources",
     "//chrome/browser/resources/media_router/extension:media_router",
   ]
-  data = [
-    "$root_gen_dir/chrome/browser/resources/media_router/extension/",
-  ]
 }
 
 copy("browser_test_resources") {
@@ -147,8 +144,7 @@ if (enable_downstream_media_tests) {
   group("media_router_perf_tests") {
     testonly = true
     data = [
-      "$root_out_dir/media_router/telemetry_extension/",
-      "$root_out_dir/mr_extension/release/",
+      "$root_out_dir/mr_extension/",
       "internal/",
       "telemetry/",
     ]
@@ -156,17 +152,7 @@ if (enable_downstream_media_tests) {
       "//tools/perf:perf",
     ]
     data_deps = [
-      ":telemetry_extension_resources",
+      "//tools/perf/contrib/media_router_benchmarks:telemetry_extension_resources",
     ]
   }
-}
-
-copy("telemetry_extension_resources") {
-  sources = [
-    "telemetry/extension/manifest.json",
-    "telemetry/extension/script.js",
-  ]
-  outputs = [
-    "$root_out_dir/media_router/telemetry_extension/{{source_file_part}}",
-  ]
 }

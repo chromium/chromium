@@ -12,7 +12,7 @@ import "services/device/public/mojom/geoposition.mojom";
 // instances created by this context.
 interface GeolocationContext {
   // Creates a Geolocation instance that is bound to the |request|.
-  BindGeolocation(Geolocation& request);
+  BindGeolocation(pending_receiver<Geolocation> receiver);
 
   // Enables geolocation override. This method can be used to trigger possible
   // location-specific behavior in GeolocationImpl created by this

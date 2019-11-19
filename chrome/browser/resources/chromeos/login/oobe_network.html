@@ -4,6 +4,7 @@
 
 <dom-module id="oobe-network-md">
   <template>
+    <link rel="stylesheet" href="oobe_dialog_host.css">
     <link rel="stylesheet" href="oobe_flex_layout.css">
     <link rel="stylesheet" href="oobe_network.css">
     <oobe-dialog id="networkDialog" role="dialog" on-show-dialog="onShown_"
@@ -19,12 +20,13 @@
       </div>
       <div slot="footer" class="layout vertical">
         <network-select-login id="networkSelectLogin"
+            on-selected-network-connected="onNetworkConnected_"
             is-connected="{{isConnected_}}">
         </network-select-login>
       </div>
       <div slot="bottom-buttons" class="layout horizontal justified">
-        <oobe-back-button on-tap="onBackClicked_"></oobe-back-button>
-        <oobe-next-button disabled="[[!isConnected_]]"
+        <oobe-back-button on-click="onBackClicked_"></oobe-back-button>
+        <oobe-next-button id="nextButton" disabled="[[!isConnected_]]"
             on-tap="onNextClicked_"></oobe-next-button>
       </div>
     </oobe-dialog>

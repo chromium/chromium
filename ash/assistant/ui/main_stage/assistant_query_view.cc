@@ -9,7 +9,9 @@
 
 #include "ash/assistant/model/assistant_query.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
+#include "ash/assistant/ui/assistant_view_ids.h"
 #include "base/strings/utf_string_conversions.h"
+#include "net/base/escape.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/layout/box_layout.h"
@@ -38,6 +40,7 @@ views::StyledLabel::RangeStyleInfo CreateStyleInfo(SkColor color) {
 // AssistantQueryView ----------------------------------------------------------
 
 AssistantQueryView::AssistantQueryView() {
+  SetID(AssistantViewID::kQueryView);
   InitLayout();
   GetViewAccessibility().OverrideRole(ax::mojom::Role::kHeading);
 }
@@ -70,14 +73,14 @@ void AssistantQueryView::InitLayout() {
           views::BoxLayout::Orientation::kVertical));
 
   layout_manager->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::MAIN_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::MainAxisAlignment::kCenter);
 
   layout_manager->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::CROSS_AXIS_ALIGNMENT_CENTER);
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Label.
   label_ = new views::StyledLabel(base::string16(), /*listener=*/nullptr);
-  label_->set_auto_color_readability_enabled(false);
+  label_->SetAutoColorReadabilityEnabled(false);
   label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
   label_->SetLineHeight(kLineHeightDip);
   AddChildView(label_);
@@ -109,11 +112,14 @@ void AssistantQueryView::SetText(const std::string& high_confidence_text,
   if (high_confidence_text.empty() && low_confidence_text.empty()) {
     label_->SetText(base::string16());
   } else {
+    // When coming from the server, both |high_confidence_text| and
+    // |low_confidence_text| may be HTML escaped, so we need to unescape both
+    // before displaying to avoid printing HTML entities to the user.
     const base::string16& high_confidence_text_16 =
-        base::UTF8ToUTF16(high_confidence_text);
+        net::UnescapeForHTML(base::UTF8ToUTF16(high_confidence_text));
 
     const base::string16& low_confidence_text_16 =
-        base::UTF8ToUTF16(low_confidence_text);
+        net::UnescapeForHTML(base::UTF8ToUTF16(low_confidence_text));
 
     label_->SetText(high_confidence_text_16 + low_confidence_text_16);
 

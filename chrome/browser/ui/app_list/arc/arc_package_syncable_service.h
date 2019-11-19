@@ -55,6 +55,7 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   bool IsPackageSyncing(const std::string& package_name) const;
 
   // syncer::SyncableService:
+  void WaitUntilReadyToSync(base::OnceClosure done) override;
   syncer::SyncMergeResult MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
@@ -79,6 +80,7 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   void OnPackageModified(const mojom::ArcPackageInfo& package_info) override;
   void OnPackageRemoved(const std::string& package_name,
                         bool uninstalled) override;
+  void OnPackageListInitialRefreshed() override;
 
   // Sends adds/updates sync change to sync server.
   void SendSyncChange(
@@ -105,6 +107,7 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   bool ShouldSyncPackage(const std::string& package_name) const;
 
   Profile* const profile_;
+  base::OnceClosure wait_until_ready_to_sync_cb_;
   std::unique_ptr<syncer::SyncChangeProcessor> sync_processor_;
   std::unique_ptr<syncer::SyncErrorFactory> sync_error_handler_;
 

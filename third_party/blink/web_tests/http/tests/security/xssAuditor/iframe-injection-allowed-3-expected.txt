@@ -1,2 +1,0 @@
-This test passes because the injected iframe has an empty src and is harmless.
-

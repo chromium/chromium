@@ -9,52 +9,8 @@
            file="images/arrow_right.svg" type="BINDATA" compress="gzip" />
   <include name="IDR_WEBUI_IMAGES_DARK_ARROW_DOWN"
            file="images/dark/arrow_down.svg" type="BINDATA" compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ARROW_RIGHT"
-           file="images/dark/arrow_right.svg" type="BINDATA" compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_ARROW_BACK"
-           file="images/dark/icon_arrow_back.svg" type="BINDATA"
-           compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_ARROW_DROPDOWN"
-           file="images/dark/icon_arrow_dropdown.svg" type="BINDATA"
-           compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_CANCEL"
-           file="images/dark/icon_cancel.svg" type="BINDATA" compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_CLEAR"
-           file="images/dark/icon_clear.svg" type="BINDATA" compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_DELETE_GRAY"
-           file="images/dark/icon_delete_gray.svg" type="BINDATA"
-           compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_EXPAND_LESS"
-           file="images/dark/icon_expand_less.svg" type="BINDATA"
-           compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_EXPAND_MORE"
-           file="images/dark/icon_expand_more.svg" type="BINDATA"
-           compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_MORE_VERT"
-           file="images/dark/icon_more_vert.svg" type="BINDATA"
-           compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_PICTURE_DELETE"
-           file="images/dark/icon_picture_delete.svg" type="BINDATA"
-           compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_REFRESH"
-           file="images/dark/icon_refresh.svg" type="BINDATA" compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_SETTINGS"
-           file="images/dark/icon_settings.svg" type="BINDATA"
-           compress="gzip" />
   <include name="IDR_WEBUI_IMAGES_DARK_ICON_SEARCH"
            file="images/dark/icon_search.svg" type="BINDATA" compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_TOOLBAR_CANCEL"
-           file="images/dark/icon_toolbar_cancel.svg" type="BINDATA"
-           compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_TOOLBAR_MENU"
-           file="images/dark/icon_toolbar_menu.svg" type="BINDATA"
-           compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_VISIBILITY"
-           file="images/dark/icon_visibility.svg" type="BINDATA"
-           compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_DARK_ICON_VISIBILITY_OFF"
-           file="images/dark/icon_visibility_off.svg" type="BINDATA"
-           compress="gzip" />
   <include name="IDR_WEBUI_IMAGES_ICON_ARROW_BACK"
            file="images/icon_arrow_back.svg" type="BINDATA" compress="gzip" />
   <include name="IDR_WEBUI_IMAGES_ICON_ARROW_DROPDOWN"
@@ -83,11 +39,6 @@
            file="images/icon_search.svg" type="BINDATA" compress="gzip" />
   <include name="IDR_WEBUI_IMAGES_ICON_SETTINGS"
            file="images/icon_settings.svg" type="BINDATA" compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_ICON_TOOLBAR_CANCEL"
-           file="images/icon_toolbar_cancel.svg" type="BINDATA"
-           compress="gzip" />
-  <include name="IDR_WEBUI_IMAGES_ICON_TOOLBAR_MENU"
-           file="images/icon_toolbar_menu.svg" type="BINDATA" compress="gzip" />
   <include name="IDR_WEBUI_IMAGES_ICON_VISIBILITY"
            file="images/icon_visibility.svg" type="BINDATA" compress="gzip" />
   <include name="IDR_WEBUI_IMAGES_ICON_VISIBILITY_OFF"
@@ -95,66 +46,4 @@
            compress="gzip" />
   <include name="IDR_WEBUI_IMAGES_OPEN_IN_NEW"
            file="images/open_in_new.svg" type="BINDATA" compress="gzip" />
-  <if expr="chromeos">
-    <include name="IDR_CR_ELEMENTS_CAMERA_ALT_ICON_SVG"
-             file="cr_elements/chromeos/cr_picture/camera_alt_icon.svg"
-             type="BINDATA" compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_CAMERA_SHUTTER_ICON_SVG"
-             file="cr_elements/chromeos/cr_picture/camera_shutter_icon.svg"
-             type="BINDATA" compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_VIDEOCAM_ICON_SVG"
-             file="cr_elements/chromeos/cr_picture/videocam_icon.svg"
-             type="BINDATA" compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_VIDEOCAM_SHUTTER_ICON_SVG"
-             file="cr_elements/chromeos/cr_picture/videocam_shutter_icon.svg"
-             type="BINDATA" compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_CELLULAR_0_WITH_X_SVG"
-             file="cr_elements/chromeos/network/cellular_0_with_x.svg"
-             type="BINDATA" compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_CELLULAR_0_SVG"
-             file="cr_elements/chromeos/network/cellular_0.svg"
-             type="BINDATA" compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_CELLULAR_1_SVG"
-             file="cr_elements/chromeos/network/cellular_1.svg"
-             type="BINDATA" compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_CELLULAR_2_SVG"
-             file="cr_elements/chromeos/network/cellular_2.svg"
-             type="BINDATA" compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_CELLULAR_3_SVG"
-             file="cr_elements/chromeos/network/cellular_3.svg"
-             type="BINDATA" compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_CELLULAR_4_SVG"
-             file="cr_elements/chromeos/network/cellular_4.svg"
-             type="BINDATA" compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_CELLULAR_OFF_SVG"
-             file="cr_elements/chromeos/network/cellular_off.svg"
-             type="BINDATA" compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_ETHERNET_SVG"
-             file="cr_elements/chromeos/network/ethernet.svg" type="BINDATA"
-             compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_VPN_SVG"
-             file="cr_elements/chromeos/network/vpn.svg" type="BINDATA"
-             compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_WIFI_0_WITH_X_SVG"
-             file="cr_elements/chromeos/network/wifi_0_with_x.svg"
-             type="BINDATA" compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_WIFI_0_SVG"
-             file="cr_elements/chromeos/network/wifi_0.svg" type="BINDATA"
-             compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_WIFI_1_SVG"
-             file="cr_elements/chromeos/network/wifi_1.svg" type="BINDATA"
-             compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_WIFI_2_SVG"
-             file="cr_elements/chromeos/network/wifi_2.svg" type="BINDATA"
-             compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_WIFI_3_SVG"
-             file="cr_elements/chromeos/network/wifi_3.svg" type="BINDATA"
-             compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_WIFI_4_SVG"
-             file="cr_elements/chromeos/network/wifi_4.svg" type="BINDATA"
-             compress="gzip" />
-    <include name="IDR_CR_ELEMENTS_WIFI_OFF_SVG"
-             file="cr_elements/chromeos/network/wifi_off.svg" type="BINDATA"
-             compress="gzip" />
-  </if>
 </grit-part>

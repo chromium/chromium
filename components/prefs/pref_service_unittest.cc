@@ -399,7 +399,7 @@ TEST(PrefServiceTest, WriteablePrefStoreFlags) {
     EXPECT_EQ(entry.write_flags, flag_checker->GetLastFlagsAndClear());
 
     prefs->SetUserPrefValue(entry.pref_name,
-                            std::make_unique<base::DictionaryValue>());
+                            base::Value(base::Value::Type::DICTIONARY));
     EXPECT_TRUE(flag_checker->last_write_flags_set());
     EXPECT_EQ(entry.write_flags, flag_checker->GetLastFlagsAndClear());
   }

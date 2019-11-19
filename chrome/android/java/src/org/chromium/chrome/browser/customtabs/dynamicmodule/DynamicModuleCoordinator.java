@@ -9,22 +9,21 @@ import static org.chromium.chrome.browser.customtabs.dynamicmodule.DynamicModule
 import android.content.ComponentName;
 import android.content.Context;
 import android.net.Uri;
-import android.os.SystemClock;
-import android.support.annotation.IntDef;
-import android.support.annotation.Nullable;
-import android.support.customtabs.CustomTabsService;
-import android.support.customtabs.PostMessageBackend;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsService;
+import androidx.browser.customtabs.PostMessageBackend;
+
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
-import org.chromium.base.VisibleForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.ChromeActivity;
 import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator;
 import org.chromium.chrome.browser.customtabs.CloseButtonNavigator.PageCriteria;
@@ -32,22 +31,25 @@ import org.chromium.chrome.browser.customtabs.CustomTabBottomBarDelegate;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabTopBarDelegate;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.customtabs.TabObserverRegistrar;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
+import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
+import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
-import org.chromium.chrome.browser.init.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.Destroyable;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.util.UrlConstants;
 import org.chromium.chrome.browser.util.UrlUtilities;
-import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.chrome.browser.util.UrlUtilitiesJni;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.KeyboardVisibilityDelegate;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -65,7 +67,8 @@ public class DynamicModuleCoordinator implements NativeInitObserver, Destroyable
     private final CustomTabIntentDataProvider mIntentDataProvider;
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final CustomTabsConnection mConnection;
-    private final CustomTabActivityTabController mTabController;
+    private final CustomTabActivityTabProvider mTabProvider;
+    private final CustomTabActivityNavigationController mNavigationController;
 
     private final ChromeActivity mActivity;
 
@@ -155,7 +158,7 @@ public class DynamicModuleCoordinator implements NativeInitObserver, Destroyable
     private final DynamicModuleNavigationEventObserver mModuleNavigationEventObserver =
             new DynamicModuleNavigationEventObserver();
     private final DynamicModulePageLoadObserver mPageLoadObserver;
-
+    private final KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
     private final PageCriteria mPageCriteria;
 
     @Inject
@@ -163,18 +166,20 @@ public class DynamicModuleCoordinator implements NativeInitObserver, Destroyable
                                     CloseButtonNavigator closeButtonNavigator,
                                     TabObserverRegistrar tabObserverRegistrar,
                                     ActivityLifecycleDispatcher activityLifecycleDispatcher,
+                                    CustomTabActivityNavigationController navigationController,
                                     ActivityDelegate activityDelegate,
                                     Lazy<CustomTabTopBarDelegate> topBarDelegate,
                                     Lazy<CustomTabBottomBarDelegate> bottomBarDelegate,
                                     Lazy<ChromeFullscreenManager> fullscreenManager,
                                     Lazy<DynamicModuleToolbarController> toolbarController,
                                     CustomTabsConnection connection, ChromeActivity activity,
-                                    CustomTabActivityTabController tabController,
+                                    CustomTabActivityTabProvider tabProvider,
                                     DynamicModulePageLoadObserver pageLoadObserver) {
         mIntentDataProvider = intentDataProvider;
         mTabObserverRegistrar = tabObserverRegistrar;
+        mNavigationController = navigationController;
         mActivity = activity;
-        mTabController = tabController;
+        mTabProvider = tabProvider;
         mConnection = connection;
 
         mTabObserverRegistrar.registerTabObserver(mModuleNavigationEventObserver);
@@ -192,6 +197,12 @@ public class DynamicModuleCoordinator implements NativeInitObserver, Destroyable
 
         mPageCriteria = url -> (isModuleLoading() || isModuleLoaded()) && isModuleManagedUrl(url);
         closeButtonNavigator.setLandingPageCriteria(mPageCriteria);
+        mNavigationController.setBackHandler(this::onBackPressedAsync);
+
+        mKeyboardVisibilityListener = isShowing ->
+            mBottomBarDelegate.get().hideBottomBar(isShowing);
+        KeyboardVisibilityDelegate.getInstance()
+                .addKeyboardVisibilityListener(mKeyboardVisibilityListener);
 
         activityLifecycleDispatcher.register(this);
     }
@@ -223,8 +234,8 @@ public class DynamicModuleCoordinator implements NativeInitObserver, Destroyable
 
     private ModuleLoader getModuleLoader() {
         ComponentName componentName = mIntentDataProvider.getModuleComponentName();
-        int dexResourceId = mIntentDataProvider.getModuleDexResourceId();
-        return mConnection.getModuleLoader(componentName, dexResourceId);
+        String dexAssetName = mIntentDataProvider.getModuleDexAssetName();
+        return mConnection.getModuleLoader(componentName, dexAssetName);
     }
 
     /* package */ Context getActivityContext() {
@@ -252,8 +263,7 @@ public class DynamicModuleCoordinator implements NativeInitObserver, Destroyable
     }
 
     /* package */ void loadUri(Uri uri) {
-        mTabController.loadUrlInTab(new LoadUrlParams(uri.toString()),
-                SystemClock.elapsedRealtime());
+        mNavigationController.navigate(uri.toString());
     }
 
     @VisibleForTesting
@@ -285,10 +295,10 @@ public class DynamicModuleCoordinator implements NativeInitObserver, Destroyable
     /**
      * @see IActivityDelegate#onBackPressedAsync
      */
-    public boolean onBackPressedAsync(Runnable notHandledRunnable) {
+    public boolean onBackPressedAsync(Runnable defaultBackHandler) {
         if (mModuleEntryPoint != null &&
                 mModuleEntryPoint.getModuleVersion() >= ON_BACK_PRESSED_ASYNC_API_VERSION) {
-            mActivityDelegate.onBackPressedAsync(notHandledRunnable);
+            mActivityDelegate.onBackPressedAsync(defaultBackHandler);
             return true;
         }
 
@@ -413,7 +423,7 @@ public class DynamicModuleCoordinator implements NativeInitObserver, Destroyable
         if (!UrlConstants.HTTPS_SCHEME.equals(scheme)) {
             return false;
         }
-        if (!UrlUtilities.nativeIsGoogleDomainUrl(url, sAllowNonStandardPortNumber)) {
+        if (!UrlUtilitiesJni.get().isGoogleDomainUrl(url, sAllowNonStandardPortNumber)) {
             return false;
         }
         return true;
@@ -425,7 +435,7 @@ public class DynamicModuleCoordinator implements NativeInitObserver, Destroyable
     }
 
     private String getContentUrl() {
-        Tab tab = mTabController.getTab();
+        Tab tab = mTabProvider.getTab();
         if (tab != null && tab.getWebContents() != null && !tab.getWebContents().isDestroyed()
                 && tab.getWebContents().getLastCommittedUrl() != null) {
             return tab.getWebContents().getLastCommittedUrl();
@@ -493,6 +503,8 @@ public class DynamicModuleCoordinator implements NativeInitObserver, Destroyable
         unregisterObserver(mHeaderVisibilityObserver);
         unregisterObserver(mCustomRequestHeaderModifier);
         PageLoadMetrics.removeObserver(mPageLoadObserver);
+        KeyboardVisibilityDelegate.getInstance()
+                .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
     }
 
     private void unregisterObserver(TabObserver observer) {

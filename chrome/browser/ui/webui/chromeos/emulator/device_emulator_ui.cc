@@ -23,31 +23,20 @@ content::WebUIDataSource* CreateDeviceEmulatorUIDataSource() {
       content::WebUIDataSource::Create(chrome::kChromeUIDeviceEmulatorHost);
 
   // Add resources.
-  html->AddResourcePath("audio_settings.html",
-                        IDR_DEVICE_EMULATOR_AUDIO_SETTINGS_HTML);
   html->AddResourcePath("audio_settings.js",
                         IDR_DEVICE_EMULATOR_AUDIO_SETTINGS_JS);
-  html->AddResourcePath("battery_settings.html",
-                        IDR_DEVICE_EMULATOR_BATTERY_SETTINGS_HTML);
   html->AddResourcePath("battery_settings.js",
                         IDR_DEVICE_EMULATOR_BATTERY_SETTINGS_JS);
-  html->AddResourcePath("bluetooth_settings.html",
-                        IDR_DEVICE_EMULATOR_BLUETOOTH_SETTINGS_HTML);
   html->AddResourcePath("bluetooth_settings.js",
                         IDR_DEVICE_EMULATOR_BLUETOOTH_SETTINGS_JS);
-  html->AddResourcePath("icons.html", IDR_DEVICE_EMULATOR_ICONS_HTML);
-  html->AddResourcePath("input_device_settings.html",
-                        IDR_DEVICE_EMULATOR_INPUT_DEVICE_SETTINGS_HTML);
+  html->AddResourcePath("icons.js", IDR_DEVICE_EMULATOR_ICONS_JS);
   html->AddResourcePath("input_device_settings.js",
                         IDR_DEVICE_EMULATOR_INPUT_DEVICE_SETTINGS_JS);
-  html->AddResourcePath("device_emulator_pages.html",
-                        IDR_DEVICE_EMULATOR_PAGES_HTML);
   html->AddResourcePath("device_emulator_pages.js",
                         IDR_DEVICE_EMULATOR_PAGES_JS);
-
-  html->AddResourcePath("shared_styles.html",
-                        IDR_DEVICE_EMULATOR_SHARED_STYLES_HTML);
-
+  html->AddResourcePath("shared_styles.js",
+                        IDR_DEVICE_EMULATOR_SHARED_STYLES_JS);
+  html->AddResourcePath("device_emulator.css", IDR_DEVICE_EMULATOR_CSS);
   html->SetDefaultResource(IDR_DEVICE_EMULATOR_HTML);
 
   return html;

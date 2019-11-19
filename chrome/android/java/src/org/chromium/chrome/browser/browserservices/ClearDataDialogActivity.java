@@ -8,16 +8,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeApplication;
-import org.chromium.chrome.browser.preferences.PreferencesLauncher;
-import org.chromium.chrome.browser.preferences.website.SettingsNavigationSource;
-import org.chromium.chrome.browser.preferences.website.SingleCategoryPreferences;
-import org.chromium.chrome.browser.preferences.website.SiteSettingsCategory;
 import org.chromium.chrome.browser.util.IntentUtils;
 
 import java.util.ArrayList;
@@ -84,37 +81,7 @@ public class ClearDataDialogActivity extends AppCompatActivity {
             assert false : "Invalid extras for ClearDataDialogActivity";
             return;
         }
-
-        if (origins.size() == 1) {
-            // When launched with EXTRA_SITE_ADDRESS, SingleWebsitePreferences will merge the
-            // settings for top-level origin, so that given https://peconn.github.io and
-            // peconn.github.io, we'll get the permission and data settings of both.
-            openSingleWebsitePrefs(origins.get(0));
-        } else {
-            // Since there might be multiple entries per origin in the "All sites" screen,
-            // such as https://peconn.github.io and peconn.github.io, we filter by domains
-            // instead of origins.
-            openFilteredAllSiteSettings(domains);
-        }
-    }
-
-    private void openSingleWebsitePrefs(String origin) {
-        startActivity(PreferencesLauncher.createIntentForSingleWebsitePreferences(
-                this, origin, SettingsNavigationSource.TWA_CLEAR_DATA_DIALOG));
-    }
-
-    private void openFilteredAllSiteSettings(Collection<String> domains) {
-        Bundle extras = new Bundle();
-        extras.putString(SingleCategoryPreferences.EXTRA_CATEGORY,
-                SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.ALL_SITES));
-        extras.putString(SingleCategoryPreferences.EXTRA_TITLE,
-                getString(R.string.twa_clear_data_site_selection_title));
-        extras.putStringArrayList(
-                SingleCategoryPreferences.EXTRA_SELECTED_DOMAINS, new ArrayList<>(domains));
-        extras.putInt(SettingsNavigationSource.EXTRA_KEY,
-                SettingsNavigationSource.TWA_CLEAR_DATA_DIALOG);
-
-        PreferencesLauncher.launchSettingsPage(this, SingleCategoryPreferences.class, extras);
+        TrustedWebActivitySettingsLauncher.launch(this, origins, domains);
     }
 
     private void recordDecision(boolean accepted) {

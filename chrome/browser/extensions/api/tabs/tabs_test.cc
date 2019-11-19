@@ -40,13 +40,14 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/zoom/chrome_zoom_level_prefs.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/page_zoom.h"
+#include "content/public/common/mime_handler_view_mode.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -59,6 +60,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -96,6 +98,8 @@ class ExtensionWindowCreateTest : public InProcessBrowserTest {
 };
 
 const int kUndefinedId = INT_MIN;
+const ExtensionTabUtil::ScrubTabBehavior kDontScrubBehavior = {
+    ExtensionTabUtil::kDontScrubTab, ExtensionTabUtil::kDontScrubTab};
 
 int GetTabId(base::DictionaryValue* tab) {
   int id = kUndefinedId;
@@ -444,15 +448,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   update_tab_function->set_extension(extension.get());
   update_tab_function->set_include_incognito_information(true);
 
-  static const char kArgsWithNonIncognitoUrl[] =
-      "[null, {\"url\": \"chrome://extensions/configureCommands\"}]";
   std::string error = extension_function_test_utils::RunFunctionAndReturnError(
-      update_tab_function.get(), kArgsWithNonIncognitoUrl,
+      update_tab_function.get(),
+      std::string("[null, {\"url\": \"") + chrome::kChromeUIExtensionsURL +
+          chrome::kExtensionConfigureCommandsSubPage + "\"}]",
       incognito,  // incognito doesn't have any tabs.
       api_test_utils::NONE);
   EXPECT_EQ(ErrorUtils::FormatErrorMessage(
                 tabs_constants::kURLsNotAllowedInIncognitoError,
-                "chrome://extensions/configureCommands"),
+                std::string(chrome::kChromeUIExtensionsURL) +
+                    chrome::kExtensionConfigureCommandsSubPage),
             error);
 
   // Ensure the tab was not updated. It should stay as the new tab page.
@@ -792,7 +797,7 @@ class ExtensionWindowLastFocusedTest : public ExtensionTabsTest {
 
   int GetTabId(const base::DictionaryValue* value) const;
 
-  base::Value* RunFunction(UIThreadExtensionFunction* function,
+  base::Value* RunFunction(ExtensionFunction* function,
                            const std::string& params);
 
   const Extension* extension() { return extension_.get(); }
@@ -877,7 +882,7 @@ int ExtensionWindowLastFocusedTest::GetTabId(
 }
 
 base::Value* ExtensionWindowLastFocusedTest::RunFunction(
-    UIThreadExtensionFunction* function,
+    ExtensionFunction* function,
     const std::string& params) {
   function->set_extension(extension_.get());
   return utils::RunFunctionAndReturnSingleResult(function, params, browser());
@@ -946,8 +951,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
   CloseAppWindow(app_window);
 }
 
+// https://crbug.com/956870
 IN_PROC_BROWSER_TEST_F(ExtensionWindowLastFocusedTest,
-                       NoTabIdForDevToolsAndAppWindows) {
+                       DISABLED_NoTabIdForDevToolsAndAppWindows) {
   Browser* normal_browser = CreateBrowserWithEmptyTab(false);
   {
     ActivateBrowserWindow(normal_browser);
@@ -1132,9 +1138,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTab) {
   EXPECT_EQ(window_id, duplicate_tab_window_id);
   EXPECT_EQ(tab_index + 1, duplicate_tab_index);
   // The test empty tab extension has tabs permissions, therefore
-  // |duplicate_result| should contain url, title, and faviconUrl
+  // |duplicate_result| should contain url, pendingUrl, title or faviconUrl
   // in the function result.
-  EXPECT_TRUE(utils::HasPrivacySensitiveFields(duplicate_result.get()));
+  EXPECT_TRUE(utils::HasAnyPrivacySensitiveFields(duplicate_result.get()));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTabNoPermission) {
@@ -1170,8 +1176,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DuplicateTabNoPermission) {
   EXPECT_EQ(window_id, duplicate_tab_window_id);
   EXPECT_EQ(tab_index + 1, duplicate_tab_index);
   // The test empty extension has no permissions, therefore |duplicate_result|
-  // should not contain url, title, and faviconUrl in the function result.
-  EXPECT_FALSE(utils::HasPrivacySensitiveFields(duplicate_result.get()));
+  // should not contain url, pendingUrl, title and faviconUrl in the function
+  // result.
+  EXPECT_FALSE(utils::HasAnyPrivacySensitiveFields(duplicate_result.get()));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, NoTabsEventOnDevTools) {
@@ -1319,8 +1326,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
 
   // Creates Tab object to ensure the property is correct for the extension.
   std::unique_ptr<api::tabs::Tab> tab_object_a =
-      ExtensionTabUtil::CreateTabObject(web_contents_a,
-                                        ExtensionTabUtil::kDontScrubTab,
+      ExtensionTabUtil::CreateTabObject(web_contents_a, kDontScrubBehavior,
                                         nullptr, tab_strip_model, 0);
   EXPECT_FALSE(tab_object_a->discarded);
 
@@ -1330,8 +1336,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardedProperty) {
 
   // Make sure the property is changed accordingly after discarding the tab.
   tab_object_a = ExtensionTabUtil::CreateTabObject(
-      web_contents_a, ExtensionTabUtil::kDontScrubTab, nullptr, tab_strip_model,
-      0);
+      web_contents_a, kDontScrubBehavior, nullptr, tab_strip_model, 0);
   EXPECT_TRUE(tab_object_a->discarded);
 
   // Get non-discarded tabs after discarding one tab.
@@ -1526,8 +1531,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
   // Creates Tab object to ensure the property is correct for the extension.
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   std::unique_ptr<api::tabs::Tab> tab_object_a =
-      ExtensionTabUtil::CreateTabObject(web_contents_a,
-                                        ExtensionTabUtil::kDontScrubTab,
+      ExtensionTabUtil::CreateTabObject(web_contents_a, kDontScrubBehavior,
                                         nullptr, tab_strip_model, 0);
   EXPECT_TRUE(tab_object_a->auto_discardable);
 
@@ -1571,8 +1575,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, AutoDiscardableProperty) {
 
   // Make sure the property is changed accordingly after updating the tab.
   tab_object_a = ExtensionTabUtil::CreateTabObject(
-      web_contents_a, ExtensionTabUtil::kDontScrubTab, nullptr, tab_strip_model,
-      0);
+      web_contents_a, kDontScrubBehavior, nullptr, tab_strip_model, 0);
   EXPECT_FALSE(tab_object_a->auto_discardable);
 
   // Get auto-discardable tabs after changing the status of web contents A.
@@ -1843,7 +1846,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, SetAndGetZoom) {
   const double kZoomLevel = 0.8;
   EXPECT_TRUE(RunSetZoom(tab_id, kZoomLevel));
   EXPECT_EQ(kZoomLevel,
-            content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents)));
+            blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents)));
 
   // Test chrome.tabs.getZoom().
   zoom_factor = -1;
@@ -1860,9 +1863,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, GetDefaultZoom) {
       zoom::ZoomController::FromWebContents(web_contents);
   double default_zoom_factor = -1.0;
   EXPECT_TRUE(RunGetDefaultZoom(tab_id, &default_zoom_factor));
-  EXPECT_TRUE(content::ZoomValuesEqual(
+  EXPECT_TRUE(blink::PageZoomValuesEqual(
       zoom_controller->GetDefaultZoomLevel(),
-      content::ZoomFactorToZoomLevel(default_zoom_factor)));
+      blink::PageZoomFactorToZoomLevel(default_zoom_factor)));
 
   // Change the default zoom level and verify GetDefaultZoom returns the
   // correct value.
@@ -1876,9 +1879,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, GetDefaultZoom) {
   zoom_prefs->SetDefaultZoomLevelPref(default_zoom_level + 0.5);
   default_zoom_factor = -1.0;
   EXPECT_TRUE(RunGetDefaultZoom(tab_id, &default_zoom_factor));
-  EXPECT_TRUE(content::ZoomValuesEqual(
+  EXPECT_TRUE(blink::PageZoomValuesEqual(
       default_zoom_level + 0.5,
-      content::ZoomFactorToZoomLevel(default_zoom_factor)));
+      blink::PageZoomFactorToZoomLevel(default_zoom_factor)));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, SetToDefaultZoom) {
@@ -1902,9 +1905,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, SetToDefaultZoom) {
   double observed_zoom_factor = -1.0;
   EXPECT_TRUE(RunSetZoom(tab_id, 0.0));
   EXPECT_TRUE(RunGetZoom(tab_id, &observed_zoom_factor));
-  EXPECT_TRUE(content::ZoomValuesEqual(
+  EXPECT_TRUE(blink::PageZoomValuesEqual(
       new_default_zoom_level,
-      content::ZoomFactorToZoomLevel(observed_zoom_factor)));
+      blink::PageZoomFactorToZoomLevel(observed_zoom_factor)));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, ZoomSettings) {
@@ -1932,48 +1935,48 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, ZoomSettings) {
   int tab_id_B = ExtensionTabUtil::GetTabId(web_contents_B);
 
   ASSERT_FLOAT_EQ(
-      1.f, content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
+      1.f, blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
   ASSERT_FLOAT_EQ(
-      1.f, content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
+      1.f, blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
   ASSERT_FLOAT_EQ(
-      1.f, content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_B)));
+      1.f, blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents_B)));
 
   // Test per-origin automatic zoom settings.
   EXPECT_TRUE(RunSetZoom(tab_id_B, 1.f));
   EXPECT_TRUE(RunSetZoom(tab_id_A2, 1.1f));
   EXPECT_FLOAT_EQ(
-      1.1f, content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
+      1.1f, blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
   EXPECT_FLOAT_EQ(
-      1.1f, content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
-  EXPECT_FLOAT_EQ(1.f,
-                  content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_B)));
+      1.1f, blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
+  EXPECT_FLOAT_EQ(
+      1.f, blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents_B)));
 
   // Test per-tab automatic zoom settings.
   EXPECT_TRUE(RunSetZoomSettings(tab_id_A1, "automatic", "per-tab"));
   EXPECT_TRUE(RunSetZoom(tab_id_A1, 1.2f));
   EXPECT_FLOAT_EQ(
-      1.2f, content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
+      1.2f, blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
   EXPECT_FLOAT_EQ(
-      1.1f, content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
+      1.1f, blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
 
   // Test 'manual' mode.
   EXPECT_TRUE(RunSetZoomSettings(tab_id_A1, "manual", nullptr));
   EXPECT_TRUE(RunSetZoom(tab_id_A1, 1.3f));
   EXPECT_FLOAT_EQ(
-      1.3f, content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
+      1.3f, blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
   EXPECT_FLOAT_EQ(
-      1.1f, content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
+      1.1f, blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
 
   // Test 'disabled' mode, which will reset A1's zoom to 1.f.
   EXPECT_TRUE(RunSetZoomSettings(tab_id_A1, "disabled", nullptr));
   std::string error = RunSetZoomExpectError(tab_id_A1, 1.4f);
   EXPECT_TRUE(base::MatchPattern(error, keys::kCannotZoomDisabledTabError));
   EXPECT_FLOAT_EQ(
-      1.f, content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
+      1.f, blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents_A1)));
   // We should still be able to zoom A2 though.
   EXPECT_TRUE(RunSetZoom(tab_id_A2, 1.4f));
   EXPECT_FLOAT_EQ(
-      1.4f, content::ZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
+      1.4f, blink::PageZoomLevelToZoomFactor(GetZoomLevel(web_contents_A2)));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, PerTabResetsOnNavigation) {
@@ -2057,13 +2060,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsZoomTest, CannotZoomInvalidTab) {
 }
 
 // Regression test for crbug.com/660498.
-// TODO(crbug.com/882213) Disabled due to timeouts on Linux builders.
-#if defined(OS_LINUX)
-#define MAYBE_TemporaryAddressSpoof DISABLED_TemporaryAddressSpoof
-#else
-#define MAYBE_TemporaryAddressSpoof TemporaryAddressSpoof
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_TemporaryAddressSpoof) {
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TemporaryAddressSpoof) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   content::WebContents* first_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -2084,14 +2081,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_TemporaryAddressSpoof) {
       pdf_extension_test_util::EnsurePDFHasLoaded(second_web_contents);
   EXPECT_TRUE(load_success);
 
+  auto* web_contents_for_click = second_web_contents;
+  if (content::MimeHandlerViewMode::UsesCrossProcessFrame()) {
+    auto inner_web_contents = web_contents_for_click->GetInnerWebContents();
+    ASSERT_EQ(1U, inner_web_contents.size());
+    // With MimeHandlerViewInCrossProcessFrame input should directly route to
+    // the guest WebContents as there is no longer a BrowserPlugin involved.
+    web_contents_for_click = inner_web_contents[0];
+  }
   // The actual PDF page coordinates that this click goes to is (346, 333),
   // after several space transformations, not (400, 400). This clicks on a link
   // to "http://www.facebook.com:83".
-  content::SimulateMouseClickAt(second_web_contents, 0,
+  content::SimulateMouseClickAt(web_contents_for_click, 0,
                                 blink::WebMouseEvent::Button::kLeft,
                                 gfx::Point(400, 400));
 
-  EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+  ASSERT_TRUE(navigation_manager.WaitForRequestStart());
 
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
@@ -2103,6 +2108,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, MAYBE_TemporaryAddressSpoof) {
             browser()->tab_strip_model()->GetActiveWebContents());
 
   EXPECT_EQ(url, second_web_contents->GetVisibleURL());
+
+  // Wait for the TestNavigationManager-monitored navigation to complete to
+  // avoid a race during browser teardown (see crbug.com/882213).
+  navigation_manager.WaitForNavigationFinished();
 }
 
 // Tests how chrome.windows.create behaves when setSelfAsOpener parameter is
@@ -2224,6 +2233,223 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_NoOpener) {
   // find |old_contents| using window.open/name.  This is currently broken,
   // because browsing instance boundaries are pierced for all extension frames
   // (we hope this can be limited to background pages / contents).
+}
+
+// Tests the origin of tabs created through chrome.windows.create().
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, WindowsCreate_OpenerAndOrigin) {
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("../simple_with_file"));
+  ASSERT_TRUE(extension);
+
+  // Navigate a tab to an extension page.
+  GURL extension_url = extension->GetResourceURL("file.html");
+  ui_test_utils::NavigateToURL(browser(), extension_url);
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  const std::string extension_origin_str =
+      url::Origin::Create(extension->url()).Serialize();
+  constexpr char kDataURL[] = "data:text/html,<html>test</html>";
+  std::string extension_url_str = extension_url.spec();
+  struct TestCase {
+    // The url to use in chrome.windows.create().
+    std::string url;
+    // If set, its value will be used to specify |setSelfAsOpener|.
+    base::Optional<bool> set_self_as_opener;
+    // The origin we expect the new tab to be in, opaque origins will be "null".
+    std::string expected_origin_str;
+  } test_cases[] = {
+      // about:blank URLs.
+      // With opener relationship, about:blank urls will get the extension's
+      // origin, without opener relationship, they will get opaque/"null"
+      // origin.
+      {url::kAboutBlankURL, true, extension_origin_str},
+      {url::kAboutBlankURL, false, "null"},
+      {url::kAboutBlankURL, base::nullopt, "null"},
+
+      // data:... URLs.
+      // With opener relationship or not, "data:..." URLs always gets unique
+      // origin, so origin will always be "null" in these cases.
+      {kDataURL, true, "null"},
+      {kDataURL, false, "null"},
+      {kDataURL, base::nullopt, "null"},
+
+      // chrome-extension:// URLs.
+      // These always get extension origin.
+      {extension_url_str, true, extension_origin_str},
+      {extension_url_str, false, extension_origin_str},
+      {extension_url_str, base::nullopt, extension_origin_str},
+  };
+
+  auto run_test_case = [&web_contents](const TestCase& test_case) {
+    std::string maybe_specify_set_self_as_opener = "";
+    if (test_case.set_self_as_opener) {
+      maybe_specify_set_self_as_opener =
+          base::StringPrintf(", setSelfAsOpener: %s",
+                             *test_case.set_self_as_opener ? "true" : "false");
+    }
+    std::string script = base::StringPrintf(
+        R"( chrome.windows.create({url: '%s'%s}); )", test_case.url.c_str(),
+        maybe_specify_set_self_as_opener.c_str());
+
+    content::WebContents* new_contents = nullptr;
+    {
+      content::WebContentsAddedObserver observer;
+      ASSERT_TRUE(content::ExecuteScript(web_contents, script));
+      new_contents = observer.GetWebContents();
+    }
+    ASSERT_TRUE(new_contents);
+    ASSERT_TRUE(content::WaitForLoadStop(new_contents));
+
+    std::string actual_origin_str;
+    EXPECT_TRUE(ExecuteScriptAndExtractString(
+        new_contents, "window.domAutomationController.send(origin);",
+        &actual_origin_str));
+    EXPECT_EQ(test_case.expected_origin_str, actual_origin_str);
+    const bool is_opaque_origin =
+        new_contents->GetMainFrame()->GetLastCommittedOrigin().opaque();
+    EXPECT_EQ(test_case.expected_origin_str == "null", is_opaque_origin);
+  };
+  for (size_t i = 0; i < base::size(test_cases); ++i) {
+    const auto& test_case = test_cases[i];
+    SCOPED_TRACE(
+        base::StringPrintf("#%" PRIuS " %s", i, test_case.url.c_str()));
+    run_test_case(test_case);
+  }
+}
+
+// Tests updating a URL of a web tab to an about:blank.  Verify that the new
+// frame is placed in the correct process, has the correct origin and that no
+// DCHECKs are hit anywhere.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutBlank) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("../simple_with_file"));
+  ASSERT_TRUE(extension);
+  GURL extension_url = extension->GetResourceURL("file.html");
+  url::Origin extension_origin = url::Origin::Create(extension_url);
+  GURL web_url = embedded_test_server()->GetURL("/title1.html");
+  url::Origin web_origin = url::Origin::Create(web_url);
+  GURL about_blank_url = GURL(url::kAboutBlankURL);
+
+  // Navigate a tab to an extension page.
+  ui_test_utils::NavigateToURL(browser(), extension_url);
+  content::WebContents* extension_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(extension_origin,
+            extension_contents->GetMainFrame()->GetLastCommittedOrigin());
+
+  // Create another tab and navigate it to a web page.
+  content::WebContents* test_contents = nullptr;
+  {
+    content::WebContentsAddedObserver test_contents_observer;
+    content::TestNavigationObserver nav_observer(nullptr);
+    nav_observer.StartWatchingNewWebContents();
+    content::ExecuteScriptAsync(
+        extension_contents,
+        content::JsReplace("window.open($1, '_blank')", web_url));
+
+    test_contents = test_contents_observer.GetWebContents();
+    nav_observer.WaitForNavigationFinished();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(web_url, nav_observer.last_navigation_url());
+  }
+  EXPECT_EQ(web_origin,
+            test_contents->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_NE(extension_contents->GetMainFrame()->GetProcess(),
+            test_contents->GetMainFrame()->GetProcess());
+
+  // Use |chrome.tabs.update| API to navigate |test_contents| to an about:blank
+  // URL.
+  {
+    content::TestNavigationObserver nav_observer(test_contents, 1);
+    int test_tab_id = ExtensionTabUtil::GetTabId(test_contents);
+    content::ExecuteScriptAsync(
+        extension_contents,
+        content::JsReplace("chrome.tabs.update($1, { url: $2 })", test_tab_id,
+                           about_blank_url));
+    nav_observer.WaitForNavigationFinished();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(about_blank_url, nav_observer.last_navigation_url());
+  }
+
+  // Verify the origin and process of the about:blank tab.
+  content::RenderFrameHost* test_frame = test_contents->GetMainFrame();
+  EXPECT_EQ(about_blank_url, test_frame->GetLastCommittedURL());
+  EXPECT_EQ(extension_contents->GetMainFrame()->GetProcess(),
+            test_contents->GetMainFrame()->GetProcess());
+
+  // The expectations below preserve the behavior at r704251.  It is not clear
+  // whether these are the right expectations - maybe about:blank should commit
+  // with an extension origin?  OTOH, committing with the extension origin
+  // wouldn't be possible when targeting an incognito window (see also
+  // IncognitoApiTest.Incognito test).
+  EXPECT_TRUE(test_frame->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(
+      extension_origin.GetTupleOrPrecursorTupleIfOpaque(),
+      test_frame->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque());
+}
+
+// Tests updating a URL of a web tab to a non-web-accessible-resource of an
+// extension - such navigation should be allowed.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToNonWAR) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const extensions::Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("../simple_with_file"));
+  ASSERT_TRUE(extension);
+  GURL extension_url = extension->GetResourceURL("file.html");
+  url::Origin extension_origin = url::Origin::Create(extension_url);
+  GURL web_url = embedded_test_server()->GetURL("/title1.html");
+  url::Origin web_origin = url::Origin::Create(web_url);
+  GURL non_war_url = extension_url;
+
+  // Navigate a tab to an extension page.
+  ui_test_utils::NavigateToURL(browser(), extension_url);
+  content::WebContents* extension_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(extension_origin,
+            extension_contents->GetMainFrame()->GetLastCommittedOrigin());
+
+  // Create another tab and navigate it to a web page.
+  content::WebContents* test_contents = nullptr;
+  {
+    content::WebContentsAddedObserver test_contents_observer;
+    content::TestNavigationObserver nav_observer(nullptr);
+    nav_observer.StartWatchingNewWebContents();
+    content::ExecuteScriptAsync(
+        extension_contents,
+        content::JsReplace("window.open($1, '_blank')", web_url));
+    test_contents = test_contents_observer.GetWebContents();
+    nav_observer.WaitForNavigationFinished();
+
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(web_url, nav_observer.last_navigation_url());
+  }
+  EXPECT_EQ(web_origin,
+            test_contents->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_NE(extension_contents->GetMainFrame()->GetProcess(),
+            test_contents->GetMainFrame()->GetProcess());
+
+  // Use |chrome.tabs.update| API to navigate |test_contents| to a
+  // non-web-accessible-resource of an extension.
+  {
+    content::TestNavigationObserver nav_observer(test_contents, 1);
+    int test_tab_id = ExtensionTabUtil::GetTabId(test_contents);
+    content::ExecuteScriptAsync(
+        extension_contents,
+        content::JsReplace("chrome.tabs.update($1, { url: $2 })", test_tab_id,
+                           non_war_url));
+    nav_observer.WaitForNavigationFinished();
+    EXPECT_TRUE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(non_war_url, nav_observer.last_navigation_url());
+  }
+
+  // Verify the origin and process of the navigated tab.
+  content::RenderFrameHost* test_frame = test_contents->GetMainFrame();
+  EXPECT_EQ(non_war_url, test_frame->GetLastCommittedURL());
+  EXPECT_EQ(extension_origin, test_frame->GetLastCommittedOrigin());
+  EXPECT_EQ(extension_contents->GetMainFrame()->GetProcess(),
+            test_contents->GetMainFrame()->GetProcess());
 }
 
 }  // namespace extensions

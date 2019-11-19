@@ -45,75 +45,92 @@ void URLDataSource::GetSourceForURL(
     BrowserContext* browser_context,
     const GURL& url,
     base::OnceCallback<void(URLDataSource*)> callback) {
-  base::PostTaskWithTraitsAndReplyWithResult(
+  base::PostTaskAndReplyWithResult(
       FROM_HERE, {content::BrowserThread::IO},
       base::BindOnce(&GetSourceForURLHelper,
                      browser_context->GetResourceContext(), url),
       std::move(callback));
 }
 
+// static
+std::string URLDataSource::URLToRequestPath(const GURL& url) {
+  const std::string& spec = url.possibly_invalid_spec();
+  const url::Parsed& parsed = url.parsed_for_possibly_invalid_spec();
+  // + 1 to skip the slash at the beginning of the path.
+  int offset = parsed.CountCharactersBefore(url::Parsed::PATH, false) + 1;
+
+  if (offset < static_cast<int>(spec.size()))
+    return spec.substr(offset);
+
+  return std::string();
+}
+
 scoped_refptr<base::SingleThreadTaskRunner>
-URLDataSource::TaskRunnerForRequestPath(const std::string& path) const {
-  return base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI});
+URLDataSource::TaskRunnerForRequestPath(const std::string& path) {
+  return base::CreateSingleThreadTaskRunner({BrowserThread::UI});
 }
 
-bool URLDataSource::ShouldReplaceExistingSource() const {
+bool URLDataSource::ShouldReplaceExistingSource() {
   return true;
 }
 
-bool URLDataSource::AllowCaching() const {
+bool URLDataSource::AllowCaching() {
   return true;
 }
 
-bool URLDataSource::ShouldAddContentSecurityPolicy() const {
+bool URLDataSource::ShouldAddContentSecurityPolicy() {
   return true;
 }
 
-std::string URLDataSource::GetContentSecurityPolicyScriptSrc() const {
+std::string URLDataSource::GetContentSecurityPolicyScriptSrc() {
   // Note: Do not add 'unsafe-eval' here. Instead override CSP for the
   // specific pages that need it, see context http://crbug.com/525224.
   return "script-src chrome://resources 'self';";
 }
 
-std::string URLDataSource::GetContentSecurityPolicyObjectSrc() const {
+std::string URLDataSource::GetContentSecurityPolicyObjectSrc() {
   return "object-src 'none';";
 }
 
-std::string URLDataSource::GetContentSecurityPolicyChildSrc() const {
+std::string URLDataSource::GetContentSecurityPolicyChildSrc() {
   return "child-src 'none';";
 }
 
-std::string URLDataSource::GetContentSecurityPolicyStyleSrc() const {
+std::string URLDataSource::GetContentSecurityPolicyStyleSrc() {
   return std::string();
 }
 
-std::string URLDataSource::GetContentSecurityPolicyImgSrc() const {
+std::string URLDataSource::GetContentSecurityPolicyImgSrc() {
   return std::string();
 }
 
-bool URLDataSource::ShouldDenyXFrameOptions() const {
+std::string URLDataSource::GetContentSecurityPolicyWorkerSrc() {
+  return std::string();
+}
+
+bool URLDataSource::ShouldDenyXFrameOptions() {
   return true;
 }
 
 bool URLDataSource::ShouldServiceRequest(const GURL& url,
                                          ResourceContext* resource_context,
-                                         int render_process_id) const {
+                                         int render_process_id) {
   return url.SchemeIs(kChromeDevToolsScheme) || url.SchemeIs(kChromeUIScheme);
 }
 
-bool URLDataSource::ShouldServeMimeTypeAsContentTypeHeader() const {
+bool URLDataSource::ShouldServeMimeTypeAsContentTypeHeader() {
   return false;
 }
 
 std::string URLDataSource::GetAccessControlAllowOriginForOrigin(
-    const std::string& origin) const {
+    const std::string& origin) {
   return std::string();
 }
 
-bool URLDataSource::IsGzipped(const std::string& path) const {
+void URLDataSource::DisablePolymer2ForHost(const std::string& host) {}
+
+bool URLDataSource::ShouldReplaceI18nInJS() {
   return false;
 }
-
-void URLDataSource::DisablePolymer2ForHost(const std::string& host) {}
 
 }  // namespace content

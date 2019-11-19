@@ -5,7 +5,9 @@
 #include "components/sync/base/syncer_error.h"
 
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 
 namespace syncer {
 
@@ -47,12 +49,38 @@ std::string GetSyncerErrorString(SyncerError::Value value) {
 
 }  // namespace
 
+SyncerError::SyncerError(Value value) : value_(value) {
+  // NETWORK_CONNECTION_UNAVAILABLE error must be created via the separate
+  // factory method NetworkConnectionUnavailable().
+  DCHECK_NE(value_, NETWORK_CONNECTION_UNAVAILABLE);
+  // SYNC_SERVER_ERROR and SYNC_AUTH_ERROR both correspond to HTTP errors, and
+  // must be created via HttpError().
+  DCHECK_NE(value_, SYNC_SERVER_ERROR);
+  DCHECK_NE(value_, SYNC_AUTH_ERROR);
+}
+
+// static
+SyncerError SyncerError::NetworkConnectionUnavailable(int net_error_code) {
+  return SyncerError(NETWORK_CONNECTION_UNAVAILABLE, net_error_code,
+                     /*http_status_code=*/0);
+}
+
+// static
+SyncerError SyncerError::HttpError(int http_status_code) {
+  return SyncerError((http_status_code == net::HTTP_UNAUTHORIZED)
+                         ? SYNC_AUTH_ERROR
+                         : SYNC_SERVER_ERROR,
+                     /*net_error_code=*/0, http_status_code);
+}
+
 std::string SyncerError::ToString() const {
-  if (value_ != NETWORK_CONNECTION_UNAVAILABLE) {
-    return GetSyncerErrorString(value_);
+  std::string result = GetSyncerErrorString(value_);
+  if (value_ == NETWORK_CONNECTION_UNAVAILABLE) {
+    result += " (" + net::ErrorToShortString(net_error_code_) + ")";
+  } else if (value_ == SYNC_SERVER_ERROR || value_ == SYNC_AUTH_ERROR) {
+    result += " (HTTP " + base::NumberToString(http_status_code_) + ")";
   }
-  return GetSyncerErrorString(value_) + " (" +
-         net::ErrorToShortString(net_error_code_) + ")";
+  return result;
 }
 
 bool SyncerError::IsActualError() const {

@@ -73,7 +73,7 @@ class BufferedSocketWriter {
 
   bool write_pending_ = false;
 
-  base::WeakPtrFactory<BufferedSocketWriter> weak_factory_;
+  base::WeakPtrFactory<BufferedSocketWriter> weak_factory_{this};
 };
 
 }  // namespace remoting

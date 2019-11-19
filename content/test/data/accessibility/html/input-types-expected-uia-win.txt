@@ -1,0 +1,51 @@
+document
+++group
+++++description
+++++++description Name='Default: '
+++++++textbox Name='Default:'
+++++description
+++++++description Name='Button: '
+++++++button Name='Button:'
+++++checkbox Name='Checkbox:' Toggle.ToggleState='Off'
+++++description
+++++++description Name='Color: '
+++++++textbox Name='Color:' Value.Value='0% red 0% green 0% blue'
+++++description
+++++++description Name='Email: '
+++++++textbox Name='Email:'
+++++description
+++++++description Name='File: '
+++++++button Name='File:'
+++++++++button Name='Choose File'
+++++description
+++++++description Name='Image: '
+++++++button Name='Image:'
+++++++++img
+++++description
+++++++description Name='Number: '
+++++++spinbutton Name='Number:' RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=0.00 RangeValue.Minimum=0.00 RangeValue.Value=0.00
+++++description
+++++++description Name='Password: '
+++++++textbox Name='Password:' IsPassword=true
+++++radio Name='Radio:' SelectionItem.IsSelected=false
+++++description
+++++++description Name='Range: '
+++++++slider Name='Range:' RangeValue.IsReadOnly=false RangeValue.LargeChange=10.00 RangeValue.SmallChange=1.00 RangeValue.Maximum=100.00 RangeValue.Minimum=0.00 RangeValue.Value=50.00 Value.Value='50'
+++++description
+++++++description Name='Reset: '
+++++++button Name='Reset:'
+++++description
+++++++description Name='Search: '
+++++++searchbox Name='Search:'
+++++description
+++++++description Name='Submit: '
+++++++button Name='Submit:'
+++++description
+++++++description Name='Tel: '
+++++++textbox Name='Tel:'
+++++description
+++++++description Name='Text: '
+++++++textbox Name='Text:'
+++++description
+++++++description Name='Url: '
+++++++textbox Name='Url:'

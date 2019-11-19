@@ -4,6 +4,9 @@
 
 #include "ui/ozone/demo/skia/skia_gl_renderer.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
@@ -21,6 +24,7 @@
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/init/gl_factory.h"
+#include "ui/ozone/public/platform_window_surface.h"
 
 namespace ui {
 
@@ -36,14 +40,16 @@ const char kUseDDL[] = "use-ddl";
 
 }  // namespace
 
-SkiaGlRenderer::SkiaGlRenderer(gfx::AcceleratedWidget widget,
-                               const scoped_refptr<gl::GLSurface>& surface,
-                               const gfx::Size& size)
+SkiaGlRenderer::SkiaGlRenderer(
+    gfx::AcceleratedWidget widget,
+    std::unique_ptr<PlatformWindowSurface> window_surface,
+    const scoped_refptr<gl::GLSurface>& surface,
+    const gfx::Size& size)
     : RendererBase(widget, size),
+      window_surface_(std::move(window_surface)),
       gl_surface_(surface),
       use_ddl_(base::CommandLine::ForCurrentProcess()->HasSwitch(kUseDDL)),
-      condition_variable_(&lock_),
-      weak_ptr_factory_(this) {}
+      condition_variable_(&lock_) {}
 
 SkiaGlRenderer::~SkiaGlRenderer() {
   if (use_ddl_)
@@ -69,8 +75,9 @@ bool SkiaGlRenderer::Initialize() {
       sk_sp<const GrGLInterface>(GrGLCreateNativeInterface());
   DCHECK(native_interface);
   GrContextOptions options;
-  if (use_ddl_)
-    options.fExplicitlyAllocateGPUResources = GrContextOptions::Enable::kYes;
+  // TODO(csmartdalton): enable internal multisampling after the related Skia
+  // rolls are in.
+  options.fInternalMultisampleCount = 0;
   gr_context_ = GrContext::MakeGL(std::move(native_interface), options);
   DCHECK(gr_context_);
 
@@ -149,7 +156,7 @@ void SkiaGlRenderer::Draw(SkCanvas* canvas, float fraction) {
     SkPoint linearPoints[] = {{0, 0}, {300, 300}};
     SkColor linearColors[] = {SK_ColorGREEN, SK_ColorBLACK};
     paint.setShader(SkGradientShader::MakeLinear(
-        linearPoints, linearColors, nullptr, 2, SkShader::kMirror_TileMode));
+        linearPoints, linearColors, nullptr, 2, SkTileMode::kMirror));
     paint.setAntiAlias(true);
 
     canvas->drawCircle(200, 200, 64, paint);
@@ -247,7 +254,6 @@ void SkiaGlRenderer::Run() {
 }
 
 void SkiaGlRenderer::OnPresentation(const gfx::PresentationFeedback& feedback) {
-  DCHECK(gl_surface_->SupportsPresentationCallback());
   LOG_IF(ERROR, feedback.timestamp.is_null()) << "Last frame is discarded!";
 }
 

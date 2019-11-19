@@ -40,6 +40,7 @@ class GFX_EXPORT RenderTextMac : public RenderText {
                                     const Point& drag_origin) override;
   bool IsSelectionSupported() const override;
   std::vector<FontSpan> GetFontSpansForTesting() override;
+  size_t GetLineContainingCaret(const SelectionModel& caret) override;
 
  protected:
   // RenderText:
@@ -50,10 +51,11 @@ class GFX_EXPORT RenderTextMac : public RenderText {
   SelectionModel AdjacentWordSelectionModel(
       const SelectionModel& selection,
       VisualCursorDirection direction) override;
-  Range GetCursorSpan(const Range& text_range) override;
+  SelectionModel AdjacentLineSelectionModel(
+      const SelectionModel& selection,
+      VisualCursorDirection direction) override;
+  RangeF GetCursorSpan(const Range& text_range) override;
   std::vector<Rect> GetSubstringBounds(const Range& range) override;
-  size_t TextIndexToDisplayIndex(size_t index) override;
-  size_t DisplayIndexToTextIndex(size_t index) override;
   bool IsValidCursorIndex(size_t index) override;
   void OnLayoutTextAttributeChanged(bool text_changed) override;
   void OnDisplayTextAttributeChanged() override;

@@ -14,18 +14,18 @@
 @protocol URLLoadingObserver <NSObject>
 @optional
 
-// The loader will open |URL| in the current tab. Next state will be
-// one of: tabFailedToOpenURL, tabDidPrerenderURL,
-// tabDidReloadURL or tabDidOpenURL.
-// Invoked by UrlLoadingObserverBridge::TabWillOpenUrl.
-- (void)tabWillOpenURL:(GURL)URL
+// The loader will load |URL| in the current tab. Next state will be
+// one of: tabFailedToLoadURL, tabDidPrerenderURL,
+// tabDidReloadURL or tabDidLoadURL.
+// Invoked by UrlLoadingObserverBridge::TabWillLoadUrl.
+- (void)tabWillLoadURL:(GURL)URL
         transitionType:(ui::PageTransition)transitionType;
 
-// The loader didn't succeed opening the requested |URL|. Reason
+// The loader didn't succeed loading the requested |URL|. Reason
 // can, for example be an incognito mismatch or an induced crash.
-// It is possible that the url was opened, but in another tab.
-// Invoked by UrlLoadingObserverBridge::TabFailedToOpenUrl.
-- (void)tabFailedToOpenURL:(GURL)URL
+// It is possible that the url was loaded, but in another tab.
+// Invoked by UrlLoadingObserverBridge::TabFailedToLoadUrl.
+- (void)tabFailedToLoadURL:(GURL)URL
             transitionType:(ui::PageTransition)transitionType;
 
 // The loader replaced the load with a prerendering.
@@ -39,27 +39,27 @@
          transitionType:(ui::PageTransition)transitionType;
 
 // The loader initiated the |url| loading successfully.
-// Invoked by UrlLoadingObserverBridge::TabDidOpenUrl.
-- (void)tabDidOpenURL:(GURL)URL
+// Invoked by UrlLoadingObserverBridge::TabDidLoadUrl.
+- (void)tabDidLoadURL:(GURL)URL
        transitionType:(ui::PageTransition)transitionType;
 
-// The loader will open |URL| in a new tab. Next state will be:
-// newTabDidOpenURL.
-// Invoked by UrlLoadingObserverBridge::NewTabWillOpenUrl.
-- (void)newTabWillOpenURL:(GURL)URL inIncognito:(BOOL)inIncognito;
+// The loader will load |URL| in a new tab. Next state will be:
+// newTabDidLoadURL.
+// Invoked by UrlLoadingObserverBridge::NewTabWillLoadUrl.
+- (void)newTabWillLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated;
 
 // The loader initiated the |URL| loading in a new tab successfully.
-// Invoked by UrlLoadingObserverBridge::NewTabDidOpenUrl.
-- (void)newTabDidOpenURL:(GURL)URL inIncognito:(BOOL)inIncognito;
+// Invoked by UrlLoadingObserverBridge::NewTabDidLoadUrl.
+- (void)newTabDidLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated;
 
 // The loader will switch to an existing tab with |URL| instead of loading it.
 // Next state will be: didSwitchToTabWithURL. Invoked by
-// UrlLoadingObserverBridge::NewTabWillOpenUrl.
+// UrlLoadingObserverBridge::NewTabWillLoadUrl.
 - (void)willSwitchToTabWithURL:(GURL)URL
               newWebStateIndex:(NSInteger)newWebStateIndex;
 
 // The loader switched to an existing tab with |URL|.
-// Invoked by UrlLoadingObserverBridge::NewTabDidOpenUrl.
+// Invoked by UrlLoadingObserverBridge::NewTabDidLoadUrl.
 - (void)didSwitchToTabWithURL:(GURL)URL
              newWebStateIndex:(NSInteger)newWebStateIndex;
 
@@ -70,14 +70,14 @@ class UrlLoadingObserverBridge {
  public:
   UrlLoadingObserverBridge(id<URLLoadingObserver> owner);
 
-  void TabWillOpenUrl(const GURL& url, ui::PageTransition transition_type);
-  void TabFailedToOpenUrl(const GURL& url, ui::PageTransition transition_type);
+  void TabWillLoadUrl(const GURL& url, ui::PageTransition transition_type);
+  void TabFailedToLoadUrl(const GURL& url, ui::PageTransition transition_type);
   void TabDidPrerenderUrl(const GURL& url, ui::PageTransition transition_type);
   void TabDidReloadUrl(const GURL& url, ui::PageTransition transition_type);
-  void TabDidOpenUrl(const GURL& url, ui::PageTransition transition_type);
+  void TabDidLoadUrl(const GURL& url, ui::PageTransition transition_type);
 
-  void NewTabWillOpenUrl(const GURL& url, bool in_incognito);
-  void NewTabDidOpenUrl(const GURL& url, bool in_incognito);
+  void NewTabWillLoadUrl(const GURL& url, bool user_initiated);
+  void NewTabDidLoadUrl(const GURL& url, bool user_initiated);
 
   void WillSwitchToTabWithUrl(const GURL& url, int new_web_state_index);
   void DidSwitchToTabWithUrl(const GURL& url, int new_web_state_index);

@@ -18,7 +18,7 @@ WebMetaElement::WebMetaElement(HTMLMetaElement* element)
     : WebElement(element) {}
 
 DEFINE_WEB_NODE_TYPE_CASTS(WebMetaElement,
-                           IsHTMLMetaElement(ConstUnwrap<Node>()))
+                           IsA<HTMLMetaElement>(ConstUnwrap<Node>()))
 
 WebMetaElement& WebMetaElement::operator=(HTMLMetaElement* element) {
   private_ = element;
@@ -26,7 +26,7 @@ WebMetaElement& WebMetaElement::operator=(HTMLMetaElement* element) {
 }
 
 WebMetaElement::operator HTMLMetaElement*() const {
-  return ToHTMLMetaElement(private_.Get());
+  return blink::To<HTMLMetaElement>(private_.Get());
 }
 
 }  // namespace blink

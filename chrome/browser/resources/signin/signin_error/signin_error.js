@@ -26,7 +26,7 @@ cr.define('signin.error', function() {
     // on "enter" being pressed and the user hits "enter", perform the default
     // action of the dialog, which is "OK".
     if (e.key == 'Enter' &&
-        !/^(A|PAPER-BUTTON)$/.test(document.activeElement.tagName)) {
+        !/^(A|CR-BUTTON)$/.test(document.activeElement.tagName)) {
       $('confirmButton').click();
       e.preventDefault();
     }

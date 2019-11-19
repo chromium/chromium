@@ -9,7 +9,7 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/chrome_root_coordinator.h"
-#import "ios/chrome/browser/ui/main/view_controller_swapping.h"
+#import "ios/chrome/browser/ui/tab_grid/view_controller_swapping.h"
 
 @protocol ApplicationCommands;
 @class TabModel;

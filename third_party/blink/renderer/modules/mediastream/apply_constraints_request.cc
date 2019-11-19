@@ -10,18 +10,11 @@
 
 namespace blink {
 
-ApplyConstraintsRequest* ApplyConstraintsRequest::Create(
-    const WebMediaStreamTrack& track,
-    const WebMediaConstraints& constraints,
-    ScriptPromiseResolver* resolver) {
-  return MakeGarbageCollected<ApplyConstraintsRequest>(track, constraints,
-                                                       resolver);
-}
-
 ApplyConstraintsRequest* ApplyConstraintsRequest::CreateForTesting(
     const WebMediaStreamTrack& track,
     const WebMediaConstraints& constraints) {
-  return Create(track, constraints, nullptr);
+  return MakeGarbageCollected<ApplyConstraintsRequest>(track, constraints,
+                                                       nullptr);
 }
 
 ApplyConstraintsRequest::ApplyConstraintsRequest(
@@ -47,8 +40,9 @@ void ApplyConstraintsRequest::RequestSucceeded() {
 
 void ApplyConstraintsRequest::RequestFailed(const String& constraint,
                                             const String& message) {
-  if (resolver_)
+  if (resolver_) {
     resolver_->Reject(OverconstrainedError::Create(constraint, message));
+  }
   track_.Reset();
 }
 

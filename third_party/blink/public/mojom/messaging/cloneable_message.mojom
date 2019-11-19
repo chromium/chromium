@@ -7,6 +7,8 @@ module blink.mojom;
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
+import "third_party/blink/public/mojom/native_file_system/native_file_system_transfer_token.mojom";
+import "url/mojom/origin.mojom";
 
 // This struct represents the cloneable part of messages that are sent across
 // postMessage style APIs. In particular this is used for BroadcastChannel.
@@ -14,6 +16,18 @@ struct CloneableMessage {
   mojo_base.mojom.BigBuffer encoded_message;
   // Blob handles for any blobs being sent in this message.
   array<SerializedBlob> blobs;
+  // Populated by message senders to prevent remote origins from accessing
+  // |native_file_system_tokens|. Tokens from a remote origin must fail by
+  // dispatching a 'messageerror' event instead of a 'message' event. If
+  // somehow a compromised process bypasses this origin check, the
+  // NativeFileSystemManager in the browser process performs another origin
+  // check that will prevent the use of remote origin NativeFileSystemHandles.
+  //
+  // The message sender may leave |sender_origin| null. When |sender_origin| is
+  // null, the message receiver must handle the message like it is from an
+  // unknown remote origin by dispatching the 'messageerror' event when
+  // |native_file_system_tokens| is not an empty array.
+  url.mojom.Origin? sender_origin;
   // Stack trace captured by sender.
   // For more details see v8_inspector::V8StackTraceId.
   // TODO(kozyatinskiy): move this to separate headers as soon as we get
@@ -21,7 +35,11 @@ struct CloneableMessage {
   uint64 stack_trace_id;
   int64 stack_trace_debugger_id_first;
   int64 stack_trace_debugger_id_second;
+  bool stack_trace_should_pause;
   // If not null, this message is locked to the given agent cluster ID.
   // See https://html.spec.whatwg.org/multipage/webappapis.html#integration-with-the-javascript-agent-cluster-formalism
   mojo_base.mojom.UnguessableToken? locked_agent_cluster_id;
+  // Tokens required to clone FileSystemFileHandles and/or
+  // FileSystemDirectoryHandles.
+  array<pending_remote<NativeFileSystemTransferToken>> native_file_system_tokens;
 };

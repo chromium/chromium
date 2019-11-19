@@ -1,0 +1,3 @@
+android.webkit.WebView focusable focused scrollable
+++android.widget.ProgressBar role_description='meter' range name='funding' item_index=50 item_count=100 range_max=100 range_current_value=50
+++android.widget.ProgressBar role_description='meter' range name='funding' item_index=10 item_count=100 range_max=100 range_current_value=10

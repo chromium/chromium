@@ -61,7 +61,8 @@ bool ImportCatalogSync(std::string version_token,
   // currently in use, don't change it.  This is an error, should have been
   // caught before we got here.
   std::string current_version_token;
-  if (meta_table.GetValue("current_catalog", &current_version_token) &&
+  if (meta_table.GetValue(ExploreSitesSchema::kCurrentCatalogKey,
+                          &current_version_token) &&
       current_version_token == version_token) {
     return false;
   }
@@ -92,7 +93,8 @@ bool ImportCatalogSync(std::string version_token,
 
   // Update the downloading catalog version number to match what we are
   // importing.
-  if (!meta_table.SetValue("downloading_catalog", version_token))
+  if (!meta_table.SetValue(ExploreSitesSchema::kDownloadingCatalogKey,
+                           version_token))
     return false;
 
   // Then insert each category.
@@ -143,8 +145,7 @@ ImportCatalogTask::ImportCatalogTask(ExploreSitesStore* store,
     : store_(store),
       version_token_(version_token),
       catalog_proto_(std::move(catalog_proto)),
-      callback_(std::move(callback)),
-      weak_ptr_factory_(this) {}
+      callback_(std::move(callback)) {}
 
 ImportCatalogTask::~ImportCatalogTask() = default;
 

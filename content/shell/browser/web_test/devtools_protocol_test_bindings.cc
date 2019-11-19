@@ -5,6 +5,7 @@
 #include "content/shell/browser/web_test/devtools_protocol_test_bindings.h"
 
 #include "base/bind.h"
+#include "base/bind_helpers.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/json/string_escape.h"
@@ -74,8 +75,9 @@ void DevToolsProtocolTestBindings::ReadyToCommitNavigation(
   if (frame->GetParent())
     return;
   frontend_host_ = DevToolsFrontendHost::Create(
-      frame, base::Bind(&DevToolsProtocolTestBindings::HandleMessageFromTest,
-                        base::Unretained(this)));
+      frame,
+      base::BindRepeating(&DevToolsProtocolTestBindings::HandleMessageFromTest,
+                          base::Unretained(this)));
 #endif
 }
 
@@ -120,7 +122,8 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
     base::EscapeJSONString(message, true, &param);
     std::string code = "DevToolsAPI.dispatchMessage(" + param + ");";
     base::string16 javascript = base::UTF8ToUTF16(code);
-    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(javascript);
+    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+        javascript, base::NullCallback());
     return;
   }
 
@@ -133,7 +136,8 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
     std::string code = "DevToolsAPI.dispatchMessageChunk(" + param + "," +
                        std::to_string(pos ? 0 : total_size) + ");";
     base::string16 javascript = base::UTF8ToUTF16(code);
-    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(javascript);
+    web_contents()->GetMainFrame()->ExecuteJavaScriptForTests(
+        javascript, base::NullCallback());
   }
 }
 

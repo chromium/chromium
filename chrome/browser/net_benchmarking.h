@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/net_benchmarking.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace predictors {
 class LoadingPredictor;
@@ -28,7 +29,7 @@ class NetBenchmarking : public chrome::mojom::NetBenchmarking {
   static void Create(
       base::WeakPtr<predictors::LoadingPredictor> loading_predictor,
       int render_process_id,
-      chrome::mojom::NetBenchmarkingRequest request);
+      mojo::PendingReceiver<chrome::mojom::NetBenchmarking> receiver);
 
   // This method is thread-safe.
   static bool CheckBenchmarkingEnabled();

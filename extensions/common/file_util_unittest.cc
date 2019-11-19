@@ -59,9 +59,10 @@ scoped_refptr<Extension> LoadExtensionManifest(
     int extra_flags,
     std::string* error) {
   JSONStringValueDeserializer deserializer(manifest_value);
-  std::unique_ptr<base::Value> result = deserializer.Deserialize(NULL, error);
+  std::unique_ptr<base::Value> result =
+      deserializer.Deserialize(nullptr, error);
   if (!result.get())
-    return NULL;
+    return nullptr;
   CHECK_EQ(base::Value::Type::DICTIONARY, result->type());
   return LoadExtensionManifest(*base::DictionaryValue::From(std::move(result)),
                                manifest_dir, location, extra_flags, error);
@@ -190,7 +191,7 @@ TEST_F(FileUtilTest, LoadExtensionWithValidLocales) {
   std::string error;
   scoped_refptr<Extension> extension(file_util::LoadExtension(
       install_dir, Manifest::UNPACKED, Extension::NO_FLAGS, &error));
-  ASSERT_TRUE(extension.get() != NULL);
+  ASSERT_TRUE(extension.get() != nullptr);
   EXPECT_EQ("The first extension that I made.", extension->description());
 }
 
@@ -202,7 +203,7 @@ TEST_F(FileUtilTest, LoadExtensionWithoutLocalesFolder) {
   std::string error;
   scoped_refptr<Extension> extension(file_util::LoadExtension(
       install_dir, Manifest::UNPACKED, Extension::NO_FLAGS, &error));
-  ASSERT_FALSE(extension.get() == NULL);
+  ASSERT_FALSE(extension.get() == nullptr);
   EXPECT_TRUE(error.empty());
 }
 
@@ -295,7 +296,7 @@ TEST_F(FileUtilTest, LoadExtensionGivesHelpfullErrorOnMissingManifest) {
   std::string error;
   scoped_refptr<Extension> extension(file_util::LoadExtension(
       install_dir, Manifest::UNPACKED, Extension::NO_FLAGS, &error));
-  ASSERT_TRUE(extension.get() == NULL);
+  ASSERT_TRUE(extension.get() == nullptr);
   ASSERT_FALSE(error.empty());
   ASSERT_EQ(manifest_errors::kManifestUnreadable, error);
 }
@@ -309,7 +310,7 @@ TEST_F(FileUtilTest, LoadExtensionGivesHelpfullErrorOnBadManifest) {
   std::string error;
   scoped_refptr<Extension> extension(file_util::LoadExtension(
       install_dir, Manifest::UNPACKED, Extension::NO_FLAGS, &error));
-  ASSERT_TRUE(extension.get() == NULL);
+  ASSERT_TRUE(extension.get() == nullptr);
   ASSERT_FALSE(error.empty());
   ASSERT_EQ(manifest_errors::kManifestParseError +
                 std::string("  Line: 2, column: 16, Syntax error."),
@@ -571,7 +572,14 @@ TEST_F(FileUtilTest, ExtensionURLToRelativeFilePath) {
     {URL_PREFIX "/simple.html", "simple.html"},
     {URL_PREFIX "\\simple.html", "simple.html"},
     {URL_PREFIX "\\\\foo\\simple.html", "foo/simple.html"},
-    {URL_PREFIX "..%2f..%2fsimple.html", "..%2f..%2fsimple.html"},
+    // Escaped file paths result in failure.
+    {URL_PREFIX "..%2f..%2fsimple.html", ""},
+    // Escaped things that look like escaped file paths, on the other hand,
+    // should work.
+    {URL_PREFIX "..%252f..%252fsimple.html", "..%2f..%2fsimple.html"},
+    // This is a UTF-8 lock icon, which is unsafe to display in the omnibox, but
+    // is a valid, if unusual, file name.
+    {URL_PREFIX "%F0%9F%94%93.html", "\xF0\x9F\x94\x93.html"},
   };
 #undef URL_PREFIX
 

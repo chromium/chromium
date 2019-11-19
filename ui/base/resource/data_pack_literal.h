@@ -9,8 +9,10 @@ namespace ui {
 
 extern const char kSamplePakContentsV4[];
 extern const size_t kSamplePakSizeV4;
-extern const char kSamplePakContentsV5[];
-extern const size_t kSamplePakSizeV5;
+extern const char kSampleCompressPakContentsV5[];
+extern const size_t kSampleCompressPakSizeV5;
+extern const char kSampleCompressScaledPakContents[];
+extern const size_t kSampleCompressScaledPakSize;
 extern const char kSamplePakContents2x[];
 extern const size_t kSamplePakSize2x;
 extern const char kEmptyPakContents[];

@@ -29,14 +29,13 @@ h1 span {
 }
 
 h2 {
-  color: #666;
+  color: var(--heading-color);
   font-size: 1.2em;
   font-weight: normal;
   margin: 10px 0;
 }
 
 a {
-  color: rgb(17, 85, 204);
   text-decoration: none;
 }
 
@@ -94,6 +93,10 @@ a {
   margin-top: 15px;
 }
 
+#suggestions-list a {
+  color: var(--google-blue-600);
+}
+
 #suggestions-list p {
   margin-block-end: 0;
 }
@@ -121,7 +124,7 @@ a {
 .use-popup-container#error-information-popup-container
   #error-information-popup {
   align-items: center;
-  background-color: rgba(0,0,0,.65);
+  background-color: var(--popup-container-background-color);
   display: flex;
   height: 100%;
   left: 0;
@@ -143,7 +146,7 @@ a {
 
 .use-popup-container#error-information-popup-container
   #error-information-popup-box {
-  background-color: white;
+  background-color: var(--background-color);
   left: 5%;
   padding-bottom: 15px;
   padding-top: 15px;
@@ -423,29 +426,29 @@ a {
   }
 }
 
-.suggestion-with-image .offline-content-suggestion-visual {
+.suggestion-with-image .offline-content-suggestion-thumbnail {
   flex-basis: 8.2em;
   flex-shrink: 0;
 }
 
-.suggestion-with-image .offline-content-suggestion-visual > img {
+.suggestion-with-image .offline-content-suggestion-thumbnail > img {
   height: 100%;
   width: 100%;
 }
 
-#offline-content-list:not(.is-rtl) .suggestion-with-image
-.offline-content-suggestion-visual > img {
+.suggestion-with-image #offline-content-list:not(.is-rtl)
+.offline-content-suggestion-thumbnail > img {
   border-bottom-right-radius: 7px;
   border-top-right-radius: 7px;
 }
 
-#offline-content-list.is-rtl .suggestion-with-image
-.offline-content-suggestion-visual > img {
+.suggestion-with-image #offline-content-list.is-rtl
+.offline-content-suggestion-thumbnail > img {
   border-bottom-left-radius: 7px;
   border-top-left-radius: 7px;
 }
 
-.suggestion-with-icon .offline-content-suggestion-visual {
+.suggestion-with-icon .offline-content-suggestion-thumbnail {
   align-items: center;
   display: flex;
   justify-content: center;
@@ -453,7 +456,7 @@ a {
   min-width: 4.2em;
 }
 
-.suggestion-with-icon .offline-content-suggestion-visual > div {
+.suggestion-with-icon .offline-content-suggestion-thumbnail > div {
   align-items: center;
   background-color: rgb(241, 243, 244);
   border-radius: 50%;
@@ -463,9 +466,24 @@ a {
   width: 2.3em;
 }
 
-.suggestion-with-icon .offline-content-suggestion-visual > div > img {
+.suggestion-with-icon .offline-content-suggestion-thumbnail > div > img {
   height: 1.45em;
   width: 1.45em;
+}
+
+.offline-content-suggestion-favicon {
+  height: 1em;
+  margin-inline-end: 0.4em;
+  width: 1.4em;
+}
+
+.offline-content-suggestion-favicon > img {
+  height: 1.4em;
+  width: 1.4em;
+}
+
+.no-favicon .offline-content-suggestion-favicon {
+  display: none;
 }
 
 .image-video {
@@ -537,6 +555,7 @@ div.offline-content-suggestion {
   color: rgb(95, 99, 104);
   display: flex;
   font-size: .8em;
+  line-height: 1.7em;
 }
 
 .offline-content-suggestion-attribution {
@@ -544,6 +563,7 @@ div.offline-content-suggestion {
   -webkit-line-clamp: 1;
   display: -webkit-box;
   flex-shrink: 1;
+  margin-inline-end: 0.3em;
   overflow-wrap: break-word;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -600,56 +620,35 @@ div.offline-content-suggestion {
   transition: opacity 0.2s linear, visibility 0s 0.2s;
 }
 
-
-#offline-content-summary {
-  border: 1px solid var(--google-gray-300);
-  border-radius: 12px;
-  padding: 12px;
-  text-align: center;
-}
-
-.offline-content-summary-image-truncate {
-  width: 45px;
-}
-
-.offline-content-summary-images {
-  direction: ltr;
-  display: flex;
-  margin-top: 10px;
-  justify-content: center;
-  padding-bottom: 12px;
-}
-
-.offline-content-summary-images img {
-  background: rgb(241, 243, 244);
-  border-radius: 50%;
-  box-shadow:
-    0px 1px 2px 0px rgb(155, 155, 155),
-    0px 1px 3px 0px rgb(155, 155, 155);
-  padding: 12px;
-  width: 32px;
-}
-
-.offline-content-summary-description {
-  border-top: 1px solid var(--google-gray-300);
-  padding-top: 12px;
-}
-
-.offline-content-summary-action {
-  padding-top: 12px;
-}
-
 #cancel-save-page-button {
+  background-image: url(images/animated_offline_pin.svg);
+  background-position: right 27px center;
+  background-repeat: no-repeat;
   border: 1px solid var(--google-gray-300);
   border-radius: 5px;
   color: var(--google-gray-700);
-  padding: 16px;
-  text-align: center;
+  margin-bottom: 26px;
+  padding-bottom: 16px;
+  padding-inline-end: 88px;
+  padding-inline-start: 16px;
+  padding-top: 16px;
+  text-align: start;
+}
+
+html[dir="rtl"] #cancel-save-page-button {
+  background-position: left 27px center;
 }
 
 #save-page-for-later-button {
   display: flex;
-  justify-content: center;
+  justify-content: start;
+}
+
+#save-page-for-later-button a:before {
+  content: url(images/download-blue.svg);
+  display: inline-block;
+  margin-inline-end: 4px;
+  vertical-align: -webkit-baseline-middle;
 }
 
 .hidden#save-page-for-later-button {
@@ -790,22 +789,39 @@ TODO(https://crbug.com/852872): UI for offline suggested content is incomplete.
 
 /* Offline page */
 .offline {
-  transition: -webkit-filter 1.5s cubic-bezier(0.65, 0.05, 0.36, 1),
+  transition: filter 1.5s cubic-bezier(0.65, 0.05, 0.36, 1),
               background-color 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
-  will-change: -webkit-filter, background-color;
+<if expr="not is_ios">
+  will-change: filter, background-color;
+</if>
+}
+
+.offline body {
+  transition: background-color 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
 }
 
 .offline #main-message > p {
   display: none;
 }
 
+/* iOS WKWebView inverts the background color set at the HTML level
+whereas Blink does not. */
 .offline.inverted {
-  -webkit-filter: invert(100%);
+  filter: invert(1);
+<if expr="not is_ios">
   background-color: #000;
+</if>
+<if expr="is_ios">
+  background-color: #fff;
+</if>
+}
+
+.offline.inverted body {
+  background-color: #fff;
 }
 
 .offline .interstitial-wrapper {
-  color: #2b2b2b;
+  color: var(--text-color);
   font-size: 1em;
   line-height: 1.55;
   margin: 0 auto;
@@ -846,6 +862,16 @@ TODO(https://crbug.com/852872): UI for offline suggested content is incomplete.
 
 #offline-resources {
   display: none;
+}
+
+#offline-instruction {
+  image-rendering: pixelated;
+  left: 0;
+  margin: auto;
+  position: absolute;
+  right: 0;
+  top: 60px;
+  width: fit-content;
 }
 
 @media (max-width: 420px) {
@@ -968,4 +994,36 @@ TODO(https://crbug.com/852872): UI for offline suggested content is incomplete.
   transform-origin: top center;
   transition: transform 250ms cubic-bezier(0.4, 0.0, 1, 1) .4s;
   z-index: 2;
+}
+
+@media (prefers-color-scheme: dark) {
+  .icon {
+    filter: invert(1);
+  }
+
+  .offline .runner-canvas {
+    filter: invert(1);
+  }
+
+  .offline.inverted {
+    filter: invert(0);
+  <if expr="not is_ios">
+    background-color: var(--background-color);
+  </if>
+  <if expr="is_ios">
+    background-color: #fff;
+  </if>
+  }
+
+  .offline.inverted body {
+    background-color: #fff;
+  }
+
+  #suggestions-list a {
+    color: var(--link-color);
+  }
+
+  #error-information-button {
+    filter: invert(0.6);
+  }
 }

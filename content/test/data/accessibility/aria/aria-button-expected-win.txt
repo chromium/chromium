@@ -1,4 +1,4 @@
-ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0><obj1><obj2><obj3><obj4><obj5>'
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0><obj1><obj2><obj3><obj4><obj5><obj6><obj7>'
 ++ROLE_SYSTEM_PUSHBUTTON name='Button1' FOCUSABLE xml-roles:button ia2_hypertext='Button1'
 ++IA2_ROLE_TOGGLE_BUTTON name='Button2' PRESSED FOCUSABLE IA2_STATE_CHECKABLE xml-roles:button checkable:true ia2_hypertext='Button2'
 ++IA2_ROLE_TOGGLE_BUTTON name='Button3' FOCUSABLE IA2_STATE_CHECKABLE xml-roles:button checkable:true ia2_hypertext='Button3'
@@ -6,4 +6,10 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0><obj1><obj2><obj3><
 ++ROLE_SYSTEM_PUSHBUTTON name='Button5' FOCUSABLE xml-roles:button ia2_hypertext='Button5'
 ++ROLE_SYSTEM_PUSHBUTTON name='Complex button ' FOCUSABLE xml-roles:button ia2_hypertext='Complex button <obj1>'
 ++++ROLE_SYSTEM_STATICTEXT name='Complex button ' ia2_hypertext='Complex button '
+++++ROLE_SYSTEM_TEXT FOCUSABLE
+++IA2_ROLE_TOGGLE_BUTTON name='Complex toggle button ' PRESSED FOCUSABLE IA2_STATE_CHECKABLE xml-roles:button checkable:true ia2_hypertext='Complex toggle button <obj1>'
+++++ROLE_SYSTEM_STATICTEXT name='Complex toggle button ' ia2_hypertext='Complex toggle button '
+++++ROLE_SYSTEM_TEXT FOCUSABLE
+++ROLE_SYSTEM_BUTTONMENU name='Complex pop up button ' FOCUSABLE HASPOPUP xml-roles:button haspopup:menu ia2_hypertext='Complex pop up button <obj1>'
+++++ROLE_SYSTEM_STATICTEXT name='Complex pop up button ' ia2_hypertext='Complex pop up button '
 ++++ROLE_SYSTEM_TEXT FOCUSABLE

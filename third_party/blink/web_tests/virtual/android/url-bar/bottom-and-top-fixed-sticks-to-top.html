@@ -10,9 +10,9 @@
   // |bottom| properties set sticks to the top of the screen, rather than the
   // bottom.
   if (window.internals) {
-    internals.setBrowserControlsShownRatio(1);
+    internals.setBrowserControlsShownRatio(1, 1);
     internals.setBrowserControlsState(100, 0, true);
-    internals.setBrowserControlsShownRatio(0);
+    internals.setBrowserControlsShownRatio(0, 0);
     internals.settings.setHideScrollbars(true);
   }
 </script>

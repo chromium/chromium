@@ -25,6 +25,6 @@ class Metric(object):
 
     Metrics may implement AddResults to provide a common way to add results
     to the PageTestResults in PageTest.ValidateOrMeasurePage --
-    results should be added with results.AddValue(...).
+    results should be added with results.AddMeasurement(...).
     """
     raise NotImplementedError()

@@ -18,6 +18,7 @@ runTest = function() {
     textNode.dispatchEvent(event);
     if (window.testRunner)
         testRunner.notifyDone();
+    window.stop();
 }
 
 setTimeout(runTest, 0);

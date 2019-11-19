@@ -25,8 +25,7 @@ Local Modifications:
 - Added missing license file and README.chromium for dat.gui
 
 - Removed the version shim, the samples are intended to work specifically
-  with the ToT Chrome version. The AR samples fall back to legacy-inline-ar
-  mode for now.
+  with the ToT Chrome version.
 
 Instructions:
 
@@ -43,3 +42,12 @@ In order to serve the samples locally, few steps are required:
    serving media like the gltf files, try using "npm serve".
    To install: `sudo npm install -g serve`
    To run: `serve .` in src/third_party/webxr_test_pages/webxr-samples
+
+To publish samples for OT:
+
+1. python make_ot_samples_folder.py webxr-samples <dest-folder>
+   That copies just the subset of samples that we want to publish.
+
+2. Serve <dest-folder> locally and make sure everything works.
+
+3. python update_bucket.py --direct-publish-samples-source=<dest-folder> --direct-publish-samples-dest=<bucket-dest-subfolder>

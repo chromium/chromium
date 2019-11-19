@@ -23,7 +23,7 @@ TEST(IndexedDBKeyTest, KeySizeEstimates) {
   keys.push_back(IndexedDBKey());
   estimates.push_back(16u);  // Overhead.
 
-  keys.push_back(IndexedDBKey(mojom::IDBKeyType::Null));
+  keys.push_back(IndexedDBKey(mojom::IDBKeyType::None));
   estimates.push_back(16u);
 
   double number = 3.14159;

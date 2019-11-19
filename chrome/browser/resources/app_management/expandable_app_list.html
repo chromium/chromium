@@ -4,15 +4,21 @@
 <link rel="import" href="constants.html">
 <link rel="import" href="shared_style.html">
 <link rel="import" href="store_client.html">
-<link rel="import" href="permission_toggle.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-icon-button/paper-icon-button-light.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
 
 <dom-module id="app-management-expandable-app-list">
   <template>
-    <style include="app-management-shared-css">
+    <style include="app-management-shared-css cr-shared-style">
+      #app-list-header {
+        align-items: center;
+        display: flex;
+        padding: 16px 12px;
+      }
+
       #app-list-title {
-        padding: 16px 24px;
+        margin-inline-start: 12px;
       }
 
       #collapse {
@@ -22,7 +28,11 @@
       }
     </style>
     <div class="card-container">
-      <div id="app-list-title" class="header-text">[[listTitle]]</div>
+      <div id="app-list-header">
+        <div id="app-list-title" class="cr-title-text header-text">
+          [[listTitle]]
+        </div>
+      </div>
       <iron-collapse id="collapse">
         <slot></slot>
       </iron-collapse>
@@ -30,12 +40,8 @@
       <div id="expander-row" class="expander-list-row"
           on-click="toggleListExpanded_">
         <span>[[moreAppsString_(apps.length, listExpanded_)]]</span>
-        <paper-icon-button-light class="expand-button">
-          <button>
-            <iron-icon icon="[[getCollapsedIcon_(listExpanded_)]]">
-            </iron-icon>
-          </button>
-        </paper-icon-button-light>
+        <cr-icon-button class="expand-button"
+            iron-icon="[[getCollapsedIcon_(listExpanded_)]]"></cr-icon-button>
       </div>
     </div>
   </template>

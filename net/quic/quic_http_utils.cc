@@ -8,7 +8,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "net/spdy/spdy_log_util.h"
-#include "net/third_party/quic/platform/api/quic_endian.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_endian.h"
 
 namespace net {
 
@@ -36,44 +36,39 @@ RequestPriority ConvertQuicPriorityToRequestPriority(
                          : static_cast<RequestPriority>(HIGHEST - priority);
 }
 
-std::unique_ptr<base::Value> QuicRequestNetLogCallback(
-    quic::QuicStreamId stream_id,
-    const spdy::SpdyHeaderBlock* headers,
-    spdy::SpdyPriority priority,
-    NetLogCaptureMode capture_mode) {
-  std::unique_ptr<base::DictionaryValue> dict(
-      static_cast<base::DictionaryValue*>(
-          SpdyHeaderBlockNetLogCallback(headers, capture_mode).release()));
-  dict->SetInteger("quic_priority", static_cast<int>(priority));
-  dict->SetInteger("quic_stream_id", static_cast<int>(stream_id));
-  return std::move(dict);
+base::Value QuicRequestNetLogParams(quic::QuicStreamId stream_id,
+                                    const spdy::SpdyHeaderBlock* headers,
+                                    spdy::SpdyPriority priority,
+                                    NetLogCaptureMode capture_mode) {
+  base::Value dict = SpdyHeaderBlockNetLogParams(headers, capture_mode);
+  DCHECK(dict.is_dict());
+  dict.SetIntKey("quic_priority", static_cast<int>(priority));
+  dict.SetIntKey("quic_stream_id", static_cast<int>(stream_id));
+  return dict;
 }
 
-quic::QuicTransportVersionVector FilterSupportedAltSvcVersions(
+base::Value QuicResponseNetLogParams(quic::QuicStreamId stream_id,
+                                     bool fin_received,
+                                     const spdy::SpdyHeaderBlock* headers,
+                                     NetLogCaptureMode capture_mode) {
+  base::Value dict = SpdyHeaderBlockNetLogParams(headers, capture_mode);
+  dict.SetIntKey("quic_stream_id", static_cast<int>(stream_id));
+  dict.SetBoolKey("fin", fin_received);
+  return dict;
+}
+
+quic::ParsedQuicVersionVector FilterSupportedAltSvcVersions(
     const spdy::SpdyAltSvcWireFormat::AlternativeService& quic_alt_svc,
-    const quic::QuicTransportVersionVector& supported_versions,
-    bool support_ietf_format_quic_altsvc) {
-  quic::QuicTransportVersionVector supported_alt_svc_versions;
-  if (support_ietf_format_quic_altsvc && quic_alt_svc.protocol_id == "hq") {
-    // Using IETF format for advertising QUIC. In this case,
-    // |alternative_service_entry.version| will store QUIC version labels.
-    for (uint32_t quic_version_label : quic_alt_svc.version) {
-      for (quic::QuicTransportVersion supported : supported_versions) {
-        quic::QuicVersionLabel supported_version_label_network_order =
-            QuicVersionToQuicVersionLabel(supported);
-        if (supported_version_label_network_order == quic_version_label) {
-          supported_alt_svc_versions.push_back(supported);
-          RecordAltSvcFormat(IETF_FORMAT);
-        }
-      }
-    }
-  } else if (quic_alt_svc.protocol_id == "quic") {
-    for (uint32_t quic_version : quic_alt_svc.version) {
-      for (quic::QuicTransportVersion supported : supported_versions) {
-        if (static_cast<uint32_t>(supported) == quic_version) {
-          supported_alt_svc_versions.push_back(supported);
-          RecordAltSvcFormat(GOOGLE_FORMAT);
-        }
+    const quic::ParsedQuicVersionVector& supported_versions) {
+  quic::ParsedQuicVersionVector supported_alt_svc_versions;
+  DCHECK("quic" == quic_alt_svc.protocol_id || "hq" == quic_alt_svc.protocol_id)
+      << quic_alt_svc.protocol_id;
+
+  for (uint32_t quic_version : quic_alt_svc.version) {
+    for (quic::ParsedQuicVersion supported : supported_versions) {
+      if (static_cast<uint32_t>(supported.transport_version) == quic_version) {
+        supported_alt_svc_versions.push_back(supported);
+        RecordAltSvcFormat(GOOGLE_FORMAT);
       }
     }
   }

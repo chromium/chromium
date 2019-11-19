@@ -8,25 +8,6 @@ import("//build/config/gclient_args.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//ios/features.gni")
 
-declare_args() {
-  # TODO(brettw) bug 684096: Remove these. These are to prevent unused
-  # override warnings on iOS from the setting of the default_args in the
-  # toplevel //.gn file. Since iOS doesn't compile V8, GN complains that
-  # the overrides are never used.
-  v8_extra_library_files = []
-  v8_experimental_extra_library_files = []
-  v8_enable_gdbjit = false
-  v8_imminent_deprecation_warnings = false
-  v8_check_microtasks_scopes_consistency = false
-}
-
-# Prevent warnings for unused build args above.
-assert(v8_extra_library_files != 0)
-assert(v8_experimental_extra_library_files != 0)
-assert(!v8_enable_gdbjit)
-assert(!v8_imminent_deprecation_warnings)
-assert(!v8_check_microtasks_scopes_consistency)
-
 # This list all targets that needs to be build as part of "gn_all" on iOS.
 # This list should generally only include executables, but since some code
 # has not yet been upstreamed it will sometimes also include targets that
@@ -35,7 +16,7 @@ group("all") {
   testonly = true
   if (is_cronet_build) {
     deps = [
-      "//components/cronet/ios:cronet_package",
+      "//components/cronet/ios:cronet_package_ios",
     ]
   } else {
     assert(xcode_version_int >= 1000, "Xcode 10 is required.")
@@ -54,6 +35,7 @@ group("all") {
       "//ios/chrome/test:all_tests",
       "//ios/chrome/test/earl_grey:all_tests",
       "//ios/chrome/test/earl_grey2:all_tests",
+      "//ios/chrome/test/wpt:all_tests",
       "//ios/components:all_tests",
       "//ios/net:all_tests",
       "//ios/showcase:all_tests",
@@ -63,9 +45,5 @@ group("all") {
       "//ios/web_view:all_tests",
       "//ios/web_view/shell/test:all_tests",
     ]
-
-    if (checkout_ios_webkit) {
-      deps += [ "//ios/third_party/webkit" ]
-    }
   }
 }

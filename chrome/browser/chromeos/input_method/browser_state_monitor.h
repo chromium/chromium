@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "components/session_manager/core/session_manager_observer.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "ui/base/ime/chromeos/input_method_manager.h"
@@ -19,7 +20,8 @@ namespace input_method {
 
 // Translates notifications from the browser (not logged in, logged in, etc.),
 // into InputMethodManager::UISessionState transitions.
-class BrowserStateMonitor : public content::NotificationObserver {
+class BrowserStateMonitor : public session_manager::SessionManagerObserver,
+                            public content::NotificationObserver {
  public:
   // Constructs a monitor that will invoke the given observer callback whenever
   // the InputMethodManager::UISessionState changes. Assumes that the current
@@ -30,12 +32,17 @@ class BrowserStateMonitor : public content::NotificationObserver {
 
   InputMethodManager::UISessionState ui_session() const { return ui_session_; }
 
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override;
+
   // content::NotificationObserver overrides:
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
  private:
+  void SetUiSessionState(InputMethodManager::UISessionState ui_session);
+
   base::Callback<void(InputMethodManager::UISessionState)> observer_;
   InputMethodManager::UISessionState ui_session_;
   content::NotificationRegistrar notification_registrar_;

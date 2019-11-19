@@ -17,7 +17,7 @@
 namespace ash {
 
 BacklightsForcedOffSetter::BacklightsForcedOffSetter()
-    : power_manager_observer_(this), weak_ptr_factory_(this) {
+    : power_manager_observer_(this) {
   InitDisableTouchscreenWhileScreenOff();
 
   power_manager_observer_.Add(chromeos::PowerManagerClient::Get());

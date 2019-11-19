@@ -13,4 +13,4 @@ traits_headers = [ "//third_party/blink/renderer/platform/mojo/fetch_api_request
 deps = [
   "//third_party/blink/renderer/platform/wtf",
 ]
-type_mappings = [ "blink.mojom.FetchAPIRequestHeaders=WTF::HashMap<WTF::String, WTF::String, WTF::CaseFoldingHash>[move_only]" ]
+type_mappings = [ "blink.mojom.FetchAPIRequestHeaders=::WTF::HashMap<::WTF::String, WTF::String, WTF::CaseFoldingHash>[move_only]" ]

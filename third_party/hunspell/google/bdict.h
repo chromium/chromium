@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/md5.h"
+#include "base/hash/md5.h"
 
 // BDict (binary dictionary) format. All offsets are little endian.
 //

@@ -56,8 +56,6 @@ class SVGMarkerElement final : public SVGElement, public SVGFitToViewBox {
     kSvgMarkerOrientAngle = kSVGMarkerOrientAngle
   };
 
-  DECLARE_NODE_FACTORY(SVGMarkerElement);
-
   explicit SVGMarkerElement(Document&);
 
   AffineTransform ViewBoxToViewTransform(float view_width,
@@ -84,7 +82,7 @@ class SVGMarkerElement final : public SVGElement, public SVGFitToViewBox {
   void SvgAttributeChanged(const QualifiedName&) override;
   void ChildrenChanged(const ChildrenChange&) override;
 
-  LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
 
   bool SelfHasRelativeLengths() const override;

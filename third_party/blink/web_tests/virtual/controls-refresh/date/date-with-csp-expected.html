@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<head>
+<style>
+#custom-icon::-webkit-calendar-picker-indicator {
+  background-image: none;
+}
+</style>
+</head>
+<body>
+
+<!-- no style for reference -->
+<input type="date" />
+
+<!-- date with custom icon blocked by CSP -->
+<input type="data" id="custom-icon"/>
+
+</body>

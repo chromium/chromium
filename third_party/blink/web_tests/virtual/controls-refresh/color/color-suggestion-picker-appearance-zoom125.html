@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body style='zoom: 1.25;'>
+<input type='color' id='color' value='#ff0000' list='gray'>
+<datalist id='gray'>
+    <option>#ffffff</option>
+    <option>#eeeeee</option>
+    <option>#dddddd</option>
+    <option>#cccccc</option>
+    <option>#bbbbbb</option>
+    <option>#aaaaaa</option>
+    <option>#999999</option>
+    <option>#888888</option>
+    <option>#777777</option>
+    <option>#666666</option>
+    <option>#555555</option>
+    <option>#444444</option>
+    <option>#333333</option>
+    <option>#222222</option>
+    <option>#111111</option>
+    <option>#000000</option>
+    <option>#F00</option> <!--invalid-->
+    <option>red</option> <!--invalid-->
+</datalist>
+<script>
+openPicker(document.getElementById('color'), () => testRunner.notifyDone(), () => testRunner.notifyDone());
+</script>
+</body>
+</html>

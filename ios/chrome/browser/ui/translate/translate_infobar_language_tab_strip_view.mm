@@ -131,11 +131,10 @@ CGFloat kScrollViewTrailingGradientStart = 0.975;
   [self addSubview:self.languagesScrollView];
 
   self.gradientLayer = [CAGradientLayer layer];
-  self.gradientLayer.colors =
-      [NSArray arrayWithObjects:(id)[[UIColor clearColor] CGColor],
-                                (id)[[UIColor whiteColor] CGColor],
-                                (id)[[UIColor whiteColor] CGColor],
-                                (id)[[UIColor clearColor] CGColor], nil];
+  self.gradientLayer.colors = @[
+    (id)UIColor.clearColor.CGColor, (id)UIColor.whiteColor.CGColor,
+    (id)UIColor.whiteColor.CGColor, (id)UIColor.clearColor.CGColor
+  ];
   // The following two lines make the gradient horizontal.
   self.gradientLayer.startPoint = CGPointMake(0.0, 0.5);
   self.gradientLayer.endPoint = CGPointMake(1.0, 0.5);

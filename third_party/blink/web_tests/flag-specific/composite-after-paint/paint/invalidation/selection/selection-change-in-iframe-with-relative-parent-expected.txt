@@ -1,0 +1,53 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "NGPhysicalTextFragment 'Bazz'",
+          "rect": [18, 238, 40, 10],
+          "reason": "selection"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'Bar'",
+          "rect": [18, 218, 30, 10],
+          "reason": "selection"
+        },
+        {
+          "object": "NGPhysicalTextFragment 'Foo'",
+          "rect": [18, 198, 30, 10],
+          "reason": "selection"
+        },
+        {
+          "object": "NGPhysicalTextFragment '\n'",
+          "rect": [58, 238, 10, 10],
+          "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment '\n'",
+          "rect": [48, 218, 10, 10],
+          "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment '\n'",
+          "rect": [48, 198, 10, 10],
+          "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment '\n'",
+          "rect": [18, 228, 10, 10],
+          "reason": "appeared"
+        },
+        {
+          "object": "NGPhysicalTextFragment '\n'",
+          "rect": [18, 208, 10, 10],
+          "reason": "appeared"
+        }
+      ]
+    }
+  ]
+}
+

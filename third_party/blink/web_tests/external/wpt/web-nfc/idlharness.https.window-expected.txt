@@ -1,51 +1,76 @@
 This is a testharness.js-based test.
+Found 72 tests; 70 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
-FAIL NFCWriter interface: existence and properties of interface object assert_own_property: self does not have own property "NFCWriter" expected property "NFCWriter" missing
-FAIL NFCWriter interface object length assert_own_property: self does not have own property "NFCWriter" expected property "NFCWriter" missing
-FAIL NFCWriter interface object name assert_own_property: self does not have own property "NFCWriter" expected property "NFCWriter" missing
-FAIL NFCWriter interface: existence and properties of interface prototype object assert_own_property: self does not have own property "NFCWriter" expected property "NFCWriter" missing
-FAIL NFCWriter interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "NFCWriter" expected property "NFCWriter" missing
-FAIL NFCWriter interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "NFCWriter" expected property "NFCWriter" missing
-FAIL NFCWriter interface: operation push(NDEFMessageSource, NFCPushOptions) assert_own_property: self does not have own property "NFCWriter" expected property "NFCWriter" missing
-FAIL NFCWriter must be primary interface of new NFCWriter(); assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCWriter is not defined"
-FAIL Stringification of new NFCWriter(); assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCWriter is not defined"
-FAIL NFCWriter interface: new NFCWriter(); must inherit property "push(NDEFMessageSource, NFCPushOptions)" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCWriter is not defined"
-FAIL NFCWriter interface: calling push(NDEFMessageSource, NFCPushOptions) on new NFCWriter(); with too few arguments must throw TypeError assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCWriter is not defined"
-FAIL NFCReader interface: existence and properties of interface object assert_own_property: self does not have own property "NFCReader" expected property "NFCReader" missing
-FAIL NFCReader interface object length assert_own_property: self does not have own property "NFCReader" expected property "NFCReader" missing
-FAIL NFCReader interface object name assert_own_property: self does not have own property "NFCReader" expected property "NFCReader" missing
-FAIL NFCReader interface: existence and properties of interface prototype object assert_own_property: self does not have own property "NFCReader" expected property "NFCReader" missing
-FAIL NFCReader interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "NFCReader" expected property "NFCReader" missing
-FAIL NFCReader interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "NFCReader" expected property "NFCReader" missing
-FAIL NFCReader interface: attribute onreading assert_own_property: self does not have own property "NFCReader" expected property "NFCReader" missing
-FAIL NFCReader interface: attribute onerror assert_own_property: self does not have own property "NFCReader" expected property "NFCReader" missing
-FAIL NFCReader interface: operation start() assert_own_property: self does not have own property "NFCReader" expected property "NFCReader" missing
-FAIL NFCReader interface: operation stop() assert_own_property: self does not have own property "NFCReader" expected property "NFCReader" missing
-FAIL NFCReader must be primary interface of new NFCReader(); assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCReader is not defined"
-FAIL Stringification of new NFCReader(); assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCReader is not defined"
-FAIL NFCReader interface: new NFCReader(); must inherit property "onreading" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCReader is not defined"
-FAIL NFCReader interface: new NFCReader(); must inherit property "onerror" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCReader is not defined"
-FAIL NFCReader interface: new NFCReader(); must inherit property "start()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCReader is not defined"
-FAIL NFCReader interface: new NFCReader(); must inherit property "stop()" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCReader is not defined"
-FAIL NFCReadingEvent interface: existence and properties of interface object assert_own_property: self does not have own property "NFCReadingEvent" expected property "NFCReadingEvent" missing
-FAIL NFCReadingEvent interface object length assert_own_property: self does not have own property "NFCReadingEvent" expected property "NFCReadingEvent" missing
-FAIL NFCReadingEvent interface object name assert_own_property: self does not have own property "NFCReadingEvent" expected property "NFCReadingEvent" missing
-FAIL NFCReadingEvent interface: existence and properties of interface prototype object assert_own_property: self does not have own property "NFCReadingEvent" expected property "NFCReadingEvent" missing
-FAIL NFCReadingEvent interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "NFCReadingEvent" expected property "NFCReadingEvent" missing
-FAIL NFCReadingEvent interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "NFCReadingEvent" expected property "NFCReadingEvent" missing
-FAIL NFCReadingEvent interface: attribute message assert_own_property: self does not have own property "NFCReadingEvent" expected property "NFCReadingEvent" missing
-FAIL NFCReadingEvent must be primary interface of new NFCReadingEvent("reading", { message: {"url":"/custom/path","records":[{"recordType":"text","data":"Hello World"}]} }) assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCReadingEvent is not defined"
-FAIL Stringification of new NFCReadingEvent("reading", { message: {"url":"/custom/path","records":[{"recordType":"text","data":"Hello World"}]} }) assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCReadingEvent is not defined"
-FAIL NFCReadingEvent interface: new NFCReadingEvent("reading", { message: {"url":"/custom/path","records":[{"recordType":"text","data":"Hello World"}]} }) must inherit property "message" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCReadingEvent is not defined"
-FAIL NFCErrorEvent interface: existence and properties of interface object assert_own_property: self does not have own property "NFCErrorEvent" expected property "NFCErrorEvent" missing
-FAIL NFCErrorEvent interface object length assert_own_property: self does not have own property "NFCErrorEvent" expected property "NFCErrorEvent" missing
-FAIL NFCErrorEvent interface object name assert_own_property: self does not have own property "NFCErrorEvent" expected property "NFCErrorEvent" missing
-FAIL NFCErrorEvent interface: existence and properties of interface prototype object assert_own_property: self does not have own property "NFCErrorEvent" expected property "NFCErrorEvent" missing
-FAIL NFCErrorEvent interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "NFCErrorEvent" expected property "NFCErrorEvent" missing
-FAIL NFCErrorEvent interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "NFCErrorEvent" expected property "NFCErrorEvent" missing
-FAIL NFCErrorEvent interface: attribute error assert_own_property: self does not have own property "NFCErrorEvent" expected property "NFCErrorEvent" missing
-FAIL NFCErrorEvent must be primary interface of new NFCErrorEvent("error", { error: new DOMException() }); assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCErrorEvent is not defined"
-FAIL Stringification of new NFCErrorEvent("error", { error: new DOMException() }); assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCErrorEvent is not defined"
-FAIL NFCErrorEvent interface: new NFCErrorEvent("error", { error: new DOMException() }); must inherit property "error" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: NFCErrorEvent is not defined"
+PASS idl_test validation
+PASS NDEFMessage interface: existence and properties of interface object
+PASS NDEFMessage interface object length
+PASS NDEFMessage interface object name
+PASS NDEFMessage interface: existence and properties of interface prototype object
+PASS NDEFMessage interface: existence and properties of interface prototype object's "constructor" property
+PASS NDEFMessage interface: existence and properties of interface prototype object's @@unscopables property
+PASS NDEFMessage interface: attribute records
+PASS NDEFMessage must be primary interface of new NDEFMessage({"url":"/custom/path","records":[{"recordType":"text","data":"Hello World","id":"/custom/path"}]});
+PASS Stringification of new NDEFMessage({"url":"/custom/path","records":[{"recordType":"text","data":"Hello World","id":"/custom/path"}]});
+PASS NDEFMessage interface: new NDEFMessage({"url":"/custom/path","records":[{"recordType":"text","data":"Hello World","id":"/custom/path"}]}); must inherit property "records" with the proper type
+PASS NDEFRecord interface: existence and properties of interface object
+PASS NDEFRecord interface object length
+PASS NDEFRecord interface object name
+PASS NDEFRecord interface: existence and properties of interface prototype object
+PASS NDEFRecord interface: existence and properties of interface prototype object's "constructor" property
+PASS NDEFRecord interface: existence and properties of interface prototype object's @@unscopables property
+PASS NDEFRecord interface: attribute recordType
+PASS NDEFRecord interface: attribute mediaType
+PASS NDEFRecord interface: attribute id
+PASS NDEFRecord interface: attribute data
+PASS NDEFRecord interface: attribute encoding
+PASS NDEFRecord interface: attribute lang
+PASS NDEFRecord interface: operation toRecords()
+PASS NDEFRecord must be primary interface of new NDEFRecord({"recordType":"text","data":"Hello World","id":"/custom/path"});
+PASS Stringification of new NDEFRecord({"recordType":"text","data":"Hello World","id":"/custom/path"});
+PASS NDEFRecord interface: new NDEFRecord({"recordType":"text","data":"Hello World","id":"/custom/path"}); must inherit property "recordType" with the proper type
+PASS NDEFRecord interface: new NDEFRecord({"recordType":"text","data":"Hello World","id":"/custom/path"}); must inherit property "mediaType" with the proper type
+PASS NDEFRecord interface: new NDEFRecord({"recordType":"text","data":"Hello World","id":"/custom/path"}); must inherit property "id" with the proper type
+FAIL NDEFRecord interface: new NDEFRecord({"recordType":"text","data":"Hello World","id":"/custom/path"}); must inherit property "data" with the proper type Unrecognized type DataView
+PASS NDEFRecord interface: new NDEFRecord({"recordType":"text","data":"Hello World","id":"/custom/path"}); must inherit property "encoding" with the proper type
+PASS NDEFRecord interface: new NDEFRecord({"recordType":"text","data":"Hello World","id":"/custom/path"}); must inherit property "lang" with the proper type
+PASS NDEFRecord interface: new NDEFRecord({"recordType":"text","data":"Hello World","id":"/custom/path"}); must inherit property "toRecords()" with the proper type
+PASS NDEFWriter interface: existence and properties of interface object
+PASS NDEFWriter interface object length
+PASS NDEFWriter interface object name
+PASS NDEFWriter interface: existence and properties of interface prototype object
+PASS NDEFWriter interface: existence and properties of interface prototype object's "constructor" property
+PASS NDEFWriter interface: existence and properties of interface prototype object's @@unscopables property
+PASS NDEFWriter interface: operation push(NDEFMessageSource, NDEFPushOptions)
+PASS NDEFWriter must be primary interface of new NDEFWriter();
+PASS Stringification of new NDEFWriter();
+PASS NDEFWriter interface: new NDEFWriter(); must inherit property "push(NDEFMessageSource, NDEFPushOptions)" with the proper type
+PASS NDEFWriter interface: calling push(NDEFMessageSource, NDEFPushOptions) on new NDEFWriter(); with too few arguments must throw TypeError
+PASS NDEFReader interface: existence and properties of interface object
+PASS NDEFReader interface object length
+PASS NDEFReader interface object name
+PASS NDEFReader interface: existence and properties of interface prototype object
+PASS NDEFReader interface: existence and properties of interface prototype object's "constructor" property
+PASS NDEFReader interface: existence and properties of interface prototype object's @@unscopables property
+PASS NDEFReader interface: attribute onerror
+PASS NDEFReader interface: attribute onreading
+FAIL NDEFReader interface: operation scan(NDEFScanOptions) assert_unreached: Throws "TypeError: Illegal invocation" instead of rejecting promise Reached unreachable code
+PASS NDEFReader must be primary interface of new NDEFReader();
+PASS Stringification of new NDEFReader();
+PASS NDEFReader interface: new NDEFReader(); must inherit property "onerror" with the proper type
+PASS NDEFReader interface: new NDEFReader(); must inherit property "onreading" with the proper type
+PASS NDEFReader interface: new NDEFReader(); must inherit property "scan(NDEFScanOptions)" with the proper type
+PASS NDEFReader interface: calling scan(NDEFScanOptions) on new NDEFReader(); with too few arguments must throw TypeError
+PASS NDEFReadingEvent interface: existence and properties of interface object
+PASS NDEFReadingEvent interface object length
+PASS NDEFReadingEvent interface object name
+PASS NDEFReadingEvent interface: existence and properties of interface prototype object
+PASS NDEFReadingEvent interface: existence and properties of interface prototype object's "constructor" property
+PASS NDEFReadingEvent interface: existence and properties of interface prototype object's @@unscopables property
+PASS NDEFReadingEvent interface: attribute serialNumber
+PASS NDEFReadingEvent interface: attribute message
+PASS NDEFReadingEvent must be primary interface of new NDEFReadingEvent("reading", { message: {"url":"/custom/path","records":[{"recordType":"text","data":"Hello World","id":"/custom/path"}]} })
+PASS Stringification of new NDEFReadingEvent("reading", { message: {"url":"/custom/path","records":[{"recordType":"text","data":"Hello World","id":"/custom/path"}]} })
+PASS NDEFReadingEvent interface: new NDEFReadingEvent("reading", { message: {"url":"/custom/path","records":[{"recordType":"text","data":"Hello World","id":"/custom/path"}]} }) must inherit property "serialNumber" with the proper type
+PASS NDEFReadingEvent interface: new NDEFReadingEvent("reading", { message: {"url":"/custom/path","records":[{"recordType":"text","data":"Hello World","id":"/custom/path"}]} }) must inherit property "message" with the proper type
 Harness: the test ran to completion.
 

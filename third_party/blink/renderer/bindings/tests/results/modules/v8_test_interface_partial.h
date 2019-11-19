@@ -30,7 +30,7 @@ class V8TestInterfacePartial {
   STATIC_ONLY(V8TestInterfacePartial);
  public:
   static void Initialize();
-  static void ImplementsCustomVoidMethodMethodCustom(const v8::FunctionCallbackInfo<v8::Value>&);
+  static void MixinCustomVoidMethodMethodCustom(const v8::FunctionCallbackInfo<v8::Value>&);
   static void InstallConditionalFeatures(
       v8::Local<v8::Context>,
       const DOMWrapperWorld&,

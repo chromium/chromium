@@ -3,7 +3,7 @@
 <head>
 <style>
 .comp {
-  transform: translateZ(0px);
+  will-change: transform;
 }
 body {
   margin:0;
@@ -32,18 +32,6 @@ body {
   background-color: #0d0;
 }
 </style>
-<script type="text/javascript">
-  if (window.testRunner) {
-    testRunner.dumpAsTextWithPixelResults();
-    testRunner.waitUntilDone();
-  }
-
-  window.onload = function() { setTimeout(function() {
-    if (window.testRunner) {
-      testRunner.notifyDone();
-    }
-  }, 0); };
-</script>
 </head>
 
 <body>

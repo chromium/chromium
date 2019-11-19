@@ -2,7 +2,7 @@
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file. */
 
-:root {
+:host {
   --oobe-dialog-list-item-border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
@@ -18,5 +18,4 @@
 
 .language-selection-title {
   color: rgba(0, 0, 0, 0.87);
-  font: 13px Roboto, sans-serif;
 }

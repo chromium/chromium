@@ -5,13 +5,14 @@
 package org.chromium.chrome.browser.preferences.languages;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -51,9 +52,10 @@ public class AddLanguageFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(LanguageRowViewHolder holder, int position) {
+        public void onBindViewHolder(ViewHolder holder, int position) {
             super.onBindViewHolder(holder, position);
-            holder.setItemClickListener(getItemByPosition(position), mItemClickListener);
+            ((LanguageRowViewHolder) holder)
+                    .setItemClickListener(getItemByPosition(position), mItemClickListener);
         }
 
         /**
@@ -62,7 +64,7 @@ public class AddLanguageFragment extends Fragment {
          */
         private void search(String query) {
             if (TextUtils.isEmpty(query)) {
-                reload(mFullLanguageList);
+                setDisplayedLanguages(mFullLanguageList);
                 return;
             }
 
@@ -76,7 +78,7 @@ public class AddLanguageFragment extends Fragment {
                     results.add(item);
                 }
             }
-            reload(results);
+            setDisplayedLanguages(results);
         }
     }
 
@@ -109,10 +111,10 @@ public class AddLanguageFragment extends Fragment {
         final Activity activity = getActivity();
 
         mRecyclerView = (RecyclerView) view.findViewById(R.id.language_list);
-        LinearLayoutManager layoutMangager = new LinearLayoutManager(activity);
-        mRecyclerView.setLayoutManager(layoutMangager);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(activity);
+        mRecyclerView.setLayoutManager(layoutManager);
         mRecyclerView.addItemDecoration(
-                new DividerItemDecoration(activity, layoutMangager.getOrientation()));
+                new DividerItemDecoration(activity, layoutManager.getOrientation()));
 
         mFullLanguageList = LanguagesManager.getInstance().getLanguageItemsExcludingUserAccept();
         mItemClickListener = item -> {
@@ -124,7 +126,7 @@ public class AddLanguageFragment extends Fragment {
         mAdapter = new LanguageSearchListAdapter(activity);
 
         mRecyclerView.setAdapter(mAdapter);
-        mAdapter.reload(mFullLanguageList);
+        mAdapter.setDisplayedLanguages(mFullLanguageList);
         mRecyclerView.getViewTreeObserver().addOnScrollChangedListener(
                 PreferenceUtils.getShowShadowOnScrollListener(
                         mRecyclerView, view.findViewById(R.id.shadow)));
@@ -141,7 +143,7 @@ public class AddLanguageFragment extends Fragment {
 
         mSearchView.setOnCloseListener(() -> {
             mSearch = "";
-            mAdapter.reload(mFullLanguageList);
+            mAdapter.setDisplayedLanguages(mFullLanguageList);
             return false;
         });
 

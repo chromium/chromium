@@ -7,15 +7,17 @@
 #include <string>
 #include <utility>
 
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/predictors/loading_data_collector.h"
 #include "chrome/browser/predictors/loading_stats_collector.h"
+#include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor_tables.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/history_service.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/resource_request_info.h"
 #include "content/public/common/resource_type.h"
+#include "net/base/mime_util.h"
 #include "net/http/http_response_headers.h"
 #include "net/url_request/url_request.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -50,11 +52,11 @@ content::ResourceType GetResourceTypeFromMimeType(
   if (mime_type.empty()) {
     return fallback;
   } else if (blink::IsSupportedImageMimeType(mime_type)) {
-    return content::RESOURCE_TYPE_IMAGE;
+    return content::ResourceType::kImage;
   } else if (blink::IsSupportedJavascriptMimeType(mime_type)) {
-    return content::RESOURCE_TYPE_SCRIPT;
+    return content::ResourceType::kScript;
   } else if (net::MatchesMimeType("text/css", mime_type)) {
-    return content::RESOURCE_TYPE_STYLESHEET;
+    return content::ResourceType::kStylesheet;
   } else {
     bool found =
         std::any_of(std::begin(kFontMimeTypes), std::end(kFontMimeTypes),
@@ -62,7 +64,7 @@ content::ResourceType GetResourceTypeFromMimeType(
                       return net::MatchesMimeType(mime, mime_type);
                     });
     if (found)
-      return content::RESOURCE_TYPE_FONT_RESOURCE;
+      return content::ResourceType::kFontResource;
   }
   return fallback;
 }
@@ -74,11 +76,11 @@ content::ResourceType GetResourceType(content::ResourceType resource_type,
   // Restricts content::RESOURCE_TYPE_{PREFETCH,SUB_RESOURCE,XHR} to a small set
   // of mime types, because these resource types don't communicate how the
   // resources will be used.
-  if (resource_type == content::RESOURCE_TYPE_PREFETCH ||
-      resource_type == content::RESOURCE_TYPE_SUB_RESOURCE ||
-      resource_type == content::RESOURCE_TYPE_XHR) {
+  if (resource_type == content::ResourceType::kPrefetch ||
+      resource_type == content::ResourceType::kSubResource ||
+      resource_type == content::ResourceType::kXhr) {
     return GetResourceTypeFromMimeType(mime_type,
-                                       content::RESOURCE_TYPE_LAST_TYPE);
+                                       content::ResourceType::kSubResource);
   }
   return resource_type;
 }
@@ -100,16 +102,18 @@ PageRequestSummary::PageRequestSummary(const PageRequestSummary& other) =
 
 void PageRequestSummary::UpdateOrAddToOrigins(
     const content::mojom::ResourceLoadInfo& resource_load_info) {
-  for (const auto& redirect_info : resource_load_info.redirect_info_chain)
-    UpdateOrAddToOrigins(redirect_info->url, redirect_info->network_info);
-  UpdateOrAddToOrigins(resource_load_info.url, resource_load_info.network_info);
+  for (const auto& redirect_info : resource_load_info.redirect_info_chain) {
+    UpdateOrAddToOrigins(url::Origin::Create(redirect_info->url),
+                         redirect_info->network_info);
+  }
+  UpdateOrAddToOrigins(url::Origin::Create(resource_load_info.url),
+                       resource_load_info.network_info);
 }
 
 void PageRequestSummary::UpdateOrAddToOrigins(
-    const GURL& url,
+    const url::Origin& origin,
     const content::mojom::CommonNetworkInfoPtr& network_info) {
-  GURL origin = url.GetOrigin();
-  if (!origin.is_valid())
+  if (origin.opaque())
     return;
 
   auto it = origins.find(origin);
@@ -186,7 +190,7 @@ void LoadingDataCollector::RecordResourceLoadComplete(
   if (nav_it == inflight_navigations_.end())
     return;
 
-  if (!ShouldRecordResourceLoad(resource_load_info))
+  if (!ShouldRecordResourceLoad(navigation_id, resource_load_info))
     return;
 
   auto& page_request_summary = *nav_it->second;
@@ -228,9 +232,9 @@ void LoadingDataCollector::RecordFirstContentfulPaint(
     nav_it->second->first_contentful_paint = first_contentful_paint;
 }
 
-// static
 bool LoadingDataCollector::ShouldRecordResourceLoad(
-    const content::mojom::ResourceLoadInfo& resource_load_info) {
+    const NavigationID& navigation_id,
+    const content::mojom::ResourceLoadInfo& resource_load_info) const {
   const GURL& url = resource_load_info.url;
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
     return false;
@@ -238,9 +242,21 @@ bool LoadingDataCollector::ShouldRecordResourceLoad(
   if (!g_allow_port_in_urls && url.has_port())
     return false;
 
-  return IsHandledResourceType(resource_load_info.resource_type,
-                               resource_load_info.mime_type) &&
-         resource_load_info.method == "GET";
+  // Guard behind feature: All delayable requests are considered low priority.
+  if (base::FeatureList::IsEnabled(
+          features::kLoadingOnlyLearnHighPriorityResources) &&
+      resource_load_info.request_priority < net::MEDIUM) {
+    return false;
+  }
+
+  if (!IsHandledResourceType(resource_load_info.resource_type,
+                             resource_load_info.mime_type)) {
+    return false;
+  }
+  if (resource_load_info.method != "GET")
+    return false;
+
+  return true;
 }
 
 // static
@@ -249,11 +265,11 @@ bool LoadingDataCollector::IsHandledResourceType(
     const std::string& mime_type) {
   content::ResourceType actual_resource_type =
       GetResourceType(resource_type, mime_type);
-  return actual_resource_type == content::RESOURCE_TYPE_MAIN_FRAME ||
-         actual_resource_type == content::RESOURCE_TYPE_STYLESHEET ||
-         actual_resource_type == content::RESOURCE_TYPE_SCRIPT ||
-         actual_resource_type == content::RESOURCE_TYPE_IMAGE ||
-         actual_resource_type == content::RESOURCE_TYPE_FONT_RESOURCE;
+  return actual_resource_type == content::ResourceType::kMainFrame ||
+         actual_resource_type == content::ResourceType::kStylesheet ||
+         actual_resource_type == content::ResourceType::kScript ||
+         actual_resource_type == content::ResourceType::kImage ||
+         actual_resource_type == content::ResourceType::kFontResource;
 }
 
 void LoadingDataCollector::CleanupAbandonedNavigations(

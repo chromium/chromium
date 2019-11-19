@@ -38,11 +38,12 @@ struct SPDChromeVoice {
 class TtsPlatformImplLinux : public TtsPlatformImpl {
  public:
   bool PlatformImplAvailable() override;
-  bool Speak(int utterance_id,
+  void Speak(int utterance_id,
              const std::string& utterance,
              const std::string& lang,
              const VoiceData& voice,
-             const UtteranceContinuousParameters& params) override;
+             const UtteranceContinuousParameters& params,
+             base::OnceCallback<void(bool)> on_speak_finished) override;
   bool StopSpeaking() override;
   void Pause() override;
   void Resume() override;
@@ -73,6 +74,13 @@ class TtsPlatformImplLinux : public TtsPlatformImpl {
                                 SPDNotificationType state,
                                 char* index_mark);
 
+  void ProcessSpeech(int utterance_id,
+                     const std::string& lang,
+                     const VoiceData& voice,
+                     const UtteranceContinuousParameters& params,
+                     base::OnceCallback<void(bool)> on_speak_finished,
+                     const std::string& parsed_utterance);
+
   static SPDNotificationType current_notification_;
 
   base::Lock initialization_lock_;
@@ -89,6 +97,8 @@ class TtsPlatformImplLinux : public TtsPlatformImpl {
 
   friend struct base::DefaultSingletonTraits<TtsPlatformImplLinux>;
 
+  base::WeakPtrFactory<TtsPlatformImplLinux> weak_factory_{this};
+
   DISALLOW_COPY_AND_ASSIGN(TtsPlatformImplLinux);
 };
 
@@ -101,10 +111,11 @@ TtsPlatformImplLinux::TtsPlatformImplLinux() : utterance_id_(0) {
   if (!command_line.HasSwitch(switches::kEnableSpeechDispatcher))
     return;
 
-  base::PostTaskWithTraits(FROM_HERE,
-                           {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-                           base::BindOnce(&TtsPlatformImplLinux::Initialize,
-                                          base::Unretained(this)));
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(&TtsPlatformImplLinux::Initialize,
+                     base::Unretained(this)));
 }
 
 void TtsPlatformImplLinux::Initialize() {
@@ -160,16 +171,33 @@ bool TtsPlatformImplLinux::PlatformImplAvailable() {
   return result;
 }
 
-bool TtsPlatformImplLinux::Speak(int utterance_id,
-                                 const std::string& utterance,
-                                 const std::string& lang,
-                                 const VoiceData& voice,
-                                 const UtteranceContinuousParameters& params) {
+void TtsPlatformImplLinux::Speak(
+    int utterance_id,
+    const std::string& utterance,
+    const std::string& lang,
+    const VoiceData& voice,
+    const UtteranceContinuousParameters& params,
+    base::OnceCallback<void(bool)> on_speak_finished) {
   if (!PlatformImplAvailable()) {
     error_ = kNotSupportedError;
-    return false;
+    std::move(on_speak_finished).Run(false);
+    return;
   }
 
+  // Parse SSML and process speech.
+  TtsController::GetInstance()->StripSSML(
+      utterance, base::BindOnce(&TtsPlatformImplLinux::ProcessSpeech,
+                                weak_factory_.GetWeakPtr(), utterance_id, lang,
+                                voice, params, std::move(on_speak_finished)));
+}
+
+void TtsPlatformImplLinux::ProcessSpeech(
+    int utterance_id,
+    const std::string& lang,
+    const VoiceData& voice,
+    const UtteranceContinuousParameters& params,
+    base::OnceCallback<void(bool)> on_speak_finished,
+    const std::string& parsed_utterance) {
   // Speech dispatcher's speech params are around 3x at either limit.
   float rate = params.rate > 3 ? 3 : params.rate;
   rate = params.rate < 0.334 ? 0.334 : rate;
@@ -192,14 +220,16 @@ bool TtsPlatformImplLinux::Speak(int utterance_id,
   if (!lang.empty())
     libspeechd_loader_.spd_set_language(conn_, lang.c_str());
 
-  utterance_ = utterance;
+  utterance_ = parsed_utterance;
   utterance_id_ = utterance_id;
 
-  if (libspeechd_loader_.spd_say(conn_, SPD_TEXT, utterance.c_str()) == -1) {
+  if (libspeechd_loader_.spd_say(conn_, SPD_TEXT, parsed_utterance.c_str()) ==
+      -1) {
     Reset();
-    return false;
+    std::move(on_speak_finished).Run(false);
+    return;
   }
-  return true;
+  std::move(on_speak_finished).Run(true);
 }
 
 bool TtsPlatformImplLinux::StopSpeaking() {
@@ -315,7 +345,7 @@ void TtsPlatformImplLinux::NotificationCallback(size_t msg_id,
   // be in a separate thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     current_notification_ = type;
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&TtsPlatformImplLinux::OnSpeechEvent,
                        base::Unretained(TtsPlatformImplLinux::GetInstance()),
@@ -335,7 +365,7 @@ void TtsPlatformImplLinux::IndexMarkCallback(size_t msg_id,
   // be in a separate thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     current_notification_ = state;
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&TtsPlatformImplLinux::OnSpeechEvent,
                        base::Unretained(TtsPlatformImplLinux::GetInstance()),

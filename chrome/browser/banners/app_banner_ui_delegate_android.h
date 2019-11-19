@@ -9,18 +9,10 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
-#include "chrome/browser/installable/installable_metrics.h"
-#include "components/infobars/core/confirm_infobar_delegate.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-
-namespace content {
-class WebContents;
-}
-
-struct ShortcutInfo;
+#include "chrome/browser/android/webapps/add_to_homescreen_installer.h"
+#include "chrome/browser/android/webapps/add_to_homescreen_params.h"
 
 namespace banners {
 
@@ -30,61 +22,20 @@ class AppBannerManager;
 // native app.
 class AppBannerUiDelegateAndroid {
  public:
-  // Describes the type of app for which this class holds data.
-  enum class AppType {
-    NATIVE,
-    WEBAPK,
-    LEGACY_WEBAPP,
-  };
-
   // Creates a delegate for promoting the installation of a web app.
   static std::unique_ptr<AppBannerUiDelegateAndroid> Create(
       base::WeakPtr<AppBannerManager> weak_manager,
-      std::unique_ptr<ShortcutInfo> info,
-      const SkBitmap& primary_icon,
-      const SkBitmap& badge_icon,
-      WebappInstallSource install_source,
-      bool is_webapk);
-
-  // Creates a delegate for promoting the installation of an Android app.
-  static std::unique_ptr<AppBannerUiDelegateAndroid> Create(
-      base::WeakPtr<AppBannerManager> weak_manager,
-      const base::string16& app_title,
-      const base::android::ScopedJavaLocalRef<jobject>& native_app_data,
-      const SkBitmap& icon,
-      const std::string& native_app_package_name);
+      std::unique_ptr<AddToHomescreenParams> params,
+      base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
+                                   const AddToHomescreenParams&)>
+          event_callback);
 
   ~AppBannerUiDelegateAndroid();
-
-  const base::string16& GetAppTitle() const;
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
-  const base::android::ScopedJavaLocalRef<jobject> GetNativeAppData() const;
-
-  const SkBitmap& GetPrimaryIcon() const;
-  AppType GetType() const;
-  const GURL& GetWebAppUrl() const;
 
   // Called through the JNI to add the app described by this class to home
   // screen.
   void AddToHomescreen(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& obj);
-
-  // Returns a reference to the Java-side AddToHomescreenDialog owned by this
-  // object, or null if it does not exist.
-  const base::android::ScopedJavaLocalRef<jobject>
-  GetAddToHomescreenDialogForTesting() const;
-
-  // Installs the app referenced by the data in this object. Returns |true| if
-  // the installation UI should be dismissed.
-  bool InstallApp(content::WebContents* web_contents);
-
-  // Called by the UI layer to indicate that a native app has begun
-  // installation.
-  void OnNativeAppInstallStarted(content::WebContents* web_contents);
-
-  // Called by the UI layer to indicate that a native app has finished
-  // installation.
-  void OnNativeAppInstallFinished(bool success);
 
   // Called through the JNI to indicate that the user has dismissed the
   // installation UI.
@@ -100,57 +51,31 @@ class AppBannerUiDelegateAndroid {
   bool ShowDialog();
 
   // Called by the UI layer to display the details for a native app.
-  void ShowNativeAppDetails();
+  bool ShowNativeAppDetails();
 
-  void ShowNativeAppDetails(JNIEnv* env,
+  bool ShowNativeAppDetails(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj);
 
  private:
-  // Delegate for promoting a web app.
-  AppBannerUiDelegateAndroid(base::WeakPtr<AppBannerManager> weak_manager,
-                             std::unique_ptr<ShortcutInfo> info,
-                             const SkBitmap& primary_icon,
-                             const SkBitmap& badge_icon,
-                             WebappInstallSource install_source,
-                             bool is_webapk);
-
-  // Delegate for promoting an Android app.
+  // Delegate for promoting a web or Android app.
   AppBannerUiDelegateAndroid(
       base::WeakPtr<AppBannerManager> weak_manager,
-      const base::string16& app_title,
-      const base::android::ScopedJavaLocalRef<jobject>& native_app_data,
-      const SkBitmap& icon,
-      const std::string& native_app_package_name);
-
-  bool IsForNativeApp() const { return GetType() == AppType::NATIVE; }
+      std::unique_ptr<AddToHomescreenParams> params,
+      base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
+                                   const AddToHomescreenParams&)>
+          event_callback);
 
   void CreateJavaDelegate();
-  bool InstallOrOpenNativeApp();
-  void InstallWebApk(content::WebContents* web_contents);
-  void InstallLegacyWebApp(content::WebContents* web_contents);
 
-  // Called when the user accepts the banner to install the app. (Not called
-  // when the "Open" button is pressed on the banner that is shown after
-  // installation for WebAPK banners.)
-  void SendBannerAccepted();
   base::android::ScopedJavaGlobalRef<jobject> java_delegate_;
 
   base::WeakPtr<AppBannerManager> weak_manager_;
 
-  base::string16 app_title_;
-  std::unique_ptr<ShortcutInfo> shortcut_info_;
+  std::unique_ptr<AddToHomescreenParams> params_;
 
-  base::android::ScopedJavaGlobalRef<jobject> native_app_data_;
-
-  const SkBitmap primary_icon_;
-  const SkBitmap badge_icon_;
-
-  std::string package_name_;
-
-  AppType type_;
-  WebappInstallSource install_source_;
-  bool has_user_interaction_;
-
+  const base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
+                                     const AddToHomescreenParams&)>
+      event_callback_;
   DISALLOW_COPY_AND_ASSIGN(AppBannerUiDelegateAndroid);
 };
 

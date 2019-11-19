@@ -17,6 +17,7 @@ MockDownloadItemImpl::MockDownloadItemImpl(DownloadItemImplDelegate* delegate)
                        GURL(),
                        GURL(),
                        GURL(),
+                       url::Origin(),
                        "application/octet-stream",
                        "application/octet-stream",
                        base::Time(),
@@ -35,7 +36,8 @@ MockDownloadItemImpl::MockDownloadItemImpl(DownloadItemImplDelegate* delegate)
                        false,
                        base::Time(),
                        true,
-                       DownloadItem::ReceivedSlices()) {}
+                       DownloadItem::ReceivedSlices(),
+                       nullptr /* download_entry */) {}
 
 MockDownloadItemImpl::~MockDownloadItemImpl() = default;
 

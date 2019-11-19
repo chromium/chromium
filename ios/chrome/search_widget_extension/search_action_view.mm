@@ -36,24 +36,43 @@ const CGFloat kIconSize = 35;
         [UIVibrancyEffect widgetPrimaryVibrancyEffect];
     UIVibrancyEffect* secondaryEffect =
         [UIVibrancyEffect widgetSecondaryVibrancyEffect];
+    UIVibrancyEffect* iconBackgroundEffect =
+        [UIVibrancyEffect widgetSecondaryVibrancyEffect];
+    if (@available(iOS 13, *)) {
+      primaryEffect = [UIVibrancyEffect
+          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleLabel];
+      secondaryEffect = [UIVibrancyEffect
+          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleSecondaryLabel];
+      iconBackgroundEffect = [UIVibrancyEffect
+          widgetEffectForVibrancyStyle:UIVibrancyEffectStyleTertiaryFill];
+    }
 
     UIVisualEffectView* primaryEffectView =
         [[UIVisualEffectView alloc] initWithEffect:primaryEffect];
     UIVisualEffectView* secondaryEffectView =
         [[UIVisualEffectView alloc] initWithEffect:secondaryEffect];
-    for (UIVisualEffectView* effectView in
-         @[ primaryEffectView, secondaryEffectView ]) {
-      [self addSubview:effectView];
+    UIVisualEffectView* iconBackgroundEffectView =
+        [[UIVisualEffectView alloc] initWithEffect:iconBackgroundEffect];
+    for (UIVisualEffectView* effectView in @[
+           primaryEffectView, secondaryEffectView, iconBackgroundEffectView
+         ]) {
       effectView.translatesAutoresizingMaskIntoConstraints = NO;
       effectView.userInteractionEnabled = NO;
-      AddSameConstraints(self, effectView);
     }
 
     UIView* circleView = [[UIView alloc] initWithFrame:CGRectZero];
-    circleView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.05];
+    circleView.translatesAutoresizingMaskIntoConstraints = NO;
+    if (@available(iOS 13, *)) {
+      circleView.backgroundColor = UIColor.whiteColor;
+    } else {
+      circleView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.05];
+    }
     circleView.layer.cornerRadius = kActionButtonSize / 2;
+    [iconBackgroundEffectView.contentView addSubview:circleView];
+    AddSameConstraints(iconBackgroundEffectView.contentView, circleView);
 
     UILabel* labelView = [[UILabel alloc] initWithFrame:CGRectZero];
+    labelView.translatesAutoresizingMaskIntoConstraints = NO;
     labelView.text = title;
     labelView.numberOfLines = 0;
     labelView.textAlignment = NSTextAlignmentCenter;
@@ -62,22 +81,28 @@ const CGFloat kIconSize = 35;
     [labelView
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:UILayoutConstraintAxisVertical];
+    [secondaryEffectView.contentView addSubview:labelView];
+    AddSameConstraints(secondaryEffectView.contentView, labelView);
 
-    UIStackView* stack = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ circleView, labelView ]];
+    UIStackView* stack = [[UIStackView alloc] initWithArrangedSubviews:@[
+      iconBackgroundEffectView, secondaryEffectView
+    ]];
     stack.axis = UILayoutConstraintAxisVertical;
     stack.spacing = kIconSpacing;
     stack.alignment = UIStackViewAlignmentCenter;
     stack.translatesAutoresizingMaskIntoConstraints = NO;
-    [secondaryEffectView.contentView addSubview:stack];
-    AddSameConstraints(secondaryEffectView, stack);
+    stack.userInteractionEnabled = NO;
+    [self addSubview:stack];
+    AddSameConstraints(self, stack);
+
     UIImage* iconImage = [UIImage imageNamed:imageName];
     iconImage =
         [iconImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-
     UIImageView* icon = [[UIImageView alloc] initWithImage:iconImage];
     icon.translatesAutoresizingMaskIntoConstraints = NO;
     [primaryEffectView.contentView addSubview:icon];
+    AddSameConstraints(primaryEffectView.contentView, icon);
+    [self addSubview:primaryEffectView];
 
     [NSLayoutConstraint activateConstraints:@[
       [circleView.widthAnchor constraintEqualToConstant:kActionButtonSize],
@@ -93,6 +118,8 @@ const CGFloat kIconSize = 35;
                   action:actionSelector
         forControlEvents:UIControlEventTouchUpInside];
     self.accessibilityLabel = title;
+
+    self.highlightableViews = @[ circleView, labelView, icon ];
   }
   return self;
 }

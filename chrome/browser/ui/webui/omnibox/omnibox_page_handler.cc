@@ -174,6 +174,7 @@ struct TypeConverter<mojom::AutocompleteMatchPtr, AutocompleteMatch> {
     result->description_class =
         mojo::ConvertTo<std::vector<mojom::ACMatchClassificationPtr>>(
             input.description_class);
+    result->swap_contents_and_description = input.swap_contents_and_description;
     if (input.answer) {
       result->answer =
           SuggestionAnswerImageLineToString(input.answer->first_line()) +
@@ -221,8 +222,8 @@ struct TypeConverter<mojom::AutocompleteResultsForProviderPtr,
 
 OmniboxPageHandler::OmniboxPageHandler(
     Profile* profile,
-    mojo::InterfaceRequest<mojom::OmniboxPageHandler> request)
-    : profile_(profile), binding_(this, std::move(request)), observer_(this) {
+    mojo::PendingReceiver<mojom::OmniboxPageHandler> receiver)
+    : profile_(profile), receiver_(this, std::move(receiver)), observer_(this) {
   observer_.Add(OmniboxControllerEmitter::GetForBrowserContext(profile_));
   ResetController();
 }
@@ -233,25 +234,31 @@ void OmniboxPageHandler::OnResultChanged(bool default_match_changed) {
   OnOmniboxResultChanged(default_match_changed, controller_.get());
 }
 
-void OmniboxPageHandler::OnOmniboxQuery(AutocompleteController* controller) {
-  page_->HandleNewAutocompleteQuery(controller == controller_.get());
+void OmniboxPageHandler::OnOmniboxQuery(AutocompleteController* controller,
+                                        const AutocompleteInput& input) {
+  time_omnibox_started_ = base::Time::Now();
+  input_ = input;
+  page_->HandleNewAutocompleteQuery(controller == controller_.get(),
+                                    base::UTF16ToUTF8(input.text()));
 }
 
 void OmniboxPageHandler::OnOmniboxResultChanged(
     bool default_match_changed,
     AutocompleteController* controller) {
   mojom::OmniboxResponsePtr response(mojom::OmniboxResponse::New());
-  response->done = controller->done();
+  response->cursor_position = input_.cursor_position();
   response->time_since_omnibox_started_ms =
       (base::Time::Now() - time_omnibox_started_).InMilliseconds();
+  response->done = controller->done();
+  response->type = AutocompleteInput::TypeToString(input_.type());
   const base::string16 host =
       input_.text().substr(input_.parts().host.begin, input_.parts().host.len);
   response->host = base::UTF16ToUTF8(host);
-  response->type = AutocompleteInput::TypeToString(input_.type());
   bool is_typed_host;
   if (!LookupIsTypedHost(host, &is_typed_host))
     is_typed_host = false;
   response->is_typed_host = is_typed_host;
+  response->input_text = base::UTF16ToUTF8(input_.text());
 
   {
     // Copy to an ACMatches to make conversion easier. Since this isn't
@@ -293,7 +300,7 @@ void OmniboxPageHandler::OnOmniboxResultChanged(
       image_urls.push_back(result_by_provider.results[j]->image);
   }
 
-  page_->handleNewAutocompleteResponse(std::move(response),
+  page_->HandleNewAutocompleteResponse(std::move(response),
                                        controller == controller_.get());
 
   // Fill in image data
@@ -368,8 +375,9 @@ bool OmniboxPageHandler::LookupIsTypedHost(const base::string16& host,
   return true;
 }
 
-void OmniboxPageHandler::SetClientPage(mojom::OmniboxPagePtr page) {
-  page_ = std::move(page);
+void OmniboxPageHandler::SetClientPage(
+    mojo::PendingRemote<mojom::OmniboxPage> page) {
+  page_.Bind(std::move(page));
 }
 
 void OmniboxPageHandler::StartOmniboxQuery(const std::string& input_string,
@@ -387,35 +395,27 @@ void OmniboxPageHandler::StartOmniboxQuery(const std::string& input_string,
   // actual results to not depend on the state of the previous request.
   if (reset_autocomplete_controller)
     ResetController();
-  // TODO (manukh): OmniboxPageHandler::StartOmniboxQuery is invoked only for
-  // queries from the debug page and not for queries from the browser omnibox.
-  // time_omnibox_started_ and input_ are therefore not set for browser omnibox
-  // queries, resulting in inaccurate time_since_omnibox_started_ms, host, type,
-  // and is_typed_host values in the result object being sent to the debug page.
-  // For the user, this means the 'details' section is mostly inaccurate for
-  // browser omnibox queries.
-  time_omnibox_started_ = base::Time::Now();
-  input_ = AutocompleteInput(
+  AutocompleteInput input(
       base::UTF8ToUTF16(input_string), cursor_position,
       static_cast<metrics::OmniboxEventProto::PageClassification>(
           page_classification),
       ChromeAutocompleteSchemeClassifier(profile_));
   GURL current_url_gurl{current_url};
   if (current_url_gurl.is_valid())
-    input_.set_current_url(current_url_gurl);
-  input_.set_current_title(base::UTF8ToUTF16(current_url));
-  input_.set_prevent_inline_autocomplete(prevent_inline_autocomplete);
-  input_.set_prefer_keyword(prefer_keyword);
+    input.set_current_url(current_url_gurl);
+  input.set_current_title(base::UTF8ToUTF16(current_url));
+  input.set_prevent_inline_autocomplete(prevent_inline_autocomplete);
+  input.set_prefer_keyword(prefer_keyword);
   if (prefer_keyword)
-    input_.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
-  input_.set_from_omnibox_focus(zero_suggest);
+    input.set_keyword_mode_entry_method(metrics::OmniboxEventProto::TAB);
+  input.set_from_omnibox_focus(zero_suggest);
 
-  OnOmniboxQuery(controller_.get());
+  OnOmniboxQuery(controller_.get(), input);
   controller_->Start(input_);
 }
 
 void OmniboxPageHandler::ResetController() {
-  controller_.reset(new AutocompleteController(
+  controller_ = std::make_unique<AutocompleteController>(
       std::make_unique<ChromeAutocompleteProviderClient>(profile_), this,
-      AutocompleteClassifier::DefaultOmniboxProviders()));
+      AutocompleteClassifier::DefaultOmniboxProviders());
 }

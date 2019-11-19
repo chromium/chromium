@@ -112,6 +112,7 @@ class MessageCenterChangeObserver::Impl
 };
 
 MessageCenterChangeObserver::MessageCenterChangeObserver() : impl_(new Impl) {}
+
 MessageCenterChangeObserver::~MessageCenterChangeObserver() = default;
 
 bool MessageCenterChangeObserver::Wait() {
@@ -128,9 +129,7 @@ const std::string& TestMessageCenterObserver::last_displayed_id() const {
   return last_displayed_id_;
 }
 
-void NotificationsTest::SetUpDefaultCommandLine(
-    base::CommandLine* command_line) {
-  InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+NotificationsTest::NotificationsTest() {
 // Temporary change while the whole support class is changed to deal
 // with native notifications. crbug.com/714679
 #if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
@@ -163,13 +162,13 @@ void NotificationsTest::AllowOrigin(const GURL& origin) {
 void NotificationsTest::AllowAllOrigins() {
   // Reset all origins
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->ClearSettingsForOneType(CONTENT_SETTINGS_TYPE_NOTIFICATIONS);
+      ->ClearSettingsForOneType(ContentSettingsType::NOTIFICATIONS);
   SetDefaultContentSetting(CONTENT_SETTING_ALLOW);
 }
 
 void NotificationsTest::SetDefaultContentSetting(ContentSetting setting) {
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetDefaultContentSetting(CONTENT_SETTINGS_TYPE_NOTIFICATIONS, setting);
+      ->SetDefaultContentSetting(ContentSettingsType::NOTIFICATIONS, setting);
 }
 
 std::string NotificationsTest::CreateNotification(Browser* browser,
@@ -268,7 +267,7 @@ bool NotificationsTest::CancelNotification(const char* notification_id,
 void NotificationsTest::GetDisabledContentSettings(
     ContentSettingsForOneType* settings) {
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->GetSettingsForOneType(CONTENT_SETTINGS_TYPE_NOTIFICATIONS,
+      ->GetSettingsForOneType(ContentSettingsType::NOTIFICATIONS,
                               content_settings::ResourceIdentifier(), settings);
 
   for (auto it = settings->begin(); it != settings->end();) {
@@ -306,17 +305,15 @@ content::WebContents* NotificationsTest::GetActiveWebContents(
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 
-void NotificationsTest::EnablePermissionsEmbargo(
-    base::test::ScopedFeatureList* scoped_feature_list) {
+NotificationsTestWithPermissionsEmbargo ::
+    NotificationsTestWithPermissionsEmbargo() {
 #if BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
-  scoped_feature_list->InitWithFeatures(
-      {features::kBlockPromptsIfDismissedOften,
-       features::kBlockPromptsIfIgnoredOften},
-      {features::kNativeNotifications});
+  feature_list_.InitWithFeatures({features::kBlockPromptsIfDismissedOften,
+                                  features::kBlockPromptsIfIgnoredOften},
+                                 {features::kNativeNotifications});
 #else
-  scoped_feature_list->InitWithFeatures(
-      {features::kBlockPromptsIfDismissedOften,
-       features::kBlockPromptsIfIgnoredOften},
-      {});
+  feature_list_.InitWithFeatures({features::kBlockPromptsIfDismissedOften,
+                                  features::kBlockPromptsIfIgnoredOften},
+                                 {});
 #endif  //  BUILDFLAG(ENABLE_NATIVE_NOTIFICATIONS)
 }

@@ -136,7 +136,7 @@ class NET_EXPORT_PRIVATE SocketBIOAdapter {
 
   Delegate* delegate_;
 
-  base::WeakPtrFactory<SocketBIOAdapter> weak_factory_;
+  base::WeakPtrFactory<SocketBIOAdapter> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SocketBIOAdapter);
 };

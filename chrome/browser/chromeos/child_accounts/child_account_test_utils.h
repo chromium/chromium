@@ -10,9 +10,6 @@
 namespace chromeos {
 namespace test {
 
-// JSON array of service flags for logging in a child account.
-extern const char kChildAccountServiceFlags[];
-
 // Returns a base64-encoded dummy token for child log-in.
 std::string GetChildAccountOAuthIdToken();
 

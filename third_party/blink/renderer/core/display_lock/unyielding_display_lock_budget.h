@@ -18,9 +18,9 @@ class CORE_EXPORT UnyieldingDisplayLockBudget final : public DisplayLockBudget {
   UnyieldingDisplayLockBudget(DisplayLockContext*);
   ~UnyieldingDisplayLockBudget() override = default;
 
-  bool ShouldPerformPhase(Phase) const override;
+  bool ShouldPerformPhase(Phase, const LifecycleData&) override;
   void DidPerformPhase(Phase) override;
-  void WillStartLifecycleUpdate() override;
+  void OnLifecycleChange(const LifecycleData&) override;
   bool NeedsLifecycleUpdates() const override;
 };
 

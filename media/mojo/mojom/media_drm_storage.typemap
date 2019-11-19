@@ -1,0 +1,17 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//media/mojo/mojom/media_drm_storage.mojom"
+
+os_whitelist = [ "android" ]
+
+public_headers = [ "//media/base/android/media_drm_key_type.h" ]
+
+traits_headers = [ "//media/base/ipc/media_param_traits_macros.h" ]
+
+deps = [
+  "//media",
+]
+
+type_mappings = [ "media.mojom.SessionData.KeyType=::media::MediaDrmKeyType" ]

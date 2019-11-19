@@ -1,13 +1,12 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+<link rel="import" href="chrome://resources/cr_elements/cr_tabs/cr_tabs.html">
 <link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/paper_tabs_style_css.html">
 <link rel="import" href="chrome://resources/html/assert.html">
 <link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-pages/iron-pages.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-tabs/paper-tabs.html">
 <link rel="import" href="ca_trust_edit_dialog.html">
 <link rel="import" href="certificate_delete_confirmation_dialog.html">
 <link rel="import" href="certificate_list.html">
@@ -19,10 +18,10 @@
 
 <dom-module id="certificate-manager">
   <template>
-    <style include="cr-hidden-style paper-tabs-style">
-      paper-tabs {
-        font-size: inherit;
-        height: 40px;
+    <style include="cr-hidden-style">
+      cr-tabs {
+        --cr-tabs-font-size: inherit;
+        --cr-tabs-height: 40px;
         margin-bottom: 24px;
       }
     </style>
@@ -51,20 +50,13 @@
       </certificates-error-dialog>
     </template>
 
-    <paper-tabs noink selected="{{selected}}">
-      <paper-tab>[[i18n('certificateManagerYourCertificates')]]</paper-tab>
-      <paper-tab hidden="[[isKiosk_]]">[[i18n('certificateManagerServers')]]
-      </paper-tab>
-      <paper-tab hidden="[[isKiosk_]]">[[i18n('certificateManagerAuthorities')]]
-      </paper-tab>
-      <paper-tab>[[i18n('certificateManagerOthers')]]</paper-tab>
-    </paper-tabs>
+    <cr-tabs selected="{{selected}}" tab-names="[[tabNames_]]"></cr-tabs>
     <iron-pages selected="[[selected]]">
       <div>
         <certificate-list id="personalCerts"
             certificates="[[personalCerts]]"
             certificate-type="[[certificateTypeEnum_.PERSONAL]]"
-            import-allowed="[[importAllowed]]">
+            import-allowed="[[clientImportAllowed]]">
         </certificate-list>
       </div>
       <div>
@@ -72,7 +64,7 @@
           <certificate-list id="serverCerts"
               certificates="[[serverCerts]]"
               certificate-type="[[certificateTypeEnum_.SERVER]]"
-              import-allowed="[[importAllowed]]">
+              import-allowed="true">
           </certificate-list>
         </template>
       </div>
@@ -81,7 +73,7 @@
           <certificate-list id="caCerts"
               certificates="[[caCerts]]"
               certificate-type="[[certificateTypeEnum_.CA]]"
-              import-allowed="[[importAllowed]]">
+              import-allowed="[[caImportAllowed]]">
           </certificate-list>
         </template>
       </div>
@@ -90,7 +82,7 @@
           <certificate-list id="otherCerts"
               certificates="[[otherCerts]]"
               certificate-type="[[certificateTypeEnum_.OTHER]]"
-              import-allowed="[[importAllowed]]">
+              import-allowed="false">
           </certificate-list>
         </template>
       </div>

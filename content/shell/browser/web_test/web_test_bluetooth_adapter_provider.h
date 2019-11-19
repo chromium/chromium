@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
-#include "device/bluetooth/test/mock_bluetooth_discovery_session.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_notify_session.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_service.h"
@@ -503,16 +502,6 @@ class WebTestBluetoothAdapterProvider {
   //          GetDisconnectingService
   static scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>>
   GetFailingGATTOperationsAdapter();
-
-  // Discovery Sessions
-
-  // |DiscoverySession|
-  // Mock Functions:
-  //  - Stop:
-  //      Run success callback.
-  static std::unique_ptr<
-      testing::NiceMock<device::MockBluetoothDiscoverySession>>
-  GetDiscoverySession();
 
   // Devices
 

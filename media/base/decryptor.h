@@ -121,9 +121,10 @@ class MEDIA_EXPORT Decryptor {
   // - Set to kError if unexpected error has occurred. In this case the
   //   returned frame(s) must be NULL/empty.
   // Second parameter: The decoded video frame or audio buffers.
-  typedef base::Callback<void(Status, const AudioFrames&)> AudioDecodeCB;
-  typedef base::Callback<void(Status,
-                              const scoped_refptr<VideoFrame>&)> VideoDecodeCB;
+  typedef base::RepeatingCallback<void(Status, const AudioFrames&)>
+      AudioDecodeCB;
+  typedef base::RepeatingCallback<void(Status, scoped_refptr<VideoFrame>)>
+      VideoDecodeCB;
 
   // Decrypts and decodes the |encrypted| buffer. The status and the decrypted
   // buffer are returned via the provided callback.

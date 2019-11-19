@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<div id="second" tabindex="0">Second</div>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  // This test checks that calling prevent default on key events doesn't
+  // prevent moving interest or entering/exiting focus.
+  let first = document.getElementById("first");
+  let second = document.getElementById("second");
+  let third = document.getElementById("third");
+
+  second.addEventListener('keydown', (e) => {
+    if (e.key !== "Escape")
+      e.preventDefault();
+  });
+
+  test(() => {
+    assert_true(!!window.internals);
+
+    // Move interest to 'second'
+    snav.triggerMove('Down');
+    snav.triggerMove('Down');
+
+    // Enter focus into 'second'
+    eventSender.keyDown('Enter');
+    assert_equals(document.activeElement,
+                  second,
+                  "Enter key moves focus into 'second'");
+
+    // Press down arrow. This should dispatch key event to the element. Since
+    // it is preventDefault'ed, we shouldn't change the interested element or
+    // focus.
+    let key_down_was_called = false;
+    const handler = (e) => {
+      assert_equals(e.key, 'ArrowDown');
+      key_down_was_called = true;
+    };
+
+    second.addEventListener('keydown', handler);
+
+    snav.triggerMove('Down');
+    assert_true(key_down_was_called, "'second' gets key events while focused");
+
+    second.removeEventListener('keydown', handler);
+
+    assert_equals(document.activeElement,
+                  second,
+                  "preventDefault on arrow key prevents movement");
+    assert_equals(window.internals.interestedElement,
+                  second,
+                  "preventDefault on arrow key prevents movement");
+
+    // Send escape key, this should remove focus from the element but keep
+    // interest.
+    eventSender.keyDown('Escape');
+
+    assert_not_equals(document.activeElement,
+                      second,
+                      "Escape key should blur 'second'");
+    assert_equals(window.internals.interestedElement,
+                  second,
+                  "Escape key shouldn't change interest from 'second'");
+
+    // Send down key. Now that focus was lost from 'second', we should move
+    // interest.
+    snav.triggerMove('Down');
+    assert_equals(window.internals.interestedElement,
+                  third,
+                  "Movement possible over key event capturing element");
+  }, "Focusless navigation with event cancelling handlers.");
+</script>

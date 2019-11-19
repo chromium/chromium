@@ -9,7 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "storage/browser/fileapi/file_system_url.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 namespace storage {
 class FileSystemContext;

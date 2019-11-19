@@ -3,17 +3,22 @@
 # found in the LICENSE file.
 
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
 
 js_type_check("closure_compile") {
   deps = [
     ":cr_policy_indicator",
     ":cr_policy_indicator_behavior",
-    ":cr_policy_network_behavior",
-    ":cr_policy_network_indicator",
     ":cr_policy_pref_behavior",
     ":cr_policy_pref_indicator",
     ":cr_tooltip_icon",
   ]
+  if (is_chromeos) {
+    deps += [
+      ":cr_policy_network_behavior_mojo",
+      ":cr_policy_network_indicator_mojo",
+    ]
+  }
 }
 
 js_library("cr_policy_indicator") {
@@ -43,21 +48,47 @@ js_library("cr_policy_pref_indicator") {
   externs_list = [ "$externs_path/settings_private.js" ]
 }
 
-js_library("cr_policy_network_behavior") {
-  deps = [
-    ":cr_policy_indicator_behavior",
-    "../chromeos/network:cr_onc_types",
-  ]
-}
+if (is_chromeos) {
+  js_library("cr_policy_network_behavior_mojo") {
+    deps = [
+      ":cr_policy_indicator_behavior",
+      "../../js/chromeos:onc_mojo",
+      "//chromeos/services/network_config/public/mojom:mojom_js_library_for_compile",
+      "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider",
+    ]
+  }
 
-js_library("cr_policy_network_indicator") {
-  deps = [
-    ":cr_policy_indicator_behavior",
-    ":cr_policy_network_behavior",
-    ":cr_tooltip_icon",
-    "../chromeos/network:cr_onc_types",
-  ]
+  js_library("cr_policy_network_indicator_mojo") {
+    deps = [
+      ":cr_policy_indicator_behavior",
+      ":cr_policy_network_behavior_mojo",
+      ":cr_tooltip_icon",
+    ]
+  }
 }
 
 js_library("cr_tooltip_icon") {
+}
+
+polymer_modulizer("cr_tooltip_icon") {
+  js_file = "cr_tooltip_icon.js"
+  html_file = "cr_tooltip_icon.html"
+  html_type = "dom-module"
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  deps = [
+    ":cr_tooltip_icon.m",
+  ]
+}
+
+js_library("cr_tooltip_icon.m") {
+  sources = [
+    "$root_gen_dir/ui/webui/resources/cr_elements/policy/cr_tooltip_icon.m.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":cr_tooltip_icon_module" ]
 }

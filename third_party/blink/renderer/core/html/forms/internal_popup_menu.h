@@ -24,8 +24,6 @@ class HTMLSelectElement;
 class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
                                             public PagePopupClient {
  public:
-  static InternalPopupMenu* Create(ChromeClient*, HTMLSelectElement&);
-
   InternalPopupMenu(ChromeClient*, HTMLSelectElement&);
   ~InternalPopupMenu() override;
   void Trace(Visitor*) override;
@@ -35,6 +33,8 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
   void Dispose();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(InternalPopupMenuTest, ShowSelectDisplayNone);
+
   class ItemIterationContext;
   void AddOption(ItemIterationContext&, HTMLOptionElement&);
   void AddOptGroup(ItemIterationContext&, HTMLOptGroupElement&);
@@ -54,6 +54,7 @@ class CORE_EXPORT InternalPopupMenu final : public PopupMenu,
   void SetValue(const String&) override;
   void CancelPopup() override;
   Element& OwnerElement() override;
+  ChromeClient& GetChromeClient() override;
   float ZoomFactor() override { return 1.0; }
   Locale& GetLocale() override;
   void DidClosePopup() override;

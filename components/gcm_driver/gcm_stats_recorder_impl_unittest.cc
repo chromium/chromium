@@ -425,7 +425,8 @@ TEST_F(GCMStatsRecorderImplTest, ClearLogTest) {
   VerifyRecordedSendingCount(0);
 }
 
-TEST_F(GCMStatsRecorderImplTest, CheckinTest) {
+// This test is flaky, see https://crbug.com/1010462
+TEST_F(GCMStatsRecorderImplTest, DISABLED_CheckinTest) {
   recorder_.RecordCheckinInitiated(kAndroidId);
   VerifyRecordedCheckinCount(1);
   VerifyCheckinInitiated("1st call");

@@ -147,7 +147,7 @@ void ImportDataHandler::InitializeDialog(const base::ListValue* args) {
   std::string callback_id;
   CHECK(args->GetString(0, &callback_id));
 
-  importer_list_.reset(new ImporterList());
+  importer_list_ = std::make_unique<ImporterList>();
   importer_list_->DetectSourceProfiles(
       g_browser_process->GetApplicationLocale(),
       true,  // include_interactive_profiles

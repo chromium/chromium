@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.dependency_injection;
 
 import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 
@@ -15,12 +16,13 @@ import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManager;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
-import org.chromium.chrome.browser.init.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.toolbar.ToolbarManager;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
+import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import javax.inject.Named;
@@ -64,25 +66,25 @@ public class ChromeActivityCommonsModule {
     }
 
     @Provides
-    public ToolbarManager provideToolbarManager() {
-        return mActivity.getToolbarManager();
-    }
-
-    @Provides
     public LayoutManager provideLayoutManager() {
         return mActivity.getCompositorViewHolder().getLayoutManager();
     }
 
     @Provides
     public ChromeActivity provideChromeActivity() {
-        // Ideally providing Context should be enough, but currently a lot of code is coupled
-        // specifically to ChromeActivity.
+        // Ideally providing Context or Activity should be enough, but currently a lot of code is
+        // coupled specifically to ChromeActivity.
         return mActivity;
     }
 
     @Provides
     @Named(ACTIVITY_CONTEXT)
     public Context provideContext() {
+        return mActivity;
+    }
+
+    @Provides
+    public Activity provideActivity() {
         return mActivity;
     }
 
@@ -124,5 +126,15 @@ public class ChromeActivityCommonsModule {
     @Provides
     public TabCreatorManager provideTabCreatorManager() {
         return (TabCreatorManager) mActivity;
+    }
+
+    @Provides
+    public StatusBarColorController provideStatusBarColorController() {
+        return mActivity.getStatusBarColorController();
+    }
+
+    @Provides
+    public ScreenOrientationProvider provideScreenOrientationProvider() {
+        return ScreenOrientationProvider.getInstance();
     }
 }

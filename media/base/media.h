@@ -34,10 +34,6 @@ MEDIA_EXPORT void InitializeMediaLibraryInSandbox(int64_t libyuv_cpu_flags,
 // (e.g. MediaPlayer).
 MEDIA_EXPORT void EnablePlatformDecoderSupport();
 MEDIA_EXPORT bool HasPlatformDecoderSupport();
-
-// Indicates if the platform supports Opus. Determined *ONLY* by the platform
-// version, so does not guarantee that either can actually be played.
-MEDIA_EXPORT bool PlatformHasOpusSupport();
 #endif
 
 }  // namespace media

@@ -88,9 +88,6 @@ class PpapiThread : public ChildThreadImpl,
       base::PlatformFile handle,
       base::ProcessId peer_pid,
       bool should_close_source) override;
-  base::SharedMemoryHandle ShareSharedMemoryHandleWithRemote(
-      const base::SharedMemoryHandle& handle,
-      base::ProcessId remote_pid) override;
   base::UnsafeSharedMemoryRegion ShareUnsafeSharedMemoryRegionWithRemote(
       const base::UnsafeSharedMemoryRegion& region,
       base::ProcessId remote_pid) override;
@@ -138,7 +135,7 @@ class PpapiThread : public ChildThreadImpl,
 
   // Reports |error| to UMA when plugin load fails.
   void ReportLoadErrorCode(const base::FilePath& path,
-                           const base::NativeLibraryLoadError& error);
+                           const base::NativeLibraryLoadError* error);
 
   // Reports time to load the plugin.
   void ReportLoadTime(const base::FilePath& path,

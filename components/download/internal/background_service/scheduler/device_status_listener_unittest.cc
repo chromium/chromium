@@ -8,7 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/power_monitor_test_base.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/download/internal/background_service/scheduler/battery_status_listener_impl.h"
 #include "components/download/network/network_status_listener_impl.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -86,8 +86,7 @@ class DeviceStatusListenerTest : public testing::Test {
   void SetUp() override {
     auto power_source = std::make_unique<base::PowerMonitorTestSource>();
     power_source_ = power_source.get();
-    power_monitor_ =
-        std::make_unique<base::PowerMonitor>(std::move(power_source));
+    base::PowerMonitor::Initialize(std::move(power_source));
 
     auto battery_listener = std::make_unique<TestBatteryStatusListener>();
     test_battery_listener_ = battery_listener.get();
@@ -100,7 +99,10 @@ class DeviceStatusListenerTest : public testing::Test {
     listener_->SetObserver(&mock_observer_);
   }
 
-  void TearDown() override { listener_.reset(); }
+  void TearDown() override {
+    listener_.reset();
+    base::PowerMonitor::ShutdownForTesting();
+  }
 
  protected:
   // Start the listener with certain network and battery state.
@@ -144,8 +146,7 @@ class DeviceStatusListenerTest : public testing::Test {
   MockObserver mock_observer_;
 
   // Needed for network change notifier and power monitor.
-  base::test::ScopedTaskEnvironment task_environment_;
-  std::unique_ptr<base::PowerMonitor> power_monitor_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::PowerMonitorTestSource* power_source_;
   TestBatteryStatusListener* test_battery_listener_;
 };

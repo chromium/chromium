@@ -16,8 +16,8 @@
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
 #include "base/test/simple_test_clock.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/blacklist/opt_out_blacklist/opt_out_blacklist_data.h"
@@ -93,7 +93,7 @@ class OptOutStoreSQLTest : public testing::Test {
   void TearDown() override { DestroyStore(); }
 
  protected:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
 
   // The backing SQL store.
   std::unique_ptr<OptOutStoreSQL> store_;
@@ -272,48 +272,6 @@ TEST_F(OptOutStoreSQLTest, TestMaxRowsPerHost) {
   // If both entries' opt out states are stored correctly, then this should not
   // be black listed.
   EXPECT_FALSE(iter->second.IsBlackListed(clock.Now()));
-}
-
-TEST_F(OptOutStoreSQLTest, TestTypesDisabledClearsBlacklistEntry) {
-  // Tests if data is cleared for type when it is disabled.
-  std::map<std::string, std::string> params;
-  std::string test_host = "host.com";
-  BlacklistData::AllowedTypesAndVersions allowed_types;
-  allowed_types.insert({1, 0});
-  SetEnabledTypes(std::move(allowed_types));
-  CreateAndLoad();
-  base::Time now = base::Time::Now();
-  store_->AddEntry(true, test_host, 1, now);
-  base::RunLoop().RunUntilIdle();
-
-  // Force data write to database then reload it and verify black list entry
-  // is present.
-  DestroyStore();
-  allowed_types.clear();
-  allowed_types.insert({1, 0});
-  SetEnabledTypes(std::move(allowed_types));
-  CreateAndLoad();
-  const auto& iter =
-      blacklist_data_->black_list_item_host_map().find(test_host);
-  EXPECT_NE(blacklist_data_->black_list_item_host_map().end(), iter);
-  EXPECT_EQ(1U, iter->second.OptOutRecordsSizeForTesting());
-
-  DestroyStore();
-  allowed_types.clear();
-  allowed_types.insert({2, 0});
-  SetEnabledTypes(std::move(allowed_types));
-  CreateAndLoad();
-  const auto& iter2 =
-      blacklist_data_->black_list_item_host_map().find(test_host);
-  EXPECT_EQ(blacklist_data_->black_list_item_host_map().end(), iter2);
-
-  DestroyStore();
-  allowed_types.clear();
-  SetEnabledTypes(std::move(allowed_types));
-  CreateAndLoad();
-  const auto& iter3 =
-      blacklist_data_->black_list_item_host_map().find(test_host);
-  EXPECT_EQ(blacklist_data_->black_list_item_host_map().end(), iter3);
 }
 
 TEST_F(OptOutStoreSQLTest, TestTypesVersionUpdateClearsBlacklistEntry) {

@@ -50,7 +50,7 @@ extended attributes), as this would cause unnecessary rebuilds.
 
 Current keys are:
 * dependencies:
-    'implements_interfaces': targets of 'implements' statements
+    'including_mixins': targets of 'includes' statements
     'referenced_interfaces': reference interfaces that are introspected
                              (currently just targets of [PutForwards])
 
@@ -111,12 +111,12 @@ inherited_extended_attributes_by_interface = {}  # interface name -> extended at
 
 
 class IdlInterfaceFileNotFoundError(Exception):
-    """Raised if the IDL file implementing an interface cannot be found."""
+    """Raised if an IDL file that contains the mixin cannot be found."""
     pass
 
 
 def parse_options():
-    usage = 'Usage: %prog [InfoIndividual.pickle]... [Info.pickle]'
+    usage = 'Usage: %prog [input_info.pickle]... [output_info.pickle]'
     parser = optparse.OptionParser(usage=usage)
 
     return parser.parse_args()
@@ -226,17 +226,17 @@ def compute_interfaces_info_overall(info_individuals):
         compute_inheritance_info(interface_name)
 
     # Compute dependencies
-    # Move implements info from implement*ed* interface (rhs of 'implements')
-    # to implement*ing* interface (lhs of 'implements').
-    # Note that moving an 'implements' statement between implementing and
-    # implemented files does not change the info (or hence cause a rebuild)!
-    for right_interface_name, interface_info in interfaces_info.iteritems():
-        for left_interface_name in interface_info['implemented_by_interfaces']:
-            interfaces_info[left_interface_name]['implements_interfaces'].append(right_interface_name)
-        del interface_info['implemented_by_interfaces']
+    # Move includes info from mixin (rhs of 'includes') to interface (lhs of
+    # 'includes').
+    # Note that moving an 'includes' statement between files does not change the
+    # info itself (or hence cause a rebuild)!
+    for mixin_name, interface_info in interfaces_info.iteritems():
+        for interface_name in interface_info['included_by_interfaces']:
+            interfaces_info[interface_name]['including_mixins'].append(mixin_name)
+        del interface_info['included_by_interfaces']
 
     # An IDL file's dependencies are partial interface files that extend it,
-    # and files for other interfaces that this interfaces implements.
+    # and files for other interfaces that this interfaces include.
     for interface_name, interface_info in interfaces_info.iteritems():
         partial_interface_paths = partial_interface_files[interface_name]
         partial_interfaces_full_paths = partial_interface_paths['full_paths']
@@ -244,29 +244,24 @@ def compute_interfaces_info_overall(info_individuals):
         # implemented in separate classes from the main interface.
         partial_interfaces_include_paths = partial_interface_paths['include_paths']
 
-        implemented_interfaces = interface_info['implements_interfaces']
+        mixins = interface_info['including_mixins']
         try:
-            implemented_interfaces_info = [
-                interfaces_info[interface]
-                for interface in implemented_interfaces]
+            mixins_info = [interfaces_info[mixin] for mixin in mixins]
         except KeyError as key_name:
-            raise IdlInterfaceFileNotFoundError('Could not find the IDL file where the following implemented interface is defined: %s' % key_name)
-        implemented_interfaces_full_paths = [
-            implemented_interface_info['full_path']
-            for implemented_interface_info in implemented_interfaces_info]
-        # Implemented interfaces don't need includes, as this is handled in
-        # the Blink implementation (they are implemented on |impl| itself,
-        # hence header is included in implementing class).
-        # However, they are needed for legacy implemented interfaces that
-        # are being treated as partial interfaces, until we remove these.
-        # http://crbug.com/360435
-        implemented_interfaces_include_paths = [
-            implemented_interface_info['include_path']
-            for implemented_interface_info in implemented_interfaces_info
-            if implemented_interface_info['is_legacy_treat_as_partial_interface']]
+            raise IdlInterfaceFileNotFoundError('Could not find the IDL file where the following mixin is defined: %s' % key_name)
+        mixins_full_paths = [mixin_info['full_path'] for mixin_info in mixins_info]
+        # Mixins don't need include files, as this is handled in the Blink
+        # implementation (they are implemented on |impl| itself, hence header
+        # declaration is included in the interface class).
+        # However, they are needed for legacy mixins that are being treated as
+        # partial interfaces, until we remove these.
+        # https://crbug.com/360435
+        mixins_include_paths = [
+            mixin_info['include_path'] for mixin_info in mixins_info
+            if mixin_info['is_legacy_treat_as_partial_interface']]
 
-        dependencies_full_paths = implemented_interfaces_full_paths
-        dependencies_include_paths = implemented_interfaces_include_paths
+        dependencies_full_paths = mixins_full_paths
+        dependencies_include_paths = mixins_include_paths
         dependencies_other_component_full_paths = []
         dependencies_other_component_include_paths = []
 

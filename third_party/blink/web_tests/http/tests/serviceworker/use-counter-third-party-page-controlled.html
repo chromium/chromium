@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!-- Tests UseCounter for service worker controlled page in third party context.
+This cannot be upstreamed to WPT because it tests Chrome's UseCounter
+mechanism. -->
+<meta charset="utf-8">
+<title>Test UseCounter for service worker controlled page in third party context.</title>
+<body></body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/get-host-info.js"></script>
+<script src="resources/test-helpers.js"></script>
+<script>
+// Check that the iframe created in |win| has observed the use counter
+// kThirdPartyServiceWorker.
+function assert_subframe_has_use_counter(win, description) {
+  let saw_message = new Promise(resolve => {
+      window.onmessage = (e => resolve(e.data));
+      win.postMessage('from_opener_assert_has_use_counter', '*');
+    });
+
+  return saw_message.then(data => assert_equals(data, 'from_iframe_verified_has_use_counter', description));
+}
+
+function popup_page_loaded() {
+  return new Promise(function(resolve, reject) {
+      window.onmessage = (msg) => {
+        if (msg.data == 'popup_page_loaded')
+          resolve();
+        else
+          reject(msg.data);
+      };
+    });
+}
+
+// This test registers a service worker and opens a cross-origin popup. The
+// popup creates an iframe same-origin with the opener page. The iframe
+// communicates whether it has observed UseCounter kThirdPartyServiceWorker.
+promise_test(async t => {
+  const popup_url = get_host_info().HTTPS_REMOTE_ORIGIN +
+            '/serviceworker/resources/use-counter-third-party-parent.html';
+  const popup = window.open(popup_url);
+  await popup_page_loaded();
+
+  const registration = await navigator.serviceWorker.register('resources/empty-worker.js');
+  t.add_cleanup(() => registration.unregister());
+  await wait_for_state(t, registration.installing, 'activated');
+  return assert_subframe_has_use_counter(popup,
+      'frame in the popup should have observed the use counter kThirdPartyServiceWorker');
+}, 'Test UseCounter for service worker controlled page in third party context.');
+</script>

@@ -12,14 +12,14 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/url_loader.h"
 #import "ios/chrome/browser/ui/util/label_link_controller.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
 #include "ios/web/public/browser_state.h"
-#include "ios/web/public/navigation_manager.h"
+#include "ios/web/public/navigation/navigation_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -28,10 +28,6 @@
 #endif
 
 namespace {
-// Color constants.
-const CGFloat kBackgroundColorBrightness = 247.0f / 255.0f;
-const CGFloat kTitleLabelTextColorBrightness = 22.0f / 255.0f;
-const CGFloat kGeneralTextColorBrightness = 80.0f / 255.0f;
 // Layout constants.
 const UIEdgeInsets kLayoutInsets = {24.0f, 24.0f, 24.0f, 24.0f};
 const CGFloat kLayoutBoundsMaxWidth = 600.0f;
@@ -325,8 +321,10 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
 - (UIImageView*)imageView {
   if (!_imageView) {
-    _imageView =
-        [[UIImageView alloc] initWithImage:NativeImage(IDR_CRASH_SAD_TAB)];
+    UIImage* sadTabImage = [NativeImage(IDR_CRASH_SAD_TAB)
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    _imageView = [[UIImageView alloc] initWithImage:sadTabImage];
+    _imageView.tintColor = [UIColor colorNamed:kTextSecondaryColor];
     [_imageView setBackgroundColor:self.backgroundColor];
   }
   return _imageView;
@@ -339,9 +337,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
     [_titleLabel setText:[self titleLabelText]];
     [_titleLabel setLineBreakMode:NSLineBreakByWordWrapping];
     [_titleLabel setNumberOfLines:0];
-    [_titleLabel
-        setTextColor:[UIColor colorWithWhite:kTitleLabelTextColorBrightness
-                                       alpha:1.0]];
+    [_titleLabel setTextColor:[UIColor colorNamed:kTextPrimaryColor]];
     [_titleLabel setFont:[[MDCTypography fontLoader]
                              regularFontOfSize:kTitleLabelFontSize]];
   }
@@ -355,9 +351,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
     [_footerLabel setNumberOfLines:0];
     [_footerLabel setFont:[[MDCTypography fontLoader]
                               regularFontOfSize:kFooterLabelFontSize]];
-    [_footerLabel
-        setTextColor:[UIColor colorWithWhite:kGeneralTextColorBrightness
-                                       alpha:1.0]];
+    [_footerLabel setTextColor:[UIColor colorNamed:kTextSecondaryColor]];
 
     [_footerLabel setText:[self footerLabelText]];
     [self attachLinkControllerToLabel:_footerLabel
@@ -527,7 +521,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 }
 
 + (UIColor*)sadTabBackgroundColor {
-  return [UIColor colorWithWhite:kBackgroundColorBrightness alpha:1.0];
+  return [UIColor colorNamed:kBackgroundColor];
 }
 
 @end
@@ -542,9 +536,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
     [_messageTextView setBackgroundColor:self.backgroundColor];
     [_messageTextView setAttributedText:[self messageTextViewAttributedText]];
     _messageTextView.textContainer.lineFragmentPadding = 0.0f;
-    [_messageTextView
-        setTextColor:[UIColor colorWithWhite:kGeneralTextColorBrightness
-                                       alpha:1.0]];
+    [_messageTextView setTextColor:[UIColor colorNamed:kTextSecondaryColor]];
     [_messageTextView setFont:[[MDCTypography fontLoader]
                                   regularFontOfSize:kMessageTextViewFontSize]];
     [_messageTextView setUserInteractionEnabled:NO];
@@ -555,18 +547,16 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 - (UIButton*)actionButton {
   if (!_actionButton) {
     _actionButton = [[MDCFlatButton alloc] init];
-    [_actionButton setBackgroundColor:[[MDCPalette cr_bluePalette] tint500]
+    [_actionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]
                              forState:UIControlStateNormal];
-    [_actionButton setBackgroundColor:[[MDCPalette greyPalette] tint500]
+    [_actionButton setBackgroundColor:[UIColor colorNamed:kDisabledTintColor]
                              forState:UIControlStateDisabled];
-    [_actionButton setTitleColor:[UIColor whiteColor]
+    [_actionButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
                         forState:UIControlStateNormal];
-    [_actionButton setUnderlyingColorHint:[UIColor blackColor]];
-    [_actionButton setInkColor:[UIColor colorWithWhite:1 alpha:0.2f]];
+    [_actionButton setUnderlyingColorHint:self.backgroundColor];
+    [_actionButton setInkColor:[UIColor colorNamed:kMDCInkColor]];
 
     [_actionButton setTitle:[self buttonText] forState:UIControlStateNormal];
-    [_actionButton setTitleColor:[UIColor whiteColor]
-                        forState:UIControlStateNormal];
     [_actionButton addTarget:self
                       action:@selector(handleActionButtonTapped)
             forControlEvents:UIControlEventTouchUpInside];

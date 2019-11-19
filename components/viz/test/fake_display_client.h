@@ -8,8 +8,9 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "mojo/public/cpp/bindings/binding.h"
-#include "services/viz/privileged/interfaces/compositing/display_private.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 
 namespace viz {
 
@@ -18,12 +19,9 @@ class FakeDisplayClient : public mojom::DisplayClient {
   FakeDisplayClient();
   ~FakeDisplayClient() override;
 
-  mojom::DisplayClientPtr BindInterfacePtr();
+  mojo::PendingRemote<mojom::DisplayClient> BindRemote();
 
   // mojom::DisplayClient implementation.
-  void DidSwapAfterSnapshotRequestReceived(
-      const std::vector<ui::LatencyInfo>&) override;
-
 #if defined(OS_MACOSX)
   void OnDisplayReceivedCALayerParams(
       const gfx::CALayerParams& ca_layer_params) override;
@@ -31,11 +29,15 @@ class FakeDisplayClient : public mojom::DisplayClient {
 
 #if defined(OS_WIN)
   void CreateLayeredWindowUpdater(
-      mojom::LayeredWindowUpdaterRequest request) override;
+      mojo::PendingReceiver<mojom::LayeredWindowUpdater> receiver) override;
+#endif
+
+#if defined(USE_X11)
+  void DidCompleteSwapWithNewSize(const gfx::Size& size) override;
 #endif
 
  private:
-  mojo::Binding<mojom::DisplayClient> binding_;
+  mojo::Receiver<mojom::DisplayClient> receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeDisplayClient);
 };

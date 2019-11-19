@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Detached use of navigator.xr</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<iframe sandbox="allow-same-origin" id="subframe"></iframe>
+<script>
+// This behavior is not in the webxr spec, so this is an internal-only test.
+promise_test((t) => {
+  var nav_xr = window.frames[0].navigator.xr;
+  document.getElementById("subframe").remove();
+  return promise_rejects(t, "InvalidStateError", nav_xr.supportsSession('inline'))
+      .then(() => promise_rejects(t, "InvalidStateError", nav_xr.requestSession('inline')));
+}, "Check that navigator.xr.supportsSession and navigator.xr.requestSession reject on a detached navigator.");
+
+</script>
+</body>
+</html>

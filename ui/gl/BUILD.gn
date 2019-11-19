@@ -32,11 +32,9 @@ if (is_android) {
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  use_egl_on_mac = use_egl && is_mac
   flags = [
     "ENABLE_SWIFTSHADER=$enable_swiftshader",
     "USE_DAWN=$use_dawn",
-    "USE_EGL_ON_MAC=$use_egl_on_mac",
     "USE_STATIC_ANGLE=$use_static_angle",
   ]
 }
@@ -66,10 +64,16 @@ jumbo_component("gl") {
     "android/surface_texture.h",
     "android/surface_texture_listener.cc",
     "android/surface_texture_listener.h",
+    "buffer_format_utils.cc",
+    "buffer_format_utils.h",
     "ca_renderer_layer_params.cc",
     "ca_renderer_layer_params.h",
+    "color_space_utils.cc",
+    "color_space_utils.h",
     "dc_renderer_layer_params.cc",
     "dc_renderer_layer_params.h",
+    "dual_gpu_state.cc",
+    "dual_gpu_state.h",
     "egl_timestamps.h",
     "gl_bindings.cc",
     "gl_bindings.h",
@@ -83,6 +87,8 @@ jumbo_component("gl") {
     "gl_enums.h",
     "gl_enums_implementation_autogen.h",
     "gl_export.h",
+    "gl_features.cc",
+    "gl_features.h",
     "gl_fence.cc",
     "gl_fence.h",
     "gl_fence_arb.cc",
@@ -140,6 +146,8 @@ jumbo_component("gl") {
     "scoped_binders.h",
     "scoped_make_current.cc",
     "scoped_make_current.h",
+    "shader_tracking.cc",
+    "shader_tracking.h",
     "sync_control_vsync_provider.cc",
     "sync_control_vsync_provider.h",
     "trace_util.cc",
@@ -270,30 +278,55 @@ jumbo_component("gl") {
       "//build/config/linux:x11",
       "//build/config/linux:xcomposite",
       "//build/config/linux:xext",
+      "//build/config/linux:xrandr",
     ]
 
-    deps += [ "//ui/gfx/x" ]
+    deps += [
+      "//ui/base/x",
+      "//ui/gfx/x",
+    ]
   }
   if (is_win) {
     sources += [
+      "child_window_win.cc",
+      "child_window_win.h",
+      "dc_layer_tree.cc",
+      "dc_layer_tree.h",
+      "direct_composition_child_surface_win.cc",
+      "direct_composition_child_surface_win.h",
+      "direct_composition_surface_win.cc",
+      "direct_composition_surface_win.h",
       "gl_angle_util_win.cc",
       "gl_angle_util_win.h",
       "gl_bindings_autogen_wgl.cc",
       "gl_bindings_autogen_wgl.h",
       "gl_context_wgl.cc",
       "gl_context_wgl.h",
+      "gl_image_d3d.cc",
+      "gl_image_d3d.h",
       "gl_image_dxgi.cc",
       "gl_image_dxgi.h",
       "gl_surface_wgl.cc",
       "gl_surface_wgl.h",
       "gl_wgl_api_implementation.cc",
       "gl_wgl_api_implementation.h",
+      "swap_chain_presenter.cc",
+      "swap_chain_presenter.h",
+      "vsync_observer.h",
       "vsync_provider_win.cc",
       "vsync_provider_win.h",
+      "vsync_thread_win.cc",
+      "vsync_thread_win.h",
     ]
 
-    libs = [ "dwmapi.lib" ]
-    ldflags = [ "/DELAYLOAD:dwmapi.dll" ]
+    libs = [
+      "dxgi.lib",
+      "dwmapi.lib",
+    ]
+    ldflags = [
+      "/DELAYLOAD:dwmapi.dll",
+      "/DELAYLOAD:dxgi.dll",
+    ]
 
     assert(use_egl)
     data_deps += [
@@ -304,6 +337,8 @@ jumbo_component("gl") {
   }
   if (is_mac) {
     sources += [
+      "dual_gpu_state_mac.cc",
+      "dual_gpu_state_mac.h",
       "gl_context_cgl.cc",
       "gl_context_cgl.h",
       "gl_fence_apple.cc",
@@ -442,6 +477,10 @@ jumbo_static_library("test_support") {
     "//ui/base",
   ]
 
+  if (is_linux) {
+    deps += [ "//ui/platform_window/common" ]
+  }
+
   if (use_x11) {
     configs += [ "//build/config/linux:x11" ]
     deps += [ "//ui/platform_window/x11" ]
@@ -471,7 +510,6 @@ source_set("run_all_unittests") {
     deps += [
       "//mojo/core/embedder",
       "//services/service_manager/public/cpp/test:test_support",
-      "//services/ws/public/mojom:constants",
       "//ui/ozone",
     ]
   }
@@ -509,6 +547,8 @@ test("gl_unittests") {
 
   if (is_win) {
     sources += [
+      "direct_composition_surface_win_unittest.cc",
+      "gl_image_d3d_unittest.cc",
       "gl_image_dxgi_unittest.cc",
       "wgl_api_unittest.cc",
     ]
@@ -532,6 +572,7 @@ test("gl_unittests") {
     "//base",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base:base",
     "//ui/gfx",
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
@@ -561,7 +602,6 @@ group("gl_unittests_ozone") {
 
 if (is_android) {
   generate_jar_jni("surface_jni_headers") {
-    jni_package = "ui/gl"
     classes = [ "android/view/Surface.class" ]
     always_mangle = true
   }
@@ -574,6 +614,5 @@ if (is_android) {
     public_deps = [
       ":surface_jni_headers",
     ]
-    jni_package = "ui/gl"
   }
 }

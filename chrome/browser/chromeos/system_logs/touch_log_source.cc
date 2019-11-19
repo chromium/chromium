@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "ash/touch/touch_observer_hud.h"
+#include "ash/touch/touch_hud_debug.h"
 #include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/callback.h"
@@ -17,11 +17,10 @@
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/task/post_task.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "content/public/browser/browser_thread.h"
-#include "services/ws/public/cpp/input_devices/input_device_controller_client.h"
-#include "ui/base/ui_base_features.h"
+#include "ui/ozone/public/input_controller.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 using content::BrowserThread;
 
@@ -37,7 +36,8 @@ const char kTouchpadEventLogDataKey[] = "hack-33025-touchpad_activity";
 const char kTouchscreenEventLogDataKey[] = "hack-33025-touchscreen_activity";
 
 // Directory for temp touch event logs.
-const char kTouchEventLogDir[] = "/home/chronos/user/log";
+constexpr char kTouchEventLogDir[] = "/home/chronos/user/log";
+constexpr char kNotLoggedInTouchEventLogDir[] = "/var/log/chrome";
 
 // Prefixes of touch event logs.
 const char kTouchpadGestureLogPrefix[] = "touchpad_activity_";
@@ -126,9 +126,10 @@ void PackEventLog(system_logs::SystemLogsResponse* response,
   }
 
   // Cleanup these temporary log files.
-  base::PostTaskWithTraits(FROM_HERE,
-                           {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-                           base::BindOnce(CleanupEventLog, log_paths));
+  base::PostTask(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      base::BindOnce(CleanupEventLog, log_paths));
 }
 
 // Callback for handing the outcome of GetTouchEventLog().
@@ -139,10 +140,10 @@ void OnEventLogCollected(
     system_logs::SysLogsSourceCallback callback,
     const std::vector<base::FilePath>& log_paths) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   system_logs::SystemLogsResponse* response_ptr = response.get();
-  base::PostTaskWithTraitsAndReply(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::PostTaskAndReply(
+      FROM_HERE,
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&PackEventLog, response_ptr, log_paths),
       base::BindOnce(std::move(callback), std::move(response)));
 }
@@ -159,23 +160,22 @@ void OnStatusLogCollected(
   (*response)[kDeviceStatusLogDataKey] = log;
 
   // Collect touch event logs.
-  const base::FilePath kBaseLogPath(kTouchEventLogDir);
-  ws::InputDeviceControllerClient* input_device_controller_client =
-      g_browser_process->platform_part()->GetInputDeviceControllerClient();
-  input_device_controller_client->GetTouchEventLog(
-      kBaseLogPath, base::BindOnce(&OnEventLogCollected, std::move(response),
-                                   std::move(callback)));
+  // The user-specific log directory will not exist if we are not logged in
+  // yet, so choose the location based on that.
+  base::FilePath base_log_path(chromeos::LoginState::Get()->IsUserLoggedIn()
+                                   ? kTouchEventLogDir
+                                   : kNotLoggedInTouchEventLogDir);
+  ui::InputController* input_controller =
+      ui::OzonePlatform::GetInstance()->GetInputController();
+  input_controller->GetTouchEventLog(
+      base_log_path, base::BindOnce(&OnEventLogCollected, std::move(response),
+                                    std::move(callback)));
 }
 
 // Collect touch HUD debug logs. This needs to be done on the UI thread.
 void CollectTouchHudDebugLog(system_logs::SystemLogsResponse* response) {
-  // TODO(crbug.com/807408): Collect this data from window server over mojo.
-  if (features::IsMultiProcessMash()) {
-    NOTIMPLEMENTED();
-    return;
-  }
   std::unique_ptr<base::DictionaryValue> dictionary =
-      ash::TouchObserverHUD::GetAllAsDictionary();
+      ash::TouchHudDebug::GetAllAsDictionary();
   if (!dictionary->empty()) {
     std::string touch_log;
     JSONStringValueSerializer json(&touch_log);
@@ -197,9 +197,9 @@ void TouchLogSource::Fetch(SysLogsSourceCallback callback) {
   CollectTouchHudDebugLog(response.get());
 
   // Collect touch device status logs.
-  ws::InputDeviceControllerClient* input_device_controller_client =
-      g_browser_process->platform_part()->GetInputDeviceControllerClient();
-  input_device_controller_client->GetTouchDeviceStatus(base::BindOnce(
+  ui::InputController* input_controller =
+      ui::OzonePlatform::GetInstance()->GetInputController();
+  input_controller->GetTouchDeviceStatus(base::BindOnce(
       &OnStatusLogCollected, std::move(response), std::move(callback)));
 }
 

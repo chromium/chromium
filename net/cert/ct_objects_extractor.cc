@@ -6,8 +6,8 @@
 
 #include <string.h>
 
+#include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/sha1.h"
 #include "base/strings/string_util.h"
 #include "crypto/sha2.h"
 #include "net/cert/asn1_util.h"

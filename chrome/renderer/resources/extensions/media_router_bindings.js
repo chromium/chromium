@@ -9,16 +9,16 @@ if ((typeof mojo === 'undefined') || !mojo.bindingsLibraryInitialized) {
 }
 mojo.config.autoLoadMojomDeps = false;
 
-loadScript('chrome/common/media_router/mojo/media_controller.mojom');
-loadScript('chrome/common/media_router/mojo/media_router.mojom');
-loadScript('chrome/common/media_router/mojo/media_status.mojom');
+loadScript('chrome/common/media_router/mojom/media_controller.mojom');
+loadScript('chrome/common/media_router/mojom/media_router.mojom');
+loadScript('chrome/common/media_router/mojom/media_status.mojom');
 loadScript('components/mirroring/mojom/cast_message_channel.mojom');
 loadScript('components/mirroring/mojom/mirroring_service_host.mojom');
 loadScript('components/mirroring/mojom/session_observer.mojom');
 loadScript('components/mirroring/mojom/session_parameters.mojom');
-loadScript('extensions/common/mojo/keep_alive.mojom');
-loadScript('media/mojo/interfaces/mirror_service_remoting.mojom');
-loadScript('media/mojo/interfaces/remoting_common.mojom');
+loadScript('extensions/common/mojom/keep_alive.mojom');
+loadScript('media/mojo/mojom/mirror_service_remoting.mojom');
+loadScript('media/mojo/mojom/remoting_common.mojom');
 loadScript('mojo/public/mojom/base/time.mojom');
 loadScript('mojo/public/mojom/base/unguessable_token.mojom');
 loadScript('net/interfaces/ip_address.mojom');
@@ -97,22 +97,6 @@ CastMediaSinkAdapter.prototype.toNewVersion = function() {
 };
 
 /**
- * Adapter for mediaRouter.mojom.HangoutsMediaStatusExtraData.
- * @constructor
- */
-function HangoutsMediaStatusExtraDataAdapter(fields) {
-  this.local_present = false;
-
-  assignFields(this, fields);
-}
-
-HangoutsMediaStatusExtraDataAdapter.prototype.toNewVersion = function() {
-  return new mediaRouter.mojom.HangoutsMediaStatusExtraData({
-    'localPresent': this.local_present,
-  });
-};
-
-/**
  * Adapter for net.interfaces.IPAddress.
  * @constructor
  */
@@ -169,12 +153,14 @@ function MediaStatusAdapter(fields) {
   this.can_mute = false;
   this.can_set_volume = false;
   this.can_seek = false;
+  this.can_skip_to_next_track = false;
+  this.can_skip_to_previous_track = false;
   this.is_muted = false;
   this.play_state = 0;
   this.volume = 0;
   this.duration = null;
   this.current_time = null;
-  this.hangouts_extra_data = null;
+  this.images = null;
 
   assignFields(this, fields);
 }
@@ -188,13 +174,14 @@ MediaStatusAdapter.prototype.toNewVersion = function() {
     'canMute': this.can_mute,
     'canSetVolume': this.can_set_volume,
     'canSeek': this.can_seek,
+    'canSkipToNextTrack': this.can_skip_to_next_track,
+    'canSkipToPreviousTrack': this.can_skip_to_previous_track,
     'isMuted': this.is_muted,
     'playState': this.play_state,
     'volume': this.volume,
     'duration': this.duration,
     'currentTime': this.current_time,
-    'hangoutsExtraData':
-        this.hangouts_extra_data && this.hangouts_extra_data.toNewVersion(),
+    'images': this.images || [],
   });
 };
 
@@ -740,9 +727,6 @@ MediaRouter.prototype.getMojoExports = function() {
     Binding: mojo.Binding,
     DialMediaSink: DialMediaSinkAdapter,
     CastMediaSink: CastMediaSinkAdapter,
-    HangoutsMediaRouteController:
-        mediaRouter.mojom.HangoutsMediaRouteController,
-    HangoutsMediaStatusExtraData: HangoutsMediaStatusExtraDataAdapter,
     IPAddress: IPAddressAdapter,
     IPEndpoint: IPEndpointAdapter,
     InterfacePtrController: mojo.InterfacePtrController,
@@ -760,8 +744,8 @@ MediaRouter.prototype.getMojoExports = function() {
     MirroringSessionObserverPtr: mirroring.mojom.SessionObserverPtr,
     MirroringSessionParameters: mirroring.mojom.SessionParameters,
     MirroringSessionType: mirroring.mojom.SessionType,
-    MirroringRemotingNamespace: mirroring.mojom.kRemotingNamespace,
-    MirroringWebRtcNamespace: mirroring.mojom.kWebRtcNamespace,
+    MirroringRemotingNamespace: mirroring.mojom.REMOTING_NAMESPACE,
+    MirroringWebRtcNamespace: mirroring.mojom.WEB_RTC_NAMESPACE,
     MirrorServiceRemoter: MirrorServiceRemoterAdapter,
     MirrorServiceRemoterPtr: MirrorServiceRemoterPtrAdapter,
     MirrorServiceRemotingSourcePtr: MirrorServiceRemotingSourcePtrAdapter,
@@ -800,7 +784,6 @@ MediaRouter.prototype.start = function() {
                 'enable_cast_discovery': response.config.enableCastDiscovery,
                 'enable_dial_sink_query': response.config.enableDialSinkQuery,
                 'enable_cast_sink_query': response.config.enableCastSinkQuery,
-                'use_views_dialog': response.config.useViewsDialog,
                 'use_mirroring_service': response.config.useMirroringService,
               }
             };

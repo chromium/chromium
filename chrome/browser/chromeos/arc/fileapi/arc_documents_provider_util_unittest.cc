@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/files/file_path.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_documents_provider_util.h"
-#include "storage/browser/fileapi/file_system_url.h"
+
+#include "base/files/file_path.h"
+#include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 

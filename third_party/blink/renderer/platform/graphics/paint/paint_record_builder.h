@@ -24,7 +24,6 @@ class GraphicsContext;
 class PaintController;
 
 class PLATFORM_EXPORT PaintRecordBuilder final : public DisplayItemClient {
-
  public:
   // Constructs a new builder for the resulting paint record. If |metadata|
   // is specified, that metadata is propagated to the builder's internal canvas.
@@ -39,7 +38,8 @@ class PLATFORM_EXPORT PaintRecordBuilder final : public DisplayItemClient {
   // CompositeAfterPaint.
   PaintRecordBuilder(printing::MetafileSkia* metafile = nullptr,
                      GraphicsContext* containing_context = nullptr,
-                     PaintController* = nullptr);
+                     PaintController* = nullptr,
+                     paint_preview::PaintPreviewTracker* tracker = nullptr);
   ~PaintRecordBuilder() override;
 
   GraphicsContext& Context() { return *context_; }
@@ -58,7 +58,7 @@ class PLATFORM_EXPORT PaintRecordBuilder final : public DisplayItemClient {
 
   // DisplayItemClient methods
   String DebugName() const final { return "PaintRecordBuilder"; }
-  LayoutRect VisualRect() const final { return LayoutRect(); }
+  IntRect VisualRect() const final { return IntRect(); }
 
  private:
   PaintController* paint_controller_;

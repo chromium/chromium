@@ -1,0 +1,10 @@
+include_rules = [
+    # Don't depend on platform/.
+    "-third_party/blink/renderer/platform",
+
+    # Module.
+    "+third_party/blink/renderer/platform/media_capabilities",
+
+    # Dependencies.
+    "+media/base/eme_constants.h",
+]

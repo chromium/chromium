@@ -20,10 +20,6 @@ class BytesConsumerTestUtil {
  public:
   class MockBytesConsumer : public BytesConsumer {
    public:
-    static MockBytesConsumer* Create() {
-      return MakeGarbageCollected<testing::StrictMock<MockBytesConsumer>>();
-    }
-
     MOCK_METHOD2(BeginRead, Result(const char**, size_t*));
     MOCK_METHOD1(EndRead, Result(size_t));
     MOCK_METHOD1(DrainAsBlobDataHandle,
@@ -35,23 +31,17 @@ class BytesConsumerTestUtil {
     MOCK_CONST_METHOD0(GetPublicState, PublicState());
     MOCK_CONST_METHOD0(GetError, Error());
 
-    String DebugName() const override { return "MockBytesConsumer"; }
-
-   protected:
     MockBytesConsumer();
+
+    String DebugName() const override { return "MockBytesConsumer"; }
   };
 
   class MockFetchDataLoaderClient
-      : public GarbageCollectedFinalized<MockFetchDataLoaderClient>,
+      : public GarbageCollected<MockFetchDataLoaderClient>,
         public FetchDataLoader::Client {
     USING_GARBAGE_COLLECTED_MIXIN(MockFetchDataLoaderClient);
 
    public:
-    static testing::StrictMock<MockFetchDataLoaderClient>* Create() {
-      return MakeGarbageCollected<
-          testing::StrictMock<MockFetchDataLoaderClient>>();
-    }
-
     void Trace(blink::Visitor* visitor) override {
       FetchDataLoader::Client::Trace(visitor);
     }

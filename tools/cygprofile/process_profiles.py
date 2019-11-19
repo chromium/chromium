@@ -11,6 +11,7 @@ import logging
 import operator
 import os
 import sys
+import json
 
 _SRC_PATH = os.path.abspath(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir))
@@ -59,6 +60,8 @@ class SymbolOffsetProcessor(object):
     self._offset_to_primary = None
     self._offset_to_symbols = None
     self._offset_to_symbol_info = None
+    # |_whitelist| will contain symbols whose size is 0.
+    self._whitelist = None
 
   def SymbolInfos(self):
     """The symbols associated with this processor's binary.
@@ -243,6 +246,45 @@ class SymbolOffsetProcessor(object):
           'to any symbol'.format(dump_offset))
       update(i, symbol_info.offset)
 
+  def GetWhitelistSymbols(self):
+    """Returns list(string) containing names of the symbols whose size is zero.
+    """
+    if self._whitelist is None:
+      self.GetDumpOffsetToSymboInfolIncludingWhitelist()
+    return self._whitelist
+
+  def GetDumpOffsetToSymboInfolIncludingWhitelist(self):
+    """Computes an array mapping each word in .text to a symbol.
+
+    This list includes symbols with size 0. It considers all offsets till the
+    next symbol to map to the symbol of size 0.
+
+    Returns:
+      [symbol_extractor.SymbolInfo or None] For every 4 bytes of the .text
+        section, maps it to a symbol, or None.
+    """
+    if self._whitelist is None:
+      self._whitelist = set()
+      symbols = self.SymbolInfos()
+      start_syms = [s for s in symbols
+                    if s.name == cygprofile_utils.START_OF_TEXT_SYMBOL]
+      assert len(start_syms) == 1, 'Can\'t find unique start of text symbol'
+      start_of_text = start_syms[0].offset
+      self.GetDumpOffsetToSymbolInfo()
+      max_idx = len(self._offset_to_symbol_info)
+      for sym in symbols:
+        if sym.size != 0 or sym.offset == start_of_text:
+          continue
+        self._whitelist.add(sym.name)
+        idx = (sym.offset - start_of_text)/ 2
+        assert self._offset_to_symbol_info[idx] == sym, (
+            'Unexpected unset offset')
+        idx += 1
+        while idx < max_idx and self._offset_to_symbol_info[idx] is None:
+          self._offset_to_symbol_info[idx] = sym
+          idx += 1
+    return self._offset_to_symbol_info
+
   def GetDumpOffsetToSymbolInfo(self):
     """Computes an array mapping each word in .text to a symbol.
 
@@ -273,6 +315,13 @@ class SymbolOffsetProcessor(object):
           # code). In this case, keep the one that started first.
           if other_symbol is None or other_symbol.offset > sym.offset:
             self._offset_to_symbol_info[i] = sym
+
+        if sym.name != cygprofile_utils.START_OF_TEXT_SYMBOL and sym.size == 0:
+          idx = offset / 2
+          assert (self._offset_to_symbol_info[idx] is None or
+                  self._offset_to_symbol_info[idx].size == 0), (
+              'Unexpected symbols overlapping')
+          self._offset_to_symbol_info[idx] = sym
     return self._offset_to_symbol_info
 
 
@@ -429,6 +478,38 @@ class ProfileManager(object):
       offsets_by_process[self._ProcessName(f)].append(self._ReadOffsets(f))
     return offsets_by_process
 
+  def _SanityCheckAllCallsCapturedByTheInstrumentation(self, process_info):
+    total_calls_count = long(process_info['total_calls_count'])
+    call_graph = process_info['call_graph']
+    count = 0
+    for el in call_graph:
+      for bucket in el['caller_and_count']:
+        count += long(bucket['count'])
+
+    # This is a sanity check to ensure the number of race-related
+    # inconsistencies is small.
+    if total_calls_count != count:
+      logging.warn('Instrumentation missed calls! %u != %u', total_calls_count,
+                   count)
+      assert abs(total_calls_count - count) < 3, (
+          'Instrumentation call count differs by too much.')
+
+  def GetProcessOffsetGraph(self):
+    """Returns a dict that maps each process type to a list of processes's
+       call graph data.
+
+    Typical process type keys are 'gpu-process', 'renderer', 'browser'.
+    """
+    graph_by_process = collections.defaultdict(list)
+    for f in self._filenames:
+      process_info = self._ReadJSON(f)
+      assert ('total_calls_count' in process_info
+              and 'call_graph' in process_info), ('Unexpected JSON format for '
+                                                  '%s.' % f)
+      self._SanityCheckAllCallsCapturedByTheInstrumentation(process_info)
+      graph_by_process[self._ProcessName(f)].append(process_info['call_graph'])
+    return graph_by_process
+
   def GetRunGroupOffsets(self, phase=None):
     """Merges files from each run group and returns offset list for each.
 
@@ -460,7 +541,7 @@ class ProfileManager(object):
   def _ProcessName(cls, filename):
     # The filename starts with 'profile-hitmap-' and ends with
     # '-PID-TIMESTAMP.txt_X'. Anything in between is the process name. The
-    # browser has an empty process name, which is insterted here.
+    # browser has an empty process name, which is inserted here.
     process_name_parts = os.path.basename(filename).split('-')[2:-2]
     if not process_name_parts:
       return 'browser'
@@ -478,6 +559,11 @@ class ProfileManager(object):
 
   def _ReadOffsets(self, filename):
     return [int(x.strip()) for x in open(filename)]
+
+  def _ReadJSON(self, filename):
+    with open(filename) as f:
+      file_content = json.load(f)
+    return file_content
 
   def _ComputeRunGroups(self):
     self._run_groups = []

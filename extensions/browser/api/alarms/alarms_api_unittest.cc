@@ -8,19 +8,19 @@
 
 #include "base/bind.h"
 #include "base/json/json_reader.h"
+#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/mock_render_process_host.h"
+#include "content/public/test/fake_local_frame.h"
 #include "extensions/browser/api/alarms/alarm_manager.h"
 #include "extensions/browser/api/alarms/alarms_api.h"
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
 #include "extensions/browser/api_unittest.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_messages.h"
-#include "ipc/ipc_test_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -291,33 +291,41 @@ TEST_F(ExtensionAlarmsTest, CreateDupe) {
       base::Bind(ExtensionAlarmsTestCreateDupeGetAllAlarmsCallback));
 }
 
+class ConsoleLogMessageLocalFrame : public content::FakeLocalFrame {
+ public:
+  void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
+                           const std::string& message,
+                           bool discard_duplicates) override {
+    message_count_++;
+    last_level_ = level;
+    last_message_ = message;
+  }
+  unsigned message_count() const { return message_count_; }
+  const std::string& last_message() const { return last_message_; }
+  blink::mojom::ConsoleMessageLevel last_level() const {
+    return last_level_.value();
+  }
+
+ private:
+  unsigned message_count_ = 0;
+  base::Optional<blink::mojom::ConsoleMessageLevel> last_level_;
+  std::string last_message_;
+};
+
 TEST_F(ExtensionAlarmsTest, CreateDelayBelowMinimum) {
   // Create an alarm with delay below the minimum accepted value.
-  IPC::TestSink& sink = static_cast<content::MockRenderProcessHost*>(
-                            contents()->GetMainFrame()->GetProcess())
-                            ->sink();
-  size_t initial_message_count = sink.message_count();
+  ConsoleLogMessageLocalFrame local_frame;
+  local_frame.Init(contents()->GetMainFrame()->GetRemoteAssociatedInterfaces());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(local_frame.message_count(), 0u);
   CreateAlarm("[\"negative\", {\"delayInMinutes\": -0.2}]");
-  // A new message should have been added.
-  ASSERT_GT(sink.message_count(), initial_message_count);
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(local_frame.message_count(), 1u);
 
-  // All of this would be cleaner if we could read the message as a
-  // FrameMsg_AddMessageToConsole, but that would be a layering violation.
-  // Better yet would be an observer method for frames adding console messages,
-  // but it's not worth adding just for a test.
-  const IPC::Message* warning =
-      sink.GetMessageAt(initial_message_count /* 0-based */);
-  ASSERT_TRUE(warning);
-
-  int level = 0;
-  base::PickleIterator iter(*warning);
-  ASSERT_TRUE(iter.ReadInt(&level));
-  std::string message;
-  ASSERT_TRUE(iter.ReadString(&message));
-
-  EXPECT_EQ(content::CONSOLE_MESSAGE_LEVEL_WARNING,
-            static_cast<content::ConsoleMessageLevel>(level));
-  EXPECT_THAT(message, testing::HasSubstr("delay is less than minimum of 1"));
+  EXPECT_EQ(blink::mojom::ConsoleMessageLevel::kWarning,
+            local_frame.last_level());
+  EXPECT_THAT(local_frame.last_message(),
+              testing::HasSubstr("delay is less than minimum of 1"));
 }
 
 TEST_F(ExtensionAlarmsTest, Get) {

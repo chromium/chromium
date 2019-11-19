@@ -1,4 +1,0 @@
-per-file ash_pref_connector_manifest.cc=set noparent
-per-file ash_pref_connector_manifest.cc=file://ipc/SECURITY_OWNERS
-per-file ash_pref_connector_manifest.h=set noparent
-per-file ash_pref_connector_manifest.h=file://ipc/SECURITY_OWNERS

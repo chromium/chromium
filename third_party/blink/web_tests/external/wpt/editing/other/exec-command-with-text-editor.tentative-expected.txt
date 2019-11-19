@@ -1,0 +1,640 @@
+This is a testharness.js-based test.
+Found 636 tests; 612 PASS, 24 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS In <input>, execCommand("bold", false, bold), a[b]c): calling execCommand()
+PASS In <input>, execCommand("bold", false, bold), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("bold", false, bold), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("bold", false, bold), a[b]c): checking input event
+PASS In <input>, execCommand("italic", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("italic", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("italic", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("italic", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("underline", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("underline", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("underline", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("underline", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("strikethrough", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("strikethrough", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("strikethrough", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("strikethrough", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("superscript", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("superscript", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("superscript", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("superscript", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("cut", false, null), ab[]c): calling execCommand()
+PASS In <input>, execCommand("cut", false, null), ab[]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("cut", false, null), ab[]c): checking beforeinput event
+PASS In <input>, execCommand("cut", false, null), ab[]c): checking input event
+PASS In <input>, execCommand("cut", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("cut", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("cut", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("cut", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("copy", false, null), abc[]d): calling execCommand()
+PASS In <input>, execCommand("copy", false, null), abc[]d): checking value and selection after execCommand()
+PASS In <input>, execCommand("copy", false, null), abc[]d): checking beforeinput event
+PASS In <input>, execCommand("copy", false, null), abc[]d): checking input event
+PASS In <input>, execCommand("copy", false, null), a[bc]d): calling execCommand()
+PASS In <input>, execCommand("copy", false, null), a[bc]d): checking value and selection after execCommand()
+PASS In <input>, execCommand("copy", false, null), a[bc]d): checking beforeinput event
+PASS In <input>, execCommand("copy", false, null), a[bc]d): checking input event
+PASS In <input>, execCommand("paste", false, null), a[]c): calling execCommand()
+FAIL In <input>, execCommand("paste", false, null), a[]c): checking value and selection after execCommand() assert_equals: expected "a[bc]c" but got "abc[]c"
+PASS In <input>, execCommand("paste", false, null), a[]c): checking beforeinput event
+PASS In <input>, execCommand("paste", false, null), a[]c): checking input event
+PASS In <input>, execCommand("delete", false, null), ab[]c): calling execCommand()
+PASS In <input>, execCommand("delete", false, null), ab[]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("delete", false, null), ab[]c): checking beforeinput event
+PASS In <input>, execCommand("delete", false, null), ab[]c): checking input event
+PASS In <input>, execCommand("delete", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("delete", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("delete", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("delete", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("forwarddelete", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("forwarddelete", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("forwarddelete", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("forwarddelete", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("forwarddelete", false, null), a[]bc): calling execCommand()
+PASS In <input>, execCommand("forwarddelete", false, null), a[]bc): checking value and selection after execCommand()
+PASS In <input>, execCommand("forwarddelete", false, null), a[]bc): checking beforeinput event
+PASS In <input>, execCommand("forwarddelete", false, null), a[]bc): checking input event
+PASS In <input>, execCommand("selectall", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("selectall", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("selectall", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("selectall", false, null), a[b]c): checking input event
+FAIL In <input>, execCommand("undo", false, null), [a]bc): calling execCommand() assert_equals: expected false but got true
+PASS In <input>, execCommand("undo", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("undo", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("undo", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("undo", false, null), a[b]c): checking input event
+FAIL In <input>, execCommand("redo", false, null), [a]bc): calling execCommand() assert_equals: expected false but got true
+PASS In <input>, execCommand("redo", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("redo", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("redo", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("redo", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("indent", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("indent", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("indent", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("indent", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("outdent", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("outdent", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("outdent", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("outdent", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("backcolor", false, #000000), a[b]c): calling execCommand()
+PASS In <input>, execCommand("backcolor", false, #000000), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("backcolor", false, #000000), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("backcolor", false, #000000), a[b]c): checking input event
+PASS In <input>, execCommand("forecolor", false, #000000), a[b]c): calling execCommand()
+PASS In <input>, execCommand("forecolor", false, #000000), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("forecolor", false, #000000), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("forecolor", false, #000000), a[b]c): checking input event
+PASS In <input>, execCommand("hilitecolor", false, #000000), a[b]c): calling execCommand()
+PASS In <input>, execCommand("hilitecolor", false, #000000), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("hilitecolor", false, #000000), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("hilitecolor", false, #000000), a[b]c): checking input event
+PASS In <input>, execCommand("fontname", false, DummyFont), a[b]c): calling execCommand()
+PASS In <input>, execCommand("fontname", false, DummyFont), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("fontname", false, DummyFont), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("fontname", false, DummyFont), a[b]c): checking input event
+PASS In <input>, execCommand("fontsize", false, 5), a[b]c): calling execCommand()
+PASS In <input>, execCommand("fontsize", false, 5), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("fontsize", false, 5), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("fontsize", false, 5), a[b]c): checking input event
+PASS In <input>, execCommand("inserthorizontalrule", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("inserthorizontalrule", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("inserthorizontalrule", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("inserthorizontalrule", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("createlink", false, foo.html), a[b]c): calling execCommand()
+PASS In <input>, execCommand("createlink", false, foo.html), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("createlink", false, foo.html), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("createlink", false, foo.html), a[b]c): checking input event
+PASS In <input>, execCommand("insertimage", false, no-image.png), a[b]c): calling execCommand()
+PASS In <input>, execCommand("insertimage", false, no-image.png), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("insertimage", false, no-image.png), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("insertimage", false, no-image.png), a[b]c): checking input event
+PASS In <input>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): calling execCommand()
+PASS In <input>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking beforeinput event
+FAIL In <input>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking input event assert_equals: expected "insertText" but got ""
+PASS In <input>, execCommand("inserttext", false, **inserted**), a[b]c): calling execCommand()
+PASS In <input>, execCommand("inserttext", false, **inserted**), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("inserttext", false, **inserted**), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("inserttext", false, **inserted**), a[b]c): checking input event
+PASS In <input>, execCommand("justifyleft", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("justifyleft", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("justifyleft", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("justifyleft", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("justifyright", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("justifyright", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("justifyright", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("justifyright", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("justifycenter", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("justifycenter", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("justifycenter", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("justifycenter", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("justifyfull", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("justifyfull", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("justifyfull", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("justifyfull", false, null), a[b]c): checking input event
+FAIL In <input>, execCommand("removeformat", false, null), a[b]c): calling execCommand() assert_equals: expected false but got true
+PASS In <input>, execCommand("unlink", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("unlink", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("unlink", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("unlink", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("insertorderedlist", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("insertorderedlist", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("insertorderedlist", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("insertorderedlist", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("insertunorderedlist", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("insertunorderedlist", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("insertunorderedlist", false, null), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("insertunorderedlist", false, null), a[b]c): checking input event
+PASS In <input>, execCommand("insertparagraph", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("insertparagraph", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("insertparagraph", false, null), a[b]c): checking beforeinput event
+FAIL In <input>, execCommand("insertparagraph", false, null), a[b]c): checking input event assert_equals: expected (string) "insertParagraph" but got (boolean) false
+PASS In <input>, execCommand("insertlinebreak", false, null), a[b]c): calling execCommand()
+PASS In <input>, execCommand("insertlinebreak", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("insertlinebreak", false, null), a[b]c): checking beforeinput event
+FAIL In <input>, execCommand("insertlinebreak", false, null), a[b]c): checking input event assert_equals: expected (string) "insertLineBreak" but got (boolean) false
+PASS In <input>, execCommand("formatblock", false, div), a[b]c): calling execCommand()
+PASS In <input>, execCommand("formatblock", false, div), a[b]c): checking value and selection after execCommand()
+PASS In <input>, execCommand("formatblock", false, div), a[b]c): checking beforeinput event
+PASS In <input>, execCommand("formatblock", false, div), a[b]c): checking input event
+PASS In <textarea>, execCommand("bold", false, bold), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("bold", false, bold), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("bold", false, bold), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("bold", false, bold), a[b]c): checking input event
+PASS In <textarea>, execCommand("italic", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("italic", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("italic", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("italic", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("underline", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("underline", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("underline", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("underline", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("strikethrough", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("strikethrough", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("strikethrough", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("strikethrough", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("superscript", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("superscript", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("superscript", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("superscript", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("cut", false, null), ab[]c): calling execCommand()
+PASS In <textarea>, execCommand("cut", false, null), ab[]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("cut", false, null), ab[]c): checking beforeinput event
+PASS In <textarea>, execCommand("cut", false, null), ab[]c): checking input event
+PASS In <textarea>, execCommand("cut", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("cut", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("cut", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("cut", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("copy", false, null), abc[]d): calling execCommand()
+PASS In <textarea>, execCommand("copy", false, null), abc[]d): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("copy", false, null), abc[]d): checking beforeinput event
+PASS In <textarea>, execCommand("copy", false, null), abc[]d): checking input event
+PASS In <textarea>, execCommand("copy", false, null), a[bc]d): calling execCommand()
+PASS In <textarea>, execCommand("copy", false, null), a[bc]d): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("copy", false, null), a[bc]d): checking beforeinput event
+PASS In <textarea>, execCommand("copy", false, null), a[bc]d): checking input event
+PASS In <textarea>, execCommand("paste", false, null), a[]c): calling execCommand()
+FAIL In <textarea>, execCommand("paste", false, null), a[]c): checking value and selection after execCommand() assert_equals: expected "a[bc]c" but got "abc[]c"
+PASS In <textarea>, execCommand("paste", false, null), a[]c): checking beforeinput event
+PASS In <textarea>, execCommand("paste", false, null), a[]c): checking input event
+PASS In <textarea>, execCommand("delete", false, null), ab[]c): calling execCommand()
+PASS In <textarea>, execCommand("delete", false, null), ab[]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("delete", false, null), ab[]c): checking beforeinput event
+PASS In <textarea>, execCommand("delete", false, null), ab[]c): checking input event
+PASS In <textarea>, execCommand("delete", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("delete", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("delete", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("delete", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("forwarddelete", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("forwarddelete", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("forwarddelete", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("forwarddelete", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("forwarddelete", false, null), a[]bc): calling execCommand()
+PASS In <textarea>, execCommand("forwarddelete", false, null), a[]bc): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("forwarddelete", false, null), a[]bc): checking beforeinput event
+PASS In <textarea>, execCommand("forwarddelete", false, null), a[]bc): checking input event
+PASS In <textarea>, execCommand("selectall", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("selectall", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("selectall", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("selectall", false, null), a[b]c): checking input event
+FAIL In <textarea>, execCommand("undo", false, null), [a]bc): calling execCommand() assert_equals: expected false but got true
+PASS In <textarea>, execCommand("undo", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("undo", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("undo", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("undo", false, null), a[b]c): checking input event
+FAIL In <textarea>, execCommand("redo", false, null), [a]bc): calling execCommand() assert_equals: expected false but got true
+PASS In <textarea>, execCommand("redo", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("redo", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("redo", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("redo", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("indent", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("indent", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("indent", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("indent", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("outdent", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("outdent", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("outdent", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("outdent", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("backcolor", false, #000000), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("backcolor", false, #000000), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("backcolor", false, #000000), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("backcolor", false, #000000), a[b]c): checking input event
+PASS In <textarea>, execCommand("forecolor", false, #000000), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("forecolor", false, #000000), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("forecolor", false, #000000), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("forecolor", false, #000000), a[b]c): checking input event
+PASS In <textarea>, execCommand("hilitecolor", false, #000000), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("hilitecolor", false, #000000), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("hilitecolor", false, #000000), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("hilitecolor", false, #000000), a[b]c): checking input event
+PASS In <textarea>, execCommand("fontname", false, DummyFont), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("fontname", false, DummyFont), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("fontname", false, DummyFont), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("fontname", false, DummyFont), a[b]c): checking input event
+PASS In <textarea>, execCommand("fontsize", false, 5), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("fontsize", false, 5), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("fontsize", false, 5), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("fontsize", false, 5), a[b]c): checking input event
+PASS In <textarea>, execCommand("inserthorizontalrule", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("inserthorizontalrule", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("inserthorizontalrule", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("inserthorizontalrule", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("createlink", false, foo.html), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("createlink", false, foo.html), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("createlink", false, foo.html), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("createlink", false, foo.html), a[b]c): checking input event
+PASS In <textarea>, execCommand("insertimage", false, no-image.png), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("insertimage", false, no-image.png), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("insertimage", false, no-image.png), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("insertimage", false, no-image.png), a[b]c): checking input event
+PASS In <textarea>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking beforeinput event
+FAIL In <textarea>, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking input event assert_equals: expected "insertText" but got ""
+PASS In <textarea>, execCommand("inserttext", false, **inserted**), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("inserttext", false, **inserted**), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("inserttext", false, **inserted**), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("inserttext", false, **inserted**), a[b]c): checking input event
+PASS In <textarea>, execCommand("justifyleft", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("justifyleft", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("justifyleft", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("justifyleft", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("justifyright", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("justifyright", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("justifyright", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("justifyright", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("justifycenter", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("justifycenter", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("justifycenter", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("justifycenter", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("justifyfull", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("justifyfull", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("justifyfull", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("justifyfull", false, null), a[b]c): checking input event
+FAIL In <textarea>, execCommand("removeformat", false, null), a[b]c): calling execCommand() assert_equals: expected false but got true
+PASS In <textarea>, execCommand("unlink", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("unlink", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("unlink", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("unlink", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("insertorderedlist", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("insertorderedlist", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("insertorderedlist", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("insertorderedlist", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("insertunorderedlist", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("insertunorderedlist", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("insertunorderedlist", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("insertunorderedlist", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("insertparagraph", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("insertlinebreak", false, null), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("insertlinebreak", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("insertlinebreak", false, null), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("insertlinebreak", false, null), a[b]c): checking input event
+PASS In <textarea>, execCommand("formatblock", false, div), a[b]c): calling execCommand()
+PASS In <textarea>, execCommand("formatblock", false, div), a[b]c): checking value and selection after execCommand()
+PASS In <textarea>, execCommand("formatblock", false, div), a[b]c): checking beforeinput event
+PASS In <textarea>, execCommand("formatblock", false, div), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("bold", false, bold), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("bold", false, bold), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("bold", false, bold), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("bold", false, bold), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("italic", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("italic", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("italic", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("italic", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("underline", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("underline", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("underline", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("underline", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("strikethrough", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("strikethrough", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("strikethrough", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("strikethrough", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("superscript", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("superscript", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("superscript", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("superscript", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("cut", false, null), ab[]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("cut", false, null), ab[]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("cut", false, null), ab[]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("cut", false, null), ab[]c): checking input event
+PASS In <input> in contenteditable, execCommand("cut", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("cut", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("cut", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("cut", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("copy", false, null), abc[]d): calling execCommand()
+PASS In <input> in contenteditable, execCommand("copy", false, null), abc[]d): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("copy", false, null), abc[]d): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("copy", false, null), abc[]d): checking input event
+PASS In <input> in contenteditable, execCommand("copy", false, null), a[bc]d): calling execCommand()
+PASS In <input> in contenteditable, execCommand("copy", false, null), a[bc]d): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("copy", false, null), a[bc]d): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("copy", false, null), a[bc]d): checking input event
+PASS In <input> in contenteditable, execCommand("paste", false, null), a[]c): calling execCommand()
+FAIL In <input> in contenteditable, execCommand("paste", false, null), a[]c): checking value and selection after execCommand() assert_equals: expected "a[bc]c" but got "abc[]c"
+PASS In <input> in contenteditable, execCommand("paste", false, null), a[]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("paste", false, null), a[]c): checking input event
+PASS In <input> in contenteditable, execCommand("delete", false, null), ab[]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("delete", false, null), ab[]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("delete", false, null), ab[]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("delete", false, null), ab[]c): checking input event
+PASS In <input> in contenteditable, execCommand("delete", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("delete", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("delete", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("delete", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("forwarddelete", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("forwarddelete", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("forwarddelete", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("forwarddelete", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("forwarddelete", false, null), a[]bc): calling execCommand()
+PASS In <input> in contenteditable, execCommand("forwarddelete", false, null), a[]bc): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("forwarddelete", false, null), a[]bc): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("forwarddelete", false, null), a[]bc): checking input event
+PASS In <input> in contenteditable, execCommand("selectall", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("selectall", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("selectall", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("selectall", false, null), a[b]c): checking input event
+FAIL In <input> in contenteditable, execCommand("undo", false, null), [a]bc): calling execCommand() assert_equals: expected false but got true
+PASS In <input> in contenteditable, execCommand("undo", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("undo", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("undo", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("undo", false, null), a[b]c): checking input event
+FAIL In <input> in contenteditable, execCommand("redo", false, null), [a]bc): calling execCommand() assert_equals: expected false but got true
+PASS In <input> in contenteditable, execCommand("redo", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("redo", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("redo", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("redo", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("indent", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("indent", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("indent", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("indent", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("outdent", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("outdent", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("outdent", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("outdent", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("backcolor", false, #000000), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("backcolor", false, #000000), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("backcolor", false, #000000), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("backcolor", false, #000000), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("forecolor", false, #000000), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("forecolor", false, #000000), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("forecolor", false, #000000), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("forecolor", false, #000000), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("hilitecolor", false, #000000), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("hilitecolor", false, #000000), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("hilitecolor", false, #000000), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("hilitecolor", false, #000000), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("fontname", false, DummyFont), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("fontname", false, DummyFont), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("fontname", false, DummyFont), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("fontname", false, DummyFont), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("fontsize", false, 5), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("fontsize", false, 5), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("fontsize", false, 5), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("fontsize", false, 5), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("inserthorizontalrule", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("inserthorizontalrule", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("inserthorizontalrule", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("inserthorizontalrule", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("createlink", false, foo.html), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("createlink", false, foo.html), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("createlink", false, foo.html), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("createlink", false, foo.html), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("insertimage", false, no-image.png), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("insertimage", false, no-image.png), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("insertimage", false, no-image.png), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("insertimage", false, no-image.png), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking beforeinput event
+FAIL In <input> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking input event assert_equals: expected "insertText" but got ""
+PASS In <input> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("justifyleft", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("justifyleft", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("justifyleft", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("justifyleft", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("justifyright", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("justifyright", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("justifyright", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("justifyright", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("justifycenter", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("justifycenter", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("justifycenter", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("justifycenter", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("justifyfull", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("justifyfull", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("justifyfull", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("justifyfull", false, null), a[b]c): checking input event
+FAIL In <input> in contenteditable, execCommand("removeformat", false, null), a[b]c): calling execCommand() assert_equals: expected false but got true
+PASS In <input> in contenteditable, execCommand("unlink", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("unlink", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("unlink", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("unlink", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("insertorderedlist", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("insertorderedlist", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("insertorderedlist", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("insertorderedlist", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("insertunorderedlist", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("insertunorderedlist", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("insertunorderedlist", false, null), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("insertunorderedlist", false, null), a[b]c): checking input event
+PASS In <input> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): checking beforeinput event
+FAIL In <input> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): checking input event assert_equals: expected (string) "insertParagraph" but got (boolean) false
+PASS In <input> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): checking beforeinput event
+FAIL In <input> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): checking input event assert_equals: expected (string) "insertLineBreak" but got (boolean) false
+PASS In <input> in contenteditable, execCommand("formatblock", false, div), a[b]c): calling execCommand()
+PASS In <input> in contenteditable, execCommand("formatblock", false, div), a[b]c): checking value and selection after execCommand()
+PASS In <input> in contenteditable, execCommand("formatblock", false, div), a[b]c): checking beforeinput event
+PASS In <input> in contenteditable, execCommand("formatblock", false, div), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("bold", false, bold), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("bold", false, bold), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("bold", false, bold), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("bold", false, bold), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("italic", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("italic", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("italic", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("italic", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("underline", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("underline", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("underline", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("underline", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("strikethrough", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("strikethrough", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("strikethrough", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("strikethrough", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("superscript", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("superscript", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("superscript", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("superscript", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("cut", false, null), ab[]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("cut", false, null), ab[]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("cut", false, null), ab[]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("cut", false, null), ab[]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("cut", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("cut", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("cut", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("cut", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("copy", false, null), abc[]d): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("copy", false, null), abc[]d): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("copy", false, null), abc[]d): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("copy", false, null), abc[]d): checking input event
+PASS In <textarea> in contenteditable, execCommand("copy", false, null), a[bc]d): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("copy", false, null), a[bc]d): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("copy", false, null), a[bc]d): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("copy", false, null), a[bc]d): checking input event
+PASS In <textarea> in contenteditable, execCommand("paste", false, null), a[]c): calling execCommand()
+FAIL In <textarea> in contenteditable, execCommand("paste", false, null), a[]c): checking value and selection after execCommand() assert_equals: expected "a[bc]c" but got "abc[]c"
+PASS In <textarea> in contenteditable, execCommand("paste", false, null), a[]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("paste", false, null), a[]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("delete", false, null), ab[]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("delete", false, null), ab[]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("delete", false, null), ab[]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("delete", false, null), ab[]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("delete", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("delete", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("delete", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("delete", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("forwarddelete", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("forwarddelete", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("forwarddelete", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("forwarddelete", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("forwarddelete", false, null), a[]bc): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("forwarddelete", false, null), a[]bc): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("forwarddelete", false, null), a[]bc): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("forwarddelete", false, null), a[]bc): checking input event
+PASS In <textarea> in contenteditable, execCommand("selectall", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("selectall", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("selectall", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("selectall", false, null), a[b]c): checking input event
+FAIL In <textarea> in contenteditable, execCommand("undo", false, null), [a]bc): calling execCommand() assert_equals: expected false but got true
+PASS In <textarea> in contenteditable, execCommand("undo", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("undo", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("undo", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("undo", false, null), a[b]c): checking input event
+FAIL In <textarea> in contenteditable, execCommand("redo", false, null), [a]bc): calling execCommand() assert_equals: expected false but got true
+PASS In <textarea> in contenteditable, execCommand("redo", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("redo", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("redo", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("redo", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("indent", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("indent", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("indent", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("indent", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("outdent", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("outdent", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("outdent", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("outdent", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("backcolor", false, #000000), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("backcolor", false, #000000), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("backcolor", false, #000000), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("backcolor", false, #000000), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("forecolor", false, #000000), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("forecolor", false, #000000), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("forecolor", false, #000000), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("forecolor", false, #000000), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("hilitecolor", false, #000000), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("hilitecolor", false, #000000), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("hilitecolor", false, #000000), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("hilitecolor", false, #000000), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("fontname", false, DummyFont), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("fontname", false, DummyFont), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("fontname", false, DummyFont), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("fontname", false, DummyFont), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("fontsize", false, 5), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("fontsize", false, 5), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("fontsize", false, 5), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("fontsize", false, 5), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("inserthorizontalrule", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("inserthorizontalrule", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("inserthorizontalrule", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("inserthorizontalrule", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("createlink", false, foo.html), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("createlink", false, foo.html), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("createlink", false, foo.html), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("createlink", false, foo.html), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("insertimage", false, no-image.png), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("insertimage", false, no-image.png), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("insertimage", false, no-image.png), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("insertimage", false, no-image.png), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking beforeinput event
+FAIL In <textarea> in contenteditable, execCommand("inserthtml", false, <b>inserted</b>), a[b]c): checking input event assert_equals: expected "insertText" but got ""
+PASS In <textarea> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("inserttext", false, **inserted**), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("justifyleft", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("justifyleft", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("justifyleft", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("justifyleft", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("justifyright", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("justifyright", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("justifyright", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("justifyright", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("justifycenter", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("justifycenter", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("justifycenter", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("justifycenter", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("justifyfull", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("justifyfull", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("justifyfull", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("justifyfull", false, null), a[b]c): checking input event
+FAIL In <textarea> in contenteditable, execCommand("removeformat", false, null), a[b]c): calling execCommand() assert_equals: expected false but got true
+PASS In <textarea> in contenteditable, execCommand("unlink", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("unlink", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("unlink", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("unlink", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("insertorderedlist", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("insertorderedlist", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("insertorderedlist", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("insertorderedlist", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("insertunorderedlist", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("insertunorderedlist", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("insertunorderedlist", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("insertunorderedlist", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("insertparagraph", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("insertlinebreak", false, null), a[b]c): checking input event
+PASS In <textarea> in contenteditable, execCommand("formatblock", false, div), a[b]c): calling execCommand()
+PASS In <textarea> in contenteditable, execCommand("formatblock", false, div), a[b]c): checking value and selection after execCommand()
+PASS In <textarea> in contenteditable, execCommand("formatblock", false, div), a[b]c): checking beforeinput event
+PASS In <textarea> in contenteditable, execCommand("formatblock", false, div), a[b]c): checking input event
+Harness: the test ran to completion.
+

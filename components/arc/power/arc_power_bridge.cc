@@ -13,12 +13,13 @@
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
+#include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
-#include "chromeos/dbus/power_policy_controller.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_service_manager.h"
-#include "content/public/common/service_manager_connection.h"
+#include "components/arc/session/arc_bridge_service.h"
+#include "content/public/browser/system_connector.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/constants.mojom.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
@@ -73,12 +74,12 @@ class ArcPowerBridge::WakeLockRequestor {
 
     // Initialize |wake_lock_| if this is the first time we're using it.
     if (!wake_lock_) {
-      device::mojom::WakeLockProviderPtr provider;
-      connector_->BindInterface(device::mojom::kServiceName,
-                                mojo::MakeRequest(&provider));
+      mojo::Remote<device::mojom::WakeLockProvider> provider;
+      connector_->Connect(device::mojom::kServiceName,
+                          provider.BindNewPipeAndPassReceiver());
       provider->GetWakeLockWithoutContext(
           type_, device::mojom::WakeLockReason::kOther, "ARC",
-          mojo::MakeRequest(&wake_lock_));
+          wake_lock_.BindNewPipeAndPassReceiver());
     }
 
     wake_lock_->RequestWakeLock();
@@ -114,7 +115,7 @@ class ArcPowerBridge::WakeLockRequestor {
   int num_android_requests_ = 0;
 
   // Lazily initialized in response to first request.
-  device::mojom::WakeLockPtr wake_lock_;
+  mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   DISALLOW_COPY_AND_ASSIGN(WakeLockRequestor);
 };
@@ -127,7 +128,7 @@ ArcPowerBridge* ArcPowerBridge::GetForBrowserContext(
 
 ArcPowerBridge::ArcPowerBridge(content::BrowserContext* context,
                                ArcBridgeService* bridge_service)
-    : arc_bridge_service_(bridge_service), weak_ptr_factory_(this) {
+    : arc_bridge_service_(bridge_service) {
   arc_bridge_service_->power()->SetHost(this);
   arc_bridge_service_->power()->AddObserver(this);
 }
@@ -174,9 +175,13 @@ void ArcPowerBridge::SuspendImminent(
   if (!power_instance)
     return;
 
-  power_instance->Suspend(
-      chromeos::PowerManagerClient::Get()->GetSuspendReadinessCallback(
-          FROM_HERE));
+  auto token = base::UnguessableToken::Create();
+  chromeos::PowerManagerClient::Get()->BlockSuspend(token, "ArcPowerBridge");
+  power_instance->Suspend(base::BindOnce(
+      [](base::UnguessableToken token) {
+        chromeos::PowerManagerClient::Get()->UnblockSuspend(token);
+      },
+      token));
 }
 
 void ArcPowerBridge::SuspendDone(const base::TimeDelta& sleep_duration) {
@@ -202,6 +207,16 @@ void ArcPowerBridge::ScreenBrightnessChanged(
                        weak_ptr_factory_.GetWeakPtr(), change.percent()));
   }
   last_brightness_changed_time_ = now;
+}
+
+void ArcPowerBridge::PowerChanged(
+    const power_manager::PowerSupplyProperties& proto) {
+  mojom::PowerInstance* power_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->power(), PowerSupplyInfoChanged);
+  if (!power_instance)
+    return;
+
+  power_instance->PowerSupplyInfoChanged();
 }
 
 void ArcPowerBridge::OnPowerStateChanged(
@@ -263,7 +278,7 @@ void ArcPowerBridge::OnScreenBrightnessUpdateRequest(double percent) {
   power_manager::SetBacklightBrightnessRequest request;
   request.set_percent(percent);
   request.set_transition(
-      power_manager::SetBacklightBrightnessRequest_Transition_GRADUAL);
+      power_manager::SetBacklightBrightnessRequest_Transition_FAST);
   request.set_cause(
       power_manager::SetBacklightBrightnessRequest_Cause_USER_REQUEST);
   chromeos::PowerManagerClient::Get()->SetScreenBrightness(request);
@@ -276,9 +291,7 @@ ArcPowerBridge::WakeLockRequestor* ArcPowerBridge::GetWakeLockRequestor(
     return it->second.get();
 
   service_manager::Connector* connector =
-      connector_for_test_
-          ? connector_for_test_
-          : content::ServiceManagerConnection::GetForProcess()->GetConnector();
+      connector_for_test_ ? connector_for_test_ : content::GetSystemConnector();
   DCHECK(connector);
 
   it = wake_lock_requestors_

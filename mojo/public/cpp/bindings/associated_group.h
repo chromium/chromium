@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) AssociatedGroup {
   AssociatedGroupController* GetController();
 
  private:
-  base::Callback<AssociatedGroupController*()> controller_getter_;
+  base::RepeatingCallback<AssociatedGroupController*()> controller_getter_;
   scoped_refptr<AssociatedGroupController> controller_;
 };
 

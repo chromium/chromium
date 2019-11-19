@@ -30,8 +30,6 @@ TEST_F(PrefsTest, TestIndex) {
 
   EXPECT_EQ(prefs::kAllowDeletingBrowserHistory,
             GetPrefName(ALLOW_DELETING_BROWSER_HISTORY));
-  EXPECT_EQ(contextual_suggestions::prefs::kContextualSuggestionsEnabled,
-            GetPrefName(CONTEXTUAL_SUGGESTIONS_ENABLED));
   EXPECT_EQ(prefs::kIncognitoModeAvailability,
             GetPrefName(INCOGNITO_MODE_AVAILABILITY));
 
@@ -62,6 +60,51 @@ TEST_F(PrefsTest, TestIndex) {
   EXPECT_EQ(autofill::prefs::kAutofillCreditCardEnabled,
             GetPrefName(AUTOFILL_CREDIT_CARD_ENABLED));
   EXPECT_EQ(prefs::kUsageStatsEnabled, GetPrefName(USAGE_STATS_ENABLED));
+  EXPECT_EQ(offline_pages::prefetch_prefs::kUserSettingEnabled,
+            GetPrefName(OFFLINE_PREFETCH_USER_SETTING_ENABLED));
+  EXPECT_EQ(prefs::kSafeBrowsingExtendedReportingOptInAllowed,
+            GetPrefName(SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED));
+  EXPECT_EQ(prefs::kSafeBrowsingEnabled, GetPrefName(SAFE_BROWSING_ENABLED));
+  EXPECT_EQ(password_manager::prefs::kPasswordManagerOnboardingState,
+            GetPrefName(PASSWORD_MANAGER_ONBOARDING_STATE));
+  EXPECT_EQ(prefs::kSearchSuggestEnabled, GetPrefName(SEARCH_SUGGEST_ENABLED));
+  EXPECT_EQ(password_manager::prefs::kCredentialsEnableService,
+            GetPrefName(REMEMBER_PASSWORDS_ENABLED));
+  EXPECT_EQ(password_manager::prefs::kCredentialsEnableAutosignin,
+            GetPrefName(PASSWORD_MANAGER_AUTO_SIGNIN_ENABLED));
+  EXPECT_EQ(password_manager::prefs::kPasswordLeakDetectionEnabled,
+            GetPrefName(PASSWORD_MANAGER_LEAK_DETECTION_ENABLED));
+  EXPECT_EQ(prefs::kSupervisedUserSafeSites,
+            GetPrefName(SUPERVISED_USER_SAFE_SITES));
+  EXPECT_EQ(prefs::kDefaultSupervisedUserFilteringBehavior,
+            GetPrefName(DEFAULT_SUPERVISED_USER_FILTERING_BEHAVIOR));
+  EXPECT_EQ(prefs::kSupervisedUserId, GetPrefName(SUPERVISED_USER_ID));
+  EXPECT_EQ(prefs::kSupervisedUserCustodianEmail,
+            GetPrefName(SUPERVISED_USER_CUSTODIAN_EMAIL));
+  EXPECT_EQ(prefs::kSupervisedUserSecondCustodianName,
+            GetPrefName(SUPERVISED_USER_SECOND_CUSTODIAN_NAME));
+  EXPECT_EQ(prefs::kSupervisedUserSecondCustodianEmail,
+            GetPrefName(SUPERVISED_USER_SECOND_CUSTODIAN_EMAIL));
+  EXPECT_EQ(prefs::kClickedUpdateMenuItem,
+            GetPrefName(CLICKED_UPDATE_MENU_ITEM));
+  EXPECT_EQ(prefs::kLatestVersionWhenClickedUpdateMenuItem,
+            GetPrefName(LATEST_VERSION_WHEN_CLICKED_UPDATE_MENU_ITEM));
+  EXPECT_EQ(prefs::kBlockThirdPartyCookies,
+            GetPrefName(BLOCK_THIRD_PARTY_COOKIES));
+  EXPECT_EQ(prefs::kEnableDoNotTrack, GetPrefName(ENABLE_DO_NOT_TRACK));
+  EXPECT_EQ(prefs::kPrintingEnabled, GetPrefName(PRINTING_ENABLED));
+  EXPECT_EQ(prefs::kOfferTranslateEnabled,
+            GetPrefName(OFFER_TRANSLATE_ENABLED));
+  EXPECT_EQ(prefs::kNotificationsVibrateEnabled,
+            GetPrefName(NOTIFICATIONS_VIBRATE_ENABLED));
+  EXPECT_EQ(prefs::kAlternateErrorPagesEnabled,
+            GetPrefName(ALTERNATE_ERROR_PAGES_ENABLED));
+  EXPECT_EQ(prefs::kGoogleServicesLastUsername,
+            GetPrefName(SYNC_LAST_ACCOUNT_NAME));
+  EXPECT_EQ(prefs::kWebKitPasswordEchoEnabled,
+            GetPrefName(WEBKIT_PASSWORD_ECHO_ENABLED));
+  EXPECT_EQ(prefs::kWebKitForceDarkModeEnabled,
+            GetPrefName(WEBKIT_FORCE_DARK_MODE_ENABLED));
 
   // If this check fails, a pref is missing a test case above.
   EXPECT_EQ(Pref::PREF_NUM_PREFS, pref_count_);

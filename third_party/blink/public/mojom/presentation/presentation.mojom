@@ -82,13 +82,13 @@ interface PresentationConnection {
 // Holds result from successfully starting or reconnecting to a presentation
 // with a pair of Mojo pipes to communicate with the presentation page.
 // |presentation_info| holds the URL and ID of the presentation.
-// |connection_ptr| holds the connection from the presentation to the
-// controlling frame.  |connection_request| is fulfilled by the controlling
+// |connection_remote| holds the connection from the presentation to the
+// controlling frame.  |connection_receiver| is fulfilled by the controlling
 // frame with a new connection to return to the presentation.
 struct PresentationConnectionResult {
   PresentationInfo presentation_info;
-  PresentationConnection connection_ptr;
-  PresentationConnection& connection_request;
+  pending_remote<PresentationConnection> connection_remote;
+  pending_receiver<PresentationConnection> connection_receiver;
 };
 
 // Service provided by the browser process to implement parts of the
@@ -106,14 +106,14 @@ interface PresentationService {
   // Sets the PresentationController of the frame. This is called by the
   // controller page of a presentation to listen for screen availability and
   // initiate presentations.
-  SetController(PresentationController controller);
+  SetController(pending_remote<PresentationController> controller);
 
   // Sets the PresentationReceiver of the page. This is called by the
   // presentation page of a 1-UA presentation in order to receive updates on new
   // connections (initiated by a controller) becoming available.
   // TODO(crbug.com/749327): Move this method out of PresentationService and
   // define a new interface that implements only Presentation Receiver APIs.
-  SetReceiver(PresentationReceiver receiver);
+  SetReceiver(pending_remote<PresentationReceiver> receiver);
 
   ///////////// Functions here are for the controller part of the API. /////////
 
@@ -194,12 +194,12 @@ interface PresentationReceiver {
   // Notifies the PresentationReceiver that a receiver connection has become
   // available.
   // |info|: URL and ID of the PresentationConnection.
-  // |controller_connection|: Ptr to the corresponding controller connection.
-  // |receiver_connection_request|: Interface request to be bound to a receiver
-  // connection implementation.
+  // |controller_connection|: Remote to the corresponding controller connection.
+  // |receiver_connection_receiver|: PendingReceiver to be bound at the other
+  // endpoint of the controller connection.
   // TODO(btolsch): Convert this to take a PresentationConnectionResult.
   OnReceiverConnectionAvailable(
       PresentationInfo info,
-      PresentationConnection controller_connection,
-      PresentationConnection& receiver_connection_request);
+      pending_remote<PresentationConnection> controller_connection,
+      pending_receiver<PresentationConnection> receiver_connection_receiver);
 };

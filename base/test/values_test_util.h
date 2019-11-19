@@ -42,6 +42,17 @@ void ExpectStringValue(const std::string& expected_str, const Value& actual);
 
 namespace test {
 
+// A custom GMock matcher which matches if a base::Value is a dictionary which
+// has a key |key| that is equal to |value|.
+testing::Matcher<const base::Value&> DictionaryHasValue(
+    const std::string& key,
+    const base::Value& expected_value);
+
+// A custom GMock matcher which matches if a base::Value is a dictionary which
+// contains all key/value pairs from |template_value|.
+testing::Matcher<const base::Value&> DictionaryHasValues(
+    const base::Value& template_value);
+
 // A custom GMock matcher.  For details, see
 // https://github.com/google/googletest/blob/644319b9f06f6ca9bf69fe791be399061044bc3d/googlemock/docs/CookBook.md#writing-new-polymorphic-matchers
 class IsJsonMatcher {

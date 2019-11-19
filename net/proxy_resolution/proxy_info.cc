@@ -8,10 +8,7 @@
 
 namespace net {
 
-ProxyInfo::ProxyInfo()
-    : did_bypass_proxy_(false),
-      did_use_pac_script_(false),
-      did_use_auto_detected_pac_script_(false) {}
+ProxyInfo::ProxyInfo() : did_bypass_proxy_(false), did_use_pac_script_(false) {}
 
 ProxyInfo::ProxyInfo(const ProxyInfo& other) = default;
 
@@ -25,7 +22,6 @@ void ProxyInfo::Use(const ProxyInfo& other) {
   traffic_annotation_ = other.traffic_annotation_;
   did_bypass_proxy_ = other.did_bypass_proxy_;
   did_use_pac_script_ = other.did_use_pac_script_;
-  did_use_auto_detected_pac_script_ = other.did_use_auto_detected_pac_script_;
 }
 
 void ProxyInfo::UseDirect() {
@@ -92,7 +88,6 @@ void ProxyInfo::Reset() {
   traffic_annotation_.reset();
   did_bypass_proxy_ = false;
   did_use_pac_script_ = false;
-  did_use_auto_detected_pac_script_ = false;
 }
 
 }  // namespace net

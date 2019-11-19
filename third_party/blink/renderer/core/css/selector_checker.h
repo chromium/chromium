@@ -39,9 +39,9 @@ namespace blink {
 
 class CSSSelector;
 class ContainerNode;
-class Element;
-class LayoutScrollbar;
+class CustomScrollbar;
 class ComputedStyle;
+class Element;
 class PartNames;
 
 class SelectorChecker {
@@ -83,7 +83,7 @@ class SelectorChecker {
     Mode mode = kResolvingStyle;
     bool is_ua_rule = false;
     ComputedStyle* element_style = nullptr;
-    Member<LayoutScrollbar> scrollbar = nullptr;
+    Member<CustomScrollbar> scrollbar = nullptr;
     ScrollbarPart scrollbar_part = kNoPart;
     PartNames* part_names = nullptr;
   };
@@ -115,7 +115,8 @@ class SelectorChecker {
           in_rightmost_compound(true),
           has_scrollbar_pseudo(false),
           has_selection_pseudo(false),
-          treat_shadow_host_as_normal_scope(false) {}
+          treat_shadow_host_as_normal_scope(false),
+          is_from_vtt(false) {}
 
     const CSSSelector* selector;
     Member<Element> element;
@@ -128,6 +129,7 @@ class SelectorChecker {
     bool has_scrollbar_pseudo;
     bool has_selection_pseudo;
     bool treat_shadow_host_as_normal_scope;
+    bool is_from_vtt;
   };
 
   struct MatchResult {
@@ -140,11 +142,7 @@ class SelectorChecker {
     unsigned specificity;
   };
 
-  bool Match(const SelectorCheckingContext& context,
-             MatchResult& result) const {
-    DCHECK(context.selector);
-    return MatchSelector(context, result) == kSelectorMatches;
-  }
+  bool Match(const SelectorCheckingContext& context, MatchResult& result) const;
 
   bool Match(const SelectorCheckingContext& context) const {
     MatchResult ignore_result;
@@ -160,6 +158,7 @@ class SelectorChecker {
   // to by the context are a match. Delegates most of the work to the Check*
   // methods below.
   bool CheckOne(const SelectorCheckingContext&, MatchResult&) const;
+  bool CheckOneForVTT(const SelectorCheckingContext&, MatchResult&) const;
 
   enum MatchStatus {
     kSelectorMatches,
@@ -186,27 +185,40 @@ class SelectorChecker {
   // to try (e.g. same element, parent, sibling) depends on the combinators in
   // the selectors.
   MatchStatus MatchSelector(const SelectorCheckingContext&, MatchResult&) const;
+  MatchStatus MatchSelectorForVTT(const SelectorCheckingContext&,
+                                  MatchResult&) const;
   MatchStatus MatchForSubSelector(const SelectorCheckingContext&,
                                   MatchResult&) const;
+  MatchStatus MatchForSubSelectorForVTT(const SelectorCheckingContext&,
+                                        MatchResult&) const;
   MatchStatus MatchForRelation(const SelectorCheckingContext&,
                                MatchResult&) const;
+  MatchStatus MatchForRelationForVTT(const SelectorCheckingContext&,
+                                     MatchResult&) const;
   MatchStatus MatchForPseudoContent(const SelectorCheckingContext&,
                                     const Element&,
                                     MatchResult&) const;
   MatchStatus MatchForPseudoShadow(const SelectorCheckingContext&,
                                    const ContainerNode*,
                                    MatchResult&) const;
+  bool MatchVTTBlockSelector(const SelectorCheckingContext& context,
+                             MatchResult& result) const;
   bool CheckPseudoClass(const SelectorCheckingContext&, MatchResult&) const;
+  bool CheckPseudoClassForVTT(const SelectorCheckingContext&,
+                              MatchResult&) const;
   bool CheckPseudoElement(const SelectorCheckingContext&, MatchResult&) const;
+  bool CheckPseudoElementForVTT(const SelectorCheckingContext&,
+                                MatchResult&) const;
   bool CheckScrollbarPseudoClass(const SelectorCheckingContext&,
                                  MatchResult&) const;
   bool CheckPseudoHost(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoNot(const SelectorCheckingContext&, MatchResult&) const;
+  bool CheckPseudoNotForVTT(const SelectorCheckingContext&, MatchResult&) const;
 
   Mode mode_;
   bool is_ua_rule_;
   ComputedStyle* element_style_;
-  Member<LayoutScrollbar> scrollbar_;
+  Member<CustomScrollbar> scrollbar_;
   ScrollbarPart scrollbar_part_;
   PartNames* part_names_;
   DISALLOW_COPY_AND_ASSIGN(SelectorChecker);

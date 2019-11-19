@@ -2,11 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import contextlib
 import os
+import shutil
+import tempfile
 import unittest
 
-from json5_generator import Json5File
+from json5_generator import Json5File, Writer
 
+
+@contextlib.contextmanager
+def tmp_dir():
+    tmp = tempfile.mkdtemp(prefix='json5_generator_')
+    try:
+        yield tmp
+    finally:
+        shutil.rmtree(tmp)
+
+
+class CleanupWriter(Writer):
+    def __init__(self, output_dir, cleanup):
+        super(CleanupWriter, self).__init__([], output_dir)
+        self._cleanup = cleanup
 
 class Json5FileTest(unittest.TestCase):
     def path_of_test_file(self, file_name):
@@ -35,6 +52,48 @@ class Json5FileTest(unittest.TestCase):
     def test_key_not_in_valid_keys(self):
         with self.assertRaises(Exception):
             Json5File.load_from_files([self.path_of_test_file('json5_generator_invalid_key.json5')])
+
+    def test_cleanup_multiple_files(self):
+        with tmp_dir() as tmp:
+            path1 = os.path.join(tmp, 'file1.h')
+            path2 = os.path.join(tmp, 'file2.h')
+
+            with open(path1, 'wb') as f:
+                f.write('File1')
+            with open(path2, 'wb') as f:
+                f.write('File2')
+
+            self.assertTrue(os.path.exists(path1))
+            self.assertTrue(os.path.exists(path2))
+            CleanupWriter(tmp, set(['file1.h', 'file2.h'])).cleanup_files(tmp)
+            self.assertFalse(os.path.exists(path1))
+            self.assertFalse(os.path.exists(path2))
+
+    def test_cleanup_partial_files(self):
+        with tmp_dir() as tmp:
+            path1 = os.path.join(tmp, 'file1.h')
+            path2 = os.path.join(tmp, 'file2.h')
+
+            with open(path1, 'wb') as f:
+                f.write('File1')
+            with open(path2, 'wb') as f:
+                f.write('File2')
+
+            self.assertTrue(os.path.exists(path1))
+            self.assertTrue(os.path.exists(path2))
+            CleanupWriter(tmp, set(['file2.h'])).cleanup_files(tmp)
+            self.assertTrue(os.path.exists(path1))
+            self.assertFalse(os.path.exists(path2))
+
+    def test_cleanup_nonexisting(self):
+        with tmp_dir() as tmp:
+            path1 = os.path.join(tmp, 'file1.h')
+            with open(path1, 'wb') as f:
+                f.write('File1')
+            self.assertTrue(os.path.exists(path1))
+            # Don't throw when trying to clean up something that doesn't exist.
+            CleanupWriter(tmp, set(['file1.h', 'file2.h'])).cleanup_files(tmp)
+            self.assertFalse(os.path.exists(path1))
 
 if __name__ == "__main__":
     unittest.main()

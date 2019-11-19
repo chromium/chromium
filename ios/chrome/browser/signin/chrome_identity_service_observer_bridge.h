@@ -39,7 +39,8 @@ class ChromeIdentityServiceObserverBridge
 
   __weak id<ChromeIdentityServiceObserver> observer_ = nil;
   ScopedObserver<ios::ChromeIdentityService,
-                 ChromeIdentityServiceObserverBridge> scoped_observer_;
+                 ios::ChromeIdentityService::Observer>
+      scoped_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ChromeIdentityServiceObserverBridge);
 };

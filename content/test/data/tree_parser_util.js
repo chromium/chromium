@@ -121,7 +121,7 @@ var TreeParserUtil = (function() {
     if (tokenStream.length == 0)
       throw new Error('Expected an identifier, but found end-of-stream.');
     var token = tokenStream.shift();
-    if (!token.match(/^[a-zA-Z0-9.-]+$/))
+    if (!token.match(/^[a-zA-Z0-9:.-]+$/))
       throw new Error('Expected an identifier, but found "' + token + '".');
     return token;
   }

@@ -205,10 +205,16 @@ payments::mojom::blink::PaymentResponsePtr BuildPaymentResponseForTest() {
   return result;
 }
 
-void MakePaymentRequestOriginSecure(Document& document) {
-  document.SetSecurityOrigin(
-      SecurityOrigin::Create(KURL("https://www.example.com/")));
-  document.SetSecureContextStateForTesting(SecureContextState::kSecure);
+payments::mojom::blink::PaymentAddressPtr BuildPaymentAddressForTest() {
+  payments::mojom::blink::PaymentAddressPtr result =
+      payments::mojom::blink::PaymentAddress::New();
+  result->country = "US";
+  return result;
+}
+
+PaymentRequestV8TestingScope::PaymentRequestV8TestingScope()
+    : V8TestingScope(KURL("https://www.example.com/")) {
+  GetDocument().SetSecureContextStateForTesting(SecureContextState::kSecure);
 }
 
 PaymentRequestMockFunctionScope::PaymentRequestMockFunctionScope(
@@ -242,10 +248,9 @@ v8::Local<v8::Function> PaymentRequestMockFunctionScope::ExpectNoCall() {
   return mock_functions_.back()->Bind();
 }
 
-ACTION_P(SaveValueIn, captor) {
-  *captor = ToCoreString(arg0.V8Value()
-                             ->ToString(arg0.GetScriptState()->GetContext())
-                             .ToLocalChecked());
+ACTION_P2(SaveValueIn, script_state, captor) {
+  *captor = ToCoreString(
+      arg0.V8Value()->ToString(script_state->GetContext()).ToLocalChecked());
 }
 
 PaymentRequestMockFunctionScope::MockFunction::MockFunction(
@@ -260,7 +265,8 @@ PaymentRequestMockFunctionScope::MockFunction::MockFunction(
     : ScriptFunction(script_state), value_(captor) {
   ON_CALL(*this, Call(testing::_))
       .WillByDefault(
-          testing::DoAll(SaveValueIn(value_), testing::ReturnArg<0>()));
+          testing::DoAll(SaveValueIn(WrapPersistent(script_state), value_),
+                         testing::ReturnArg<0>()));
 }
 
 v8::Local<v8::Function> PaymentRequestMockFunctionScope::MockFunction::Bind() {

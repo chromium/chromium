@@ -148,8 +148,7 @@ FileMonitorImpl::FileMonitorImpl(
     base::TimeDelta file_keep_alive_time)
     : download_file_dir_(download_file_dir),
       file_keep_alive_time_(file_keep_alive_time),
-      file_thread_task_runner_(file_thread_task_runner),
-      weak_factory_(this) {}
+      file_thread_task_runner_(file_thread_task_runner) {}
 
 FileMonitorImpl::~FileMonitorImpl() = default;
 

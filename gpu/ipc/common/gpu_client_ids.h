@@ -22,6 +22,11 @@ constexpr int32_t kInProcessCommandBufferClientId = -1;
 // namespace for these shaders.
 constexpr int32_t kGrShaderCacheClientId = -2;
 
+// The ID used by PlatformVideoFramePool for video decoding buffer allocation
+// in the GPU process. These are never accessed on the host side so we can use
+// the same client ID for all clients.
+constexpr int32_t kPlatformVideoFramePoolClientId = -3;
+
 inline bool IsReservedClientId(int32_t client_id) {
   return client_id < 0;
 }

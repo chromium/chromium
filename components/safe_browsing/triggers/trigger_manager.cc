@@ -26,6 +26,8 @@ bool TriggerNeedsOptInForCollection(const TriggerType trigger_type) {
       // For security interstitials, users can change the opt-in while the
       // trigger runs, so collection can begin without opt-in.
       return false;
+    case TriggerType::AD_POPUP:
+    case TriggerType::AD_REDIRECT:
     case TriggerType::AD_SAMPLE:
       // Ad samples happen in the background so the user must already be opted
       // in before the trigger is allowed to run.
@@ -67,8 +69,7 @@ TriggerManager::TriggerManager(BaseUIManager* ui_manager,
                                PrefService* local_state_prefs)
     : ui_manager_(ui_manager),
       referrer_chain_provider_(referrer_chain_provider),
-      trigger_throttler_(new TriggerThrottler(local_state_prefs)),
-      weak_factory_(this) {}
+      trigger_throttler_(new TriggerThrottler(local_state_prefs)) {}
 
 TriggerManager::~TriggerManager() {}
 
@@ -111,7 +112,6 @@ bool TriggerManager::CanStartDataCollectionWithReason(
   bool optin_required_check_ok =
       !TriggerNeedsOptInForCollection(trigger_type) ||
       error_display_options.is_extended_reporting_enabled;
-
   // We start data collection as long as user is not incognito and is able to
   // change the Extended Reporting opt-in, and the |trigger_type| has available
   // quota. For some triggers we also require extended reporting opt-in in
@@ -128,6 +128,7 @@ bool TriggerManager::CanStartDataCollectionWithReason(
     return false;
   }
 }
+
 bool TriggerManager::StartCollectingThreatDetails(
     const TriggerType trigger_type,
     content::WebContents* web_contents,
@@ -160,7 +161,9 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
   if (collectors->threat_details != nullptr)
     return false;
 
-  bool should_trim_threat_details = trigger_type == TriggerType::AD_SAMPLE;
+  bool should_trim_threat_details = (trigger_type == TriggerType::AD_POPUP ||
+                                     trigger_type == TriggerType::AD_SAMPLE ||
+                                     trigger_type == TriggerType::AD_REDIRECT);
   collectors->threat_details = ThreatDetails::NewThreatDetails(
       ui_manager_, web_contents, resource, url_loader_factory, history_service,
       referrer_chain_provider_, should_trim_threat_details,
@@ -178,7 +181,7 @@ bool TriggerManager::FinishCollectingThreatDetails(
     const SBErrorOptions& error_display_options) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Make sure there's a ThreatDetails collector running on this tab.
-  if (!base::ContainsKey(data_collectors_map_, web_contents))
+  if (!base::Contains(data_collectors_map_, web_contents))
     return false;
   DataCollectorsContainer* collectors = &data_collectors_map_[web_contents];
   if (collectors->threat_details == nullptr)
@@ -212,7 +215,7 @@ bool TriggerManager::FinishCollectingThreatDetails(
 void TriggerManager::ThreatDetailsDone(content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Clean up the ThreatDetailsdata collector on the specified tab.
-  if (!base::ContainsKey(data_collectors_map_, web_contents))
+  if (!base::Contains(data_collectors_map_, web_contents))
     return;
 
   DataCollectorsContainer* collectors = &data_collectors_map_[web_contents];
@@ -221,7 +224,7 @@ void TriggerManager::ThreatDetailsDone(content::WebContents* web_contents) {
 
 void TriggerManager::WebContentsDestroyed(content::WebContents* web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!base::ContainsKey(data_collectors_map_, web_contents))
+  if (!base::Contains(data_collectors_map_, web_contents))
     return;
   data_collectors_map_.erase(web_contents);
 }

@@ -18,34 +18,57 @@ PublicKeyCredentialUserEntity::CreateFromCBORValue(const cbor::Value& cbor) {
 
   const cbor::Value::MapValue& cbor_map = cbor.GetMap();
 
-  auto user_id = cbor_map.find(cbor::Value(kEntityIdMapKey));
-  if (user_id == cbor_map.end() || !user_id->second.is_bytestring())
+  auto id_it = cbor_map.find(cbor::Value(kEntityIdMapKey));
+  if (id_it == cbor_map.end() || !id_it->second.is_bytestring())
     return base::nullopt;
 
-  PublicKeyCredentialUserEntity user(user_id->second.GetBytestring());
+  PublicKeyCredentialUserEntity user(id_it->second.GetBytestring());
 
-  auto user_name = cbor_map.find(cbor::Value(kEntityNameMapKey));
-  if (user_name != cbor_map.end() && user_name->second.is_string()) {
-    user.SetUserName(user_name->second.GetString());
+  auto name_it = cbor_map.find(cbor::Value(kEntityNameMapKey));
+  if (name_it != cbor_map.end()) {
+    if (!name_it->second.is_string()) {
+      return base::nullopt;
+    }
+    user.name = name_it->second.GetString();
   }
 
-  auto user_display_name = cbor_map.find(cbor::Value(kDisplayNameMapKey));
-  if (user_display_name != cbor_map.end() &&
-      user_display_name->second.is_string()) {
-    user.SetDisplayName(user_display_name->second.GetString());
+  auto display_name_it = cbor_map.find(cbor::Value(kDisplayNameMapKey));
+  if (display_name_it != cbor_map.end()) {
+    if (!display_name_it->second.is_string()) {
+      return base::nullopt;
+    }
+    user.display_name = display_name_it->second.GetString();
   }
 
-  auto user_icon_url = cbor_map.find(cbor::Value(kIconUrlMapKey));
-  if (user_icon_url != cbor_map.end() && user_icon_url->second.is_string()) {
-    user.SetIconUrl(GURL(user_icon_url->second.GetString()));
+  auto icon_it = cbor_map.find(cbor::Value(kIconUrlMapKey));
+  if (icon_it != cbor_map.end()) {
+    if (!icon_it->second.is_string()) {
+      return base::nullopt;
+    }
+    user.icon_url = GURL(icon_it->second.GetString());
+    if (!user.icon_url->is_valid()) {
+      return base::nullopt;
+    }
   }
 
   return user;
 }
 
+PublicKeyCredentialUserEntity::PublicKeyCredentialUserEntity() = default;
+
 PublicKeyCredentialUserEntity::PublicKeyCredentialUserEntity(
-    std::vector<uint8_t> user_id)
-    : user_id_(std::move(user_id)) {}
+    std::vector<uint8_t> id_)
+    : id(std::move(id_)) {}
+
+PublicKeyCredentialUserEntity::PublicKeyCredentialUserEntity(
+    std::vector<uint8_t> id_,
+    base::Optional<std::string> name_,
+    base::Optional<std::string> display_name_,
+    base::Optional<GURL> icon_url_)
+    : id(std::move(id_)),
+      name(std::move(name_)),
+      display_name(std::move(display_name_)),
+      icon_url(std::move(icon_url_)) {}
 
 PublicKeyCredentialUserEntity::PublicKeyCredentialUserEntity(
     const PublicKeyCredentialUserEntity& other) = default;
@@ -61,35 +84,23 @@ PublicKeyCredentialUserEntity& PublicKeyCredentialUserEntity::operator=(
 
 PublicKeyCredentialUserEntity::~PublicKeyCredentialUserEntity() = default;
 
-cbor::Value PublicKeyCredentialUserEntity::ConvertToCBOR() const {
+bool PublicKeyCredentialUserEntity::operator==(
+    const PublicKeyCredentialUserEntity& other) const {
+  return id == other.id && name == other.name &&
+         display_name == other.display_name && icon_url == other.icon_url;
+}
+
+cbor::Value AsCBOR(const PublicKeyCredentialUserEntity& user) {
   cbor::Value::MapValue user_map;
-  user_map.emplace(kEntityIdMapKey, user_id_);
-  if (user_name_)
-    user_map.emplace(kEntityNameMapKey, *user_name_);
-  if (user_icon_url_)
-    user_map.emplace(kIconUrlMapKey, user_icon_url_->spec());
-  if (user_display_name_) {
-    user_map.emplace(kDisplayNameMapKey, *user_display_name_);
-  }
+  user_map.emplace(kEntityIdMapKey, user.id);
+  if (user.name)
+    user_map.emplace(kEntityNameMapKey, *user.name);
+  // Empty icon URLs result in CTAP1_ERR_INVALID_LENGTH on some security keys.
+  if (user.icon_url && !user.icon_url->is_empty())
+    user_map.emplace(kIconUrlMapKey, user.icon_url->spec());
+  if (user.display_name)
+    user_map.emplace(kDisplayNameMapKey, *user.display_name);
   return cbor::Value(std::move(user_map));
-}
-
-PublicKeyCredentialUserEntity& PublicKeyCredentialUserEntity::SetUserName(
-    std::string user_name) {
-  user_name_ = std::move(user_name);
-  return *this;
-}
-
-PublicKeyCredentialUserEntity& PublicKeyCredentialUserEntity::SetDisplayName(
-    std::string user_display_name) {
-  user_display_name_ = std::move(user_display_name);
-  return *this;
-}
-
-PublicKeyCredentialUserEntity& PublicKeyCredentialUserEntity::SetIconUrl(
-    GURL icon_url) {
-  user_icon_url_ = std::move(icon_url);
-  return *this;
 }
 
 }  // namespace device

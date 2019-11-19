@@ -8,13 +8,13 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "chrome/android/chrome_jni_headers/AutofillSaveCardInfoBar_jni.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/infobars/infobar_service.h"
-#include "components/autofill/core/browser/autofill_save_card_infobar_delegate_mobile.h"
-#include "components/autofill/core/browser/autofill_save_card_infobar_mobile.h"
-#include "components/autofill/core/browser/legal_message_line.h"
-#include "jni/AutofillSaveCardInfoBar_jni.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_infobar_mobile.h"
+#include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -72,7 +72,7 @@ AutofillSaveCardInfoBar::CreateRenderInfoBar(JNIEnv* env) {
       base::android::ConvertUTF16ToJavaString(env, delegate->card_label()),
       base::android::ConvertUTF16ToJavaString(env, delegate->card_sub_label()));
 
-  for (const auto& line : delegate->legal_messages()) {
+  for (const auto& line : delegate->legal_message_lines()) {
     Java_AutofillSaveCardInfoBar_addLegalMessageLine(
         env, java_delegate,
         base::android::ConvertUTF16ToJavaString(env, line.text()));

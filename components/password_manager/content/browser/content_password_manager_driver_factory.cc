@@ -15,6 +15,7 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/content/browser/form_submission_tracker_util.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
@@ -42,18 +43,10 @@ void ContentPasswordManagerDriverFactory::CreateForWebContents(
     return;
 
   // NOTE: Can't use |std::make_unique| due to private constructor.
-  auto new_factory = base::WrapUnique(new ContentPasswordManagerDriverFactory(
-      web_contents, password_client, autofill_client));
-  const std::vector<content::RenderFrameHost*> frames =
-      web_contents->GetAllFrames();
-  for (content::RenderFrameHost* frame : frames) {
-    if (frame->IsRenderFrameLive())
-      new_factory->RenderFrameCreated(frame);
-  }
-
   web_contents->SetUserData(
       kContentPasswordManagerDriverFactoryWebContentsUserDataKey,
-      std::move(new_factory));
+      base::WrapUnique(new ContentPasswordManagerDriverFactory(
+          web_contents, password_client, autofill_client)));
 }
 
 ContentPasswordManagerDriverFactory::ContentPasswordManagerDriverFactory(
@@ -75,23 +68,43 @@ ContentPasswordManagerDriverFactory::FromWebContents(
           kContentPasswordManagerDriverFactoryWebContentsUserDataKey));
 }
 
+// static
+void ContentPasswordManagerDriverFactory::BindPasswordManagerDriver(
+    mojo::PendingAssociatedReceiver<autofill::mojom::PasswordManagerDriver>
+        pending_receiver,
+    content::RenderFrameHost* render_frame_host) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  // We try to bind to the driver of this render frame host,
+  // but if driver is not ready for this render frame host for now,
+  // the request will be just dropped, this would cause closing the message pipe
+  // which would raise connection error to peer side.
+  // Peer side could reconnect later when needed.
+  if (!web_contents)
+    return;
+
+  ContentPasswordManagerDriverFactory* factory =
+      ContentPasswordManagerDriverFactory::FromWebContents(web_contents);
+  if (!factory)
+    return;
+
+  factory->GetDriverForFrame(render_frame_host)
+      ->BindPendingReceiver(std::move(pending_receiver));
+}
+
 ContentPasswordManagerDriver*
 ContentPasswordManagerDriverFactory::GetDriverForFrame(
     content::RenderFrameHost* render_frame_host) {
-  auto mapping = frame_driver_map_.find(render_frame_host);
-  return mapping == frame_driver_map_.end() ? nullptr : mapping->second.get();
-}
+  DCHECK_EQ(web_contents(),
+            content::WebContents::FromRenderFrameHost(render_frame_host));
+  DCHECK(render_frame_host->IsRenderFrameCreated());
 
-void ContentPasswordManagerDriverFactory::RenderFrameCreated(
-    content::RenderFrameHost* render_frame_host) {
-  auto insertion_result =
-      frame_driver_map_.insert(std::make_pair(render_frame_host, nullptr));
-  // This is called twice for the main frame.
-  if (insertion_result.second) {  // This was the first time.
-    insertion_result.first->second =
-        std::make_unique<ContentPasswordManagerDriver>(
-            render_frame_host, password_client_, autofill_client_);
+  auto& driver = frame_driver_map_[render_frame_host];
+  if (!driver) {
+    driver = std::make_unique<ContentPasswordManagerDriver>(
+        render_frame_host, password_client_, autofill_client_);
   }
+  return driver.get();
 }
 
 void ContentPasswordManagerDriverFactory::RenderFrameDeleted(
@@ -100,12 +113,20 @@ void ContentPasswordManagerDriverFactory::RenderFrameDeleted(
 }
 
 void ContentPasswordManagerDriverFactory::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->HasCommitted())
+    content::NavigationHandle* navigation) {
+  if (!navigation->IsInMainFrame() || navigation->IsSameDocument() ||
+      !navigation->HasCommitted()) {
     return;
+  }
 
-  if (auto* driver = GetDriverForFrame(navigation_handle->GetRenderFrameHost()))
-    driver->DidNavigateFrame(navigation_handle);
+  // Clear page specific data after main frame navigation.
+  NotifyDidNavigateMainFrame(navigation->IsRendererInitiated(),
+                             navigation->GetPageTransition(),
+                             navigation->WasInitiatedByLinkClick(),
+                             password_client_->GetPasswordManager());
+  GetDriverForFrame(navigation->GetRenderFrameHost())
+      ->GetPasswordAutofillManager()
+      ->DidNavigateMainFrame();
 }
 
 void ContentPasswordManagerDriverFactory::RequestSendLoggingAvailability() {

@@ -5,9 +5,9 @@
 #ifndef ASH_HIGHLIGHTER_HIGHLIGHTER_CONTROLLER_TEST_API_H_
 #define ASH_HIGHLIGHTER_HIGHLIGHTER_CONTROLLER_TEST_API_H_
 
-#include "ash/public/interfaces/highlighter_controller.mojom.h"
+#include "ash/highlighter/highlighter_controller.h"
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "base/scoped_observer.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace fast_ink {
@@ -16,13 +16,11 @@ class FastInkPoints;
 
 namespace ash {
 
-class HighlighterController;
-
 // An api for testing the HighlighterController class.
 // Implements ash::mojom::HighlighterControllerClient and binds itself as the
 // client to provide the tests with access to gesture recognition results.
 class HighlighterControllerTestApi
-    : public ash::mojom::HighlighterControllerClient {
+    : public ash::HighlighterController::Observer {
  public:
   explicit HighlighterControllerTestApi(HighlighterController* instance);
   ~HighlighterControllerTestApi() override;
@@ -46,28 +44,22 @@ class HighlighterControllerTestApi
   const fast_ink::FastInkPoints& predicted_points() const;
 
   void ResetEnabledState() { handle_enabled_state_changed_called_ = false; }
-  // Flushes the mojo connection, then checks whether HandleEnabledStateChange
-  // has been called on the client since the last call to ResetEnabledState.
   bool HandleEnabledStateChangedCalled();
   bool enabled() const { return enabled_; }
 
   void ResetSelection() { handle_selection_called_ = false; }
-  // Flushes the mojo connection, then checks whether HandleSelection
-  // has been called on the client since the last call to ResetSelection.
   bool HandleSelectionCalled();
   const gfx::Rect& selection() const { return selection_; }
 
  private:
+  using ScopedObserver =
+      ScopedObserver<HighlighterController, HighlighterController::Observer>;
+
   // HighlighterSelectionObserver:
-  void HandleSelection(const gfx::Rect& rect) override;
-  void HandleEnabledStateChange(bool enabled) override;
+  void OnHighlighterSelectionRecognized(const gfx::Rect& rect) override;
+  void OnHighlighterEnabledChanged(HighlighterEnabledState state) override;
 
-  // Binds to the client interface.
-  mojo::Binding<ash::mojom::HighlighterControllerClient> binding_;
-
-  // HighlighterController interface.
-  ash::mojom::HighlighterControllerPtr highlighter_controller_;
-
+  std::unique_ptr<ScopedObserver> scoped_observer_;
   HighlighterController* instance_;
 
   bool handle_selection_called_ = false;

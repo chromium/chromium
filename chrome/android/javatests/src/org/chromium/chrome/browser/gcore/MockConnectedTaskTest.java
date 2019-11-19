@@ -21,7 +21,7 @@ public class MockConnectedTaskTest {
     private MockConnectedTask<MockChromeGoogleApiClient> mTask;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mClient = new MockChromeGoogleApiClient();
         mTask = new MockConnectedTask<>(mClient);
     }

@@ -4,6 +4,10 @@
 
 #include "ui/base/dragdrop/os_exchange_data.h"
 
+#include <utility>
+#include <vector>
+
+#include "base/callback.h"
 #include "base/pickle.h"
 #include "build/build_config.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -14,12 +18,10 @@ namespace ui {
 
 OSExchangeData::DownloadFileInfo::DownloadFileInfo(
     const base::FilePath& filename,
-    DownloadFileProvider* downloader)
-    : filename(filename),
-      downloader(downloader) {
-}
+    std::unique_ptr<DownloadFileProvider> downloader)
+    : filename(filename), downloader(std::move(downloader)) {}
 
-OSExchangeData::DownloadFileInfo::~DownloadFileInfo() {}
+OSExchangeData::DownloadFileInfo::~DownloadFileInfo() = default;
 
 OSExchangeData::OSExchangeData()
     : provider_(OSExchangeDataProviderFactory::CreateProvider()) {
@@ -136,12 +138,32 @@ bool OSExchangeData::GetFileContents(base::FilePath* filename,
   return provider_->GetFileContents(filename, file_contents);
 }
 
-void OSExchangeData::SetDownloadFileInfo(const DownloadFileInfo& download) {
+bool OSExchangeData::HasVirtualFilenames() const {
+  return provider_->HasVirtualFilenames();
+}
+
+bool OSExchangeData::GetVirtualFilenames(
+    std::vector<FileInfo>* filenames) const {
+  return provider_->GetVirtualFilenames(filenames);
+}
+
+bool OSExchangeData::GetVirtualFilesAsTempFiles(
+    base::OnceCallback<
+        void(const std::vector<std::pair<base::FilePath, base::FilePath>>&)>
+        callback) const {
+  return provider_->GetVirtualFilesAsTempFiles(std::move(callback));
+}
+
+void OSExchangeData::SetDownloadFileInfo(DownloadFileInfo* download) {
   provider_->SetDownloadFileInfo(download);
 }
 #endif
 
 #if defined(USE_AURA)
+bool OSExchangeData::HasHtml() const {
+  return provider_->HasHtml();
+}
+
 void OSExchangeData::SetHtml(const base::string16& html, const GURL& base_url) {
   provider_->SetHtml(html, base_url);
 }

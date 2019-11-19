@@ -27,16 +27,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FEATURE_VALUE_H_
 
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 namespace cssvalue {
 class CSSFontFeatureValue : public CSSValue {
  public:
-  static CSSFontFeatureValue* Create(const AtomicString& tag, int value) {
-    return MakeGarbageCollected<CSSFontFeatureValue>(tag, value);
-  }
-
   CSSFontFeatureValue(const AtomicString& tag, int value);
 
   const AtomicString& Tag() const { return tag_; }
@@ -54,9 +51,15 @@ class CSSFontFeatureValue : public CSSValue {
   const int value_;
 };
 
-DEFINE_CSS_VALUE_TYPE_CASTS(CSSFontFeatureValue, IsFontFeatureValue());
-
 }  // namespace cssvalue
+
+template <>
+struct DowncastTraits<cssvalue::CSSFontFeatureValue> {
+  static bool AllowFrom(const CSSValue& value) {
+    return value.IsFontFeatureValue();
+  }
+};
+
 }  // namespace blink
 
 #endif

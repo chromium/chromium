@@ -1,0 +1,92 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/grpc/grpc_library.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("host_info_proto") {
+  sources = [
+    "host_info.proto",
+  ]
+}
+
+proto_library("directory_proto") {
+  sources = [
+    "directory_messages.proto",
+  ]
+  deps = [
+    ":host_info_proto",
+  ]
+}
+
+cc_grpc_library("directory_grpc_library") {
+  sources = [
+    "directory_service.proto",
+  ]
+  deps = [
+    ":directory_proto",
+  ]
+}
+
+if (is_android) {
+  import("///build/config/android/rules.gni")
+
+  proto_java_library("directory_proto_java") {
+    proto_path = "."
+    sources = [
+      "directory_messages.proto",
+      "host_info.proto",
+    ]
+  }
+}
+
+proto_library("network_traversal_proto") {
+  sources = [
+    "network_traversal_messages.proto",
+  ]
+}
+
+cc_grpc_library("network_traversal_grpc_library") {
+  sources = [
+    "network_traversal_service.proto",
+  ]
+  deps = [
+    ":network_traversal_proto",
+  ]
+}
+
+cc_grpc_library("remote_support_host_grpc_library") {
+  sources = [
+    "remote_support_host_messages.proto",
+    "remote_support_host_service.proto",
+  ]
+  deps = [
+    ":host_info_proto",
+  ]
+}
+
+proto_library("chromoting_event_proto") {
+  sources = [
+    "chromoting_event.proto",
+  ]
+}
+
+proto_library("telemetry_messages") {
+  sources = [
+    "generic_log_entry.proto",
+    "telemetry_messages.proto",
+  ]
+  deps = [
+    ":chromoting_event_proto",
+  ]
+}
+
+cc_grpc_library("telemetry_grpc_library") {
+  sources = [
+    "telemetry_service.proto",
+  ]
+  deps = [
+    ":telemetry_messages",
+  ]
+}

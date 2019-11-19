@@ -22,20 +22,17 @@ class CheckFinalizerVisitor
  public:
   struct Error {
     Error(clang::MemberExpr* member,
-          bool as_eagerly_finalized,
           FieldPoint* field)
         : member(member),
-          as_eagerly_finalized(as_eagerly_finalized),
           field(field) {}
 
     clang::MemberExpr* member;
-    bool as_eagerly_finalized;
     FieldPoint* field;
   };
 
   typedef std::vector<Error> Errors;
 
-  CheckFinalizerVisitor(RecordCache* cache, bool is_eagerly_finalized);
+  explicit CheckFinalizerVisitor(RecordCache* cache);
 
   Errors& finalized_fields();
 
@@ -45,13 +42,12 @@ class CheckFinalizerVisitor
   bool VisitMemberExpr(clang::MemberExpr* member);
 
  private:
-  bool MightBeCollected(FieldPoint* point, bool* as_eagerly_finalized);
+  bool MightBeCollected(FieldPoint* point);
 
   bool blacklist_context_;
   Errors finalized_fields_;
   std::set<clang::MemberExpr*> seen_members_;
   RecordCache* cache_;
-  bool is_eagerly_finalized_;
 };
 
 #endif  // TOOLS_BLINK_GC_PLUGIN_CHECK_FINALIZER_VISITOR_H_

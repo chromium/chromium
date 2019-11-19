@@ -39,10 +39,12 @@ namespace ash {
 //   |   7   |  |   8   |  |   9   |
 //   |P Q R S|  | T U V |  |W X Y Z|
 //    -------    -------    -------
-//               _______    _______
-//              |   0   |  |  <-   |
-//              |   +   |  |       |
-//               -------    -------
+//    _______    _______    _______
+//   |  BACK |  |   0   |  |  <-   |
+//   |       |  |   +   |  |       |
+//    -------    -------    -------
+//
+// The "BACK" button is hidden by default.
 //
 class ASH_EXPORT LoginPinView : public NonAccessibleView {
  public:
@@ -66,6 +68,7 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
 
     views::View* GetButton(int number) const;
     views::View* GetBackspaceButton() const;
+    views::View* GetBackButton() const;
 
     // Sets the timers that are used for backspace auto-submit. |delay_timer| is
     // the initial delay before an auto-submit, and |repeat_timer| fires
@@ -79,25 +82,35 @@ class ASH_EXPORT LoginPinView : public NonAccessibleView {
 
   using OnPinKey = base::RepeatingCallback<void(int value)>;
   using OnPinBackspace = base::RepeatingClosure;
+  using OnPinBack = base::RepeatingClosure;
 
   // Creates PIN view with the specified |keyboard_style|.
-  // |on_key| is called whenever the user taps one of the pin buttons.
+  // |on_key| is called whenever the user taps one of the pin buttons; must be
+  // non-null.
   // |on_backspace| is called when the user wants to erase the most recently
-  // tapped key. Neither callback can be null.
-  explicit LoginPinView(Style keyboard_style,
-                        const OnPinKey& on_key,
-                        const OnPinBackspace& on_backspace);
+  // tapped key; must be non-null.
+  // |on_back| is called when the user taps the back button; must be non-null
+  // if the back button is shown.
+  LoginPinView(Style keyboard_style,
+               const OnPinKey& on_key,
+               const OnPinBackspace& on_backspace,
+               const OnPinBack& on_back);
   ~LoginPinView() override;
+
+  void SetBackButtonVisible(bool visible);
 
   // Called when the password field text changed.
   void OnPasswordTextChanged(bool is_empty);
 
  private:
+  class BackButton;
   class BackspacePinButton;
 
+  BackButton* back_button_;
   BackspacePinButton* backspace_;
   OnPinKey on_key_;
   OnPinBackspace on_backspace_;
+  OnPinBack on_back_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginPinView);
 };

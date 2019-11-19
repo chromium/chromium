@@ -35,6 +35,7 @@ class GL_EXPORT GLImageDXGI : public GLImage {
                        const gfx::Rect& rect) override;
   void Flush() override;
   unsigned GetInternalFormat() override;
+  unsigned GetDataType() override;
   gfx::Size GetSize() override;
   Type GetType() const override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,

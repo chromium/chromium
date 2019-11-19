@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<meta charset="utf8">
+<title>Display Locking: overflow auto</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="overflow-auto-with-overflow-ref.html">
+<script src="/common/reftest-wait.js"></script>
+<script src="../resources/utils.js"></script>
+
+<style>
+#border {
+  border: 1px solid black;
+  width: max-content;
+}
+#container {
+  intrinsic-size: 12px 34px;
+  height: 100px;
+  overflow: auto;
+}
+.content {
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+  background: pink;
+}
+div:not([rendersubtree~="invisible"]) {
+  intrinsic-size: legacy !important;
+}
+</style>
+
+<div id="border">
+  <div id="container">
+    <div class="content"></div>
+    <div class="content"></div>
+    <div class="content"></div>
+    <div class="content"></div>
+  </div>
+</div>
+
+<script>
+async function runTest() {
+  const container = document.getElementById("container");
+  await setInvisible(container);
+  takeScreenshot();
+}
+
+onload = () => requestAnimationFrame(runTest);
+</script>
+</html>

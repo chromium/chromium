@@ -119,10 +119,14 @@ PaymentDetails ConvertPaymentDetails(
     details.total =
         std::make_unique<PaymentItem>(ConvertPaymentItem(details_entry->total));
   }
-  details.display_items.reserve(details_entry->display_items.size());
-  for (const mojom::PaymentItemPtr& display_item :
-       details_entry->display_items) {
-    details.display_items.push_back(ConvertPaymentItem(display_item));
+  if (details_entry->display_items) {
+    details.display_items.reserve(details_entry->display_items->size());
+    for (const mojom::PaymentItemPtr& display_item :
+         *details_entry->display_items) {
+      details.display_items.push_back(ConvertPaymentItem(display_item));
+    }
+  } else {
+    details.display_items.clear();
   }
   if (details_entry->shipping_options) {
     details.shipping_options.reserve(details_entry->shipping_options->size());
@@ -132,10 +136,14 @@ PaymentDetails ConvertPaymentDetails(
           ConvertPaymentShippingOption(shipping_option));
     }
   }
-  details.modifiers.reserve(details_entry->modifiers.size());
-  for (const mojom::PaymentDetailsModifierPtr& modifier :
-       details_entry->modifiers) {
-    details.modifiers.push_back(ConvertPaymentDetailsModifier(modifier));
+  if (details_entry->modifiers) {
+    details.modifiers.reserve(details_entry->modifiers->size());
+    for (const mojom::PaymentDetailsModifierPtr& modifier :
+         *details_entry->modifiers) {
+      details.modifiers.push_back(ConvertPaymentDetailsModifier(modifier));
+    }
+  } else {
+    details.modifiers.clear();
   }
   details.error = details_entry->error;
   if (details_entry->id.has_value())

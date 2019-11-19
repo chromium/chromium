@@ -11,7 +11,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
-#include "chrome/browser/chromeos/arc/arc_session_manager.h"
+#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
@@ -60,7 +60,7 @@ class AndroidAppsHandler : public ::settings::SettingsPageUIHandler,
   ScopedObserver<arc::ArcSessionManager, arc::ArcSessionManager::Observer>
       arc_session_manager_observer_;
   Profile* profile_;  // unowned
-  base::WeakPtrFactory<AndroidAppsHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<AndroidAppsHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AndroidAppsHandler);
 };

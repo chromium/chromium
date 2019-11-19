@@ -254,7 +254,12 @@
   }
 
   function negotiate() {
-    negotiateBetween(gFirstConnection, gSecondConnection);
+    Promise.all([
+      waitForConnectionToStabilizeIfNeeded(gFirstConnection),
+      waitForConnectionToStabilizeIfNeeded(gSecondConnection),
+    ]).then(() => {
+      negotiateBetween(gFirstConnection, gSecondConnection);
+    });
   }
 
   function onRemoteStream(e, target) {

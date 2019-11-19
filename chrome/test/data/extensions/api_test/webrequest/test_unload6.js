@@ -5,11 +5,28 @@
 const hostname1 = 'hostname-of-main-frame';
 const hostname2 = 'origin-different-from-main-frame';
 const hostname3 = 'origin-different-from-other-frames';
+const frameId1 = 'frame1';
+const frameId2 = 'frame2';
+const frameId3 = 'frame3';
+
+// Removes the frame with id |frameId| when the request for |frameURL| is
+// started. Otherwise, the frame may be removed before the request has even been
+// started, which will not send any Web Request events.
+function removeFrameOnStart(frameURL, frameId) {
+  chrome.webRequest.onBeforeRequest.addListener(function listener(details) {
+    chrome.tabs.executeScript(tabId, {
+      code: `document.getElementById('${frameId}').remove();`
+    });
+    chrome.webRequest.onBeforeRequest.removeListener(listener);
+  }, {
+    urls: [frameURL],
+    types: ['sub_frame'],
+  });
+}
 
 // Wait until |num| webRequest.onErrorOccurred sub_frame events have triggered
-// and invoke |callback| with the results. We use this instead of the usual
-// test framework because a frame may or may not have onBeforeRequest events,
-// and at this point we are only interested in seeing whether the details in the
+// and invoke |callback| with the results. We use this instead of the usual test
+// framework because we are only interested in seeing whether the details in the
 // onErrorOccurred event are valid.
 function awaitOnErrorOccurred(num, callback) {
   var callbackDone = chrome.test.callbackAdded();
@@ -84,19 +101,20 @@ runTests([
       }], results);
     });
 
+    removeFrameOnStart(frameUrl1, frameId1);
+    removeFrameOnStart(frameUrl2, frameId2);
     navigateAndWait(mainUrl, function() {
       chrome.tabs.executeScript(tabId, {
         code: `
           var f1 = document.createElement('iframe');
+          f1.id = '${frameId1}';
           f1.src = '${frameUrl1}';
           var f2 = document.createElement('iframe');
+          f2.id = '${frameId2}';
           f2.src = '${frameUrl2}';
 
           document.body.appendChild(f1);
           document.body.appendChild(f2);
-
-          f1.remove();
-          f2.remove();
         `
       });
     });
@@ -121,12 +139,13 @@ runTests([
       }], results);
     });
 
+    removeFrameOnStart(frameUrl, frameId3);
     chrome.tabs.executeScript(tabId, {
       code: `
         var f = document.createElement('iframe');
+        f.id = '${frameId3}';
         f.src = '${frameUrl}';
         document.body.appendChild(f);
-        f.remove();
       `
     });
   },

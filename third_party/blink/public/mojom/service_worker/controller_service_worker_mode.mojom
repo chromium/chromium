@@ -1,0 +1,16 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Describes whether a controller service worker exists and if it has a fetch
+// handler.
+enum ControllerServiceWorkerMode {
+  // No controller exists.
+  kNoController,
+  // The controller exists, but it has no fetch event handler.
+  kNoFetchEventHandler,
+  // The controller exists and it has a fetch event handler.
+  kControlled
+};

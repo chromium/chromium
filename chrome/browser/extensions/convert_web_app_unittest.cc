@@ -19,18 +19,20 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/version.h"
-#include "chrome/browser/extensions/bookmark_app_helper.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/web_application_info.h"
+#include "components/services/app_service/public/cpp/file_handler_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_icon_set.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/file_handler_info.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/url_pattern.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
@@ -42,8 +44,8 @@ namespace keys = manifest_keys;
 namespace {
 
 // Returns an icon info corresponding to a canned icon.
-WebApplicationInfo::IconInfo GetIconInfo(const GURL& url, int size) {
-  WebApplicationInfo::IconInfo result;
+WebApplicationIconInfo GetIconInfo(const GURL& url, int size) {
+  WebApplicationIconInfo result;
 
   base::FilePath icon_file;
   if (!base::PathService::Get(chrome::DIR_TEST_DATA, &icon_file)) {
@@ -407,6 +409,71 @@ TEST(ExtensionFromWebApp, ScopeDoesNotEndInSlash) {
       Extension::NO_FLAGS, Manifest::INTERNAL);
   ASSERT_TRUE(extension.get());
   EXPECT_EQ(web_app.scope, GetScopeURLFromBookmarkApp(extension.get()));
+}
+
+// Tests that |file_handler| on the WebAppManifest is correctly converted
+// to |file_handlers| on an extension manifest.
+TEST(ExtensionFromWebApp, FileHandlersAreCorrectlyConverted) {
+  base::ScopedTempDir extensions_dir;
+  ASSERT_TRUE(extensions_dir.CreateUniqueTempDir());
+
+  WebApplicationInfo web_app;
+  web_app.title = base::ASCIIToUTF16("Graphr");
+  web_app.description = base::ASCIIToUTF16("A magical graphy thing");
+  web_app.app_url = GURL("https://graphr.n/");
+  web_app.scope = GURL("https://graphr.n/");
+
+  {
+    blink::Manifest::FileHandler file_handler;
+    file_handler.action = GURL("https://graphr.n/open-file/");
+
+    blink::Manifest::FileFilter graph;
+    graph.name = base::ASCIIToUTF16("Graph");
+    graph.accept.push_back(base::ASCIIToUTF16("text/svg+xml"));
+    graph.accept.push_back(base::ASCIIToUTF16(""));
+    graph.accept.push_back(base::ASCIIToUTF16(".svg"));
+    file_handler.files.push_back(graph);
+
+    blink::Manifest::FileFilter raw;
+    raw.name = base::ASCIIToUTF16("Raw");
+    raw.accept.push_back(base::ASCIIToUTF16(".csv"));
+    raw.accept.push_back(base::ASCIIToUTF16("text/csv"));
+    file_handler.files.push_back(raw);
+
+    web_app.file_handler =
+        base::Optional<blink::Manifest::FileHandler>(std::move(file_handler));
+  }
+
+  scoped_refptr<Extension> extension = ConvertWebAppToExtension(
+      web_app, GetTestTime(1978, 12, 11, 0, 0, 0, 0), extensions_dir.GetPath(),
+      Extension::NO_FLAGS, Manifest::INTERNAL);
+
+  ASSERT_TRUE(extension.get());
+
+  const std::vector<apps::FileHandlerInfo> file_handler_info =
+      *extensions::FileHandlers::GetFileHandlers(extension.get());
+
+  EXPECT_EQ(2u, file_handler_info.size());
+
+  EXPECT_EQ("https://graphr.n/open-file/?name=Graph", file_handler_info[0].id);
+  EXPECT_FALSE(file_handler_info[0].include_directories);
+  EXPECT_EQ(apps::file_handler_verbs::kOpenWith, file_handler_info[0].verb);
+  // Extensions should contain SVG, and only SVG
+  EXPECT_THAT(file_handler_info[0].extensions,
+              testing::UnorderedElementsAre("svg"));
+  // Mime types should contain text/svg+xml and only text/svg+xml
+  EXPECT_THAT(file_handler_info[0].types,
+              testing::UnorderedElementsAre("text/svg+xml"));
+
+  EXPECT_EQ("https://graphr.n/open-file/?name=Raw", file_handler_info[1].id);
+  EXPECT_FALSE(file_handler_info[1].include_directories);
+  EXPECT_EQ(apps::file_handler_verbs::kOpenWith, file_handler_info[1].verb);
+  // Extensions should contain csv, and only csv
+  EXPECT_THAT(file_handler_info[1].extensions,
+              testing::UnorderedElementsAre("csv"));
+  // Mime types should contain text/csv and only text/csv
+  EXPECT_THAT(file_handler_info[1].types,
+              testing::UnorderedElementsAre("text/csv"));
 }
 
 }  // namespace extensions

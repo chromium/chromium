@@ -4,6 +4,8 @@
 
 #include "chrome/browser/android/explore_sites/explore_sites_store.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -20,52 +22,9 @@
 
 namespace explore_sites {
 namespace {
+using offline_pages::SqlStoreBase;
 
 const char kExploreSitesStoreFileName[] = "ExploreSitesStore.db";
-
-bool PrepareDirectory(const base::FilePath& path) {
-  base::File::Error error = base::File::FILE_OK;
-  if (!base::DirectoryExists(path.DirName())) {
-    if (!base::CreateDirectoryAndGetError(path.DirName(), &error)) {
-      LOG(ERROR) << "Failed to create explore sites db directory: "
-                 << base::File::ErrorToString(error);
-      return false;
-    }
-  }
-  return true;
-}
-
-bool InitializeSync(sql::Database* db,
-                    const base::FilePath& path,
-                    bool in_memory) {
-  // These values are default.
-  db->set_page_size(4096);
-  db->set_cache_size(500);
-  db->set_histogram_tag("ExploreSitesStore");
-  db->set_exclusive_locking();
-
-  if (!in_memory && !PrepareDirectory(path))
-    return false;
-
-  bool open_db_result = in_memory ? db->OpenInMemory() : db->Open(path);
-
-  if (!open_db_result) {
-    LOG(ERROR) << "Failed to open database, in memory: " << in_memory;
-    return false;
-  }
-  db->Preload();
-
-  return ExploreSitesSchema::CreateOrUpgradeIfNeeded(db);
-}
-
-void CloseDatabaseSync(
-    sql::Database* db,
-    scoped_refptr<base::SingleThreadTaskRunner> callback_runner,
-    base::OnceClosure callback) {
-  if (db)
-    db->Close();
-  callback_runner->PostTask(FROM_HERE, std::move(callback));
-}
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -83,107 +42,77 @@ void ReportStoreEvent(ExploreSitesStoreEvent event) {
 
 }  // namespace
 
-// static
-constexpr base::TimeDelta ExploreSitesStore::kClosingDelay;
-
 ExploreSitesStore::ExploreSitesStore(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner)
-    : blocking_task_runner_(std::move(blocking_task_runner)),
-      in_memory_(true),
-      db_(nullptr, base::OnTaskRunnerDeleter(blocking_task_runner_)),
-      initialization_status_(InitializationStatus::NOT_INITIALIZED),
-      weak_ptr_factory_(this),
-      closing_weak_ptr_factory_(this) {}
+    : SqlStoreBase("ExploreSitesStore",
+                   std::move(blocking_task_runner),
+                   base::FilePath()) {}
 
 ExploreSitesStore::ExploreSitesStore(
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     const base::FilePath& path)
-    : blocking_task_runner_(std::move(blocking_task_runner)),
-      db_file_path_(path.AppendASCII(kExploreSitesStoreFileName)),
-      in_memory_(false),
-      db_(nullptr, base::OnTaskRunnerDeleter(blocking_task_runner_)),
-      initialization_status_(InitializationStatus::NOT_INITIALIZED),
-      weak_ptr_factory_(this),
-      closing_weak_ptr_factory_(this) {}
+    : SqlStoreBase("ExploreSitesStore",
+                   std::move(blocking_task_runner),
+                   path.AppendASCII(kExploreSitesStoreFileName)) {}
 
 ExploreSitesStore::~ExploreSitesStore() {}
 
-void ExploreSitesStore::SetInitializationStatusForTest(
-    InitializationStatus status) {
-  initialization_status_ = status;
+base::OnceCallback<bool(sql::Database* db)>
+ExploreSitesStore::GetSchemaInitializationFunction() {
+  return base::BindOnce(&ExploreSitesSchema::CreateOrUpgradeIfNeeded);
 }
 
-void ExploreSitesStore::Initialize(base::OnceClosure pending_command) {
+void ExploreSitesStore::OnOpenStart(base::TimeTicks last_closing_time) {
   TRACE_EVENT_ASYNC_BEGIN1("explore_sites", "ExploreSitesStore", this,
-                           "is reopen", !last_closing_time_.is_null());
-  DCHECK_EQ(initialization_status_, InitializationStatus::NOT_INITIALIZED);
-  initialization_status_ = InitializationStatus::INITIALIZING;
-
-  if (!last_closing_time_.is_null()) {
+                           "is reopen", !last_closing_time.is_null());
+  if (!last_closing_time.is_null()) {
     ReportStoreEvent(ExploreSitesStoreEvent::kReopened);
   } else {
     ReportStoreEvent(ExploreSitesStoreEvent::kOpenedFirstTime);
   }
-
-  // This is how we reset a pointer and provide deleter. This is necessary to
-  // ensure that we can close the store more than once.
-  db_ = DatabaseUniquePtr(new sql::Database,
-                          base::OnTaskRunnerDeleter(blocking_task_runner_));
-
-  base::PostTaskAndReplyWithResult(
-      blocking_task_runner_.get(), FROM_HERE,
-      base::BindOnce(&InitializeSync, db_.get(), db_file_path_, in_memory_),
-      base::BindOnce(&ExploreSitesStore::OnInitializeDone,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(pending_command)));
 }
 
-void ExploreSitesStore::OnInitializeDone(base::OnceClosure pending_command,
-                                         bool success) {
-  // TODO(carlosk): Add initializing error reporting here.
+void ExploreSitesStore::OnOpenDone(bool success) {
   TRACE_EVENT_ASYNC_STEP_PAST1("explore_sites", "ExploreSitesStore", this,
                                "Initializing", "succeeded", success);
-  DCHECK_EQ(initialization_status_, InitializationStatus::INITIALIZING);
-  if (success) {
-    initialization_status_ = InitializationStatus::SUCCESS;
-  } else {
-    initialization_status_ = InitializationStatus::FAILURE;
-    db_.reset();
+  if (!success) {
     TRACE_EVENT_ASYNC_END0("explore_sites", "ExploreSitesStore", this);
   }
-
-  CHECK(!pending_command.is_null());
-  std::move(pending_command).Run();
-
-  // Once pending commands are empty, we get back to NOT_INITIALIZED state, to
-  // make it possible to retry initialization next time a DB operation is
-  // attempted.
-  if (initialization_status_ == InitializationStatus::FAILURE)
-    initialization_status_ = InitializationStatus::NOT_INITIALIZED;
 }
 
-void ExploreSitesStore::CloseInternal() {
-  if (initialization_status_ != InitializationStatus::SUCCESS) {
+void ExploreSitesStore::OnTaskBegin(bool is_initialized) {
+  TRACE_EVENT_ASYNC_BEGIN1("explore_sites",
+                           "ExploreSites Store: task execution", this,
+                           "is store loaded", is_initialized);
+}
+
+void ExploreSitesStore::OnTaskRunComplete() {
+  // Note: the time recorded for this trace step will include thread hop wait
+  // times to the background thread and back.
+  TRACE_EVENT_ASYNC_STEP_PAST0(
+      "explore_sites", "ExploreSites Store: task execution", this, "Task");
+}
+
+void ExploreSitesStore::OnTaskReturnComplete() {
+  TRACE_EVENT_ASYNC_STEP_PAST0(
+      "explore_sites", "ExploreSites Store: task execution", this, "Callback");
+  TRACE_EVENT_ASYNC_END0("explore_sites", "ExploreSites Store: task execution",
+                         this);
+}
+
+void ExploreSitesStore::OnCloseStart(
+    InitializationStatus initialization_status) {
+  if (initialization_status != InitializationStatus::kSuccess) {
     ReportStoreEvent(ExploreSitesStoreEvent::kCloseSkipped);
     return;
   }
   TRACE_EVENT_ASYNC_STEP_PAST0("explore_sites", "ExploreSitesStore", this,
                                "Open");
 
-  last_closing_time_ = offline_pages::OfflineTimeNow();
   ReportStoreEvent(ExploreSitesStoreEvent::kClosed);
-
-  initialization_status_ = InitializationStatus::NOT_INITIALIZED;
-  blocking_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CloseDatabaseSync, db_.get(), base::ThreadTaskRunnerHandle::Get(),
-          base::BindOnce(&ExploreSitesStore::CloseInternalDone,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(db_))));
 }
 
-void ExploreSitesStore::CloseInternalDone(DatabaseUniquePtr db) {
-  db.reset();
+void ExploreSitesStore::OnCloseComplete() {
   TRACE_EVENT_ASYNC_STEP_PAST0("explore_sites", "ExploreSitesStore", this,
                                "Closing");
   TRACE_EVENT_ASYNC_END0("explore_sites", "ExploreSitesStore", this);

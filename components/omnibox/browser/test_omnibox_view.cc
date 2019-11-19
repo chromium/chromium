@@ -46,6 +46,9 @@ void TestOmniboxView::OnTemporaryTextMaybeChanged(
     bool save_original_selection,
     bool notify_text_changed) {
   text_ = display_text;
+
+  if (save_original_selection)
+    saved_temporary_selection_ = selection_;
 }
 
 bool TestOmniboxView::OnInlineAutocompleteTextMaybeChanged(
@@ -65,6 +68,11 @@ bool TestOmniboxView::OnInlineAutocompleteTextMaybeChanged(
 
 void TestOmniboxView::OnInlineAutocompleteTextCleared() {
   inline_autocomplete_text_.clear();
+}
+
+void TestOmniboxView::OnRevertTemporaryText(const base::string16& display_text,
+                                            const AutocompleteMatch& match) {
+  selection_ = saved_temporary_selection_;
 }
 
 bool TestOmniboxView::OnAfterPossibleChange(bool allow_keyword_ui_change) {

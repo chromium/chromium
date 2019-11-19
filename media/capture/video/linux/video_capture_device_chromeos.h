@@ -51,8 +51,12 @@ class VideoCaptureDeviceChromeOS : public VideoCaptureDeviceLinux,
  private:
   // DisplayRotationObserver implementation.
   void SetDisplayRotation(const display::Display& display) override;
+
   const ChromeOSDeviceCameraConfig camera_config_;
   scoped_refptr<ScreenObserverDelegate> screen_observer_delegate_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
   DISALLOW_IMPLICIT_CONSTRUCTORS(VideoCaptureDeviceChromeOS);
 };
 

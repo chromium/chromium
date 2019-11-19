@@ -8,11 +8,10 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/scoped_observer.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/common/custom_handlers/protocol_handler.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // ProtocolHandlersHandler
@@ -28,7 +27,7 @@ class DictionaryValue;
 namespace settings {
 
 class ProtocolHandlersHandler : public SettingsPageUIHandler,
-                              public content::NotificationObserver {
+                                public ProtocolHandlerRegistry::Observer {
  public:
   ProtocolHandlersHandler();
   ~ProtocolHandlersHandler() override;
@@ -38,10 +37,8 @@ class ProtocolHandlersHandler : public SettingsPageUIHandler,
   void OnJavascriptDisallowed() override;
   void RegisterMessages() override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // ProtocolHandlerRegistry::Observer:
+  void OnProtocolHandlerRegistryChanged() override;
 
  private:
   // Called to fetch the state of the protocol handlers. If the full list of
@@ -84,7 +81,8 @@ class ProtocolHandlersHandler : public SettingsPageUIHandler,
 
   ProtocolHandlerRegistry* GetProtocolHandlerRegistry();
 
-  content::NotificationRegistrar notification_registrar_;
+  ScopedObserver<ProtocolHandlerRegistry, ProtocolHandlerRegistry::Observer>
+      registry_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProtocolHandlersHandler);
 };

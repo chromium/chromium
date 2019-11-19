@@ -14,7 +14,7 @@
 #include "base/optional.h"
 #include "extensions/renderer/bindings/api_binding_types.h"
 #include "extensions/renderer/bindings/api_last_error.h"
-#include "third_party/blink/public/web/web_user_gesture_token.h"
+#include "extensions/renderer/bindings/interaction_provider.h"
 #include "v8/include/v8.h"
 
 namespace base {
@@ -40,7 +40,6 @@ class APIRequestHandler {
     std::string method_name;
     bool has_callback = false;
     bool has_user_gesture = false;
-    binding::RequestThread thread = binding::RequestThread::UI;
     std::unique_ptr<base::ListValue> arguments;
 
    private:
@@ -51,13 +50,10 @@ class APIRequestHandler {
       base::RepeatingCallback<void(std::unique_ptr<Request>,
                                    v8::Local<v8::Context>)>;
 
-  using GetUserActivationState =
-      base::RepeatingCallback<bool(v8::Local<v8::Context>)>;
-
   APIRequestHandler(SendRequestMethod send_request,
                     APILastError last_error,
                     ExceptionHandler* exception_handler,
-                    GetUserActivationState get_user_activation_state_callback);
+                    const InteractionProvider* interaction_provider);
   ~APIRequestHandler();
 
   // Begins the process of processing the request. Returns the identifier of the
@@ -67,8 +63,14 @@ class APIRequestHandler {
                    const std::string& method,
                    std::unique_ptr<base::ListValue> arguments,
                    v8::Local<v8::Function> callback,
-                   v8::Local<v8::Function> custom_callback,
-                   binding::RequestThread thread);
+                   v8::Local<v8::Function> custom_callback);
+
+  // Starts a request and returns a promise, which will be resolved or rejected
+  // when the request is completed.
+  std::pair<int, v8::Local<v8::Promise>> StartPromiseBasedRequest(
+      v8::Local<v8::Context> context,
+      const std::string& method,
+      std::unique_ptr<base::ListValue> arguments);
 
   // Adds a pending request for the request handler to manage (and complete via
   // CompleteRequest). This is used by renderer-side implementations that
@@ -105,15 +107,16 @@ class APIRequestHandler {
 
  private:
   class ArgumentAdapter;
+  class AsyncResultHandler;
 
   struct PendingRequest {
     PendingRequest(
         v8::Isolate* isolate,
         v8::Local<v8::Context> context,
         const std::string& method_name,
-        v8::Local<v8::Function> callback,
-        const base::Optional<std::vector<v8::Local<v8::Value>>>& callback_args,
-        const base::Optional<blink::WebUserGestureToken>& user_gesture_token);
+        std::unique_ptr<AsyncResultHandler> async_handler,
+        std::unique_ptr<InteractionProvider::Token> user_gesture_token);
+
     ~PendingRequest();
     PendingRequest(PendingRequest&&);
     PendingRequest& operator=(PendingRequest&&);
@@ -122,12 +125,23 @@ class APIRequestHandler {
     v8::Global<v8::Context> context;
     std::string method_name;
 
-    // The following are only populated for requests with a callback.
-    base::Optional<v8::Global<v8::Function>> callback;
-    base::Optional<std::vector<v8::Global<v8::Value>>> callback_arguments;
-    base::Optional<blink::WebUserGestureToken> user_gesture_token;
+    std::unique_ptr<AsyncResultHandler> async_handler;
+
+    // Note: We can't use base::Optional here for derived Token instances.
+    std::unique_ptr<InteractionProvider::Token> user_gesture_token;
   };
 
+  // Returns the next request ID to be used.
+  int GetNextRequestId();
+
+  // Common implementation for starting a request.
+  void StartRequestImpl(v8::Local<v8::Context> context,
+                        int request_id,
+                        const std::string& method,
+                        std::unique_ptr<base::ListValue> arguments,
+                        std::unique_ptr<AsyncResultHandler> async_handler);
+
+  // Common implementation for completing a request.
   void CompleteRequestImpl(int request_id,
                            const ArgumentAdapter& arguments,
                            const std::string& error);
@@ -155,8 +169,8 @@ class APIRequestHandler {
   // Null if response validation is disabled.
   std::unique_ptr<APIResponseValidator> response_validator_;
 
-  // The callback to determine transient user activation state of the context.
-  GetUserActivationState get_user_activation_state_callback_;
+  // Outlives |this|.
+  const InteractionProvider* const interaction_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(APIRequestHandler);
 };

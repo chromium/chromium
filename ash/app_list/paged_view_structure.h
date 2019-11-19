@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/macros.h"
 
-namespace app_list {
+namespace ash {
 
 class AppsGridView;
 class AppListItemView;
@@ -61,7 +61,7 @@ class APP_LIST_EXPORT PagedViewStructure {
   GridIndex GetLastTargetIndex() const;
 
   // Returns the last possible visual index to add an item view in the specified
-  // page.
+  // page, used only for drag reordering.
   GridIndex GetLastTargetIndexOfPage(int page_index) const;
 
   // Returns the target model index if moving the item view to specified target
@@ -78,6 +78,9 @@ class APP_LIST_EXPORT PagedViewStructure {
   // can be moved.
   bool IsValidReorderTargetIndex(const GridIndex& index) const;
 
+  // Adds a page break at the end of |pages_|.
+  void AppendPage();
+
   // Returns true if the page has no empty slot.
   bool IsFullPage(int page_index) const;
 
@@ -93,6 +96,10 @@ class APP_LIST_EXPORT PagedViewStructure {
   const Pages& pages() const { return pages_; }
 
  private:
+  // Skips the item view being dragged if it exists in the specified
+  // |page|.
+  int CalculateTargetSlot(const Page& page) const;
+
   // Clear overflowing item views by moving them to the next page. Returns true
   // if view structure is changed.
   bool ClearOverflow();
@@ -100,14 +107,12 @@ class APP_LIST_EXPORT PagedViewStructure {
   // Removes empty page. Returns true if view structure is changed.
   bool ClearEmptyPages();
 
-  // Represents the item views' locations in each page. This is only used when
-  // apps grid gap is enabled. (We don't need this in non-gap apps grid since
-  // all item views are linearly laid out in |view_model_|.)
+  // Represents the item views' locations in each page.
   Pages pages_;
 
   AppsGridView* const apps_grid_view_;  // Not owned.
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_PAGED_VIEW_STRUCTURE_H_

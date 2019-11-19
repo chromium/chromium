@@ -9,11 +9,13 @@
 #include <utility>
 
 #include "base/big_endian.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
+#include "components/services/storage/indexed_db/scopes/varint_coding.h"
 
 // See leveldb_coding_scheme.md for detailed documentation of the coding
 // scheme implemented here.
@@ -65,6 +67,7 @@ constexpr unsigned char kLiveBlobJournalTypeByte = 4;
 constexpr unsigned char kEarliestSweepTimeTypeByte = 5;
 constexpr unsigned char kMaxSimpleGlobalMetaDataTypeByte =
     6;  // Insert before this and increment.
+constexpr unsigned char kScopesPrefixByte = 50;
 constexpr unsigned char kDatabaseFreeListTypeByte = 100;
 constexpr unsigned char kDatabaseNameTypeByte = 201;
 
@@ -118,22 +121,6 @@ void EncodeInt(int64_t value, std::string* into) {
     unsigned char c = n;
     into->push_back(c);
     n >>= 8;
-  } while (n);
-}
-
-void EncodeVarInt(int64_t value, std::string* into) {
-#ifndef NDEBUG
-  // Exercised by unit tests in debug only.
-  DCHECK_GE(value, 0);
-#endif
-  uint64_t n = static_cast<uint64_t>(value);
-
-  do {
-    unsigned char c = n & 0x7f;
-    n >>= 7;
-    if (n)
-      c |= 0x80;
-    into->push_back(c);
   } while (n);
 }
 
@@ -202,7 +189,7 @@ void EncodeIDBKey(const IndexedDBKey& value, std::string* into) {
       EncodeDouble(value.number(), into);
       DCHECK_EQ(9u, static_cast<size_t>(into->size() - previous_size));
       return;
-    case blink::mojom::IDBKeyType::Null:
+    case blink::mojom::IDBKeyType::None:
     case blink::mojom::IDBKeyType::Invalid:
     case blink::mojom::IDBKeyType::Min:
     default:
@@ -287,26 +274,6 @@ bool DecodeInt(StringPiece* slice, int64_t* value) {
     ret |= static_cast<int64_t>(c) << shift;
     shift += 8;
   }
-  *value = ret;
-  slice->remove_prefix(it - slice->begin());
-  return true;
-}
-
-bool DecodeVarInt(StringPiece* slice, int64_t* value) {
-  if (slice->empty())
-    return false;
-
-  StringPiece::const_iterator it = slice->begin();
-  int shift = 0;
-  int64_t ret = 0;
-  do {
-    if (it == slice->end())
-      return false;
-
-    unsigned char c = *it;
-    ret |= static_cast<int64_t>(c & 0x7f) << shift;
-    shift += 7;
-  } while (*it++ & 0x80);
   *value = ret;
   slice->remove_prefix(it - slice->begin());
   return true;
@@ -507,7 +474,7 @@ bool DecodeBlobJournal(StringPiece* slice, BlobJournalType* journal) {
         (blob_key != DatabaseMetaDataKey::kAllBlobsKey)) {
       return false;
     }
-    output.push_back(std::make_pair(database_id, blob_key));
+    output.push_back({database_id, blob_key});
   }
   journal->swap(output);
   return true;
@@ -588,7 +555,7 @@ static blink::mojom::IDBKeyType KeyTypeByteToKeyType(unsigned char type) {
       return blink::mojom::IDBKeyType::Min;
   }
 
-  NOTREACHED();
+  NOTREACHED() << "Got invalid type " << type;
   return blink::mojom::IDBKeyType::Invalid;
 }
 
@@ -877,6 +844,9 @@ int Compare(const StringPiece& a,
         return x;
       if (type_byte_a < kMaxSimpleGlobalMetaDataTypeByte)
         return 0;
+
+      if (type_byte_a == kScopesPrefixByte)
+        return slice_a.compare(slice_b);
 
       // Compare<> is used (which re-decodes the prefix) rather than an
       // specialized CompareSuffix<> because metadata is relatively uncommon
@@ -1253,6 +1223,13 @@ std::string EarliestSweepKey::Encode() {
   std::string ret = KeyPrefix::EncodeEmpty();
   ret.push_back(kEarliestSweepTimeTypeByte);
   return ret;
+}
+
+std::vector<uint8_t> ScopesPrefix::Encode() {
+  std::string ret = KeyPrefix::EncodeEmpty();
+  ret.push_back(kScopesPrefixByte);
+  auto span = base::make_span(ret);
+  return std::vector<uint8_t>(span.begin(), span.end());
 }
 
 DatabaseFreeListKey::DatabaseFreeListKey() : database_id_(-1) {}

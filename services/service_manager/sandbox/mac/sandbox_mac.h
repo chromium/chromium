@@ -37,6 +37,11 @@ class SERVICE_MANAGER_SANDBOX_EXPORT SandboxMac {
   // This path is not necessarily unique e.g. in the face of hardlinks.
   static base::FilePath GetCanonicalPath(const base::FilePath& path);
 
+  // Returns the sandbox profile string for a given sandbox type.
+  // It CHECKs that the sandbox profile is a valid type, so it always returns a
+  // valid result, or crashes.
+  static std::string GetSandboxProfile(SandboxType sandbox_type);
+
   static const char* kSandboxBrowserPID;
   static const char* kSandboxBundlePath;
   static const char* kSandboxChromeBundleId;

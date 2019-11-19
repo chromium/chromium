@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//   http://www.apache.org/licenses/LICENSE-2.0
+//   https://www.apache.org/licenses/LICENSE-2.0
 //
 //   Unless required by applicable law or agreed to in writing, software
 //   distributed under the License is distributed on an "AS IS" BASIS,
@@ -27,7 +27,7 @@ namespace cctz {
 namespace {
 
 // The prefix used for the internal names of fixed-offset zones.
-const char kFixedOffsetPrefix[] = "Fixed/UTC";
+const char kFixedZonePrefix[] = "Fixed/UTC";
 
 const char kDigits[] = "0123456789";
 
@@ -55,11 +55,11 @@ bool FixedOffsetFromName(const std::string& name, seconds* offset) {
     return true;
   }
 
-  const std::size_t prefix_len = sizeof(kFixedOffsetPrefix) - 1;
-  const char* const ep = kFixedOffsetPrefix + prefix_len;
+  const std::size_t prefix_len = sizeof(kFixedZonePrefix) - 1;
+  const char* const ep = kFixedZonePrefix + prefix_len;
   if (name.size() != prefix_len + 9)  // <prefix>+99:99:99
     return false;
-  if (!std::equal(kFixedOffsetPrefix, ep, name.begin()))
+  if (!std::equal(kFixedZonePrefix, ep, name.begin()))
     return false;
   const char* np = name.data() + prefix_len;
   if (np[0] != '+' && np[0] != '-')
@@ -102,9 +102,9 @@ std::string FixedOffsetToName(const seconds& offset) {
   }
   int hours = minutes / 60;
   minutes %= 60;
-  char buf[sizeof(kFixedOffsetPrefix) - 1 + sizeof("-24:00:00")];
-  std::strcpy(buf, kFixedOffsetPrefix);
-  char* ep = buf + sizeof(kFixedOffsetPrefix) - 1;
+  const std::size_t prefix_len = sizeof(kFixedZonePrefix) - 1;
+  char buf[prefix_len + sizeof("-24:00:00")];
+  char* ep = std::copy(kFixedZonePrefix, kFixedZonePrefix + prefix_len, buf);
   *ep++ = sign;
   ep = Format02d(ep, hours);
   *ep++ = ':';
@@ -118,7 +118,7 @@ std::string FixedOffsetToName(const seconds& offset) {
 
 std::string FixedOffsetToAbbr(const seconds& offset) {
   std::string abbr = FixedOffsetToName(offset);
-  const std::size_t prefix_len = sizeof(kFixedOffsetPrefix) - 1;
+  const std::size_t prefix_len = sizeof(kFixedZonePrefix) - 1;
   if (abbr.size() == prefix_len + 9) {         // <prefix>+99:99:99
     abbr.erase(0, prefix_len);                 // +99:99:99
     abbr.erase(6, 1);                          // +99:9999

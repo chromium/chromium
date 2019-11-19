@@ -42,11 +42,6 @@ class SVGPath final : public SVGPropertyBase {
  public:
   typedef void TearOffType;
 
-  static SVGPath* Create() { return MakeGarbageCollected<SVGPath>(); }
-  static SVGPath* Create(cssvalue::CSSPathValue* path_value) {
-    return MakeGarbageCollected<SVGPath>(path_value);
-  }
-
   SVGPath();
   explicit SVGPath(cssvalue::CSSPathValue*);
   ~SVGPath() override;
@@ -64,7 +59,7 @@ class SVGPath final : public SVGPropertyBase {
   SVGParsingError SetValueAsString(const String&);
 
   void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(SVGAnimationElement*,
+  void CalculateAnimatedValue(const SVGAnimateElement&,
                               float percentage,
                               unsigned repeat_count,
                               SVGPropertyBase* from_value,

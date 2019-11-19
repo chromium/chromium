@@ -2,20 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_VR_VR_DEVICE_BASE_H
-#define DEVICE_VR_VR_DEVICE_BASE_H
+#ifndef DEVICE_VR_VR_DEVICE_BASE_H_
+#define DEVICE_VR_VR_DEVICE_BASE_H_
+
+#include <memory>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/vr_device.h"
 #include "device/vr/vr_export.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/display/display.h"
 
 namespace device {
-
-class VRDisplayImpl;
 
 // Represents one of the platform's VR devices. Owned by the respective
 // VRDeviceProvider.
@@ -25,18 +29,12 @@ class DEVICE_VR_EXPORT VRDeviceBase : public mojom::XRRuntime {
   explicit VRDeviceBase(mojom::XRDeviceId id);
   ~VRDeviceBase() override;
 
-  // VRDevice Implementation
+  // XRRuntime implementation
   void ListenToDeviceChanges(
-      mojom::XRRuntimeEventListenerAssociatedPtrInfo listener,
+      mojo::PendingAssociatedRemote<mojom::XRRuntimeEventListener> listener,
       mojom::XRRuntime::ListenToDeviceChangesCallback callback) final;
-  void SetListeningForActivate(bool is_listening) override;
-  void EnsureInitialized(int render_process_id,
-                         int render_frame_id,
-                         EnsureInitializedCallback callback) override;
   void SetInlinePosesEnabled(bool enable) override;
-
-  void GetInlineFrameData(
-      mojom::XRFrameDataProvider::GetFrameDataCallback callback);
+  void ShutdownSession(mojom::XRRuntime::ShutdownSessionCallback) override;
 
   virtual void RequestHitTest(
       mojom::XRRayPtr ray,
@@ -44,23 +42,15 @@ class DEVICE_VR_EXPORT VRDeviceBase : public mojom::XRRuntime {
   device::mojom::XRDeviceId GetId() const;
 
   bool HasExclusiveSession();
-  void EndMagicWindowSession(VRDisplayImpl* session);
 
-  // TODO(https://crbug.com/845283): This method is a temporary solution
-  // until a XR related refactor lands. It allows to keep using the
-  // existing PauseTracking/ResumeTracking while not changing the
-  // existing VR functionality.
-  virtual bool ShouldPauseTrackingWhenFrameDataRestricted();
-
-  // Devices may be paused/resumed when focus changes by VRDisplayImpl or
-  // GVR delegate.
+  // Devices may be paused/resumed when focus changes by GVR delegate.
   virtual void PauseTracking();
   virtual void ResumeTracking();
 
   mojom::VRDisplayInfoPtr GetVRDisplayInfo();
 
   // Used by providers to bind devices.
-  mojom::XRRuntimePtr BindXRRuntimePtr();
+  mojo::PendingRemote<mojom::XRRuntime> BindXRRuntime();
 
   // TODO(mthiesse): The browser should handle browser-side exiting of
   // presentation before device/ is even aware presentation is being exited.
@@ -75,33 +65,25 @@ class DEVICE_VR_EXPORT VRDeviceBase : public mojom::XRRuntime {
   void OnStartPresenting();
   bool IsPresenting() { return presenting_; }  // Exposed for test.
   void SetVRDisplayInfo(mojom::VRDisplayInfoPtr display_info);
-  void OnActivate(mojom::VRDisplayEventReason reason,
-                  base::Callback<void(bool)> on_handled);
-
-  void ReturnNonImmersiveSession(
-      mojom::XRRuntime::RequestSessionCallback callback);
+  void OnVisibilityStateChanged(mojom::XRVisibilityState visibility_state);
 
   mojom::VRDisplayInfoPtr display_info_;
-  std::vector<std::unique_ptr<VRDisplayImpl>> magic_window_sessions_;
+
+  bool inline_poses_enabled_ = true;
 
  private:
-  // TODO(https://crbug.com/842227): Rename methods to HandleOnXXX
-  virtual void OnListeningForActivate(bool listening);
-  virtual void OnGetInlineFrameData(
-      mojom::XRFrameDataProvider::GetFrameDataCallback callback);
 
-  mojom::XRRuntimeEventListenerAssociatedPtr listener_;
+  mojo::AssociatedRemote<mojom::XRRuntimeEventListener> listener_;
 
   bool presenting_ = false;
 
   device::mojom::XRDeviceId id_;
-  bool inline_poses_enabled_ = true;
 
-  mojo::Binding<mojom::XRRuntime> runtime_binding_;
+  mojo::Receiver<mojom::XRRuntime> runtime_receiver_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VRDeviceBase);
 };
 
 }  // namespace device
 
-#endif  // DEVICE_VR_VR_DEVICE_BASE_H
+#endif  // DEVICE_VR_VR_DEVICE_BASE_H_

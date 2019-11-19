@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/single_thread_task_runner.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromecast/base/serializers.h"
@@ -145,7 +146,14 @@ DeviceCapabilitiesImpl::DeviceCapabilitiesImpl()
 
 DeviceCapabilitiesImpl::~DeviceCapabilitiesImpl() {
   // Make sure that any registered Validators have unregistered at this point
-  DCHECK(validator_map_.empty());
+  DCHECK(validator_map_.empty())
+      << "Some validators weren't properly unregistered: " << [this] {
+           std::vector<std::string> keys;
+           for (const auto& pair : validator_map_) {
+             keys.push_back(pair.first);
+           }
+           return base::JoinString(keys, ", ");
+         }();
   // Make sure that all observers have been removed at this point
   observer_list_->AssertEmpty();
 }
@@ -334,7 +342,7 @@ void DeviceCapabilitiesImpl::SetPublicValidatedValue(
       public_data_->dictionary().Get(path, &cur_value) &&
       cur_value->Equals(new_value.get());
   if (capability_unchanged) {
-    VLOG(1) << "Ignoring unchanged public capability: " << path;
+    DVLOG(1) << "Ignoring unchanged public capability: " << path;
     return;
   }
 
@@ -393,7 +401,7 @@ void DeviceCapabilitiesImpl::SetPrivateValidatedValue(
   bool capability_unchanged = all_data_->dictionary().Get(path, &cur_value) &&
                               cur_value->Equals(new_value.get());
   if (capability_unchanged) {
-    VLOG(1) << "Ignoring unchanged capability: " << path;
+    DVLOG(1) << "Ignoring unchanged capability: " << path;
     return;
   }
 

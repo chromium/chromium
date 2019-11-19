@@ -37,17 +37,17 @@ class AppLauncherPageUI : public content::WebUIController {
     ~HTMLSource() override;
 
     // content::URLDataSource implementation.
-    std::string GetSource() const override;
+    std::string GetSource() override;
     void StartDataRequest(
-        const std::string& path,
-        const content::ResourceRequestInfo::WebContentsGetter& wc_getter,
+        const GURL& url,
+        const content::WebContents::Getter& wc_getter,
         const content::URLDataSource::GotDataCallback& callback) override;
-    std::string GetMimeType(const std::string&) const override;
-    bool ShouldReplaceExistingSource() const override;
-    bool AllowCaching() const override;
-    std::string GetContentSecurityPolicyScriptSrc() const override;
-    std::string GetContentSecurityPolicyStyleSrc() const override;
-    std::string GetContentSecurityPolicyImgSrc() const override;
+    std::string GetMimeType(const std::string&) override;
+    bool ShouldReplaceExistingSource() override;
+    bool AllowCaching() override;
+    std::string GetContentSecurityPolicyScriptSrc() override;
+    std::string GetContentSecurityPolicyStyleSrc() override;
+    std::string GetContentSecurityPolicyImgSrc() override;
 
    private:
 

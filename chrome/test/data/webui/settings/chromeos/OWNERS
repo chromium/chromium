@@ -1,0 +1,7 @@
+file://chrome/browser/resources/settings/chromeos/OWNERS
+
+per-file *printer*=khorimoto@chromium.org
+per-file *multidevice*=khorimoto@chromium.org
+per-file *internet*=khorimoto@chromium.org
+
+# COMPONENT: OS>Systems>Settings

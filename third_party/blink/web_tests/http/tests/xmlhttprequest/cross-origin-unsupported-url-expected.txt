@@ -5,12 +5,12 @@ CONSOLE ERROR: line 13: Access to XMLHttpRequest at 'localhost:8080/' from origi
 CONSOLE ERROR: line 13: Access to XMLHttpRequest at 'localhost:8080/' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
 CONSOLE ERROR: line 13: Access to XMLHttpRequest at 'tel:1234' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
 CONSOLE ERROR: line 13: Access to XMLHttpRequest at 'tel:1234' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
-CONSOLE ERROR: line 29: Access to XMLHttpRequest at 'mailto:foo@bar.com' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
-CONSOLE ERROR: line 29: Access to XMLHttpRequest at 'mailto:foo@bar.com' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
-CONSOLE ERROR: line 29: Access to XMLHttpRequest at 'localhost:8080/' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
-CONSOLE ERROR: line 29: Access to XMLHttpRequest at 'localhost:8080/' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
-CONSOLE ERROR: line 29: Access to XMLHttpRequest at 'tel:1234' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
-CONSOLE ERROR: line 29: Access to XMLHttpRequest at 'tel:1234' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
+CONSOLE ERROR: Access to XMLHttpRequest at 'mailto:foo@bar.com' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
+CONSOLE ERROR: Access to XMLHttpRequest at 'mailto:foo@bar.com' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
+CONSOLE ERROR: Access to XMLHttpRequest at 'localhost:8080/' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
+CONSOLE ERROR: Access to XMLHttpRequest at 'localhost:8080/' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
+CONSOLE ERROR: Access to XMLHttpRequest at 'tel:1234' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
+CONSOLE ERROR: Access to XMLHttpRequest at 'tel:1234' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: Cross origin requests are only supported for protocol schemes: http, data, chrome, https.
 This is a testharness.js-based test.
 PASS sync test for url=mailto:foo@bar.com, contentType=undefined
 PASS sync test for url=mailto:foo@bar.com, contentType=application/json

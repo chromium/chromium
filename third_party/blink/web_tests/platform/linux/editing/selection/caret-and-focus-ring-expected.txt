@@ -11,7 +11,7 @@ layer at (0,0) size 800x600
       LayoutBlockFlow {DIV} at (0,56) size 784x20
         LayoutText {#text} at (0,0) size 65x19
           text run at (0,0) width 65: "This is an "
-        LayoutInline {SPAN} at (0,0) size 49x19
+        LayoutInline {SPAN} at (65,0) size 49x19
           LayoutText {#text} at (65,0) size 49x19
             text run at (65,0) width 49: "editable"
         LayoutText {#text} at (114,0) size 404x19

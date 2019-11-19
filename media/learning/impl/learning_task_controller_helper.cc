@@ -13,28 +13,6 @@
 namespace media {
 namespace learning {
 
-class RunOnDelete {
- public:
-  RunOnDelete(scoped_refptr<base::SequencedTaskRunner> task_runner,
-              base::OnceClosure cb)
-      : task_runner_(std::move(task_runner)), cb_(std::move(cb)) {}
-
-  ~RunOnDelete() {
-    if (task_runner_)
-      task_runner_->PostTask(FROM_HERE, std::move(cb_));
-  }
-
-  // Don't do anything on delete.
-  void Cancel() {
-    task_runner_ = nullptr;
-    cb_ = base::OnceClosure();
-  }
-
- private:
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::OnceClosure cb_;
-};
-
 LearningTaskControllerHelper::LearningTaskControllerHelper(
     const LearningTask& task,
     AddExampleCB add_example_cb,
@@ -46,54 +24,41 @@ LearningTaskControllerHelper::LearningTaskControllerHelper(
 
 LearningTaskControllerHelper::~LearningTaskControllerHelper() = default;
 
-LearningTaskController::SetTargetValueCB
-LearningTaskControllerHelper::BeginObservation(FeatureVector features) {
-  int64_t example_id = next_example_id_++;
-  auto& pending_example = pending_examples_[example_id];
+void LearningTaskControllerHelper::BeginObservation(base::UnguessableToken id,
+                                                    FeatureVector features) {
+  auto& pending_example = pending_examples_[id];
 
   // Start feature prediction, so that we capture the current values.
   if (!feature_provider_.is_null()) {
     feature_provider_.Post(
         FROM_HERE, &FeatureProvider::AddFeatures, std::move(features),
         base::BindOnce(&LearningTaskControllerHelper::OnFeaturesReadyTrampoline,
-                       task_runner_, AsWeakPtr(), example_id));
+                       task_runner_, AsWeakPtr(), id));
   } else {
     pending_example.example.features = std::move(features);
     pending_example.features_done = true;
   }
-
-  return base::BindOnce(
-      &LearningTaskControllerHelper::OnTargetValue, AsWeakPtr(), example_id,
-      std::make_unique<RunOnDelete>(
-          task_runner_,
-          base::BindOnce(
-              &LearningTaskControllerHelper::OnLabelCallbackDestroyed,
-              AsWeakPtr(), example_id)));
 }
 
-void LearningTaskControllerHelper::OnTargetValue(
-    int64_t example_id,
-    std::unique_ptr<RunOnDelete> run_on_delete,
-    TargetValue target_value,
-    WeightType weight) {
-  // Don't bother to run the callback when |run_on_delete| is destroyed.
-  run_on_delete->Cancel();
-  run_on_delete = nullptr;
+void LearningTaskControllerHelper::CompleteObservation(
+    base::UnguessableToken id,
+    const ObservationCompletion& completion) {
+  auto iter = pending_examples_.find(id);
+  if (iter == pending_examples_.end())
+    return;
 
-  auto iter = pending_examples_.find(example_id);
-  DCHECK(iter != pending_examples_.end());
-
-  iter->second.example.target_value = target_value;
-  iter->second.example.weight = weight;
+  iter->second.example.target_value = completion.target_value;
+  iter->second.example.weight = completion.weight;
   iter->second.target_done = true;
+  iter->second.source_id = completion.source_id;
   ProcessExampleIfFinished(std::move(iter));
 }
 
-void LearningTaskControllerHelper::OnLabelCallbackDestroyed(
-    int64_t example_id) {
-  auto iter = pending_examples_.find(example_id);
-  // If the example has already been completed, then we shouldn't be called.
-  DCHECK(iter != pending_examples_.end());
+void LearningTaskControllerHelper::CancelObservation(
+    base::UnguessableToken id) {
+  auto iter = pending_examples_.find(id);
+  if (iter == pending_examples_.end())
+    return;
 
   // This would have to check for pending predictions, if we supported them, and
   // defer destruction until the features arrive.
@@ -104,11 +69,11 @@ void LearningTaskControllerHelper::OnLabelCallbackDestroyed(
 void LearningTaskControllerHelper::OnFeaturesReadyTrampoline(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     base::WeakPtr<LearningTaskControllerHelper> weak_this,
-    int64_t example_id,
+    base::UnguessableToken id,
     FeatureVector features) {
-  auto cb =
-      base::BindOnce(&LearningTaskControllerHelper::OnFeaturesReady,
-                     std::move(weak_this), example_id, std::move(features));
+  // TODO(liberato): this would benefit from promises / deferred data.
+  auto cb = base::BindOnce(&LearningTaskControllerHelper::OnFeaturesReady,
+                           std::move(weak_this), id, std::move(features));
   if (!task_runner->RunsTasksInCurrentSequence()) {
     task_runner->PostTask(FROM_HERE, std::move(cb));
   } else {
@@ -116,9 +81,9 @@ void LearningTaskControllerHelper::OnFeaturesReadyTrampoline(
   }
 }
 
-void LearningTaskControllerHelper::OnFeaturesReady(int64_t example_id,
+void LearningTaskControllerHelper::OnFeaturesReady(base::UnguessableToken id,
                                                    FeatureVector features) {
-  PendingExampleMap::iterator iter = pending_examples_.find(example_id);
+  PendingExampleMap::iterator iter = pending_examples_.find(id);
   // It's possible that OnLabelCallbackDestroyed has already run.  That's okay
   // since we don't support prediction right now.
   if (iter == pending_examples_.end())
@@ -134,7 +99,7 @@ void LearningTaskControllerHelper::ProcessExampleIfFinished(
   if (!iter->second.features_done || !iter->second.target_done)
     return;
 
-  add_example_cb_.Run(std::move(iter->second.example));
+  add_example_cb_.Run(std::move(iter->second.example), iter->second.source_id);
   pending_examples_.erase(iter);
 
   // TODO(liberato): If we receive FeatureVector f1 then f2, and start filling

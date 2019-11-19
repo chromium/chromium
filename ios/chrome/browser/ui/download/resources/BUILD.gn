@@ -8,32 +8,34 @@ import("//build/config/ios/rules.gni")
 imageset("background_compact") {
   sources = [
     "background_compact.imageset/Contents.json",
-    "background_compact.imageset/background_compact.png",
     "background_compact.imageset/background_compact@2x.png",
     "background_compact.imageset/background_compact@3x.png",
+    "background_compact.imageset/background_compact_dark@2x.png",
+    "background_compact.imageset/background_compact_dark@3x.png",
   ]
 }
 
 imageset("background_regular") {
   sources = [
     "background_regular.imageset/Contents.json",
-    "background_regular.imageset/background_regular.png",
     "background_regular.imageset/background_regular@2x.png",
     "background_regular.imageset/background_regular@3x.png",
+    "background_regular.imageset/background_regular_dark@2x.png",
+    "background_regular.imageset/background_regular_dark@3x.png",
   ]
 }
 imageset("done_badge") {
   sources = [
     "done_badge.imageset/Contents.json",
-    "done_badge.imageset/done_badge.png",
     "done_badge.imageset/done_badge@2x.png",
     "done_badge.imageset/done_badge@3x.png",
+    "done_badge.imageset/done_badge_dark@2x.png",
+    "done_badge.imageset/done_badge_dark@3x.png",
   ]
 }
 imageset("download_close") {
   sources = [
     "download_close.imageset/Contents.json",
-    "download_close.imageset/download_close.png",
     "download_close.imageset/download_close@2x.png",
     "download_close.imageset/download_close@3x.png",
   ]
@@ -41,8 +43,9 @@ imageset("download_close") {
 imageset("error_badge") {
   sources = [
     "error_badge.imageset/Contents.json",
-    "error_badge.imageset/error_badge.png",
     "error_badge.imageset/error_badge@2x.png",
     "error_badge.imageset/error_badge@3x.png",
+    "error_badge.imageset/error_badge_dark@2x.png",
+    "error_badge.imageset/error_badge_dark@3x.png",
   ]
 }

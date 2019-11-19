@@ -1,0 +1,18 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(crbug.com/986435) Remove this target when IdentityServicesProvider
+# will provide AccountManagerFacade.
+source_set("base") {
+  if (is_android) {
+    sources = [
+      "account_manager_facade_android.cc",
+      "account_manager_facade_android.h",
+    ]
+    deps = [
+      "//base",
+      "//components/signin/core/browser/android:jni_headers",
+    ]
+  }
+}

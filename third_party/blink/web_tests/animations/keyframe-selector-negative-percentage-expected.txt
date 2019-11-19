@@ -1,4 +1,0 @@
-The background color of this element should be green and the text should be white.
-PASS: background color is green
-PASS: text color is white
-

@@ -1,0 +1,95 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.ozone.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "ui/display/mojom/display_constants.mojom";
+import "ui/display/mojom/display_mode.mojom";
+import "ui/display/mojom/display_snapshot.mojom";
+import "ui/display/mojom/gamma_ramp_rgb_entry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/accelerated_widget.mojom";
+import "ui/ozone/public/mojom/device_cursor.mojom";
+import "ui/ozone/public/mojom/overlay_surface_candidate.mojom";
+
+
+// The viz process on CrOS implements the DrmDevice
+// service to let the viz host and clients manage DRM displays.
+// All functions in DrmDevice are implemented by the lower privilege viz
+// process.
+interface DrmDevice {
+  // Creates scanout capable DRM buffers to back |widget|. |initial_bounds| is
+  // used to calculate the initial size of the DRM bufffer backing |widget| and
+  // it can be modified later by calling SetWindowBounds().
+  CreateWindow(gfx.mojom.AcceleratedWidget widget,
+               gfx.mojom.Rect initial_bounds);
+
+  // Destroys the DRM buffers backing |widget|.
+  DestroyWindow(gfx.mojom.AcceleratedWidget widget);
+
+  // Sets the size of the DRM buffer for |widget|.
+  SetWindowBounds(gfx.mojom.AcceleratedWidget widget, gfx.mojom.Rect bounds);
+
+  // Takes control of the display and invoke a provided callback with a boolean
+  // status.
+  TakeDisplayControl() => (bool success);
+
+  // Releases control of the display and invoke a provided callback with a
+  // boolean status.
+  RelinquishDisplayControl() => (bool success);
+
+  // Requests a callback providing a list of the available displays.
+  RefreshNativeDisplays() =>
+      (array<display.mojom.DisplaySnapshot> display_snapshots);
+
+  // Transfers ownership of a DRM device to the GPU process.
+  AddGraphicsDevice(mojo_base.mojom.FilePath path,
+                    mojo_base.mojom.File file);
+
+  // Instructs the GPU to abandon a DRM device.
+  RemoveGraphicsDevice(mojo_base.mojom.FilePath path);
+
+  // Instructs the GPU to disable a DRM device.
+  DisableNativeDisplay(int64 display_id) => (int64 display_id, bool success);
+
+  // Configures a DRM display returning true on success.
+  ConfigureNativeDisplay(int64 display_id,
+                         display.mojom.DisplayMode display_mode,
+                         gfx.mojom.Point point) =>
+      (int64 display_id, bool success);
+
+  // Gets or sets high-definition content protection (HDCP) (DRM as in
+  // digital rights management) state.
+  GetHDCPState(int64 display_id) =>
+      (int64 display_id, bool success, display.mojom.HDCPState state);
+  SetHDCPState(int64 display_id, display.mojom.HDCPState  state) =>
+      (int64 display_id, bool success);
+
+  // Sets a 3x3 color transform matrix on the display hardware.
+  // TODO: Consider using a different type for the color matrix.
+  // https://crbug.com/846975.
+  SetColorMatrix(int64 display_id, array<float, 9> color_matrix);
+
+  // Sets a color correction gamma lookup table.
+  SetGammaCorrection(int64 display_id,
+                     array<display.mojom.GammaRampRGBEntry> degamma_lut,
+                     array<display.mojom.GammaRampRGBEntry> gamma_lut);
+
+  // Verifies if the display controller can successfully scanout the given set
+  // of OverlaySurfaceCandidates and return the status associated with each
+  // candidate.
+  CheckOverlayCapabilities(gfx.mojom.AcceleratedWidget widget,
+      array<ui.ozone.mojom.OverlaySurfaceCandidate> candidates) =>
+          (gfx.mojom.AcceleratedWidget widget,
+          array<ui.ozone.mojom.OverlaySurfaceCandidate> candidates,
+          array<ui.ozone.mojom.OverlayStatus> status);
+
+  // Provides a DeviceCursor interface. The provided interface needs to be
+  // associated because the AcceleratedWidgets referenced by its methods are
+  // registered via CreateWindow() in this interface.
+  GetDeviceCursor(pending_associated_receiver<DeviceCursor> cursor);
+};
+

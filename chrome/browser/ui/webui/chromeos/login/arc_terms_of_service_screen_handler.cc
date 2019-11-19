@@ -5,13 +5,12 @@
 #include "chrome/browser/ui/webui/chromeos/login/arc_terms_of_service_screen_handler.h"
 
 #include "base/command_line.h"
+#include "base/hash/sha1.h"
 #include "base/i18n/timezone.h"
-#include "base/sha1.h"
 #include "chrome/browser/chromeos/arc/arc_support_host.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
 #include "chrome/browser/chromeos/arc/optin/arc_optin_preference_handler.h"
 #include "chrome/browser/chromeos/login/screens/arc_terms_of_service_screen.h"
-#include "chrome/browser/chromeos/login/screens/arc_terms_of_service_screen_view_observer.h"
 #include "chrome/browser/chromeos/login/ui/login_display_host.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -19,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/network/network_handler.h"
@@ -28,10 +28,10 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
-#include "services/identity/public/cpp/identity_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using ArcBackupAndRestoreConsent =
@@ -43,20 +43,16 @@ using ArcPlayTermsOfServiceConsent =
 
 using sync_pb::UserConsentTypes;
 
-namespace {
-
-const char kJsScreenPath[] = "login.ArcTermsOfServiceScreen";
-
-}  // namespace
-
 namespace chromeos {
+
+constexpr StaticOobeScreenId ArcTermsOfServiceScreenView::kScreenId;
 
 ArcTermsOfServiceScreenHandler::ArcTermsOfServiceScreenHandler(
     JSCallsContainer* js_calls_container)
     : BaseScreenHandler(kScreenId, js_calls_container),
       is_child_account_(
           user_manager::UserManager::Get()->IsLoggedInAsChildUser()) {
-  set_call_js_prefix(kJsScreenPath);
+  set_user_acted_method_path("login.ArcTermsOfServiceScreen.userActed");
 }
 
 ArcTermsOfServiceScreenHandler::~ArcTermsOfServiceScreenHandler() {
@@ -92,9 +88,9 @@ void ArcTermsOfServiceScreenHandler::MaybeLoadPlayStoreToS(
 }
 
 void ArcTermsOfServiceScreenHandler::OnCurrentScreenChanged(
-    OobeScreen current_screen,
-    OobeScreen new_screen) {
-  if (new_screen != OobeScreen::SCREEN_GAIA_SIGNIN)
+    OobeScreenId current_screen,
+    OobeScreenId new_screen) {
+  if (new_screen != GaiaView::kScreenId)
     return;
 
   MaybeLoadPlayStoreToS(false);
@@ -139,6 +135,7 @@ void ArcTermsOfServiceScreenHandler::DeclareLocalizedValues(
   builder->Add("arcTextReviewSettings", IDS_ARC_REVIEW_SETTINGS);
   builder->Add("arcTextMetricsManagedEnabled",
                IDS_ARC_OOBE_TERMS_DIALOG_METRICS_MANAGED_ENABLED);
+  builder->Add("arcTextMetricsDemoApps", IDS_ARC_OOBE_TERMS_DIALOG_DEMO_APPS);
   builder->Add("arcAcceptAndContinueGoogleServiceConfirmation",
                IDS_ARC_OPT_IN_ACCEPT_AND_CONTINUE_GOOGLE_SERVICE_CONFIRMATION);
   builder->Add("arcLearnMoreStatistics",
@@ -282,7 +279,8 @@ void ArcTermsOfServiceScreenHandler::DoShow() {
 
   // Hide the Skip button if the ToS screen can not be skipped during OOBE.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kEnableArcOobeOptinNoSkip)) {
+          chromeos::switches::kEnableArcOobeOptinNoSkip) ||
+      arc::IsArcPlayStoreEnabledPreferenceManagedForProfile(profile)) {
     CallJS("login.ArcTermsOfServiceScreen.hideSkipButton");
   }
 
@@ -296,8 +294,8 @@ void ArcTermsOfServiceScreenHandler::DoShow() {
   MaybeLoadPlayStoreToS(true);
   StartNetworkAndTimeZoneObserving();
 
-  pref_handler_.reset(new arc::ArcOptInPreferenceHandler(
-      this, profile->GetPrefs()));
+  pref_handler_ = std::make_unique<arc::ArcOptInPreferenceHandler>(
+      this, profile->GetPrefs());
   pref_handler_->Start();
 }
 
@@ -320,7 +318,7 @@ bool ArcTermsOfServiceScreenHandler::NeedDispatchEventOnAction() {
 
 void ArcTermsOfServiceScreenHandler::RecordConsents(
     const std::string& tos_content,
-    bool record_tos_content,
+    bool record_tos_consent,
     bool tos_accepted,
     bool record_backup_consent,
     bool backup_accepted,
@@ -338,7 +336,7 @@ void ArcTermsOfServiceScreenHandler::RecordConsents(
                                        : UserConsentTypes::NOT_GIVEN);
   play_consent.set_confirmation_grd_id(IDS_ARC_OOBE_TERMS_BUTTON_ACCEPT);
   play_consent.set_consent_flow(ArcPlayTermsOfServiceConsent::SETUP);
-  if (record_tos_content) {
+  if (record_tos_consent) {
     play_consent.set_play_terms_of_service_text_length(tos_content.length());
     play_consent.set_play_terms_of_service_hash(
         base::SHA1HashString(tos_content));

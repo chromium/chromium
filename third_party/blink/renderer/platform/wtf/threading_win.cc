@@ -107,7 +107,6 @@
 #include <windows.h>
 #include "base/threading/scoped_blocking_call.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace WTF {
 

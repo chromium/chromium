@@ -12,6 +12,7 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ResourceId;
 import org.chromium.ui.UiUtils;
@@ -110,7 +111,8 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
         // |createContent|. This hides the ImageView that normally shows the icon and gets rid of
         // the left padding of the infobar content.
         super(isGooglePayBrandingEnabled ? 0 : ResourceId.mapToDrawableId(enumeratedIconId),
-                iconBitmap, message, linkText, buttonOk, buttonCancel);
+                isGooglePayBrandingEnabled ? 0 : R.color.infobar_icon_drawable_color, iconBitmap,
+                message, linkText, buttonOk, buttonCancel);
         mIconDrawableId = ResourceId.mapToDrawableId(enumeratedIconId);
         mTitleText = message;
         mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
@@ -213,7 +215,9 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
                 text.setSpan(new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        nativeOnLegalMessageLinkClicked(mNativeAutofillSaveCardInfoBar, link.url);
+                        AutofillSaveCardInfoBarJni.get().onLegalMessageLinkClicked(
+                                mNativeAutofillSaveCardInfoBar, AutofillSaveCardInfoBar.this,
+                                link.url);
                     }
                 }, link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
@@ -221,6 +225,9 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
         }
     }
 
-    private native void nativeOnLegalMessageLinkClicked(
-            long nativeAutofillSaveCardInfoBar, String url);
+    @NativeMethods
+    interface Natives {
+        void onLegalMessageLinkClicked(
+                long nativeAutofillSaveCardInfoBar, AutofillSaveCardInfoBar caller, String url);
+    }
 }

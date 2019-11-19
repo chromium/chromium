@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/account_id/account_id.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -130,6 +131,18 @@ class ArcKioskAppUser : public DeviceLocalAccountUserBase {
   DISALLOW_COPY_AND_ASSIGN(ArcKioskAppUser);
 };
 
+class WebKioskAppUser : public DeviceLocalAccountUserBase {
+ public:
+  explicit WebKioskAppUser(const AccountId& web_kiosk_account_id);
+  ~WebKioskAppUser() override;
+
+  // Overridden from User:
+  UserType GetType() const override;
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(WebKioskAppUser);
+};
+
 class SupervisedUser : public User {
  public:
   explicit SupervisedUser(const AccountId& account_id);
@@ -242,8 +255,8 @@ bool User::is_active() const {
 }
 
 bool User::has_gaia_account() const {
-  static_assert(user_manager::NUM_USER_TYPES == 9,
-                "NUM_USER_TYPES should equal 9");
+  static_assert(user_manager::NUM_USER_TYPES == 10,
+                "NUM_USER_TYPES should equal 10");
   switch (GetType()) {
     case user_manager::USER_TYPE_REGULAR:
     case user_manager::USER_TYPE_CHILD:
@@ -254,6 +267,7 @@ bool User::has_gaia_account() const {
     case user_manager::USER_TYPE_KIOSK_APP:
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
+    case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return false;
     default:
       NOTREACHED();
@@ -262,8 +276,10 @@ bool User::has_gaia_account() const {
 }
 
 void User::AddProfileCreatedObserver(base::OnceClosure on_profile_created) {
-  DCHECK(!profile_is_created_);
-  on_profile_created_observers_.push_back(std::move(on_profile_created));
+  if (profile_is_created_)
+    std::move(on_profile_created).Run();
+  else
+    on_profile_created_observers_.push_back(std::move(on_profile_created));
 }
 
 bool User::IsAffiliated() const {
@@ -285,6 +301,12 @@ bool User::IsDeviceLocalAccount() const {
   return false;
 }
 
+bool User::IsKioskType() const {
+  UserType type = GetType();
+  return type == USER_TYPE_KIOSK_APP || type == USER_TYPE_ARC_KIOSK_APP ||
+         type == USER_TYPE_WEB_KIOSK_APP;
+}
+
 User* User::CreateRegularUser(const AccountId& account_id,
                               const UserType user_type) {
   if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY)
@@ -304,12 +326,19 @@ User* User::CreateArcKioskAppUser(const AccountId& arc_kiosk_account_id) {
   return new ArcKioskAppUser(arc_kiosk_account_id);
 }
 
+User* User::CreateWebKioskAppUser(const AccountId& web_kiosk_account_id) {
+  return new WebKioskAppUser(web_kiosk_account_id);
+}
+
 User* User::CreateSupervisedUser(const AccountId& account_id) {
   return new SupervisedUser(account_id);
 }
 
-User* User::CreatePublicAccountUser(const AccountId& account_id) {
-  return new PublicAccountUser(account_id);
+User* User::CreatePublicAccountUser(const AccountId& account_id,
+                                    bool is_using_saml) {
+  User* user = new PublicAccountUser(account_id);
+  user->set_using_saml(is_using_saml);
+  return user;
 }
 
 void User::SetAccountLocale(const std::string& resolved_account_locale) {
@@ -382,6 +411,11 @@ void RegularUser::UpdateType(UserType user_type) {
       return;
     const bool old_is_child = is_child_;
     is_child_ = user_type == user_manager::USER_TYPE_CHILD;
+
+    // Clear information about profile policy requirements to enforce setting it
+    // again for the new account type.
+    user_manager::known_user::ClearProfileRequiresPolicy(GetAccountId());
+
     LOG(WARNING) << "User type has changed: " << current_type
                  << " (is_child=" << old_is_child << ") => " << user_type
                  << " (is_child=" << is_child_ << ")";
@@ -454,6 +488,17 @@ UserType ArcKioskAppUser::GetType() const {
   return user_manager::USER_TYPE_ARC_KIOSK_APP;
 }
 
+WebKioskAppUser::WebKioskAppUser(const AccountId& web_kiosk_account_id)
+    : DeviceLocalAccountUserBase(web_kiosk_account_id) {
+  set_display_email(web_kiosk_account_id.GetUserEmail());
+}
+
+WebKioskAppUser::~WebKioskAppUser() {}
+
+UserType WebKioskAppUser::GetType() const {
+  return user_manager::USER_TYPE_WEB_KIOSK_APP;
+}
+
 SupervisedUser::SupervisedUser(const AccountId& account_id) : User(account_id) {
   set_can_lock(true);
 }
@@ -470,7 +515,10 @@ std::string SupervisedUser::display_email() const {
 }
 
 PublicAccountUser::PublicAccountUser(const AccountId& account_id)
-    : DeviceLocalAccountUserBase(account_id) {}
+    : DeviceLocalAccountUserBase(account_id) {
+  // Public accounts do not have a real email address, so they do not set
+  // |display_email_|.
+}
 
 PublicAccountUser::~PublicAccountUser() {
 }

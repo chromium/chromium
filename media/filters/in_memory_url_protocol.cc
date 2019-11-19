@@ -19,10 +19,17 @@ InMemoryUrlProtocol::InMemoryUrlProtocol(const uint8_t* data,
 InMemoryUrlProtocol::~InMemoryUrlProtocol() = default;
 
 int InMemoryUrlProtocol::Read(int size, uint8_t* data) {
+  // Not sure this can happen, but it's unclear from the ffmpeg code, so guard
+  // against it.
   if (size < 0)
     return AVERROR(EIO);
+  if (!size)
+    return 0;
 
-  int64_t available_bytes = size_ - position_;
+  const int64_t available_bytes = size_ - position_;
+  if (available_bytes <= 0)
+    return AVERROR_EOF;
+
   if (size > available_bytes)
     size = available_bytes;
 

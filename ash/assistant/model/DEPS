@@ -2,6 +2,8 @@ include_rules = [
   "-ash",
   "+ash/assistant/ui/assistant_ui_constants.h",
   "+ash/assistant/model",
+  "+ash/public/cpp/app_list",
+  "+ash/public/cpp/assistant",
   "+chromeos/services/assistant/public" ,
   "+services/content/public",
   "+ui/gfx/geometry",

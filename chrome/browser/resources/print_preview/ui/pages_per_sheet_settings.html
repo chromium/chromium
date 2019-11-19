@@ -1,0 +1,17 @@
+<style include="print-preview-shared md-select">
+</style>
+<print-preview-settings-section>
+  <span id="pages-per-sheet-label" slot="title">$i18n{pagesPerSheetLabel}
+  </span>
+  <div slot="controls">
+    <select class="md-select" aria-labelledby="pages-per-sheet-label"
+        disabled$="[[disabled]]" value="{{selectedValue::change}}">
+      <option value="1" selected>1</option>
+      <option value="2">2</option>
+      <option value="4">4</option>
+      <option value="6">6</option>
+      <option value="9">9</option>
+      <option value="16">16</option>
+    </select>
+  </div>
+</print-preview-settings-section>

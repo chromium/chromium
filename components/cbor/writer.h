@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <vector>
 
 #include "base/optional.h"
@@ -57,24 +58,41 @@ class CBOR_EXPORT Writer {
   // Default that should be sufficiently large for most use cases.
   static constexpr size_t kDefaultMaxNestingDepth = 16;
 
+  struct CBOR_EXPORT Config {
+    // Controls the maximum depth of CBOR nesting that will be permitted in a
+    // Value. Nesting depth is defined as the number of arrays/maps that have to
+    // be traversed to reach the most nested contained Value. Primitive values
+    // and empty containers have nesting depths of 0.
+    int max_nesting_level = kDefaultMaxNestingDepth;
+
+    // Controls whether the Writer allows writing string values of type
+    // Value::Type::INVALID_UTF8. Regular CBOR strings must be valid UTF-8.
+    // Writers with this setting will produce invalid CBOR, so it may only be
+    // enabled in tests.
+    bool allow_invalid_utf8_for_testing = false;
+  };
+
   ~Writer();
 
   // Returns the CBOR byte string representation of |node|, unless its nesting
-  // depth is greater than |max_nesting_depth|, in which case an empty optional
-  // value is returned. The nesting depth of |node| is defined as the number of
-  // arrays/maps that has to be traversed to reach the most nested Value
-  // contained in |node|. Primitive values and empty containers have nesting
-  // depths of 0.
+  // depth is greater than |max_nesting_level|, in which case an empty optional
+  // value is returned.
   static base::Optional<std::vector<uint8_t>> Write(
       const Value& node,
       size_t max_nesting_level = kDefaultMaxNestingDepth);
+
+  // A version of |Write| above that takes a Config.
+  static base::Optional<std::vector<uint8_t>> Write(const Value& node,
+                                                    const Config& config);
 
  private:
   explicit Writer(std::vector<uint8_t>* cbor);
 
   // Called recursively to build the CBOR bytestring. When completed,
   // |encoded_cbor_| will contain the CBOR.
-  bool EncodeCBOR(const Value& node, int max_nesting_level);
+  bool EncodeCBOR(const Value& node,
+                  int max_nesting_level,
+                  bool allow_invalid_utf8);
 
   // Encodes the type and size of the data being added.
   void StartItem(Value::Type type, uint64_t size);
@@ -86,7 +104,7 @@ class CBOR_EXPORT Writer {
   // unsigned integers and to encode the lengths of other major types.
   void SetUint(uint64_t value);
 
-  // Get the number of bytes needed to store the unsigned integer.
+  // Returns the number of bytes needed to store the unsigned integer.
   size_t GetNumUintBytes(uint64_t value);
 
   // Holds the encoded CBOR data.

@@ -1,0 +1,25 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//ui/base/ime/mojom/ime_types.mojom"
+public_headers = [
+  "//ui/base/ime/ime_text_span.h",
+  "//ui/base/ime/text_input_type.h",
+]
+traits_headers = [ "//ui/base/ime/mojom/ime_types_mojom_traits.h" ]
+sources = [
+  "//ui/base/ime/mojom/ime_types_mojom_traits.cc",
+]
+public_deps = [
+  "//ui/base/ime:ime_types",
+]
+deps = [
+  "//ui/gfx/range",
+]
+
+type_mappings = [
+  "ui.mojom.ImeTextSpan=::ui::ImeTextSpan",
+  "ui.mojom.ImeTextSpanThickness=::ui::ImeTextSpan::Thickness",
+  "ui.mojom.TextInputType=::ui::TextInputType",
+]

@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "ash/public/cpp/ash_switches.h"
 #include "ash/shell.h"
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -49,6 +50,11 @@ class ForceMaximizeOnFirstRunTest : public LoginPolicyTestBase {
     return CreateBrowser(profile);
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LoginPolicyTestBase::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(ash::switches::kShowWebUiLogin);
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(ForceMaximizeOnFirstRunTest);
 };
@@ -78,9 +84,6 @@ IN_PROC_BROWSER_TEST_F(ForceMaximizeOnFirstRunTest, PRE_TwoRuns) {
 
 IN_PROC_BROWSER_TEST_F(ForceMaximizeOnFirstRunTest, TwoRuns) {
   SetUpResolution();
-  content::WindowedNotificationObserver(
-      chrome::NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
-      content::NotificationService::AllSources()).Wait();
   LogIn(kAccountId, kAccountPassword, kEmptyServices);
 
   const Browser* const browser = OpenNewBrowserWindow();

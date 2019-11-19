@@ -1,22 +1,41 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="vi">
+<translation id="1482734542997480527"><ph name="ENROLLMENT_DOMAIN" /> quản lý thiết bị này và có thể giám sát hoạt động của bạn.</translation>
 <translation id="1510238584712386396">Trình chạy</translation>
 <translation id="1734367976349034509">Thiết bị này do doanh nghiệp quản lý</translation>
+<translation id="1930797645656624981">Dịch vụ cung cấp phương thức nhập trên Chrome OS</translation>
+<translation id="1979103255016296513">Đã quá hạn thay đổi mật khẩu</translation>
 <translation id="2049639323467105390">Thiết bị này được <ph name="DOMAIN" /> quản lý.</translation>
 <translation id="2083960536266308407">Không có gì trên màn hình</translation>
 <translation id="2338501278241028356">Bật Bluetooth để khám phá các thiết bị lân cận</translation>
 <translation id="2805756323405976993">Ứng dụng</translation>
 <translation id="2872961005593481000">Tắt</translation>
-<translation id="3147142846278915599">Trình khởi chạy (đang đồng bộ hóa ứng dụng...)</translation>
+<translation id="3008341117444806826">LÀM MỚI</translation>
+<translation id="3838338534323494292">Mật khẩu mới</translation>
+<translation id="4003259559679196451"><ph name="ENROLLMENT_DOMAIN" /> quản lý thiết bị này và có quyền truy cập vào tất cả hoạt động của người dùng, bao gồm cả các trang web đã truy cập, mật khẩu và email.</translation>
+<translation id="4227825898293920515">Mật khẩu sẽ hết hạn sau <ph name="TIME" /></translation>
+<translation id="4429881212383817840">Phiếu Kerberos sẽ sớm hết hạn</translation>
+<translation id="445059817448385655">Mật khẩu cũ</translation>
+<translation id="467510802200863975">Mật khẩu không khớp</translation>
 <translation id="4731797938093519117">Quyền truy cập của cha mẹ</translation>
+<translation id="4890353053343094602">Chọn ngay một mật khẩu mới</translation>
 <translation id="5212543919916444558">Tôi không tìm thấy nội dung nào trên màn hình để có thể trợ giúp cho bạn.
 Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translation>
 <translation id="5222676887888702881">Đăng xuất</translation>
+<translation id="5317780077021120954">Lưu</translation>
+<translation id="5332948983412042822">Chọn ngay một mật khẩu mới</translation>
 <translation id="5457599981699367932">Duyệt với tư cách Khách</translation>
 <translation id="54609108002486618">Được quản lý</translation>
 <translation id="5832805196449965646">Thêm người</translation>
 <translation id="5895138241574237353">Khởi động lại</translation>
+<translation id="6058625436358447366">Để hoàn tất, hãy nhập cả mật khẩu cũ và mật khẩu mới của bạn</translation>
+<translation id="6106186594183574873">Để hoàn tất, hãy nhập mật khẩu cũ của bạn</translation>
+<translation id="6146993107019042706">Để hoàn tất, hãy nhập mật khẩu mới của bạn</translation>
 <translation id="7658239707568436148">Hủy</translation>
+<translation id="7690294790491645610">Xác nhận mật khẩu mới</translation>
+<translation id="808894953321890993">Đổi mật khẩu</translation>
+<translation id="8747900814994928677">Xác nhận thay đổi</translation>
+<translation id="910415269708673980">Làm mới phiếu cho <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9111102763498581341">Mở khóa</translation>
 </translationbundle>

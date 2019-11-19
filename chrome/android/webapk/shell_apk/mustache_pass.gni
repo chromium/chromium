@@ -1,0 +1,59 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+template("mustache_pass") {
+  set_sources_assignment_filter([])
+  forward_variables_from(invoker, [ "testonly" ])
+
+  assert(defined(invoker.input))
+  assert(defined(invoker.output))
+
+  action(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "visibility",
+                             "deps",
+                           ])
+    sources = [
+      invoker.input,
+    ]
+    if (defined(invoker.config_file)) {
+      sources += [ invoker.config_file ]
+    }
+    if (defined(invoker.delta_config_file)) {
+      sources += [ invoker.delta_config_file ]
+    }
+
+    script = "//chrome/android/webapk/shell_apk/mustache_pass.py"
+
+    outputs = [
+      invoker.output,
+    ]
+
+    args = [
+      "--template",
+      rebase_path(invoker.input, root_build_dir),
+      "--output",
+      rebase_path(invoker.output, root_build_dir),
+    ]
+    if (defined(invoker.config_file)) {
+      args += [
+        "--config_file",
+        rebase_path(invoker.config_file, root_build_dir),
+      ]
+    }
+    if (defined(invoker.delta_config_file)) {
+      args += [
+        "--delta_config_file",
+        rebase_path(invoker.delta_config_file, root_build_dir),
+      ]
+    }
+    if (defined(invoker.extra_variables)) {
+      extra_variables = invoker.extra_variables
+      args += [ "--extra_variables=${extra_variables}" ]
+    }
+  }
+}

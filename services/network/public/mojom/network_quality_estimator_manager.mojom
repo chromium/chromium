@@ -36,5 +36,6 @@ interface NetworkQualityEstimatorManagerClient {
 interface NetworkQualityEstimatorManager {
   // Requests to receive notification when there is a change in the network
   // quality.
-  RequestNotifications(NetworkQualityEstimatorManagerClient client_ptr);
+  RequestNotifications(
+      pending_remote<NetworkQualityEstimatorManagerClient> client);
 };

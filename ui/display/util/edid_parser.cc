@@ -7,8 +7,9 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <bitset>
 
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/sys_byteorder.h"
@@ -332,6 +333,35 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
   constexpr uint8_t kPTOverscanFlagPosition = 4;
   constexpr uint8_t kITOverscanFlagPosition = 2;
   constexpr uint8_t kCEOverscanFlagPosition = 0;
+  // See CTA-861-F, particularly Table 56 "Colorimetry Data Block".
+  constexpr uint8_t kColorimetryDataBlockCapabilityTag = 0x05;
+  constexpr gfx::ColorSpace::PrimaryID kPrimaryIDMap[] = {
+      // xvYCC601. Standard Definition Colorimetry based on IEC 61966-2-4.
+      gfx::ColorSpace::PrimaryID::SMPTE170M,
+      // xvYCC709. High Definition Colorimetry based on IEC 61966-2-4.
+      gfx::ColorSpace::PrimaryID::BT709,
+      // sYCC601. Colorimetry based on IEC 61966-2-1/Amendment 1.
+      gfx::ColorSpace::PrimaryID::SMPTE170M,
+      // opYCC601. Colorimetry based on IEC 61966-2-5, Annex A.
+      gfx::ColorSpace::PrimaryID::SMPTE170M,
+      // opRGB, Colorimetry based on IEC 61966-2-5.
+      gfx::ColorSpace::PrimaryID::SMPTE170M,
+      // BT2020RGB. Colorimetry based on ITU-R BT.2020 R’G’B’.
+      gfx::ColorSpace::PrimaryID::BT2020,
+      // BT2020YCC. Colorimetry based on ITU-R BT.2020 Y’C’BC’R.
+      gfx::ColorSpace::PrimaryID::BT2020,
+      // BT2020cYCC. Colorimetry based on ITU-R BT.2020 Y’cC’BCC’RC.
+      gfx::ColorSpace::PrimaryID::BT2020,
+  };
+  // See CEA 861.3-2015, "HDR Static Metadata Extensions" for these.
+  constexpr uint8_t kHDRStaticMetadataCapabilityTag = 0x6;
+  constexpr gfx::ColorSpace::TransferID kTransferIDMap[] = {
+      gfx::ColorSpace::TransferID::BT709,
+      gfx::ColorSpace::TransferID::GAMMA24,
+      gfx::ColorSpace::TransferID::SMPTEST2084,
+      // STD B67 is also known as Hybrid-log Gamma (HLG).
+      gfx::ColorSpace::TransferID::ARIB_STD_B67,
+  };
 
   if (edid.size() < kNumExtensionsOffset + 1) {
     LOG(ERROR) << "Too short EDID data: extensions";
@@ -359,26 +389,61 @@ void EdidParser::ParseEdid(const std::vector<uint8_t>& edid) {
       // A data block is encoded as:
       // - byte 1 high 3 bits: tag. '07' for extended tags.
       // - byte 1 remaining bits: the length of data block.
-      // - byte 2: the extended tag.  '0' for video capability.
+      // - byte 2: the extended tag. E.g. '0' for video capability. Values are
+      //   defined by the k...CapabilityTag constants.
       // - byte 3: the capability.
       const uint8_t tag = edid[data_offset] >> 5;
       const uint8_t payload_length = edid[data_offset] & 0x1f;
       if (data_offset + payload_length + 1 > edid.size())
         break;
 
-      if (tag != kExtendedTag || payload_length < 2 ||
-          edid[data_offset + 1] != kExtendedVideoCapabilityTag) {
+      if (tag != kExtendedTag || payload_length < 2) {
         data_offset += payload_length + 1;
         continue;
       }
 
-      // The difference between preferred, IT, and CE video formats doesn't
-      // matter. Set the flag to true if any of these flags are true.
-      overscan_flag_ =
-          (edid[data_offset + 2] & (1 << kPTOverscanFlagPosition)) ||
-          (edid[data_offset + 2] & (1 << kITOverscanFlagPosition)) ||
-          (edid[data_offset + 2] & (1 << kCEOverscanFlagPosition));
-      break;
+      switch (edid[data_offset + 1]) {
+        case kExtendedVideoCapabilityTag:
+          // The difference between preferred, IT, and CE video formats doesn't
+          // matter. Set the flag to true if any of these flags are true.
+          overscan_flag_ =
+              (edid[data_offset + 2] & (1 << kPTOverscanFlagPosition)) ||
+              (edid[data_offset + 2] & (1 << kITOverscanFlagPosition)) ||
+              (edid[data_offset + 2] & (1 << kCEOverscanFlagPosition));
+          break;
+
+        case kColorimetryDataBlockCapabilityTag: {
+          constexpr size_t kMaxNumColorimetryEntries = 8;
+          const std::bitset<kMaxNumColorimetryEntries>
+              supported_primaries_bitfield(edid[data_offset + 2]);
+          static_assert(
+              kMaxNumColorimetryEntries == base::size(kPrimaryIDMap),
+              "kPrimaryIDMap should describe all possible colorimetry entries");
+          for (size_t i = 0; i < kMaxNumColorimetryEntries; ++i) {
+            if (supported_primaries_bitfield[i])
+              supported_color_primary_ids_.insert(kPrimaryIDMap[i]);
+          }
+          break;
+        }
+
+        case kHDRStaticMetadataCapabilityTag: {
+          constexpr size_t kMaxNumHDRStaticMedatataEntries = 4;
+          const std::bitset<kMaxNumHDRStaticMedatataEntries>
+              supported_eotfs_bitfield(edid[data_offset + 2]);
+          static_assert(
+              kMaxNumHDRStaticMedatataEntries == base::size(kTransferIDMap),
+              "kTransferIDMap should describe all possible transfer entries");
+          for (size_t i = 0; i < kMaxNumHDRStaticMedatataEntries; ++i) {
+            if (supported_eotfs_bitfield[i])
+              supported_color_transfer_ids_.insert(kTransferIDMap[i]);
+          }
+          break;
+        }
+        default:
+          break;
+      }
+
+      data_offset += payload_length + 1;
     }
   }
 }

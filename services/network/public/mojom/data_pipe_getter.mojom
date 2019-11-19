@@ -17,5 +17,5 @@ interface DataPipeGetter {
   // Makes a clone so there can be multiple handles to this interface. This
   // doesn't imply the data itself is cloned: this can be an inexpensive
   // operation.
-  Clone(DataPipeGetter& request);
+  Clone(pending_receiver<DataPipeGetter> receiver);
 };

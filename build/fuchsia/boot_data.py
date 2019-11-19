@@ -33,12 +33,11 @@ Host *
 FVM_TYPE_QCOW = 'qcow'
 FVM_TYPE_SPARSE = 'sparse'
 
+# Specifies boot files intended for use by an emulator.
+TARGET_TYPE_QEMU = 'qemu'
 
-def _TargetCpuToSdkBinPath(target_arch):
-  """Returns the path to the SDK 'target' file directory for |target_cpu|."""
-
-  return os.path.join(common.SDK_ROOT, 'target', target_arch)
-
+# Specifies boot files intended for use by anything (incl. physical devices).
+TARGET_TYPE_GENERIC = 'generic'
 
 def _GetPubKeyPath(output_dir):
   """Returns a path to the generated SSH public key."""
@@ -74,37 +73,27 @@ def ProvisionSSH(output_dir):
     os.remove(known_hosts_path)
 
 
-def _MakeQcowDisk(output_dir, disk_path):
-  """Creates a QEMU copy-on-write version of |disk_path| in the output
-  directory."""
+def GetTargetFile(filename, target_arch, target_type):
+  """Computes a path to |filename| in the Fuchsia boot image directory specific
+  to |target_type| and |target_arch|."""
 
-  qimg_path = os.path.join(common.GetQemuRootForPlatform(), 'bin', 'qemu-img')
-  output_path = os.path.join(output_dir,
-                             os.path.basename(disk_path) + '.qcow2')
-  subprocess.check_call([qimg_path, 'create', '-q', '-f', 'qcow2',
-                         '-b', disk_path, output_path])
-  return output_path
+  assert target_type == TARGET_TYPE_QEMU or target_type == TARGET_TYPE_GENERIC
 
-
-def GetTargetFile(target_arch, filename):
-  """Computes a path to |filename| in the Fuchsia target directory specific to
-  |target_arch|."""
-
-  return os.path.join(_TargetCpuToSdkBinPath(target_arch), filename)
+  return os.path.join(common.IMAGES_ROOT, target_arch, target_type, filename)
 
 
 def GetSSHConfigPath(output_dir):
   return output_dir + '/ssh_config'
 
 
-def GetBootImage(output_dir, target_arch):
+def GetBootImage(output_dir, target_arch, target_type):
   """"Gets a path to the Zircon boot image, with the SSH client public key
   added."""
 
   ProvisionSSH(output_dir)
   pubkey_path = _GetPubKeyPath(output_dir)
-  zbi_tool = os.path.join(common.SDK_ROOT, 'tools', 'zbi')
-  image_source_path = GetTargetFile(target_arch, 'fuchsia.zbi')
+  zbi_tool = common.GetHostToolPathFromPlatform('zbi')
+  image_source_path = GetTargetFile('zircon-a.zbi', target_arch, target_type)
   image_dest_path = os.path.join(output_dir, 'gen', 'fuchsia-with-keys.zbi')
 
   cmd = [ zbi_tool, '-o', image_dest_path, image_source_path,
@@ -114,24 +103,15 @@ def GetBootImage(output_dir, target_arch):
   return image_dest_path
 
 
-def GetNodeName(output_dir):
-  """Returns the cached Zircon node name, or generates one if it doesn't
-  already exist. The node name is used by Discover to find the prior
-  deployment on the LAN."""
-
-  nodename_file = os.path.join(output_dir, 'nodename')
-  if not os.path.exists(nodename_file):
-    nodename = uuid.uuid4()
-    f = open(nodename_file, 'w')
-    f.write(str(nodename))
-    f.flush()
-    f.close()
-    return str(nodename)
-  else:
-    f = open(nodename_file, 'r')
-    return f.readline()
-
-
 def GetKernelArgs(output_dir):
-  return ['devmgr.epoch=%d' % time.time(),
-          'zircon.nodename=' + GetNodeName(output_dir)]
+  return ['devmgr.epoch=%d' % time.time()]
+
+
+def AssertBootImagesExist(arch, platform):
+  assert os.path.exists(GetTargetFile('zircon-a.zbi', arch, platform)), \
+      'This checkout is missing the files necessary for\n' \
+      'booting this configuration of Fuchsia.\n' \
+      'To check out the files, add this entry to the "custom_vars"\n' \
+      'section of your .gclient file:\n\n' \
+      '    "checkout_fuchsia_boot_images": "%s.%s"\n\n' % \
+           (platform, arch)

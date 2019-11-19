@@ -1,0 +1,26 @@
+Name: ARCore SDK client library for Chrome
+Short Name: com.google.ar:core-partner_chrome
+URL: https://developers.google.com/ar/develop/java/enable-arcore#dependencies
+Version: 1.10
+License: Apache 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+The ARCore Android SDK provides augmented reality capabilities to Android
+devices. This package contains partner version of ARCore SDK client specific
+to Chrome. Since the partner version is not published to Maven (see package URL
+for more context about dependencies), the .aar file is uploaded to CIPD.
+
+Googler update instructions - see:
+https://goto.google.com/arcore-chrome-client-update
+
+Local Modifications:
+Added files required for consumption in Chrome (LICENSE, OWNERS, BUILD.gn,
+cipd.yaml, *.info).
+
+The LICENSE file is taken from
+ * https://www.apache.org/licenses/LICENSE-2.0.txt
+
+Changes:
+2019-07-01 - Initial version.

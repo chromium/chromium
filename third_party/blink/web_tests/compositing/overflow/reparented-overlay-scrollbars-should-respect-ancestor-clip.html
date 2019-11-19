@@ -4,6 +4,12 @@
     clips applied by a tree-order ancestor, even if that ancestor is
     not an ancestor in the compositing layer tree.
 -->
+<script>
+if (window.internals) {
+    internals.useMockOverlayScrollbars();
+    internals.settings.setPreferCompositingToLCDTextEnabled(true);
+}
+</script>
 <style>
 #clipper {
     overflow: hidden;
@@ -35,12 +41,6 @@
     height: 500px;
 }
 </style>
-<script>
-if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-    internals.settings.setPreferCompositingToLCDTextEnabled(true);
-}
-</script>
 <div id='clipper'>
     <div id='scroller'>
         <div id='fixed'></div>

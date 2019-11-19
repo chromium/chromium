@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/shared_image_backing_factory_gl_texture.h"
 
 #include "base/bind_helpers.h"
+#include "base/optional.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -25,9 +26,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/GrBackendSurface.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gl/buffer_format_utils.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image_shared_memory.h"
@@ -115,8 +118,8 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, Basic) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
-  auto backing = backing_factory_->CreateSharedImage(mailbox, format, size,
-                                                     color_space, usage);
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, usage, false /* is_thread_safe */);
   EXPECT_TRUE(backing);
 
   // Check clearing.
@@ -177,28 +180,40 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, Basic) {
   }
 
   // Finally, validate a SharedImageRepresentationSkia.
-  auto skia_representation =
-      shared_image_representation_factory_->ProduceSkia(mailbox);
+  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+      mailbox, context_state_.get());
   EXPECT_TRUE(skia_representation);
-  auto surface = skia_representation->BeginWriteAccess(
-      gr_context(), 0, SkSurfaceProps(0, kUnknown_SkPixelGeometry));
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  base::Optional<SharedImageRepresentationSkia::ScopedWriteAccess>
+      scoped_write_access;
+  scoped_write_access.emplace(skia_representation.get(), &begin_semaphores,
+                              &end_semaphores);
+  auto* surface = scoped_write_access->surface();
   EXPECT_TRUE(surface);
   EXPECT_EQ(size.width(), surface->width());
   EXPECT_EQ(size.height(), surface->height());
-  skia_representation->EndWriteAccess(std::move(surface));
-  auto promise_texture = skia_representation->BeginReadAccess(nullptr);
+  EXPECT_TRUE(begin_semaphores.empty());
+  EXPECT_TRUE(end_semaphores.empty());
+  scoped_write_access.reset();
+
+  base::Optional<SharedImageRepresentationSkia::ScopedReadAccess>
+      scoped_read_access;
+  scoped_read_access.emplace(skia_representation.get(), &begin_semaphores,
+                             &end_semaphores);
+  auto* promise_texture = scoped_read_access->promise_image_texture();
   EXPECT_TRUE(promise_texture);
-  if (promise_texture) {
+  EXPECT_TRUE(begin_semaphores.empty());
+  EXPECT_TRUE(end_semaphores.empty());
     GrBackendTexture backend_texture = promise_texture->backendTexture();
     EXPECT_TRUE(backend_texture.isValid());
     EXPECT_EQ(size.width(), backend_texture.width());
     EXPECT_EQ(size.height(), backend_texture.height());
-  }
-  skia_representation->EndReadAccess();
-  skia_representation.reset();
+    scoped_read_access.reset();
+    skia_representation.reset();
 
-  shared_image.reset();
-  EXPECT_FALSE(mailbox_manager_.ConsumeTexture(mailbox));
+    shared_image.reset();
+    EXPECT_FALSE(mailbox_manager_.ConsumeTexture(mailbox));
 }
 
 TEST_P(SharedImageBackingFactoryGLTextureTest, Image) {
@@ -207,8 +222,8 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, Image) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
-  auto backing = backing_factory_->CreateSharedImage(mailbox, format, size,
-                                                     color_space, usage);
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, usage, false /* is_thread_safe */);
   EXPECT_TRUE(backing);
 
   // Check clearing.
@@ -276,24 +291,36 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, Image) {
   }
 
   // Finally, validate a SharedImageRepresentationSkia.
-  auto skia_representation =
-      shared_image_representation_factory_->ProduceSkia(mailbox);
+  auto skia_representation = shared_image_representation_factory_->ProduceSkia(
+      mailbox, context_state_.get());
   EXPECT_TRUE(skia_representation);
-  auto surface = skia_representation->BeginWriteAccess(
-      gr_context(), 0, SkSurfaceProps(0, kUnknown_SkPixelGeometry));
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  base::Optional<SharedImageRepresentationSkia::ScopedWriteAccess>
+      scoped_write_access;
+  scoped_write_access.emplace(skia_representation.get(), &begin_semaphores,
+                              &end_semaphores);
+  auto* surface = scoped_write_access->surface();
   EXPECT_TRUE(surface);
   EXPECT_EQ(size.width(), surface->width());
   EXPECT_EQ(size.height(), surface->height());
-  skia_representation->EndWriteAccess(std::move(surface));
-  auto promise_texture = skia_representation->BeginReadAccess(nullptr);
+  scoped_write_access.reset();
+
+  base::Optional<SharedImageRepresentationSkia::ScopedReadAccess>
+      scoped_read_access;
+  scoped_read_access.emplace(skia_representation.get(), &begin_semaphores,
+                             &end_semaphores);
+  auto* promise_texture = scoped_read_access->promise_image_texture();
   EXPECT_TRUE(promise_texture);
+  EXPECT_TRUE(begin_semaphores.empty());
+  EXPECT_TRUE(end_semaphores.empty());
   if (promise_texture) {
     GrBackendTexture backend_texture = promise_texture->backendTexture();
     EXPECT_TRUE(backend_texture.isValid());
     EXPECT_EQ(size.width(), backend_texture.width());
     EXPECT_EQ(size.height(), backend_texture.height());
   }
-  skia_representation->EndReadAccess();
+  scoped_read_access.reset();
   skia_representation.reset();
 
   shared_image.reset();
@@ -305,8 +332,8 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, Image) {
     // the image (GL_RGBA for TextureImageFactory). This only matters for the
     // validating decoder.
     auto format = viz::ResourceFormat::RED_8;
-    backing = backing_factory_->CreateSharedImage(mailbox, format, size,
-                                                  color_space, usage);
+    backing = backing_factory_->CreateSharedImage(
+        mailbox, format, size, color_space, usage, false /* is_thread_safe */);
     EXPECT_TRUE(backing);
     shared_image = shared_image_manager_.Register(std::move(backing),
                                                   memory_type_tracker_.get());
@@ -435,12 +462,12 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, InitialDataWrongSize) {
 
 TEST_P(SharedImageBackingFactoryGLTextureTest, InvalidFormat) {
   auto mailbox = Mailbox::GenerateForSharedImage();
-  auto format = viz::ResourceFormat::UYVY_422;
+  auto format = viz::ResourceFormat::YUV_420_BIPLANAR;
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
-  auto backing = backing_factory_->CreateSharedImage(mailbox, format, size,
-                                                     color_space, usage);
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, usage, false /* is_thread_safe */);
   EXPECT_FALSE(backing);
 }
 
@@ -450,13 +477,13 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, InvalidSize) {
   gfx::Size size(0, 0);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
-  auto backing = backing_factory_->CreateSharedImage(mailbox, format, size,
-                                                     color_space, usage);
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, usage, false /* is_thread_safe */);
   EXPECT_FALSE(backing);
 
   size = gfx::Size(INT_MAX, INT_MAX);
-  backing = backing_factory_->CreateSharedImage(mailbox, format, size,
-                                                color_space, usage);
+  backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, usage, false /* is_thread_safe */);
   EXPECT_FALSE(backing);
 }
 
@@ -466,8 +493,8 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, EstimatedSize) {
   gfx::Size size(256, 256);
   auto color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
-  auto backing = backing_factory_->CreateSharedImage(mailbox, format, size,
-                                                     color_space, usage);
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, usage, false /* is_thread_safe */);
   EXPECT_TRUE(backing);
 
   size_t backing_estimated_size = backing->estimated_size();
@@ -535,7 +562,10 @@ class StubImage : public gl::GLImageStub {
 
   gfx::Size GetSize() override { return size_; }
   unsigned GetInternalFormat() override {
-    return InternalFormatForGpuMemoryBufferFormat(format_);
+    return gl::BufferFormatToGLInternalFormat(format_);
+  }
+  unsigned GetDataType() override {
+    return gl::BufferFormatToGLDataType(format_);
   }
 
   BindOrCopy ShouldBindOrCopy() override { return BIND; }
@@ -653,7 +683,7 @@ TEST_P(SharedImageBackingFactoryGLTextureWithGMBTest,
   auto* stub_image = static_cast<StubImage*>(image.get());
   EXPECT_TRUE(stub_image->bound());
   int update_counter = stub_image->update_counter();
-  ref->Update();
+  ref->Update(nullptr);
   EXPECT_TRUE(stub_image->bound());
   EXPECT_GT(stub_image->update_counter(), update_counter);
 }

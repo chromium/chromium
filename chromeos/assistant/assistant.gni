@@ -1,13 +1,6 @@
 import("//build/config/chrome_build.gni")
 
 declare_args() {
-  # Enable assistant features. Assistant related code is compiled only when
-  # true. The default assistant implementation is a stub.
-  enable_cros_assistant = is_chromeos
-}
-
-declare_args() {
-  # Enable assistant implementation based on libassistant. This requires
-  # enable_cros_assistant also enabled.
-  enable_cros_libassistant = enable_cros_assistant && is_chrome_branded
+  # Enable assistant implementation based on libassistant.
+  enable_cros_libassistant = is_chromeos && is_chrome_branded
 }

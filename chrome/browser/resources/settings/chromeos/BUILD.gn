@@ -1,0 +1,90 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/webui_features.gni")
+import("../../optimize_webui.gni")
+
+if (optimize_webui) {
+  settings_pak_file = "os_settings_resources.pak"
+  unpak_folder = "os_settings_resources.unpak"
+
+  optimize_webui("build") {
+    host = "os-settings"
+    html_in_files = [
+      "chromeos/os_settings.html",
+      "chromeos/lazy_load.html",
+    ]
+    html_out_files = [
+      "vulcanized.html",
+      "lazy_load.vulcanized.html",
+    ]
+    insert_in_head = "<base href=\"chrome://os-settings\">"
+    input = rebase_path("$target_gen_dir/$unpak_folder", root_build_dir)
+    js_out_files = [
+      "crisper.js",
+      "lazy_load.crisper.js",
+    ]
+    excludes = [
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom.html",
+      "chrome://os-settings/app-management/app_management.mojom-lite.js",
+      "chrome://os-settings/app-management/bitmap.mojom-lite.js",
+      "chrome://os-settings/app-management/image_info.mojom-lite.js",
+      "chrome://os-settings/app-management/image.mojom-lite.js",
+      "chrome://os-settings/app-management/types.mojom-lite.js",
+      "chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom.html",
+      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom.html",
+    ]
+
+    deps = [
+      ":unpak",
+    ]
+  }
+
+  unpak("unpak") {
+    pak_file = settings_pak_file
+    out_folder = unpak_folder
+
+    deps = [
+      ":flattened_resources",
+    ]
+  }
+
+  grit("flattened_resources") {
+    source = "../os_settings_resources.grd"
+
+    # The .grd contains references to generated files.
+    source_is_generated = true
+
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/os_settings_resources.h",
+      "grit/os_settings_resources_map.cc",
+      "grit/os_settings_resources_map.h",
+      settings_pak_file,
+    ]
+    output_dir = "$root_gen_dir/chrome/browser/resources/settings/chromeos"
+  }
+}
+
+group("closure_compile") {
+  deps = [
+    "os_a11y_page:closure_compile",
+    "os_apps_page:closure_compile",
+    "os_files_page:closure_compile",
+    "os_languages_page:closure_compile",
+    "os_people_page:closure_compile",
+    "os_printing_page:closure_compile",
+    "os_privacy_page:closure_compile",
+    "os_reset_page:closure_compile",
+    "os_search_page:closure_compile",
+    "os_settings_main:closure_compile",
+    "os_settings_menu:closure_compile",
+    "os_settings_page:closure_compile",
+    "os_settings_ui:closure_compile",
+    "personalization_page:closure_compile",
+  ]
+}

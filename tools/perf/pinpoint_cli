@@ -1,0 +1,72 @@
+#!/usr/bin/env vpython
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import argparse
+import json
+import os
+import sys
+
+from core import path_util
+path_util.AddPyUtilsToPath()
+path_util.AddTracingToPath()
+
+from core import cli_utils
+from core import external_modules
+from cli_tools.pinpoint_cli import commands
+from core.services import luci_auth
+
+
+def main():
+  parser = argparse.ArgumentParser()
+  parser.add_argument(
+      '-v', '--verbose', action='count', default=0,
+      help='Increase verbosity level')
+  subparsers = parser.add_subparsers(dest='action')
+  subparsers.required = True
+
+  subparser = subparsers.add_parser(
+      'status', help='check the status of some pinpoint jobs')
+  subparser.add_argument(
+      'job_ids', metavar='JOB_ID', nargs='+',
+      help='one or more pinpoint job ids')
+
+  subparser = subparsers.add_parser(
+      'get-csv', help='download the perf results from jobs as a csv file')
+  subparser.add_argument(
+      '--only-differences', action='store_true',
+      help='on bisect jobs, only get data for changes immediately before/after'
+           ' differences in the comparison metric.')
+  subparser.add_argument(
+      '--output', metavar='OUTPUT_CSV', default='job_results.csv',
+      help='path to a file where to store perf results as a csv file'
+           ' (default: %(default)s)')
+  subparser.add_argument(
+      'job_ids', metavar='JOB_ID', nargs='+',
+      help='one or more pinpoint job ids')
+
+  subparser = subparsers.add_parser(
+      'start-job', help='start a new pinpoint job')
+  subparser.add_argument(
+      'config_path', metavar='CONFIG_PATH',
+      help='path to a json file with a pinpoint job configuration (see'
+           " examples/pinpoint_cli directory) or '-' to read it from stdin")
+  args = parser.parse_args()
+  cli_utils.ConfigureLogging(args.verbose)
+
+  luci_auth.CheckLoggedIn()
+  if args.action == 'status':
+    return commands.CheckJobStatus(args.job_ids)
+  elif args.action == 'get-csv':
+    return commands.DownloadJobResultsAsCsv(
+        args.job_ids, args.only_differences, args.output)
+  elif args.action == 'start-job':
+    return commands.StartJobFromConfig(args.config_path)
+  else:
+    raise NotImplementedError(args.action)
+
+
+if __name__ == '__main__':
+  external_modules.RequireModules()
+  sys.exit(main())

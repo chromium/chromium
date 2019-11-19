@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOCUMENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_DOCUMENT_H_
 
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_vector.h"
@@ -69,12 +70,11 @@ class WebDocument : public WebNode {
   // Note: Security checks should use the getSecurityOrigin(), not url().
   BLINK_EXPORT WebSecurityOrigin GetSecurityOrigin() const;
   BLINK_EXPORT bool IsSecureContext() const;
-  BLINK_EXPORT void GrantLoadLocalResources();
 
   BLINK_EXPORT WebString Encoding() const;
   BLINK_EXPORT WebString ContentLanguage() const;
   BLINK_EXPORT WebString GetReferrer() const;
-  BLINK_EXPORT SkColor ThemeColor() const;
+  BLINK_EXPORT base::Optional<SkColor> ThemeColor() const;
   // The url of the OpenSearch Desription Document (if any).
   BLINK_EXPORT WebURL OpenSearchDescriptionURL() const;
 
@@ -85,6 +85,7 @@ class WebDocument : public WebNode {
   BLINK_EXPORT bool IsXHTMLDocument() const;
   BLINK_EXPORT bool IsPluginDocument() const;
   BLINK_EXPORT WebURL BaseURL() const;
+  BLINK_EXPORT ukm::SourceId GetUkmSourceId() const;
 
   // The firstPartyForCookies is used to compute whether this document
   // appears in a "third-party" context for the purpose of third-party
@@ -123,12 +124,11 @@ class WebDocument : public WebNode {
 
   BLINK_EXPORT WebVector<WebDraggableRegion> DraggableRegions() const;
 
-  BLINK_EXPORT WebURL ManifestURL() const;
-  BLINK_EXPORT bool ManifestUseCredentials() const;
-
   BLINK_EXPORT WebURL CanonicalUrlForSharing() const;
 
   BLINK_EXPORT WebDistillabilityFeatures DistillabilityFeatures();
+
+  BLINK_EXPORT void SetShowBeforeUnloadDialog(bool show_dialog);
 
 #if INSIDE_BLINK
   BLINK_EXPORT WebDocument(Document*);

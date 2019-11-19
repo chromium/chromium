@@ -35,6 +35,10 @@ enum class PermissionStatusSource {
   // seen by the user. This may be very confusing for a user to see in a
   // permissions request.
   VIRTUAL_URL_DIFFERENT_ORIGIN,
+
+  // In web kiosk mode, all permissions are granted to the domain associated
+  // with the single app running.
+  WEB_KIOSK_APP_MODE,
 };
 
 struct PermissionResult {

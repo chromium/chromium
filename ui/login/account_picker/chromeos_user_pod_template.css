@@ -6,12 +6,23 @@
  * chromeos_user_pod_template.html.
  */
 
-.action-box-remove-user-warning .remove-warning-button {
-  color: #E67C73;
+cr-icon-button {
+  --cr-icon-button-color: var(--google-grey-refresh-500);
+  cursor: default;
   margin: 0;
-  padding: 0;
-  text-transform: none;
-  z-index: 6;
+}
+
+.action-box-remove-user-warning .remove-warning-button {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  color: #e66a5e;  /* Google dark red 500 */
+  cursor: default;
+  padding: 4px;
+}
+
+.action-box-remove-user-warning .remove-warning-button:not(:active):focus {
+  font-weight: bold;
 }
 
 /* TODO(crbug.com/814922): Merge most of these with the default values. */

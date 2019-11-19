@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_context.h"
+#include "ui/gl/scoped_binders.h"
 
 using gpu::gles2::AbstractTexture;
 
@@ -61,7 +62,7 @@ class GLES2DecoderHelperImpl : public GLES2DecoderHelper {
 
     // TODO(sandersd): Do we always want to allocate for GL_TEXTURE_2D?
     if (target == GL_TEXTURE_2D) {
-      glBindTexture(target, texture->service_id());
+      gl::ScopedTextureBinder scoped_binder(target, texture->service_id());
       glTexImage2D(target,           // target
                    0,                // level
                    internal_format,  // internal_format
@@ -71,7 +72,6 @@ class GLES2DecoderHelperImpl : public GLES2DecoderHelper {
                    format,           // format
                    type,             // type
                    nullptr);         // data
-      decoder_->RestoreActiveTextureUnitBinding(target);
     }
 
     return texture;

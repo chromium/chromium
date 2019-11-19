@@ -18,6 +18,8 @@
  */
 
 // https://html.spec.whatwg.org/C/#the-head-element
-[HTMLConstructor]
-interface HTMLHeadElement : HTMLElement {
+[
+    Exposed=Window,
+    HTMLConstructor
+] interface HTMLHeadElement : HTMLElement {
 };

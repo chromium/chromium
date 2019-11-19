@@ -13,10 +13,8 @@
 #include "chromeos/cryptohome/cryptohome_util.h"
 #include "chromeos/dbus/cryptohome/key.pb.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/device_event_log/device_event_log.h"
 
-using chromeos::DBusThreadManager;
 using google::protobuf::RepeatedPtrField;
 
 namespace cryptohome {
@@ -28,7 +26,7 @@ HomedirMethods* g_homedir_methods = NULL;
 // The implementation of HomedirMethods
 class HomedirMethodsImpl : public HomedirMethods {
  public:
-  HomedirMethodsImpl() : weak_ptr_factory_(this) {}
+  HomedirMethodsImpl() {}
 
   ~HomedirMethodsImpl() override = default;
 
@@ -36,7 +34,7 @@ class HomedirMethodsImpl : public HomedirMethods {
                   const cryptohome::AuthorizationRequest& auth,
                   const cryptohome::CheckKeyRequest& request,
                   const Callback& callback) override {
-    DBusThreadManager::Get()->GetCryptohomeClient()->CheckKeyEx(
+    chromeos::CryptohomeClient::Get()->CheckKeyEx(
         CreateAccountIdentifierFromIdentification(id), auth, request,
         base::BindOnce(&HomedirMethodsImpl::OnBaseReplyCallback,
                        weak_ptr_factory_.GetWeakPtr(), callback));
@@ -46,7 +44,7 @@ class HomedirMethodsImpl : public HomedirMethods {
                 const AuthorizationRequest& auth,
                 const AddKeyRequest& request,
                 const Callback& callback) override {
-    DBusThreadManager::Get()->GetCryptohomeClient()->AddKeyEx(
+    chromeos::CryptohomeClient::Get()->AddKeyEx(
         CreateAccountIdentifierFromIdentification(id), auth, request,
         base::BindOnce(&HomedirMethodsImpl::OnBaseReplyCallback,
                        weak_ptr_factory_.GetWeakPtr(), callback));
@@ -56,7 +54,7 @@ class HomedirMethodsImpl : public HomedirMethods {
                    const AuthorizationRequest& auth,
                    const RemoveKeyRequest& request,
                    const Callback& callback) override {
-    DBusThreadManager::Get()->GetCryptohomeClient()->RemoveKeyEx(
+    chromeos::CryptohomeClient::Get()->RemoveKeyEx(
         CreateAccountIdentifierFromIdentification(id), auth, request,
         base::BindOnce(&HomedirMethodsImpl::OnBaseReplyCallback,
                        weak_ptr_factory_.GetWeakPtr(), callback));
@@ -66,7 +64,17 @@ class HomedirMethodsImpl : public HomedirMethods {
                    const AuthorizationRequest& auth,
                    const UpdateKeyRequest& request,
                    const Callback& callback) override {
-    DBusThreadManager::Get()->GetCryptohomeClient()->UpdateKeyEx(
+    chromeos::CryptohomeClient::Get()->UpdateKeyEx(
+        CreateAccountIdentifierFromIdentification(id), auth, request,
+        base::BindOnce(&HomedirMethodsImpl::OnBaseReplyCallback,
+                       weak_ptr_factory_.GetWeakPtr(), callback));
+  }
+
+  void MassRemoveKeys(const Identification& id,
+                      const AuthorizationRequest& auth,
+                      const MassRemoveKeysRequest& request,
+                      const Callback& callback) override {
+    chromeos::CryptohomeClient::Get()->MassRemoveKeys(
         CreateAccountIdentifierFromIdentification(id), auth, request,
         base::BindOnce(&HomedirMethodsImpl::OnBaseReplyCallback,
                        weak_ptr_factory_.GetWeakPtr(), callback));
@@ -86,7 +94,7 @@ class HomedirMethodsImpl : public HomedirMethods {
     callback.Run(true, MOUNT_ERROR_NONE);
   }
 
-  base::WeakPtrFactory<HomedirMethodsImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<HomedirMethodsImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HomedirMethodsImpl);
 };

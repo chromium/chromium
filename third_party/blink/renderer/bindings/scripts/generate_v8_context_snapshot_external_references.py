@@ -80,15 +80,15 @@ class InterfaceTemplateContextBuilder(object):
         has_cross_origin_named_enum = False
         has_cross_origin_named_getter = False
         has_cross_origin_named_setter = False
-        has_origin_safe_method_setter = False
         has_security_check = False
         indexed_property_getter = None
         is_global = False
         named_property_getter = None
+        component_info = self._info_provider.component_info
         if interface.name in SNAPSHOTTED_INTERFACES:
-            attributes = [v8_attributes.attribute_context(interface, attribute, interfaces)
+            attributes = [v8_attributes.attribute_context(interface, attribute, interfaces, component_info)
                           for attribute in interface.attributes]
-            methods = v8_interface.methods_context(interface)['methods']
+            methods = v8_interface.methods_context(interface, component_info)['methods']
             is_global = 'Global' in interface.extended_attributes
 
             named_property_getter = v8_interface.property_getter(
@@ -97,9 +97,6 @@ class InterfaceTemplateContextBuilder(object):
                 interface.indexed_property_getter, ['index'])
 
             if not interface.is_partial:
-                has_origin_safe_method_setter = is_global and any(
-                    method['is_check_security_for_receiver'] and not method['is_unforgeable']
-                    for method in methods)
                 has_security_check = ('CheckSecurity' in interface.extended_attributes and
                                       interface.name != 'EventTarget')
                 has_cross_origin_named_getter = (any(method['is_cross_origin'] for method in methods) or
@@ -113,7 +110,6 @@ class InterfaceTemplateContextBuilder(object):
         return {
             'attributes': attributes,
             'component': component,
-            'has_origin_safe_method_setter': has_origin_safe_method_setter,
             'has_constructor_callback': has_constructor_callback,
             'has_cross_origin_named_getter': has_cross_origin_named_getter,
             'has_cross_origin_named_setter': has_cross_origin_named_setter,
@@ -161,10 +157,12 @@ class ExternalReferenceTableGenerator(object):
     # in V8 context snapshot, so we can skip them.
     def _process_interface(self, interface, component, interfaces):
         def has_impl(interface):
+            component_info = self._info_provider.component_info
+            runtime_features = component_info['runtime_enabled_features']
             # Non legacy callback interface does not provide V8 callbacks.
             if interface.is_callback:
                 return len(interface.constants) > 0
-            if 'RuntimeEnabled' in interface.extended_attributes:
+            if v8_utilities.runtime_enabled_feature_name(interface, runtime_features):
                 return False
             if 'Exposed' not in interface.extended_attributes:
                 return True

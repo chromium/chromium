@@ -5,11 +5,9 @@
 #include "content/public/renderer/content_renderer_client.h"
 
 #include "media/base/renderer_factory.h"
-#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_renderer_factory.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
-#include "third_party/blink/public/platform/web_media_stream_center.h"
 #include "third_party/blink/public/platform/web_rtc_peer_connection_handler.h"
-#include "third_party/blink/public/platform/web_speech_synthesizer.h"
+#include "third_party/blink/public/web/modules/mediastream/web_media_stream_renderer_factory.h"
 #include "ui/gfx/icc_profile.h"
 #include "url/gurl.h"
 
@@ -23,7 +21,7 @@ SkBitmap* ContentRendererClient::GetSadWebViewBitmap() {
   return nullptr;
 }
 
-bool ContentRendererClient::MaybeCreateMimeHandlerView(
+bool ContentRendererClient::IsPluginHandledExternally(
     RenderFrame* embedder_frame,
     const blink::WebElement& owner_element,
     const GURL& original_url,
@@ -79,12 +77,6 @@ ContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
   return nullptr;
 }
 
-std::unique_ptr<blink::WebSpeechSynthesizer>
-ContentRendererClient::OverrideSpeechSynthesizer(
-    blink::WebSpeechSynthesizerClient* client) {
-  return nullptr;
-}
-
 void ContentRendererClient::PostIOThreadCreated(
     base::SingleThreadTaskRunner* io_thread_task_runner) {}
 
@@ -113,14 +105,6 @@ bool ContentRendererClient::HandleNavigation(
 }
 #endif
 
-bool ContentRendererClient::ShouldFork(blink::WebLocalFrame* frame,
-                                       const GURL& url,
-                                       const std::string& http_method,
-                                       bool is_initial_navigation,
-                                       bool is_server_redirect) {
-  return false;
-}
-
 void ContentRendererClient::WillSendRequest(blink::WebLocalFrame* frame,
                                             ui::PageTransition transition_type,
                                             const blink::WebURL& url,
@@ -134,23 +118,18 @@ bool ContentRendererClient::IsPrefetchOnly(
   return false;
 }
 
-unsigned long long ContentRendererClient::VisitedLinkHash(
-    const char* canonical_url, size_t length) {
-  return 0LL;
+uint64_t ContentRendererClient::VisitedLinkHash(const char* canonical_url,
+                                                size_t length) {
+  return 0;
 }
 
-bool ContentRendererClient::IsLinkVisited(unsigned long long link_hash) {
+bool ContentRendererClient::IsLinkVisited(uint64_t link_hash) {
   return false;
 }
 
 blink::WebPrescientNetworking*
 ContentRendererClient::GetPrescientNetworking() {
   return nullptr;
-}
-
-bool ContentRendererClient::IsPrerenderingFrame(
-    const RenderFrame* render_frame) {
-  return false;
 }
 
 bool ContentRendererClient::IsExternalPepperPlugin(
@@ -236,17 +215,8 @@ GURL ContentRendererClient::OverrideFlashEmbedWithHTML(const GURL& url) {
   return GURL();
 }
 
-std::unique_ptr<base::TaskScheduler::InitParams>
-ContentRendererClient::GetTaskSchedulerInitParams() {
-  return nullptr;
-}
-
 bool ContentRendererClient::IsIdleMediaSuspendEnabled() {
   return true;
-}
-
-bool ContentRendererClient::SuppressLegacyTLSVersionConsoleMessage() {
-  return false;
 }
 
 std::unique_ptr<URLLoaderThrottleProvider>
@@ -266,5 +236,18 @@ bool ContentRendererClient::IsSafeRedirectTarget(const GURL& url) {
 }
 
 void ContentRendererClient::DidSetUserAgent(const std::string& user_agent) {}
+
+bool ContentRendererClient::RequiresWebComponentsV0(const GURL& url) {
+  return false;
+}
+
+base::Optional<::media::AudioRendererAlgorithmParameters>
+ContentRendererClient::GetAudioRendererAlgorithmParameters(
+    media::AudioParameters audio_parameters) {
+  return base::nullopt;
+}
+
+void ContentRendererClient::BindReceiverOnMainThread(
+    mojo::GenericPendingReceiver receiver) {}
 
 }  // namespace content

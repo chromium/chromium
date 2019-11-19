@@ -131,10 +131,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedState {
   std::string type_;  // shill::kTypeProperty
 
   // Set to true when the an update has been received.
-  bool update_received_;
+  bool update_received_ = false;
 
   // Tracks when an update has been requested.
-  bool update_requested_;
+  bool update_requested_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(ManagedState);
 };

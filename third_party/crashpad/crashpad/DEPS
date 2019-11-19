@@ -20,17 +20,20 @@ vars = {
 
 deps = {
   'buildtools':
-      Var('chromium_git') + '/chromium/buildtools.git@' +
-      '6fe4a3251488f7af86d64fc25cf442e817cf6133',
+      Var('chromium_git') + '/chromium/src/buildtools.git@' +
+      '3e50219fc4503f461b2176a9976891b28d80f9ab',
   'crashpad/third_party/gtest/gtest':
       Var('chromium_git') + '/external/github.com/google/googletest@' +
-      '9518a57428ae0a7ed450c1361768e84a2a38af5a',
+      'eb78ee170ac9eb21487f4d127720c060351fa8a2',
   'crashpad/third_party/gyp/gyp':
       Var('chromium_git') + '/external/gyp@' +
-      '5e2b3ddde7cda5eb6bc09a5546a76b00e49d888f',
+      '8bee09f4a57807136593ddc906b0b213c21f9014',
+  'crashpad/third_party/lss/lss':
+      Var('chromium_git') + '/linux-syscall-support.git@' +
+      '726d71ec08d15493b94eff456bc31faecf0a5902',
   'crashpad/third_party/mini_chromium/mini_chromium':
       Var('chromium_git') + '/chromium/mini_chromium@' +
-      '737433ebade4d446643c6c07daae02a67e8decca',
+      'cdab1e6263ec7f3f61763efc1dac863f8dc07c80',
   'crashpad/third_party/libfuzzer/src':
       Var('chromium_git') + '/chromium/llvm-project/compiler-rt/lib/fuzzer.git@' +
       'fda403cf93ecb8792cb1d061564d89a6553ca020',
@@ -89,22 +92,24 @@ deps = {
     'condition': 'checkout_fuchsia and host_os == "linux"',
     'dep_type': 'cipd'
   },
-  'crashpad/third_party/fuchsia/sdk/linux-amd64': {
-    # The SDK is keyed to the host system because it contains build tools.
-    # Currently, linux-amd64 is the only SDK published (see
-    # https://chrome-infra-packages.appspot.com/#/?path=fuchsia/sdk).
-    # As long as this is the case, use that SDK package
-    # even on other build hosts.
-    # The sysroot (containing headers and libraries) and other components are
-    # related to the target and should be functional with an appropriate
-    # toolchain that runs on the build host (fuchsia_clang, above).
+  'crashpad/third_party/fuchsia/sdk/mac-amd64': {
     'packages': [
       {
-        'package': 'fuchsia/sdk/linux-amd64',
+        'package': 'fuchsia/sdk/core/mac-amd64',
         'version': 'latest'
       },
     ],
-    'condition': 'checkout_fuchsia',
+    'condition': 'checkout_fuchsia and host_os == "mac"',
+    'dep_type': 'cipd'
+  },
+  'crashpad/third_party/fuchsia/sdk/linux-amd64': {
+    'packages': [
+      {
+        'package': 'fuchsia/sdk/core/linux-amd64',
+        'version': 'latest'
+      },
+    ],
+    'condition': 'checkout_fuchsia and host_os == "linux"',
     'dep_type': 'cipd'
   },
   'crashpad/third_party/win/toolchain': {

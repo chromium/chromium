@@ -1,5 +1,0 @@
-include_rules = [
-  "+ui/base/ime/text_input_flags.h",
-  "+ui/base/ime/text_input_type.h",
-  "+ui/platform_window/text_input_state.h",
-]

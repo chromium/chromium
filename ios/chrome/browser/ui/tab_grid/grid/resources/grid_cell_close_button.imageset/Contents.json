@@ -2,11 +2,6 @@
     "images": [
         {
             "idiom": "universal",
-            "scale": "1x",
-            "filename": "grid_cell_close_button.png"
-        },
-        {
-            "idiom": "universal",
             "scale": "2x",
             "filename": "grid_cell_close_button@2x.png"
         },

@@ -1,0 +1,59 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("cryptohome") {
+  # Avoid conflict with //chromoes/cryptohome
+  output_name = "chromeos_dbus_cryptohome"
+
+  defines = [ "IS_CRYPTOHOME_CLIENT_IMPL" ]
+
+  deps = [
+    ":attestation_proto",
+    ":cryptohome_proto",
+    "//base",
+    "//chromeos/dbus:common",
+    "//components/policy/proto",
+    "//dbus",
+  ]
+
+  sources = [
+    "account_identifier_operators.cc",
+    "account_identifier_operators.h",
+    "cryptohome_client.cc",
+    "cryptohome_client.h",
+    "fake_cryptohome_client.cc",
+    "fake_cryptohome_client.h",
+    "tpm_util.cc",
+    "tpm_util.h",
+  ]
+}
+
+proto_library("attestation_proto") {
+  sources = [
+    "attestation.proto",
+  ]
+
+  proto_out_dir = "chromeos/dbus/attestation"
+}
+
+proto_library("cryptohome_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/cryptohome/key.proto",
+    "//third_party/cros_system_api/dbus/cryptohome/rpc.proto",
+  ]
+
+  proto_out_dir = "chromeos/dbus/cryptohome"
+}
+
+proto_library("cryptohome_signkey_proto") {
+  sources = [
+    "//third_party/cros_system_api/dbus/cryptohome/signed_secret.proto",
+  ]
+
+  proto_out_dir = "chromeos/dbus/cryptohome"
+}

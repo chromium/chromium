@@ -54,7 +54,7 @@ grit("extensions_renderer_resources") {
   source_is_generated = true
 
   deps = [
-    "//extensions/common:mojo_js",
+    "//extensions/common:mojom_js",
     "//extensions/common/api:mojom_js",
     "//services/device/public/mojom:mojom_js",
   ]
@@ -121,6 +121,8 @@ jumbo_static_library("test_support") {
     "test/logging_timer.h",
     "test/result_catcher.cc",
     "test/result_catcher.h",
+    "test/test_background_page_first_load_observer.cc",
+    "test/test_background_page_first_load_observer.h",
     "test/test_content_utility_client.cc",
     "test/test_content_utility_client.h",
     "test/test_extension_dir.cc",
@@ -137,6 +139,7 @@ jumbo_static_library("test_support") {
   deps = [
     ":extensions_resources",
     "//base",
+    "//chrome/common:buildflags",
     "//components/cast_certificate:test_support",
     "//components/cast_channel:test_support",
     "//components/guest_view/browser:test_support",
@@ -165,7 +168,6 @@ repack("shell_and_test_pak") {
   testonly = true
 
   sources = [
-    "$root_gen_dir/content/app/strings/content_strings_en-US.pak",
     "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/content/shell/shell_resources.pak",
@@ -177,6 +179,7 @@ repack("shell_and_test_pak") {
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
@@ -187,7 +190,6 @@ repack("shell_and_test_pak") {
   deps = [
     ":extensions_resources",
     "//content:resources",
-    "//content/app/strings",
     "//content/browser/devtools:devtools_resources",
     "//content/shell:resources",
     "//extensions/shell:resources",
@@ -195,6 +197,7 @@ repack("shell_and_test_pak") {
     "//mojo/public/js:resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
+    "//third_party/blink/public/strings",
     "//ui/resources",
     "//ui/strings",
   ]
@@ -234,17 +237,12 @@ test("extensions_unittests") {
   data_deps = [
     "//third_party/mesa_headers",
   ]
-
-  if (enable_mus) {
-    deps += [ "//ui/aura:test_support" ]
-  }
 }
 
 test("extensions_browsertests") {
   data = [
     "//extensions/test/data/",
     "//net/tools/testserver/",
-    "//third_party/pyftpdlib/",
     "//third_party/pywebsocket/src/mod_pywebsocket/",
     "//third_party/tlslite/",
     "$root_out_dir/extensions_shell_and_test.pak",
@@ -298,6 +296,7 @@ source_set("chrome_extensions_browsertests") {
     "//components/dom_distiller/content/browser",
     "//components/dom_distiller/core:test_support",
     "//components/guest_view/browser:test_support",
+    "//components/printing/common",
     "//components/resources",
     "//components/strings",
     "//components/sync",
@@ -321,8 +320,7 @@ source_set("chrome_extensions_browsertests") {
     "//third_party/icu",
     "//third_party/leveldatabase",
     "//third_party/libaddressinput",
-    "//third_party/webrtc/modules/desktop_capture",
-    "//third_party/webrtc_overrides",
+    "//third_party/webrtc_overrides:webrtc_component",
     "//third_party/widevine/cdm:headers",
     "//ui/accessibility:test_support",
     "//ui/base:test_support",

@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_sink.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestion_identifier.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/common/favicon/favicon_attributes.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/showcase/content_suggestions/sc_content_suggestions_item.h"
@@ -69,15 +68,9 @@ using CSCollectionViewItem = CollectionViewItem<SuggestedContent>;
 #pragma mark - ContentSuggestionsDataSource
 
 - (NSArray<ContentSuggestionsSectionInformation*>*)sectionsInfo {
-  if (IsUIRefreshPhase1Enabled()) {
-    return @[
-      self.logoHeaderSection, self.mostVisitedSection, self.articleSection,
-      self.learnMoreSection
-    ];
-  }
   return @[
-    self.logoHeaderSection, self.mostVisitedSection, self.readingListSection,
-    self.articleSection, self.learnMoreSection
+    self.logoHeaderSection, self.mostVisitedSection, self.articleSection,
+    self.learnMoreSection
   ];
 }
 

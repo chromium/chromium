@@ -11,6 +11,7 @@
 
 namespace extensions {
 
+class ChromecastAutomationInternalApiDelegate;
 class MessagingDelegate;
 
 class CastExtensionsAPIClient : public ExtensionsAPIClient {
@@ -24,9 +25,12 @@ class CastExtensionsAPIClient : public ExtensionsAPIClient {
   WebViewGuestDelegate* CreateWebViewGuestDelegate(
       WebViewGuest* web_view_guest) const override;
   MessagingDelegate* GetMessagingDelegate() override;
+  AutomationInternalApiDelegate* GetAutomationInternalApiDelegate() override;
 
  private:
   std::unique_ptr<MessagingDelegate> messaging_delegate_;
+  std::unique_ptr<extensions::ChromecastAutomationInternalApiDelegate>
+      extensions_automation_api_delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(CastExtensionsAPIClient);
 };

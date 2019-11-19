@@ -14,13 +14,12 @@ namespace media {
 const int kMaxOutOfOrderFrameLogs = 10;
 
 VideoRendererAlgorithm::ReadyFrame::ReadyFrame(
-    const scoped_refptr<VideoFrame>& ready_frame)
-    : frame(ready_frame),
+    scoped_refptr<VideoFrame> ready_frame)
+    : frame(std::move(ready_frame)),
       has_estimated_end_time(true),
       ideal_render_count(0),
       render_count(0),
-      drop_count(0) {
-}
+      drop_count(0) {}
 
 VideoRendererAlgorithm::ReadyFrame::ReadyFrame(const ReadyFrame& other) =
     default;
@@ -331,12 +330,17 @@ int64_t VideoRendererAlgorithm::GetMemoryUsage() const {
   return allocation_size;
 }
 
-void VideoRendererAlgorithm::EnqueueFrame(
-    const scoped_refptr<VideoFrame>& frame) {
+void VideoRendererAlgorithm::EnqueueFrame(scoped_refptr<VideoFrame> frame) {
   DCHECK(frame);
   DCHECK(!frame->metadata()->IsTrue(VideoFrameMetadata::END_OF_STREAM));
 
-  ReadyFrame ready_frame(frame);
+  // Note: Not all frames have duration. E.g., this class is used with WebRTC
+  // which does not provide duration information for its frames.
+  base::TimeDelta metadata_frame_duration;
+  auto has_duration = frame->metadata()->GetTimeDelta(
+      VideoFrameMetadata::FRAME_DURATION, &metadata_frame_duration);
+  auto timestamp = frame->timestamp();
+  ReadyFrame ready_frame(std::move(frame));
   auto it = frame_queue_.empty()
                 ? frame_queue_.end()
                 : std::lower_bound(frame_queue_.begin(), frame_queue_.end(),
@@ -349,7 +353,7 @@ void VideoRendererAlgorithm::EnqueueFrame(
   if (new_frame_index <= 0 && have_rendered_frames_) {
     LIMITED_MEDIA_LOG(INFO, media_log_, out_of_order_frame_logs_,
                       kMaxOutOfOrderFrameLogs)
-        << "Dropping frame with timestamp " << frame->timestamp()
+        << "Dropping frame with timestamp " << timestamp
         << ", which is earlier than the last rendered frame ("
         << frame_queue_.front().frame->timestamp() << ").";
     ++frames_dropped_during_enqueue_;
@@ -359,15 +363,13 @@ void VideoRendererAlgorithm::EnqueueFrame(
   // Drop any frames which are less than a millisecond apart in media time (even
   // those with timestamps matching an already enqueued frame), there's no way
   // we can reasonably render these frames; it's effectively a 1000fps limit.
-  const base::TimeDelta delta =
-      std::min(new_frame_index < frame_queue_.size()
-                   ? frame_queue_[new_frame_index].frame->timestamp() -
-                         frame->timestamp()
-                   : base::TimeDelta::Max(),
-               new_frame_index > 0
-                   ? frame->timestamp() -
-                         frame_queue_[new_frame_index - 1].frame->timestamp()
-                   : base::TimeDelta::Max());
+  const base::TimeDelta delta = std::min(
+      new_frame_index < frame_queue_.size()
+          ? frame_queue_[new_frame_index].frame->timestamp() - timestamp
+          : base::TimeDelta::Max(),
+      new_frame_index > 0
+          ? timestamp - frame_queue_[new_frame_index - 1].frame->timestamp()
+          : base::TimeDelta::Max());
   if (delta < base::TimeDelta::FromMilliseconds(1)) {
     DVLOG(2) << "Dropping frame too close to an already enqueued frame: "
              << delta.InMicroseconds() << " us";
@@ -378,7 +380,7 @@ void VideoRendererAlgorithm::EnqueueFrame(
   // Calculate an accurate start time and an estimated end time if possible for
   // the new frame; this allows EffectiveFramesQueued() to be relatively correct
   // immediately after a new frame is queued.
-  std::vector<base::TimeDelta> media_timestamps(1, frame->timestamp());
+  std::vector<base::TimeDelta> media_timestamps(1, timestamp);
 
   // If there are not enough frames to estimate duration based on end time, ask
   // the WallClockTimeCB to convert the estimated frame duration into wall clock
@@ -386,15 +388,9 @@ void VideoRendererAlgorithm::EnqueueFrame(
   //
   // Note: This duration value is not compensated for playback rate and
   // thus is different than |average_frame_duration_| which is compensated.
-  //
-  // Note: Not all frames have duration. E.g., this class is used with WebRTC
-  // which does not provide duration information for its frames.
-  base::TimeDelta metadata_frame_duration;
-  if (!frame_duration_calculator_.count() &&
-      frame->metadata()->GetTimeDelta(VideoFrameMetadata::FRAME_DURATION,
-                                      &metadata_frame_duration) &&
+  if (!frame_duration_calculator_.count() && has_duration &&
       metadata_frame_duration > base::TimeDelta()) {
-    media_timestamps.push_back(frame->timestamp() + metadata_frame_duration);
+    media_timestamps.push_back(timestamp + metadata_frame_duration);
   }
 
   std::vector<base::TimeTicks> wall_clock_times;
@@ -410,8 +406,7 @@ void VideoRendererAlgorithm::EnqueueFrame(
   if (it != frame_queue_.end()) {
     LIMITED_MEDIA_LOG(INFO, media_log_, out_of_order_frame_logs_,
                       kMaxOutOfOrderFrameLogs)
-        << "Decoded frame with timestamp " << frame->timestamp()
-        << " is out of order.";
+        << "Decoded frame with timestamp " << timestamp << " is out of order.";
   }
   frame_queue_.insert(it, ready_frame);
 

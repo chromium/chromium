@@ -9,15 +9,15 @@
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/text/character.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 class Document;
 class Element;
-class FileOrUSVString;
+class FileOrUSVStringOrFormData;
 class HTMLElement;
 class HTMLFormElement;
 class QualifiedName;
@@ -108,11 +108,11 @@ class CORE_EXPORT CustomElement {
   static void EnqueueFormAssociatedCallback(Element& element,
                                             HTMLFormElement* nullable_form);
   static void EnqueueFormResetCallback(Element& element);
-  static void EnqueueDisabledStateChangedCallback(Element& element,
-                                                  bool is_disabled);
-  static void EnqueueRestoreValueCallback(Element& element,
-                                          const FileOrUSVString& value,
-                                          const String& mode);
+  static void EnqueueFormDisabledCallback(Element& element, bool is_disabled);
+  static void EnqueueFormStateRestoreCallback(
+      Element& element,
+      const FileOrUSVStringOrFormData& value,
+      const String& mode);
 
   static void TryToUpgrade(Element&, bool upgrade_invisible_elements = false);
 

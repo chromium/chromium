@@ -10,6 +10,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -23,12 +24,12 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
 #include "chrome/browser/translate/translate_service.h"
+#include "components/contextual_search/core/browser/public.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/signin/core/browser/account_consistency_method.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -39,9 +40,11 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "url/gurl.h"
 
 using content::RenderFrameHost;
+using language::LanguageModel;
 using unified_consent::UrlKeyedDataCollectionConsentHelper;
 
 namespace {
@@ -58,6 +61,9 @@ const char kContextualSearchCaption[] = "caption";
 const char kContextualSearchThumbnail[] = "thumbnail";
 const char kContextualSearchAction[] = "action";
 const char kContextualSearchCategory[] = "category";
+const char kContextualSearchCardTag[] = "card_tag";
+const char kContextualSearchSearchUrlFull[] = "search_url_full";
+const char kContextualSearchSearchUrlPreload[] = "search_url_preload";
 
 const char kActionCategoryAddress[] = "ADDRESS";
 const char kActionCategoryEmail[] = "EMAIL";
@@ -71,9 +77,6 @@ const int kContextualSearchMaxSelection = 100;
 const char kXssiEscape[] = ")]}'\n";
 const char kDiscourseContextHeaderPrefix[] = "X-Additional-Discourse-Context: ";
 const char kDoPreventPreloadValue[] = "1";
-
-// The version of the Contextual Cards API that we want to invoke.
-const int kContextualCardsUrlActions = 3;
 
 const int kResponseCodeUninitialized = -1;
 
@@ -101,9 +104,10 @@ void ContextualSearchDelegate::GatherAndSaveSurroundingText(
     base::WeakPtr<ContextualSearchContext> contextual_search_context,
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  RenderFrameHost::TextSurroundingSelectionCallback callback =
-      base::Bind(&ContextualSearchDelegate::OnTextSurroundingSelectionAvailable,
-                 AsWeakPtr());
+  blink::mojom::LocalFrame::GetTextSurroundingSelectionCallback callback =
+      base::BindOnce(
+          &ContextualSearchDelegate::OnTextSurroundingSelectionAvailable,
+          AsWeakPtr());
   context_ = contextual_search_context;
   if (context_ == nullptr)
     return;
@@ -114,11 +118,16 @@ void ContextualSearchDelegate::GatherAndSaveSurroundingText(
                                 : field_trial_->GetSampleSurroundingSize();
   RenderFrameHost* focused_frame = web_contents->GetFocusedFrame();
   if (focused_frame) {
-    focused_frame->RequestTextSurroundingSelection(callback,
+    focused_frame->RequestTextSurroundingSelection(std::move(callback),
                                                    surroundingTextSize);
   } else {
-    callback.Run(base::string16(), 0, 0);
+    std::move(callback).Run(base::string16(), 0, 0);
   }
+}
+
+void ContextualSearchDelegate::SetActiveContext(
+    base::WeakPtr<ContextualSearchContext> contextual_search_context) {
+  context_ = contextual_search_context;
 }
 
 void ContextualSearchDelegate::StartSearchTermResolutionRequest(
@@ -159,7 +168,7 @@ void ContextualSearchDelegate::ResolveSearchTermFromContext() {
       GetDiscourseContext(*context_));
 
   // Disable cookies for this request.
-  resource_request->allow_credentials = false;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   // Add Chrome experiment state to the request headers.
   // Reset will delete any previous loader, and we won't get any callback.
@@ -213,14 +222,17 @@ ContextualSearchDelegate::GetResolvedSearchTermFromJson(
   std::string thumbnail_url = "";
   std::string caption = "";
   std::string quick_action_uri = "";
-  int64_t logged_event_id = 0;
   QuickActionCategory quick_action_category = QUICK_ACTION_CATEGORY_NONE;
+  int64_t logged_event_id = 0;
+  std::string search_url_full = "";
+  std::string search_url_preload = "";
+  int coca_card_tag = 0;
 
   DecodeSearchTermFromJsonResponse(
       json_string, &search_term, &display_text, &alternate_term, &mid,
       &prevent_preload, &mention_start, &mention_end, &context_language,
       &thumbnail_url, &caption, &quick_action_uri, &quick_action_category,
-      &logged_event_id);
+      &logged_event_id, &search_url_full, &search_url_preload, &coca_card_tag);
   if (mention_start != 0 || mention_end != 0) {
     // Sanity check that our selection is non-zero and it is less than
     // 100 characters as that would make contextual search bar hide.
@@ -242,7 +254,8 @@ ContextualSearchDelegate::GetResolvedSearchTermFromJson(
       is_invalid, response_code, search_term, display_text, alternate_term, mid,
       prevent_preload == kDoPreventPreloadValue, start_adjust, end_adjust,
       context_language, thumbnail_url, caption, quick_action_uri,
-      quick_action_category, logged_event_id));
+      quick_action_category, logged_event_id, search_url_full,
+      search_url_preload, coca_card_tag));
 }
 
 std::string ContextualSearchDelegate::BuildRequestUrl(
@@ -258,9 +271,28 @@ std::string ContextualSearchDelegate::BuildRequestUrl(
   TemplateURLRef::SearchTermsArgs search_terms_args =
       TemplateURLRef::SearchTermsArgs(base::string16());
 
-  int contextual_cards_version = kContextualCardsUrlActions;
+  // Set the Coca-integration version.
+  // This is based on our current active feature, or an override param from a
+  // field trial, possibly augmented by using simplified server logic.
+  int contextual_cards_version =
+      contextual_search::kContextualCardsUrlActionsIntegration;
+  if (base::FeatureList::IsEnabled(
+                 chrome::android::kContextualSearchDefinitions)) {
+    contextual_cards_version =
+        contextual_search::kContextualCardsDefinitionsIntegration;
+  }
+  // Let the field-trial override.
   if (field_trial_->GetContextualCardsVersion() != 0) {
     contextual_cards_version = field_trial_->GetContextualCardsVersion();
+  }
+  // Add the simplified-server mixin, if enabled.
+  if (base::FeatureList::IsEnabled(
+          chrome::android::kContextualSearchSimplifiedServer) &&
+      contextual_cards_version <
+          contextual_search::kContextualCardsSimplifiedServerMixin) {
+    contextual_cards_version =
+        contextual_cards_version +
+        contextual_search::kContextualCardsSimplifiedServerMixin;
   }
 
   TemplateURLRef::SearchTermsArgs::ContextualSearchParams params(
@@ -292,8 +324,8 @@ std::string ContextualSearchDelegate::BuildRequestUrl(
 
 void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
     const base::string16& surrounding_text,
-    int start_offset,
-    int end_offset) {
+    uint32_t start_offset,
+    uint32_t end_offset) {
   if (context_ == nullptr)
     return;
 
@@ -305,9 +337,9 @@ void ContextualSearchDelegate::OnTextSurroundingSelectionAvailable(
   }
 
   // Pin the start and end offsets to ensure they point within the string.
-  int surrounding_length = surrounding_text.length();
-  start_offset = std::min(surrounding_length, std::max(0, start_offset));
-  end_offset = std::min(surrounding_length, std::max(0, end_offset));
+  uint32_t surrounding_length = surrounding_text.length();
+  start_offset = std::min(surrounding_length, start_offset);
+  end_offset = std::min(surrounding_length, end_offset);
 
   context_->SetSelectionSurroundings(start_offset, end_offset,
                                      surrounding_text);
@@ -399,10 +431,11 @@ bool ContextualSearchDelegate::CanSendPageURL(
 // Gets the target language from the translate service using the user's profile.
 std::string ContextualSearchDelegate::GetTargetLanguage() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  PrefService* pref_service = profile->GetPrefs();
-  language::LanguageModel* language_model =
+  LanguageModel* language_model =
       LanguageModelManagerFactory::GetForBrowserContext(profile)
           ->GetPrimaryModel();
+  DCHECK(language_model);
+  PrefService* pref_service = profile->GetPrefs();
   std::string result =
       TranslateService::GetTargetLanguage(pref_service, language_model);
   DCHECK(!result.empty());
@@ -432,7 +465,10 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
     std::string* caption,
     std::string* quick_action_uri,
     QuickActionCategory* quick_action_category,
-    int64_t* logged_event_id) {
+    int64_t* logged_event_id,
+    std::string* search_url_full,
+    std::string* search_url_preload,
+    int* coca_card_tag) {
   bool contains_xssi_escape =
       base::StartsWith(response, kXssiEscape, base::CompareCase::SENSITIVE);
   const std::string& proper_json =
@@ -479,13 +515,13 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
     }
   }
 
-  // Contextual Cards V1 Integration.
+  // Contextual Cards V1+ Integration.
   // Get the basic Bar data for Contextual Cards integration directly
   // from the root.
   dict->GetString(kContextualSearchCaption, caption);
   dict->GetString(kContextualSearchThumbnail, thumbnail_url);
 
-  // Contextual Cards V2 Integration.
+  // Contextual Cards V2+ Integration.
   // Get the Single Action data.
   dict->GetString(kContextualSearchAction, quick_action_uri);
   std::string quick_action_category_string;
@@ -503,6 +539,16 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
       *quick_action_category = QUICK_ACTION_CATEGORY_WEBSITE;
     }
   }
+
+  // Contextual Cards V4+ may also provide full search URLs to use in the
+  // overlay.
+  dict->GetString(kContextualSearchSearchUrlFull, search_url_full);
+  dict->GetString(kContextualSearchSearchUrlPreload, search_url_preload);
+
+  // Contextual Cards V5+ integration can provide the primary card tag, so
+  // clients can tell what kind of card they have received.
+  // TODO(donnd): make sure this works with a non-integer or missing value!
+  dict->GetInteger(kContextualSearchCardTag, coca_card_tag);
 
   // Any Contextual Cards integration.
   // For testing purposes check if there was a diagnostic from Contextual

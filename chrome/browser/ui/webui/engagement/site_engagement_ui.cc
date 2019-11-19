@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
 
 #include <cmath>
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
+#include "chrome/browser/engagement/site_engagement_details.mojom.h"
 #include "chrome/browser/engagement/site_engagement_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -18,7 +20,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace {
 
@@ -30,8 +33,8 @@ class SiteEngagementDetailsProviderImpl
   // Instance is deleted when the supplied pipe is destroyed.
   SiteEngagementDetailsProviderImpl(
       Profile* profile,
-      mojo::InterfaceRequest<mojom::SiteEngagementDetailsProvider> request)
-      : profile_(profile), binding_(this, std::move(request)) {
+      mojo::PendingReceiver<mojom::SiteEngagementDetailsProvider> receiver)
+      : profile_(profile), receiver_(this, std::move(receiver)) {
     DCHECK(profile_);
   }
 
@@ -70,7 +73,7 @@ class SiteEngagementDetailsProviderImpl
   // The Profile* handed to us in our constructor.
   Profile* profile_;
 
-  mojo::Binding<mojom::SiteEngagementDetailsProvider> binding_;
+  mojo::Receiver<mojom::SiteEngagementDetailsProvider> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(SiteEngagementDetailsProviderImpl);
 };
@@ -86,9 +89,7 @@ SiteEngagementUI::SiteEngagementUI(content::WebUI* web_ui)
   source->AddResourcePath(
       "chrome/browser/engagement/site_engagement_details.mojom-lite.js",
       IDR_SITE_ENGAGEMENT_DETAILS_MOJOM_LITE_JS);
-  source->AddResourcePath("url/mojom/url.mojom-lite.js", IDR_URL_MOJOM_LITE_JS);
   source->SetDefaultResource(IDR_SITE_ENGAGEMENT_HTML);
-  source->UseGzip();
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source.release());
 
   AddHandlerToRegistry(
@@ -99,7 +100,7 @@ SiteEngagementUI::SiteEngagementUI(content::WebUI* web_ui)
 SiteEngagementUI::~SiteEngagementUI() {}
 
 void SiteEngagementUI::BindSiteEngagementDetailsProvider(
-    mojom::SiteEngagementDetailsProviderRequest request) {
-  ui_handler_.reset(new SiteEngagementDetailsProviderImpl(
-      Profile::FromWebUI(web_ui()), std::move(request)));
+    mojo::PendingReceiver<mojom::SiteEngagementDetailsProvider> receiver) {
+  ui_handler_ = std::make_unique<SiteEngagementDetailsProviderImpl>(
+      Profile::FromWebUI(web_ui()), std::move(receiver));
 }

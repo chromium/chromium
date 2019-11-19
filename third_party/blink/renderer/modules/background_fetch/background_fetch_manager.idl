@@ -6,7 +6,7 @@
 
 [
     Exposed=(Window,Worker),
-    OriginTrialEnabled=BackgroundFetch
+    RuntimeEnabled=BackgroundFetch
 ] interface BackgroundFetchManager {
     [CallWith=ScriptState, RaisesException, MeasureAs=BackgroundFetchManagerFetch] Promise<BackgroundFetchRegistration> fetch(DOMString id, (RequestInfo or sequence<RequestInfo>) requests, optional BackgroundFetchOptions options);
     [CallWith=ScriptState, MeasureAs=BackgroundFetchManagerGet] Promise<BackgroundFetchRegistration?> get(DOMString id);

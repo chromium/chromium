@@ -219,7 +219,6 @@ chrome.developerPrivate.ExtensionView;
  */
 chrome.developerPrivate.ControllerType = {
   POLICY: 'POLICY',
-  CHILD_CUSTODIAN: 'CHILD_CUSTODIAN',
   SUPERVISED_USER_CUSTODIAN: 'SUPERVISED_USER_CUSTODIAN',
 };
 

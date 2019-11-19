@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/version_info.h"
@@ -18,6 +19,12 @@
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/chromeos/settings/cros_settings.h"
+#endif
+
+#if defined(OS_WIN) || defined(OS_MACOSX)
+#include "base/enterprise_util.h"
+#elif defined(OS_CHROMEOS)
+#include "chromeos/tpm/install_attributes.h"
 #endif
 
 namespace {
@@ -59,10 +66,6 @@ ChromeVariationsServiceClient::GetNetworkTimeTracker() {
   return g_browser_process->network_time_tracker();
 }
 
-version_info::Channel ChromeVariationsServiceClient::GetChannel() {
-  return chrome::GetChannel();
-}
-
 bool ChromeVariationsServiceClient::OverridesRestrictParameter(
     std::string* parameter) {
 #if defined(OS_CHROMEOS)
@@ -72,4 +75,18 @@ bool ChromeVariationsServiceClient::OverridesRestrictParameter(
 #else
   return false;
 #endif
+}
+
+bool ChromeVariationsServiceClient::IsEnterprise() {
+#if defined(OS_WIN) || defined(OS_MACOSX)
+  return base::IsMachineExternallyManaged();
+#elif defined(OS_CHROMEOS)
+  return chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
+#else
+  return false;
+#endif
+}
+
+version_info::Channel ChromeVariationsServiceClient::GetChannel() {
+  return chrome::GetChannel();
 }

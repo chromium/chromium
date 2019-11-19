@@ -15,8 +15,6 @@ using ::testing::SetArgPointee;
 namespace gpu {
 namespace gles2 {
 
-using namespace cmds;
-
 namespace {
 
 }  // namespace anonymous
@@ -24,8 +22,8 @@ namespace {
 TEST_P(GLES3DecoderTest, BindBufferBaseValidArgs) {
   EXPECT_CALL(
       *gl_, BindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 2, kServiceBufferId));
-  SpecializedSetup<BindBufferBase, 0>(true);
-  BindBufferBase cmd;
+  SpecializedSetup<cmds::BindBufferBase, 0>(true);
+  cmds::BindBufferBase cmd;
   cmd.Init(GL_TRANSFORM_FEEDBACK_BUFFER, 2, client_buffer_id_);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -36,8 +34,8 @@ TEST_P(GLES3DecoderTest, BindBufferBaseValidArgsNewId) {
               BindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 2, kNewServiceId));
   EXPECT_CALL(*gl_, GenBuffersARB(1, _))
       .WillOnce(SetArgPointee<1>(kNewServiceId));
-  SpecializedSetup<BindBufferBase, 0>(true);
-  BindBufferBase cmd;
+  SpecializedSetup<cmds::BindBufferBase, 0>(true);
+  cmds::BindBufferBase cmd;
   cmd.Init(GL_TRANSFORM_FEEDBACK_BUFFER, 2, kNewClientId);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -53,8 +51,8 @@ TEST_P(GLES3DecoderTest, BindBufferRangeValidArgs) {
   DoBufferData(kTarget, kBufferSize);
   EXPECT_CALL(*gl_, BindBufferRange(kTarget, 2, kServiceBufferId,
                                     kRangeOffset, kRangeSize));
-  SpecializedSetup<BindBufferRange, 0>(true);
-  BindBufferRange cmd;
+  SpecializedSetup<cmds::BindBufferRange, 0>(true);
+  cmds::BindBufferRange cmd;
   cmd.Init(kTarget, 2, client_buffer_id_, kRangeOffset, kRangeSize);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -66,8 +64,8 @@ TEST_P(GLES3DecoderTest, BindBufferRangeValidArgsWithNoData) {
   const GLsizeiptr kRangeSize = 8;
   DoBindBuffer(kTarget, client_buffer_id_, kServiceBufferId);
   EXPECT_CALL(*gl_, BindBufferBase(kTarget, 2, kServiceBufferId));
-  SpecializedSetup<BindBufferRange, 0>(true);
-  BindBufferRange cmd;
+  SpecializedSetup<cmds::BindBufferRange, 0>(true);
+  cmds::BindBufferRange cmd;
   cmd.Init(kTarget, 2, client_buffer_id_, kRangeOffset, kRangeSize);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -82,8 +80,8 @@ TEST_P(GLES3DecoderTest, BindBufferRangeValidArgsWithLessData) {
   DoBufferData(kTarget, kBufferSize);
   EXPECT_CALL(*gl_, BindBufferRange(kTarget, 2, kServiceBufferId,
                                     kRangeOffset, kRangeSize - 4));
-  SpecializedSetup<BindBufferRange, 0>(true);
-  BindBufferRange cmd;
+  SpecializedSetup<cmds::BindBufferRange, 0>(true);
+  cmds::BindBufferRange cmd;
   cmd.Init(kTarget, 2, client_buffer_id_, kRangeOffset, kRangeSize);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -94,8 +92,8 @@ TEST_P(GLES3DecoderTest, BindBufferRangeValidArgsNewId) {
                                     kNewServiceId));
   EXPECT_CALL(*gl_, GenBuffersARB(1, _))
       .WillOnce(SetArgPointee<1>(kNewServiceId));
-  SpecializedSetup<BindBufferRange, 0>(true);
-  BindBufferRange cmd;
+  SpecializedSetup<cmds::BindBufferRange, 0>(true);
+  cmds::BindBufferRange cmd;
   cmd.Init(GL_TRANSFORM_FEEDBACK_BUFFER, 2, kNewClientId, 4, 4);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
@@ -128,10 +126,9 @@ TEST_P(GLES3DecoderTest, MapBufferRangeUnmapBufferReadSucceeds) {
         .WillOnce(Return(&data[0]))
         .RetiresOnSaturation();
 
-    typedef MapBufferRange::Result Result;
-    Result* result = GetSharedMemoryAs<Result*>();
+    auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
 
-    MapBufferRange cmd;
+    cmds::MapBufferRange cmd;
     cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
              result_shm_id, result_shm_offset);
     *result = 0;
@@ -146,7 +143,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeUnmapBufferReadSucceeds) {
         .WillOnce(Return(GL_TRUE))
         .RetiresOnSaturation();
 
-    UnmapBuffer cmd;
+    cmds::UnmapBuffer cmd;
     cmd.Init(kTarget);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   }
@@ -168,8 +165,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeUnmapBufferWriteSucceeds) {
   // uint32_t is Result for both MapBufferRange and UnmapBuffer commands.
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(uint32_t);
 
-  typedef MapBufferRange::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
   int8_t* client_data = GetSharedMemoryAs<int8_t*>() + sizeof(uint32_t);
 
   DoBindBuffer(kTarget, client_buffer_id_, kServiceBufferId);
@@ -198,7 +194,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeUnmapBufferWriteSucceeds) {
         .WillOnce(Return(&gpu_data[kOffset]))
         .RetiresOnSaturation();
 
-    MapBufferRange cmd;
+    cmds::MapBufferRange cmd;
     cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
              result_shm_id, result_shm_offset);
     *result = 0;
@@ -217,7 +213,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeUnmapBufferWriteSucceeds) {
         .WillOnce(Return(GL_TRUE))
         .RetiresOnSaturation();
 
-    UnmapBuffer cmd;
+    cmds::UnmapBuffer cmd;
     cmd.Init(kTarget);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 
@@ -253,8 +249,7 @@ TEST_P(GLES3DecoderTest, FlushMappedBufferRangeSucceeds) {
   // uint32_t is Result for both MapBufferRange and UnmapBuffer commands.
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(uint32_t);
 
-  typedef MapBufferRange::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
   int8_t* client_data = GetSharedMemoryAs<int8_t*>() + sizeof(uint32_t);
 
   DoBindBuffer(kTarget, client_buffer_id_, kServiceBufferId);
@@ -283,7 +278,7 @@ TEST_P(GLES3DecoderTest, FlushMappedBufferRangeSucceeds) {
         .WillOnce(Return(&gpu_data[kMappedOffset]))
         .RetiresOnSaturation();
 
-    MapBufferRange cmd;
+    cmds::MapBufferRange cmd;
     cmd.Init(kTarget, kMappedOffset, kMappedSize, kAccess,
              data_shm_id, data_shm_offset,
              result_shm_id, result_shm_offset);
@@ -304,7 +299,7 @@ TEST_P(GLES3DecoderTest, FlushMappedBufferRangeSucceeds) {
         .Times(1)
         .RetiresOnSaturation();
 
-    FlushMappedBufferRange cmd;
+    cmds::FlushMappedBufferRange cmd;
     cmd.Init(kTarget, kFlushRangeOffset, kFlushRangeSize);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 
@@ -327,7 +322,7 @@ TEST_P(GLES3DecoderTest, FlushMappedBufferRangeSucceeds) {
         .WillOnce(Return(GL_TRUE))
         .RetiresOnSaturation();
 
-    UnmapBuffer cmd;
+    cmds::UnmapBuffer cmd;
     cmd.Init(kTarget);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
 
@@ -354,15 +349,14 @@ TEST_P(GLES3DecoderTest, MapBufferRangeNotInitFails) {
   const GLbitfield kAccess = GL_MAP_READ_BIT;
   std::vector<int8_t> data(kSize);
 
-  typedef MapBufferRange::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
   *result = 1;  // Any value other than 0.
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t data_shm_id = shared_memory_id_;
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  MapBufferRange cmd;
+  cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
            result_shm_id, result_shm_offset);
   EXPECT_NE(error::kNoError, ExecuteCmd(cmd));
@@ -387,8 +381,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeWriteInvalidateRangeSucceeds) {
       .WillOnce(Return(&data[0]))
       .RetiresOnSaturation();
 
-  typedef MapBufferRange::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
   *result = 0;
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
@@ -398,7 +391,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeWriteInvalidateRangeSucceeds) {
   int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
   memset(mem, 72, kSize);  // Init to a random value other than 0.
 
-  MapBufferRange cmd;
+  cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
            result_shm_id, result_shm_offset);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -426,8 +419,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeWriteInvalidateBufferSucceeds) {
       .WillOnce(Return(&data[0]))
       .RetiresOnSaturation();
 
-  typedef MapBufferRange::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
   *result = 0;
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
@@ -437,7 +429,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeWriteInvalidateBufferSucceeds) {
   int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
   memset(mem, 72, kSize);  // Init to a random value other than 0.
 
-  MapBufferRange cmd;
+  cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
            result_shm_id, result_shm_offset);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -463,8 +455,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeWriteUnsynchronizedBit) {
       .WillOnce(Return(&data[0]))
       .RetiresOnSaturation();
 
-  typedef MapBufferRange::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
   *result = 0;
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
@@ -474,7 +465,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeWriteUnsynchronizedBit) {
   int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
   memset(mem, 72, kSize);  // Init to a random value other than 0.
 
-  MapBufferRange cmd;
+  cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
            result_shm_id, result_shm_offset);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -491,8 +482,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeWithError) {
     data[ii] = static_cast<int8_t>(ii % 255);
   }
 
-  typedef MapBufferRange::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
   *result = 0;
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
@@ -502,7 +492,7 @@ TEST_P(GLES3DecoderTest, MapBufferRangeWithError) {
   int8_t* mem = reinterpret_cast<int8_t*>(&result[1]);
   memset(mem, 72, kSize);  // Init to a random value other than 0.
 
-  MapBufferRange cmd;
+  cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
            result_shm_id, result_shm_offset);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
@@ -526,15 +516,14 @@ TEST_P(GLES3DecoderTest, MapBufferRangeBadSharedMemoryFails) {
   DoBindBuffer(kTarget, client_buffer_id_, kServiceBufferId);
   DoBufferData(kTarget, kOffset + kSize);
 
-  typedef MapBufferRange::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
   *result = 0;
   uint32_t result_shm_id = shared_memory_id_;
   uint32_t result_shm_offset = kSharedMemoryOffset;
   uint32_t data_shm_id = shared_memory_id_;
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(*result);
 
-  MapBufferRange cmd;
+  cmds::MapBufferRange cmd;
   cmd.Init(kTarget, kOffset, kSize, kAccess,
            kInvalidSharedMemoryId, data_shm_offset,
            result_shm_id, result_shm_offset);
@@ -558,7 +547,7 @@ TEST_P(GLES3DecoderTest, UnmapBufferWriteNotMappedFails) {
 
   DoBindBuffer(kTarget, client_buffer_id_, kServiceBufferId);
 
-  UnmapBuffer cmd;
+  cmds::UnmapBuffer cmd;
   cmd.Init(kTarget);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -567,7 +556,7 @@ TEST_P(GLES3DecoderTest, UnmapBufferWriteNotMappedFails) {
 TEST_P(GLES3DecoderTest, UnmapBufferWriteNoBoundBufferFails) {
   const GLenum kTarget = GL_ARRAY_BUFFER;
 
-  UnmapBuffer cmd;
+  cmds::UnmapBuffer cmd;
   cmd.Init(kTarget);
   EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
   EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -597,10 +586,9 @@ TEST_P(GLES3DecoderTest, BufferDataDestroysDataStore) {
         .WillOnce(Return(&data[0]))
         .RetiresOnSaturation();
 
-    typedef MapBufferRange::Result Result;
-    Result* result = GetSharedMemoryAs<Result*>();
+    auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
 
-    MapBufferRange cmd;
+    cmds::MapBufferRange cmd;
     cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
              result_shm_id, result_shm_offset);
     *result = 0;
@@ -614,7 +602,7 @@ TEST_P(GLES3DecoderTest, BufferDataDestroysDataStore) {
   }
 
   {  // UnmapBuffer fails.
-    UnmapBuffer cmd;
+    cmds::UnmapBuffer cmd;
     cmd.Init(kTarget);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -645,10 +633,9 @@ TEST_P(GLES3DecoderTest, DeleteBuffersDestroysDataStore) {
         .WillOnce(Return(&data[0]))
         .RetiresOnSaturation();
 
-    typedef MapBufferRange::Result Result;
-    Result* result = GetSharedMemoryAs<Result*>();
+    auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
 
-    MapBufferRange cmd;
+    cmds::MapBufferRange cmd;
     cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
              result_shm_id, result_shm_offset);
     *result = 0;
@@ -666,7 +653,7 @@ TEST_P(GLES3DecoderTest, DeleteBuffersDestroysDataStore) {
   }
 
   {  // UnmapBuffer fails.
-    UnmapBuffer cmd;
+    cmds::UnmapBuffer cmd;
     cmd.Init(kTarget);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
@@ -685,11 +672,10 @@ TEST_P(GLES3DecoderTest, MapUnmapBufferInvalidTarget) {
   // uint32_t is Result for both MapBufferRange and UnmapBuffer commands.
   uint32_t data_shm_offset = kSharedMemoryOffset + sizeof(uint32_t);
 
-  typedef MapBufferRange::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>();
+  auto* result = GetSharedMemoryAs<cmds::MapBufferRange::Result*>();
 
   {
-    MapBufferRange cmd;
+    cmds::MapBufferRange cmd;
     cmd.Init(kTarget, kOffset, kSize, kAccess, data_shm_id, data_shm_offset,
              result_shm_id, result_shm_offset);
     *result = 0;
@@ -699,7 +685,7 @@ TEST_P(GLES3DecoderTest, MapUnmapBufferInvalidTarget) {
   }
 
   {
-    UnmapBuffer cmd;
+    cmds::UnmapBuffer cmd;
     cmd.Init(kTarget);
     EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
     EXPECT_EQ(GL_INVALID_ENUM, GetGLError());

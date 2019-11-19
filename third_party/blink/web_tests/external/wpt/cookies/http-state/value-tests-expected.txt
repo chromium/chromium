@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS value0001 - value0001
-PASS value0002 - value0002
-FAIL value0003 - value0003 assert_equals: expected "foo=\" bar \"" but got "foo=\"  bar \""
-PASS value0004 - value0004
-PASS value0005 - value0005
-PASS value0006 - value0006
-Harness: the test ran to completion.
-

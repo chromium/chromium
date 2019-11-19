@@ -1,49 +1,38 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "paintInvalidations": [
         {
-          "object": "LayoutBlockFlow DIV class='item'",
+          "object": "LayoutNGBlockFlow DIV class='item'",
           "rect": [250, 52, 50, 200],
           "reason": "geometry"
         },
         {
-          "object": "LayoutBlockFlow DIV class='item'",
+          "object": "LayoutNGBlockFlow DIV class='item'",
           "rect": [200, 52, 50, 200],
           "reason": "geometry"
         },
         {
-          "object": "LayoutBlockFlow DIV class='item'",
+          "object": "LayoutNGBlockFlow DIV class='item'",
           "rect": [150, 52, 50, 200],
           "reason": "geometry"
         },
         {
-          "object": "LayoutBlockFlow DIV class='item'",
+          "object": "LayoutNGBlockFlow DIV class='item'",
           "rect": [100, 52, 50, 200],
           "reason": "geometry"
         },
         {
-          "object": "LayoutBlockFlow DIV class='item'",
+          "object": "LayoutNGBlockFlow DIV class='item'",
           "rect": [50, 52, 50, 200],
           "reason": "geometry"
         },
         {
-          "object": "LayoutBlockFlow DIV class='item'",
+          "object": "LayoutNGBlockFlow DIV class='item'",
           "rect": [0, 52, 50, 200],
           "reason": "geometry"
         }

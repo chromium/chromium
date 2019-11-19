@@ -29,8 +29,8 @@ enum ResourceFormat {
   BGRX_1010102,
   YVU_420,
   YUV_420_BIPLANAR,
-  UYVY_422,
-  RESOURCE_FORMAT_MAX = UYVY_422,
+  P010,
+  RESOURCE_FORMAT_MAX = P010,
 };
 
 }  // namespace viz

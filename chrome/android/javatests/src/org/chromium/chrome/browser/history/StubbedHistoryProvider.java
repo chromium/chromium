@@ -21,11 +21,13 @@ public class StubbedHistoryProvider implements HistoryProvider {
 
     private BrowsingHistoryObserver mObserver;
     private List<HistoryItem> mItems = new ArrayList<>();
+    private List<HistoryItem> mSearchItems = new ArrayList<>();
     private List<HistoryItem> mRemovedItems = new ArrayList<>();
 
     /** The exclusive end position for the last query. **/
     private int mLastQueryEndPosition;
     private String mLastQuery;
+    private int mPaging = 5;
 
     @Override
     public void setObserver(BrowsingHistoryObserver observer) {
@@ -42,29 +44,31 @@ public class StubbedHistoryProvider implements HistoryProvider {
     @Override
     public void queryHistoryContinuation() {
         // Simulate basic paging to facilitate testing loading more items.
-        // TODO(twellington): support loading more items while searching.
-        int queryStartPosition = mLastQueryEndPosition;
-        int queryStartPositionPlusFive = mLastQueryEndPosition + 5;
-        boolean hasMoreItems =
-                queryStartPositionPlusFive < mItems.size() && TextUtils.isEmpty(mLastQuery);
-        int queryEndPosition = hasMoreItems ? queryStartPositionPlusFive : mItems.size();
 
-        mLastQueryEndPosition = queryEndPosition;
-
-        List<HistoryItem> items = new ArrayList<>();
-        if (TextUtils.isEmpty(mLastQuery)) {
-            items = mItems.subList(queryStartPosition, queryEndPosition);
-        } else {
-            // Simulate basic search.
+        boolean isSearch = !TextUtils.isEmpty(mLastQuery);
+        if (!isSearch) {
+            mSearchItems.clear();
+        } else if (mLastQueryEndPosition == 0) {
+            // Start a new search; simulate basic search.
             mLastQuery = mLastQuery.toLowerCase(Locale.getDefault());
             for (HistoryItem item : mItems) {
                 if (item.getUrl().toLowerCase(Locale.getDefault()).contains(mLastQuery)
                         || item.getTitle().toLowerCase(Locale.getDefault()).contains(mLastQuery)) {
-                    items.add(item);
+                    mSearchItems.add(item);
                 }
             }
         }
 
+        int queryStartPosition = mLastQueryEndPosition;
+        int queryStartPositionPlusPaging = mLastQueryEndPosition + mPaging;
+
+        List<HistoryItem> targetItems = isSearch ? mSearchItems : mItems;
+        boolean hasMoreItems = queryStartPositionPlusPaging < targetItems.size();
+        int queryEndPosition = hasMoreItems ? queryStartPositionPlusPaging : targetItems.size();
+
+        mLastQueryEndPosition = queryEndPosition;
+
+        List<HistoryItem> items = targetItems.subList(queryStartPosition, queryEndPosition);
         mObserver.onQueryHistoryComplete(items, hasMoreItems);
     }
 
@@ -81,6 +85,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
         }
         mRemovedItems.clear();
         removeItemsCallback.notifyCalled();
+        mObserver.onHistoryDeleted();
     }
 
     @Override
@@ -92,6 +97,14 @@ public class StubbedHistoryProvider implements HistoryProvider {
 
     public void removeItem(HistoryItem item) {
         mItems.remove(item);
+    }
+
+    public void setPaging(int paging) {
+        mPaging = paging;
+    }
+
+    public int getPaging() {
+        return mPaging;
     }
 
     public static HistoryItem createHistoryItem(int which, long timestamp) {

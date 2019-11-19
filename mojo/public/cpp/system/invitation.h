@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
+#include "mojo/public/c/system/invitation.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/system/handle.h"
@@ -99,6 +100,13 @@ class MOJO_CPP_SYSTEM_EXPORT OutgoingInvitation {
                    PlatformChannelServerEndpoint server_endpoint,
                    const ProcessErrorCallback& error_callback = {});
 
+  // Similar to |Send()|, but targets a process which will accept the invitation
+  // with |IncomingInvitation::AcceptAsync()| instead of |Accept()|.
+  static void SendAsync(OutgoingInvitation invitation,
+                        base::ProcessHandle target_process,
+                        PlatformChannelEndpoint channel_endpoint,
+                        const ProcessErrorCallback& error_callback = {});
+
   // Sends an isolated invitation over |endpoint|. The process at the other
   // endpoint must use |IncomingInvitation::AcceptIsolated()| to accept the
   // invitation.
@@ -160,7 +168,17 @@ class MOJO_CPP_SYSTEM_EXPORT IncomingInvitation {
   // the other end of that channel. If the invitation was sent using a
   // |PlatformChannelServerEndpoint|, then |channel_endpoint| should be created
   // by |NamedPlatformChannel::ConnectToServer|.
-  static IncomingInvitation Accept(PlatformChannelEndpoint channel_endpoint);
+  //
+  // Note that this performs blocking I/O on the calling thread.
+  static IncomingInvitation Accept(
+      PlatformChannelEndpoint channel_endpoint,
+      MojoAcceptInvitationFlags flags = MOJO_ACCEPT_INVITATION_FLAG_NONE);
+
+  // Like above, but does not perform any blocking I/O. Not all platforms and
+  // sandbox configurations are compatible with this API. In such cases, the
+  // synchronous |Accept()| above should be used.
+  static IncomingInvitation AcceptAsync(
+      PlatformChannelEndpoint channel_endpoint);
 
   // Accepts an incoming isolated invitation from |channel_endpoint|. See
   // notes on |OutgoingInvitation::SendIsolated()|.

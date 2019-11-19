@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL XMLHttpRequest: open() during abort processing - abort() called from onloadstart assert_array_equals: lengths differ, expected 7 got 9
+Harness: the test ran to completion.
+

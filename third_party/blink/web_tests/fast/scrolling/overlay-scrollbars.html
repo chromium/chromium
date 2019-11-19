@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
+<script>
+if (window.internals)
+  internals.useMockOverlayScrollbars();
+</script>
 <style>
 html, body {
     margin: 0;
@@ -17,12 +21,6 @@ html, body {
     height: 500px;
 }
 </style>
-<script>
-if (window.internals) {
-    internals.runtimeFlags.overlayScrollbarsEnabled = true;
-    internals.settings.setMockScrollbarsEnabled(true);
-}
-</script>
 </head>
 <body>
 <p>You should see first 2 green boxes with overlay scrollbars.

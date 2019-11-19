@@ -25,11 +25,11 @@ source_set("bubble") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/feature_engagement",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
+    "//ios/chrome/common/colors",
     "//ios/third_party/material_components_ios",
     "//net",
     "//ui/base",
@@ -49,7 +49,7 @@ source_set("unit_tests") {
     ":bubble",
     "//base",
     "//base:i18n",
-    "//ios/chrome/browser/ui",
+    "//ios/chrome/browser/ui/util",
     "//testing/gtest",
   ]
   libs = [ "CoreGraphics.framework" ]

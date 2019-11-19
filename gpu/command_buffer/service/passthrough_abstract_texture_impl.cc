@@ -7,6 +7,7 @@
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/error_state.h"
+#include "gpu/command_buffer/service/gl_stream_texture_image.h"
 #include "gpu/command_buffer/service/passthrough_abstract_texture_impl.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_context.h"
@@ -73,7 +74,17 @@ void PassthroughAbstractTextureImpl::BindImage(gl::GLImage* image,
 void PassthroughAbstractTextureImpl::BindStreamTextureImage(
     GLStreamTextureImage* image,
     GLuint service_id) {
-  NOTREACHED();
+  DCHECK(image);
+  DCHECK(!decoder_managed_image_);
+
+  if (!texture_passthrough_)
+    return;
+
+  const GLuint target = texture_passthrough_->target();
+  const GLint level = 0;
+
+  texture_passthrough_->set_is_bind_pending(true);
+  texture_passthrough_->SetStreamLevelImage(target, level, image, service_id);
 }
 
 gl::GLImage* PassthroughAbstractTextureImpl::GetImage() const {

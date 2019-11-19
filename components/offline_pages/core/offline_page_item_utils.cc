@@ -8,13 +8,13 @@
 namespace offline_pages {
 
 bool EqualsIgnoringFragment(const GURL& lhs, const GURL& rhs) {
-  GURL::Replacements remove_params;
-  remove_params.ClearRef();
+  return UrlWithoutFragment(lhs) == UrlWithoutFragment(rhs);
+}
 
-  GURL lhs_stripped = lhs.ReplaceComponents(remove_params);
-  GURL rhs_stripped = rhs.ReplaceComponents(remove_params);
-
-  return lhs_stripped == rhs_stripped;
+GURL UrlWithoutFragment(const GURL& url) {
+  GURL::Replacements remove_fragment;
+  remove_fragment.ClearRef();
+  return url.ReplaceComponents(remove_fragment);
 }
 
 }  // namespace offline_pages

@@ -21,9 +21,9 @@ class DownloadCompletionBlocker : public base::SupportsUserData::Data {
 
   bool is_complete() const { return is_complete_; }
 
-  void set_callback(const base::Closure& callback) {
+  void set_callback(base::OnceClosure callback) {
     if (!is_complete())
-      callback_ = callback;
+      callback_ = std::move(callback);
   }
 
   // Mark this download item as complete with respect to this blocker. (Other
@@ -34,7 +34,7 @@ class DownloadCompletionBlocker : public base::SupportsUserData::Data {
 
  private:
   bool is_complete_;
-  base::Closure callback_;
+  base::OnceClosure callback_;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadCompletionBlocker);
 };

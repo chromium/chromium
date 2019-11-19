@@ -1,0 +1,44 @@
+This is a testharness.js-based test.
+PASS minmax replaced IFRAME 1
+PASS minmax replaced IFRAME 2
+PASS minmax replaced IFRAME 3
+PASS minmax replaced IFRAME 4
+PASS minmax replaced IFRAME 5
+PASS minmax replaced IFRAME 6
+PASS minmax replaced IFRAME 7
+PASS minmax replaced IFRAME 8
+PASS minmax replaced IFRAME 9
+PASS minmax replaced IFRAME 10
+PASS minmax replaced IFRAME 11
+PASS minmax replaced IMG 12
+PASS minmax replaced IMG 13
+PASS minmax replaced IMG 14
+PASS minmax replaced IMG 15
+PASS minmax replaced IMG 16
+PASS minmax replaced IMG 17
+PASS minmax replaced IMG 18
+PASS minmax replaced IMG 19
+PASS minmax replaced IMG 20
+PASS minmax replaced IMG 21
+PASS minmax replaced IMG 22
+PASS minmax replaced IMG svg 23
+PASS minmax replaced IMG svg 24
+PASS minmax replaced IMG svg 25
+PASS minmax replaced IMG svg 26
+PASS minmax replaced IMG svg 27
+PASS minmax replaced IMG svg 28
+PASS minmax replaced IMG svg 29
+PASS minmax replaced IMG svg 30
+PASS minmax replaced IMG svg 31
+PASS minmax replaced IMG svg 32
+PASS minmax replaced IMG svg 33
+PASS minmax replaced IMG 34
+FAIL minmax replaced IMG 35 assert_equals: incorrect offsetWidth expected "388" but got "426"
+FAIL minmax replaced IMG 36 assert_equals: incorrect offsetWidth expected "188" but got "426"
+FAIL minmax replaced IMG 37 assert_equals: incorrect offsetWidth expected "188" but got "338"
+PASS minmax replaced IMG 38
+PASS minmax replaced IMG 39
+PASS minmax replaced IMG 40
+PASS minmax replaced IMG 41
+Harness: the test ran to completion.
+

@@ -17,11 +17,11 @@ interface RenderMessageFilter {
 
   // Similar to CreateWindow, except used for sub-widgets, like <select>
   // dropdowns.
-  [Sync] CreateNewWidget(int32 opener_id, Widget widget)
+  [Sync] CreateNewWidget(int32 opener_id, pending_remote<Widget> widget)
       => (int32 route_id);
 
   // Similar to CreateWidget except the widget is a full screen window.
-  [Sync] CreateFullscreenWidget(int32 opener_id, Widget widget)
+  [Sync] CreateFullscreenWidget(int32 opener_id, pending_remote<Widget> widget)
       => (int32 route_id);
 
   // A renderer sends this when it wants to know whether a gpu process exists.

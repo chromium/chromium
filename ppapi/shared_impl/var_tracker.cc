@@ -218,11 +218,11 @@ ArrayBufferVar* VarTracker::MakeArrayBufferVar(uint32_t size_in_bytes,
 }
 
 PP_Var VarTracker::MakeArrayBufferPPVar(uint32_t size_in_bytes,
-                                        base::SharedMemoryHandle handle) {
+                                        base::UnsafeSharedMemoryRegion region) {
   CheckThreadingPreconditions();
 
   scoped_refptr<ArrayBufferVar> array_buffer(
-      CreateShmArrayBuffer(size_in_bytes, handle));
+      CreateShmArrayBuffer(size_in_bytes, std::move(region)));
   if (!array_buffer.get())
     return PP_MakeNull();
   return array_buffer->GetPPVar();

@@ -6,28 +6,30 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_NEW_SCRIPT_LOADER_H_
 
 #include "base/macros.h"
-#include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "content/public/common/resource_type.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
 
-class ServiceWorkerCacheWriter;
 class ServiceWorkerVersion;
 struct HttpResponseInfoIOBuffer;
 
-// S13nServiceWorker:
 // This is the URLLoader used for loading scripts for a new (installing) service
-// worker. It fetches the script (the main script or imported script) from
-// network, and returns the response to |client|, while also writing the
-// response into the service worker script storage.
+// worker. It fetches the script (the main script or imported script) and
+// returns the response to |client|, while also writing the response into the
+// service worker script storage.
 //
-// In the common case, this works as follows:
+// This loader works as follows:
 //   1. Makes a network request.
 //   2. OnReceiveResponse() is called, writes the response headers to the
 //      service worker script storage and responds with them to the |client|
@@ -38,14 +40,14 @@ struct HttpResponseInfoIOBuffer;
 //   4. OnComplete() for the network load and OnWriteDataComplete() are called,
 //      calls CommitCompleted() and closes the connections with the network
 //      service and the renderer process.
-// In an uncommon case, the response body is empty so
-// OnStartLoadingResponseBody() is not called.
 //
 // A set of |network_loader_state_|, |header_writer_state_|, and
 // |body_writer_state_| is the state of this loader. Each of them is changed
 // independently, while some state changes have dependency to other state
 // changes.  See the comment for each field below to see exactly when their
-// state changes happen.
+// state changes happen. For resume loaders, these states are set to be
+// values extracted from ServiceWorkerSingleScriptUpdateChecker::PausedState
+// to make the loader seamlessly resume the download.
 //
 // In case there is already an installed service worker for this registration,
 // this class also performs the "byte-for-byte" comparison for updating the
@@ -58,27 +60,36 @@ struct HttpResponseInfoIOBuffer;
 // "network" request in comments and naming. "network" is meant to distinguish
 // from the load this URLLoader does for its client:
 //     "network" <------> SWNewScriptLoader <------> client
-class CONTENT_EXPORT ServiceWorkerNewScriptLoader
+class CONTENT_EXPORT ServiceWorkerNewScriptLoader final
     : public network::mojom::URLLoader,
       public network::mojom::URLLoaderClient {
  public:
-  // |loader_factory| is used to load the script, see class comments.
-  ServiceWorkerNewScriptLoader(
+  enum class LoaderState {
+    kNotStarted,
+    kLoadingHeader,
+    kWaitingForBody,
+    kLoadingBody,
+    kCompleted,
+  };
+
+  enum class WriterState { kNotStarted, kWriting, kCompleted };
+
+  static std::unique_ptr<ServiceWorkerNewScriptLoader> CreateAndStart(
       int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& original_request,
-      network::mojom::URLLoaderClientPtr client,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       scoped_refptr<ServiceWorkerVersion> version,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
+
   ~ServiceWorkerNewScriptLoader() override;
 
   // network::mojom::URLLoader:
   void FollowRedirect(const std::vector<std::string>& removed_headers,
                       const net::HttpRequestHeaders& modified_headers,
                       const base::Optional<GURL>& new_url) override;
-  void ProceedWithResponse() override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
   void PauseReadingBodyFromNet() override;
@@ -86,14 +97,14 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader
 
   // network::mojom::URLLoaderClient for the network load:
   void OnReceiveResponse(
-      const network::ResourceResponseHead& response_head) override;
+      network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(
       const net::RedirectInfo& redirect_info,
-      const network::ResourceResponseHead& response_head) override;
+      network::mojom::URLResponseHeadPtr response_head) override;
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback ack_callback) override;
-  void OnReceiveCachedMetadata(const std::vector<uint8_t>& data) override;
+  void OnReceiveCachedMetadata(mojo_base::BigBuffer data) override;
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnStartLoadingResponseBody(
       mojo::ScopedDataPipeConsumerHandle body) override;
@@ -103,15 +114,17 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader
   const static uint32_t kReadBufferSize;
 
  private:
-  enum class NetworkLoaderState {
-    kNotStarted,
-    kLoadingHeader,
-    kWaitingForBody,
-    kLoadingBody,
-    kCompleted,
-  };
+  class WrappedIOBuffer;
 
-  enum class WriterState { kNotStarted, kWriting, kCompleted };
+  ServiceWorkerNewScriptLoader(
+      int32_t routing_id,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& original_request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      scoped_refptr<ServiceWorkerVersion> version,
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation);
 
   // Writes the given headers into the service worker script storage.
   void WriteHeaders(scoped_refptr<HttpResponseInfoIOBuffer> info_buffer);
@@ -138,26 +151,47 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader
   void CommitCompleted(const network::URLLoaderCompletionStatus& status,
                        const std::string& status_message);
 
+  // Called when |client_producer_| is writable. It writes |data_to_send_|
+  // to |client_producer_|. If all data is written, the observer has completed
+  // its work and |write_observer_complete_callback_| is called. Otherwise,
+  // |client_producer_watcher_| is armed to wait for |client_producer_| to be
+  // writable again.
+  void OnClientWritable(MojoResult);
+
+  // Called when ServiceWorkerCacheWriter::Resume() completes its work.
+  // If not all data are received, it continues to download from network.
+  void OnCacheWriterResumed(net::Error error);
+
+#if DCHECK_IS_ON()
+  void CheckVersionStatusBeforeLoad();
+#endif  // DCHECK_IS_ON()
+
   const GURL request_url_;
 
-  // This is RESOURCE_TYPE_SERVICE_WORKER for the main script or
-  // RESOURCE_TYPE_SCRIPT for an imported script.
+  // This is ResourceType::kServiceWorker for the main script or
+  // ResourceType::kScript for an imported script.
   const ResourceType resource_type_;
+
+  // Load options originally passed to this loader. The options passed to the
+  // network loader might be different from this.
+  const uint32_t original_options_;
 
   scoped_refptr<ServiceWorkerVersion> version_;
 
   std::unique_ptr<ServiceWorkerCacheWriter> cache_writer_;
 
-  // Used for fetching the script from network, which might not actually
-  // use the direct network factory, see class comments.
+  // Used for fetching the script from network (or other loaders like extensions
+  // sometimes).
   network::mojom::URLLoaderPtr network_loader_;
-  mojo::Binding<network::mojom::URLLoaderClient> network_client_binding_;
+
+  mojo::Receiver<network::mojom::URLLoaderClient> network_client_receiver_{
+      this};
   mojo::ScopedDataPipeConsumerHandle network_consumer_;
   mojo::SimpleWatcher network_watcher_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
   // Used for responding with the fetched script to this loader's client.
-  network::mojom::URLLoaderClientPtr client_;
+  mojo::Remote<network::mojom::URLLoaderClient> client_;
   mojo::ScopedDataPipeProducerHandle client_producer_;
 
   // Represents the state of |network_loader_|.
@@ -173,7 +207,7 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader
   // CreateLoaderAndStart(): kNotStarted -> kLoadingHeader
   // OnReceiveResponse(): kLoadingHeader -> kWaitingForBody
   // OnComplete(): kWaitingForBody -> kCompleted
-  NetworkLoaderState network_loader_state_ = NetworkLoaderState::kNotStarted;
+  LoaderState network_loader_state_ = LoaderState::kNotStarted;
 
   // Represents the state of |cache_writer_|.
   // Set to kWriting when it starts to write the header, and set to kCompleted
@@ -187,19 +221,13 @@ class CONTENT_EXPORT ServiceWorkerNewScriptLoader
   // Set to kWriting when |this| starts watching |network_consumer_|, and set to
   // kCompleted when all data has been written to |cache_writer_|.
   //
-  // When response body exists:
   // OnStartLoadingResponseBody() && OnWriteHeadersComplete():
   //     kNotStarted -> kWriting
   // OnNetworkDataAvailable() && MOJO_RESULT_FAILED_PRECONDITION:
   //     kWriting -> kCompleted
-  //
-  // When response body is empty:
-  // OnComplete(): kNotStarted -> kCompleted
   WriterState body_writer_state_ = WriterState::kNotStarted;
 
-  const uint32_t original_options_;
-
-  base::WeakPtrFactory<ServiceWorkerNewScriptLoader> weak_factory_;
+  base::WeakPtrFactory<ServiceWorkerNewScriptLoader> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerNewScriptLoader);
 };

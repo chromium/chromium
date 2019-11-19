@@ -104,9 +104,7 @@ class MEDIA_EXPORT TrackRunIterator {
   bool IsSampleEncrypted(size_t sample_index) const;
   uint8_t GetIvSize(size_t sample_index) const;
   const std::vector<uint8_t>& GetKeyId(size_t sample_index) const;
-#if BUILDFLAG(ENABLE_CBCS_ENCRYPTION_SCHEME)
   bool ApplyConstantIv(size_t sample_index, SampleEncryptionEntry* entry) const;
-#endif
 
   const Movie* moov_;
   MediaLog* media_log_;

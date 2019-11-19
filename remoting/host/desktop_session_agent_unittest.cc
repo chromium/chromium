@@ -12,9 +12,9 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "ipc/ipc_listener.h"
@@ -45,12 +45,11 @@ class FakeDelegate : public DesktopSessionAgent::Delegate {
  private:
   FakeDesktopEnvironmentFactory factory_;
 
-  base::WeakPtrFactory<FakeDelegate> weak_ptr_;
+  base::WeakPtrFactory<FakeDelegate> weak_ptr_{this};
 };
 
 FakeDelegate::FakeDelegate(scoped_refptr<base::SingleThreadTaskRunner> runner)
-    : factory_(runner),
-      weak_ptr_(this) {}
+    : factory_(runner) {}
 
 class ProcessStatsListener : public IPC::Listener {
  public:
@@ -94,17 +93,20 @@ class DesktopSessionAgentTest : public ::testing::Test {
   void Shutdown();
 
  protected:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   scoped_refptr<AutoThreadTaskRunner> task_runner_;
   scoped_refptr<DesktopSessionAgent> agent_;
 };
 
 DesktopSessionAgentTest::DesktopSessionAgentTest()
-    : task_runner_(new AutoThreadTaskRunner(
-          message_loop_.task_runner(), run_loop_.QuitClosure())),
-      agent_(new DesktopSessionAgent(
-          task_runner_, task_runner_, task_runner_, task_runner_)) {}
+    : task_runner_(
+          new AutoThreadTaskRunner(task_environment_.GetMainThreadTaskRunner(),
+                                   run_loop_.QuitClosure())),
+      agent_(new DesktopSessionAgent(task_runner_,
+                                     task_runner_,
+                                     task_runner_,
+                                     task_runner_)) {}
 
 void DesktopSessionAgentTest::Shutdown() {
   task_runner_ = nullptr;

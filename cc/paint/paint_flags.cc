@@ -129,7 +129,6 @@ SkPaint PaintFlags::ToSkPaint() const {
     paint.setShader(shader_->GetSkShader());
   paint.setMaskFilter(mask_filter_);
   paint.setColorFilter(color_filter_);
-  paint.setDrawLooper(draw_looper_);
   if (image_filter_)
     paint.setImageFilter(image_filter_->cached_sk_filter_);
   paint.setColor(color_);

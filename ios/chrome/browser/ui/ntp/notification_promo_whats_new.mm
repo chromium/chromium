@@ -34,7 +34,7 @@ namespace {
 
 struct PromoStringToIdsMapEntry {
   const char* promo_text_str;
-  // Use |nonlocalized_message| instead of |message_id| if non-NULL.
+  // Use |nonlocalized_message| instead of |message_id| if non-nullptr.
   const char* nonlocalized_message;
   int message_id;
 };
@@ -42,7 +42,8 @@ struct PromoStringToIdsMapEntry {
 // A mapping from a string to a l10n message id.
 const PromoStringToIdsMapEntry kPromoStringToIdsMap[] = {
     {"testWhatsNewCommand", kTestWhatsNewMessage, 0},
-    {"moveToDockTip", NULL, IDS_IOS_MOVE_TO_DOCK_TIP},
+    {"moveToDockTip", nullptr, IDS_IOS_MOVE_TO_DOCK_TIP},
+    {"reviewChromeToS", nullptr, IDS_IOS_REVIEW_UPDATED_CHROME_TOS},
 };
 
 // Returns a localized version of |promo_text| if it has an entry in the
@@ -89,6 +90,10 @@ bool NotificationPromoWhatsNew::Init() {
       InjectFakePromo("2", "moveToDockTip", "url", "",
                       "https://support.google.com/chrome/?p=iphone_dock&ios=1",
                       "MoveToDockTipPromo", "logoWithRoundedRectangle");
+      break;
+    case experimental_flags::WHATS_NEW_REVIEW_UPDATED_TOS:
+      InjectFakePromo("3", "reviewChromeToS", "url", "", "chrome://terms",
+                      "ReviewUpdatedChromeToS", "logoWithRoundedRectangle");
       break;
     default:
       NOTREACHED();
@@ -275,7 +280,7 @@ void NotificationPromoWhatsNew::InjectFakePromo(const std::string& promo_id,
                             "  \"promo_id\":$7"
                             "}";
   std::string promo_json_filled_in =
-      base::ReplaceStringPlaceholders(promo_json, replacements, NULL);
+      base::ReplaceStringPlaceholders(promo_json, replacements, nullptr);
 
   base::Optional<base::Value> value =
       base::JSONReader::Read(promo_json_filled_in);

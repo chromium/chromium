@@ -18,13 +18,12 @@
 #include "base/supports_user_data.h"
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
-#include "content/browser/resource_context_impl.h"
 #include "content/public/browser/blob_handle.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
-#include "services/network/public/cpp/resource_request_body.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -72,11 +71,11 @@ class BlobHandleImpl : public BlobHandle {
 
   std::string GetUUID() override { return handle_->uuid(); }
 
-  blink::mojom::BlobPtr PassBlob() override {
-    blink::mojom::BlobPtr result;
+  mojo::PendingRemote<blink::mojom::Blob> PassBlob() override {
+    mojo::PendingRemote<blink::mojom::Blob> result;
     storage::BlobImpl::Create(
         std::make_unique<storage::BlobDataHandle>(*handle_),
-        MakeRequest(&result));
+        result.InitWithNewPipeAndPassReceiver());
     return result;
   }
 
@@ -118,18 +117,19 @@ ChromeBlobStorageContext* ChromeBlobStorageContext::GetFor(
     // If we're not incognito mode, schedule all of our file tasks to enable
     // disk on the storage context.
     if (!context->IsOffTheRecord() && io_thread_valid) {
-      file_task_runner = base::CreateTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      file_task_runner = base::CreateTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
       // Removes our old blob directories if they exist.
-      BrowserThread::PostAfterStartupTask(
+      BrowserThread::PostBestEffortTask(
           FROM_HERE, file_task_runner,
           base::BindOnce(&RemoveOldBlobStorageDirectories,
                          std::move(blob_storage_parent), blob_storage_dir));
     }
 
     if (io_thread_valid) {
-      base::PostTaskWithTraits(
+      base::PostTask(
           FROM_HERE, {BrowserThread::IO},
           base::BindOnce(&ChromeBlobStorageContext::InitializeOnIOThread, blob,
                          std::move(blob_storage_dir),
@@ -149,23 +149,34 @@ void ChromeBlobStorageContext::InitializeOnIOThread(
                                         std::move(file_task_runner)));
   // Signal the BlobMemoryController when it's appropriate to calculate its
   // storage limits.
-  BrowserThread::PostAfterStartupTask(
-      FROM_HERE,
-      base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::IO}),
+  base::PostTask(
+      FROM_HERE, {content::BrowserThread::IO, base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&storage::BlobMemoryController::CalculateBlobStorageLimits,
                      context_->mutable_memory_controller()->GetWeakPtr()));
 }
 
+storage::BlobStorageContext* ChromeBlobStorageContext::context() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  return context_.get();
+}
+
+mojo::PendingRemote<storage::mojom::BlobStorageContext>
+ChromeBlobStorageContext::MojoContext() const {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  mojo::PendingRemote<storage::mojom::BlobStorageContext> remote;
+  context_->Bind(remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
 std::unique_ptr<BlobHandle> ChromeBlobStorageContext::CreateMemoryBackedBlob(
-    const char* data,
-    size_t length,
+    base::span<const uint8_t> data,
     const std::string& content_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   std::string uuid(base::GenerateGUID());
   auto blob_data_builder = std::make_unique<storage::BlobDataBuilder>(uuid);
   blob_data_builder->set_content_type(content_type);
-  blob_data_builder->AppendData(data, length);
+  blob_data_builder->AppendData(data);
 
   std::unique_ptr<storage::BlobDataHandle> blob_data_handle =
       context_->AddFinishedBlob(std::move(blob_data_builder));
@@ -181,23 +192,25 @@ std::unique_ptr<BlobHandle> ChromeBlobStorageContext::CreateMemoryBackedBlob(
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeBlobStorageContext::URLLoaderFactoryForToken(
     BrowserContext* browser_context,
-    blink::mojom::BlobURLTokenPtr token) {
+    mojo::PendingRemote<blink::mojom::BlobURLToken> token) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  network::mojom::URLLoaderFactoryPtr blob_url_loader_factory_ptr;
-  base::PostTaskWithTraits(
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      blob_url_loader_factory_remote;
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           [](scoped_refptr<ChromeBlobStorageContext> context,
-             network::mojom::URLLoaderFactoryRequest request,
-             blink::mojom::BlobURLTokenPtrInfo token) {
+             mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
+             mojo::PendingRemote<blink::mojom::BlobURLToken> token) {
             storage::BlobURLLoaderFactory::Create(
-                blink::mojom::BlobURLTokenPtr(std::move(token)),
-                context->context()->AsWeakPtr(), std::move(request));
+                std::move(token), context->context()->AsWeakPtr(),
+                std::move(receiver));
           },
           base::WrapRefCounted(GetFor(browser_context)),
-          MakeRequest(&blob_url_loader_factory_ptr), token.PassInterface()));
+          blob_url_loader_factory_remote.InitWithNewPipeAndPassReceiver(),
+          std::move(token)));
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-      std::move(blob_url_loader_factory_ptr));
+      std::move(blob_url_loader_factory_remote));
 }
 
 // static
@@ -206,41 +219,45 @@ ChromeBlobStorageContext::URLLoaderFactoryForUrl(
     BrowserContext* browser_context,
     const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  network::mojom::URLLoaderFactoryPtr blob_url_loader_factory_ptr;
-  base::PostTaskWithTraits(
+  mojo::PendingRemote<network::mojom::URLLoaderFactory>
+      blob_url_loader_factory_remote;
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           [](scoped_refptr<ChromeBlobStorageContext> context,
-             network::mojom::URLLoaderFactoryRequest request, const GURL& url) {
-            auto blob_handle =
-                context->context()->GetBlobDataFromPublicURL(url);
-            storage::BlobURLLoaderFactory::Create(std::move(blob_handle), url,
-                                                  std::move(request));
+             mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
+             const GURL& url) {
+            auto blob_remote = context->context()->GetBlobFromPublicURL(url);
+            storage::BlobURLLoaderFactory::Create(
+                std::move(blob_remote), url, context->context()->AsWeakPtr(),
+                std::move(receiver));
           },
           base::WrapRefCounted(GetFor(browser_context)),
-          MakeRequest(&blob_url_loader_factory_ptr), url));
+          blob_url_loader_factory_remote.InitWithNewPipeAndPassReceiver(),
+          url));
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-      std::move(blob_url_loader_factory_ptr));
+      std::move(blob_url_loader_factory_remote));
 }
 
 // static
-blink::mojom::BlobPtr ChromeBlobStorageContext::GetBlobPtr(
+mojo::PendingRemote<blink::mojom::Blob> ChromeBlobStorageContext::GetBlobRemote(
     BrowserContext* browser_context,
     const std::string& uuid) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  blink::mojom::BlobPtr blob_ptr;
-  base::PostTaskWithTraits(
+  mojo::PendingRemote<blink::mojom::Blob> blob_remote;
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           [](scoped_refptr<ChromeBlobStorageContext> context,
-             blink::mojom::BlobRequest request, const std::string& uuid) {
+             mojo::PendingReceiver<blink::mojom::Blob> receiver,
+             const std::string& uuid) {
             auto handle = context->context()->GetBlobDataFromUUID(uuid);
             if (handle)
-              storage::BlobImpl::Create(std::move(handle), std::move(request));
+              storage::BlobImpl::Create(std::move(handle), std::move(receiver));
           },
-          base::WrapRefCounted(GetFor(browser_context)), MakeRequest(&blob_ptr),
-          uuid));
-  return blob_ptr;
+          base::WrapRefCounted(GetFor(browser_context)),
+          blob_remote.InitWithNewPipeAndPassReceiver(), uuid));
+  return blob_remote;
 }
 
 ChromeBlobStorageContext::~ChromeBlobStorageContext() = default;
@@ -250,28 +267,6 @@ storage::BlobStorageContext* GetBlobStorageContext(
   if (!blob_storage_context)
     return nullptr;
   return blob_storage_context->context();
-}
-
-bool GetBodyBlobDataHandles(network::ResourceRequestBody* body,
-                            ResourceContext* resource_context,
-                            BlobHandles* blob_handles) {
-  blob_handles->clear();
-
-  storage::BlobStorageContext* blob_context = GetBlobStorageContext(
-      GetChromeBlobStorageContextForResourceContext(resource_context));
-
-  DCHECK(blob_context);
-  for (size_t i = 0; i < body->elements()->size(); ++i) {
-    const network::DataElement& element = (*body->elements())[i];
-    if (element.type() != network::mojom::DataElementType::kBlob)
-      continue;
-    std::unique_ptr<storage::BlobDataHandle> handle =
-        blob_context->GetBlobDataFromUUID(element.blob_uuid());
-    if (!handle)
-      return false;
-    blob_handles->push_back(std::move(handle));
-  }
-  return true;
 }
 
 const char kBlobStorageContextKeyName[] = "content_blob_storage_context";

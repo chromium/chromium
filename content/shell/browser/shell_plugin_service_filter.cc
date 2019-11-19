@@ -16,7 +16,6 @@ ShellPluginServiceFilter::~ShellPluginServiceFilter() {}
 bool ShellPluginServiceFilter::IsPluginAvailable(
     int render_process_id,
     int render_frame_id,
-    const void* context,
     const GURL& url,
     const url::Origin& main_frame_origin,
     WebPluginInfo* plugin) {

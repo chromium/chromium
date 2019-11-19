@@ -49,23 +49,22 @@ class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
   ~ClientNativePixmapFactoryDmabuf() override {}
 
   std::unique_ptr<ClientNativePixmap> ImportFromHandle(
-      const gfx::NativePixmapHandle& handle,
+      gfx::NativePixmapHandle handle,
       const gfx::Size& size,
+      gfx::BufferFormat format,
       gfx::BufferUsage usage) override {
-    DCHECK(!handle.fds.empty());
+    DCHECK(!handle.planes.empty());
     switch (usage) {
       case gfx::BufferUsage::SCANOUT_CPU_READ_WRITE:
       case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE:
-      case gfx::BufferUsage::GPU_READ_CPU_READ_WRITE_PERSISTENT:
       case gfx::BufferUsage::SCANOUT_CAMERA_READ_WRITE:
       case gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE:
-        return ClientNativePixmapDmaBuf::ImportFromDmabuf(handle, size);
+      case gfx::BufferUsage::SCANOUT_VEA_READ_CAMERA_AND_CPU_READ_WRITE:
+        return ClientNativePixmapDmaBuf::ImportFromDmabuf(std::move(handle),
+                                                          size, format);
       case gfx::BufferUsage::GPU_READ:
       case gfx::BufferUsage::SCANOUT:
       case gfx::BufferUsage::SCANOUT_VDA_WRITE:
-        // Close all the fds.
-        for (const auto& fd : handle.fds)
-          base::ScopedFD scoped_fd(fd.fd);
         return base::WrapUnique(new ClientNativePixmapOpaque);
     }
     NOTREACHED();

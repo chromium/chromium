@@ -13,7 +13,7 @@
     height: 20px;
     background: green;
 }
-.layer { transform: translateZ(0); }
+.layer { will-change: transform; }
 </style>
 
 <p>If no compositing were present, there should be two green squares below. Since some elements are composited, and therefore not fragmented, the output is different.</p>

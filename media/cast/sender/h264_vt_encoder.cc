@@ -181,9 +181,7 @@ H264VideoToolboxEncoder::H264VideoToolboxEncoder(
             weak_factory_.GetWeakPtr(), cast_environment_));
 
     // Register for power state changes.
-    auto* power_monitor = base::PowerMonitor::Get();
-    if (power_monitor) {
-      power_monitor->AddObserver(this);
+    if (base::PowerMonitor::AddObserver(this)) {
       VLOG(1) << "Registered for power state changes.";
     } else {
       DLOG(WARNING) << "No power monitor. Process suspension will invalidate "
@@ -197,11 +195,8 @@ H264VideoToolboxEncoder::~H264VideoToolboxEncoder() {
 
   // If video_frame_factory_ is not null, the encoder registered for power state
   // changes in the ctor and it must now unregister.
-  if (video_frame_factory_) {
-    auto* power_monitor = base::PowerMonitor::Get();
-    if (power_monitor)
-      power_monitor->RemoveObserver(this);
-  }
+  if (video_frame_factory_)
+    base::PowerMonitor::RemoveObserver(this);
 }
 
 void H264VideoToolboxEncoder::ResetCompressionSession() {
@@ -351,7 +346,7 @@ void H264VideoToolboxEncoder::DestroyCompressionSession() {
 }
 
 bool H264VideoToolboxEncoder::EncodeVideoFrame(
-    const scoped_refptr<media::VideoFrame>& video_frame,
+    scoped_refptr<media::VideoFrame> video_frame,
     const base::TimeTicks& reference_time,
     const FrameEncodedCallback& frame_encoded_callback) {
   DCHECK(thread_checker_.CalledOnValidThread());

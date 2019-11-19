@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/browser-payment-api/#paymentdetailsupdate-dictionary
+// https://w3c.github.io/payment-request/#dom-paymentdetailsupdate
 
 dictionary PaymentDetailsUpdate : PaymentDetailsBase {
     DOMString error;
     PaymentItem total;
     AddressErrors shippingAddressErrors;
+    object paymentMethodErrors;
 };

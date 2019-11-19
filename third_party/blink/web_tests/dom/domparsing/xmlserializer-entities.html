@@ -1,11 +1,9 @@
 <html>
 <head>
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
     <script type="text/javascript">
-    function runTest()
-    {
-        if (window.testRunner)
-            testRunner.dumpAsText();
-
+    test(() => {
         var ns = 'http://www.w3.org/1999/xhtml';
         var xhtml = document.implementation.createDocument(ns , 'html', null);
 
@@ -24,12 +22,10 @@
         var serializer = new XMLSerializer();
         var xmlString = serializer.serializeToString(xhtml);
 
-        var outputText = document.getElementById("output");
-        outputText.textContent = xmlString;
-    }
+        assert_equals(xmlString, "<html xmlns=\"http://www.w3.org/1999/xhtml\"><p>(0 &lt; 1 &amp;&amp; 1 &gt; 0)</p><script>if (0 &lt; 1 &amp;&amp; 1 &gt; 0) { };<\/script><style>/* &lt; &gt; &amp; */</style></html>");
+    }, 'XMLSerializer: Serializes entities to XML-compatible format');
     </script>
 </head>
-    <body onload="runTest()">
-        <div id="output"/>
+    <body>
     </body>
 </html>

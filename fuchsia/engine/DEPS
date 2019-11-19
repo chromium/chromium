@@ -1,6 +1,12 @@
 include_rules = [
-  "+chromium/web/cpp",    # FIDL generated headers
+  "+components/version_info",
+  "+components/viz/common",
   "+content/public/app",
+  "+gpu/command_buffer/service",
+  "+media/base",
+  "+mojo/public",
   "+services/service_manager",
+  "+third_party/widevine/cdm/widevine_cdm_common.h",
   "+ui/base",
+  "+ui/gl/gl_switches.h",
 ]

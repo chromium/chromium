@@ -3,10 +3,10 @@
 # found in the LICENSE file.
 
 declare_args() {
-  # Enable a full featured IME implementation with decoders.
-  enable_cros_ime_decoder = false
+  # Enable share language modules between IME services.
+  enable_cros_ime_shared_data = false
 
-  # Enable build an example deocder shared library from local checkout.
-  # This is for development purposes only.
-  enable_cros_ime_example_so = false
+  # Enable to load a shared library for sanity tests only.
+  # This is for debugging purposes only.
+  enable_cros_ime_sanity_test_so = false
 }

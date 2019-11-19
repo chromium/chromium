@@ -159,6 +159,10 @@ std::vector<RenderText::FontSpan> RenderTextMac::GetFontSpansForTesting() {
   return spans;
 }
 
+size_t RenderTextMac::GetLineContainingCaret(const SelectionModel& caret) {
+  return 0;
+}
+
 int RenderTextMac::GetDisplayTextBaseline() {
   EnsureLayout();
   return common_baseline_;
@@ -178,24 +182,20 @@ SelectionModel RenderTextMac::AdjacentWordSelectionModel(
   return SelectionModel();
 }
 
-Range RenderTextMac::GetCursorSpan(const Range& text_range) {
+SelectionModel RenderTextMac::AdjacentLineSelectionModel(
+    const SelectionModel& selection,
+    VisualCursorDirection direction) {
+  return SelectionModel();
+}
+
+RangeF RenderTextMac::GetCursorSpan(const Range& text_range) {
   // TODO(asvitkine): Implement this. http://crbug.com/131618
-  return Range();
+  return RangeF();
 }
 
 std::vector<Rect> RenderTextMac::GetSubstringBounds(const Range& range) {
   // TODO(asvitkine): Implement this. http://crbug.com/131618
   return std::vector<Rect>();
-}
-
-size_t RenderTextMac::TextIndexToDisplayIndex(size_t index) {
-  // TODO(asvitkine): Implement this. http://crbug.com/131618
-  return index;
-}
-
-size_t RenderTextMac::DisplayIndexToTextIndex(size_t index) {
-  // TODO(asvitkine): Implement this. http://crbug.com/131618
-  return index;
 }
 
 bool RenderTextMac::IsValidCursorIndex(size_t index) {

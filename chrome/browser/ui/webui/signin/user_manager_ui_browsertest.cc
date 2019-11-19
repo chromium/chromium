@@ -24,7 +24,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/signin/core/browser/account_consistency_method.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -86,7 +85,9 @@ IN_PROC_BROWSER_TEST_F(UserManagerUIBrowserTest, PageLoads) {
   EXPECT_EQ(num_pods, static_cast<int>(profile_manager->GetNumberOfProfiles()));
 }
 
-IN_PROC_BROWSER_TEST_F(UserManagerUIBrowserTest, PageRedirectsToAboutChrome) {
+// https://crbug.com/945795
+IN_PROC_BROWSER_TEST_F(UserManagerUIBrowserTest,
+                       DISABLED_PageRedirectsToAboutChrome) {
   std::string user_manager_url = chrome::kChromeUIMdUserManagerUrl;
   user_manager_url += profiles::kUserManagerSelectProfileAboutChrome;
 

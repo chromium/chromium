@@ -25,12 +25,7 @@ bool IsUnsandboxedSandboxType(SandboxType sandbox_type) {
           service_manager::features::kXRSandbox);
 #endif
     case SANDBOX_TYPE_AUDIO:
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
-      return !base::FeatureList::IsEnabled(
-          service_manager::features::kAudioServiceSandbox);
-#else
-      return true;
-#endif
+      return !IsAudioSandboxEnabled();
     case SANDBOX_TYPE_NETWORK:
       return !base::FeatureList::IsEnabled(
           service_manager::features::kNetworkServiceSandbox);
@@ -196,6 +191,18 @@ SandboxType UtilitySandboxTypeFromString(const std::string& sandbox_string) {
     return SANDBOX_TYPE_IME;
 #endif  // defined(OS_CHROMEOS)
   return SANDBOX_TYPE_UTILITY;
+}
+
+void EnableAudioSandbox(bool enable) {
+  if (enable) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kEnableAudioServiceSandbox);
+  }
+}
+
+bool IsAudioSandboxEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kEnableAudioServiceSandbox);
 }
 
 }  // namespace service_manager

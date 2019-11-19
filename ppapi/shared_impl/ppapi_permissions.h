@@ -40,14 +40,22 @@ enum Permission {
   // PDF-related interfaces.
   PERMISSION_PDF = 1 << 6,
 
+  // Socket APIs. Formerly part of public APIs.
+  PERMISSION_SOCKET = 1 << 7,
+
   // NOTE: If you add stuff be sure to update PERMISSION_ALL_BITS.
+
+  // Meta permission for for initializing plugins with permissions that have
+  // historically been part of public APIs but are now covered by finer-grained
+  // permissions.
+  PERMISSION_DEFAULT = PERMISSION_SOCKET,
 
   // Meta permission for initializing plugins registered on the command line
   // that get all permissions.
   PERMISSION_ALL_BITS = PERMISSION_DEV | PERMISSION_PRIVATE |
                         PERMISSION_BYPASS_USER_GESTURE | PERMISSION_TESTING |
                         PERMISSION_FLASH | PERMISSION_DEV_CHANNEL |
-                        PERMISSION_PDF
+                        PERMISSION_PDF | PERMISSION_SOCKET,
 };
 
 class PPAPI_SHARED_EXPORT PpapiPermissions {

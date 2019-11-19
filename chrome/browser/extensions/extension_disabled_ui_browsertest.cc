@@ -58,8 +58,6 @@ class ExtensionDisabledGlobalErrorTest
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     EXPECT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
-    service_ = extensions::ExtensionSystem::Get(profile())->extension_service();
-    registry_ = ExtensionRegistry::Get(profile());
     const base::FilePath test_dir =
         test_data_dir_.AppendASCII("permissions_increase");
     const base::FilePath pem_path = test_dir.AppendASCII("permissions.pem");
@@ -86,11 +84,11 @@ class ExtensionDisabledGlobalErrorTest
 
   // Install the initial version, which should happen just fine.
   const Extension* InstallIncreasingPermissionExtensionV1() {
-    size_t size_before = registry_->enabled_extensions().size();
+    size_t size_before = extension_registry()->enabled_extensions().size();
     const Extension* extension = InstallExtension(path_v1_, 1);
     if (!extension)
       return NULL;
-    if (registry_->enabled_extensions().size() != size_before + 1)
+    if (extension_registry()->enabled_extensions().size() != size_before + 1)
       return NULL;
     return extension;
   }
@@ -101,16 +99,16 @@ class ExtensionDisabledGlobalErrorTest
       const Extension* extension,
       const base::FilePath& crx_path,
       int expected_change) {
-    size_t size_before = registry_->enabled_extensions().size();
+    size_t size_before = extension_registry()->enabled_extensions().size();
     if (UpdateExtension(extension->id(), crx_path, expected_change))
       return NULL;
     content::RunAllTasksUntilIdle();
     EXPECT_EQ(size_before + expected_change,
-              registry_->enabled_extensions().size());
-    if (registry_->disabled_extensions().size() != 1u)
+              extension_registry()->enabled_extensions().size());
+    if (extension_registry()->disabled_extensions().size() != 1u)
       return NULL;
 
-    return registry_->disabled_extensions().begin()->get();
+    return extension_registry()->disabled_extensions().begin()->get();
   }
 
   // Helper function to install an extension and upgrade it to a version
@@ -121,8 +119,6 @@ class ExtensionDisabledGlobalErrorTest
     return extension;
   }
 
-  extensions::ExtensionService* service_;
-  ExtensionRegistry* registry_;
   base::ScopedTempDir scoped_temp_dir_;
   base::FilePath path_v1_;
   base::FilePath path_v2_;
@@ -135,13 +131,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, AcceptPermissions) {
   const Extension* extension = InstallAndUpdateIncreasingPermissionsExtension();
   ASSERT_TRUE(extension);
   ASSERT_TRUE(GetExtensionDisabledGlobalError());
-  const size_t size_before = registry_->enabled_extensions().size();
+  const size_t size_before = extension_registry()->enabled_extensions().size();
 
   ExtensionTestMessageListener listener("v2.onInstalled", false);
   listener.set_failure_message("FAILED");
-  service_->GrantPermissionsAndEnableExtension(extension);
-  EXPECT_EQ(size_before + 1, registry_->enabled_extensions().size());
-  EXPECT_EQ(0u, registry_->disabled_extensions().size());
+  extension_service()->GrantPermissionsAndEnableExtension(extension);
+  EXPECT_EQ(size_before + 1, extension_registry()->enabled_extensions().size());
+  EXPECT_EQ(0u, extension_registry()->disabled_extensions().size());
   ASSERT_FALSE(GetExtensionDisabledGlobalError());
   // Expect onInstalled event to fire.
   EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -152,11 +148,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, Uninstall) {
   const Extension* extension = InstallAndUpdateIncreasingPermissionsExtension();
   ASSERT_TRUE(extension);
   ASSERT_TRUE(GetExtensionDisabledGlobalError());
-  const size_t size_before = registry_->enabled_extensions().size();
+  const size_t size_before = extension_registry()->enabled_extensions().size();
 
   UninstallExtension(extension->id());
-  EXPECT_EQ(size_before, registry_->enabled_extensions().size());
-  EXPECT_EQ(0u, registry_->disabled_extensions().size());
+  EXPECT_EQ(size_before, extension_registry()->enabled_extensions().size());
+  EXPECT_EQ(0u, extension_registry()->disabled_extensions().size());
   ASSERT_FALSE(GetExtensionDisabledGlobalError());
 }
 
@@ -173,13 +169,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, UninstallFromDialog) {
   ASSERT_TRUE(error);
 
   // The "cancel" button is the uninstall button on the browser.
-  extensions::TestExtensionRegistryObserver test_observer(registry_,
+  extensions::TestExtensionRegistryObserver test_observer(extension_registry(),
                                                           extension_id);
   error->BubbleViewCancelButtonPressed(browser());
   test_observer.WaitForExtensionUninstalled();
 
-  EXPECT_FALSE(registry_->GetExtensionById(extension_id,
-                                           ExtensionRegistry::EVERYTHING));
+  EXPECT_FALSE(extension_registry()->GetExtensionById(
+      extension_id, ExtensionRegistry::EVERYTHING));
   EXPECT_FALSE(GetExtensionDisabledGlobalError());
 }
 
@@ -253,7 +249,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
       syncer::EXTENSIONS, syncer::SyncDataList(),
       base::WrapUnique(new syncer::FakeSyncChangeProcessor()),
       base::WrapUnique(new syncer::SyncErrorFactoryMock()));
-  extensions::TestExtensionRegistryObserver install_observer(registry_);
+  extensions::TestExtensionRegistryObserver install_observer(
+      extension_registry());
   sync_service->ProcessSyncChanges(
       FROM_HERE,
       syncer::SyncChangeList(
@@ -262,12 +259,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest,
   install_observer.WaitForExtensionWillBeInstalled();
   content::RunAllTasksUntilIdle();
 
-  extension = service_->GetExtensionById(extension_id, true);
+  extension = extension_registry()->disabled_extensions().GetByID(extension_id);
   ASSERT_TRUE(extension);
   EXPECT_EQ("2", extension->VersionString());
-  EXPECT_EQ(1u, registry_->disabled_extensions().size());
+  EXPECT_EQ(1u, extension_registry()->disabled_extensions().size());
   EXPECT_EQ(extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE,
-            ExtensionPrefs::Get(service_->profile())
+            ExtensionPrefs::Get(extension_service()->profile())
                 ->GetDisableReasons(extension_id));
   EXPECT_TRUE(GetExtensionDisabledGlobalError());
 }
@@ -311,7 +308,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, RemoteInstall) {
       syncer::EXTENSIONS, syncer::SyncDataList(),
       base::WrapUnique(new syncer::FakeSyncChangeProcessor()),
       base::WrapUnique(new syncer::SyncErrorFactoryMock()));
-  extensions::TestExtensionRegistryObserver install_observer(registry_);
+  extensions::TestExtensionRegistryObserver install_observer(
+      extension_registry());
   sync_service->ProcessSyncChanges(
       FROM_HERE,
       syncer::SyncChangeList(
@@ -321,12 +319,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionDisabledGlobalErrorTest, RemoteInstall) {
   install_observer.WaitForExtensionWillBeInstalled();
   content::RunAllTasksUntilIdle();
 
-  const Extension* extension = service_->GetExtensionById(extension_id, true);
+  const Extension* extension =
+      extension_registry()->disabled_extensions().GetByID(extension_id);
   ASSERT_TRUE(extension);
   EXPECT_EQ("2", extension->VersionString());
-  EXPECT_EQ(1u, registry_->disabled_extensions().size());
+  EXPECT_EQ(1u, extension_registry()->disabled_extensions().size());
   EXPECT_EQ(extensions::disable_reason::DISABLE_REMOTE_INSTALL,
-            ExtensionPrefs::Get(service_->profile())
+            ExtensionPrefs::Get(extension_service()->profile())
                 ->GetDisableReasons(extension_id));
   EXPECT_TRUE(GetExtensionDisabledGlobalError());
 }

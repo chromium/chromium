@@ -6,31 +6,31 @@
 selection_test(
   '<div contenteditable dir="rtl">|Lorem\n        <div></div>\n        ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lore|m\n        <div></div>\n        ipsum</div>',
+  '<div contenteditable dir="rtl">L|orem\n        <div></div>\n        ipsum</div>',
   '23-0 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">L|orem\n        <div></div>\n        ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem|\n        <div></div>\n        ipsum</div>',
+  '<div contenteditable dir="rtl">Lo|rem\n        <div></div>\n        ipsum</div>',
   '23-1 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lo|rem\n        <div></div>\n        ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">L|orem\n        <div></div>\n        ipsum</div>',
+  '<div contenteditable dir="rtl">Lor|em\n        <div></div>\n        ipsum</div>',
   '23-2 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lor|em\n        <div></div>\n        ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lo|rem\n        <div></div>\n        ipsum</div>',
+  '<div contenteditable dir="rtl">Lore|m\n        <div></div>\n        ipsum</div>',
   '23-3 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lore|m\n        <div></div>\n        ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lor|em\n        <div></div>\n        ipsum</div>',
+  '<div contenteditable dir="rtl">Lorem|\n        <div></div>\n        ipsum</div>',
   '23-4 rtl left character');
 
 selection_test(
@@ -96,91 +96,91 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div>|</div>\n        ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
   '23-15 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>|\n        ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
   '23-16 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n|        ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
   '23-17 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n |       ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
   '23-18 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n  |      ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
   '23-19 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n   |     ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
   '23-20 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n    |    ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
   '23-21 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n     |   ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
   '23-22 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n      |  ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
   '23-23 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n       | ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
   '23-24 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        |ipsum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
   '23-25 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsum|</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ip|sum</div>',
   '23-26 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ip|sum</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        i|psum</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ips|um</div>',
   '23-27 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ips|um</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ip|sum</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
   '23-28 rtl left character');
 
 selection_test(
   '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsu|m</div>',
   selection => selection.modify('move', 'left', 'character'),
-  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ips|um</div>',
+  '<div contenteditable dir="rtl">Lorem\n        <div></div>\n        ipsum|</div>',
   '23-29 rtl left character');
 
 selection_test(

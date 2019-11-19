@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS DTLS transport goes to connected state
-FAIL close() causes the local transport to close immediately assert_equals: expected "closed" but got "connected"
-PASS close() causes the other end's DTLS transport to close
-Harness: the test ran to completion.
-

@@ -18,7 +18,7 @@ component("service") {
     "//base",
     "//components/crash/core/common:crash_key",
     "//components/discardable_memory/common",
-    "//components/discardable_memory/public/interfaces",
+    "//components/discardable_memory/public/mojom",
   ]
 }
 

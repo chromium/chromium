@@ -12,11 +12,8 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "base/macros.h"
 #include "base/scoped_observer.h"
+#include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
-
-namespace aura {
-class Window;
-}
 
 namespace ui {
 class BaseWindow;
@@ -50,13 +47,13 @@ class AppWindowLauncherItemController : public ash::ShelfItemDelegate,
                     int64_t display_id,
                     ash::ShelfLaunchSource source,
                     ItemSelectedCallback callback) override;
-  ash::MenuItemList GetAppMenuItems(int event_flags) override;
+  AppMenuItems GetAppMenuItems(int event_flags) override;
+  void GetContextMenu(int64_t display_id,
+                      GetContextMenuCallback callback) override;
   void ExecuteCommand(bool from_context_menu,
                       int64_t command_id,
                       int32_t event_flags,
                       int64_t display_id) override;
-  void GetContextMenu(int64_t display_id,
-                      GetMenuModelCallback callback) override;
   void Close() override;
 
   // aura::WindowObserver overrides:
@@ -105,7 +102,7 @@ class AppWindowLauncherItemController : public ash::ShelfItemDelegate,
   ui::BaseWindow* last_active_window_ = nullptr;
 
   // Scoped list of observed windows (for removal on destruction)
-  ScopedObserver<aura::Window, aura::WindowObserver> observed_windows_;
+  ScopedObserver<aura::Window, aura::WindowObserver> observed_windows_{this};
 
   std::unique_ptr<LauncherContextMenu> context_menu_;
 

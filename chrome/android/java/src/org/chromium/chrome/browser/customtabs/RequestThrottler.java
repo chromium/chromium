@@ -5,14 +5,15 @@
 package org.chromium.chrome.browser.customtabs;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.SystemClock;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.SparseArray;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
+
+import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 
@@ -126,14 +127,14 @@ class RequestThrottler {
     }
 
     /** @return the {@link Throttler} for a given UID. */
-    public static RequestThrottler getForUid(Context context, int uid) {
+    public static RequestThrottler getForUid(int uid) {
         if (sUidToThrottler == null) {
             sUidToThrottler = new SparseArray<>();
-            purgeOldEntries(context);
+            purgeOldEntries();
         }
         RequestThrottler throttler = sUidToThrottler.get(uid);
         if (throttler == null) {
-            throttler = new RequestThrottler(context, uid);
+            throttler = new RequestThrottler(uid);
             sUidToThrottler.put(uid, throttler);
         }
         return throttler;
@@ -162,8 +163,9 @@ class RequestThrottler {
         editor.putFloat(SCORE + mUid, mScore);
     }
 
-    private RequestThrottler(Context context, int uid) {
-        mSharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, 0);
+    private RequestThrottler(int uid) {
+        mSharedPreferences =
+                ContextUtils.getApplicationContext().getSharedPreferences(PREFERENCES_NAME, 0);
         mUid = uid;
         mScore = mSharedPreferences.getFloat(SCORE + uid, MAX_SCORE);
         mLastPrerenderRequestMs = mSharedPreferences.getLong(LAST_REQUEST + uid, 0);
@@ -196,20 +198,21 @@ class RequestThrottler {
      * the background to hopefully avoid the violation (if the next edit() call happens once the
      * preferences are loaded).
      *
-     * @param context The application context.
      */
     // TODO(crbug.com/635567): Fix this properly.
     @SuppressLint("CommitPrefEdits")
-    static void loadInBackground(final Context context) {
+    static void loadInBackground() {
         boolean alreadyDone = !sAccessedSharedPreferences.compareAndSet(false, true);
         if (alreadyDone) return;
-        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                () -> { context.getSharedPreferences(PREFERENCES_NAME, 0).edit(); });
+        PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, () -> {
+            ContextUtils.getApplicationContext().getSharedPreferences(PREFERENCES_NAME, 0).edit();
+        });
     }
 
     /** Removes all the UIDs that haven't been seen since at least {@link FORGET_AFTER_MS}. */
-    private static void purgeOldEntries(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, 0);
+    private static void purgeOldEntries() {
+        SharedPreferences sharedPreferences =
+                ContextUtils.getApplicationContext().getSharedPreferences(PREFERENCES_NAME, 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         long now = System.currentTimeMillis();
         for (Map.Entry<String, ?> entry : sharedPreferences.getAll().entrySet()) {
@@ -231,8 +234,9 @@ class RequestThrottler {
     }
 
     @VisibleForTesting
-    static void purgeAllEntriesForTesting(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCES_NAME, 0);
+    static void purgeAllEntriesForTesting() {
+        SharedPreferences sharedPreferences =
+                ContextUtils.getApplicationContext().getSharedPreferences(PREFERENCES_NAME, 0);
         sharedPreferences.edit().clear().apply();
         if (sUidToThrottler != null) sUidToThrottler.clear();
     }

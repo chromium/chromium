@@ -12,6 +12,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -34,8 +35,8 @@ enum AnalyzerCreationError {
 };
 
 void LogAnalyzerCreationError(AnalyzerCreationError error) {
-  UMA_HISTOGRAM_ENUMERATION("ActivityTracker.Collect.AnalyzerCreationError",
-                            error, kAnalyzerCreationErrorMax);
+  UmaHistogramEnumeration("ActivityTracker.Collect.AnalyzerCreationError",
+                          error, kAnalyzerCreationErrorMax);
 }
 
 }  // namespace
@@ -354,7 +355,7 @@ void GlobalActivityAnalyzer::PrepareAllAnalyzers() {
         // Add this analyzer to the map of known ones, indexed by a unique
         // thread
         // identifier.
-        DCHECK(!base::ContainsKey(analyzers_, analyzer->GetThreadKey()));
+        DCHECK(!base::Contains(analyzers_, analyzer->GetThreadKey()));
         analyzer->allocator_reference_ = ref;
         analyzers_[analyzer->GetThreadKey()] = std::move(analyzer);
       } break;
@@ -364,7 +365,7 @@ void GlobalActivityAnalyzer::PrepareAllAnalyzers() {
         int64_t process_id;
         int64_t create_stamp;
         ActivityUserData::GetOwningProcessId(base, &process_id, &create_stamp);
-        DCHECK(!base::ContainsKey(process_data_, process_id));
+        DCHECK(!base::Contains(process_data_, process_id));
 
         // Create a snapshot of the data. This can fail if the data is somehow
         // corrupted or the process shutdown and the memory being released.

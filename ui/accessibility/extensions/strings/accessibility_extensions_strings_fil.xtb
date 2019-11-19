@@ -31,6 +31,7 @@
 <translation id="4769065380738716500">Ang mga larawan ay napalitan na ng alt text ng mga ito.</translation>
 <translation id="4896660567607030658">Walang feedback, ipakita lang ang cursor.</translation>
 <translation id="4937901943818762779">Payagan ang mga animated na larawan, ngunit isang beses lang.</translation>
+<translation id="4949131196216960195">Pindutin ang &lt;span class='key'&gt;Search&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (ang key na Dagdagan ang Liwanag, o F7) para i-on ang Caret Browsing. Pindutin ito ulit para i-off ito.</translation>
 <translation id="4954450790315188152">Kapag naka-enable ang Pagba-browse ng Caret:</translation>
 <translation id="5041932793799765940">Pagsasaayos ng kulay</translation>
 <translation id="5094574508723441140">Dinagdagan ang Contrast</translation>
@@ -57,10 +58,9 @@
 <translation id="7384431257964758081">Naka-enable ang Mataas na Contrast</translation>
 <translation id="7586636300921797327">Hakbang 2: Ayusin ang slider hanggang sa nakikita ang lahat ng star sa
         piniling row</translation>
-<translation id="7658239707568436148">Ikansela</translation>
+<translation id="7658239707568436148">Kanselahin</translation>
 <translation id="786423340267544509">Magdagdag ng border sa mga elementong may mga attribute na aria-describedat o longdesc.</translation>
 <translation id="7942349550061667556">Pula</translation>
-<translation id="8254860724243898966">Pindutin ang &lt;span class='key'&gt;Alt&lt;/span&gt; + &lt;img src='increase_brightness.png'&gt; (ang key na Dagdagan ang Liwanag, o F7) upang i-on ang Pagba-browse ng Caret. Pindutin itong muli upang i-off ito.</translation>
 <translation id="8260673944985561857">Mga Opsyon sa Pagba-browse ng Caret</translation>
 <translation id="8321034316479930120">Patakaran sa Animation</translation>
 <translation id="8480209185614411573">Mataas na Contrast</translation>

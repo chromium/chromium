@@ -77,4 +77,13 @@ bool FontTableMatcher::FontListIsDisjointFrom(
   return intersection_result.empty();
 }
 
+void FontTableMatcher::SortUniqueNameTableForSearch(
+    FontUniqueNameTable* font_table) {
+  std::sort(font_table->mutable_name_map()->begin(),
+            font_table->mutable_name_map()->end(),
+            [](const auto& a, const auto& b) {
+              return a.font_name() < b.font_name();
+            });
+}
+
 }  // namespace blink

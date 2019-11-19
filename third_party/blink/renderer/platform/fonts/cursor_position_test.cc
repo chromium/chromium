@@ -30,9 +30,10 @@ class CursorPositionTest : public ::testing::Test {
                  int end = -1) {
     FontDescription::VariantLigatures ligatures(
         FontDescription::kEnabledLigaturesState);
-    Font font = CreateTestFont("TestFont",
-                               test::PlatformTestDataPath(font_path[font_name]),
-                               100, &ligatures);
+    Font font = CreateTestFont(
+        "TestFont",
+        test::PlatformTestDataPath(font_path.find(font_name)->value), 100,
+        &ligatures);
     TextRun text_run(
         text, /* xpos */ 0, /* expansion */ 0,
         TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
@@ -56,9 +57,10 @@ class CursorPositionTest : public ::testing::Test {
                    bool partial) {
     FontDescription::VariantLigatures ligatures(
         FontDescription::kEnabledLigaturesState);
-    Font font = CreateTestFont("TestFont",
-                               test::PlatformTestDataPath(font_path[font_name]),
-                               100, &ligatures);
+    Font font = CreateTestFont(
+        "TestFont",
+        test::PlatformTestDataPath(font_path.find(font_name)->value), 100,
+        &ligatures);
     TextRun text_run(
         text, /* xpos */ 0, /* expansion */ 0,
         TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
@@ -70,7 +72,7 @@ class CursorPositionTest : public ::testing::Test {
   }
 
  private:
-  std::map<FontName, String> font_path = {
+  HashMap<FontName, String, WTF::IntHash<FontName>> font_path = {
       {ahem, "Ahem.woff"},
       {amiri, "third_party/Amiri/amiri_arabic.woff2"},
       {megalopolis, "third_party/MEgalopolis/MEgalopolisExtra.woff"},

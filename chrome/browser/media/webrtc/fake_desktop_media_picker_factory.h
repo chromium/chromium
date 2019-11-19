@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/optional.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory.h"

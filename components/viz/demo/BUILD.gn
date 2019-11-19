@@ -15,7 +15,7 @@ static_library("client") {
   deps = [
     "//components/viz/common",
     "//mojo/public/cpp/bindings",
-    "//services/viz/public/interfaces",
+    "//services/viz/public/mojom",
   ]
 }
 
@@ -31,7 +31,7 @@ static_library("host") {
     "//components/viz/common",
     "//components/viz/host",
     "//mojo/public/cpp/system",
-    "//services/viz/privileged/interfaces",
+    "//services/viz/privileged/mojom",
   ]
 }
 
@@ -46,7 +46,7 @@ static_library("service") {
     "//components/viz/common",
     "//components/viz/service/main",
     "//mojo/public/cpp/system",
-    "//services/viz/privileged/interfaces",
+    "//services/viz/privileged/mojom",
   ]
 }
 
@@ -75,6 +75,7 @@ executable("viz_demo") {
       "//ui/events/platform/x11",
       "//ui/platform_window/x11",
     ]
+    configs += [ "//build/config/linux:x11" ]
   }
 
   if (is_win) {

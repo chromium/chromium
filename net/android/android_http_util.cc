@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/android/jni_string.h"
-#include "jni/HttpUtil_jni.h"
 #include "net/http/http_util.h"
+#include "net/net_jni_headers/HttpUtil_jni.h"
 #include "url/gurl.h"
 
 using base::android::JavaParamRef;
@@ -26,4 +26,3 @@ jboolean JNI_HttpUtil_IsAllowedHeader(
 }
 
 }  // namespace net
-

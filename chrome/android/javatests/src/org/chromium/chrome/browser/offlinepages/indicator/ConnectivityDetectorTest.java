@@ -13,9 +13,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestRule;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -45,7 +45,7 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
     @Before
     public void setUp() throws Exception {
         mNativeLibraryTestRule.loadNativeLibraryNoBrowserProcess();
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             if (!NetworkChangeNotifier.isInitialized()) {
                 NetworkChangeNotifier.init();
             }
@@ -323,19 +323,19 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
     }
 
     private static void setNetworkConnectivity(boolean connected) {
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> { NetworkChangeNotifier.forceConnectivityState(connected); });
     }
 
     private boolean hasScheduledRetry() {
         final boolean[] result = new boolean[1];
-        ThreadUtils.runOnUiThreadBlocking(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> { result[0] = mConnectivityDetector.getHandlerForTesting().hasMessages(0); });
         return result[0];
     }
 
     private void checkConnectivityViaDefaultUrl() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             mConnectivityDetector.setUseDefaultUrlForTesting(true);
             mConnectivityDetector.checkConnectivityViaHttpProbe();
         });
@@ -343,16 +343,15 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
     }
 
     private void checkConnectivityViaFallbackUrl() throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(() -> {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
             mConnectivityDetector.setUseDefaultUrlForTesting(false);
             mConnectivityDetector.checkConnectivityViaHttpProbe();
         });
         Assert.assertTrue(mSemaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
-    private void setConnectionState(@ConnectivityDetector.ConnectionState int connectionState)
-            throws Exception {
-        ThreadUtils.runOnUiThreadBlocking(
+    private void setConnectionState(@ConnectivityDetector.ConnectionState int connectionState) {
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mConnectivityDetector.forceConnectionStateForTesting(connectionState); });
     }
 }

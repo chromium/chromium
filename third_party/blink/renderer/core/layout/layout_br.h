@@ -36,7 +36,7 @@ class LayoutBR final : public LayoutText {
 
   // Although line breaks contain no actual text, if we're selected we need
   // to return a rect that includes space to illustrate a newline.
-  using LayoutText::LocalSelectionRect;
+  using LayoutText::LocalSelectionVisualRect;
 
   float Width(unsigned /* from */,
               unsigned /* len */,
@@ -68,7 +68,7 @@ class LayoutBR final : public LayoutText {
   int CaretMinOffset() const override;
   int CaretMaxOffset() const override;
 
-  PositionWithAffinity PositionForPoint(const LayoutPoint&) const final;
+  PositionWithAffinity PositionForPoint(const PhysicalOffset&) const final;
 
   Position PositionForCaretOffset(unsigned) const final;
   base::Optional<unsigned> CaretOffsetForPosition(const Position&) const final;

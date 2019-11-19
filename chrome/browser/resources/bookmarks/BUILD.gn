@@ -2,26 +2,146 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/polymer.gni")
 import("../optimize_webui.gni")
 
-optimize_webui("build") {
-  host = "bookmarks"
-  html_in_files = [ "bookmarks.html" ]
-  html_out_files = [ "vulcanized.html" ]
-  html_out_files_polymer2 = [ "vulcanized.p2.html" ]
+if (optimize_webui) {
+  bookmarks_pak_file = "bookmarks_resources.pak"
+  unpak_folder = "bookmarks_resources.unpak"
 
-  input = rebase_path(".", root_build_dir)
-  js_out_files = [ "crisper.js" ]
+  optimize_webui("build") {
+    host = "bookmarks"
+    html_in_files = [ "bookmarks.html" ]
+    html_out_files = [ "vulcanized.html" ]
+    input = rebase_path("$target_gen_dir/$unpak_folder", root_build_dir)
+    js_out_files = [ "bookmarks.js" ]
+    js_module_in_files = [ "bookmarks.js" ]
 
-  deps = []
+    deps = [
+      ":unpak",
+      "../../../../ui/webui/resources:modulize",
+    ]
+    excludes = [ "chrome://resources/js/cr.m.js" ]
+  }
+
+  unpak("unpak") {
+    pak_file = bookmarks_pak_file
+    out_folder = unpak_folder
+
+    deps = [
+      ":flattened_resources",
+    ]
+  }
+
+  grit("flattened_resources") {
+    source = "bookmarks_resources.grd"
+
+    # The .grd contains references to generated files.
+    source_is_generated = true
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
+
+    deps = [
+      ":polymer3_elements",
+    ]
+    defines = chrome_grit_defines
+    outputs = [
+      "grit/bookmarks_resources.h",
+      "grit/bookmarks_resources_map.cc",
+      "grit/bookmarks_resources_map.h",
+      bookmarks_pak_file,
+    ]
+    output_dir = "$root_gen_dir/chrome/browser/resources/bookmarks"
+  }
+}
+
+group("polymer3_elements") {
+  deps = [
+    ":app_module",
+    ":command_manager_module",
+    ":edit_dialog_module",
+    ":folder_node_module",
+    ":item_module",
+    ":list_module",
+    ":router_module",
+    ":shared_style_module",
+    ":shared_vars_module",
+    ":toolbar_module",
+  ]
+}
+
+polymer_modulizer("app") {
+  html_file = "app.html"
+  js_file = "app.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("command_manager") {
+  html_file = "command_manager.html"
+  js_file = "command_manager.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("edit_dialog") {
+  html_file = "edit_dialog.html"
+  js_file = "edit_dialog.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("folder_node") {
+  html_file = "folder_node.html"
+  js_file = "folder_node.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("item") {
+  html_file = "item.html"
+  js_file = "item.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("list") {
+  html_file = "list.html"
+  js_file = "list.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("router") {
+  html_file = "router.html"
+  js_file = "router.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("shared_style") {
+  html_file = "shared_style.html"
+  js_file = "shared_style.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("shared_vars") {
+  html_file = "shared_vars.html"
+  js_file = "shared_vars.js"
+  html_type = "v3-ready"
+}
+
+polymer_modulizer("toolbar") {
+  html_file = "toolbar.html"
+  js_file = "toolbar.js"
+  html_type = "v3-ready"
 }
 
 js_type_check("closure_compile") {
+  is_polymer3 = true
   deps = [
     ":actions",
     ":api_listener",
     ":app",
+    ":browser_proxy",
     ":command_manager",
     ":constants",
     ":debouncer",
@@ -36,7 +156,6 @@ js_type_check("closure_compile") {
     ":router",
     ":store",
     ":store_client",
-    ":toast_manager",
     ":toolbar",
     ":types",
     ":util",
@@ -47,8 +166,8 @@ js_library("actions") {
   deps = [
     ":types",
     ":util",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr/ui:store",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:store.m",
   ]
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
@@ -56,11 +175,13 @@ js_library("actions") {
 js_library("api_listener") {
   deps = [
     ":actions",
+    ":browser_proxy",
+    ":constants",
     ":debouncer",
     ":store",
     ":util",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr/ui:store",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:store.m",
   ]
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
@@ -73,26 +194,39 @@ js_library("app") {
     ":router",
     ":store",
     ":store_client",
-    "//ui/webui/resources/js:find_shortcut_behavior",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js/cr/ui:splitter",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_splitter:cr_splitter.m",
+    "//ui/webui/resources/js:find_shortcut_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
 
+js_library("browser_proxy") {
+  deps = [
+    ":constants",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
 js_library("command_manager") {
   deps = [
+    ":actions",
     ":api_listener",
+    ":browser_proxy",
     ":dialog_focus_manager",
     ":edit_dialog",
     ":store_client",
-    ":toast_manager",
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior-extracted",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js/cr/ui:command",
+    ":types",
+    ":util",
+    "//third_party/polymer/v3_0/components-chromium/iron-a11y-keys-behavior:iron-a11y-keys-behavior",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
+    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast_manager.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js/cr/ui:keyboard_shortcut_list.m",
   ]
   externs_list = [ "$externs_path/bookmark_manager_private.js" ]
 }
@@ -102,13 +236,14 @@ js_library("constants") {
 
 js_library("debouncer") {
   deps = [
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:promise_resolver.m",
   ]
 }
 
 js_library("dialog_focus_manager") {
   deps = [
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:cr.m",
   ]
 }
 
@@ -120,7 +255,6 @@ js_library("dnd_manager") {
     ":store",
     ":types",
     ":util",
-    "//ui/webui/resources/js:cr",
   ]
   externs_list = [
     "$externs_path/bookmark_manager_private.js",
@@ -133,10 +267,11 @@ js_library("edit_dialog") {
     ":api_listener",
     ":dialog_focus_manager",
     ":types",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
@@ -145,8 +280,11 @@ js_library("folder_node") {
   deps = [
     ":actions",
     ":command_manager",
+    ":constants",
     ":store_client",
-    "//ui/webui/resources/js:load_time_data",
+    ":types",
+    ":util",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
@@ -154,9 +292,16 @@ js_library("folder_node") {
 js_library("item") {
   deps = [
     ":actions",
+    ":browser_proxy",
     ":command_manager",
+    ":constants",
     ":store_client",
-    "//ui/webui/resources/js:icon",
+    ":types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:icon.m",
+    "//ui/webui/resources/js/cr/ui:focus_without_ink.m",
   ]
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
@@ -164,33 +309,37 @@ js_library("item") {
 js_library("list") {
   deps = [
     ":actions",
+    ":browser_proxy",
     ":command_manager",
+    ":constants",
     ":item",
     ":store_client",
-    "//third_party/polymer/v1_0/components-chromium/iron-list:iron-list-extracted",
-    "//ui/webui/resources/js:list_property_update_behavior",
-    "//ui/webui/resources/js:load_time_data",
+    ":types",
+    ":util",
+    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:list_property_update_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
 js_library("mouse_focus_behavior") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
 }
 
 js_library("reducers") {
   deps = [
     ":actions",
     ":types",
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:assert.m",
   ]
 }
 
 js_library("router") {
   deps = [
     ":actions",
+    ":constants",
     ":store_client",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -198,8 +347,9 @@ js_library("store") {
   deps = [
     ":reducers",
     ":types",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr/ui:store",
+    ":util",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:store.m",
   ]
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }
@@ -208,25 +358,23 @@ js_library("store_client") {
   deps = [
     ":store",
     ":types",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr/ui:store_client",
-  ]
-}
-
-js_library("toast_manager") {
-  deps = [
-    "//third_party/polymer/v1_0/components-chromium/iron-a11y-announcer:iron-a11y-announcer-extracted",
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js/cr/ui:store_client.m",
   ]
 }
 
 js_library("toolbar") {
   deps = [
     ":command_manager",
+    ":constants",
     ":edit_dialog",
     ":store_client",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu.m",
+    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar.m",
+    "//ui/webui/resources/cr_elements/cr_toolbar:cr_toolbar_search_field.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
   externs_list = [
     "$externs_path/bookmark_manager_private.js",
@@ -244,7 +392,6 @@ js_library("types") {
 js_library("util") {
   deps = [
     ":types",
-    "//ui/webui/resources/js:cr",
   ]
   externs_list = [ "$externs_path/chrome_extensions.js" ]
 }

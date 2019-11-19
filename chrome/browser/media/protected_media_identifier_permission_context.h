@@ -43,7 +43,7 @@ class ProtectedMediaIdentifierPermissionContext
                         const GURL& requesting_origin,
                         const GURL& embedding_origin,
                         bool user_gesture,
-                        const BrowserPermissionCallback& callback) override;
+                        BrowserPermissionCallback callback) override;
 #endif  // defined(OS_CHROMEOS)
   ContentSetting GetPermissionStatusInternal(
       content::RenderFrameHost* render_frame_host,
@@ -71,7 +71,7 @@ class ProtectedMediaIdentifierPermissionContext
       const PermissionRequestID& id,
       const GURL& requesting_origin,
       const GURL& embedding_origin,
-      const BrowserPermissionCallback& callback,
+      BrowserPermissionCallback callback,
       chromeos::attestation::PlatformVerificationDialog::ConsentResponse
           response);
 
@@ -85,7 +85,8 @@ class ProtectedMediaIdentifierPermissionContext
 
   // Must be the last member, to ensure that it will be
   // destroyed first, which will invalidate weak pointers
-  base::WeakPtrFactory<ProtectedMediaIdentifierPermissionContext> weak_factory_;
+  base::WeakPtrFactory<ProtectedMediaIdentifierPermissionContext> weak_factory_{
+      this};
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(ProtectedMediaIdentifierPermissionContext);

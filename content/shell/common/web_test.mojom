@@ -5,8 +5,8 @@
 module content.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
-import "skia/public/interfaces/bitmap.mojom";
-import "ui/gfx/geometry/mojo/geometry.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
 struct ShellTestConfiguration {

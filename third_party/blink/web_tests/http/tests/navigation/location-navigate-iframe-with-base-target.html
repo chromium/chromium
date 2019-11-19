@@ -1,0 +1,15 @@
+<body>
+PASS
+<iframe id="i" src="resources/location-navigate-iframe-with-base-target-iframe.html"></iframe>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+var navigated = false;
+i.onload = function() {
+  if (navigated)
+    return;
+  navigated = true;
+  i.contentWindow.location = "resources/blank.txt";
+}
+</script>

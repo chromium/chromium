@@ -1,5 +1,15 @@
 Tests that JavaScriptSourceSyntaxHighlighter detects the tokens.
 
+1_23.45_67: cm-js-number
+0xDEAD_c0de: cm-js-number
+0o123_456: cm-js-number
+0b1011_1101: cm-js-number
+123_456: cm-js-number
+.123_456e0_1: cm-js-number
+1E+12_34: cm-js-number
+123_456n: cm-js-number
+window._abc: cm-js-variable, *, cm-js-property
+window._for: cm-js-variable, *, cm-js-property
 return'foo';: cm-js-keyword, cm-js-string, *
 /\//g: cm-js-string-2
 //ig';: cm-js-comment

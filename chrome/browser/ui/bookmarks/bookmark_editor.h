@@ -48,14 +48,14 @@ class BookmarkEditor {
     // a given parent node with a specified index.
     static EditDetails AddNodeInFolder(
         const bookmarks::BookmarkNode* parent_node,
-        int index,
+        size_t index,
         const GURL& url,
         const base::string16& title);
 
     // Returns an EditDetails instance for the user adding a folder within a
     // given parent node with a specified index.
     static EditDetails AddFolder(const bookmarks::BookmarkNode* parent_node,
-                                 int index);
+                                 size_t index);
 
     enum Type {
       // The user is editing an existing node in the model. The node the user
@@ -79,15 +79,15 @@ class BookmarkEditor {
     const Type type;
 
     // If type == EXISTING_NODE this gives the existing node.
-    const bookmarks::BookmarkNode* existing_node;
+    const bookmarks::BookmarkNode* existing_node = nullptr;
 
     // If type == NEW_URL or type == NEW_FOLDER this gives the initial parent
     // node to place the new node in.
-    const bookmarks::BookmarkNode* parent_node;
+    const bookmarks::BookmarkNode* parent_node = nullptr;
 
     // If type == NEW_URL or type == NEW_FOLDER this gives the index to insert
     // the new node at.
-    int index;
+    base::Optional<size_t> index;
 
     // If type == NEW_URL this gives the URL/title.
     GURL url;

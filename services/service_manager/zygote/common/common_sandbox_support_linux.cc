@@ -13,7 +13,8 @@
 namespace service_manager {
 
 #if !defined(OS_NACL_NONSFI)
-int MakeSharedMemorySegmentViaIPC(size_t length, bool executable) {
+int SharedMemoryIPCSupport::MakeSharedMemorySegment(size_t length,
+                                                    bool executable) {
   base::Pickle request;
   request.WriteInt(
       service_manager::SandboxLinux::METHOD_MAKE_SHARED_MEMORY_SEGMENT);

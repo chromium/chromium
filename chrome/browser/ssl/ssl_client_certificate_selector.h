@@ -27,7 +27,10 @@ namespace chrome {
 // |cert_request_info|. When the user has made a selection, the dialog will
 // report back to |delegate|. If the dialog is closed with no selection,
 // |delegate| will simply be destroyed.
-void ShowSSLClientCertificateSelector(
+//
+// Returns a UI-thread callback that will cancel the dialog. The callback may be
+// null depending on the implementation and is not required to be run.
+base::OnceClosure ShowSSLClientCertificateSelector(
     content::WebContents* contents,
     net::SSLCertRequestInfo* cert_request_info,
     net::ClientCertIdentityList client_certs,

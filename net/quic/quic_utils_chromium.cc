@@ -6,7 +6,7 @@
 
 #include "base/containers/adapters.h"
 #include "base/strings/string_split.h"
-#include "net/third_party/quic/platform/api/quic_string_piece.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_string_piece.h"
 
 namespace net {
 

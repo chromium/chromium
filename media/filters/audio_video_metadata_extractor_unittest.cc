@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/sha1.h"
 #include "build/build_config.h"
 #include "media/base/test_data_util.h"
 #include "media/filters/file_data_source.h"
@@ -47,7 +47,12 @@ const std::string GetTagValue(
     const media::AudioVideoMetadataExtractor::TagDictionary& tags,
     const char* tag_name) {
   auto tag_data = tags.find(tag_name);
-  return tag_data == tags.end() ? "" : tag_data->second;
+  if (tag_data == tags.end()) {
+    DLOG(WARNING) << "Tag name \"" << tag_name << "\" not found!";
+    return "";
+  }
+
+  return tag_data->second;
 }
 
 TEST(AudioVideoMetadataExtractorTest, InvalidFile) {
@@ -67,7 +72,7 @@ TEST(AudioVideoMetadataExtractorTest, AudioOGG) {
   EXPECT_EQ(1u, extractor->stream_infos()[1].tags.size());
   EXPECT_EQ("vorbis", extractor->stream_infos()[1].type);
   EXPECT_EQ("Processed by SoX",
-            GetTagValue(extractor->stream_infos()[1].tags, "COMMENT"));
+            GetTagValue(extractor->stream_infos()[1].tags, "Comment"));
 
   EXPECT_EQ(0u, extractor->attached_images_bytes().size());
 }
@@ -104,9 +109,9 @@ TEST(AudioVideoMetadataExtractorTest, AudioFLAC) {
 
   EXPECT_EQ(2u, extractor->stream_infos()[0].tags.size());
   EXPECT_EQ("Lavf55.43.100",
-            GetTagValue(extractor->stream_infos()[0].tags, "ENCODER"));
+            GetTagValue(extractor->stream_infos()[0].tags, "encoder"));
   EXPECT_EQ("Amadeus Pro",
-            GetTagValue(extractor->stream_infos()[0].tags, "ENCODED_BY"));
+            GetTagValue(extractor->stream_infos()[0].tags, "encoded_by"));
 
   EXPECT_EQ("flac", extractor->stream_infos()[1].type);
   EXPECT_EQ(0u, extractor->stream_infos()[1].tags.size());

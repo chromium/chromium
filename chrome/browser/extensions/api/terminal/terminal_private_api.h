@@ -8,18 +8,41 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/profiles/profile.h"
+#include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/value_store/value_store.h"
+
+class PrefChangeRegistrar;
 
 namespace extensions {
 
+class TerminalPrivateAPI : public BrowserContextKeyedAPI {
+ public:
+  explicit TerminalPrivateAPI(content::BrowserContext* context);
+  ~TerminalPrivateAPI() override;
+
+  // BrowserContextKeyedAPI implementation.
+  static BrowserContextKeyedAPIFactory<TerminalPrivateAPI>*
+  GetFactoryInstance();
+
+ private:
+  friend class BrowserContextKeyedAPIFactory<TerminalPrivateAPI>;
+
+  // BrowserContextKeyedAPI implementation.
+  static const char* service_name() { return "TerminalPrivateAPI"; }
+
+  content::BrowserContext* const context_;
+  std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  DISALLOW_COPY_AND_ASSIGN(TerminalPrivateAPI);
+};
+
 // Opens new terminal process. Returns the new terminal id.
-class TerminalPrivateOpenTerminalProcessFunction
-    : public UIThreadExtensionFunction {
+class TerminalPrivateOpenTerminalProcessFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("terminalPrivate.openTerminalProcess",
                              TERMINALPRIVATE_OPENTERMINALPROCESS)
-
-  TerminalPrivateOpenTerminalProcessFunction();
 
  protected:
   ~TerminalPrivateOpenTerminalProcessFunction() override;
@@ -34,6 +57,9 @@ class TerminalPrivateOpenTerminalProcessFunction
   using OpenProcessCallback =
       base::Callback<void(bool success, const std::string& terminal_id)>;
 
+  void OpenProcess(const std::string& user_id_hash,
+                   int tab_id,
+                   const std::vector<std::string>& arguments);
   void OpenOnRegistryTaskRunner(const ProcessOutputCallback& output_callback,
                                 const OpenProcessCallback& callback,
                                 const std::vector<std::string>& arguments,
@@ -43,7 +69,7 @@ class TerminalPrivateOpenTerminalProcessFunction
 
 // Send input to the terminal process specified by the terminal ID, which is set
 // as an argument.
-class TerminalPrivateSendInputFunction : public UIThreadExtensionFunction {
+class TerminalPrivateSendInputFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("terminalPrivate.sendInput",
                              TERMINALPRIVATE_SENDINPUT)
@@ -60,8 +86,7 @@ class TerminalPrivateSendInputFunction : public UIThreadExtensionFunction {
 };
 
 // Closes terminal process.
-class TerminalPrivateCloseTerminalProcessFunction
-    : public UIThreadExtensionFunction {
+class TerminalPrivateCloseTerminalProcessFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("terminalPrivate.closeTerminalProcess",
                              TERMINALPRIVATE_CLOSETERMINALPROCESS)
@@ -77,8 +102,7 @@ class TerminalPrivateCloseTerminalProcessFunction
 };
 
 // Called by extension when terminal size changes.
-class TerminalPrivateOnTerminalResizeFunction
-    : public UIThreadExtensionFunction {
+class TerminalPrivateOnTerminalResizeFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("terminalPrivate.onTerminalResize",
                              TERMINALPRIVATE_ONTERMINALRESIZE)
@@ -95,7 +119,7 @@ class TerminalPrivateOnTerminalResizeFunction
   void RespondOnUIThread(bool success);
 };
 
-class TerminalPrivateAckOutputFunction : public UIThreadExtensionFunction {
+class TerminalPrivateAckOutputFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("terminalPrivate.ackOutput",
                              TERMINALPRIVATE_ACKOUTPUT)
@@ -107,6 +131,44 @@ class TerminalPrivateAckOutputFunction : public UIThreadExtensionFunction {
 
  private:
   void AckOutputOnRegistryTaskRunner(const std::string& terminal_id);
+};
+
+// TODO(crbug.com/1019021): Remove this function after M-83.
+// Be sure to first remove the callsite in the terminal system app.
+class TerminalPrivateGetCroshSettingsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("terminalPrivate.getCroshSettings",
+                             TERMINALPRIVATE_GETCROSHSETTINGS)
+
+ protected:
+  ~TerminalPrivateGetCroshSettingsFunction() override;
+
+  ExtensionFunction::ResponseAction Run() override;
+
+ private:
+  void AsyncRunWithStorage(ValueStore* storage);
+};
+
+class TerminalPrivateGetSettingsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("terminalPrivate.getSettings",
+                             TERMINALPRIVATE_GETSETTINGS)
+
+ protected:
+  ~TerminalPrivateGetSettingsFunction() override;
+
+  ExtensionFunction::ResponseAction Run() override;
+};
+
+class TerminalPrivateSetSettingsFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("terminalPrivate.setSettings",
+                             TERMINALPRIVATE_SETSETTINGS)
+
+ protected:
+  ~TerminalPrivateSetSettingsFunction() override;
+
+  ExtensionFunction::ResponseAction Run() override;
 };
 
 }  // namespace extensions

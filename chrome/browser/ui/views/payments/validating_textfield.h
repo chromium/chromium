@@ -23,7 +23,7 @@ class ValidatingTextfield : public views::Textfield {
   void OnBlur() override;
   // Used to keep track of our own destruction.
   void ViewHierarchyChanged(
-      const ViewHierarchyChangedDetails& details) override;
+      const views::ViewHierarchyChangedDetails& details) override;
 
   // Called when the textfield contents is changed. May do validation.
   void OnContentsChanged();

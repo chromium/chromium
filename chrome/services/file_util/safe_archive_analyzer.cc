@@ -15,9 +15,7 @@
 #include "chrome/utility/safe_browsing/mac/dmg_analyzer.h"
 #endif
 
-SafeArchiveAnalyzer::SafeArchiveAnalyzer(
-    std::unique_ptr<service_manager::ServiceContextRef> service_ref)
-    : service_ref_(std::move(service_ref)) {}
+SafeArchiveAnalyzer::SafeArchiveAnalyzer() = default;
 
 SafeArchiveAnalyzer::~SafeArchiveAnalyzer() = default;
 

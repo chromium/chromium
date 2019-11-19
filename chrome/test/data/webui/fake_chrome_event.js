@@ -6,36 +6,32 @@
  * @fileoverview Fake implementations of ChromeEvent.
  */
 
-/**
- * @constructor
- * @extends {ChromeEvent}
- */
-function FakeChromeEvent() {
-  /** @type {!Set<!Function>} */
-  this.listeners_ = new Set();
-}
+/* #export */ class FakeChromeEvent {
+  constructor() {
+    /** @type {!Set<!Function>} */
+    this.listeners_ = new Set();
+  }
 
-FakeChromeEvent.prototype = {
   /** @param {Function} listener */
-  addListener: function(listener) {
+  addListener(listener) {
     assertFalse(
         this.listeners_.has(listener),
         'FakeChromeEvent.addListened: Listener already added');
     this.listeners_.add(listener);
-  },
+  }
 
   /** @param {Function} listener */
-  removeListener: function(listener) {
+  removeListener(listener) {
     assertTrue(
         this.listeners_.has(listener),
         'FakeChromeEvent.removeListener: Listener does not exist');
     this.listeners_.delete(listener);
-  },
+  }
 
   /** @param {...} args */
-  callListeners: function(...var_args) {
+  callListeners(...var_args) {
     this.listeners_.forEach(function(l) {
       l.apply(null, var_args);
     });
   }
-};
+}

@@ -10,7 +10,7 @@
  * Launches the PaymentRequest UI with Bob Pay and basic-card as payment
  * methods and a modifier for basic-card.
  */
-function buy() {  // eslint-disable-line no-unused-vars
+function buy() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest(
         [
@@ -54,7 +54,7 @@ function buy() {  // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with Bob Pay and basic-card as payment
  * methods and a modifier for Bob Pay.
  */
-function buyWithBobPayDiscount() {  // eslint-disable-line no-unused-vars
+function buyWithBobPayDiscount() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest(
         [
@@ -98,7 +98,7 @@ function buyWithBobPayDiscount() {  // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with Bob Pay and basic-card as payment
  * methods and a modifier for basic-card with "credit" type
  */
-function creditSupportedType() {  // eslint-disable-line no-unused-vars
+function creditSupportedType() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest(
         [
@@ -145,7 +145,7 @@ function creditSupportedType() {  // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with Bob Pay and basic-card as payment
  * methods and a modifier for basic-card with "debit" type
  */
-function debitSupportedType() {  // eslint-disable-line no-unused-vars
+function debitSupportedType() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest(
         [
@@ -192,7 +192,7 @@ function debitSupportedType() {  // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with Bob Pay and basic-card as payment
  * methods and a modifier for basic-card with "credit" type and "visa" network
  */
-function visaSupportedNetwork() {  // eslint-disable-line no-unused-vars
+function visaSupportedNetwork() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest(
         [
@@ -241,7 +241,7 @@ function visaSupportedNetwork() {  // eslint-disable-line no-unused-vars
  * methods and a modifier for basic-card with "credit" type and " mastercard"
  * network
  */
-function mastercardSupportedNetwork() {  // eslint-disable-line no-unused-vars
+function mastercardSupportedNetwork() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest(
         [
@@ -289,7 +289,7 @@ function mastercardSupportedNetwork() {  // eslint-disable-line no-unused-vars
  * Launches the PaymentRequest UI with Bob Pay and basic-card as payment
  * methods and a modifier for basic-card with "mastercard" network.
  */
-function mastercardAnySupportedType() {  // eslint-disable-line no-unused-vars
+function mastercardAnySupportedType() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest(
         [
@@ -337,7 +337,7 @@ function mastercardAnySupportedType() {  // eslint-disable-line no-unused-vars
  * modifier for basic-card with "mastercard" network, but the modifier does not
  * have a total specified.
  */
-function noTotal() {  // eslint-disable-line no-unused-vars
+function noTotal() { // eslint-disable-line no-unused-vars
   try {
     new PaymentRequest([{supportedMethods: 'basic-card'}], {
       total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},

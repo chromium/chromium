@@ -63,7 +63,7 @@ class AppSearchResultRanker {
   bool load_from_disk_completed_ = false;
   const base::FilePath predictor_filename_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  base::WeakPtrFactory<AppSearchResultRanker> weak_factory_;
+  base::WeakPtrFactory<AppSearchResultRanker> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppSearchResultRanker);
 };

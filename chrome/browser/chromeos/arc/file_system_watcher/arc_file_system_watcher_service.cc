@@ -28,8 +28,8 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/arc/arc_bridge_service.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "components/arc/session/arc_bridge_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -52,6 +52,10 @@ constexpr base::FilePath::CharType kAndroidDownloadDir[] =
 constexpr base::FilePath::CharType kAndroidMyFilesDir[] =
     FILE_PATH_LITERAL("/storage/MyFiles");
 
+// The path for Downloads under MyFiles inside ARC container.
+constexpr base::FilePath::CharType kAndroidMyFilesDownloadsDir[] =
+    FILE_PATH_LITERAL("/storage/MyFiles/Downloads/");
+
 // The removable media path in ChromeOS. This is the actual directory to be
 // watched.
 constexpr base::FilePath::CharType kCrosRemovableMediaDir[] =
@@ -61,6 +65,11 @@ constexpr base::FilePath::CharType kCrosRemovableMediaDir[] =
 // is used in MediaScanner.scanFile request.
 constexpr base::FilePath::CharType kAndroidRemovableMediaDir[] =
     FILE_PATH_LITERAL("/storage");
+
+// The prefix for device label used in Android paths for removable media.
+// A removable device mounted at /media/removable/UNTITLED is mounted at
+// /storage/removable_UNTITLED in Android.
+constexpr char kRemovableMediaLabelPrefix[] = "removable_";
 
 // How long to wait for new inotify events before building the updated timestamp
 // map.
@@ -122,7 +131,11 @@ TimestampMap BuildTimestampMap(base::FilePath cros_dir,
     // Android file path can be obtained by replacing |cros_dir|
     // prefix with |android_dir|.
     base::FilePath android_path(android_dir);
-    cros_dir.AppendRelativePath(cros_path, &android_path);
+    if (cros_dir.value() == kCrosRemovableMediaDir) {
+      AppendRelativePathForRemovableMedia(cros_path, &android_path);
+    } else {
+      cros_dir.AppendRelativePath(cros_path, &android_path);
+    }
     const base::FileEnumerator::FileInfo& info = enumerator.GetInfo();
     timestamp_map[android_path] = info.GetLastModifiedTime();
   }
@@ -247,6 +260,35 @@ bool HasAndroidSupportedMediaExtension(const base::FilePath& path) {
       extension.c_str(), less_comparator);
 }
 
+bool AppendRelativePathForRemovableMedia(const base::FilePath& cros_path,
+                                         base::FilePath* android_path) {
+  std::vector<base::FilePath::StringType> parent_components;
+  base::FilePath(kCrosRemovableMediaDir).GetComponents(&parent_components);
+  std::vector<base::FilePath::StringType> child_components;
+  cros_path.GetComponents(&child_components);
+  auto child_itr = child_components.begin();
+  for (const auto& parent_component : parent_components) {
+    if (child_itr == child_components.end() || parent_component != *child_itr) {
+      LOG(WARNING) << "|cros_path| is not under kCrosRemovableMediaDir.";
+      return false;
+    }
+    ++child_itr;
+  }
+  if (child_itr == child_components.end()) {
+    LOG(WARNING) << "The CrOS path doesn't have a component for device label.";
+    return false;
+  }
+  // The device label (e.g. "UNTITLED" for /media/removable/UNTITLED/foo.jpg)
+  // should be converted to removable_UNTITLED, since the prefix "removable_"
+  // is appended to paths for removable media in Android.
+  *android_path = android_path->Append(kRemovableMediaLabelPrefix + *child_itr);
+  ++child_itr;
+  for (; child_itr != child_components.end(); ++child_itr) {
+    *android_path = android_path->Append(*child_itr);
+  }
+  return true;
+}
+
 // The core part of ArcFileSystemWatcherService to watch for file changes in
 // directory.
 class ArcFileSystemWatcherService::FileSystemWatcher {
@@ -291,7 +333,7 @@ class ArcFileSystemWatcherService::FileSystemWatcher {
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate the weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<FileSystemWatcher> weak_ptr_factory_;
+  base::WeakPtrFactory<FileSystemWatcher> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FileSystemWatcher);
 };
@@ -305,8 +347,7 @@ ArcFileSystemWatcherService::FileSystemWatcher::FileSystemWatcher(
       cros_dir_(cros_dir),
       android_dir_(android_dir),
       last_notify_time_(base::TimeTicks()),
-      outstanding_task_(false),
-      weak_ptr_factory_(this) {
+      outstanding_task_(false) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
@@ -352,10 +393,9 @@ void ArcFileSystemWatcherService::FileSystemWatcher::OnFilePathChanged(
 void ArcFileSystemWatcherService::FileSystemWatcher::DelayBuildTimestampMap() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(outstanding_task_);
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::Bind(&BuildTimestampMapCallback, cros_dir_,
-                 android_dir_),
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+      base::Bind(&BuildTimestampMapCallback, cros_dir_, android_dir_),
       base::Bind(&FileSystemWatcher::OnBuildTimestampMap,
                  weak_ptr_factory_.GetWeakPtr()));
 }
@@ -375,8 +415,8 @@ void ArcFileSystemWatcherService::FileSystemWatcher::OnBuildTimestampMap(
   for (size_t i = 0; i < changed_paths.size(); ++i) {
     string_paths[i] = changed_paths[i].value();
   }
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI},
-                           base::BindOnce(callback_, std::move(string_paths)));
+  base::PostTask(FROM_HERE, {BrowserThread::UI},
+                 base::BindOnce(callback_, std::move(string_paths)));
   if (last_notify_time_ > snapshot_time)
     DelayBuildTimestampMap();
   else
@@ -394,9 +434,8 @@ ArcFileSystemWatcherService::ArcFileSystemWatcherService(
     ArcBridgeService* bridge_service)
     : context_(context),
       arc_bridge_service_(bridge_service),
-      file_task_runner_(
-          base::CreateSequencedTaskRunnerWithTraits({base::MayBlock()})),
-      weak_ptr_factory_(this) {
+      file_task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock()})) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   arc_bridge_service_->file_system()->AddObserver(this);
 }
@@ -479,7 +518,19 @@ void ArcFileSystemWatcherService::OnFileSystemChanged(
       arc_bridge_service_->file_system(), RequestMediaScan);
   if (!instance)
     return;
-  instance->RequestMediaScan(paths);
+
+  std::vector<std::string> filtered_paths;
+  for (const std::string& path : paths) {
+    if (base::StartsWith(path, kAndroidMyFilesDownloadsDir,
+                         base::CompareCase::SENSITIVE)) {
+      // Exclude files under /storage/MyFiles/Downloads/ because they are also
+      // indexed as files under /storage/emulated/0/Download/
+      continue;
+    }
+    filtered_paths.push_back(path);
+  }
+
+  instance->RequestMediaScan(filtered_paths);
 }
 
 }  // namespace arc

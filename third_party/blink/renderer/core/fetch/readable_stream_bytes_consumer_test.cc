@@ -29,15 +29,11 @@ using Checkpoint = StrictMock<testing::MockFunction<void(int)>>;
 using Result = BytesConsumer::Result;
 using PublicState = BytesConsumer::PublicState;
 
-class MockClient : public GarbageCollectedFinalized<MockClient>,
+class MockClient : public GarbageCollected<MockClient>,
                    public BytesConsumer::Client {
   USING_GARBAGE_COLLECTED_MIXIN(MockClient);
 
  public:
-  static MockClient* Create() {
-    return MakeGarbageCollected<StrictMock<MockClient>>();
-  }
-
   MockClient() = default;
 
   MOCK_METHOD0(OnStateChange, void());
@@ -76,7 +72,7 @@ TEST(ReadableStreamBytesConsumerTest, EmptyStream) {
       MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream,
                                                         ASSERT_NO_EXCEPTION);
 
-  Persistent<MockClient> client = MockClient::Create();
+  Persistent<MockClient> client = MakeGarbageCollected<MockClient>();
   consumer->SetClient(client);
 
   Checkpoint checkpoint;
@@ -109,13 +105,13 @@ TEST(ReadableStreamBytesConsumerTest, ErroredStream) {
       MakeGarbageCollected<TestUnderlyingSource>(script_state);
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, underlying_source, 0);
-  underlying_source->SetError(
-      ScriptValue(script_state, v8::Undefined(script_state->GetIsolate())));
+  underlying_source->Error(ScriptValue(
+      script_state->GetIsolate(), v8::Undefined(script_state->GetIsolate())));
 
   Persistent<BytesConsumer> consumer =
       MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream,
                                                         ASSERT_NO_EXCEPTION);
-  Persistent<MockClient> client = MockClient::Create();
+  Persistent<MockClient> client = MakeGarbageCollected<MockClient>();
   consumer->SetClient(client);
   Checkpoint checkpoint;
 
@@ -161,18 +157,18 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
     chunk3->Data()[2] = 0x49;
     chunk3->Data()[3] = 0x4a;
     underlying_source->Enqueue(
-        ScriptValue(script_state, ToV8(chunk1, script_state)));
+        ScriptValue(script_state->GetIsolate(), ToV8(chunk1, script_state)));
     underlying_source->Enqueue(
-        ScriptValue(script_state, ToV8(chunk2, script_state)));
+        ScriptValue(script_state->GetIsolate(), ToV8(chunk2, script_state)));
     underlying_source->Enqueue(
-        ScriptValue(script_state, ToV8(chunk3, script_state)));
+        ScriptValue(script_state->GetIsolate(), ToV8(chunk3, script_state)));
     underlying_source->Close();
   }
 
   Persistent<BytesConsumer> consumer =
       MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream,
                                                         ASSERT_NO_EXCEPTION);
-  Persistent<MockClient> client = MockClient::Create();
+  Persistent<MockClient> client = MakeGarbageCollected<MockClient>();
   consumer->SetClient(client);
   Checkpoint checkpoint;
 
@@ -257,14 +253,14 @@ TEST(ReadableStreamBytesConsumerTest, EnqueueUndefined) {
       MakeGarbageCollected<TestUnderlyingSource>(script_state);
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, underlying_source, 0);
-  underlying_source->Enqueue(
-      ScriptValue(script_state, v8::Undefined(script_state->GetIsolate())));
+  underlying_source->Enqueue(ScriptValue(
+      script_state->GetIsolate(), v8::Undefined(script_state->GetIsolate())));
   underlying_source->Close();
 
   Persistent<BytesConsumer> consumer =
       MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream,
                                                         ASSERT_NO_EXCEPTION);
-  Persistent<MockClient> client = MockClient::Create();
+  Persistent<MockClient> client = MakeGarbageCollected<MockClient>();
   consumer->SetClient(client);
   Checkpoint checkpoint;
 
@@ -297,14 +293,14 @@ TEST(ReadableStreamBytesConsumerTest, EnqueueNull) {
       MakeGarbageCollected<TestUnderlyingSource>(script_state);
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, underlying_source, 0);
-  underlying_source->Enqueue(
-      ScriptValue(script_state, v8::Null(script_state->GetIsolate())));
+  underlying_source->Enqueue(ScriptValue(script_state->GetIsolate(),
+                                         v8::Null(script_state->GetIsolate())));
   underlying_source->Close();
 
   Persistent<BytesConsumer> consumer =
       MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream,
                                                         ASSERT_NO_EXCEPTION);
-  Persistent<MockClient> client = MockClient::Create();
+  Persistent<MockClient> client = MakeGarbageCollected<MockClient>();
   consumer->SetClient(client);
   Checkpoint checkpoint;
 
@@ -338,13 +334,14 @@ TEST(ReadableStreamBytesConsumerTest, EnqueueString) {
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, underlying_source, 0);
   underlying_source->Enqueue(
-      ScriptValue(script_state, V8String(script_state->GetIsolate(), "hello")));
+      ScriptValue(script_state->GetIsolate(),
+                  V8String(script_state->GetIsolate(), "hello")));
   underlying_source->Close();
 
   Persistent<BytesConsumer> consumer =
       MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream,
                                                         ASSERT_NO_EXCEPTION);
-  Persistent<MockClient> client = MockClient::Create();
+  Persistent<MockClient> client = MakeGarbageCollected<MockClient>();
   consumer->SetClient(client);
   Checkpoint checkpoint;
 

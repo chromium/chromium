@@ -36,7 +36,7 @@
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html')`);
-  await ConsoleTestRunner.waitForConsoleMessagesPromise(3);
+  await ConsoleTestRunner.waitForConsoleMessagesPromise(4);
   ConsoleTestRunner.dumpConsoleMessages();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');
@@ -62,7 +62,7 @@
   TestRunner.addResult('');
 
   TestRunner.evaluateInPageAsync(`requestHelper('GET', 'http://localhost:8000/devtools/resources/cors-disabled/xhr-exists.html')`);
-  await ConsoleTestRunner.waitForConsoleMessagesPromise(2);
+  await ConsoleTestRunner.waitForConsoleMessagesPromise(3);
   ConsoleTestRunner.dumpConsoleMessages();
   SDK.consoleModel.requestClearMessages();
   TestRunner.addResult('');

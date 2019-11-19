@@ -5,6 +5,9 @@
 #include "chrome/browser/chromeos/arc/metrics/arc_metrics_service_proxy.h"
 
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/chromeos/arc/arc_util.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/metrics/arc_metrics_service.h"
@@ -49,9 +52,11 @@ ArcMetricsServiceProxy::ArcMetricsServiceProxy(
     : arc_app_list_prefs_(ArcAppListPrefs::Get(context)),
       arc_metrics_service_(ArcMetricsService::GetForBrowserContext(context)) {
   arc_app_list_prefs_->AddObserver(this);
+  arc::ArcSessionManager::Get()->AddObserver(this);
 }
 
 void ArcMetricsServiceProxy::Shutdown() {
+  arc::ArcSessionManager::Get()->RemoveObserver(this);
   arc_app_list_prefs_->RemoveObserver(this);
 }
 
@@ -64,6 +69,15 @@ void ArcMetricsServiceProxy::OnTaskCreated(int32_t task_id,
 
 void ArcMetricsServiceProxy::OnTaskDestroyed(int32_t task_id) {
   arc_metrics_service_->OnTaskDestroyed(task_id);
+}
+
+void ArcMetricsServiceProxy::OnArcSessionStopped(ArcStopReason stop_reason) {
+  const auto* profile = ProfileManager::GetPrimaryUserProfile();
+  if (arc::IsArcAllowedForProfile(profile)) {
+    base::UmaHistogramEnumeration(
+        GetHistogramNameByUserType("Arc.Session.StopReason", profile),
+        stop_reason);
+  }
 }
 
 }  // namespace arc

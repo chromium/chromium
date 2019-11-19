@@ -5,6 +5,8 @@
 #include "ui/ozone/demo/vulkan_renderer.h"
 
 #include <vulkan/vulkan.h>
+#include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/location.h"
@@ -14,32 +16,95 @@
 #include "gpu/vulkan/vulkan_command_buffer.h"
 #include "gpu/vulkan/vulkan_command_pool.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
+#include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_surface.h"
 #include "gpu/vulkan/vulkan_swap_chain.h"
+#include "ui/ozone/public/platform_window_surface.h"
 
 namespace ui {
 
-VulkanRenderer::VulkanRenderer(std::unique_ptr<gpu::VulkanSurface> surface,
-                               gpu::VulkanImplementation* vulkan_implementation,
-                               gfx::AcceleratedWidget widget,
-                               const gfx::Size& size)
+namespace {
+VkPipelineStageFlags GetPipelineStageFlags(const VkImageLayout layout) {
+  switch (layout) {
+    case VK_IMAGE_LAYOUT_UNDEFINED:
+      return VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+    case VK_IMAGE_LAYOUT_GENERAL:
+      return VK_PIPELINE_STAGE_ALL_COMMANDS_BIT;
+    case VK_IMAGE_LAYOUT_PREINITIALIZED:
+      return VK_PIPELINE_STAGE_HOST_BIT;
+    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+      return VK_PIPELINE_STAGE_TRANSFER_BIT;
+    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+      return VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+      return VK_PIPELINE_STAGE_TESSELLATION_CONTROL_SHADER_BIT |
+             VK_PIPELINE_STAGE_TESSELLATION_EVALUATION_SHADER_BIT |
+             VK_PIPELINE_STAGE_GEOMETRY_SHADER_BIT |
+             VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+      return VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
+    default:
+      NOTREACHED() << "layout=" << layout;
+  }
+  return 0;
+}
+
+VkAccessFlags GetAccessMask(const VkImageLayout layout) {
+  switch (layout) {
+    case VK_IMAGE_LAYOUT_UNDEFINED:
+      return 0;
+    case VK_IMAGE_LAYOUT_GENERAL:
+      DLOG(WARNING) << "VK_IMAGE_LAYOUT_GENERAL is used.";
+      return VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT |
+             VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT |
+             VK_ACCESS_TRANSFER_WRITE_BIT | VK_ACCESS_TRANSFER_READ_BIT |
+             VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_HOST_WRITE_BIT |
+             VK_ACCESS_HOST_READ_BIT;
+    case VK_IMAGE_LAYOUT_PREINITIALIZED:
+      return VK_ACCESS_HOST_WRITE_BIT;
+    case VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL:
+      return VK_ACCESS_COLOR_ATTACHMENT_READ_BIT |
+             VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+    case VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL:
+      return VK_ACCESS_SHADER_READ_BIT | VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+    case VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL:
+      return VK_ACCESS_TRANSFER_READ_BIT;
+    case VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL:
+      return VK_ACCESS_TRANSFER_WRITE_BIT;
+    case VK_IMAGE_LAYOUT_PRESENT_SRC_KHR:
+      return 0;
+    default:
+      NOTREACHED() << "layout=" << layout;
+  }
+  return 0;
+}
+}  // namespace
+
+VulkanRenderer::VulkanRenderer(
+    std::unique_ptr<PlatformWindowSurface> window_surface,
+    std::unique_ptr<gpu::VulkanSurface> vulkan_surface,
+    gpu::VulkanImplementation* vulkan_implementation,
+    gfx::AcceleratedWidget widget,
+    const gfx::Size& size)
     : RendererBase(widget, size),
+      window_surface_(std::move(window_surface)),
       vulkan_implementation_(vulkan_implementation),
-      surface_(std::move(surface)),
-      size_(size),
-      weak_ptr_factory_(this) {}
+      vulkan_surface_(std::move(vulkan_surface)),
+      size_(size) {}
 
 VulkanRenderer::~VulkanRenderer() {
   DestroyFramebuffers();
   DestroyRenderPass();
-  surface_->Destroy();
-  surface_.reset();
+  vulkan_surface_->Destroy();
+  vulkan_surface_.reset();
   command_pool_->Destroy();
   command_pool_.reset();
   device_queue_->Destroy();
   device_queue_.reset();
+  window_surface_.reset();
 }
 
 bool VulkanRenderer::Initialize() {
@@ -53,14 +118,14 @@ bool VulkanRenderer::Initialize() {
     LOG(FATAL) << "Failed to init device queue";
   }
 
-  if (!surface_->Initialize(device_queue_.get(),
-                            gpu::VulkanSurface::DEFAULT_SURFACE_FORMAT)) {
+  if (!vulkan_surface_->Initialize(
+          device_queue_.get(), gpu::VulkanSurface::DEFAULT_SURFACE_FORMAT)) {
     LOG(FATAL) << "Failed to init surface";
   }
 
   VkAttachmentDescription render_pass_attachments[] = {{
       /* .flags = */ 0,
-      /* .format = */ surface_->surface_format().format,
+      /* .format = */ vulkan_surface_->surface_format().format,
       /* .samples = */ VK_SAMPLE_COUNT_1_BIT,
       /* .loadOp = */ VK_ATTACHMENT_LOAD_OP_CLEAR,
       /* .storeOp = */ VK_ATTACHMENT_STORE_OP_STORE,
@@ -104,7 +169,7 @@ bool VulkanRenderer::Initialize() {
            VK_SUCCESS);
 
   command_pool_ = std::make_unique<gpu::VulkanCommandPool>(device_queue_.get());
-  CHECK(command_pool_->Initialize());
+  CHECK(command_pool_->Initialize(false /* use_protected_memory */));
 
   RecreateFramebuffers();
 
@@ -143,18 +208,11 @@ void VulkanRenderer::RecreateFramebuffers() {
 
   DestroyFramebuffers();
 
-  surface_->SetSize(size_);
+  vulkan_surface_->Reshape(size_, gfx::OVERLAY_TRANSFORM_NONE);
 
-  gpu::VulkanSwapChain* vulkan_swap_chain = surface_->GetSwapChain();
+  gpu::VulkanSwapChain* vulkan_swap_chain = vulkan_surface_->swap_chain();
   const uint32_t num_images = vulkan_swap_chain->num_images();
   framebuffers_.resize(num_images);
-
-  for (uint32_t image = 0; image < num_images; ++image) {
-    framebuffers_[image] =
-        Framebuffer::Create(device_queue_.get(), command_pool_.get(),
-                            render_pass_, surface_.get(), image);
-    CHECK(framebuffers_[image]);
-  }
 }
 
 void VulkanRenderer::RenderFrame() {
@@ -163,45 +221,90 @@ void VulkanRenderer::RenderFrame() {
   VkClearValue clear_value = {
       /* .color = */ {/* .float32 = */ {.5f, 1.f - NextFraction(), .5f, 1.f}}};
 
-  gpu::VulkanSwapChain* vulkan_swap_chain = surface_->GetSwapChain();
-  const uint32_t image = vulkan_swap_chain->current_image();
-  const Framebuffer& framebuffer = *framebuffers_[image];
-
-  gpu::VulkanCommandBuffer& command_buffer = *framebuffer.command_buffer();
-
+  gpu::VulkanSwapChain* vulkan_swap_chain = vulkan_surface_->swap_chain();
+  gpu::VulkanSwapChain::ScopedWrite scoped_write(vulkan_swap_chain);
+  const uint32_t image = scoped_write.image_index();
   {
-    gpu::ScopedSingleUseCommandBufferRecorder recorder(command_buffer);
+    auto& framebuffer = framebuffers_[image];
+    if (!framebuffer) {
+      framebuffer = Framebuffer::Create(
+          device_queue_.get(), command_pool_.get(), render_pass_,
+          vulkan_surface_.get(), scoped_write.image());
+      CHECK(framebuffer);
+    }
 
-    VkRenderPassBeginInfo begin_info = {
-        /* .sType = */ VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
-        /* .pNext = */ nullptr,
-        /* .renderPass = */ render_pass_,
-        /* .framebuffer = */ framebuffer.vk_framebuffer(),
-        /* .renderArea = */
-        {
-            /* .offset = */ {
-                /* .x = */ 0,
-                /* .y = */ 0,
-            },
-            /* .extent = */
-            {
-                /* .width = */ vulkan_swap_chain->size().width(),
-                /* .height = */ vulkan_swap_chain->size().height(),
-            },
-        },
-        /* .clearValueCount = */ 1,
-        /* .pClearValues = */ &clear_value,
-    };
+    gpu::VulkanCommandBuffer& command_buffer = *framebuffer->command_buffer();
 
-    vkCmdBeginRenderPass(recorder.handle(), &begin_info,
-                         VK_SUBPASS_CONTENTS_INLINE);
+    {
+      gpu::ScopedSingleUseCommandBufferRecorder recorder(command_buffer);
+      VkImageLayout old_layout = scoped_write.image_layout();
+      VkImageLayout layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+      VkImageMemoryBarrier image_memory_barrier = {
+          .sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER,
+          .pNext = nullptr,
+          .srcAccessMask = GetAccessMask(old_layout),
+          .dstAccessMask = GetAccessMask(layout),
+          .oldLayout = old_layout,
+          .newLayout = layout,
+          .srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+          .dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED,
+          .image = scoped_write.image(),
+          .subresourceRange =
+              {
+                  .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+                  .baseMipLevel = 0,
+                  .levelCount = 1,
+                  .baseArrayLayer = 0,
+                  .layerCount = 1,
+              },
+      };
+      vkCmdPipelineBarrier(
+          recorder.handle(), GetPipelineStageFlags(old_layout),
+          GetPipelineStageFlags(layout), 0 /* dependencyFlags */,
+          0 /* memoryBarrierCount */, nullptr /* pMemoryBarriers */,
+          0 /* bufferMemoryBarrierCount */, nullptr /* pBufferMemoryBarriers */,
+          1, &image_memory_barrier);
+      scoped_write.set_image_layout(layout);
 
-    vkCmdEndRenderPass(recorder.handle());
+      VkRenderPassBeginInfo begin_info = {
+          /* .sType = */ VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
+          /* .pNext = */ nullptr,
+          /* .renderPass = */ render_pass_,
+          /* .framebuffer = */ framebuffer->vk_framebuffer(),
+          /* .renderArea = */
+          {
+              /* .offset = */ {
+                  /* .x = */ 0,
+                  /* .y = */ 0,
+              },
+              /* .extent = */
+              {
+                  /* .width = */ vulkan_swap_chain->size().width(),
+                  /* .height = */ vulkan_swap_chain->size().height(),
+              },
+          },
+          /* .clearValueCount = */ 1,
+          /* .pClearValues = */ &clear_value,
+      };
+
+      vkCmdBeginRenderPass(recorder.handle(), &begin_info,
+                           VK_SUBPASS_CONTENTS_INLINE);
+
+      vkCmdEndRenderPass(recorder.handle());
+    }
+    VkSemaphore begin_semaphore = scoped_write.TakeBeginSemaphore();
+    VkSemaphoreCreateInfo vk_semaphore_create_info = {
+        VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO};
+    VkSemaphore end_semaphore;
+    CHECK(vkCreateSemaphore(device_queue_->GetVulkanDevice(),
+                            &vk_semaphore_create_info, nullptr /* pAllocator */,
+                            &end_semaphore) == VK_SUCCESS);
+    CHECK(command_buffer.Submit(1, &begin_semaphore, 1, &end_semaphore));
+    scoped_write.SetEndSemaphore(end_semaphore);
+    device_queue_->GetFenceHelper()->EnqueueSemaphoreCleanupForSubmittedWork(
+        begin_semaphore);
   }
-
-  CHECK(command_buffer.Submit(0, nullptr, 0, nullptr));
-
-  vulkan_swap_chain->SwapBuffers();
+  vulkan_surface_->SwapBuffers();
 
   PostRenderFrameTask();
 }
@@ -227,14 +330,14 @@ VulkanRenderer::Framebuffer::Create(gpu::VulkanDeviceQueue* vulkan_device_queue,
                                     gpu::VulkanCommandPool* vulkan_command_pool,
                                     VkRenderPass vk_render_pass,
                                     gpu::VulkanSurface* vulkan_surface,
-                                    uint32_t vulkan_swap_chain_image_index) {
-  gpu::VulkanSwapChain* vulkan_swap_chain = vulkan_surface->GetSwapChain();
+                                    VkImage image) {
+  gpu::VulkanSwapChain* vulkan_swap_chain = vulkan_surface->swap_chain();
   const VkDevice vk_device = vulkan_device_queue->GetVulkanDevice();
   VkImageViewCreateInfo vk_image_view_create_info = {
       /* .sType = */ VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
       /* .pNext = */ nullptr,
       /* .flags = */ 0,
-      /* .image = */ vulkan_swap_chain->GetImage(vulkan_swap_chain_image_index),
+      /* .image = */ image,
       /* .viewType = */ VK_IMAGE_VIEW_TYPE_2D,
       /* .format = */ vulkan_surface->surface_format().format,
       /* .components = */
@@ -281,7 +384,8 @@ VulkanRenderer::Framebuffer::Create(gpu::VulkanDeviceQueue* vulkan_device_queue,
   }
 
   auto command_buffer = std::make_unique<gpu::VulkanCommandBuffer>(
-      vulkan_device_queue, vulkan_command_pool, true /* primary */);
+      vulkan_device_queue, vulkan_command_pool, true /* primary */,
+      false /* use_protected_memory */);
   CHECK(command_buffer->Initialize());
 
   return std::make_unique<VulkanRenderer::Framebuffer>(

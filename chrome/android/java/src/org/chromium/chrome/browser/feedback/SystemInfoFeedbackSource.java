@@ -9,10 +9,10 @@ import android.os.Environment;
 import android.os.StatFs;
 import android.util.Pair;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.util.ConversionUtils;
 
 import java.io.File;
@@ -33,21 +33,23 @@ public class SystemInfoFeedbackSource extends AsyncFeedbackSourceAdapter<StatFs>
     @Override
     public Map<String, String> getFeedback() {
         Map<String, String> feedback = CollectionUtil.newHashMap(
-                Pair.create("CPU Architecture", nativeGetCpuArchitecture()),
                 Pair.create(
-                        "Available Memory (MB)", Integer.toString(nativeGetAvailableMemoryMB())),
-                Pair.create("Total Memory (MB)", Integer.toString(nativeGetTotalMemoryMB())),
-                Pair.create("GPU Vendor", nativeGetGpuVendor()),
-                Pair.create("GPU Model", nativeGetGpuModel()),
+                        "CPU Architecture", SystemInfoFeedbackSourceJni.get().getCpuArchitecture()),
+                Pair.create("Available Memory (MB)",
+                        Integer.toString(SystemInfoFeedbackSourceJni.get().getAvailableMemoryMB())),
+                Pair.create("Total Memory (MB)",
+                        Integer.toString(SystemInfoFeedbackSourceJni.get().getTotalMemoryMB())),
+                Pair.create("GPU Vendor", SystemInfoFeedbackSourceJni.get().getGpuVendor()),
+                Pair.create("GPU Model", SystemInfoFeedbackSourceJni.get().getGpuModel()),
                 Pair.create("UI Locale", LocaleUtils.getDefaultLocaleString()));
 
         StatFs statFs = getResult();
         if (statFs != null) {
-            long blockSize = ApiCompatibilityUtils.getBlockSize(statFs);
-            long availSpace = ConversionUtils.bytesToMegabytes(
-                    ApiCompatibilityUtils.getAvailableBlocks(statFs) * blockSize);
-            long totalSpace = ConversionUtils.bytesToMegabytes(
-                    ApiCompatibilityUtils.getBlockCount(statFs) * blockSize);
+            long blockSize = statFs.getBlockSizeLong();
+            long availSpace =
+                    ConversionUtils.bytesToMegabytes(statFs.getAvailableBlocksLong() * blockSize);
+            long totalSpace =
+                    ConversionUtils.bytesToMegabytes(statFs.getBlockCountLong() * blockSize);
 
             feedback.put("Available Storage (MB)", Long.toString(availSpace));
             feedback.put("Total Storage (MB)", Long.toString(totalSpace));
@@ -56,9 +58,12 @@ public class SystemInfoFeedbackSource extends AsyncFeedbackSourceAdapter<StatFs>
         return feedback;
     }
 
-    private static native String nativeGetCpuArchitecture();
-    private static native String nativeGetGpuVendor();
-    private static native String nativeGetGpuModel();
-    private static native int nativeGetAvailableMemoryMB();
-    private static native int nativeGetTotalMemoryMB();
+    @NativeMethods
+    interface Natives {
+        String getCpuArchitecture();
+        String getGpuVendor();
+        String getGpuModel();
+        int getAvailableMemoryMB();
+        int getTotalMemoryMB();
+    }
 }

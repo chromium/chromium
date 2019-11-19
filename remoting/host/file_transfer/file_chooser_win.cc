@@ -81,13 +81,16 @@ FileTransferResult<std::pair<ScopedHandle, ScopedHandle>> MakePipe(
 }
 
 FileTransferResult<base::FilePath> GetExePath(base::Location from_here) {
+  // The remoting_desktop.exe binary (where this code runs) has extra manifest
+  // flags (uiAccess and requireAdministrator) that are undesirable for the
+  // file-chooser child process, so remoting_host.exe is used instead.
   base::FilePath path;
-  if (!base::PathService::Get(base::FILE_EXE, &path)) {
+  if (!base::PathService::Get(base::DIR_EXE, &path)) {
     LOG(ERROR) << "Failed to get executable path.";
     return MakeFileTransferError(
         from_here, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR);
   }
-  return std::move(path);
+  return path.AppendASCII("remoting_host.exe");
 }
 
 class FileChooserWindows : public FileChooser,

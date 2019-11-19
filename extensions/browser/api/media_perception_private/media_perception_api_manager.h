@@ -10,11 +10,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
-#include "chromeos/dbus/media_analytics_client.h"
+#include "chromeos/dbus/media_analytics/media_analytics_client.h"
 #include "chromeos/dbus/media_perception/media_perception.pb.h"
 #include "chromeos/services/media_perception/public/mojom/media_perception_service.mojom.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/common/api/media_perception_private.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace extensions {
 
@@ -48,7 +50,8 @@ class MediaPerceptionAPIManager
 
   // Handler for clients of the API requesting a MediaPerception Mojo interface.
   void ActivateMediaPerception(
-      chromeos::media_perception::mojom::MediaPerceptionRequest request);
+      mojo::PendingReceiver<chromeos::media_perception::mojom::MediaPerception>
+          receiver);
 
   // Public functions for MediaPerceptionPrivateAPI implementation.
   void SetAnalyticsComponent(
@@ -131,7 +134,8 @@ class MediaPerceptionAPIManager
 
   // Callback with the mount point for a loaded component.
   void LoadComponentCallback(APISetAnalyticsComponentCallback callback,
-                             bool success,
+                             const extensions::api::media_perception_private::
+                                 ComponentInstallationError installation_error,
                              const base::FilePath& mount_point);
 
   bool ComponentIsLoaded();
@@ -149,18 +153,19 @@ class MediaPerceptionAPIManager
 
   // Pointer to the MediaPerceptionService interface for communicating with the
   // service over Mojo.
-  chromeos::media_perception::mojom::MediaPerceptionServicePtr
+  mojo::Remote<chromeos::media_perception::mojom::MediaPerceptionService>
       media_perception_service_;
 
-  chromeos::media_perception::mojom::MediaPerceptionControllerPtr
+  mojo::Remote<chromeos::media_perception::mojom::MediaPerceptionController>
       media_perception_controller_;
 
   std::unique_ptr<MediaPerceptionControllerClient>
       media_perception_controller_client_;
 
-  ScopedObserver<chromeos::MediaAnalyticsClient, MediaPerceptionAPIManager>
-      scoped_observer_;
-  base::WeakPtrFactory<MediaPerceptionAPIManager> weak_ptr_factory_;
+  ScopedObserver<chromeos::MediaAnalyticsClient,
+                 chromeos::MediaAnalyticsClient::Observer>
+      scoped_observer_{this};
+  base::WeakPtrFactory<MediaPerceptionAPIManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaPerceptionAPIManager);
 };

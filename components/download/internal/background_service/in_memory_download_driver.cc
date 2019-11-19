@@ -14,7 +14,7 @@ namespace {
 DriverEntry::State ToDriverEntryState(InMemoryDownload::State state) {
   switch (state) {
     case InMemoryDownload::State::INITIAL:
-      return DriverEntry::State::IN_PROGRESS;
+    case InMemoryDownload::State::RETRIEVE_BLOB_CONTEXT:
     case InMemoryDownload::State::IN_PROGRESS:
       return DriverEntry::State::IN_PROGRESS;
     case InMemoryDownload::State::FAILED:
@@ -55,10 +55,8 @@ DriverEntry CreateDriverEntry(const InMemoryDownload& download) {
 
 InMemoryDownloadFactory::InMemoryDownloadFactory(
     network::mojom::URLLoaderFactory* url_loader_factory,
-    BlobTaskProxy::BlobContextGetter blob_context_getter,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner)
     : url_loader_factory_(url_loader_factory),
-      blob_context_getter_(blob_context_getter),
       io_task_runner_(io_task_runner) {}
 
 InMemoryDownloadFactory::~InMemoryDownloadFactory() = default;
@@ -72,12 +70,15 @@ std::unique_ptr<InMemoryDownload> InMemoryDownloadFactory::Create(
   DCHECK(url_loader_factory_);
   return std::make_unique<InMemoryDownloadImpl>(
       guid, request_params, std::move(request_body), traffic_annotation,
-      delegate, url_loader_factory_, blob_context_getter_, io_task_runner_);
+      delegate, url_loader_factory_, io_task_runner_);
 }
 
 InMemoryDownloadDriver::InMemoryDownloadDriver(
-    std::unique_ptr<InMemoryDownload::Factory> download_factory)
-    : client_(nullptr), download_factory_(std::move(download_factory)) {}
+    std::unique_ptr<InMemoryDownload::Factory> download_factory,
+    BlobContextGetterFactoryPtr blob_context_getter_factory)
+    : client_(nullptr),
+      download_factory_(std::move(download_factory)),
+      blob_context_getter_factory_(std::move(blob_context_getter_factory)) {}
 
 InMemoryDownloadDriver::~InMemoryDownloadDriver() = default;
 
@@ -182,6 +183,7 @@ void InMemoryDownloadDriver::OnDownloadComplete(InMemoryDownload* download) {
       // OnDownloadSucceeded.
       return;
     case InMemoryDownload::State::INITIAL:
+    case InMemoryDownload::State::RETRIEVE_BLOB_CONTEXT:
     case InMemoryDownload::State::IN_PROGRESS:
       NOTREACHED();
       return;
@@ -192,6 +194,11 @@ void InMemoryDownloadDriver::OnUploadProgress(InMemoryDownload* download) {
   DCHECK(download);
   DCHECK(client_);
   client_->OnUploadProgress(download->guid(), download->bytes_uploaded());
+}
+
+void InMemoryDownloadDriver::RetrieveBlobContextGetter(
+    BlobContextGetterCallback callback) {
+  blob_context_getter_factory_->RetrieveBlobContextGetter(std::move(callback));
 }
 
 }  // namespace download

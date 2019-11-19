@@ -3,7 +3,6 @@
 <head>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-<script src="../resources/run-after-layout-and-paint.js"></script>
 </head>
 <body id="static_eventTarget">
 
@@ -11,7 +10,7 @@
 
 <div id="console"></div>
 <script>
-async_test_after_layout_and_paint((t) => {
+async_test((t) => {
     var axElement = accessibilityController.rootElement;
     axElement.addNotificationListener(t.step_func(function(notification) {
         if (notification == 'SelectedTextChanged') {

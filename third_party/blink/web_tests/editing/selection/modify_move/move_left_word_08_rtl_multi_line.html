@@ -12,20 +12,24 @@ selection_test(
   '<div contenteditable dir="rtl">|abc ghi<div></div><div></div><div></div></div>',
   selection => selection.modify('move', 'left', 'word'),
   isMac
-      ? '<div contenteditable dir="rtl">abc |ghi<div></div><div></div><div></div></div>'
-      : '<div contenteditable dir="rtl">abc| ghi<div></div><div></div><div></div></div>',
+      ? '<div contenteditable dir="rtl">abc| ghi<div></div><div></div><div></div></div>'
+      : '<div contenteditable dir="rtl">abc |ghi<div></div><div></div><div></div></div>',
   '8-0 rtl left word');
 
 selection_test(
   '<div contenteditable dir="rtl">a|bc ghi<div></div><div></div><div></div></div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="rtl">abc ghi|<div></div><div></div><div></div></div>',
+  isMac
+      ? '<div contenteditable dir="rtl">abc| ghi<div></div><div></div><div></div></div>'
+      : '<div contenteditable dir="rtl">abc |ghi<div></div><div></div><div></div></div>',
   '8-1 rtl left word');
 
 selection_test(
   '<div contenteditable dir="rtl">ab|c ghi<div></div><div></div><div></div></div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="rtl">abc ghi|<div></div><div></div><div></div></div>',
+  isMac
+      ? '<div contenteditable dir="rtl">abc| ghi<div></div><div></div><div></div></div>'
+      : '<div contenteditable dir="rtl">abc |ghi<div></div><div></div><div></div></div>',
   '8-2 rtl left word');
 
 selection_test(
@@ -39,23 +43,23 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">abc ghi|<div></div><div></div><div></div></div>'
-      : '<div contenteditable dir="rtl">abc| ghi<div></div><div></div><div></div></div>',
+      : '<div contenteditable dir="rtl">abc ghi|<div></div><div></div><div></div></div>',
   '8-4 rtl left word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc g|hi<div></div><div></div><div></div></div>',
   selection => selection.modify('move', 'left', 'word'),
   isMac
-      ? '<div contenteditable dir="rtl">abc |ghi<div></div><div></div><div></div></div>'
-      : '<div contenteditable dir="rtl">abc| ghi<div></div><div></div><div></div></div>',
+      ? '<div contenteditable dir="rtl">abc ghi|<div></div><div></div><div></div></div>'
+      : '<div contenteditable dir="rtl">abc ghi|<div></div><div></div><div></div></div>',
   '8-5 rtl left word');
 
 selection_test(
   '<div contenteditable dir="rtl">abc gh|i<div></div><div></div><div></div></div>',
   selection => selection.modify('move', 'left', 'word'),
   isMac
-      ? '<div contenteditable dir="rtl">abc |ghi<div></div><div></div><div></div></div>'
-      : '<div contenteditable dir="rtl">abc| ghi<div></div><div></div><div></div></div>',
+      ? '<div contenteditable dir="rtl">abc ghi|<div></div><div></div><div></div></div>'
+      : '<div contenteditable dir="rtl">abc ghi|<div></div><div></div><div></div></div>',
   '8-6 rtl left word');
 
 selection_test(

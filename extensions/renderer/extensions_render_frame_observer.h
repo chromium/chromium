@@ -9,8 +9,9 @@
 
 #include "base/macros.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "extensions/common/mojo/app_window.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "extensions/common/mojom/app_window.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
 namespace extensions {
@@ -25,7 +26,7 @@ class ExtensionsRenderFrameObserver : public content::RenderFrameObserver,
   ~ExtensionsRenderFrameObserver() override;
 
  private:
-  void BindAppWindowRequest(mojom::AppWindowRequest request);
+  void BindAppWindowReceiver(mojo::PendingReceiver<mojom::AppWindow> receiver);
 
   // Toggles visual muting of the render view area. This is on when a
   // constrained window is showing.
@@ -42,7 +43,7 @@ class ExtensionsRenderFrameObserver : public content::RenderFrameObserver,
   // true if webview is overlayed with grey color.
   bool webview_visually_deemphasized_;
 
-  mojo::BindingSet<mojom::AppWindow> bindings_;
+  mojo::ReceiverSet<mojom::AppWindow> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionsRenderFrameObserver);
 };

@@ -13,11 +13,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
+#include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
-#include "components/signin/core/browser/signin_buildflags.h"
-#include "components/signin/core/browser/signin_pref_names.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "google_apis/google_api_keys.h"
 
 #if defined(OS_CHROMEOS)
@@ -26,12 +27,18 @@
 
 using signin::AccountConsistencyMethod;
 
+// TODO(droger): Verify if this feature flag is still required now that
+// DICE migration was enabled by default for all users.
 const base::Feature kAccountConsistencyFeature{
     "AccountConsistency", base::FEATURE_ENABLED_BY_DEFAULT};
 const char kAccountConsistencyFeatureMethodParameter[] = "method";
 const char kAccountConsistencyFeatureMethodMirror[] = "mirror";
 const char kAccountConsistencyFeatureMethodDiceMigration[] = "dice_migration";
+// TODO(msalama): Remove this method.
 const char kAccountConsistencyFeatureMethodDice[] = "dice";
+
+const base::Feature kForceDiceMigration{"ForceDiceMigration",
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
 namespace {
 
@@ -51,10 +58,26 @@ enum class DiceMigrationStatus {
   kEnabled,
   kDisabledReadyForMigration,
   kDisabledNotReadyForMigration,
+  kDisabled,
 
   // This is the last value. New values should be inserted above.
   kDiceMigrationStatusCount
 };
+
+DiceMigrationStatus GetDiceMigrationStatus(
+    AccountConsistencyMethod account_consistency) {
+  switch (account_consistency) {
+    case AccountConsistencyMethod::kDice:
+      return DiceMigrationStatus::kEnabled;
+    case AccountConsistencyMethod::kDiceMigration:
+      return DiceMigrationStatus::kDisabledNotReadyForMigration;
+    case AccountConsistencyMethod::kDisabled:
+      return DiceMigrationStatus::kDisabled;
+    case AccountConsistencyMethod::kMirror:
+      NOTREACHED();
+      return DiceMigrationStatus::kDisabled;
+  }
+}
 #endif
 
 }  // namespace
@@ -73,7 +96,7 @@ AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
       account_consistency_(signin::AccountConsistencyMethod::kDisabled),
       account_consistency_initialized_(false) {
   DCHECK(profile_);
-  DCHECK(!profile_->IsOffTheRecord());
+  DCHECK(ShouldBuildServiceForProfile(profile));
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   PrefService* prefs = profile->GetPrefs();
@@ -90,23 +113,26 @@ AccountConsistencyModeManager::AccountConsistencyModeManager(Profile* profile)
   account_consistency_ = ComputeAccountConsistencyMethod(profile_);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  bool is_ready_for_dice = IsReadyForDiceMigration(profile_);
-  if (is_ready_for_dice &&
-      signin::DiceMethodGreaterOrEqual(
+  if (signin::DiceMethodGreaterOrEqual(
           account_consistency_, AccountConsistencyMethod::kDiceMigration)) {
-    if (account_consistency_ != AccountConsistencyMethod::kDice)
-      VLOG(1) << "Profile is migrating to Dice";
-    profile_->GetPrefs()->SetBoolean(kDiceMigrationCompletePref, true);
-    account_consistency_ = AccountConsistencyMethod::kDice;
+    if (IsReadyForDiceMigration(profile_)) {
+      // Note: Even when |account_consistency_| is kDice, there may be cases
+      // when |kDiceMigrationCompletePref| preference is not set (e.g. browser
+      // tests that force set DICE state to kDice).
+      SetDiceMigrationCompleted();
+      account_consistency_ = AccountConsistencyMethod::kDice;
+    }
+
+    if (account_consistency_ == AccountConsistencyMethod::kDiceMigration) {
+      UMA_HISTOGRAM_BOOLEAN(
+          "Signin.TokenServiceDiceCompatible",
+          prefs->GetBoolean(prefs::kTokenServiceDiceCompatible));
+    }
   }
-  UMA_HISTOGRAM_ENUMERATION(
-      kDiceMigrationStatusHistogram,
-      account_consistency_ == AccountConsistencyMethod::kDice
-          ? DiceMigrationStatus::kEnabled
-          : (is_ready_for_dice
-                 ? DiceMigrationStatus::kDisabledReadyForMigration
-                 : DiceMigrationStatus::kDisabledNotReadyForMigration),
-      DiceMigrationStatus::kDiceMigrationStatusCount);
+
+  UMA_HISTOGRAM_ENUMERATION(kDiceMigrationStatusHistogram,
+                            GetDiceMigrationStatus(account_consistency_),
+                            DiceMigrationStatus::kDiceMigrationStatusCount);
 #endif
 
   DCHECK_EQ(account_consistency_, ComputeAccountConsistencyMethod(profile_));
@@ -132,7 +158,7 @@ void AccountConsistencyModeManager::RegisterProfilePrefs(
 // static
 AccountConsistencyMethod AccountConsistencyModeManager::GetMethodForProfile(
     Profile* profile) {
-  if (profile->IsOffTheRecord())
+  if (!ShouldBuildServiceForProfile(profile))
     return AccountConsistencyMethod::kDisabled;
 
   return AccountConsistencyModeManager::GetForProfile(profile)
@@ -145,8 +171,12 @@ bool AccountConsistencyModeManager::IsDiceEnabledForProfile(Profile* profile) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void AccountConsistencyModeManager::SetDiceMigrationCompleted() {
+  VLOG(1) << "Dice migration completed.";
+  profile_->GetPrefs()->SetBoolean(kDiceMigrationCompletePref, true);
+}
+
 void AccountConsistencyModeManager::SetReadyForDiceMigration(bool is_ready) {
-  DCHECK_EQ(Profile::ProfileType::REGULAR_PROFILE, profile_->GetProfileType());
   SetDiceMigrationOnStartup(profile_->GetPrefs(), is_ready);
 }
 
@@ -160,9 +190,14 @@ void AccountConsistencyModeManager::SetDiceMigrationOnStartup(
 
 // static
 bool AccountConsistencyModeManager::IsReadyForDiceMigration(Profile* profile) {
-  return (profile->GetProfileType() == Profile::ProfileType::REGULAR_PROFILE) &&
+  return ShouldBuildServiceForProfile(profile) &&
          (profile->IsNewProfile() ||
           profile->GetPrefs()->GetBoolean(kDiceMigrationOnStartupPref));
+}
+
+// static
+bool AccountConsistencyModeManager::IsDiceMigrationCompleted(Profile* profile) {
+  return profile->GetPrefs()->GetBoolean(kDiceMigrationCompletePref);
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -175,6 +210,17 @@ bool AccountConsistencyModeManager::IsMirrorEnabledForProfile(
 // static
 void AccountConsistencyModeManager::SetIgnoreMissingOAuthClientForTesting() {
   ignore_missing_oauth_client_for_testing_ = true;
+}
+
+// static
+bool AccountConsistencyModeManager::ShouldBuildServiceForProfile(
+    Profile* profile) {
+  // IsGuestSession() returns true for the ProfileImpl associated with Guest
+  // profiles. This profile manually sets the kSigninAllowed prference, which
+  // causes crashes if the AccountConsistencyModeManager is instantiated. See
+  // https://crbug.com/940026
+  return profile->IsRegularProfile() && !profile->IsGuestSession() &&
+         !profile->IsSystemProfile();
 }
 
 AccountConsistencyMethod
@@ -197,10 +243,7 @@ AccountConsistencyModeManager::GetAccountConsistencyMethod() {
 signin::AccountConsistencyMethod
 AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
     Profile* profile) {
-  if (profile->GetProfileType() != Profile::ProfileType::REGULAR_PROFILE) {
-    DCHECK_EQ(Profile::ProfileType::GUEST_PROFILE, profile->GetProfileType());
-    return AccountConsistencyMethod::kDisabled;
-  }
+  DCHECK(ShouldBuildServiceForProfile(profile));
 
 #if BUILDFLAG(ENABLE_MIRROR)
   return AccountConsistencyMethod::kMirror;
@@ -251,9 +294,12 @@ AccountConsistencyModeManager::ComputeAccountConsistencyMethod(
     return AccountConsistencyMethod::kDisabled;
   }
 
-  if (method == AccountConsistencyMethod::kDiceMigration &&
-      profile->GetPrefs()->GetBoolean(kDiceMigrationCompletePref)) {
-    return AccountConsistencyMethod::kDice;
+  if (method == AccountConsistencyMethod::kDiceMigration) {
+    if (IsDiceMigrationCompleted(profile))
+      return AccountConsistencyMethod::kDice;
+
+    if (base::FeatureList::IsEnabled(kForceDiceMigration))
+      return AccountConsistencyMethod::kDice;
   }
 
   return method;

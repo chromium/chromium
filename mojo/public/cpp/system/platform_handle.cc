@@ -33,6 +33,8 @@ base::PlatformFile PlatformFileFromPlatformHandleValue(uint64_t value) {
 #endif
 }
 
+}  // namespace
+
 ScopedSharedBufferHandle WrapPlatformSharedMemoryRegion(
     base::subtle::PlatformSharedMemoryRegion region) {
   if (!region.IsValid())
@@ -177,8 +179,6 @@ base::subtle::PlatformSharedMemoryRegion UnwrapPlatformSharedMemoryRegion(
       base::UnguessableToken::Deserialize(mojo_guid.high, mojo_guid.low));
 }
 
-}  // namespace
-
 ScopedHandle WrapPlatformHandle(PlatformHandle handle) {
   MojoPlatformHandle platform_handle;
   PlatformHandle::ToMojoPlatformHandle(std::move(handle), &platform_handle);
@@ -230,128 +230,6 @@ MojoResult UnwrapPlatformFile(ScopedHandle handle, base::PlatformFile* file) {
     CHECK_EQ(platform_handle.type, kPlatformFileHandleType);
     *file = PlatformFileFromPlatformHandleValue(platform_handle.value);
   }
-
-  return MOJO_RESULT_OK;
-}
-
-ScopedSharedBufferHandle WrapSharedMemoryHandle(
-    const base::SharedMemoryHandle& memory_handle,
-    size_t size,
-    UnwrappedSharedMemoryHandleProtection protection) {
-  if (!memory_handle.IsValid())
-    return ScopedSharedBufferHandle();
-  MojoPlatformHandle platform_handle;
-  platform_handle.struct_size = sizeof(MojoPlatformHandle);
-  platform_handle.type = kPlatformSharedBufferHandleType;
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-  platform_handle.value =
-      static_cast<uint64_t>(memory_handle.GetMemoryObject());
-#else
-  platform_handle.value =
-      PlatformHandleValueFromPlatformFile(memory_handle.GetHandle());
-#endif
-
-  MojoPlatformSharedMemoryRegionAccessMode access_mode =
-      MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_UNSAFE;
-  if (protection == UnwrappedSharedMemoryHandleProtection::kReadOnly) {
-    access_mode = MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_READ_ONLY;
-
-#if defined(OS_ANDROID)
-    // Many callers assume that base::SharedMemory::GetReadOnlyHandle() gives
-    // them a handle which is actually read-only. This assumption is invalid on
-    // Android. As a precursor to migrating all base::SharedMemory usage --
-    // including Mojo internals -- to the new base shared memory API, we ensure
-    // that regions are set to read-only if any of their handles are wrapped
-    // read-only. This relies on existing usages not attempting to map the
-    // region writable any time after this call.
-    if (!memory_handle.IsRegionReadOnly())
-      memory_handle.SetRegionReadOnly();
-#endif
-  }
-
-  MojoSharedBufferGuid guid;
-  guid.high = memory_handle.GetGUID().GetHighForSerialization();
-  guid.low = memory_handle.GetGUID().GetLowForSerialization();
-  MojoHandle mojo_handle;
-  MojoResult result = MojoWrapPlatformSharedMemoryRegion(
-      &platform_handle, 1, size, &guid, access_mode, nullptr, &mojo_handle);
-  CHECK_EQ(result, MOJO_RESULT_OK);
-
-  return ScopedSharedBufferHandle(SharedBufferHandle(mojo_handle));
-}
-
-MojoResult UnwrapSharedMemoryHandle(
-    ScopedSharedBufferHandle handle,
-    base::SharedMemoryHandle* memory_handle,
-    size_t* size,
-    UnwrappedSharedMemoryHandleProtection* protection) {
-  if (!handle.is_valid())
-    return MOJO_RESULT_INVALID_ARGUMENT;
-  MojoPlatformHandle platform_handles[2];
-  platform_handles[0].struct_size = sizeof(platform_handles[0]);
-  platform_handles[1].struct_size = sizeof(platform_handles[1]);
-
-  uint32_t num_platform_handles = 2;
-  uint64_t num_bytes;
-  MojoSharedBufferGuid mojo_guid;
-  MojoPlatformSharedMemoryRegionAccessMode access_mode;
-  MojoResult result = MojoUnwrapPlatformSharedMemoryRegion(
-      handle.release().value(), nullptr, platform_handles,
-      &num_platform_handles, &num_bytes, &mojo_guid, &access_mode);
-  if (result != MOJO_RESULT_OK)
-    return result;
-
-  if (size) {
-    DCHECK(base::IsValueInRangeForNumericType<size_t>(num_bytes));
-    *size = static_cast<size_t>(num_bytes);
-  }
-
-  if (protection) {
-    *protection =
-        access_mode == MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_READ_ONLY
-            ? UnwrappedSharedMemoryHandleProtection::kReadOnly
-            : UnwrappedSharedMemoryHandleProtection::kReadWrite;
-  }
-
-  base::UnguessableToken guid =
-      base::UnguessableToken::Deserialize(mojo_guid.high, mojo_guid.low);
-#if defined(OS_MACOSX) && !defined(OS_IOS)
-  DCHECK_EQ(platform_handles[0].type, MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT);
-  DCHECK_EQ(num_platform_handles, 1u);
-  *memory_handle = base::SharedMemoryHandle(
-      static_cast<mach_port_t>(platform_handles[0].value), num_bytes, guid);
-#elif defined(OS_FUCHSIA)
-  DCHECK_EQ(platform_handles[0].type, MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE);
-  DCHECK_EQ(num_platform_handles, 1u);
-  *memory_handle = base::SharedMemoryHandle(
-      static_cast<zx_handle_t>(platform_handles[0].value), num_bytes, guid);
-#elif defined(OS_POSIX)
-  DCHECK_EQ(platform_handles[0].type,
-            MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR);
-  *memory_handle = base::SharedMemoryHandle(
-      base::FileDescriptor(static_cast<int>(platform_handles[0].value), false),
-      num_bytes, guid);
-#if !defined(OS_ANDROID)
-  if (access_mode == MOJO_PLATFORM_SHARED_MEMORY_REGION_ACCESS_MODE_WRITABLE) {
-    DCHECK_EQ(num_platform_handles, 2u);
-    // When unwrapping as a base::SharedMemoryHandle, make sure to discard the
-    // extra file descriptor if the region is writable. base::SharedMemoryHandle
-    // effectively only supports read-only and unsafe usage modes when wrapping
-    // or unwrapping to and from Mojo handles.
-    base::ScopedFD discarded_readonly_fd(
-        static_cast<int>(platform_handles[1].value));
-  } else {
-    DCHECK_EQ(num_platform_handles, 1u);
-  }
-#else   // !defined(OS_ANDROID)
-  DCHECK_EQ(num_platform_handles, 1u);
-#endif  // !defined(OS_ANDROID)
-#elif defined(OS_WIN)
-  DCHECK_EQ(platform_handles[0].type, MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE);
-  DCHECK_EQ(num_platform_handles, 1u);
-  *memory_handle = base::SharedMemoryHandle(
-      reinterpret_cast<HANDLE>(platform_handles[0].value), num_bytes, guid);
-#endif
 
   return MOJO_RESULT_OK;
 }

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//mojo/public/tools/bindings/mojom.gni")
-
 source_set("cpp") {
   sources = [
     "patch.cc",
@@ -11,20 +9,7 @@ source_set("cpp") {
   ]
 
   public_deps = [
-    "//components/services/patch/public/interfaces",
-    "//services/service_manager/public/cpp",
-  ]
-}
-
-source_set("manifest") {
-  sources = [
-    "manifest.cc",
-    "manifest.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/services/patch/public/interfaces",
-    "//services/service_manager/public/cpp",
+    "//components/services/patch/public/mojom",
+    "//mojo/public/cpp/bindings",
   ]
 }

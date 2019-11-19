@@ -12,6 +12,7 @@
 #include "ash/app_list/model/app_list_item_list_observer.h"
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/app_list/model/app_list_model_export.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/observer_list.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -19,15 +20,16 @@ namespace gfx {
 class Rect;
 }
 
-namespace app_list {
+namespace ash {
 
+class AppListConfig;
 class AppListItem;
 class AppListItemList;
 
 class APP_LIST_MODEL_EXPORT FolderImageObserver {
  public:
   // Called when the folder icon has changed.
-  virtual void OnFolderImageUpdated() {}
+  virtual void OnFolderImageUpdated(ash::AppListConfigType config_type) {}
 
  protected:
   virtual ~FolderImageObserver() {}
@@ -43,7 +45,7 @@ class APP_LIST_MODEL_EXPORT FolderImage : public AppListItemListObserver,
   // and animated when opening and closing a folder.
   static const size_t kNumFolderTopItems;
 
-  explicit FolderImage(AppListItemList* item_list);
+  FolderImage(const AppListConfig* app_list_config, AppListItemList* item_list);
   ~FolderImage() override;
 
   // Generates the folder's icon from the icons of the items in the item list,
@@ -58,7 +60,10 @@ class APP_LIST_MODEL_EXPORT FolderImage : public AppListItemListObserver,
 
   // Calculates the top item icons' bounds inside |folder_icon_bounds|.
   // Returns the bounds of top item icons based on total number of items.
+  // |app_list_config| is the app list configuration for which bounds are being
+  // calculated.
   static std::vector<gfx::Rect> GetTopIconsBounds(
+      const AppListConfig& app_list_config,
       const gfx::Rect& folder_icon_bounds,
       size_t num_items);
 
@@ -68,7 +73,10 @@ class APP_LIST_MODEL_EXPORT FolderImage : public AppListItemListObserver,
   // the target icon bounds is centered at the |folder_icon_bounds| with
   // the same size of the top item icon.
   // The Rect returned is in the same coordinates of |folder_icon_bounds|.
+  // |app_list_config| is the app list configuration for which bounds are being
+  // calculated.
   gfx::Rect GetTargetIconRectInFolderForItem(
+      const AppListConfig& app_list_config,
       AppListItem* item,
       const gfx::Rect& folder_icon_bounds) const;
 
@@ -76,7 +84,7 @@ class APP_LIST_MODEL_EXPORT FolderImage : public AppListItemListObserver,
   void RemoveObserver(FolderImageObserver* observer);
 
   // AppListItemObserver overrides:
-  void ItemIconChanged() override;
+  void ItemIconChanged(ash::AppListConfigType config_type) override;
 
   // AppListItemListObserver overrides:
   void OnListItemAdded(size_t index, AppListItem* item) override;
@@ -90,6 +98,9 @@ class APP_LIST_MODEL_EXPORT FolderImage : public AppListItemListObserver,
   // OnFolderImageUpdated. Does not refresh the |top_items_| list, so should
   // only be called if the |item_list_| has not been changed (see UpdateIcon).
   void RedrawIconAndNotify();
+
+  // The app list config for which this folder image is created.
+  const AppListConfig* app_list_config_;
 
   // The unclipped icon image. This will be clipped in AppListItemView before
   // being shown in apps grid.
@@ -107,6 +118,6 @@ class APP_LIST_MODEL_EXPORT FolderImage : public AppListItemListObserver,
   base::ObserverList<FolderImageObserver>::Unchecked observers_;
 };
 
-}  // namespace app_list
+}  // namespace ash
 
 #endif  // ASH_APP_LIST_MODEL_FOLDER_IMAGE_H_

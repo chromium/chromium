@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/chrome_cleaner/srt_chrome_prompt_impl_win.h"
+#include "chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_actions_win.h"
 
 #include <vector>
 
-#include "base/bind.h"
 #include "base/bind_helpers.h"
 #include "base/feature_list.h"
 #include "base/location.h"
@@ -20,7 +19,7 @@
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/mock_extension_system.h"
 #include "extensions/common/extension.h"
@@ -114,39 +113,35 @@ class ExtensionDeletionDisabledTest : public ExtensionDeletionTest {
 TEST_F(ExtensionDeletionEnabledTest, DisableExtensionTest) {
   std::vector<base::string16> extension_ids = PopulateExtensionIds();
   extensions::ExtensionService* extension_service = this->service();
-  std::unique_ptr<ChromePromptImpl> chrome_prompt =
-      std::make_unique<ChromePromptImpl>(extension_service, nullptr,
-                                         base::DoNothing(), base::DoNothing());
+  extensions::ExtensionRegistry* extension_registry = registry();
 
-  chrome_prompt->PromptUser({}, {}, extension_ids, base::DoNothing());
+  ChromePromptActions chrome_prompt(extension_service, extension_registry,
+                                    base::DoNothing());
+  chrome_prompt.PromptUser({}, {}, extension_ids, base::DoNothing());
   std::vector<base::string16> extensions_to_disable{extension_ids[0]};
-  chrome_prompt->DisableExtensions(
-      extensions_to_disable,
-      base::BindOnce([](bool result) { EXPECT_TRUE(result); }));
-  EXPECT_EQ(extension_service->GetInstalledExtension(
+  EXPECT_TRUE(chrome_prompt.DisableExtensions(extensions_to_disable));
+  EXPECT_EQ(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[0])),
             nullptr);
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[1])),
             nullptr);
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[2])),
             nullptr);
 
-  chrome_prompt = std::make_unique<ChromePromptImpl>(
-      extension_service, nullptr, base::DoNothing(), base::DoNothing());
-  chrome_prompt->PromptUser({}, {}, extension_ids, base::DoNothing());
+  ChromePromptActions chrome_prompt2(extension_service, extension_registry,
+                                     base::DoNothing());
+  chrome_prompt2.PromptUser({}, {}, extension_ids, base::DoNothing());
   extensions_to_disable = {extension_ids[2], extension_ids[1]};
-  chrome_prompt->DisableExtensions(
-      extensions_to_disable,
-      base::BindOnce([](bool result) { EXPECT_TRUE(result); }));
-  EXPECT_EQ(extension_service->GetInstalledExtension(
+  EXPECT_TRUE(chrome_prompt2.DisableExtensions(extensions_to_disable));
+  EXPECT_EQ(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[0])),
             nullptr);
-  EXPECT_EQ(extension_service->GetInstalledExtension(
+  EXPECT_EQ(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[1])),
             nullptr);
-  EXPECT_EQ(extension_service->GetInstalledExtension(
+  EXPECT_EQ(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[2])),
             nullptr);
 }
@@ -154,49 +149,49 @@ TEST_F(ExtensionDeletionEnabledTest, DisableExtensionTest) {
 TEST_F(ExtensionDeletionEnabledTest, CantDeleteNonPromptedExtensions) {
   std::vector<base::string16> extension_ids = PopulateExtensionIds();
   extensions::ExtensionService* extension_service = this->service();
-  std::unique_ptr<ChromePromptImpl> chrome_prompt =
-      std::make_unique<ChromePromptImpl>(extension_service, nullptr,
-                                         base::DoNothing(), base::DoNothing());
+  extensions::ExtensionRegistry* extension_registry = registry();
 
+  // Call DisableExtensions without prompting.
   std::vector<base::string16> extensions_to_disable{extension_ids[0]};
-  chrome_prompt->DisableExtensions(
-      extensions_to_disable,
-      base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  ChromePromptActions chrome_prompt(extension_service, extension_registry,
+                                    base::DoNothing());
+  EXPECT_FALSE(chrome_prompt.DisableExtensions(extensions_to_disable));
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[0])),
             nullptr);
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[1])),
             nullptr);
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[2])),
             nullptr);
 
-  chrome_prompt = std::make_unique<ChromePromptImpl>(
-      extension_service, nullptr, base::DoNothing(), base::DoNothing());
-  chrome_prompt->DisableExtensions(
-      extension_ids, base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  ChromePromptActions chrome_prompt2(extension_service, extension_registry,
+                                     base::DoNothing());
+  EXPECT_FALSE(chrome_prompt2.DisableExtensions(extension_ids));
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[0])),
             nullptr);
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[1])),
             nullptr);
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[2])),
             nullptr);
 
-  chrome_prompt->PromptUser({}, {}, {{extension_ids[2]}}, base::DoNothing());
-  chrome_prompt->DisableExtensions(
-      {extension_ids[0], extension_ids[1]},
-      base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  // Prompt for an extension but try to disable different ones.
+  ChromePromptActions chrome_prompt3(extension_service, extension_registry,
+                                     base::DoNothing());
+  chrome_prompt3.PromptUser({}, {}, {{extension_ids[2]}}, base::DoNothing());
+  EXPECT_FALSE(
+      chrome_prompt3.DisableExtensions({extension_ids[0], extension_ids[1]}));
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[0])),
             nullptr);
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[1])),
             nullptr);
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[2])),
             nullptr);
 }
@@ -204,13 +199,12 @@ TEST_F(ExtensionDeletionEnabledTest, CantDeleteNonPromptedExtensions) {
 TEST_F(ExtensionDeletionEnabledTest, EmptyDeletionTest) {
   std::vector<base::string16> extension_ids = PopulateExtensionIds();
   extensions::ExtensionService* extension_service = this->service();
-  std::unique_ptr<ChromePromptImpl> chrome_prompt =
-      std::make_unique<ChromePromptImpl>(extension_service, nullptr,
-                                         base::DoNothing(), base::DoNothing());
+  extensions::ExtensionRegistry* extension_registry = registry();
 
-  chrome_prompt->PromptUser({}, {}, extension_ids, base::DoNothing());
-  chrome_prompt->DisableExtensions(
-      {}, base::BindOnce([](bool result) { EXPECT_TRUE(result); }));
+  ChromePromptActions chrome_prompt(extension_service, extension_registry,
+                                    base::DoNothing());
+  chrome_prompt.PromptUser({}, {}, extension_ids, base::DoNothing());
+  EXPECT_TRUE(chrome_prompt.DisableExtensions({}));
   EXPECT_TRUE(extension_service->IsExtensionEnabled(
       base::UTF16ToUTF8(extension_ids[0])));
   EXPECT_TRUE(extension_service->IsExtensionEnabled(
@@ -222,53 +216,47 @@ TEST_F(ExtensionDeletionEnabledTest, EmptyDeletionTest) {
 TEST_F(ExtensionDeletionEnabledTest, BadlyFormattedDeletionTest) {
   std::vector<base::string16> extension_ids = PopulateExtensionIds();
   extensions::ExtensionService* extension_service = this->service();
-  std::unique_ptr<ChromePromptImpl> chrome_prompt =
-      std::make_unique<ChromePromptImpl>(extension_service, nullptr,
-                                         base::DoNothing(), base::DoNothing());
+  extensions::ExtensionRegistry* extension_registry = registry();
 
-  chrome_prompt->DisableExtensions(
-      {L"bad-extension-id"},
-      base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
-  chrome_prompt->DisableExtensions(
-      {L""}, base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
-  chrome_prompt->DisableExtensions(
-      {L"🤷☝¯\\_(ツ)_/¯✌🤷"},
-      base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
+  ChromePromptActions chrome_prompt(extension_service, extension_registry,
+                                    base::DoNothing());
+  EXPECT_FALSE(chrome_prompt.DisableExtensions({L"bad-extension-id"}));
+  EXPECT_FALSE(chrome_prompt.DisableExtensions({L""}));
+  EXPECT_FALSE(
+      chrome_prompt.DisableExtensions({L"🤷☝¯\\_(ツ)_/¯✌🤷"}));
 }
 
 TEST_F(ExtensionDeletionEnabledTest, NotInstalledExtensionTest) {
   // Don't actually install the extension
   std::vector<base::string16> extension_ids = PopulateExtensionIds(false);
   extensions::ExtensionService* extension_service = this->service();
-  std::unique_ptr<ChromePromptImpl> chrome_prompt =
-      std::make_unique<ChromePromptImpl>(extension_service, nullptr,
-                                         base::DoNothing(), base::DoNothing());
+  extensions::ExtensionRegistry* extension_registry = registry();
 
-  chrome_prompt->DisableExtensions(
-      extension_ids, base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
+  ChromePromptActions chrome_prompt(extension_service, extension_registry,
+                                    base::DoNothing());
+  chrome_prompt.PromptUser({}, {}, extension_ids, base::DoNothing());
+  EXPECT_FALSE(chrome_prompt.DisableExtensions(extension_ids));
 }
 
 TEST_F(ExtensionDeletionDisabledTest, CannotDisableExtensionTest) {
   std::vector<base::string16> extension_ids = PopulateExtensionIds();
   extensions::ExtensionService* extension_service = this->service();
+  extensions::ExtensionRegistry* extension_registry = registry();
 
-  std::unique_ptr<ChromePromptImpl> chrome_prompt =
-      std::make_unique<ChromePromptImpl>(extension_service, nullptr,
-                                         base::DoNothing(), base::DoNothing());
-  chrome_prompt->PromptUser({}, {}, extension_ids, base::DoNothing());
+  ChromePromptActions chrome_prompt(extension_service, extension_registry,
+                                    base::DoNothing());
+  chrome_prompt.PromptUser({}, {}, extension_ids, base::DoNothing());
   std::vector<base::string16> extensions_to_disable{extension_ids[0]};
-  chrome_prompt->DisableExtensions(
-      extensions_to_disable,
-      base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
+  EXPECT_FALSE(chrome_prompt.DisableExtensions(extensions_to_disable));
 
   // Even if we called disable, the extension doesn't get disabled.
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[0])),
             nullptr);
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[1])),
             nullptr);
-  EXPECT_NE(extension_service->GetInstalledExtension(
+  EXPECT_NE(extension_registry->GetInstalledExtension(
                 base::UTF16ToUTF8(extension_ids[2])),
             nullptr);
 }

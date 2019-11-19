@@ -16,7 +16,9 @@
 namespace viz {
 
 DrawQuad::DrawQuad()
-    : material(INVALID), needs_blending(false), shared_quad_state(nullptr) {}
+    : material(Material::kInvalid),
+      needs_blending(false),
+      shared_quad_state(nullptr) {}
 
 DrawQuad::DrawQuad(const DrawQuad& other) = default;
 
@@ -36,13 +38,13 @@ void DrawQuad::SetAll(const SharedQuadState* shared_quad_state,
   this->shared_quad_state = shared_quad_state;
 
   DCHECK(shared_quad_state);
-  DCHECK(material != INVALID);
+  DCHECK(material != Material::kInvalid);
 }
 
 DrawQuad::~DrawQuad() {}
 
 void DrawQuad::AsValueInto(base::trace_event::TracedValue* value) const {
-  value->SetInteger("material", material);
+  value->SetInteger("material", static_cast<int>(material));
   TracedValue::SetIDRef(shared_quad_state, value, "shared_state");
 
   cc::MathUtil::AddToTracedValue("content_space_rect", rect, value);

@@ -2,44 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Note: The handle* functions below are called internally on promise
+// resolution, unlike the other return* functions, which are called
+// asynchronously by the host.
+
 /**
- * Callback from the backend with the list of variations to display.
- * This call will build the variations section of the version page, or hide that
- * section if there are none to display.
- * @param {!Array<string>} variationsList The list of variations.
+ * Promise resolution handler for variations list and command line equivalent.
+ * @param {{variationsList: !Array<string>, variationsCmd: string=}}
  */
-function returnVariationInfo(variationsList) {
+function handleVariationInfo({variationsList, variationsCmd}) {
   $('variations-section').hidden = !variationsList.length;
   $('variations-list').appendChild(
       parseHtmlSubset(variationsList.join('<br>'), ['BR']));
+
+  if (variationsCmd) {
+    $('variations-cmd-section').hidden = !variationsCmd;
+    $('variations-cmd').textContent = variationsCmd;
+  }
 }
 
 /**
- * Callback from the backend with the variations formatted as command line
- * input. This call will build the variations-cmd section of the version page
- * if needed.
- * @param {string} variationsCmd The variations info in command line format.
- */
-function returnVariationCmd(variationsCmd) {
-  $('variations-cmd-section').hidden = !variationsCmd;
-  $('variations-cmd').textContent = variationsCmd;
-}
-
-/**
- * Callback from the backend with the executable and profile paths to display.
+ * Promise resolution handler for the executable and profile paths to display.
  * @param {string} execPath The executable path to display.
  * @param {string} profilePath The profile path to display.
  */
-function returnFilePaths(execPath, profilePath) {
+function handlePathInfo({execPath, profilePath}) {
   $('executable_path').textContent = execPath;
   $('profile_path').textContent = profilePath;
 }
 
 /**
- * Callback from the backend with the Flash version to display.
+ * Promise resolution handler for the Flash version to display.
  * @param {string} flashVersion The Flash version to display.
  */
-function returnFlashVersion(flashVersion) {
+function handlePluginInfo(flashVersion) {
   $('flash_version').textContent = flashVersion;
 }
 
@@ -83,9 +79,18 @@ function returnCustomizationId(response) {
 /* All the work we do onload. */
 function onLoadWork() {
   chrome.send('requestVersionInfo');
+  const includeVariationsCmd = location.search.includes("show-variations-cmd");
+  cr.sendWithPromise('requestVariationInfo', includeVariationsCmd)
+      .then(handleVariationInfo);
+  cr.sendWithPromise('requestPluginInfo').then(handlePluginInfo);
+  cr.sendWithPromise('requestPathInfo').then(handlePathInfo);
+
   if (cr.isChromeOS) {
     $('arc_holder').hidden = true;
     chrome.chromeosInfoPrivate.get(['customizationId'], returnCustomizationId);
+  }
+  if ($('sanitizer').textContent != '') {
+    $('sanitizer-section').hidden = false;
   }
 }
 

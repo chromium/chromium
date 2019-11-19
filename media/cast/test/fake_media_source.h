@@ -174,7 +174,7 @@ class FakeMediaSource : public media::AudioConverter::InputCallback {
   base::queue<AudioBus*> audio_bus_queue_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<FakeMediaSource> weak_factory_;
+  base::WeakPtrFactory<FakeMediaSource> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FakeMediaSource);
 };

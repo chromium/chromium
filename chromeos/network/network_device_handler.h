@@ -23,6 +23,8 @@ class IPEndPoint;
 
 namespace chromeos {
 
+class NetworkStateHandler;
+
 // The NetworkDeviceHandler class allows making device specific requests on a
 // ChromeOS network device. All calls are asynchronous and interact with the
 // Shill device API. No calls will block on DBus calls.
@@ -70,14 +72,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
       const base::Closure& callback,
       const network_handler::ErrorCallback& error_callback) = 0;
 
-  // Requests a refresh of the IP configuration for the device specified by
-  // |device_path| if it exists. This will apply any newly configured
-  // properties and renew the DHCP lease.
-  virtual void RequestRefreshIPConfigs(
-      const std::string& device_path,
-      const base::Closure& callback,
-      const network_handler::ErrorCallback& error_callback) = 0;
-
   // Tells the device specified by |device_path| to register to the cellular
   // network with id |network_id|. If |network_id| is empty then registration
   // will proceed in automatic mode, which will cause the modem to register
@@ -87,21 +81,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
   virtual void RegisterCellularNetwork(
       const std::string& device_path,
       const std::string& network_id,
-      const base::Closure& callback,
-      const network_handler::ErrorCallback& error_callback) = 0;
-
-  // Tells the device to set the modem carrier firmware, as specified by
-  // |carrier|.
-  //
-  // See note on |callback| and |error_callback| in the class description
-  // above. The operation will fail if:
-  //    - Device |device_path| could not be found.
-  //    - |carrier| doesn't match one of the supported carriers, as reported by
-  //    - Shill.
-  //    - Operation is not supported by the device.
-  virtual void SetCarrier(
-      const std::string& device_path,
-      const std::string& carrier,
       const base::Closure& callback,
       const network_handler::ErrorCallback& error_callback) = 0;
 
@@ -189,6 +168,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
   // which become available in the future.
   virtual void SetMACAddressRandomizationEnabled(bool enabled) = 0;
 
+  // Sets up USB Ethernet MAC address source. This applies to primary enabled
+  // USB Ethernet device.
+  virtual void SetUsbEthernetMacAddressSource(const std::string& source) = 0;
+
   // Attempts to enable or disable TDLS for the specified IP or MAC address for
   // the active wifi device.
   virtual void SetWifiTDLSEnabled(
@@ -237,6 +220,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkDeviceHandler {
   virtual void RemoveAllWifiWakeOnPacketConnections(
       const base::Closure& callback,
       const network_handler::ErrorCallback& error_callback) = 0;
+
+  static std::unique_ptr<NetworkDeviceHandler> InitializeForTesting(
+      NetworkStateHandler* network_state_handler);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(NetworkDeviceHandler);

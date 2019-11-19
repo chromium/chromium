@@ -16,12 +16,12 @@
 #include "chrome/browser/browsing_data/browsing_data_file_system_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
 #include "content/public/test/test_utils.h"
-#include "storage/browser/fileapi/file_system_context.h"
-#include "storage/browser/fileapi/file_system_url.h"
-#include "storage/common/fileapi/file_system_types.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using content::BrowserContext;
@@ -41,7 +41,7 @@ const char kTestOrigin3[] = "http://host3:3";
 
 // Extensions and Devtools should be ignored.
 const char kTestOriginExt[] = "chrome-extension://abcdefghijklmnopqrstuvwxyz";
-const char kTestOriginDevTools[] = "chrome-devtools://abcdefghijklmnopqrstuvw";
+const char kTestOriginDevTools[] = "devtools://abcdefghijklmnopqrstuvw";
 
 const url::Origin kOrigin1 = url::Origin::Create(GURL(kTestOrigin1));
 const url::Origin kOrigin2 = url::Origin::Create(GURL(kTestOrigin2));
@@ -66,12 +66,13 @@ class BrowsingDataFileSystemHelperTest : public testing::Test {
  public:
   BrowsingDataFileSystemHelperTest() {
     profile_.reset(new TestingProfile());
-
-    helper_ = BrowsingDataFileSystemHelper::Create(
-        BrowserContext::GetDefaultStoragePartition(profile_.get())->
-            GetFileSystemContext());
+    auto* file_system_context =
+        BrowserContext::GetDefaultStoragePartition(profile_.get())
+            ->GetFileSystemContext();
+    helper_ = BrowsingDataFileSystemHelper::Create(file_system_context);
     content::RunAllTasksUntilIdle();
-    canned_helper_ = new CannedBrowsingDataFileSystemHelper(profile_.get());
+    canned_helper_ =
+        new CannedBrowsingDataFileSystemHelper(file_system_context);
   }
   ~BrowsingDataFileSystemHelperTest() override {
     // Avoid memory leaks.
@@ -189,7 +190,7 @@ class BrowsingDataFileSystemHelperTest : public testing::Test {
   }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
 
   // Temporary storage to pass information back from callbacks.
@@ -218,21 +219,21 @@ TEST_F(BrowsingDataFileSystemHelperTest, FetchData) {
     if (info.origin == kOrigin1) {
       EXPECT_FALSE(test_hosts_found[0]);
       test_hosts_found[0] = true;
-      EXPECT_FALSE(base::ContainsKey(info.usage_map, kPersistent));
-      EXPECT_TRUE(base::ContainsKey(info.usage_map, kTemporary));
+      EXPECT_FALSE(base::Contains(info.usage_map, kPersistent));
+      EXPECT_TRUE(base::Contains(info.usage_map, kTemporary));
       EXPECT_EQ(kEmptyFileSystemSize,
                 info.usage_map.at(storage::kFileSystemTypeTemporary));
     } else if (info.origin == kOrigin2) {
       EXPECT_FALSE(test_hosts_found[1]);
       test_hosts_found[1] = true;
-      EXPECT_TRUE(base::ContainsKey(info.usage_map, kPersistent));
-      EXPECT_FALSE(base::ContainsKey(info.usage_map, kTemporary));
+      EXPECT_TRUE(base::Contains(info.usage_map, kPersistent));
+      EXPECT_FALSE(base::Contains(info.usage_map, kTemporary));
       EXPECT_EQ(kEmptyFileSystemSize, info.usage_map.at(kPersistent));
     } else if (info.origin == kOrigin3) {
       EXPECT_FALSE(test_hosts_found[2]);
       test_hosts_found[2] = true;
-      EXPECT_TRUE(base::ContainsKey(info.usage_map, kPersistent));
-      EXPECT_TRUE(base::ContainsKey(info.usage_map, kTemporary));
+      EXPECT_TRUE(base::Contains(info.usage_map, kPersistent));
+      EXPECT_TRUE(base::Contains(info.usage_map, kTemporary));
       EXPECT_EQ(kEmptyFileSystemSize, info.usage_map.at(kPersistent));
       EXPECT_EQ(kEmptyFileSystemSize, info.usage_map.at(kTemporary));
     } else {
@@ -258,8 +259,8 @@ TEST_F(BrowsingDataFileSystemHelperTest, DeleteData) {
   BrowsingDataFileSystemHelper::FileSystemInfo info =
       *(file_system_info_list_->begin());
   EXPECT_EQ(kOrigin3, info.origin);
-  EXPECT_TRUE(base::ContainsKey(info.usage_map, kPersistent));
-  EXPECT_TRUE(base::ContainsKey(info.usage_map, kTemporary));
+  EXPECT_TRUE(base::Contains(info.usage_map, kPersistent));
+  EXPECT_TRUE(base::Contains(info.usage_map, kTemporary));
   EXPECT_EQ(kEmptyFileSystemSize, info.usage_map[kPersistent]);
   EXPECT_EQ(kEmptyFileSystemSize, info.usage_map[kTemporary]);
 }
@@ -285,13 +286,13 @@ TEST_F(BrowsingDataFileSystemHelperTest, CannedAddFileSystem) {
   EXPECT_EQ(2U, file_system_info_list_->size());
   auto info = file_system_info_list_->begin();
   EXPECT_EQ(kOrigin1, info->origin);
-  EXPECT_FALSE(base::ContainsKey(info->usage_map, kPersistent));
-  EXPECT_FALSE(base::ContainsKey(info->usage_map, kTemporary));
+  EXPECT_FALSE(base::Contains(info->usage_map, kPersistent));
+  EXPECT_FALSE(base::Contains(info->usage_map, kTemporary));
 
   info++;
   EXPECT_EQ(kOrigin2, info->origin);
-  EXPECT_FALSE(base::ContainsKey(info->usage_map, kPersistent));
-  EXPECT_FALSE(base::ContainsKey(info->usage_map, kTemporary));
+  EXPECT_FALSE(base::Contains(info->usage_map, kPersistent));
+  EXPECT_FALSE(base::Contains(info->usage_map, kTemporary));
 }
 
 // Verifies that the CannedBrowsingDataFileSystemHelper correctly ignores

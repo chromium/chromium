@@ -75,9 +75,10 @@ std::string SecurityInterstitialPage::GetHTMLContents() {
   PopulateInterstitialStrings(&load_time_data);
   webui::SetLoadTimeDataDefaults(controller()->GetApplicationLocale(),
                                  &load_time_data);
-  std::string html = ui::ResourceBundle::GetSharedInstance()
-                         .GetRawDataResource(GetHTMLTemplateId())
-                         .as_string();
+  std::string html =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          GetHTMLTemplateId());
+
   webui::AppendWebUiCssTextDefaults(&html);
   return webui::GetI18nTemplateHtml(html, &load_time_data);
 }

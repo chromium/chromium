@@ -6,7 +6,46 @@ import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 
 config("config") {
-  include_dirs = [ "//ios/third_party/earl_grey2/src" ]
+  include_dirs = [
+    "//ios/third_party/earl_grey2/src",
+    "//ios/third_party/earl_grey2/src/AppFramework/Action",
+    "//ios/third_party/earl_grey2/src/AppFramework/Assertion",
+    "//ios/third_party/earl_grey2/src/AppFramework/Config",
+    "//ios/third_party/earl_grey2/src/AppFramework/Core",
+    "//ios/third_party/earl_grey2/src/AppFramework/DistantObject",
+    "//ios/third_party/earl_grey2/src/AppFramework/Error",
+    "//ios/third_party/earl_grey2/src/AppFramework/Event",
+    "//ios/third_party/earl_grey2/src/AppFramework/Keyboard",
+    "//ios/third_party/earl_grey2/src/AppFramework/Matcher",
+    "//ios/third_party/earl_grey2/src/AppFramework/Synchronization",
+    "//ios/third_party/earl_grey2/src/CommonLib",
+    "//ios/third_party/earl_grey2/src/CommonLib/Additions",
+    "//ios/third_party/earl_grey2/src/CommonLib/Assertion",
+    "//ios/third_party/earl_grey2/src/CommonLib/Config",
+    "//ios/third_party/earl_grey2/src/CommonLib/DistantObject",
+    "//ios/third_party/earl_grey2/src/CommonLib/Error",
+    "//ios/third_party/earl_grey2/src/CommonLib/Event",
+    "//ios/third_party/earl_grey2/src/CommonLib/Exceptions",
+    "//ios/third_party/earl_grey2/src/CommonLib/Matcher",
+    "//ios/third_party/earl_grey2/src/CommonLib/Provider",
+    "//ios/third_party/earl_grey2/src/UILib",
+    "//ios/third_party/earl_grey2/src/UILib/Additions",
+    "//ios/third_party/earl_grey2/src/UILib/Provider",
+    "//ios/third_party/earl_grey2/src/UILib/Traversal",
+    "//ios/third_party/earl_grey2/src/UILib/VisibilityChecker",
+    "//ios/third_party/earl_grey2/src/TestLib",
+    "//ios/third_party/earl_grey2/src/TestLib/AlertHandling",
+    "//ios/third_party/earl_grey2/src/TestLib/AppleInternals",
+    "//ios/third_party/earl_grey2/src/TestLib/Assertion",
+    "//ios/third_party/earl_grey2/src/TestLib/Condition",
+    "//ios/third_party/earl_grey2/src/TestLib/Config",
+    "//ios/third_party/earl_grey2/src/TestLib/Exception",
+    "//ios/third_party/earl_grey2/src/TestLib/Execution",
+    "//ios/third_party/earl_grey2/src/TestLib/DistantObject",
+    "//ios/third_party/earl_grey2/src/TestLib/XCTestCase",
+    "//ios/third_party/edo/src",
+    "//ios/third_party/edo/src/Service/Sources",
+  ]
 }
 
 group("earl_grey2") {
@@ -25,6 +64,8 @@ source_set("common_lib") {
   visibility = [ ":*" ]
 
   sources = [
+    "src/CommonLib/Additions/NSFileManager+GREYCommon.h",
+    "src/CommonLib/Additions/NSFileManager+GREYCommon.m",
     "src/CommonLib/Additions/NSObject+GREYCommon.h",
     "src/CommonLib/Additions/NSObject+GREYCommon.m",
     "src/CommonLib/Additions/NSString+GREYCommon.h",
@@ -32,15 +73,24 @@ source_set("common_lib") {
     "src/CommonLib/Additions/UIView+GREYCommon.h",
     "src/CommonLib/Additions/UIView+GREYCommon.m",
     "src/CommonLib/Assertion/GREYAssertion.h",
+    "src/CommonLib/Assertion/GREYAssertionBlock+Private.h",
     "src/CommonLib/Assertion/GREYAssertionBlock.h",
     "src/CommonLib/Assertion/GREYAssertionBlock.m",
+    "src/CommonLib/Assertion/GREYAssertionDefinesPrivate.h",
+    "src/CommonLib/Assertion/GREYFatalAsserts.h",
+    "src/CommonLib/Assertion/GREYThrowDefines.h",
     "src/CommonLib/Config/GREYAppState.h",
     "src/CommonLib/Config/GREYConfigKey.h",
     "src/CommonLib/Config/GREYConfigKey.m",
     "src/CommonLib/Config/GREYConfiguration+Private.h",
     "src/CommonLib/Config/GREYConfiguration.h",
     "src/CommonLib/Config/GREYConfiguration.m",
+    "src/CommonLib/DistantObject/GREYHostApplicationDistantObject.h",
+    "src/CommonLib/DistantObject/GREYHostBackgroundDistantObject.h",
+    "src/CommonLib/DistantObject/GREYTestApplicationDistantObject+Private.h",
+    "src/CommonLib/DistantObject/GREYTestApplicationDistantObject.h",
     "src/CommonLib/DistantObject/GREYValueType.m",
+    "src/CommonLib/Error/GREYError+Private.h",
     "src/CommonLib/Error/GREYError.h",
     "src/CommonLib/Error/GREYError.m",
     "src/CommonLib/Error/GREYErrorConstants.h",
@@ -57,8 +107,13 @@ source_set("common_lib") {
     "src/CommonLib/Exceptions/GREYFailureHandler.h",
     "src/CommonLib/Exceptions/GREYFrameworkException.h",
     "src/CommonLib/Exceptions/GREYFrameworkException.m",
+    "src/CommonLib/GREYAppleInternals.h",
     "src/CommonLib/GREYConstants.h",
     "src/CommonLib/GREYConstants.m",
+    "src/CommonLib/GREYDefines.h",
+    "src/CommonLib/GREYDiagnosable.h",
+    "src/CommonLib/GREYDiagnosable.m",
+    "src/CommonLib/GREYLogger.h",
     "src/CommonLib/GREYObjcRuntime.h",
     "src/CommonLib/GREYObjcRuntime.m",
     "src/CommonLib/GREYStopwatch.h",
@@ -68,12 +123,15 @@ source_set("common_lib") {
     "src/CommonLib/Matcher/GREYBaseMatcher.h",
     "src/CommonLib/Matcher/GREYBaseMatcher.m",
     "src/CommonLib/Matcher/GREYDescription.h",
+    "src/CommonLib/Matcher/GREYElementMatcherBlock+Private.h",
     "src/CommonLib/Matcher/GREYElementMatcherBlock.h",
     "src/CommonLib/Matcher/GREYElementMatcherBlock.m",
     "src/CommonLib/Matcher/GREYLayoutConstraint.h",
     "src/CommonLib/Matcher/GREYLayoutConstraint.m",
+    "src/CommonLib/Matcher/GREYMatcher.h",
     "src/CommonLib/Matcher/GREYStringDescription.h",
     "src/CommonLib/Matcher/GREYStringDescription.m",
+    "src/CommonLib/Provider/GREYProvider.h",
   ]
 
   deps = [
@@ -101,8 +159,9 @@ source_set("ui_lib_shared_headers") {
 
   sources = [
     "src/UILib/GREYElementHierarchy.h",
-    "src/UILib/GREYScreenshotUtil.h",
-    "src/UILib/GREYVisibilityChecker.h",
+    "src/UILib/GREYScreenshotter.h",
+    "src/UILib/VisibilityChecker/GREYVisibilityChecker.h",
+    "src/UILib/VisibilityChecker/GREYVisibilityCheckerDuration.h",
   ]
 }
 
@@ -117,21 +176,24 @@ source_set("ui_lib") {
     "src/UILib/Additions/NSObject+GREYUI.h",
     "src/UILib/Additions/NSObject+GREYUI.m",
     "src/UILib/GREYElementHierarchy.m",
-    "src/UILib/GREYScreenshotUtil.m",
-    "src/UILib/GREYVisibilityChecker+Internal.h",
-    "src/UILib/GREYVisibilityChecker.m",
+    "src/UILib/GREYScreenshotter+Private.h",
+    "src/UILib/GREYScreenshotter.m",
     "src/UILib/Provider/GREYDataEnumerator.h",
     "src/UILib/Provider/GREYDataEnumerator.m",
     "src/UILib/Provider/GREYElementProvider.h",
     "src/UILib/Provider/GREYElementProvider.m",
     "src/UILib/Provider/GREYUIWindowProvider.h",
     "src/UILib/Provider/GREYUIWindowProvider.m",
-    "src/UILib/Traversal/GREYTraversal.h",
-    "src/UILib/Traversal/GREYTraversal.m",
     "src/UILib/Traversal/GREYTraversalBFS.h",
     "src/UILib/Traversal/GREYTraversalBFS.m",
     "src/UILib/Traversal/GREYTraversalDFS.h",
     "src/UILib/Traversal/GREYTraversalDFS.m",
+    "src/UILib/Traversal/GREYTraversalFunctions.h",
+    "src/UILib/Traversal/GREYTraversalFunctions.m",
+    "src/UILib/Traversal/GREYTraversalObject.h",
+    "src/UILib/Traversal/GREYTraversalObject.m",
+    "src/UILib/VisibilityChecker/GREYVisibilityChecker+Private.h",
+    "src/UILib/VisibilityChecker/GREYVisibilityChecker.m",
   ]
 
   deps = [
@@ -169,6 +231,7 @@ source_set("app_framework_shared_headers") {
     "src/AppFramework/Action/GREYActionsShorthand.h",
     "src/AppFramework/Config/GREYAppConfiguration.h",
     "src/AppFramework/Core/GREYElementInteraction.h",
+    "src/AppFramework/Core/GREYInteraction.h",
     "src/AppFramework/DistantObject/GREYHostApplicationDistantObject+GREYTestHelper.h",
     "src/AppFramework/DistantObject/GREYHostBackgroundDistantObject+GREYApp.h",
     "src/AppFramework/Error/GREYFailureScreenshotter.h",
@@ -178,7 +241,6 @@ source_set("app_framework_shared_headers") {
     "src/AppFramework/Matcher/GREYAnyOf.h",
     "src/AppFramework/Matcher/GREYMatchers.h",
     "src/AppFramework/Matcher/GREYMatchersShorthand.h",
-    "src/AppFramework/Matcher/GREYNot.h",
     "src/AppFramework/Synchronization/GREYUIThreadExecutor.h",
   ]
 }
@@ -190,12 +252,11 @@ ios_framework_bundle("app_framework") {
   info_plist = "Info.plist"
 
   sources = [
-    "src/AppFramework/Action/GREYAction.h",
+    "src/AppFramework/Action/GREYActionBlock+Private.h",
     "src/AppFramework/Action/GREYActionBlock.h",
     "src/AppFramework/Action/GREYActionBlock.m",
-    "src/AppFramework/Action/GREYActions+Internal.h",
+    "src/AppFramework/Action/GREYActions+Private.h",
     "src/AppFramework/Action/GREYActions.m",
-    "src/AppFramework/Action/GREYActionsShorthand.h",
     "src/AppFramework/Action/GREYActionsShorthand.m",
     "src/AppFramework/Action/GREYBaseAction.h",
     "src/AppFramework/Action/GREYBaseAction.m",
@@ -225,8 +286,6 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Additions/CAAnimation+GREYApp.m",
     "src/AppFramework/Additions/CALayer+GREYApp.h",
     "src/AppFramework/Additions/CALayer+GREYApp.m",
-    "src/AppFramework/Additions/NSException+GREYApp.h",
-    "src/AppFramework/Additions/NSException+GREYApp.m",
     "src/AppFramework/Additions/NSObject+GREYApp.h",
     "src/AppFramework/Additions/NSObject+GREYApp.m",
     "src/AppFramework/Additions/NSRunLoop+GREYApp.h",
@@ -266,9 +325,7 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Config/GREYAppConfiguration.m",
     "src/AppFramework/Core/GREYElementFinder.h",
     "src/AppFramework/Core/GREYElementFinder.m",
-    "src/AppFramework/Core/GREYElementInteraction+Internal.h",
     "src/AppFramework/Core/GREYElementInteraction.m",
-    "src/AppFramework/Core/GREYInteraction.h",
     "src/AppFramework/Core/GREYInteractionDataSource.h",
     "src/AppFramework/Delegate/GREYCAAnimationDelegate.h",
     "src/AppFramework/Delegate/GREYCAAnimationDelegate.m",
@@ -283,8 +340,7 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/DistantObject/GREYHostBackgroundDistantObject+GREYApp.m",
     "src/AppFramework/DistantObject/GREYHostBackgroundDistantObject.m",
     "src/AppFramework/DistantObject/GREYTestStub.m",
-    "src/AppFramework/Error/GREYAppFailureHandler.h",
-    "src/AppFramework/Error/GREYAppFailureHandler.m",
+    "src/AppFramework/Error/GREYAppError.h",
     "src/AppFramework/Error/GREYFailureScreenshotter.m",
     "src/AppFramework/Event/GREYIOHIDEventTypes.h",
     "src/AppFramework/Event/GREYSyntheticEvents.m",
@@ -304,11 +360,11 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/IdlingResources/GREYUIWebViewIdlingResource.h",
     "src/AppFramework/IdlingResources/GREYUIWebViewIdlingResource.m",
     "src/AppFramework/Keyboard/GREYKeyboard.m",
+    "src/AppFramework/Matcher/GREYAllOf+Private.h",
     "src/AppFramework/Matcher/GREYAllOf.m",
     "src/AppFramework/Matcher/GREYAnyOf.m",
     "src/AppFramework/Matcher/GREYMatchers.m",
     "src/AppFramework/Matcher/GREYMatchersShorthand.m",
-    "src/AppFramework/Matcher/GREYNot.m",
     "src/AppFramework/Synchronization/GREYAppStateTracker.h",
     "src/AppFramework/Synchronization/GREYAppStateTracker.m",
     "src/AppFramework/Synchronization/GREYAppStateTrackerObject.h",
@@ -321,7 +377,7 @@ ios_framework_bundle("app_framework") {
     "src/AppFramework/Synchronization/GREYRunLoopSpinner.m",
     "src/AppFramework/Synchronization/GREYSyncAPI.h",
     "src/AppFramework/Synchronization/GREYSyncAPI.m",
-    "src/AppFramework/Synchronization/GREYUIThreadExecutor+Internal.h",
+    "src/AppFramework/Synchronization/GREYUIThreadExecutor+Private.h",
     "src/AppFramework/Synchronization/GREYUIThreadExecutor.m",
   ]
 
@@ -332,6 +388,7 @@ ios_framework_bundle("app_framework") {
     "//build/config/ios:xctest",
     "//ios/third_party/edo",
     "//ios/third_party/fishhook",
+    "//ios/third_party/webkit",
   ]
 
   public_deps = [
@@ -346,7 +403,6 @@ ios_framework_bundle("app_framework") {
     "Foundation.framework",
     "IOKit.framework",
     "QuartzCore.framework",
-    "WebKit.framework",
   ]
 
   public_configs = [ ":config" ]
@@ -376,23 +432,27 @@ source_set("test_lib") {
 
   sources = [
     "src/AppFramework/Action/GREYActionsShorthand.m",
-    "src/AppFramework/Error/GREYFailureScreenshotterStub.m",
     "src/AppFramework/Matcher/GREYMatchersShorthand.m",
     "src/TestLib/AlertHandling/XCTestCase+GREYSystemAlertHandler.h",
     "src/TestLib/AlertHandling/XCTestCase+GREYSystemAlertHandler.m",
-    "src/TestLib/Analytics/GREYAnalytics.h",
-    "src/TestLib/Analytics/GREYAnalytics.m",
-    "src/TestLib/Analytics/GREYAnalyticsDelegate.h",
+    "src/TestLib/AppleInternals/GREYXCTestAppleInternals.h",
+    "src/TestLib/Assertion/GREYAssertionDefines.h",
+    "src/TestLib/Assertion/GREYWaitFunctions.h",
+    "src/TestLib/Assertion/GREYWaitFunctions.m",
     "src/TestLib/Condition/GREYCondition.h",
     "src/TestLib/Condition/GREYCondition.m",
+    "src/TestLib/Config/GREYTestConfiguration.h",
     "src/TestLib/Config/GREYTestConfiguration.m",
     "src/TestLib/DistantObject/GREYHostStub.m",
+    "src/TestLib/DistantObject/GREYTestApplicationDistantObject+GREYLogger.h",
     "src/TestLib/DistantObject/GREYTestApplicationDistantObject+GREYLogger.m",
     "src/TestLib/DistantObject/GREYTestApplicationDistantObject.m",
     "src/TestLib/EarlGreyImpl/EarlGrey.h",
     "src/TestLib/EarlGreyImpl/EarlGrey.m",
     "src/TestLib/EarlGreyImpl/EarlGreyImpl+XCUIApplication.h",
     "src/TestLib/EarlGreyImpl/EarlGreyImpl+XCUIApplication.m",
+    "src/TestLib/EarlGreyImpl/GREYElementInteractionErrorHandler.h",
+    "src/TestLib/EarlGreyImpl/GREYElementInteractionErrorHandler.m",
     "src/TestLib/EarlGreyImpl/GREYElementInteractionProxy.h",
     "src/TestLib/EarlGreyImpl/GREYElementInteractionProxy.m",
     "src/TestLib/EarlGreyImpl/XCUIApplication+GREYTest.h",
@@ -401,26 +461,27 @@ source_set("test_lib") {
     "src/TestLib/Exception/GREYDefaultFailureHandler.m",
     "src/TestLib/Exception/GREYFailureFormatter.h",
     "src/TestLib/Exception/GREYFailureFormatter.m",
+    "src/TestLib/Exception/GREYFailureScreenshotSaver.h",
+    "src/TestLib/Exception/GREYFailureScreenshotSaver.m",
+    "src/TestLib/Execution/GREYRemoteExecutor.h",
+    "src/TestLib/Execution/GREYRemoteExecutor.m",
     "src/TestLib/XCTestCase/GREYTestCaseInvocation.h",
     "src/TestLib/XCTestCase/GREYTestCaseInvocation.m",
     "src/TestLib/XCTestCase/XCTestCase+GREYTest.h",
     "src/TestLib/XCTestCase/XCTestCase+GREYTest.m",
     "src/TestLib/XCTestCase/XCUIApplication+GREYEnvironment.h",
     "src/TestLib/XCTestCase/XCUIApplication+GREYEnvironment.m",
-    "src/UILib/GREYElementHierarchyStub.m",
-    "src/UILib/GREYScreenshotUtilStub.m",
-    "src/UILib/GREYVisibilityCheckerStub.m",
   ]
 
   deps = [
     ":app_framework_shared_headers",
-    ":common_lib",
     ":ui_lib_shared_headers",
     "//build/config/ios:xctest",
     "//ios/third_party/edo",
   ]
 
   public_deps = [
+    ":common_lib",
     ":test_lib_shared_headers",
   ]
 

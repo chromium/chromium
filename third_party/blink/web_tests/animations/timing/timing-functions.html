@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 
 <html lang="en">
@@ -67,9 +67,6 @@
     #box8 {
       animation-timing-function: steps(3, end);
     }
-    #box9 {
-      animation-timing-function: frames(3);
-    }
   </style>
   <script src="../resources/animation-test-helpers.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript" charset="utf-8">
@@ -100,9 +97,6 @@
       [0.25, "box8", "left", 100, 5],
       [0.50, "box8", "left", 133, 5],
       [0.75, "box8", "left", 166, 5],
-      [0.25, "box9", "left", 100, 5],
-      [0.50, "box9", "left", 150, 5],
-      [0.75, "box9", "left", 200, 5],
     ];
     
     runAnimationTest(expectedValues);
@@ -127,8 +121,6 @@ It takes 3 snapshots and expects each result to be within a specified range.
 <div class="box" id="box7">
 </div>
 <div class="box" id="box8">
-</div>
-<div class="box" id="box9">
 </div>
 <div id="result">
 </div>

@@ -114,6 +114,12 @@ public class CronetSampleActivity extends Activity {
         setContentView(R.layout.activity_main);
         mResultText = (TextView) findViewById(R.id.resultView);
         mReceiveDataText = (TextView) findViewById(R.id.dataView);
+        mReceiveDataText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                promptForURL(mUrl);
+            }
+        });
 
         CronetEngine.Builder myBuilder = new CronetEngine.Builder(this);
         myBuilder.enableHttpCache(CronetEngine.Builder.HTTP_CACHE_IN_MEMORY, 100 * 1024)

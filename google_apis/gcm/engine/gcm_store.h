@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gcm/base/gcm_export.h"
 #include "google_apis/gcm/engine/account_mapping.h"
 
@@ -137,7 +138,7 @@ class GCM_EXPORT GCMStore {
   // Sets the account information related to device to account mapping.
   virtual void AddAccountMapping(const AccountMapping& account_mapping,
                                  const UpdateCallback& callback) = 0;
-  virtual void RemoveAccountMapping(const std::string& account_id,
+  virtual void RemoveAccountMapping(const CoreAccountId& account_id,
                                     const UpdateCallback& callback) = 0;
 
   // Sets last token fetch time.

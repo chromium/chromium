@@ -34,11 +34,11 @@ int Compare(const T& a, const T& b) {
 }  // namespace
 
 IndexedDBKey::IndexedDBKey()
-    : type_(mojom::IDBKeyType::Null), size_estimate_(kOverheadSize) {}
+    : type_(mojom::IDBKeyType::None), size_estimate_(kOverheadSize) {}
 
 IndexedDBKey::IndexedDBKey(mojom::IDBKeyType type)
     : type_(type), size_estimate_(kOverheadSize) {
-  DCHECK(type == mojom::IDBKeyType::Null || type == mojom::IDBKeyType::Invalid);
+  DCHECK(type == mojom::IDBKeyType::None || type == mojom::IDBKeyType::Invalid);
 }
 
 IndexedDBKey::IndexedDBKey(double number, mojom::IDBKeyType type)
@@ -71,7 +71,7 @@ IndexedDBKey::~IndexedDBKey() = default;
 IndexedDBKey& IndexedDBKey::operator=(const IndexedDBKey& other) = default;
 
 bool IndexedDBKey::IsValid() const {
-  if (type_ == mojom::IDBKeyType::Invalid || type_ == mojom::IDBKeyType::Null)
+  if (type_ == mojom::IDBKeyType::Invalid || type_ == mojom::IDBKeyType::None)
     return false;
 
   if (type_ == blink::mojom::IDBKeyType::Array) {
@@ -90,6 +90,38 @@ bool IndexedDBKey::IsLessThan(const IndexedDBKey& other) const {
 
 bool IndexedDBKey::Equals(const IndexedDBKey& other) const {
   return !CompareTo(other);
+}
+
+bool IndexedDBKey::HasHoles() const {
+  if (type_ != mojom::IDBKeyType::Array)
+    return false;
+
+  for (const auto& subkey : array_) {
+    if (subkey.type() == mojom::IDBKeyType::None)
+      return true;
+  }
+  return false;
+}
+
+IndexedDBKey IndexedDBKey::FillHoles(const IndexedDBKey& primary_key) const {
+  if (type_ != mojom::IDBKeyType::Array)
+    return IndexedDBKey(*this);
+
+  std::vector<IndexedDBKey> subkeys;
+  subkeys.reserve(array_.size());
+  for (const auto& subkey : array_) {
+    if (subkey.type() == mojom::IDBKeyType::None) {
+      subkeys.push_back(primary_key);
+    } else {
+      // "Holes" can only exist at the top level of an array key, as (1) they
+      // are produced by an index's array keypath when a member matches the
+      // store's keypath, and (2) array keypaths are flat (no
+      // arrays-of-arrays).
+      DCHECK(!subkey.HasHoles());
+      subkeys.push_back(subkey);
+    }
+  }
+  return IndexedDBKey(subkeys);
 }
 
 int IndexedDBKey::CompareTo(const IndexedDBKey& other) const {
@@ -114,7 +146,7 @@ int IndexedDBKey::CompareTo(const IndexedDBKey& other) const {
     case mojom::IDBKeyType::Number:
       return Compare(number_, other.number_);
     case mojom::IDBKeyType::Invalid:
-    case mojom::IDBKeyType::Null:
+    case mojom::IDBKeyType::None:
     case mojom::IDBKeyType::Min:
     default:
       NOTREACHED();

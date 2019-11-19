@@ -7,11 +7,12 @@
 #include <stdint.h>
 
 #include "base/debug/alias.h"
-#include "base/memory/shared_memory.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/memory.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
+#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -40,9 +41,8 @@ void CollectMemoryUsageAndDie(const gfx::Size& size,
 
 namespace bitmap_allocation {
 
-std::unique_ptr<base::SharedMemory> AllocateMappedBitmap(
-    const gfx::Size& size,
-    ResourceFormat format) {
+base::MappedReadOnlyRegion AllocateSharedBitmap(const gfx::Size& size,
+                                                ResourceFormat format) {
   DCHECK(IsBitmapFormatSupported(format));
   size_t bytes = 0;
   if (!ResourceSizes::MaybeSizeInBytes(size, format, &bytes)) {
@@ -50,62 +50,16 @@ std::unique_ptr<base::SharedMemory> AllocateMappedBitmap(
     CollectMemoryUsageAndDie(size, format, std::numeric_limits<int>::max());
   }
 
-  auto mojo_buf = mojo::SharedBufferHandle::Create(bytes);
-  if (!mojo_buf->is_valid()) {
+  // NOTE: Need to use mojo::CreateReadOnlySharedMemoryRegion() instead of
+  // base::ReadOnlySharedMemoryRegion::Create() to ensure that this always work,
+  // even in sandboxed processes.
+  base::MappedReadOnlyRegion shm =
+      mojo::CreateReadOnlySharedMemoryRegion(bytes);
+  if (!shm.IsValid()) {
     DLOG(ERROR) << "Browser failed to allocate shared memory";
     CollectMemoryUsageAndDie(size, format, bytes);
   }
-
-  base::SharedMemoryHandle shared_buf;
-  if (mojo::UnwrapSharedMemoryHandle(std::move(mojo_buf), &shared_buf, nullptr,
-                                     nullptr) != MOJO_RESULT_OK) {
-    DLOG(ERROR) << "Browser failed to allocate shared memory";
-    CollectMemoryUsageAndDie(size, format, bytes);
-  }
-
-  auto memory = std::make_unique<base::SharedMemory>(shared_buf, false);
-  if (!memory->Map(bytes)) {
-    DLOG(ERROR) << "Browser failed to map shared memory";
-    CollectMemoryUsageAndDie(size, format, bytes);
-  }
-
-  return memory;
-}
-
-mojo::ScopedSharedBufferHandle DuplicateAndCloseMappedBitmap(
-    base::SharedMemory* memory,
-    const gfx::Size& size,
-    ResourceFormat format) {
-  DCHECK(IsBitmapFormatSupported(format));
-  base::SharedMemoryHandle dupe_handle =
-      base::SharedMemory::DuplicateHandle(memory->handle());
-  if (!base::SharedMemory::IsHandleValid(dupe_handle)) {
-    DLOG(ERROR) << "Failed to duplicate shared memory handle for bitmap.";
-    CollectMemoryUsageAndDie(size, format, memory->requested_size());
-  }
-
-  memory->Close();
-
-  return mojo::WrapSharedMemoryHandle(
-      dupe_handle, memory->mapped_size(),
-      mojo::UnwrappedSharedMemoryHandleProtection::kReadWrite);
-}
-
-mojo::ScopedSharedBufferHandle DuplicateWithoutClosingMappedBitmap(
-    const base::SharedMemory* memory,
-    const gfx::Size& size,
-    ResourceFormat format) {
-  DCHECK(IsBitmapFormatSupported(format));
-  base::SharedMemoryHandle dupe_handle =
-      base::SharedMemory::DuplicateHandle(memory->handle());
-  if (!base::SharedMemory::IsHandleValid(dupe_handle)) {
-    DLOG(ERROR) << "Failed to duplicate shared memory handle for bitmap.";
-    CollectMemoryUsageAndDie(size, format, memory->requested_size());
-  }
-
-  return mojo::WrapSharedMemoryHandle(
-      dupe_handle, memory->mapped_size(),
-      mojo::UnwrappedSharedMemoryHandleProtection::kReadWrite);
+  return shm;
 }
 
 }  // namespace bitmap_allocation

@@ -50,11 +50,17 @@ class ImageDecodeAcceleratorProxy : public ImageDecodeAcceleratorInterface {
   ImageDecodeAcceleratorProxy(GpuChannelHost* host, int32_t route_id);
   ~ImageDecodeAcceleratorProxy() override;
 
-  // Determines if an encoded image is supported by the hardware accelerator.
-  // The ScheduleImageDecode() method should only be called for images for which
-  // IsImageSupported() returns true. Otherwise, the client faces a GPU channel
-  // teardown if the decode fails.
-  bool IsImageSupported(base::span<const uint8_t> encoded_data) const override;
+  // Determines if |image_metadata| corresponds to an image that can be decoded
+  // using hardware decode acceleration. The ScheduleImageDecode() method should
+  // only be called for images for which IsImageSupported() returns true.
+  bool IsImageSupported(
+      const cc::ImageHeaderMetadata* image_metadata) const override;
+
+  // Determines if hardware decode acceleration is supported for JPEG images.
+  bool IsJpegDecodeAccelerationSupported() const override;
+
+  // Determines if hardware decode acceleration is supported for WebP images.
+  bool IsWebPDecodeAccelerationSupported() const override;
 
   // Schedules a hardware-accelerated image decode on the GPU process. The image
   // in |encoded_data| is decoded and scaled to |output_size|. Upon completion

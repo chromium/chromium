@@ -20,9 +20,8 @@
 #include "third_party/blink/renderer/core/layout/hit_test_canvas_result.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/histogram.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
 
 namespace blink {
 
@@ -78,12 +77,6 @@ const AtomicString& TouchEventNameForPointerEventType(
       return g_empty_atom;
   }
 }
-
-enum TouchEventDispatchResultType {
-  kUnhandledTouches,  // Unhandled touch events.
-  kHandledTouches,    // Handled touch events.
-  kTouchEventDispatchResultTypeMax,
-};
 
 WebTouchPoint::State TouchPointStateFromPointerEventType(
     WebInputEvent::Type type,
@@ -221,10 +214,10 @@ Touch* TouchEventManager::CreateDomTouch(
       FloatSize(transformed_event.width / 2.f, transformed_event.height / 2.f)
           .ScaledBy(scale_factor);
 
-  return Touch::Create(target_frame, touch_node, point_attr->event_.id,
-                       transformed_event.PositionInScreen(), document_point,
-                       adjusted_radius, transformed_event.rotation_angle,
-                       transformed_event.force, region_id);
+  return MakeGarbageCollected<Touch>(
+      target_frame, touch_node, point_attr->event_.id,
+      transformed_event.PositionInScreen(), document_point, adjusted_radius,
+      transformed_event.rotation_angle, transformed_event.force, region_id);
 }
 
 WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
@@ -251,6 +244,10 @@ WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
     event.touches[event.touches_length++] =
         CreateWebTouchPointFromWebPointerEvent(touch_pointer_event,
                                                touch_point_attribute->stale_);
+    if (!touch_point_attribute->stale_) {
+      event.SetTimeStamp(std::max(event.TimeStamp(),
+                                  touch_point_attribute->event_.TimeStamp()));
+    }
 
     // Only change the touch event type from move. So if we have two pointers
     // in up and down state we just set the touch event type to the first one
@@ -283,8 +280,7 @@ WebCoalescedInputEvent TouchEventManager::GenerateWebCoalescedInputEvent() {
   } timestamp_based_event_comparison;
   std::sort(all_coalesced_events.begin(), all_coalesced_events.end(),
             timestamp_based_event_comparison);
-  WebCoalescedInputEvent result(event, std::vector<const WebInputEvent*>(),
-                                std::vector<const WebInputEvent*>());
+  WebCoalescedInputEvent result(event, {}, {});
   for (const auto& web_pointer_event : all_coalesced_events) {
     if (web_pointer_event.GetType() == WebInputEvent::kPointerDown) {
       // TODO(crbug.com/732842): Technically we should never receive the
@@ -535,7 +531,7 @@ void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
   if (touch_sequence_document_ &&
       (!touch_node || &touch_node->GetDocument() != touch_sequence_document_)) {
     if (touch_sequence_document_->GetFrame()) {
-      HitTestLocation location(LayoutPoint(
+      HitTestLocation location(PhysicalOffset::FromFloatPointRound(
           touch_sequence_document_->GetFrame()->View()->ConvertFromRootFrame(
               event.PositionInWidget())));
       result = event_handling_util::HitTestResultInFrame(

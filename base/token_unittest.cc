@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/token.h"
+
+#include "base/pickle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -52,6 +54,14 @@ TEST(TokenTest, ToString) {
             Token(0x0123456789abcdefull, 0x5a5a5a5aa5a5a5a5ull).ToString());
   EXPECT_EQ("FFFFFFFFFFFFFFFDFFFFFFFFFFFFFFFE",
             Token(0xfffffffffffffffdull, 0xfffffffffffffffeull).ToString());
+}
+
+TEST(TokenTest, Pickle) {
+  Pickle pickle;
+  WriteTokenToPickle(&pickle, kTestToken);
+
+  PickleIterator iterator(pickle);
+  EXPECT_EQ(kTestToken, ReadTokenFromPickle(&iterator));
 }
 
 }  // namespace base

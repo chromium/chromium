@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequenced_task_runner.h"
 #include "base/task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -19,7 +19,7 @@ namespace chromecast {
 
 ThreadHealthChecker::Internal::Internal(
     scoped_refptr<base::TaskRunner> patient_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> doctor_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> doctor_task_runner,
     base::TimeDelta interval,
     base::TimeDelta timeout,
     base::RepeatingClosure on_failure)
@@ -35,7 +35,7 @@ ThreadHealthChecker::Internal::Internal(
 ThreadHealthChecker::Internal::~Internal() {}
 
 void ThreadHealthChecker::Internal::StartHealthCheck() {
-  DCHECK(doctor_task_runner_->BelongsToCurrentThread());
+  DCHECK(doctor_task_runner_->RunsTasksInCurrentSequence());
   DETACH_FROM_THREAD(thread_checker_);
   ok_timer_ = std::make_unique<base::OneShotTimer>();
   failure_timer_ = std::make_unique<base::OneShotTimer>();
@@ -82,7 +82,7 @@ void ThreadHealthChecker::Internal::ThreadTimeout() {
 // object which does the heavy lifting.
 ThreadHealthChecker::ThreadHealthChecker(
     scoped_refptr<base::TaskRunner> patient_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> doctor_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> doctor_task_runner,
     base::TimeDelta interval,
     base::TimeDelta timeout,
     base::RepeatingClosure on_failure)

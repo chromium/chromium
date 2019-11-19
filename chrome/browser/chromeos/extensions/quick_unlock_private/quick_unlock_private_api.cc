@@ -13,7 +13,9 @@
 #include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/chromeos/login/quick_unlock/auth_token.h"
+#include "chrome/browser/chromeos/login/quick_unlock/fingerprint_storage.h"
 #include "chrome/browser/chromeos/login/quick_unlock/pin_backend.h"
+#include "chrome/browser/chromeos/login/quick_unlock/pin_storage_prefs.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
@@ -107,7 +109,7 @@ bool AreModesEqual(const QuickUnlockModeList& a, const QuickUnlockModeList& b) {
   // This is a slow comparison algorithm, but the number of entries in |a| and
   // |b| will always be very low (0-3 items) so it doesn't matter.
   for (size_t i = 0; i < a.size(); ++i) {
-    if (!base::ContainsValue(b, a[i]))
+    if (!base::Contains(b, a[i]))
       return false;
   }
 
@@ -170,7 +172,7 @@ bool IsPinDifficultEnough(const std::string& pin) {
     return true;
 
   // Check if it is on the list of most common PINs.
-  if (base::ContainsValue(kMostCommonPins, pin))
+  if (base::Contains(kMostCommonPins, pin))
     return false;
 
   // Check for same digits, increasing and decreasing PIN simultaneously.
@@ -202,6 +204,12 @@ Profile* GetActiveProfile(content::BrowserContext* browser_context) {
     return ProfileManager::GetPrimaryUserProfile();
 
   return profile;
+}
+
+AuthToken* GetActiveProfileAuthToken(content::BrowserContext* browser_context) {
+  return chromeos::quick_unlock::QuickUnlockFactory::GetForProfile(
+             GetActiveProfile(browser_context))
+      ->GetAuthToken();
 }
 
 }  // namespace
@@ -269,7 +277,7 @@ QuickUnlockPrivateGetAuthTokenFunction::Run() {
   // is needed.
   AddRef();
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {content::BrowserThread::UI},
       base::BindOnce(&chromeos::ExtendedAuthenticator::AuthenticateToCheck,
                      extended_authenticator_.get(), user_context,
@@ -291,6 +299,7 @@ void QuickUnlockPrivateGetAuthTokenFunction::OnAuthSuccess(
   Profile* profile = GetActiveProfile(browser_context());
   QuickUnlockStorage* quick_unlock_storage =
       chromeos::quick_unlock::QuickUnlockFactory::GetForProfile(profile);
+  quick_unlock_storage->MarkStrongAuth();
   result->token = quick_unlock_storage->CreateAuthToken(user_context);
   result->lifetime_seconds = AuthToken::kTokenExpirationSeconds;
 
@@ -317,16 +326,15 @@ ExtensionFunction::ResponseAction
 QuickUnlockPrivateSetLockScreenEnabledFunction::Run() {
   auto params =
       quick_unlock_private::SetLockScreenEnabled::Params::Create(*args_);
-  Profile* profile = GetActiveProfile(browser_context());
-  QuickUnlockStorage* quick_unlock_storage =
-      chromeos::quick_unlock::QuickUnlockFactory::GetForProfile(profile);
-  if (quick_unlock_storage->GetAuthTokenExpired())
+  AuthToken* auth_token = GetActiveProfileAuthToken(browser_context());
+  if (!auth_token)
     return RespondNow(Error(kAuthTokenExpired));
-  if (params->token != quick_unlock_storage->GetAuthToken())
+  if (params->token != auth_token->Identifier())
     return RespondNow(Error(kAuthTokenInvalid));
 
-  profile->GetPrefs()->SetBoolean(ash::prefs::kEnableAutoScreenLock,
-                                  params->enabled);
+  GetActiveProfile(browser_context())
+      ->GetPrefs()
+      ->SetBoolean(ash::prefs::kEnableAutoScreenLock, params->enabled);
 
   return RespondNow(ArgumentList(
       quick_unlock_private::SetLockScreenEnabled::Results::Create()));
@@ -464,12 +472,10 @@ ExtensionFunction::ResponseAction QuickUnlockPrivateSetModesFunction::Run() {
   if (params_->modes.size() > 1)
     return RespondNow(Error(kMultipleModesNotSupported));
 
-  Profile* profile = GetActiveProfile(browser_context());
-  QuickUnlockStorage* quick_unlock_storage =
-      chromeos::quick_unlock::QuickUnlockFactory::GetForProfile(profile);
-  if (quick_unlock_storage->GetAuthTokenExpired())
+  AuthToken* auth_token = GetActiveProfileAuthToken(browser_context());
+  if (!auth_token)
     return RespondNow(Error(kAuthTokenExpired));
-  if (params_->token != quick_unlock_storage->GetAuthToken())
+  if (params_->token != auth_token->Identifier())
     return RespondNow(Error(kAuthTokenInvalid));
 
   // Verify every credential is valid based on policies.

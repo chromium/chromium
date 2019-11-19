@@ -19,8 +19,12 @@ FOUNDATION_EXPORT CWV_EXPORT int64_t const CWVDownloadSizeUnknown;
 // The error domain for download errors.
 FOUNDATION_EXPORT CWV_EXPORT NSErrorDomain const CWVDownloadErrorDomain;
 
-// An error code for CWVDownloadErrorDomain which doesn't indicate the cause.
-FOUNDATION_EXPORT CWV_EXPORT NSInteger const CWVDownloadErrorUnknown;
+// An error code for CWVDownloadErrorDomain for generic failure.
+FOUNDATION_EXPORT CWV_EXPORT NSInteger const CWVDownloadErrorFailed;
+
+// An error code for CWVDownloadErrorDomain when the task is aborted
+// (cancelled).
+FOUNDATION_EXPORT CWV_EXPORT NSInteger const CWVDownloadErrorAborted;
 
 // Represents a single browser download task.
 CWV_EXPORT
@@ -56,10 +60,17 @@ CWV_EXPORT
 // The local file is not deleted automatically. It is the caller's
 // responsibility to delete it when it is unnecessary. This method can only be
 // called if the task is not in progress.
+//
+// NOTE: It is currently required that an instance of CWVWebView which created
+// this task is not deallocated before this method is called.
+// TODO(crbug.com/932099): Remove the restriction.
 - (void)startDownloadToLocalFileAtPath:(NSString*)path;
 
-// Cancels the download. Cancelled download can be restarted by calling
-// -startDownloadToLocalFileAtPath:
+// Cancels the download.
+//
+// It triggers a delegate method -downloadTask:didFinishWithError: with
+// |error.code| CWVDownloadErrorAborted. Cancelled download can be restarted by
+// calling -startDownloadToLocalFileAtPath:
 - (void)cancel;
 
 @end
@@ -70,8 +81,9 @@ CWV_EXPORT
 
 // Called when the download has finished. |error| is nil when it has completed
 // successfully. |error| represents the error when the download has failed
-// e.g., due to network errors. |error| contains a description which describes
-// the type of an error.
+// (e.g., due to network errors) or has been cancelled. |error.code| is either
+// CWVDownloadErrorFailed or CWVDownloadErrorAborted. |error| also contains a
+// description which describes the type of an error.
 - (void)downloadTask:(CWVDownloadTask*)downloadTask
     didFinishWithError:(nullable NSError*)error;
 

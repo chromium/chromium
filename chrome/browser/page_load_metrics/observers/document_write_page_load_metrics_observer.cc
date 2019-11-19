@@ -4,10 +4,10 @@
 
 #include "chrome/browser/page_load_metrics/observers/document_write_page_load_metrics_observer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/page_load_metrics/page_load_metrics_util.h"
+#include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "third_party/blink/public/platform/web_loading_behavior_flag.h"
+#include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 
 namespace internal {
 const char kHistogramDocWriteBlockFirstContentfulPaint[] =
@@ -48,30 +48,27 @@ const char kHistogramDocWriteBlockLoadingBehavior[] =
 }  // namespace internal
 
 void DocumentWritePageLoadMetricsObserver::OnFirstContentfulPaintInPage(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
-  if (info.main_frame_metadata.behavior_flags &
-      blink::WebLoadingBehaviorFlag::kWebLoadingBehaviorDocumentWriteBlock) {
-    LogDocumentWriteBlockFirstContentfulPaint(timing, info);
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (GetDelegate().GetMainFrameMetadata().behavior_flags &
+      blink::LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlock) {
+    LogDocumentWriteBlockFirstContentfulPaint(timing);
   }
 }
 
 void DocumentWritePageLoadMetricsObserver::
     OnFirstMeaningfulPaintInMainFrameDocument(
-        const page_load_metrics::mojom::PageLoadTiming& timing,
-        const page_load_metrics::PageLoadExtraInfo& info) {
-  if (info.main_frame_metadata.behavior_flags &
-      blink::WebLoadingBehaviorFlag::kWebLoadingBehaviorDocumentWriteBlock) {
-    LogDocumentWriteBlockFirstMeaningfulPaint(timing, info);
+        const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (GetDelegate().GetMainFrameMetadata().behavior_flags &
+      blink::LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlock) {
+    LogDocumentWriteBlockFirstMeaningfulPaint(timing);
   }
 }
 
 void DocumentWritePageLoadMetricsObserver::OnParseStop(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
-  if (info.main_frame_metadata.behavior_flags &
-      blink::WebLoadingBehaviorFlag::kWebLoadingBehaviorDocumentWriteBlock) {
-    LogDocumentWriteBlockParseStop(timing, info);
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (GetDelegate().GetMainFrameMetadata().behavior_flags &
+      blink::LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlock) {
+    LogDocumentWriteBlockParseStop(timing);
   }
 }
 
@@ -95,31 +92,32 @@ void DocumentWritePageLoadMetricsObserver::LogLoadingBehaviorMetrics(
 }
 
 void DocumentWritePageLoadMetricsObserver::OnLoadingBehaviorObserved(
-    const page_load_metrics::PageLoadExtraInfo& info) {
-  if ((info.main_frame_metadata.behavior_flags &
-       blink::WebLoadingBehaviorFlag::
-           kWebLoadingBehaviorDocumentWriteBlockReload) &&
+    content::RenderFrameHost* rfh,
+    int behavior_flags) {
+  if ((GetDelegate().GetMainFrameMetadata().behavior_flags &
+       blink::LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlockReload) &&
       !doc_write_block_reload_observed_) {
-    DCHECK(!(
-        info.main_frame_metadata.behavior_flags &
-        blink::WebLoadingBehaviorFlag::kWebLoadingBehaviorDocumentWriteBlock));
+    DCHECK(!(GetDelegate().GetMainFrameMetadata().behavior_flags &
+             blink::LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlock));
     UMA_HISTOGRAM_COUNTS_1M(internal::kHistogramDocWriteBlockReloadCount, 1);
-    LogLoadingBehaviorMetrics(LOADING_BEHAVIOR_RELOAD, info.source_id);
+    LogLoadingBehaviorMetrics(LOADING_BEHAVIOR_RELOAD,
+                              GetDelegate().GetSourceId());
     doc_write_block_reload_observed_ = true;
   }
-  if ((info.main_frame_metadata.behavior_flags &
-       blink::WebLoadingBehaviorFlag::kWebLoadingBehaviorDocumentWriteBlock) &&
+  if ((GetDelegate().GetMainFrameMetadata().behavior_flags &
+       blink::LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlock) &&
       !doc_write_block_observed_) {
     UMA_HISTOGRAM_BOOLEAN(internal::kHistogramDocWriteBlockCount, true);
-    LogLoadingBehaviorMetrics(LOADING_BEHAVIOR_BLOCK, info.source_id);
+    LogLoadingBehaviorMetrics(LOADING_BEHAVIOR_BLOCK,
+                              GetDelegate().GetSourceId());
     doc_write_block_observed_ = true;
   }
-  if ((info.main_frame_metadata.behavior_flags &
-       blink::WebLoadingBehaviorFlag::
-           kWebLoadingBehaviorDocumentWriteBlockDifferentScheme) &&
+  if ((GetDelegate().GetMainFrameMetadata().behavior_flags &
+       blink::LoadingBehaviorFlag::
+           kLoadingBehaviorDocumentWriteBlockDifferentScheme) &&
       !doc_write_same_site_diff_scheme_) {
     LogLoadingBehaviorMetrics(LOADING_BEHAVIOR_SAME_SITE_DIFF_SCHEME,
-                              info.source_id);
+                              GetDelegate().GetSourceId());
     doc_write_same_site_diff_scheme_ = true;
   }
 }
@@ -132,10 +130,9 @@ void DocumentWritePageLoadMetricsObserver::OnLoadingBehaviorObserved(
 // the consumer wants.
 void DocumentWritePageLoadMetricsObserver::
     LogDocumentWriteBlockFirstMeaningfulPaint(
-        const page_load_metrics::mojom::PageLoadTiming& timing,
-        const page_load_metrics::PageLoadExtraInfo& info) {
-  if (WasStartedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_meaningful_paint, info)) {
+        const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_meaningful_paint, GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(
         "PageLoad.Clients.DocWrite.Block.Experimental.PaintTiming."
         "ParseStartToFirstMeaningfulPaint",
@@ -146,10 +143,9 @@ void DocumentWritePageLoadMetricsObserver::
 
 void DocumentWritePageLoadMetricsObserver::
     LogDocumentWriteBlockFirstContentfulPaint(
-        const page_load_metrics::mojom::PageLoadTiming& timing,
-        const page_load_metrics::PageLoadExtraInfo& info) {
-  if (WasStartedInForegroundOptionalEventInForeground(
-          timing.paint_timing->first_contentful_paint, info)) {
+        const page_load_metrics::mojom::PageLoadTiming& timing) {
+  if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_contentful_paint, GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramDocWriteBlockFirstContentfulPaint,
                         timing.paint_timing->first_contentful_paint.value());
     PAGE_LOAD_HISTOGRAM(
@@ -160,12 +156,11 @@ void DocumentWritePageLoadMetricsObserver::
 }
 
 void DocumentWritePageLoadMetricsObserver::LogDocumentWriteBlockParseStop(
-    const page_load_metrics::mojom::PageLoadTiming& timing,
-    const page_load_metrics::PageLoadExtraInfo& info) {
+    const page_load_metrics::mojom::PageLoadTiming& timing) {
   base::TimeDelta parse_duration = timing.parse_timing->parse_stop.value() -
                                    timing.parse_timing->parse_start.value();
-  if (WasStartedInForegroundOptionalEventInForeground(
-          timing.parse_timing->parse_stop, info)) {
+  if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.parse_timing->parse_stop, GetDelegate())) {
     PAGE_LOAD_HISTOGRAM(internal::kHistogramDocWriteBlockParseDuration,
                         parse_duration);
     PAGE_LOAD_HISTOGRAM(
@@ -187,7 +182,8 @@ void DocumentWritePageLoadMetricsObserver::LogDocumentWriteBlockParseStop(
             ->parse_blocked_on_script_execution_from_document_write_duration
             .value());
 
-    ukm::builders::Intervention_DocumentWrite_ScriptBlock(info.source_id)
+    ukm::builders::Intervention_DocumentWrite_ScriptBlock(
+        GetDelegate().GetSourceId())
         .SetParseTiming_ParseBlockedOnScriptLoadFromDocumentWrite(
             timing.parse_timing
                 ->parse_blocked_on_script_load_from_document_write_duration

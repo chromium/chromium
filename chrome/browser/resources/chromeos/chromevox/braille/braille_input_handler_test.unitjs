@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 // Include test fixture.
-GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
+GEN_INCLUDE(['//chrome/browser/resources/chromeos/chromevox/testing/chromevox_unittest_base.js']);
 
-GEN_INCLUDE(['../testing/fake_objects.js']);
+GEN_INCLUDE(['//chrome/browser/resources/chromeos/chromevox/testing/fake_objects.js']);
 
 // Fake out the Chrome API namespace we depend on.
 var chrome = {};
@@ -22,13 +22,13 @@ chrome.virtualKeyboardPrivate = {};
  * the input manager's knowledge about the display content when text changes
  * in the edit field.
  * @param {FakePort} port A fake port.
- * @param {cvox.BrailleInputHandler} inputHandler to work with.
+ * @param {BrailleInputHandler} inputHandler to work with.
  * @constructor
  */
 function FakeEditor(port, inputHandler) {
   /** @private {FakePort} */
   this.port_ = port;
-  /** @private {cvox.BrailleInputHandler} */
+  /** @private {BrailleInputHandler} */
   this.inputHandler_ = inputHandler;
   /** @private {string} */
   this.text_ = '';
@@ -170,16 +170,36 @@ FakeEditor.prototype.message_ = function(msg) {
 };
 
 
+FakeEditor.prototype.createValue = function(
+    text, opt_selStart, opt_selEnd, opt_textOffset) {
+  var spannable = new Spannable(text, new ValueSpan(opt_textOffset || 0));
+  if (goog.isDef(opt_selStart)) {
+    opt_selEnd = goog.isDef(opt_selEnd) ? opt_selEnd : opt_selStart;
+    // TODO(plundblad): This looses the distinction between the selection
+    // anchor (start) and focus (end).  We should use that information to
+    // decide where to pan the braille display.
+    if (opt_selStart > opt_selEnd) {
+      var temp = opt_selStart;
+      opt_selStart = opt_selEnd;
+      opt_selEnd = temp;
+    }
+
+    spannable.setSpan(new ValueSelectionSpan(), opt_selStart, opt_selEnd);
+  }
+  return spannable;
+};
+
+
 /**
  * Calls the {@code onDisplayContentChanged} method of the input handler
  * with the current editor content and selection.
  * @private
  */
 FakeEditor.prototype.callOnDisplayContentChanged_ = function() {
-  var content = cvox.BrailleUtil.createValue(
+  var content = this.createValue(
       this.text_, this.selectionStart_, this.selectionEnd_)
   var grabExtraCells = function() {
-    var span = content.getSpanInstanceOf(cvox.ExtraCellsSpan);
+    var span = content.getSpanInstanceOf(ExtraCellsSpan);
     assertNotEquals(null, span);
     // Convert the ArrayBuffer to a normal array for easier comparision.
     this.extraCells_ = Array.prototype.map.call(new Uint8Array(span.cells),
@@ -261,9 +281,9 @@ function FakePort() {
   /** @type {FakeChromeEvent} */
   this.onMessage = new FakeChromeEvent();
   /** @type {string} */
-  this.name = cvox.BrailleInputHandler.IME_PORT_NAME_;
+  this.name = BrailleInputHandler.IME_PORT_NAME_;
   /** @type {{id: string}} */
-  this.sender = {id: cvox.BrailleInputHandler.IME_EXTENSION_ID_};
+  this.sender = {id: BrailleInputHandler.IME_EXTENSION_ID_};
 }
 
 /**
@@ -324,7 +344,7 @@ function FakeTranslator(table, opt_capitalize) {
 
 
 /**
- * Implements the {@code cvox.LibLouis.BrailleTranslator.backTranslate} method.
+ * Implements the {@code LibLouis.BrailleTranslator.backTranslate} method.
  * @param {!ArrayBuffer} cells Cells to be translated.
  * @param {function(?string)} callback Callback for result.
  */
@@ -365,7 +385,7 @@ FakeTranslator.prototype.backTranslate = function(cells, callback) {
   callback(result);
 };
 
-/** @extends {cvox.BrailleTranslatorManager} */
+/** @extends {BrailleTranslatorManager} */
 function FakeTranslatorManager() {
 }
 
@@ -408,8 +428,9 @@ FakeTranslatorManager.prototype = {
  *     pattern (dot 1 uses bit 0, etc).
  */
 function cellsToArray(cells) {
-  if (!cells)
+  if (!cells) {
     return [];
+  }
   return cells.split(/\s+/).map(function(cellString) {
     var cell = 0;
     assertTrue(cellString.length > 0);
@@ -437,8 +458,7 @@ ChromeVoxBrailleInputHandlerUnitTest.prototype = {
 
   /** @override */
   closureModuleDeps: [
-    'cvox.BrailleInputHandler',
-    'cvox.BrailleUtil',
+    'BrailleInputHandler',
   ],
 
   /**
@@ -458,7 +478,7 @@ ChromeVoxBrailleInputHandlerUnitTest.prototype = {
    */
   sendCells: function(cells) {
     return cellsToArray(cells).reduce(function(prevResult, cell) {
-      var event = {command: cvox.BrailleKeyCommand.DOTS, brailleDots: cell};
+      var event = {command: BrailleKeyCommand.DOTS, brailleDots: cell};
       return prevResult && this.inputHandler.onBrailleKeyEvent(event);
     }.bind(this), true);
   },
@@ -470,7 +490,7 @@ ChromeVoxBrailleInputHandlerUnitTest.prototype = {
    * @return {boolean} Whether the event was handled.
    */
   sendKeyEvent: function(keyCode) {
-    var event = {command: cvox.BrailleKeyCommand.STANDARD_KEY,
+    var event = {command: BrailleKeyCommand.STANDARD_KEY,
                  standardKeyCode: keyCode};
     return this.inputHandler.onBrailleKeyEvent(event);
   },
@@ -479,7 +499,7 @@ ChromeVoxBrailleInputHandlerUnitTest.prototype = {
    * Shortcut for asserting that the value expansion mode is {@code NONE}.
    */
   assertExpandingNone: function() {
-    assertEquals(cvox.ExpandingBrailleTranslator.ExpansionType.NONE,
+    assertEquals(ExpandingBrailleTranslator.ExpansionType.NONE,
                  this.inputHandler.getExpansionType());
   },
 
@@ -487,7 +507,7 @@ ChromeVoxBrailleInputHandlerUnitTest.prototype = {
    * Shortcut for asserting that the value expansion mode is {@code SELECTION}.
    */
   assertExpandingSelection: function() {
-    assertEquals(cvox.ExpandingBrailleTranslator.ExpansionType.SELECTION,
+    assertEquals(ExpandingBrailleTranslator.ExpansionType.SELECTION,
                  this.inputHandler.getExpansionType());
   },
 
@@ -495,7 +515,7 @@ ChromeVoxBrailleInputHandlerUnitTest.prototype = {
    * Shortcut for asserting that the value expansion mode is {@code ALL}.
    */
   assertExpandingAll: function() {
-    assertEquals(cvox.ExpandingBrailleTranslator.ExpansionType.ALL,
+    assertEquals(ExpandingBrailleTranslator.ExpansionType.ALL,
                  this.inputHandler.getExpansionType());
   },
 
@@ -526,7 +546,7 @@ ChromeVoxBrailleInputHandlerUnitTest.prototype = {
     chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN = 'keydown';
     chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP = 'keyup';
     this.translatorManager = new FakeTranslatorManager();
-    this.inputHandler = new cvox.BrailleInputHandler(this.translatorManager);
+    this.inputHandler = new BrailleInputHandler(this.translatorManager);
     this.inputHandler.init();
     this.uncontractedTranslator = new FakeTranslator(UNCONTRACTED_TABLE);
     this.contractedTranslator = new FakeTranslator(CONTRACTED_TABLE, true);

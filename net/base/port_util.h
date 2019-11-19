@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -20,12 +21,12 @@ NET_EXPORT bool IsPortValid(int port);
 
 // Returns true if the port is in the range [0, 1023]. These ports are
 // registered by IANA and typically need root access to listen on.
-bool IsWellKnownPort(int port);
+NET_EXPORT bool IsWellKnownPort(int port);
 
 // Checks if the port is allowed for the specified scheme.  Ports set as allowed
 // with SetExplicitlyAllowedPorts() or by using ScopedPortException() will be
 // considered allowed for any scheme.
-NET_EXPORT bool IsPortAllowedForScheme(int port, const std::string& url_scheme);
+NET_EXPORT bool IsPortAllowedForScheme(int port, base::StringPiece url_scheme);
 
 // Returns the number of explicitly allowed ports; for testing.
 NET_EXPORT_PRIVATE size_t GetCountOfExplicitlyAllowedPorts();

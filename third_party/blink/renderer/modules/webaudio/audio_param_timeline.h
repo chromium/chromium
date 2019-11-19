@@ -68,13 +68,17 @@ class AudioParamTimeline {
   void CancelScheduledValues(double start_time, ExceptionState&);
   void CancelAndHoldAtTime(double cancel_time, ExceptionState&);
 
-  // hasValue is set to true if a valid timeline value is returned.
-  // otherwise defaultValue is returned.
-  float ValueForContextTime(AudioDestinationHandler&,
-                            float default_value,
-                            bool& has_value,
-                            float min_value,
-                            float max_value);
+  // Compute the value from this AudioParamHandler at the current context frame.
+  // Returns two values:
+  //
+  //   bool has_value - to indicate if the value could be computed from the
+  //                    timeline
+  //   float value    - the timeline value if |has_value| is true; otherwise
+  //                    |default_value| is returned.
+  std::tuple<bool, float> ValueForContextTime(AudioDestinationHandler&,
+                                              float default_value,
+                                              float min_value,
+                                              float max_value);
 
   // Given the time range in frames, calculates parameter values into the values
   // buffer and returns the last parameter value calculated for "values" or the
@@ -448,6 +452,11 @@ class AudioParamTimeline {
   // When cancelling events, remove the items from |events_| starting
   // at the given index.  Update |new_events_| too.
   void RemoveCancelledEvents(wtf_size_t first_event_to_remove);
+
+  // Remove old events, but always leave at least one event in the timeline.
+  // This is needed in case a new event is added (like linearRamp) that would
+  // use a previous event to compute the automation.
+  void RemoveOldEvents(wtf_size_t n_events);
 
   // Vector of all automation events for the AudioParam.  Access must
   // be locked via m_eventsLock.

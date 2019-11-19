@@ -15,11 +15,11 @@ namespace sandbox {
 // JOBOBJECT_EXTENDED_LIMIT_INFORMATION.JobMemoryLimit on Windows.
 //
 #if defined(ARCH_CPU_64_BITS)
-const size_t kDataSizeLimit = 1ULL << 32;
+constexpr size_t kDataSizeLimit = size_t{1} << 34;  // 16 GB
 #else
 // Limit the data memory to a size that prevents allocations that can't be
 // indexed by an int.
-const size_t kDataSizeLimit =
+constexpr size_t kDataSizeLimit =
     static_cast<size_t>(std::numeric_limits<int>::max());
 #endif
 

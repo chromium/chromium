@@ -35,8 +35,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/html/custom/v0_custom_element_lifecycle_callbacks.h"
-#include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -49,14 +49,6 @@ class V8PerContextData;
 class V8V0CustomElementLifecycleCallbacks final
     : public V0CustomElementLifecycleCallbacks {
  public:
-  static V8V0CustomElementLifecycleCallbacks* Create(
-      ScriptState*,
-      v8::Local<v8::Object> prototype,
-      v8::MaybeLocal<v8::Function> created,
-      v8::MaybeLocal<v8::Function> attached,
-      v8::MaybeLocal<v8::Function> detached,
-      v8::MaybeLocal<v8::Function> attribute_changed);
-
   V8V0CustomElementLifecycleCallbacks(
       ScriptState*,
       v8::Local<v8::Object> prototype,
@@ -79,16 +71,17 @@ class V8V0CustomElementLifecycleCallbacks final
                         const AtomicString& old_value,
                         const AtomicString& new_value) override;
 
-  void Call(const ScopedPersistent<v8::Function>& weak_callback, Element*);
+  void Call(const TraceWrapperV8Reference<v8::Function>& callback_reference,
+            Element*);
 
   V8PerContextData* CreationContextData();
 
   Member<ScriptState> script_state_;
-  ScopedPersistent<v8::Object> prototype_;
-  ScopedPersistent<v8::Function> created_;
-  ScopedPersistent<v8::Function> attached_;
-  ScopedPersistent<v8::Function> detached_;
-  ScopedPersistent<v8::Function> attribute_changed_;
+  TraceWrapperV8Reference<v8::Object> prototype_;
+  TraceWrapperV8Reference<v8::Function> created_;
+  TraceWrapperV8Reference<v8::Function> attached_;
+  TraceWrapperV8Reference<v8::Function> detached_;
+  TraceWrapperV8Reference<v8::Function> attribute_changed_;
 };
 
 }  // namespace blink

@@ -15,8 +15,17 @@
 @protocol BrowserCommands;
 @protocol LoadQueryCommands;
 @protocol OmniboxFocuser;
+@class OmniboxViewController;
+class OmniboxTextChangeDelegate;
 
-// The view controller managing the omnibox textfield and its container view.
+@protocol OmniboxViewControllerDelegate
+
+// Called after the text input mode changes in the OmniboxViewController. This
+// means that the active keyboard has changed.
+- (void)omniboxViewControllerTextInputModeDidChange:
+    (OmniboxViewController*)omniboxViewController;
+@end
+
 @interface OmniboxViewController : UIViewController<EditViewAnimatee,
                                                     LocationBarOffsetProvider,
                                                     OmniboxConsumer>
@@ -31,14 +40,23 @@
 // The default leading image to be used whenever the omnibox text is empty.
 @property(nonatomic, strong) UIImage* emptyTextLeadingImage;
 
-// Designated initializer.
-- (instancetype)initWithIncognito:(BOOL)isIncognito;
+// The current semantic content attribute for the views this view controller
+// manages
+@property(nonatomic, assign)
+    UISemanticContentAttribute semanticContentAttribute;
 
 // The dispatcher for the paste and go action.
 @property(nonatomic, weak)
     id<BrowserCommands, LoadQueryCommands, OmniboxFocuser>
         dispatcher;
 
+// The delegate for this object.
+@property(nonatomic, weak) id<OmniboxViewControllerDelegate> delegate;
+
+// Designated initializer.
+- (instancetype)initWithIncognito:(BOOL)isIncognito;
+
+- (void)setTextChangeDelegate:(OmniboxTextChangeDelegate*)textChangeDelegate;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_VIEW_CONTROLLER_H_

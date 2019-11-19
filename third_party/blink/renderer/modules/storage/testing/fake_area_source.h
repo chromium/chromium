@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_TESTING_FAKE_AREA_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_STORAGE_TESTING_FAKE_AREA_SOURCE_H_
 
-#include "third_party/blink/public/platform/web_scoped_virtual_time_pauser.h"
+#include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
-class FakeAreaSource : public GarbageCollectedFinalized<FakeAreaSource>,
+class FakeAreaSource : public GarbageCollected<FakeAreaSource>,
                        public CachedStorageArea::Source {
   USING_GARBAGE_COLLECTED_MIXIN(FakeAreaSource);
 

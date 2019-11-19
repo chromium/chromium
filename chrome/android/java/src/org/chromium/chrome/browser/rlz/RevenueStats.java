@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -61,16 +62,19 @@ public class RevenueStats {
      * Sets search client id.
      */
     protected static void setSearchClient(String client) {
-        nativeSetSearchClient(client);
+        RevenueStatsJni.get().setSearchClient(client);
     }
 
     /**
      * Sets rlz value.
      */
     protected static void setRlzParameterValue(String rlz) {
-        nativeSetRlzParameterValue(rlz);
+        RevenueStatsJni.get().setRlzParameterValue(rlz);
     }
 
-    private static native void nativeSetSearchClient(String client);
-    private static native void nativeSetRlzParameterValue(String rlz);
+    @NativeMethods
+    interface Natives {
+        void setSearchClient(String client);
+        void setRlzParameterValue(String rlz);
+    }
 }

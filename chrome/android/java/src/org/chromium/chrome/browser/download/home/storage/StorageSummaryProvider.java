@@ -5,16 +5,16 @@
 package org.chromium.chrome.browser.download.home.storage;
 
 import android.content.Context;
-import android.os.Environment;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DirectoryOption;
+import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterObserver;
 import org.chromium.chrome.browser.download.home.filter.OfflineItemFilterSource;
-import org.chromium.chrome.browser.download.ui.DownloadHistoryAdapter;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 
@@ -52,16 +52,6 @@ public class StorageSummaryProvider implements OfflineItemFilterObserver {
         computeTotalStorage();
     }
 
-    /**
-     * Sets the total size used by downloads. Used to support legacy download home UI, see
-     * {@link DownloadHistoryAdapter}.
-     * @param totalSize
-     */
-    public void setUsedStorage(long totalSize) {
-        mTotalDownloadSize = totalSize;
-        update();
-    }
-
     // OfflineItemFilterObserver implementation.
     @Override
     public void onItemsAdded(Collection<OfflineItem> items) {
@@ -89,8 +79,7 @@ public class StorageSummaryProvider implements OfflineItemFilterObserver {
         new AsyncTask<DirectoryOption>() {
             @Override
             protected DirectoryOption doInBackground() {
-                File defaultDownloadDir = Environment.getExternalStoragePublicDirectory(
-                        Environment.DIRECTORY_DOWNLOADS);
+                File defaultDownloadDir = DownloadDirectoryProvider.getPrimaryDownloadDirectory();
                 DirectoryOption directoryOption = new DirectoryOption("",
                         defaultDownloadDir.getAbsolutePath(), defaultDownloadDir.getUsableSpace(),
                         defaultDownloadDir.getTotalSpace(),

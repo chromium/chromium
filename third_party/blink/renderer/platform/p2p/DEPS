@@ -1,0 +1,13 @@
+include_rules = [
+    "+base/observer_list_threadsafe.h",
+    "+crypto/random.h",
+    "+jingle/glue/utils.h",
+    "+media/base/media_permission.h",
+    "+net/base/ip_address.h",
+    "+net/base/ip_endpoint.h",
+    "+net/base/network_change_notifier.h",
+    "+net/base/network_interfaces.h",
+    "+net/traffic_annotation/network_traffic_annotation.h",
+    "+services/network/public/cpp/p2p_param_traits.h",
+    "+services/network/public/cpp/p2p_socket_type.h",
+]

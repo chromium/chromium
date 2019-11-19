@@ -341,7 +341,7 @@ make_patch_symlink() {
 
   # Use rsync instead of the above, as it's the only way to preserve the
   # timestamp of a symbolic link using shell tools.
-  if ! rsync -lt "${new_file}" "${patch_file}"; then
+  if ! rsync --links --times "${new_file}" "${patch_file}"; then
     exit 10
   fi
 
@@ -406,7 +406,8 @@ verify_patch_dir() {
   # rsync will print a line for any file, directory, or symbolic link that
   # differs or exists only in one directory. As used here, it correctly
   # considers link targets, file contents, permissions, and timestamps.
-  local rsync_command=(rsync -clprt --delete --out-format=%n \
+  local rsync_command=(rsync --checksum --delete --links --out-format=%n \
+                       --perms --recursive --times \
                        "${new_dir}/" "${verify_dir}")
   if [[ ${#g_verify_exclude[@]} -gt 0 ]]; then
     local exclude
@@ -414,7 +415,7 @@ verify_patch_dir() {
       # ${g_verify_exclude[@]} contains paths in ${new_dir}. Strip off
       # ${new_dir} from the beginning of each, but leave a leading "/" so that
       # rsync treats them as being at the root of the "transfer."
-      rsync_command+=("--exclude" "${exclude:${#new_dir}}")
+      rsync_command+=("--exclude=${exclude:${#new_dir}}")
     done
   fi
 

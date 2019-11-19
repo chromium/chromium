@@ -25,13 +25,15 @@
 #include "chrome/browser/media/router/route_message_observer.h"
 #include "chrome/common/media_router/media_route.h"
 #include "chrome/common/media_router/media_sink.h"
-#include "chrome/common/media_router/media_source_helper.h"
+#include "chrome/common/media_router/media_source.h"
 #include "chrome/common/media_router/route_request_result.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_screen_availability_listener.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "url/gurl.h"
 
 #if !defined(OS_ANDROID)
@@ -40,9 +42,7 @@
 #include "components/prefs/pref_service.h"
 #endif
 
-using blink::mojom::PresentationConnectionPtr;
-using blink::mojom::PresentationConnectionPtrInfo;
-using blink::mojom::PresentationConnectionRequest;
+using blink::mojom::PresentationConnection;
 using blink::mojom::PresentationError;
 using blink::mojom::PresentationErrorType;
 using blink::mojom::PresentationInfo;
@@ -110,8 +110,9 @@ class PresentationFrame {
                        const MediaRoute& route);
   void ConnectToPresentation(
       const PresentationInfo& presentation_info,
-      PresentationConnectionPtr controller_connection_ptr,
-      PresentationConnectionRequest receiver_connection_request);
+      mojo::PendingRemote<PresentationConnection> controller_connection_remote,
+      mojo::PendingReceiver<PresentationConnection>
+          receiver_connection_receiver);
   void RemovePresentation(const std::string& presentation_id);
 
  private:
@@ -164,7 +165,7 @@ bool PresentationFrame::SetScreenAvailabilityListener(
 
   MediaRouterMetrics::RecordPresentationUrlType(url);
 
-  MediaSource source = MediaSourceForPresentationUrl(url);
+  MediaSource source = MediaSource::ForPresentationUrl(url);
   auto& sinks_observer = url_to_sinks_observer_[source.id()];
   if (sinks_observer && sinks_observer->listener() == listener)
     return false;
@@ -185,7 +186,7 @@ bool PresentationFrame::SetScreenAvailabilityListener(
 void PresentationFrame::RemoveScreenAvailabilityListener(
     content::PresentationScreenAvailabilityListener* listener) {
   MediaSource source =
-      MediaSourceForPresentationUrl(listener->GetAvailabilityUrl());
+      MediaSource::ForPresentationUrl(listener->GetAvailabilityUrl());
   auto sinks_observer_it = url_to_sinks_observer_.find(source.id());
   if (sinks_observer_it != url_to_sinks_observer_.end() &&
       sinks_observer_it->second->listener() == listener) {
@@ -225,8 +226,9 @@ void PresentationFrame::AddPresentation(
 
 void PresentationFrame::ConnectToPresentation(
     const PresentationInfo& presentation_info,
-    PresentationConnectionPtr controller_connection_ptr,
-    PresentationConnectionRequest receiver_connection_request) {
+    mojo::PendingRemote<PresentationConnection> controller_connection_remote,
+    mojo::PendingReceiver<PresentationConnection>
+        receiver_connection_receiver) {
   const auto pid_route_it =
       presentation_id_to_route_.find(presentation_info.id);
 
@@ -241,14 +243,14 @@ void PresentationFrame::ConnectToPresentation(
             web_contents_);
     local_presentation_manager->RegisterLocalPresentationController(
         presentation_info, render_frame_host_id_,
-        std::move(controller_connection_ptr),
-        std::move(receiver_connection_request), pid_route_it->second);
+        std::move(controller_connection_remote),
+        std::move(receiver_connection_receiver), pid_route_it->second);
   } else {
     DVLOG(2)
         << "Creating BrowserPresentationConnectionProxy for [presentation_id]: "
         << presentation_info.id;
     MediaRoute::Id route_id = pid_route_it->second.media_route_id();
-    if (base::ContainsKey(browser_connection_proxies_, route_id)) {
+    if (base::Contains(browser_connection_proxies_, route_id)) {
       DLOG(ERROR) << __func__
                   << "Already has a BrowserPresentationConnectionProxy for "
                   << "route: " << route_id;
@@ -256,8 +258,8 @@ void PresentationFrame::ConnectToPresentation(
     }
 
     auto* proxy = new BrowserPresentationConnectionProxy(
-        router_, route_id, std::move(receiver_connection_request),
-        std::move(controller_connection_ptr));
+        router_, route_id, std::move(receiver_connection_receiver),
+        std::move(controller_connection_remote));
     browser_connection_proxies_.emplace(route_id, base::WrapUnique(proxy));
   }
 }
@@ -362,8 +364,7 @@ PresentationServiceDelegateImpl::PresentationServiceDelegateImpl(
     content::WebContents* web_contents)
     : web_contents_(web_contents),
       router_(MediaRouterFactory::GetApiForBrowserContext(
-          web_contents_->GetBrowserContext())),
-      weak_factory_(this) {
+          web_contents_->GetBrowserContext())) {
   DCHECK(web_contents_);
   DCHECK(router_);
 }
@@ -471,8 +472,8 @@ void PresentationServiceDelegateImpl::OnJoinRouteResponse(
                                  &connection);
     std::move(success_cb)
         .Run(blink::mojom::PresentationConnectionResult::New(
-            presentation_info.Clone(), std::move(connection->connection_ptr),
-            std::move(connection->connection_request)));
+            presentation_info.Clone(), std::move(connection->connection_remote),
+            std::move(connection->connection_receiver)));
   }
 }
 
@@ -491,8 +492,9 @@ void PresentationServiceDelegateImpl::OnStartPresentationSucceeded(
                                &connection);
   std::move(success_cb)
       .Run(blink::mojom::PresentationConnectionResult::New(
-          new_presentation_info.Clone(), std::move(connection->connection_ptr),
-          std::move(connection->connection_request)));
+          new_presentation_info.Clone(),
+          std::move(connection->connection_remote),
+          std::move(connection->connection_receiver)));
 }
 
 void PresentationServiceDelegateImpl::AddPresentation(
@@ -585,7 +587,7 @@ void PresentationServiceDelegateImpl::ReconnectPresentation(
       return;
     }
 
-    if (!base::ContainsValue(presentation_urls, route->media_source().url())) {
+    if (!base::Contains(presentation_urls, route->media_source().url())) {
       DVLOG(2) << "Presentation URLs do not match URL of current presentation:"
                << route->media_source().url();
       return;
@@ -601,7 +603,7 @@ void PresentationServiceDelegateImpl::ReconnectPresentation(
     const GURL& presentation_url = presentation_urls[0];
     bool incognito = web_contents_->GetBrowserContext()->IsOffTheRecord();
     router_->JoinRoute(
-        MediaSourceForPresentationUrl(presentation_url).id(), presentation_id,
+        MediaSource::ForPresentationUrl(presentation_url).id(), presentation_id,
         request.frame_origin, web_contents_,
         base::BindOnce(&PresentationServiceDelegateImpl::OnJoinRouteResponse,
                        GetWeakPtr(), render_frame_host_id, presentation_url,
@@ -670,9 +672,8 @@ void PresentationServiceDelegateImpl::OnRouteResponse(
     const content::PresentationRequest& presentation_request,
     mojom::RoutePresentationConnectionPtr connection,
     const RouteRequestResult& result) {
-  if (!result.route() ||
-      !base::ContainsValue(presentation_request.presentation_urls,
-                           result.presentation_url())) {
+  if (!result.route() || !base::Contains(presentation_request.presentation_urls,
+                                         result.presentation_url())) {
     return;
   }
 
@@ -687,8 +688,8 @@ void PresentationServiceDelegateImpl::OnRouteResponse(
                                  presentation_info, &connection);
     default_presentation_started_callback_.Run(
         blink::mojom::PresentationConnectionResult::New(
-            presentation_info.Clone(), std::move(connection->connection_ptr),
-            std::move(connection->connection_request)));
+            presentation_info.Clone(), std::move(connection->connection_remote),
+            std::move(connection->connection_receiver)));
   } else {
     DCHECK(!connection);
   }
@@ -785,14 +786,15 @@ void PresentationServiceDelegateImpl::EnsurePresentationConnection(
   // directly, we need to provide a BrowserPresentationConnectionProxy here or
   // connect to the LocalPresentationManager, as necessary.
   if (!*connection) {
-    PresentationConnectionPtr controller_ptr;
-    PresentationConnectionPtrInfo receiver_ptr_info;
+    mojo::PendingRemote<PresentationConnection> controller_remote;
+    mojo::PendingRemote<PresentationConnection> receiver_remote;
     *connection = mojom::RoutePresentationConnection::New(
-        std::move(receiver_ptr_info), mojo::MakeRequest(&controller_ptr));
+        std::move(receiver_remote),
+        controller_remote.InitWithNewPipeAndPassReceiver());
     auto* presentation_frame = GetOrAddPresentationFrame(render_frame_host_id);
     presentation_frame->ConnectToPresentation(
-        presentation_info, std::move(controller_ptr),
-        mojo::MakeRequest(&(*connection)->connection_ptr));
+        presentation_info, std::move(controller_remote),
+        (*connection)->connection_remote.InitWithNewPipeAndPassReceiver());
   }
 }
 

@@ -4,6 +4,8 @@
 
 """A module to hold adb specific action implementations."""
 
+from __future__ import print_function
+
 import re
 
 import cr
@@ -43,7 +45,7 @@ class Adb(object):
           '-n', '{CR_INTENT}',
           '{CR_RUN_ARGUMENTS}',
           *arguments
-    )
+      )
 
   @classmethod
   def Kill(cls, target, _):
@@ -57,7 +59,7 @@ class Adb(object):
       with target:
         cr.Host.Execute('{CR_ADB}', 'shell', 'kill', *pids)
     elif target.verbose:
-      print target.Substitute('{CR_TARGET_NAME} not running')
+      print(target.Substitute('{CR_TARGET_NAME} not running'))
     cls._kills[target_name] = True
 
   @classmethod
@@ -67,7 +69,7 @@ class Adb(object):
           '{CR_ADB}', 'uninstall',
           '{CR_PACKAGE}',
           *arguments
-    )
+      )
 
   @classmethod
   def Install(cls, target, arguments):
@@ -76,7 +78,7 @@ class Adb(object):
           '{CR_ADB}', 'install',
           '{CR_BINARY}',
           *arguments
-    )
+      )
 
   @classmethod
   def Reinstall(cls, target, arguments):
@@ -86,7 +88,7 @@ class Adb(object):
           '-r',
           '{CR_BINARY}',
           *arguments
-    )
+      )
 
   @classmethod
   def AttachGdb(cls, target, arguments):
@@ -98,7 +100,7 @@ class Adb(object):
           '--program-name={CR_TARGET_NAME}',
           '--package-name={CR_PACKAGE}',
           *arguments
-    )
+      )
 
 
 class AdbRunner(cr.Runner):

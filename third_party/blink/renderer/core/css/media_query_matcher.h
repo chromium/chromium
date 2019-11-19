@@ -40,8 +40,7 @@ class MediaQuerySet;
 // which they have been added.
 
 class CORE_EXPORT MediaQueryMatcher final
-    : public GarbageCollectedFinalized<MediaQueryMatcher> {
-
+    : public GarbageCollected<MediaQueryMatcher> {
  public:
   static MediaQueryMatcher* Create(Document&);
 

@@ -41,6 +41,6 @@ void NotificationCommon::OpenNotificationSettings(Profile* profile,
 #else
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile);
   chrome::ShowContentSettingsExceptions(browser_displayer.browser(),
-                                        CONTENT_SETTINGS_TYPE_NOTIFICATIONS);
+                                        ContentSettingsType::NOTIFICATIONS);
 #endif
 }

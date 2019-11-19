@@ -18,19 +18,19 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension.h"
 
 class Browser;
 class PrefService;
 class Profile;
-class ToolbarActionsBar;
+class ExtensionsContainer;
 class ToolbarActionViewController;
 
 namespace extensions {
 class ExtensionActionManager;
 class ExtensionMessageBubbleController;
-class ExtensionRegistry;
 }  // namespace extensions
 
 // Model for the browser actions toolbar. This is a per-profile instance, and
@@ -39,7 +39,7 @@ class ExtensionRegistry;
 // model, but if the window is too narrow, actions may end up pushed into the
 // overflow menu on a per-window basis. Callers interested in the arrangement of
 // actions in a particular window should check that window's instance of
-// ToolbarActionsBar, which is responsible for the per-window layout.
+// ExtensionsContainer, which is responsible for the per-window layout.
 class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
                             public extensions::LoadErrorReporter::Observer,
                             public extensions::ExtensionRegistryObserver,
@@ -101,6 +101,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
     // can catch up.
     virtual void OnToolbarModelInitialized() = 0;
 
+    // Called whenever the pinned actions change.
+    virtual void OnToolbarPinnedActionsChanged() = 0;
+
    protected:
     virtual ~Observer() {}
   };
@@ -140,10 +143,12 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
 
   std::vector<std::unique_ptr<ToolbarActionViewController>> CreateActions(
       Browser* browser,
-      ToolbarActionsBar* bar);
+      ExtensionsContainer* main_bar,
+      bool in_overflow_menu);
   std::unique_ptr<ToolbarActionViewController> CreateActionForId(
       Browser* browser,
-      ToolbarActionsBar* bar,
+      ExtensionsContainer* main_bar,
+      bool in_overflow_menu,
       const ActionId& action_id);
 
   const std::vector<ActionId>& action_ids() const {
@@ -178,6 +183,17 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // profile, if any.
   std::unique_ptr<extensions::ExtensionMessageBubbleController>
   GetExtensionMessageBubbleController(Browser* browser);
+
+  // Returns true if the action is pinned to the toolbar.
+  bool IsActionPinned(const ActionId& action_id) const;
+
+  // Move the pinned action for |action_id| to |target_index|.
+  void MovePinnedAction(const ActionId& action_id, size_t target_index);
+
+  // Returns the ordered list of ids of pinned actions.
+  const std::vector<ActionId>& pinned_action_ids() const {
+    return pinned_action_ids_;
+  }
 
  private:
   // Callback when actions are ready.
@@ -250,6 +266,10 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // Returns true if the action is visible on the toolbar.
   bool IsActionVisible(const ActionId& action_id) const;
 
+  // Gets a list of pinned action ids that only contains that only contains IDs
+  // with a corresponding action in the model.
+  std::vector<ActionId> GetFilteredPinnedActionIds() const;
+
   // Our observers.
   base::ObserverList<Observer>::Unchecked observers_;
 
@@ -277,6 +297,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // List of browser action IDs which should be highlighted.
   std::vector<ActionId> highlighted_action_ids_;
 
+  // Set of pinned action IDs.
+  std::vector<ActionId> pinned_action_ids_;
+
   // The current type of highlight (with HIGHLIGHT_NONE indicating no current
   // highlight).
   HighlightType highlight_type_;
@@ -299,11 +322,11 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
 
   ScopedObserver<extensions::ExtensionActionAPI,
                  extensions::ExtensionActionAPI::Observer>
-      extension_action_observer_;
+      extension_action_observer_{this};
 
   // Listen to extension load, unloaded notifications.
   ScopedObserver<extensions::ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_;
+      extension_registry_observer_{this};
 
   // For observing change of toolbar order preference by external entity (sync).
   PrefChangeRegistrar pref_change_registrar_;
@@ -311,9 +334,9 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
 
   ScopedObserver<extensions::LoadErrorReporter,
                  extensions::LoadErrorReporter::Observer>
-      load_error_reporter_observer_;
+      load_error_reporter_observer_{this};
 
-  base::WeakPtrFactory<ToolbarActionsModel> weak_ptr_factory_;
+  base::WeakPtrFactory<ToolbarActionsModel> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ToolbarActionsModel);
 };

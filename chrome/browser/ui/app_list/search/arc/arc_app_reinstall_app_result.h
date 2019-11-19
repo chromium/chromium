@@ -7,9 +7,10 @@
 
 #include <string>
 
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/macros.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
-#include "components/arc/common/app.mojom.h"
+#include "components/arc/mojom/app.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace app_list {
@@ -21,8 +22,8 @@ class ArcAppReinstallAppResult : public ChromeSearchResult {
  public:
   class Observer {
    public:
-    virtual void OnOpened(const std::string& package_id) = 0;
-    virtual void OnVisibilityChanged(const std::string& package_id,
+    virtual void OnOpened(const std::string& package_name) = 0;
+    virtual void OnVisibilityChanged(const std::string& package_name,
                                      bool visibility) = 0;
 
    protected:
@@ -38,11 +39,12 @@ class ArcAppReinstallAppResult : public ChromeSearchResult {
   // ChromeSearchResult:
   void Open(int event_flags) override;
   void OnVisibilityChanged(bool visibility) override;
+  ash::SearchResultType GetSearchResultType() const override;
 
  private:
   // Observer passed in constructor. not owned.
   Observer* const observer_;
-
+  const std::string package_name_;
   DISALLOW_COPY_AND_ASSIGN(ArcAppReinstallAppResult);
 };
 

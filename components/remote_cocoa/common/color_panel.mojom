@@ -1,0 +1,23 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remote_cocoa.mojom;
+
+// Interface to the NSColorPanel.
+interface ColorPanel {
+  // Show the panel with initial color |initial_sk_color|.
+  Show(uint32 initial_sk_color);
+
+  // Programmatically set the selected color to |sk_color|.
+  SetSelectedColor(uint32 sk_color);
+};
+
+// NSColorPanel's interface to the browser.
+interface ColorPanelHost {
+  // Specify that the user color selection has changed.
+  DidChooseColorInColorPanel(uint32 sk_color);
+
+  // Sepecify that the user has closed the panel.
+  DidCloseColorPanel();
+};

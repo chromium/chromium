@@ -5,11 +5,13 @@
 #ifndef COMPONENTS_SYNC_DRIVER_SYNC_AUTH_UTIL_H_
 #define COMPONENTS_SYNC_DRIVER_SYNC_AUTH_UTIL_H_
 
-#include "components/signin/core/browser/account_info.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
-namespace identity {
+class GoogleServiceAuthError;
+
+namespace signin {
 class IdentityManager;
-}  // namespace identity
+}  // namespace signin
 
 namespace syncer {
 
@@ -25,8 +27,11 @@ struct SyncAccountInfo {
 // corresponding SyncAccountInfo. This is exposed so that autofill metrics
 // code can use it.
 SyncAccountInfo DetermineAccountToUse(
-    identity::IdentityManager* identity_manager,
-    bool allow_secondary_accounts);
+    signin::IdentityManager* identity_manager);
+
+// Returns whether |auth_error| indicates the user has locally signed out of
+// content area, rejecting credentials.
+bool IsWebSignout(const GoogleServiceAuthError& auth_error);
 
 }  // namespace syncer
 

@@ -1,8 +1,6 @@
 #ifndef _RAR_EXTINFO_
 #define _RAR_EXTINFO_
 
-namespace third_party_unrar {
-
 bool IsRelativeSymlinkSafe(CommandData *Cmd,const wchar *SrcName,const wchar *PrepSrcName,const wchar *TargetName);
 bool ExtractSymlink(CommandData *Cmd,ComprDataIO &DataIO,Archive &Arc,const wchar *LinkName);
 #ifdef _UNIX
@@ -21,6 +19,5 @@ void SetExtraInfo20(CommandData *Cmd,Archive &Arc,wchar *Name);
 void SetExtraInfo(CommandData *Cmd,Archive &Arc,wchar *Name);
 void SetFileHeaderExtra(CommandData *Cmd,Archive &Arc,wchar *Name);
 
-}  // namespace third_party_unrar
 
 #endif

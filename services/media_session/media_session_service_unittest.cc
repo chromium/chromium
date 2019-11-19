@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "services/media_session/media_session_service.h"
+
 #include "base/macros.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "services/service_manager/public/cpp/test/test_connector_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,7 +18,7 @@ class MediaSessionTest : public testing::Test {
   ~MediaSessionTest() override = default;
 
  private:
-  base::test::ScopedTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSessionTest);
 };

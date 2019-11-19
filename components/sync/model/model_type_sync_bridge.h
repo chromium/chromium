@@ -16,7 +16,7 @@
 
 namespace syncer {
 
-class ConflictResolution;
+enum class ConflictResolution;
 class DataBatch;
 struct DataTypeActivationRequest;
 struct EntityData;
@@ -150,7 +150,7 @@ class ModelTypeSyncBridge {
   // guaranteed not to match (both be deleted or have identical specifics). A
   // default implementation chooses the server data unless it is a deletion.
   virtual ConflictResolution ResolveConflict(
-      const EntityData& local_data,
+      const std::string& storage_key,
       const EntityData& remote_data) const;
 
   // Similar to ApplySyncChanges() but called by the processor when sync

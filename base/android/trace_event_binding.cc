@@ -7,10 +7,10 @@
 #include <set>
 
 #include "base/android/jni_string.h"
+#include "base/base_jni_headers/TraceEvent_jni.h"
 #include "base/macros.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
-#include "jni/TraceEvent_jni.h"
 
 namespace base {
 namespace android {
@@ -80,12 +80,16 @@ static void JNI_TraceEvent_Instant(JNIEnv* env,
                                    const JavaParamRef<jstring>& jarg) {
   TraceEventDataConverter converter(env, jname, jarg);
   if (converter.arg()) {
-    TRACE_EVENT_COPY_INSTANT1(kJavaCategory, converter.name(),
-                              TRACE_EVENT_SCOPE_THREAD, converter.arg_name(),
-                              converter.arg());
+    TRACE_EVENT_INSTANT_WITH_FLAGS1(kJavaCategory, converter.name(),
+                                    TRACE_EVENT_FLAG_JAVA_STRING_LITERALS |
+                                        TRACE_EVENT_FLAG_COPY |
+                                        TRACE_EVENT_SCOPE_THREAD,
+                                    converter.arg_name(), converter.arg());
   } else {
-    TRACE_EVENT_COPY_INSTANT0(kJavaCategory, converter.name(),
-                              TRACE_EVENT_SCOPE_THREAD);
+    TRACE_EVENT_INSTANT_WITH_FLAGS0(kJavaCategory, converter.name(),
+                                    TRACE_EVENT_FLAG_JAVA_STRING_LITERALS |
+                                        TRACE_EVENT_FLAG_COPY |
+                                        TRACE_EVENT_SCOPE_THREAD);
   }
 }
 
@@ -94,10 +98,14 @@ static void JNI_TraceEvent_Begin(JNIEnv* env,
                                  const JavaParamRef<jstring>& jarg) {
   TraceEventDataConverter converter(env, jname, jarg);
   if (converter.arg()) {
-    TRACE_EVENT_COPY_BEGIN1(kJavaCategory, converter.name(),
-                            converter.arg_name(), converter.arg());
+    TRACE_EVENT_BEGIN_WITH_FLAGS1(
+        kJavaCategory, converter.name(),
+        TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY,
+        converter.arg_name(), converter.arg());
   } else {
-    TRACE_EVENT_COPY_BEGIN0(kJavaCategory, converter.name());
+    TRACE_EVENT_BEGIN_WITH_FLAGS0(
+        kJavaCategory, converter.name(),
+        TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
   }
 }
 
@@ -106,37 +114,49 @@ static void JNI_TraceEvent_End(JNIEnv* env,
                                const JavaParamRef<jstring>& jarg) {
   TraceEventDataConverter converter(env, jname, jarg);
   if (converter.arg()) {
-    TRACE_EVENT_COPY_END1(kJavaCategory, converter.name(), converter.arg_name(),
-                          converter.arg());
+    TRACE_EVENT_END_WITH_FLAGS1(
+        kJavaCategory, converter.name(),
+        TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY,
+        converter.arg_name(), converter.arg());
   } else {
-    TRACE_EVENT_COPY_END0(kJavaCategory, converter.name());
+    TRACE_EVENT_END_WITH_FLAGS0(
+        kJavaCategory, converter.name(),
+        TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
   }
 }
 
 static void JNI_TraceEvent_BeginToplevel(JNIEnv* env,
                                          const JavaParamRef<jstring>& jtarget) {
   std::string target = ConvertJavaStringToUTF8(env, jtarget);
-  TRACE_EVENT_COPY_BEGIN0(kToplevelCategory, target.c_str());
+  TRACE_EVENT_BEGIN_WITH_FLAGS0(
+      kToplevelCategory, target.c_str(),
+      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
 
 static void JNI_TraceEvent_EndToplevel(JNIEnv* env,
                                        const JavaParamRef<jstring>& jtarget) {
   std::string target = ConvertJavaStringToUTF8(env, jtarget);
-  TRACE_EVENT_COPY_END0(kToplevelCategory, target.c_str());
+  TRACE_EVENT_END_WITH_FLAGS0(
+      kToplevelCategory, target.c_str(),
+      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
 
 static void JNI_TraceEvent_StartAsync(JNIEnv* env,
                                       const JavaParamRef<jstring>& jname,
                                       jlong jid) {
   TraceEventDataConverter converter(env, jname, nullptr);
-  TRACE_EVENT_COPY_ASYNC_BEGIN0(kJavaCategory, converter.name(), jid);
+  TRACE_EVENT_ASYNC_BEGIN_WITH_FLAGS0(
+      kJavaCategory, converter.name(), jid,
+      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
 
 static void JNI_TraceEvent_FinishAsync(JNIEnv* env,
                                        const JavaParamRef<jstring>& jname,
                                        jlong jid) {
   TraceEventDataConverter converter(env, jname, nullptr);
-  TRACE_EVENT_COPY_ASYNC_END0(kJavaCategory, converter.name(), jid);
+  TRACE_EVENT_ASYNC_END_WITH_FLAGS0(
+      kJavaCategory, converter.name(), jid,
+      TRACE_EVENT_FLAG_JAVA_STRING_LITERALS | TRACE_EVENT_FLAG_COPY);
 }
 
 }  // namespace android

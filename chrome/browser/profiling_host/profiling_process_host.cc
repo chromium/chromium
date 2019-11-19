@@ -51,8 +51,7 @@ const char kOOPHeapProfilingUploadUrl[] = "upload_url";
 void OnTraceUploadComplete(TraceCrashServiceUploader* uploader,
                            bool success,
                            const std::string& feedback) {
-  UMA_HISTOGRAM_BOOLEAN("OutOfProcessHeapProfiling.UploadTrace.Success",
-                        success);
+  UMA_HISTOGRAM_BOOLEAN("HeapProfiling.UploadTrace.Success", success);
 
   if (!success) {
     LOG(ERROR) << "Cannot upload trace file: " << feedback;
@@ -71,14 +70,14 @@ void UploadTraceToCrashServer(std::string upload_url,
   // account for all potentially too-small traces, we set the lower bounds to
   // 512 bytes. The upper bounds is set to 300MB as an extra-high threshold,
   // just in case something goes wrong.
-  UMA_HISTOGRAM_CUSTOM_COUNTS("OutOfProcessHeapProfiling.UploadTrace.Size",
+  UMA_HISTOGRAM_CUSTOM_COUNTS("HeapProfiling.UploadTrace.Size",
                               file_contents.size(), 512, 300 * 1024 * 1024, 50);
 
   base::Value rules_list(base::Value::Type::LIST);
   base::Value rule(base::Value::Type::DICTIONARY);
   rule.SetKey("rule", base::Value("MEMLOG"));
   rule.SetKey("trigger_name", base::Value(std::move(trigger_name)));
-  rules_list.GetList().push_back(std::move(rule));
+  rules_list.Append(std::move(rule));
 
   std::string sampling_mode = base::StringPrintf("SAMPLING_%u", sampling_rate);
 
@@ -141,13 +140,14 @@ void ProfilingProcessHost::SaveTraceWithHeapDumpToFile(
       [](base::FilePath dest, SaveTraceFinishedCallback done, bool success,
          std::string trace) {
         if (!success) {
-          base::CreateSingleThreadTaskRunnerWithTraits(
-              {content::BrowserThread::UI})
+          base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})
               ->PostTask(FROM_HERE, base::BindOnce(std::move(done), false));
           return;
         }
-        base::PostTaskWithTraits(
-            FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+        base::PostTask(
+            FROM_HERE,
+            {base::ThreadPool(), base::TaskPriority::USER_VISIBLE,
+             base::MayBlock()},
             base::BindOnce(
                 &ProfilingProcessHost::SaveTraceToFileOnBlockingThread,
                 base::Unretained(ProfilingProcessHost::GetInstance()),
@@ -167,8 +167,7 @@ void ProfilingProcessHost::RequestProcessReport(std::string trigger_name) {
   auto finish_report_callback = base::BindOnce(
       [](std::string upload_url, std::string trigger_name,
          uint32_t sampling_rate, bool success, std::string trace) {
-        UMA_HISTOGRAM_BOOLEAN("OutOfProcessHeapProfiling.RecordTrace.Success",
-                              success);
+        UMA_HISTOGRAM_BOOLEAN("HeapProfiling.RecordTrace.Success", success);
         if (success) {
           UploadTraceToCrashServer(std::move(upload_url), std::move(trace),
                                    std::move(trigger_name), sampling_rate);
@@ -198,7 +197,7 @@ void ProfilingProcessHost::SaveTraceToFileOnBlockingThread(
   gzFile gz_file = gzdopen(fd, "w");
   if (!gz_file) {
     DLOG(ERROR) << "Cannot compress trace file";
-    base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
+    base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})
         ->PostTask(FROM_HERE, base::BindOnce(std::move(done), false));
     return;
   }
@@ -206,13 +205,13 @@ void ProfilingProcessHost::SaveTraceToFileOnBlockingThread(
   size_t written_bytes = gzwrite(gz_file, trace.c_str(), trace.size());
   gzclose(gz_file);
 
-  base::CreateSingleThreadTaskRunnerWithTraits({content::BrowserThread::UI})
+  base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})
       ->PostTask(FROM_HERE, base::BindOnce(std::move(done),
                                            written_bytes == trace.size()));
 }
 
 void ProfilingProcessHost::ReportMetrics() {
-  UMA_HISTOGRAM_ENUMERATION("OutOfProcessHeapProfiling.ProfilingMode",
+  UMA_HISTOGRAM_ENUMERATION("HeapProfiling.ProfilingMode",
                             Supervisor::GetInstance()->GetMode(), Mode::kCount);
 }
 

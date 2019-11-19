@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_delegate.h"
 #include "ash/wm/tablet_mode/tablet_mode_window_drag_metrics.h"
+#include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_util.h"
 #include "ui/wm/core/coordinate_conversion.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -14,11 +15,9 @@
 namespace ash {
 
 TabletModeWindowDragController::TabletModeWindowDragController(
-    wm::WindowState* window_state,
+    WindowState* window_state,
     std::unique_ptr<TabletModeWindowDragDelegate> drag_delegate)
-    : WindowResizer(window_state),
-      drag_delegate_(std::move(drag_delegate)),
-      weak_ptr_factory_(this) {
+    : WindowResizer(window_state), drag_delegate_(std::move(drag_delegate)) {
   if (details().source != ::wm::WINDOW_MOVE_SOURCE_TOUCH) {
     Shell::Get()->cursor_manager()->LockCursor();
     did_lock_cursor_ = true;
@@ -44,7 +43,7 @@ void TabletModeWindowDragController::Drag(const gfx::Point& location_in_parent,
 
   // Update the dragged window, the drag indicators, the preview window,
   // source window position, blurred background, etc, if necessary.
-  if (wm::IsDraggingTabs(GetTarget())) {
+  if (window_util::IsDraggingTabs(GetTarget())) {
     // Update the dragged window's bounds if it's tab-dragging.
     base::WeakPtr<TabletModeWindowDragController> resizer(
         weak_ptr_factory_.GetWeakPtr());
@@ -64,17 +63,15 @@ void TabletModeWindowDragController::Drag(const gfx::Point& location_in_parent,
 }
 
 void TabletModeWindowDragController::CompleteDrag() {
-  drag_delegate_->EndWindowDrag(
-      wm::WmToplevelWindowEventHandler::DragResult::SUCCESS,
-      previous_location_in_screen_);
+  drag_delegate_->EndWindowDrag(ToplevelWindowEventHandler::DragResult::SUCCESS,
+                                previous_location_in_screen_);
   RecordWindowDragEndTypeHistogram(
       WindowDragEndEventType::kEndsWithNormalComplete);
 }
 
 void TabletModeWindowDragController::RevertDrag() {
-  drag_delegate_->EndWindowDrag(
-      wm::WmToplevelWindowEventHandler::DragResult::REVERT,
-      previous_location_in_screen_);
+  drag_delegate_->EndWindowDrag(ToplevelWindowEventHandler::DragResult::REVERT,
+                                previous_location_in_screen_);
   RecordWindowDragEndTypeHistogram(WindowDragEndEventType::kEndsWithRevert);
 }
 

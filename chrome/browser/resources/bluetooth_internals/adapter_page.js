@@ -7,7 +7,7 @@
  */
 
 cr.define('adapter_page', function() {
-  var PROPERTY_NAMES = {
+  const PROPERTY_NAMES = {
     address: 'Address',
     name: 'Name',
     initialized: 'Initialized',

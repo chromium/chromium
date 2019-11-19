@@ -33,7 +33,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_ORDERED_MAP_H_
 
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -48,8 +48,6 @@ class TreeScope;
 
 class TreeOrderedMap : public GarbageCollected<TreeOrderedMap> {
  public:
-  static TreeOrderedMap* Create();
-
   TreeOrderedMap();
 
   void Add(const AtomicString&, Element&);

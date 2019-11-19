@@ -4,7 +4,7 @@
 
 assert(is_fuchsia)
 
-import("//build/config/fuchsia/rules.gni")
+import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/fuchsia/symbol_archive.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
@@ -14,32 +14,14 @@ config("web_engine_implementation") {
   defines = [ "WEB_ENGINE_IMPLEMENTATION" ]
 }
 
-source_set("test_support") {
-  testonly = true
-  sources = [
-    "test/fake_context.cc",
-    "test/fake_context.h",
-    "test/test_common.cc",
-    "test/test_common.h",
-  ]
-  deps = [
-    "//base",
-    "//base/test:test_config",
-    "//content/test:test_support",
-    "//fuchsia/base",
-  ]
-  public_deps = [
-    "//fuchsia:web_fidl",
-    "//skia/public/interfaces",
-  ]
-}
-
 mojom("mojom") {
   sources = [
     "on_load_script_injector.mojom",
+    "url_request_rewrite.mojom",
   ]
   public_deps = [
     "//mojo/public/mojom/base",
+    "//services/network/public/mojom",
   ]
   visibility = [ ":*" ]
 }
@@ -49,13 +31,13 @@ repack("web_engine_pak") {
     "$root_gen_dir/components/components_resources.pak",
     "$root_gen_dir/components/strings/components_strings_en-US.pak",
     "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
-    "$root_gen_dir/content/app/strings/content_strings_en-US.pak",
     "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
@@ -66,25 +48,30 @@ repack("web_engine_pak") {
     "//components/strings",
     "//content:resources",
     "//content/app/resources",
-    "//content/app/strings",
     "//content/browser/tracing:resources",
+    "//gpu/command_buffer/service",
     "//mojo/public/js:resources",
     "//net:net_resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
+    "//third_party/blink/public/strings",
     "//ui/resources",
     "//ui/strings",
   ]
 
-  output = "$root_out_dir/webrunner.pak"
+  output = "$root_out_dir/web_engine.pak"
   visibility = [ ":*" ]
 }
 
 component("web_engine_core") {
   deps = [
     ":mojom",
+    ":switches",
     ":web_engine_pak",
     "//base",
+    "//base:base_static",
+    "//base/util/memory_pressure",
+    "//components/cdm/renderer",
     "//components/version_info",
     "//content/public/app:both",
     "//content/public/browser",
@@ -92,12 +79,27 @@ component("web_engine_core") {
     "//content/public/common",
     "//content/public/renderer",
     "//fuchsia/base",
+    "//fuchsia/base:message_port",
+    "//fuchsia/base:modular",
+    "//gpu/command_buffer/service",
+    "//media/fuchsia/cdm/service",
+    "//media/fuchsia/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//services/service_manager/sandbox",
-    "//skia/public/interfaces",
+    "//skia/public/mojom",
     "//third_party/blink/public/common",
+    "//third_party/fuchsia-sdk/sdk:accessibility_semantics",
+    "//third_party/fuchsia-sdk/sdk:math",
+    "//third_party/fuchsia-sdk/sdk:scenic_cpp",
+    "//third_party/fuchsia-sdk/sdk:sys_cpp",
+    "//third_party/fuchsia-sdk/sdk:ui_gfx",
+    "//third_party/fuchsia-sdk/sdk:web",
+    "//third_party/widevine/cdm:headers",
+    "//ui/accessibility",
     "//ui/aura",
+    "//ui/base",
     "//ui/base/ime",
     "//ui/display",
     "//ui/ozone",
@@ -108,55 +110,83 @@ component("web_engine_core") {
   data_deps = [
     ":web_engine_pak",
   ]
-  data = [
-    "$root_out_dir/webrunner.pak",
-  ]
   public_deps = [
-    "//fuchsia:web_fidl",
+    "//content/public/browser",
+  ]
+  data = [
+    "$root_out_dir/web_engine.pak",
   ]
   configs += [ ":web_engine_implementation" ]
   sources = [
+    "browser/accessibility_bridge.cc",
+    "browser/accessibility_bridge.h",
+    "browser/ax_tree_converter.cc",
+    "browser/ax_tree_converter.h",
+    "browser/content_directory_loader_factory.cc",
+    "browser/content_directory_loader_factory.h",
     "browser/context_impl.cc",
     "browser/context_impl.h",
+    "browser/cookie_manager_impl.cc",
+    "browser/cookie_manager_impl.h",
     "browser/discarding_event_filter.cc",
     "browser/discarding_event_filter.h",
     "browser/frame_impl.cc",
     "browser/frame_impl.h",
-    "browser/message_port_impl.cc",
-    "browser/message_port_impl.h",
+    "browser/navigation_controller_impl.cc",
+    "browser/navigation_controller_impl.h",
+    "browser/url_request_rewrite_rules_manager.cc",
+    "browser/url_request_rewrite_rules_manager.h",
     "browser/web_engine_browser_context.cc",
     "browser/web_engine_browser_context.h",
     "browser/web_engine_browser_main.cc",
     "browser/web_engine_browser_main.h",
     "browser/web_engine_browser_main_parts.cc",
     "browser/web_engine_browser_main_parts.h",
+    "browser/web_engine_cdm_service.cc",
+    "browser/web_engine_cdm_service.h",
     "browser/web_engine_content_browser_client.cc",
     "browser/web_engine_content_browser_client.h",
-    "browser/web_engine_devtools_manager_delegate.cc",
-    "browser/web_engine_devtools_manager_delegate.h",
+    "browser/web_engine_devtools_controller.cc",
+    "browser/web_engine_devtools_controller.h",
+    "browser/web_engine_memory_pressure_evaluator.cc",
+    "browser/web_engine_memory_pressure_evaluator.h",
     "browser/web_engine_net_log.cc",
     "browser/web_engine_net_log.h",
-    "browser/web_engine_screen.cc",
-    "browser/web_engine_screen.h",
-    "browser/web_engine_url_request_context_getter.cc",
-    "browser/web_engine_url_request_context_getter.h",
-    "common.cc",
-    "common.h",
+    "browser/web_engine_permission_manager.cc",
+    "browser/web_engine_permission_manager.h",
+    "common/web_engine_content_client.cc",
+    "common/web_engine_content_client.h",
+    "common/web_engine_url_loader_throttle.cc",
+    "common/web_engine_url_loader_throttle.h",
     "context_provider_impl.cc",
     "context_provider_impl.h",
     "context_provider_main.cc",
     "context_provider_main.h",
     "renderer/on_load_script_injector.cc",
     "renderer/on_load_script_injector.h",
+    "renderer/url_request_rules_receiver.cc",
+    "renderer/url_request_rules_receiver.h",
     "renderer/web_engine_content_renderer_client.cc",
     "renderer/web_engine_content_renderer_client.h",
-    "web_engine_content_client.cc",
-    "web_engine_content_client.h",
+    "renderer/web_engine_url_loader_throttle_provider.cc",
+    "renderer/web_engine_url_loader_throttle_provider.h",
+    "url_request_rewrite_type_converters.cc",
+    "url_request_rewrite_type_converters.h",
     "web_engine_export.h",
     "web_engine_main_delegate.cc",
     "web_engine_main_delegate.h",
   ]
-  visibility = [ ":*" ]
+  visibility = [
+    ":*",
+    "//fuchsia/runners:cast_runner_browsertests__exec",
+  ]
+}
+
+source_set("switches") {
+  sources = [
+    "switches.cc",
+    "switches.h",
+  ]
 }
 
 executable("web_engine_exe") {
@@ -175,10 +205,13 @@ executable("web_engine_exe") {
 fuchsia_package("web_engine") {
   binary = ":web_engine_exe"
   package_name_override = "chromium"
-  sandbox_policy = "sandbox_policy"
+  manifest = "web_engine.cmx"
   excluded_files = [
     "lib/libswiftshader_libEGL.so",
     "lib/libswiftshader_libGLESv2.so",
+    "lib/libEGL.so",
+    "lib/libGLESv2.so",
+    "lib/libfuchsia_egl.so",
   ]
 }
 
@@ -191,33 +224,38 @@ fuchsia_package_runner("web_engine_runner") {
 source_set("browsertest_core") {
   testonly = true
   sources = [
+    "test/test_data.cc",
+    "test/test_data.h",
     "test/web_engine_browser_test.cc",
     "test/web_engine_browser_test.h",
     "test/web_engine_test_launcher.cc",
+  ]
+  data = [
+    "test/data",
   ]
   deps = [
     ":web_engine_core",
     "//content/public/browser",
     "//content/test:test_support",
-    "//fuchsia:web_fidl",
     "//net:test_support",
     "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk:web",
     "//ui/ozone",
   ]
 }
 
 test("web_engine_browsertests") {
   sources = [
+    "browser/accessibility_bridge_browsertest.cc",
+    "browser/content_directory_browsertest.cc",
     "browser/context_impl_browsertest.cc",
     "browser/frame_impl_browsertest.cc",
+    "browser/media_browsertest.cc",
   ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  data = [
-    "test/data",
-  ]
   deps = [
     ":browsertest_core",
-    ":test_support",
+    ":switches",
     ":web_engine_core",
     "//base/test:test_support",
     "//content/public/browser",
@@ -226,29 +264,108 @@ test("web_engine_browsertests") {
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk:accessibility_semantics",
+    "//third_party/fuchsia-sdk/sdk:scenic_cpp",
     "//ui/ozone",
   ]
 }
 
 test("web_engine_unittests") {
   sources = [
+    "browser/ax_tree_converter_unittest.cc",
+    "browser/cookie_manager_impl_unittest.cc",
+    "browser/frame_impl_unittest.cc",
+    "browser/url_request_rewrite_rules_manager_unittest.cc",
+    "common/web_engine_url_loader_throttle_unittest.cc",
     "context_provider_impl_unittest.cc",
+    "fake_context.cc",
+    "fake_context.h",
+    "test/run_all_unittests.cc",
   ]
   deps = [
-    ":test_support",
+    ":mojom",
     ":web_engine_core",
-    "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//fuchsia/base:test_support",
+    "//mojo/core/embedder",
+    "//services/network:network_service",
+    "//services/network/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/fuchsia-sdk/sdk:accessibility_semantics",
+    "//third_party/fuchsia-sdk/sdk:scenic_cpp",
+    "//third_party/fuchsia-sdk/sdk:web",
   ]
 }
 
-symbol_archive("symbol_archive") {
-  deps = [
-    ":web_engine",
+test("web_engine_integration_tests") {
+  manifest = "web_engine_integration_tests.cmx"
+  sources = [
+    "test_debug_listener.cc",
+    "test_debug_listener.h",
+    "web_engine_debug_integration_test.cc",
+    "web_engine_integration_test.cc",
   ]
-  ids_txt = "$root_gen_dir/fuchsia/engine/chromium/ids.txt"
-  archive_name =
-      "$root_gen_dir/fuchsia/engine/chromium/chromium.symbols.tar.bz2"
+  data = [
+    "test/data",
+  ]
+  deps = [
+    "//base",
+    "//base/test:run_all_unittests",
+    "//fuchsia/base",
+    "//fuchsia/base:test_support",
+    "//third_party/fuchsia-sdk/sdk:web",
+  ]
+  package_deps = [ [
+        ":web_engine",
+        "chromium",
+      ] ]
 }
+
+fuchsia_package("web_engine_shell_pkg") {
+  testonly = true
+  manifest = "test/web_engine_shell.cmx"
+  binary = ":web_engine_shell_exec"
+  package_name_override = "web_engine_shell"
+}
+
+fuchsia_package_runner("web_engine_shell") {
+  testonly = true
+  package = ":web_engine_shell_pkg"
+  package_name_override = "web_engine_shell"
+  package_deps = [ [
+        ":web_engine",
+        "chromium",
+      ] ]
+}
+
+executable("web_engine_shell_exec") {
+  sources = [
+    "test/web_engine_shell.cc",
+  ]
+
+  data = [
+    "test/shell_data",
+  ]
+
+  deps = [
+    "//base",
+    "//fuchsia/base",
+    "//third_party/fuchsia-sdk/sdk:scenic_cpp",
+    "//third_party/fuchsia-sdk/sdk:sys_cpp",
+    "//third_party/fuchsia-sdk/sdk:ui_policy",
+    "//third_party/fuchsia-sdk/sdk:web",
+    "//url",
+  ]
+}
+
+if (is_official_build) {
+  symbol_archive("symbol_archive") {
+    deps = [
+      ":web_engine",
+    ]
+    ids_txt = "$root_gen_dir/fuchsia/engine/chromium/ids.txt"
+    archive_name =
+        "$root_gen_dir/fuchsia/engine/chromium/chromium.symbols.tar.bz2"
+  }
+}  # is_official_build

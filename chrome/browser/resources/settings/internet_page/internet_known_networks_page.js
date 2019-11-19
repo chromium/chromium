@@ -10,27 +10,24 @@
 Polymer({
   is: 'settings-internet-known-networks-page',
 
-  behaviors: [CrPolicyNetworkBehavior],
+  behaviors: [
+    NetworkListenerBehavior,
+    CrPolicyNetworkBehaviorMojo,
+  ],
 
   properties: {
     /**
      * The type of networks to list.
-     * @type {CrOnc.Type}
+     * @type {chromeos.networkConfig.mojom.NetworkType|undefined}
      */
     networkType: {
-      type: String,
+      type: Number,
       observer: 'networkTypeChanged_',
     },
 
     /**
-     * Interface for networkingPrivate calls, passed from internet_page.
-     * @type {NetworkingPrivate}
-     */
-    networkingPrivate: Object,
-
-    /**
      * List of all network state data for the network type.
-     * @private {!Array<!CrOnc.NetworkStateProperties>}
+     * @private {!Array<!OncMojo.NetworkStateProperties>}
      */
     networkStateList_: {
       type: Array,
@@ -54,10 +51,22 @@ Polymer({
     enableForget_: Boolean,
   },
 
-  listeners: {'network-list-changed': 'refreshNetworks_'},
-
   /** @private {string} */
   selectedGuid_: '',
+
+  /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
+  networkConfig_: null,
+
+  /** @override */
+  created: function() {
+    this.networkConfig_ = network_config.MojoInterfaceProviderImpl.getInstance()
+                              .getMojoServiceRemote();
+  },
+
+  /** CrosNetworkConfigObserver impl */
+  onNetworkStateListChanged: function() {
+    this.refreshNetworks_();
+  },
 
   /** @private */
   networkTypeChanged_: function() {
@@ -70,36 +79,36 @@ Polymer({
    * @private
    */
   refreshNetworks_: function() {
-    if (!this.networkType) {
+    if (this.networkType === undefined) {
       return;
     }
     const filter = {
+      filter: chromeos.networkConfig.mojom.FilterType.kConfigured,
+      limit: chromeos.networkConfig.mojom.NO_LIMIT,
       networkType: this.networkType,
-      visible: false,
-      configured: true
     };
-    this.networkingPrivate.getNetworks(filter, states => {
-      this.networkStateList_ = states;
+    this.networkConfig_.getNetworkStateList(filter).then(response => {
+      this.networkStateList_ = response.result;
     });
   },
 
   /**
-   * @param {!CrOnc.NetworkStateProperties} state
+   * @param {!OncMojo.NetworkStateProperties} networkState
    * @return {boolean}
    * @private
    */
-  networkIsPreferred_: function(state) {
+  networkIsPreferred_: function(networkState) {
     // Currently we treat NetworkStateProperties.Priority as a boolean.
-    return state.Priority > 0;
+    return networkState.priority > 0;
   },
 
   /**
-   * @param {!CrOnc.NetworkStateProperties} networkState
+   * @param {!OncMojo.NetworkStateProperties} networkState
    * @return {boolean}
    * @private
    */
   networkIsNotPreferred_: function(networkState) {
-    return networkState.Priority == 0;
+    return networkState.priority == 0;
   },
 
   /**
@@ -121,67 +130,102 @@ Polymer({
   },
 
   /**
+   * @param {!OncMojo.NetworkStateProperties} networkState
+   * @return {string}
+   * @private
+   */
+  getNetworkDisplayName_: function(networkState) {
+    return OncMojo.getNetworkStateDisplayName(networkState);
+  },
+
+  /**
    * @param {!Event} event
    * @private
    */
   onMenuButtonTap_: function(event) {
-    const button = /** @type {!HTMLElement} */ (event.target);
-    this.selectedGuid_ =
-        /** @type {!{model: !{item: !CrOnc.NetworkStateProperties}}} */ (event)
-            .model.item.GUID;
+    const button = event.target;
+    const networkState =
+        /** @type {!OncMojo.NetworkStateProperties} */ (event.model.item);
+    this.selectedGuid_ = networkState.guid;
     // We need to make a round trip to Chrome in order to retrieve the managed
     // properties for the network. The delay is not noticeable (~5ms) and is
     // preferable to initiating a query for every known network at load time.
-    this.networkingPrivate.getManagedProperties(
-        this.selectedGuid_, properties => {
-          if (chrome.runtime.lastError || !properties) {
-            console.error(
-                'Unexpected error: ' + chrome.runtime.lastError.message);
+    this.networkConfig_.getManagedProperties(this.selectedGuid_)
+        .then(response => {
+          const properties = response.result;
+          if (!properties) {
+            console.error('Properties not found for: ' + this.selectedGuid_);
             return;
           }
-          const preferred = button.hasAttribute('preferred');
-          if (this.isNetworkPolicyEnforced(properties.Priority)) {
+          if (properties.priority &&
+              this.isNetworkPolicyEnforced(properties.priority)) {
             this.showAddPreferred_ = false;
             this.showRemovePreferred_ = false;
           } else {
+            const preferred = this.networkIsPreferred_(networkState);
             this.showAddPreferred_ = !preferred;
             this.showRemovePreferred_ = preferred;
           }
-          this.enableForget_ = !this.isPolicySource(properties.Source);
-          /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).showAt(button);
+          this.enableForget_ = !this.isPolicySource(networkState.source);
+          /** @type {!CrActionMenuElement} */ (this.$.dotsMenu)
+              .showAt(/** @type {!Element} */ (button));
         });
     event.stopPropagation();
   },
 
+  /**
+   * @param {!chromeos.networkConfig.mojom.ConfigProperties} config
+   * @private
+   */
+  setProperties_: function(config) {
+    this.networkConfig_.setProperties(this.selectedGuid_, config)
+        .then(response => {
+          if (!response.success) {
+            console.error(
+                'Unable to set properties for: ' + this.selectedGuid_ + ': ' +
+                JSON.stringify(config));
+          }
+        });
+  },
+
   /** @private */
   onRemovePreferredTap_: function() {
-    this.networkingPrivate.setProperties(this.selectedGuid_, {Priority: 0});
+    assert(this.networkType !== undefined);
+    const config = OncMojo.getDefaultConfigProperties(this.networkType);
+    config.priority = {value: 0};
+    this.setProperties_(config);
     /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();
   },
 
   /** @private */
   onAddPreferredTap_: function() {
-    this.networkingPrivate.setProperties(this.selectedGuid_, {Priority: 1});
+    assert(this.networkType !== undefined);
+    const config = OncMojo.getDefaultConfigProperties(this.networkType);
+    config.priority = {value: 1};
+    this.setProperties_(config);
     /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();
   },
 
   /** @private */
   onForgetTap_: function() {
-    this.networkingPrivate.forgetNetwork(this.selectedGuid_);
+    this.networkConfig_.forgetNetwork(this.selectedGuid_).then(response => {
+      if (!response.success) {
+        console.error('Froget network failed for: ' + this.selectedGuid_);
+      }
+    });
     /** @type {!CrActionMenuElement} */ (this.$.dotsMenu).close();
   },
 
   /**
-   * Fires a 'show-details' event with an item containing a |networkStateList_|
+   * Fires a 'show-detail' event with an item containing a |networkStateList_|
    * entry in the event model.
    * @param {!Event} event
    * @private
    */
   fireShowDetails_: function(event) {
-    const state =
-        /** @type {!{model: !{item: !CrOnc.NetworkStateProperties}}} */ (event)
-            .model.item;
-    this.fire('show-detail', state);
+    const networkState =
+        /** @type {!OncMojo.NetworkStateProperties} */ (event.model.item);
+    this.fire('show-detail', networkState);
     event.stopPropagation();
   },
 

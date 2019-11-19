@@ -11,8 +11,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/webrtc_desktop_capture_private.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/origin_util.h"
 #include "net/base/url_util.h"
@@ -42,8 +40,8 @@ bool WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::RunAsync() {
   EXTENSION_FUNCTION_VALIDATE(args_->GetSize() > 0);
 
   EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &request_id_));
-  DesktopCaptureRequestsRegistry::GetInstance()->AddRequest(
-      render_frame_host()->GetProcess()->GetID(), request_id_, this);
+  DesktopCaptureRequestsRegistry::GetInstance()->AddRequest(source_process_id(),
+                                                            request_id_, this);
 
   args_->Remove(0, NULL);
 

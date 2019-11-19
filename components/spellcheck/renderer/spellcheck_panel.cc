@@ -23,7 +23,7 @@ SpellCheckPanel::SpellCheckPanel(
   DCHECK(render_frame);
   DCHECK(embedder_provider);
   registry->AddInterface(base::BindRepeating(
-      &SpellCheckPanel::SpellCheckPanelRequest, base::Unretained(this)));
+      &SpellCheckPanel::SpellCheckPanelReceiver, base::Unretained(this)));
   render_frame->GetWebFrame()->SetSpellCheckPanelHostClient(this);
 }
 
@@ -47,9 +47,9 @@ void SpellCheckPanel::UpdateSpellingUIWithMisspelledWord(
   GetSpellCheckPanelHost()->UpdateSpellingPanelWithMisspelledWord(word.Utf16());
 }
 
-void SpellCheckPanel::SpellCheckPanelRequest(
-    spellcheck::mojom::SpellCheckPanelRequest request) {
-  bindings_.AddBinding(this, std::move(request));
+void SpellCheckPanel::SpellCheckPanelReceiver(
+    mojo::PendingReceiver<spellcheck::mojom::SpellCheckPanel> receiver) {
+  receivers_.Add(this, std::move(receiver));
 }
 
 void SpellCheckPanel::AdvanceToNextMisspelling() {

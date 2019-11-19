@@ -5,6 +5,8 @@
 #include <drm_fourcc.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/macros.h"
@@ -45,7 +47,7 @@ const gfx::SizeF kDefaultModeSizeF(1.0, 1.0);
 class HardwareDisplayControllerTest : public testing::Test {
  public:
   HardwareDisplayControllerTest() : page_flips_(0) {}
-  ~HardwareDisplayControllerTest() override {}
+  ~HardwareDisplayControllerTest() override = default;
 
   void SetUp() override;
   void TearDown() override;
@@ -90,10 +92,10 @@ void HardwareDisplayControllerTest::SetUp() {
   drm_ = new ui::MockDrmDevice(std::move(gbm_device));
   InitializeDrmDevice(/* use_atomic= */ true);
 
-  controller_.reset(new ui::HardwareDisplayController(
-      std::unique_ptr<ui::CrtcController>(
-          new ui::CrtcController(drm_.get(), kPrimaryCrtc, kPrimaryConnector)),
-      gfx::Point()));
+  controller_ = std::make_unique<ui::HardwareDisplayController>(
+      std::make_unique<ui::CrtcController>(drm_.get(), kPrimaryCrtc,
+                                           kPrimaryConnector),
+      gfx::Point());
 }
 
 void HardwareDisplayControllerTest::TearDown() {
@@ -145,8 +147,17 @@ void HardwareDisplayControllerTest::InitializeDrmDevice(bool use_atomic) {
             {/* .id = */ pair.first, /*.value = */ value});
       };
 
+      drm_format_modifier y_css = {.formats = 1UL,
+                                   .modifier = I915_FORMAT_MOD_Y_TILED_CCS};
+      drm_format_modifier yf_css = {.formats = 1UL,
+                                    .modifier = I915_FORMAT_MOD_Yf_TILED_CCS};
+      drm_format_modifier x = {.formats = 1UL,
+                               .modifier = I915_FORMAT_MOD_X_TILED};
+      drm_format_modifier linear = {.formats = 1UL,
+                                    .modifier = DRM_FORMAT_MOD_LINEAR};
       drm_->SetPropertyBlob(ui::MockDrmDevice::AllocateInFormatsBlob(
-          kInFormatsBlobPropId, {DRM_FORMAT_XRGB8888}, {}));
+          kInFormatsBlobPropId, {DRM_FORMAT_XRGB8888},
+          {y_css, yf_css, x, linear}));
 
       plane_properties.emplace_back(std::move(plane));
     }
@@ -194,6 +205,52 @@ TEST_F(HardwareDisplayControllerTest, CheckModesettingResult) {
 
   EXPECT_TRUE(controller_->Modeset(plane, kDefaultMode));
   EXPECT_FALSE(plane.buffer->HasOneRef());
+}
+
+TEST_F(HardwareDisplayControllerTest, ModifiersWithConnectorType) {
+  ui::DrmOverlayPlane plane(CreateBuffer(), nullptr);
+
+  // With internal displays, all modifiers including compressed (css) should be
+  // there.
+  drm_->set_connector_type(DRM_MODE_CONNECTOR_eDP);
+
+  std::vector<uint64_t> internal_modifiers =
+      controller_->GetFormatModifiers(DRM_FORMAT_XRGB8888);
+  ASSERT_FALSE(internal_modifiers.empty());
+
+  EXPECT_NE(std::find(internal_modifiers.begin(), internal_modifiers.end(),
+                      I915_FORMAT_MOD_Y_TILED_CCS),
+            internal_modifiers.end());
+  EXPECT_NE(std::find(internal_modifiers.begin(), internal_modifiers.end(),
+                      I915_FORMAT_MOD_Yf_TILED_CCS),
+            internal_modifiers.end());
+  EXPECT_NE(std::find(internal_modifiers.begin(), internal_modifiers.end(),
+                      I915_FORMAT_MOD_X_TILED),
+            internal_modifiers.end());
+  EXPECT_NE(std::find(internal_modifiers.begin(), internal_modifiers.end(),
+                      DRM_FORMAT_MOD_LINEAR),
+            internal_modifiers.end());
+
+  // With external displays, *_CSS modifiers (2 of them) should not exist.
+  drm_->set_connector_type(DRM_MODE_CONNECTOR_DisplayPort);
+
+  std::vector<uint64_t> external_modifiers =
+      controller_->GetFormatModifiers(DRM_FORMAT_XRGB8888);
+  ASSERT_FALSE(external_modifiers.empty());
+  EXPECT_EQ(external_modifiers.size(), internal_modifiers.size() - 2);
+
+  EXPECT_EQ(std::find(external_modifiers.begin(), external_modifiers.end(),
+                      I915_FORMAT_MOD_Y_TILED_CCS),
+            external_modifiers.end());
+  EXPECT_EQ(std::find(external_modifiers.begin(), external_modifiers.end(),
+                      I915_FORMAT_MOD_Yf_TILED_CCS),
+            external_modifiers.end());
+  EXPECT_NE(std::find(internal_modifiers.begin(), internal_modifiers.end(),
+                      I915_FORMAT_MOD_X_TILED),
+            internal_modifiers.end());
+  EXPECT_NE(std::find(internal_modifiers.begin(), internal_modifiers.end(),
+                      DRM_FORMAT_MOD_LINEAR),
+            internal_modifiers.end());
 }
 
 TEST_F(HardwareDisplayControllerTest, CheckStateAfterPageFlip) {
@@ -436,8 +493,8 @@ TEST_F(HardwareDisplayControllerTest, PlaneStateAfterAddCrtc) {
   ASSERT_TRUE(primary_crtc_plane != nullptr);
 
   std::unique_ptr<ui::HardwareDisplayController> hdc_controller;
-  hdc_controller.reset(new ui::HardwareDisplayController(
-      controller_->RemoveCrtc(drm_, kPrimaryCrtc), controller_->origin()));
+  hdc_controller = std::make_unique<ui::HardwareDisplayController>(
+      controller_->RemoveCrtc(drm_, kPrimaryCrtc), controller_->origin());
   SchedulePageFlip(ui::DrmOverlayPlane::Clone(planes));
   drm_->RunCallbacks();
   EXPECT_EQ(gfx::SwapResult::SWAP_ACK, last_swap_result_);

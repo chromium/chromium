@@ -235,40 +235,31 @@ TEST(WaitableEventTest, SubMsTimedWait) {
   EXPECT_GE(TimeTicks::Now() - start_time, delay);
 }
 
-// Tests that TimedWaitUntil can be safely used with various end_time deadline
-// values.
-TEST(WaitableEventTest, TimedWaitUntil) {
-  WaitableEvent ev(WaitableEvent::ResetPolicy::AUTOMATIC,
-                   WaitableEvent::InitialState::NOT_SIGNALED);
+// Tests that timeouts of zero return immediately (true if already signaled,
+// false otherwise).
+TEST(WaitableEventTest, ZeroTimeout) {
+  WaitableEvent ev;
+  TimeTicks start_time = TimeTicks::Now();
+  EXPECT_FALSE(ev.TimedWait(TimeDelta()));
+  EXPECT_LT(TimeTicks::Now() - start_time, TimeDelta::FromMilliseconds(1));
 
-  TimeTicks start_time(TimeTicks::Now());
-  TimeDelta delay = TimeDelta::FromMilliseconds(10);
-
-  // Should be OK to wait for the current time or time in the past.
-  // That should end promptly and be equivalent to IsSignalled.
-  EXPECT_FALSE(ev.TimedWaitUntil(start_time));
-  EXPECT_FALSE(ev.TimedWaitUntil(start_time - delay));
-
-  // Should be OK to wait for zero TimeTicks().
-  EXPECT_FALSE(ev.TimedWaitUntil(TimeTicks()));
-
-  // Waiting for a time in the future shouldn't end before the deadline
-  // if the event isn't signalled.
-  EXPECT_FALSE(ev.TimedWaitUntil(start_time + delay));
-  EXPECT_GE(TimeTicks::Now() - start_time, delay);
-
-  // Test that passing TimeTicks::Max to TimedWaitUntil is valid and isn't
-  // the same as passing TimeTicks(). Also verifies that signaling event
-  // ends the wait promptly.
-  WaitableEventSignaler signaler(delay, &ev);
-  PlatformThreadHandle thread;
+  ev.Signal();
   start_time = TimeTicks::Now();
-  PlatformThread::Create(0, &signaler, &thread);
+  EXPECT_TRUE(ev.TimedWait(TimeDelta()));
+  EXPECT_LT(TimeTicks::Now() - start_time, TimeDelta::FromMilliseconds(1));
+}
 
-  EXPECT_TRUE(ev.TimedWaitUntil(TimeTicks::Max()));
-  EXPECT_GE(TimeTicks::Now() - start_time, delay);
+// Same as ZeroTimeout for negative timeouts.
+TEST(WaitableEventTest, NegativeTimeout) {
+  WaitableEvent ev;
+  TimeTicks start_time = TimeTicks::Now();
+  EXPECT_FALSE(ev.TimedWait(TimeDelta::FromMilliseconds(-10)));
+  EXPECT_LT(TimeTicks::Now() - start_time, TimeDelta::FromMilliseconds(1));
 
-  PlatformThread::Join(thread);
+  ev.Signal();
+  start_time = TimeTicks::Now();
+  EXPECT_TRUE(ev.TimedWait(TimeDelta::FromMilliseconds(-10)));
+  EXPECT_LT(TimeTicks::Now() - start_time, TimeDelta::FromMilliseconds(1));
 }
 
 }  // namespace base

@@ -10,15 +10,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/registry.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_notifier_impl.h"
-#include "components/prefs/testing_pref_store.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace safe_browsing {
@@ -51,24 +51,13 @@ class PlatformStateStoreWinTest : public ::testing::Test {
       profile_manager_.DeleteTestingProfile(kProfileName_);
       profile_ = nullptr;
     }
-    // Create a profile with a user PrefStore that can be manipulated.
-    TestingPrefStore* user_pref_store = new TestingPrefStore();
-    // Profile::IsNewProfile() returns true/false on the basis of the pref
-    // store's read_error property. A profile is considered "New" if it didn't
-    // have a user prefs file.
-    user_pref_store->set_read_error(
-        new_profile ? PersistentPrefStore::PREF_READ_ERROR_NO_FILE
-                    : PersistentPrefStore::PREF_READ_ERROR_NONE);
-    // Ownership of |user_pref_store| is passed to the service.
     std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs(
-        new sync_preferences::TestingPrefServiceSyncable(
-            new TestingPrefStore(), new TestingPrefStore(), user_pref_store,
-            new TestingPrefStore(), new user_prefs::PrefRegistrySyncable(),
-            new PrefNotifierImpl()));
+        new sync_preferences::TestingPrefServiceSyncable);
     RegisterUserProfilePrefs(prefs->registry());
     profile_ = profile_manager_.CreateTestingProfile(
         kProfileName_, std::move(prefs), base::UTF8ToUTF16(kProfileName_), 0,
-        std::string(), TestingProfile::TestingFactories());
+        std::string(), TestingProfile::TestingFactories(),
+        base::Optional<bool>(new_profile));
     if (new_profile)
       ASSERT_TRUE(profile_->IsNewProfile());
     else
@@ -112,7 +101,7 @@ class PlatformStateStoreWinTest : public ::testing::Test {
   TestingProfile* profile_;
 
  private:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   registry_util::RegistryOverrideManager registry_override_manager_;
   TestingProfileManager profile_manager_;
 
@@ -121,7 +110,7 @@ class PlatformStateStoreWinTest : public ::testing::Test {
 
 // static
 const char PlatformStateStoreWinTest::kProfileName_[] = "test_profile";
-#if defined(GOOGLE_CHROME_BUILD)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const base::char16 PlatformStateStoreWinTest::kStoreKeyName_[] =
     L"Software\\Google\\Chrome\\IncidentsSent";
 #else

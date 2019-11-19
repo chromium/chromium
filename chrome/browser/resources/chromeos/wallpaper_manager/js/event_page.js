@@ -271,8 +271,13 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
     var updateDailyRefreshStates = key => {
       if (!changes[key])
         return;
-      var oldDailyRefreshInfo = JSON.parse(changes[key].oldValue);
+
+      // If the user did not change Daily Refresh in this sync update,
+      // changes[key].oldValue will be empty
+      var oldDailyRefreshInfo =
+          changes[key].oldValue ? JSON.parse(changes[key].oldValue) : '';
       var newDailyRefreshInfo = JSON.parse(changes[key].newValue);
+
       // The resume token is expected to change after a new daily refresh
       // wallpaper is set. Ignore it if it's the only change.
       if (oldDailyRefreshInfo.enabled === newDailyRefreshInfo.enabled &&
@@ -308,22 +313,18 @@ chrome.storage.onChanged.addListener(function(changes, namespace) {
         if (!wallpaperPickerWindow)
           return;
         var wpDocument = wallpaperPickerWindow.contentWindow.document;
-        var messageContainer = wpDocument.querySelector('#message-container');
+        var messageContent = wpDocument.querySelector('#message-content');
 
         chrome.wallpaperPrivate.getStrings(strings => {
           if (appName) {
+            wpDocument.querySelector('#message-container').display = 'block';
             var message =
                 strings.currentWallpaperSetByMessage.replace(/\$1/g, appName);
-            messageContainer.textContent = message;
-            messageContainer.style.visibility = 'visible';
+            messageContent.textContent = message;
             wpDocument.querySelector('#checkbox').classList.remove('checked');
             wpDocument.querySelector('#categories-list').disabled = false;
             wpDocument.querySelector('#wallpaper-grid').disabled = false;
           } else {
-            if (messageContainer.textContent !=
-                strings.setSuccessfullyMessage) {
-              messageContainer.style.visibility = 'hidden';
-            }
             Constants.WallpaperSyncStorage.get(
                 Constants.AccessSyncSurpriseMeEnabledKey, function(item) {
                   // TODO(crbug.com/810169): Try to combine this part with

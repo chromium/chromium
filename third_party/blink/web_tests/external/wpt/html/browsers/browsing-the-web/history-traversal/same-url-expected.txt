@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL Test same-URL navigation and its effects on history assert_equals: expected 2 but got 1
+FAIL Test same-URL navigation and its effects on history assert_equals: expected 3 but got 2
 Harness: the test ran to completion.
 

@@ -53,6 +53,46 @@ const ProcessId kNullProcessId = 0;
 #define CrPRIdPid "d"
 #endif
 
+class UniqueProcId {
+ public:
+  explicit UniqueProcId(ProcessId value) : value_(value) {}
+  UniqueProcId(const UniqueProcId& other) = default;
+  UniqueProcId& operator=(const UniqueProcId& other) = default;
+
+  // Returns the process PID. WARNING: On some platforms, the pid may not be
+  // valid within the current process sandbox.
+  ProcessId GetUnsafeValue() const { return value_; }
+
+  bool operator==(const UniqueProcId& other) const {
+    return value_ == other.value_;
+  }
+
+  bool operator!=(const UniqueProcId& other) const {
+    return value_ != other.value_;
+  }
+
+  bool operator<(const UniqueProcId& other) const {
+    return value_ < other.value_;
+  }
+
+  bool operator<=(const UniqueProcId& other) const {
+    return value_ <= other.value_;
+  }
+
+  bool operator>(const UniqueProcId& other) const {
+    return value_ > other.value_;
+  }
+
+  bool operator>=(const UniqueProcId& other) const {
+    return value_ >= other.value_;
+  }
+
+ private:
+  ProcessId value_;
+};
+
+std::ostream& operator<<(std::ostream& os, const UniqueProcId& obj);
+
 // Returns the id of the current process.
 // Note that on some platforms, this is not guaranteed to be unique across
 // processes (use GetUniqueIdForProcess if uniqueness is required).
@@ -60,9 +100,8 @@ BASE_EXPORT ProcessId GetCurrentProcId();
 
 // Returns a unique ID for the current process. The ID will be unique across all
 // currently running processes within the chrome session, but IDs of terminated
-// processes may be reused. This returns an opaque value that is different from
-// a process's PID.
-BASE_EXPORT uint32_t GetUniqueIdForProcess();
+// processes may be reused.
+BASE_EXPORT UniqueProcId GetUniqueIdForProcess();
 
 #if defined(OS_LINUX)
 // When a process is started in a different PID namespace from the browser

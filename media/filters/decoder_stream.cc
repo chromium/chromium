@@ -111,10 +111,7 @@ DecoderStream<StreamType>::DecoderStream(
       pending_decode_requests_(0),
       duration_tracker_(8),
       received_config_change_during_reinit_(false),
-      pending_demuxer_read_(false),
-      weak_factory_(this),
-      fallback_weak_factory_(this),
-      prepare_weak_factory_(this) {
+      pending_demuxer_read_(false) {
   FUNCTION_DVLOG(1);
 }
 
@@ -387,7 +384,10 @@ void DecoderStream<StreamType>::OnDecoderSelected(
   }
 
   // Send logs and statistics updates including the decoder name.
+  traits_->SetIsPlatformDecoder(decoder_->IsPlatformDecoder());
+  traits_->SetIsDecryptingDemuxerStream(!!decrypting_demuxer_stream_);
   traits_->ReportStatistics(statistics_cb_, 0);
+
   media_log_->SetBooleanProperty(GetStreamTypeString() + "_dds",
                                  !!decrypting_demuxer_stream_);
   media_log_->SetStringProperty(GetStreamTypeString() + "_decoder",
@@ -421,13 +421,12 @@ void DecoderStream<StreamType>::OnDecoderSelected(
 }
 
 template <DemuxerStream::Type StreamType>
-void DecoderStream<StreamType>::SatisfyRead(
-    Status status,
-    const scoped_refptr<Output>& output) {
+void DecoderStream<StreamType>::SatisfyRead(Status status,
+                                            scoped_refptr<Output> output) {
   DCHECK(read_cb_);
   TRACE_EVENT_ASYNC_END1("media", GetReadTraceString<StreamType>(), this,
                          "status", GetStatusString<StreamType>(status));
-  std::move(read_cb_).Run(status, output);
+  std::move(read_cb_).Run(status, std::move(output));
 }
 
 template <DemuxerStream::Type StreamType>
@@ -544,19 +543,22 @@ void DecoderStream<StreamType>::OnDecodeDone(
         // from being called back.
         fallback_weak_factory_.InvalidateWeakPtrs();
 
-        FUNCTION_DVLOG(1)
-            << ": Falling back to new decoder after initial decode error.";
+        std::string fallback_message =
+            GetStreamTypeString() +
+            " fallback to new decoder after initial decode error.";
+        FUNCTION_DVLOG(1) << ": " << fallback_message;
+        MEDIA_LOG(WARNING, media_log_) << fallback_message;
         state_ = STATE_REINITIALIZING_DECODER;
         SelectDecoder();
-        return;
+      } else {
+        std::string error_message = GetStreamTypeString() + " decode error!";
+        FUNCTION_DVLOG(1) << ": " << error_message;
+        MEDIA_LOG(ERROR, media_log_) << error_message;
+        state_ = STATE_ERROR;
+        ClearOutputs();
+        if (read_cb_)
+          SatisfyRead(DECODE_ERROR, nullptr);
       }
-
-      FUNCTION_DVLOG(1) << ": Decode error!";
-      state_ = STATE_ERROR;
-      MEDIA_LOG(ERROR, media_log_) << GetStreamTypeString() << " decode error";
-      ClearOutputs();
-      if (read_cb_)
-        SatisfyRead(DECODE_ERROR, nullptr);
       return;
 
     case DecodeStatus::ABORTED:
@@ -590,7 +592,7 @@ void DecoderStream<StreamType>::OnDecodeDone(
 
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::OnDecodeOutputReady(
-    const scoped_refptr<Output>& output) {
+    scoped_refptr<Output> output) {
   FUNCTION_DVLOG(3) << ": " << output->timestamp().InMilliseconds() << " ms";
   DCHECK(output);
   DCHECK(state_ == STATE_NORMAL || state_ == STATE_FLUSHING_DECODER ||
@@ -618,26 +620,28 @@ void DecoderStream<StreamType>::OnDecodeOutputReady(
   }
 
   // If the frame should be dropped, exit early and decode another frame.
-  if (traits_->OnDecodeDone(output) == PostDecodeAction::DROP)
+  if (traits_->OnDecodeDone(output.get()) == PostDecodeAction::DROP)
     return;
 
   if (prepare_cb_ && output->timestamp() + AverageDuration() >=
                          skip_prepare_until_timestamp_) {
-    unprepared_outputs_.push_back(output);
+    unprepared_outputs_.push_back(std::move(output));
     MaybePrepareAnotherOutput();
     return;
   }
+
+  traits_->OnOutputReady(output.get());
 
   if (read_cb_) {
     // If |ready_outputs_| was non-empty, the read would have already been
     // satisifed by Read().
     DCHECK(ready_outputs_.empty());
-    SatisfyRead(OK, output);
+    SatisfyRead(OK, std::move(output));
     return;
   }
 
   // Store decoded output.
-  ready_outputs_.push_back(output);
+  ready_outputs_.push_back(std::move(output));
 }
 
 template <DemuxerStream::Type StreamType>
@@ -663,8 +667,8 @@ void DecoderStream<StreamType>::ReadFromDemuxerStream() {
   TRACE_EVENT_ASYNC_BEGIN0("media", GetDemuxerReadTraceString<StreamType>(),
                            this);
   pending_demuxer_read_ = true;
-  stream_->Read(base::BindRepeating(&DecoderStream<StreamType>::OnBufferReady,
-                                    weak_factory_.GetWeakPtr()));
+  stream_->Read(base::BindOnce(&DecoderStream<StreamType>::OnBufferReady,
+                               weak_factory_.GetWeakPtr()));
 }
 
 template <DemuxerStream::Type StreamType>
@@ -958,19 +962,20 @@ void DecoderStream<StreamType>::MaybePrepareAnotherOutput() {
   if (ready_outputs_.size() >= static_cast<size_t>(GetMaxDecodeRequests()))
     return;
 
-  TRACE_EVENT_ASYNC_BEGIN1(
-      "media", GetPrepareTraceString<StreamType>(), this, "timestamp_us",
-      unprepared_outputs_.front()->timestamp().InMicroseconds());
+  // Retain a copy to avoid dangling reference in OnPreparedOutputReady().
+  const scoped_refptr<Output> output = unprepared_outputs_.front();
+  TRACE_EVENT_ASYNC_BEGIN1("media", GetPrepareTraceString<StreamType>(), this,
+                           "timestamp_us",
+                           output->timestamp().InMicroseconds());
   preparing_output_ = true;
   prepare_cb_.Run(
-      unprepared_outputs_.front(),
-      base::BindOnce(&DecoderStream<StreamType>::OnPreparedOutputReady,
-                     prepare_weak_factory_.GetWeakPtr()));
+      output, base::BindOnce(&DecoderStream<StreamType>::OnPreparedOutputReady,
+                             prepare_weak_factory_.GetWeakPtr()));
 }
 
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::OnPreparedOutputReady(
-    const scoped_refptr<Output>& output) {
+    scoped_refptr<Output> output) {
   FUNCTION_DVLOG(2);
   DCHECK(task_runner_->BelongsToCurrentThread());
 
@@ -984,12 +989,13 @@ void DecoderStream<StreamType>::OnPreparedOutputReady(
   DCHECK(!unprepared_outputs_.empty());
   DCHECK(preparing_output_);
 
+  traits_->OnOutputReady(output.get());
   CompletePrepare(output.get());
   unprepared_outputs_.pop_front();
   if (!read_cb_)
-    ready_outputs_.emplace_back(output);
+    ready_outputs_.emplace_back(std::move(output));
   else
-    SatisfyRead(OK, output);
+    SatisfyRead(OK, std::move(output));
 
   MaybePrepareAnotherOutput();
 

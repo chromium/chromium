@@ -60,6 +60,10 @@ function extractElementInfo(element, contentWindow, opt_styleNames) {
   result.renderedTop = size.top;
   result.renderedLeft = size.left;
 
+  // Get the scroll position of the element.
+  result.scrollLeft = element.scrollLeft;
+  result.scrollTop = element.scrollTop;
+
   return result;
 }
 
@@ -170,10 +174,11 @@ test.util.sync.isWindowMaximized = contentWindow => {
  *     information that contains contentText, attribute names and
  *     values, hidden attribute, and style names and values.
  */
-test.util.sync.queryAllElements = (contentWindow, targetQuery, opt_styleNames) => {
-  return test.util.sync.deepQueryAllElements(
-      contentWindow, targetQuery, opt_styleNames);
-};
+test.util.sync.queryAllElements =
+    (contentWindow, targetQuery, opt_styleNames) => {
+      return test.util.sync.deepQueryAllElements(
+          contentWindow, targetQuery, opt_styleNames);
+    };
 
 /**
  * Queries elements inside shadow DOM.
@@ -189,20 +194,21 @@ test.util.sync.queryAllElements = (contentWindow, targetQuery, opt_styleNames) =
  *     information that contains contentText, attribute names and
  *     values, hidden attribute, and style names and values.
  */
-test.util.sync.deepQueryAllElements = (contentWindow, targetQuery, opt_styleNames) => {
-  if (!contentWindow.document) {
-    return [];
-  }
-  if (typeof targetQuery === 'string') {
-    targetQuery = [targetQuery];
-  }
+test.util.sync.deepQueryAllElements =
+    (contentWindow, targetQuery, opt_styleNames) => {
+      if (!contentWindow.document) {
+        return [];
+      }
+      if (typeof targetQuery === 'string') {
+        targetQuery = [targetQuery];
+      }
 
-  const elems =
-      test.util.sync.deepQuerySelectorAll_(contentWindow.document, targetQuery);
-  return elems.map(element => {
-    return extractElementInfo(element, contentWindow, opt_styleNames);
-  });
-};
+      const elems = test.util.sync.deepQuerySelectorAll_(
+          contentWindow.document, targetQuery);
+      return elems.map(element => {
+        return extractElementInfo(element, contentWindow, opt_styleNames);
+      });
+    };
 
 /**
  * Selects elements below |root|, possibly following shadow DOM subtree.
@@ -216,7 +222,8 @@ test.util.sync.deepQueryAllElements = (contentWindow, targetQuery, opt_styleName
  * @private
  */
 test.util.sync.deepQuerySelectorAll_ = (root, targetQuery) => {
-  const elems = Array.prototype.slice.call(root.querySelectorAll(targetQuery[0]));
+  const elems =
+      Array.prototype.slice.call(root.querySelectorAll(targetQuery[0]));
   const remaining = targetQuery.slice(1);
   if (remaining.length === 0) {
     return elems;
@@ -246,15 +253,16 @@ test.util.sync.deepQuerySelectorAll_ = (root, targetQuery) => {
  * @param {function(*)} callback Callback function to be called with the
  *   result of the |script|.
  */
-test.util.async.deepExecuteScriptInWebView = (contentWindow, targetQuery, script, callback) => {
-  const webviews =
-      test.util.sync.deepQuerySelectorAll_(contentWindow.document, targetQuery);
-  if (!webviews || webviews.length !== 1) {
-    throw new Error('<webview> not found: [' + targetQuery.join(',') + ']');
-  }
-  const webview = /** @type {WebView} */ (webviews[0]);
-  webview.executeScript({code: script}, callback);
-};
+test.util.async.deepExecuteScriptInWebView =
+    (contentWindow, targetQuery, script, callback) => {
+      const webviews = test.util.sync.deepQuerySelectorAll_(
+          contentWindow.document, targetQuery);
+      if (!webviews || webviews.length !== 1) {
+        throw new Error('<webview> not found: [' + targetQuery.join(',') + ']');
+      }
+      const webview = /** @type {WebView} */ (webviews[0]);
+      webview.executeScript({code: script}, callback);
+    };
 
 /**
  * Gets the information of the active element.
@@ -280,12 +288,62 @@ test.util.sync.getActiveElement = (contentWindow, opt_styleNames) => {
 /**
  * Assigns the text to the input element.
  * @param {Window} contentWindow Window to be tested.
- * @param {string} query Query for the input element.
+ * @param {string|!Array<string>} query Query for the input element.
+ *     If |query| is an array, |query[0]| specifies the first element(s),
+ *     |query[1]| specifies elements inside the shadow DOM of the first element,
+ *     and so on.
  * @param {string} text Text to be assigned.
  */
 test.util.sync.inputText = (contentWindow, query, text) => {
-  const input = contentWindow.document.querySelector(query);
+  if (typeof query === 'string') {
+    query = [query];
+  }
+
+  const elems =
+      test.util.sync.deepQuerySelectorAll_(contentWindow.document, query);
+  if (elems.length === 0) {
+    console.error(`Input element not found: [${query.join(',')}]`);
+    return;
+  }
+
+  const input = elems[0];
   input.value = text;
+  input.dispatchEvent(new Event('change'));
+};
+
+/**
+ * Sets the left scroll position of an element.
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} query Query for the test element.
+ * @param {number} position scrollLeft position to set.
+ */
+test.util.sync.setScrollLeft = (contentWindow, query, position) => {
+  const scrollablElement = contentWindow.document.querySelector(query);
+  scrollablElement.scrollLeft = position;
+};
+
+/**
+ * Sets the top scroll position of an element.
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} query Query for the test element.
+ * @param {number} position scrollTop position to set.
+ */
+test.util.sync.setScrollTop = (contentWindow, query, position) => {
+  const scrollablElement = contentWindow.document.querySelector(query);
+  scrollablElement.scrollTop = position;
+};
+
+/**
+ * Sets style properties for an element using the CSS OM.
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} query Query for the test element.
+ * @param {!Object<?, string>} properties CSS Property name/values to set.
+ */
+test.util.sync.setElementStyles = (contentWindow, query, properties) => {
+  const element = contentWindow.document.querySelector(query);
+  for (let [prop, value] of Object.entries(properties)) {
+    element.style[prop] = value;
+  }
 };
 
 /**
@@ -337,17 +395,18 @@ test.util.sync.sendEvent = (contentWindow, targetQuery, event) => {
  *     properties.
  * @return {boolean} True if the event is sent to the target, false otherwise.
  */
-test.util.sync.fakeEvent = (contentWindow, targetQuery, eventType, opt_additionalProperties) => {
-  const event = new Event(
-      eventType,
-      /** @type {!EventInit} */ (opt_additionalProperties || {}));
-  if (opt_additionalProperties) {
-    for (const name in opt_additionalProperties) {
-      event[name] = opt_additionalProperties[name];
-    }
-  }
-  return test.util.sync.sendEvent(contentWindow, targetQuery, event);
-};
+test.util.sync.fakeEvent =
+    (contentWindow, targetQuery, eventType, opt_additionalProperties) => {
+      const event = new Event(
+          eventType,
+          /** @type {!EventInit} */ (opt_additionalProperties || {}));
+      if (opt_additionalProperties) {
+        for (const name in opt_additionalProperties) {
+          event[name] = opt_additionalProperties[name];
+        }
+      }
+      return test.util.sync.sendEvent(contentWindow, targetQuery, event);
+    };
 
 /**
  * Sends a fake key event to the element specified by |targetQuery| or active
@@ -362,17 +421,18 @@ test.util.sync.fakeEvent = (contentWindow, targetQuery, eventType, opt_additiona
  * @param {boolean} alt whether ALT should be pressed, or not.
  * @return {boolean} True if the event is sent to the target, false otherwise.
  */
-test.util.sync.fakeKeyDown = (contentWindow, targetQuery, key, ctrl, shift, alt) => {
-  const event = new KeyboardEvent('keydown', {
-    bubbles: true,
-    composed: true,  // Allow the event to bubble past shadow DOM root.
-    key: key,
-    ctrlKey: ctrl,
-    shiftKey: shift,
-    altKey: alt
-  });
-  return test.util.sync.sendEvent(contentWindow, targetQuery, event);
-};
+test.util.sync.fakeKeyDown =
+    (contentWindow, targetQuery, key, ctrl, shift, alt) => {
+      const event = new KeyboardEvent('keydown', {
+        bubbles: true,
+        composed: true,  // Allow the event to bubble past shadow DOM root.
+        key: key,
+        ctrlKey: ctrl,
+        shiftKey: shift,
+        altKey: alt,
+      });
+      return test.util.sync.sendEvent(contentWindow, targetQuery, event);
+    };
 
 /**
  * Simulates a fake mouse click (left button, single click) on the element
@@ -387,33 +447,57 @@ test.util.sync.fakeKeyDown = (contentWindow, targetQuery, key, ctrl, shift, alt)
  *     the first element, and so on.
  * @param {{shift: boolean, alt: boolean, ctrl: boolean}=} opt_keyModifiers
  *     Object containing common key modifiers : shift, alt, and ctrl.
+ * @param {number=} opt_button Mouse button number as per spec, e.g.: 2 for
+ *     right-click.
+ * @param {Object=} opt_eventProperties Additional properties to pass to each
+ *     event, e.g.: clientX and clientY. right-click.
  * @return {boolean} True if the all events are sent to the target, false
  *     otherwise.
  */
-test.util.sync.fakeMouseClick = (contentWindow, targetQuery, opt_keyModifiers) => {
-  const modifiers = opt_keyModifiers || {};
-  const props = {
-    bubbles: true,
-    detail: 1,
-    composed: true,  // Allow the event to bubble past shadow DOM root.
-    ctrlKey: modifiers.ctrl,
-    shiftKey: modifiers.shift,
-    altKey: modifiers.alt,
-  };
-  const mouseOverEvent = new MouseEvent('mouseover', props);
-  const resultMouseOver =
-      test.util.sync.sendEvent(contentWindow, targetQuery, mouseOverEvent);
-  const mouseDownEvent = new MouseEvent('mousedown', props);
-  const resultMouseDown =
-      test.util.sync.sendEvent(contentWindow, targetQuery, mouseDownEvent);
-  const mouseUpEvent = new MouseEvent('mouseup', props);
-  const resultMouseUp =
-      test.util.sync.sendEvent(contentWindow, targetQuery, mouseUpEvent);
-  const clickEvent = new MouseEvent('click', props);
-  const resultClick =
-      test.util.sync.sendEvent(contentWindow, targetQuery, clickEvent);
-  return resultMouseOver && resultMouseDown && resultMouseUp && resultClick;
-};
+test.util.sync.fakeMouseClick =
+    (contentWindow, targetQuery, opt_keyModifiers, opt_button,
+     opt_eventProperties) => {
+      const modifiers = opt_keyModifiers || {};
+      const eventProperties = opt_eventProperties || {};
+
+      const props = Object.assign(
+          {
+            bubbles: true,
+            detail: 1,
+            composed: true,  // Allow the event to bubble past shadow DOM root.
+            ctrlKey: modifiers.ctrl,
+            shiftKey: modifiers.shift,
+            altKey: modifiers.alt,
+          },
+          eventProperties);
+      if (opt_button !== undefined) {
+        props.button = opt_button;
+      }
+
+      if (!targetQuery) {
+        return false;
+      }
+      if (typeof targetQuery === 'string') {
+        targetQuery = [targetQuery];
+      }
+      const elems = test.util.sync.deepQuerySelectorAll_(
+          contentWindow.document, /** @type !Array<string> */ (targetQuery));
+      if (elems.length === 0) {
+        return false;
+      }
+      // Only sends the event to the first matched element.
+      const target = elems[0];
+
+      const mouseOverEvent = new MouseEvent('mouseover', props);
+      const resultMouseOver = target.dispatchEvent(mouseOverEvent);
+      const mouseDownEvent = new MouseEvent('mousedown', props);
+      const resultMouseDown = target.dispatchEvent(mouseDownEvent);
+      const mouseUpEvent = new MouseEvent('mouseup', props);
+      const resultMouseUp = target.dispatchEvent(mouseUpEvent);
+      const clickEvent = new MouseEvent('click', props);
+      const resultClick = target.dispatchEvent(clickEvent);
+      return resultMouseOver && resultMouseDown && resultMouseUp && resultClick;
+    };
 
 /**
  * Simulates a mouse hover on an element specified by |targetQuery|.
@@ -472,28 +556,39 @@ test.util.sync.fakeMouseOut =
     };
 
 /**
- * Simulates a fake mouse click (right button, single click) on the element
- * specified by |targetQuery|.
+ * Simulates a fake full mouse right-click  on the element specified by
+ * |targetQuery|.
+ *
+ * It generates the sequence of the following MouseEvents:
+ * 1. mouseover
+ * 2. mousedown
+ * 3. mouseup
+ * 4. click
+ * 5. contextmenu
  *
  * @param {Window} contentWindow Window to be tested.
  * @param {string} targetQuery Query to specify the element.
+ * @param {{shift: boolean, alt: boolean, ctrl: boolean}=} opt_keyModifiers
+ *     Object containing common key modifiers : shift, alt, and ctrl.
  * @return {boolean} True if the event is sent to the target, false
  *     otherwise.
  */
-test.util.sync.fakeMouseRightClick = (contentWindow, targetQuery) => {
-  const mouseDownEvent =
-      new MouseEvent('mousedown', {bubbles: true, button: 2, composed: true});
-  if (!test.util.sync.sendEvent(contentWindow, targetQuery, mouseDownEvent)) {
-    return false;
-  }
+test.util.sync.fakeMouseRightClick =
+    (contentWindow, targetQuery, opt_keyModifiers) => {
+      const clickResult = test.util.sync.fakeMouseClick(
+          contentWindow, targetQuery, opt_keyModifiers, 2 /* right button */);
+      if (!clickResult) {
+        return false;
+      }
 
-  const contextMenuEvent =
-      new MouseEvent('contextmenu', {bubbles: true, composed: true});
-  return test.util.sync.sendEvent(contentWindow, targetQuery, contextMenuEvent);
-};
+      const contextMenuEvent =
+          new MouseEvent('contextmenu', {bubbles: true, composed: true});
+      return test.util.sync.sendEvent(
+          contentWindow, targetQuery, contextMenuEvent);
+    };
 
 /**
- * Simulates a fake touch event (touch start, touch end) on the element
+ * Simulates a fake touch event (touch start and touch end) on the element
  * specified by |targetQuery|.
  *
  * @param {Window} contentWindow Window to be tested.
@@ -507,20 +602,12 @@ test.util.sync.fakeTouchClick = (contentWindow, targetQuery) => {
     return false;
   }
 
-  const mouseDownEvent =
-      new MouseEvent('mousedown', {bubbles: true, button: 2, composed: true});
-  if (!test.util.sync.sendEvent(contentWindow, targetQuery, mouseDownEvent)) {
-    return false;
-  }
-
   const touchEndEvent = new TouchEvent('touchend');
   if (!test.util.sync.sendEvent(contentWindow, targetQuery, touchEndEvent)) {
     return false;
   }
 
-  const contextMenuEvent =
-      new MouseEvent('contextmenu', {bubbles: true, composed: true});
-  return test.util.sync.sendEvent(contentWindow, targetQuery, contextMenuEvent);
+  return true;
 };
 
 /**
@@ -579,6 +666,99 @@ test.util.sync.fakeMouseUp = (contentWindow, targetQuery) => {
 };
 
 /**
+ * Simulates a mouse right-click on the element specified by |targetQuery|.
+ * Optionally pass X,Y coordinates to be able to choose where the right-click
+ * should occur.
+ *
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} targetQuery Query to specify the element.
+ * @param {number=} opt_offsetBottom offset pixels applied to target element
+ *     bottom, can be negative to move above the bottom.
+ * @param {number=} opt_offsetRight offset pixels applied to target element
+ *     right can be negative to move inside the element.
+ * @return {boolean} True if the all events are sent to the target, false
+ *     otherwise.
+ */
+test.util.sync.rightClickOffset =
+    (contentWindow, targetQuery, opt_offsetBottom, opt_offsetRight) => {
+      const target = contentWindow.document &&
+          contentWindow.document.querySelector(targetQuery);
+      if (!target) {
+        return false;
+      }
+
+      // Calculate the offsets.
+      const targetRect = target.getBoundingClientRect();
+      const props = {
+        clientX: targetRect.right + (opt_offsetRight ? opt_offsetRight : 0),
+        clientY: targetRect.bottom + (opt_offsetBottom ? opt_offsetBottom : 0),
+      };
+
+      const keyModifiers = undefined;
+      const rightButton = 2;
+      if (!test.util.sync.fakeMouseClick(
+              contentWindow, targetQuery, keyModifiers, rightButton, props)) {
+        return false;
+      }
+
+      return true;
+    };
+
+/**
+ * Sends a drag'n'drop set of events from |srcTarget| to |dstTarget|.
+ *
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} srcTarget Query to specify the element as the source to be
+ *   dragged.
+ * @param {string} dstTarget Query to specify the element as the destination
+ *   to drop.
+ * @param {boolean=} skipDrop True if it should only hover over dstTarget.
+ *   to drop.
+ * @return {boolean} True if the event is sent to the target, false otherwise.
+ */
+test.util.sync.fakeDragAndDrop =
+    (contentWindow, srcTarget, dstTarget, skipDrop) => {
+      const options = {
+        bubbles: true,
+        composed: true,
+        dataTransfer: new DataTransfer(),
+      };
+      const srcElement = contentWindow.document &&
+          contentWindow.document.querySelector(srcTarget);
+      const dstElement = contentWindow.document &&
+          contentWindow.document.querySelector(dstTarget);
+
+      if (!srcElement || !dstElement) {
+        return false;
+      }
+
+      // Get the middle of the src element, because some of Files app logic
+      // requires clientX and clientY.
+      const srcRect = srcElement.getBoundingClientRect();
+      const srcOptions = Object.assign(
+          {
+            clientX: srcRect.left + (srcRect.width / 2),
+            clientY: srcRect.top + (srcRect.height / 2),
+          },
+          options);
+
+      const dragStart = new DragEvent('dragstart', srcOptions);
+      const dragEnter = new DragEvent('dragenter', options);
+      const dragOver = new DragEvent('dragover', options);
+      const drop = new DragEvent('drop', options);
+      const dragEnd = new DragEvent('dragEnd', options);
+
+      srcElement.dispatchEvent(dragStart);
+      dstElement.dispatchEvent(dragEnter);
+      dstElement.dispatchEvent(dragOver);
+      if (!skipDrop) {
+        dstElement.dispatchEvent(drop);
+      }
+      srcElement.dispatchEvent(dragEnd);
+      return true;
+    };
+
+/**
  * Focuses to the element specified by |targetQuery|. This method does not
  * provide any guarantee whether the element is actually focused or not.
  *
@@ -635,15 +815,15 @@ test.util.sync.launcherSearchOpenResult = fileURL => {
 test.util.async.getFilesUnderVolume = (volumeType, names, callback) => {
   const displayRootPromise =
       volumeManagerFactory.getInstance().then(volumeManager => {
-        const volumeInfo = volumeManager.getCurrentProfileVolumeInfo(volumeType);
+        const volumeInfo =
+            volumeManager.getCurrentProfileVolumeInfo(volumeType);
         return volumeInfo.resolveDisplayRoot();
       });
 
   const retrievePromise = displayRootPromise.then(displayRoot => {
     const filesPromise = names.map(name => {
       // TODO(crbug.com/880130): Remove this conditional.
-      if (volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS &&
-          util.isMyFilesVolumeEnabled()) {
+      if (volumeType === VolumeManagerCommon.VolumeType.DOWNLOADS) {
         name = 'Downloads/' + name;
       }
       return new Promise(displayRoot.getFile.bind(displayRoot, name, {}));
@@ -735,6 +915,28 @@ test.util.sync.getMetadataStats = contentWindow => {
 };
 
 /**
+ * Calls the metadata model to get the selected file entries in the file
+ * list and try to get their metadata properties.
+ *
+ * @param {Array<String>} properties Content metadata properties to get.
+ * @param {function(*)} callback Callback with metadata results returned.
+ * @suppress {missingProperties} getContentMetadata isn't visible in the
+ * background window.
+ */
+test.util.async.getContentMetadata = (contentWindow, properties, callback) => {
+  const entries =
+      contentWindow.fileManager.directoryModel.getSelectedEntries_();
+
+  assert(entries.length > 0);
+  const metaPromise =
+      contentWindow.fileManager.metadataModel.get(entries, properties);
+  // Wait for the promise to resolve
+  metaPromise.then(resultsList => {
+    callback(resultsList);
+  });
+};
+
+/**
  * Returns true when FileManager has finished loading, by checking the attribute
  * "loaded" on its root element.
  */
@@ -772,4 +974,41 @@ test.util.async.getVolumesCount = callback => {
   return volumeManagerFactory.getInstance().then((volumeManager) => {
     callback(volumeManager.volumeInfoList.length);
   });
+};
+
+/**
+ * Updates the preferences.
+ * @param {chrome.fileManagerPrivate.PreferencesChange} preferences Preferences
+ *     to set.
+ */
+test.util.sync.setPreferences = preferences => {
+  chrome.fileManagerPrivate.setPreferences(preferences);
+};
+
+/**
+ * Reports an enum metric.
+ * @param {string} name The metric name.
+ * @param {string} value The metric enumerator to record.
+ * @param {Array<string>} validValues An array containing the valid enumerators
+ *     in order.
+ *
+ */
+test.util.sync.recordEnumMetric = (name, value, validValues) => {
+  metrics.recordEnum(name, value, validValues);
+};
+
+/**
+ * Reloads the Files app (Background & Foreground).
+ * NOTE: Any foreground window opened before the reload will be killed, so any
+ * appId/windowId won't be usable after the reload.
+ */
+test.util.sync.reload = () => {
+  chrome.runtime.reload();
+};
+
+/**
+ * Tells background page progress center to never notify a completed operation.
+ */
+test.util.sync.progressCenterNeverNotifyCompleted = () => {
+  window.background.progressCenter.neverNotifyCompleted();
 };

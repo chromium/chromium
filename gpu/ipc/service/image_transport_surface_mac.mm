@@ -9,6 +9,7 @@
 #include "gpu/ipc/service/image_transport_surface_overlay_mac.h"
 #include "gpu/ipc/service/pass_through_image_transport_surface.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/gl/buildflags.h"
 #include "ui/gl/gl_surface_stub.h"
 
 namespace gpu {
@@ -24,10 +25,15 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeSurface(
     case gl::kGLImplementationDesktopGL:
     case gl::kGLImplementationDesktopGLCoreProfile:
     case gl::kGLImplementationAppleGL:
-    case gl::kGLImplementationEGLGLES2:
-    case gl::kGLImplementationSwiftShaderGL:
       return base::WrapRefCounted<gl::GLSurface>(
           new ImageTransportSurfaceOverlayMac(delegate));
+#if defined(USE_EGL)
+    case gl::kGLImplementationEGLGLES2:
+    case gl::kGLImplementationEGLANGLE:
+    case gl::kGLImplementationSwiftShaderGL:
+      return base::WrapRefCounted<gl::GLSurface>(
+          new ImageTransportSurfaceOverlayMacEGL(delegate));
+#endif
     case gl::kGLImplementationMockGL:
     case gl::kGLImplementationStubGL:
       return base::WrapRefCounted<gl::GLSurface>(new gl::GLSurfaceStub);

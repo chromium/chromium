@@ -15,7 +15,6 @@
 
 namespace blink {
 
-class CSSSyntaxComponent;
 class ExceptionState;
 class ExecutionContext;
 enum class SecureContextMode;
@@ -46,6 +45,7 @@ class CORE_EXPORT CSSStyleValue : public ScriptWrappable {
     kTransformType,
     kPositionType,
     kURLImageType,
+    kUnsupportedColorType,
   };
 
   static CSSStyleValue* parse(const ExecutionContext*,
@@ -66,9 +66,7 @@ class CORE_EXPORT CSSStyleValue : public ScriptWrappable {
 
   virtual const CSSValue* ToCSSValue() const = 0;
   // FIXME: We should make this a method on CSSProperty instead.
-  virtual const CSSValue* ToCSSValueWithProperty(
-      CSSPropertyID,
-      const CSSSyntaxComponent*) const {
+  virtual const CSSValue* ToCSSValueWithProperty(CSSPropertyID) const {
     return ToCSSValue();
   }
   virtual String toString() const;

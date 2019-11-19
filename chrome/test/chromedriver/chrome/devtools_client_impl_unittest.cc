@@ -273,49 +273,53 @@ class FakeSyncWebSocket : public SyncWebSocket {
   bool connected_;
 };
 
-bool ReturnCommand(
-    const std::string& message,
-    int expected_id,
-    internal::InspectorMessageType* type,
-    internal::InspectorEvent* event,
-    internal::InspectorCommandResponse* command_response) {
+bool ReturnCommand(const std::string& message,
+                   int expected_id,
+                   std::string* session_id,
+                   internal::InspectorMessageType* type,
+                   internal::InspectorEvent* event,
+                   internal::InspectorCommandResponse* command_response) {
   *type = internal::kCommandResponseMessageType;
+  session_id->clear();
   command_response->id = expected_id;
   command_response->result.reset(new base::DictionaryValue());
   return true;
 }
 
-bool ReturnBadResponse(
-    const std::string& message,
-    int expected_id,
-    internal::InspectorMessageType* type,
-    internal::InspectorEvent* event,
-    internal::InspectorCommandResponse* command_response) {
+bool ReturnBadResponse(const std::string& message,
+                       int expected_id,
+                       std::string* session_id,
+                       internal::InspectorMessageType* type,
+                       internal::InspectorEvent* event,
+                       internal::InspectorCommandResponse* command_response) {
   *type = internal::kCommandResponseMessageType;
+  session_id->clear();
   command_response->id = expected_id;
   command_response->result.reset(new base::DictionaryValue());
   return false;
 }
 
-bool ReturnCommandBadId(
-    const std::string& message,
-    int expected_id,
-    internal::InspectorMessageType* type,
-    internal::InspectorEvent* event,
-    internal::InspectorCommandResponse* command_response) {
+bool ReturnCommandBadId(const std::string& message,
+                        int expected_id,
+                        std::string* session_id,
+                        internal::InspectorMessageType* type,
+                        internal::InspectorEvent* event,
+                        internal::InspectorCommandResponse* command_response) {
   *type = internal::kCommandResponseMessageType;
+  session_id->clear();
   command_response->id = expected_id + 100;
   command_response->result.reset(new base::DictionaryValue());
   return true;
 }
 
-bool ReturnCommandError(
-    const std::string& message,
-    int expected_id,
-    internal::InspectorMessageType* type,
-    internal::InspectorEvent* event,
-    internal::InspectorCommandResponse* command_response) {
+bool ReturnCommandError(const std::string& message,
+                        int expected_id,
+                        std::string* session_id,
+                        internal::InspectorMessageType* type,
+                        internal::InspectorEvent* event,
+                        internal::InspectorCommandResponse* command_response) {
   *type = internal::kCommandResponseMessageType;
+  session_id->clear();
   command_response->id = expected_id;
   command_response->error = "err";
   return true;
@@ -345,9 +349,11 @@ bool ReturnEventThenResponse(
     bool* first,
     const std::string& message,
     int expected_id,
+    std::string* session_id,
     internal::InspectorMessageType* type,
     internal::InspectorEvent* event,
     internal::InspectorCommandResponse* command_response) {
+  session_id->clear();
   if (*first) {
     *type = internal::kEventMessageType;
     event->method = "method";
@@ -364,12 +370,12 @@ bool ReturnEventThenResponse(
   return true;
 }
 
-bool ReturnEvent(
-    const std::string& message,
-    int expected_id,
-    internal::InspectorMessageType* type,
-    internal::InspectorEvent* event,
-    internal::InspectorCommandResponse* command_response) {
+bool ReturnEvent(const std::string& message,
+                 int expected_id,
+                 std::string* session_id,
+                 internal::InspectorMessageType* type,
+                 internal::InspectorEvent* event,
+                 internal::InspectorCommandResponse* command_response) {
   *type = internal::kEventMessageType;
   event->method = "method";
   event->params.reset(new base::DictionaryValue());
@@ -382,6 +388,7 @@ bool ReturnOutOfOrderResponses(
     DevToolsClient* client,
     const std::string& message,
     int expected_id,
+    std::string* session_id,
     internal::InspectorMessageType* type,
     internal::InspectorEvent* event,
     internal::InspectorCommandResponse* command_response) {
@@ -411,12 +418,12 @@ bool ReturnOutOfOrderResponses(
   return true;
 }
 
-bool ReturnError(
-    const std::string& message,
-    int expected_id,
-    internal::InspectorMessageType* type,
-    internal::InspectorEvent* event,
-    internal::InspectorCommandResponse* command_response) {
+bool ReturnError(const std::string& message,
+                 int expected_id,
+                 std::string* session_id,
+                 internal::InspectorMessageType* type,
+                 internal::InspectorEvent* event,
+                 internal::InspectorCommandResponse* command_response) {
   return false;
 }
 
@@ -499,61 +506,84 @@ TEST(ParseInspectorMessage, NonJson) {
   internal::InspectorMessageType type;
   internal::InspectorEvent event;
   internal::InspectorCommandResponse response;
-  ASSERT_FALSE(internal::ParseInspectorMessage(
-      "hi", 0, &type, &event, &response));
+  std::string session_id;
+  ASSERT_FALSE(internal::ParseInspectorMessage("hi", 0, &session_id, &type,
+                                               &event, &response));
 }
 
 TEST(ParseInspectorMessage, NeitherCommandNorEvent) {
   internal::InspectorMessageType type;
   internal::InspectorEvent event;
   internal::InspectorCommandResponse response;
-  ASSERT_FALSE(internal::ParseInspectorMessage(
-      "{}", 0, &type, &event, &response));
+  std::string session_id;
+  ASSERT_FALSE(internal::ParseInspectorMessage("{}", 0, &session_id, &type,
+                                               &event, &response));
 }
 
 TEST(ParseInspectorMessage, EventNoParams) {
   internal::InspectorMessageType type;
   internal::InspectorEvent event;
   internal::InspectorCommandResponse response;
+  std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(
-      "{\"method\":\"method\"}", 0, &type, &event, &response));
+      "{\"method\":\"method\"}", 0, &session_id, &type, &event, &response));
   ASSERT_EQ(internal::kEventMessageType, type);
   ASSERT_STREQ("method", event.method.c_str());
   ASSERT_TRUE(event.params->is_dict());
+}
+
+TEST(ParseInspectorMessage, EventNoParamsWithSessionId) {
+  internal::InspectorMessageType type;
+  internal::InspectorEvent event;
+  internal::InspectorCommandResponse response;
+  std::string session_id;
+  ASSERT_TRUE(internal::ParseInspectorMessage(
+      "{\"method\":\"method\",\"sessionId\":\"B221AF2\"}", 0, &session_id,
+      &type, &event, &response));
+  ASSERT_EQ(internal::kEventMessageType, type);
+  ASSERT_STREQ("method", event.method.c_str());
+  ASSERT_TRUE(event.params->is_dict());
+  EXPECT_EQ("B221AF2", session_id);
 }
 
 TEST(ParseInspectorMessage, EventWithParams) {
   internal::InspectorMessageType type;
   internal::InspectorEvent event;
   internal::InspectorCommandResponse response;
+  std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(
-      "{\"method\":\"method\",\"params\":{\"key\":100}}",
-      0, &type, &event, &response));
+      "{\"method\":\"method\",\"params\":{\"key\":100},\"sessionId\":\"AB3A\"}",
+      0, &session_id, &type, &event, &response));
   ASSERT_EQ(internal::kEventMessageType, type);
   ASSERT_STREQ("method", event.method.c_str());
   int key;
   ASSERT_TRUE(event.params->GetInteger("key", &key));
   ASSERT_EQ(100, key);
+  EXPECT_EQ("AB3A", session_id);
 }
 
 TEST(ParseInspectorMessage, CommandNoErrorOrResult) {
   internal::InspectorMessageType type;
   internal::InspectorEvent event;
   internal::InspectorCommandResponse response;
+  std::string session_id;
   // As per Chromium issue 392577, DevTools does not necessarily return a
   // "result" dictionary for every valid response. If neither "error" nor
   // "result" keys are present, a blank result dictionary should be inferred.
-  ASSERT_TRUE(internal::ParseInspectorMessage(
-      "{\"id\":1}", 0, &type, &event, &response));
+  ASSERT_TRUE(
+      internal::ParseInspectorMessage("{\"id\":1,\"sessionId\":\"AB2AF3C\"}", 0,
+                                      &session_id, &type, &event, &response));
   ASSERT_TRUE(response.result->empty());
+  EXPECT_EQ("AB2AF3C", session_id);
 }
 
 TEST(ParseInspectorMessage, CommandError) {
   internal::InspectorMessageType type;
   internal::InspectorEvent event;
   internal::InspectorCommandResponse response;
+  std::string session_id;
   ASSERT_TRUE(internal::ParseInspectorMessage(
-      "{\"id\":1,\"error\":{}}", 0, &type, &event, &response));
+      "{\"id\":1,\"error\":{}}", 0, &session_id, &type, &event, &response));
   ASSERT_EQ(internal::kCommandResponseMessageType, type);
   ASSERT_EQ(1, response.id);
   ASSERT_TRUE(response.error.length());
@@ -564,14 +594,44 @@ TEST(ParseInspectorMessage, Command) {
   internal::InspectorMessageType type;
   internal::InspectorEvent event;
   internal::InspectorCommandResponse response;
-  ASSERT_TRUE(internal::ParseInspectorMessage(
-      "{\"id\":1,\"result\":{\"key\":1}}", 0, &type, &event, &response));
+  std::string session_id;
+  ASSERT_TRUE(
+      internal::ParseInspectorMessage("{\"id\":1,\"result\":{\"key\":1}}", 0,
+                                      &session_id, &type, &event, &response));
   ASSERT_EQ(internal::kCommandResponseMessageType, type);
   ASSERT_EQ(1, response.id);
   ASSERT_FALSE(response.error.length());
   int key;
   ASSERT_TRUE(response.result->GetInteger("key", &key));
   ASSERT_EQ(1, key);
+}
+
+TEST(ParseInspectorError, EmptyError) {
+  Status status = internal::ParseInspectorError("");
+  ASSERT_EQ(kUnknownError, status.code());
+  ASSERT_EQ("unknown error: inspector error with no error message",
+            status.message());
+}
+
+TEST(ParseInspectorError, InvalidUrlError) {
+  Status status = internal::ParseInspectorError(
+      "{\"message\": \"Cannot navigate to invalid URL\"}");
+  ASSERT_EQ(kInvalidArgument, status.code());
+}
+
+TEST(ParseInspectorError, InvalidArgumentCode) {
+  Status status = internal::ParseInspectorError(
+      "{\"code\": -32602, \"message\": \"Error description\"}");
+  ASSERT_EQ(kInvalidArgument, status.code());
+  ASSERT_EQ("invalid argument: Error description", status.message());
+}
+
+TEST(ParseInspectorError, UnknownError) {
+  const std::string error("{\"code\": 10, \"message\": \"Error description\"}");
+  Status status = internal::ParseInspectorError(error);
+  ASSERT_EQ(kUnknownError, status.code());
+  ASSERT_EQ("unknown error: unhandled inspector error: " + error,
+            status.message());
 }
 
 TEST_F(DevToolsClientImplTest, HandleEventsUntil) {

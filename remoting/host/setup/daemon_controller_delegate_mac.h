@@ -7,11 +7,16 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/host/setup/daemon_controller.h"
 
 namespace remoting {
+
+namespace mac {
+class PermissionWizard;
+}
 
 class DaemonControllerDelegateMac : public DaemonController::Delegate {
  public:
@@ -21,6 +26,7 @@ class DaemonControllerDelegateMac : public DaemonController::Delegate {
   // DaemonController::Delegate interface.
   DaemonController::State GetState() override;
   std::unique_ptr<base::DictionaryValue> GetConfig() override;
+  void CheckPermission(bool it2me, DaemonController::BoolCallback) override;
   void SetConfigAndStart(
       std::unique_ptr<base::DictionaryValue> config,
       bool consent,
@@ -31,6 +37,8 @@ class DaemonControllerDelegateMac : public DaemonController::Delegate {
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
 
  private:
+  std::unique_ptr<mac::PermissionWizard> permission_wizard_;
+
   DISALLOW_COPY_AND_ASSIGN(DaemonControllerDelegateMac);
 };
 

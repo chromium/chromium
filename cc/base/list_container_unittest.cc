@@ -650,15 +650,16 @@ TEST(ListContainerTest, DeletionAllInAllocationReversed) {
 
   // The 2nd-last element is next, and the rest of the elements exist.
   size_t i = kReserve - 1;
-  for (auto it = list.rbegin(); it != list.rend(); ++it) {
-    SimpleDerivedElement* de = static_cast<SimpleDerivedElement*>(*it);
+  for (auto reverse_it = list.rbegin(); reverse_it != list.rend();
+       ++reverse_it) {
+    SimpleDerivedElement* de = static_cast<SimpleDerivedElement*>(*reverse_it);
     EXPECT_EQ(static_cast<int>(i), de->get_value());
     --i;
   }
 
   // Can forward iterate too.
   i = 0;
-  for (auto it = list.begin(); it != list.end(); ++it) {
+  for (it = list.begin(); it != list.end(); ++it) {
     SimpleDerivedElement* de = static_cast<SimpleDerivedElement*>(*it);
     EXPECT_EQ(static_cast<int>(i), de->get_value());
     ++i;
@@ -666,21 +667,22 @@ TEST(ListContainerTest, DeletionAllInAllocationReversed) {
 
   // Remove the last thing from the 1st allocation.
   it = list.begin();
-  for (size_t i = 0; i < kReserve - 1; ++i)
+  for (i = 0; i < kReserve - 1; ++i)
     ++it;
   list.EraseAndInvalidateAllPointers(it);
 
   // The 2nd-last element is next, and the rest of the elements exist.
   i = kReserve - 2;
-  for (auto it = list.rbegin(); it != list.rend(); ++it) {
-    SimpleDerivedElement* de = static_cast<SimpleDerivedElement*>(*it);
+  for (auto reverse_it = list.rbegin(); reverse_it != list.rend();
+       ++reverse_it) {
+    SimpleDerivedElement* de = static_cast<SimpleDerivedElement*>(*reverse_it);
     EXPECT_EQ(static_cast<int>(i), de->get_value());
     --i;
   }
 
   // Can forward iterate too.
   i = 0;
-  for (auto it = list.begin(); it != list.end(); ++it) {
+  for (it = list.begin(); it != list.end(); ++it) {
     SimpleDerivedElement* de = static_cast<SimpleDerivedElement*>(*it);
     EXPECT_EQ(static_cast<int>(i), de->get_value());
     ++i;

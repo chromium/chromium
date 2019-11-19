@@ -10,10 +10,10 @@
 #include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
-#include "components/payments/core/payment_instrument.h"
+#include "components/payments/core/payment_app.h"
 #include "components/payments/core/web_payment_request.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/payments/payment_request_test_util.h"
@@ -31,19 +31,19 @@ namespace payments {
 
 namespace {
 
-class FakePaymentInstrumentDelegate : public PaymentInstrument::Delegate {
+class FakePaymentInstrumentDelegate : public PaymentApp::Delegate {
  public:
   FakePaymentInstrumentDelegate() {}
 
-  void OnInstrumentDetailsReady(
-      const std::string& method_name,
-      const std::string& stringified_details) override {
+  void OnInstrumentDetailsReady(const std::string& method_name,
+                                const std::string& stringified_details,
+                                const PayerData& payer_data) override {
     if (run_loop_)
       run_loop_->Quit();
     on_instrument_details_ready_called_ = true;
   }
 
-  void OnInstrumentDetailsError() override {
+  void OnInstrumentDetailsError(const std::string& error_message) override {
     if (run_loop_)
       run_loop_->Quit();
     on_instrument_details_error_called_ = true;
@@ -91,7 +91,7 @@ class PaymentRequestIOSPaymentInstrumentLauncherTest : public PlatformTest {
     launcher.payment_request_id_ = "some-payment-request-id";
   }
 
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   autofill::TestPersonalDataManager test_personal_data_manager_;
   web::TestWebState web_state_;
@@ -153,7 +153,7 @@ TEST_F(PaymentRequestIOSPaymentInstrumentLauncherTest,
   std::string jef_stringified_data;
   base::JSONWriter::Write(jef_data, &jef_stringified_data);
   base::Value jef_data_list(base::Value::Type::LIST);
-  jef_data_list.GetList().emplace_back(jef_stringified_data);
+  jef_data_list.Append(jef_stringified_data);
 
   // Bob data...
   base::Value bob_data(base::Value::Type::DICTIONARY);
@@ -161,7 +161,7 @@ TEST_F(PaymentRequestIOSPaymentInstrumentLauncherTest,
   std::string bob_stringified_data;
   base::JSONWriter::Write(bob_data, &bob_stringified_data);
   base::Value bob_data_list(base::Value::Type::LIST);
-  bob_data_list.GetList().emplace_back(bob_stringified_data);
+  bob_data_list.Append(bob_stringified_data);
 
   // Alice data...
   base::Value alice_data_list(base::Value::Type::LIST);

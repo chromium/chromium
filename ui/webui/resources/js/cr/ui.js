@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 cr.define('cr.ui', function() {
-
   /**
    * Decorates elements as an instance of a class.
    * @param {string|!Element} source The way to find the element(s) to decorate.
@@ -11,11 +10,12 @@ cr.define('cr.ui', function() {
    *     elements to decorate.
    * @param {!Function} constr The constructor to decorate with. The constr
    *     needs to have a {@code decorate} function.
+   * @closurePrimitive {asserts.matchesReturn}
    */
   function decorate(source, constr) {
     let elements;
     if (typeof source == 'string') {
-      elements = cr.doc.querySelectorAll(source);
+      elements = document.querySelectorAll(source);
     } else {
       elements = [source];
     }
@@ -36,7 +36,7 @@ cr.define('cr.ui', function() {
     if (opt_bag && opt_bag.ownerDocument) {
       doc = opt_bag.ownerDocument;
     } else {
-      doc = cr.doc;
+      doc = document;
     }
     return doc.createElement(tagName);
   }

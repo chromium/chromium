@@ -11,6 +11,11 @@
 
 namespace viz {
 
+// static
+FrameDeadline FrameDeadline::MakeZero() {
+  return FrameDeadline(base::TimeTicks(), 0, base::TimeDelta(), false);
+}
+
 base::TimeTicks FrameDeadline::ToWallTime(
     base::Optional<uint32_t> default_deadline_in_frames) const {
   uint32_t deadline_in_frames = deadline_in_frames_;
@@ -20,6 +25,10 @@ base::TimeTicks FrameDeadline::ToWallTime(
                                          std::numeric_limits<uint32_t>::max()));
   }
   return frame_start_time_ + deadline_in_frames * frame_interval_;
+}
+
+bool FrameDeadline::IsZero() const {
+  return deadline_in_frames_ == 0 && !use_default_lower_bound_deadline_;
 }
 
 std::string FrameDeadline::ToString() const {

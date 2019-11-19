@@ -10,7 +10,7 @@
     {% for entry in entries %}
     {% set constant_prefix = entry | symbol %}
     {% set method_prefix = constant_prefix | to_function_name %}
-    macro({{constant_prefix}}, {{method_prefix}}){% if not loop.last %} \
+    macro(media_feature_names::{{constant_prefix}}, {{method_prefix}}){% if not loop.last %} \
     {% endif %}
     {% endfor %}
 

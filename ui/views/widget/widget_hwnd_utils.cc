@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "build/build_config.h"
 #include "ui/base/l10n/l10n_util_win.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/win/hwnd_message_handler.h"
@@ -45,11 +46,11 @@ void CalculateWindowStylesFromInitParams(
   DCHECK_NE(Widget::InitParams::ACTIVATABLE_DEFAULT, params.activatable);
   if (params.activatable == Widget::InitParams::ACTIVATABLE_NO)
     *ex_style |= WS_EX_NOACTIVATE;
-  if (params.keep_on_top)
+  if (params.EffectiveZOrderLevel() != ui::ZOrderLevel::kNormal)
     *ex_style |= WS_EX_TOPMOST;
   if (params.mirror_origin_in_rtl)
     *ex_style |= l10n_util::GetExtendedTooltipStyles();
-  if (params.shadow_type == Widget::InitParams::SHADOW_TYPE_DROP)
+  if (params.shadow_type == Widget::InitParams::ShadowType::kDrop)
     *class_style |= CS_DROPSHADOW;
 
   // Set type-dependent style attributes.
@@ -107,6 +108,18 @@ void CalculateWindowStylesFromInitParams(
         *ex_style |= WS_EX_TOOLWINDOW;
       break;
     case Widget::InitParams::TYPE_MENU:
+      *style |= WS_POPUP;
+      if (::features::IsFormControlsRefreshEnabled() &&
+          params.remove_standard_frame) {
+        // If the platform doesn't support drop shadow, decorate the Window
+        // with just a border.
+        if (ui::win::IsAeroGlassEnabled())
+          *style |= WS_THICKFRAME;
+        else
+          *style |= WS_BORDER;
+      }
+      break;
+    case Widget::InitParams::TYPE_TOOLTIP:
       *style |= WS_POPUP;
       break;
     default:

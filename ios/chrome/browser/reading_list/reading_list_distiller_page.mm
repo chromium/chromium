@@ -12,11 +12,11 @@
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "components/google/core/common/google_util.h"
 #include "ios/chrome/browser/reading_list/favicon_web_state_dispatcher_impl.h"
-#import "ios/web/public/navigation_item.h"
-#import "ios/web/public/navigation_manager.h"
-#include "ios/web/public/ssl_status.h"
-#import "ios/web/public/web_state/js/crw_js_injection_receiver.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#include "ios/web/public/security/ssl_status.h"
+#import "ios/web/public/web_state.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/cert/cert_status_flags.h"
 #include "url/url_constants.h"
@@ -147,8 +147,7 @@ bool ReadingListDistillerPage::IsLoadingSuccess(
 
   // On SSL connections, check there was no error.
   const web::SSLStatus& ssl_status = item->GetSSL();
-  if (net::IsCertStatusError(ssl_status.cert_status) &&
-      !net::IsCertStatusMinorError(ssl_status.cert_status)) {
+  if (net::IsCertStatusError(ssl_status.cert_status)) {
     return false;
   }
   return true;
@@ -239,8 +238,7 @@ bool ReadingListDistillerPage::IsGoogleCachedAMPPage() {
                                          ->GetLastCommittedItem()
                                          ->GetSSL();
   if (!ssl_status.certificate ||
-      (net::IsCertStatusError(ssl_status.cert_status) &&
-       !net::IsCertStatusMinorError(ssl_status.cert_status))) {
+      net::IsCertStatusError(ssl_status.cert_status)) {
     return false;
   }
 

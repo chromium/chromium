@@ -10,26 +10,39 @@
 #include <memory>
 #include <utility>
 
+#include "base/base_paths.h"
+#include "base/base_switches.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
+#include "base/path_service.h"
 #include "base/process/process_metrics.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/api/messaging/native_messaging_launch_from_native.h"
 #include "chrome/browser/extensions/api/messaging/native_messaging_test_util.h"
 #include "chrome/browser/extensions/api/messaging/native_process_launcher.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,15 +117,15 @@ class NativeMessagingTest : public ::testing::Test,
  protected:
   NativeMessagingTest()
       : current_channel_(version_info::Channel::DEV),
-        thread_bundle_(content::TestBrowserThreadBundle::IO_MAINLOOP),
+        task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         channel_closed_(false) {}
 
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   void TearDown() override {
     if (native_message_host_) {
-      BrowserThread::DeleteSoon(
-          BrowserThread::IO, FROM_HERE, native_message_host_.release());
+      base::DeleteSoon(FROM_HERE, {BrowserThread::IO},
+                       native_message_host_.release());
     }
     base::RunLoop().RunUntilIdle();
   }
@@ -166,7 +179,8 @@ class NativeMessagingTest : public ::testing::Test,
   ScopedCurrentChannel current_channel_;
   std::unique_ptr<NativeMessageHost> native_message_host_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
 
   std::string last_message_;
   std::unique_ptr<base::DictionaryValue> last_message_parsed_;
@@ -267,11 +281,8 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   ASSERT_NO_FATAL_FAILURE(test_host.RegisterTestHost(false));
   std::string error_message;
   native_message_host_ = NativeMessageProcessHost::Create(
-      NULL,
-      ScopedTestNativeMessagingHost::kExtensionId,
-      ScopedTestNativeMessagingHost::kHostName,
-      false,
-      &error_message);
+      &profile_, NULL, ScopedTestNativeMessagingHost::kExtensionId,
+      ScopedTestNativeMessagingHost::kHostName, false, &error_message);
   native_message_host_->Start(this);
   ASSERT_TRUE(native_message_host_);
 
@@ -302,6 +313,135 @@ TEST_F(NativeMessagingTest, EchoConnect) {
   EXPECT_EQ("bar", text);
   EXPECT_TRUE(last_message_parsed_->GetString("caller_url", &url));
   EXPECT_EQ(expected_url, url);
+
+  const base::Value* args = nullptr;
+  ASSERT_TRUE(last_message_parsed_->Get("args", &args));
+  EXPECT_TRUE(args->is_none());
+
+  const base::Value* connect_id_value = nullptr;
+  ASSERT_TRUE(last_message_parsed_->Get("connect_id", &connect_id_value));
+  EXPECT_TRUE(connect_id_value->is_none());
+}
+
+// Test send message with a real client. The args passed when launching the
+// native messaging host should contain reconnect args.
+//
+// TODO(crbug.com/1026121): Fix it. This test is flaky on Win7 bots.
+#if defined(OS_WIN)
+#define MAYBE_ReconnectArgs DISABLED_ReconnectArgs
+#else
+#define MAYBE_ReconnectArgs ReconnectArgs
+#endif
+TEST_F(NativeMessagingTest, MAYBE_ReconnectArgs) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOnConnectNative);
+  ScopedAllowNativeAppConnectionForTest allow_native_app_connection(true);
+  ScopedTestNativeMessagingHost test_host;
+  ASSERT_NO_FATAL_FAILURE(test_host.RegisterTestHost(false));
+  std::string error_message;
+  native_message_host_ = NativeMessageProcessHost::Create(
+      &profile_, NULL, ScopedTestNativeMessagingHost::kExtensionId,
+      ScopedTestNativeMessagingHost::
+          kSupportsNativeInitiatedConnectionsHostName,
+      false, &error_message);
+  native_message_host_->Start(this);
+  ASSERT_TRUE(native_message_host_);
+
+  native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
+  run_loop_.reset(new base::RunLoop());
+  run_loop_->Run();
+  ASSERT_FALSE(last_message_.empty());
+  ASSERT_TRUE(last_message_parsed_);
+
+  const base::ListValue* args_value = nullptr;
+  ASSERT_TRUE(last_message_parsed_->GetList("args", &args_value));
+  std::vector<base::CommandLine::StringType> args;
+  args.reserve(args_value->GetSize());
+  for (auto& arg : args_value->GetList()) {
+    ASSERT_TRUE(arg.is_string());
+#if defined(OS_WIN)
+    args.push_back(base::UTF8ToUTF16(arg.GetString()));
+#else
+    args.push_back(arg.GetString());
+#endif
+  }
+  base::CommandLine cmd_line(args);
+  base::FilePath exe_path;
+  ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &exe_path));
+  EXPECT_EQ(exe_path, cmd_line.GetProgram());
+  EXPECT_TRUE(cmd_line.HasSwitch(switches::kNoStartupWindow));
+  EXPECT_EQ(
+      ScopedTestNativeMessagingHost::
+          kSupportsNativeInitiatedConnectionsHostName,
+      cmd_line.GetSwitchValueASCII(switches::kNativeMessagingConnectHost));
+  EXPECT_EQ(
+      ScopedTestNativeMessagingHost::kExtensionId,
+      cmd_line.GetSwitchValueASCII(switches::kNativeMessagingConnectExtension));
+  EXPECT_EQ(features::kOnConnectNative.name,
+            cmd_line.GetSwitchValueASCII(switches::kEnableFeatures));
+  EXPECT_EQ(profile_.GetPath().BaseName(),
+            cmd_line.GetSwitchValuePath(switches::kProfileDirectory));
+  EXPECT_EQ(profile_.GetPath().DirName(),
+            cmd_line.GetSwitchValuePath(switches::kUserDataDir));
+}
+
+// Test send message with a real client. The args passed when launching the
+// native messaging host should not contain reconnect args.
+TEST_F(NativeMessagingTest, ReconnectArgs_Disabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kOnConnectNative);
+  ScopedTestNativeMessagingHost test_host;
+  ASSERT_NO_FATAL_FAILURE(test_host.RegisterTestHost(false));
+  std::string error_message;
+  native_message_host_ = NativeMessageProcessHost::Create(
+      &profile_, NULL, ScopedTestNativeMessagingHost::kExtensionId,
+      ScopedTestNativeMessagingHost::
+          kSupportsNativeInitiatedConnectionsHostName,
+      false, &error_message);
+  native_message_host_->Start(this);
+  ASSERT_TRUE(native_message_host_);
+
+  native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
+  run_loop_.reset(new base::RunLoop());
+  run_loop_->Run();
+  ASSERT_FALSE(last_message_.empty());
+  ASSERT_TRUE(last_message_parsed_);
+
+  const base::Value* args = nullptr;
+  ASSERT_TRUE(last_message_parsed_->Get("args", &args));
+  EXPECT_TRUE(args->is_none());
+}
+
+// Test that reconnect args are not sent if the extension is not permitted to
+// receive natively-established connections.
+TEST_F(NativeMessagingTest, ReconnectArgsIfNativeConnectionDisallowed) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kOnConnectNative);
+  ScopedAllowNativeAppConnectionForTest disallow_native_app_connection(false);
+  ScopedTestNativeMessagingHost test_host;
+  ASSERT_NO_FATAL_FAILURE(test_host.RegisterTestHost(false));
+  std::string error_message;
+  native_message_host_ = NativeMessageProcessHost::Create(
+      &profile_, NULL, ScopedTestNativeMessagingHost::kExtensionId,
+      ScopedTestNativeMessagingHost::
+          kSupportsNativeInitiatedConnectionsHostName,
+      false, &error_message);
+  native_message_host_->Start(this);
+  ASSERT_TRUE(native_message_host_);
+
+  native_message_host_->OnMessage("{\"text\": \"Hello.\"}");
+  run_loop_.reset(new base::RunLoop());
+  run_loop_->Run();
+  ASSERT_FALSE(last_message_.empty());
+  ASSERT_TRUE(last_message_parsed_);
+
+  const base::Value* args_value = nullptr;
+  ASSERT_TRUE(last_message_parsed_->Get("args", &args_value));
+  EXPECT_TRUE(args_value->is_none());
+
+  const base::Value* connect_id_value = nullptr;
+  ASSERT_TRUE(last_message_parsed_->Get("connect_id", &connect_id_value));
+  EXPECT_TRUE(connect_id_value->is_none());
 }
 
 TEST_F(NativeMessagingTest, UserLevel) {
@@ -310,11 +450,8 @@ TEST_F(NativeMessagingTest, UserLevel) {
 
   std::string error_message;
   native_message_host_ = NativeMessageProcessHost::Create(
-      NULL,
-      ScopedTestNativeMessagingHost::kExtensionId,
-      ScopedTestNativeMessagingHost::kHostName,
-      true,
-      &error_message);
+      &profile_, NULL, ScopedTestNativeMessagingHost::kExtensionId,
+      ScopedTestNativeMessagingHost::kHostName, true, &error_message);
   native_message_host_->Start(this);
   ASSERT_TRUE(native_message_host_);
 
@@ -331,11 +468,8 @@ TEST_F(NativeMessagingTest, DisallowUserLevel) {
 
   std::string error_message;
   native_message_host_ = NativeMessageProcessHost::Create(
-      NULL,
-      ScopedTestNativeMessagingHost::kExtensionId,
-      ScopedTestNativeMessagingHost::kHostName,
-      false,
-      &error_message);
+      &profile_, NULL, ScopedTestNativeMessagingHost::kExtensionId,
+      ScopedTestNativeMessagingHost::kHostName, false, &error_message);
   native_message_host_->Start(this);
   ASSERT_TRUE(native_message_host_);
   run_loop_.reset(new base::RunLoop());

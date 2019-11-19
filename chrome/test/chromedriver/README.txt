@@ -1,8 +1,9 @@
 This file contains high-level info about how ChromeDriver works and how to
 contribute.
 
-ChromeDriver is an implementation of the WebDriver standard,
-which allows users to automate testing of their website across browsers.
+ChromeDriver is an implementation of the WebDriver standard
+(https://w3c.github.io/webdriver/), which allows users to automate testing of
+their website across browsers.
 
 See the user site at https://sites.google.com/a/chromium.org/chromedriver/
 
@@ -11,7 +12,10 @@ Build ChromeDriver by building the 'chromedriver' target. This will
 create an executable binary in the build folder named
 'chromedriver[.exe]'.
 
-Once built, ChromeDriver can be used interactively with python.
+Once built, ChromeDriver can be used with various third-party libraries that
+support WebDriver protocol, including language bindings provided by Selenium.
+
+For testing purposes, ChromeDriver can be used interactively with python.
 
 $ export PYTHONPATH=<THIS_DIR>/server:<THIS_DIR>/client
 $ python
@@ -25,7 +29,7 @@ $ python
 
 ChromeDriver will use the system installed Chrome by default.
 
-To use ChromeDriver2 with Chrome on Android pass the Android package name in the
+To use ChromeDriver with Chrome on Android pass the Android package name in the
 chromeOptions.androidPackage capability when creating the driver. The path to
 adb_commands.py and the adb tool from the Android SDK must be set in PATH. For
 more detailed instructions see the user site.
@@ -79,30 +83,25 @@ Integration tests.
 Third party libraries used by chromedriver.
 
 =====Testing=====
-See the ChromeDriver waterfall at:
-    http://build.chromium.org/p/chromium.chromedriver/waterfall
-There are 4 test suites for verifying ChromeDriver's correctness:
+There are several test suites for verifying ChromeDriver's correctness:
 
-1) chromedriver_unittests (chrome/chrome_tests.gypi)
-This is the unittest target, which runs on the main waterfall on win/mac/linux
-and can close the tree. It is also run on the commit queue and try bots by
-default. Tests should take a few milliseconds and be very stable.
+* chromedriver_unittests
+This is the unittest target, which runs on the commit queue on win/mac/linux.
+Tests should take a few milliseconds and be very stable.
 
-2) chromedriver_tests (chrome/chrome_tests.gypi)
-This is a collection of C++ medium sized tests which can be run optionally
-on the trybots.
+* python integration tests (test/run_py_tests.py)
+These tests are maintained by the ChromeDriver team, and are intended to verify
+that ChromeDriver works correctly with Chrome. Run test/run_py_tests.py --help
+for more info. These are run on the commit queue on win/mac/linux.
 
-3) python integration tests
-Run test/run_py_tests.py --help for more info. These are only run on the
-ChromeDriver waterfall.
-
-4) WebDriver Java acceptance tests
+* WebDriver Java acceptance tests (test/run_java_tests.py)
 These are integration tests from the WebDriver open source project which can
-be run via test/run_java_tests.py. They are only run on the ChromeDriver
-bots. Run with --help for more info.
+be run via test/run_java_tests.py. They are not currently run on any bots, but
+will be included in the commit queue in the future. Run with --help for more
+info.
 
 =====Contributing=====
 Find an open issue and submit a patch for review by an individual listed in
 the OWNERS file in this directory. Issues are tracked in chromedriver's issue
 tracker:
-    https://code.google.com/p/chromedriver/issues/list
+    https://bugs.chromium.org/p/chromedriver/issues/list

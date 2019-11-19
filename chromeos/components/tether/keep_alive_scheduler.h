@@ -79,7 +79,7 @@ class KeepAliveScheduler : public ActiveHost::Observer,
   base::Optional<multidevice::RemoteDeviceRef> active_host_device_;
   std::unique_ptr<KeepAliveOperation> keep_alive_operation_;
 
-  base::WeakPtrFactory<KeepAliveScheduler> weak_ptr_factory_;
+  base::WeakPtrFactory<KeepAliveScheduler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(KeepAliveScheduler);
 };

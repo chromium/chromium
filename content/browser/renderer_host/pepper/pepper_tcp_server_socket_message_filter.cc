@@ -21,7 +21,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/socket_permission_request.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
@@ -68,8 +68,7 @@ PepperTCPServerSocketMessageFilter::PepperTCPServerSocketMessageFilter(
       external_plugin_(host->external_plugin()),
       private_api_(private_api),
       render_process_id_(0),
-      render_frame_id_(0),
-      weak_ptr_factory_(this) {
+      render_frame_id_(0) {
   ++g_num_instances;
   DCHECK(factory_);
   DCHECK(ppapi_host_);
@@ -100,7 +99,7 @@ void PepperTCPServerSocketMessageFilter::OnFilterDestroyed() {
   // also ensures that future messages will be ignored, so the mojo pipes won't
   // be re-created, so after Close() runs, |this| can be safely deleted on the
   // IO thread.
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::UI},
       base::BindOnce(&PepperTCPServerSocketMessageFilter::Close, this));
 }
@@ -112,7 +111,7 @@ PepperTCPServerSocketMessageFilter::OverrideTaskRunnerForMessage(
     case PpapiHostMsg_TCPServerSocket_Listen::ID:
     case PpapiHostMsg_TCPServerSocket_Accept::ID:
     case PpapiHostMsg_TCPServerSocket_StopListening::ID:
-      return base::CreateSingleThreadTaskRunnerWithTraits({BrowserThread::UI});
+      return base::CreateSingleThreadTaskRunner({BrowserThread::UI});
   }
   return nullptr;
 }
@@ -176,7 +175,7 @@ int32_t PepperTCPServerSocketMessageFilter::OnMsgListen(
   network_context->CreateTCPServerSocket(
       net::IPEndPoint(net::IPAddress(address), port), backlog,
       pepper_socket_utils::PepperTCPNetworkAnnotationTag(),
-      mojo::MakeRequest(&socket_),
+      socket_.BindNewPipeAndPassReceiver(),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&PepperTCPServerSocketMessageFilter::OnListenCompleted,
                          weak_ptr_factory_.GetWeakPtr(), reply_context),
@@ -197,17 +196,16 @@ int32_t PepperTCPServerSocketMessageFilter::OnMsgAccept(
   ppapi::host::ReplyMessageContext reply_context(
       context->MakeReplyMessageContext());
 
-  network::mojom::SocketObserverPtr socket_observer;
-  network::mojom::SocketObserverRequest socket_observer_request =
-      mojo::MakeRequest(&socket_observer);
+  mojo::PendingRemote<network::mojom::SocketObserver> socket_observer;
+  auto socket_observer_receiver =
+      socket_observer.InitWithNewPipeAndPassReceiver();
   socket_->Accept(
       std::move(socket_observer),
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(
           base::BindOnce(&PepperTCPServerSocketMessageFilter::OnAcceptCompleted,
                          base::Unretained(this), reply_context,
-                         std::move(socket_observer_request)),
-          net::ERR_FAILED, base::nullopt /* remote_addr */,
-          network::mojom::TCPConnectedSocketPtr(),
+                         std::move(socket_observer_receiver)),
+          net::ERR_FAILED, base::nullopt /* remote_addr */, mojo::NullRemote(),
           mojo::ScopedDataPipeConsumerHandle(),
           mojo::ScopedDataPipeProducerHandle()));
   return PP_OK_COMPLETIONPENDING;
@@ -288,10 +286,11 @@ void PepperTCPServerSocketMessageFilter::OnFirewallHoleOpened(
 
 void PepperTCPServerSocketMessageFilter::OnAcceptCompleted(
     const ppapi::host::ReplyMessageContext& context,
-    network::mojom::SocketObserverRequest socket_observer_request,
+    mojo::PendingReceiver<network::mojom::SocketObserver>
+        socket_observer_receiver,
     int net_result,
     const base::Optional<net::IPEndPoint>& remote_addr,
-    network::mojom::TCPConnectedSocketPtr connected_socket,
+    mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -311,12 +310,12 @@ void PepperTCPServerSocketMessageFilter::OnAcceptCompleted(
     return;
   }
 
-  if (!remote_addr || !connected_socket.is_bound()) {
+  if (!remote_addr || !connected_socket.is_valid()) {
     SendAcceptError(context, NetErrorToPepperError(net_result));
     return;
   }
 
-  DCHECK(socket_observer_request.is_pending());
+  DCHECK(socket_observer_receiver.is_valid());
 
   PP_NetAddress_Private pp_remote_addr =
       NetAddressPrivateImpl::kInvalidNetAddress;
@@ -328,19 +327,20 @@ void PepperTCPServerSocketMessageFilter::OnAcceptCompleted(
     return;
   }
 
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnIOThread,
-          this, context, connected_socket.PassInterface(),
-          std::move(socket_observer_request), std::move(receive_stream),
+          this, context, std::move(connected_socket),
+          std::move(socket_observer_receiver), std::move(receive_stream),
           std::move(send_stream), bound_addr_, pp_remote_addr));
 }
 
 void PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnIOThread(
     const ppapi::host::ReplyMessageContext& context,
-    network::mojom::TCPConnectedSocketPtrInfo connected_socket,
-    network::mojom::SocketObserverRequest socket_observer_request,
+    mojo::PendingRemote<network::mojom::TCPConnectedSocket> connected_socket,
+    mojo::PendingReceiver<network::mojom::SocketObserver>
+        socket_observer_receiver,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream,
     PP_NetAddress_Private pp_local_addr,
@@ -353,7 +353,7 @@ void PepperTCPServerSocketMessageFilter::OnAcceptCompletedOnIOThread(
   std::unique_ptr<ppapi::host::ResourceHost> host =
       factory_->CreateAcceptedTCPSocket(
           instance_, ppapi::TCP_SOCKET_VERSION_PRIVATE,
-          std::move(connected_socket), std::move(socket_observer_request),
+          std::move(connected_socket), std::move(socket_observer_receiver),
           std::move(receive_stream), std::move(send_stream));
   if (!host) {
     SendAcceptError(context, PP_ERROR_NOSPACE);

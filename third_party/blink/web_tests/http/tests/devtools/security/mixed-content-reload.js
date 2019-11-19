@@ -8,16 +8,6 @@
   await TestRunner.loadModule('security_test_runner');
   await TestRunner.showPanel('security');
 
-  /** @type {!Protocol.Security.InsecureContentStatus} */
-  var insecureContentStatus = {
-    ranMixedContent: false,
-    displayedMixedContent: true,
-    ranContentWithCertErrors: false,
-    displayedContentWithCertErrors: false,
-    ranInsecureContentStyle: Protocol.Security.SecurityState.Insecure,
-    displayedInsecureContentStyle: Protocol.Security.SecurityState.Neutral
-  };
-
   TestRunner.addResult('\nBefore Refresh --------------');
 
   var mixedExplanations = [{
@@ -31,7 +21,7 @@
       .dispatchEventToListeners(
           Security.SecurityModel.Events.SecurityStateChanged,
           new Security.PageSecurityState(
-              Protocol.Security.SecurityState.Neutral, true, mixedExplanations, insecureContentStatus, null));
+              Protocol.Security.SecurityState.Neutral, mixedExplanations, null));
 
   // At this point, the page has mixed content but no mixed requests have been recorded, so the user should be prompted to refresh.
   var explanations =
@@ -46,7 +36,7 @@
       .dispatchEventToListeners(
           Security.SecurityModel.Events.SecurityStateChanged,
           new Security.PageSecurityState(
-              Protocol.Security.SecurityState.Neutral, true, mixedExplanations, insecureContentStatus, null));
+              Protocol.Security.SecurityState.Neutral, mixedExplanations, null));
 
   var request = new SDK.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
   request.mixedContentType = 'optionally-blockable';

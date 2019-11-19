@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS e.style['dominant-baseline'] = "auto" should set the property value
+FAIL e.style['dominant-baseline'] = "text-bottom" should set the property value assert_not_equals: property should be set got disallowed value ""
+PASS e.style['dominant-baseline'] = "alphabetic" should set the property value
+PASS e.style['dominant-baseline'] = "ideographic" should set the property value
+PASS e.style['dominant-baseline'] = "middle" should set the property value
+PASS e.style['dominant-baseline'] = "central" should set the property value
+PASS e.style['dominant-baseline'] = "mathematical" should set the property value
+PASS e.style['dominant-baseline'] = "hanging" should set the property value
+FAIL e.style['dominant-baseline'] = "text-top" should set the property value assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

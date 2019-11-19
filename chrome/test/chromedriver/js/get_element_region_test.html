@@ -53,6 +53,77 @@ function testAreaCircle() {
   assertEquals(10, region.height);
 }
 
+function testPartialOutOfView() {
+  var region = getElementRegion(document.getElementById('partial-out-of-view'));
+  assertEquals(50, region.left);
+  assertEquals(0, region.top);
+  assertEquals(50, region.width);
+  assertEquals(100, region.height);
+}
+
+function testScrolledOutOfView() {
+  // Scroll to an offset to make element with id=a partially visible.
+  var elemRect = document.getElementById("a").getBoundingClientRect();
+  window.scrollTo(elemRect.left + 50, elemRect.top + 100);
+  var region = getElementRegion(document.getElementById("a"));
+  assertEquals(50, region.left);
+  assertEquals(100, region.top);
+  assertEquals(50, region.width);
+  assertEquals(100, region.height);
+  window.scrollTo(0, 0);
+}
+
+function testFullOutOfView() {
+  var region = getElementRegion(document.getElementById('out-of-view'));
+  assertEquals(0, region.left);
+  assertEquals(0, region.top);
+  assertEquals(100, region.width);
+  assertEquals(100, region.height);
+}
+
+function testFullOutOfViewRect() {
+  var region = getElementRegion(document.getElementById('out-of-view-rect'));
+  assertEquals(120, region.left);
+  assertEquals(100, region.top);
+  assertEquals(20, region.width);
+  assertEquals(50, region.height);
+}
+
+function testFullOutOfViewCircle() {
+  var region = getElementRegion(document.getElementById('out-of-view-circle'));
+  assertEquals(175, region.left);
+  assertEquals(165, region.top);
+  assertEquals(10, region.width);
+  assertEquals(10, region.height);
+}
+
+function testPartialOutOfViewRect() {
+  var region = getElementRegion(document.getElementById('partial-rect'));
+  assertEquals(120, region.left);
+  assertEquals(10, region.top);
+  assertEquals(10, region.width);
+  // Height should not be truncated, even if partially visible.
+  assertEquals(40, region.height);
+}
+
+function testPartialOutOfViewCircle() {
+  var region = getElementRegion(document.getElementById('partial-circle'));
+  assertEquals(30, region.left);
+  assertEquals(0, region.top);
+  // Area is treated as if it is fully in-view or fully out-of-view.
+  assertEquals(60, region.width);
+  assertEquals(60, region.height);
+}
+
+function testNegativeDimensions() {
+  var region = getElementRegion(document.getElementById('negative-dims'));
+  assertEquals(0, region.left);
+  assertEquals(0, region.top);
+  // Negative dimensions appear as 0, so region is 0x0.
+  assertEquals(0, region.width);
+  assertEquals(0, region.height);
+}
+
 function testAreaDefault() {
   try {
     getElementRegion(document.getElementById('default'));
@@ -83,6 +154,43 @@ function testAreaDefault() {
       <area id="default" shape="default">
     </map>
   </div>
+  <div style="background-color:blue;width:100px;height:100px;position:absolute;top:200px;left:-50px"
+    id="partial-out-of-view">
+  </div>
+  <div style="background-color:green;width:100px;height:100px;position:absolute;top:100px;left:-200px"
+    id="out-of-view">
+  </div>
+  <div>
+    <img width="200" height="200" usemap="#outofviewmap" style="position:absolute;top:120vh;left:50px">
+    <map name="outofviewmap">
+      <area id="out-of-view-rect" shape="rect" coords="120,100,140,150">
+      <area id="out-of-view-circle" shape="circle" coords="180,170,5">
+    </map>
+  </div>
+  <div>
+    <img width="200" height="200" usemap="#partialmap" style="position:absolute;top:calc(100vh - 20px);left:50px">
+    <map name="partialmap">
+      <area id="partial-rect" shape="rect" coords="120,10,130,50">
+      <area id="partial-circle" shape="circle" coords="60,5,30">
+    </map>
+  </div>
+  <div style="background-color:blue;width:100px;height:100px;position:absolute;top:200px;left:-50px"
+    id="partial-out-of-view">
+  </div>
+  <div style="background-color:green;width:100px;height:100px;position:absolute;top:100px;left:-200px"
+    id="out-of-view">
+  </div>
+  <div style="background-color:yellow;width:-100px;height:-100px;position:absolute;top:200px;left:200px;"
+    id="negative-dims">
+  </div>
+  <!-- This element adds scroll to see how script handles viewport with scroll -->
+  <div style="background-color:red;width:50px;height:50px;position:absolute;top:200vh;left:200vw;">
+  </div>
+
+</div>
+</body>
+</html>
+
 </div>
 </body>
 </html>

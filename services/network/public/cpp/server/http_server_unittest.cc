@@ -13,9 +13,10 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
@@ -26,10 +27,6 @@
 #include "net/log/net_log_source.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
-#include "net/url_request/url_fetcher.h"
-#include "net/url_request/url_fetcher_delegate.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/server/http_connection.h"
 #include "services/network/public/cpp/server/http_server_request_info.h"
@@ -52,8 +49,8 @@ class TestHttpClient {
     factory_.CreateTCPConnectedSocket(
         base::nullopt /* local address */, addresses,
         nullptr /* tcp_connected_socket_options */,
-        TRAFFIC_ANNOTATION_FOR_TESTS, mojo::MakeRequest(&socket_),
-        nullptr /* observer */,
+        TRAFFIC_ANNOTATION_FOR_TESTS, socket_.BindNewPipeAndPassReceiver(),
+        mojo::NullRemote() /* observer */,
         base::BindOnce(
             [](base::RunLoop* run_loop, int* result_out,
                mojo::ScopedDataPipeConsumerHandle* receive_pipe_handle_out,
@@ -138,9 +135,9 @@ class TestHttpClient {
     // Return true if response has data equal to or more than content length.
     int64_t body_size = static_cast<int64_t>(response.size()) - end_of_headers;
     DCHECK_LE(0, body_size);
-    scoped_refptr<net::HttpResponseHeaders> headers(
-        new net::HttpResponseHeaders(net::HttpUtil::AssembleRawHeaders(
-            response.data(), end_of_headers)));
+    auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+        net::HttpUtil::AssembleRawHeaders(
+            base::StringPiece(response.data(), end_of_headers)));
     return body_size >= headers->GetContentLength();
   }
 
@@ -152,7 +149,7 @@ class TestHttpClient {
   mojo::ScopedDataPipeConsumerHandle receive_pipe_handle_;
   mojo::ScopedDataPipeProducerHandle send_pipe_handle_;
 
-  network::mojom::TCPConnectedSocketPtr socket_;
+  mojo::Remote<network::mojom::TCPConnectedSocket> socket_;
 };
 
 }  // namespace
@@ -164,8 +161,7 @@ namespace server {
 class HttpServerTest : public testing::Test, public HttpServer::Delegate {
  public:
   HttpServerTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO),
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         quit_after_request_count_(0),
         quit_on_close_connection_(-1),
         factory_(nullptr, &url_request_context_) {}
@@ -175,7 +171,8 @@ class HttpServerTest : public testing::Test, public HttpServer::Delegate {
     base::RunLoop run_loop;
     factory_.CreateTCPServerSocket(
         net::IPEndPoint(net::IPAddress::IPv6Localhost(), 0), 1 /* backlog */,
-        TRAFFIC_ANNOTATION_FOR_TESTS, mojo::MakeRequest(&server_socket_),
+        TRAFFIC_ANNOTATION_FOR_TESTS,
+        server_socket_.InitWithNewPipeAndPassReceiver(),
         base::BindOnce(
             [](base::RunLoop* run_loop, int* result_out,
                net::IPEndPoint* local_addr_out, int result,
@@ -211,7 +208,7 @@ class HttpServerTest : public testing::Test, public HttpServer::Delegate {
     NOTREACHED();
   }
 
-  void OnWebSocketMessage(int connection_id, const std::string& data) override {
+  void OnWebSocketMessage(int connection_id, std::string data) override {
     NOTREACHED();
   }
 
@@ -275,13 +272,13 @@ class HttpServerTest : public testing::Test, public HttpServer::Delegate {
       connection_map_;
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   size_t quit_after_request_count_;
   int quit_on_close_connection_;
 
   net::TestURLRequestContext url_request_context_;
   SocketFactory factory_;
-  mojom::TCPServerSocketPtr server_socket_;
+  mojo::PendingRemote<mojom::TCPServerSocket> server_socket_;
 };
 
 class WebSocketTest : public HttpServerTest {
@@ -296,8 +293,7 @@ class WebSocketTest : public HttpServerTest {
     HttpServerTest::OnHttpRequest(connection_id, info);
   }
 
-  void OnWebSocketMessage(int connection_id, const std::string& data) override {
-  }
+  void OnWebSocketMessage(int connection_id, std::string data) override {}
 };
 
 TEST_F(HttpServerTest, SetNonexistingConnectionBuffer) {
@@ -488,37 +484,19 @@ TEST_F(WebSocketTest, RequestWebSocketTrailingJunk) {
 }
 
 TEST_F(HttpServerTest, RequestWithTooLargeBody) {
-  class TestURLFetcherDelegate : public net::URLFetcherDelegate {
-   public:
-    TestURLFetcherDelegate(const base::RepeatingClosure& quit_loop_func)
-        : quit_loop_func_(quit_loop_func) {}
-    ~TestURLFetcherDelegate() override = default;
-
-    void OnURLFetchComplete(const net::URLFetcher* source) override {
-      EXPECT_EQ(net::HTTP_INTERNAL_SERVER_ERROR, source->GetResponseCode());
-      quit_loop_func_.Run();
-    }
-
-   private:
-    base::RepeatingClosure quit_loop_func_;
-  };
-
-  base::RunLoop run_loop;
-  TestURLFetcherDelegate delegate(run_loop.QuitClosure());
-
-  scoped_refptr<net::URLRequestContextGetter> request_context_getter(
-      new net::TestURLRequestContextGetter(
-          base::ThreadTaskRunnerHandle::Get()));
-  std::unique_ptr<net::URLFetcher> fetcher = net::URLFetcher::Create(
-      GURL(base::StringPrintf("http://[::1]:%d/test", server_address_.port())),
-      net::URLFetcher::GET, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
-  fetcher->SetRequestContext(request_context_getter.get());
-  fetcher->AddExtraRequestHeader(
-      base::StringPrintf("content-length:%d", 1 << 30));
-  fetcher->Start();
-
-  run_loop.Run();
-  ASSERT_EQ(0u, requests_.size());
+  TestHttpClient client;
+  ASSERT_THAT(client.ConnectAndWait(server_address_), IsOk());
+  client.Send(
+      "GET /test HTTP/1.1\r\n"
+      "Content-Length: 1073741824\r\n\r\n");
+  std::string response;
+  ASSERT_TRUE(client.ReadResponse(&response));
+  EXPECT_EQ(
+      "HTTP/1.1 500 Internal Server Error\r\n"
+      "Content-Length:53\r\n"
+      "Content-Type:text/html\r\n\r\n"
+      "request content-length too big or unknown: 1073741824",
+      response);
 }
 
 TEST_F(HttpServerTest, Send200) {

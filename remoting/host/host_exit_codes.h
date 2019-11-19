@@ -18,6 +18,7 @@ enum HostExitCodes {
   kReservedForX11ExitCode = 1,
   kInitializationFailed = 2,
   kInvalidCommandLineExitCode = 3,
+  kNoPermissionExitCode = 4,
 
   // Error codes that do indicate a permanent error condition.
   kInvalidHostConfigurationExitCode = 100,
@@ -26,14 +27,19 @@ enum HostExitCodes {
   kInvalidHostDomainExitCode = 103,
   kLoginScreenNotSupportedExitCode = 104,
   kUsernameMismatchExitCode = 105,
+  kHostDeletedExitCode = 106,
 
   // The range of the exit codes that should be interpreted as a permanent error
   // condition.
   kMinPermanentErrorExitCode = kInvalidHostConfigurationExitCode,
-  kMaxPermanentErrorExitCode = kUsernameMismatchExitCode
+  kMaxPermanentErrorExitCode = kHostDeletedExitCode
 };
 
 const char* ExitCodeToString(HostExitCodes exit_code);
+
+// Returns nullptr if |exit_code| is not a HostExitCodes.
+const char* ExitCodeToStringUnchecked(int exit_code);
+
 }  // namespace remoting
 
 #endif  // REMOTING_HOST_HOST_EXIT_CODES_H_

@@ -20,19 +20,12 @@
 
 namespace views {
 
-namespace {
-
-const int64_t kTimeBeforeClearingMS = 1000;
-
-}  // namespace
-
 PrefixSelector::PrefixSelector(PrefixDelegate* delegate, View* host_view)
     : prefix_delegate_(delegate),
       host_view_(host_view),
       tick_clock_(base::DefaultTickClock::GetInstance()) {}
 
-PrefixSelector::~PrefixSelector() {
-}
+PrefixSelector::~PrefixSelector() = default;
 
 void PrefixSelector::OnViewBlur() {
   ClearText();
@@ -40,15 +33,15 @@ void PrefixSelector::OnViewBlur() {
 
 bool PrefixSelector::ShouldContinueSelection() const {
   const base::TimeTicks now(tick_clock_->NowTicks());
-  return ((now - time_of_last_key_).InMilliseconds() < kTimeBeforeClearingMS);
+  constexpr auto kTimeBeforeClearing = base::TimeDelta::FromSeconds(1);
+  return (now - time_of_last_key_) < kTimeBeforeClearing;
 }
 
 void PrefixSelector::SetCompositionText(
     const ui::CompositionText& composition) {
 }
 
-void PrefixSelector::ConfirmCompositionText() {
-}
+void PrefixSelector::ConfirmCompositionText(bool keep_selection) {}
 
 void PrefixSelector::ClearCompositionText() {
 }
@@ -169,10 +162,21 @@ bool PrefixSelector::ShouldDoLearning() {
   return false;
 }
 
-#if defined(OS_WIN)
-void PrefixSelector::SetCompositionFromExistingText(
+#if defined(OS_WIN) || defined(OS_CHROMEOS)
+bool PrefixSelector::SetCompositionFromExistingText(
     const gfx::Range& range,
-    const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {}
+    const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
+  // TODO(https://crbug.com/952757): Implement this method.
+  NOTIMPLEMENTED_LOG_ONCE();
+  return false;
+}
+#endif
+
+#if defined(OS_WIN)
+void PrefixSelector::SetActiveCompositionForAccessibility(
+    const gfx::Range& range,
+    const base::string16& active_composition_text,
+    bool is_composition_committed) {}
 #endif
 
 void PrefixSelector::OnTextInput(const base::string16& text) {

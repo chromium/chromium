@@ -1,0 +1,48 @@
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+FAIL Unexpected node #0 for rect [39,202], [2,41] - DIV#d2
+FAIL Unexpected node #1 for rect [39,202], [6,41] - DIV#d2
+FAIL Unexpected node #2 for rect [39,202], [16,41] - DIV#d2
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect
+PASS All correct nodes found for rect

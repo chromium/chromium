@@ -29,16 +29,13 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "gin/public/gin_embedders.h"
 #include "gin/public/isolate_holder.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable_marking_visitor.h"
 #include "third_party/blink/renderer/platform/bindings/v8_global_value_map.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/heap/unified_heap_controller.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -100,6 +97,16 @@ class PLATFORM_EXPORT V8PerIsolateData {
   class PLATFORM_EXPORT Data {
    public:
     virtual ~Data() = default;
+  };
+
+  // Pointers to core/ objects that are garbage collected. Receives callback
+  // when V8PerIsolateData will be destroyed.
+  class PLATFORM_EXPORT GarbageCollectedData
+      : public GarbageCollected<GarbageCollectedData> {
+   public:
+    virtual ~GarbageCollectedData() = default;
+    virtual void WillBeDestroyed() {}
+    virtual void Trace(blink::Visitor*) {}
   };
 
   static v8::Isolate* Initialize(scoped_refptr<base::SingleThreadTaskRunner>,
@@ -198,32 +205,14 @@ class PLATFORM_EXPORT V8PerIsolateData {
   void SetThreadDebugger(std::unique_ptr<Data>);
   Data* ThreadDebugger();
 
+  void SetProfilerGroup(V8PerIsolateData::GarbageCollectedData*);
+  V8PerIsolateData::GarbageCollectedData* ProfilerGroup();
+
   using ActiveScriptWrappableSet =
       HeapHashSet<WeakMember<ActiveScriptWrappableBase>>;
   void AddActiveScriptWrappable(ActiveScriptWrappableBase*);
   const ActiveScriptWrappableSet* ActiveScriptWrappables() const {
     return active_script_wrappables_.Get();
-  }
-
-  ScriptWrappableMarkingVisitor* GetScriptWrappableMarkingVisitor() const {
-    return script_wrappable_visitor_.get();
-  }
-
-  void SwapScriptWrappableMarkingVisitor(
-      std::unique_ptr<ScriptWrappableMarkingVisitor>& other) {
-    script_wrappable_visitor_.swap(other);
-  }
-
-  UnifiedHeapController* GetUnifiedHeapController() const {
-    return unified_heap_controller_.get();
-  }
-
-  v8::EmbedderHeapTracer* GetEmbedderHeapTracer() const {
-    return RuntimeEnabledFeatures::HeapUnifiedGarbageCollectionEnabled()
-               ? static_cast<v8::EmbedderHeapTracer*>(
-                     GetUnifiedHeapController())
-               : static_cast<v8::EmbedderHeapTracer*>(
-                     GetScriptWrappableMarkingVisitor());
   }
 
  private:
@@ -273,7 +262,7 @@ class PLATFORM_EXPORT V8PerIsolateData {
   // When taking a V8 context snapshot, we can't keep V8 objects with eternal
   // handles. So we use a special interface map that doesn't use eternal handles
   // instead of the default V8FunctionTemplateMap.
-  V8GlobalValueMap<const WrapperTypeInfo*, v8::FunctionTemplate, v8::kNotWeak>
+  V8GlobalValueMap<const WrapperTypeInfo*, v8::FunctionTemplate>
       interface_template_map_for_v8_context_snapshot_;
 
   std::unique_ptr<StringCache> string_cache_;
@@ -291,10 +280,9 @@ class PLATFORM_EXPORT V8PerIsolateData {
 
   Vector<base::OnceClosure> end_of_scope_tasks_;
   std::unique_ptr<Data> thread_debugger_;
+  Persistent<GarbageCollectedData> profiler_group_;
 
   Persistent<ActiveScriptWrappableSet> active_script_wrappables_;
-  std::unique_ptr<ScriptWrappableMarkingVisitor> script_wrappable_visitor_;
-  std::unique_ptr<UnifiedHeapController> unified_heap_controller_;
 
   RuntimeCallStats runtime_call_stats_;
 

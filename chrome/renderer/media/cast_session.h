@@ -44,7 +44,7 @@ class CastSession : public base::RefCounted<CastSession> {
       base::Callback<void(std::unique_ptr<base::DictionaryValue>)>;
   using ErrorCallback = base::Callback<void(const std::string&)>;
 
-  CastSession();
+  explicit CastSession(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Start encoding of audio and video using the provided configuration.
   //
@@ -100,6 +100,9 @@ class CastSession : public base::RefCounted<CastSession> {
   // safe to post task on the IO thread to access CastSessionDelegate
   // because it is owned by this object.
   std::unique_ptr<CastSessionDelegate> delegate_;
+
+  // A main thread task runner that might execute JavaScript.
+  const scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
   // Proxy to the IO task runner.
   const scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;

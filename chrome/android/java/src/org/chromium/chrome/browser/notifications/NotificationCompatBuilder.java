@@ -15,12 +15,14 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.widget.RemoteViews;
 
+import org.chromium.base.Log;
 import org.chromium.chrome.browser.notifications.channels.ChannelsInitializer;
 
 /**
  * Wraps a NotificationCompat.Builder object.
  */
 public class NotificationCompatBuilder implements ChromeNotificationBuilder {
+    private static final String TAG = "NotifCompatBuilder";
     private final NotificationCompat.Builder mBuilder;
     private final NotificationMetadata mMetadata;
 
@@ -80,6 +82,12 @@ public class NotificationCompatBuilder implements ChromeNotificationBuilder {
     @Override
     public ChromeNotificationBuilder setSmallIcon(Icon icon) {
         assert false; // unused
+        return this;
+    }
+
+    @Override
+    public ChromeNotificationBuilder setColor(int argb) {
+        mBuilder.setColor(argb);
         return this;
     }
 
@@ -273,21 +281,34 @@ public class NotificationCompatBuilder implements ChromeNotificationBuilder {
     }
 
     @Override
-    public Notification buildWithBigContentView(RemoteViews view) {
-        return mBuilder.setCustomBigContentView(view).build();
+    public ChromeNotification buildWithBigContentView(RemoteViews view) {
+        assert mMetadata != null;
+        return new ChromeNotification(mBuilder.setCustomBigContentView(view).build(), mMetadata);
     }
 
     @Override
-    public Notification buildWithBigTextStyle(String bigText) {
+    public ChromeNotification buildWithBigTextStyle(String bigText) {
         NotificationCompat.BigTextStyle bigTextStyle =
                 new NotificationCompat.BigTextStyle(mBuilder);
         bigTextStyle.bigText(bigText);
-        return bigTextStyle.build();
+
+        assert mMetadata != null;
+        return new ChromeNotification(bigTextStyle.build(), mMetadata);
     }
 
     @Override
     public Notification build() {
-        return mBuilder.build();
+        Notification notification = null;
+        try {
+            notification = mBuilder.build();
+        } catch (NullPointerException e) {
+            // Android M and L may throw exception, see https://crbug.com/949794.
+            Log.e(TAG, "Failed to build notification.", e);
+            if (mMetadata != null) {
+                NotificationUmaTracker.onNotificationFailedToCreate(mMetadata.type);
+            }
+        }
+        return notification;
     }
 
     @Override

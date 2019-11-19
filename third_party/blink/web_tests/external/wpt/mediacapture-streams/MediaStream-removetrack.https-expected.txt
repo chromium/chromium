@@ -1,7 +1,6 @@
 This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Test named 'Test that removal from a MediaStream fires ended on media elements (video first)' specified 2 'cleanup' functions, and 1 returned a non-thenable value.
 PASS Tests that a removal from a MediaStream works as expected
 FAIL Test that removal from a MediaStream fires ended on media elements (video first) assert_equals: audio element ended because no more audio tracks expected true but got false
-NOTRUN Test that removal from a MediaStream fires ended on media elements (audio first)
+FAIL Test that removal from a MediaStream fires ended on media elements (audio first) assert_equals: audio element ended because no more audio tracks expected true but got false
 Harness: the test ran to completion.
 

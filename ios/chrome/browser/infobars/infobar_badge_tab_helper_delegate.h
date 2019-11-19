@@ -5,11 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_INFOBAR_BADGE_TAB_HELPER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_INFOBARS_INFOBAR_BADGE_TAB_HELPER_DELEGATE_H_
 
+#import <Foundation/Foundation.h>
+
+@protocol BadgeItem;
+
 // Delegate used by InfobarBadgeTabHelper to manage the Infobar badges.
 @protocol InfobarBadgeTabHelperDelegate
 
-// Asks the delegate to display or stop displaying a badge.
-- (void)displayBadge:(BOOL)display;
+// Asks the delegate to add a badge with the configuration of |badgeItem|.
+- (void)addInfobarBadge:(id<BadgeItem>)badgeItem;
+// Asks the delegate to remove a badge matching the badgeType of |badgeItem|.
+- (void)removeInfobarBadge:(id<BadgeItem>)badgeItem;
+// Asks the delegate to update the configuration of |badgeItem|.
+- (void)updateInfobarBadge:(id<BadgeItem>)badgeItem;
 
 @end
 

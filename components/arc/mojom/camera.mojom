@@ -1,0 +1,110 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 3
+
+module arc.mojom;
+
+import "media/capture/video/chromeos/mojom/cros_camera_service.mojom";
+
+struct CameraDeviceInfo {
+  string device_path@0;
+  string usb_vid@1;
+  string usb_pid@2;
+  // Direction the camera faces relative to device screen.
+  // The value is ANDROID_LENS_FACING_* in camera_metadata_tags.h
+  [MinVersion=1] uint32 lens_facing@3;
+  // Clockwise angle through which the output image needs to be rotated to be
+  // upright on the device screen in its native orientation.
+  // Only [0, 90, 180, 270] values are valid.
+  [MinVersion=1] int32 sensor_orientation@4;
+  // The number of frames will be skipped after stream on.
+  [MinVersion=1] uint32 frames_to_skip_after_streamon@5;
+  // The horizontal field of view for 16:9 aspect ratio.
+  [MinVersion=1] float horizontal_view_angle_16_9@6;
+  // The horizontal field of view for 4:3 aspect ratio.
+  [MinVersion=1] float horizontal_view_angle_4_3@7;
+  // List of focal lengths that are supported by this camera device.
+  [MinVersion=1] array<float>? lens_info_available_focal_lengths@8;
+  // Shortest distance from frontmost surface of the lens that can be brought
+  // into sharp focus.
+  [MinVersion=1] float lens_info_minimum_focus_distance@9;
+  // The distance from frontmost surface of the lens that the image is
+  // sharpest.
+  [MinVersion=1] float lens_info_optimal_focus_distance@10;
+  // The vertical field of view for 16:9 aspect ratio.
+  [MinVersion=1] float vertical_view_angle_16_9@11;
+  // The vertical field of view for 4:3 aspect ratio.
+  [MinVersion=1] float vertical_view_angle_4_3@12;
+};
+
+struct CameraSupportedFormat {
+  uint32 width;
+  uint32 height;
+  uint32 fourcc;
+  array<float> frameRates;
+};
+
+// This interface is implemented by arc-camera daemon.
+// There can be multiple CameraService instances, but each CameraService
+// instance can connect to at most one camera device and at most one stream.
+interface CameraService {
+  // Connect camera device with |device_path|. Return 0 in |result| if device is
+  // opened successfully; -errno otherwise.
+  Connect@0(string device_path) => (int32 result);
+  // Disconnect camera device. This function is a no-op if the camera device
+  // is not connected. If the stream is on, this function will also stop the
+  // stream.
+  Disconnect@1() => ();
+  // Enable camera device stream. Set up captured frame with |width|x|height|
+  // resolution, |pixel_format|, and |frame_rate|. |pixel_format| is
+  // V4L2_PIX_FORMAT_* in videodev2.h. Return frame buffer file descriptors
+  // |fds| and |buffer_size|. |buffer_size| is the size allocated for each
+  // buffer. The ownership of |fds| are transferred to the caller and |fds|
+  // should be closed when done. Caller can memory map |fds| and should unmap
+  // when done. Return 0 in |result| if device supports the format; -errno
+  // otherwise. This function should be called after Connect().
+  StreamOn@2(uint32 width, uint32 height, uint32 pixel_format, float frame_rate)
+      => (array<handle> fds, uint32 buffer_size, int32 result);
+  // Disable camera device stream. Return 0 in |result| if device disables
+  // stream successfully; -errno otherwise. This function is a no-op if the
+  // stream is already stopped.
+  StreamOff@3() => (int32 result);
+  // Get next frame buffer from device. Device returns the corresponding
+  // buffer with |buffer_id| and |data_size| bytes. |buffer_id| is the index
+  // into the array of handles |fds| returned from StreamOn. |data_size| is the
+  // number of bytes used in the buffer for this frame. Return 0 in |result| if
+  // device gets the buffer successfully; -errno otherwise. Return -EAGAIN
+  // immediately if next frame buffer is not ready. This function should be
+  // called after StreamOn().
+  GetNextFrameBuffer@4() => (uint32 buffer_id, uint32 data_size, int32 result);
+  // Return |buffer_id| buffer to device. Return 0 in |result| if the buffer is
+  // returned successfully; -errno otherwise. This function should be called
+  // after StreamOn().
+  ReuseFrameBuffer@5(uint32 buffer_id) => (int32 result);
+  // Get all supported formats of device by |device_path|. This function can be
+  // called without calling Connect().
+  GetDeviceSupportedFormats@6(string device_path)
+      => (array<CameraSupportedFormat> supported_formats);
+  // Get all camera devices information. This function can be called without
+  // calling Connect().
+  GetCameraDeviceInfos@7() => (array<CameraDeviceInfo> device_infos);
+};
+
+// Next method ID: 2
+interface CameraHost {
+  // Notifies Chrome that CameraService is requested and returns an interface
+  // pointer bound to a newly created service. Used by camera HAL v1.
+  StartCameraService@0() => (CameraService service);
+
+  // Registers the camera HAL client. Used by camera HAL v3.
+  [MinVersion=2] RegisterCameraHalClient@1(
+      pending_remote<cros.mojom.CameraHalClient> client);
+};
+
+// Next method ID: 1
+interface CameraInstance {
+  // Establishes full-duplex communication with the host.
+  Init@0(CameraHost host_ptr) => ();
+};

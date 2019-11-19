@@ -55,9 +55,6 @@ class FullscreenToolbarAnimationController
   // Returns true if |animation_| is running.
   bool IsAnimationRunning() const;
 
-  // Only for testing. Sets the duration of |animation_|.
-  void SetAnimationDuration(CGFloat duration);
-
   // content::WebContentsObserver:
   void DidFirstVisuallyNonEmptyPaint() override;
 

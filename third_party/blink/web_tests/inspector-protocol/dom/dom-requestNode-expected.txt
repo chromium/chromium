@@ -1,0 +1,219 @@
+Tests permutations of DOM.requestNode
+
+Running test: requestTargetAfterTraversal
+{
+    attributes : [
+        [0] : id
+        [1] : targetDiv
+    ]
+    backendNodeId : <number>
+    childNodeCount : 0
+    children : [
+    ]
+    localName : div
+    nodeId : <number>
+    nodeName : DIV
+    nodeType : 1
+    nodeValue : 
+    parentId : <number>
+}
+{
+    result : {
+        className : HTMLDivElement
+        description : div#targetDiv
+        objectId : <string>
+        subtype : node
+        type : object
+    }
+}
+requested === targeted: true
+
+Running test: requestTargetBeforeTraversal
+{
+    result : {
+        className : HTMLDivElement
+        description : div#targetDiv
+        objectId : <string>
+        subtype : node
+        type : object
+    }
+}
+{
+    nodeId : <number>
+}
+{
+    attributes : [
+        [0] : id
+        [1] : targetDiv
+    ]
+    backendNodeId : <number>
+    childNodeCount : 0
+    localName : div
+    nodeId : <number>
+    nodeName : DIV
+    nodeType : 1
+    nodeValue : 
+    parentId : <number>
+}
+requested === targeted: true
+
+Running test: requestNodeByObjectId
+{
+    result : {
+        className : Object
+        description : Object
+        objectId : <string>
+        type : object
+    }
+}
+{
+    code : -32000
+    message : Object id doesn't reference a Node
+}
+
+Running test: requestNodeInIframeByObjectId
+{
+    backendNodeId : <number>
+    baseURL : <string>
+    childNodeCount : 2
+    children : [
+        [0] : {
+            backendNodeId : <number>
+            localName : 
+            nodeId : <number>
+            nodeName : html
+            nodeType : 10
+            nodeValue : 
+            parentId : <number>
+            publicId : 
+            systemId : 
+        }
+        [1] : {
+            attributes : [
+            ]
+            backendNodeId : <number>
+            childNodeCount : 2
+            children : [
+                [0] : {
+                    attributes : [
+                    ]
+                    backendNodeId : <number>
+                    childNodeCount : 1
+                    children : [
+                        [0] : {
+                            attributes : [
+                            ]
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            children : [
+                                [0] : {
+                                    backendNodeId : <number>
+                                    localName : 
+                                    nodeId : <number>
+                                    nodeName : #text
+                                    nodeType : 3
+                                    nodeValue : Iframe
+                                    parentId : <number>
+                                }
+                            ]
+                            localName : title
+                            nodeId : <number>
+                            nodeName : TITLE
+                            nodeType : 1
+                            nodeValue : 
+                            parentId : <number>
+                        }
+                    ]
+                    localName : head
+                    nodeId : <number>
+                    nodeName : HEAD
+                    nodeType : 1
+                    nodeValue : 
+                    parentId : <number>
+                }
+                [1] : {
+                    attributes : [
+                    ]
+                    backendNodeId : <number>
+                    childNodeCount : 1
+                    children : [
+                        [0] : {
+                            attributes : [
+                                [0] : class
+                                [1] : class1
+                            ]
+                            backendNodeId : <number>
+                            childNodeCount : 1
+                            children : [
+                                [0] : {
+                                    backendNodeId : <number>
+                                    localName : 
+                                    nodeId : <number>
+                                    nodeName : #text
+                                    nodeType : 3
+                                    nodeValue :          Iframe Paragraph Text     
+                                    parentId : <number>
+                                }
+                            ]
+                            localName : p
+                            nodeId : <number>
+                            nodeName : P
+                            nodeType : 1
+                            nodeValue : 
+                            parentId : <number>
+                        }
+                    ]
+                    localName : body
+                    nodeId : <number>
+                    nodeName : BODY
+                    nodeType : 1
+                    nodeValue : 
+                    parentId : <number>
+                }
+            ]
+            frameId : <string>
+            localName : html
+            nodeId : <number>
+            nodeName : HTML
+            nodeType : 1
+            nodeValue : 
+            parentId : <number>
+        }
+    ]
+    documentURL : <string>
+    localName : 
+    nodeId : <number>
+    nodeName : #document
+    nodeType : 9
+    nodeValue : 
+    xmlVersion : 
+}
+{
+    attributes : [
+        [0] : class
+        [1] : class1
+    ]
+    backendNodeId : <number>
+    childNodeCount : 1
+    children : [
+        [0] : {
+            backendNodeId : <number>
+            localName : 
+            nodeId : <number>
+            nodeName : #text
+            nodeType : 3
+            nodeValue :          Iframe Paragraph Text     
+            parentId : <number>
+        }
+    ]
+    localName : p
+    nodeId : <number>
+    nodeName : P
+    nodeType : 1
+    nodeValue : 
+    parentId : <number>
+}
+{
+    nodeId : <number>
+}
+

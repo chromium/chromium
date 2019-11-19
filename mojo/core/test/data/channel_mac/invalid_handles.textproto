@@ -1,0 +1,20 @@
+endpoint_type: LOCAL
+fuzz_handshake: false
+messages {
+  id: 0x4d4f4a4f
+  descriptors {
+    port: RECEIVE
+  }
+  descriptors {
+    port: SEND
+  }
+  include_body_if_not_complex: true
+  data: "Receive a message with ports but that has invalid data."
+}
+messages {
+  id: 0x4d4f4a4f
+  include_body_if_not_complex: true
+  [mojo_fuzzer.MojoMessage.mojo_message]: {
+    data: "Follow it with a valid message."
+  }
+}

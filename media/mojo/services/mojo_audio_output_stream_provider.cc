@@ -8,24 +8,24 @@
 
 #include "base/bind.h"
 #include "build/build_config.h"
-#include "media/mojo/interfaces/audio_data_pipe.mojom.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace media {
 
 MojoAudioOutputStreamProvider::MojoAudioOutputStreamProvider(
-    mojom::AudioOutputStreamProviderRequest request,
+    mojo::PendingReceiver<mojom::AudioOutputStreamProvider> pending_receiver,
     CreateDelegateCallback create_delegate_callback,
     DeleterCallback deleter_callback,
     std::unique_ptr<media::mojom::AudioOutputStreamObserver> observer)
-    : binding_(this, std::move(request)),
+    : receiver_(this, std::move(pending_receiver)),
       create_delegate_callback_(std::move(create_delegate_callback)),
       deleter_callback_(std::move(deleter_callback)),
       observer_(std::move(observer)),
-      observer_binding_(observer_.get()) {
+      observer_receiver_(observer_.get()) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Unretained is safe since |this| owns |binding_|.
-  binding_.set_connection_error_handler(
+  // Unretained is safe since |this| owns |receiver_|.
+  receiver_.set_disconnect_handler(
       base::BindOnce(&MojoAudioOutputStreamProvider::CleanUp,
                      base::Unretained(this), /*had_error*/ false));
   DCHECK(create_delegate_callback_);
@@ -38,7 +38,7 @@ MojoAudioOutputStreamProvider::~MojoAudioOutputStreamProvider() {
 
 void MojoAudioOutputStreamProvider::Acquire(
     const AudioParameters& params,
-    mojom::AudioOutputStreamProviderClientPtr provider_client,
+    mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> provider_client,
     const base::Optional<base::UnguessableToken>& processing_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 // |processing_id| gets dropped here. It's not supported outside of the audio
@@ -58,14 +58,14 @@ void MojoAudioOutputStreamProvider::Acquire(
     return;
   }
 
-  provider_client_ = std::move(provider_client);
+  provider_client_.Bind(std::move(provider_client));
 
-  mojom::AudioOutputStreamObserverPtr observer_ptr;
-  observer_binding_.Bind(mojo::MakeRequest(&observer_ptr));
+  mojo::PendingRemote<mojom::AudioOutputStreamObserver> pending_observer;
+  observer_receiver_.Bind(pending_observer.InitWithNewPipeAndPassReceiver());
   // Unretained is safe since |this| owns |audio_output_|.
   audio_output_.emplace(
       base::BindOnce(std::move(create_delegate_callback_), params,
-                     std::move(observer_ptr)),
+                     std::move(pending_observer)),
       base::BindOnce(&mojom::AudioOutputStreamProviderClient::Created,
                      base::Unretained(provider_client_.get())),
       base::BindOnce(&MojoAudioOutputStreamProvider::CleanUp,

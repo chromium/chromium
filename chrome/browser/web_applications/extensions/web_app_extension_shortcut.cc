@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -95,35 +96,9 @@ void UpdateAllShortcutsForShortcutInfo(
   base::FilePath shortcut_data_dir =
       internals::GetShortcutDataDir(*shortcut_info);
   internals::PostShortcutIOTaskAndReply(
-      base::BindOnce(&internals::UpdatePlatformShortcuts, shortcut_data_dir,
-                     old_app_title),
+      base::BindOnce(&internals::UpdatePlatformShortcuts,
+                     std::move(shortcut_data_dir), old_app_title),
       std::move(shortcut_info), std::move(callback));
-}
-
-void CreatePlatformShortcutsAndPostCallback(
-    const base::FilePath& shortcut_data_path,
-    const ShortcutLocations& creation_locations,
-    ShortcutCreationReason creation_reason,
-    CreateShortcutsCallback callback,
-    const ShortcutInfo& shortcut_info) {
-  bool shortcut_created = internals::CreatePlatformShortcuts(
-      shortcut_data_path, creation_locations, creation_reason, shortcut_info);
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::UI},
-      base::BindOnce(std::move(callback), shortcut_created));
-}
-
-void ScheduleCreatePlatformShortcut(
-    ShortcutCreationReason reason,
-    const ShortcutLocations& locations,
-    CreateShortcutsCallback callback,
-    std::unique_ptr<ShortcutInfo> shortcut_info) {
-  base::FilePath shortcut_data_dir =
-      internals::GetShortcutDataDir(*shortcut_info);
-  internals::PostShortcutIOTask(
-      base::BindOnce(&CreatePlatformShortcutsAndPostCallback, shortcut_data_dir,
-                     locations, reason, std::move(callback)),
-      std::move(shortcut_info));
 }
 
 }  // namespace
@@ -163,8 +138,11 @@ void CreateShortcutsWithInfo(ShortcutCreationReason reason,
     }
   }
 
-  ScheduleCreatePlatformShortcut(reason, locations, std::move(callback),
-                                 std::move(shortcut_info));
+  base::FilePath shortcut_data_dir =
+      internals::GetShortcutDataDir(*shortcut_info);
+  internals::ScheduleCreatePlatformShortcuts(shortcut_data_dir, locations,
+                                             reason, std::move(shortcut_info),
+                                             std::move(callback));
 }
 
 void GetShortcutInfoForApp(const extensions::Extension* extension,
@@ -219,18 +197,9 @@ std::unique_ptr<ShortcutInfo> ShortcutInfoForExtensionAndProfile(
     Profile* profile) {
   std::unique_ptr<ShortcutInfo> shortcut_info(new ShortcutInfo);
   shortcut_info->extension_id = app->id();
-  shortcut_info->is_platform_app = app->is_platform_app();
-
-  // Some default-installed apps are converted into bookmark apps on Chrome
-  // first run. These should not be considered as being created (by the user)
-  // from a web page.
-  shortcut_info->from_bookmark =
-      app->from_bookmark() && !app->was_installed_by_default();
-
   shortcut_info->url = extensions::AppLaunchInfo::GetLaunchWebURL(app);
   shortcut_info->title = base::UTF8ToUTF16(app->name());
   shortcut_info->description = base::UTF8ToUTF16(app->description());
-  shortcut_info->extension_path = app->path();
   shortcut_info->profile_path = profile->GetPath();
   shortcut_info->profile_name =
       profile->GetPrefs()->GetString(prefs::kProfileName);
@@ -263,13 +232,6 @@ bool ShouldCreateShortcutFor(ShortcutCreationReason reason,
   // Allow shortcut creation if it was explicitly requested by the user (i.e. is
   // not automatic).
   return reason == SHORTCUT_CREATION_BY_USER;
-}
-
-base::FilePath GetWebAppDataDirectory(const base::FilePath& profile_path,
-                                      const extensions::Extension& extension) {
-  return GetWebAppDataDirectory(
-      profile_path, extension.id(),
-      GURL(extensions::AppLaunchInfo::GetLaunchWebURL(&extension)));
 }
 
 void CreateShortcuts(ShortcutCreationReason reason,

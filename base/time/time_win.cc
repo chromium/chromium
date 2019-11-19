@@ -33,6 +33,7 @@
 
 #include "base/time/time.h"
 
+#include <windows.foundation.h>
 #include <windows.h>
 #include <mmsystem.h>
 #include <stdint.h>
@@ -40,6 +41,7 @@
 #include "base/atomicops.h"
 #include "base/bit_cast.h"
 #include "base/cpu.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
@@ -84,12 +86,28 @@ void InitializeClock() {
   g_initial_time = CurrentWallclockMicroseconds();
 }
 
+const base::Feature kSlowDCTimerInterruptsFeature{
+    "SlowDCTimerInterrups", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // The two values that ActivateHighResolutionTimer uses to set the systemwide
 // timer interrupt frequency on Windows. It controls how precise timers are
 // but also has a big impact on battery life.
-const int kMinTimerIntervalHighResMs = 1;
-const int kMinTimerIntervalLowResMs = 4;
-// Track if kMinTimerIntervalHighResMs or kMinTimerIntervalLowResMs is active.
+// Used when running on AC power - plugged in - when a fast timer is wanted.
+UINT MinTimerIntervalHighResMs() {
+  return 1;
+}
+
+UINT MinTimerIntervalLowResMs() {
+  // Traditionally Chrome has used an interval of 4 ms when raising the timer
+  // interrupt frequency on battery power. However even 4 ms is too short an
+  // interval on modern CPUs - it wastes non-trivial power - so this experiment
+  // tests an interval of 8 ms, recommended by Intel.
+  static const UINT s_interval =
+      base::FeatureList::IsEnabled(kSlowDCTimerInterruptsFeature) ? 8 : 4;
+  return s_interval;
+}
+
+// Track if MinTimerIntervalHighResMs() or MinTimerIntervalLowResMs() is active.
 bool g_high_res_timer_enabled = false;
 // How many times the high resolution timer has been called.
 uint32_t g_high_res_timer_count = 0;
@@ -204,11 +222,11 @@ void Time::EnableHighResolutionTimer(bool enable) {
   // call timeEndPeriod with the same value used in timeBeginPeriod and
   // therefore undo the period effect.
   if (enable) {
-    timeEndPeriod(kMinTimerIntervalLowResMs);
-    timeBeginPeriod(kMinTimerIntervalHighResMs);
+    timeEndPeriod(MinTimerIntervalLowResMs());
+    timeBeginPeriod(MinTimerIntervalHighResMs());
   } else {
-    timeEndPeriod(kMinTimerIntervalHighResMs);
-    timeBeginPeriod(kMinTimerIntervalLowResMs);
+    timeEndPeriod(MinTimerIntervalHighResMs());
+    timeBeginPeriod(MinTimerIntervalLowResMs());
   }
 }
 
@@ -220,8 +238,8 @@ bool Time::ActivateHighResolutionTimer(bool activating) {
   const uint32_t max = std::numeric_limits<uint32_t>::max();
 
   AutoLock lock(*GetHighResLock());
-  UINT period = g_high_res_timer_enabled ? kMinTimerIntervalHighResMs
-                                         : kMinTimerIntervalLowResMs;
+  UINT period = g_high_res_timer_enabled ? MinTimerIntervalHighResMs()
+                                         : MinTimerIntervalLowResMs();
   if (activating) {
     DCHECK_NE(g_high_res_timer_count, max);
     ++g_high_res_timer_count;
@@ -238,7 +256,7 @@ bool Time::ActivateHighResolutionTimer(bool activating) {
       timeEndPeriod(period);
     }
   }
-  return (period == kMinTimerIntervalHighResMs);
+  return period == MinTimerIntervalHighResMs();
 }
 
 // static
@@ -623,6 +641,20 @@ ThreadTicks ThreadTicks::GetForThread(
     const PlatformThreadHandle& thread_handle) {
   DCHECK(IsSupported());
 
+#if defined(ARCH_CPU_ARM64)
+  // QueryThreadCycleTime versus TSCTicksPerSecond doesn't have much relation to
+  // actual elapsed time on Windows on Arm, because QueryThreadCycleTime is
+  // backed by the actual number of CPU cycles executed, rather than a
+  // constant-rate timer like Intel. To work around this, use GetThreadTimes
+  // (which isn't as accurate but is meaningful as a measure of elapsed
+  // per-thread time).
+  FILETIME creation_time, exit_time, kernel_time, user_time;
+  ::GetThreadTimes(thread_handle.platform_handle(), &creation_time, &exit_time,
+                   &kernel_time, &user_time);
+
+  int64_t us = FileTimeToMicroseconds(user_time);
+  return ThreadTicks(us);
+#else
   // Get the number of TSC ticks used by the current thread.
   ULONG64 thread_cycle_time = 0;
   ::QueryThreadCycleTime(thread_handle.platform_handle(), &thread_cycle_time);
@@ -636,6 +668,7 @@ ThreadTicks ThreadTicks::GetForThread(
   double thread_time_seconds = thread_cycle_time / tsc_ticks_per_second;
   return ThreadTicks(
       static_cast<int64_t>(thread_time_seconds * Time::kMicrosecondsPerSecond));
+#endif
 }
 
 // static
@@ -646,23 +679,18 @@ bool ThreadTicks::IsSupportedWin() {
 
 // static
 void ThreadTicks::WaitUntilInitializedWin() {
+#if !defined(ARCH_CPU_ARM64)
   while (TSCTicksPerSecond() == 0)
     ::Sleep(10);
+#endif
 }
 
-#if defined(_M_ARM64) && defined(__clang__)
-#define ReadCycleCounter() _ReadStatusReg(ARM64_PMCCNTR_EL0)
-#else
-#define ReadCycleCounter() __rdtsc()
-#endif
-
+#if !defined(ARCH_CPU_ARM64)
 double ThreadTicks::TSCTicksPerSecond() {
   DCHECK(IsSupported());
-
   // The value returned by QueryPerformanceFrequency() cannot be used as the TSC
   // frequency, because there is no guarantee that the TSC frequency is equal to
   // the performance counter frequency.
-
   // The TSC frequency is cached in a static variable because it takes some time
   // to compute it.
   static double tsc_ticks_per_second = 0;
@@ -677,12 +705,12 @@ double ThreadTicks::TSCTicksPerSecond() {
   // The first time that this function is called, make an initial reading of the
   // TSC and the performance counter.
 
-  static const uint64_t tsc_initial = ReadCycleCounter();
+  static const uint64_t tsc_initial = __rdtsc();
   static const uint64_t perf_counter_initial = QPCNowRaw();
 
   // Make a another reading of the TSC and the performance counter every time
   // that this function is called.
-  uint64_t tsc_now = ReadCycleCounter();
+  uint64_t tsc_now = __rdtsc();
   uint64_t perf_counter_now = QPCNowRaw();
 
   // Reset the thread priority.
@@ -715,8 +743,8 @@ double ThreadTicks::TSCTicksPerSecond() {
 
   return tsc_ticks_per_second;
 }
+#endif  // defined(ARCH_CPU_ARM64)
 
-#undef ReadCycleCounter
 // static
 TimeTicks TimeTicks::FromQPCValue(LONGLONG qpc_value) {
   return TimeTicks() + QPCValueToTimeDelta(qpc_value);
@@ -732,6 +760,18 @@ TimeDelta TimeDelta::FromQPCValue(LONGLONG qpc_value) {
 // static
 TimeDelta TimeDelta::FromFileTime(FILETIME ft) {
   return TimeDelta::FromMicroseconds(FileTimeToMicroseconds(ft));
+}
+
+// static
+TimeDelta TimeDelta::FromWinrtDateTime(ABI::Windows::Foundation::DateTime dt) {
+  // UniversalTime is 100 ns intervals since January 1, 1601 (UTC)
+  return TimeDelta::FromMicroseconds(dt.UniversalTime / 10);
+}
+
+ABI::Windows::Foundation::DateTime TimeDelta::ToWinrtDateTime() const {
+  ABI::Windows::Foundation::DateTime date_time;
+  date_time.UniversalTime = InMicroseconds() * 10;
+  return date_time;
 }
 
 }  // namespace base

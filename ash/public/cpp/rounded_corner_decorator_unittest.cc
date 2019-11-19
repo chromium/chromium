@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/rounded_corner_decorator.h"
 
+#include "ash/public/cpp/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/aura_test_base.h"
 #include "ui/aura/test/test_windows.h"
@@ -11,18 +13,21 @@
 
 namespace ash {
 
-typedef aura::test::AuraTestBase RoundedCornerDecoratorTest;
+using RoundedCornerDecoratorTest = aura::test::AuraTestBase;
 
 // Test that the decorator doesn't try to apply itself to destroyed layers.
 TEST_F(RoundedCornerDecoratorTest, RoundedCornerMaskProperlyInvalidatesItself) {
+  constexpr int kCornerRadius = 4;
+  constexpr gfx::RoundedCornersF kRadii(kCornerRadius);
   std::unique_ptr<aura::Window> window(aura::test::CreateTestWindowWithBounds(
       gfx::Rect(100, 100, 100, 100), root_window()));
   auto decorator = std::make_unique<ash::RoundedCornerDecorator>(
-      window.get(), window.get(), window->layer(), 4);
+      window.get(), window.get(), window->layer(), kCornerRadius);
 
   // Confirm a mask layer exists and the decorator is valid.
   EXPECT_TRUE(window->layer());
-  EXPECT_TRUE(window->layer()->layer_mask_layer());
+  ASSERT_FALSE(window->layer()->layer_mask_layer());
+  EXPECT_EQ(window->layer()->rounded_corner_radii(), kRadii);
   EXPECT_TRUE(decorator->IsValid());
 
   // Destroy window.
@@ -35,15 +40,15 @@ TEST_F(RoundedCornerDecoratorTest, RoundedCornerMaskProperlyInvalidatesItself) {
 // Test that mask layer changes bounds with the window it is applied to.
 TEST_F(RoundedCornerDecoratorTest,
        RoundedCornerMaskChangesBoundsOnWindowBoundsChange) {
+  constexpr int kCornerRadius = 4;
+  constexpr gfx::RoundedCornersF kRadii(kCornerRadius);
   std::unique_ptr<aura::Window> window(aura::test::CreateTestWindowWithBounds(
       gfx::Rect(100, 100, 100, 100), root_window()));
   auto decorator = std::make_unique<ash::RoundedCornerDecorator>(
-      window.get(), window.get(), window->layer(), 4);
+      window.get(), window.get(), window->layer(), kCornerRadius);
 
-  // Make sure the mask layer has the correct bounds and exists.
-  ASSERT_TRUE(window->layer()->layer_mask_layer());
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 100),
-            window->layer()->layer_mask_layer()->bounds());
+  ASSERT_FALSE(window->layer()->layer_mask_layer());
+  EXPECT_EQ(window->layer()->rounded_corner_radii(), kRadii);
 
   // Change the bounds of the window. Set zero duration animations to apply
   // changes immediately.
@@ -51,8 +56,9 @@ TEST_F(RoundedCornerDecoratorTest,
 
   // Make sure the mask layer's bounds are also changed.
   EXPECT_EQ(gfx::Rect(0, 0, 150, 150).ToString(), window->bounds().ToString());
-  EXPECT_EQ(window->layer()->layer_mask_layer()->bounds().ToString(),
-            window->bounds().ToString());
+
+  ASSERT_FALSE(window->layer()->layer_mask_layer());
+  EXPECT_EQ(window->layer()->rounded_corner_radii(), kRadii);
 }
 
 }  // namespace ash

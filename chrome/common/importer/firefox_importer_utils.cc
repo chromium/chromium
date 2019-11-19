@@ -50,51 +50,107 @@ base::FilePath GetProfilePath(const base::DictionaryValue& root,
   return path;
 }
 
-// Checks if the named profile is the default profile.
-bool IsDefaultProfile(const base::DictionaryValue& root,
-                      const std::string& profile_name) {
-  std::string is_default;
-  root.GetStringASCII(profile_name + ".Default", &is_default);
-  return is_default == "1";
+// Returns a map from Firefox profiles to their corresponding installation ids.
+// The keys are file system paths for Firefox profiles that are the default
+// profile in their installation. The values are the registry keys for the
+// corresponding installation.
+std::map<std::string, std::string> GetDefaultProfilesPerInstall(
+    const base::DictionaryValue& root) {
+  std::map<std::string, std::string> default_profile_to_install_id;
+  static constexpr base::StringPiece kInstallPrefix("Install");
+  // Find the default profiles for each Firefox installation.
+  for (const auto& data : root) {
+    const std::string& dict_key = data.first;
+    if (base::StartsWith(dict_key, kInstallPrefix,
+                         base::CompareCase::SENSITIVE)) {
+      std::string path;
+      if (root.GetStringASCII(dict_key + ".Default", &path)) {
+        default_profile_to_install_id.emplace(
+            std::move(path), dict_key.substr(kInstallPrefix.size()));
+      }
+    }
+  }
+  return default_profile_to_install_id;
+}
+
+base::FilePath GetLegacyDefaultProfilePath(
+    const base::DictionaryValue& root,
+    const std::vector<std::string>& profile_names) {
+  if (profile_names.empty())
+    return base::FilePath();
+
+  // When multiple profiles exist, the path to the default profile is returned.
+  for (const auto& profile_name : profile_names) {
+    // Checks if the named profile is the default profile using the legacy
+    // format of profiles.ini (Firefox version < 67).
+    std::string is_default;
+    if (root.GetStringASCII(profile_name + ".Default", &is_default) &&
+        is_default == "1") {
+      return GetProfilePath(root, profile_name);
+    }
+  }
+
+  // If no default profile is found, the path to Profile0 will be returned.
+  return GetProfilePath(root, profile_names.front());
 }
 
 } // namespace
 
-base::FilePath GetFirefoxProfilePath() {
+base::FilePath GetFirefoxProfilePath(const std::string& firefox_install_id) {
   base::FilePath ini_file = GetProfilesINI();
   std::string content;
   base::ReadFileToString(ini_file, &content);
   DictionaryValueINIParser ini_parser;
   ini_parser.Parse(content);
-  return GetFirefoxProfilePathFromDictionary(ini_parser.root());
+  return GetFirefoxProfilePathFromDictionary(ini_parser.root(),
+                                             firefox_install_id);
 }
 
 base::FilePath GetFirefoxProfilePathFromDictionary(
-    const base::DictionaryValue& root) {
-  std::vector<std::string> profiles;
+    const base::DictionaryValue& root,
+    const std::string& firefox_install_id) {
+  // List of profiles linked to a Firefox installation. This will be empty for
+  // Firefox versions older than 67.
+  std::map<std::string, std::string> default_profile_to_install_id =
+      GetDefaultProfilesPerInstall(root);
+  // First profile linked to a Firefox installation (version >= 67).
+  base::Optional<std::string> first_modern_profile;
+
+  // Profiles not linked to a Firefox installation (version < 67).
+  std::vector<std::string> legacy_profiles;
+
   for (int i = 0; ; ++i) {
     std::string current_profile = base::StringPrintf("Profile%d", i);
-    if (root.HasKey(current_profile)) {
-      profiles.push_back(current_profile);
-    } else {
-      // Profiles are continuously numbered. So we exit when we can't
+    if (!root.HasKey(current_profile)) {
+      // Profiles are contiguously numbered. So we exit when we can't
       // find the i-th one.
       break;
     }
+
+    std::string path;
+    if (!root.GetStringASCII(current_profile + ".Path", &path))
+      continue;
+
+    auto install_id_it = default_profile_to_install_id.find(path);
+    if (install_id_it != default_profile_to_install_id.end()) {
+      // If this installation is the default browser, use the associated
+      // profile as default profile.
+      if (install_id_it->second == firefox_install_id)
+        return GetProfilePath(root, current_profile);
+      if (!first_modern_profile)
+        first_modern_profile.emplace(std::move(current_profile));
+    } else {
+      // If no Firefox installation found in profiles.ini, legacy profiles
+      // (Firefox version < 67) are being used.
+      legacy_profiles.push_back(std::move(current_profile));
+    }
   }
 
-  if (profiles.empty())
-    return base::FilePath();
+  // Take the first install found as the default install.
+  if (first_modern_profile)
+    return GetProfilePath(root, *first_modern_profile);
 
-  // When multiple profiles exist, the path to the default profile is returned,
-  // since the other profiles are used mostly by developers for testing.
-  for (std::vector<std::string>::const_iterator it = profiles.begin();
-       it != profiles.end(); ++it)
-    if (IsDefaultProfile(root, *it))
-      return GetProfilePath(root, *it);
-
-  // If no default profile is found, the path to Profile0 will be returned.
-  return GetProfilePath(root, profiles.front());
+  return GetLegacyDefaultProfilePath(root, legacy_profiles);
 }
 
 #if defined(OS_MACOSX)

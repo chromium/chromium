@@ -10,10 +10,12 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
+#include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -42,7 +44,7 @@ const policy::CloudPolicyClient* GetCloudPolicyClient() {
 
 namespace arc {
 
-ArcRobotAuthCodeFetcher::ArcRobotAuthCodeFetcher() : weak_ptr_factory_(this) {}
+ArcRobotAuthCodeFetcher::ArcRobotAuthCodeFetcher() {}
 
 ArcRobotAuthCodeFetcher::~ArcRobotAuthCodeFetcher() = default;
 
@@ -57,34 +59,36 @@ void ArcRobotAuthCodeFetcher::Fetch(FetchCallback callback) {
   }
 
   policy::DeviceManagementService* service = GetDeviceManagementService();
-  fetch_request_job_.reset(service->CreateJob(
-      policy::DeviceManagementRequestJob::TYPE_API_AUTH_CODE_FETCH,
-      url_loader_factory_for_testing()
-          ? url_loader_factory_for_testing()
-          : g_browser_process->system_network_context_manager()
-                ->GetSharedURLLoaderFactory()));
-
-  fetch_request_job_->SetAuthData(
-      policy::DMAuth::FromDMToken(client->dm_token()));
-  fetch_request_job_->SetClientID(client->client_id());
+  std::unique_ptr<policy::DMServerJobConfiguration> config =
+      std::make_unique<policy::DMServerJobConfiguration>(
+          service,
+          policy::DeviceManagementService::JobConfiguration::
+              TYPE_API_AUTH_CODE_FETCH,
+          client->client_id(), /*critical=*/false,
+          policy::DMAuth::FromDMToken(client->dm_token()),
+          /*oauth_token=*/base::nullopt,
+          url_loader_factory_for_testing()
+              ? url_loader_factory_for_testing()
+              : g_browser_process->system_network_context_manager()
+                    ->GetSharedURLLoaderFactory(),
+          base::BindOnce(
+              &ArcRobotAuthCodeFetcher::OnFetchRobotAuthCodeCompleted,
+              weak_ptr_factory_.GetWeakPtr(),
+              base::AdaptCallbackForRepeating(std::move(callback))));
 
   enterprise_management::DeviceServiceApiAccessRequest* request =
-      fetch_request_job_->GetRequest()->mutable_service_api_access_request();
+      config->request()->mutable_service_api_access_request();
   request->set_oauth2_client_id(kAndoidClientId);
   request->add_auth_scopes(GaiaConstants::kAnyApiOAuth2Scope);
   request->set_device_type(
       enterprise_management::DeviceServiceApiAccessRequest::ANDROID_OS);
 
-  // TODO(sinhak): Migrate |DeviceManagementService| to use
-  // |base::OnceCallback|.
-  fetch_request_job_->Start(
-      base::Bind(&ArcRobotAuthCodeFetcher::OnFetchRobotAuthCodeCompleted,
-                 weak_ptr_factory_.GetWeakPtr(),
-                 base::AdaptCallbackForRepeating(std::move(callback))));
+  fetch_request_job_ = service->CreateJob(std::move(config));
 }
 
 void ArcRobotAuthCodeFetcher::OnFetchRobotAuthCodeCompleted(
     FetchCallback callback,
+    policy::DeviceManagementService::Job* job,
     policy::DeviceManagementStatus status,
     int net_error,
     const enterprise_management::DeviceManagementResponse& response) {

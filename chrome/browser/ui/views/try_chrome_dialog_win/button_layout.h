@@ -48,10 +48,6 @@ class ButtonLayout : public views::LayoutManager {
   // The horizontal or vertical space between two buttons.
   enum { kPaddingBetweenButtons = 4 };
 
-  // Returns true if |host| contains two buttons, or false if it contains only
-  // one.
-  static bool HasTwoButtons(const views::View* host);
-
   // Returns the preferred size of the largest child of |host|.
   static gfx::Size GetMaxChildPreferredSize(const views::View* host);
 

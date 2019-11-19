@@ -25,9 +25,6 @@ UI_BASE_EXPORT
 @interface MenuControllerCocoa
     : NSObject<NSMenuDelegate, NSUserInterfaceValidations>
 
-// The Model passed in to -initWithModel:.
-@property(nonatomic, assign) ui::MenuModel* model;
-
 // Whether to activate selected menu items via a posted task. This may allow the
 // selection to be handled earlier, whilst the menu is fading out. If the posted
 // task wasn't processed by the time the action is normally sent, it will be
@@ -53,6 +50,9 @@ UI_BASE_EXPORT
 
 // Programmatically close the constructed menu.
 - (void)cancel;
+
+- (ui::MenuModel*)model;
+- (void)setModel:(ui::MenuModel*)model;
 
 // Access to the constructed menu if the complex initializer was used. If the
 // default initializer was used, then this will create the menu on first call.

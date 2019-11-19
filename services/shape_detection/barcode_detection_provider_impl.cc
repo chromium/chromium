@@ -9,7 +9,7 @@
 namespace shape_detection {
 
 void BarcodeDetectionProviderImpl::CreateBarcodeDetection(
-    shape_detection::mojom::BarcodeDetectionRequest request,
+    mojo::PendingReceiver<shape_detection::mojom::BarcodeDetection> receiver,
     shape_detection::mojom::BarcodeDetectorOptionsPtr options) {
   DLOG(ERROR) << "Platform not supported for Barcode Detection Service.";
 }

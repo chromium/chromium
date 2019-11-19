@@ -29,13 +29,16 @@ struct WebDeviceEmulationParams {
   // original one for kDesktop screen position, (0, 0) for kMobile.
   base::Optional<WebPoint> view_position;
 
-  // Emulated view size. Empty size means no override.
+  // Emulated view size. A width or height of 0 means no override in that
+  // dimension, but the other can still be applied. When both are 0, then the
+  // |scale| will be applied to the view instead.
   WebSize view_size;
 
   // If zero, the original device scale factor is preserved.
   float device_scale_factor;
 
-  // Scale of emulated view inside available space, not in fit to view mode.
+  // Scale the contents of the main frame. The view's size will be scaled by
+  // this number when they are not specified in |view_size|.
   float scale;
 
   // Forced viewport offset for screenshots during emulation, (-1, -1) for

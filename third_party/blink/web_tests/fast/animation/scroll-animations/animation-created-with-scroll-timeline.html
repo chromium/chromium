@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Test an Animation created with a ScrollTimeline doesn't crash</title>
+<title>Test instantiating an Animation with a ScrollTimeline.</title>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 
 <script>
-test(t => {
-  // We don't yet support ScrollTimeline, but creating an Animation object with
-  // one should not crash.
-  var timeline = new ScrollTimeline({ timeRange: 100, orientation: 'block' });
-  assert_throws("NotSupportedError", function() { new Animation(null, timeline) });
-}, 'An Animation created with a ScrollTimeline should not crash');
+  test(t => {
+    var scrollTimeline = new ScrollTimeline({ timeRange: 100, orientation: 'block' });
+    var animationObject = new Animation(null, scrollTimeline);
+    assert_equals(animationObject.timeline, scrollTimeline,
+      "Animation timeline should be the ScrollTimeline passed in the constructor.");
+  }, 'Instantiating an Animation with a ScrollTimeline should be successful.');
 </script>

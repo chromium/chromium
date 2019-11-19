@@ -12,9 +12,6 @@
 extern const float kTableViewNavigationVerticalOffsetForSearchHeader;
 // The Alpha value used by the SearchBar when disabled.
 extern const float kTableViewNavigationAlphaForDisabledSearchBar;
-// The Alpha (on white) used for the scrim covering current data until data
-// is filtered out.
-extern const float kTableViewNavigationWhiteAlphaForSearchScrim;
 // The duration for scrim to fade in or out.
 extern const NSTimeInterval kTableViewNavigationScrimFadeDuration;
 

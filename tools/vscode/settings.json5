@@ -45,12 +45,13 @@
   },
 
   // Wider author column for annotator extension.
+  // https://marketplace.visualstudio.com/items?itemName=ryu1kn.annotator
   "annotator.annotationColumnWidth": "24em",
 
   // C++ clang format settings.
   "C_Cpp.clang_format_path": "${workspaceFolder}/third_party/depot_tools/clang-format",
   "C_Cpp.clang_format_sortIncludes": true,
-  "C_Cpp.clang_format_formatOnSave": true,
+  "editor.formatOnSave": true,
 
   // YouCompleteMe
   "ycmd.path": "<full_path_to_your_home>/.ycmd", // Please replace this path

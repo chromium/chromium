@@ -12,13 +12,13 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.UrlConstants;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinatorFactory;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.native_page.BasicNativePage;
 import org.chromium.chrome.browser.native_page.NativePageHost;
 import org.chromium.chrome.browser.snackbar.SnackbarManager.SnackbarManageable;
+import org.chromium.chrome.browser.util.UrlConstants;
 
 /**
  * Native page for managing downloads handled through Chrome.
@@ -42,15 +42,18 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
     protected void initialize(ChromeActivity activity, final NativePageHost host) {
         ThreadUtils.assertOnUiThread();
 
-        DownloadManagerUiConfig config = new DownloadManagerUiConfig.Builder()
-                                                 .setIsOffTheRecord(host.isIncognito())
-                                                 .setIsSeparateActivity(false)
-                                                 .build();
+        DownloadManagerUiConfig config =
+                new DownloadManagerUiConfig.Builder()
+                        .setIsOffTheRecord(host.isIncognito())
+                        .setIsSeparateActivity(false)
+                        .setShowOfflineHome(DownloadUtils.shouldShowOfflineHome())
+                        .build();
         mDownloadCoordinator = DownloadManagerCoordinatorFactory.create(activity, config,
                 ((SnackbarManageable) activity).getSnackbarManager(), activity.getComponentName(),
                 activity.getModalDialogManager());
 
         mDownloadCoordinator.addObserver(this);
+        mDownloadCoordinator.setHistoryNavigationDelegate(host.createHistoryNavigationDelegate());
         mTitle = activity.getString(R.string.menu_downloads);
 
         // #destroy() unregisters the ActivityStateListener to avoid checking for externally removed

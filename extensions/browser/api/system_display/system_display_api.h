@@ -12,7 +12,7 @@
 
 namespace extensions {
 
-class SystemDisplayCrOSRestrictedFunction : public UIThreadExtensionFunction {
+class SystemDisplayCrOSRestrictedFunction : public ExtensionFunction {
  public:
   static const char kCrosOnlyError[];
   static const char kKioskOnlyError[];
@@ -26,9 +26,9 @@ class SystemDisplayCrOSRestrictedFunction : public UIThreadExtensionFunction {
   virtual bool ShouldRestrictToKioskAndWebUI();
 };
 
-// This function inherits from UIThreadExtensionFunction because, unlike the
+// This function inherits from ExtensionFunction because, unlike the
 // rest of this API, it's available on all platforms.
-class SystemDisplayGetInfoFunction : public UIThreadExtensionFunction {
+class SystemDisplayGetInfoFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("system.display.getInfo", SYSTEM_DISPLAY_GETINFO)
 

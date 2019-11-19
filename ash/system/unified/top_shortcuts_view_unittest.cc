@@ -11,8 +11,7 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
-
-using views::Button;
+#include "base/macros.h"
 
 namespace ash {
 
@@ -25,7 +24,7 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
   void SetUp() override {
     NoSessionAshTestBase::SetUp();
 
-    model_ = std::make_unique<UnifiedSystemTrayModel>();
+    model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
     controller_ = std::make_unique<UnifiedSystemTrayController>(model_.get());
   }
 
@@ -41,7 +40,7 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
     top_shortcuts_view_ = std::make_unique<TopShortcutsView>(controller_.get());
   }
 
-    views::View* GetUserAvatar() {
+  views::View* GetUserAvatar() {
     return top_shortcuts_view_->user_avatar_button_;
   }
 
@@ -61,9 +60,8 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
     return top_shortcuts_view_->collapse_button_;
   }
 
-  void Layout() {
-    top_shortcuts_view_->Layout();
-  }
+  void Layout() { top_shortcuts_view_->Layout(); }
+
  private:
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
@@ -76,35 +74,35 @@ class TopShortcutsViewTest : public NoSessionAshTestBase {
 TEST_F(TopShortcutsViewTest, ButtonStatesNotLoggedIn) {
   SetUpView();
   EXPECT_EQ(nullptr, GetUserAvatar());
-  EXPECT_FALSE(GetSignOutButton()->visible());
-  EXPECT_FALSE(GetLockButton()->visible());
-  EXPECT_FALSE(GetSettingsButton()->visible());
-  EXPECT_TRUE(GetPowerButton()->visible());
-  EXPECT_TRUE(GetCollapseButton()->visible());
+  EXPECT_EQ(nullptr, GetSignOutButton());
+  EXPECT_EQ(nullptr, GetLockButton());
+  EXPECT_EQ(nullptr, GetSettingsButton());
+  EXPECT_TRUE(GetPowerButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
 }
 
 // All buttons are shown after login.
 TEST_F(TopShortcutsViewTest, ButtonStatesLoggedIn) {
   CreateUserSessions(1);
   SetUpView();
-  EXPECT_NE(nullptr, GetUserAvatar());
-  EXPECT_TRUE(GetSignOutButton()->visible());
-  EXPECT_TRUE(GetLockButton()->visible());
-  EXPECT_TRUE(GetSettingsButton()->visible());
-  EXPECT_TRUE(GetPowerButton()->visible());
-  EXPECT_TRUE(GetCollapseButton()->visible());
+  EXPECT_TRUE(GetUserAvatar()->GetVisible());
+  EXPECT_TRUE(GetSignOutButton()->GetVisible());
+  EXPECT_TRUE(GetLockButton()->GetVisible());
+  EXPECT_TRUE(GetSettingsButton()->GetVisible());
+  EXPECT_TRUE(GetPowerButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
 }
 
 // Settings button and lock button are hidden at the lock screen.
 TEST_F(TopShortcutsViewTest, ButtonStatesLockScreen) {
   BlockUserSession(BLOCKED_BY_LOCK_SCREEN);
   SetUpView();
-  EXPECT_NE(nullptr, GetUserAvatar());
-  EXPECT_TRUE(GetSignOutButton()->visible());
-  EXPECT_FALSE(GetLockButton()->visible());
-  EXPECT_FALSE(GetSettingsButton()->visible());
-  EXPECT_TRUE(GetPowerButton()->visible());
-  EXPECT_TRUE(GetCollapseButton()->visible());
+  EXPECT_TRUE(GetUserAvatar()->GetVisible());
+  EXPECT_TRUE(GetSignOutButton()->GetVisible());
+  EXPECT_EQ(nullptr, GetLockButton());
+  EXPECT_EQ(nullptr, GetSettingsButton());
+  EXPECT_TRUE(GetPowerButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
 }
 
 // Settings button and lock button are hidden when adding a second
@@ -113,12 +111,12 @@ TEST_F(TopShortcutsViewTest, ButtonStatesAddingUser) {
   CreateUserSessions(1);
   SetUserAddingScreenRunning(true);
   SetUpView();
-  EXPECT_NE(nullptr, GetUserAvatar());
-  EXPECT_TRUE(GetSignOutButton()->visible());
-  EXPECT_FALSE(GetLockButton()->visible());
-  EXPECT_FALSE(GetSettingsButton()->visible());
-  EXPECT_TRUE(GetPowerButton()->visible());
-  EXPECT_TRUE(GetCollapseButton()->visible());
+  EXPECT_TRUE(GetUserAvatar()->GetVisible());
+  EXPECT_TRUE(GetSignOutButton()->GetVisible());
+  EXPECT_EQ(nullptr, GetLockButton());
+  EXPECT_EQ(nullptr, GetSettingsButton());
+  EXPECT_TRUE(GetPowerButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
 }
 
 // Settings button and lock button are hidden when adding a supervised user.
@@ -130,11 +128,11 @@ TEST_F(TopShortcutsViewTest, ButtonStatesSupervisedUserFlow) {
       "foo@example.com", user_manager::USER_TYPE_REGULAR, enable_settings);
   SetUpView();
   EXPECT_EQ(nullptr, GetUserAvatar());
-  EXPECT_FALSE(GetSignOutButton()->visible());
-  EXPECT_FALSE(GetLockButton()->visible());
-  EXPECT_FALSE(GetSettingsButton()->visible());
-  EXPECT_TRUE(GetPowerButton()->visible());
-  EXPECT_TRUE(GetCollapseButton()->visible());
+  EXPECT_EQ(nullptr, GetSignOutButton());
+  EXPECT_EQ(nullptr, GetLockButton());
+  EXPECT_EQ(nullptr, GetSettingsButton());
+  EXPECT_TRUE(GetPowerButton()->GetVisible());
+  EXPECT_TRUE(GetCollapseButton()->GetVisible());
 }
 
 // Try to layout buttons before login.
@@ -173,4 +171,5 @@ TEST_F(TopShortcutsViewTest, ButtonLayoutSupervisedUserFlow) {
   SetUpView();
   Layout();
 }
+
 }  // namespace ash

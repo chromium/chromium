@@ -40,7 +40,9 @@
 #include "components/safe_browsing/db/v4_embedded_test_server_util.h"
 #include "components/safe_browsing/db/v4_test_util.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -246,7 +248,8 @@ class SafeBrowsingTriggeredInterceptingBrowserTest
         safe_browsing::GetUrlSubresourceFilterId().platform_type());
     threat_match.set_threat_entry_type(safe_browsing::URL);
 
-    safe_browsing::FullHash enforce_full_hash = safe_browsing::GetFullHash(url);
+    safe_browsing::FullHash enforce_full_hash =
+        safe_browsing::V4ProtocolManagerUtil::GetFullHash(url);
     threat_match.mutable_threat()->set_hash(enforce_full_hash);
     threat_match.mutable_cache_duration()->set_seconds(300);
 
@@ -277,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerDisabledTest,
                                                    &opened_window));
   EXPECT_TRUE(opened_window);
   EXPECT_FALSE(TabSpecificContentSettings::FromWebContents(web_contents)
-                   ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerDisabledTest,
@@ -296,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerDisabledTest,
                                                    &opened_window));
   EXPECT_TRUE(opened_window);
   EXPECT_FALSE(TabSpecificContentSettings::FromWebContents(web_contents)
-                   ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   log_observer.RoundTripAndVerifyLogMessages(
       web_contents, {}, {kAbusiveWarnMessage, kAbusiveEnforceMessage});
@@ -325,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                                                    &opened_window));
   EXPECT_TRUE(opened_window);
   EXPECT_FALSE(TabSpecificContentSettings::FromWebContents(web_contents)
-                   ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   // Since the policy change can take effect without browser restart, verify
   // that enabling the policy here should disallow opening new tabs or windows
@@ -350,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
   EXPECT_FALSE(opened_window);
   // Make sure the popup UI was shown.
   EXPECT_TRUE(TabSpecificContentSettings::FromWebContents(web_contents1)
-                  ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                  ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
@@ -372,7 +375,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                                                    &opened_window));
   EXPECT_TRUE(opened_window);
   EXPECT_FALSE(TabSpecificContentSettings::FromWebContents(web_contents)
-                   ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
@@ -389,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                                                    &opened_window));
   EXPECT_TRUE(opened_window);
   EXPECT_FALSE(TabSpecificContentSettings::FromWebContents(web_contents)
-                   ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
@@ -409,7 +412,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
   EXPECT_FALSE(opened_window);
   // Make sure the popup UI was shown.
   EXPECT_TRUE(TabSpecificContentSettings::FromWebContents(web_contents)
-                  ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                  ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   // Block again.
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(web_contents, "openWindow()",
@@ -424,7 +427,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
   EXPECT_TRUE(opened_window);
   // Popup UI should not be shown.
   EXPECT_FALSE(TabSpecificContentSettings::FromWebContents(web_contents)
-                   ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
@@ -446,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
 
   // Make sure the popup UI was shown.
   EXPECT_TRUE(TabSpecificContentSettings::FromWebContents(web_contents)
-                  ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                  ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   // Click through.
   content::TestNavigationObserver navigation_observer(nullptr, 1);
@@ -497,8 +500,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   settings_map->SetContentSettingDefaultScope(
-      a_url, a_url, ContentSettingsType::CONTENT_SETTINGS_TYPE_POPUPS,
-      std::string(), CONTENT_SETTING_ALLOW);
+      a_url, a_url, ContentSettingsType::POPUPS, std::string(),
+      CONTENT_SETTING_ALLOW);
 
   // Navigate to a_url, should not trigger the popup blocker.
   ScopedLoggingObserver log_observer;
@@ -527,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
   EXPECT_TRUE(content::ExecuteScript(web_contents, "openWindow()"));
 
   EXPECT_TRUE(TabSpecificContentSettings::FromWebContents(web_contents)
-                  ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                  ->IsContentBlocked(ContentSettingsType::POPUPS));
 
   // Navigate to |b_url|, which should successfully open the popup.
 
@@ -540,7 +543,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
 
   // Popup UI should not be shown.
   EXPECT_FALSE(TabSpecificContentSettings::FromWebContents(web_contents)
-                   ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                   ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
@@ -558,7 +561,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                                                    &sent_open));
   EXPECT_TRUE(sent_open);
   EXPECT_TRUE(TabSpecificContentSettings::FromWebContents(web_contents)
-                  ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                  ->IsContentBlocked(ContentSettingsType::POPUPS));
 }
 
 IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
@@ -577,7 +580,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
     EXPECT_EQ(expect_block, !opened_window);
     EXPECT_EQ(expect_block,
               TabSpecificContentSettings::FromWebContents(web_contents)
-                  ->IsContentBlocked(CONTENT_SETTINGS_TYPE_POPUPS));
+                  ->IsContentBlocked(ContentSettingsType::POPUPS));
   };
 
   ui_test_utils::NavigateToURL(browser(), url1);
@@ -629,8 +632,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   settings_map->SetContentSettingDefaultScope(
-      a_url, a_url, ContentSettingsType::CONTENT_SETTINGS_TYPE_POPUPS,
-      std::string(), CONTENT_SETTING_ALLOW);
+      a_url, a_url, ContentSettingsType::POPUPS, std::string(),
+      CONTENT_SETTING_ALLOW);
 
   // Navigate to a_url, should not trigger the popup blocker.
   ScopedLoggingObserver log_observer;
@@ -706,4 +709,27 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredInterceptingBrowserTest,
     log_observer.RoundTripAndVerifyLogMessages(
         web_contents(), {kAbusiveWarnMessage}, {kAbusiveEnforceMessage});
   }
+}
+
+IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
+                       AbusivePagesAreNotPutIntoBackForwardCache) {
+  content::BackForwardCacheDisabledTester back_forward_cache_tester;
+  const GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  const GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  ConfigureAsAbusive(a_url);
+
+  // Navigate to an abusive page.
+  ui_test_utils::NavigateToURL(browser(), a_url);
+
+  content::RenderFrameHost* main_frame =
+      browser()->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
+  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int main_frame_routing_id = main_frame->GetRoutingID();
+
+  // Navigate away from the abusive page. This should block bfcache.
+  ui_test_utils::NavigateToURL(browser(), b_url);
+
+  EXPECT_TRUE(back_forward_cache_tester.IsDisabledForFrameWithReason(
+      main_frame_process_id, main_frame_routing_id,
+      "SafeBrowsingTriggeredPopupBlocker"));
 }

@@ -4,12 +4,12 @@
 
 #include "remoting/host/host_status_logger.h"
 
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "remoting/host/host_status_monitor.h"
 #include "remoting/signaling/mock_signal_strategy.h"
+#include "remoting/signaling/xmpp_log_to_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gmock_mutant.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
@@ -129,15 +129,17 @@ class HostStatusLoggerTest : public testing::Test {
         host_status_monitor_(new HostStatusMonitor()) {}
   void SetUp() override {
     EXPECT_CALL(signal_strategy_, AddListener(_));
-    host_status_logger_.reset(
-        new HostStatusLogger(host_status_monitor_, ServerLogEntry::ME2ME,
-                             &signal_strategy_, kTestBotJid));
+    log_to_server_ = std::make_unique<XmppLogToServer>(
+        ServerLogEntry::ME2ME, &signal_strategy_, kTestBotJid);
+    host_status_logger_ = std::make_unique<HostStatusLogger>(
+        host_status_monitor_, log_to_server_.get());
     EXPECT_CALL(signal_strategy_, RemoveListener(_));
   }
 
  protected:
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   MockSignalStrategy signal_strategy_;
+  std::unique_ptr<XmppLogToServer> log_to_server_;
   std::unique_ptr<HostStatusLogger> host_status_logger_;
   scoped_refptr<HostStatusMonitor> host_status_monitor_;
 };
@@ -154,14 +156,13 @@ TEST_F(HostStatusLoggerTest, SendNow) {
         .WillOnce(QuitRunLoop(&run_loop))
         .RetiresOnSaturation();
   }
-  host_status_logger_->SetSignalingStateForTest(SignalStrategy::CONNECTED);
+  log_to_server_->OnSignalStrategyStateChange(SignalStrategy::CONNECTED);
   protocol::TransportRoute route;
   route.type = protocol::TransportRoute::DIRECT;
   host_status_logger_->OnClientRouteChange(kClientJid1, "video", route);
   host_status_logger_->OnClientAuthenticated(kClientJid1);
   host_status_logger_->OnClientConnected(kClientJid1);
-  host_status_logger_->SetSignalingStateForTest(
-      SignalStrategy::DISCONNECTED);
+  log_to_server_->OnSignalStrategyStateChange(SignalStrategy::DISCONNECTED);
   run_loop.Run();
 }
 
@@ -183,8 +184,8 @@ TEST_F(HostStatusLoggerTest, SendLater) {
         .WillOnce(QuitRunLoop(&run_loop))
         .RetiresOnSaturation();
   }
-  host_status_logger_->SetSignalingStateForTest(SignalStrategy::CONNECTED);
-  host_status_logger_->SetSignalingStateForTest(SignalStrategy::DISCONNECTED);
+  log_to_server_->OnSignalStrategyStateChange(SignalStrategy::CONNECTED);
+  log_to_server_->OnSignalStrategyStateChange(SignalStrategy::DISCONNECTED);
   run_loop.Run();
 }
 
@@ -212,8 +213,8 @@ TEST_F(HostStatusLoggerTest, SendTwoEntriesLater) {
         .WillOnce(QuitRunLoop(&run_loop))
         .RetiresOnSaturation();
   }
-  host_status_logger_->SetSignalingStateForTest(SignalStrategy::CONNECTED);
-  host_status_logger_->SetSignalingStateForTest(SignalStrategy::DISCONNECTED);
+  log_to_server_->OnSignalStrategyStateChange(SignalStrategy::CONNECTED);
+  log_to_server_->OnSignalStrategyStateChange(SignalStrategy::DISCONNECTED);
   run_loop.Run();
 }
 
@@ -236,7 +237,7 @@ TEST_F(HostStatusLoggerTest, HandleRouteChangeInUnusualOrder) {
         .WillOnce(QuitRunLoop(&run_loop))
         .RetiresOnSaturation();
   }
-  host_status_logger_->SetSignalingStateForTest(SignalStrategy::CONNECTED);
+  log_to_server_->OnSignalStrategyStateChange(SignalStrategy::CONNECTED);
   protocol::TransportRoute route1;
   route1.type = protocol::TransportRoute::DIRECT;
   host_status_logger_->OnClientRouteChange(kClientJid1, "video", route1);
@@ -248,7 +249,7 @@ TEST_F(HostStatusLoggerTest, HandleRouteChangeInUnusualOrder) {
   host_status_logger_->OnClientDisconnected(kClientJid1);
   host_status_logger_->OnClientAuthenticated(kClientJid2);
   host_status_logger_->OnClientConnected(kClientJid2);
-  host_status_logger_->SetSignalingStateForTest(SignalStrategy::DISCONNECTED);
+  log_to_server_->OnSignalStrategyStateChange(SignalStrategy::DISCONNECTED);
   run_loop.Run();
 }
 

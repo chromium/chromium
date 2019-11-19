@@ -56,6 +56,11 @@
   v8::Context::BackupIncumbentScope backup_incumbent_scope(
       IncumbentScriptState()->GetContext());
 
+  if (UNLIKELY(ScriptForbiddenScope::IsScriptForbidden())) {
+    ScriptForbiddenScope::ThrowScriptForbiddenException(GetIsolate());
+    return v8::Nothing<{{return_cpp_type}}>();
+  }
+
   {% if invoke_or_construct == 'construct' %}
   // step 3. If ! IsConstructor(F) is false, throw a TypeError exception.
   //

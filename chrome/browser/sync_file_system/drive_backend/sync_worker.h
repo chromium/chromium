@@ -31,6 +31,7 @@ class DriveUploaderInterface;
 }
 
 namespace extensions {
+class ExtensionRegistry;
 class ExtensionServiceInterface;
 }
 
@@ -62,6 +63,7 @@ class SyncWorker : public SyncWorkerInterface,
   SyncWorker(const base::FilePath& base_dir,
              const base::WeakPtr<extensions::ExtensionServiceInterface>&
                  extension_service,
+             extensions::ExtensionRegistry* extension_registry,
              leveldb::Env* env_override);
 
   ~SyncWorker() override;
@@ -129,6 +131,7 @@ class SyncWorker : public SyncWorkerInterface,
   static void QueryAppStatusOnUIThread(
       const base::WeakPtr<extensions::ExtensionServiceInterface>&
           extension_service_ptr,
+      extensions::ExtensionRegistry* extension_registry,
       const std::vector<std::string>* app_ids,
       AppStatusMap* status,
       const base::Closure& callback);
@@ -174,13 +177,15 @@ class SyncWorker : public SyncWorkerInterface,
   std::unique_ptr<SyncTaskManager> task_manager_;
 
   base::WeakPtr<extensions::ExtensionServiceInterface> extension_service_;
+  // Only guaranteed to be valid if |extension_service_| is not null.
+  extensions::ExtensionRegistry* extension_registry_;
 
   std::unique_ptr<SyncEngineContext> context_;
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::SequenceChecker sequence_checker_;
 
-  base::WeakPtrFactory<SyncWorker> weak_ptr_factory_;
+  base::WeakPtrFactory<SyncWorker> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(SyncWorker);
 };
 

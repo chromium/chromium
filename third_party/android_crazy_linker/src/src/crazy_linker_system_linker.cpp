@@ -10,6 +10,13 @@
 
 namespace crazy {
 
+// <android/dlext.h> does not declare android_dlopen_ext() if __ANDROID_API__
+// is smaller than 21, so declare it here as a weak function. This will allow
+// detecting its availability at runtime. For API level 21 or higher, the
+// attribute is ignored due to the previous declaration.
+extern "C" void* android_dlopen_ext(const char*, int, const android_dlextinfo*)
+    __attribute__((weak));
+
 // static
 void* SystemLinker::Open(const char* path, int mode) {
   // NOTE: The system linker will likely modify the global _r_debug link map
@@ -18,6 +25,27 @@ void* SystemLinker::Open(const char* path, int mode) {
   ScopedLinkMapLocker locker;
   return ::dlopen(path, mode);
 }
+
+#ifdef __ANDROID__
+// static
+bool SystemLinker::HasAndroidOpenExt() {
+  return android_dlopen_ext != nullptr;
+}
+
+// static
+void* SystemLinker::AndroidOpenExt(const char* path,
+                                   int mode,
+                                   const android_dlextinfo* info) {
+  // NOTE: The system linker will likely modify the global _r_debug link map
+  // so ensure this doesn't conflict with other threads performing delayed
+  // updates on it.
+  ScopedLinkMapLocker locker;
+  if (android_dlopen_ext != nullptr) {
+    return android_dlopen_ext(path, mode, info);
+  }
+  return nullptr;
+}
+#endif  // __ANDROID__
 
 // static
 int SystemLinker::Close(void* handle) {

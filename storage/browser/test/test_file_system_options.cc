@@ -18,7 +18,7 @@ FileSystemOptions CreateIncognitoFileSystemOptions() {
   additional_allowed_schemes.push_back("chrome-extension");
 #endif
   return FileSystemOptions(FileSystemOptions::PROFILE_MODE_INCOGNITO,
-                           false /* force_in_memory */,
+                           true /* force_in_memory */,
                            additional_allowed_schemes);
 }
 

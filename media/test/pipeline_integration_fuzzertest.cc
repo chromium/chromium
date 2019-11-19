@@ -19,9 +19,9 @@
 #include "media/base/media.h"
 #include "media/base/media_switches.h"
 #include "media/base/pipeline_status.h"
+#include "media/media_buildflags.h"
 #include "media/test/pipeline_integration_test_base.h"
 #include "media/test/test_media_source.h"
-#include "third_party/libaom/av1_buildflags.h"
 
 namespace {
 
@@ -227,7 +227,7 @@ struct Environment {
   Environment() {
     base::CommandLine::Init(0, nullptr);
 
-    // |test| instances uses ScopedTaskEnvironment, which needs TestTimeouts.
+    // |test| instances uses TaskEnvironment, which needs TestTimeouts.
     TestTimeouts::Initialize();
 
     media::InitializeMediaLibrary();
@@ -248,50 +248,11 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   FuzzerVariant variant = PIPELINE_FUZZER_VARIANT;
 
   if (variant == SRC) {
-    {
-      media::ProgressivePipelineIntegrationFuzzerTest test;
-      test.RunTest(data, size);
-    }
-
-#if BUILDFLAG(ENABLE_DAV1D_DECODER)
-    {
-      // Rerun the test with the dav1d video decoder instead of libaom. Note:
-      // this ends up running for all SRC fuzzing and not just AV1 content, but
-      // that's true for our entire corpus.
-      base::test::ScopedFeatureList features_with_dav1d;
-      features_with_dav1d.InitAndEnableFeature(media::kDav1dVideoDecoder);
-      media::ProgressivePipelineIntegrationFuzzerTest test;
-      test.RunTest(data, size);
-    }
-#endif
+    media::ProgressivePipelineIntegrationFuzzerTest test;
+    test.RunTest(data, size);
   } else {
-    // Sequentially fuzz with new and old MSE buffering APIs.  See
-    // https://crbug.com/718641.
-    {
-      base::test::ScopedFeatureList features_with_buffering_api_forced;
-      features_with_buffering_api_forced.InitAndEnableFeature(
-          media::kMseBufferByPts);
-      media::MediaSourcePipelineIntegrationFuzzerTest test;
-      test.RunTest(data, size, MseFuzzerVariantEnumToMimeTypeString(variant));
-    }
-    {
-      base::test::ScopedFeatureList features_with_buffering_api_forced;
-      features_with_buffering_api_forced.InitAndDisableFeature(
-          media::kMseBufferByPts);
-      media::MediaSourcePipelineIntegrationFuzzerTest test;
-      test.RunTest(data, size, MseFuzzerVariantEnumToMimeTypeString(variant));
-    }
-
-#if BUILDFLAG(ENABLE_DAV1D_DECODER)
-    // Rerun the test with the dav1d video decoder instead of libaom. No need to
-    // run with ByPts in both configurations, just use the default.
-    if (variant == MP4_AV1) {
-      base::test::ScopedFeatureList features_with_dav1d;
-      features_with_dav1d.InitAndEnableFeature(media::kDav1dVideoDecoder);
-      media::MediaSourcePipelineIntegrationFuzzerTest test;
-      test.RunTest(data, size, MseFuzzerVariantEnumToMimeTypeString(variant));
-    }
-#endif
+    media::MediaSourcePipelineIntegrationFuzzerTest test;
+    test.RunTest(data, size, MseFuzzerVariantEnumToMimeTypeString(variant));
   }
 
   return 0;

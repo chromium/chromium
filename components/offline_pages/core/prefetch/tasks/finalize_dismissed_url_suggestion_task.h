@@ -41,7 +41,8 @@ class FinalizeDismissedUrlSuggestionTask : public Task {
 
   PrefetchStore* prefetch_store_;
   ClientId client_id_;
-  base::WeakPtrFactory<FinalizeDismissedUrlSuggestionTask> weak_ptr_factory_;
+  base::WeakPtrFactory<FinalizeDismissedUrlSuggestionTask> weak_ptr_factory_{
+      this};
   DISALLOW_COPY_AND_ASSIGN(FinalizeDismissedUrlSuggestionTask);
 };
 

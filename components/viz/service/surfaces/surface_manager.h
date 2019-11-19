@@ -21,9 +21,9 @@
 #include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/trace_event.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "components/viz/service/surfaces/surface_dependency_tracker.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/surfaces/surface_reference.h"
 
@@ -40,7 +40,9 @@ namespace viz {
 
 class Surface;
 class SurfaceAllocationGroup;
+class SurfaceClient;
 class SurfaceManagerDelegate;
+class SurfaceRange;
 struct BeginFrameAck;
 struct BeginFrameArgs;
 
@@ -65,10 +67,6 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
     return activation_deadline_in_frames_;
   }
 
-  SurfaceDependencyTracker* dependency_tracker() {
-    return &dependency_tracker_;
-  }
-
   // Sets an alternative base::TickClock to pass into surfaces for surface
   // synchronization deadlines. This allows unit tests to mock the wall clock.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
@@ -77,17 +75,16 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   const base::TickClock* tick_clock() { return tick_clock_; }
 
   // Creates a Surface for the given SurfaceClient. The surface will be
-  // destroyed when DestroySurface is called, all of its destruction
+  // destroyed when MarkSurfaceForDestruction is called, all of its destruction
   // dependencies are satisfied, and it is not reachable from the root surface.
   // A temporary reference will be added to the new Surface.
   Surface* CreateSurface(base::WeakPtr<SurfaceClient> surface_client,
-                         const SurfaceInfo& surface_info,
-                         BeginFrameSource* begin_frame_source,
-                         bool needs_sync_tokens,
-                         bool block_activation_on_parent);
+                         const SurfaceInfo& surface_info);
 
-  // Destroy the Surface once a set of sequence numbers has been satisfied.
-  void DestroySurface(const SurfaceId& surface_id);
+  // Marks |surface_id| for destruction. The surface will get destroyed when
+  // it's not reachable from the root or any other surface that is not marked
+  // for destruction.
+  void MarkSurfaceForDestruction(const SurfaceId& surface_id);
 
   // Returns a Surface corresponding to the provided |surface_id|.
   Surface* GetSurfaceForId(const SurfaceId& surface_id);
@@ -108,14 +105,6 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // Called when a surface has an active frame for the first time.
   void FirstSurfaceActivation(const SurfaceInfo& surface_info);
 
-  // Add |surface_id| as an observer for |sink_id|.
-  void AddActivationObserver(const FrameSinkId& sink_id,
-                             const SurfaceId& surface_id);
-
-  // Remove |surface_id| from the observers of |sink_id|.
-  void RemoveActivationObserver(const FrameSinkId& sink_id,
-                                const SurfaceId& surface_id);
-
   // Called when a CompositorFrame within |surface| has activated. |duration| is
   // a measure of the time the frame has spent waiting on dependencies to
   // arrive. If |duration| is base::nullopt, then that indicates that this frame
@@ -123,19 +112,8 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   void SurfaceActivated(Surface* surface,
                         base::Optional<base::TimeDelta> duration);
 
-  // Called when this |surface_id| is referenced as an activation dependency
-  // from a parent CompositorFrame.
-  void SurfaceDependencyAdded(const SurfaceId& surface_id);
-
-  // Called when the dependencies of a pending CompositorFrame within |surface|
-  // has changed.
-  void SurfaceDependenciesChanged(
-      Surface* surface,
-      const base::flat_set<FrameSinkId>& added_dependencies,
-      const base::flat_set<FrameSinkId>& removed_dependencies);
-
   // Called when |surface| is being destroyed.
-  void SurfaceDiscarded(Surface* surface);
+  void SurfaceDestroyed(Surface* surface);
 
   // Called when a Surface's CompositorFrame producer has received a BeginFrame
   // and, thus, is expected to produce damage soon.
@@ -206,6 +184,19 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   SurfaceAllocationGroup* GetOrCreateAllocationGroupForSurfaceId(
       const SurfaceId& surface_id);
 
+  // Similar to GetOrCreateAllocationGroupForSurfaceId, but will not attempt to
+  // create the allocation group if it does not already exist.
+  SurfaceAllocationGroup* GetAllocationGroupForSurfaceId(
+      const SurfaceId& surface_id);
+
+  // Called by allocation groups when they're ready to destroy and need garbage
+  // collection.
+  void SetAllocationGroupsNeedGarbageCollection();
+
+  // Returns whether there is any surface blocked on a surface from
+  // |frame_sink_id|.
+  bool HasBlockedEmbedder(const FrameSinkId& frame_sink_id) const;
+
  private:
   friend class CompositorFrameSinkSupportTest;
   friend class FrameSinkManagerTest;
@@ -233,16 +224,8 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
     bool marked_as_old = false;
   };
 
-  // Returns the latest surface in a FrameSinkId that satisfies |is_valid|.
-  Surface* GetLatestInFlightSurfaceForFrameSinkId(
-      const SurfaceRange& surface_range,
-      const FrameSinkId& sink_id);
-
-  // Returns set of live surfaces for |lifetime_manager_| is REFERENCES.
-  SurfaceIdSet GetLiveSurfacesForReferences();
-
-  // Returns set of live surfaces for |lifetime_manager_| is SEQUENCES.
-  SurfaceIdSet GetLiveSurfacesForSequences();
+  // Returns set of surfaces that cannot be garbage-collected.
+  SurfaceIdSet GetLiveSurfaces();
 
   // Adds a reference from |parent_id| to |child_id| without dealing with
   // temporary references.
@@ -253,9 +236,6 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
 
   // Returns whether |surface_id| has a temporary reference or not.
   bool HasTemporaryReference(const SurfaceId& surface_id) const;
-
-  // Returns whether |surface_id| has a Persistent reference or not.
-  bool HasPersistentReference(const SurfaceId& surface_id) const;
 
   // Adds a temporary reference to |surface_id|. The reference will not have an
   // owner initially.
@@ -283,15 +263,20 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   // Returns true if |surface_id| is in the garbage collector's queue.
   bool IsMarkedForDestruction(const SurfaceId& surface_id);
 
+  // Garbage-collects the allocation groups if they have signalled that they are
+  // ready for destruction.
+  void MaybeGarbageCollectAllocationGroups();
+
   // Can be nullptr.
   SurfaceManagerDelegate* const delegate_;
 
   base::Optional<uint32_t> activation_deadline_in_frames_;
 
-  // SurfaceDependencyTracker needs to be destroyed after Surfaces are destroyed
-  // because they will call back into the dependency tracker.
-  SurfaceDependencyTracker dependency_tracker_;
-
+  base::flat_map<base::UnguessableToken,
+                 std::unique_ptr<SurfaceAllocationGroup>>
+      embed_token_to_allocation_group_;
+  base::flat_map<FrameSinkId, std::vector<SurfaceAllocationGroup*>>
+      frame_sink_id_to_allocation_groups_;
   base::flat_map<SurfaceId, std::unique_ptr<Surface>> surface_map_;
   base::ObserverList<SurfaceObserver>::Unchecked observer_list_;
   base::ThreadChecker thread_checker_;
@@ -331,25 +316,14 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
   std::unordered_map<FrameSinkId, std::vector<LocalSurfaceId>, FrameSinkIdHash>
       temporary_reference_ranges_;
 
-  // A list of surfaces with a given FrameSinkId that have a persistent
-  // reference.
-  base::flat_map<FrameSinkId, base::flat_set<LocalSurfaceId>>
-      persistent_references_by_frame_sink_id_;
-
-  // A map storing SurfaceIds interested in knowing about activation events
-  // happending in FrameSinkId.
-  base::flat_map<FrameSinkId, base::flat_set<SurfaceId>> activation_observers_;
-
   // Timer to remove old temporary references that aren't removed after an
   // interval of time. The timer will started/stopped so it only runs if there
   // are temporary references. Also the timer isn't used with Android WebView.
   base::Optional<base::RepeatingTimer> expire_timer_;
 
-  base::flat_map<base::UnguessableToken,
-                 std::unique_ptr<SurfaceAllocationGroup>>
-      embed_token_to_allocation_group_;
+  bool allocation_groups_need_garbage_collection_ = false;
 
-  base::WeakPtrFactory<SurfaceManager> weak_factory_;
+  base::WeakPtrFactory<SurfaceManager> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SurfaceManager);
 };

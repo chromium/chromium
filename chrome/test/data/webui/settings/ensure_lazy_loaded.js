@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 cr.define('settings', function() {
-  function ensureLazyLoaded() {
+  /** @param {string} pathPrefix Prefix for the path to lazy_load.html */
+  function ensureLazyLoaded(pathPrefix) {
     // Only trigger lazy loading, if we are in top-level Settings page.
     // IMPORTANT: This is used when running tests that use the Polymer Bundler
     // (aka vulcanize).
@@ -12,7 +13,8 @@ cr.define('settings', function() {
         return new Promise(function(resolve, reject) {
           // This URL needs to match the URL passed to <settings-idle-load> from
           // <settings-basic-page>.
-          Polymer.Base.importHref('/lazy_load.html', resolve, reject, true);
+          const path = (pathPrefix || '') + '/lazy_load.html';
+          Polymer.Base.importHref(path, resolve, reject, true);
         });
       });
     }

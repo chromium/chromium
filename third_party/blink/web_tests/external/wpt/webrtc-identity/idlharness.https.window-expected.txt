@@ -1,0 +1,46 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface RTCPeerConnection: original interface defined
+PASS Partial interface RTCPeerConnection: member names are unique
+PASS Partial dictionary MediaStreamConstraints: original dictionary defined
+PASS Partial dictionary MediaStreamConstraints: member names are unique
+PASS Partial interface MediaStreamTrack: original interface defined
+PASS Partial interface MediaStreamTrack: member names are unique
+PASS Partial interface RTCPeerConnection[2]: member names are unique
+PASS Partial interface RTCPeerConnection[3]: member names are unique
+PASS Partial interface RTCPeerConnection[4]: member names are unique
+PASS Partial interface RTCPeerConnection[5]: member names are unique
+PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
+PASS RTCIdentityProviderGlobalScope interface: existence and properties of interface object
+PASS RTCIdentityProviderRegistrar interface: existence and properties of interface object
+FAIL RTCIdentityAssertion interface: existence and properties of interface object assert_own_property: self does not have own property "RTCIdentityAssertion" expected property "RTCIdentityAssertion" missing
+FAIL RTCIdentityAssertion interface object length assert_own_property: self does not have own property "RTCIdentityAssertion" expected property "RTCIdentityAssertion" missing
+FAIL RTCIdentityAssertion interface object name assert_own_property: self does not have own property "RTCIdentityAssertion" expected property "RTCIdentityAssertion" missing
+FAIL RTCIdentityAssertion interface: existence and properties of interface prototype object assert_own_property: self does not have own property "RTCIdentityAssertion" expected property "RTCIdentityAssertion" missing
+FAIL RTCIdentityAssertion interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "RTCIdentityAssertion" expected property "RTCIdentityAssertion" missing
+FAIL RTCIdentityAssertion interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "RTCIdentityAssertion" expected property "RTCIdentityAssertion" missing
+FAIL RTCIdentityAssertion interface: attribute idp assert_own_property: self does not have own property "RTCIdentityAssertion" expected property "RTCIdentityAssertion" missing
+FAIL RTCIdentityAssertion interface: attribute name assert_own_property: self does not have own property "RTCIdentityAssertion" expected property "RTCIdentityAssertion" missing
+FAIL RTCIdentityAssertion must be primary interface of new RTCIdentityAssertion('idp', 'name') assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: RTCIdentityAssertion is not defined"
+FAIL Stringification of new RTCIdentityAssertion('idp', 'name') assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: RTCIdentityAssertion is not defined"
+FAIL RTCIdentityAssertion interface: new RTCIdentityAssertion('idp', 'name') must inherit property "idp" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: RTCIdentityAssertion is not defined"
+FAIL RTCIdentityAssertion interface: new RTCIdentityAssertion('idp', 'name') must inherit property "name" with the proper type assert_equals: Unexpected exception when evaluating object expected null but got object "ReferenceError: RTCIdentityAssertion is not defined"
+FAIL RTCPeerConnection interface: operation setIdentityProvider(DOMString, RTCIdentityProviderOptions) assert_own_property: interface prototype object missing non-static operation expected property "setIdentityProvider" missing
+FAIL RTCPeerConnection interface: operation getIdentityAssertion() assert_own_property: interface prototype object missing non-static operation expected property "getIdentityAssertion" missing
+FAIL RTCPeerConnection interface: attribute peerIdentity assert_true: The prototype object must have a property "peerIdentity" expected true got false
+FAIL RTCPeerConnection interface: attribute idpLoginUrl assert_true: The prototype object must have a property "idpLoginUrl" expected true got false
+FAIL RTCPeerConnection interface: attribute idpErrorInfo assert_true: The prototype object must have a property "idpErrorInfo" expected true got false
+FAIL RTCPeerConnection interface: new RTCPeerConnection() must inherit property "setIdentityProvider(DOMString, RTCIdentityProviderOptions)" with the proper type assert_inherits: property "setIdentityProvider" not found in prototype chain
+FAIL RTCPeerConnection interface: calling setIdentityProvider(DOMString, RTCIdentityProviderOptions) on new RTCPeerConnection() with too few arguments must throw TypeError assert_inherits: property "setIdentityProvider" not found in prototype chain
+FAIL RTCPeerConnection interface: new RTCPeerConnection() must inherit property "getIdentityAssertion()" with the proper type assert_inherits: property "getIdentityAssertion" not found in prototype chain
+FAIL RTCPeerConnection interface: new RTCPeerConnection() must inherit property "peerIdentity" with the proper type assert_inherits: property "peerIdentity" not found in prototype chain
+FAIL RTCPeerConnection interface: new RTCPeerConnection() must inherit property "idpLoginUrl" with the proper type assert_inherits: property "idpLoginUrl" not found in prototype chain
+FAIL RTCPeerConnection interface: new RTCPeerConnection() must inherit property "idpErrorInfo" with the proper type assert_inherits: property "idpErrorInfo" not found in prototype chain
+FAIL MediaStreamTrack interface: attribute isolated assert_true: The prototype object must have a property "isolated" expected true got false
+FAIL MediaStreamTrack interface: attribute onisolationchange assert_true: The prototype object must have a property "onisolationchange" expected true got false
+FAIL MediaStreamTrack interface: track must inherit property "isolated" with the proper type assert_inherits: property "isolated" not found in prototype chain
+FAIL MediaStreamTrack interface: track must inherit property "onisolationchange" with the proper type assert_inherits: property "onisolationchange" not found in prototype chain
+PASS WorkerGlobalScope interface: existence and properties of interface object
+Harness: the test ran to completion.
+

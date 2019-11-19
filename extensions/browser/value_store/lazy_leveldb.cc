@@ -85,7 +85,7 @@ LazyLevelDb::LazyLevelDb(const std::string& uma_client_name,
 LazyLevelDb::~LazyLevelDb() = default;
 
 ValueStore::Status LazyLevelDb::Read(const std::string& key,
-                                     std::unique_ptr<base::Value>* value) {
+                                     base::Optional<base::Value>* value) {
   DCHECK(value);
 
   std::string value_as_json;
@@ -100,13 +100,13 @@ ValueStore::Status LazyLevelDb::Read(const std::string& key,
   if (!s.ok())
     return ToValueStoreError(s);
 
-  std::unique_ptr<base::Value> val =
-      base::JSONReader().ReadToValueDeprecated(value_as_json);
-  if (!val)
+  base::Optional<base::Value> read_value =
+      base::JSONReader().ReadToValue(value_as_json);
+  if (!read_value) {
     return ValueStore::Status(ValueStore::CORRUPTION, FixCorruption(&key),
                               kInvalidJson);
-
-  *value = std::move(val);
+  }
+  *value = std::move(read_value);
   return ValueStore::Status();
 }
 

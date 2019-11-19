@@ -29,9 +29,8 @@ class UserCloudPolicyInvalidator : public CloudPolicyInvalidator,
   // invalidation service must remain valid until Shutdown is called.
   // |policy_manager| is the policy manager for the user policy and must remain
   // valid until Shutdown is called.
-  UserCloudPolicyInvalidator(
-      Profile* profile,
-      CloudPolicyManager* policy_manager);
+  UserCloudPolicyInvalidator(Profile* profile,
+                             CloudPolicyManager* policy_manager);
 
   static enterprise_management::DeviceRegisterRequest::Type GetPolicyType();
 

@@ -10,10 +10,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/tick_clock.h"
-#include "chrome/browser/ui/blocked_content/scoped_visibility_tracker.h"
 #include "chrome/browser/ui/blocked_content/tab_under_navigation_throttle.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/scoped_visibility_tracker.h"
 
 // static
 void PopupOpenerTabHelper::CreateForWebContents(
@@ -62,7 +62,7 @@ void PopupOpenerTabHelper::OnDidTabUnder() {
 PopupOpenerTabHelper::PopupOpenerTabHelper(content::WebContents* web_contents,
                                            const base::TickClock* tick_clock)
     : content::WebContentsObserver(web_contents), tick_clock_(tick_clock) {
-  visibility_tracker_ = std::make_unique<ScopedVisibilityTracker>(
+  visibility_tracker_ = std::make_unique<ui::ScopedVisibilityTracker>(
       tick_clock_,
       web_contents->GetVisibility() != content::Visibility::HIDDEN);
 }

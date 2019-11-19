@@ -7,7 +7,7 @@
 #include "base/bind_helpers.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace device {
@@ -17,10 +17,10 @@ class BluetoothAdapterCastTest : public testing::Test {
   BluetoothAdapterCastTest() = default;
   ~BluetoothAdapterCastTest() override {
     BluetoothAdapterCast::ResetFactoryForTest();
-  };
+  }
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterCastTest);
 };

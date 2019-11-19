@@ -4,7 +4,6 @@
 
 #include "content/renderer/loader/request_extra_data.h"
 
-#include "content/common/service_worker/service_worker_types.h"
 #include "services/network/public/cpp/resource_request.h"
 
 using blink::WebString;
@@ -16,16 +15,12 @@ RequestExtraData::~RequestExtraData() = default;
 
 void RequestExtraData::CopyToResourceRequest(
     network::ResourceRequest* request) const {
-  request->is_prerendering = is_prerendering_;
   request->render_frame_id = render_frame_id_;
   request->is_main_frame = is_main_frame_;
 
-  request->allow_download = allow_download_;
   request->transition_type = transition_type_;
-  request->service_worker_provider_id = service_worker_provider_id_;
   request->originated_from_service_worker = originated_from_service_worker_;
 
-  request->initiated_in_secure_context = initiated_in_secure_context_;
   request->attach_same_site_cookies = attach_same_site_cookies_;
 }
 

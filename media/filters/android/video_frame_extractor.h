@@ -75,7 +75,7 @@ class MEDIA_EXPORT VideoFrameExtractor {
 
   VideoFrameCallback video_frame_callback_;
 
-  base::WeakPtrFactory<VideoFrameExtractor> weak_factory_;
+  base::WeakPtrFactory<VideoFrameExtractor> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoFrameExtractor);
 };

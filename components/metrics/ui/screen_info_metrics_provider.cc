@@ -66,12 +66,17 @@ ScreenInfoMetricsProvider::~ScreenInfoMetricsProvider() {
 
 void ScreenInfoMetricsProvider::ProvideSystemProfileMetrics(
     SystemProfileProto* system_profile_proto) {
+  // This may be called before the screen info has been initialized, such as
+  // when the persistent system profile gets filled in initially.
+  const base::Optional<gfx::Size> display_size = GetScreenSize();
+  if (!display_size.has_value())
+    return;
+
   SystemProfileProto::Hardware* hardware =
       system_profile_proto->mutable_hardware();
 
-  const gfx::Size display_size = GetScreenSize();
-  hardware->set_primary_screen_width(display_size.width());
-  hardware->set_primary_screen_height(display_size.height());
+  hardware->set_primary_screen_width(display_size->width());
+  hardware->set_primary_screen_height(display_size->height());
   hardware->set_primary_screen_scale_factor(GetScreenDeviceScaleFactor());
   hardware->set_screen_count(GetScreenCount());
 
@@ -80,8 +85,11 @@ void ScreenInfoMetricsProvider::ProvideSystemProfileMetrics(
 #endif
 }
 
-gfx::Size ScreenInfoMetricsProvider::GetScreenSize() const {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
+base::Optional<gfx::Size> ScreenInfoMetricsProvider::GetScreenSize() const {
+  auto* screen = display::Screen::GetScreen();
+  if (!screen)
+    return base::nullopt;
+  return base::make_optional(screen->GetPrimaryDisplay().GetSizeInPixel());
 }
 
 float ScreenInfoMetricsProvider::GetScreenDeviceScaleFactor() const {

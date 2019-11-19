@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/chromeos/power/cpu_data_collector.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace power_manager {
 class PowerSupplyProperties;

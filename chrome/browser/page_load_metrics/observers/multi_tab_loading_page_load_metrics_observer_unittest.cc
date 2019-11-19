@@ -9,8 +9,8 @@
 #include "base/optional.h"
 #include "chrome/browser/page_load_metrics/observers/histogram_suffixes.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
-#include "chrome/browser/page_load_metrics/page_load_tracker.h"
-#include "chrome/common/page_load_metrics/test/page_load_metrics_test_util.h"
+#include "components/page_load_metrics/browser/page_load_tracker.h"
+#include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -70,7 +70,7 @@ class MultiTabLoadingPageLoadMetricsObserverTest
       web_contents()->WasShown();
     }
 
-    SimulateTimingUpdate(timing);
+    tester()->SimulateTimingUpdate(timing);
   }
 
  protected:
@@ -84,14 +84,14 @@ class MultiTabLoadingPageLoadMetricsObserverTest
                           base::HistogramBase::Count expected_base,
                           base::HistogramBase::Count expected_2_or_more,
                           base::HistogramBase::Count expected_5_or_more) {
-    histogram_tester().ExpectTotalCount(
+    tester()->histogram_tester().ExpectTotalCount(
         std::string(internal::kHistogramPrefixMultiTabLoading).append(suffix),
         expected_base);
-    histogram_tester().ExpectTotalCount(
+    tester()->histogram_tester().ExpectTotalCount(
         std::string(internal::kHistogramPrefixMultiTabLoading2OrMore)
             .append(suffix),
         expected_2_or_more);
-    histogram_tester().ExpectTotalCount(
+    tester()->histogram_tester().ExpectTotalCount(
         std::string(internal::kHistogramPrefixMultiTabLoading5OrMore)
             .append(suffix),
         expected_5_or_more);
@@ -103,8 +103,6 @@ class MultiTabLoadingPageLoadMetricsObserverTest
 
 TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, SingleTabLoading) {
   SimulatePageLoad(0, Foreground);
-  histogram_tester().ExpectUniqueSample(
-      internal::kHistogramMultiTabLoadingNumTabsWithInflightLoad, 0, 1);
 
   ValidateHistograms(internal::kHistogramFirstContentfulPaintSuffix, 0, 0, 0);
   ValidateHistograms(internal::kHistogramForegroundToFirstContentfulPaintSuffix,
@@ -123,8 +121,6 @@ TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, SingleTabLoading) {
 
 TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, MultiTabLoading1) {
   SimulatePageLoad(1, Foreground);
-  histogram_tester().ExpectUniqueSample(
-      internal::kHistogramMultiTabLoadingNumTabsWithInflightLoad, 1, 1);
 
   ValidateHistograms(internal::kHistogramFirstContentfulPaintSuffix, 1, 0, 0);
   ValidateHistograms(internal::kHistogramForegroundToFirstContentfulPaintSuffix,
@@ -143,8 +139,6 @@ TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, MultiTabLoading1) {
 
 TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, MultiTabLoading2) {
   SimulatePageLoad(2, Foreground);
-  histogram_tester().ExpectUniqueSample(
-      internal::kHistogramMultiTabLoadingNumTabsWithInflightLoad, 2, 1);
 
   ValidateHistograms(internal::kHistogramFirstContentfulPaintSuffix, 1, 1, 0);
   ValidateHistograms(internal::kHistogramForegroundToFirstContentfulPaintSuffix,
@@ -163,8 +157,6 @@ TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, MultiTabLoading2) {
 
 TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, MultiTabLoading5) {
   SimulatePageLoad(5, Foreground);
-  histogram_tester().ExpectUniqueSample(
-      internal::kHistogramMultiTabLoadingNumTabsWithInflightLoad, 5, 1);
 
   ValidateHistograms(internal::kHistogramFirstContentfulPaintSuffix, 1, 1, 1);
   ValidateHistograms(internal::kHistogramForegroundToFirstContentfulPaintSuffix,
@@ -183,8 +175,6 @@ TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, MultiTabLoading5) {
 
 TEST_F(MultiTabLoadingPageLoadMetricsObserverTest, MultiTabBackground) {
   SimulatePageLoad(1, Background);
-  histogram_tester().ExpectUniqueSample(
-      internal::kHistogramMultiTabLoadingNumTabsWithInflightLoad, 1, 1);
 
   ValidateHistograms(internal::kHistogramFirstContentfulPaintSuffix, 0, 0, 0);
   ValidateHistograms(internal::kHistogramForegroundToFirstContentfulPaintSuffix,

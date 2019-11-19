@@ -54,12 +54,12 @@ TEST_F(PlatformAppsManifestTest, PlatformApps) {
           "apps, but this is a packaged app."),
       Testcase("init_invalid_platform_app_4.json",
                "'background' is only allowed for extensions, legacy packaged "
-               "apps, and"
-               " hosted apps, but this is a packaged app."),
+               "apps, hosted apps, and login screen extensions, but this is a "
+               "packaged app."),
       Testcase("init_invalid_platform_app_5.json",
                "'background' is only allowed for extensions, legacy packaged "
-               "apps, and"
-               " hosted apps, but this is a packaged app."),
+               "apps, hosted apps, and login screen extensions, but this is a "
+               "packaged app."),
       Testcase("incognito_invalid_platform_app.json",
                "'incognito' is only allowed for extensions and legacy packaged "
                "apps, "
@@ -125,8 +125,8 @@ TEST_F(PlatformAppsManifestTest, CertainApisRequirePlatformApps) {
   // Create each manifest.
   for (const char* api_name : kPlatformAppExperimentalApis) {
     base::Value permissions(base::Value::Type::LIST);
-    permissions.GetList().push_back(base::Value("experimental"));
-    permissions.GetList().push_back(base::Value(api_name));
+    permissions.Append(base::Value("experimental"));
+    permissions.Append(base::Value(api_name));
     manifest.SetKey("permissions", std::move(permissions));
     manifests.push_back(
         std::make_unique<ManifestData>(manifest.CreateDeepCopy(), ""));

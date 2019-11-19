@@ -30,15 +30,16 @@
 
 #include "third_party/blink/renderer/core/svg/svg_number.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animation_element.h"
+#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 SVGNumber::SVGNumber(float value) : value_(value) {}
 
 SVGNumber* SVGNumber::Clone() const {
-  return Create(value_);
+  return MakeGarbageCollected<SVGNumber>(value_);
 }
 
 String SVGNumber::ValueAsString() const {
@@ -77,20 +78,19 @@ void SVGNumber::Add(SVGPropertyBase* other, SVGElement*) {
   SetValue(value_ + ToSVGNumber(other)->Value());
 }
 
-void SVGNumber::CalculateAnimatedValue(SVGAnimationElement* animation_element,
-                                       float percentage,
-                                       unsigned repeat_count,
-                                       SVGPropertyBase* from,
-                                       SVGPropertyBase* to,
-                                       SVGPropertyBase* to_at_end_of_duration,
-                                       SVGElement*) {
-  DCHECK(animation_element);
-
+void SVGNumber::CalculateAnimatedValue(
+    const SVGAnimateElement& animation_element,
+    float percentage,
+    unsigned repeat_count,
+    SVGPropertyBase* from,
+    SVGPropertyBase* to,
+    SVGPropertyBase* to_at_end_of_duration,
+    SVGElement*) {
   SVGNumber* from_number = ToSVGNumber(from);
   SVGNumber* to_number = ToSVGNumber(to);
   SVGNumber* to_at_end_of_duration_number = ToSVGNumber(to_at_end_of_duration);
 
-  animation_element->AnimateAdditiveNumber(
+  animation_element.AnimateAdditiveNumber(
       percentage, repeat_count, from_number->Value(), to_number->Value(),
       to_at_end_of_duration_number->Value(), value_);
 }
@@ -100,7 +100,7 @@ float SVGNumber::CalculateDistance(SVGPropertyBase* other, SVGElement*) {
 }
 
 SVGNumber* SVGNumberAcceptPercentage::Clone() const {
-  return Create(value_);
+  return MakeGarbageCollected<SVGNumberAcceptPercentage>(value_);
 }
 
 template <typename CharType>

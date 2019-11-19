@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FastKeyboardLockUnlockRelock) {
   EnterActiveTabFullscreen();
-  // TODO(crbug.com/708584): Replace with ScopedTaskEnvironment using MOCK_TIME.
+  // TODO(crbug.com/708584): Replace with TaskEnvironment using MOCK_TIME.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
 
@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FastKeyboardLockUnlockRelock) {
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, SlowKeyboardLockUnlockRelock) {
   EnterActiveTabFullscreen();
-  // TODO(crbug.com/708584): Replace with ScopedTaskEnvironment using MOCK_TIME.
+  // TODO(crbug.com/708584): Replace with TaskEnvironment using MOCK_TIME.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
 
@@ -461,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
                        MouseLockBubbleHideCallbackTimeout) {
   SetWebContentsGrantedSilentMouseLockPermission();
-  // TODO(crbug.com/708584): Replace with ScopedTaskEnvironment using MOCK_TIME.
+  // TODO(crbug.com/708584): Replace with TaskEnvironment using MOCK_TIME.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
 
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FastMouseLockUnlockRelock) {
-  // TODO(crbug.com/708584): Replace with ScopedTaskEnvironment using MOCK_TIME.
+  // TODO(crbug.com/708584): Replace with TaskEnvironment using MOCK_TIME.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
 
@@ -498,7 +498,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FastMouseLockUnlockRelock) {
 }
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, SlowMouseLockUnlockRelock) {
-  // TODO(crbug.com/708584): Replace with ScopedTaskEnvironment using MOCK_TIME.
+  // TODO(crbug.com/708584): Replace with TaskEnvironment using MOCK_TIME.
   auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
 

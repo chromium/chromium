@@ -49,7 +49,7 @@ function showPaymentRequest(pr) {
 /**
  * Show a PaymentRequest that requests a shipping address, but has no listeners.
  */
-function buyWithoutListeners() {  // eslint-disable-line no-unused-vars
+function buyWithoutListeners() { // eslint-disable-line no-unused-vars
   showPaymentRequest(buildPaymentRequest());
 }
 
@@ -57,7 +57,7 @@ function buyWithoutListeners() {  // eslint-disable-line no-unused-vars
  * Show a PaymentRequest that requests a shipping address, but listeners don't
  * call updateWith().
  */
-function buyWithoutCallingUpdateWith() {  // eslint-disable-line no-unused-vars
+function buyWithoutCallingUpdateWith() { // eslint-disable-line no-unused-vars
   const pr = buildPaymentRequest();
   pr.addEventListener('shippingaddresschange', function(evt) {
     print('shippingaddresschange');
@@ -72,7 +72,7 @@ function buyWithoutCallingUpdateWith() {  // eslint-disable-line no-unused-vars
  * Show a PaymentRequest that requests a shipping address, but listeners don't
  * use promises to update the UI.
  */
-function buyWithoutPromises() {  // eslint-disable-line no-unused-vars
+function buyWithoutPromises() { // eslint-disable-line no-unused-vars
   const pr = buildPaymentRequest();
   const updatedDetails = {
     total: {label: 'Updated total', amount: {currency: 'USD', value: '10.00'}},

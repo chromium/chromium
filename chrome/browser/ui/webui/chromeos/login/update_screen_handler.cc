@@ -12,18 +12,15 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
-
-namespace {
-
-const char kJsScreenPath[] = "login.UpdateScreen";
-
-}  // namespace
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace chromeos {
 
+constexpr StaticOobeScreenId UpdateView::kScreenId;
+
 UpdateScreenHandler::UpdateScreenHandler(JSCallsContainer* js_calls_container)
     : BaseScreenHandler(kScreenId, js_calls_container) {
-  set_call_js_prefix(kJsScreenPath);
+  set_user_acted_method_path("login.UpdateScreen.userActed");
 }
 
 UpdateScreenHandler::~UpdateScreenHandler() {
@@ -31,12 +28,64 @@ UpdateScreenHandler::~UpdateScreenHandler() {
     screen_->OnViewDestroyed(this);
 }
 
+void UpdateScreenHandler::Show() {
+  if (!page_is_ready()) {
+    show_on_init_ = true;
+    return;
+  }
+  ShowScreen(kScreenId);
+}
+
+void UpdateScreenHandler::Hide() {}
+
+void UpdateScreenHandler::Bind(UpdateScreen* screen) {
+  screen_ = screen;
+  BaseScreenHandler::SetBaseScreen(screen_);
+}
+
+void UpdateScreenHandler::Unbind() {
+  screen_ = nullptr;
+  BaseScreenHandler::SetBaseScreen(nullptr);
+}
+
+void UpdateScreenHandler::SetEstimatedTimeLeft(int value) {
+  CallJS("login.UpdateScreen.setEstimatedTimeLeft", value);
+}
+
+void UpdateScreenHandler::SetShowEstimatedTimeLeft(bool value) {
+  CallJS("login.UpdateScreen.showEstimatedTimeLeft", value);
+}
+
+void UpdateScreenHandler::SetUpdateCompleted(bool value) {
+  CallJS("login.UpdateScreen.setUpdateCompleted", value);
+}
+
+void UpdateScreenHandler::SetShowCurtain(bool value) {
+  CallJS("login.UpdateScreen.showUpdateCurtain", value);
+}
+
+void UpdateScreenHandler::SetProgressMessage(const base::string16& value) {
+  CallJS("login.UpdateScreen.setProgressMessage", value);
+}
+
+void UpdateScreenHandler::SetProgress(int value) {
+  CallJS("login.UpdateScreen.setUpdateProgress", value);
+}
+
+void UpdateScreenHandler::SetRequiresPermissionForCellular(bool value) {
+  CallJS("login.UpdateScreen.setRequiresPermissionForCellular", value);
+}
+
+void UpdateScreenHandler::SetCancelUpdateShortcutEnabled(bool value) {
+  CallJS("login.UpdateScreen.setCancelUpdateShortcutEnabled", value);
+}
+
 void UpdateScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("checkingForUpdatesMsg", IDS_CHECKING_FOR_UPDATE_MSG);
-  builder->Add("installingUpdateDesc", IDS_UPDATE_MSG);
+  builder->AddF("installingUpdateDesc", IDS_UPDATE_MSG,
+                ui::GetChromeOSDeviceName());
   builder->Add("updateCompeletedMsg", IDS_UPDATE_COMPLETED);
-  builder->Add("updateScreenTitle", IDS_UPDATE_SCREEN_TITLE);
   builder->Add("updateScreenAccessibleTitle",
                IDS_UPDATE_SCREEN_ACCESSIBLE_TITLE);
   builder->Add("checkingForUpdates", IDS_CHECKING_FOR_UPDATES);
@@ -70,27 +119,6 @@ void UpdateScreenHandler::Initialize() {
     Show();
     show_on_init_ = false;
   }
-}
-
-void UpdateScreenHandler::Show() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
-  ShowScreen(kScreenId);
-}
-
-void UpdateScreenHandler::Hide() {
-}
-
-void UpdateScreenHandler::Bind(UpdateScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreen(screen_);
-}
-
-void UpdateScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreen(nullptr);
 }
 
 }  // namespace chromeos

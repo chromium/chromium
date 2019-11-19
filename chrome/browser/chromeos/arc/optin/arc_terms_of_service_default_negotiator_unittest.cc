@@ -7,9 +7,9 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/hash/sha1.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/sha1.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/arc/arc_support_host.h"
 #include "chrome/browser/chromeos/arc/extensions/fake_arc_support.h"
@@ -27,10 +27,11 @@
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/test/test_browser_thread_bundle.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,9 +63,9 @@ class ArcTermsOfServiceDefaultNegotiatorTest
     BrowserWithTestWindowTest::SetUp();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::make_unique<chromeos::FakeChromeUserManager>());
-    IdentityManagerFactory::GetForProfile(profile())
-        ->SetPrimaryAccountSynchronously("gaia_id", "testing@account.com",
-                                         /*refresh_token=*/std::string());
+    signin::MakePrimaryAccountAvailable(
+        IdentityManagerFactory::GetForProfile(profile()),
+        "testing@account.com");
 
     chromeos::StatsReportingController::RegisterLocalStatePrefs(
         local_state_.registry());
@@ -95,7 +96,7 @@ class ArcTermsOfServiceDefaultNegotiatorTest
         ConsentAuditorFactory::GetForProfile(profile()));
   }
 
-  std::string GetAuthenticatedAccountId() {
+  CoreAccountId GetAuthenticatedAccountId() {
     return IdentityManagerFactory::GetForProfile(profile())
         ->GetPrimaryAccountInfo()
         .account_id;

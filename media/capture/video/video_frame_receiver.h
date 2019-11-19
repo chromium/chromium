@@ -13,7 +13,13 @@
 namespace media {
 
 // Callback interface for VideoCaptureDeviceClient to communicate with its
-// clients.
+// clients. On some platforms, VideoCaptureDeviceClient calls these methods from
+// OS or capture driver provided threads which do not have a task runner and
+// cannot be posted back to. The mostly equivalent interface
+// video_capture::mojom::VideoFrameHandler cannot be used by
+// VideoCaptureDeviceClient directly, because creating a
+// video_catpure::mojom::ScopedAccessPermissionPtr for passing into
+// OnFrameReadyInBuffer() requires a thread with a task runner.
 class CAPTURE_EXPORT VideoFrameReceiver {
  public:
   virtual ~VideoFrameReceiver() {}
@@ -46,9 +52,9 @@ class CAPTURE_EXPORT VideoFrameReceiver {
   // while the receiver is still holding |buffer_read_permission| from a call to
   // OnFrameReadInBuffer() for the same buffer. In that case, it means that the
   // caller is asking the VideoFrameReceiver to release the read permission and
-  // buffer handle at its earliest convenience.
-  // After this call, a producer may immediately reuse the retired |buffer_id|
-  // with a new buffer via a call to OnNewBufferHandle().
+  // buffer handle at its earliest convenience. After this call, a producer may
+  // immediately reuse the retired |buffer_id| with a new buffer via a call to
+  // OnNewBuffer().
   virtual void OnBufferRetired(int buffer_id) = 0;
 
   virtual void OnError(VideoCaptureError error) = 0;

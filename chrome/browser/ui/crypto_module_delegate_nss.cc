@@ -31,13 +31,12 @@ std::string ChromeNSSCryptoModuleDelegate::RequestPassword(
   DCHECK(!event_.IsSignaled());
   event_.Reset();
 
-  if (base::PostTaskWithTraits(
+  if (base::PostTask(
           FROM_HERE, {BrowserThread::UI},
-          base::BindOnce(
-              &ChromeNSSCryptoModuleDelegate::ShowDialog,
-              // This method blocks on |event_| until the task completes,
-              // so there's no need to ref-count.
-              base::Unretained(this), slot_name, retry))) {
+          base::BindOnce(&ChromeNSSCryptoModuleDelegate::ShowDialog,
+                         // This method blocks on |event_| until the task
+                         // completes, so there's no need to ref-count.
+                         base::Unretained(this), slot_name, retry))) {
     event_.Wait();
   }
   *cancelled = cancelled_;
@@ -48,10 +47,7 @@ void ChromeNSSCryptoModuleDelegate::ShowDialog(const std::string& slot_name,
                                                bool retry) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ShowCryptoModulePasswordDialog(
-      slot_name,
-      retry,
-      reason_,
-      server_.host(),
+      slot_name, retry, reason_, server_.host(),
       NULL,  // TODO(mattm): Supply parent window.
       base::Bind(&ChromeNSSCryptoModuleDelegate::GotPassword,
                  // RequestPassword is blocked on |event_| until GotPassword is

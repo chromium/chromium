@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_OBSERVER_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_OBSERVER_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/macros.h"
+#include "base/optional.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/tabs/tab_group_id.h"
 #include "ui/base/models/list_selection_model.h"
 
+class TabGroupVisualData;
 class TabStripModel;
 
 namespace content {
@@ -32,31 +36,101 @@ class WebContents;
 ////////////////////////////////////////////////////////////////////////////////
 class TabStripModelChange {
  public:
-  enum Type { kSelectionOnly, kInserted, kRemoved, kMoved, kReplaced };
+  enum Type {
+    kSelectionOnly,
+    kInserted,
+    kRemoved,
+    kMoved,
+    kReplaced,
+    kGroupChanged
+  };
 
-  // A WebContents was inserted at |index|. This implicitly changes the existing
-  // selection model by calling IncrementFrom(index).
-  struct Insert {
+  // Base class for all changes.
+  // TODO(dfried): would love to change this whole thing into a std::variant,
+  // but C++17 features are not yet approved for use in chromium.
+  struct Delta {
+    virtual ~Delta() = default;
+  };
+
+  struct ContentsWithIndex {
     content::WebContents* contents;
     int index;
   };
 
-  // A WebContents was removed at |index|. This implicitly changes the existing
-  // selection model by calling DecrementFrom(index).
-  struct Remove {
-    content::WebContents* contents;
-    int index;
+  // WebContents were inserted. This implicitly changes the existing selection
+  // model by calling IncrementFrom(index) on each index in |contents[i].index|.
+  struct Insert : public Delta {
+    Insert();
+    ~Insert() override;
+    Insert(Insert&& other);
+    Insert& operator=(Insert&& other);
 
-    // The specified WebContents at |index| is being closed (and eventually
-    // destroyed). |tab_strip_model| is the TabStripModel that contained the
-    // tab.
+    // Contains the web contents that were inserted, along with their indexes at
+    // the time of insertion. For example, if we inserted elements:
+    //
+    // Before insertion:
+    // A B C D
+    // 0 1 2 3
+    //
+    // After insertion:
+    // A X Y B C Z D
+    // 0 1 2 3 4 5 6
+    //
+    // If the tabs were inserted in the order X, Y, Z, |contents| would contain:
+    // { X, 1 }, { Y, 2 }, { Z, 5 }
+    //
+    // But if the contents were inserted in the order Z, Y, X, |contents| would
+    // contain:
+    // { Z, 3 }, { Y, 1 }, { X, 1 }
+    //
+    // Therefore all observers which store indices of web contents should update
+    // them in the order the web contents appear in |contents|. Observers should
+    // not do index-based queries based on their own internally-stored indices
+    // until after processing all of |contents|.
+    std::vector<ContentsWithIndex> contents;
+  };
+
+  // WebContents were removed at |indices_before_removal|. This implicitly
+  // changes the existing selection model by calling DecrementFrom(index).
+  struct Remove : public Delta {
+    Remove();
+    ~Remove() override;
+    Remove(Remove&& other);
+    Remove& operator=(Remove&& other);
+
+    // Contains the list of web contents removed, along with their indexes at
+    // the time of removal. For example, if we removed elements:
+    //
+    // Before removal:
+    // A B C D E F G
+    // 0 1 2 3 4 5 6
+    //
+    // After removal:
+    // A D E G
+    // 0 1 2 3
+    //
+    // If the tabs were removed in the order B, C, F, |contents| would contain:
+    // { B, 1 }, { C, 1 }, { F, 3 }
+    //
+    // But if the tabs were removed in the order F, C, B, then |contents| would
+    // contain:
+    // { F, 5 }, { C, 2 }, { B, 1 }
+    //
+    // Therefore all observers which store indices of web contents should update
+    // them in the order the web contents appear in |contents|. Observers should
+    // not do index-based queries based on their own internally-stored indices
+    // until after processing all of |contents|.
+    std::vector<ContentsWithIndex> contents;
+
+    // The specified WebContents are being closed (and eventually destroyed).
+    // |tab_strip_model| is the TabStripModel that contained the tab.
     bool will_be_deleted;
   };
 
   // A WebContents was moved from |from_index| to |to_index|. This implicitly
   // changes the existing selection model by calling
   // Move(from_index, to_index, 1).
-  struct Move {
+  struct Move : public Delta {
     content::WebContents* contents;
     int from_index;
     int to_index;
@@ -64,46 +138,46 @@ class TabStripModelChange {
 
   // The WebContents was replaced at the specified index. This is invoked when
   // prerendering swaps in a prerendered WebContents.
-  struct Replace {
+  struct Replace : public Delta {
     content::WebContents* old_contents;
     content::WebContents* new_contents;
     int index;
   };
 
-  struct Delta {
-    union {
-      Insert insert;
-      Remove remove;
-      Move move;
-      Replace replace;
-    };
+  // A WebContents' group affiliation changed from |old_group| to |new_group|.
+  struct GroupChange : public Delta {
+    // Constructors and destructor required due to Optional.
+    GroupChange();
+    GroupChange(const GroupChange& other);
+    GroupChange& operator=(const GroupChange& other);
+    ~GroupChange() override;
+
+    content::WebContents* contents;
+    int index;
+    base::Optional<TabGroupId> old_group;
+    base::Optional<TabGroupId> new_group;
   };
 
-  // Convenient factory methods to create |Delta| with each member.
-  static Delta CreateInsertDelta(content::WebContents* contents, int index);
-  static Delta CreateRemoveDelta(content::WebContents* contents,
-                                 int index,
-                                 bool will_be_deleted);
-  static Delta CreateMoveDelta(content::WebContents* contents,
-                               int from_index,
-                               int to_index);
-  static Delta CreateReplaceDelta(content::WebContents* old_contents,
-                                  content::WebContents* new_contents,
-                                  int index);
-
   TabStripModelChange();
-  TabStripModelChange(Type type, const Delta& delta);
-  TabStripModelChange(Type type, const std::vector<Delta>& deltas);
+  explicit TabStripModelChange(Insert delta);
+  explicit TabStripModelChange(Remove delta);
+  explicit TabStripModelChange(Replace delta);
+  explicit TabStripModelChange(Move delta);
+  explicit TabStripModelChange(GroupChange delta);
   ~TabStripModelChange();
 
-  TabStripModelChange(TabStripModelChange&& other);
-
   Type type() const { return type_; }
-  const std::vector<Delta>& deltas() const { return deltas_; }
+  const Insert* GetInsert() const;
+  const Remove* GetRemove() const;
+  const Move* GetMove() const;
+  const Replace* GetReplace() const;
+  const GroupChange* GetGroupChange() const;
 
  private:
+  TabStripModelChange(Type type, std::unique_ptr<Delta> delta);
+
   const Type type_ = kSelectionOnly;
-  const std::vector<Delta> deltas_;
+  std::unique_ptr<Delta> delta_;
 
   DISALLOW_COPY_AND_ASSIGN(TabStripModelChange);
 };
@@ -185,6 +259,15 @@ class TabStripModelObserver {
                                       const TabStripModelChange& change,
                                       const TabStripSelectionChange& selection);
 
+  // Called when the TabGroupVisualData associated with a group changes. |group|
+  // identifies which group changed. |visual_data| is a pointer to the new
+  // TabGroupVisualData and is valid until either the data associated with
+  // |group| changes again or |group| is destroyed.
+  virtual void OnTabGroupVisualDataChanged(
+      TabStripModel* tab_strip_model,
+      TabGroupId group,
+      const TabGroupVisualData* visual_data);
+
   // The specified WebContents at |index| changed in some way. |contents|
   // may be an entirely different object and the old value is no longer
   // available by the time this message is delivered.
@@ -227,11 +310,39 @@ class TabStripModelObserver {
   // |attention| is true.
   virtual void SetTabNeedsAttentionAt(int index, bool attention);
 
+  // Called when an observed TabStripModel is beginning destruction.
+  virtual void OnTabStripModelDestroyed(TabStripModel* tab_strip_model);
+
+  static void StopObservingAll(TabStripModelObserver* observer);
+  static bool IsObservingAny(TabStripModelObserver* observer);
+  static int CountObservedModels(TabStripModelObserver* observer);
+
+  // A passkey for TabStripModel to access some methods on this class - see
+  // </docs/patterns/passkey.md>.
+  class ModelPasskey {
+   private:
+    friend class TabStripModel;
+    ModelPasskey() = default;
+    ~ModelPasskey() = default;
+  };
+
+  // These methods are used by TabStripModel to notify this class of lifecycle
+  // events on the TabStripModelObserver or the TabStripModel itself. The first
+  // two are used to allow TabStripModelObserver to track which models it is
+  // observing. The third is used to allow TabStripModelObserver to clean up
+  // when an observed TabStripModel is destroyed, and to send the
+  // OnTabStripModelDestroyed notification above.
+  void StartedObserving(ModelPasskey, TabStripModel* model);
+  void StoppedObserving(ModelPasskey, TabStripModel* model);
+  void ModelDestroyed(ModelPasskey, TabStripModel* model);
+
  protected:
   TabStripModelObserver();
-  virtual ~TabStripModelObserver() {}
+  virtual ~TabStripModelObserver();
 
  private:
+  std::set<TabStripModel*> observed_models_;
+
   DISALLOW_COPY_AND_ASSIGN(TabStripModelObserver);
 };
 

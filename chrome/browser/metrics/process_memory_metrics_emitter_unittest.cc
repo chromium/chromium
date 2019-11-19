@@ -11,7 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/metrics/renderer_uptime_tracker.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,10 +21,10 @@ using GlobalMemoryDumpPtr = memory_instrumentation::mojom::GlobalMemoryDumpPtr;
 using ProcessMemoryDumpPtr =
     memory_instrumentation::mojom::ProcessMemoryDumpPtr;
 using OSMemDumpPtr = memory_instrumentation::mojom::OSMemDumpPtr;
-using PageInfoPtr = resource_coordinator::mojom::PageInfoPtr;
+using PageInfo = ProcessMemoryMetricsEmitter::PageInfo;
 using ProcessType = memory_instrumentation::mojom::ProcessType;
-using ProcessInfoPtr = resource_coordinator::mojom::ProcessInfoPtr;
-using ProcessInfoVector = std::vector<ProcessInfoPtr>;
+using ProcessInfo = ProcessMemoryMetricsEmitter::ProcessInfo;
+using ProcessInfoVector = std::vector<ProcessInfo>;
 
 namespace {
 
@@ -118,13 +118,21 @@ OSMemDumpPtr GetFakeOSMemDump(uint32_t resident_set_kb,
   using memory_instrumentation::mojom::VmRegion;
 
   return memory_instrumentation::mojom::OSMemDump::New(
-      resident_set_kb, private_footprint_kb, shared_footprint_kb
+      resident_set_kb, resident_set_kb /* peak_resident_set_kb */,
+      true /* is_peak_rss_resettable */, private_footprint_kb,
+      shared_footprint_kb
 #if defined(OS_LINUX) || defined(OS_ANDROID)
       ,
       private_swap_footprint_kb
 #endif
-      );
+  );
 }
+
+constexpr uint64_t kGpuSharedImagesSizeMB = 32;
+constexpr uint64_t kGpuSkiaGpuResourcesMB = 87;
+constexpr uint64_t kGpuCommandBufferMB = 240;
+constexpr uint64_t kGpuTotalMemory =
+    kGpuCommandBufferMB + kGpuSharedImagesSizeMB + kGpuSkiaGpuResourcesMB;
 
 void PopulateBrowserMetrics(GlobalMemoryDumpPtr& global_dump,
                             MetricMap& metrics_mb) {
@@ -133,6 +141,14 @@ void PopulateBrowserMetrics(GlobalMemoryDumpPtr& global_dump,
   pmd->process_type = ProcessType::BROWSER;
   SetAllocatorDumpMetric(pmd, "malloc", "effective_size",
                          metrics_mb["Malloc"] * 1024 * 1024);
+  // These three categories are required for total gpu memory, but do not
+  // have a UKM value set for them, so don't appear in metrics_mb.
+  SetAllocatorDumpMetric(pmd, "gpu/gl", "effective_size",
+                         kGpuCommandBufferMB * 1024 * 1024);
+  SetAllocatorDumpMetric(pmd, "gpu/shared_images", "effective_size",
+                         kGpuSharedImagesSizeMB * 1024 * 1024);
+  SetAllocatorDumpMetric(pmd, "skia/gpu_resources", "effective_size",
+                         kGpuSkiaGpuResourcesMB * 1024 * 1024);
   OSMemDumpPtr os_dump =
       GetFakeOSMemDump(GetResidentValue(metrics_mb) * 1024,
                        metrics_mb["PrivateMemoryFootprint"] * 1024,
@@ -159,11 +175,11 @@ MetricMap GetExpectedBrowserMetrics() {
 #endif
             {"Malloc", 20}, {"PrivateMemoryFootprint", 30},
             {"SharedMemoryFootprint", 35}, {"Uptime", 42},
+            {"GpuMemory", kGpuTotalMemory * 1024 * 1024},
 #if defined(OS_LINUX) || defined(OS_ANDROID)
             {"PrivateSwapFootprint", 50},
 #endif
-      },
-      base::KEEP_FIRST_OF_DUPES);
+      });
 }
 
 void PopulateRendererMetrics(GlobalMemoryDumpPtr& global_dump,
@@ -309,6 +325,8 @@ void PopulateRendererMetrics(GlobalMemoryDumpPtr& global_dump,
 constexpr int kTestRendererPrivateMemoryFootprint = 130;
 constexpr int kTestRendererSharedMemoryFootprint = 135;
 constexpr int kNativeLibraryResidentMemoryFootprint = 27560;
+constexpr int kNativeLibraryResidentNotOrderedCodeFootprint = 12345;
+constexpr int kNativeLibraryNotResidentOrderedCodeFootprint = 23456;
 
 #if !defined(OS_MACOSX)
 constexpr int kTestRendererResidentSet = 110;
@@ -356,8 +374,7 @@ MetricMap GetExpectedRendererMetrics() {
             {"NumberOfDocuments", 1}, {"NumberOfFrames", 2},
             {"NumberOfLayoutObjects", 5}, {"NumberOfNodes", 3},
             {"PartitionAlloc.Partitions.ArrayBuffer", 10},
-      },
-      base::KEEP_FIRST_OF_DUPES);
+      });
 }
 
 void AddPageMetrics(MetricMap& expected_metrics) {
@@ -375,6 +392,12 @@ void PopulateGpuMetrics(GlobalMemoryDumpPtr& global_dump,
                          metrics_mb["Malloc"] * 1024 * 1024);
   SetAllocatorDumpMetric(pmd, "gpu/gl", "effective_size",
                          metrics_mb["CommandBuffer"] * 1024 * 1024);
+  // These two categories are required for total gpu memory, but do not
+  // have a UKM value set for them, so don't appear in metrics_mb.
+  SetAllocatorDumpMetric(pmd, "gpu/shared_images", "effective_size",
+                         kGpuSharedImagesSizeMB * 1024 * 1024);
+  SetAllocatorDumpMetric(pmd, "skia/gpu_resources", "effective_size",
+                         kGpuSkiaGpuResourcesMB * 1024 * 1024);
   OSMemDumpPtr os_dump =
       GetFakeOSMemDump(GetResidentValue(metrics_mb) * 1024,
                        metrics_mb["PrivateMemoryFootprint"] * 1024,
@@ -400,13 +423,13 @@ MetricMap GetExpectedGpuMetrics() {
             {"Resident", 210},
 #endif
             {"Malloc", 220}, {"PrivateMemoryFootprint", 230},
-            {"SharedMemoryFootprint", 235}, {"CommandBuffer", 240},
-            {"Uptime", 42},
+            {"SharedMemoryFootprint", 235},
+            {"CommandBuffer", kGpuCommandBufferMB}, {"Uptime", 42},
+            {"GpuMemory", kGpuTotalMemory * 1024 * 1024},
 #if defined(OS_LINUX) || defined(OS_ANDROID)
             {"PrivateSwapFootprint", 50},
 #endif
-      },
-      base::KEEP_FIRST_OF_DUPES);
+      });
 }
 
 void PopulateAudioServiceMetrics(GlobalMemoryDumpPtr& global_dump,
@@ -445,8 +468,7 @@ MetricMap GetExpectedAudioServiceMetrics() {
 #if defined(OS_LINUX) || defined(OS_ANDROID)
             {"PrivateSwapFootprint", 50},
 #endif
-      },
-      base::KEEP_FIRST_OF_DUPES);
+      });
 }
 
 void PopulateMetrics(GlobalMemoryDumpPtr& global_dump,
@@ -501,60 +523,57 @@ ProcessInfoVector GetProcessInfo(ukm::TestUkmRecorder& ukm_recorder) {
 
   // Process 200 always has no URLs.
   {
-    ProcessInfoPtr process_info(
-        resource_coordinator::mojom::ProcessInfo::New());
-    process_info->pid = 200;
+    ProcessInfo process_info;
+    process_info.pid = 200;
     process_infos.push_back(std::move(process_info));
   }
 
   // Process kTestRendererPid201 always has 1 URL
   {
-    ProcessInfoPtr process_info(
-        resource_coordinator::mojom::ProcessInfo::New());
-    process_info->pid = kTestRendererPid201;
+    ProcessInfo process_info;
+    process_info.pid = kTestRendererPid201;
     ukm::SourceId first_source_id = ukm::UkmRecorder::GetNewSourceID();
     ukm_recorder.UpdateSourceURL(first_source_id,
                                  GURL("http://www.url201.com/"));
-    PageInfoPtr page_info(resource_coordinator::mojom::PageInfo::New());
+    PageInfo page_info;
 
-    page_info->ukm_source_id = first_source_id;
-    page_info->tab_id = 201;
-    page_info->hosts_main_frame = true;
-    page_info->is_visible = true;
-    page_info->time_since_last_visibility_change =
+    page_info.ukm_source_id = first_source_id;
+    page_info.tab_id = 201;
+    page_info.hosts_main_frame = true;
+    page_info.is_visible = true;
+    page_info.time_since_last_visibility_change =
         base::TimeDelta::FromSeconds(15);
-    page_info->time_since_last_navigation = base::TimeDelta::FromSeconds(20);
-    process_info->page_infos.push_back(std::move(page_info));
+    page_info.time_since_last_navigation = base::TimeDelta::FromSeconds(20);
+    process_info.page_infos.push_back(page_info);
     process_infos.push_back(std::move(process_info));
   }
 
   // Process kTestRendererPid202 always has 2 URL
   {
-    ProcessInfoPtr process_info(
-        resource_coordinator::mojom::ProcessInfo::New());
-    process_info->pid = kTestRendererPid202;
+    ProcessInfo process_info;
+    process_info.pid = kTestRendererPid202;
     ukm::SourceId first_source_id = ukm::UkmRecorder::GetNewSourceID();
     ukm::SourceId second_source_id = ukm::UkmRecorder::GetNewSourceID();
     ukm_recorder.UpdateSourceURL(first_source_id,
                                  GURL("http://www.url2021.com/"));
     ukm_recorder.UpdateSourceURL(second_source_id,
                                  GURL("http://www.url2022.com/"));
-    PageInfoPtr page_info1(resource_coordinator::mojom::PageInfo::New());
-    page_info1->ukm_source_id = first_source_id;
-    page_info1->tab_id = 2021;
-    page_info1->hosts_main_frame = true;
-    page_info1->time_since_last_visibility_change =
+    PageInfo page_info1;
+    page_info1.ukm_source_id = first_source_id;
+    page_info1.tab_id = 2021;
+    page_info1.hosts_main_frame = true;
+    page_info1.time_since_last_visibility_change =
         base::TimeDelta::FromSeconds(11);
-    page_info1->time_since_last_navigation = base::TimeDelta::FromSeconds(21);
-    PageInfoPtr page_info2(resource_coordinator::mojom::PageInfo::New());
-    page_info2->ukm_source_id = second_source_id;
-    page_info2->tab_id = 2022;
-    page_info2->hosts_main_frame = true;
-    page_info2->time_since_last_visibility_change =
+    page_info1.time_since_last_navigation = base::TimeDelta::FromSeconds(21);
+    PageInfo page_info2;
+    page_info2.ukm_source_id = second_source_id;
+    page_info2.tab_id = 2022;
+    page_info2.hosts_main_frame = true;
+    page_info2.time_since_last_visibility_change =
         base::TimeDelta::FromSeconds(12);
-    page_info2->time_since_last_navigation = base::TimeDelta::FromSeconds(22);
-    process_info->page_infos.push_back(std::move(page_info1));
-    process_info->page_infos.push_back(std::move(page_info2));
+    page_info2.time_since_last_navigation = base::TimeDelta::FromSeconds(22);
+    process_info.page_infos.push_back(std::move(page_info1));
+    process_info.page_infos.push_back(std::move(page_info2));
 
     process_infos.push_back(std::move(process_info));
   }
@@ -595,7 +614,7 @@ class ProcessMemoryMetricsEmitterTest
     EXPECT_EQ(expected.size() + expected_total_memory_entries, entries.size());
   }
 
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder_;
 
  private:
@@ -812,6 +831,10 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   PopulateRendererMetrics(global_dump, expected_metrics, kTestRendererPid202);
   global_dump->aggregated_metrics->native_library_resident_kb =
       kNativeLibraryResidentMemoryFootprint;
+  global_dump->aggregated_metrics->native_library_not_resident_ordered_kb =
+      kNativeLibraryNotResidentOrderedCodeFootprint;
+  global_dump->aggregated_metrics->native_library_resident_not_ordered_kb =
+      kNativeLibraryResidentNotOrderedCodeFootprint;
 
   // No histograms should have been recorded yet.
   histograms.ExpectTotalCount("Memory.Renderer.PrivateMemoryFootprint", 0);
@@ -823,7 +846,11 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   histograms.ExpectTotalCount("Memory.Total.SharedMemoryFootprint", 0);
   histograms.ExpectTotalCount("Memory.Total.ResidentSet", 0);
   histograms.ExpectTotalCount(
-      "Memory.NativeLibrary.MappedAndResidentMemoryFootprint", 0);
+      "Memory.NativeLibrary.MappedAndResidentMemoryFootprint2", 0);
+  histograms.ExpectTotalCount(
+      "Memory.NativeLibrary.NotResidentOrderedCodeMemoryFootprint", 0);
+  histograms.ExpectTotalCount(
+      "Memory.NativeLibrary.ResidentNotOrderedCodeMemoryFootprint", 0);
 
   // Simulate some metrics emission.
   scoped_refptr<ProcessMemoryMetricsEmitterFake> emitter =
@@ -857,8 +884,14 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
                                 2 * kTestRendererResidentSet, 1);
 #endif
   histograms.ExpectUniqueSample(
-      "Memory.NativeLibrary.MappedAndResidentMemoryFootprint",
+      "Memory.NativeLibrary.MappedAndResidentMemoryFootprint2",
       kNativeLibraryResidentMemoryFootprint, 1);
+  histograms.ExpectUniqueSample(
+      "Memory.NativeLibrary.NotResidentOrderedCodeMemoryFootprint",
+      kNativeLibraryNotResidentOrderedCodeFootprint, 1);
+  histograms.ExpectUniqueSample(
+      "Memory.NativeLibrary.ResidentNotOrderedCodeMemoryFootprint",
+      kNativeLibraryResidentNotOrderedCodeFootprint, 1);
 }
 
 TEST_F(ProcessMemoryMetricsEmitterTest, MainFramePMFEmitted) {

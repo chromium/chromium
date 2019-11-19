@@ -33,10 +33,6 @@ namespace blink {
 
 class StyleFilterData final : public GarbageCollected<StyleFilterData> {
  public:
-  static StyleFilterData* Create() {
-    return MakeGarbageCollected<StyleFilterData>();
-  }
-
   StyleFilterData();
   explicit StyleFilterData(const StyleFilterData&);
 

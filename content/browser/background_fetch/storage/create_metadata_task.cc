@@ -18,14 +18,15 @@
 #include "content/browser/background_fetch/storage/database_helpers.h"
 #include "content/browser/background_fetch/storage/image_helpers.h"
 #include "content/browser/background_fetch/storage/mark_registration_for_deletion_task.h"
+#include "content/browser/cache_storage/cache_storage.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/common/background_fetch/background_fetch_types.h"
-#include "content/common/service_worker/service_worker_utils.h"
+#include "content/common/fetch/fetch_api_request_proto.h"
+#include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom.h"
 
 namespace content {
-
 namespace background_fetch {
 
 namespace {
@@ -44,10 +45,7 @@ class CanCreateRegistrationTask : public DatabaseTask {
   CanCreateRegistrationTask(DatabaseTaskHost* host,
                             const url::Origin& origin,
                             CanCreateRegistrationCallback callback)
-      : DatabaseTask(host),
-        origin_(origin),
-        callback_(std::move(callback)),
-        weak_factory_(this) {}
+      : DatabaseTask(host), origin_(origin), callback_(std::move(callback)) {}
 
   ~CanCreateRegistrationTask() override = default;
 
@@ -121,8 +119,8 @@ class CanCreateRegistrationTask : public DatabaseTask {
   // The number of existing registrations found for |origin_|.
   size_t num_active_registrations_ = 0u;
 
-  base::WeakPtrFactory<CanCreateRegistrationTask>
-      weak_factory_;  // Keep as last.
+  base::WeakPtrFactory<CanCreateRegistrationTask> weak_factory_{
+      this};  // Keep as last.
 };
 
 }  // namespace
@@ -141,8 +139,7 @@ CreateMetadataTask::CreateMetadataTask(
       options_(std::move(options)),
       icon_(icon),
       start_paused_(start_paused),
-      callback_(std::move(callback)),
-      weak_factory_(this) {}
+      callback_(std::move(callback)) {}
 
 CreateMetadataTask::~CreateMetadataTask() = default;
 
@@ -338,7 +335,7 @@ void CreateMetadataTask::StoreMetadata() {
     pending_request_proto.set_unique_id(registration_id_.unique_id());
     pending_request_proto.set_request_index(i);
     pending_request_proto.set_serialized_request(
-        ServiceWorkerUtils::SerializeFetchRequestToString(*requests_[i]));
+        SerializeFetchRequestToString(*requests_[i]));
     if (requests_[i]->blob)
       pending_request_proto.set_request_body_size(requests_[i]->blob->size);
     entries.emplace_back(PendingRequestKey(registration_id_.unique_id(), i),
@@ -354,6 +351,11 @@ void CreateMetadataTask::StoreMetadata() {
 
 void CreateMetadataTask::DidStoreMetadata(
     blink::ServiceWorkerStatusCode status) {
+  int64_t trace_id = blink::cache_storage::CreateTraceId();
+  TRACE_EVENT_WITH_FLOW0("CacheStorage",
+                         "CacheStorageMigrationTask::DidStoreMetadata",
+                         TRACE_ID_GLOBAL(trace_id), TRACE_EVENT_FLAG_FLOW_OUT);
+
   switch (ToDatabaseStatus(status)) {
     case DatabaseStatus::kOk:
       break;
@@ -367,13 +369,19 @@ void CreateMetadataTask::DidStoreMetadata(
   // Create cache entries.
   CacheStorageHandle cache_storage = GetOrOpenCacheStorage(registration_id_);
   cache_storage.value()->OpenCache(
-      /* cache_name= */ registration_id_.unique_id(),
+      /* cache_name= */ registration_id_.unique_id(), trace_id,
       base::BindOnce(&CreateMetadataTask::DidOpenCache,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), trace_id));
 }
 
-void CreateMetadataTask::DidOpenCache(CacheStorageCacheHandle handle,
+void CreateMetadataTask::DidOpenCache(int64_t trace_id,
+                                      CacheStorageCacheHandle handle,
                                       blink::mojom::CacheStorageError error) {
+  TRACE_EVENT_WITH_FLOW0("CacheStorage",
+                         "CacheStorageMigrationTask::DidReopenCache",
+                         TRACE_ID_GLOBAL(trace_id),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+
   if (error != blink::mojom::CacheStorageError::kSuccess) {
     SetStorageErrorAndFinish(BackgroundFetchStorageError::kCacheStorageError);
     return;
@@ -396,7 +404,7 @@ void CreateMetadataTask::DidOpenCache(CacheStorageCacheHandle handle,
   }
 
   handle.value()->BatchOperation(
-      std::move(operations), /* fail_on_duplicates= */ false,
+      std::move(operations), trace_id,
       base::BindOnce(&CreateMetadataTask::DidStoreRequests,
                      weak_factory_.GetWeakPtr(), handle.Clone()),
       base::DoNothing());
@@ -419,13 +427,13 @@ void CreateMetadataTask::DidStoreRequests(
 
 void CreateMetadataTask::FinishWithError(
     blink::mojom::BackgroundFetchError error) {
-  auto registration = blink::mojom::BackgroundFetchRegistration::New();
+  auto registration_data = blink::mojom::BackgroundFetchRegistrationData::New();
 
   if (error == blink::mojom::BackgroundFetchError::NONE) {
     DCHECK(metadata_proto_);
 
-    bool converted =
-        ToBackgroundFetchRegistration(*metadata_proto_, registration.get());
+    bool converted = ToBackgroundFetchRegistration(*metadata_proto_,
+                                                   registration_data.get());
     if (!converted) {
       // Database corrupted.
       SetStorageErrorAndFinish(
@@ -434,7 +442,7 @@ void CreateMetadataTask::FinishWithError(
     }
 
     for (auto& observer : data_manager()->observers()) {
-      observer.OnRegistrationCreated(registration_id_, *registration,
+      observer.OnRegistrationCreated(registration_id_, *registration_data,
                                      options_.Clone(), icon_, requests_.size(),
                                      start_paused_);
     }
@@ -442,7 +450,7 @@ void CreateMetadataTask::FinishWithError(
 
   ReportStorageError();
 
-  std::move(callback_).Run(error, std::move(registration));
+  std::move(callback_).Run(error, std::move(registration_data));
   Finished();  // Destroys |this|.
 }
 
@@ -451,5 +459,4 @@ std::string CreateMetadataTask::HistogramName() const {
 }
 
 }  // namespace background_fetch
-
 }  // namespace content

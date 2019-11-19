@@ -7,7 +7,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/credit_card.h"
+#include "components/autofill/core/browser/data_model/credit_card.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #include "ios/chrome/browser/application_context.h"
 #include "url/gurl.h"

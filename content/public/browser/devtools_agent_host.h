@@ -19,6 +19,7 @@
 #include "url/gurl.h"
 
 namespace base {
+class RefCountedMemory;
 class SingleThreadTaskRunner;
 }
 
@@ -73,7 +74,7 @@ class CONTENT_EXPORT DevToolsAgentHost
       std::unique_ptr<DevToolsExternalAgentProxyDelegate> delegate);
 
   using CreateServerSocketCallback =
-      base::Callback<std::unique_ptr<net::ServerSocket>(std::string*)>;
+      base::RepeatingCallback<std::unique_ptr<net::ServerSocket>(std::string*)>;
 
   // Creates DevToolsAgentHost for the browser, which works with browser-wide
   // debugging protocol.
@@ -112,6 +113,12 @@ class CONTENT_EXPORT DevToolsAgentHost
   // Observer is notified about changes in DevToolsAgentHosts.
   static void AddObserver(DevToolsAgentHostObserver*);
   static void RemoveObserver(DevToolsAgentHostObserver*);
+
+  // Create a DevTools IO Stream from data.
+  // Returns a DevTools IO Stream handle that can be used to read and close the
+  // stream.
+  virtual std::string CreateIOStreamFromData(
+      scoped_refptr<base::RefCountedMemory>) = 0;
 
   // Attaches |client| to this agent host to start debugging.
   // Returns |true| on success. Note that some policies defined by

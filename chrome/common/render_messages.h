@@ -13,7 +13,6 @@
 #include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/common/browser_controls_state_param_traits.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/web_application_info_provider_param_traits.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -47,11 +46,6 @@
 IPC_MESSAGE_ROUTED1(ChromeViewMsg_LoadBlockedPlugins,
                     std::string /* identifier */)
 
-// Tells the renderer whether or not a file system access has been allowed.
-IPC_MESSAGE_ROUTED2(ChromeViewMsg_RequestFileSystemAccessAsyncResponse,
-                    int  /* request_id */,
-                    bool /* allowed */)
-
 // JavaScript related messages -----------------------------------------------
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -68,53 +62,6 @@ IPC_MESSAGE_ROUTED1(ChromeViewHostMsg_SetIsShowingDownloadButtonInErrorPage,
 //-----------------------------------------------------------------------------
 // Misc messages
 // These are messages sent from the renderer to the browser process.
-
-// Tells the browser that content in the current page was blocked due to the
-// user's content settings.
-IPC_MESSAGE_ROUTED2(ChromeViewHostMsg_ContentBlocked,
-                    ContentSettingsType /* type of blocked content */,
-                    base::string16 /* details on blocked content */)
-
-// Sent by the renderer process to check whether access to web databases is
-// granted by content settings.
-IPC_SYNC_MESSAGE_CONTROL3_1(ChromeViewHostMsg_AllowDatabase,
-                            int /* render_frame_id */,
-                            GURL /* origin_url */,
-                            GURL /* top origin url */,
-                            bool /* allowed */)
-
-// Sent by the renderer process to check whether access to DOM Storage is
-// granted by content settings.
-IPC_SYNC_MESSAGE_CONTROL4_1(ChromeViewHostMsg_AllowDOMStorage,
-                            int /* render_frame_id */,
-                            GURL /* origin_url */,
-                            GURL /* top origin url */,
-                            bool /* if true local storage, otherwise session */,
-                            bool /* allowed */)
-
-// Sent by the renderer process to check whether access to FileSystem is
-// granted by content settings.
-IPC_SYNC_MESSAGE_CONTROL3_1(ChromeViewHostMsg_RequestFileSystemAccessSync,
-                            int /* render_frame_id */,
-                            GURL /* origin_url */,
-                            GURL /* top origin url */,
-                            bool /* allowed */)
-
-// Sent by the renderer process to check whether access to FileSystem is
-// granted by content settings.
-IPC_MESSAGE_CONTROL4(ChromeViewHostMsg_RequestFileSystemAccessAsync,
-                    int /* render_frame_id */,
-                    int /* request_id */,
-                    GURL /* origin_url */,
-                    GURL /* top origin url */)
-
-// Sent by the renderer process to check whether access to Indexed DB is
-// granted by content settings.
-IPC_SYNC_MESSAGE_CONTROL3_1(ChromeViewHostMsg_AllowIndexedDB,
-                            int /* render_frame_id */,
-                            GURL /* origin_url */,
-                            GURL /* top origin url */,
-                            bool /* allowed */)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 // Sent by the renderer to check if crash reporting is enabled.

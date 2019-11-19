@@ -89,7 +89,7 @@ public class InsetObserverViewTest {
     private LinearLayout mContentView;
 
     @Before
-    public void setUp() throws Throwable {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
@@ -100,7 +100,7 @@ public class InsetObserverViewTest {
     /** Test that applying new insets does not notify the observer.. */
     @Test
     @SmallTest
-    public void applyInsets() throws Throwable {
+    public void applyInsets() {
         mView = new TestInsetObserverView(mActivity, null);
         mView.addObserver(mObserver);
 
@@ -111,7 +111,7 @@ public class InsetObserverViewTest {
     /** Test that applying new insets with a cutout notifies the observer. */
     @Test
     @SmallTest
-    public void applyInsets_WithCutout() throws Throwable {
+    public void applyInsets_WithCutout() {
         mView = new TestInsetObserverView(mActivity, new DisplayCutout());
         mView.addObserver(mObserver);
 
@@ -122,7 +122,7 @@ public class InsetObserverViewTest {
     /** Test applying new insets with a cutout and then remove the cutout. */
     @Test
     @SmallTest
-    public void applyInsets_WithCutout_WithoutCutout() throws Throwable {
+    public void applyInsets_WithCutout_WithoutCutout() {
         mView = new TestInsetObserverView(mActivity, new DisplayCutout());
         mView.addObserver(mObserver);
 
@@ -138,7 +138,7 @@ public class InsetObserverViewTest {
     /** Test that applying new insets with a cutout but no observer is a no-op. */
     @Test
     @SmallTest
-    public void applyInsets_WithCutout_NoListener() throws Throwable {
+    public void applyInsets_WithCutout_NoListener() {
         mView = new TestInsetObserverView(mActivity, new DisplayCutout());
         mView.onApplyWindowInsets(mInsets);
     }
@@ -146,7 +146,7 @@ public class InsetObserverViewTest {
     /** Test that applying new insets with no observer is a no-op. */
     @Test
     @SmallTest
-    public void applyInsets_NoListener() throws Throwable {
+    public void applyInsets_NoListener() {
         mView = new TestInsetObserverView(mActivity, null);
         mView.onApplyWindowInsets(mInsets);
     }

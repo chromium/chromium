@@ -2,6 +2,4 @@ per-file *_fuchsia*=file://build/fuchsia/OWNERS
 
 # For security review of MIME sniffing to avoid introducing security bugs
 per-file mime_sniffer*=set noparent
-per-file mime_sniffer*=rsleevi@chromium.org
-per-file mime_sniffer*=asanka@chromium.org
-per-file mime_sniffer*=mmenke@chromium.org
+per-file mime_sniffer*=file://net/base/SECURITY_OWNERS

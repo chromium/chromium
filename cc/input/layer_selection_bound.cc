@@ -15,7 +15,7 @@ LayerSelectionBound::~LayerSelectionBound() = default;
 
 bool LayerSelectionBound::operator==(const LayerSelectionBound& other) const {
   return type == other.type && layer_id == other.layer_id &&
-         edge_top == other.edge_top && edge_bottom == other.edge_bottom &&
+         edge_start == other.edge_start && edge_end == other.edge_end &&
          hidden == other.hidden;
 }
 
@@ -25,8 +25,8 @@ bool LayerSelectionBound::operator!=(const LayerSelectionBound& other) const {
 
 std::string LayerSelectionBound::ToString() const {
   return base::StringPrintf("LayerSelectionBound(%s, %s, %d)",
-                            edge_top.ToString().c_str(),
-                            edge_bottom.ToString().c_str(), hidden);
+                            edge_start.ToString().c_str(),
+                            edge_end.ToString().c_str(), hidden);
 }
 
 }  // namespace cc

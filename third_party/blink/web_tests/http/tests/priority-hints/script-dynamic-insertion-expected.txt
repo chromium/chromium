@@ -5,7 +5,7 @@ PASS auto importance on dynamically-inserted <script>s has no effect on resource
 PASS invalid importance on dynamically-inserted <script>s has no effect on resource load priority
 PASS missing importance on dynamically-inserted <script>s has no effect on resource load priority
 PASS high importance on dynamically-inserted module <script>s has no effect on resource load priority
-FAIL low importance on dynamically-inserted module <script>s translates to kLow resource load priority assert_equals: expected 3 but got 1
+FAIL low importance on dynamically-inserted module <script>s translates to kLow resource load priority assert_equals: expected 1 but got 3
 PASS auto importance on dynamically-inserted module <script>s has no effect on resource load priority
 PASS invalid importance on dynamically-inserted module <script>s has no effect on resource load priority
 PASS missing importance on dynamically-inserted module <script>s has no effect on resource load priority

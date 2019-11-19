@@ -5,6 +5,7 @@
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+import("//tools/polymer/polymer.gni")
 import("../optimize_webui.gni")
 
 if (optimize_webui) {
@@ -13,17 +14,19 @@ if (optimize_webui) {
 
   optimize_webui("build") {
     host = "print"
-    html_in_files = [ "print_preview_new.html" ]
+    html_in_files = [ "print_preview.html" ]
     html_out_files = [ "vulcanized.html" ]
-    html_out_files_polymer2 = [ "vulcanized.p2.html" ]
-    insert_in_head = "<base href=\"chrome://print\">"
     input = rebase_path("$target_gen_dir/$unpak_folder", root_build_dir)
-    js_out_files = [ "crisper.js" ]
-
-    excludes = [ "pdf/pdf_scripting_api.js" ]
+    js_out_files = [ "print_preview.js" ]
+    js_module_in_files = [ "print_preview.js" ]
 
     deps = [
       ":unpak",
+      "../../../../ui/webui/resources:modulize",
+    ]
+    excludes = [
+      "chrome://resources/js/cr.m.js",
+      "pdf/pdf_scripting_api.js",
     ]
   }
 
@@ -41,7 +44,14 @@ if (optimize_webui) {
 
     # The .grd contains references to generated files.
     source_is_generated = true
+    grit_flags = [
+      "-E",
+      "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
+    ]
 
+    deps = [
+      "ui:polymer3_elements",
+    ]
     defines = chrome_grit_defines
     outputs = [
       "grit/print_preview_resources.h",
@@ -55,18 +65,20 @@ if (optimize_webui) {
 
 group("closure_compile") {
   deps = [
-    ":print_preview_resources",
-    "data:closure_compile",
-    "new:closure_compile",
+    ":print_preview_module_resources",
+    "data:closure_compile_module",
+    "ui:closure_compile_module",
   ]
 }
 
-js_type_check("print_preview_resources") {
+js_type_check("print_preview_module_resources") {
+  is_polymer3 = true
   deps = [
     ":cloud_print_interface",
     ":cloud_print_interface_js",
     ":cloud_print_interface_manager",
     ":cloud_print_interface_native",
+    ":dark_mode_behavior",
     ":metrics",
     ":native_layer",
     ":print_preview_utils",
@@ -74,19 +86,24 @@ js_type_check("print_preview_resources") {
 }
 
 js_library("print_preview_utils") {
+  deps = [
+    ":dark_mode_behavior",
+    "//third_party/polymer/v3_0/components-chromium/iron-iconset-svg:iron-iconset-svg",
+    "//ui/webui/resources/js:util.m",
+  ]
 }
 
 js_library("metrics") {
   deps = [
     ":native_layer",
-    "//ui/webui/resources/js:cr",
   ]
 }
 
 js_library("cloud_print_interface") {
   deps = [
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr:event_target",
+    "data:destination",
+    "data:invitation",
+    "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
@@ -96,6 +113,7 @@ js_library("cloud_print_interface_manager") {
     ":cloud_print_interface_js",
     ":cloud_print_interface_native",
     ":native_layer",
+    "//ui/webui/resources/js:load_time_data.m",
   ]
 }
 
@@ -105,10 +123,9 @@ js_library("cloud_print_interface_js") {
     ":native_layer",
     "data:cloud_parsers",
     "data:destination",
-    "data:document_info",
     "data:invitation",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js/cr:event_target",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
@@ -121,7 +138,16 @@ js_library("cloud_print_interface_native") {
 js_library("native_layer") {
   deps = [
     "data:destination",
+    "data:destination_match",
+    "data:destination_policies",
     "data:measurement_system",
-    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("dark_mode_behavior") {
+  deps = [
+    "//ui/webui/resources/js:assert.m",
   ]
 }

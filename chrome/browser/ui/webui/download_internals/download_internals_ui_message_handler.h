@@ -44,7 +44,8 @@ class DownloadInternalsUIMessageHandler : public content::WebUIMessageHandler,
 
   download::DownloadService* download_service_;
 
-  base::WeakPtrFactory<DownloadInternalsUIMessageHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<DownloadInternalsUIMessageHandler> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(DownloadInternalsUIMessageHandler);
 };

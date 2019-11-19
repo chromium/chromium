@@ -24,25 +24,25 @@ of **messages**. Each interface message is roughly analogous to a single proto
 message, for developers who are familiar with Google protobufs.
 
 Given a mojom interface and a message pipe, one of the endpoints
-can be designated as an **InterfacePtr** and is used to *send* messages described by
-the interface. The other endpoint can be designated as a **Binding** and is used
+can be designated as a **`Remote`** and is used to *send* messages described by
+the interface. The other endpoint can be designated as a **`Receiver`** and is used
 to *receive* interface messages.
 
 *** aside
 NOTE: The above generalization is a bit oversimplified. Remember that the
 message pipe is still bidirectional, and it's possible for a mojom message to
-expect a reply. Replies are sent from the Binding endpoint and received by the
-InterfacePtr endpoint.
+expect a reply. Replies are sent from the `Receiver` endpoint and received by the
+`Remote` endpoint.
 ***
 
-The Binding endpoint must be associated with (*i.e.* **bound** to) an
+The `Receiver` endpoint must be associated with (*i.e.* **bound** to) an
 **implementation** of its mojom interface in order to process received messages.
 A received message is dispatched as a scheduled task invoking the corresponding
 interface method on the implementation object.
 
-Another way to think about all this is simply that **an InterfacePtr makes
+Another way to think about all this is simply that **a `Remote` makes
 calls on a remote implementation of its interface associated with a
-corresponding remote Binding.**
+corresponding remote `Receiver`.**
 
 ## Example: Defining a New Frame Interface
 
@@ -64,7 +64,7 @@ module example.mojom;
 
 interface PingResponder {
   // Receives a "Ping" and responds with a random integer.
-  Ping() => (int random);
+  Ping() => (int32 random);
 };
 ```
 
@@ -73,7 +73,7 @@ definition here:
 
 ``` python
 # src/example/public/mojom/BUILD.gn
-import "mojo/public/tools/bindings/mojom.gni"
+import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "ping_responder.mojom" ]
 }
@@ -85,49 +85,45 @@ Now let's create a message pipe to use this interface.
 
 *** aside
 As a general rule and as a matter of convenience when
-using Mojo, the *client* of an interface (*i.e.* the InterfacePtr side) is
+using Mojo, the *client* of an interface (*i.e.* the `Remote` side) is
 typically the party who creates a new pipe. This is convenient because the
-InterfacePtr may be used to start sending messages immediately without waiting
+`Remote` may be used to start sending messages immediately without waiting
 for the InterfaceRequest endpoint to be transferred or bound anywhere.
 ***
 
 This code would be placed somewhere in the renderer:
 
 ```cpp
-example::mojom::PingResponderPtr ping_responder;
-example::mojom::PingResponderRequest request =
-    mojo::MakeRequest(&ping_responder);
+// src/third_party/blink/example/public/ping_responder.h
+mojo::Remote<example::mojom::PingResponder> ping_responder;
+mojo::PendingReceiver<example::mojom::PingResponder> receiver =
+    ping_responder.BindNewPipeAndPassReceiver();
 ```
 
-In this example, ```ping_responder``` is the InterfacePtr, and ```request```
-is an InterfaceRequest, which is a Binding precursor that will eventually
-be turned into a Binding. `mojo::MakeRequest` is the most common way to create
-a message pipe: it yields both endpoints as strongly-typed objects, with the
-`InterfacePtr` as an output argument and the `InterfaceRequest` as the return
+In this example, ```ping_responder``` is the `Remote`, and ```receiver```
+is a `PendingReceiver`, which is a `Receiver` precursor that will eventually
+be turned into a `Receiver`. `BindNewPipeAndPassReceiver` is the most common way to create
+a message pipe: it yields the `PendingReceiver` as the return
 value.
 
 *** aside
-NOTE: Every mojom interface `T` generates corresponding C++ type aliases
-`TPtr = InterfacePtr<T>` and `TRequest = InterfaceRequest<T>`. Chromium code
-almost exclusively uses these aliases instead of writing out the more verbose
-templated name.
-
-Also note that an InterfaceRequest doesn't actually **do** anything. It is an
+NOTE: A `PendingReceiver` doesn't actually **do** anything. It is an
 inert holder of a single message pipe endpoint. It exists only to make its
 endpoint more strongly-typed at compile-time, indicating that the endpoint
-expects to be bound by a Binding of the same interface type.
+expects to be bound by a `Receiver` of the same interface type.
 ***
 
 ### Sending a Message
 
-Finally, we can call the `Ping()` method on our InterfacePtr to send a message:
+Finally, we can call the `Ping()` method on our `Remote` to send a message:
 
 ```cpp
+// src/third_party/blink/example/public/ping_responder.h
 ping_responder->Ping(base::BindOnce(&OnPong));
 ```
 
 *** aside
-**IMPORTANT:** If we want to receive the the response, we must keep the
+**IMPORTANT:** If we want to receive the response, we must keep the
 `ping_responder` object alive until `OnPong` is invoked. After all,
 `ping_responder` *owns* its message pipe endpoint. If it's destroyed then so is
 the endpoint, and there will be nothing to receive the response message.
@@ -136,63 +132,54 @@ the endpoint, and there will be nothing to receive the response message.
 We're almost done! Of course, if everything were this easy, this document
 wouldn't need to exist. We've taken the hard problem of sending a message from
 a renderer process to the browser process, and transformed it into a problem
-where we just need to take the `request` object from above and pass it to the
-browser process somehow where it can be turned into a Binding that dispatches
+where we just need to take the `receiver` object from above and pass it to the
+browser process somehow where it can be turned into a `Receiver` that dispatches
 its received messages.
 
-### Sending an InterfaceRequest to the Browser
+### Sending a `PendingReceiver` to the Browser
 
-It's worth noting that InterfaceRequests (and message pipe endpoints in general)
+It's worth noting that `PendingReceiver`s (and message pipe endpoints in general)
 are just another type of object that can be freely sent over mojom messages.
-The most common way to get an InterfaceRequest somewhere is to pass it as a
+The most common way to get a `PendingReceiver` somewhere is to pass it as a
 method argument on some other already-connected interface.
 
 One such interface which we always have connected between a renderer's
 `RenderFrameImpl` and its corresponding `RenderFrameHostImpl` in the browser
 is
-[`DocumentInterfaceBroker`](https://cs.chromium.org/chromium/src/third_party/blink/public/mojom/frame/document_interface_broker.mojom).
-We can update this definition to add support for our new PingResponder
-interface:
+[`BrowserInterfaceBroker`](https://cs.chromium.org/chromium/src/third_party/blink/public/mojom/browser_interface_broker.mojom).
+This interface is a factory for acquiring other interfaces. Its `GetInterface`
+method takes a `GenericPendingReceiver`, which allows passing arbitrary
+interface receivers.
 
 ``` cpp
-interface DocumentInterfaceBroker {
-  ...
-
-  GetPingResponder(PingResponder& responder);
+interface BrowserInterfaceBroker {
+  GetInterface(mojo_base.mojom.GenericPendingReceiver receiver);
 }
 ```
-
-The `&` syntax is not a reference! In mojom it denotes an InterfaceRequest.
-Specifically in this case, the `GetPingResponder` takes a single
-`PingResponderRequest` argument. If the `&` were omitted, this would instead
-take a `PingResponderPtr`.
-
-Now the renderer can call this method with the `request` object it created
-earlier via `mojo::MakeRequest`:
+Since `GenericPendingReceiver` can be implicitly constructed from any specific
+`PendingReceiver`, it can call this method with the `receiver` object it created
+earlier via `BindNewPipeAndPassReceiver`:
 
 ``` cpp
 RenderFrame* my_frame = GetMyFrame();
-my_frame->GetDocumentInterfaceBroker()->GetPingResponder(std::move(request));
+my_frame->GetBrowserInterfaceBroker().GetInterface(std::move(receiver));
 ```
 
-This will transfer the PingResponderRequest endpoint to the browser process
-where it will be received by the corresponding `DocumentInterfaceBroker`
+This will transfer the `PendingReceiver` endpoint to the browser process
+where it will be received by the corresponding `BrowserInterfaceBroker`
 implementation. More on that below.
 
 ### Implementing the Interface
 
-Finally, we need a browser-side implementation of our `PingResponder` interface
-as well as an implementation of the new
-`DocumentInterfaceBroker.GetPingResponder` message. Let's implement
-`PingResponder` first:
+Finally, we need a browser-side implementation of our `PingResponder` interface.
 
 ```cpp
 #include "example/public/mojom/ping_responder.mojom.h"
 
 class PingResponderImpl : example::mojom::PingResponder {
  public:
-  explicit PingResponderImpl(example::mojom::PingResponderRequest request)
-      : binding_(this, std::move(request)) {}
+  explicit PingResponderImpl(mojo::PendingReceiver<example::mojom::PingResponder> receiver)
+      : receiver_(this, std::move(receiver)) {}
 
   // example::mojom::PingResponder:
   void Ping(PingCallback callback) override {
@@ -201,25 +188,21 @@ class PingResponderImpl : example::mojom::PingResponder {
   }
 
  private:
-  mojo::Binding<example::mojom::PingResponder> binding_;
+  mojo::Receiver<example::mojom::PingResponder> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(PingResponderImpl);
 };
 ```
 
-And conveniently `RenderFrameHostImpl` implements `DocumentInterfaceBroker`, and
-any calls made on the object returned by
-`RenderFrameImpl::GetDocumentInterfaceBroker()' will be routed directly to the
-`RenderFrameHostImpl`.  So the only thing left to do is update
-`RenderFrameHostImpl` to implement `GetPingResponder`. If you forget to do this
-the compiler will complain anyway, because generated mojom interface methods are
-pure virtual methods in C++.
+`RenderFrameHostImpl` owns an implementation of `BrowserInterfaceBroker`.
+When this implementation receives a `GetInterface` method call, it calls
+the handler previously registered for this specific interface.
 
 ``` cpp
 // render_frame_host_impl.h
 class RenderFrameHostImpl
   ...
-  void GetPingResponder(example::mojom::PingResponderRequest request) override;
+  void GetPingResponder(mojo::PendingReceiver<example::mojom::PingResponder> receiver);
   ...
  private:
   ...
@@ -229,8 +212,17 @@ class RenderFrameHostImpl
 
 // render_frame_host_impl.cc
 void RenderFrameHostImpl::GetPingResponder(
-    example::mojom::PingResponderRequest request) {
-  ping_responder_ = std::make_unique<PingResponderImpl>(std::move(request));
+    mojo::PendingReceiver<example::mojom::PingResponder> receiver) {
+  ping_responder_ = std::make_unique<PingResponderImpl>(std::move(receiver));
+}
+
+// browser_interface_binders.cc
+void PopulateFrameBinders(RenderFrameHostImpl* host,
+                          service_manager::BinderMap* map) {
+...
+  // Register the handler for PingResponder.
+  map->Add<example::mojom::PingResponder>(base::BindRepeating(
+    &RenderFrameHostImpl::GetPingResponder, base::Unretained(host)));
 }
 ```
 
@@ -327,7 +319,7 @@ interface Divider {
 
 ``` python
 # src/chrome/services/math/public/mojom/BUILD.gn
-import "mojo/public/tools/bindings/mojom.gni"
+import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
@@ -367,10 +359,10 @@ class MathService : public service_manager::Service,
 
   service_manager::ServiceBinding service_binding_;
 
-  // You could also use a Binding. We use BindingSet to conveniently allow
+  // You could also use a Receiver. We use ReceiverSet to conveniently allow
   // multiple clients to bind to the same instance of this class. See Mojo
   // C++ Bindings documentation for more information.
-  mojo::BindingSet<mojom::Divider> divider_bindings_;
+  mojo::ReceiverSet<mojom::Divider> divider_receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(MathService);
 };
@@ -396,8 +388,8 @@ void MathService::OnBindInterface(
   // Note that services typically use a service_manager::BinderRegistry if they
   // plan on handling many different interface request types.
   if (interface_name == mojom::Divider::Name_) {
-    divider_bindings_.AddBinding(
-        this, mojom::DividerRequest(std::move(interface_pipe)));
+    divider_receivers_.Add(
+        this, mojo::PendingReceiver<mojom::Divider>(std::move(interface_pipe)));
   }
 }
 
@@ -405,7 +397,7 @@ void MathService::Divide(int32_t dividend,
                          int32_t divisor,
                          DivideCallback callback) {
   // Respond with the quotient!
-  callback.Run(dividend / divisor);
+  std::move(callback).Run(dividend / divisor);
 }
 
 }  // namespace math
@@ -525,7 +517,7 @@ GetChromePackagedServiceManifests() {
 ```
 
 And don't forget to add a GN dependency from
-`//chrome/app:packaged_service_manifests` onto
+[`//chrome/app:chrome_packaged_service_manifests`](https://cs.chromium.org/chromium/src/chrome/app/BUILD.gn?l=564&rcl=a77d5ba9c4621cfe14e7e1cd03bbae16904f269e) onto
 `//chrome/services/math/public/cpp:manifest`!
 
 We're almost done with service setup. The last step is to teach Chromium (and
@@ -568,7 +560,7 @@ For this step we just modify
 by adding a block of code as follows:
 
 ``` cpp
-void ChromeContentUtilityClient::MaybeCreateMainThreadService(
+std::unique_ptr<service_manager::Service> ChromeContentUtilityClient::MaybeCreateMainThreadService(
     const std::string& service_name,
     service_manager::mojom::ServiceRequest request) {
   ...
@@ -617,9 +609,9 @@ an interface request to our service. This is accessible from the main thread of
 the browser process. Somewhere in `src/chrome/browser`, we can write:
 
 ``` cpp
-// This gives us the global content_browser's Connector
-service_manager::Connector* connector =
-    content::ServiceManagerConnection::GetForProcess()->GetConnector();
+// This gives us the system Connector for the browser process, which has access
+// to most service interfaces.
+service_manager::Connector* connector = content::GetSystemConnector();
 
 // Recall from the earlier Mojo section that mojo::MakeRequest creates a new
 // message pipe for our interface. Connector passes the request endpoint to
@@ -634,6 +626,12 @@ connector->BindInterface(math::mojom::kServiceName,
 divider->Divide(
     42, 6, base::BindOnce([](int32_t quotient) { LOG(INFO) << quotient; }));
 ```
+*** aside
+NOTE: To ensure the execution of the response callback, the DividerPtr
+object must be kept alive (see
+[this section](/mojo/public/cpp/bindings/README.md#A-Note-About-Endpoint-Lifetime-and-Callbacks)
+and [this note from an earlier section](#sending-a-message)).
+***
 
 This should successfully spawn a new process to run the `math` service if it's
 not already running, then ask it to do a division, and ultimately log the result
@@ -766,37 +764,33 @@ For additional convenience, here is also a link to the `content_browser`
 
 #### The New Way: Interface Brokers
 
-*** aside
-In classic Google tradition, the New Way is not entirely ready yet. As of this
-writing, worker-scoped interfaces must still use the Old Way described above.
-***
-
 Rather than the confusing spaghetti of interface filter logic, we now define an
 explicit mojom interface with a persistent connection between a renderer's
 frame object and the corresponding `RenderFrameHostImpl` in the browser process.
 This interface is called
-[`DocumentInterfaceBroker`](https://cs.chromium.org/chromium/src/third_party/blink/public/mojom/frame/document_interface_broker.mojom?rcl=ea6921f717f21e9a72d321a15c4bf50d47d10310&l=11)
-and is fairly easy to work with: you simply add a new factory method to the
-interface definition:
-
-``` cpp
-interface DocumentInterfaceBroker {
-  ...
-
-  GetGoatTeleporter(magic.mojom.GoatTeleporter& request);
-};
-```
-
-and implement this new method on `RenderFrameHostImpl`, which is an
-implementation (**the** production implementation) of
-`DocumentInterfaceBroker`:
+[`BrowserInterfaceBroker`](https://cs.chromium.org/chromium/src/third_party/blink/public/mojom/browser_interface_broker.mojom?rcl=09aa5ae71649974cae8ad4f889d7cd093637ccdb&l=11)
+and is fairly easy to work with: you add a new method on `RenderFrameHostImpl`:
 
 ``` cpp
 void RenderFrameHostImpl::GetGoatTeleporter(
-    magic::mojom::GoatTeleporterRequest request) {
-  goat_teleporter_binding_.Bind(std::move(request));
+    mojo::PendingReceiver<magic::mojom::GoatTeleporter> receiver) {
+  goat_teleporter_receiver_.Bind(std::move(receiver));
 }
 ```
+
+and register this method in `PopulateFrameBinders` function in `browser_interface_binders.cc`,
+which maps specific interfaces to their handlers in respective hosts:
+
+``` cpp
+// //content/browser/browser_interface_binders.cc
+void PopulateFrameBinders(RenderFrameHostImpl* host,
+                          service_manager::BinderMap* map) {
+...
+  map->Add<magic::mojom::GoatTeleporter>(base::BindRepeating(
+      &RenderFrameHostImpl::GetGoatTeleporter, base::Unretained(host)));
+}
+```
+
 
 ### Exposing Browser Interfaces to Render Processes
 
@@ -818,8 +812,8 @@ the main thread, you can access the process's `Connector` as follows:
 auto* connector = content::ChildThread::Get()->GetConnector();
 
 // For example...
-connector->BindInterface(content::mojom::kBrowserServiceName,
-                         std::move(some_request));
+connector->Connect(content::mojom::kBrowserServiceName,
+                         std::move(some_receiver));
 ```
 
 ### Exposing Content Child Process Interfaces to the Browser

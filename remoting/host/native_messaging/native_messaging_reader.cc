@@ -13,7 +13,7 @@
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/sequenced_task_runner.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
@@ -144,10 +144,9 @@ void NativeMessagingReader::Core::NotifyEof() {
 }
 
 NativeMessagingReader::NativeMessagingReader(base::File file)
-    : reader_thread_("Reader"),
-      weak_factory_(this) {
+    : reader_thread_("Reader") {
   reader_thread_.StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, /*size=*/0));
+      base::Thread::Options(base::MessagePumpType::IO, /*size=*/0));
 
   read_task_runner_ = reader_thread_.task_runner();
   core_.reset(new Core(std::move(file), base::ThreadTaskRunnerHandle::Get(),

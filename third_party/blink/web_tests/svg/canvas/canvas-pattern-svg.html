@@ -4,10 +4,6 @@
   <title>Test for WK113420: SVG-based patterns should be drawn correctly</title>
   <style> canvas { border:solid #000 } </style>
   <script>
-   if (window.testRunner) {
-     testRunner.dumpAsTextWithPixelResults();
-     testRunner.waitUntilDone();
-   }
    window.onload = function(){
     var i = new Image();
     i.src = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='50' height='50'><circle cx='10' cy='10' r='10' fill='green' /></svg>";
@@ -37,9 +33,6 @@
       ctx.translate(0, -160);
       ctx.strokeRect(0, 0, 150, 150);
       ctx.fillRect(0, 0, 150, 150);
-
-      if (window.testRunner)
-          testRunner.notifyDone();
     }
    }
   </script>

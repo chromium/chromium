@@ -17,7 +17,7 @@ namespace {
 
 void EnsureMonitorCaptureDevices() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(
           &MediaStreamManager::EnsureDeviceMonitorStarted,
@@ -60,7 +60,7 @@ void MediaCaptureDevicesImpl::AddVideoCaptureObserver(
   MediaStreamManager* media_stream_manager =
       BrowserMainLoop::GetInstance()->media_stream_manager();
   if (media_stream_manager != nullptr) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&MediaStreamManager::AddVideoCaptureObserver,
                        base::Unretained(media_stream_manager), observer));
@@ -73,7 +73,7 @@ void MediaCaptureDevicesImpl::RemoveAllVideoCaptureObservers() {
   MediaStreamManager* media_stream_manager =
       BrowserMainLoop::GetInstance()->media_stream_manager();
   if (media_stream_manager != nullptr) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::IO},
         base::BindOnce(&MediaStreamManager::RemoveAllVideoCaptureObservers,
                        base::Unretained(media_stream_manager)));
@@ -87,7 +87,7 @@ void MediaCaptureDevicesImpl::OnAudioCaptureDevicesChanged(
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     UpdateAudioDevicesOnUIThread(devices);
   } else {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&MediaCaptureDevicesImpl::UpdateAudioDevicesOnUIThread,
                        base::Unretained(this), devices));
@@ -99,7 +99,7 @@ void MediaCaptureDevicesImpl::OnVideoCaptureDevicesChanged(
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     UpdateVideoDevicesOnUIThread(devices);
   } else {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&MediaCaptureDevicesImpl::UpdateVideoDevicesOnUIThread,
                        base::Unretained(this), devices));

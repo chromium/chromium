@@ -14,6 +14,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "chrome/android/chrome_jni_headers/DataReductionProxySettings_jni.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings.h"
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,7 +30,6 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/previews/core/previews_experiments.h"
-#include "jni/DataReductionProxySettings_jni.h"
 #include "net/base/proxy_server.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -53,13 +53,11 @@ struct DataUsageForHost {
 
 }  // namespace
 
-DataReductionProxySettingsAndroid::DataReductionProxySettingsAndroid()
-    : weak_factory_(this) {}
+DataReductionProxySettingsAndroid::DataReductionProxySettingsAndroid() {}
 
 DataReductionProxySettingsAndroid::DataReductionProxySettingsAndroid(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj)
-    : weak_factory_(this) {}
+    const base::android::JavaParamRef<jobject>& obj) {}
 
 DataReductionProxySettingsAndroid::~DataReductionProxySettingsAndroid() {}
 

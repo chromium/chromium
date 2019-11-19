@@ -63,12 +63,48 @@ class FloatSampleTypeTraits {
   static SampleType From(FloatType source_value) {
     // Apply clipping (aka. clamping). These values are frequently sent to OS
     // level drivers that may not properly handle these values.
-    if (std::isnan(source_value))
-      return kZeroPointValue;
-    if (source_value <= kMinValue)
+    if (UNLIKELY(!(source_value >= kMinValue)))
       return kMinValue;
-    if (source_value >= kMaxValue)
+    if (UNLIKELY(source_value >= kMaxValue))
       return kMaxValue;
+    return static_cast<SampleType>(source_value);
+  }
+
+  template <typename FloatType>
+  static FloatType To(SampleType source_value) {
+    return static_cast<FloatType>(source_value);
+  }
+};
+
+// Similar to above, but does not apply clipping.
+template <typename SampleType>
+class FloatSampleTypeTraitsNoClip {
+  static_assert(std::is_floating_point<SampleType>::value,
+                "Template is only valid for float types.");
+
+ public:
+  using ValueType = SampleType;
+
+  static constexpr SampleType kMinValue = -1.0f;
+  static constexpr SampleType kMaxValue = +1.0f;
+  static constexpr SampleType kZeroPointValue = 0.0f;
+
+  static SampleType FromFloat(float source_value) {
+    return From<float>(source_value);
+  }
+  static float ToFloat(SampleType source_value) {
+    return To<float>(source_value);
+  }
+  static SampleType FromDouble(double source_value) {
+    return From<double>(source_value);
+  }
+  static double ToDouble(SampleType source_value) {
+    return To<double>(source_value);
+  }
+
+ private:
+  template <typename FloatType>
+  static SampleType From(FloatType source_value) {
     return static_cast<SampleType>(source_value);
   }
 
@@ -208,6 +244,7 @@ class FixedSampleTypeTraits {
 
 // Aliases for commonly used sample formats.
 using Float32SampleTypeTraits = FloatSampleTypeTraits<float>;
+using Float32SampleTypeTraitsNoClip = FloatSampleTypeTraitsNoClip<float>;
 using Float64SampleTypeTraits = FloatSampleTypeTraits<double>;
 using UnsignedInt8SampleTypeTraits = FixedSampleTypeTraits<uint8_t>;
 using SignedInt16SampleTypeTraits = FixedSampleTypeTraits<int16_t>;

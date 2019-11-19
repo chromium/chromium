@@ -258,7 +258,7 @@ void SettingsAppMonitor::AutomationControllerDelegate::MaybeInvokeChooser(
 }
 
 SettingsAppMonitor::SettingsAppMonitor(Delegate* delegate)
-    : delegate_(delegate), weak_ptr_factory_(this) {
+    : delegate_(delegate) {
   // A fully initialized WeakPtrFactory is needed to create the
   // AutomationControllerDelegate.
   auto automation_controller_delegate =

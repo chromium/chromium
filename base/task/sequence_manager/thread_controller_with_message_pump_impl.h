@@ -10,8 +10,10 @@
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/work_id_provider.h"
 #include "base/run_loop.h"
+#include "base/task/common/checked_lock.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
+#include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/sequenced_task_source.h"
 #include "base/task/sequence_manager/thread_controller.h"
 #include "base/task/sequence_manager/work_deduplicator.h"
@@ -32,21 +34,22 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
       public RunLoop::Delegate,
       public RunLoop::NestingObserver {
  public:
-  ThreadControllerWithMessagePumpImpl(std::unique_ptr<MessagePump> message_pump,
-                                      const TickClock* time_source);
+  ThreadControllerWithMessagePumpImpl(
+      std::unique_ptr<MessagePump> message_pump,
+      const SequenceManager::Settings& settings);
   ~ThreadControllerWithMessagePumpImpl() override;
 
   using ShouldScheduleWork = WorkDeduplicator::ShouldScheduleWork;
 
   static std::unique_ptr<ThreadControllerWithMessagePumpImpl> CreateUnbound(
-      const TickClock* time_source);
+      const SequenceManager::Settings& settings);
 
   // ThreadController implementation:
   void SetSequencedTaskSource(SequencedTaskSource* task_source) override;
-  void BindToCurrentThread(MessageLoopBase* message_loop_base) override;
   void BindToCurrentThread(std::unique_ptr<MessagePump> message_pump) override;
   void SetWorkBatchSize(int work_batch_size) override;
-  void WillQueueTask(PendingTask* pending_task) override;
+  void WillQueueTask(PendingTask* pending_task,
+                     const char* task_queue_name) override;
   void ScheduleWork() override;
   void SetNextDelayedDoWork(LazyNow* lazy_now, TimeTicks run_time) override;
   void SetTimerSlack(TimerSlack timer_slack) override;
@@ -72,7 +75,8 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void OnExitNestedRunLoop() override;
 
  protected:
-  explicit ThreadControllerWithMessagePumpImpl(const TickClock* time_source);
+  explicit ThreadControllerWithMessagePumpImpl(
+      const SequenceManager::Settings& settings);
 
   // MessagePump::Delegate implementation.
   void BeforeDoInternalWork() override;
@@ -82,7 +86,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   bool DoIdleWork() override;
 
   // RunLoop::Delegate implementation.
-  void Run(bool application_tasks_allowed) override;
+  void Run(bool application_tasks_allowed, TimeDelta timeout) override;
   void Quit() override;
   void EnsureWorkScheduled() override;
 
@@ -120,6 +124,9 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
     // When the next scheduled delayed work should run, if any.
     TimeTicks next_delayed_do_work = TimeTicks::Max();
 
+    // The time after which the runloop should quit.
+    TimeTicks quit_runloop_after = TimeTicks::Max();
+
     bool task_execution_allowed = true;
   };
 
@@ -137,7 +144,7 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   scoped_refptr<AssociatedThreadId> associated_thread_;
   MainThreadOnly main_thread_only_;
 
-  mutable Lock task_runner_lock_;
+  mutable base::internal::CheckedLock task_runner_lock_;
   scoped_refptr<SingleThreadTaskRunner> task_runner_
       GUARDED_BY(task_runner_lock_);
 
@@ -149,6 +156,12 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   std::unique_ptr<MessagePump> pump_;
 
   TaskAnnotator task_annotator_;
+
+#if DCHECK_IS_ON()
+  const bool log_runloop_quit_and_quit_when_idle_;
+  bool quit_when_idle_requested_ = false;
+#endif
+
   const TickClock* time_source_;  // Not owned.
 
   // Non-null provider of id state for identifying distinct work items executed

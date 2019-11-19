@@ -4,11 +4,8 @@
 marq@chromium.org
 rohitrao@chromium.org
 
-# BVC OWNERS for small changes. Please refer larger changes to one
-# of the above OWNERs.
-per-file browser_view_controller*=edchin@chromium.org
-per-file browser_view_controller*=kkhorimoto@chromium.org
-per-file browser_view_controller*=gambard@chromium.org
+# Only for adding and removing flags.
+per-file ui_feature_flags.*=*
 
 # TEAM: ios-directory-owners@chromium.org
 # OS: iOS

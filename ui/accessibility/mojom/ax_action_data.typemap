@@ -12,4 +12,4 @@ sources = [
 public_deps = [
   "//ui/accessibility",
 ]
-type_mappings = [ "ax.mojom.AXActionData=ui::AXActionData" ]
+type_mappings = [ "ax.mojom.AXActionData=::ui::AXActionData" ]

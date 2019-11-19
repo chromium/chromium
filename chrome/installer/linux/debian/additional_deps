@@ -17,9 +17,6 @@ libappindicator3-1
 # security and stability updates in NSS.
 libnss3 (>= 3.26)
 
-# For lsb_release.
-lsb-release
-
 # For uploading crash reports with Breakpad.
 wget
 

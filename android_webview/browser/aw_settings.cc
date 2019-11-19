@@ -10,11 +10,11 @@
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_contents.h"
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
+#include "android_webview/browser_jni_headers/AwSettings_jni.h"
 #include "android_webview/common/aw_content_client.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/macros.h"
-#include "base/no_destructor.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -23,10 +23,9 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/web_preferences.h"
-#include "jni/AwSettings_jni.h"
 #include "net/http/http_util.h"
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
+#include "ui/native_theme/native_theme.h"
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF8ToJavaString;
@@ -43,6 +42,9 @@ void PopulateFixedWebPreferences(WebPreferences* web_prefs) {
   web_prefs->should_clear_document_background = false;
   web_prefs->viewport_meta_enabled = true;
   web_prefs->picture_in_picture_enabled = false;
+  web_prefs->disable_features_depending_on_viz = true;
+  web_prefs->disable_accelerated_small_canvases = true;
+  web_prefs->reenable_web_components_v0 = true;
 }
 
 const void* const kAwSettingsUserDataKey = &kAwSettingsUserDataKey;
@@ -71,6 +73,8 @@ AwSettings::AwSettings(JNIEnv* env,
     : WebContentsObserver(web_contents),
       renderer_prefs_initialized_(false),
       javascript_can_open_windows_automatically_(false),
+      allow_third_party_cookies_(false),
+      allow_file_access_(false),
       aw_settings_(env, obj) {
   web_contents->SetUserData(kAwSettingsUserDataKey,
                             std::make_unique<AwSettingsUserData>(this));
@@ -91,6 +95,10 @@ AwSettings::~AwSettings() {
 
 bool AwSettings::GetJavaScriptCanOpenWindowsAutomatically() {
   return javascript_can_open_windows_automatically_;
+}
+
+bool AwSettings::GetAllowThirdPartyCookies() {
+  return allow_third_party_cookies_;
 }
 
 void AwSettings::Destroy(JNIEnv* env, const JavaParamRef<jobject>& obj) {
@@ -143,6 +151,8 @@ void AwSettings::UpdateEverythingLocked(JNIEnv* env,
   UpdateRendererPreferencesLocked(env, obj);
   UpdateOffscreenPreRasterLocked(env, obj);
   UpdateWillSuppressErrorStateLocked(env, obj);
+  UpdateCookiePolicyLocked(env, obj);
+  UpdateAllowFileAccessLocked(env, obj);
 }
 
 void AwSettings::UpdateUserAgentLocked(JNIEnv* env,
@@ -233,7 +243,6 @@ void AwSettings::UpdateRendererPreferencesLocked(
 
   if (!renderer_prefs_initialized_) {
     content::UpdateFontRendererPreferencesFromSystemSettings(prefs);
-    content::UpdateFocusRingPreferencesFromSystemSettings(prefs);
     renderer_prefs_initialized_ = true;
     update_prefs = true;
   }
@@ -244,21 +253,30 @@ void AwSettings::UpdateRendererPreferencesLocked(
     update_prefs = true;
   }
 
-  content::RenderViewHost* host = web_contents()->GetRenderViewHost();
-  if (update_prefs && host)
-    host->SyncRendererPrefs();
+  if (update_prefs)
+    web_contents()->SyncRendererPrefs();
 
-  if (update_prefs &&
-      base::FeatureList::IsEnabled(network::features::kNetworkService)) {
+  if (update_prefs) {
     // make sure to update accept languages when the network service is enabled
     AwBrowserContext* aw_browser_context =
         AwBrowserContext::FromWebContents(web_contents());
     // AndroidWebview does not use per-site storage partitions.
     content::StoragePartition* storage_partition =
         content::BrowserContext::GetDefaultStoragePartition(aw_browser_context);
+    std::string expanded_language_list =
+        net::HttpUtil::ExpandLanguageList(prefs->accept_languages);
     storage_partition->GetNetworkContext()->SetAcceptLanguage(
-        net::HttpUtil::ExpandLanguageList(prefs->accept_languages));
+        net::HttpUtil::GenerateAcceptLanguageHeader(expanded_language_list));
   }
+}
+
+void AwSettings::UpdateCookiePolicyLocked(JNIEnv* env,
+                                          const JavaParamRef<jobject>& obj) {
+  if (!web_contents())
+    return;
+
+  allow_third_party_cookies_ =
+      Java_AwSettings_getAcceptThirdPartyCookiesLocked(env, obj);
 }
 
 void AwSettings::UpdateOffscreenPreRasterLocked(
@@ -269,6 +287,14 @@ void AwSettings::UpdateOffscreenPreRasterLocked(
     contents->SetOffscreenPreRaster(
         Java_AwSettings_getOffscreenPreRasterLocked(env, obj));
   }
+}
+
+void AwSettings::UpdateAllowFileAccessLocked(JNIEnv* env,
+                                             const JavaParamRef<jobject>& obj) {
+  if (!web_contents())
+    return;
+
+  allow_file_access_ = Java_AwSettings_getAllowFileAccess(env, obj);
 }
 
 void AwSettings::RenderViewHostChanged(content::RenderViewHost* old_host,
@@ -422,7 +448,6 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   // Please see the corresponding Blink settings for bug references.
   web_prefs->support_deprecated_target_density_dpi = support_quirks;
   web_prefs->use_legacy_background_size_shorthand_behavior = support_quirks;
-  web_prefs->viewport_meta_layout_size_quirk = support_quirks;
   web_prefs->viewport_meta_merge_content_quirk = support_quirks;
   web_prefs->viewport_meta_non_user_scalable_quirk = support_quirks;
   web_prefs->viewport_meta_zero_values_quirk = support_quirks;
@@ -441,22 +466,13 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   bool enable_supported_hardware_accelerated_features =
       Java_AwSettings_getEnableSupportedHardwareAcceleratedFeaturesLocked(env,
                                                                           obj);
-
-  bool accelerated_2d_canvas_enabled_by_switch =
-      web_prefs->accelerated_2d_canvas_enabled;
-  web_prefs->accelerated_2d_canvas_enabled = true;
-  if (!accelerated_2d_canvas_enabled_by_switch ||
-      !enable_supported_hardware_accelerated_features) {
-    // Any canvas smaller than this will fallback to software. Abusing this
-    // slightly to turn canvas off without changing
-    // accelerated_2d_canvas_enabled, which also affects compositing mode.
-    // Using 100M instead of max int to avoid overflows.
-    web_prefs->minimum_accelerated_2d_canvas_size = 100 * 1000 * 1000;
-  }
-  web_prefs->webgl1_enabled = web_prefs->webgl1_enabled &&
-                              enable_supported_hardware_accelerated_features;
-  web_prefs->webgl2_enabled = web_prefs->webgl2_enabled &&
-                              enable_supported_hardware_accelerated_features;
+  web_prefs->accelerated_2d_canvas_enabled =
+      web_prefs->accelerated_2d_canvas_enabled &&
+      enable_supported_hardware_accelerated_features;
+  // Always allow webgl. Webview always requires access to the GPU even if
+  // it only does software draws. WebGL will not show up in software draw so
+  // there is no more brokenness for user. This makes it easier for apps that
+  // want to start running webgl content before webview is first attached.
 
   // If strict mixed content checking is enabled then running should not be
   // allowed.
@@ -491,20 +507,60 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   web_prefs->scroll_top_left_interop_enabled =
       Java_AwSettings_getScrollTopLeftInteropEnabledLocked(env, obj);
 
+  bool is_dark_mode;
   switch (Java_AwSettings_getForceDarkModeLocked(env, obj)) {
     case ForceDarkMode::FORCE_DARK_OFF:
-      web_prefs->force_dark_mode_enabled = false;
+      is_dark_mode = false;
       break;
     case ForceDarkMode::FORCE_DARK_ON:
-      web_prefs->force_dark_mode_enabled = true;
+      is_dark_mode = true;
       break;
     case ForceDarkMode::FORCE_DARK_AUTO: {
       AwContents* contents = AwContents::FromWebContents(web_contents());
-      web_prefs->force_dark_mode_enabled =
-          contents && contents->GetViewTreeForceDarkState();
+      is_dark_mode = contents && contents->GetViewTreeForceDarkState();
       break;
     }
   }
+  ui::NativeTheme::PreferredColorScheme preferred_color_scheme =
+      is_dark_mode ? ui::NativeTheme::PreferredColorScheme::kDark
+                   : ui::NativeTheme::PreferredColorScheme::kNoPreference;
+  if (is_dark_mode) {
+    switch (Java_AwSettings_getForceDarkBehaviorLocked(env, obj)) {
+      case ForceDarkBehavior::FORCE_DARK_ONLY: {
+        preferred_color_scheme =
+            ui::NativeTheme::PreferredColorScheme::kNoPreference;
+        web_prefs->force_dark_mode_enabled = true;
+        break;
+      }
+      case ForceDarkBehavior::MEDIA_QUERY_ONLY: {
+        preferred_color_scheme = ui::NativeTheme::PreferredColorScheme::kDark;
+        web_prefs->force_dark_mode_enabled = false;
+        break;
+      }
+      // Blink's behavior is that if the preferred color scheme matches the
+      // supported color scheme, then force dark will be disabled, otherwise
+      // the preferred color scheme will be reset to no preference. Therefore
+      // when enabling force dark, we also set the preferred color scheme to
+      // dark so that dark themed content will be preferred over force
+      // darkening.
+      case ForceDarkBehavior::PREFER_MEDIA_QUERY_OVER_FORCE_DARK: {
+        preferred_color_scheme = ui::NativeTheme::PreferredColorScheme::kDark;
+        web_prefs->force_dark_mode_enabled = true;
+        break;
+      }
+    }
+  } else {
+    preferred_color_scheme =
+        ui::NativeTheme::PreferredColorScheme::kNoPreference;
+    web_prefs->force_dark_mode_enabled = false;
+  }
+  // Notify NativeTheme of changes to dark mode.
+  ui::NativeTheme::GetInstanceForWeb()->set_preferred_color_scheme(
+      preferred_color_scheme);
+}
+
+bool AwSettings::GetAllowFileAccess() {
+  return allow_file_access_;
 }
 
 static jlong JNI_AwSettings_Init(JNIEnv* env,

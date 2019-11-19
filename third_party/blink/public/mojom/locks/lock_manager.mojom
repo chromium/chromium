@@ -1,0 +1,77 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// An opaque handle passed from the browser process to a child process to
+// reflect a held lock. The lock is released when the handle is dropped.
+interface LockHandle {};
+
+// An explicit lock request is used so that requests from terminated
+// contexts (e.g. closed or navigated tabs) can be observed and removed
+// from the lock manager's queue.
+
+interface LockRequest {
+  // Request was granted. Associated to maintain ordering within
+  // a LockManager, to match task queue behavior required by spec.
+  Granted(pending_associated_remote<LockHandle> lock_handle);
+
+  // Request failed; e.g. request was only "if available" and it was not.
+  Failed();
+
+  // TODO(jsbell): Abort() is not yet used.
+  Abort(string reason);
+};
+
+// Corresponds to the |mode| enum option in the Web Locks API.
+enum LockMode {
+  SHARED,
+  EXCLUSIVE
+};
+
+struct LockInfo {
+  string name;
+  LockMode mode;
+
+  // TODO(jsbell): Unify with Service Worker client ID e.g. ensure same
+  // struct type is used.
+  string client_id;
+};
+
+// Implementation of the proposed "Web Locks API". This provides a "lock"
+// primitive for coordination of resource usage across window and worker
+// contexts in a web application. A resource is identified by an abstract
+// name string selected by the web app. A lock can be requested over the
+// resource. The request will be granted asynchronously depending on
+// availablility and options. Once granted, the lock will be held until
+// explicitly released or the holding context is terminated.
+//
+// Proposal: https://wicg.github.io/web-locks
+
+interface LockManager {
+  // PREEMPT corresponds to the |steal| option in the API; if used then
+  // all previous locks with the same name are released.
+  // NO_WAIT corresponds to |ifAvailable| option in the API; if used then
+  // the request fails if it cannot be granted immediately.
+  enum WaitMode {
+    WAIT,
+    NO_WAIT,
+    PREEMPT
+  };
+
+  // Request a lock. One of |request|'s methods will be called
+  // when the lock is granted or if the request fails. If |request|'s
+  // channel is closed (e.g. due to terminated process) the request
+  // is removed from the manager's queues, which can unblock later
+  // requests. Associated to maintain to match task queue behavior
+  // defined by spec.
+  RequestLock(string name,
+              LockMode mode,
+              WaitMode wait,
+              pending_associated_remote<LockRequest> request);
+
+  // Produces a snapshot of the lock manager's state. Web applications
+  // can use this for diagnostic purposes.
+  QueryState() => (array<LockInfo> requested, array<LockInfo> held);
+};

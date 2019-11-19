@@ -43,7 +43,7 @@ class ExceptionState;
 
 class InspectorHistory final : public GarbageCollected<InspectorHistory> {
  public:
-  class Action : public GarbageCollectedFinalized<Action> {
+  class Action : public GarbageCollected<Action> {
    public:
     explicit Action(const String& name);
     virtual ~Action();

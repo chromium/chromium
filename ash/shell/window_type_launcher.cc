@@ -8,7 +8,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
-#include "ash/session/session_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell/example_factory.h"
 #include "ash/shell/toplevel_window.h"
@@ -48,11 +48,10 @@ class ModalWindow : public views::WidgetDelegateView,
                     public views::ButtonListener {
  public:
   explicit ModalWindow(ui::ModalType modal_type)
-      : modal_type_(modal_type),
-        color_(kColors[g_color_index]),
-        open_button_(MdTextButton::Create(this, base::ASCIIToUTF16("Moar!"))) {
+      : modal_type_(modal_type), color_(kColors[g_color_index]) {
     ++g_color_index %= base::size(kColors);
-    AddChildView(open_button_);
+    open_button_ =
+        AddChildView(MdTextButton::Create(this, base::ASCIIToUTF16("Moar!")));
   }
   ~ModalWindow() override = default;
 
@@ -139,7 +138,7 @@ class NonModalTransient : public views::WidgetDelegateView {
   }
   void DeleteDelegate() override {
     if (GetWidget() == non_modal_transient_)
-      non_modal_transient_ = NULL;
+      non_modal_transient_ = nullptr;
 
     delete this;
   }
@@ -153,12 +152,14 @@ class NonModalTransient : public views::WidgetDelegateView {
 };
 
 // static
-views::Widget* NonModalTransient::non_modal_transient_ = NULL;
+views::Widget* NonModalTransient::non_modal_transient_ = nullptr;
 
-void AddViewToLayout(views::GridLayout* layout, views::View* view) {
+template <class T>
+T* AddViewToLayout(views::GridLayout* layout, std::unique_ptr<T> view) {
   layout->StartRow(0, 0);
-  layout->AddView(view);
+  T* result = layout->AddView(std::move(view));
   layout->AddPaddingRow(0, 5);
+  return result;
 }
 
 }  // namespace
@@ -178,63 +179,52 @@ void InitWindowTypeLauncher(
 WindowTypeLauncher::WindowTypeLauncher(
     base::RepeatingClosure show_views_examples_callback,
     base::RepeatingClosure create_embedded_browser_callback)
-    : create_button_(
-          MdTextButton::Create(this, base::ASCIIToUTF16("Create Window"))),
-      create_nonresizable_button_(MdTextButton::Create(
-          this,
-          base::ASCIIToUTF16("Create Non-Resizable Window"))),
-      bubble_button_(
-          MdTextButton::Create(this,
-                               base::ASCIIToUTF16("Create Pointy Bubble"))),
-      lock_button_(
-          MdTextButton::Create(this, base::ASCIIToUTF16("Lock Screen"))),
-      widgets_button_(
-          MdTextButton::Create(this,
-                               base::ASCIIToUTF16("Show Example Widgets"))),
-      system_modal_button_(
-          MdTextButton::Create(this,
-                               base::ASCIIToUTF16("Open System Modal Window"))),
-      window_modal_button_(
-          MdTextButton::Create(this,
-                               base::ASCIIToUTF16("Open Window Modal Window"))),
-      child_modal_button_(
-          MdTextButton::Create(this,
-                               base::ASCIIToUTF16("Open Child Modal Window"))),
-      transient_button_(MdTextButton::Create(
-          this,
-          base::ASCIIToUTF16("Open Non-Modal Transient Window"))),
-      examples_button_(MdTextButton::Create(
-          this,
-          base::ASCIIToUTF16("Open Views Examples Window"))),
-      show_hide_window_button_(
-          MdTextButton::Create(this, base::ASCIIToUTF16("Show/Hide a Window"))),
-      show_web_notification_(MdTextButton::Create(
-          this,
-          base::ASCIIToUTF16("Show a web/app notification"))),
-      embedded_browser_button_(
-          MdTextButton::Create(this, base::ASCIIToUTF16("Embedded Browser"))),
-      show_views_examples_callback_(std::move(show_views_examples_callback)),
+    : show_views_examples_callback_(std::move(show_views_examples_callback)),
       create_embedded_browser_callback_(
           std::move(create_embedded_browser_callback)) {
   views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>(this));
+      SetLayoutManager(std::make_unique<views::GridLayout>());
   SetBorder(views::CreateEmptyBorder(gfx::Insets(5)));
   views::ColumnSet* column_set = layout->AddColumnSet(0);
   column_set->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
                         0, views::GridLayout::USE_PREF, 0, 0);
-  AddViewToLayout(layout, create_button_);
-  AddViewToLayout(layout, create_nonresizable_button_);
-  AddViewToLayout(layout, bubble_button_);
-  AddViewToLayout(layout, lock_button_);
-  AddViewToLayout(layout, widgets_button_);
-  AddViewToLayout(layout, system_modal_button_);
-  AddViewToLayout(layout, window_modal_button_);
-  AddViewToLayout(layout, child_modal_button_);
-  AddViewToLayout(layout, transient_button_);
-  AddViewToLayout(layout, examples_button_);
-  AddViewToLayout(layout, show_hide_window_button_);
-  AddViewToLayout(layout, show_web_notification_);
-  AddViewToLayout(layout, embedded_browser_button_);
+  create_button_ = AddViewToLayout(
+      layout, MdTextButton::Create(this, base::ASCIIToUTF16("Create Window")));
+  create_nonresizable_button_ = AddViewToLayout(
+      layout, MdTextButton::Create(
+                  this, base::ASCIIToUTF16("Create Non-Resizable Window")));
+  bubble_button_ = AddViewToLayout(
+      layout,
+      MdTextButton::Create(this, base::ASCIIToUTF16("Create Pointy Bubble")));
+  lock_button_ = AddViewToLayout(
+      layout, MdTextButton::Create(this, base::ASCIIToUTF16("Lock Screen")));
+  widgets_button_ = AddViewToLayout(
+      layout,
+      MdTextButton::Create(this, base::ASCIIToUTF16("Show Example Widgets")));
+  system_modal_button_ = AddViewToLayout(
+      layout, MdTextButton::Create(
+                  this, base::ASCIIToUTF16("Open System Modal Window")));
+  window_modal_button_ = AddViewToLayout(
+      layout, MdTextButton::Create(
+                  this, base::ASCIIToUTF16("Open Window Modal Window")));
+  child_modal_button_ = AddViewToLayout(
+      layout, MdTextButton::Create(
+                  this, base::ASCIIToUTF16("Open Child Modal Window")));
+  transient_button_ = AddViewToLayout(
+      layout, MdTextButton::Create(
+                  this, base::ASCIIToUTF16("Open Non-Modal Transient Window")));
+  examples_button_ = AddViewToLayout(
+      layout, MdTextButton::Create(
+                  this, base::ASCIIToUTF16("Open Views Examples Window")));
+  show_hide_window_button_ = AddViewToLayout(
+      layout,
+      MdTextButton::Create(this, base::ASCIIToUTF16("Show/Hide a Window")));
+  show_web_notification_ = AddViewToLayout(
+      layout, MdTextButton::Create(
+                  this, base::ASCIIToUTF16("Show a web/app notification")));
+  embedded_browser_button_ = AddViewToLayout(
+      layout,
+      MdTextButton::Create(this, base::ASCIIToUTF16("Embedded Browser")));
   set_context_menu_controller(this);
 }
 
@@ -326,21 +316,19 @@ void WindowTypeLauncher::ExecuteCommand(int id, int event_flags) {
   }
 }
 
-void WindowTypeLauncher::ShowContextMenuForView(
+void WindowTypeLauncher::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
   MenuItemView* root = new MenuItemView(this);
-  root->AppendMenuItem(COMMAND_NEW_WINDOW, base::ASCIIToUTF16("New Window"),
-                       MenuItemView::NORMAL);
+  root->AppendMenuItem(COMMAND_NEW_WINDOW, base::ASCIIToUTF16("New Window"));
   root->AppendMenuItem(COMMAND_TOGGLE_FULLSCREEN,
-                       base::ASCIIToUTF16("Toggle FullScreen"),
-                       MenuItemView::NORMAL);
+                       base::ASCIIToUTF16("Toggle FullScreen"));
   // MenuRunner takes ownership of root.
   menu_runner_.reset(new MenuRunner(
       root, MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU));
-  menu_runner_->RunMenuAt(GetWidget(), NULL, gfx::Rect(point, gfx::Size()),
-                          views::MENU_ANCHOR_TOPLEFT, source_type);
+  menu_runner_->RunMenuAt(GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
+                          views::MenuAnchorPosition::kTopLeft, source_type);
 }
 
 }  // namespace shell

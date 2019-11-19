@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/optional.h"
+#include "base/parameter_pack.h"
 
 // A bag of Traits (structs / enums / etc...) can be an elegant alternative to
 // the builder pattern and multiple default arguments for configuring things.
@@ -46,51 +47,15 @@
 //                 trait_helpers::AreValidTraits<ValidTraits,
 //                                               ArgTypes...>::value>>
 //   constexpr void DoSomethingAwesome(ArgTypes... args)
-//      : enable_feature_x(trait_helpers::HasTrait<EnableFeatureX>(args...)),
+//      : enable_feature_x(
+//            trait_helpers::HasTrait<EnableFeatureX, ArgTypes...>()),
 //        color(trait_helpers::GetEnum<Color, EnumTraitA::BLUE>(args...)) {}
 
 namespace base {
 namespace trait_helpers {
 
-// Checks if any of the elements in |ilist| is true.
-// Similar to std::any_of for the case of constexpr initializer_list.
-inline constexpr bool any_of(std::initializer_list<bool> ilist) {
-  for (auto c : ilist) {
-    if (c)
-      return true;
-  }
-  return false;
-}
-
-// Checks if all of the elements in |ilist| are true.
-// Similar to std::any_of for the case of constexpr initializer_list.
-inline constexpr bool all_of(std::initializer_list<bool> ilist) {
-  for (auto c : ilist) {
-    if (!c)
-      return false;
-  }
-  return true;
-}
-
-// Counts the elements in |ilist| that are equal to |value|.
-// Similar to std::count for the case of constexpr initializer_list.
-template <class T>
-inline constexpr size_t count(std::initializer_list<T> ilist, T value) {
-  size_t c = 0;
-  for (const auto& v : ilist) {
-    c += (v == value);
-  }
-  return c;
-}
-
 // Represents a trait that has been removed by a predicate.
 struct EmptyTrait {};
-
-// Checks if |Type| occurs in the parameter pack.
-template <typename Type, typename... Pack>
-struct TypeInPack {
-  static constexpr auto value = any_of({std::is_same<Type, Pack>::value...});
-};
 
 // Predicate used to remove any traits from the given list of types by
 // converting them to EmptyTrait. E.g.
@@ -107,16 +72,16 @@ struct TypeInPack {
 // which isn't worth the complexity over ignoring EmptyTrait.
 template <typename... TraitsToExclude>
 struct Exclude {
-  template <
-      typename T,
-      std::enable_if_t<TypeInPack<T, TraitsToExclude...>::value>* = nullptr>
+  template <typename T,
+            std::enable_if_t<ParameterPack<
+                TraitsToExclude...>::template HasType<T>()>* = nullptr>
   static constexpr EmptyTrait Filter(T t) {
     return EmptyTrait();
   }
 
-  template <
-      typename T,
-      std::enable_if_t<!TypeInPack<T, TraitsToExclude...>::value>* = nullptr>
+  template <typename T,
+            std::enable_if_t<!ParameterPack<
+                TraitsToExclude...>::template HasType<T>()>* = nullptr>
   static constexpr T Filter(T t) {
     return t;
   }
@@ -282,11 +247,11 @@ static constexpr Optional<Enum> GetOptionalEnum(Args... args) {
 
 // Helper to make checking for the presence of a trait more readable.
 template <typename Trait, typename... Args>
-static constexpr bool HasTrait(Args... args) {
+static constexpr bool HasTrait() {
   static_assert(
       count({std::is_constructible<Trait, Args>::value...}, true) <= 1,
       "The traits bag contains multiple traits of the same type.");
-  return TypeInPack<Trait, Args...>::value;
+  return ParameterPack<Args...>::template HasType<Trait>();
 }
 
 // If you need a template vararg constructor to delegate to a private

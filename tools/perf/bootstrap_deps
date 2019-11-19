@@ -7,8 +7,16 @@
 
 deps = {
     "src/build/android": "",
+    "src/chrome/test/data/image_decoding": "",
     "src/chrome/test/data/perf/canvas_bench": "",
+    "src/chrome/test/data/perf/throughput_test_cases": "",
+    "src/chrome/test/data/perf/tough_compositor_cases": "",
     "src/chrome/test/data/third_party/spaceport": "",
+    "src/components/variations/service": "",
+    "src/content/test/data/gpu": "",
+    "src/content/test/data/media": "",
+    "src/media/test/data": "",
+    "src/content/test/gpu": "",
     "src/tools/json_comment_eater": "",
     "src/tools/json_to_struct": "",
     "src/tools/perf/benchmarks": "",

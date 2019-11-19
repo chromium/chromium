@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async () => {
+  // Having the expected prototype is used to demonstrate that the object was
+  // in fact cloned, and is not the original object leaking between worlds.
+  testRunner.evaluateScriptInIsolatedWorld(1,
+      `window.addEventListener("toisolatedworld", e => {
+          window.dispatchEvent(new PortalActivateEvent("tomainworld", {data: {
+              hasRightPrototype: Object.getPrototypeOf(e.data) === Object.prototype,
+              foo: e.data.foo
+          }}));
+      });`);
+
+  const data = { foo: 42 };
+
+  const replyPromise = new Promise((resolve, reject) => {
+    window.addEventListener("tomainworld", e => resolve(e), { once: true });
+  });
+  window.dispatchEvent(new PortalActivateEvent("toisolatedworld", { data }));
+  const reply = await replyPromise;
+  const replyData = reply.data;
+  assert_equals(Object.getPrototypeOf(replyData), Object.prototype);
+  assert_true(replyData.hasRightPrototype);
+  assert_equals(replyData.foo, 42);
+  assert_equals(replyData, reply.data, "an additional access should not produce a new object");
+}, "A clone should be used in an isolated world, but only one clone");
+</script>

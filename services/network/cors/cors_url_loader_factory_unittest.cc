@@ -5,9 +5,9 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -18,8 +18,8 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/network/resource_scheduler.h"
-#include "services/network/resource_scheduler_client.h"
+#include "services/network/resource_scheduler/resource_scheduler.h"
+#include "services/network/resource_scheduler/resource_scheduler_client.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -38,9 +38,7 @@ constexpr int kRouteId = 789;
 class CorsURLLoaderFactoryTest : public testing::Test {
  public:
   CorsURLLoaderFactoryTest()
-      : scoped_task_environment_(
-            base::test::ScopedTaskEnvironment::MainThreadType::IO),
-        resource_scheduler_(true) {
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
     net::URLRequestContextBuilder context_builder;
     context_builder.set_proxy_resolution_service(
         net::ProxyResolutionService::CreateDirect());
@@ -60,7 +58,8 @@ class CorsURLLoaderFactoryTest : public testing::Test {
     context_params->initial_proxy_config =
         net::ProxyConfigWithAnnotation::CreateDirect();
     network_context_ = std::make_unique<NetworkContext>(
-        network_service_.get(), mojo::MakeRequest(&network_context_ptr_),
+        network_service_.get(),
+        network_context_remote_.BindNewPipeAndPassReceiver(),
         std::move(context_params));
 
     auto factory_params = network::mojom::URLLoaderFactoryParams::New();
@@ -72,15 +71,15 @@ class CorsURLLoaderFactoryTest : public testing::Test {
     cors_url_loader_factory_ = std::make_unique<CorsURLLoaderFactory>(
         network_context_.get(), std::move(factory_params),
         resource_scheduler_client,
-        mojo::MakeRequest(&cors_url_loader_factory_ptr_), &origin_access_list_,
-        nullptr);
+        cors_url_loader_factory_remote_.BindNewPipeAndPassReceiver(),
+        &origin_access_list_, nullptr);
   }
 
   void CreateLoaderAndStart(const ResourceRequest& request) {
     cors_url_loader_factory_->CreateLoaderAndStart(
         mojo::MakeRequest(&url_loader_), kRouteId, kRequestId,
         mojom::kURLLoadOptionNone, request,
-        test_cors_loader_client_.CreateInterfacePtr(),
+        test_cors_loader_client_.CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
   }
 
@@ -91,16 +90,16 @@ class CorsURLLoaderFactoryTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
 
   // Test environment.
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
   ResourceScheduler resource_scheduler_;
   std::unique_ptr<NetworkService> network_service_;
   std::unique_ptr<NetworkContext> network_context_;
-  mojom::NetworkContextPtr network_context_ptr_;
+  mojo::Remote<mojom::NetworkContext> network_context_remote_;
 
   // CorsURLLoaderFactory instance under tests.
   std::unique_ptr<mojom::URLLoaderFactory> cors_url_loader_factory_;
-  mojom::URLLoaderFactoryPtr cors_url_loader_factory_ptr_;
+  mojo::Remote<mojom::URLLoaderFactory> cors_url_loader_factory_remote_;
 
   // Holds URLLoaderPtr that CreateLoaderAndStart() creates.
   mojom::URLLoaderPtr url_loader_;
@@ -118,11 +117,8 @@ class CorsURLLoaderFactoryTest : public testing::Test {
 TEST_F(CorsURLLoaderFactoryTest, DestructionOrder) {
   ResourceRequest request;
   GURL url("http://localhost");
-  request.fetch_request_mode = mojom::FetchRequestMode::kNoCors;
-  request.fetch_credentials_mode = mojom::FetchCredentialsMode::kOmit;
-  request.load_flags |= net::LOAD_DO_NOT_SAVE_COOKIES;
-  request.load_flags |= net::LOAD_DO_NOT_SEND_COOKIES;
-  request.load_flags |= net::LOAD_DO_NOT_SEND_AUTH_DATA;
+  request.mode = mojom::RequestMode::kNoCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
   request.method = net::HttpRequestHeaders::kGetMethod;
   request.url = url;
   request.request_initiator = url::Origin::Create(url);

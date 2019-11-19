@@ -14,10 +14,12 @@ namespace media {
 VideoDecodeStatsRecorder::VideoDecodeStatsRecorder(
     VideoDecodePerfHistory::SaveCallback save_cb,
     ukm::SourceId source_id,
+    learning::FeatureValue origin,
     bool is_top_frame,
     uint64_t player_id)
     : save_cb_(std::move(save_cb)),
       source_id_(source_id),
+      origin_(origin),
       is_top_frame_(is_top_frame),
       player_id_(player_id) {
   DCHECK(save_cb_);
@@ -34,12 +36,16 @@ void VideoDecodeStatsRecorder::StartNewRecord(
   DCHECK_GT(features->frames_per_sec, 0);
   DCHECK(features->video_size.width() > 0 && features->video_size.height() > 0);
 
-  features_ = *features;
+  // DO THIS FIRST! Finalize existing stats with the current state.
   FinalizeRecord();
+
+  features_ = *features;
 
   DVLOG(2) << __func__ << "profile: " << features_.profile
            << " sz:" << features_.video_size.ToString()
-           << " fps:" << features_.frames_per_sec;
+           << " fps:" << features_.frames_per_sec
+           << " key_system:" << features_.key_system
+           << " use_hw_secure_codecs:" << features_.use_hw_secure_codecs;
 
   // Reinitialize to defaults.
   targets_ = mojom::PredictionTargets();
@@ -77,8 +83,8 @@ void VideoDecodeStatsRecorder::FinalizeRecord() {
 
   // Final argument is an empty save-done-callback. No action to take if save
   // fails (DB already records UMAs on failure). Callback mainly used by tests.
-  save_cb_.Run(source_id_, is_top_frame_, features_, targets_, player_id_,
-               base::OnceClosure());
+  save_cb_.Run(source_id_, origin_, is_top_frame_, features_, targets_,
+               player_id_, base::OnceClosure());
 }
 
 }  // namespace media

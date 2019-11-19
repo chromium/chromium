@@ -44,6 +44,12 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
   // initialization is not yet complete.
   static AutoResumptionHandler* Get();
 
+  // Utility function to determine whether an interrupted download should be
+  // auto-resumable.
+  static bool IsInterruptedDownloadAutoResumable(
+      download::DownloadItem* download_item,
+      int auto_resumption_size_limit);
+
   AutoResumptionHandler(
       std::unique_ptr<download::NetworkStatusListener> network_listener,
       std::unique_ptr<download::TaskManager> task_manager,
@@ -89,7 +95,7 @@ class COMPONENTS_DOWNLOAD_EXPORT AutoResumptionHandler
 
   bool recompute_task_params_scheduled_ = false;
 
-  base::WeakPtrFactory<AutoResumptionHandler> weak_factory_;
+  base::WeakPtrFactory<AutoResumptionHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutoResumptionHandler);
 };

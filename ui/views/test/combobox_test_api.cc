@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/macros.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -24,7 +26,7 @@ class TestMenuRunnerHandler : public MenuRunnerHandler {
   explicit TestMenuRunnerHandler(int* show_counter)
       : show_counter_(show_counter) {}
   void RunMenuAt(Widget* parent,
-                 MenuButton* button,
+                 MenuButtonController* button_controller,
                  const gfx::Rect& bounds,
                  MenuAnchorPosition anchor,
                  ui::MenuSourceType source_type,
@@ -45,8 +47,8 @@ void ComboboxTestApi::PerformActionAt(int index) {
 }
 
 void ComboboxTestApi::InstallTestMenuRunner(int* menu_show_count) {
-  combobox_->menu_runner_.reset(
-      new MenuRunner(menu_model(), MenuRunner::COMBOBOX));
+  combobox_->menu_runner_ =
+      std::make_unique<MenuRunner>(menu_model(), MenuRunner::COMBOBOX);
   test::MenuRunnerTestAPI test_api(combobox_->menu_runner_.get());
   test_api.SetMenuRunnerHandler(
       std::make_unique<TestMenuRunnerHandler>(menu_show_count));
@@ -60,5 +62,5 @@ ui::MenuModel* ComboboxTestApi::menu_model() {
   return combobox_->menu_model_.get();
 }
 
-}  // test
-}  // views
+}  // namespace test
+}  // namespace views

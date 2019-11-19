@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_task_environment.h"
+#include "base/test/task_environment.h"
 #include "components/feed/core/feed_content_mutation.h"
 #include "components/feed/core/proto/content_storage.pb.h"
 #include "components/leveldb_proto/testing/fake_db.h"
@@ -32,18 +32,10 @@ const char kContentData2[] = "Content Data2";
 
 const char kUmaCommitMutationSizeHistogramName[] =
     "ContentSuggestions.Feed.ContentStorage.CommitMutationCount";
-const char kUmaInitialSuccessHistogramName[] =
-    "ContentSuggestions.Feed.ContentStorage.InitialSuccess";
-const char kUmaLoadKeysSuccessHistogramName[] =
-    "ContentSuggestions.Feed.ContentStorage.LoadKeysSuccess";
 const char kUmaLoadKeysTimeHistogramName[] =
     "ContentSuggestions.Feed.ContentStorage.LoadKeysTime";
-const char kUmaLoadSuccessHistogramName[] =
-    "ContentSuggestions.Feed.ContentStorage.LoadSuccess";
 const char kUmaLoadTimeHistogramName[] =
     "ContentSuggestions.Feed.ContentStorage.LoadTime";
-const char kUmaOperationCommitSuccessHistogramName[] =
-    "ContentSuggestions.Feed.ContentStorage.OperationCommitSuccess";
 const char kUmaOperationCommitTimeHistogramName[] =
     "ContentSuggestions.Feed.ContentStorage.OperationCommitTime";
 const char kUmaSizeHistogramName[] =
@@ -65,14 +57,16 @@ class FeedContentDatabaseTest : public testing::Test {
     auto storage_db =
         std::make_unique<FakeDB<ContentStorageProto>>(&content_db_storage_);
 
+    task_runner_ =
+        base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
+                                         base::TaskPriority::USER_VISIBLE});
+
     content_db_ = storage_db.get();
-    feed_db_ = std::make_unique<FeedContentDatabase>(base::FilePath(),
-                                                     std::move(storage_db));
+    feed_db_ = std::make_unique<FeedContentDatabase>(std::move(storage_db),
+                                                     task_runner_);
     if (init_database) {
-      content_db_->InitCallback(true);
+      InitStatusCallback(content_db_, leveldb_proto::Enums::InitStatus::kOK);
       ASSERT_TRUE(db()->IsInitialized());
-      histogram().ExpectBucketCount(kUmaInitialSuccessHistogramName,
-                                    /*success=*/true, 1);
     }
   }
 
@@ -84,7 +78,54 @@ class FeedContentDatabaseTest : public testing::Test {
     content_db_storage_[key] = storage_proto;
   }
 
-  void RunUntilIdle() { scoped_task_environment_.RunUntilIdle(); }
+  // Since the FakeDB implementation doesn't run callbacks on the same task
+  // runner as the original request was made (like the real ProtoDatabase impl
+  // does), we explicitly post all callbacks onto the DB task runner here.
+  void InitStatusCallback(FakeDB<ContentStorageProto>* storage_db,
+                          leveldb_proto::Enums::InitStatus status) {
+    task_runner()->PostTask(FROM_HERE,
+                            base::BindOnce(
+                                [](FakeDB<ContentStorageProto>* storage_db,
+                                   leveldb_proto::Enums::InitStatus status) {
+                                  storage_db->InitStatusCallback(status);
+                                },
+                                storage_db, status));
+    RunUntilIdle();
+  }
+  void LoadCallback(FakeDB<ContentStorageProto>* storage_db, bool success) {
+    task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce([](FakeDB<ContentStorageProto>* storage_db,
+                          bool success) { storage_db->LoadCallback(success); },
+                       storage_db, success));
+    RunUntilIdle();
+  }
+  void LoadKeysCallback(FakeDB<ContentStorageProto>* storage_db, bool success) {
+    task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](FakeDB<ContentStorageProto>* storage_db, bool success) {
+              storage_db->LoadKeysCallback(success);
+            },
+            storage_db, success));
+    RunUntilIdle();
+  }
+  void UpdateCallback(FakeDB<ContentStorageProto>* storage_db, bool success) {
+    task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](FakeDB<ContentStorageProto>* storage_db, bool success) {
+              storage_db->UpdateCallback(success);
+            },
+            storage_db, success));
+    RunUntilIdle();
+  }
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner() {
+    return task_runner_;
+  }
 
   FakeDB<ContentStorageProto>* storage_db() { return content_db_; }
 
@@ -98,9 +139,11 @@ class FeedContentDatabaseTest : public testing::Test {
   MOCK_METHOD1(OnStorageCommitted, void(bool));
 
  private:
-  base::test::ScopedTaskEnvironment scoped_task_environment_;
+  base::test::TaskEnvironment task_environment_;
 
   std::map<std::string, ContentStorageProto> content_db_storage_;
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Owned by |feed_db_|.
   FakeDB<ContentStorageProto>* content_db_;
@@ -117,7 +160,8 @@ TEST_F(FeedContentDatabaseTest, Init) {
 
   CreateDatabase(/*init_database=*/false);
 
-  storage_db()->InitCallback(true);
+  InitStatusCallback(storage_db(), leveldb_proto::Enums::InitStatus::kOK);
+
   EXPECT_TRUE(db()->IsInitialized());
 }
 
@@ -129,10 +173,8 @@ TEST_F(FeedContentDatabaseTest, LoadContentAfterInitSuccess) {
       {kContentKey1},
       base::BindOnce(&FeedContentDatabaseTest::OnContentEntriesReceived,
                      base::Unretained(this)));
-  storage_db()->LoadCallback(true);
+  LoadCallback(storage_db(), true);
 
-  histogram().ExpectBucketCount(kUmaLoadSuccessHistogramName,
-                                /*success=*/true, 1);
   histogram().ExpectTotalCount(kUmaLoadTimeHistogramName, 1);
 }
 
@@ -157,10 +199,8 @@ TEST_F(FeedContentDatabaseTest, LoadContentsEntries) {
       {kContentKey2, kContentKey3},
       base::BindOnce(&FeedContentDatabaseTest::OnContentEntriesReceived,
                      base::Unretained(this)));
-  storage_db()->LoadCallback(true);
+  LoadCallback(storage_db(), true);
 
-  histogram().ExpectBucketCount(kUmaLoadSuccessHistogramName,
-                                /*success=*/true, 1);
   histogram().ExpectTotalCount(kUmaLoadTimeHistogramName, 1);
 }
 
@@ -187,10 +227,8 @@ TEST_F(FeedContentDatabaseTest, LoadContentsEntriesByPrefix) {
       kContentKeyPrefix,
       base::BindOnce(&FeedContentDatabaseTest::OnContentEntriesReceived,
                      base::Unretained(this)));
-  storage_db()->LoadCallback(true);
+  LoadCallback(storage_db(), true);
 
-  histogram().ExpectBucketCount(kUmaLoadSuccessHistogramName,
-                                /*success=*/true, 1);
   histogram().ExpectTotalCount(kUmaLoadTimeHistogramName, 1);
 }
 
@@ -210,12 +248,10 @@ TEST_F(FeedContentDatabaseTest, LoadAllContentKeys) {
       });
   db()->LoadAllContentKeys(base::BindOnce(
       &FeedContentDatabaseTest::OnContentKeyReceived, base::Unretained(this)));
-  storage_db()->LoadKeysCallback(true);
+  LoadKeysCallback(storage_db(), true);
 
   histogram().ExpectBucketCount(kUmaSizeHistogramName,
                                 /*size=*/2, 1);
-  histogram().ExpectBucketCount(kUmaLoadKeysSuccessHistogramName,
-                                /*success=*/true, 1);
   histogram().ExpectTotalCount(kUmaLoadKeysTimeHistogramName, 1);
 }
 
@@ -232,8 +268,8 @@ TEST_F(FeedContentDatabaseTest, SaveContent) {
       std::move(content_mutation),
       base::BindOnce(&FeedContentDatabaseTest::OnStorageCommitted,
                      base::Unretained(this)));
-  storage_db()->UpdateCallback(true);
-  storage_db()->UpdateCallback(true);
+  UpdateCallback(storage_db(), true);
+  UpdateCallback(storage_db(), true);
 
   // Make sure they're there.
   EXPECT_CALL(*this, OnContentEntriesReceived(_, _))
@@ -250,12 +286,10 @@ TEST_F(FeedContentDatabaseTest, SaveContent) {
       {kContentKey1, kContentKey2},
       base::BindOnce(&FeedContentDatabaseTest::OnContentEntriesReceived,
                      base::Unretained(this)));
-  storage_db()->LoadCallback(true);
+  LoadCallback(storage_db(), true);
 
   histogram().ExpectBucketCount(kUmaCommitMutationSizeHistogramName,
                                 /*operations=*/2, 1);
-  histogram().ExpectBucketCount(kUmaOperationCommitSuccessHistogramName,
-                                /*success=*/true, 1);
   histogram().ExpectTotalCount(kUmaOperationCommitTimeHistogramName, 1);
 }
 
@@ -276,8 +310,8 @@ TEST_F(FeedContentDatabaseTest, DeleteContent) {
       std::move(content_mutation),
       base::BindOnce(&FeedContentDatabaseTest::OnStorageCommitted,
                      base::Unretained(this)));
-  storage_db()->UpdateCallback(true);
-  storage_db()->UpdateCallback(true);
+  UpdateCallback(storage_db(), true);
+  UpdateCallback(storage_db(), true);
 
   // Make sure only |kContentKey2| got deleted.
   EXPECT_CALL(*this, OnContentEntriesReceived(_, _))
@@ -292,12 +326,10 @@ TEST_F(FeedContentDatabaseTest, DeleteContent) {
       {kContentKey1, kContentKey2},
       base::BindOnce(&FeedContentDatabaseTest::OnContentEntriesReceived,
                      base::Unretained(this)));
-  storage_db()->LoadCallback(true);
+  LoadCallback(storage_db(), true);
 
   histogram().ExpectBucketCount(kUmaCommitMutationSizeHistogramName,
                                 /*operations=*/2, 1);
-  histogram().ExpectBucketCount(kUmaOperationCommitSuccessHistogramName,
-                                /*success=*/true, 1);
   histogram().ExpectTotalCount(kUmaOperationCommitTimeHistogramName, 1);
 }
 
@@ -317,7 +349,7 @@ TEST_F(FeedContentDatabaseTest, DeleteContentByPrefix) {
       std::move(content_mutation),
       base::BindOnce(&FeedContentDatabaseTest::OnStorageCommitted,
                      base::Unretained(this)));
-  storage_db()->UpdateCallback(true);
+  UpdateCallback(storage_db(), true);
 
   // Make sure |kContentKey1| and |kContentKey2| got deleted.
   EXPECT_CALL(*this, OnContentEntriesReceived(_, _))
@@ -330,12 +362,10 @@ TEST_F(FeedContentDatabaseTest, DeleteContentByPrefix) {
       {kContentKey1, kContentKey2},
       base::BindOnce(&FeedContentDatabaseTest::OnContentEntriesReceived,
                      base::Unretained(this)));
-  storage_db()->LoadCallback(true);
+  LoadCallback(storage_db(), true);
 
   histogram().ExpectBucketCount(kUmaCommitMutationSizeHistogramName,
                                 /*operations=*/1, 1);
-  histogram().ExpectBucketCount(kUmaOperationCommitSuccessHistogramName,
-                                /*success=*/true, 1);
   histogram().ExpectTotalCount(kUmaOperationCommitTimeHistogramName, 1);
 }
 
@@ -356,7 +386,7 @@ TEST_F(FeedContentDatabaseTest, DeleteAllContent) {
       std::move(content_mutation),
       base::BindOnce(&FeedContentDatabaseTest::OnStorageCommitted,
                      base::Unretained(this)));
-  storage_db()->UpdateCallback(true);
+  UpdateCallback(storage_db(), true);
 
   // Make sure |kContentKey1| and |kContentKey2| got deleted.
   EXPECT_CALL(*this, OnContentEntriesReceived(_, _))
@@ -369,12 +399,10 @@ TEST_F(FeedContentDatabaseTest, DeleteAllContent) {
       {kContentKey1, kContentKey2},
       base::BindOnce(&FeedContentDatabaseTest::OnContentEntriesReceived,
                      base::Unretained(this)));
-  storage_db()->LoadCallback(true);
+  LoadCallback(storage_db(), true);
 
   histogram().ExpectBucketCount(kUmaCommitMutationSizeHistogramName,
                                 /*operations=*/1, 1);
-  histogram().ExpectBucketCount(kUmaOperationCommitSuccessHistogramName,
-                                /*success=*/true, 1);
   histogram().ExpectTotalCount(kUmaOperationCommitTimeHistogramName, 1);
 }
 
@@ -393,10 +421,10 @@ TEST_F(FeedContentDatabaseTest, SaveAndDeleteContent) {
       std::move(content_mutation),
       base::BindOnce(&FeedContentDatabaseTest::OnStorageCommitted,
                      base::Unretained(this)));
-  storage_db()->UpdateCallback(true);
-  storage_db()->UpdateCallback(true);
-  storage_db()->UpdateCallback(true);
-  storage_db()->UpdateCallback(true);
+  UpdateCallback(storage_db(), true);
+  UpdateCallback(storage_db(), true);
+  UpdateCallback(storage_db(), true);
+  UpdateCallback(storage_db(), true);
 
   // Make sure only |kContentKey2| got deleted.
   EXPECT_CALL(*this, OnContentEntriesReceived(_, _))
@@ -411,12 +439,10 @@ TEST_F(FeedContentDatabaseTest, SaveAndDeleteContent) {
       {kContentKey1, kContentKey2},
       base::BindOnce(&FeedContentDatabaseTest::OnContentEntriesReceived,
                      base::Unretained(this)));
-  storage_db()->LoadCallback(true);
+  LoadCallback(storage_db(), true);
 
   histogram().ExpectBucketCount(kUmaCommitMutationSizeHistogramName,
                                 /*operations=*/4, 1);
-  histogram().ExpectBucketCount(kUmaOperationCommitSuccessHistogramName,
-                                /*success=*/true, 1);
   histogram().ExpectTotalCount(kUmaOperationCommitTimeHistogramName, 1);
 }
 
@@ -437,10 +463,8 @@ TEST_F(FeedContentDatabaseTest, LoadContentsFail) {
       {kContentKey2, kContentKey3},
       base::BindOnce(&FeedContentDatabaseTest::OnContentEntriesReceived,
                      base::Unretained(this)));
-  storage_db()->LoadCallback(false);
+  LoadCallback(storage_db(), false);
 
-  histogram().ExpectBucketCount(kUmaLoadSuccessHistogramName,
-                                /*success=*/false, 1);
   histogram().ExpectTotalCount(kUmaLoadTimeHistogramName, 1);
 }
 
@@ -457,11 +481,9 @@ TEST_F(FeedContentDatabaseTest, LoadAllContentKeysFail) {
       });
   db()->LoadAllContentKeys(base::BindOnce(
       &FeedContentDatabaseTest::OnContentKeyReceived, base::Unretained(this)));
-  storage_db()->LoadKeysCallback(false);
+  LoadKeysCallback(storage_db(), false);
 
   histogram().ExpectTotalCount(kUmaSizeHistogramName, 0);
-  histogram().ExpectBucketCount(kUmaLoadKeysSuccessHistogramName,
-                                /*success=*/false, 1);
   histogram().ExpectTotalCount(kUmaLoadKeysTimeHistogramName, 1);
 }
 

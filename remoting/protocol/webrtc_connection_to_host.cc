@@ -49,6 +49,10 @@ void WebrtcConnectionToHost::Connect(
   SetState(CONNECTING, OK);
 }
 
+void WebrtcConnectionToHost::Disconnect(ErrorCode error) {
+  session_->Close(error);
+}
+
 const SessionConfig& WebrtcConnectionToHost::config() {
   return session_->config();
 }

@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
 import os
 import sys
 import time
 
 from gpu_tests import gpu_integration_test
-from gpu_tests import context_lost_expectations
 from gpu_tests import path_util
 
 from telemetry.core import exceptions
@@ -63,7 +63,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     super(ContextLostIntegrationTest, cls).AddCommandlineArgs(parser)
     parser.add_option('--is-asan',
         help='Indicates whether currently running an ASAN build',
-        action='store_true')
+        action='store_true', default=False)
 
   @staticmethod
   def _AddDefaultArgs(browser_args):
@@ -71,7 +71,13 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     return [
       '--disable-gpu-process-crash-limit',
       # Required to call crashGpuProcess.
-      '--enable-gpu-benchmarking'] + browser_args
+      '--enable-gpu-benchmarking',
+      # Disable:
+      #   Do you want the application "Chromium Helper.app" to accept incoming
+      #   network connections?
+      # dialogs on macOS. crbug.com/969559
+      '--disable-device-discovery-notifications',
+    ] + browser_args
 
   @classmethod
   def GenerateGpuTests(cls, options):
@@ -97,7 +103,11 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
              ('ContextLost_WorkerRAFAfterGPUCrash_OOPD',
               'worker-raf-after-gpu-crash.html'),
              ('ContextLost_WebGL2Blocked',
-              'webgl2-context-blocked.html'))
+              'webgl2-context-blocked.html'),
+             ('ContextLost_MacWebGLMultisamplingHighPowerSwitchLosesContext',
+              'webgl2-multisampling-high-power-switch-loses-context.html'),
+             ('ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext',
+              'webgl2-preserve-db-high-power-switch-loses-context.html'))
     for t in tests:
       yield (t[0], t[1], ('_' + t[0]))
 
@@ -107,11 +117,6 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     if not tab.browser.supports_tab_control:
       self.fail('Browser must support tab control')
     getattr(self, test_name)(test_path)
-
-  @classmethod
-  def _CreateExpectations(cls):
-    return context_lost_expectations.ContextLostExpectations(
-      is_asan=cls._is_asan)
 
   @classmethod
   def SetUpProcess(cls):
@@ -220,7 +225,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab = self.tab
     completed = self._WaitForPageToFinish(tab)
     if not completed:
-      self.fail('Test didn\'t complete (no context restored event?)')
+      self.fail('Test didn\'t complete (no context lost / restored event?)')
     if not tab.EvaluateJavaScript('window.domAutomationController._succeeded'):
       self.fail('Test failed (context not restored properly?)')
 
@@ -362,6 +367,62 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # Attempting to create a WebGL 2.0 context when ES 3.0 is
     # blacklisted should not cause the GPU process to crash.
     self._CheckCrashCount(tab, 0)
+
+  def _ContextLost_MacWebGLMultisamplingHighPowerSwitchLosesContext(self, test_path):
+    # Verifies that switching from the low-power to the high-power GPU
+    # on a dual-GPU Mac, while the user has allocated multisampled
+    # renderbuffers via the WebGL 2.0 API, causes the context to be
+    # lost.
+    if not self._IsDualGPUMacLaptop():
+      logging.info('Skipping test because not running on dual-GPU Mac laptop')
+      return
+    # Start with a browser with clean GPU process state.
+    self.RestartBrowserWithArgs(self._AddDefaultArgs([]))
+    # Wait a few seconds for the system to dispatch any GPU switched
+    # notifications.
+    time.sleep(3)
+    self._NavigateAndWaitForLoad(test_path)
+    if not self._IsIntel(self.browser.GetSystemInfo().gpu.devices[0].vendor_id):
+      self.fail('Test did not start up on low-power GPU')
+    tab = self.tab
+    tab.EvaluateJavaScript('runTest()')
+    self._WaitForTabAndCheckCompletion()
+    self._CheckCrashCount(tab, 0)
+
+  def _ContextLost_MacWebGLPreserveDBHighPowerSwitchLosesContext(self, test_path):
+    # Verifies that switching from the low-power to the high-power GPU on a
+    # dual-GPU Mac, when the user specified preserveDrawingBuffer:true, causes
+    # the context to be lost.
+    if not self._IsDualGPUMacLaptop():
+      logging.info('Skipping test because not running on dual-GPU Mac laptop')
+      return
+    # Start with a browser with clean GPU process state.
+    self.RestartBrowserWithArgs(self._AddDefaultArgs([]))
+    # Wait a few seconds for the system to dispatch any GPU switched
+    # notifications.
+    time.sleep(3)
+    self._NavigateAndWaitForLoad(test_path)
+    if not self._IsIntel(self.browser.GetSystemInfo().gpu.devices[0].vendor_id):
+      self.fail('Test did not start up on low-power GPU')
+    tab = self.tab
+    tab.EvaluateJavaScript('runTest()')
+    self._WaitForTabAndCheckCompletion()
+    self._CheckCrashCount(tab, 0)
+
+  @classmethod
+  def GetPlatformTags(cls, browser):
+    tags = super(ContextLostIntegrationTest, cls).GetPlatformTags(browser)
+    tags.extend(
+        [['no-asan', 'asan'][cls._is_asan]])
+    return tags
+
+  @classmethod
+  def ExpectationsFiles(cls):
+    return [
+        os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                     'test_expectations',
+                     'context_lost_expectations.txt')]
+
 
 def load_tests(loader, tests, pattern):
   del loader, tests, pattern  # Unused.

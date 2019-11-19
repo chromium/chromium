@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_VIEWS_ANIMATION_TEST_INK_DROP_H_
-#define UI_VIEWS_ANIMATION_TEST_INK_DROP_H_
+#ifndef UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_H_
+#define UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_H_
 
 #include "ui/views/animation/ink_drop.h"
 
@@ -24,7 +24,7 @@ class TestInkDrop : public InkDrop {
   void HostSizeChanged(const gfx::Size& new_size) override;
   InkDropState GetTargetInkDropState() const override;
   void AnimateToState(InkDropState ink_drop_state) override;
-  void SetHoverHighlightFadeDurationMs(int duration_ms) override;
+  void SetHoverHighlightFadeDuration(base::TimeDelta duration) override;
   void UseDefaultHoverHighlightFadeDuration() override;
   void SnapToActivated() override;
   void SnapToHidden() override;
@@ -35,8 +35,8 @@ class TestInkDrop : public InkDrop {
   void SetShowHighlightOnFocus(bool show_highlight_on_focus) override;
 
  private:
-  InkDropState state_;
-  bool is_hovered_;
+  InkDropState state_ = InkDropState::HIDDEN;
+  bool is_hovered_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(TestInkDrop);
 };
@@ -44,4 +44,4 @@ class TestInkDrop : public InkDrop {
 }  // namespace test
 }  // namespace views
 
-#endif  // UI_VIEWS_ANIMATION_TEST_INK_DROP_H_
+#endif  // UI_VIEWS_ANIMATION_TEST_TEST_INK_DROP_H_

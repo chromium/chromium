@@ -9,13 +9,13 @@
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
-#import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 #import "ios/chrome/browser/ui/payments/cells/price_item.h"
 #import "ios/chrome/browser/ui/payments/payment_items_display_view_controller_actions.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/third_party/material_components_ios/src/components/Buttons/src/MaterialButtons.h"
 #import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
@@ -76,12 +76,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _payButton = [[MDCButton alloc] init];
     [_payButton setTitle:l10n_util::GetNSString(IDS_PAYMENTS_PAY_BUTTON)
                 forState:UIControlStateNormal];
-    [_payButton setBackgroundColor:[[MDCPalette cr_bluePalette] tint500]];
-    [_payButton setTitleColor:[UIColor whiteColor]
+    [_payButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];
+    [_payButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
                      forState:UIControlStateNormal];
-    [_payButton setTitleColor:[UIColor whiteColor]
+    [_payButton setTitleColor:[UIColor colorNamed:kSolidButtonTextColor]
                      forState:UIControlStateDisabled];
-    [_payButton setInkColor:[UIColor colorWithWhite:1 alpha:0.2]];
+    [_payButton setInkColor:[UIColor colorNamed:kMDCInkColor]];
     [_payButton addTarget:self
                    action:@selector(onConfirm)
          forControlEvents:UIControlEventTouchUpInside];
@@ -168,6 +168,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.styler.cellStyle = MDCCollectionViewCellStyleCard;
   self.styler.separatorInset =
       UIEdgeInsetsMake(0, kSeparatorEdgeInset, 0, kSeparatorEdgeInset);
+  self.styler.separatorColor = [UIColor colorNamed:kSeparatorColor];
 }
 
 #pragma mark UICollectionViewDataSource

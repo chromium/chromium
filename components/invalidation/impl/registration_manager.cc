@@ -84,7 +84,7 @@ ObjectIdSet RegistrationManager::UpdateRegisteredIds(const ObjectIdSet& ids) {
   }
 
   for (auto it = to_register.begin(); it != to_register.end(); ++it) {
-    if (!base::ContainsKey(registration_statuses_, *it)) {
+    if (!base::Contains(registration_statuses_, *it)) {
       registration_statuses_[*it] =
           std::make_unique<RegistrationStatus>(*it, this);
     }

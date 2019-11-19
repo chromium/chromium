@@ -52,7 +52,6 @@ class CookieStoreIOS;
 // changes are written directly to the system cookie store, then propagated to
 // the backing store by OnSystemCookiesChanged, which is called by the system
 // store once the change to the system store is written back.
-// For not synchronized CookieStore, please see CookieStoreIOSPersistent.
 class CookieStoreIOS : public net::CookieStore,
                        public CookieNotificationObserver {
  public:
@@ -83,18 +82,14 @@ class CookieStoreIOS : public net::CookieStore,
   void SetMetricsEnabled();
 
   // Implementation of the net::CookieStore interface.
-  void SetCookieWithOptionsAsync(const GURL& url,
-                                 const std::string& cookie_line,
-                                 const net::CookieOptions& options,
-                                 SetCookiesCallback callback) override;
   void SetCanonicalCookieAsync(std::unique_ptr<CanonicalCookie> cookie,
                                std::string source_scheme,
-                               bool modify_http_only,
+                               const net::CookieOptions& options,
                                SetCookiesCallback callback) override;
   void GetCookieListWithOptionsAsync(const GURL& url,
                                      const net::CookieOptions& options,
                                      GetCookieListCallback callback) override;
-  void GetAllCookiesAsync(GetCookieListCallback callback) override;
+  void GetAllCookiesAsync(GetAllCookiesCallback callback) override;
   void DeleteCanonicalCookieAsync(const CanonicalCookie& cookie,
                                   DeleteCallback callback) override;
   void DeleteAllCreatedInTimeRangeAsync(
@@ -105,7 +100,8 @@ class CookieStoreIOS : public net::CookieStore,
   void DeleteSessionCookiesAsync(DeleteCallback callback) override;
   void FlushStore(base::OnceClosure callback) override;
   CookieChangeDispatcher& GetChangeDispatcher() override;
-  bool IsEphemeral() override;
+  void SetCookieableSchemes(const std::vector<std::string>& schemes,
+                            SetCookieableSchemesCallback callback) override;
 
  protected:
   CookieStoreIOS(net::CookieMonster::PersistentCookieStore* persistent_store,
@@ -129,8 +125,7 @@ class CookieStoreIOS : public net::CookieStore,
 
  private:
   using CookieChangeCallbackList =
-      base::CallbackList<void(const CanonicalCookie& cookie,
-                              CookieChangeCause cause)>;
+      base::CallbackList<void(const CookieChangeInfo&)>;
 
   class Subscription : public base::LinkNode<Subscription>,
                        public CookieChangeSubscription {
@@ -239,10 +234,10 @@ class CookieStoreIOS : public net::CookieStore,
                               net::CookieChangeCause cause);
 
   // Called by this CookieStoreIOS' internal CookieMonster instance when
-  // GetAllCookiesForURLAsync() completes. Updates the cookie cache and runs
+  // UpdateCachesFromCookieMonster completes. Updates the cookie cache and runs
   // callbacks if the cache changed.
   void GotCookieListFor(const std::pair<GURL, std::string> key,
-                        const net::CookieList& cookies,
+                        const net::CookieStatusList& cookies,
                         const net::CookieStatusList& excluded_cookies);
 
   // Fetches new values for all (url, name) pairs that have hooks registered,
@@ -255,7 +250,7 @@ class CookieStoreIOS : public net::CookieStore,
   // hence running callbacks).
   //
   // When this CookieStoreIOS object is not synchronized, the various mutator
-  // methods (SetCookieWithOptionsAsync &c) instead store their state in a
+  // methods (SetCanonicalCookieAsync &c) instead store their state in a
   // CookieMonster object to be written back when the system store synchronizes.
   // To deliver notifications in a timely manner, the mutators have to ensure
   // that hooks get run, but only after the changes have been written back to
@@ -277,8 +272,19 @@ class CookieStoreIOS : public net::CookieStore,
   // creation date.
   net::CookieList CanonicalCookieListFromSystemCookies(NSArray* cookies);
 
-  // Runs |callback| on CanonicalCookie List converted from cookies.
+  // Takes an NSArray of NSHTTPCookies as returns a net::CookieStatusList.
+  // A status of "INCLUDE" is assigned to each cookie.
+  // The returned cookies are ordered by longest path, then earliest
+  // creation date.
+  net::CookieStatusList CanonicalCookieWithStatusListFromSystemCookies(
+      NSArray* cookies);
+
+  // Runs |callback| on CanonicalCookie with status List converted from cookies.
   void RunGetCookieListCallbackOnSystemCookies(GetCookieListCallback callback,
+                                               NSArray<NSHTTPCookie*>* cookies);
+
+  // Runs |callback| on CanonicalCookie List converted from cookies.
+  void RunGetAllCookiesCallbackOnSystemCookies(GetAllCookiesCallback callback,
                                                NSArray<NSHTTPCookie*>* cookies);
 
   // Cached values of system cookies. Only cookies which have an observer added

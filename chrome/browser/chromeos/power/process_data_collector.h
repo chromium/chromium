@@ -27,7 +27,7 @@
 #include "base/synchronization/lock.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/power/process_data_collector.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace chromeos {
 
@@ -326,7 +326,7 @@ class ProcessDataCollector {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<ProcessDataCollector> weak_ptr_factory_;
+  base::WeakPtrFactory<ProcessDataCollector> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ProcessDataCollector);
 };

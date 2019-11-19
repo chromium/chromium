@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_H_
 #define COMPONENTS_RENDERER_CONTEXT_MENU_CONTEXT_MENU_CONTENT_TYPE_H_
 
-#include "base/callback.h"
 #include "base/macros.h"
 #include "content/public/common/context_menu_params.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -49,14 +48,6 @@ class ContextMenuContentType {
     ITEM_GROUP_PASSWORD
   };
 
-  typedef base::Callback<bool (const GURL& url)>
-      InternalResourcesURLChecker;
-
-  void set_internal_resources_url_checker(
-      const InternalResourcesURLChecker& checker) {
-    internal_resources_url_checker_ = checker;
-  }
-
   // Returns if |group| is enabled.
   virtual bool SupportsGroup(int group);
 
@@ -74,15 +65,9 @@ class ContextMenuContentType {
  private:
   bool SupportsGroupInternal(int group);
 
-  bool IsInternalResourcesURL(const GURL& url);
-
   const content::ContextMenuParams params_;
   content::WebContents* const source_web_contents_;
   const bool supports_custom_items_;
-
-  // A boolean callback to check if the url points to the internal
-  // resources.
-  InternalResourcesURLChecker internal_resources_url_checker_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextMenuContentType);
 };

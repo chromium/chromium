@@ -21,8 +21,7 @@ class PaddedImageSource : public CanvasImageSource {
  public:
   PaddedImageSource(const ImageSkia& image, const Insets& insets)
       : CanvasImageSource(Size(image.width() + insets.width(),
-                               image.height() + insets.height()),
-                          false),
+                               image.height() + insets.height())),
         image_(image),
         insets_(insets) {}
 
@@ -49,39 +48,32 @@ ImageSkia CanvasImageSource::CreatePadded(const ImageSkia& image,
   return MakeImageSkia<PaddedImageSource>(image, insets);
 }
 
-CanvasImageSource::CanvasImageSource(const Size& size, bool is_opaque)
-    : size_(size), is_opaque_(is_opaque) {}
+CanvasImageSource::CanvasImageSource(const Size& size) : size_(size) {}
 
 ImageSkiaRep CanvasImageSource::GetImageForScale(float scale) {
-  if (base::FeatureList::IsEnabled(features::kUsePaintRecordForImageSkia)) {
-    scoped_refptr<cc::DisplayItemList> display_item_list =
-        base::MakeRefCounted<cc::DisplayItemList>(
-            cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer);
-    display_item_list->StartPaint();
+  scoped_refptr<cc::DisplayItemList> display_item_list =
+      base::MakeRefCounted<cc::DisplayItemList>(
+          cc::DisplayItemList::kToBeReleasedAsPaintOpBuffer);
+  display_item_list->StartPaint();
 
-    SizeF size_in_pixel = ScaleSize(SizeF(size_), scale);
-    cc::RecordPaintCanvas record_canvas(
-        display_item_list.get(),
-        SkRect::MakeWH(SkFloatToScalar(size_in_pixel.width()),
-                       SkFloatToScalar(size_in_pixel.height())));
-    gfx::Canvas canvas(&record_canvas, scale);
+  SizeF size_in_pixel = ScaleSize(SizeF(size_), scale);
+  cc::RecordPaintCanvas record_canvas(
+      display_item_list.get(),
+      SkRect::MakeWH(SkFloatToScalar(size_in_pixel.width()),
+                     SkFloatToScalar(size_in_pixel.height())));
+  gfx::Canvas canvas(&record_canvas, scale);
 #if DCHECK_IS_ON()
-    Rect clip_rect;
-    DCHECK(canvas.GetClipBounds(&clip_rect));
-    DCHECK(clip_rect.Contains(gfx::Rect(ToCeiledSize(size_in_pixel))));
+  Rect clip_rect;
+  DCHECK(canvas.GetClipBounds(&clip_rect));
+  DCHECK(clip_rect.Contains(gfx::Rect(ToCeiledSize(size_in_pixel))));
 #endif
-    canvas.Scale(scale, scale);
-    Draw(&canvas);
-
-    display_item_list->EndPaintOfPairedEnd();
-    display_item_list->Finalize();
-    return ImageSkiaRep(display_item_list->ReleaseAsRecord(),
-                        gfx::ScaleToCeiledSize(size_, scale), scale);
-  }
-
-  gfx::Canvas canvas(size_, scale, is_opaque_);
+  canvas.Scale(scale, scale);
   Draw(&canvas);
-  return ImageSkiaRep(canvas.GetBitmap(), scale);
+
+  display_item_list->EndPaintOfPairedEnd();
+  display_item_list->Finalize();
+  return ImageSkiaRep(display_item_list->ReleaseAsRecord(),
+                      gfx::ScaleToCeiledSize(size_, scale), scale);
 }
 
 }  // namespace gfx

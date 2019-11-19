@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/fuchsia/service_directory_client.h"
+#include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/service_directory_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,21 +17,23 @@ class FilteredServiceDirectoryTest : public ServiceDirectoryTestBase {
  public:
   FilteredServiceDirectoryTest() {
     filtered_service_directory_ = std::make_unique<FilteredServiceDirectory>(
-        public_service_directory_client_.get());
-    filtered_client_ = std::make_unique<ServiceDirectoryClient>(
-        filtered_service_directory_->ConnectClient());
+        public_service_directory_.get());
+    fidl::InterfaceHandle<::fuchsia::io::Directory> directory;
+    filtered_service_directory_->ConnectClient(directory.NewRequest());
+    filtered_client_ =
+        std::make_unique<sys::ServiceDirectory>(std::move(directory));
   }
 
  protected:
   std::unique_ptr<FilteredServiceDirectory> filtered_service_directory_;
-  std::unique_ptr<ServiceDirectoryClient> filtered_client_;
+  std::unique_ptr<sys::ServiceDirectory> filtered_client_;
 };
 
 // Verify that we can connect to a whitelisted service.
 TEST_F(FilteredServiceDirectoryTest, Connect) {
   filtered_service_directory_->AddService(testfidl::TestInterface::Name_);
 
-  auto stub = filtered_client_->ConnectToService<testfidl::TestInterface>();
+  auto stub = filtered_client_->Connect<testfidl::TestInterface>();
   VerifyTestInterface(&stub, ZX_OK);
 }
 
@@ -39,15 +41,15 @@ TEST_F(FilteredServiceDirectoryTest, Connect) {
 TEST_F(FilteredServiceDirectoryTest, ConnectMultiple) {
   filtered_service_directory_->AddService(testfidl::TestInterface::Name_);
 
-  auto stub1 = filtered_client_->ConnectToService<testfidl::TestInterface>();
-  auto stub2 = filtered_client_->ConnectToService<testfidl::TestInterface>();
+  auto stub1 = filtered_client_->Connect<testfidl::TestInterface>();
+  auto stub2 = filtered_client_->Connect<testfidl::TestInterface>();
   VerifyTestInterface(&stub1, ZX_OK);
   VerifyTestInterface(&stub2, ZX_OK);
 }
 
 // Verify that non-whitelisted services are blocked.
 TEST_F(FilteredServiceDirectoryTest, ServiceBlocked) {
-  auto stub = filtered_client_->ConnectToService<testfidl::TestInterface>();
+  auto stub = filtered_client_->Connect<testfidl::TestInterface>();
   VerifyTestInterface(&stub, ZX_ERR_PEER_CLOSED);
 }
 
@@ -58,7 +60,7 @@ TEST_F(FilteredServiceDirectoryTest, NoService) {
 
   service_binding_.reset();
 
-  auto stub = filtered_client_->ConnectToService<testfidl::TestInterface>();
+  auto stub = filtered_client_->Connect<testfidl::TestInterface>();
   VerifyTestInterface(&stub, ZX_ERR_PEER_CLOSED);
 }
 
@@ -68,10 +70,19 @@ TEST_F(FilteredServiceDirectoryTest, NoServiceDir) {
   filtered_service_directory_->AddService(testfidl::TestInterface::Name_);
 
   service_binding_.reset();
-  service_directory_.reset();
+  outgoing_directory_.reset();
 
-  auto stub = filtered_client_->ConnectToService<testfidl::TestInterface>();
+  auto stub = filtered_client_->Connect<testfidl::TestInterface>();
   VerifyTestInterface(&stub, ZX_ERR_PEER_CLOSED);
+}
+
+// Verify that FilteredServiceDirectory allows extra services to be added.
+TEST_F(FilteredServiceDirectoryTest, AdditionalService) {
+  ScopedServiceBinding<testfidl::TestInterface> binding(
+      filtered_service_directory_->outgoing_directory(), &test_service_);
+
+  auto stub = filtered_client_->Connect<testfidl::TestInterface>();
+  VerifyTestInterface(&stub, ZX_OK);
 }
 
 }  // namespace fuchsia

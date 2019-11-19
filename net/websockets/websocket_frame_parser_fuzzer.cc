@@ -5,14 +5,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <vector>
 
-#include "base/test/fuzzed_data_provider.h"
 #include "net/websockets/websocket_frame_parser.h"
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::FuzzedDataProvider fuzzed_data_provider(data, size);
+  FuzzedDataProvider fuzzed_data_provider(data, size);
   net::WebSocketFrameParser parser;
   std::vector<std::unique_ptr<net::WebSocketFrameChunk>> frame_chunks;
   while (fuzzed_data_provider.remaining_bytes() > 0) {

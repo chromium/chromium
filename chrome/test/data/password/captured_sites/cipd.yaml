@@ -16,11 +16,7 @@ package: chromium/chrome/test/data/password/captured_sites
 description: captured sites test archives and recipes.
 install_mode: copy
 data:
-  - file: sign_in/amazon
-  - file: sign_in/amazon.test
-  - file: sign_in_fill/amazon
-  - file: sign_in_fill/amazon.test
-  - file: sign_up/tumblr
-  - file: sign_up/tumblr.test
-  - file: sign_up_fill/amazon
-  - file: sign_up_fill/amazon.test
+  - dir: capture_update_pass
+  - dir: sign_in_pass
+  - dir: sign_up_fill
+  - dir: sign_up_pass

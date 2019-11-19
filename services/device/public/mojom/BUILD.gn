@@ -6,6 +6,7 @@ import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
+  generate_java = true
   sources = [
     "battery_monitor.mojom",
     "battery_status.mojom",
@@ -58,12 +59,12 @@ mojom("mojom") {
   visibility_blink = [
     "//third_party/blink/renderer/bindings/modules/v8:generate_mojo_bindings",
     "//third_party/blink/renderer/platform:blink_platform_public_deps",
-    "//third_party/blink/public:mojo_bindings_blink",
     "//third_party/blink/public/mojom:mojom_platform_blink",
   ]
 }
 
 mojom("generic_sensor") {
+  generate_java = true
   sources = [
     "sensor.mojom",
     "sensor_provider.mojom",
@@ -87,6 +88,7 @@ mojom("generic_sensor") {
 }
 
 mojom("constants") {
+  generate_java = true
   sources = [
     "constants.mojom",
   ]
@@ -98,5 +100,51 @@ mojom("constants") {
   visibility_blink = [
     "//third_party/blink/renderer/platform:blink_platform_public_deps",
     ":*",
+  ]
+}
+
+mojom("usb") {
+  generate_java = true
+  sources = [
+    "usb_device.mojom",
+    "usb_enumeration_options.mojom",
+    "usb_manager.mojom",
+    "usb_manager_client.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  # USB Mojom interfaces are exposed publicly to layout tests which use
+  # prepackaged redistributable JS bindings. It is therefore not desirable to
+  # scramble these messages.
+  scramble_message_ids = false
+
+  # The blink variant of the usb mojom is depended on by the blink platform
+  # target. All blink variant mojoms use WTF types, which are part of the
+  # blink platform component. In order to avoid a dependency cycle, these
+  # targets must be part of that component.
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
+
+  visibility_blink = [
+    ":*",
+    "//components/arc/mojom:mojom_blink",
+    "//third_party/blink/public/mojom/usb:usb_blink",
+    "//third_party/blink/renderer/modules/webusb",
+    "//chrome/browser/ui/webui/usb_internals:mojo_bindings_blink",
+  ]
+}
+
+mojom("usb_test") {
+  sources = [
+    "usb_manager_test.mojom",
+  ]
+
+  public_deps = [
+    "//url/mojom:url_mojom_gurl",
   ]
 }

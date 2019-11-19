@@ -32,10 +32,6 @@ namespace blink {
 
 class CreateLinkCommand final : public CompositeEditCommand {
  public:
-  static CreateLinkCommand* Create(Document& document, const String& link_url) {
-    return MakeGarbageCollected<CreateLinkCommand>(document, link_url);
-  }
-
   CreateLinkCommand(Document&, const String& link_url);
 
  private:

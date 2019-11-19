@@ -1,0 +1,219 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+import("//build/config/chromecast_build.gni")
+import("//build/config/fuchsia/config.gni")
+import("//build/config/fuchsia/package.gni")
+import("//build/config/gclient_args.gni")
+import("//build/config/sysroot.gni")
+import("//build/util/generate_wrapper.gni")
+
+declare_args() {
+  # Sets the Fuchsia Amber repository which will be used by default by the
+  # generated installation scripts. If not specified, then no default directory
+  # will be used.
+  default_fuchsia_build_dir_for_installation = ""
+}
+
+# Generates a script which deploys and optionally executes a package on a
+# device.
+#
+# Parameters:
+#   package: The package() target which will be run.
+#   package_name_override: Specifies the name of the generated package, if its
+#       name is different than the |package| target name. This value must match
+#       package_name_override in the |package| target.
+#   package_deps: An array of [package, package_name_override] array pairs
+#       which specify additional dependency packages to be installed
+#       prior to execution.
+#   runner_script: The runner script implementation to use, relative to
+#       "build/fuchsia". Defaults to "test_runner.py".
+#   install_only: If true, executing the script will only install the package
+#       on the device, but not run it.
+template("fuchsia_package_runner") {
+  forward_variables_from(invoker, [ "runner_script" ])
+
+  if (defined(invoker.package_name_override)) {
+    _pkg_shortname = invoker.package_name_override
+  } else {
+    _pkg_shortname = get_label_info(invoker.package, "name")
+  }
+
+  _pkg_dir = "$root_out_dir/gen/" + get_label_info(invoker.package, "dir") +
+             "/" + _pkg_shortname
+  _manifest_path = "$_pkg_dir/${_pkg_shortname}.archive_manifest"
+  _package_path = "$_pkg_dir/${_pkg_shortname}.far"
+
+  generated_run_pkg_script_path = "$root_build_dir/bin/run_${_pkg_shortname}"
+  generated_install_pkg_script_path =
+      "$root_build_dir/bin/install_$_pkg_shortname"
+
+  _generate_runner_target = "${target_name}__generate_runner"
+  _generate_installer_target = "${target_name}__generate_installer"
+
+  # Generates a script which installs and runs a test.
+  generate_wrapper(_generate_runner_target) {
+    forward_variables_from(invoker,
+                           [
+                             "target",
+                             "testonly",
+                           ])
+
+    if (defined(runner_script)) {
+      executable = rebase_path(runner_script)
+    } else {
+      executable = rebase_path("//build/fuchsia/test_runner.py")
+    }
+    wrapper_script = generated_run_pkg_script_path
+
+    deps = [
+      invoker.package,
+    ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+
+    data_deps = [
+      invoker.package,
+    ]
+
+    # Declares the files that are needed for test execution on the
+    # swarming test client.
+    data = [
+      _manifest_path,
+      "//build/fuchsia/",
+      "//build/util/lib/",
+      "${fuchsia_sdk}/tools/fvm",
+      "${fuchsia_sdk}/tools/pm",
+      "${fuchsia_sdk}/tools/symbolize",
+      "${fuchsia_sdk}/tools/zbi",
+      "${fuchsia_sdk}/.build-id/",
+      "${boot_image_root}/qemu/qemu-kernel.kernel",
+      "${boot_image_root}/qemu/storage-full.blk",
+      "${boot_image_root}/qemu/zircon-a.zbi",
+    ]
+
+    if (checkout_aemu) {
+      data += [ "${aemu_root}/" ]
+    }
+
+    if (host_os == "linux" && host_cpu == "x64" && target_cpu == "arm64") {
+      data += [
+        # Host tools for qemu on arm64 test bots.
+        "${qemu_arm64_root}/",
+        "${fuchsia_arm64_sdk}/",
+      ]
+    } else {
+      data += [
+        # Host tools for qemu on x64 test bots.
+        "//third_party/llvm-build/Release+Asserts/bin/llvm-symbolizer",
+        "${qemu_root}/",
+      ]
+    }
+
+    executable_args = []
+
+    package_paths = [ rebase_path(_package_path, root_build_dir) ]
+    if (defined(invoker.package_deps)) {
+      foreach(package_dep, invoker.package_deps) {
+        package_dep_target = package_dep[0]
+        package_dep_name = package_dep[1]
+
+        deps += [ package_dep_target ]
+        package_dep_path = rebase_path(
+                get_label_info(package_dep_target, "target_gen_dir") + "/" +
+                    package_dep_name + "/" + package_dep_name + ".far",
+                root_build_dir)
+        package_paths += [ package_dep_path ]
+      }
+    }
+
+    foreach(package_path, package_paths) {
+      executable_args += [
+        "--package",
+        "@WrappedPath(${package_path})",
+      ]
+    }
+
+    executable_args += [
+      "--output-directory",
+      "@WrappedPath(.)",
+      "--target-cpu",
+      target_cpu,
+      "--package-name",
+      _pkg_shortname,
+    ]
+
+    if (defined(invoker.use_test_server) && invoker.use_test_server) {
+      executable_args += [ "--enable-test-server" ]
+    }
+
+    if (default_fuchsia_build_dir_for_installation != "") {
+      executable_args += [
+        "--fuchsia-out-dir",
+        default_fuchsia_build_dir_for_installation,
+      ]
+    }
+  }
+
+  # Produces a script which installs a package and its dependencies into the
+  # Amber repository of a pre-existing Fuchsia build directory.
+  generate_wrapper(_generate_installer_target) {
+    forward_variables_from(invoker, [ "testonly" ])
+
+    executable = rebase_path("//build/fuchsia/deploy_to_amber_repo.py")
+    wrapper_script = generated_install_pkg_script_path
+
+    deps = [
+      invoker.package,
+    ]
+    if (defined(invoker.deps)) {
+      deps += invoker.deps
+    }
+
+    # Build a list of all packages to install, and pass the list to the runner
+    # script.
+    package_paths = [ rebase_path(_package_path, root_build_dir) ]
+    if (defined(invoker.package_deps)) {
+      foreach(package_dep, invoker.package_deps) {
+        package_dep_target = package_dep[0]
+        package_dep_name = package_dep[1]
+
+        deps += [ package_dep_target ]
+        package_dep_path = rebase_path(
+                get_label_info(package_dep_target, "target_gen_dir") + "/" +
+                    package_dep_name + "/" + package_dep_name + ".far",
+                root_build_dir)
+        package_paths += [ package_dep_path ]
+      }
+    }
+    executable_args = []
+    foreach(package_path, package_paths) {
+      executable_args += [
+        "--package",
+        "@WrappedPath(${package_path})",
+      ]
+
+      if (default_fuchsia_build_dir_for_installation != "") {
+        executable_args += [
+          "--fuchsia-out-dir",
+          default_fuchsia_build_dir_for_installation,
+        ]
+      }
+    }
+  }
+
+  group(target_name) {
+    forward_variables_from(invoker, [ "testonly" ])
+    deps = [
+      ":${_generate_installer_target}",
+    ]
+
+    if (!defined(invoker.install_only) || invoker.install_only == false) {
+      deps += [ ":${_generate_runner_target}" ]
+    }
+  }
+}

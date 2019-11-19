@@ -7,10 +7,11 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <fuzzer/FuzzedDataProvider.h>
+
 #include <vector>
 
 #include "base/scoped_generic.h"
-#include "base/test/fuzzed_data_provider.h"
 #include "third_party/minizip/src/mz.h"
 #include "third_party/minizip/src/mz_strm_mem.h"
 #include "third_party/minizip/src/mz_zip.h"
@@ -39,7 +40,7 @@ typedef base::ScopedGeneric<void*, MzZipTraits> ScopedMzZip;
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  base::FuzzedDataProvider data_provider(data, size);
+  FuzzedDataProvider data_provider(data, size);
 
   mz_zip_file file_info = {};
   file_info.flag = MZ_ZIP_FLAG_UTF8;
@@ -79,7 +80,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   }
 
-  std::vector<uint8_t> remaining_data = data_provider.ConsumeRemainingBytes();
+  std::vector<uint8_t> remaining_data =
+      data_provider.ConsumeRemainingBytes<uint8_t>();
   result = mz_zip_entry_write(zip_file.get(), remaining_data.data(),
                               remaining_data.size());
   if (result != MZ_OK) {

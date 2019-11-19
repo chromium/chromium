@@ -8,10 +8,10 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
-#include "jni/BaseRunLoop_jni.h"
+#include "base/task/single_thread_task_executor.h"
+#include "mojo/public/java/system/system_impl_java_jni_headers/BaseRunLoop_jni.h"
 
 using base::android::JavaParamRef;
 
@@ -21,8 +21,9 @@ namespace android {
 static jlong JNI_BaseRunLoop_CreateBaseRunLoop(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller) {
-  base::MessageLoop* message_loop = new base::MessageLoop;
-  return reinterpret_cast<uintptr_t>(message_loop);
+  base::SingleThreadTaskExecutor* task_executor =
+      new base::SingleThreadTaskExecutor;
+  return reinterpret_cast<uintptr_t>(task_executor);
 }
 
 static void JNI_BaseRunLoop_Run(JNIEnv* env,
@@ -57,7 +58,7 @@ static void JNI_BaseRunLoop_PostDelayedTask(
   // use it across threads. |RunJavaRunnable| will acquire a new JNIEnv before
   // running the Runnable.
   runnable_ref.Reset(env, runnable);
-  reinterpret_cast<base::MessageLoop*>(runLoopID)
+  reinterpret_cast<base::SingleThreadTaskExecutor*>(runLoopID)
       ->task_runner()
       ->PostDelayedTask(FROM_HERE,
                         base::BindOnce(&RunJavaRunnable, runnable_ref),
@@ -68,9 +69,9 @@ static void JNI_BaseRunLoop_DeleteMessageLoop(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
     jlong runLoopID) {
-  base::MessageLoop* message_loop =
-      reinterpret_cast<base::MessageLoop*>(runLoopID);
-  delete message_loop;
+  base::SingleThreadTaskExecutor* task_executor =
+      reinterpret_cast<base::SingleThreadTaskExecutor*>(runLoopID);
+  delete task_executor;
 }
 
 }  // namespace android

@@ -13,7 +13,7 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -49,7 +49,8 @@ class TPMFirmwareUpdateNotificationDelegate
              const base::Optional<base::string16>& reply) override {
     // Show the about page which contains the line item allowing the user to
     // trigger TPM firmware update installation.
-    chrome::ShowSettingsSubPageForProfile(profile_, chrome::kHelpSubPage);
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        profile_, chrome::kHelpSubPage);
 
     profile_->GetPrefs()->SetBoolean(prefs::kTPMFirmwareUpdateCleanupDismissed,
                                      true);
@@ -86,7 +87,8 @@ void OnAvailableUpdateModes(Profile* profile,
           message_center::SystemNotificationWarningLevel::WARNING);
 
   NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
-      NotificationHandler::Type::TRANSIENT, *notification);
+      NotificationHandler::Type::TRANSIENT, *notification,
+      /*metadata=*/nullptr);
 }
 
 }  // namespace

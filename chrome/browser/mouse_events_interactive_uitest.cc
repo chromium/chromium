@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/bind_helpers.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
@@ -107,9 +108,9 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ClickAndDoubleClick) {
   WaitForTitle("ondblclick");
 }
 
-#if defined(OS_MACOSX) || defined(OS_LINUX)
+#if defined(OS_MACOSX) || defined(OS_LINUX) || defined(OS_WIN)
 // OS_MACOSX: Missing automation provider support: http://crbug.com/45892.
-// OS_LINUX: http://crbug.com/133361.
+// OS_LINUX, OS_WIN: http://crbug.com/133361.
 #define MAYBE_TestOnMouseOut DISABLED_TestOnMouseOut
 #else
 #define MAYBE_TestOnMouseOut TestOnMouseOut
@@ -154,7 +155,8 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ContextMenu) {
   menu_observer.WaitForMenuOpenAndClose();
 
   content::WebContents* tab = GetActiveWebContents();
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16("done()"));
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16("done()"),
+                                                 base::NullCallback());
   const base::string16 success_title = base::ASCIIToUTF16("without mouseleave");
   const base::string16 failure_title = base::ASCIIToUTF16("with mouseleave");
   content::TitleWatcher done_title_watcher(tab, success_title);
@@ -182,13 +184,15 @@ IN_PROC_BROWSER_TEST_F(MouseEventsTest, MAYBE_ModalDialog) {
       JavaScriptDialogTabHelper::FromWebContents(tab);
   base::RunLoop dialog_wait;
   js_helper->SetDialogShownCallbackForTesting(dialog_wait.QuitClosure());
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16("alert()"));
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::UTF8ToUTF16("alert()"),
+                                                 base::NullCallback());
   dialog_wait.Run();
 
   // Cancel the dialog.
   js_helper->HandleJavaScriptDialog(tab, false, nullptr);
 
-  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16("done()"));
+  tab->GetMainFrame()->ExecuteJavaScriptForTests(base::ASCIIToUTF16("done()"),
+                                                 base::NullCallback());
   const base::string16 success_title = base::ASCIIToUTF16("without mouseleave");
   const base::string16 failure_title = base::ASCIIToUTF16("with mouseleave");
   content::TitleWatcher done_title_watcher(tab, success_title);

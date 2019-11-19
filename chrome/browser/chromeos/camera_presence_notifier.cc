@@ -18,9 +18,8 @@ const int kCameraCheckIntervalSeconds = 3;
 
 }  // namespace
 
-CameraPresenceNotifier::CameraPresenceNotifier() :
-    camera_present_on_last_check_(false),
-    weak_factory_(this) {}
+CameraPresenceNotifier::CameraPresenceNotifier()
+    : camera_present_on_last_check_(false) {}
 
 CameraPresenceNotifier::~CameraPresenceNotifier() {}
 

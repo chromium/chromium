@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<style>
+@font-face {
+  font-family: 'Test Font';
+  src: url(http://127.0.0.1:8000/security/resources/opensans.woff2) format('woff2');
+}
+
+body {
+  font-family: 'Test Font';
+}
+</style>
+<body>
+<p>
+Checks that a font face that was created before a referrer policy was set is
+loaded with the correct referrer, in this case, without a referrer.
+</p>
+<p>
+The test passes, a normal font will be loaded.
+</p>
+</body>

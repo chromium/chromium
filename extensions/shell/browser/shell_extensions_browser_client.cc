@@ -15,10 +15,8 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/resource_request_info.h"
 #include "content/public/common/user_agent.h"
 #include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/component_extension_resource_manager.h"
 #include "extensions/browser/core_extensions_browser_api_provider.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/mojo/interface_registration.h"
@@ -121,31 +119,21 @@ bool ShellExtensionsBrowserClient::CanExtensionCrossIncognito(
   return false;
 }
 
-net::URLRequestJob*
-ShellExtensionsBrowserClient::MaybeCreateResourceBundleRequestJob(
-    net::URLRequest* request,
-    net::NetworkDelegate* network_delegate,
-    const base::FilePath& directory_path,
-    const std::string& content_security_policy,
-    bool send_cors_header) {
-  return NULL;
-}
-
 base::FilePath ShellExtensionsBrowserClient::GetBundleResourcePath(
     const network::ResourceRequest& request,
     const base::FilePath& extension_resources_path,
-    ComponentExtensionResourceInfo* resource_info) const {
-  *resource_info = {};
+    int* resource_id) const {
+  *resource_id = 0;
   return base::FilePath();
 }
 
 void ShellExtensionsBrowserClient::LoadResourceFromResourceBundle(
     const network::ResourceRequest& request,
-    network::mojom::URLLoaderRequest loader,
+    mojo::PendingReceiver<network::mojom::URLLoader> loader,
     const base::FilePath& resource_relative_path,
-    const ComponentExtensionResourceInfo& resource_info,
+    int resource_id,
     const std::string& content_security_policy,
-    network::mojom::URLLoaderClientPtr client,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     bool send_cors_header) {
   NOTREACHED() << "Load resources from bundles not supported.";
 }
@@ -178,8 +166,7 @@ PrefService* ShellExtensionsBrowserClient::GetPrefServiceForContext(
 
 void ShellExtensionsBrowserClient::GetEarlyExtensionPrefsObservers(
     content::BrowserContext* context,
-    std::vector<ExtensionPrefsObserver*>* observers) const {
-}
+    std::vector<EarlyExtensionPrefsObserver*>* observers) const {}
 
 ProcessManagerDelegate*
 ShellExtensionsBrowserClient::GetProcessManagerDelegate() const {
@@ -248,23 +235,20 @@ ShellExtensionsBrowserClient::GetComponentExtensionResourceManager() {
 void ShellExtensionsBrowserClient::BroadcastEventToRenderers(
     events::HistogramValue histogram_value,
     const std::string& event_name,
-    std::unique_ptr<base::ListValue> args) {
+    std::unique_ptr<base::ListValue> args,
+    bool dispatch_to_off_the_record_profiles) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(&ShellExtensionsBrowserClient::BroadcastEventToRenderers,
                        base::Unretained(this), histogram_value, event_name,
-                       std::move(args)));
+                       std::move(args), dispatch_to_off_the_record_profiles));
     return;
   }
 
   std::unique_ptr<Event> event(
       new Event(histogram_value, event_name, std::move(args)));
   EventRouter::Get(browser_context_)->BroadcastEvent(std::move(event));
-}
-
-net::NetLog* ShellExtensionsBrowserClient::GetNetLog() {
-  return NULL;
 }
 
 ExtensionCache* ShellExtensionsBrowserClient::GetExtensionCache() {
@@ -289,20 +273,6 @@ ExtensionWebContentsObserver*
 ShellExtensionsBrowserClient::GetExtensionWebContentsObserver(
     content::WebContents* web_contents) {
   return ShellExtensionWebContentsObserver::FromWebContents(web_contents);
-}
-
-ExtensionNavigationUIData*
-ShellExtensionsBrowserClient::GetExtensionNavigationUIData(
-    net::URLRequest* request) {
-  content::ResourceRequestInfo* info =
-      content::ResourceRequestInfo::ForRequest(request);
-  if (!info)
-    return nullptr;
-  ShellNavigationUIData* navigation_data =
-      static_cast<ShellNavigationUIData*>(info->GetNavigationUIData());
-  if (!navigation_data)
-    return nullptr;
-  return navigation_data->GetExtensionNavigationUIData();
 }
 
 KioskDelegate* ShellExtensionsBrowserClient::GetKioskDelegate() {

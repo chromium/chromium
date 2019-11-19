@@ -50,7 +50,6 @@
 #include "third_party/blink/renderer/platform/fonts/small_caps_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/utf16_text_iterator.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
-#include "third_party/blink/renderer/platform/wtf/compiler.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -85,7 +84,7 @@ void CheckShapeResultRange(const ShapeResult* result,
       break;
     log.Append(", ");
   }
-  log.Append(String::Format("', %f", font_description.ComputedSize()));
+  log.AppendFormat("', %f", font_description.ComputedSize());
 
   // Log the primary font with its family name in the font file.
   const SimpleFontData* font_data = font->PrimaryFont();
@@ -98,10 +97,10 @@ void CheckShapeResultRange(const ShapeResult* result,
   }
 
   // Log the text to shape.
-  log.Append(String::Format(": %u-%u -> %u-%u:", start, end,
-                            result->StartIndex(), result->EndIndex()));
+  log.AppendFormat(": %u-%u -> %u-%u:", start, end, result->StartIndex(),
+                   result->EndIndex());
   for (unsigned i = start; i < end; ++i)
-    log.Append(String::Format(" %02X", text[i]));
+    log.AppendFormat(" %02X", text[i]);
 
   log.Append(", result=");
   result->ToString(&log);
@@ -614,9 +613,12 @@ void SetFontFeatures(const Font* font, FeaturesVector* features) {
     }
   }
 
-  static hb_feature_t hwid = CreateFeature(HB_TAG('h', 'w', 'i', 'd'), 1);
-  static hb_feature_t twid = CreateFeature(HB_TAG('t', 'w', 'i', 'd'), 1);
-  static hb_feature_t qwid = CreateFeature(HB_TAG('q', 'w', 'i', 'd'), 1);
+  static constexpr hb_feature_t hwid =
+      CreateFeature(HB_TAG('h', 'w', 'i', 'd'), 1);
+  static constexpr hb_feature_t twid =
+      CreateFeature(HB_TAG('t', 'w', 'i', 'd'), 1);
+  static constexpr hb_feature_t qwid =
+      CreateFeature(HB_TAG('q', 'w', 'i', 'd'), 1);
   switch (description.WidthVariant()) {
     case kHalfWidth:
       features->push_back(hwid);
@@ -634,12 +636,18 @@ void SetFontFeatures(const Font* font, FeaturesVector* features) {
   // font-variant-east-asian:
   const FontVariantEastAsian east_asian = description.VariantEastAsian();
   if (UNLIKELY(!east_asian.IsAllNormal())) {
-    static hb_feature_t jp78 = CreateFeature(HB_TAG('j', 'p', '7', '8'), 1);
-    static hb_feature_t jp83 = CreateFeature(HB_TAG('j', 'p', '8', '3'), 1);
-    static hb_feature_t jp90 = CreateFeature(HB_TAG('j', 'p', '9', '0'), 1);
-    static hb_feature_t jp04 = CreateFeature(HB_TAG('j', 'p', '0', '4'), 1);
-    static hb_feature_t smpl = CreateFeature(HB_TAG('s', 'm', 'p', 'l'), 1);
-    static hb_feature_t trad = CreateFeature(HB_TAG('t', 'r', 'a', 'd'), 1);
+    static constexpr hb_feature_t jp78 =
+        CreateFeature(HB_TAG('j', 'p', '7', '8'), 1);
+    static constexpr hb_feature_t jp83 =
+        CreateFeature(HB_TAG('j', 'p', '8', '3'), 1);
+    static constexpr hb_feature_t jp90 =
+        CreateFeature(HB_TAG('j', 'p', '9', '0'), 1);
+    static constexpr hb_feature_t jp04 =
+        CreateFeature(HB_TAG('j', 'p', '0', '4'), 1);
+    static constexpr hb_feature_t smpl =
+        CreateFeature(HB_TAG('s', 'm', 'p', 'l'), 1);
+    static constexpr hb_feature_t trad =
+        CreateFeature(HB_TAG('t', 'r', 'a', 'd'), 1);
     switch (east_asian.Form()) {
       case FontVariantEastAsian::kNormalForm:
         break;
@@ -664,8 +672,10 @@ void SetFontFeatures(const Font* font, FeaturesVector* features) {
       default:
         NOTREACHED();
     }
-    static hb_feature_t fwid = CreateFeature(HB_TAG('f', 'w', 'i', 'd'), 1);
-    static hb_feature_t pwid = CreateFeature(HB_TAG('p', 'w', 'i', 'd'), 1);
+    static constexpr hb_feature_t fwid =
+        CreateFeature(HB_TAG('f', 'w', 'i', 'd'), 1);
+    static constexpr hb_feature_t pwid =
+        CreateFeature(HB_TAG('p', 'w', 'i', 'd'), 1);
     switch (east_asian.Width()) {
       case FontVariantEastAsian::kNormalWidth:
         break;
@@ -678,46 +688,55 @@ void SetFontFeatures(const Font* font, FeaturesVector* features) {
       default:
         NOTREACHED();
     }
-    static hb_feature_t ruby = CreateFeature(HB_TAG('r', 'u', 'b', 'y'), 1);
+    static constexpr hb_feature_t ruby =
+        CreateFeature(HB_TAG('r', 'u', 'b', 'y'), 1);
     if (east_asian.Ruby())
       features->push_back(ruby);
   }
 
   // font-variant-numeric:
-  static hb_feature_t lnum = CreateFeature(HB_TAG('l', 'n', 'u', 'm'), 1);
+  static constexpr hb_feature_t lnum =
+      CreateFeature(HB_TAG('l', 'n', 'u', 'm'), 1);
   if (description.VariantNumeric().NumericFigureValue() ==
       FontVariantNumeric::kLiningNums)
     features->push_back(lnum);
 
-  static hb_feature_t onum = CreateFeature(HB_TAG('o', 'n', 'u', 'm'), 1);
+  static constexpr hb_feature_t onum =
+      CreateFeature(HB_TAG('o', 'n', 'u', 'm'), 1);
   if (description.VariantNumeric().NumericFigureValue() ==
       FontVariantNumeric::kOldstyleNums)
     features->push_back(onum);
 
-  static hb_feature_t pnum = CreateFeature(HB_TAG('p', 'n', 'u', 'm'), 1);
+  static constexpr hb_feature_t pnum =
+      CreateFeature(HB_TAG('p', 'n', 'u', 'm'), 1);
   if (description.VariantNumeric().NumericSpacingValue() ==
       FontVariantNumeric::kProportionalNums)
     features->push_back(pnum);
-  static hb_feature_t tnum = CreateFeature(HB_TAG('t', 'n', 'u', 'm'), 1);
+  static constexpr hb_feature_t tnum =
+      CreateFeature(HB_TAG('t', 'n', 'u', 'm'), 1);
   if (description.VariantNumeric().NumericSpacingValue() ==
       FontVariantNumeric::kTabularNums)
     features->push_back(tnum);
 
-  static hb_feature_t afrc = CreateFeature(HB_TAG('a', 'f', 'r', 'c'), 1);
+  static constexpr hb_feature_t afrc =
+      CreateFeature(HB_TAG('a', 'f', 'r', 'c'), 1);
   if (description.VariantNumeric().NumericFractionValue() ==
       FontVariantNumeric::kStackedFractions)
     features->push_back(afrc);
-  static hb_feature_t frac = CreateFeature(HB_TAG('f', 'r', 'a', 'c'), 1);
+  static constexpr hb_feature_t frac =
+      CreateFeature(HB_TAG('f', 'r', 'a', 'c'), 1);
   if (description.VariantNumeric().NumericFractionValue() ==
       FontVariantNumeric::kDiagonalFractions)
     features->push_back(frac);
 
-  static hb_feature_t ordn = CreateFeature(HB_TAG('o', 'r', 'd', 'n'), 1);
+  static constexpr hb_feature_t ordn =
+      CreateFeature(HB_TAG('o', 'r', 'd', 'n'), 1);
   if (description.VariantNumeric().OrdinalValue() ==
       FontVariantNumeric::kOrdinalOn)
     features->push_back(ordn);
 
-  static hb_feature_t zero = CreateFeature(HB_TAG('z', 'e', 'r', 'o'), 1);
+  static constexpr hb_feature_t zero =
+      CreateFeature(HB_TAG('z', 'e', 'r', 'o'), 1);
   if (description.VariantNumeric().SlashedZeroValue() ==
       FontVariantNumeric::kSlashedZeroOn)
     features->push_back(zero);
@@ -738,6 +757,17 @@ void SetFontFeatures(const Font* font, FeaturesVector* features) {
     feature.end = static_cast<unsigned>(-1);
     features->push_back(feature);
   }
+}
+
+inline RangeData CreateRangeData(const Font* font,
+                                 TextDirection direction,
+                                 hb_buffer_t* buffer) {
+  RangeData range_data;
+  range_data.buffer = buffer;
+  range_data.font = font;
+  range_data.text_direction = direction;
+  SetFontFeatures(font, &range_data.font_features);
+  return range_data;
 }
 
 class CapsFeatureSettingsScopedOverlay final {
@@ -765,12 +795,18 @@ CapsFeatureSettingsScopedOverlay::CapsFeatureSettingsScopedOverlay(
 
 void CapsFeatureSettingsScopedOverlay::OverlayCapsFeatures(
     FontDescription::FontVariantCaps variant_caps) {
-  static hb_feature_t smcp = CreateFeature(HB_TAG('s', 'm', 'c', 'p'), 1);
-  static hb_feature_t pcap = CreateFeature(HB_TAG('p', 'c', 'a', 'p'), 1);
-  static hb_feature_t c2sc = CreateFeature(HB_TAG('c', '2', 's', 'c'), 1);
-  static hb_feature_t c2pc = CreateFeature(HB_TAG('c', '2', 'p', 'c'), 1);
-  static hb_feature_t unic = CreateFeature(HB_TAG('u', 'n', 'i', 'c'), 1);
-  static hb_feature_t titl = CreateFeature(HB_TAG('t', 'i', 't', 'l'), 1);
+  static constexpr hb_feature_t smcp =
+      CreateFeature(HB_TAG('s', 'm', 'c', 'p'), 1);
+  static constexpr hb_feature_t pcap =
+      CreateFeature(HB_TAG('p', 'c', 'a', 'p'), 1);
+  static constexpr hb_feature_t c2sc =
+      CreateFeature(HB_TAG('c', '2', 's', 'c'), 1);
+  static constexpr hb_feature_t c2pc =
+      CreateFeature(HB_TAG('c', '2', 'p', 'c'), 1);
+  static constexpr hb_feature_t unic =
+      CreateFeature(HB_TAG('u', 'n', 'i', 'c'), 1);
+  static constexpr hb_feature_t titl =
+      CreateFeature(HB_TAG('t', 'i', 't', 'l'), 1);
   if (variant_caps == FontDescription::kSmallCaps ||
       variant_caps == FontDescription::kAllSmallCaps) {
     PrependCounting(smcp);
@@ -811,7 +847,6 @@ void HarfBuzzShaper::ShapeSegment(
     ShapeResult* result) const {
   DCHECK(result);
   DCHECK(range_data->buffer);
-
   const Font* font = range_data->font;
   const FontDescription& font_description = font->GetFontDescription();
   const hb_language_t language =
@@ -930,34 +965,23 @@ void HarfBuzzShaper::ShapeSegment(
   }
 }
 
-scoped_refptr<ShapeResult> HarfBuzzShaper::Shape(
-    const Font* font,
-    TextDirection direction,
-    unsigned start,
-    unsigned end,
-    const RunSegmenter::RunSegmenterRange* pre_segmented) const {
+scoped_refptr<ShapeResult> HarfBuzzShaper::Shape(const Font* font,
+                                                 TextDirection direction,
+                                                 unsigned start,
+                                                 unsigned end) const {
   DCHECK_GE(end, start);
   DCHECK_LE(end, text_.length());
-  DCHECK(!pre_segmented ||
-         (start >= pre_segmented->start && end <= pre_segmented->end));
 
   unsigned length = end - start;
   scoped_refptr<ShapeResult> result =
-      ShapeResult::Create(font, length, direction);
-  HarfBuzzScopedPtr<hb_buffer_t> buffer(hb_buffer_create(), hb_buffer_destroy);
+      ShapeResult::Create(font, start, length, direction);
 
-  RangeData range_data;
-  range_data.buffer = buffer.Get();
-  range_data.font = font;
-  range_data.text_direction = direction;
+  HarfBuzzScopedPtr<hb_buffer_t> buffer(hb_buffer_create(), hb_buffer_destroy);
+  RangeData range_data = CreateRangeData(font, direction, buffer.Get());
   range_data.start = start;
   range_data.end = end;
-  SetFontFeatures(font, &range_data.font_features);
 
-  if (pre_segmented) {
-    ShapeSegment(&range_data, *pre_segmented, result.get());
-
-  } else if (text_.Is8Bit()) {
+  if (text_.Is8Bit()) {
     // 8-bit text is guaranteed to horizontal latin-1.
     RunSegmenter::RunSegmenterRange segment_range = {
         start, end, USCRIPT_LATIN, OrientationIterator::kOrientationKeep,
@@ -985,9 +1009,72 @@ scoped_refptr<ShapeResult> HarfBuzzShaper::Shape(
     }
   }
 
-  // Ensure |start_index_| is updated even when no runs were inserted.
-  if (UNLIKELY(result->runs_.IsEmpty()))
-    result->start_index_ = start;
+#if DCHECK_IS_ON()
+  if (result)
+    CheckShapeResultRange(result.get(), start, end, text_, font);
+#endif
+
+  return result;
+}
+
+scoped_refptr<ShapeResult> HarfBuzzShaper::Shape(
+    const Font* font,
+    TextDirection direction,
+    unsigned start,
+    unsigned end,
+    const Vector<RunSegmenter::RunSegmenterRange>& ranges) const {
+  DCHECK_GE(end, start);
+  DCHECK_LE(end, text_.length());
+  DCHECK_GT(ranges.size(), 0u);
+  DCHECK_EQ(start, ranges[0].start);
+  DCHECK_EQ(end, ranges[ranges.size() - 1].end);
+
+  unsigned length = end - start;
+  scoped_refptr<ShapeResult> result =
+      ShapeResult::Create(font, start, length, direction);
+
+  HarfBuzzScopedPtr<hb_buffer_t> buffer(hb_buffer_create(), hb_buffer_destroy);
+  RangeData range_data = CreateRangeData(font, direction, buffer.Get());
+
+  for (const RunSegmenter::RunSegmenterRange& segmented_range : ranges) {
+    DCHECK_GE(segmented_range.end, segmented_range.start);
+    DCHECK_GE(segmented_range.start, start);
+    DCHECK_LE(segmented_range.end, end);
+
+    range_data.start = segmented_range.start;
+    range_data.end = segmented_range.end;
+    ShapeSegment(&range_data, segmented_range, result.get());
+  }
+
+#if DCHECK_IS_ON()
+  if (result)
+    CheckShapeResultRange(result.get(), start, end, text_, font);
+#endif
+
+  return result;
+}
+
+scoped_refptr<ShapeResult> HarfBuzzShaper::Shape(
+    const Font* font,
+    TextDirection direction,
+    unsigned start,
+    unsigned end,
+    const RunSegmenter::RunSegmenterRange pre_segmented) const {
+  DCHECK_GE(end, start);
+  DCHECK_LE(end, text_.length());
+  DCHECK_GE(start, pre_segmented.start);
+  DCHECK_LE(end, pre_segmented.end);
+
+  unsigned length = end - start;
+  scoped_refptr<ShapeResult> result =
+      ShapeResult::Create(font, start, length, direction);
+
+  HarfBuzzScopedPtr<hb_buffer_t> buffer(hb_buffer_create(), hb_buffer_destroy);
+  RangeData range_data = CreateRangeData(font, direction, buffer.Get());
+  range_data.start = start;
+  range_data.end = end;
+
+  ShapeSegment(&range_data, pre_segmented, result.get());
 
 #if DCHECK_IS_ON()
   if (result)

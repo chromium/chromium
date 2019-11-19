@@ -33,11 +33,9 @@ class DebugDaemonLogSource : public SystemLogsSource {
  private:
   typedef std::map<std::string, std::string> KeyValueMap;
 
-  // Callbacks for the 5 different dbus calls to debugd.
+  // Callbacks for the dbus calls to debugd.
   void OnGetRoutes(base::Optional<std::vector<std::string>> routes);
-  void OnGetNetworkStatus(base::Optional<std::string> status);
-  void OnGetModemStatus(base::Optional<std::string> status);
-  void OnGetWiMaxStatus(base::Optional<std::string> status);
+  void OnGetOneLog(std::string key, base::Optional<std::string> status);
   void OnGetLogs(bool succeeded,
                  const KeyValueMap& logs);
 
@@ -64,7 +62,7 @@ class DebugDaemonLogSource : public SystemLogsSource {
   SysLogsSourceCallback callback_;
   int num_pending_requests_;
   bool scrub_;
-  base::WeakPtrFactory<DebugDaemonLogSource> weak_ptr_factory_;
+  base::WeakPtrFactory<DebugDaemonLogSource> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DebugDaemonLogSource);
 };

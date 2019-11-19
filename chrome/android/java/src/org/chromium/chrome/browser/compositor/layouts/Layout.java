@@ -7,11 +7,12 @@ package org.chromium.chrome.browser.compositor.layouts;
 import android.content.Context;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.support.annotation.IntDef;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
 
-import org.chromium.base.VisibleForTesting;
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
@@ -59,7 +60,7 @@ public abstract class Layout implements TabContentManager.ThumbnailChangeListene
     public @interface ViewportMode {
         /** The viewport is assumed to be always fullscreen. */
         int ALWAYS_FULLSCREEN = 0;
-        /** The viewport is assuming that browser controls are permenantly shown. */
+        /** The viewport is assuming that browser controls are permanently shown. */
         int ALWAYS_SHOWING_BROWSER_CONTROLS = 1;
         /** The viewport will account for animating browser controls (both shown and hidden). */
         int DYNAMIC_BROWSER_CONTROLS = 2;

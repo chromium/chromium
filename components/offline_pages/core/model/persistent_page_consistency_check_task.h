@@ -9,13 +9,13 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "components/offline_pages/core/offline_page_archive_publisher.h"
 #include "components/offline_pages/core/offline_store_types.h"
 #include "components/offline_pages/task/task.h"
 
 namespace offline_pages {
 
 class ArchiveManager;
-class ClientPolicyController;
 class OfflinePageMetadataStore;
 
 // This task is responsible for checking consistency of persistent pages, mark
@@ -23,26 +23,25 @@ class OfflinePageMetadataStore;
 // missing entries back to normal.
 class PersistentPageConsistencyCheckTask : public Task {
  public:
-  using PersistentPageConsistencyCheckCallback =
-      base::OnceCallback<void(bool success,
-                              const std::vector<int64_t>& pages_deleted)>;
+  using PersistentPageConsistencyCheckCallback = base::OnceCallback<void(
+      bool success,
+      const std::vector<PublishedArchiveId>& ids_of_deleted_pages)>;
 
   struct CheckResult {
     CheckResult();
     CheckResult(SyncOperationResult result,
-                const std::vector<int64_t>& system_download_ids);
+                const std::vector<PublishedArchiveId>& ids_of_deleted_pages);
     CheckResult(const CheckResult& other);
     CheckResult& operator=(const CheckResult& other);
     ~CheckResult();
 
     SyncOperationResult result;
-    std::vector<int64_t> download_ids_of_deleted_pages;
+    std::vector<PublishedArchiveId> ids_of_deleted_pages;
   };
 
   PersistentPageConsistencyCheckTask(
       OfflinePageMetadataStore* store,
       ArchiveManager* archive_manager,
-      ClientPolicyController* policy_controller,
       base::Time check_time,
       PersistentPageConsistencyCheckCallback callback);
   ~PersistentPageConsistencyCheckTask() override;
@@ -57,14 +56,12 @@ class PersistentPageConsistencyCheckTask : public Task {
   OfflinePageMetadataStore* store_;
   // The archive manager storing archive directories. Not owned.
   ArchiveManager* archive_manager_;
-  // The policy controller which is used to acquire names of namespaces. Not
-  // owned.
-  ClientPolicyController* policy_controller_;
   base::Time check_time_;
   // The callback for the task.
   PersistentPageConsistencyCheckCallback callback_;
 
-  base::WeakPtrFactory<PersistentPageConsistencyCheckTask> weak_ptr_factory_;
+  base::WeakPtrFactory<PersistentPageConsistencyCheckTask> weak_ptr_factory_{
+      this};
   DISALLOW_COPY_AND_ASSIGN(PersistentPageConsistencyCheckTask);
 };
 

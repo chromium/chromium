@@ -84,6 +84,7 @@ class MEDIA_EXPORT VideoRendererImpl
                                    base::TimeTicks deadline_max,
                                    bool background_rendering) override;
   void OnFrameDropped() override;
+  base::TimeDelta GetPreferredRenderInterval() override;
 
  private:
   // Callback for |video_decoder_stream_| initialization.
@@ -106,10 +107,10 @@ class MEDIA_EXPORT VideoRendererImpl
   // Callback for |video_decoder_stream_| to deliver decoded video frames and
   // report video decoding status.
   void FrameReady(VideoDecoderStream::Status status,
-                  const scoped_refptr<VideoFrame>& frame);
+                  scoped_refptr<VideoFrame> frame);
 
   // Helper method for enqueueing a frame to |alogorithm_|.
-  void AddReadyFrame_Locked(const scoped_refptr<VideoFrame>& frame);
+  void AddReadyFrame_Locked(scoped_refptr<VideoFrame> frame);
 
   // Helper method that schedules an asynchronous read from the
   // |video_decoder_stream_| as long as there isn't a pending read and we have
@@ -212,6 +213,9 @@ class MEDIA_EXPORT VideoRendererImpl
   // Provides video frames to VideoRendererImpl.
   std::unique_ptr<VideoDecoderStream> video_decoder_stream_;
 
+  // Passed in during Initialize().
+  DemuxerStream* demuxer_stream_;
+
   MediaLog* media_log_;
 
   // Flag indicating low-delay mode.
@@ -305,13 +309,13 @@ class MEDIA_EXPORT VideoRendererImpl
   base::TimeTicks last_frame_ready_time_;
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<VideoRendererImpl> weak_factory_;
+  base::WeakPtrFactory<VideoRendererImpl> weak_factory_{this};
 
   // Weak factory used to invalidate certain queued callbacks on reset().
   // This is useful when doing video frame copies asynchronously since we
   // want to discard video frames that might be received after the stream has
   // been reset.
-  base::WeakPtrFactory<VideoRendererImpl> cancel_on_flush_weak_factory_;
+  base::WeakPtrFactory<VideoRendererImpl> cancel_on_flush_weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(VideoRendererImpl);
 };

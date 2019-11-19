@@ -5,7 +5,6 @@
 #include "base/android/jni_android.h"
 #include "content/public/app/content_jni_onload.h"
 #include "content/public/app/content_main.h"
-#include "content/public/browser/android/compositor.h"
 #include "content/shell/app/shell_main_delegate.h"
 
 // This is called by the VM when the shared library is first loaded.
@@ -13,7 +12,6 @@ JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
   base::android::InitVM(vm);
   if (!content::android::OnJNIOnLoadInit())
     return -1;
-  content::Compositor::Initialize();
   content::SetContentMainDelegate(new content::ShellMainDelegate());
   return JNI_VERSION_1_4;
 }

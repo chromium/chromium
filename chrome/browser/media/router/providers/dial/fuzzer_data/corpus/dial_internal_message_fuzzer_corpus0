@@ -1,0 +1,7 @@
+{
+  "type": "client_connect",
+  "message": "98765432109876543210",
+  "sequenceNumber": -1,
+  "timeoutMillis": 0,
+  "clientId": "98765432109876543210"
+}

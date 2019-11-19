@@ -52,7 +52,7 @@ class LintWPTTest(unittest.TestCase):
   def testWPTLintErrors(self):
     # Private LayoutTests APIs are not allowed.
     with open(self._test_file, 'w') as f:
-      f.write('<script>testRunner</script>')
+      f.write('<script>testRunner.notifyDone()</script>')
     mock_input = MockInputApi()
     mock_output = MockOutputApi()
     mock_input.affected_files = [os.path.abspath(self._test_file)]

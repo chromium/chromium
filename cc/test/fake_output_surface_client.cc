@@ -6,7 +6,8 @@
 
 namespace cc {
 
-void FakeOutputSurfaceClient::DidReceiveSwapBuffersAck() {
+void FakeOutputSurfaceClient::DidReceiveSwapBuffersAck(
+    const gfx::SwapTimings&) {
   swap_count_++;
 }
 

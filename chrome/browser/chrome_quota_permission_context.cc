@@ -30,7 +30,6 @@
 #if defined(OS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
 #else
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #endif
 
@@ -56,6 +55,7 @@ class QuotaPermissionRequest : public PermissionRequest {
   // PermissionRequest:
   IconId GetIconId() const override;
 #if defined(OS_ANDROID)
+  base::string16 GetTitleText() const override;
   base::string16 GetMessageText() const override;
 #endif
   base::string16 GetMessageTextFragment() const override;
@@ -93,11 +93,15 @@ PermissionRequest::IconId QuotaPermissionRequest::GetIconId() const {
 #if defined(OS_ANDROID)
   return IDR_ANDROID_INFOBAR_FOLDER;
 #else
-  return kFolderIcon;
+  return vector_icons::kFolderIcon;
 #endif
 }
 
 #if defined(OS_ANDROID)
+base::string16 QuotaPermissionRequest::GetTitleText() const {
+  return l10n_util::GetStringUTF16(IDS_REQUEST_QUOTA_PERMISSION_TITLE);
+}
+
 base::string16 QuotaPermissionRequest::GetMessageText() const {
   // If the site requested larger quota than this threshold, show a different
   // message to the user.
@@ -167,7 +171,7 @@ void ChromeQuotaPermissionContext::RequestQuotaPermission(
   }
 
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::UI},
         base::BindOnce(&ChromeQuotaPermissionContext::RequestQuotaPermission,
                        this, params, render_process_id, callback));
@@ -206,7 +210,7 @@ void ChromeQuotaPermissionContext::DispatchCallbackOnIOThread(
   DCHECK_EQ(false, callback.is_null());
 
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::IO)) {
-    base::PostTaskWithTraits(
+    base::PostTask(
         FROM_HERE, {content::BrowserThread::IO},
         base::BindOnce(
             &ChromeQuotaPermissionContext::DispatchCallbackOnIOThread, this,

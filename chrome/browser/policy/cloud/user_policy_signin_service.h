@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_base.h"
-#include "services/identity/public/cpp/identity_manager.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 
 class AccountId;
 class Profile;
@@ -36,19 +36,9 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
       PrefService* local_state,
       DeviceManagementService* device_management_service,
       UserCloudPolicyManager* policy_manager,
-      identity::IdentityManager* identity_manager,
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
   ~UserPolicySigninService() override;
-
-  // Registers a CloudPolicyClient for fetching policy for a user. The
-  // |oauth2_login_token| and |username| are explicitly passed because
-  // the user is not signed in yet (ProfileOAuth2TokenService does not have
-  // any tokens yet to prevent services from using it until after we've fetched
-  // policy).
-  void RegisterForPolicyWithLoginToken(
-      const std::string& username,
-      const std::string& oauth2_login_token,
-      const PolicyRegistrationCallback& callback);
 
   // Registers a CloudPolicyClient for fetching policy for a user. |username| is
   // explicitly passed because the user is not yet authenticated, but the token
@@ -56,10 +46,10 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
   // Virtual for testing.
   virtual void RegisterForPolicyWithAccountId(
       const std::string& username,
-      const std::string& account_id,
+      const CoreAccountId& account_id,
       const PolicyRegistrationCallback& callback);
 
-  // identity::IdentityManager::Observer implementation:
+  // signin::IdentityManager::Observer implementation:
   // UserPolicySigninServiceBase is already an observer of IdentityManager.
   void OnPrimaryAccountSet(const CoreAccountInfo& account_info) override;
   void OnRefreshTokenUpdatedForAccount(

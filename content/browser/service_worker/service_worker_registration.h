@@ -19,7 +19,6 @@
 #include "base/timer/timer.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
-#include "content/common/service_worker/service_worker_types.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "url/gurl.h"
 
@@ -27,10 +26,6 @@ namespace content {
 
 class ServiceWorkerVersion;
 struct ServiceWorkerRegistrationInfo;
-
-namespace service_worker_registration_unittest {
-class ServiceWorkerActivationTest;
-}  // namespace service_worker_registration_unittest
 
 // Represents the core of a service worker registration object. Other
 // registration derivatives (WebServiceWorkerRegistration etc) ultimately refer
@@ -62,6 +57,20 @@ class CONTENT_EXPORT ServiceWorkerRegistration
     virtual void OnSkippedWaiting(ServiceWorkerRegistration* registation) {}
   };
 
+  enum class Status {
+    // This registration has not been deleted.
+    kIntact,
+    // The registration data has been deleted from the database, but it's still
+    // usable: if a page has an existing controller from this registration, the
+    // controller will continue to function until all such pages are unloaded.
+    // The registration may also be resurrected if register() is called while in
+    // this state.
+    kUninstalling,
+    // This registration is completely uninstalled. It cannot be resurrected or
+    // used.
+    kUninstalled,
+  };
+
   ServiceWorkerRegistration(
       const blink::mojom::ServiceWorkerRegistrationOptions& options,
       int64_t registration_id,
@@ -73,13 +82,11 @@ class CONTENT_EXPORT ServiceWorkerRegistration
     return update_via_cache_;
   }
 
-  bool is_deleted() const { return is_deleted_; }
-  void set_is_deleted(bool deleted) { is_deleted_ = deleted; }
-
-  bool is_uninstalling() const { return is_uninstalling_; }
-
-  void set_is_uninstalled(bool uninstalled) { is_uninstalled_ = uninstalled; }
-  bool is_uninstalled() const { return is_uninstalled_; }
+  bool is_deleted() const { return status_ != Status::kIntact; }
+  bool is_uninstalling() const { return status_ == Status::kUninstalling; }
+  bool is_uninstalled() const { return status_ == Status::kUninstalled; }
+  Status status() const { return status_; }
+  void SetStatus(Status status);
 
   int64_t resources_total_size_bytes() const {
     return resources_total_size_bytes_;
@@ -172,9 +179,11 @@ class CONTENT_EXPORT ServiceWorkerRegistration
     self_update_delay_ = delay;
   }
 
-  // Unsets the version and deletes its resources. Also deletes this
-  // registration from storage if there is no longer a stored version.
-  void DeleteVersion(const scoped_refptr<ServiceWorkerVersion>& version);
+  // An emergency measure to forcibly delete the registration even if it has
+  // controllees. The controllees will stop using the registration. Called when
+  // a service worker can't be read from disk, a potentially sticky failure
+  // that would prevent the site from being loaded.
+  void ForceDelete();
 
   void RegisterRegistrationFinishedCallback(base::OnceClosure callback);
   void NotifyRegistrationFinished();
@@ -190,8 +199,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
 
  private:
   friend class base::RefCounted<ServiceWorkerRegistration>;
-  friend class service_worker_registration_unittest::
-      ServiceWorkerActivationTest;
+  friend class ServiceWorkerActivationTest;
 
   void UnsetVersionInternal(
       ServiceWorkerVersion* version,
@@ -231,9 +239,7 @@ class CONTENT_EXPORT ServiceWorkerRegistration
   const GURL scope_;
   blink::mojom::ServiceWorkerUpdateViaCache update_via_cache_;
   const int64_t registration_id_;
-  bool is_deleted_;
-  bool is_uninstalling_;
-  bool is_uninstalled_;
+  Status status_;
   bool should_activate_when_ready_;
   blink::mojom::NavigationPreloadState navigation_preload_state_;
   base::Time last_update_check_;

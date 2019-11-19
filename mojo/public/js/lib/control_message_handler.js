@@ -12,8 +12,8 @@
       throw error;
     }
 
-    if (message.getName() != mojo.interfaceControl.kRunMessageId) {
-      throw new Error("Control message name is not kRunMessageId");
+    if (message.getName() != mojo.interfaceControl.RUN_MESSAGE_ID) {
+      throw new Error("Control message name is not RUN_MESSAGE_ID");
     }
 
     // Validate payload.
@@ -31,8 +31,10 @@
       throw error;
     }
 
-    if (message.getName() != mojo.interfaceControl.kRunOrClosePipeMessageId) {
-      throw new Error("Control message name is not kRunOrClosePipeMessageId");
+    if (message.getName() !=
+          mojo.interfaceControl.RUN_OR_CLOSE_PIPE_MESSAGE_ID) {
+      throw new Error(
+        "Control message name is not RUN_OR_CLOSE_PIPE_MESSAGE_ID");
     }
 
     // Validate payload.
@@ -68,7 +70,7 @@
         mojo.interfaceControl.RunResponseMessageParams();
     runResponseMessageParams.output = runOutput;
 
-    var messageName = mojo.interfaceControl.kRunMessageId;
+    var messageName = mojo.interfaceControl.RUN_MESSAGE_ID;
     var payloadSize =
         mojo.interfaceControl.RunResponseMessageParams.encodedSize;
     var requestID = reader.requestID;
@@ -81,8 +83,9 @@
   }
 
   function isInterfaceControlMessage(message) {
-    return message.getName() == mojo.interfaceControl.kRunMessageId ||
-           message.getName() == mojo.interfaceControl.kRunOrClosePipeMessageId;
+    return message.getName() == mojo.interfaceControl.RUN_MESSAGE_ID ||
+           message.getName() ==
+             mojo.interfaceControl.RUN_OR_CLOSE_PIPE_MESSAGE_ID;
   }
 
   function ControlMessageHandler(interfaceVersion) {

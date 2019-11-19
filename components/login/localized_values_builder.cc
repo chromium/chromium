@@ -47,6 +47,15 @@ void LocalizedValuesBuilder::AddF(const std::string& key,
 
 void LocalizedValuesBuilder::AddF(const std::string& key,
                                   int message_id,
+                                  const base::string16& a,
+                                  const base::string16& b,
+                                  const base::string16& c) {
+  dict_->SetString(prefix_ + key,
+                   l10n_util::GetStringFUTF16(message_id, a, b, c));
+}
+
+void LocalizedValuesBuilder::AddF(const std::string& key,
+                                  int message_id,
                                   int message_id_a) {
   AddF(key, message_id, l10n_util::GetStringUTF16(message_id_a));
 }
@@ -57,6 +66,16 @@ void LocalizedValuesBuilder::AddF(const std::string& key,
                                   int message_id_b) {
   AddF(key, message_id, l10n_util::GetStringUTF16(message_id_a),
        l10n_util::GetStringUTF16(message_id_b));
+}
+
+void LocalizedValuesBuilder::AddF(const std::string& key,
+                                  int message_id,
+                                  int message_id_a,
+                                  int message_id_b,
+                                  int message_id_c) {
+  AddF(key, message_id, l10n_util::GetStringUTF16(message_id_a),
+       l10n_util::GetStringUTF16(message_id_b),
+       l10n_util::GetStringUTF16(message_id_c));
 }
 
 }  // namespace login

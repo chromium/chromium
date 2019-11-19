@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,6 +29,9 @@ namespace {
 class HomePageUndoBubble : public views::BubbleDialogDelegateView,
                            public views::StyledLabelListener {
  public:
+  HomePageUndoBubble(const HomePageUndoBubble&) = delete;
+  HomePageUndoBubble& operator=(const HomePageUndoBubble&) = delete;
+
   static void ShowBubble(Browser* browser,
                          bool undo_value_is_ntp,
                          const GURL& undo_url,
@@ -42,7 +44,6 @@ class HomePageUndoBubble : public views::BubbleDialogDelegateView,
   ~HomePageUndoBubble() override;
 
   // views::BubbleDialogDelegateView:
-  int GetDialogButtons() const override;
   void Init() override;
   void WindowClosing() override;
 
@@ -56,8 +57,6 @@ class HomePageUndoBubble : public views::BubbleDialogDelegateView,
   Browser* browser_;
   bool undo_value_is_ntp_;
   GURL undo_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(HomePageUndoBubble);
 };
 
 // static
@@ -89,17 +88,13 @@ HomePageUndoBubble::HomePageUndoBubble(
       browser_(browser),
       undo_value_is_ntp_(undo_value_is_ntp),
       undo_url_(undo_url) {
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_NONE);
   set_margins(
       ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::HOME_PAGE_UNDO);
 }
 
-HomePageUndoBubble::~HomePageUndoBubble() {
-}
-
-int HomePageUndoBubble::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_NONE;
-}
+HomePageUndoBubble::~HomePageUndoBubble() = default;
 
 void HomePageUndoBubble::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -112,8 +107,8 @@ void HomePageUndoBubble::Init() {
       base::JoinString(message, base::StringPiece16(base::ASCIIToUTF16(" "))),
       this);
 
-  gfx::Range undo_range(label->text().length() - undo_string.length(),
-                        label->text().length());
+  gfx::Range undo_range(label->GetText().length() - undo_string.length(),
+                        label->GetText().length());
   label->AddStyleRange(undo_range,
                        views::StyledLabel::RangeStyleInfo::CreateForLink());
 

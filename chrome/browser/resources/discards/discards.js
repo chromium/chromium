@@ -2,21 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('discards', function() {
-  'use strict';
-
   // The following variables are initialized by 'initialize'.
-  // Points to the Mojo WebUI handler.
-  let uiHandler;
+  // Points to the DiscardsDetailsProviderRemote.
+  let discardsDetailsProvider;
 
   /**
-   * @return {!mojom.DiscardsDetailsProviderProxy} The UI handler.
+   * @return {!discards.mojom.DetailsProviderRemote} Provides discards details.
    */
-  function getOrCreateUiHandler() {
-    if (!uiHandler) {
-      uiHandler = mojom.DiscardsDetailsProvider.getProxy();
+  export function getOrCreateDetailsProvider() {
+    if (!discardsDetailsProvider) {
+      discardsDetailsProvider = discards.mojom.DetailsProvider.getRemote();
     }
-    return uiHandler;
+    return discardsDetailsProvider;
   }
 
   /**
@@ -26,7 +23,7 @@ cr.define('discards', function() {
    * @param {number} n The count of the number of ojects.
    * @return {string} The plural version of |s| if n != 1, otherwise |s|.
    */
-  function maybeMakePlural(s, n) {
+  export function maybeMakePlural(s, n) {
     return n == 1 ? s : s + 's';
   }
 
@@ -35,7 +32,7 @@ cr.define('discards', function() {
    * @param {number} seconds The interval to render.
    * @return {string} An English string representing the interval.
    */
-  function secondsToString(seconds) {
+  export function secondsToString(seconds) {
     // These constants aren't perfect, but close enough.
     const SECONDS_PER_MINUTE = 60;
     const MINUTES_PER_HOUR = 60;
@@ -98,7 +95,7 @@ cr.define('discards', function() {
    * @param {number} secondsAgo The duration to render.
    * @return {string} An English string representing the duration.
    */
-  function durationToString(secondsAgo) {
+  export function durationToString(secondsAgo) {
     const ret = secondsToString(secondsAgo);
 
     if (ret.endsWith(' seconds') || ret.endsWith(' second')) {
@@ -113,17 +110,6 @@ cr.define('discards', function() {
    * @param {boolean} bool A boolean value.
    * @return {string} A string representing the bool.
    */
-  function boolToString(bool) {
+  export function boolToString(bool) {
     return bool ? '✔' : '✘️';
   }
-
-  // These functions are exposed on the 'discards' object created by
-  // cr.define. This allows unittesting of these functions.
-  return {
-    boolToString: boolToString,
-    durationToString: durationToString,
-    getOrCreateUiHandler: getOrCreateUiHandler,
-    maybeMakePlural: maybeMakePlural,
-    secondsToString: secondsToString
-  };
-});

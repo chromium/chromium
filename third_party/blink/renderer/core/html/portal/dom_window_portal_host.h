@@ -15,6 +15,7 @@ class PortalHost;
 class CORE_EXPORT DOMWindowPortalHost {
  public:
   static PortalHost* portalHost(LocalDOMWindow& window);
+  static bool ShouldExposePortalHost(const LocalDOMWindow& window);
 };
 
 }  // namespace blink

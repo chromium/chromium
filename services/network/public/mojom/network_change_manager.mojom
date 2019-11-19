@@ -84,7 +84,8 @@ interface NetworkChangeManagerClient {
 // An interface for facilitating notifications of network change events.
 interface NetworkChangeManager {
   // Requests to receive notification when there is a network change.
-  RequestNotifications(NetworkChangeManagerClient client_ptr);
+  RequestNotifications(
+      pending_remote<NetworkChangeManagerClient> client_remote);
 
   // Notifies the network service that the network configuration has changed.
   // This is needed for ChromeOS because only one process can listen for network

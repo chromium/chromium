@@ -1,3 +1,0 @@
-WebView Log Verbosifier is an empty dummy app. If this app is installed, WebView
-will log the active field trials, for debugging/QA purposes. A dummy app is used
-because it can be installed on any device, unlike command-line flags.

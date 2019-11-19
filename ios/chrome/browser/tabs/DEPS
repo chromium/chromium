@@ -7,8 +7,8 @@ specific_include_rules = {
   ],
   "^tab_unittest\.mm$": [
     "+ios/web/web_state/ui/crw_web_controller.h",
-    "+ios/web/web_state/navigation_context_impl.h",
     "+ios/web/navigation/navigation_manager_impl.h",
+    "+ios/web/navigation/navigation_context_impl.h",
     "+ios/web/web_state/web_state_impl.h",
     "+ios/web/test/fakes/crw_fake_back_forward_list.h",
   ],

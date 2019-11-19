@@ -98,6 +98,7 @@ if (!is_ios) {
 
     outputs = [
       "$target_gen_dir/GeneratedRulesetData",
+      "$target_gen_dir/default_local_state.json",
     ]
 
     inputs = [
@@ -109,10 +110,8 @@ if (!is_ios) {
 
     args = [
       rebase_path(inputs[0], root_build_dir),
-      rebase_path("$target_gen_dir/GeneratedRulesetData", root_build_dir),
-      "--version_output=" +
-          rebase_path("$target_gen_dir/default_local_state.json",
-                      root_build_dir),
+      rebase_path(outputs[0], root_build_dir),
+      "--version_output=" + rebase_path(outputs[1], root_build_dir),
       "--content_version=1000",
     ]
   }

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/network/managed_state.h"
+#include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
 #include "components/onc/onc_constants.h"
 #include "url/gurl.h"
 
@@ -76,16 +78,26 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   const std::string& device_path() const { return device_path_; }
   const std::string& guid() const { return guid_; }
   const std::string& profile_path() const { return profile_path_; }
-  const std::string& error() const { return error_; }
-  const std::string& last_error() const { return last_error_; }
-  void clear_last_error() { last_error_.clear(); }
+  const GURL& probe_url() const { return probe_url_; }
   ::onc::ONCSource onc_source() const { return onc_source_; }
 
-  // Returns |connection_state_| if visible, kStateDisconnect otherwise.
+  // Provides the error for the last attempt to connect/configure the network
+  // (an empty string signifies no error at all). Note that this value can be
+  // cleared - see ClearError() below.
+  const std::string& GetError() const;
+
+  // Clears the error associated with this network. Should be called whenever
+  // a connection to this network is initiated or the associated configuration
+  // is updated/removed.
+  void ClearError();
+
+  // Returns |connection_state_| if visible, kStateIdle otherwise.
   std::string connection_state() const;
 
   // Updates the connection state and saves the previous connection state.
   void SetConnectionState(const std::string& connection_state);
+
+  int priority() const { return priority_; }
 
   const base::Value* proxy_config() const { return proxy_config_.get(); }
   const base::Value* ipv4_config() const { return ipv4_config_.get(); }
@@ -105,6 +117,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   void set_signal_strength(int signal_strength) {
     signal_strength_ = signal_strength;
   }
+  const std::string& bssid() const { return bssid_; }
+  int frequency() const { return frequency_; }
   bool blocked_by_policy() const { return blocked_by_policy_; }
   void set_blocked_by_policy(bool blocked_by_policy) {
     blocked_by_policy_ = blocked_by_policy;
@@ -132,8 +146,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   void set_battery_percentage(int battery_percentage) {
     battery_percentage_ = battery_percentage;
   }
-  const std::string& carrier() const { return carrier_; }
-  void set_carrier(const std::string& carrier) { carrier_ = carrier; }
+  const std::string& tether_carrier() const { return tether_carrier_; }
+  void set_tether_carrier(const std::string& tether_carrier) {
+    tether_carrier_ = tether_carrier;
+  }
   bool tether_has_connected_to_host() const {
     return tether_has_connected_to_host_;
   }
@@ -166,6 +182,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // Similar to IsConnectingOrConnected but also checks activation state.
   bool IsActive() const;
+
+  // Returns true if |connection_state_| is online.
+  bool IsOnline() const;
 
   // Returns true if this is a network stored in a profile.
   bool IsInProfile() const;
@@ -205,8 +224,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // Set the GUID. Called exclusively by NetworkStateHandler.
   void SetGuid(const std::string& guid);
 
-  // Returns |error_| if valid, otherwise returns |last_error_|.
-  std::string GetErrorState() const;
+  // Helpers for returning mojo types.
+  network_config::mojom::ActivationStateType GetMojoActivationState() const;
+  network_config::mojom::SecurityType GetMojoSecurity() const;
 
   // Setters for testing.
   void set_connection_state_for_testing(const std::string& connection_state) {
@@ -222,6 +242,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   // Helpers (used e.g. when a state, error, or shill dictionary is cached)
   static bool StateIsConnected(const std::string& connection_state);
   static bool StateIsConnecting(const std::string& connection_state);
+  static bool StateIsPortalled(const std::string& connection_state);
   static bool NetworkStateIsCaptivePortal(const base::Value& shill_properties);
   static bool ErrorIsValid(const std::string& error);
   static std::unique_ptr<NetworkState> CreateDefaultCellular(
@@ -253,16 +274,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   std::string connection_state_;
   std::string last_connection_state_;
   std::string profile_path_;
+  GURL probe_url_;
   std::vector<uint8_t> raw_ssid_;  // Unknown encoding. Not necessarily UTF-8.
-  int priority_ = 0;
+  int priority_ = 0;  // kPriority, used for organizing known networks.
   ::onc::ONCSource onc_source_ = ::onc::ONC_SOURCE_UNKNOWN;
 
-  // Reflects the current Shill Service.Error property. This might get cleared
-  // by Shill shortly after a failure.
-  std::string error_;
-
-  // Last non empty Service.Error property. Cleared by NetworkConnectionHandler
-  // when a connection attempt is initiated.
+  // Last non empty Service.Error property. Expected to be cleared via
+  // ClearError() when a connection attempt is initiated and when an associated
+  // configuration is updated/removed.
   std::string last_error_;
 
   // Cached copy of the Shill Service IPConfig object. For ipv6 properties use
@@ -274,8 +293,8 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   bool is_captive_portal_ = false;
   std::unique_ptr<CaptivePortalProviderInfo> captive_portal_provider_;
   int signal_strength_ = 0;
-  std::string bssid_;  // For ARC
-  int frequency_ = 0;  // For ARC
+  std::string bssid_;
+  int frequency_ = 0;
   bool blocked_by_policy_ = false;
 
   // Cellular properties, used for icons, Connect, and Activation.
@@ -295,7 +314,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
   std::unique_ptr<VpnProviderInfo> vpn_provider_;
 
   // Tether properties.
-  std::string carrier_;
+  std::string tether_carrier_;
   int battery_percentage_ = 0;
 
   // Whether the current device has already connected to the tether host device

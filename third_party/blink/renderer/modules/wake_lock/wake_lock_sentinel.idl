@@ -1,0 +1,18 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/wake-lock/#the-wakelocksentinel-interface
+
+[
+  ActiveScriptWrappable,
+  Exposed=(DedicatedWorker,Window),
+  RuntimeEnabled=WakeLock,
+  SecureContext
+] interface WakeLockSentinel : EventTarget {
+  attribute EventHandler onrelease;
+
+  readonly attribute WakeLockType type;
+
+  [CallWith=ScriptState] Promise<void> release();
+};

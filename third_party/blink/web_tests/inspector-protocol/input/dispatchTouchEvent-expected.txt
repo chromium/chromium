@@ -214,23 +214,6 @@ radiusY: 1
 rotationAngle: 0
 force: 1
 id: 1
-pageX: 100
-pageY: 200
-radiusX: 1
-radiusY: 1
-rotationAngle: 0
-force: 1
------Event-----
-type: touchmove
-----Touches----
-id: 0
-pageX: 25
-pageY: 36
-radiusX: 1
-radiusY: 1
-rotationAngle: 0
-force: 1
-id: 1
 pageX: 101
 pageY: 202
 radiusX: 1

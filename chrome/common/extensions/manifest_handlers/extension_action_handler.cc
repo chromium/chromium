@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/extension_action/action_info.h"
@@ -29,9 +28,11 @@ bool ExtensionActionHandler::Parse(Extension* extension,
                                    base::string16* error) {
   const char* key = nullptr;
   const char* error_key = nullptr;
+  ActionInfo::Type type = ActionInfo::TYPE_ACTION;
   if (extension->manifest()->HasKey(manifest_keys::kAction)) {
     key = manifest_keys::kAction;
     error_key = manifest_errors::kInvalidAction;
+    // type ACTION is correct.
   }
 
   if (extension->manifest()->HasKey(manifest_keys::kPageAction)) {
@@ -42,6 +43,7 @@ bool ExtensionActionHandler::Parse(Extension* extension,
     }
     key = manifest_keys::kPageAction;
     error_key = manifest_errors::kInvalidPageAction;
+    type = ActionInfo::TYPE_PAGE;
   }
 
   if (extension->manifest()->HasKey(manifest_keys::kBrowserAction)) {
@@ -52,6 +54,7 @@ bool ExtensionActionHandler::Parse(Extension* extension,
     }
     key = manifest_keys::kBrowserAction;
     error_key = manifest_errors::kInvalidBrowserAction;
+    type = ActionInfo::TYPE_BROWSER;
   }
 
   if (key) {
@@ -62,41 +65,32 @@ bool ExtensionActionHandler::Parse(Extension* extension,
     }
 
     std::unique_ptr<ActionInfo> action_info =
-        ActionInfo::Load(extension, dict, error);
+        ActionInfo::Load(extension, type, dict, error);
     if (!action_info)
       return false;  // Failed to parse extension action definition.
 
-    if (key == manifest_keys::kAction) {
-      ActionInfo::SetExtensionActionInfo(extension, action_info.release());
-    } else {
-      if (dict->HasKey(manifest_keys::kActionDefaultState)) {
-        *error =
-            base::ASCIIToUTF16(manifest_errors::kDefaultStateShouldNotBeSet);
-        return false;
-      }
-
-      if (key == manifest_keys::kPageAction)
-        ActionInfo::SetPageActionInfo(extension, action_info.release());
-      else
-        ActionInfo::SetBrowserActionInfo(extension, action_info.release());
+    switch (type) {
+      case ActionInfo::TYPE_ACTION:
+        ActionInfo::SetExtensionActionInfo(extension, std::move(action_info));
+        break;
+      case ActionInfo::TYPE_PAGE:
+        ActionInfo::SetPageActionInfo(extension, std::move(action_info));
+        break;
+      case ActionInfo::TYPE_BROWSER:
+        ActionInfo::SetBrowserActionInfo(extension, std::move(action_info));
+        break;
     }
   } else {  // No key, used for synthesizing an action for extensions with none.
     if (Manifest::IsComponentLocation(extension->location()))
       return true;  // Don't synthesize actions for component extensions.
     if (extension->was_installed_by_default())
       return true;  // Don't synthesize actions for default extensions.
-    if (extension->manifest()->HasKey(
-            manifest_keys::kSynthesizeExtensionAction)) {
-      *error = base::ASCIIToUTF16(base::StringPrintf(
-          "Key %s is reserved.", manifest_keys::kSynthesizeExtensionAction));
-      return false;  // No one should use this key.
-    }
 
     // Set an empty page action. We use a page action (instead of a browser
     // action) because the action should not be seen as enabled on every page.
-    std::unique_ptr<ActionInfo> action_info(new ActionInfo());
+    auto action_info = std::make_unique<ActionInfo>(ActionInfo::TYPE_PAGE);
     action_info->synthesized = true;
-    ActionInfo::SetPageActionInfo(extension, action_info.release());
+    ActionInfo::SetPageActionInfo(extension, std::move(action_info));
   }
 
   return true;
@@ -132,8 +126,9 @@ bool ExtensionActionHandler::AlwaysParseForType(Manifest::Type type) const {
 
 base::span<const char* const> ExtensionActionHandler::Keys() const {
   static constexpr const char* kKeys[] = {
-      manifest_keys::kPageAction, manifest_keys::kBrowserAction,
-      manifest_keys::kSynthesizeExtensionAction};
+      manifest_keys::kPageAction,
+      manifest_keys::kBrowserAction,
+  };
   return kKeys;
 }
 

@@ -46,14 +46,20 @@ using ShimTerminatedCallback = base::OnceClosure;
 void LaunchShim(LaunchShimUpdateBehavior update_behavior,
                 ShimLaunchedCallback launched_callback,
                 ShimTerminatedCallback terminated_callback,
-                std::unique_ptr<web_app::ShortcutInfo> shortcut_info);
+                std::unique_ptr<ShortcutInfo> shortcut_info);
 
-std::unique_ptr<web_app::ShortcutInfo> RecordAppShimErrorAndBuildShortcutInfo(
+std::unique_ptr<ShortcutInfo> RecordAppShimErrorAndBuildShortcutInfo(
     const base::FilePath& bundle_path);
 
 // Return true if launching and updating app shims will fail because of the
 // testing environment.
 bool AppShimLaunchDisabled();
+
+// Returns a path to the Chrome Apps folder in ~/Applications.
+base::FilePath GetChromeAppsFolder();
+
+// Testing method to override calls to GetChromeAppsFolder.
+void SetChromeAppsFolderForTesting(const base::FilePath& path);
 
 // Creates a shortcut for a web application. The shortcut is a stub app
 // that simply loads the browser framework and runs the given app.
@@ -78,10 +84,6 @@ class WebAppShortcutCreator {
   // of the profile name and extension id. This is used if the app title is
   // unable to be used for the bundle path (e.g: "...").
   base::FilePath GetFallbackBasename() const;
-
-  // Returns a path to the Chrome Apps folder in the relevant applications
-  // folder. E.g. ~/Applications or /Applications.
-  virtual base::FilePath GetApplicationsDirname() const;
 
   // The full path to the app bundle under the relevant Applications folder.
   // If |avoid_conflicts| is true then return a path that does not yet exist (by
@@ -117,14 +119,20 @@ class WebAppShortcutCreator {
   FRIEND_TEST_ALL_PREFIXES(WebAppShortcutCreatorTest,
                            UpdateBookmarkAppShortcut);
 
+  // Return true if the bundle for this app should be profile-agnostic.
+  bool IsMultiProfile() const;
+
   // Returns the bundle identifier to use for this app bundle.
   std::string GetBundleIdentifier() const;
 
-  // Returns the bundle identifier for the internal copy of the bundle.
-  std::string GetInternalBundleIdentifier() const;
+  // Returns the profile-scoped app bundle identifier. For multi-profile apps,
+  // this will give the bundle identifier for shims that were created before
+  // multi-profile support was added.
+  std::string GetProfileScopedBundleIdentifier() const;
 
   // Copies the app loader template into a temporary directory and fills in all
-  // relevant information.
+  // relevant information. This works around a Finder bug where the app's icon
+  // doesn't properly update.
   bool BuildShortcut(const base::FilePath& staging_path) const;
 
   // Builds a shortcut and copies it to the specified app paths. Populates
@@ -147,10 +155,10 @@ class WebAppShortcutCreator {
 
   // Path to the data directory for this app. For example:
   // ~/Library/Application Support/Chromium/Default/Web Applications/_crx_abc/
-  base::FilePath app_data_dir_;
+  const base::FilePath app_data_dir_;
 
   // Information about the app. Owned by the caller of the constructor.
-  const ShortcutInfo* info_;
+  const ShortcutInfo* const info_;
 
   DISALLOW_COPY_AND_ASSIGN(WebAppShortcutCreator);
 };

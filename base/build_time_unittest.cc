@@ -15,14 +15,20 @@ TEST(BuildTime, DateLooksValid) {
   EXPECT_EQ(' ', build_date[3]);
   EXPECT_EQ(' ', build_date[6]);
   EXPECT_EQ(' ', build_date[11]);
+#if !defined(OFFICIAL_BUILD)
   EXPECT_EQ('0', build_date[12]);
   EXPECT_EQ('5', build_date[13]);
+#endif
   EXPECT_EQ(':', build_date[14]);
+#if !defined(OFFICIAL_BUILD)
   EXPECT_EQ('0', build_date[15]);
   EXPECT_EQ('0', build_date[16]);
+#endif
   EXPECT_EQ(':', build_date[17]);
+#if !defined(OFFICIAL_BUILD)
   EXPECT_EQ('0', build_date[18]);
   EXPECT_EQ('0', build_date[19]);
+#endif
 }
 
 TEST(BuildTime, InThePast) {

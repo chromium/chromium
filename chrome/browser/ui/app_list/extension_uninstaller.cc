@@ -12,8 +12,9 @@
 #include "extensions/common/extension.h"
 
 ExtensionUninstaller::ExtensionUninstaller(Profile* profile,
-                                           const std::string& extension_id)
-    : profile_(profile), app_id_(extension_id) {}
+                                           const std::string& extension_id,
+                                           gfx::NativeWindow parent_window)
+    : profile_(profile), app_id_(extension_id), parent_window_(parent_window) {}
 
 ExtensionUninstaller::~ExtensionUninstaller() {
 }
@@ -26,8 +27,8 @@ void ExtensionUninstaller::Run() {
     CleanUp();
     return;
   }
-  dialog_ =
-      extensions::ExtensionUninstallDialog::Create(profile_, nullptr, this);
+  dialog_ = extensions::ExtensionUninstallDialog::Create(profile_,
+                                                         parent_window_, this);
   dialog_->ConfirmUninstall(extension,
                             extensions::UNINSTALL_REASON_USER_INITIATED,
                             extensions::UNINSTALL_SOURCE_APP_LIST);

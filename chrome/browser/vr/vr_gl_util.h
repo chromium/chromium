@@ -26,9 +26,11 @@ namespace vr {
 VR_BASE_EXPORT std::array<float, 16> MatrixToGLArray(
     const gfx::Transform& matrix);
 
-// Compile a shader.
+// Compile a shader. This is intended for browser-internal shaders only,
+// don't use this for user-supplied arbitrary shaders since data is handed
+// directly to the GL driver without further sanity checks.
 VR_BASE_EXPORT GLuint CompileShader(GLenum shader_type,
-                                    const GLchar* shader_source,
+                                    const std::string& shader_source,
                                     std::string& error);
 
 // Compile and link a program.

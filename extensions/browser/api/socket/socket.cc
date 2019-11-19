@@ -39,9 +39,9 @@ Socket::~Socket() {
 
 void Socket::Write(scoped_refptr<net::IOBuffer> io_buffer,
                    int byte_count,
-                   const CompletionCallback& callback) {
+                   net::CompletionOnceCallback callback) {
   DCHECK(!callback.is_null());
-  write_queue_.push(WriteRequest(io_buffer, byte_count, callback));
+  write_queue_.emplace(io_buffer, byte_count, std::move(callback));
   WriteData();
 }
 
@@ -57,14 +57,14 @@ void Socket::WriteData() {
       request.io_buffer->data() + request.bytes_written);
   int result = WriteImpl(
       io_buffer_write_.get(), request.byte_count - request.bytes_written,
-      base::Bind(&Socket::OnWriteComplete, base::Unretained(this)));
+      base::BindOnce(&Socket::OnWriteComplete, base::Unretained(this)));
 
   if (result != net::ERR_IO_PENDING)
     OnWriteComplete(result);
 }
 
 void Socket::OnWriteComplete(int result) {
-  io_buffer_write_ = NULL;
+  io_buffer_write_.reset();
 
   WriteRequest& request = write_queue_.front();
 
@@ -78,7 +78,7 @@ void Socket::OnWriteComplete(int result) {
     result = request.bytes_written;
   }
 
-  request.callback.Run(result);
+  std::move(request.callback).Run(result);
   write_queue_.pop();
 
   if (!write_queue_.empty())
@@ -103,8 +103,8 @@ void Socket::Listen(const std::string& address,
 }
 
 void Socket::Accept(AcceptCompletionCallback callback) {
-  std::move(callback).Run(net::ERR_FAILED, nullptr /* socket */, base::nullopt,
-                          mojo::ScopedDataPipeConsumerHandle(),
+  std::move(callback).Run(net::ERR_FAILED, mojo::NullRemote() /* socket */,
+                          base::nullopt, mojo::ScopedDataPipeConsumerHandle(),
                           mojo::ScopedDataPipeProducerHandle());
 }
 
@@ -136,13 +136,13 @@ void Socket::IPEndPointToStringAndPort(const net::IPEndPoint& address,
 
 Socket::WriteRequest::WriteRequest(scoped_refptr<net::IOBuffer> io_buffer,
                                    int byte_count,
-                                   const CompletionCallback& callback)
+                                   net::CompletionOnceCallback callback)
     : io_buffer(io_buffer),
       byte_count(byte_count),
-      callback(callback),
+      callback(std::move(callback)),
       bytes_written(0) {}
 
-Socket::WriteRequest::WriteRequest(const WriteRequest& other) = default;
+Socket::WriteRequest::WriteRequest(WriteRequest&& other) = default;
 
 Socket::WriteRequest::~WriteRequest() {}
 

@@ -9,10 +9,9 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
-#include "base/threading/thread.h"
-#include "base/threading/thread_restrictions.h"
-#include "build/build_config.h"
+#include "base/sequenced_task_runner.h"
+#include "base/task/post_task.h"
+#include "base/task/task_traits.h"
 #include "net/dns/dns_config_service.h"
 
 namespace net {
@@ -23,27 +22,6 @@ static bool CalculateReachability(SCNetworkConnectionFlags flags) {
   return reachable && !connection_required;
 }
 
-// Thread on which we can run DnsConfigService, which requires a TYPE_IO
-// message loop.
-class NetworkChangeNotifierMac::DnsConfigServiceThread : public base::Thread {
- public:
-  DnsConfigServiceThread() : base::Thread("DnsConfigService") {}
-
-  ~DnsConfigServiceThread() override { Stop(); }
-
-  void Init() override {
-    service_ = DnsConfigService::CreateSystemService();
-    service_->WatchConfig(base::Bind(&NetworkChangeNotifier::SetDnsConfig));
-  }
-
-  void CleanUp() override { service_.reset(); }
-
- private:
-  std::unique_ptr<DnsConfigService> service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DnsConfigServiceThread);
-};
-
 NetworkChangeNotifierMac::NetworkChangeNotifierMac()
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsMac()),
       connection_type_(CONNECTION_UNKNOWN),
@@ -53,17 +31,10 @@ NetworkChangeNotifierMac::NetworkChangeNotifierMac()
   // Must be initialized after the rest of this object, as it may call back into
   // SetInitialConnectionType().
   config_watcher_ = std::make_unique<NetworkConfigWatcherMac>(&forwarder_);
-#if !defined(OS_IOS)
-  // DnsConfigService on iOS doesn't watch the config so its result can become
-  // inaccurate at any time.  Disable it to prevent promulgation of inaccurate
-  // DnsConfigs.
-  dns_config_service_thread_ = std::make_unique<DnsConfigServiceThread>();
-  dns_config_service_thread_->StartWithOptions(
-      base::Thread::Options(base::MessageLoop::TYPE_IO, 0));
-#endif
 }
 
 NetworkChangeNotifierMac::~NetworkChangeNotifierMac() {
+  ClearGlobalPointer();
   // Delete the ConfigWatcher to join the notifier thread, ensuring that
   // StartReachabilityNotifications() has an opportunity to run to completion.
   config_watcher_.reset();

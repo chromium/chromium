@@ -14,7 +14,7 @@
 
 class SigninStatusMetricsProvider;
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 
@@ -48,7 +48,7 @@ class SigninStatusMetricsProviderDelegate {
   virtual AccountsStatus GetStatusOfAllAccounts() = 0;
 
   // Returns the IdentityManager instance (if any) associated with each account.
-  virtual std::vector<identity::IdentityManager*>
+  virtual std::vector<signin::IdentityManager*>
   GetIdentityManagersForAllAccounts() = 0;
 
  protected:

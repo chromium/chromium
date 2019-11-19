@@ -31,10 +31,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_HTTP_PARSERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_HTTP_PARSERS_H_
 
+#include "base/optional.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/network/server_timing_header.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
@@ -53,16 +55,6 @@ enum ContentTypeOptionsDisposition {
   kContentTypeOptionsNosniff
 };
 
-// Be aware that some behavior may depend on this enum's ordering, with
-// higher values taking precedence over lower ones.
-enum ReflectedXSSDisposition {
-  kReflectedXSSUnset = 0,
-  kAllowReflectedXSS,
-  kReflectedXSSInvalid,
-  kFilterReflectedXSS,
-  kBlockReflectedXSS
-};
-
 using CommaDelimitedHeaderSet = HashSet<String, CaseFoldingHash>;
 
 struct CacheControlHeader {
@@ -71,16 +63,14 @@ struct CacheControlHeader {
   bool contains_no_cache : 1;
   bool contains_no_store : 1;
   bool contains_must_revalidate : 1;
-  double max_age;
-  double stale_while_revalidate;
+  base::Optional<base::TimeDelta> max_age;
+  base::Optional<base::TimeDelta> stale_while_revalidate;
 
   CacheControlHeader()
       : parsed(false),
         contains_no_cache(false),
         contains_no_store(false),
-        contains_must_revalidate(false),
-        max_age(0.0),
-        stale_while_revalidate(0.0) {}
+        contains_must_revalidate(false) {}
 };
 
 using ServerTimingHeaderVector = Vector<std::unique_ptr<ServerTimingHeader>>;
@@ -98,9 +88,9 @@ PLATFORM_EXPORT bool IsValidHTTPToken(const String&);
 // is specified, ' ' and '\t' are treated as whitespace characters.
 PLATFORM_EXPORT bool ParseHTTPRefresh(const String& refresh,
                                       WTF::CharacterMatchFunctionPtr matcher,
-                                      double& delay,
+                                      base::TimeDelta& delay,
                                       String& url);
-PLATFORM_EXPORT double ParseDate(const String&);
+PLATFORM_EXPORT base::Optional<base::Time> ParseDate(const String&);
 
 // Given a Media Type (like "foo/bar; baz=gazonk" - usually from the
 // 'Content-Type' HTTP header), extract and return the "type/subtype" portion
@@ -112,19 +102,6 @@ PLATFORM_EXPORT double ParseDate(const String&);
 // - OWSes at the head and the tail of the region before the first semicolon
 //   are trimmed.
 PLATFORM_EXPORT AtomicString ExtractMIMETypeFromMediaType(const AtomicString&);
-
-// Given an X-XSS-Protection value like "1; mode=block; report=/foo", combine
-// the first positional parameter and the "mode" into the result code, and
-// return the "report" as report_url, if present. Return kReflectedXSSInvalid
-// on bad syntax, setting |failure_reason| and |failure_position|, otherwise
-// set |failure_position| to the start of the "report" URL, if present (since
-// it is not validated here, and the caller may need that position information
-// to construct an error message).
-PLATFORM_EXPORT ReflectedXSSDisposition
-ParseXSSProtectionHeader(const String& header,
-                         String& failure_reason,
-                         unsigned& failure_position,
-                         String& report_url);
 
 PLATFORM_EXPORT CacheControlHeader
 ParseCacheControlDirectives(const AtomicString& cache_control_header,
@@ -164,9 +141,6 @@ PLATFORM_EXPORT bool ParseContentRangeHeaderFor206(const String& content_range,
 
 PLATFORM_EXPORT std::unique_ptr<ServerTimingHeaderVector>
 ParseServerTimingHeader(const String&);
-
-using Mode = blink::ParsedContentType::Mode;
-
 }  // namespace blink
 
 #endif

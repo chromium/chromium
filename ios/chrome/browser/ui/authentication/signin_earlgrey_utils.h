@@ -7,25 +7,35 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/compiler_specific.h"
+#import "ios/testing/earl_grey/base_eg_test_helper_impl.h"
+
 @class ChromeIdentity;
 
+#define SigninEarlGreyUtils \
+  [SigninEarlGreyUtilsImpl invokedFromFile:@"" __FILE__ lineNumber:__LINE__]
+
 // Methods used for the EarlGrey tests.
-@interface SigninEarlGreyUtils : NSObject
+// TODO(crbug.com/974833): Consider moving these into ChromeEarlGrey.
+@interface SigninEarlGreyUtilsImpl : BaseEGTestHelperImpl
 
 // Returns a fake identity.
-+ (ChromeIdentity*)fakeIdentity1;
+- (ChromeIdentity*)fakeIdentity1;
 
 // Returns a second fake identity.
-+ (ChromeIdentity*)fakeIdentity2;
+- (ChromeIdentity*)fakeIdentity2;
 
 // Returns a fake managed identity.
-+ (ChromeIdentity*)fakeManagedIdentity;
+- (ChromeIdentity*)fakeManagedIdentity;
 
-// Asserts that |identity| is actually signed in to the active profile.
-+ (void)assertSignedInWithIdentity:(ChromeIdentity*)identity;
+// Adds |identity| to the fake identity service.
+- (void)addIdentity:(ChromeIdentity*)identity;
 
-// Asserts that no identity is signed in.
-+ (void)assertSignedOut;
+// Induces a GREYAssert if |identity| is not signed in to the active profile.
+- (void)checkSignedInWithIdentity:(ChromeIdentity*)identity;
+
+// Induces a GREYAssert if an identity is signed in.
+- (void)checkSignedOut;
 
 @end
 

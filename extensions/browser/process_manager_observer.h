@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/observer_list_types.h"
+
 namespace content {
 class RenderFrameHost;
 }
@@ -14,8 +16,9 @@ class RenderFrameHost;
 namespace extensions {
 class Extension;
 class ExtensionHost;
+class ProcessManager;
 
-class ProcessManagerObserver {
+class ProcessManagerObserver : public base::CheckedObserver {
  public:
   // Called immediately after an extension background host is started. This
   // corresponds with the loading of background hosts immediately after profile
@@ -39,6 +42,9 @@ class ProcessManagerObserver {
   virtual void OnExtensionFrameUnregistered(
       const std::string& extension_id,
       content::RenderFrameHost* render_frame_host) {}
+
+  // Called when the observed ProcessManager is shutting down.
+  virtual void OnProcessManagerShutdown(ProcessManager* manager) {}
 };
 
 }  // namespace extensions

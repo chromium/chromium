@@ -11,8 +11,8 @@
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
@@ -44,17 +44,15 @@ const char kBadScope[] =
 class FakeProtocolHandler : public net::URLRequestJobFactory::ProtocolHandler {
  public:
   FakeProtocolHandler(const std::string& headers, const std::string& response)
-      : headers_(headers),
-        response_(response) {
-  }
+      : headers_(headers), response_(response) {}
 
   ~FakeProtocolHandler() override = default;
 
   net::URLRequestJob* MaybeCreateJob(
       net::URLRequest* request,
       net::NetworkDelegate* network_delegate) const override {
-    return new net::URLRequestTestJob(
-        request, network_delegate, headers_, response_, true);
+    return new net::URLRequestTestJob(request, network_delegate, headers_,
+                                      response_, true);
   }
 
  private:
@@ -85,7 +83,7 @@ class FakeFailingProtocolHandler
   const net::Error net_error_;
 };
 
-class SetResponseURLRequestContext: public net::TestURLRequestContext {
+class SetResponseURLRequestContext : public net::TestURLRequestContext {
  public:
   void SetResponse(const std::string& headers, const std::string& response) {
     std::unique_ptr<net::URLRequestJobFactoryImpl> factory =
@@ -112,7 +110,9 @@ namespace remoting {
 
 class TokenValidatorFactoryImplTest : public testing::Test {
  public:
-  TokenValidatorFactoryImplTest() : message_loop_(base::MessageLoop::TYPE_IO) {}
+  TokenValidatorFactoryImplTest()
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::IO) {}
 
   void SuccessCallback(const std::string& shared_secret) {
     EXPECT_FALSE(shared_secret.empty());
@@ -134,7 +134,7 @@ class TokenValidatorFactoryImplTest : public testing::Test {
   void SetUp() override {
     key_pair_ = RsaKeyPair::FromString(kTestRsaKeyPair);
     request_context_getter_ = new net::TestURLRequestContextGetter(
-        message_loop_.task_runner(),
+        task_environment_.GetMainThreadTaskRunner(),
         std::make_unique<SetResponseURLRequestContext>());
     ThirdPartyAuthConfig config;
     config.token_url = GURL(kTokenUrl);
@@ -162,7 +162,6 @@ class TokenValidatorFactoryImplTest : public testing::Test {
     return response;
   }
 
-
   void SetResponse(const std::string& headers, const std::string& response) {
     SetResponseURLRequestContext* context =
         static_cast<SetResponseURLRequestContext*>(
@@ -178,7 +177,7 @@ class TokenValidatorFactoryImplTest : public testing::Test {
     context->SetErrorResponse(failure_phase, net_error);
   }
 
-  base::MessageLoop message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
   base::RunLoop run_loop_;
   scoped_refptr<RsaKeyPair> key_pair_;
   scoped_refptr<net::URLRequestContextGetter> request_context_getter_;
@@ -187,33 +186,33 @@ class TokenValidatorFactoryImplTest : public testing::Test {
 };
 
 TEST_F(TokenValidatorFactoryImplTest, Success) {
-  token_validator_ = token_validator_factory_->CreateTokenValidator(
-      kLocalJid, kRemoteJid);
+  token_validator_ =
+      token_validator_factory_->CreateTokenValidator(kLocalJid, kRemoteJid);
 
   SetResponse(net::URLRequestTestJob::test_headers(),
               CreateResponse(token_validator_->token_scope()));
 
   token_validator_->ValidateThirdPartyToken(
       kToken, base::Bind(&TokenValidatorFactoryImplTest::SuccessCallback,
-                             base::Unretained(this)));
+                         base::Unretained(this)));
   run_loop_.Run();
 }
 
 TEST_F(TokenValidatorFactoryImplTest, BadToken) {
-  token_validator_ = token_validator_factory_->CreateTokenValidator(
-      kLocalJid, kRemoteJid);
+  token_validator_ =
+      token_validator_factory_->CreateTokenValidator(kLocalJid, kRemoteJid);
 
   SetResponse(net::URLRequestTestJob::test_error_headers(), std::string());
 
   token_validator_->ValidateThirdPartyToken(
       kToken, base::Bind(&TokenValidatorFactoryImplTest::FailureCallback,
-                             base::Unretained(this)));
+                         base::Unretained(this)));
   run_loop_.Run();
 }
 
 TEST_F(TokenValidatorFactoryImplTest, BadScope) {
-  token_validator_ = token_validator_factory_->CreateTokenValidator(
-      kLocalJid, kRemoteJid);
+  token_validator_ =
+      token_validator_factory_->CreateTokenValidator(kLocalJid, kRemoteJid);
 
   SetResponse(net::URLRequestTestJob::test_headers(),
               CreateResponse(kBadScope));
@@ -225,15 +224,15 @@ TEST_F(TokenValidatorFactoryImplTest, BadScope) {
 }
 
 TEST_F(TokenValidatorFactoryImplTest, DeleteOnFailure) {
-  token_validator_ = token_validator_factory_->CreateTokenValidator(
-      kLocalJid, kRemoteJid);
+  token_validator_ =
+      token_validator_factory_->CreateTokenValidator(kLocalJid, kRemoteJid);
 
   SetResponse(net::URLRequestTestJob::test_error_headers(), std::string());
 
   token_validator_->ValidateThirdPartyToken(
-      kToken, base::Bind(
-          &TokenValidatorFactoryImplTest::DeleteOnFailureCallback,
-          base::Unretained(this)));
+      kToken,
+      base::Bind(&TokenValidatorFactoryImplTest::DeleteOnFailureCallback,
+                 base::Unretained(this)));
   run_loop_.Run();
 }
 

@@ -140,16 +140,21 @@ class DropdownPopupWindowImpl
         boolean wasShowing = mAnchoredPopupWindow.isShowing();
         mAnchoredPopupWindow.setVerticalOverlapAnchor(false);
         mAnchoredPopupWindow.setHorizontalOverlapAnchor(true);
+
+        int windowWidthPx = mContext.getResources().getDisplayMetrics().widthPixels;
         int contentWidth = measureContentWidth();
-        if (mAnchorView.getWidth() < contentWidth) {
+        if (windowWidthPx < contentWidth + mHorizontalPadding) {
+            mAnchoredPopupWindow.setMaxWidth(windowWidthPx - mHorizontalPadding);
+        } else if (mAnchorView.getWidth() < contentWidth) {
             mAnchoredPopupWindow.setMaxWidth(contentWidth + mHorizontalPadding);
         } else {
             mAnchoredPopupWindow.setMaxWidth(mAnchorView.getWidth() + mHorizontalPadding);
         }
+
         mAnchoredPopupWindow.show();
         mListView.setDividerHeight(0);
-        ApiCompatibilityUtils.setLayoutDirection(
-                mListView, mRtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR);
+        int layoutDirection = mRtl ? View.LAYOUT_DIRECTION_RTL : View.LAYOUT_DIRECTION_LTR;
+        mListView.setLayoutDirection(layoutDirection);
         if (!wasShowing) {
             mListView.setContentDescription(mDescription);
             mListView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);

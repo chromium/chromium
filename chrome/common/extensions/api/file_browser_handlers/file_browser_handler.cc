@@ -147,18 +147,19 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
 
   std::string handler_id;
   // Read the file action |id| (mandatory).
-  if (!file_browser_handler->HasKey(keys::kPageActionId) ||
-      !file_browser_handler->GetString(keys::kPageActionId, &handler_id)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidPageActionId);
+  if (!file_browser_handler->HasKey(keys::kFileBrowserHandlerId) ||
+      !file_browser_handler->GetString(keys::kFileBrowserHandlerId,
+                                       &handler_id)) {
+    *error = base::ASCIIToUTF16(errors::kInvalidFileBrowserHandlerId);
     return nullptr;
   }
   result->set_id(handler_id);
 
   // Read the page action title from |default_title| (mandatory).
   std::string title;
-  if (!file_browser_handler->HasKey(keys::kPageActionDefaultTitle) ||
-      !file_browser_handler->GetString(keys::kPageActionDefaultTitle, &title)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidPageActionDefaultTitle);
+  if (!file_browser_handler->HasKey(keys::kActionDefaultTitle) ||
+      !file_browser_handler->GetString(keys::kActionDefaultTitle, &title)) {
+    *error = base::ASCIIToUTF16(errors::kInvalidActionDefaultTitle);
     return nullptr;
   }
   result->set_title(title);
@@ -234,11 +235,11 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
 
   std::string default_icon;
   // Read the file browser action |default_icon| (optional).
-  if (file_browser_handler->HasKey(keys::kPageActionDefaultIcon)) {
-    if (!file_browser_handler->GetString(
-            keys::kPageActionDefaultIcon, &default_icon) ||
+  if (file_browser_handler->HasKey(keys::kActionDefaultIcon)) {
+    if (!file_browser_handler->GetString(keys::kActionDefaultIcon,
+                                         &default_icon) ||
         default_icon.empty()) {
-      *error = base::ASCIIToUTF16(errors::kInvalidPageActionIconPath);
+      *error = base::ASCIIToUTF16(errors::kInvalidActionDefaultIcon);
       return nullptr;
     }
     result->set_icon_path(default_icon);

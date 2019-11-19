@@ -6,8 +6,8 @@
 #define MEDIA_GPU_VAAPI_VAAPI_VP8_ACCELERATOR_H_
 
 #include "base/sequence_checker.h"
-#include "media/filters/vp8_parser.h"
 #include "media/gpu/vp8_decoder.h"
+#include "media/parsers/vp8_parser.h"
 
 namespace media {
 

@@ -13,9 +13,9 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/hash/md5.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/md5.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -163,6 +163,12 @@ DaemonControllerDelegateLinux::GetConfig() {
     result->SetString(kXmppLoginConfigPath, value);
   }
   return result;
+}
+
+void DaemonControllerDelegateLinux::CheckPermission(
+    bool it2me,
+    DaemonController::BoolCallback callback) {
+  std::move(callback).Run(true);
 }
 
 void DaemonControllerDelegateLinux::SetConfigAndStart(

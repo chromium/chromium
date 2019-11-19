@@ -21,18 +21,15 @@
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/metrics/previous_session_info.h"
 #import "ios/chrome/browser/metrics/previous_session_info_private.h"
-#import "ios/chrome/browser/tabs/tab.h"
-#import "ios/chrome/browser/ui/browser_view_controller.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
-#import "ios/chrome/browser/ui/main/tab_switcher.h"
-#import "ios/chrome/browser/ui/main/view_controller_swapping.h"
-#import "ios/chrome/browser/ui/ntp/new_tab_page_controller.h"
+#import "ios/chrome/browser/ui/tab_grid/view_controller_swapping.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
-#import "ios/web/public/navigation_manager.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/test/fakes/test_web_state_observer.h"
 #import "ios/web/public/test/native_controller_test_util.h"
-#import "ios/web/public/web_state/navigation_context.h"
 #import "third_party/breakpad/breakpad/src/client/ios/BreakpadController.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -86,30 +83,12 @@ DeviceSharingManager* GetDeviceSharingManager() {
   return [GetMainController() deviceSharingManager];
 }
 
-NewTabPageController* GetCurrentNewTabPageController() {
-  web::WebState* web_state = GetCurrentWebState();
-  id nativeController = web::test::GetCurrentNativeController(web_state);
-  if (![nativeController isKindOfClass:[NewTabPageController class]])
-    return nil;
-  return base::mac::ObjCCast<NewTabPageController>(nativeController);
-}
-
-web::WebState* GetCurrentWebState() {
-  return GetCurrentTab().webState;
-}
-
 ios::ChromeBrowserState* GetOriginalBrowserState() {
   return GetBrowserState(false);
 }
 
 ios::ChromeBrowserState* GetCurrentIncognitoBrowserState() {
   return GetBrowserState(true);
-}
-
-NSUInteger GetRegisteredKeyCommandsCount() {
-  UIViewController* mainViewController =
-      GetMainController().interfaceProvider.mainInterface.viewController;
-  return mainViewController.keyCommands.count;
 }
 
 id<BrowserCommands> BrowserCommandDispatcherForMainBVC() {
@@ -155,7 +134,7 @@ DispatcherForActiveBrowserViewController() {
 }
 
 void RemoveAllInfoBars() {
-  web::WebState* webState = [GetCurrentTab() webState];
+  web::WebState* webState = GetCurrentWebState();
   if (webState) {
     infobars::InfoBarManager* info_bar_manager =
         InfoBarManagerImpl::FromWebState(webState);

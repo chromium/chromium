@@ -9,18 +9,20 @@
 # The IDs are not random to avoid rebuilding host when it's not
 # necessary.
 
+from __future__ import print_function
+
 import uuid
 import sys
 
 if len(sys.argv) != 3:
-  print """Expecting 2 args:
-<rdp_desktop_session_guid> <version>"""
+  print("""Expecting 2 args:
+<rdp_desktop_session_guid> <version>""")
   sys.exit(1)
 
 rdp_desktop_session_guid = sys.argv[1]
 version_full = sys.argv[2]
 
 # Output a GN list of 1 strings.
-print '["' + \
-    str(uuid.uuid5(uuid.UUID(rdp_desktop_session_guid), version_full)) + '"]'
+print('["' + \
+    str(uuid.uuid5(uuid.UUID(rdp_desktop_session_guid), version_full)) + '"]')
 

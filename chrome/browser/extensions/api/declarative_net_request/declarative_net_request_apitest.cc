@@ -9,6 +9,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/threading/thread_restrictions.h"
+#include "net/dns/mock_host_resolver.h"
 
 namespace {
 
@@ -20,6 +21,10 @@ class DeclarativeNetRequestAPItest : public extensions::ExtensionApiTest {
   // ExtensionApiTest override.
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
+    ASSERT_TRUE(StartEmbeddedTestServer());
+
+    // Map all hosts to localhost.
+    host_resolver()->AddRule("*", "127.0.0.1");
 
     base::FilePath test_data_dir =
         test_data_dir_.AppendASCII("declarative_net_request");
@@ -52,6 +57,14 @@ IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestAPItest, ExtensionWithNoRuleset) {
 
 IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestAPItest, DynamicRules) {
   ASSERT_TRUE(RunExtensionTest("dynamic_rules")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestAPItest, HeaderRemoval) {
+  ASSERT_TRUE(RunExtensionTest("header_removal")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_F(DeclarativeNetRequestAPItest, OnRulesMatchedDebug) {
+  ASSERT_TRUE(RunExtensionTest("on_rules_matched_debug")) << message_;
 }
 
 }  // namespace

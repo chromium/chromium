@@ -13,21 +13,22 @@ namespace {
 
 class ThreadControllerForTest : public internal::ThreadControllerImpl {
  public:
-  ThreadControllerForTest(MessageLoopBase* message_loop_base,
-                          scoped_refptr<SingleThreadTaskRunner> task_runner,
-                          const TickClock* time_source)
-      : ThreadControllerImpl(message_loop_base,
+  ThreadControllerForTest(
+      internal::SequenceManagerImpl* funneled_sequence_manager,
+      scoped_refptr<SingleThreadTaskRunner> task_runner,
+      const TickClock* time_source)
+      : ThreadControllerImpl(funneled_sequence_manager,
                              std::move(task_runner),
                              time_source) {}
 
   void AddNestingObserver(RunLoop::NestingObserver* observer) override {
-    if (!message_loop_base_)
+    if (!funneled_sequence_manager_)
       return;
     ThreadControllerImpl::AddNestingObserver(observer);
   }
 
   void RemoveNestingObserver(RunLoop::NestingObserver* observer) override {
-    if (!message_loop_base_)
+    if (!funneled_sequence_manager_)
       return;
     ThreadControllerImpl::RemoveNestingObserver(observer);
   }
@@ -44,12 +45,12 @@ SequenceManagerForTest::SequenceManagerForTest(
 
 // static
 std::unique_ptr<SequenceManagerForTest> SequenceManagerForTest::Create(
-    MessageLoopBase* message_loop_base,
+    SequenceManagerImpl* funneled_sequence_manager,
     scoped_refptr<SingleThreadTaskRunner> task_runner,
     const TickClock* clock,
     SequenceManager::Settings settings) {
   std::unique_ptr<SequenceManagerForTest> manager(new SequenceManagerForTest(
-      std::make_unique<ThreadControllerForTest>(message_loop_base,
+      std::make_unique<ThreadControllerForTest>(funneled_sequence_manager,
                                                 std::move(task_runner), clock),
       std::move(settings)));
   manager->BindToCurrentThread();
@@ -66,12 +67,20 @@ std::unique_ptr<SequenceManagerForTest> SequenceManagerForTest::Create(
   return manager;
 }
 
+// static
+std::unique_ptr<SequenceManagerForTest>
+SequenceManagerForTest::CreateOnCurrentThread(
+    SequenceManager::Settings settings) {
+  return Create(CreateThreadControllerImplForCurrentThread(settings.clock),
+                std::move(settings));
+}
+
 size_t SequenceManagerForTest::ActiveQueuesCount() const {
   return main_thread_only().active_queues.size();
 }
 
 bool SequenceManagerForTest::HasImmediateWork() const {
-  return !main_thread_only().selector.AllEnabledWorkQueuesAreEmpty();
+  return main_thread_only().selector.GetHighestPendingPriority().has_value();
 }
 
 size_t SequenceManagerForTest::PendingTasksCount() const {

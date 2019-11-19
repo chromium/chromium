@@ -16,6 +16,7 @@
 #include "google_apis/gcm/engine/connection_event_tracker.h"
 #include "google_apis/gcm/engine/connection_handler.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/backoff_entry.h"
 #include "net/log/net_log_with_source.h"
@@ -35,7 +36,7 @@ class GCM_EXPORT ConnectionFactoryImpl
       const std::vector<GURL>& mcs_endpoints,
       const net::BackoffEntry::Policy& backoff_policy,
       GetProxyResolvingFactoryCallback get_socket_factory_callback,
-      // need task runner here.
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder,
       network::NetworkConnectionTracker* network_connection_tracker);
   ~ConnectionFactoryImpl() override;
@@ -136,9 +137,9 @@ class GCM_EXPORT ConnectionFactoryImpl
   // ---- network:: components for establishing connections. ----
   // Socket factory for creating new GCM connections.
   GetProxyResolvingFactoryCallback get_socket_factory_callback_;
-  network::mojom::ProxyResolvingSocketFactoryPtr socket_factory_;
+  mojo::Remote<network::mojom::ProxyResolvingSocketFactory> socket_factory_;
   // The handle to the socket for the current connection, if one exists.
-  network::mojom::ProxyResolvingSocketPtr socket_;
+  mojo::Remote<network::mojom::ProxyResolvingSocket> socket_;
   // Peer address of |socket_|.
   net::IPEndPoint peer_addr_;
 
@@ -181,6 +182,9 @@ class GCM_EXPORT ConnectionFactoryImpl
   // Builder for generating new login requests.
   BuildLoginRequestCallback request_builder_;
 
+  // Task runner.
+  const scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+
   // Recorder that records GCM activities for debugging purpose. Not owned.
   GCMStatsRecorder* recorder_;
 
@@ -191,7 +195,7 @@ class GCM_EXPORT ConnectionFactoryImpl
   // The currently registered listener to notify of connection changes.
   ConnectionListener* listener_;
 
-  base::WeakPtrFactory<ConnectionFactoryImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<ConnectionFactoryImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ConnectionFactoryImpl);
 };

@@ -11,14 +11,25 @@ import sys
 
 import common
 
-# If something adds a static initializer, revert it, don't increase these
-# numbers. We don't accept regressions in static initializers.
-EXPECTED_LINUX_SI_COUNTS = {
-    'chrome': 4,
-    'nacl_helper': 4,
-    'nacl_helper_bootstrap': 0,
+# A list of whitelisted files that are allowed to have static initializers.
+# If something adds a static initializer, revert it. We don't accept regressions
+# in static initializers.
+_LINUX_SI_FILE_WHITELIST = {
+    'chrome': [
+        'InstrProfilingRuntime.cpp',  # Only in coverage builds, not production.
+        'atomicops_internals_x86.cc',  # TODO(crbug.com/973551): Remove.
+        'debugallocation_shim.cc',  # TODO(crbug.com/973552): Remove.
+        'iostream.cpp',  # TODO(crbug.com/973554): Remove.
+        'spinlock.cc',  # TODO(crbug.com/973556): Remove.
+    ],
+    'nacl_helper_bootstrap': [],
 }
+_LINUX_SI_FILE_WHITELIST['nacl_helper'] = _LINUX_SI_FILE_WHITELIST['chrome']
 
+# TODO: Convert Mac to use the whitelist, but need to first modify
+# //tools/mac/dump-static-initializers.py to have the same stdout format as
+# //tools/linux/dump-static-initializers.py.
+#
 # A static initializer is needed on Mac for libc++ to set up std::cin/cout/cerr
 # before main() runs.
 EXPECTED_MAC_SI_COUNT = 1
@@ -92,56 +103,39 @@ def main_mac(src_dir):
 
 
 def main_linux(src_dir):
-
-  def get_elf_section_size(readelf_stdout, section_name):
-    # Matches: .ctors PROGBITS 000000000516add0 5169dd0 000010 00 WA 0 0 8
-    match = re.search(r'\.%s.*$' % re.escape(section_name), readelf_stdout,
-                      re.MULTILINE)
-    if not match:
-      return (False, -1)
-    size_str = re.split(r'\W+', match.group(0))[5]
-    return (True, int(size_str, 16))
-
-  def get_word_size(binary_name):
-    stdout = run_process(['readelf', '-h', binary_name])
-    elf_class_line = re.search('Class:.*$', stdout, re.MULTILINE).group(0)
-    elf_class = re.split(r'\W+', elf_class_line)[1]
-    if elf_class == 'ELF32':
-      return 4
-    elif elf_class == 'ELF64':
-      return 8
-    raise Exception('Unsupported architecture')
-
   ret = 0
-  for binary_name in EXPECTED_LINUX_SI_COUNTS:
+  for binary_name in _LINUX_SI_FILE_WHITELIST:
     if not os.path.exists(binary_name):
       continue
-    # NOTE: this is very implementation-specific and makes assumptions
-    # about how compiler and linker implement global static initializers.
-    si_count = 0
-    stdout = run_process(['readelf', '-SW', binary_name])
-    has_init_array, init_array_size = get_elf_section_size(stdout, 'init_array')
-    if has_init_array:
-      si_count = init_array_size / get_word_size(binary_name)
-      # In newer versions of gcc crtbegin.o inserts frame_dummy into .init_array
-      # but we don't want to count this entry, since its always present and not
-      # related to our code.
-      stdout = run_process(['objdump', '-t', binary_name, '-j' '.init_array'])
-      if '__frame_dummy_init_array_entry' in stdout:
-        si_count -= 1
 
-    # Print the list of static initializers.
-    if (binary_name in EXPECTED_LINUX_SI_COUNTS and
-        si_count > EXPECTED_LINUX_SI_COUNTS[binary_name]):
-      print('Expected <= %d static initializers in %s, but found %d' %
-            (EXPECTED_LINUX_SI_COUNTS[binary_name], binary_name, si_count))
-      ret = 1
-    if si_count > 0:
-      dump_static_initializers = os.path.join(src_dir, 'tools', 'linux',
-                                              'dump-static-initializers.py')
-      stdout = run_process([dump_static_initializers, '-d', binary_name])
-      print '\n# Static initializers in %s:' % binary_name
-      print stdout
+    dump_static_initializers = os.path.join(src_dir, 'tools', 'linux',
+                                            'dump-static-initializers.py')
+    stdout = run_process([dump_static_initializers, '-d', binary_name])
+    # The output has the following format:
+    # First lines: '# <file_name> <si_name>'
+    # Last line: '# Found <num> static initializers in <num> files.'
+    #
+    # For example:
+    # # spinlock.cc GetSystemCPUsCount()
+    # # spinlock.cc adaptive_spin_count
+    # # Found 2 static initializers in 1 files.
+
+    files_with_si = set()
+    for line in stdout.splitlines()[:-1]:
+      parts = line.split(' ', 2)
+      assert len(parts) == 3 and parts[0] == '#'
+
+      files_with_si.add(parts[1])
+
+    for f in files_with_si:
+      if f not in _LINUX_SI_FILE_WHITELIST[binary_name]:
+        ret = 1
+        print('Error: file "%s" is not expected to have static initializers in'
+              ' binary "%s"') % (f, binary_name)
+
+    print '\n# Static initializers in %s:' % binary_name
+    print stdout
+
   return ret
 
 

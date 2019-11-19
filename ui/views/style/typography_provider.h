@@ -18,22 +18,23 @@ namespace views {
 
 class View;
 
-// Provides fonts to use in toolkit-views UI.
+// Provides a default provider of fonts to use in toolkit-views UI.
 class VIEWS_EXPORT TypographyProvider {
  public:
+  TypographyProvider() = default;
   virtual ~TypographyProvider() = default;
 
   // Gets the FontList for the given |context| and |style|.
-  virtual const gfx::FontList& GetFont(int context, int style) const = 0;
+  virtual const gfx::FontList& GetFont(int context, int style) const;
 
   // Gets the color for the given |context| and |style|. |view| is the View
   // requesting the color.
   virtual SkColor GetColor(const views::View& view,
                            int context,
-                           int style) const = 0;
+                           int style) const;
 
   // Gets the line spacing, or 0 if it should be provided by gfx::FontList.
-  virtual int GetLineHeight(int context, int style) const = 0;
+  virtual int GetLineHeight(int context, int style) const;
 
   // Returns the weight that will result in the ResourceBundle returning an
   // appropriate "medium" weight for UI. This caters for systems that are known
@@ -42,36 +43,8 @@ class VIEWS_EXPORT TypographyProvider {
   // of these cases, NORMAL is returned instead.
   static gfx::Font::Weight MediumWeightForUI();
 
- protected:
-  TypographyProvider() = default;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(TypographyProvider);
-};
-
-// The default provider aims to provide values to match pre-Harmony constants
-// for the given contexts so that old UI does not change.
-class VIEWS_EXPORT DefaultTypographyProvider : public TypographyProvider {
- public:
-  DefaultTypographyProvider() = default;
-
-  // TypographyProvider:
-  const gfx::FontList& GetFont(int context, int style) const override;
-  SkColor GetColor(const views::View& view,
-                   int context,
-                   int style) const override;
-  int GetLineHeight(int context, int style) const override;
-
-  // Sets the |size_delta| and |font_weight| that the the default GetFont()
-  // implementation uses. Always sets values, even for styles it doesn't know
-  // about.
-  static void GetDefaultFont(int context,
-                             int style,
-                             int* size_delta,
-                             gfx::Font::Weight* font_weight);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultTypographyProvider);
 };
 
 }  // namespace views

@@ -13,7 +13,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/components/tether/tether_component.h"
 #include "chromeos/components/tether/tether_host_fetcher.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
@@ -307,7 +307,7 @@ class TetherService
   scoped_refptr<device::BluetoothAdapter> adapter_;
   std::unique_ptr<base::OneShotTimer> timer_;
 
-  base::WeakPtrFactory<TetherService> weak_ptr_factory_;
+  base::WeakPtrFactory<TetherService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TetherService);
 };

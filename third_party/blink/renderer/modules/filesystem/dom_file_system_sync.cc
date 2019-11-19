@@ -49,24 +49,25 @@ namespace blink {
 
 class FileWriterBase;
 
-DOMFileSystemSync* DOMFileSystemSync::Create(DOMFileSystemBase* file_system) {
-  return MakeGarbageCollected<DOMFileSystemSync>(
-      file_system->context_, file_system->name(), file_system->GetType(),
-      file_system->RootURL());
-}
+DOMFileSystemSync::DOMFileSystemSync(DOMFileSystemBase* file_system)
+    : DOMFileSystemSync(file_system->context_,
+                        file_system->name(),
+                        file_system->GetType(),
+                        file_system->RootURL()) {}
 
 DOMFileSystemSync::DOMFileSystemSync(ExecutionContext* context,
                                      const String& name,
                                      mojom::blink::FileSystemType type,
                                      const KURL& root_url)
     : DOMFileSystemBase(context, name, type, root_url),
-      root_entry_(DirectoryEntrySync::Create(this, DOMFilePath::kRoot)) {}
+      root_entry_(
+          MakeGarbageCollected<DirectoryEntrySync>(this, DOMFilePath::kRoot)) {}
 
 DOMFileSystemSync::~DOMFileSystemSync() = default;
 
-void DOMFileSystemSync::ReportError(ErrorCallbackBase* error_callback,
+void DOMFileSystemSync::ReportError(ErrorCallback error_callback,
                                     base::File::Error error) {
-  error_callback->Invoke(error);
+  std::move(error_callback).Run(error);
 }
 
 DirectoryEntrySync* DOMFileSystemSync::root() {
@@ -75,7 +76,7 @@ DirectoryEntrySync* DOMFileSystemSync::root() {
 
 namespace {
 
-class CreateFileHelper final : public AsyncFileSystemCallbacks {
+class CreateFileHelper final : public SnapshotFileCallbackBase {
  public:
   class CreateFileResult : public GarbageCollected<CreateFileResult> {
    public:
@@ -92,12 +93,12 @@ class CreateFileHelper final : public AsyncFileSystemCallbacks {
     void Trace(blink::Visitor* visitor) { visitor->Trace(file_); }
   };
 
-  static std::unique_ptr<AsyncFileSystemCallbacks> Create(
+  static std::unique_ptr<SnapshotFileCallbackBase> Create(
       CreateFileResult* result,
       const String& name,
       const KURL& url,
       mojom::blink::FileSystemType type) {
-    return base::WrapUnique(static_cast<AsyncFileSystemCallbacks*>(
+    return base::WrapUnique(static_cast<SnapshotFileCallbackBase*>(
         new CreateFileHelper(result, name, url, type)));
   }
 
@@ -158,14 +159,20 @@ FileWriterSync* DOMFileSystemSync::CreateWriter(
     ExceptionState& exception_state) {
   DCHECK(file_entry);
 
-  FileWriterSync* file_writer = FileWriterSync::Create(context_);
+  auto* file_writer = MakeGarbageCollected<FileWriterSync>(context_);
 
-  FileWriterCallbacksSyncHelper* sync_helper =
-      FileWriterCallbacksSyncHelper::Create();
-  std::unique_ptr<AsyncFileSystemCallbacks> callbacks =
-      FileWriterCallbacks::Create(file_writer,
-                                  sync_helper->GetSuccessCallback(),
-                                  sync_helper->GetErrorCallback(), context_);
+  auto* sync_helper = MakeGarbageCollected<FileWriterCallbacksSyncHelper>();
+
+  auto success_callback_wrapper =
+      WTF::Bind(&FileWriterCallbacksSyncHelper::OnSuccess,
+                WrapPersistentIfNeeded(sync_helper));
+  auto error_callback_wrapper =
+      WTF::Bind(&FileWriterCallbacksSyncHelper::OnError,
+                WrapPersistentIfNeeded(sync_helper));
+
+  auto callbacks = std::make_unique<FileWriterCallbacks>(
+      file_writer, std::move(success_callback_wrapper),
+      std::move(error_callback_wrapper), context_);
 
   FileSystemDispatcher::From(context_).InitializeFileWriterSync(
       CreateFileSystemURL(file_entry), std::move(callbacks));

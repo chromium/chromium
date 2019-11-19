@@ -20,7 +20,7 @@ class InternalsNetInfo {
                                                bool on_line,
                                                const String& type,
                                                const String& effective_type,
-                                               unsigned long http_rtt_msec,
+                                               uint32_t http_rtt_msec,
                                                double downlink_max_mbps,
                                                ExceptionState& exception_state);
   static void setSaveDataEnabled(Internals&, bool enabled);

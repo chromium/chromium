@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/battery/battery_manager.h"
 
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -86,7 +87,7 @@ void BatteryManager::DidUpdateData() {
 }
 
 void BatteryManager::RegisterWithDispatcher() {
-  BatteryDispatcher::Instance().AddController(this);
+  BatteryDispatcher::Instance().AddController(this, GetFrame());
 }
 
 void BatteryManager::UnregisterWithDispatcher() {

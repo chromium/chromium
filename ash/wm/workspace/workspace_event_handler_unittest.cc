@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "services/ws/public/mojom/window_tree_constants.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window.h"
@@ -80,7 +79,7 @@ class WindowPropertyObserver : public aura::WindowObserver {
   ~WindowPropertyObserver() override { window_->RemoveObserver(this); }
 
   bool DidPropertyChange(const void* property) const {
-    return base::ContainsValue(properties_changed_, property);
+    return base::Contains(properties_changed_, property);
   }
 
  private:
@@ -130,7 +129,7 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickSingleAxisResizeEdge) {
   EXPECT_EQ(work_area.y(), bounds_in_screen.y());
   EXPECT_EQ(work_area.height(), bounds_in_screen.height());
 
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   // Single-axis maximization is not considered real maximization.
   EXPECT_FALSE(window_state->IsMaximized());
 
@@ -165,6 +164,10 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickSingleAxisResizeEdge) {
   aura::Window* second_root = Shell::GetAllRootWindows()[1];
   EXPECT_EQ(second_root, window->GetRootWindow());
   ui::test::EventGenerator generator2(second_root, window.get());
+  // TODO(crbug.com/990589): Unit tests should be able to simulate mouse input
+  // without having to call |CursorManager::SetDisplay|.
+  Shell::Get()->cursor_manager()->SetDisplay(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(second_root));
 
   // Y-axis maximization.
   delegate.set_window_component(HTTOP);
@@ -211,8 +214,8 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickSingleAxisWhenSideSnapped) {
                                       ->GetDisplayNearestWindow(window.get())
                                       .work_area();
 
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
-  const wm::WMEvent snap_event(wm::WM_EVENT_SNAP_LEFT);
+  WindowState* window_state = WindowState::Get(window.get());
+  const WMEvent snap_event(WM_EVENT_SNAP_LEFT);
   window_state->OnWMEvent(&snap_event);
 
   gfx::Rect snapped_bounds_in_screen = window->GetBoundsInScreen();
@@ -228,7 +231,7 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickSingleAxisWhenSideSnapped) {
                                      window.get());
   delegate.set_window_component(HTTOP);
   generator.DoubleClickLeftButton();
-  EXPECT_EQ(mojom::WindowStateType::LEFT_SNAPPED, window_state->GetStateType());
+  EXPECT_EQ(WindowStateType::kLeftSnapped, window_state->GetStateType());
   EXPECT_EQ(snapped_bounds_in_screen.ToString(),
             window->GetBoundsInScreen().ToString());
 
@@ -294,13 +297,13 @@ TEST_F(WorkspaceEventHandlerTest,
   std::unique_ptr<aura::Window> child(
       CreateTestWindow(&delegate2, gfx::Rect(0, 0, 1, 1)));
   window->SetProperty(aura::client::kResizeBehaviorKey,
-                      ws::mojom::kResizeBehaviorCanMaximize);
+                      aura::client::kResizeBehaviorCanMaximize);
   delegate1.set_window_component(HTCAPTION);
 
   child->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_WINDOW);
   ::wm::AddTransientChild(window.get(), child.get());
 
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   EXPECT_FALSE(window_state->IsMaximized());
   aura::Window* root = Shell::GetPrimaryRootWindow();
   ui::test::EventGenerator generator(root, window.get());
@@ -321,9 +324,9 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickCaptionTogglesMaximize) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(&delegate, gfx::Rect(1, 2, 30, 40)));
   window->SetProperty(aura::client::kResizeBehaviorKey,
-                      ws::mojom::kResizeBehaviorCanMaximize);
+                      aura::client::kResizeBehaviorCanMaximize);
 
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   gfx::Rect restore_bounds = window->bounds();
   gfx::Rect work_area_in_parent =
       screen_util::GetDisplayWorkAreaBoundsInParent(window.get());
@@ -360,7 +363,7 @@ TEST_F(WorkspaceEventHandlerTest, DoubleClickCaptionTogglesMaximize) {
   EXPECT_EQ(restore_bounds.ToString(), window->bounds().ToString());
 
   // 3) Double clicking a snapped window should maximize.
-  const wm::WMEvent snap_event(wm::WM_EVENT_SNAP_LEFT);
+  const WMEvent snap_event(WM_EVENT_SNAP_LEFT);
   window_state->OnWMEvent(&snap_event);
   EXPECT_TRUE(window_state->IsSnapped());
   generator.MoveMouseTo(window->GetBoundsInRootWindow().CenterPoint());
@@ -380,7 +383,7 @@ TEST_F(WorkspaceEventHandlerTest,
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(&delegate, gfx::Rect(1, 2, 30, 40)));
   window->SetProperty(aura::client::kResizeBehaviorKey,
-                      ws::mojom::kResizeBehaviorCanMaximize);
+                      aura::client::kResizeBehaviorCanMaximize);
   delegate.set_window_component(HTCAPTION);
   aura::Window* root = Shell::GetPrimaryRootWindow();
   ui::test::EventGenerator generator(root, window.get());
@@ -390,7 +393,7 @@ TEST_F(WorkspaceEventHandlerTest,
   ClickButtonWithFlags(&generator, ui::EF_MIDDLE_MOUSE_BUTTON,
                        ui::EF_IS_DOUBLE_CLICK);
 
-  EXPECT_FALSE(wm::GetWindowState(window.get())->IsMaximized());
+  EXPECT_FALSE(WindowState::Get(window.get())->IsMaximized());
   EXPECT_EQ("1,2 30x40", window->bounds().ToString());
   EXPECT_FALSE(observer.DidPropertyChange(aura::client::kShowStateKey));
 }
@@ -400,10 +403,10 @@ TEST_F(WorkspaceEventHandlerTest, DoubleTapCaptionTogglesMaximize) {
   gfx::Rect bounds(10, 20, 30, 40);
   std::unique_ptr<aura::Window> window(CreateTestWindow(&delegate, bounds));
   window->SetProperty(aura::client::kResizeBehaviorKey,
-                      ws::mojom::kResizeBehaviorCanMaximize);
+                      aura::client::kResizeBehaviorCanMaximize);
   delegate.set_window_component(HTCAPTION);
 
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   EXPECT_FALSE(window_state->IsMaximized());
   ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow(),
                                      window.get());
@@ -465,9 +468,9 @@ TEST_F(WorkspaceEventHandlerTest,
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(&delegate, gfx::Rect(1, 2, 30, 40)));
   window->SetProperty(aura::client::kResizeBehaviorKey,
-                      ws::mojom::kResizeBehaviorCanMaximize);
+                      aura::client::kResizeBehaviorCanMaximize);
 
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   EXPECT_FALSE(window_state->IsMaximized());
 
   // First click will go to a client
@@ -491,9 +494,9 @@ TEST_F(WorkspaceEventHandlerTest, DoubleTapTwoDifferentTargetsDoesntMaximize) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(&delegate, gfx::Rect(1, 2, 30, 40)));
   window->SetProperty(aura::client::kResizeBehaviorKey,
-                      ws::mojom::kResizeBehaviorCanMaximize);
+                      aura::client::kResizeBehaviorCanMaximize);
 
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   EXPECT_FALSE(window_state->IsMaximized());
 
   // First tap will go to a client
@@ -514,9 +517,9 @@ TEST_F(WorkspaceEventHandlerTest, RightClickDuringDoubleClickDoesntMaximize) {
   std::unique_ptr<aura::Window> window(
       CreateTestWindow(&delegate, gfx::Rect(1, 2, 30, 40)));
   window->SetProperty(aura::client::kResizeBehaviorKey,
-                      ws::mojom::kResizeBehaviorCanMaximize);
+                      aura::client::kResizeBehaviorCanMaximize);
 
-  wm::WindowState* window_state = wm::GetWindowState(window.get());
+  WindowState* window_state = WindowState::Get(window.get());
   EXPECT_FALSE(window_state->IsMaximized());
 
   // First click will go to a client

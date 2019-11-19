@@ -7,7 +7,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "storage/browser/blob/blob_data_item.h"
 #include "storage/browser/blob/scoped_file.h"
 
 namespace storage {
@@ -17,7 +16,7 @@ namespace storage {
 // This class is non-thread-safe and all methods must be called on a single
 // thread.
 class COMPONENT_EXPORT(STORAGE_BROWSER) ShareableFileReference
-    : public BlobDataItem::DataHandle {
+    : public base::RefCounted<ShareableFileReference> {
  public:
   using FinalReleaseCallback = ScopedFile::ScopeOutCallback;
 
@@ -64,8 +63,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) ShareableFileReference
   void AddFinalReleaseCallback(FinalReleaseCallback callback);
 
  private:
+  friend class base::RefCounted<ShareableFileReference>;
+
   ShareableFileReference(ScopedFile scoped_file);
-  ~ShareableFileReference() override;
+  ~ShareableFileReference();
 
   ScopedFile scoped_file_;
 

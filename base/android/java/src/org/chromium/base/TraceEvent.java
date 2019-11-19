@@ -13,6 +13,7 @@ import android.util.Printer;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.annotations.NativeMethods;
 /**
  * Java mirror of Chrome trace event API. See base/trace_event/trace_event.h.
  *
@@ -22,6 +23,9 @@ import org.chromium.base.annotations.MainDex;
  *   // code.
  * }
  * }</pre>
+ *
+ * The event name of the trace events must be a string literal or a |static final String| class
+ * member. Otherwise NoDynamicStringsInTraceEventCheck error will be thrown.
  *
  * It is OK to use tracing before the native library has loaded, in a slightly restricted fashion.
  * @see EarlyTraceEvent for details.
@@ -54,7 +58,7 @@ public class TraceEvent implements AutoCloseable {
             if (sEnabled || earlyTracingActive) {
                 mCurrentTarget = getTraceEventName(line);
                 if (sEnabled) {
-                    nativeBeginToplevel(mCurrentTarget);
+                    TraceEventJni.get().beginToplevel(mCurrentTarget);
                 } else {
                     EarlyTraceEvent.begin(mCurrentTarget);
                 }
@@ -65,7 +69,7 @@ public class TraceEvent implements AutoCloseable {
             boolean earlyTracingActive = EarlyTraceEvent.isActive();
             if ((sEnabled || earlyTracingActive) && mCurrentTarget != null) {
                 if (sEnabled) {
-                    nativeEndToplevel(mCurrentTarget);
+                    TraceEventJni.get().endToplevel(mCurrentTarget);
                 } else {
                     EarlyTraceEvent.end(mCurrentTarget);
                 }
@@ -130,7 +134,7 @@ public class TraceEvent implements AutoCloseable {
     private static final class IdleTracingLooperMonitor extends BasicLooperMonitor
             implements MessageQueue.IdleHandler {
         // Tags for dumping to logcat or TraceEvent
-        private static final String TAG = "TraceEvent.LooperMonitor";
+        private static final String TAG = "TraceEvent_LooperMonitor";
         private static final String IDLE_EVENT_NAME = "Looper.queueIdle";
 
         // Calculation constants
@@ -267,7 +271,7 @@ public class TraceEvent implements AutoCloseable {
      * Register an enabled observer, such that java traces are always enabled with native.
      */
     public static void registerNativeEnabledObserver() {
-        nativeRegisterEnabledObserver();
+        TraceEventJni.get().registerEnabledObserver();
     }
 
     /**
@@ -311,11 +315,11 @@ public class TraceEvent implements AutoCloseable {
         if (enabled) {
             // Calls TraceEvent.setEnabled(true) via
             // TraceLog::EnabledStateObserver::OnTraceLogEnabled
-            nativeStartATrace();
+            TraceEventJni.get().startATrace();
         } else {
             // Calls TraceEvent.setEnabled(false) via
             // TraceLog::EnabledStateObserver::OnTraceLogDisabled
-            nativeStopATrace();
+            TraceEventJni.get().stopATrace();
         }
     }
 
@@ -333,7 +337,7 @@ public class TraceEvent implements AutoCloseable {
      * @param name The name of the event.
      */
     public static void instant(String name) {
-        if (sEnabled) nativeInstant(name, null);
+        if (sEnabled) TraceEventJni.get().instant(name, null);
     }
 
     /**
@@ -342,7 +346,7 @@ public class TraceEvent implements AutoCloseable {
      * @param arg  The arguments of the event.
      */
     public static void instant(String name, String arg) {
-        if (sEnabled) nativeInstant(name, arg);
+        if (sEnabled) TraceEventJni.get().instant(name, arg);
     }
 
     /**
@@ -352,7 +356,7 @@ public class TraceEvent implements AutoCloseable {
      */
     public static void startAsync(String name, long id) {
         EarlyTraceEvent.startAsync(name, id);
-        if (sEnabled) nativeStartAsync(name, id);
+        if (sEnabled) TraceEventJni.get().startAsync(name, id);
     }
 
     /**
@@ -362,7 +366,7 @@ public class TraceEvent implements AutoCloseable {
      */
     public static void finishAsync(String name, long id) {
         EarlyTraceEvent.finishAsync(name, id);
-        if (sEnabled) nativeFinishAsync(name, id);
+        if (sEnabled) TraceEventJni.get().finishAsync(name, id);
     }
 
     /**
@@ -380,7 +384,7 @@ public class TraceEvent implements AutoCloseable {
      */
     public static void begin(String name, String arg) {
         EarlyTraceEvent.begin(name);
-        if (sEnabled) nativeBegin(name, arg);
+        if (sEnabled) TraceEventJni.get().begin(name, arg);
     }
 
     /**
@@ -398,17 +402,20 @@ public class TraceEvent implements AutoCloseable {
      */
     public static void end(String name, String arg) {
         EarlyTraceEvent.end(name);
-        if (sEnabled) nativeEnd(name, arg);
+        if (sEnabled) TraceEventJni.get().end(name, arg);
     }
 
-    private static native void nativeRegisterEnabledObserver();
-    private static native void nativeStartATrace();
-    private static native void nativeStopATrace();
-    private static native void nativeInstant(String name, String arg);
-    private static native void nativeBegin(String name, String arg);
-    private static native void nativeEnd(String name, String arg);
-    private static native void nativeBeginToplevel(String target);
-    private static native void nativeEndToplevel(String target);
-    private static native void nativeStartAsync(String name, long id);
-    private static native void nativeFinishAsync(String name, long id);
+    @NativeMethods
+    interface Natives {
+        void registerEnabledObserver();
+        void startATrace();
+        void stopATrace();
+        void instant(String name, String arg);
+        void begin(String name, String arg);
+        void end(String name, String arg);
+        void beginToplevel(String target);
+        void endToplevel(String target);
+        void startAsync(String name, long id);
+        void finishAsync(String name, long id);
+    }
 }

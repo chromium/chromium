@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chrome/common/chrome_features.h"
 
 namespace extensions {
 
@@ -133,6 +134,19 @@ bool NativeMessagingHostManifest::Parse(base::DictionaryValue* dictionary,
     }
 
     allowed_origins_.AddPattern(pattern);
+  }
+
+  if (base::FeatureList::IsEnabled(features::kOnConnectNative)) {
+    if (const base::Value* supports_native_initiated_connections =
+            dictionary->FindKey("supports_native_initiated_connections")) {
+      if (!supports_native_initiated_connections->is_bool()) {
+        *error_message =
+            "supports_native_initiated_connections must be a boolean.";
+        return false;
+      }
+      supports_native_initiated_connections_ =
+          supports_native_initiated_connections->GetBool();
+    }
   }
 
   return true;

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_math_max.h"
 
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_sum_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -32,7 +33,8 @@ CSSMathMax* CSSMathMax::Create(CSSNumericValueVector values) {
       CSSMathVariadic::TypeCheck(values, CSSNumericValueType::Add, error);
   return error ? nullptr
                : MakeGarbageCollected<CSSMathMax>(
-                     CSSNumericArray::Create(std::move(values)), final_type);
+                     MakeGarbageCollected<CSSNumericArray>(std::move(values)),
+                     final_type);
 }
 
 base::Optional<CSSNumericSumValue> CSSMathMax::SumValue() const {
@@ -66,6 +68,32 @@ void CSSMathMax::BuildCSSText(Nested, ParenLess, StringBuilder& result) const {
   }
 
   result.Append(")");
+}
+
+CSSMathExpressionNode* CSSMathMax::ToCalcExpressionNode() const {
+  if (!RuntimeEnabledFeatures::CSSComparisonFunctionsEnabled())
+    return nullptr;
+
+  CSSMathExpressionVariadicOperation::Operands operands;
+  operands.ReserveCapacity(NumericValues().size());
+  for (const auto& value : NumericValues()) {
+    CSSMathExpressionNode* operand = value->ToCalcExpressionNode();
+    if (!operand) {
+      // TODO(crbug.com/983784): Remove this when all ToCalcExpressionNode()
+      // overrides are implemented.
+      NOTREACHED();
+      continue;
+    }
+    operands.push_back(value->ToCalcExpressionNode());
+  }
+  if (!operands.size()) {
+    // TODO(crbug.com/983784): Remove this when all ToCalcExpressionNode()
+    // overrides are implemented.
+    NOTREACHED();
+    return nullptr;
+  }
+  return CSSMathExpressionVariadicOperation::Create(std::move(operands),
+                                                    CSSMathOperator::kMax);
 }
 
 }  // namespace blink

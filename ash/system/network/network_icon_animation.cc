@@ -6,16 +6,12 @@
 
 #include "ash/system/network/network_icon_animation_observer.h"
 
-namespace {
-const int kThrobDurationMs = 750;  // Animation cycle length.
-}
-
 namespace ash {
 namespace network_icon {
 
 NetworkIconAnimation::NetworkIconAnimation() : animation_(this) {
   // Set up the animation throbber.
-  animation_.SetThrobDuration(kThrobDurationMs);
+  animation_.SetThrobDuration(base::TimeDelta::FromMilliseconds(750));
   animation_.SetTweenType(gfx::Tween::LINEAR);
 }
 

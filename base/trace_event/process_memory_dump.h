@@ -28,7 +28,6 @@
 
 namespace base {
 
-class SharedMemory;
 class UnguessableToken;
 
 namespace trace_event {
@@ -177,16 +176,15 @@ class BASE_EXPORT ProcessMemoryDump {
                                    const MemoryAllocatorDumpGuid& target,
                                    int importance);
 
-  // Creates ownership edges for memory backed by base::SharedMemory. Handles
-  // the case of cross process sharing and importnace of ownership for the case
-  // with and without the base::SharedMemory dump provider. The new version
-  // should just use global dumps created by SharedMemoryTracker and this
-  // function handles the transition until we get SharedMemory IDs through mojo
-  // channel crbug.com/713763. The weak version creates a weak global dump.
+  // Creates ownership edges for shared memory. Handles the case of cross
+  // process sharing and importance of ownership for the case with and without
+  // the shared memory dump provider. This handles both shared memory from both
+  // legacy base::SharedMemory as well as current base::SharedMemoryMapping. The
+  // weak version creates a weak global dump.
   // |client_local_dump_guid| The guid of the local dump created by the client
   // of base::SharedMemory.
-  // |shared_memory_guid| The ID of the base::SharedMemory that is assigned
-  // globally, used to create global dump edges in the new model.
+  // |shared_memory_guid| The ID of the shared memory that is assigned globally,
+  // used to create global dump edges in the new model.
   // |importance| Importance of the global dump edges to say if the current
   // process owns the memory segment.
   void CreateSharedMemoryOwnershipEdge(

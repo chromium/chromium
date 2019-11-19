@@ -7,7 +7,7 @@
 #include "base/atomicops.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
-#include "base/synchronization/cancellation_flag.h"
+#include "base/synchronization/atomic_flag.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
@@ -57,7 +57,7 @@ class ThreadCPUThrottler::ThrottlingThread final
 
   base::PlatformThreadHandle throttled_thread_handle_;
   base::PlatformThreadHandle throttling_thread_handle_;
-  base::CancellationFlag cancellation_flag_;
+  base::AtomicFlag cancellation_flag_;
 
   DISALLOW_COPY_AND_ASSIGN(ThrottlingThread);
 };

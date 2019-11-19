@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_RECT_BASED_TARGETING_UTILS_H_
-#define UI_RECT_BASED_TARGETING_UTILS_H_
+#ifndef UI_VIEWS_RECT_BASED_TARGETING_UTILS_H_
+#define UI_VIEWS_RECT_BASED_TARGETING_UTILS_H_
 
 #include "ui/views/views_export.h"
 
@@ -27,4 +27,4 @@ VIEWS_EXPORT int DistanceSquaredFromCenterToPoint(const gfx::Point& point,
 
 }  // namespace views
 
-#endif  // UI_RECT_BASED_TARGETING_UTILS_H_
+#endif  // UI_VIEWS_RECT_BASED_TARGETING_UTILS_H_

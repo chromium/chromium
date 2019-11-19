@@ -22,7 +22,8 @@ class UIElement;
 
 class DOMAgentObserver {
  public:
-  virtual void OnElementBoundsChanged(UIElement* ui_element) = 0;
+  virtual void OnElementBoundsChanged(UIElement* ui_element) {}
+  virtual void OnElementAdded(UIElement* ui_element) {}
 };
 
 class UI_DEVTOOLS_EXPORT DOMAgent
@@ -39,6 +40,18 @@ class UI_DEVTOOLS_EXPORT DOMAgent
   protocol::Response pushNodesByBackendIdsToFrontend(
       std::unique_ptr<protocol::Array<int>> backend_node_ids,
       std::unique_ptr<protocol::Array<int>>* result) override;
+  protocol::Response performSearch(
+      const protocol::String& query,
+      protocol::Maybe<bool> include_user_agent_shadow_dom,
+      protocol::String* search_id,
+      int* result_count) override;
+  protocol::Response getSearchResults(
+      const protocol::String& search_id,
+      int from_index,
+      int to_index,
+      std::unique_ptr<protocol::Array<int>>* node_ids) override;
+  protocol::Response discardSearchResults(
+      const protocol::String& search_id) override;
 
   // UIElementDelegate:
   void OnUIElementAdded(UIElement* parent, UIElement* child) override;
@@ -58,13 +71,15 @@ class UI_DEVTOOLS_EXPORT DOMAgent
  protected:
   std::unique_ptr<protocol::DOM::Node> BuildNode(
       const std::string& name,
-      std::unique_ptr<protocol::Array<std::string>> attributes,
+      std::unique_ptr<std::vector<std::string>> attributes,
       std::unique_ptr<protocol::Array<protocol::DOM::Node>> children,
       int node_ids);
   std::unique_ptr<protocol::DOM::Node> BuildDomNodeFromUIElement(
       UIElement* root);
 
  private:
+  struct Query;
+
   // These are called on creating a DOM document.
   std::unique_ptr<protocol::DOM::Node> BuildInitialTree();
 
@@ -74,13 +89,24 @@ class UI_DEVTOOLS_EXPORT DOMAgent
       UIElement* ui_element) = 0;
 
   void OnElementBoundsChanged(UIElement* ui_element);
-  void RemoveDomNode(UIElement* ui_element);
+
+  // Recursively removes |ui_element| and its children from the frontend
+  // elements tree. If |update_node_id_map|=true, also remove |ui_element|'s
+  // |node_id| from |node_id_to_ui_element_|.
+  void RemoveDomNode(UIElement* ui_element, bool update_node_id_map);
   void Reset();
+  Query PreprocessQuery(protocol::String query);
+  void SearchDomTree(const Query& query, std::vector<int>* result_collector);
 
   std::unique_ptr<UIElement> element_root_;
   std::unordered_map<int, UIElement*> node_id_to_ui_element_;
 
   base::ObserverList<DOMAgentObserver>::Unchecked observers_;
+
+  using SearchResults = std::unordered_map<std::string, std::vector<int>>;
+  SearchResults search_results_;
+
+  bool is_document_created_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(DOMAgent);
 };

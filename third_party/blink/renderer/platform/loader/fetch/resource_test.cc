@@ -11,10 +11,9 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource_client.h"
-#include "third_party/blink/renderer/platform/shared_buffer.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/time.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -29,7 +28,7 @@ class MockPlatform final : public TestingPlatformSupportWithMockScheduler {
   // From blink::Platform:
   void CacheMetadata(blink::mojom::CodeCacheType cache_type,
                      const WebURL& url,
-                     Time,
+                     base::Time,
                      const uint8_t*,
                      size_t) override {
     cached_urls_.push_back(url);
@@ -65,7 +64,7 @@ void CreateTestResourceAndSetCachedMetadata(const ResourceResponse& response) {
   ResourceRequest request(response.CurrentRequestUrl());
   request.SetRequestorOrigin(
       SecurityOrigin::Create(response.CurrentRequestUrl()));
-  MockResource* resource = MockResource::Create(request);
+  auto* resource = MakeGarbageCollected<MockResource>(request);
   resource->SetResponse(response);
   resource->SendCachedMetadata(kTestData, sizeof(kTestData));
   return;
@@ -103,7 +102,7 @@ TEST(
   // Equivalent to service worker calling respondWith(fetch(evt.request.url));
   ResourceResponse response(CreateTestResourceResponse());
   response.SetWasFetchedViaServiceWorker(true);
-  response.SetURLListViaServiceWorker(
+  response.SetUrlListViaServiceWorker(
       Vector<KURL>(1, response.CurrentRequestUrl()));
 
   CreateTestResourceAndSetCachedMetadata(response);
@@ -119,7 +118,7 @@ TEST(
   // Equivalent to service worker calling respondWith(fetch(some_different_url))
   ResourceResponse response(CreateTestResourceResponse());
   response.SetWasFetchedViaServiceWorker(true);
-  response.SetURLListViaServiceWorker(Vector<KURL>(
+  response.SetUrlListViaServiceWorker(Vector<KURL>(
       1, url_test_helpers::ToKURL("https://example.com/different/url")));
 
   CreateTestResourceAndSetCachedMetadata(response);
@@ -147,7 +146,7 @@ TEST(ResourceTest, RevalidateWithFragment) {
   KURL url("http://127.0.0.1:8000/foo.html");
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
-  MockResource* resource = MockResource::Create(url);
+  auto* resource = MakeGarbageCollected<MockResource>(url);
   resource->ResponseReceived(response);
   resource->FinishForTest();
 
@@ -166,53 +165,53 @@ TEST(ResourceTest, Vary) {
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
 
-  MockResource* resource = MockResource::Create(url);
+  auto* resource = MakeGarbageCollected<MockResource>(url);
   resource->ResponseReceived(response);
   resource->FinishForTest();
 
   ResourceRequest new_request(url);
   EXPECT_FALSE(resource->MustReloadDueToVaryHeader(new_request));
 
-  response.SetHTTPHeaderField(http_names::kVary, "*");
+  response.SetHttpHeaderField(http_names::kVary, "*");
   resource->SetResponse(response);
   EXPECT_TRUE(resource->MustReloadDueToVaryHeader(new_request));
 
   // Irrelevant header
-  response.SetHTTPHeaderField(http_names::kVary, "definitelynotarealheader");
+  response.SetHttpHeaderField(http_names::kVary, "definitelynotarealheader");
   resource->SetResponse(response);
   EXPECT_FALSE(resource->MustReloadDueToVaryHeader(new_request));
 
   // Header present on new but not old
-  new_request.SetHTTPHeaderField(http_names::kUserAgent, "something");
-  response.SetHTTPHeaderField(http_names::kVary, http_names::kUserAgent);
+  new_request.SetHttpHeaderField(http_names::kUserAgent, "something");
+  response.SetHttpHeaderField(http_names::kVary, http_names::kUserAgent);
   resource->SetResponse(response);
   EXPECT_TRUE(resource->MustReloadDueToVaryHeader(new_request));
-  new_request.ClearHTTPHeaderField(http_names::kUserAgent);
+  new_request.ClearHttpHeaderField(http_names::kUserAgent);
 
   ResourceRequest old_request(url);
-  old_request.SetHTTPHeaderField(http_names::kUserAgent, "something");
-  old_request.SetHTTPHeaderField(http_names::kReferer, "http://foo.com");
-  resource = MockResource::Create(old_request);
+  old_request.SetHttpHeaderField(http_names::kUserAgent, "something");
+  old_request.SetHttpHeaderField(http_names::kReferer, "http://foo.com");
+  resource = MakeGarbageCollected<MockResource>(old_request);
   resource->ResponseReceived(response);
   resource->FinishForTest();
 
   // Header present on old but not new
-  new_request.ClearHTTPHeaderField(http_names::kUserAgent);
-  response.SetHTTPHeaderField(http_names::kVary, http_names::kUserAgent);
+  new_request.ClearHttpHeaderField(http_names::kUserAgent);
+  response.SetHttpHeaderField(http_names::kVary, http_names::kUserAgent);
   resource->SetResponse(response);
   EXPECT_TRUE(resource->MustReloadDueToVaryHeader(new_request));
 
   // Header present on both
-  new_request.SetHTTPHeaderField(http_names::kUserAgent, "something");
+  new_request.SetHttpHeaderField(http_names::kUserAgent, "something");
   EXPECT_FALSE(resource->MustReloadDueToVaryHeader(new_request));
 
   // One matching, one mismatching
-  response.SetHTTPHeaderField(http_names::kVary, "User-Agent, Referer");
+  response.SetHttpHeaderField(http_names::kVary, "User-Agent, Referer");
   resource->SetResponse(response);
   EXPECT_TRUE(resource->MustReloadDueToVaryHeader(new_request));
 
   // Two matching
-  new_request.SetHTTPHeaderField(http_names::kReferer, "http://foo.com");
+  new_request.SetHttpHeaderField(http_names::kReferer, "http://foo.com");
   EXPECT_FALSE(resource->MustReloadDueToVaryHeader(new_request));
 }
 
@@ -220,7 +219,7 @@ TEST(ResourceTest, RevalidationFailed) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
   const KURL url("http://test.example.com/");
-  MockResource* resource = MockResource::Create(ResourceRequest(url));
+  auto* resource = MakeGarbageCollected<MockResource>(url);
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
   resource->ResponseReceived(response);
@@ -268,7 +267,7 @@ TEST(ResourceTest, RevalidationSucceeded) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
   const KURL url("http://test.example.com/");
-  MockResource* resource = MockResource::Create(ResourceRequest(url));
+  auto* resource = MakeGarbageCollected<MockResource>(url);
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
   resource->ResponseReceived(response);
@@ -310,7 +309,7 @@ TEST(ResourceTest, RevalidationSucceededForResourceWithoutBody) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
   const KURL url("http://test.example.com/");
-  Resource* resource = MockResource::Create(ResourceRequest(url));
+  auto* resource = MakeGarbageCollected<MockResource>(url);
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
   resource->ResponseReceived(response);
@@ -342,15 +341,15 @@ TEST(ResourceTest, RevalidationSucceededUpdateHeaders) {
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
   const KURL url("http://test.example.com/");
-  Resource* resource = MockResource::Create(ResourceRequest(url));
+  auto* resource = MakeGarbageCollected<MockResource>(url);
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
-  response.AddHTTPHeaderField("keep-alive", "keep-alive value");
-  response.AddHTTPHeaderField("expires", "expires value");
-  response.AddHTTPHeaderField("last-modified", "last-modified value");
-  response.AddHTTPHeaderField("proxy-authenticate", "proxy-authenticate value");
-  response.AddHTTPHeaderField("proxy-connection", "proxy-connection value");
-  response.AddHTTPHeaderField("x-custom", "custom value");
+  response.AddHttpHeaderField("keep-alive", "keep-alive value");
+  response.AddHttpHeaderField("expires", "expires value");
+  response.AddHttpHeaderField("last-modified", "last-modified value");
+  response.AddHttpHeaderField("proxy-authenticate", "proxy-authenticate value");
+  response.AddHttpHeaderField("proxy-connection", "proxy-connection value");
+  response.AddHttpHeaderField("x-custom", "custom value");
   resource->ResponseReceived(response);
   resource->FinishForTest();
   GetMemoryCache()->Add(resource);
@@ -382,13 +381,13 @@ TEST(ResourceTest, RevalidationSucceededUpdateHeaders) {
   ResourceResponse revalidating_response(url);
   revalidating_response.SetHttpStatusCode(304);
   // Headers that aren't copied with an 304 code.
-  revalidating_response.AddHTTPHeaderField("keep-alive", "garbage");
-  revalidating_response.AddHTTPHeaderField("expires", "garbage");
-  revalidating_response.AddHTTPHeaderField("last-modified", "garbage");
-  revalidating_response.AddHTTPHeaderField("proxy-authenticate", "garbage");
-  revalidating_response.AddHTTPHeaderField("proxy-connection", "garbage");
+  revalidating_response.AddHttpHeaderField("keep-alive", "garbage");
+  revalidating_response.AddHttpHeaderField("expires", "garbage");
+  revalidating_response.AddHttpHeaderField("last-modified", "garbage");
+  revalidating_response.AddHttpHeaderField("proxy-authenticate", "garbage");
+  revalidating_response.AddHttpHeaderField("proxy-connection", "garbage");
   // Header that is updated with 304 code.
-  revalidating_response.AddHTTPHeaderField("x-custom", "updated");
+  revalidating_response.AddHttpHeaderField("x-custom", "updated");
   resource->ResponseReceived(revalidating_response);
 
   // Validate the original response.
@@ -420,7 +419,7 @@ TEST(ResourceTest, RedirectDuringRevalidation) {
   const KURL url("http://test.example.com/1");
   const KURL redirect_target_url("http://test.example.com/2");
 
-  MockResource* resource = MockResource::Create(ResourceRequest(url));
+  auto* resource = MakeGarbageCollected<MockResource>(url);
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
   resource->ResponseReceived(response);
@@ -449,7 +448,7 @@ TEST(ResourceTest, RedirectDuringRevalidation) {
 
   // The revalidating request is redirected.
   ResourceResponse redirect_response(url);
-  redirect_response.SetHTTPHeaderField(
+  redirect_response.SetHttpHeaderField(
       "location", AtomicString(redirect_target_url.GetString()));
   redirect_response.SetHttpStatusCode(308);
   ResourceRequest redirected_revalidating_request(redirect_target_url);
@@ -500,15 +499,24 @@ TEST(ResourceTest, RedirectDuringRevalidation) {
   EXPECT_FALSE(resource->IsAlive());
 }
 
+class ScopedResourceMockClock {
+ public:
+  explicit ScopedResourceMockClock(const base::Clock* clock) {
+    Resource::SetClockForTesting(clock);
+  }
+  ~ScopedResourceMockClock() { Resource::SetClockForTesting(nullptr); }
+};
+
 TEST(ResourceTest, StaleWhileRevalidateCacheControl) {
   ScopedTestingPlatformSupport<MockPlatform> mock;
+  ScopedResourceMockClock clock(mock->test_task_runner()->GetMockClock());
   const KURL url("http://127.0.0.1:8000/foo.html");
   ResourceResponse response(url);
   response.SetHttpStatusCode(200);
-  response.SetHTTPHeaderField(http_names::kCacheControl,
+  response.SetHttpHeaderField(http_names::kCacheControl,
                               "max-age=0, stale-while-revalidate=40");
 
-  MockResource* resource = MockResource::Create(url);
+  auto* resource = MakeGarbageCollected<MockResource>(url);
   resource->ResponseReceived(response);
   resource->FinishForTest();
 
@@ -529,23 +537,24 @@ TEST(ResourceTest, StaleWhileRevalidateCacheControl) {
 
 TEST(ResourceTest, StaleWhileRevalidateCacheControlWithRedirect) {
   ScopedTestingPlatformSupport<MockPlatform> mock;
+  ScopedResourceMockClock clock(mock->test_task_runner()->GetMockClock());
   const KURL url("http://127.0.0.1:8000/foo.html");
   const KURL redirect_target_url("http://127.0.0.1:8000/food.html");
   ResourceResponse response(url);
-  response.SetHTTPHeaderField(http_names::kCacheControl, "max-age=50");
+  response.SetHttpHeaderField(http_names::kCacheControl, "max-age=50");
   response.SetHttpStatusCode(200);
 
   // The revalidating request is redirected.
   ResourceResponse redirect_response(url);
-  redirect_response.SetHTTPHeaderField(
+  redirect_response.SetHttpHeaderField(
       "location", AtomicString(redirect_target_url.GetString()));
   redirect_response.SetHttpStatusCode(302);
-  redirect_response.SetHTTPHeaderField(http_names::kCacheControl,
+  redirect_response.SetHttpHeaderField(http_names::kCacheControl,
                                        "max-age=0, stale-while-revalidate=40");
   redirect_response.SetAsyncRevalidationRequested(true);
   ResourceRequest redirected_revalidating_request(redirect_target_url);
 
-  MockResource* resource = MockResource::Create(url);
+  auto* resource = MakeGarbageCollected<MockResource>(url);
   resource->WillFollowRedirect(redirected_revalidating_request,
                                redirect_response);
   resource->ResponseReceived(response);

@@ -2,7 +2,7 @@
 
 Chromium on Linux has two general flavors: You can either get
 [Google Chrome](http://www.google.com/chrome?platform=linux) or chromium-browser
-(see [Linux Chromium Packages](linux_chromium_packages.md).
+(see [Linux Chromium Packages](linux_chromium_packages.md)).
 This page tries to describe the differences between the two.
 
 In short, Google Chrome is the Chromium open source project built, packaged, and

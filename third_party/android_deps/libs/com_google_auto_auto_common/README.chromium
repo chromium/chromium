@@ -1,0 +1,13 @@
+Name: Auto Common Libraries
+Short Name: auto-common
+URL: 
+Version: 0.10
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Common utilities for creating annotation processors.
+
+Local Modifications:
+No modifications.

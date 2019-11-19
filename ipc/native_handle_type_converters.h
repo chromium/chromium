@@ -13,15 +13,15 @@ namespace mojo {
 
 template <>
 struct TypeConverter<IPC::MessageAttachment::Type,
-                     native::SerializedHandle_Type> {
+                     native::SerializedHandleType> {
   static IPC::MessageAttachment::Type Convert(
-      native::SerializedHandle_Type type);
+      native::SerializedHandleType type);
 };
 
 template <>
-struct TypeConverter<native::SerializedHandle_Type,
+struct TypeConverter<native::SerializedHandleType,
                      IPC::MessageAttachment::Type> {
-  static native::SerializedHandle_Type Convert(
+  static native::SerializedHandleType Convert(
       IPC::MessageAttachment::Type type);
 };
 

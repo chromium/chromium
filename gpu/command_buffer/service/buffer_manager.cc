@@ -294,7 +294,7 @@ bool Buffer::GetMaxValueForRange(
   // from scratch.
   if (primitive_restart_enabled) {
     Range disabled_range(offset, count, type, false);
-    RangeToMaxValueMap::iterator it = range_set_.find(disabled_range);
+    it = range_set_.find(disabled_range);
     if (it != range_set_.end() && it->second < primitive_restart_index) {
       // This reuses the max value for the case where primitive
       // restart is enabled.

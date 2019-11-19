@@ -1,0 +1,3 @@
+android.webkit.WebView focusable focused scrollable
+++android.view.View
+++++android.widget.Spinner role_description='pop up button' clickable focusable name='Mercedes Label'

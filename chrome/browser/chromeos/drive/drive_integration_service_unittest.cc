@@ -7,9 +7,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/drive/chromeos/dummy_file_system.h"
-#include "components/drive/service/dummy_drive_service.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_service_manager_context.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,7 +22,7 @@ class DriveIntegrationServiceTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(profile_manager_.SetUp()); }
 
  protected:
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
   content::TestServiceManagerContext context_;
   // DriveIntegrationService depends on DriveNotificationManager which depends
   // on InvalidationService. On Chrome OS, the InvalidationServiceFactory
@@ -33,7 +31,9 @@ class DriveIntegrationServiceTest : public testing::Test {
   TestingProfileManager profile_manager_;
 };
 
-TEST_F(DriveIntegrationServiceTest, ServiceInstanceIdentity) {
+// This test is flaky on chromeos.
+// https://crbug.com/943376
+TEST_F(DriveIntegrationServiceTest, DISABLED_ServiceInstanceIdentity) {
   TestingProfile* user1 = profile_manager_.CreateTestingProfile("user1");
 
   // Integration Service is created as a profile keyed service.

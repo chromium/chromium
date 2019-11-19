@@ -7,9 +7,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/modules/credentialmanager/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanager/scoped_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -25,15 +27,6 @@ void OnIsUserVerifyingComplete(
 }
 }  // namespace
 
-PublicKeyCredential* PublicKeyCredential::Create(
-    const String& id,
-    DOMArrayBuffer* raw_id,
-    AuthenticatorResponse* response,
-    const AuthenticationExtensionsClientOutputs* extension_outputs) {
-  return MakeGarbageCollected<PublicKeyCredential>(id, raw_id, response,
-                                                   extension_outputs);
-}
-
 PublicKeyCredential::PublicKeyCredential(
     const String& id,
     DOMArrayBuffer* raw_id,
@@ -47,7 +40,7 @@ PublicKeyCredential::PublicKeyCredential(
 ScriptPromise
 PublicKeyCredential::isUserVerifyingPlatformAuthenticatorAvailable(
     ScriptState* script_state) {
-  ScriptPromiseResolver* resolver = ScriptPromiseResolver::Create(script_state);
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
   // Ignore calls if the current realm execution context is no longer valid,
@@ -57,6 +50,11 @@ PublicKeyCredential::isUserVerifyingPlatformAuthenticatorAvailable(
     resolver->Reject();
     return promise;
   }
+
+  UseCounter::Count(
+      resolver->GetExecutionContext(),
+      WebFeature::
+          kCredentialManagerIsUserVerifyingPlatformAuthenticatorAvailable);
 
   auto* authenticator =
       CredentialManagerProxy::From(script_state)->Authenticator();

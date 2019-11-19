@@ -9,10 +9,11 @@
 
 #include "base/callback_forward.h"
 #include "cc/cc_export.h"
-#include "cc/trees/layer_tree_host_common.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace cc {
+
+struct ScrollAndScaleSet;
 
 struct CC_EXPORT BeginMainFrameAndCommitState {
   BeginMainFrameAndCommitState();

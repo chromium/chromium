@@ -20,8 +20,9 @@
 
 #include "third_party/blink/renderer/core/svg/svg_length_list.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animation_element.h"
+#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -31,13 +32,13 @@ SVGLengthList::SVGLengthList(SVGLengthMode mode) : mode_(mode) {}
 SVGLengthList::~SVGLengthList() = default;
 
 SVGLengthList* SVGLengthList::Clone() {
-  SVGLengthList* ret = SVGLengthList::Create(mode_);
+  auto* ret = MakeGarbageCollected<SVGLengthList>(mode_);
   ret->DeepCopy(this);
   return ret;
 }
 
 SVGPropertyBase* SVGLengthList::CloneForAnimation(const String& value) const {
-  SVGLengthList* ret = SVGLengthList::Create(mode_);
+  auto* ret = MakeGarbageCollected<SVGLengthList>(mode_);
   ret->SetValueAsString(value);
   return ret;
 }
@@ -61,7 +62,7 @@ SVGParsingError SVGLengthList::ParseInternal(const CharType*& ptr,
     if (value_string.IsEmpty())
       break;
 
-    SVGLength* length = SVGLength::Create(mode_);
+    auto* length = MakeGarbageCollected<SVGLength>(mode_);
     SVGParsingError length_parse_status =
         length->SetValueAsString(value_string);
     if (length_parse_status != SVGParseStatus::kNoError)
@@ -102,11 +103,11 @@ void SVGLengthList::Add(SVGPropertyBase* other, SVGElement* context_element) {
 }
 
 SVGLength* SVGLengthList::CreatePaddingItem() const {
-  return SVGLength::Create(mode_);
+  return MakeGarbageCollected<SVGLength>(mode_);
 }
 
 void SVGLengthList::CalculateAnimatedValue(
-    SVGAnimationElement* animation_element,
+    const SVGAnimateElement& animation_element,
     float percentage,
     unsigned repeat_count,
     SVGPropertyBase* from_value,
@@ -120,26 +121,26 @@ void SVGLengthList::CalculateAnimatedValue(
 
   SVGLengthContext length_context(context_element);
   DCHECK_EQ(mode_, SVGLength::LengthModeForAnimatedLengthAttribute(
-                       animation_element->AttributeName()));
+                       animation_element.AttributeName()));
 
   uint32_t from_length_list_size = from_list->length();
   uint32_t to_length_list_size = to_list->length();
   uint32_t to_at_end_of_duration_list_size =
       to_at_end_of_duration_list->length();
 
-  if (!AdjustFromToListValues(from_list, to_list, percentage,
-                              animation_element->GetAnimationMode()))
+  const bool is_to_animation =
+      animation_element.GetAnimationMode() == kToAnimation;
+  if (!AdjustFromToListValues(from_list, to_list, percentage, is_to_animation))
     return;
 
   for (uint32_t i = 0; i < to_length_list_size; ++i) {
     // TODO(shanmuga.m): Support calc for SVGLengthList animation
     float animated_number = at(i)->Value(length_context);
-    CSSPrimitiveValue::UnitType unit_type =
-        to_list->at(i)->TypeWithCalcResolved();
+    const SVGLength* length_for_unit_type = to_list->at(i);
     float effective_from = 0;
     if (from_length_list_size) {
       if (percentage < 0.5)
-        unit_type = from_list->at(i)->TypeWithCalcResolved();
+        length_for_unit_type = from_list->at(i);
       effective_from = from_list->at(i)->Value(length_context);
     }
     float effective_to = to_list->at(i)->Value(length_context);
@@ -148,9 +149,14 @@ void SVGLengthList::CalculateAnimatedValue(
             ? to_at_end_of_duration_list->at(i)->Value(length_context)
             : 0;
 
-    animation_element->AnimateAdditiveNumber(
+    animation_element.AnimateAdditiveNumber(
         percentage, repeat_count, effective_from, effective_to,
         effective_to_at_end, animated_number);
+    // |animated_number| is in user units.
+    CSSPrimitiveValue::UnitType unit_type =
+        length_for_unit_type->IsCalculated()
+            ? CSSPrimitiveValue::UnitType::kUserUnits
+            : length_for_unit_type->NumericLiteralType();
     at(i)->SetUnitType(unit_type);
     at(i)->SetValue(animated_number, length_context);
   }

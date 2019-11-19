@@ -1,8 +1,6 @@
 #ifndef _RAR_SAVEPOS_
 #define _RAR_SAVEPOS_
 
-namespace third_party_unrar {
-
 class SaveFilePos
 {
   private:
@@ -25,7 +23,5 @@ class SaveFilePos
         SaveFile->Seek(SavePos,SEEK_SET);
     }
 };
-
-}  // namespace third_party_unrar
 
 #endif

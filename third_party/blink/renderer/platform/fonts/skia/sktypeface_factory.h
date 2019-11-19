@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SKIA_SKTYPEFACE_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SKIA_SKTYPEFACE_FACTORY_H_
 
-#include "third_party/blink/renderer/platform/wtf/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 

@@ -7,11 +7,9 @@
 #include <utility>
 #include <vector>
 
-#include "ash/lock_screen_action/lock_screen_action_background_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
-#include "ash/public/interfaces/tray_action.mojom.h"
+#include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/shell.h"
-#include "ash/tray_action/tray_action.h"
 #include "ash/wm/lock_window_state.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
@@ -41,9 +39,7 @@ LockActionHandlerLayoutManager::LockActionHandlerLayoutManager(
     Shelf* shelf,
     LockScreenActionBackgroundController* action_background_controller)
     : LockLayoutManager(window, shelf),
-      action_background_controller_(action_background_controller),
-      tray_action_observer_(this),
-      action_background_observer_(this) {
+      action_background_controller_(action_background_controller) {
   TrayAction* tray_action = Shell::Get()->tray_action();
   tray_action_observer_.Add(tray_action);
   action_background_observer_.Add(action_background_controller_);
@@ -57,11 +53,11 @@ void LockActionHandlerLayoutManager::OnWindowAddedToLayout(
 
   // The lock action background should be shown behind the shelf (which is
   // transparent on the lock screen), unlike lock action handler windows.
-  wm::WindowState* window_state =
+  WindowState* window_state =
       action_background_controller_->IsBackgroundWindow(child)
           ? LockWindowState::SetLockWindowState(child)
           : LockWindowState::SetLockWindowStateWithShelfExcluded(child);
-  wm::WMEvent event(wm::WM_EVENT_ADDED_TO_WORKSPACE);
+  WMEvent event(WM_EVENT_ADDED_TO_WORKSPACE);
   window_state->OnWMEvent(&event);
 }
 

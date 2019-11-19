@@ -8,18 +8,18 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/run_loop.h"
 #include "chrome/browser/android/vr/arcore_device/ar_image_transport.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_device.h"
 #include "chrome/browser/android/vr/arcore_device/arcore_gl.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_install_utils.h"
-#include "chrome/browser/android/vr/arcore_device/arcore_permission_helper.h"
+#include "chrome/browser/android/vr/arcore_device/arcore_session_utils.h"
 #include "chrome/browser/android/vr/arcore_device/fake_arcore.h"
 #include "chrome/browser/android/vr/mailbox_to_surface_bridge.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/test/fake_vr_device.h"
 #include "device/vr/test/fake_vr_service_client.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,9 +31,10 @@ class StubArImageTransport : public ArImageTransport {
       std::unique_ptr<vr::MailboxToSurfaceBridge> mailbox_bridge)
       : ArImageTransport(std::move(mailbox_bridge)) {}
 
-  // TODO(lincolnfrog): verify this gets called on GL thread.
-  // TODO(lincolnfrog): test what happens if this returns false.
-  bool Initialize() override { return true; }
+  void Initialize(vr::WebXrPresentationState*,
+                  base::OnceClosure callback) override {
+    std::move(callback).Run();
+  }
 
   // TODO(lincolnfrog): test verify this somehow.
   GLuint GetCameraTextureId() override { return CAMERA_TEXTURE_ID; }
@@ -42,6 +43,7 @@ class StubArImageTransport : public ArImageTransport {
   // by GetCameraTextureId() is at the time it is called and returns
   // a gpu::MailboxHolder with that texture copied to a shared buffer.
   gpu::MailboxHolder TransferFrame(
+      vr::WebXrPresentationState*,
       const gfx::Size& frame_size,
       const gfx::Transform& uv_transform) override {
     return gpu::MailboxHolder();
@@ -65,16 +67,8 @@ class StubMailboxToSurfaceBridge : public vr::MailboxToSurfaceBridge {
  public:
   StubMailboxToSurfaceBridge() = default;
 
-  MOCK_METHOD1(DoCreateUnboundContextProvider,
-               void(base::OnceClosure callback));
-  void CreateUnboundContextProvider(base::OnceClosure callback) override {
+  void CreateAndBindContextProvider(base::OnceClosure callback) override {
     callback_ = std::move(callback);
-  }
-
-  void BindContextProviderToCurrentThread() override {}
-
-  uint32_t CreateMailboxTexture(gpu::Mailbox* mailbox) override {
-    return TEXTURE_ID;
   }
 
   bool IsConnected() override { return true; }
@@ -87,18 +81,24 @@ class StubMailboxToSurfaceBridge : public vr::MailboxToSurfaceBridge {
   base::OnceClosure callback_;
 };
 
-class StubArCoreInstallUtils : public vr::ArCoreInstallUtils {
+class StubArCoreSessionUtils : public vr::ArCoreSessionUtils {
  public:
-  StubArCoreInstallUtils() = default;
+  StubArCoreSessionUtils() = default;
 
-  bool CanRequestInstallArModule() override { return false; }
-  bool ShouldRequestInstallArModule() override { return false; }
-
-  void RequestInstallArModule(int render_process_id,
-                              int render_frame_id) override {}
-  bool ShouldRequestInstallSupportedArCore() override { return false; }
-  void RequestInstallSupportedArCore(int render_process_id,
-                                     int render_frame_id) override {}
+  void RequestArSession(
+      int render_process_id,
+      int render_frame_id,
+      bool use_overlay,
+      vr::SurfaceReadyCallback ready_callback,
+      vr::SurfaceTouchCallback touch_callback,
+      vr::SurfaceDestroyedCallback destroyed_callback) override {
+    // Return arbitrary screen geometry as stand-in for the expected
+    // drawing surface. It's not actually a surface, hence the nullptr
+    // instead of a WindowAndroid.
+    std::move(ready_callback)
+        .Run(nullptr, display::Display::Rotation::ROTATE_0, {1024, 512});
+  }
+  void EndSession() override {}
 
   bool EnsureLoaded() override { return true; }
 
@@ -117,45 +117,17 @@ class StubArCoreInstallUtils : public vr::ArCoreInstallUtils {
   }
 };
 
-class StubArCorePermissionHelper : public ArCorePermissionHelper {
- public:
-  StubArCorePermissionHelper() = default;
-
-  MOCK_METHOD4(DoRequestCameraPermission,
-               void(int render_process_id,
-                    int render_frame_id,
-                    bool has_user_activation,
-                    base::OnceCallback<void(bool)> callback));
-  void RequestCameraPermission(
-      int render_process_id,
-      int render_frame_id,
-      bool has_user_activation,
-      base::OnceCallback<void(bool)> callback) override {
-    callback_ = std::move(callback);
-    if (request_camera_permission_quit_closure) {
-      std::move(request_camera_permission_quit_closure).Run();
-    }
-  }
-
-  void CallCallback(bool result) { std::move(callback_).Run(result); }
-
-  base::OnceClosure request_camera_permission_quit_closure;
-
- private:
-  base::OnceCallback<void(bool)> callback_;
-};
-
 class ArCoreDeviceTest : public testing::Test {
  public:
   ArCoreDeviceTest() {}
   ~ArCoreDeviceTest() override {}
 
-  static const gfx::Size kTestFrameSize;
-
-  void OnSessionCreated(mojom::XRSessionPtr session,
-                        mojom::XRSessionControllerPtr controller) {
+  void OnSessionCreated(
+      mojom::XRSessionPtr session,
+      mojo::PendingRemote<mojom::XRSessionController> controller) {
+    DVLOG(1) << __func__;
     session_ = std::move(session);
-    controller_ = std::move(controller);
+    controller_.Bind(std::move(controller));
     // TODO(crbug.com/837834): verify that things fail if restricted.
     // We should think through the right result here for javascript.
     // If an AR page tries to hittest while not focused, should it
@@ -164,15 +136,15 @@ class ArCoreDeviceTest : public testing::Test {
 
     frame_provider.Bind(std::move(session_->data_provider));
     frame_provider->GetEnvironmentIntegrationProvider(
-        mojo::MakeRequest(&environment_provider));
+        environment_provider.BindNewEndpointAndPassReceiver());
     std::move(quit_closure).Run();
   }
 
   StubMailboxToSurfaceBridge* bridge;
-  StubArCoreInstallUtils* install_utils;
-  StubArCorePermissionHelper* permission_helper;
-  mojom::XRFrameDataProviderPtr frame_provider;
-  mojom::XREnvironmentIntegrationProviderAssociatedPtr environment_provider;
+  StubArCoreSessionUtils* session_utils;
+  mojo::Remote<mojom::XRFrameDataProvider> frame_provider;
+  mojo::AssociatedRemote<mojom::XREnvironmentIntegrationProvider>
+      environment_provider;
   std::unique_ptr<base::RunLoop> run_loop;
   base::OnceClosure quit_closure;
 
@@ -181,24 +153,20 @@ class ArCoreDeviceTest : public testing::Test {
     std::unique_ptr<StubMailboxToSurfaceBridge> bridge_ptr =
         std::make_unique<StubMailboxToSurfaceBridge>();
     bridge = bridge_ptr.get();
-    std::unique_ptr<StubArCoreInstallUtils> install_utils_ptr =
-        std::make_unique<StubArCoreInstallUtils>();
-    install_utils = install_utils_ptr.get();
-    std::unique_ptr<StubArCorePermissionHelper> permission_helper_ptr =
-        std::make_unique<StubArCorePermissionHelper>();
-    permission_helper = permission_helper_ptr.get();
+    std::unique_ptr<StubArCoreSessionUtils> session_utils_ptr =
+        std::make_unique<StubArCoreSessionUtils>();
+    session_utils = session_utils_ptr.get();
     device_ = std::make_unique<ArCoreDevice>(
         std::make_unique<FakeArCoreFactory>(),
         std::make_unique<StubArImageTransportFactory>(), std::move(bridge_ptr),
-        std::move(install_utils_ptr), std::move(permission_helper_ptr));
+        std::move(session_utils_ptr));
   }
 
   void CreateSession() {
     mojom::XRRuntimeSessionOptionsPtr options =
         mojom::XRRuntimeSessionOptions::New();
-    options->immersive = false;
-    // TODO(crbug.com/837834): ensure request fails without user activation?
-    options->has_user_activation = true;
+    options->environment_integration = true;
+    options->immersive = true;
     device()->RequestSession(std::move(options),
                              base::BindOnce(&ArCoreDeviceTest::OnSessionCreated,
                                             base::Unretained(this)));
@@ -208,25 +176,11 @@ class ArCoreDeviceTest : public testing::Test {
     // DoCreateUnboundContextProvider(testing::_)).Times(1);
 
     run_loop = std::make_unique<base::RunLoop>();
-    permission_helper->request_camera_permission_quit_closure =
-        run_loop->QuitClosure();
-    bridge->CallCallback();
-    run_loop->Run();
-
-    // TODO(https://crbug.com/837834): figure out how to make this work.
-    // EXPECT_CALL(*permission_helper, DoRequestCameraPermission(testing::_,
-    // testing::_, testing::_, testing::_)).Times(1);
-
-    run_loop = std::make_unique<base::RunLoop>();
     quit_closure = run_loop->QuitClosure();
-    permission_helper->CallCallback(true);
     run_loop->Run();
 
     EXPECT_TRUE(environment_provider);
     EXPECT_TRUE(session_);
-
-    environment_provider->UpdateSessionGeometry(kTestFrameSize,
-                                                display::Display::ROTATE_0);
   }
 
   mojom::XRFrameDataPtr GetFrameData() {
@@ -244,6 +198,7 @@ class ArCoreDeviceTest : public testing::Test {
     // TODO(https://crbug.com/837834): verify GetFrameData fails if we
     // haven't resolved the Mailbox.
     frame_provider->GetFrameData(
+        nullptr,
         base::BindOnce(callback, std::move(quit_closure), &frame_data));
     run_loop->Run();
     EXPECT_TRUE(frame_data);
@@ -256,11 +211,8 @@ class ArCoreDeviceTest : public testing::Test {
  private:
   std::unique_ptr<ArCoreDevice> device_;
   mojom::XRSessionPtr session_;
-  mojom::XRSessionControllerPtr controller_;
+  mojo::Remote<mojom::XRSessionController> controller_;
 };
-
-// The default screen size for portrait mode on the Pixel Android phone.
-const gfx::Size ArCoreDeviceTest::kTestFrameSize = {1080, 1795};
 
 TEST_F(ArCoreDeviceTest, RequestSession) {
   CreateSession();
@@ -269,20 +221,6 @@ TEST_F(ArCoreDeviceTest, RequestSession) {
 TEST_F(ArCoreDeviceTest, GetFrameData) {
   CreateSession();
   GetFrameData();
-}
-
-TEST_F(ArCoreDeviceTest, SetDisplayGeometry) {
-  CreateSession();
-
-  auto frame_data = GetFrameData();
-  EXPECT_TRUE(frame_data->buffer_size.value() == kTestFrameSize);
-
-  gfx::Size new_size = {100, 200};
-  environment_provider->UpdateSessionGeometry(new_size,
-                                              display::Display::ROTATE_90);
-
-  frame_data = GetFrameData();
-  EXPECT_TRUE(frame_data->buffer_size.value() == new_size);
 }
 
 TEST_F(ArCoreDeviceTest, RequestHitTest) {
@@ -300,7 +238,7 @@ TEST_F(ArCoreDeviceTest, RequestHitTest) {
                                        base::BindOnce(callback, &hit_results));
   // Have to get frame data to trigger the hit-test calculation.
   GetFrameData();
-  EXPECT_TRUE(hit_results.size() > 0);
+  EXPECT_FALSE(hit_results.empty());
 }
 
 }  // namespace device

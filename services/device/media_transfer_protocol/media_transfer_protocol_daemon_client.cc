@@ -59,12 +59,9 @@ class MediaTransferProtocolDaemonClientImpl
     : public MediaTransferProtocolDaemonClient {
  public:
   explicit MediaTransferProtocolDaemonClientImpl(dbus::Bus* bus)
-      : proxy_(bus->GetObjectProxy(
-          mtpd::kMtpdServiceName,
-          dbus::ObjectPath(mtpd::kMtpdServicePath))),
-        listen_for_changes_called_(false),
-        weak_ptr_factory_(this) {
-  }
+      : proxy_(bus->GetObjectProxy(mtpd::kMtpdServiceName,
+                                   dbus::ObjectPath(mtpd::kMtpdServicePath))),
+        listen_for_changes_called_(false) {}
 
   // MediaTransferProtocolDaemonClient override.
   void EnumerateStorages(EnumerateStoragesCallback callback,
@@ -519,7 +516,8 @@ class MediaTransferProtocolDaemonClientImpl
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<MediaTransferProtocolDaemonClientImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<MediaTransferProtocolDaemonClientImpl> weak_ptr_factory_{
+      this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaTransferProtocolDaemonClientImpl);
 };

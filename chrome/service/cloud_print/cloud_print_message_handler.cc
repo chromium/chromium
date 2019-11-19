@@ -4,10 +4,12 @@
 
 #include "chrome/service/cloud_print/cloud_print_message_handler.h"
 
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "chrome/common/cloud_print/cloud_print_proxy_info.h"
-#include "mojo/public/cpp/bindings/strong_binding.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace cloud_print {
 
@@ -22,10 +24,10 @@ CloudPrintMessageHandler::~CloudPrintMessageHandler() = default;
 // static
 void CloudPrintMessageHandler::Create(
     CloudPrintProxy::Provider* proxy_provider,
-    cloud_print::mojom::CloudPrintRequest request) {
-  mojo::MakeStrongBinding(
+    mojo::PendingReceiver<cloud_print::mojom::CloudPrint> receiver) {
+  mojo::MakeSelfOwnedReceiver(
       std::make_unique<CloudPrintMessageHandler>(proxy_provider),
-      std::move(request));
+      std::move(receiver));
 }
 
 void CloudPrintMessageHandler::EnableCloudPrintProxyWithRobot(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file is used during build to generate prepopulated_engine.h/cc.
+// This file is used during build to generate prepopulated_engines.h/cc.
 // For more details see tools/json_to_struct/json_to_struct.py.
 
 // Engine definitions. See prepopulated_engines_schema.json for the field
@@ -28,26 +28,22 @@
     // Increment this if you change the data in ways that mean users with
     // existing data should get a new version. Otherwise, existing data may
     // continue to be used and updates made here will not always appear.
-    "kCurrentDataVersion": 110
+    "kCurrentDataVersion": 117
   },
 
   // The following engines are included in country lists and are added to the
   // list of search engines on the first run depending on user's country.
   "elements": {
-    // Ask and Ask UK have suggestion URLs reachable over HTTPS, but they
-    // throw a certificate error, so those will remain as HTTP for now.
     "ask": {
       "name": "Ask",
       "keyword": "ask.com",
       "favicon_url": "https://sp.ask.com/sh/i/a16/favicon/favicon.ico",
       "search_url": "https://www.ask.com/web?q={searchTerms}",
-      "suggest_url": "http://ss.ask.com/query?q={searchTerms}&li=ff",
+      "suggest_url": "https://lss.sse-iacapps.com/query?q={searchTerms}&li=ff",
       "type": "SEARCH_ENGINE_ASK",
       "id": 4
     },
 
-    // Baidu's suggestion URL is not reachable over HTTPS, so it remains as
-    // HTTP for now.
     "baidu": {
       "name": "\u767e\u5ea6",
       "keyword": "baidu.com",
@@ -58,7 +54,7 @@
         "https://www.baidu.com/s?ie={inputEncoding}&word={searchTerms}",
         "https://www.baidu.com/{google:pathWildcard}/s?ie={inputEncoding}&word={searchTerms}"
       ],
-      "suggest_url": "http://suggestion.baidu.com/su?wd={searchTerms}&action=opensearch&ie={inputEncoding}",
+      "suggest_url": "https://suggestion.baidu.com/su?wd={searchTerms}&action=opensearch&ie={inputEncoding}",
       "type": "SEARCH_ENGINE_BAIDU",
       "id": 21
     },
@@ -69,9 +65,9 @@
       "favicon_url": "https://www.bing.com/sa/simg/bing_p_rr_teal_min.ico",
       "search_url": "https://www.bing.com/search?q={searchTerms}&PC=U316&FORM=CHROMN",
       "suggest_url": "https://www.bing.com/osjson.aspx?query={searchTerms}&language={language}&PC=U316",
-      "image_url": "https://www.bing.com/images/detail/search?iss=sbi&FORM=CHROMI#enterInsights",
+      "image_url": "https://www.bing.com/images/detail/search?iss=sbiupload&FORM=CHROMI#enterInsights",
       "new_tab_url": "https://www.bing.com/chrome/newtab",
-      "image_url_post_params": "imgurl={google:imageURL}",
+      "image_url_post_params": "imageBin={google:imageThumbnailBase64}",
       "type": "SEARCH_ENGINE_BING",
       "id": 3
     },
@@ -101,6 +97,7 @@
       "favicon_url": "https://duckduckgo.com/favicon.ico",
       "search_url": "https://duckduckgo.com/?q={searchTerms}",
       "suggest_url": "https://duckduckgo.com/ac/?q={searchTerms}&type=list",
+      "new_tab_url": "https://duckduckgo.com/chrome_newtab",
       "type": "SEARCH_ENGINE_DUCKDUCKGO",
       "id": 92
     },
@@ -110,9 +107,8 @@
       "keyword": "google.com",
       "favicon_url": "https://www.google.com/images/branding/product/ico/googleg_lodp.ico",
       "search_url": "{google:baseURL}search?q={searchTerms}&{google:RLZ}{google:originalQueryForSuggestion}{google:assistedQueryStats}{google:searchFieldtrialParameter}{google:iOSSearchLanguage}{google:searchClient}{google:sourceId}{google:contextualSearchVersion}ie={inputEncoding}",
-      "suggest_url": "{google:baseSuggestURL}search?{google:searchFieldtrialParameter}client={google:suggestClient}&gs_ri={google:suggestRid}&xssi=t&q={searchTerms}&{google:inputType}{google:cursorPosition}{google:currentPageUrl}{google:pageClassification}{google:searchVersion}{google:sessionToken}{google:prefetchQuery}sugkey={google:suggestAPIKeyParameter}",
+      "suggest_url": "{google:baseSuggestURL}search?{google:searchFieldtrialParameter}client={google:suggestClient}&gs_ri={google:suggestRid}&xssi=t&q={searchTerms}&{google:inputType}{google:omniboxFocusType}{google:cursorPosition}{google:currentPageUrl}{google:pageClassification}{google:searchVersion}{google:sessionToken}{google:prefetchQuery}sugkey={google:suggestAPIKeyParameter}",
       "image_url": "{google:baseURL}searchbyimage/upload",
-      "new_tab_url": "{google:baseURL}_/chrome/newtab?{google:RLZ}ie={inputEncoding}",
       "contextual_search_url": "{google:baseURL}_/contextualsearch?{google:contextualSearchVersion}{google:contextualSearchContextData}",
       "image_url_post_params": "encoded_image={google:imageThumbnail},image_url={google:imageURL},sbisrc={google:imageSearchSource},original_width={google:imageOriginalWidth},original_height={google:imageOriginalHeight}",
       "alternate_urls": [
@@ -134,7 +130,7 @@
       "alternate_urls": [
         "https://go.mail.ru/msearch?q={searchTerms}&{mailru:referralID}"
       ],
-      "encoding": "windows-1251",
+      "new_tab_url": "https://go.mail.ru/chrome/newtab/",
       "suggest_url": "https://suggests.go.mail.ru/chrome?q={searchTerms}",
       "type": "SEARCH_ENGINE_MAILRU",
       "id": 83
@@ -148,15 +144,6 @@
       "suggest_url": "https://ac.search.naver.com/nx/ac?of=os&ie={inputEncoding}&q={searchTerms}&oe={outputEncoding}",
       "type": "SEARCH_ENGINE_NAVER",
       "id": 67
-    },
-
-    "parsijoo": {
-      "name": "پارسی جو",
-      "keyword": "parsijoo.ir",
-      "favicon_url": "https://cdn.parsijoo.ir/content3/images/1.0/favicon.ico",
-      "search_url": "https://parsijoo.ir/web?q={searchTerms}",
-      "type": "SEARCH_ENGINE_PARSIJOO",
-      "id": 93
     },
 
     "qwant": {
@@ -648,6 +635,7 @@
       "alternate_urls": [
 	"http://hladaj.atlas.sk/fulltext/?phrase={searchTerms}"
       ],
+      "type": "SEARCH_ENGINE_ATLAS",
       "id": 27
     },
 
@@ -1022,5 +1010,9 @@
       "type": "SEARCH_ENGINE_ZOZNAM",
       "id": 85
     }
+  },
+
+  "generate_array": {
+    "array_name": "kAllEngines"
   }
 }

@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup.h"
 
 #include "base/containers/flat_map.h"
 #include "chromeos/components/multidevice/remote_device.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace chromeos {
 
@@ -19,6 +22,13 @@ FakeMultiDeviceSetup::~FakeMultiDeviceSetup() {
   for (auto& get_eligible_hosts_arg : get_eligible_hosts_args_) {
     if (get_eligible_hosts_arg)
       std::move(get_eligible_hosts_arg).Run(multidevice::RemoteDeviceList());
+  }
+
+  for (auto& get_eligible_active_hosts_arg : get_eligible_active_hosts_args_) {
+    if (get_eligible_active_hosts_arg) {
+      std::move(get_eligible_active_hosts_arg)
+          .Run(std::vector<mojom::HostDevicePtr>());
+    }
   }
 
   for (auto& set_host_arg : set_host_args_) {
@@ -63,7 +73,8 @@ FakeMultiDeviceSetup::~FakeMultiDeviceSetup() {
 }
 
 void FakeMultiDeviceSetup::BindHandle(mojo::ScopedMessagePipeHandle handle) {
-  BindRequest(mojom::MultiDeviceSetupRequest(std::move(handle)));
+  BindReceiver(
+      mojo::PendingReceiver<mojom::MultiDeviceSetup>(std::move(handle)));
 }
 
 void FakeMultiDeviceSetup::FlushForTesting() {
@@ -82,39 +93,40 @@ bool FakeMultiDeviceSetup::HasAtLeastOneFeatureStateObserver() {
 void FakeMultiDeviceSetup::NotifyHostStatusChanged(
     mojom::HostStatus host_status,
     const base::Optional<multidevice::RemoteDevice>& host_device) {
-  host_status_observers_.ForAllPtrs(
-      [&host_status, &host_device](mojom::HostStatusObserver* observer) {
-        observer->OnHostStatusChanged(host_status, host_device);
-      });
+  for (auto& observer : host_status_observers_)
+    observer->OnHostStatusChanged(host_status, host_device);
 }
 
 void FakeMultiDeviceSetup::NotifyFeatureStateChanged(
     const base::flat_map<mojom::Feature, mojom::FeatureState>&
         feature_states_map) {
-  feature_state_observers_.ForAllPtrs(
-      [&feature_states_map](mojom::FeatureStateObserver* observer) {
-        observer->OnFeatureStatesChanged(feature_states_map);
-      });
+  for (auto& observer : feature_state_observers_)
+    observer->OnFeatureStatesChanged(feature_states_map);
 }
 
 void FakeMultiDeviceSetup::SetAccountStatusChangeDelegate(
-    mojom::AccountStatusChangeDelegatePtr delegate) {
-  delegate_ = std::move(delegate);
+    mojo::PendingRemote<mojom::AccountStatusChangeDelegate> delegate) {
+  delegate_.Bind(std::move(delegate));
 }
 
 void FakeMultiDeviceSetup::AddHostStatusObserver(
-    mojom::HostStatusObserverPtr observer) {
-  host_status_observers_.AddPtr(std::move(observer));
+    mojo::PendingRemote<mojom::HostStatusObserver> observer) {
+  host_status_observers_.Add(std::move(observer));
 }
 
 void FakeMultiDeviceSetup::AddFeatureStateObserver(
-    mojom::FeatureStateObserverPtr observer) {
-  feature_state_observers_.AddPtr(std::move(observer));
+    mojo::PendingRemote<mojom::FeatureStateObserver> observer) {
+  feature_state_observers_.Add(std::move(observer));
 }
 
 void FakeMultiDeviceSetup::GetEligibleHostDevices(
     GetEligibleHostDevicesCallback callback) {
   get_eligible_hosts_args_.push_back(std::move(callback));
+}
+
+void FakeMultiDeviceSetup::GetEligibleActiveHostDevices(
+    GetEligibleActiveHostDevicesCallback callback) {
+  get_eligible_active_hosts_args_.push_back(std::move(callback));
 }
 
 void FakeMultiDeviceSetup::SetHostDevice(const std::string& host_device_id,

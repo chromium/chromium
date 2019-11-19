@@ -12,7 +12,6 @@
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "extensions/common/extension.h"
@@ -28,7 +27,7 @@ typedef std::list<SharedModuleInfo::ImportInfo> ImportInfoList;
 }  // namespace
 
 SharedModuleService::SharedModuleService(content::BrowserContext* context)
-    : extension_registry_observer_(this), browser_context_(context) {
+    : browser_context_(context) {
   extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
 }
 

@@ -86,7 +86,7 @@ class AppInfoSummaryPanel : public AppInfoPanel,
   std::unique_ptr<LaunchOptionsComboboxModel> launch_options_combobox_model_;
   views::Combobox* launch_options_combobox_;
 
-  base::WeakPtrFactory<AppInfoSummaryPanel> weak_ptr_factory_;
+  base::WeakPtrFactory<AppInfoSummaryPanel> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppInfoSummaryPanel);
 };

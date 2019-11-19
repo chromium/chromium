@@ -4,7 +4,7 @@
 
 package org.chromium.ui.modelutil;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -153,5 +153,25 @@ public class ListModelBase<T, P> extends ListObservableImpl<P> implements Simple
      */
     public int indexOf(Object item) {
         return mItems.indexOf(item);
+    }
+
+    /**
+     * Moves a single {@code item} from current {@code index} to new {@code index}.
+     * @param curIndex The position of the item before move.
+     * @param newIndex The position of the item after move.
+     */
+    public void move(int curIndex, int newIndex) {
+        T item = mItems.remove(curIndex);
+        if (newIndex == mItems.size()) {
+            mItems.add(item);
+        } else {
+            mItems.add(newIndex, item);
+        }
+        notifyItemMoved(curIndex, newIndex);
+    }
+
+    /** Clear all items from the list. */
+    public void clear() {
+        if (size() > 0) removeRange(0, size());
     }
 }

@@ -6,7 +6,7 @@ function mouseOver()
 {
     var trouble = document.createElement('iframe');
     trouble.id='trouble';
-    trouble.src="data:text/html,... then into this iframe to crash."
+    trouble.srcdoc="... then into this iframe to crash."
     document.getElementById("parentNode").appendChild(trouble);
 }
 

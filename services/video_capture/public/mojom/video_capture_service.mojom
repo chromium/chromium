@@ -1,0 +1,53 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module video_capture.mojom;
+
+[EnableIf=is_chromeos]
+import "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom";
+import "services/video_capture/public/mojom/device_factory.mojom";
+import "services/video_capture/public/mojom/testing_controls.mojom";
+import "services/video_capture/public/mojom/video_source_provider.mojom";
+
+[EnableIf=is_chromeos]
+import "media/capture/video/chromeos/mojom/camera_app.mojom";
+
+[EnableIf=is_chromeos]
+interface AcceleratorFactory {
+  // Creates a new JpegDecodeAccelerator and binds it to |jda|.
+  CreateJpegDecodeAccelerator(
+      pending_receiver<chromeos_camera.mojom.MjpegDecodeAccelerator> jda);
+};
+
+// Entry point to the Video Capture Service API.
+// The factory provides access to the capture devices connected to the system.
+// By using command-line switches, it is possible to replace this with a "fake"
+// factory, which provides access to fake devices that generates test frames.
+// The video capture supports gpu accelerated decoding of MJPEG frames
+// delivered by camera devices, but to do it requires InjectGpuDependencies()
+// to be called once before any call to ConnectToDeviceFactory() is made.
+// Calling InjectGpuDependencies() is optional. If it is not called, MJPEG
+// decoding will be performed without gpu acceleration.
+interface VideoCaptureService  {
+  [EnableIf=is_chromeos]
+  InjectGpuDependencies(pending_remote<AcceleratorFactory> accelerator_factory);
+
+  // Binds a bridge for Chrome OS camera app and device.
+  [EnableIf=is_chromeos]
+  ConnectToCameraAppDeviceBridge(
+      pending_receiver<cros.mojom.CameraAppDeviceBridge> receiver);
+
+  // Legacy API. Supports one client per device.
+  ConnectToDeviceFactory(pending_receiver<DeviceFactory> receiver);
+
+  // Current API. Supports multiple clients per source.
+  ConnectToVideoSourceProvider(pending_receiver<VideoSourceProvider> receiver);
+
+  // Sets a retry count that is used by the service for logging UMA events in
+  // the context of investigation for https://crbug.com/643068.
+  SetRetryCount(int32 count);
+
+  // Binds a test-only interface for use by unit tests.
+  BindControlsForTesting(pending_receiver<TestingControls> receiver);
+};

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>backdrop-filter: Clipping should work when browser zoom is not 100%</title>
+<div class="box"></div>
+<div class="navbar">
+  <div class="menu"></div>
+  <div class="menu2"></div>
+</div>
+
+<!-- TODO(978481): Convert this back to WPT test. See crbug.com/978481 for
+  an implementation in WPT that is waiting for the WPT Fuzzy Matching feature.
+-->
+<style>
+div {
+  position: absolute;
+}
+.box {
+  width: 200px;
+  height: 200px;
+  top: 100px;
+  left: 100px;
+  background: green;
+}
+.navbar {
+  width: 300px;
+  height: 50px;
+  top: 150px;
+  left: 50px;
+  border: 2px solid blue;
+  backdrop-filter: invert(1);
+  border-radius: 10px 20px 30px 40px;
+}
+.menu {
+  width: 100px;
+  height: 150px;
+  top: 50px;
+  left: 95px;
+  border: 2px solid red;
+}
+.menu2 {
+  width: 100px;
+  height: 30px;
+  top: -34px;
+  left: 95px;
+  border: 2px solid red;
+}
+</style>
+<script>
+    eventSender.setPageZoomFactor(1.5);
+</script>
+</html>

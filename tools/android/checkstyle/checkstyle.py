@@ -14,7 +14,7 @@ CHROMIUM_SRC = os.path.normpath(
     os.path.join(os.path.dirname(__file__),
                  os.pardir, os.pardir, os.pardir))
 CHECKSTYLE_ROOT = os.path.join(CHROMIUM_SRC, 'third_party', 'checkstyle',
-                               'checkstyle-8.0-all.jar')
+                               'checkstyle-all.jar')
 
 
 def FormatCheckstyleOutput(checkstyle_output):

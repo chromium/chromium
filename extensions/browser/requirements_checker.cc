@@ -22,7 +22,7 @@ namespace extensions {
 
 RequirementsChecker::RequirementsChecker(
     scoped_refptr<const Extension> extension)
-    : PreloadCheck(extension), weak_ptr_factory_(this) {}
+    : PreloadCheck(extension) {}
 
 RequirementsChecker::~RequirementsChecker() {}
 
@@ -77,9 +77,9 @@ void RequirementsChecker::PostRunCallback() {
   // to maintain the assumption in
   // ExtensionService::LoadExtensionsFromCommandLineFlag(). Remove these helper
   // functions after crbug.com/708354 is addressed.
-  base::PostTaskWithTraits(FROM_HERE, {content::BrowserThread::UI},
-                           base::BindOnce(&RequirementsChecker::RunCallback,
-                                          weak_ptr_factory_.GetWeakPtr()));
+  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
+                 base::BindOnce(&RequirementsChecker::RunCallback,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RequirementsChecker::RunCallback() {

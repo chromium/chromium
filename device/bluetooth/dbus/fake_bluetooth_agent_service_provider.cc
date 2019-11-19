@@ -37,10 +37,10 @@ void FakeBluetoothAgentServiceProvider::Release() {
 
 void FakeBluetoothAgentServiceProvider::RequestPinCode(
     const dbus::ObjectPath& device_path,
-    const Delegate::PinCodeCallback& callback) {
+    Delegate::PinCodeCallback callback) {
   VLOG(1) << object_path_.value() << ": RequestPinCode for "
           << device_path.value();
-  delegate_->RequestPinCode(device_path, callback);
+  delegate_->RequestPinCode(device_path, std::move(callback));
 }
 
 void FakeBluetoothAgentServiceProvider::DisplayPinCode(
@@ -53,10 +53,10 @@ void FakeBluetoothAgentServiceProvider::DisplayPinCode(
 
 void FakeBluetoothAgentServiceProvider::RequestPasskey(
     const dbus::ObjectPath& device_path,
-    const Delegate::PasskeyCallback& callback) {
+    Delegate::PasskeyCallback callback) {
   VLOG(1) << object_path_.value() << ": RequestPasskey for "
           << device_path.value();
-  delegate_->RequestPasskey(device_path, callback);
+  delegate_->RequestPasskey(device_path, std::move(callback));
 }
 
 void FakeBluetoothAgentServiceProvider::DisplayPasskey(
@@ -71,27 +71,27 @@ void FakeBluetoothAgentServiceProvider::DisplayPasskey(
 void FakeBluetoothAgentServiceProvider::RequestConfirmation(
     const dbus::ObjectPath& device_path,
     uint32_t passkey,
-    const Delegate::ConfirmationCallback& callback) {
+    Delegate::ConfirmationCallback callback) {
   VLOG(1) << object_path_.value() << ": RequestConfirmation " << passkey
           << " for " << device_path.value();
-  delegate_->RequestConfirmation(device_path, passkey, callback);
+  delegate_->RequestConfirmation(device_path, passkey, std::move(callback));
 }
 
 void FakeBluetoothAgentServiceProvider::RequestAuthorization(
     const dbus::ObjectPath& device_path,
-    const Delegate::ConfirmationCallback& callback) {
+    Delegate::ConfirmationCallback callback) {
   VLOG(1) << object_path_.value() << ": RequestAuthorization for "
           << device_path.value();
-  delegate_->RequestAuthorization(device_path, callback);
+  delegate_->RequestAuthorization(device_path, std::move(callback));
 }
 
 void FakeBluetoothAgentServiceProvider::AuthorizeService(
     const dbus::ObjectPath& device_path,
     const std::string& uuid,
-    const Delegate::ConfirmationCallback& callback) {
+    Delegate::ConfirmationCallback callback) {
   VLOG(1) << object_path_.value() << ": AuthorizeService " << uuid << " for "
           << device_path.value();
-  delegate_->AuthorizeService(device_path, uuid, callback);
+  delegate_->AuthorizeService(device_path, uuid, std::move(callback));
 }
 
 void FakeBluetoothAgentServiceProvider::Cancel() {

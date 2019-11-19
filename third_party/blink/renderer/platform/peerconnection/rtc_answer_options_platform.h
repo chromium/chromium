@@ -6,17 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_ANSWER_OPTIONS_PLATFORM_H_
 
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 
 class RTCAnswerOptionsPlatform final
     : public GarbageCollected<RTCAnswerOptionsPlatform> {
  public:
-  static RTCAnswerOptionsPlatform* Create(bool voice_activity_detection) {
-    return MakeGarbageCollected<RTCAnswerOptionsPlatform>(
-        voice_activity_detection);
-  }
-
   explicit RTCAnswerOptionsPlatform(bool voice_activity_detection)
       : voice_activity_detection_(voice_activity_detection) {}
 

@@ -9,7 +9,7 @@
 
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/views_utils.h"
-#include "ash/public/interfaces/tray_action.mojom.h"
+#include "ash/public/mojom/tray_action.mojom.h"
 #include "ash/shell.h"
 #include "ash/tray_action/test_tray_action_client.h"
 #include "base/macros.h"
@@ -43,7 +43,7 @@ class NoteActionLaunchButtonTest : public LoginTestBase {
     LoginTestBase::SetUp();
 
     Shell::Get()->tray_action()->SetClient(
-        tray_action_client_.CreateInterfacePtrAndBind(),
+        tray_action_client_.CreateRemoteAndBind(),
         mojom::TrayActionState::kAvailable);
   }
 
@@ -77,7 +77,7 @@ class NoteActionLaunchButtonTest : public LoginTestBase {
 TEST_F(NoteActionLaunchButtonTest, VisibilityActionNotAvailable) {
   auto note_action_button = std::make_unique<NoteActionLaunchButton>(
       mojom::TrayActionState::kNotAvailable);
-  EXPECT_FALSE(note_action_button->visible());
+  EXPECT_FALSE(note_action_button->GetVisible());
 }
 
 // Verifies that note action button is shown and enabled if lock screen note
@@ -87,12 +87,12 @@ TEST_F(NoteActionLaunchButtonTest, VisibilityActionAvailable) {
       mojom::TrayActionState::kAvailable);
   NoteActionLaunchButton::TestApi test_api(note_action_button.get());
 
-  EXPECT_TRUE(note_action_button->visible());
-  EXPECT_TRUE(note_action_button->enabled());
+  EXPECT_TRUE(note_action_button->GetVisible());
+  EXPECT_TRUE(note_action_button->GetEnabled());
 
-  EXPECT_TRUE(test_api.ActionButtonView()->visible());
-  EXPECT_TRUE(test_api.ActionButtonView()->enabled());
-  EXPECT_TRUE(test_api.BackgroundView()->visible());
+  EXPECT_TRUE(test_api.ActionButtonView()->GetVisible());
+  EXPECT_TRUE(test_api.ActionButtonView()->GetEnabled());
+  EXPECT_TRUE(test_api.BackgroundView()->GetVisible());
 }
 
 // Tests that clicking Enter while lock screen action button is focused requests
@@ -100,8 +100,10 @@ TEST_F(NoteActionLaunchButtonTest, VisibilityActionAvailable) {
 TEST_F(NoteActionLaunchButtonTest, KeyboardTest) {
   auto* note_action_button =
       new NoteActionLaunchButton(mojom::TrayActionState::kAvailable);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(
-      login_views_utils::WrapViewForPreferredSize(note_action_button));
+  std::unique_ptr<views::Widget> widget =
+      CreateWidgetWithContent(login_views_utils::WrapViewForPreferredSize(
+                                  base::WrapUnique(note_action_button))
+                                  .release());
   NoteActionLaunchButton::TestApi test_api(note_action_button);
 
   note_action_button->RequestFocus();
@@ -125,8 +127,10 @@ TEST_F(NoteActionLaunchButtonTest, KeyboardTest) {
 TEST_F(NoteActionLaunchButtonTest, ClickTest) {
   auto* note_action_button =
       new NoteActionLaunchButton(mojom::TrayActionState::kAvailable);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(
-      login_views_utils::WrapViewForPreferredSize(note_action_button));
+  std::unique_ptr<views::Widget> widget =
+      CreateWidgetWithContent(login_views_utils::WrapViewForPreferredSize(
+                                  base::WrapUnique(note_action_button))
+                                  .release());
 
   const gfx::Size action_size = note_action_button->GetPreferredSize();
   EXPECT_EQ(gfx::Size(kLargeButtonRadiusDp, kLargeButtonRadiusDp), action_size);
@@ -237,8 +241,10 @@ TEST_F(NoteActionLaunchButtonTest, ClickTest) {
 TEST_F(NoteActionLaunchButtonTest, TapTest) {
   auto* note_action_button =
       new NoteActionLaunchButton(mojom::TrayActionState::kAvailable);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(
-      login_views_utils::WrapViewForPreferredSize(note_action_button));
+  std::unique_ptr<views::Widget> widget =
+      CreateWidgetWithContent(login_views_utils::WrapViewForPreferredSize(
+                                  base::WrapUnique(note_action_button))
+                                  .release());
 
   const gfx::Size action_size = note_action_button->GetPreferredSize();
   EXPECT_EQ(gfx::Size(kLargeButtonRadiusDp, kLargeButtonRadiusDp), action_size);
@@ -272,8 +278,10 @@ TEST_F(NoteActionLaunchButtonTest, TapTest) {
 TEST_F(NoteActionLaunchButtonTest, FlingGesture) {
   auto* note_action_button =
       new NoteActionLaunchButton(mojom::TrayActionState::kAvailable);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(
-      login_views_utils::WrapViewForPreferredSize(note_action_button));
+  std::unique_ptr<views::Widget> widget =
+      CreateWidgetWithContent(login_views_utils::WrapViewForPreferredSize(
+                                  base::WrapUnique(note_action_button))
+                                  .release());
 
   const gfx::Size action_size = note_action_button->GetPreferredSize();
   EXPECT_EQ(gfx::Size(kLargeButtonRadiusDp, kLargeButtonRadiusDp), action_size);
@@ -326,8 +334,10 @@ TEST_F(NoteActionLaunchButtonTest, FlingGesture) {
 TEST_F(NoteActionLaunchButtonTest, MultiFingerFling) {
   auto* note_action_button =
       new NoteActionLaunchButton(mojom::TrayActionState::kAvailable);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(
-      login_views_utils::WrapViewForPreferredSize(note_action_button));
+  std::unique_ptr<views::Widget> widget =
+      CreateWidgetWithContent(login_views_utils::WrapViewForPreferredSize(
+                                  base::WrapUnique(note_action_button))
+                                  .release());
 
   const gfx::Size action_size = note_action_button->GetPreferredSize();
   EXPECT_EQ(gfx::Size(kLargeButtonRadiusDp, kLargeButtonRadiusDp), action_size);

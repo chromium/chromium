@@ -23,6 +23,6 @@ typedef CGContextRef NativeDrawingContext;
 typedef void* NativeDrawingContext;
 #endif
 
-}  // namespace skia
+}  // namespace printing
 
 #endif  // PRINTING_NATIVE_DRAWING_CONTEXT_H_

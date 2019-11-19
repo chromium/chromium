@@ -14,10 +14,11 @@
 
 class OfflineItemModelManager;
 
+using offline_items_collection::ContentId;
 using offline_items_collection::FilteredOfflineItemObserver;
 using offline_items_collection::OfflineContentProvider;
 using offline_items_collection::OfflineItem;
-using offline_items_collection::ContentId;
+using offline_items_collection::UpdateDelta;
 
 // Implementation of DownloadUIModel that wrappers around a |OfflineItem|.
 class OfflineItemModel : public DownloadUIModel,
@@ -74,7 +75,8 @@ class OfflineItemModel : public DownloadUIModel,
 
   // FilteredOfflineItemObserver::Observer overrides.
   void OnItemRemoved(const ContentId& id) override;
-  void OnItemUpdated(const OfflineItem& item) override;
+  void OnItemUpdated(const OfflineItem& item,
+                     const base::Optional<UpdateDelta>& update_delta) override;
 
   // DownloadUIModel implementation.
   std::string GetMimeType() const override;

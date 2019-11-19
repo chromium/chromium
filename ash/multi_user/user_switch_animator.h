@@ -10,7 +10,6 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "ash/public/interfaces/wallpaper.mojom.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -19,7 +18,7 @@
 
 namespace ash {
 
-class MultiUserWindowManager;
+class MultiUserWindowManagerImpl;
 
 // A class which performs transitions animations between users. Upon creation,
 // the animation gets started and upon destruction the animation gets finished
@@ -36,10 +35,10 @@ class ASH_EXPORT UserSwitchAnimator {
     ANIMATION_STEP_ENDED           // The animation has ended.
   };
 
-  // Creates a UserSwitchAnimator to animate between the current user and
-  // |user_info|.
-  UserSwitchAnimator(MultiUserWindowManager* owner,
-                     mojom::WallpaperUserInfoPtr user_info,
+  // Creates a UserSwitchAnimator to animate between the current user and the
+  // user associated with |new_account_id|.
+  UserSwitchAnimator(MultiUserWindowManagerImpl* owner,
+                     const AccountId& new_account_id,
                      base::TimeDelta animation_speed);
   ~UserSwitchAnimator();
 
@@ -99,11 +98,7 @@ class ASH_EXPORT UserSwitchAnimator {
   void BuildUserToWindowsListMap();
 
   // The owning window manager.
-  MultiUserWindowManager* owner_;
-
-  // Contains the wallpaper configuration for the user switching to. This is
-  // passed to the WallpaperController at the right time.
-  mojom::WallpaperUserInfoPtr wallpaper_user_info_;
+  MultiUserWindowManagerImpl* owner_;
 
   // The new user to set.
   AccountId new_account_id_;

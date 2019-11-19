@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+pre, #log {
+  position: absolute;
+  top: 0;
+  left: 200px;
+}
+</style>
+
+<iframe src="http://localhost:8080/intersection-observer/resources/subframe-occlusion-tracking.html"></iframe>
+
+<script>
+
+if (self.internals) {
+  internals.DisableIntersectionObserverThrottleDelay();
+}
+
+async_test(t => {
+  let iframe = document.querySelector("iframe");
+  if (self.internals && !internals.isSiteIsolated(iframe)) {
+    t.done();
+    return;
+  }
+
+  let checkTracking = (expected => {
+    if (self.internals) {
+      t.step(() => {
+        assert_equals(internals.isTrackingOcclusionForIFrame(iframe), expected);
+      });
+    }
+  });
+
+  let detachAndCheck = (() => {
+    iframe.remove();
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        checkTracking(false);
+        t.done();
+      });
+    });
+  });
+
+  checkTracking(false);
+
+  let count = 0;
+  addEventListener("message", event => {
+    requestAnimationFrame(() => {
+      checkTracking(event.data.expected);
+      if (count++ > 3 && event.data.expected) {
+        detachAndCheck();
+      } else {
+        iframe.contentWindow.postMessage("", "*");
+      }
+    });
+  });
+
+  iframe.addEventListener("load", t.step_func(() => {
+    checkTracking(false);
+    requestAnimationFrame(() => {
+      iframe.contentWindow.postMessage("", "*")
+      checkTracking(false);
+    });
+  }));
+}, "Test that an OOP iframe only gets occlusion information from its parent if the iframe has an IntersectionObserver that needs it.");
+
+</script>

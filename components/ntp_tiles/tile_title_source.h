@@ -13,7 +13,7 @@ namespace ntp_tiles {
 // enums.xml AND in chrome/browser/resources/local_ntp/most_visited_single.js.
 //
 // A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.suggestions
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.suggestions.tile
 enum class TileTitleSource {
   // The title might be invalid, aggregated, user-set, extracted from history,
   // not loaded or simply not known.

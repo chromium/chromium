@@ -130,8 +130,7 @@ Polymer({
    * @private
    */
   onImportTap_: function(e) {
-    this.handleImport_(
-        false, /** @type {!HTMLElement} */ (Polymer.dom(e).localTarget));
+    this.handleImport_(false, /** @type {!HTMLElement} */ (e.target));
   },
 
   // <if expr="chromeos">
@@ -140,8 +139,7 @@ Polymer({
    * @param {!Event} e
    */
   onImportAndBindTap_: function(e) {
-    this.handleImport_(
-        true, /** @type {!HTMLElement} */ (Polymer.dom(e).localTarget));
+    this.handleImport_(true, /** @type {!HTMLElement} */ (e.target));
   },
   // </if>
 

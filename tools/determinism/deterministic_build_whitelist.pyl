@@ -13,13 +13,14 @@
 #
 # TODO(sebmarchand): Remove this once all the files are deterministic.
 {
-  # https://crbug.com/383340
   # TODO(thakis): Move android det bots to use two distinct build dirs,
   # https://crbug.com/899438
   'android': [
   ],
 
-  # https://crbug.com/330263
+  'fuchsia': [
+  ],
+
   'linux': [
   ],
 
@@ -30,148 +31,37 @@
     # https://crbug.com/937268
     'swiftshader/libGLESv2.so',
     'swiftshader_vertex_routine_fuzzer',
+
+    # https://crbug.com/954056
+    'nacl_test_data/nonsfi/irt_exception_test_pnacl_newlib_x32_nonsfi.nexe',
+    'nacl_test_data/nonsfi/irt_manifest_file_pnacl_newlib_x32_nonsfi.nexe',
+    'test_data/ppapi/tests/extensions/packaged_app/nonsfi/ppapi_tests_extensions_packaged_app_pnacl_newlib_x32_nonsfi.nexe',
+
+    # https://crbug.com/1008035
+    'nacl_test_data/extension_vcache_test/glibc/extension_validation_cache_libs/lib64/libppapi_cpp_lib.so',
+    'nacl_test_data/glibc/pm_exit_status_test_libs/lib64/libppapi_cpp_lib.so',
+    'nacl_test_data/glibc/simple_libs/lib64/libppapi_cpp_lib.so',
+    'nacl_test_data/glibc/sysconf_nprocessors_onln_test_libs/lib64/libppapi_cpp_lib.so',
+    'ppapi_nacl_tests_libs/lib64/glibc_x64/libppapi_cpp_lib.so',
   ],
 
-  # https://crbug.com/330262
-  # TODO(thakis): Move android det bots to use two distinct build dirs,
+  # TODO(thakis): Move mac det bots to use two distinct build dirs,
   # https://crbug.com/899438
   'mac': [
-    # ld64 in current Xcode versions is not deterministic. Most smaller binaries
-    # are fine, but larger binaries often get different outputs.
-    # To reduce flakiness, list most binaries here.
-    # TODO(erikchen): Once our fix for this has made it into Xcode and that
-    # is on all the bots, remove most binaries.
-    'accelerated_widget_mac_unittests',
-    'accessibility_unittests',
-    'angle_end2end_tests',
-    'angle_unittests',
-    'angle_white_box_tests',
-    'App Shell',
-    'app_shell_unittests',
-    'ar_sample_test_driver',
-    'audio_unittests',
-    'base_unittests',
-    'blink_heap_unittests',
-    'blink_platform_perftests',
-    'blink_platform_unittests',
-    'blink_unittests',
-    'bluetooth_metrics_hash',
-    'browser_tests',
-    'cacheinvalidation_unittests',
-    'capture_unittests',
-    'cast_benchmarks',
-    'cast_receiver_app',
-    'cast_sender_app',
-    'cast_simulator',
-    'cast_unittests',
-    'cc_perftests',
-    'cc_unittests',
-    'chrome_app_unittests',
-    'chromedriver',
-    'chromedriver_tests',
-    'chromedriver_unittests',
-    'chromoting_test_driver',
-    'command_buffer_gles2_tests',
-    'components_browsertests',
-    'components_perftests',
-    'components_unittests',
-    'compositor_unittests',
-    'content_browsertests',
-    'content_perftests',
-    'content_unittests',
-    'courgette_unittests',
-    'chrome_crashpad_handler',
-    'crypto_unittests',
-    'device_unittests',
-    'display_compositor_benchmark',
-    'display_unittests',
-    'events_unittests',
-    'extensions_browsertests',
-    'extensions_unittests',
-    'ffmpeg_regression_tests',
-    'filesystem_service_unittests',
-    'filter_fuzz_stub',
-    'gcm_unit_tests',
-    'generate_barcode_video',
-    'generate_timecode_audio',
-    'gfx_unittests',
-    'gin_unittests',
-    'gles2_conform_support',
-    'gles2_conform_test',
-    'gl_tests',
-    'gl_unittests',
-    'gn_unittests',
-    'google_apis_unittests',
-    'gpu_ipc_service_unittests',
-    'gpu_perftests',
-    'gpu_unittests',
-    'interactive_ui_tests',
-    'ipc_fuzzer',
-    'ipc_fuzzer_replay',
-    'ipc_message_dump.so',
-    'ipc_message_list',
-    'ipc_message_util',
-    'ipc_tests',
-    'it2me_standalone_host_main',
-    'jingle_unittests',
-    'khronos_glcts_test',
-    'latency_unittests',
-    'leveldb_service_unittests',
-    'libaddressinput_unittests',
-    'libapp_shell_framework.dylib',
-    'libcommand_buffer_gles2.dylib',
-    'libmedia_library.dylib',
-    'libphonenumber_unittests',
-    'mac_installer_unittests',
-    'macviews_interactive_ui_tests',
-    'media_blink_unittests',
-    'media_service_unittests',
-    'media_mojo_unittests',
-    'media_perftests',
-    'media_pipeline_integration_unittests',
-    'media_unittests',
-    'message_center_unittests',
-    'midi_unittests',
-    'mojo_unittests',
-    'nacl_loader_unittests',
-    'native_theme_unittests',
-    'net_unittests',
-    'performance_browser_tests',
-    'ppapi_perftests',
-    'ppapi_unittests',
-    'printing_unittests',
-    'proximity_auth_unittests',
-    'remoting_perftests',
-    'remoting_start_host',
-    'remoting_unittests',
-    'sandbox_mac_unittests',
-    'service_manager_unittests',
-    'shell_dialogs_unittests',
-    'skia_unittests',
-    'snapshot_unittests',
-    'sql_unittests',
-    'storage_unittests',
-    'sync_client',
-    'sync_integration_tests',
-    'sync_listen_notifications',
-    'sync_performance_tests',
-    'sync_unit_tests',
-    'udp_proxy',
-    'ui_base_unittests',
-    'ui_touch_selection_unittests',
-    'unit_tests',
-    'url_ipc_unittests',
-    'url_unittests',
-    'video_encode_accelerator_unittest',
-    'views_examples_exe',
-    'views_examples_with_content_exe',
-    'views_unittests',
-    'viz_benchmark',
-    'wtf_unittests',
   ],
 
   # https://crbug.com/330260
   'win': [
+    # https://crbug.com/1008035
+    'ppapi_nacl_tests_pnacl_newlib_x32.nexe',
+    'ppapi_nacl_tests_pnacl_newlib_x64.nexe',
+
+    # https://crbug.com/429358
+    'nacl_test_data\\extension_vcache_test\\glibc\\extension_validation_cache_libs\\lib32\\libppapi_cpp_lib.dll',
+    'nacl_test_data\\glibc\\pm_exit_status_test_libs\\lib32\\libppapi_cpp_lib.dll',
+    'nacl_test_data\\glibc\\simple_libs\\lib32\\libppapi_cpp_lib.dll',
+    'nacl_test_data\\glibc\\sysconf_nprocessors_onln_test_libs\\lib32\\libppapi_cpp_lib.dll',
+
     # TODO(thakis): Figure out what's up with these three (and their isolate).
     'mini_installer.exe',
     'mini_installer.exe.pdb',
@@ -180,6 +70,5 @@
     # These probably have mtimes in the zip headers and the scripts creating
     # them probably should use build_utils.ZipDir() instead.
     'mini_installer_tests.zip',
-    'policy_templates.zip',
   ],
 }

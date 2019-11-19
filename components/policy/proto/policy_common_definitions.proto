@@ -1,0 +1,48 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package enterprise_management;
+
+// Everything below this comment will be synchronized between client and server
+// repos ( go/cros-proto-sync ).
+
+message StringList {
+  repeated string entries = 1;
+}
+
+message PolicyOptions {
+  enum PolicyMode {
+    // The given settings are applied regardless of user choice.
+    MANDATORY = 0;
+    // The user may choose to override the given settings.
+    RECOMMENDED = 1;
+    // No policy value is present and the policy should be ignored.
+    UNSET = 2;
+  }
+  optional PolicyMode mode = 1 [default = MANDATORY];
+}
+
+message BooleanPolicyProto {
+  optional PolicyOptions policy_options = 1;
+  optional bool value = 2;
+}
+
+message IntegerPolicyProto {
+  optional PolicyOptions policy_options = 1;
+  optional int64 value = 2;
+}
+
+message StringPolicyProto {
+  optional PolicyOptions policy_options = 1;
+  optional string value = 2;
+}
+
+message StringListPolicyProto {
+  optional PolicyOptions policy_options = 1;
+  optional StringList value = 2;
+}

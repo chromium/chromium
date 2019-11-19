@@ -1,0 +1,6 @@
+[document web]
+++[panel] xml-roles:feed
+++++[article] xml-roles:article
+++++++[static] name='First'
+++++[article] xml-roles:article
+++++++[static] name='Second'

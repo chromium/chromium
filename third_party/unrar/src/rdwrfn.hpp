@@ -1,8 +1,6 @@
 #ifndef _RAR_DATAIO_
 #define _RAR_DATAIO_
 
-namespace third_party_unrar {
-
 class CmdAdd;
 class Unpack;
 
@@ -97,7 +95,5 @@ class ComprDataIO
     bool Encryption;
     bool Decryption;
 };
-
-}  // namespace third_party_unrar
 
 #endif

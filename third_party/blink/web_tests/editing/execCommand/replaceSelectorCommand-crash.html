@@ -1,29 +1,29 @@
 <!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-  if (window.testRunner) {
-    testRunner.waitUntilDone();
-    testRunner.dumpAsText();
-  }
+  const testObject = async_test('Does not crash');
 
   var af = [], i = 0;
   var setIntervalId;
   var done = false;
 
   function main() {
-    if (done)
+    testObject.step(() => {
+      if (done)
         return;
 
-    if (i == 20 * af.length) {
-      done = true;
-      document.body.innerHTML += "<p>Test for crbug.com/338982. Passes if it does not crash</p>";
-      document.body.innerHTML += "<p>PASS</p>";
-      clearInterval(setIntervalId);
-      if (window.testRunner)
-        testRunner.notifyDone();
-      return;
-    }    
+      if (i == 20 * af.length) {
+        done = true;
+        document.body.innerHTML += "<p>Test for crbug.com/338982. Passes if it does not crash</p>";
+        document.body.innerHTML += "<p>PASS</p>";
+        clearInterval(setIntervalId);
+        testObject.done();
+        return;
+      }
 
-    af[i++ % af.length]();
+      af[i++ % af.length]();
+    });
   }
 
   af.push(function() {

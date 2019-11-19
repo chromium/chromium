@@ -32,7 +32,7 @@ class WebUsbChooserAndroid : public WebUsbChooser {
   // Only a single dialog can be shown at a time.
   std::unique_ptr<UsbChooserDialogAndroid> dialog_;
 
-  base::WeakPtrFactory<WebUsbChooserAndroid> weak_factory_;
+  base::WeakPtrFactory<WebUsbChooserAndroid> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebUsbChooserAndroid);
 };

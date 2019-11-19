@@ -6,21 +6,20 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_THREAD_SAFE_INTERFACE_PTR_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr.h"
+#include "mojo/public/cpp/bindings/deprecated_interface_types_forward.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
-#include "mojo/public/cpp/bindings/sync_event_watcher.h"
+#include "mojo/public/cpp/bindings/thread_safe_forwarder_base.h"
 
 // ThreadSafeInterfacePtr wraps a non-thread-safe InterfacePtr and proxies
 // messages to it. Async calls are posted to the sequence that the InteracePtr
@@ -40,12 +39,9 @@ namespace mojo {
 // type may be useful if you need/want to manually manage the lifetime of the
 // underlying proxy object which will be used to ultimately send messages.
 template <typename Interface>
-class ThreadSafeForwarder : public MessageReceiverWithResponder {
+class ThreadSafeForwarder : public ThreadSafeForwarderBase {
  public:
   using ProxyType = typename Interface::Proxy_;
-  using ForwardMessageCallback = base::Callback<void(Message)>;
-  using ForwardMessageWithResponderCallback =
-      base::Callback<void(Message, std::unique_ptr<MessageReceiver>)>;
 
   // Constructs a ThreadSafeForwarder through which Messages are forwarded to
   // |forward| or |forward_with_responder| by posting to |task_runner|.
@@ -54,206 +50,22 @@ class ThreadSafeForwarder : public MessageReceiverWithResponder {
   // if any, back to the sequence which called the corresponding interface
   // method.
   ThreadSafeForwarder(
-      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
-      const ForwardMessageCallback& forward,
-      const ForwardMessageWithResponderCallback& forward_with_responder,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      ForwardMessageCallback forward,
+      ForwardMessageWithResponderCallback forward_with_responder,
       const AssociatedGroup& associated_group)
-      : proxy_(this),
-        task_runner_(task_runner),
-        forward_(forward),
-        forward_with_responder_(forward_with_responder),
-        associated_group_(associated_group),
-        sync_calls_(new InProgressSyncCalls()) {}
+      : ThreadSafeForwarderBase(std::move(task_runner),
+                                std::move(forward),
+                                std::move(forward_with_responder),
+                                associated_group),
+        proxy_(this) {}
 
-  ~ThreadSafeForwarder() override {
-    // If there are ongoing sync calls signal their completion now.
-    base::AutoLock l(sync_calls_->lock);
-    for (const auto& pending_response : sync_calls_->pending_responses)
-      pending_response->event.Signal();
-  }
+  ~ThreadSafeForwarder() override = default;
 
   ProxyType& proxy() { return proxy_; }
 
  private:
-  // MessageReceiverWithResponder implementation:
-  bool PrefersSerializedMessages() override {
-    // TSIP is primarily used because it emulates legacy IPC threading behavior.
-    // In practice this means it's only for cross-process messaging and we can
-    // just always assume messages should be serialized.
-    return true;
-  }
-
-  bool Accept(Message* message) override {
-    if (!message->associated_endpoint_handles()->empty()) {
-      // If this DCHECK fails, it is likely because:
-      // - This is a non-associated interface pointer setup using
-      //     PtrWrapper::BindOnTaskRunner(
-      //         InterfacePtrInfo<InterfaceType> ptr_info);
-      //   Please see the TODO in that method.
-      // - This is an associated interface which hasn't been associated with a
-      //   message pipe. In other words, the corresponding
-      //   AssociatedInterfaceRequest hasn't been sent.
-      DCHECK(associated_group_.GetController());
-      message->SerializeAssociatedEndpointHandles(
-          associated_group_.GetController());
-    }
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(forward_, base::Passed(message)));
-    return true;
-  }
-
-  bool AcceptWithResponder(
-      Message* message,
-      std::unique_ptr<MessageReceiver> responder) override {
-    if (!message->associated_endpoint_handles()->empty()) {
-      // Please see comment for the DCHECK in the previous method.
-      DCHECK(associated_group_.GetController());
-      message->SerializeAssociatedEndpointHandles(
-          associated_group_.GetController());
-    }
-
-    // Async messages are always posted (even if |task_runner_| runs tasks on
-    // this sequence) to guarantee that two async calls can't be reordered.
-    if (!message->has_flag(Message::kFlagIsSync)) {
-      auto reply_forwarder =
-          std::make_unique<ForwardToCallingThread>(std::move(responder));
-      task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(forward_with_responder_, base::Passed(message),
-                         std::move(reply_forwarder)));
-      return true;
-    }
-
-    SyncCallRestrictions::AssertSyncCallAllowed();
-
-    // If the InterfacePtr is bound to this sequence, dispatch it directly.
-    if (task_runner_->RunsTasksInCurrentSequence()) {
-      forward_with_responder_.Run(std::move(*message), std::move(responder));
-      return true;
-    }
-
-    // If the InterfacePtr is bound on another sequence, post the call.
-    // TODO(yzshen, watk): We block both this sequence and the InterfacePtr
-    // sequence. Ideally only this sequence would block.
-    auto response = base::MakeRefCounted<SyncResponseInfo>();
-    auto response_signaler = std::make_unique<SyncResponseSignaler>(response);
-    task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(forward_with_responder_, base::Passed(message),
-                       std::move(response_signaler)));
-
-    // Save the pending SyncResponseInfo so that if the sync call deletes
-    // |this|, we can signal the completion of the call to return from
-    // SyncWatch().
-    auto sync_calls = sync_calls_;
-    {
-      base::AutoLock l(sync_calls->lock);
-      sync_calls->pending_responses.push_back(response.get());
-    }
-
-    auto assign_true = [](bool* b) { *b = true; };
-    bool event_signaled = false;
-    SyncEventWatcher watcher(&response->event,
-                             base::Bind(assign_true, &event_signaled));
-    const bool* stop_flags[] = {&event_signaled};
-    watcher.SyncWatch(stop_flags, 1);
-
-    {
-      base::AutoLock l(sync_calls->lock);
-      base::Erase(sync_calls->pending_responses, response.get());
-    }
-
-    if (response->received)
-      ignore_result(responder->Accept(&response->message));
-
-    return true;
-  }
-
-  // Data that we need to share between the sequences involved in a sync call.
-  struct SyncResponseInfo
-      : public base::RefCountedThreadSafe<SyncResponseInfo> {
-    Message message;
-    bool received = false;
-    base::WaitableEvent event{base::WaitableEvent::ResetPolicy::MANUAL,
-                              base::WaitableEvent::InitialState::NOT_SIGNALED};
-
-   private:
-    friend class base::RefCountedThreadSafe<SyncResponseInfo>;
-  };
-
-  // A MessageReceiver that signals |response| when it either accepts the
-  // response message, or is destructed.
-  class SyncResponseSignaler : public MessageReceiver {
-   public:
-    explicit SyncResponseSignaler(scoped_refptr<SyncResponseInfo> response)
-        : response_(response) {}
-
-    ~SyncResponseSignaler() override {
-      // If Accept() was not called we must still notify the waiter that the
-      // sync call is finished.
-      if (response_)
-        response_->event.Signal();
-    }
-
-    bool Accept(Message* message) override {
-      response_->message = std::move(*message);
-      response_->received = true;
-      response_->event.Signal();
-      response_ = nullptr;
-      return true;
-    }
-
-   private:
-    scoped_refptr<SyncResponseInfo> response_;
-  };
-
-  // A record of the pending sync responses for canceling pending sync calls
-  // when the owning ThreadSafeForwarder is destructed.
-  struct InProgressSyncCalls
-      : public base::RefCountedThreadSafe<InProgressSyncCalls> {
-    // |lock| protects access to |pending_responses|.
-    base::Lock lock;
-    std::vector<SyncResponseInfo*> pending_responses;
-  };
-
-  class ForwardToCallingThread : public MessageReceiver {
-   public:
-    explicit ForwardToCallingThread(std::unique_ptr<MessageReceiver> responder)
-        : responder_(std::move(responder)),
-          caller_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
-    ~ForwardToCallingThread() override {
-      caller_task_runner_->DeleteSoon(FROM_HERE, std::move(responder_));
-    }
-
-   private:
-    bool Accept(Message* message) override {
-      // The current instance will be deleted when this method returns, so we
-      // have to relinquish the responder's ownership so it does not get
-      // deleted.
-      caller_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ForwardToCallingThread::CallAcceptAndDeleteResponder,
-                         base::Passed(std::move(responder_)),
-                         base::Passed(std::move(*message))));
-      return true;
-    }
-
-    static void CallAcceptAndDeleteResponder(
-        std::unique_ptr<MessageReceiver> responder,
-        Message message) {
-      ignore_result(responder->Accept(&message));
-    }
-
-    std::unique_ptr<MessageReceiver> responder_;
-    scoped_refptr<base::SequencedTaskRunner> caller_task_runner_;
-  };
-
   ProxyType proxy_;
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  const ForwardMessageCallback forward_;
-  const ForwardMessageWithResponderCallback forward_with_responder_;
-  AssociatedGroup associated_group_;
-  scoped_refptr<InProgressSyncCalls> sync_calls_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadSafeForwarder);
 };
@@ -339,8 +151,8 @@ class ThreadSafeInterfacePtrBase
 
     std::unique_ptr<ThreadSafeForwarder<InterfaceType>> CreateForwarder() {
       return std::make_unique<ThreadSafeForwarder<InterfaceType>>(
-          task_runner_, base::Bind(&PtrWrapper::Accept, this),
-          base::Bind(&PtrWrapper::AcceptWithResponder, this),
+          task_runner_, base::BindRepeating(&PtrWrapper::Accept, this),
+          base::BindRepeating(&PtrWrapper::AcceptWithResponder, this),
           associated_group_);
     }
 
@@ -395,14 +207,6 @@ class ThreadSafeInterfacePtrBase
 
   DISALLOW_COPY_AND_ASSIGN(ThreadSafeInterfacePtrBase);
 };
-
-template <typename Interface>
-using ThreadSafeAssociatedInterfacePtr =
-    ThreadSafeInterfacePtrBase<AssociatedInterfacePtr<Interface>>;
-
-template <typename Interface>
-using ThreadSafeInterfacePtr =
-    ThreadSafeInterfacePtrBase<InterfacePtr<Interface>>;
 
 }  // namespace mojo
 

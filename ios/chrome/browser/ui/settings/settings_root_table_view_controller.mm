@@ -14,6 +14,8 @@
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -40,7 +42,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 }  // namespace
 
 NSString* const kSettingsToolbarDeleteButtonId =
-    @"PasswordsToolbarDeleteButtonId";
+    @"SettingsToolbarDeleteButtonId";
 
 @interface SettingsRootTableViewController ()
 
@@ -66,13 +68,14 @@ NSString* const kSettingsToolbarDeleteButtonId =
 
 #pragma mark - Public
 
-- (void)updateEditButton {
+- (void)updateUIForEditState {
   if (self.tableView.editing) {
     self.navigationItem.rightBarButtonItem = [self createEditModeDoneButton];
     return;
   }
 
-  [self.navigationController setToolbarHidden:YES animated:YES];
+  [self.navigationController setToolbarHidden:self.shouldHideToolbar
+                                     animated:YES];
   if (self.shouldShowEditButton) {
     self.navigationItem.rightBarButtonItem = [self createEditButton];
   } else {
@@ -95,35 +98,33 @@ NSString* const kSettingsToolbarDeleteButtonId =
                target:self
                action:@selector(deleteButtonCallback)];
     _deleteButton.accessibilityIdentifier = kSettingsToolbarDeleteButtonId;
-    _deleteButton.tintColor = [UIColor redColor];
+    _deleteButton.tintColor = [UIColor colorNamed:kRedColor];
   }
   return _deleteButton;
 }
 
 #pragma mark - UIViewController
 
-- (NSArray<UIBarButtonItem*>*)toolbarItems {
+- (void)viewDidLoad {
   UIBarButtonItem* flexibleSpace = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                            target:nil
                            action:nil];
-  return @[ flexibleSpace, self.deleteButton, flexibleSpace ];
-}
-
-- (void)viewDidLoad {
+  [self setToolbarItems:@[ flexibleSpace, self.deleteButton, flexibleSpace ]
+               animated:YES];
   if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
-    self.styler.tableViewBackgroundColor = UIColor.whiteColor;
+    self.styler.tableViewBackgroundColor = UIColor.cr_systemBackgroundColor;
   } else {
     self.styler.tableViewBackgroundColor =
-        [UIColor groupTableViewBackgroundColor];
+        UIColor.cr_systemGroupedBackgroundColor;
   }
-  self.styler.tableViewSectionHeaderBlurEffect = nil;
   [super viewDidLoad];
   if (base::FeatureList::IsEnabled(kSettingsRefresh)) {
     self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
   }
-  self.styler.cellBackgroundColor = [UIColor whiteColor];
-  self.styler.cellTitleColor = [UIColor blackColor];
+  self.styler.cellBackgroundColor =
+      UIColor.cr_secondarySystemGroupedBackgroundColor;
+  self.styler.cellTitleColor = UIColor.cr_labelColor;
   self.tableView.estimatedSectionHeaderHeight = kEstimatedHeaderFooterHeight;
   self.tableView.estimatedRowHeight = kSettingsCellDefaultHeight;
   self.tableView.estimatedSectionFooterHeight = kEstimatedHeaderFooterHeight;
@@ -150,14 +151,18 @@ NSString* const kSettingsToolbarDeleteButtonId =
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
   [super setEditing:editing animated:animated];
   if (!editing)
-    [self.navigationController setToolbarHidden:YES animated:YES];
+    [self.navigationController setToolbarHidden:self.shouldHideToolbar
+                                       animated:YES];
 }
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  // TODO(crbug.com/931173): This is a workaround to fix the vertical alignment
-  // of the back button. Remove once the UIKit bug is fixed.
-  [self.navigationController.navigationBar setNeedsLayout];
+  if (@available(iOS 13, *)) {
+  } else {
+    // This is a workaround to fix the vertical alignment of the back button.
+    // The bug has been fixed in iOS 13. See crbug.com/931173 if needed.
+    [self.navigationController.navigationBar setNeedsLayout];
+  }
 }
 
 #pragma mark - UITableViewDelegate
@@ -177,7 +182,8 @@ NSString* const kSettingsToolbarDeleteButtonId =
     return;
 
   if (self.tableView.indexPathsForSelectedRows.count == 0)
-    [self.navigationController setToolbarHidden:YES animated:YES];
+    [self.navigationController setToolbarHidden:self.shouldHideToolbar
+                                       animated:YES];
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
@@ -243,6 +249,10 @@ NSString* const kSettingsToolbarDeleteButtonId =
 
 #pragma mark - Subclassing
 
+- (BOOL)shouldHideToolbar {
+  return YES;
+}
+
 - (BOOL)shouldShowEditButton {
   return NO;
 }
@@ -253,7 +263,7 @@ NSString* const kSettingsToolbarDeleteButtonId =
 
 - (void)editButtonPressed {
   [self setEditing:!self.tableView.editing animated:YES];
-  [self updateEditButton];
+  [self updateUIForEditState];
 }
 
 - (void)deleteItems:(NSArray<NSIndexPath*>*)indexPaths {
@@ -341,6 +351,13 @@ NSString* const kSettingsToolbarDeleteButtonId =
   }
   self.savedBarButtonItem = nil;
   self.savedBarButtonItemPosition = kUndefinedBarButtonItemPosition;
+}
+
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return YES;
 }
 
 @end

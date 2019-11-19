@@ -6,26 +6,10 @@
 
 #include <algorithm>
 
+#include "base/bits.h"
 #include "base/logging.h"
 
 namespace {
-
-// Returns the number of trailing zeros.
-int FindLSBSetNonZero(uint32_t word) {
-  // Get the LSB, put it on the exponent of a 32 bit float and remove the
-  // mantisa and the bias. This code requires IEEE 32 bit float compliance.
-  float f = static_cast<float>(word & -static_cast<int>(word));
-
-  // We use a union to go around strict-aliasing complains.
-  union {
-    float ieee_float;
-    uint32_t as_uint;
-  } x;
-
-  x.ieee_float = f;
-  return (x.as_uint >> 23) - 0x7f;
-}
-
 // Returns the index of the first bit set to |value| from |word|. This code
 // assumes that we'll be able to find that bit.
 int FindLSBNonEmpty(uint32_t word, bool value) {
@@ -33,7 +17,7 @@ int FindLSBNonEmpty(uint32_t word, bool value) {
   if (!value)
     word = ~word;
 
-  return FindLSBSetNonZero(word);
+  return base::bits::CountTrailingZeroBits(word);
 }
 
 }  // namespace

@@ -62,12 +62,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDiscoverySession {
   virtual void Stop(const base::Closure& callback,
                     const ErrorCallback& error_callback);
 
-  virtual void SetDiscoveryFilter(
-      std::unique_ptr<BluetoothDiscoveryFilter> discovery_filter,
-      const base::Closure& callback,
-      const ErrorCallback& error_callback);
-
   virtual const BluetoothDiscoveryFilter* GetDiscoveryFilter() const;
+
+  base::WeakPtr<BluetoothDiscoverySession> GetWeakPtr();
 
  protected:
   explicit BluetoothDiscoverySession(
@@ -114,7 +111,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDiscoverySession {
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
-  base::WeakPtrFactory<BluetoothDiscoverySession> weak_ptr_factory_;
+  base::WeakPtrFactory<BluetoothDiscoverySession> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothDiscoverySession);
 };

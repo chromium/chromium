@@ -79,8 +79,9 @@ void CRLSetData::ConfigureNetworkService() {
   if (crl_set_path_.empty())
     return;
 
-  base::PostTaskWithTraitsAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&LoadCRLSet, crl_set_path_),
       base::BindOnce(&CRLSetData::UpdateCRLSetOnUI, base::Unretained(this)));
 }

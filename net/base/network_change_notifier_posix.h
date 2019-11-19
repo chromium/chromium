@@ -5,8 +5,11 @@
 #ifndef NET_BASE_NETWORK_CHANGE_NOTIFIER_POSIX_H_
 #define NET_BASE_NETWORK_CHANGE_NOTIFIER_POSIX_H_
 
+#include <memory>
+
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
@@ -49,28 +52,13 @@ class NET_EXPORT NetworkChangeNotifierPosix : public NetworkChangeNotifier {
  private:
   friend class NetworkChangeNotifierPosixTest;
 
-  class DnsConfigService;
-
-  // Thread on which we can run DnsConfigService, which requires a TYPE_IO
-  // message loop.
-  class NotifierThread : public base::Thread {
-   public:
-    NotifierThread();
-    ~NotifierThread() override;
-
-    void OnNetworkChange();
-
-   protected:
-    // base::Thread
-    void Init() override;
-    void CleanUp() override;
-
-   private:
-    std::unique_ptr<DnsConfigService> dns_config_service_;
-    SEQUENCE_CHECKER(sequence_checker_);
-
-    DISALLOW_COPY_AND_ASSIGN(NotifierThread);
-  };
+  // For testing purposes, allows specifying a SystemDnsConfigChangeNotifier.
+  // If |system_dns_config_notifier| is nullptr, NetworkChangeNotifier create a
+  // global one.
+  NetworkChangeNotifierPosix(
+      NetworkChangeNotifier::ConnectionType initial_connection_type,
+      NetworkChangeNotifier::ConnectionSubtype initial_connection_subtype,
+      SystemDnsConfigChangeNotifier* system_dns_config_notifier);
 
   // Calculates parameters used for network change notifier online/offline
   // signals.
@@ -83,8 +71,6 @@ class NET_EXPORT NetworkChangeNotifierPosix : public NetworkChangeNotifier {
   NetworkChangeNotifier::ConnectionType
       connection_type_;        // Guarded by |lock_|.
   double max_bandwidth_mbps_;  // Guarded by |lock_|.
-
-  NotifierThread notifier_thread_;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierPosix);
 };

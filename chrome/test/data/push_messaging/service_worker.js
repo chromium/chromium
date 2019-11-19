@@ -9,13 +9,16 @@ self.importScripts('/push_messaging/push_constants.js');
 // Don't wait for clients of old SW to close before activating.
 self.addEventListener('install', () => skipWaiting());
 
-// The "onpush" event currently understands two values as message payload
-// data coming from the test. Any other input is passed through to the
+// The "onpush" event currently understands the following values as message
+// payload data coming from the test. Any other input is passed through to the
 // document unchanged.
 //
-// "shownotification" - Display a Web Notification with event.waitUntil().
+// "shownotification"
+//     - Display a Web Notification with event.waitUntil().
 // "shownotification-without-waituntil"
 //     - Display a Web Notification without using event.waitUntil().
+// "shownotification-with-showtrigger"
+//     - Display a Web Notification with a showTrigger.
 this.onpush = function(event) {
   if (event.data === null) {
     sendMessageToClients('push', '[NULL]');
@@ -28,12 +31,19 @@ this.onpush = function(event) {
     return;
   }
 
-  var result = registration.showNotification('Push test title', {
+  var notificationOptions = {
     body: 'Push test body',
     tag: 'push_test_tag'
-  });
+  };
 
-  if (data == 'shownotification-without-waituntil') {
+  if (data === 'shownotification-with-showtrigger') {
+    notificationOptions.showTrigger = new TimestampTrigger(Date.now() + 60000);
+  }
+
+  var result =
+      registration.showNotification('Push test title', notificationOptions);
+
+  if (data === 'shownotification-without-waituntil') {
     sendMessageToClients('push', 'immediate:' + data);
     return;
   }
@@ -49,12 +59,15 @@ self.addEventListener('message', function handler (event) {
   let pushSubscriptionOptions = {
       userVisibleOnly: true
   };
-  if (event.data.command == 'workerSubscribe') {
+  if (event.data.command === 'workerSubscribe') {
     pushSubscriptionOptions.applicationServerKey = kApplicationServerKey.buffer;
-  } else if (event.data.command == 'workerSubscribeWithNumericKey') {
+  } else if (event.data.command === 'workerSubscribeWithNumericKey') {
     pushSubscriptionOptions.applicationServerKey =
         new TextEncoder().encode(event.data.key);
-  } else if (event.data.command == 'workerSubscribeNoKey') {
+  } else if (
+      event.data.command === 'workerSubscribePushWithBase64URLEncodedString') {
+    pushSubscriptionOptions.applicationServerKey = kBase64URLEncodedKey;
+  } else if (event.data.command === 'workerSubscribeNoKey') {
     // Nothing to set up
   } else {
     sendMessageToClients('message', 'error - unknown message request');

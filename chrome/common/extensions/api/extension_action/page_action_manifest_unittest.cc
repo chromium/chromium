@@ -57,7 +57,7 @@ TEST_F(PageActionManifestTest, ManifestVersion2DoesntAllowLegacyKeys) {
   EXPECT_TRUE(page_action_info->default_popup_url.is_empty());
 
   LoadAndExpectError("page_action_manifest_version_2b.json",
-                     errors::kInvalidPageActionPopup);
+                     errors::kInvalidActionDefaultPopup);
 }
 
 TEST_F(PageActionManifestTest, LoadPageActionHelper) {
@@ -86,7 +86,7 @@ TEST_F(PageActionManifestTest, LoadPageActionHelper) {
 
   // Invalid title should give an error.
   LoadAndExpectError("page_action_invalid_title.json",
-                     errors::kInvalidPageActionDefaultTitle);
+                     errors::kInvalidActionDefaultTitle);
 
   // Test the "default_popup" key.
   // These tests require an extension_url, so we also load the extension.

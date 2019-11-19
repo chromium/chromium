@@ -6,19 +6,20 @@
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_BASE_H_
 
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace chromeos {
 
 namespace multidevice_setup {
 
-// MultiDeviceSetup implementation which accepts requests to bind to it.
+// MultiDeviceSetup implementation which accepts receivers to bind to it.
 class MultiDeviceSetupBase : public mojom::MultiDeviceSetup {
  public:
   ~MultiDeviceSetupBase() override;
 
-  void BindRequest(mojom::MultiDeviceSetupRequest request);
-  void CloseAllBindings();
+  void BindReceiver(mojo::PendingReceiver<mojom::MultiDeviceSetup> receiver);
+  void CloseAllReceivers();
 
   // Sets the device with the given ID as the multi-device host for this
   // account.
@@ -30,7 +31,7 @@ class MultiDeviceSetupBase : public mojom::MultiDeviceSetup {
   MultiDeviceSetupBase();
 
  private:
-  mojo::BindingSet<mojom::MultiDeviceSetup> bindings_;
+  mojo::ReceiverSet<mojom::MultiDeviceSetup> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupBase);
 };

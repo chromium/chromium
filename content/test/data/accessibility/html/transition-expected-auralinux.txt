@@ -1,4 +1,4 @@
 [document web]
 ++[section]
 ++++[push button] name='GrowButton'
-++++[text] name='Done'
+++++[static] name='Done'

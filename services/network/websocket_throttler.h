@@ -96,7 +96,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebSocketPerProcessThrottler final {
 
   static constexpr int kMaxPendingWebSocketConnections = 255;
 
-  base::WeakPtrFactory<WebSocketPerProcessThrottler> weak_factory_;
+  base::WeakPtrFactory<WebSocketPerProcessThrottler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebSocketPerProcessThrottler);
 };

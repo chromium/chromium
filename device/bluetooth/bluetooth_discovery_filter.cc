@@ -12,6 +12,10 @@
 
 namespace device {
 
+BluetoothDiscoveryFilter::BluetoothDiscoveryFilter() {
+  SetTransport(BluetoothTransport::BLUETOOTH_TRANSPORT_DUAL);
+}
+
 BluetoothDiscoveryFilter::BluetoothDiscoveryFilter(
     BluetoothTransport transport) {
   SetTransport(transport);
@@ -19,9 +23,26 @@ BluetoothDiscoveryFilter::BluetoothDiscoveryFilter(
 
 BluetoothDiscoveryFilter::~BluetoothDiscoveryFilter() = default;
 
+BluetoothDiscoveryFilter::DeviceInfoFilter::DeviceInfoFilter() = default;
+BluetoothDiscoveryFilter::DeviceInfoFilter::DeviceInfoFilter(
+    const DeviceInfoFilter& other) = default;
+BluetoothDiscoveryFilter::DeviceInfoFilter::~DeviceInfoFilter() = default;
+bool BluetoothDiscoveryFilter::DeviceInfoFilter::operator==(
+    const BluetoothDiscoveryFilter::DeviceInfoFilter& other) const {
+  return uuids == other.uuids && name == other.name;
+}
+
+bool BluetoothDiscoveryFilter::DeviceInfoFilter::operator<(
+    const BluetoothDiscoveryFilter::DeviceInfoFilter& other) const {
+  if (name == other.name)
+    return uuids < other.uuids;
+
+  return name < other.name;
+}
+
 bool BluetoothDiscoveryFilter::GetRSSI(int16_t* out_rssi) const {
   DCHECK(out_rssi);
-  if (!rssi_.get())
+  if (!rssi_)
     return false;
 
   *out_rssi = *rssi_;
@@ -29,15 +50,12 @@ bool BluetoothDiscoveryFilter::GetRSSI(int16_t* out_rssi) const {
 }
 
 void BluetoothDiscoveryFilter::SetRSSI(int16_t rssi) {
-  if (!rssi_.get())
-    rssi_.reset(new int16_t());
-
-  *rssi_ = rssi;
+  rssi_ = rssi;
 }
 
 bool BluetoothDiscoveryFilter::GetPathloss(uint16_t* out_pathloss) const {
   DCHECK(out_pathloss);
-  if (!pathloss_.get())
+  if (!pathloss_)
     return false;
 
   *out_pathloss = *pathloss_;
@@ -45,10 +63,7 @@ bool BluetoothDiscoveryFilter::GetPathloss(uint16_t* out_pathloss) const {
 }
 
 void BluetoothDiscoveryFilter::SetPathloss(uint16_t pathloss) {
-  if (!pathloss_.get())
-    pathloss_.reset(new uint16_t());
-
-  *pathloss_ = pathloss;
+  pathloss_ = pathloss;
 }
 
 BluetoothTransport BluetoothDiscoveryFilter::GetTransport() const {
@@ -63,40 +78,28 @@ void BluetoothDiscoveryFilter::SetTransport(BluetoothTransport transport) {
 void BluetoothDiscoveryFilter::GetUUIDs(
     std::set<device::BluetoothUUID>& out_uuids) const {
   out_uuids.clear();
-
-  for (const auto& uuid : uuids_)
-    out_uuids.insert(*uuid);
+  for (const auto& device_filter : device_filters_) {
+    for (const auto& uuid : device_filter.uuids) {
+      out_uuids.insert(uuid);
+    }
+  }
 }
 
-void BluetoothDiscoveryFilter::AddUUID(const device::BluetoothUUID& uuid) {
-  DCHECK(uuid.IsValid());
-  for (const auto& uuid_it : uuids_) {
-    if (*uuid_it == uuid)
-      return;
-  }
-
-  uuids_.push_back(std::make_unique<device::BluetoothUUID>(uuid));
+void BluetoothDiscoveryFilter::AddDeviceFilter(
+    const BluetoothDiscoveryFilter::DeviceInfoFilter& device_filter) {
+  device_filters_.insert(device_filter);
 }
 
 void BluetoothDiscoveryFilter::CopyFrom(
     const BluetoothDiscoveryFilter& filter) {
   transport_ = filter.transport_;
 
-  if (filter.uuids_.size()) {
-    for (const auto& uuid : filter.uuids_)
-      AddUUID(*uuid);
-  } else
-    uuids_.clear();
+  device_filters_.clear();
+  for (const auto& device_filter : filter.device_filters_)
+    AddDeviceFilter(device_filter);
 
-  if (filter.rssi_.get()) {
-    SetRSSI(*filter.rssi_);
-  } else
-    rssi_.reset();
-
-  if (filter.pathloss_.get()) {
-    SetPathloss(*filter.pathloss_);
-  } else
-    pathloss_.reset();
+  rssi_ = filter.rssi_;
+  pathloss_ = filter.pathloss_;
 }
 
 std::unique_ptr<device::BluetoothDiscoveryFilter>
@@ -122,28 +125,26 @@ BluetoothDiscoveryFilter::Merge(
 
   // if both filters have uuids, them merge them. Otherwise uuids filter should
   // be left empty
-  if (filter_a->uuids_.size() && filter_b->uuids_.size()) {
-    std::set<device::BluetoothUUID> uuids;
-    filter_a->GetUUIDs(uuids);
-    for (auto& uuid : uuids)
-      result->AddUUID(uuid);
+  if (!filter_a->device_filters_.empty() &&
+      !filter_b->device_filters_.empty()) {
+    for (const auto& device_filter : filter_a->device_filters_)
+      result->AddDeviceFilter(device_filter);
 
-    filter_b->GetUUIDs(uuids);
-    for (auto& uuid : uuids)
-      result->AddUUID(uuid);
+    for (const auto& device_filter : filter_b->device_filters_)
+      result->AddDeviceFilter(device_filter);
   }
 
-  if ((filter_a->rssi_.get() && filter_b->pathloss_.get()) ||
-      (filter_a->pathloss_.get() && filter_b->rssi_.get())) {
+  if ((filter_a->rssi_ && filter_b->pathloss_) ||
+      (filter_a->pathloss_ && filter_b->rssi_)) {
     // if both rssi and pathloss filtering is enabled in two different
     // filters, we can't tell which filter is more generic, and we don't set
     // proximity filtering on merged filter.
     return result;
   }
 
-  if (filter_a->rssi_.get() && filter_b->rssi_.get()) {
+  if (filter_a->rssi_ && filter_b->rssi_) {
     result->SetRSSI(std::min(*filter_a->rssi_, *filter_b->rssi_));
-  } else if (filter_a->pathloss_.get() && filter_b->pathloss_.get()) {
+  } else if (filter_a->pathloss_ && filter_b->pathloss_) {
     result->SetPathloss(std::max(*filter_a->pathloss_, *filter_b->pathloss_));
   }
 
@@ -152,31 +153,26 @@ BluetoothDiscoveryFilter::Merge(
 
 bool BluetoothDiscoveryFilter::Equals(
     const BluetoothDiscoveryFilter& other) const {
-  if (((!!rssi_.get()) != (!!other.rssi_.get())) ||
-      (rssi_.get() && other.rssi_.get() && *rssi_ != *other.rssi_)) {
+  if ((rssi_.has_value() != other.rssi_.has_value()) ||
+      (rssi_ && other.rssi_ && *rssi_ != *other.rssi_))
     return false;
-  }
 
-  if (((!!pathloss_.get()) != (!!other.pathloss_.get())) ||
-      (pathloss_.get() && other.pathloss_.get() &&
-       *pathloss_ != *other.pathloss_)) {
+  if ((pathloss_.has_value() != other.pathloss_.has_value()) ||
+      (pathloss_ && other.pathloss_ && *pathloss_ != *other.pathloss_)) {
     return false;
   }
 
   if (transport_ != other.transport_)
     return false;
 
-  std::set<device::BluetoothUUID> uuids_a, uuids_b;
-  GetUUIDs(uuids_a);
-  other.GetUUIDs(uuids_b);
-  if (uuids_a != uuids_b)
+  if (device_filters_ != other.device_filters_)
     return false;
 
   return true;
 }
 
 bool BluetoothDiscoveryFilter::IsDefault() const {
-  return !(rssi_.get() || pathloss_.get() || uuids_.size() ||
+  return !(rssi_ || pathloss_ || !device_filters_.empty() ||
            transport_ != BLUETOOTH_TRANSPORT_DUAL);
 }
 

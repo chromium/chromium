@@ -5,12 +5,14 @@
 #ifndef COMPONENTS_SYNC_TEST_FAKE_SERVER_FAKE_SERVER_HTTP_POST_PROVIDER_H_
 #define COMPONENTS_SYNC_TEST_FAKE_SERVER_FAKE_SERVER_HTTP_POST_PROVIDER_H_
 
+#include <atomic>
 #include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
@@ -54,12 +56,18 @@ class FakeServerHttpPostProvider
  private:
   friend class base::RefCountedThreadSafe<FakeServerHttpPostProvider>;
 
-  static bool network_enabled_;
+  void HandleCommandOnFakeServerThread(int* http_status_code,
+                                       std::string* response);
+
+  static std::atomic_bool network_enabled_;
 
   // |fake_server_| should only be dereferenced on the same thread as
   // |fake_server_task_runner_| runs on.
   base::WeakPtr<FakeServer> fake_server_;
   scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner_;
+
+  base::WaitableEvent synchronous_post_completion_;
+  std::atomic_bool aborted_;
 
   std::string response_;
   std::string request_url_;
@@ -67,6 +75,8 @@ class FakeServerHttpPostProvider
   std::string request_content_;
   std::string request_content_type_;
   std::string extra_request_headers_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   DISALLOW_COPY_AND_ASSIGN(FakeServerHttpPostProvider);
 };
@@ -80,9 +90,6 @@ class FakeServerHttpPostProviderFactory
   ~FakeServerHttpPostProviderFactory() override;
 
   // HttpPostProviderFactory:
-  void Init(
-      const std::string& user_agent,
-      const syncer::BindToTrackerCallback& bind_to_tracker_callback) override;
   syncer::HttpPostProviderInterface* Create() override;
   void Destroy(syncer::HttpPostProviderInterface* http) override;
 

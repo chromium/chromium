@@ -1,0 +1,36 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//third_party/blink/public/mojom/webauthn/authenticator.mojom"
+public_headers = [
+  "//device/fido/authenticator_selection_criteria.h",
+  "//device/fido/fido_transport_protocol.h",
+  "//device/fido/cable/cable_discovery_data.h",
+  "//device/fido/public_key_credential_descriptor.h",
+  "//device/fido/public_key_credential_params.h",
+  "//device/fido/public_key_credential_rp_entity.h",
+  "//device/fido/public_key_credential_user_entity.h",
+  "//device/fido/fido_types.h",
+]
+traits_headers = [ "//content/browser/webauth/authenticator_mojom_traits.h" ]
+sources = [
+  "//content/browser/webauth/authenticator_mojom_traits.cc",
+  "//content/browser/webauth/authenticator_mojom_traits.h",
+]
+public_deps = [
+  "//device/fido",
+]
+type_mappings = [
+  "blink.mojom.AuthenticatorTransport=::device::FidoTransportProtocol",
+  "blink.mojom.PublicKeyCredentialType=::device::CredentialType",
+  "blink.mojom.PublicKeyCredentialParameters=::device::PublicKeyCredentialParams::CredentialInfo",
+  "blink.mojom.PublicKeyCredentialDescriptor=::device::PublicKeyCredentialDescriptor",
+  "blink.mojom.AuthenticatorAttachment=::device::AuthenticatorAttachment",
+  "blink.mojom.UserVerificationRequirement=::device::UserVerificationRequirement",
+  "blink.mojom.AuthenticatorSelectionCriteria=::device::AuthenticatorSelectionCriteria",
+  "blink.mojom.PublicKeyCredentialRpEntity=::device::PublicKeyCredentialRpEntity",
+  "blink.mojom.PublicKeyCredentialUserEntity=::device::PublicKeyCredentialUserEntity",
+  "blink.mojom.CableAuthentication=::device::CableDiscoveryData",
+  "blink.mojom.AttestationConveyancePreference=::device::AttestationConveyancePreference",
+]

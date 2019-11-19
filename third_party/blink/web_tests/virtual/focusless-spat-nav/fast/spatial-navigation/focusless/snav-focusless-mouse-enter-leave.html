@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<script src="../../../../../resources/testharness.js"></script>
+<script src="../../../../../resources/testharnessreport.js"></script>
+<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="file:///gen/third_party/blink/public/mojom/page/spatial_navigation.mojom.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/mock-snav-service.js"></script>
+<script src="../../../../../fast/spatial-navigation/resources/snav-testharness.js"></script>
+
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    margin: 5px;
+    border: 1px solid black;
+  }
+  div:hover {
+    background-color: dodgerblue;
+  }
+  iframe {
+    width: 200px;
+    height: 200px;
+  }
+</style>
+
+<div id="first" tabindex="0">First</div>
+<iframe srcdoc="
+    <!DOCTYPE html>
+    <style>
+      div:hover {
+        background-color: dodgerblue;
+      }
+      div {
+        width: 100px;
+        height: 100px;
+        margin: 5px;
+        border: 1px solid black;
+      }
+    </style>
+    <div id='second' tabindex='0'>Second</div>"></iframe>
+<div id="third" tabindex="0">Third</div>
+
+<script>
+  const iframe = document.querySelector("iframe");
+  iframe.onload = () => {
+    // This test checks whether mouse "boundary" events like mouse enter and
+    // mouse leave are fired when spatial navigation moves from element to
+    // element.
+    const first = document.getElementById("first");
+    const second = iframe.contentDocument.getElementById("second");
+    const third = document.getElementById("third");
+
+    const eventNames = ['mouseenter', 'mouseleave', 'mouseover', 'mouseout'];
+    const elements = [first, second, third];
+
+    function reset() {
+      elements.forEach(element => {
+        element.eventList = [];
+      });
+    }
+
+    reset();
+
+    eventNames.forEach(event => {
+      elements.forEach(element => {
+        element.addEventListener(event, () => { element.eventList.push(event); });
+      });
+    });
+
+    test(() => {
+      // Moves interest to |first| element.
+      snav.triggerMove("Down");
+
+      assert_equals(window.internals.interestedElement,
+                    first, "|first| element gets interest.");
+      assert_equals(first.eventList.join(), "mouseover,mouseenter", "|first| events");
+      assert_equals(second.eventList.join(), "",  "|second| events");
+      assert_equals(third.eventList.join(), "", "|third| events");
+    }, "Interest on |first|");
+
+    reset();
+
+    test(() => {
+      // Moves interest to |iframe| element.
+      snav.triggerMove("Down");
+      assert_equals(window.internals.interestedElement,
+                    iframe, "|iframe| element gets interest.");
+      assert_equals(first.eventList.join(), "mouseout,mouseleave", "|first| events");
+      assert_equals(second.eventList.join(), "",  "|second| events");
+      assert_equals(third.eventList.join(), "", "|third| events");
+    }, "Interest on |iframe|");
+
+    reset();
+
+    test(() => {
+      // Moves interest to |second| element.
+      snav.triggerMove("Down");
+      assert_equals(window.internals.interestedElement,
+                    second, "|second| element gets interest.");
+      assert_equals(first.eventList.join(), "", "|first| events");
+      assert_equals(second.eventList.join(), "mouseover,mouseenter",  "|second| events");
+      assert_equals(third.eventList.join(), "", "|third| events");
+    }, "Interest on |second|");
+
+    reset();
+
+    test(() => {
+      // Moves interest to |second| element.
+      snav.triggerMove("Down");
+      assert_equals(window.internals.interestedElement,
+                    third, "|third| element gets interest.");
+      assert_equals(first.eventList.join(), "", "|first| events");
+      assert_equals(second.eventList.join(), "mouseout,mouseleave",  "|second| events");
+      assert_equals(third.eventList.join(), "mouseover,mouseenter", "|third| events");
+    }, "Interest on |third|");
+
+    reset();
+
+    test(() => {
+      // Moves interest to |second| element.
+      // TODO(bokan): Need to implement clearing interest when element is removed.
+      //third.remove();
+      //assert_equals(window.internals.interestedElement,
+      //              null, "interest was cleared");
+      //assert_equals(first.eventList.join(), "", "|first| events");
+      //assert_equals(second.eventList.join(), "",  "|second| events");
+      //assert_equals(third.eventList.join(), "mouseout,mouseleave", "|third| events");
+    }, "Interest cleared");
+  }
+</script>

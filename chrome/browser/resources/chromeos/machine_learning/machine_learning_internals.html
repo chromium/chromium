@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Machine Learning Internals</title>
+  <link rel="stylesheet" href="chrome://resources/css/tabs.css">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+
+  <script src="chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js">
+  </script>
+
+  <script src="chrome://resources/js/cr.js"></script>
+  <script src="chrome://resources/js/cr/ui.js"></script>
+  <script src="chrome://resources/js/cr/ui/focus_outline_manager.js"></script>
+  <script src="chrome://resources/js/cr/ui/tabs.js"></script>
+  <script src="chrome://resources/js/util.js"></script>
+  <script src="chromeos/services/machine_learning/public/mojom/tensor.mojom-lite.js"></script>
+  <script src="chromeos/services/machine_learning/public/mojom/graph_executor.mojom-lite.js"></script>
+  <script src="chromeos/services/machine_learning/public/mojom/model.mojom-lite.js"></script>
+  <script src="chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom-lite.js"></script>
+  <script src="chrome/browser/ui/webui/chromeos/machine_learning/machine_learning_internals_page_handler.mojom-lite.js"></script>
+</head>
+
+<body>
+  <tabbox id="machine-learning-internals-page">
+    <tabs>
+      <tab>Test Model</tab>
+    </tabs>
+    <tabpanels>
+      <tabpanel>
+        <p id='test-model-status'>Model not loaded.</p>
+        <p>
+          <label>
+            Input X: <input id='test-input-x' value='1' type='text' size='40'>
+          </label>
+        </p>
+        <p>
+          <label>
+            Input Y: <input id='test-input-y' value='2' type='text' size='40'>
+          </label>
+        </p>
+        <button id="test-execute">Execute model</button>
+        <p id="test-status"></p>
+        <p id="test-output"></p>
+      </tabpanel>
+    </tabpanels>
+  </tabbox>
+  <script src="machine_learning_internals_utils.js"></script>
+  <script src="machine_learning_internals.js"></script>
+  <script src="test_model_tab.js"></script>
+</body>
+</html>

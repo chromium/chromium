@@ -39,7 +39,7 @@ __gCrWeb.translate['installCallbacks'] = function() {
         'errorCode': cr.googleTranslate.errorCode,
         'loadTime': cr.googleTranslate.loadTime,
         'readyTime': cr.googleTranslate.readyTime});
-  }
+  };
 
   /**
    * Sets a callback to inform host of the result of translation.
@@ -50,7 +50,7 @@ __gCrWeb.translate['installCallbacks'] = function() {
         'errorCode': cr.googleTranslate.errorCode,
         'originalPageLanguage': cr.googleTranslate.sourceLang,
         'translationTime': cr.googleTranslate.translationTime});
-  }
+  };
 
   /**
    * Sets a callback to inform host to download javascript.
@@ -59,7 +59,7 @@ __gCrWeb.translate['installCallbacks'] = function() {
     __gCrWeb.message.invokeOnHost({
         'command': 'translate.loadjavascript',
         'url': url});
-  }
+  };
 };
 
 /**
@@ -75,7 +75,7 @@ if (typeof(XMLHttpRequest.prototype.realOpen) == 'undefined') {
     this.savedUser = user;
     this.savedPassword = password;
     this.realOpen(method, url, async, user, password);
-  }
+  };
 }
 
 /**
@@ -106,7 +106,7 @@ if (typeof(XMLHttpRequest.prototype.realSend) == 'undefined') {
     } else {
       this.realSend(body);
     }
-  }
+  };
 }
 
 /**

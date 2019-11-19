@@ -5,22 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_LAYER_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_LAYER_DELEGATE_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "cc/input/scrollbar.h"
-#include "cc/paint/paint_canvas.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-
-namespace cc {
-class PaintCanvas;
-}
 
 namespace blink {
 
 class Scrollbar;
-class ScrollbarTheme;
 
 // Implementation of cc::Scrollbar, providing a delegate to query about
 // scrollbar state and to paint the image in the scrollbar.
@@ -28,34 +20,38 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
  public:
   ScrollbarLayerDelegate(blink::Scrollbar& scrollbar,
                          float device_scale_factor);
-  ~ScrollbarLayerDelegate() override;
 
   // cc::Scrollbar implementation.
   cc::ScrollbarOrientation Orientation() const override;
   bool IsLeftSideVerticalScrollbar() const override;
   bool HasThumb() const override;
+  bool IsSolidColor() const override;
   bool IsOverlay() const override;
-  gfx::Point Location() const override;
-  int ThumbThickness() const override;
-  int ThumbLength() const override;
+  bool SupportsDragSnapBack() const override;
+
+  // The following rects are all relative to the scrollbar's origin.
+  gfx::Rect ThumbRect() const override;
   gfx::Rect TrackRect() const override;
+  gfx::Rect BackButtonRect() const override;
+  gfx::Rect ForwardButtonRect() const override;
+
   float ThumbOpacity() const override;
-  bool NeedsPaintPart(cc::ScrollbarPart part) const override;
+  bool NeedsRepaintPart(cc::ScrollbarPart part) const override;
   bool HasTickmarks() const override;
   void PaintPart(cc::PaintCanvas* canvas,
                  cc::ScrollbarPart part,
-                 const gfx::Rect& content_rect) override;
+                 const gfx::Rect& rect) override;
 
   bool UsesNinePatchThumbResource() const override;
   gfx::Size NinePatchThumbCanvasSize() const override;
   gfx::Rect NinePatchThumbAperture() const override;
 
  private:
-  // Accessed by main and compositor threads, e.g., the compositor thread
-  // checks |Orientation()|.
-  CrossThreadPersistent<blink::Scrollbar> scrollbar_;
+  ~ScrollbarLayerDelegate() override;
 
-  ScrollbarTheme& theme_;
+  bool ShouldPaint() const;
+
+  Persistent<blink::Scrollbar> scrollbar_;
   float device_scale_factor_;
 
   DISALLOW_COPY_AND_ASSIGN(ScrollbarLayerDelegate);

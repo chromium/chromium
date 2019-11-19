@@ -6,31 +6,44 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   deps = [
-    ":account_manager",
-    ":account_manager_browser_proxy",
-    ":change_picture",
-    ":change_picture_browser_proxy",
-    ":fingerprint_browser_proxy",
-    ":fingerprint_list",
-    ":import_data_browser_proxy",
-    ":import_data_dialog",
-    ":lock_screen",
-    ":lock_screen_password_prompt_dialog",
-    ":lock_state_behavior",
-    ":manage_profile",
-    ":manage_profile_browser_proxy",
     ":people_page",
     ":profile_info_browser_proxy",
-    ":setup_fingerprint_dialog",
-    ":setup_pin_dialog",
     ":signout_dialog",
-    ":sync_account_control",
     ":sync_browser_proxy",
     ":sync_page",
-    ":user_list",
-    ":users_add_user_dialog",
-    ":users_page",
   ]
+
+  if (!is_chromeos) {
+    deps += [
+      ":import_data_browser_proxy",
+      ":import_data_dialog",
+      ":manage_profile",
+      ":manage_profile_browser_proxy",
+      ":sync_account_control",
+    ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      ":account_manager",
+      ":account_manager_browser_proxy",
+      ":change_picture",
+      ":change_picture_browser_proxy",
+      ":fingerprint_browser_proxy",
+      ":fingerprint_list",
+      ":kerberos_accounts",
+      ":kerberos_accounts_browser_proxy",
+      ":kerberos_add_account_dialog",
+      ":lock_screen",
+      ":lock_screen_password_prompt_dialog",
+      ":lock_state_behavior",
+      ":setup_fingerprint_dialog",
+      ":setup_pin_dialog",
+      ":user_list",
+      ":users_add_user_dialog",
+      ":users_page",
+    ]
+  }
 }
 
 js_library("account_manager") {
@@ -88,12 +101,38 @@ js_library("fingerprint_list") {
     "//ui/webui/resources/js:web_ui_listener_behavior",
     "//ui/webui/resources/js/cr/ui:focus_without_ink",
   ]
-  externs_list = [ "$externs_path/web_animations.js" ]
 }
 
 js_library("import_data_browser_proxy") {
   deps = [
     "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("kerberos_accounts") {
+  deps = [
+    ":kerberos_accounts_browser_proxy",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:icon",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
+  ]
+}
+
+js_library("kerberos_accounts_browser_proxy") {
+  deps = [
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
+js_library("kerberos_add_account_dialog") {
+  deps = [
+    ":kerberos_accounts_browser_proxy",
+    "//chrome/browser/resources/settings/controls:settings_textarea",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
+    "//ui/webui/resources/js:cr",
+    "//ui/webui/resources/js:i18n_behavior",
+    "//ui/webui/resources/js:web_ui_listener_behavior",
   ]
 }
 
@@ -182,7 +221,8 @@ js_library("profile_info_browser_proxy") {
 js_library("setup_fingerprint_dialog") {
   deps = [
     ":fingerprint_browser_proxy",
-    "//ui/webui/resources/cr_elements/chromeos/fingerprint:cr_fingerprint_progress_arc",
+    "//ui/webui/resources/cr_elements/chromeos/cr_lottie:cr_lottie",
+    "//ui/webui/resources/cr_elements/cr_fingerprint:cr_fingerprint_progress_arc",
     "//ui/webui/resources/js:i18n_behavior",
     "//ui/webui/resources/js:web_ui_listener_behavior",
   ]

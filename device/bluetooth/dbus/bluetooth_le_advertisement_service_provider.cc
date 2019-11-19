@@ -45,8 +45,7 @@ class BluetoothAdvertisementServiceProviderImpl
         service_uuids_(std::move(service_uuids)),
         manufacturer_data_(std::move(manufacturer_data)),
         solicit_uuids_(std::move(solicit_uuids)),
-        service_data_(std::move(service_data)),
-        weak_ptr_factory_(this) {
+        service_data_(std::move(service_data)) {
     DCHECK(bus);
     DCHECK(delegate);
 
@@ -399,7 +398,7 @@ class BluetoothAdvertisementServiceProviderImpl
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdvertisementServiceProviderImpl>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(BluetoothAdvertisementServiceProviderImpl);
 };

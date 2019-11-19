@@ -66,7 +66,7 @@ class BrowsingDataRemoverCompletionInhibitor {
 
  protected:
   virtual void OnBrowsingDataRemoverWouldComplete(
-      const base::Closure& continue_to_completion);
+      base::OnceClosure continue_to_completion);
 
  private:
   void FlushForTestingComplete();
@@ -83,7 +83,7 @@ class BrowsingDataRemoverCompletionInhibitor {
   BrowsingDataRemover* remover_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-  base::Closure continue_to_completion_callback_;
+  base::OnceClosure continue_to_completion_callback_;
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverCompletionInhibitor);

@@ -25,5 +25,7 @@
 
 // https://dom.spec.whatwg.org/#xmldocument
 
-interface XMLDocument : Document {
+[
+    Exposed=Window
+] interface XMLDocument : Document {
 };

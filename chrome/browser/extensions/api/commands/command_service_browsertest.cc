@@ -10,11 +10,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/api/commands/command_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/manifest_constants.h"
 
 namespace {
@@ -64,15 +64,14 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
                                scoped_temp_dir.GetPath().AppendASCII("v2.crx"),
                                pem_path, base::FilePath());
 
-  ExtensionService* service = ExtensionSystem::Get(browser()->profile())->
-      extension_service();
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser()->profile());
   CommandService* command_service = CommandService::Get(browser()->profile());
 
   const char kId[] = "pgoakhfeplldmjheffidklpoklkppipp";
 
   // Install v1 of the extension.
   ASSERT_TRUE(InstallExtension(path_v1, 1));
-  EXPECT_TRUE(service->GetExtensionById(kId, false) != NULL);
+  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED));
 
   // Verify it has a command of Alt+Shift+F.
   ui::Accelerator accelerator = command_service->FindCommandByName(
@@ -93,7 +92,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, RemoveShortcutSurvivesUpdate) {
 
   // Update to version 2.
   EXPECT_TRUE(UpdateExtension(kId, path_v2, 0));
-  EXPECT_TRUE(service->GetExtensionById(kId, false) != NULL);
+  EXPECT_TRUE(registry->GetExtensionById(kId, ExtensionRegistry::ENABLED));
 
   // Verify it is still set to nothing.
   accelerator = command_service->FindCommandByName(

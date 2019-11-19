@@ -2,11 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {changeFolderOpen, selectFolder} from './actions.js';
+import {ROOT_NODE_ID, FOLDER_OPEN_BY_DEFAULT_DEPTH, MenuSource} from './constants.js';
+import {CommandManager} from './command_manager.js';
+import './shared_style.js';
+import {StoreClient} from './store_client.js';
+import './strings.m.js';
+import {BookmarkNode, BookmarksPageState} from './types.js';
+import {hasChildFolders, isShowingSearch} from './util.js';
+
 Polymer({
   is: 'bookmarks-folder-node',
 
+  _template: html`{__html_template__}`,
+
   behaviors: [
-    bookmarks.StoreClient,
+    StoreClient,
   ],
 
   properties: {
@@ -63,33 +78,33 @@ Polymer({
 
   /** @override */
   attached: function() {
-    this.watch('item_', (state) => state.nodes[this.itemId]);
-    this.watch('openState_', (state) => {
-      return state.folderOpenState.has(this.itemId) ?
-          state.folderOpenState.get(this.itemId) :
+    this.watch('item_', state => {
+      return /** @type {!BookmarksPageState} */ (state).nodes[this.itemId];
+    });
+    this.watch('openState_', state => {
+      const bookmarksState = /** @type {!BookmarksPageState} */ (state);
+      return bookmarksState.folderOpenState.has(this.itemId) ?
+          bookmarksState.folderOpenState.get(this.itemId) :
           null;
     });
-    this.watch('selectedFolder_', function(state) {
-      return state.selectedFolder;
+    this.watch('selectedFolder_', state => {
+      return /** @type {!BookmarksPageState} */ (state).selectedFolder;
     });
-    this.watch('searchActive_', function(state) {
-      return bookmarks.util.isShowingSearch(state);
+    this.watch('searchActive_', state => {
+      return isShowingSearch(/** @type {!BookmarksPageState} */(state));
     });
 
     this.updateFromStore();
   },
 
-  /**
-   * Overriden from bookmarks.MouseFocusBehavior.
-   * @return {!HTMLElement}
-   */
+  /** @return {!HTMLElement} */
   getFocusTarget: function() {
-    return this.$.container;
+    return /** @type {!HTMLDivElement} */ (this.$.container);
   },
 
   /** @return {HTMLElement} */
   getDropTarget: function() {
-    return this.$.container;
+    return /** @type {!HTMLDivElement} */ (this.$.container);
   },
 
   /**
@@ -122,7 +137,7 @@ Polymer({
         xDirection, yDirection, this.root.activeElement);
 
     if (!handled) {
-      handled = bookmarks.CommandManager.getInstance().handleKeyEvent(
+      handled = CommandManager.getInstance().handleKeyEvent(
           e, new Set([this.itemId]));
     }
 
@@ -151,7 +166,7 @@ Polymer({
       if (this.hasChildFolder_) {
         if (!this.isOpen) {
           this.dispatch(
-              bookmarks.actions.changeFolderOpen(this.item_.id, true));
+              changeFolderOpen(this.item_.id, true));
         } else {
           yDirection = 1;
         }
@@ -160,7 +175,7 @@ Polymer({
       // The left arrow closes a folder if open and goes to the parent
       // otherwise.
       if (this.hasChildFolder_ && this.isOpen) {
-        this.dispatch(bookmarks.actions.changeFolderOpen(this.item_.id, false));
+        this.dispatch(changeFolderOpen(this.item_.id, false));
       } else {
         const parentFolderNode = this.getParentFolderNode_();
         if (parentFolderNode.itemId != ROOT_NODE_ID) {
@@ -269,7 +284,7 @@ Polymer({
   selectFolder_: function() {
     if (!this.isSelectedFolder_) {
       this.dispatch(
-          bookmarks.actions.selectFolder(this.itemId, this.getState().nodes));
+          selectFolder(this.itemId, this.getState().nodes));
     }
   },
 
@@ -280,7 +295,7 @@ Polymer({
   onContextMenu_: function(e) {
     e.preventDefault();
     this.selectFolder_();
-    bookmarks.CommandManager.getInstance().openCommandMenuAtPosition(
+    CommandManager.getInstance().openCommandMenuAtPosition(
         e.clientX, e.clientY, MenuSource.TREE, new Set([this.itemId]));
   },
 
@@ -299,7 +314,7 @@ Polymer({
    */
   toggleFolder_: function(e) {
     this.dispatch(
-        bookmarks.actions.changeFolderOpen(this.itemId, !this.isOpen));
+        changeFolderOpen(this.itemId, !this.isOpen));
     e.stopPropagation();
   },
 
@@ -326,7 +341,7 @@ Polymer({
    * @return {boolean}
    */
   computeHasChildFolder_: function() {
-    return bookmarks.util.hasChildFolders(this.itemId, this.getState().nodes);
+    return hasChildFolders(this.itemId, this.getState().nodes);
   },
 
   /** @private */
@@ -408,15 +423,5 @@ Polymer({
   computeIsOpen_: function(openState, depth) {
     return openState != null ? openState :
                                depth <= FOLDER_OPEN_BY_DEFAULT_DEPTH;
-  },
-
-  /**
-   * @private
-   * @return {string}
-   */
-  getButtonAriaLabel_: function() {
-    return loadTimeData.getStringF(
-        this.isOpen ? 'sidebarNodeCollapseAxLabel' : 'sidebarNodeExpandAxLabel',
-        this.item_.title);
   },
 });

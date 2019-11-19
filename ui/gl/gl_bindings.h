@@ -127,7 +127,7 @@
 
 // GL_ANGLE_request_extension
 #define GL_REQUESTABLE_EXTENSIONS_ANGLE 0x93A8
-#define GL_NUM_REQUESTABLE_EXTENSIONS_ANGLE 0x93A8
+#define GL_NUM_REQUESTABLE_EXTENSIONS_ANGLE 0x93A9
 
 // GL_ANGLE_memory_size
 #define GL_MEMORY_SIZE_ANGLE 0x93AD
@@ -144,12 +144,16 @@
 
 // GL_CHROMIUM_command_buffer_query
 #define GL_COMMANDS_ISSUED_CHROMIUM                      0x6004
+#define GL_COMMANDS_ISSUED_TIMESTAMP_CHROMIUM            0x6005
 
 /* GL_CHROMIUM_get_error_query */
 #define GL_GET_ERROR_QUERY_CHROMIUM                      0x6003
 
 /* GL_CHROMIUM_command_buffer_latency_query */
 #define GL_LATENCY_QUERY_CHROMIUM                        0x6007
+
+/* GL_CHROMIUM_program_completion_query */
+#define GL_PROGRAM_COMPLETION_QUERY_CHROMIUM 0x6009
 
 /* GL_CHROMIUM_async_pixel_transfers */
 #define GL_ASYNC_PIXEL_PACK_COMPLETED_CHROMIUM           0x6006
@@ -165,6 +169,9 @@
 
 // GL_CHROMIUM_ycbcr_420v_image
 #define GL_RGB_YCBCR_420V_CHROMIUM 0x78FC
+
+// GL_CHROMIUM_ycbcr_p010_image
+#define GL_RGB_YCBCR_P010_CHROMIUM 0x78FD
 
 // GL_CHROMIUM_schedule_overlay_plane
 #define GL_OVERLAY_TRANSFORM_NONE_CHROMIUM               0x9245
@@ -186,6 +193,7 @@
 #define GL_COLOR_SPACE_SCRGB_LINEAR_CHROMIUM 0x8AF2
 #define GL_COLOR_SPACE_SRGB_CHROMIUM 0x8AF3
 #define GL_COLOR_SPACE_DISPLAY_P3_CHROMIUM 0x8AF4
+#define GL_COLOR_SPACE_HDR10_CHROMIUM 0x8AF5
 
 // GL_CHROMIUM_texture_storage_image
 #define GL_SCANOUT_CHROMIUM 0x6000
@@ -424,8 +432,8 @@
 
 #ifndef GL_CHROMIUM_shared_image
 #define GL_CHROMIUM_shared_image 1
-#define GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM 0x8AF5
-#define GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM 0x8AF6
+#define GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM 0x8AF6
+#define GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM 0x8AF7
 #endif /* GL_CHROMIUM_shared_image */
 
 #ifndef GL_NV_internalformat_sample_query
@@ -451,7 +459,7 @@
 #define GL_SERVICE_LOG_CODE_BLOCK(code) code
 #endif
 
-// ANGLE_multiview constants.
+// OVR_multiview2 constants.
 #define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_NUM_VIEWS_OVR 0x9630
 #define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_BASE_VIEW_INDEX_OVR 0x9632
 #define GL_MAX_VIEWS_OVR 0x9631

@@ -13,16 +13,14 @@
 #include "base/callback_forward.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_data_delegate.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/chromeos/extensions/external_cache.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/account_id/account_id.h"
-#include "ui/gfx/image/image_skia.h"
 
 class GURL;
 class PrefRegistrySimple;
@@ -41,12 +39,11 @@ namespace chromeos {
 class AppSession;
 class ExternalCache;
 class KioskAppData;
-class KioskAppManagerObserver;
 class KioskExternalUpdater;
 class OwnerSettingsServiceChromeOS;
 
 // KioskAppManager manages cached app data.
-class KioskAppManager : public KioskAppDataDelegate,
+class KioskAppManager : public KioskAppManagerBase,
                         public ExternalCacheDelegate {
  public:
   enum ConsumerKioskAutoLaunchStatus {
@@ -63,23 +60,6 @@ class KioskAppManager : public KioskAppDataDelegate,
   typedef base::Callback<void(ConsumerKioskAutoLaunchStatus status)>
       GetConsumerKioskAutoLaunchStatusCallback;
 
-  // Struct to hold app info returned from GetApps() call.
-  struct App {
-    App(const KioskAppData& data,
-        bool is_extension_pending,
-        bool was_auto_launched_with_zero_delay);
-    App();
-    App(const App& other);
-    ~App();
-
-    std::string app_id;
-    AccountId account_id;
-    std::string name;
-    gfx::ImageSkia icon;
-    std::string required_platform_version;
-    bool is_loading;
-    bool was_auto_launched_with_zero_delay;
-  };
   typedef std::vector<App> Apps;
 
   // Interface that can be used to override default KioskAppManager behavior.
@@ -110,9 +90,6 @@ class KioskAppManager : public KioskAppDataDelegate,
   static const char kKioskDictionaryName[];
   static const char kKeyAutoLoginState[];
 
-  // Sub directory under DIR_USER_DATA to store cached icon files.
-  static const char kIconCacheDir[];
-
   // Gets the KioskAppManager instance, which is lazily created on first call.
   static KioskAppManager* Get();
 
@@ -127,9 +104,6 @@ class KioskAppManager : public KioskAppDataDelegate,
 
   // Registers kiosk app entries in local state.
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  // Removes cryptohomes which could not be removed during the previous session.
-  static void RemoveObsoleteCryptohomes();
 
   static bool IsConsumerKioskEnabled();
 
@@ -171,8 +145,9 @@ class KioskAppManager : public KioskAppDataDelegate,
   void RemoveApp(const std::string& app_id,
                  OwnerSettingsServiceChromeOS* service);
 
+  // KioskAppManagerBase:
   // Gets info of all apps that have no meta data load error.
-  void GetApps(Apps* apps) const;
+  void GetApps(Apps* apps) const override;
 
   // Gets app data for the given app id. Returns true if |app_id| is known and
   // |app| is populated. Otherwise, return false.
@@ -181,7 +156,7 @@ class KioskAppManager : public KioskAppDataDelegate,
   // Gets whether the bailout shortcut is disabled.
   bool GetDisableBailoutShortcut() const;
 
-  // Clears locally cached app data.
+  // Clears locally cached Gdata.
   void ClearAppData(const std::string& app_id);
 
   // Updates app data from the |app| in |profile|. |app| is provided to cover
@@ -203,9 +178,6 @@ class KioskAppManager : public KioskAppDataDelegate,
   bool GetCachedCrx(const std::string& app_id,
                     base::FilePath* file_path,
                     std::string* version) const;
-
-  void AddObserver(KioskAppManagerObserver* observer);
-  void RemoveObserver(KioskAppManagerObserver* observer);
 
   // Initialized or updates the app whose prefs are available to primary kiosk
   // app external extensions loader.
@@ -304,20 +276,12 @@ class KioskAppManager : public KioskAppDataDelegate,
   const KioskAppData* GetAppData(const std::string& app_id) const;
   KioskAppData* GetAppDataMutable(const std::string& app_id);
 
+  // KioskAppManagerBase:
   // Updates app data |apps_| based on CrosSettings.
-  void UpdateAppData();
-
-  // Clear cached data and crx of the removed apps.
-  void ClearRemovedApps(
-      const std::map<std::string, std::unique_ptr<KioskAppData>>& old_apps);
+  void UpdateAppsFromPolicy() override;
 
   // Updates the prefs of |external_cache_| from |apps_|.
   void UpdateExternalCachePrefs();
-
-  // KioskAppDataDelegate overrides:
-  void GetKioskAppIconCacheDir(base::FilePath* cache_dir) override;
-  void OnKioskAppDataChanged(const std::string& app_id) override;
-  void OnKioskAppDataLoadFailure(const std::string& app_id) override;
 
   // ExternalCacheDelegate:
   void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override;
@@ -356,17 +320,15 @@ class KioskAppManager : public KioskAppDataDelegate,
   bool GetSwitchesForSessionRestore(const std::string& app_id,
                                     base::CommandLine* switches);
 
+  // Converts kiosk app data from internal representation KioskAppData to
+  // App.
+  App ConstructApp(const KioskAppData& data) const;
+
   // True if machine ownership is already established.
   bool ownership_established_ = false;
   std::vector<std::unique_ptr<KioskAppData>> apps_;
   std::string auto_launch_app_id_;
   std::string currently_auto_launched_with_zero_delay_app_;
-  base::ObserverList<KioskAppManagerObserver, true>::Unchecked observers_;
-
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      local_accounts_subscription_;
-  std::unique_ptr<CrosSettings::ObserverSubscription>
-      local_account_auto_login_id_subscription_;
 
   std::unique_ptr<ExternalCache> external_cache_;
 

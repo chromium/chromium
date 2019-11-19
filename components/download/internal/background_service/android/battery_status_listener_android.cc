@@ -6,7 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/trace_event/trace_event.h"
-#include "jni/BatteryStatusListenerAndroid_jni.h"
+#include "components/download/internal/background_service/jni_headers/BatteryStatusListenerAndroid_jni.h"
 
 namespace download {
 

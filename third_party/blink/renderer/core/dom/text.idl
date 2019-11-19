@@ -21,7 +21,8 @@
 
 [
     Constructor(optional DOMString data = ""),
-    ConstructorCallWith=Document
+    ConstructorCallWith=Document,
+    Exposed=Window
 ] interface Text : CharacterData {
     [NewObject, DoNotTestNewObject, RaisesException] Text splitText(unsigned long offset);
     [MeasureAs=TextWholeText] readonly attribute DOMString wholeText;
@@ -31,5 +32,5 @@
     [ImplementedAs=assignedSlotForBinding] readonly attribute HTMLSlotElement? assignedSlot;
 
     // Non-standard API:
-    [OriginTrialEnabled=ShadowDOMV0] NodeList getDestinationInsertionPoints();
+    [RuntimeEnabled=ShadowDOMV0] NodeList getDestinationInsertionPoints();
 };

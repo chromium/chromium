@@ -1,0 +1,30 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Display Locking: scroll / viewport intersections activate locked element</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../resources/utils.js"></script>
+
+<div id=visible rendersubtree="invisible">text</div>
+<div id=spacer style="height: 3000px">text</div>
+<div id=target rendersubtree="invisible">text</div>
+
+<script>
+promise_test(() => {
+  return new Promise((resolve, reject) => {
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        assert_equals(visible.renderSubtree, "", "visible activated");
+        window.scrollBy(0, 3000);
+        requestAnimationFrame(() => {
+          assert_equals(target.renderSubtree, "", "target activated");
+          resolve();
+        });
+      });
+    });
+  });
+}, "Scroll activates elements");
+</script>

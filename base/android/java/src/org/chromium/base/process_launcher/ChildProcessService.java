@@ -5,6 +5,7 @@
 package org.chromium.base.process_launcher;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Bundle;
@@ -14,7 +15,6 @@ import android.os.Looper;
 import android.os.Parcelable;
 import android.os.Process;
 import android.os.RemoteException;
-import android.support.annotation.IntDef;
 import android.util.SparseArray;
 
 import org.chromium.base.BaseSwitches;
@@ -25,20 +25,18 @@ import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.memory.MemoryPressureMonitor;
-import org.chromium.base.metrics.RecordHistogram;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * This is the base class for child services; the embedding application should contain
- * ProcessService0, 1.. etc subclasses that provide the concrete service entry points, so it can
- * connect to more than one distinct process (i.e. one process per service number, up to limit of
- * N).
+ * This is the base class for child services.
+ * Pre-Q, and for privileged services, the embedding application should contain ProcessService0,
+ * 1, etc subclasses that provide the concrete service entry points, so it can connect to more than
+ * one distinct process (i.e. one process per service number, up to limit of N).
  * The embedding application must declare these service instances in the application section
  * of its AndroidManifest.xml, first with some meta-data describing the services:
  *     <meta-data android:name="org.chromium.test_app.SERVICES_NAME"
@@ -47,12 +45,18 @@ import javax.annotation.concurrent.GuardedBy;
  *     <service android:name="org.chromium.test_app.ProcessServiceX"
  *              android:process=":processX" />
  *
+ * Q added bindIsolatedService which supports creating multiple instances from a single manifest
+ * declaration for isolated services. In this case, only need to declare instance 0 in the manifest.
+ *
  * Subclasses must also provide a delegate in this class constructor. That delegate is responsible
  * for loading native libraries and running the main entry point of the service.
+ *
+ * This class does not directly inherit from Service because the logic may be used by a Service
+ * implementation which cannot directly inherit from this class (e.g. for WebLayer child services).
  */
 @JNINamespace("base::android")
 @MainDex
-public abstract class ChildProcessService extends Service {
+public class ChildProcessService {
     private static final String MAIN_THREAD_NAME = "ChildProcessMain";
     private static final String TAG = "ChildProcessService";
 
@@ -60,6 +64,8 @@ public abstract class ChildProcessService extends Service {
     private static boolean sCreateCalled;
 
     private final ChildProcessServiceDelegate mDelegate;
+    private final Service mService;
+    private final Context mApplicationContext;
 
     private final Object mBinderLock = new Object();
     private final Object mLibraryInitializedLock = new Object();
@@ -91,32 +97,11 @@ public abstract class ChildProcessService extends Service {
     // Interface to send notifications to the parent process.
     private IParentProcess mParentProcess;
 
-    // These values are persisted to logs. Entries should not be renumbered and numeric values
-    // should never be reused.
-    @IntDef({SplitApkWorkaroundResult.NOT_RUN, SplitApkWorkaroundResult.NO_ENTRIES,
-            SplitApkWorkaroundResult.ONE_ENTRY, SplitApkWorkaroundResult.MULTIPLE_ENTRIES,
-            SplitApkWorkaroundResult.TOPLEVEL_EXCEPTION, SplitApkWorkaroundResult.LOOP_EXCEPTION})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface SplitApkWorkaroundResult {
-        int NOT_RUN = 0;
-        int NO_ENTRIES = 1;
-        int ONE_ENTRY = 2;
-        int MULTIPLE_ENTRIES = 3;
-        int TOPLEVEL_EXCEPTION = 4;
-        int LOOP_EXCEPTION = 5;
-        // Keep this one at the end and increment appropriately when adding new results.
-        int NUM_ENTRIES = 6;
-    }
-
-    private static @SplitApkWorkaroundResult int sSplitApkWorkaroundResult =
-            SplitApkWorkaroundResult.NOT_RUN;
-
-    public static void setSplitApkWorkaroundResult(@SplitApkWorkaroundResult int result) {
-        sSplitApkWorkaroundResult = result;
-    }
-
-    public ChildProcessService(ChildProcessServiceDelegate delegate) {
+    public ChildProcessService(
+            ChildProcessServiceDelegate delegate, Service service, Context applicationContext) {
         mDelegate = delegate;
+        mService = service;
+        mApplicationContext = applicationContext;
     }
 
     // Binder object used by clients for this service.
@@ -187,15 +172,26 @@ public abstract class ChildProcessService extends Service {
                 }
             });
         }
+
+        @Override
+        public void dumpProcessStack() {
+            assert mServiceBound;
+            synchronized (mLibraryInitializedLock) {
+                if (!mLibraryInitialized) {
+                    Log.e(TAG, "Cannot dump process stack before native is loaded");
+                    return;
+                }
+            }
+            ChildProcessServiceJni.get().dumpProcessStack();
+        }
+
     };
 
     /**
      * Loads Chrome's native libraries and initializes a ChildProcessService.
      */
     // For sCreateCalled check.
-    @Override
     public void onCreate() {
-        super.onCreate();
         Log.i(TAG, "Creating new ChildProcessService pid=%d", Process.myPid());
         if (sCreateCalled) {
             throw new RuntimeException("Illegal child process reuse.");
@@ -225,15 +221,7 @@ public abstract class ChildProcessService extends Service {
                         android.os.Debug.waitForDebugger();
                     }
 
-                    boolean nativeLibraryLoaded = false;
-                    try {
-                        nativeLibraryLoaded = mDelegate.loadNativeLibrary(getApplicationContext());
-                    } catch (Exception e) {
-                        Log.e(TAG, "Failed to load native library.", e);
-                    }
-                    if (!nativeLibraryLoaded) {
-                        System.exit(-1);
-                    }
+                    mDelegate.loadNativeLibrary(getApplicationContext());
 
                     synchronized (mLibraryInitializedLock) {
                         mLibraryInitialized = true;
@@ -265,21 +253,17 @@ public abstract class ChildProcessService extends Service {
                         regionOffsets[i] = fdInfo.offset;
                         regionSizes[i] = fdInfo.size;
                     }
-                    nativeRegisterFileDescriptors(keys, fileIds, fds, regionOffsets, regionSizes);
+                    ChildProcessServiceJni.get().registerFileDescriptors(
+                            keys, fileIds, fds, regionOffsets, regionSizes);
 
                     mDelegate.onBeforeMain();
-                    if (ContextUtils.isIsolatedProcess()) {
-                        RecordHistogram.recordEnumeratedHistogram(
-                                "Android.WebView.SplitApkWorkaroundResult",
-                                sSplitApkWorkaroundResult, SplitApkWorkaroundResult.NUM_ENTRIES);
-                    }
                     mDelegate.runMain();
                     try {
                         mParentProcess.reportCleanExit();
                     } catch (RemoteException e) {
                         Log.e(TAG, "Failed to call clean exit callback.", e);
                     }
-                    nativeExitChildProcess();
+                    ChildProcessServiceJni.get().exitChildProcess();
                 } catch (InterruptedException e) {
                     Log.w(TAG, "%s startup failed: %s", MAIN_THREAD_NAME, e);
                 }
@@ -288,9 +272,8 @@ public abstract class ChildProcessService extends Service {
         mMainThread.start();
     }
 
-    @Override
+    @SuppressWarnings("checkstyle:SystemExitCheck") // Allowed due to http://crbug.com/928521#c16.
     public void onDestroy() {
-        super.onDestroy();
         Log.i(TAG, "Destroying ChildProcessService pid=%d", Process.myPid());
         System.exit(0);
     }
@@ -303,15 +286,14 @@ public abstract class ChildProcessService extends Service {
      * @param intent The intent that was used to bind to the service.
      * @return the binder used by the client to setup the connection.
      */
-    @Override
     public IBinder onBind(Intent intent) {
-        assert !mServiceBound;
+        if (mServiceBound) return mBinder;
 
         // We call stopSelf() to request that this service be stopped as soon as the client unbinds.
         // Otherwise the system may keep it around and available for a reconnect. The child
         // processes do not currently support reconnect; they must be initialized from scratch every
         // time.
-        stopSelf();
+        mService.stopSelf();
 
         mBindToCallerCheck =
                 intent.getBooleanExtra(ChildProcessConstants.EXTRA_BIND_TO_CALLER, false);
@@ -348,17 +330,28 @@ public abstract class ChildProcessService extends Service {
         }
     }
 
-    /**
-     * Helper for registering FileDescriptorInfo objects with GlobalFileDescriptors or
-     * FileDescriptorStore.
-     * This includes the IPC channel, the crash dump signals and resource related
-     * files.
-     */
-    private static native void nativeRegisterFileDescriptors(
-            String[] keys, int[] id, int[] fd, long[] offset, long[] size);
+    private Context getApplicationContext() {
+        return mApplicationContext;
+    }
 
-    /**
-     * Force the child process to exit.
-     */
-    private static native void nativeExitChildProcess();
+    @NativeMethods
+    interface Natives {
+        /**
+         * Helper for registering FileDescriptorInfo objects with GlobalFileDescriptors or
+         * FileDescriptorStore.
+         * This includes the IPC channel, the crash dump signals and resource related
+         * files.
+         */
+        void registerFileDescriptors(String[] keys, int[] id, int[] fd, long[] offset, long[] size);
+
+        /**
+         * Force the child process to exit.
+         */
+        void exitChildProcess();
+
+        /**
+         * Dumps the child process stack without crashing it.
+         */
+        void dumpProcessStack();
+    }
 }

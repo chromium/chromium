@@ -95,7 +95,7 @@ bool SyncAppListHelper::AppListMatch(Profile* profile1, Profile* profile2) {
   return res;
 }
 
-bool SyncAppListHelper::AllProfilesHaveSameAppList() {
+bool SyncAppListHelper::AllProfilesHaveSameAppList(size_t* size_out) {
   const auto& profiles = test_->GetAllProfiles();
   for (auto* profile : profiles) {
     if (profile != profiles.front() &&
@@ -108,6 +108,11 @@ bool SyncAppListHelper::AllProfilesHaveSameAppList() {
       PrintAppList(profiles.front());
       return false;
     }
+  }
+  if (size_out) {
+    *size_out = AppListSyncableServiceFactory::GetForProfile(profiles.front())
+                    ->GetModelUpdater()
+                    ->ItemCount();
   }
   return true;
 }

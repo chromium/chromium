@@ -1,0 +1,224 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals)
+  internals.settings.setEditingBehavior('win');
+
+selection_test(
+  '<div contenteditable dir="ltr">|abc def hij אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc |def hij אאא בבב צצצ opr uvw xyz</div>',
+  '5-0 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">a|bc def hij אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc |def hij אאא בבב צצצ opr uvw xyz</div>',
+  '5-1 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">ab|c def hij אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc |def hij אאא בבב צצצ opr uvw xyz</div>',
+  '5-2 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc| def hij אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def |hij \u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 opr uvw xyz</div>',
+  '5-3 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc |def hij אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def |hij אאא בבב צצצ opr uvw xyz</div>',
+  '5-4 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc d|ef hij אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def |hij אאא בבב צצצ opr uvw xyz</div>',
+  '5-5 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc de|f hij אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def |hij אאא בבב צצצ opr uvw xyz</div>',
+  '5-6 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def| hij אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij |\u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 opr uvw xyz</div>',
+  '5-7 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def |hij אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij |אאא בבב צצצ opr uvw xyz</div>',
+  '5-8 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def h|ij אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij |אאא בבב צצצ opr uvw xyz</div>',
+  '5-9 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hi|j אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij |אאא בבב צצצ opr uvw xyz</div>',
+  '5-10 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij| אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 |\u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 opr uvw xyz</div>',
+  '5-11 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij |אאא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 |\u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 opr uvw xyz</div>',
+  '5-12 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij א|אא בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 |\u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 opr uvw xyz</div>',
+  '5-13 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אא|א בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 |\u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 opr uvw xyz</div>',
+  '5-14 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא| בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 |\u05E6\u05E6\u05E6 opr uvw xyz</div>',
+  '5-15 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא |בבב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 |\u05E6\u05E6\u05E6 opr uvw xyz</div>',
+  '5-16 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא ב|בב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 |\u05E6\u05E6\u05E6 opr uvw xyz</div>',
+  '5-17 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בב|ב צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 |\u05E6\u05E6\u05E6 opr uvw xyz</div>',
+  '5-18 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב| צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 |opr uvw xyz</div>',
+  '5-19 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב |צצצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 |opr uvw xyz</div>',
+  '5-20 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צ|צצ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 |opr uvw xyz</div>',
+  '5-21 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצ|צ opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 |opr uvw xyz</div>',
+  '5-22 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ| opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 opr |uvw xyz</div>',
+  '5-23 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ |opr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr |uvw xyz</div>',
+  '5-24 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ o|pr uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr |uvw xyz</div>',
+  '5-25 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ op|r uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr |uvw xyz</div>',
+  '5-26 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr| uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 opr uvw |xyz</div>',
+  '5-27 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr |uvw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uvw |xyz</div>',
+  '5-28 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr u|vw xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uvw |xyz</div>',
+  '5-29 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uv|w xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uvw |xyz</div>',
+  '5-30 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uvw| xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij \u05D0\u05D0\u05D0 \u05D1\u05D1\u05D1 \u05E6\u05E6\u05E6 opr uvw xyz|</div>',
+  '5-31 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uvw |xyz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uvw xyz|</div>',
+  '5-32 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uvw x|yz</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uvw xyz|</div>',
+  '5-33 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uvw xy|z</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uvw xyz|</div>',
+  '5-34 right word');
+
+selection_test(
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uvw xyz|</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable dir="ltr">abc def hij אאא בבב צצצ opr uvw xyz|</div>',
+  '5-35 right word');
+</script>

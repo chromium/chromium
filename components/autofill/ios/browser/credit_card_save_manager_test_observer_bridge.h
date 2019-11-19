@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/macros.h"
-#include "components/autofill/core/browser/credit_card_save_manager.h"
+#include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 
 // A protocol to be adopted by EarlGrey tests to get notified of actions that
 // occur in autofill::CreditCardSaveManager.
@@ -38,7 +38,7 @@ class CreditCardSaveManagerTestObserverBridge
   explicit CreditCardSaveManagerTestObserverBridge(
       CreditCardSaveManager* credit_card_save_manager,
       id<CreditCardSaveManagerTestObserver> observer);
-  virtual ~CreditCardSaveManagerTestObserverBridge() = default;
+  ~CreditCardSaveManagerTestObserverBridge() override = default;
 
   // CreditCardSaveManager::ObserverForTest:
   void OnOfferLocalSave() override;

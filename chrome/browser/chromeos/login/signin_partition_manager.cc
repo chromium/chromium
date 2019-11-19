@@ -51,23 +51,26 @@ network::mojom::NetworkContext* GetSystemNetworkContext() {
   return g_browser_process->system_network_context_manager()->GetContext();
 }
 
-// Copies the HttpAuthCache with key |cache_key| into
+// Copies the http auth cache proxy entries with key |cache_key| into
 // |signin_storage_partition|'s NetworkContext.
-void LoadHttpAuthCache(content::StoragePartition* signin_storage_partition,
-                       base::OnceClosure completion_callback,
-                       const base::UnguessableToken& cache_key) {
-  signin_storage_partition->GetNetworkContext()->LoadHttpAuthCache(
+void LoadHttpAuthCacheProxyEntries(
+    content::StoragePartition* signin_storage_partition,
+    base::OnceClosure completion_callback,
+    const base::UnguessableToken& cache_key) {
+  signin_storage_partition->GetNetworkContext()->LoadHttpAuthCacheProxyEntries(
       cache_key, std::move(completion_callback));
 }
 
-// Transfers HttpAuthCache content from |main_network_context| into
+// Transfers http auth cache proxy entries from |main_network_context| into
 // |signin_storage_partition|'s NetworkContext.
-void TransferHttpAuthCache(network::mojom::NetworkContext* main_network_context,
-                           content::StoragePartition* signin_storage_partition,
-                           base::OnceClosure completion_callback) {
-  main_network_context->SaveHttpAuthCache(base::BindOnce(
-      &LoadHttpAuthCache, base::Unretained(signin_storage_partition),
-      std::move(completion_callback)));
+void TransferHttpAuthCacheProxyEntries(
+    network::mojom::NetworkContext* main_network_context,
+    content::StoragePartition* signin_storage_partition,
+    base::OnceClosure completion_callback) {
+  main_network_context->SaveHttpAuthCacheProxyEntries(
+      base::BindOnce(&LoadHttpAuthCacheProxyEntries,
+                     base::Unretained(signin_storage_partition),
+                     std::move(completion_callback)));
 }
 
 }  // namespace
@@ -103,10 +106,10 @@ void SigninPartitionManager::StartSigninSession(
       content::BrowserContext::GetStoragePartitionForSite(browser_context_,
                                                           guest_site, true);
 
-  TransferHttpAuthCache(get_system_network_context_task_.Run(),
-                        current_storage_partition_,
-                        base::BindOnce(std::move(signin_session_started),
-                                       current_storage_partition_name_));
+  TransferHttpAuthCacheProxyEntries(
+      get_system_network_context_task_.Run(), current_storage_partition_,
+      base::BindOnce(std::move(signin_session_started),
+                     current_storage_partition_name_));
 }
 
 void SigninPartitionManager::CloseCurrentSigninSession(

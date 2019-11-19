@@ -25,8 +25,9 @@ class MESSAGE_CENTER_EXPORT MessageViewFactory {
  public:
   // A function that creates MessageView for a NOTIFICATION_TYPE_CUSTOM
   // notification.
-  typedef base::Callback<std::unique_ptr<MessageView>(const Notification&)>
-      CustomMessageViewFactoryFunction;
+  using CustomMessageViewFactoryFunction =
+      base::RepeatingCallback<std::unique_ptr<MessageView>(
+          const Notification&)>;
 
   static MessageView* Create(const Notification& notification);
 

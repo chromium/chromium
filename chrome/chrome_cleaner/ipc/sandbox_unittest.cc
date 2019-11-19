@@ -21,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/multiprocess_test.h"
 #include "base/win/scoped_handle.h"
+#include "chrome/chrome_cleaner/buildflags.h"
 #include "chrome/chrome_cleaner/ipc/mojo_task_runner.h"
 #include "chrome/chrome_cleaner/logging/scoped_logging.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
@@ -149,7 +150,7 @@ MULTIPROCESS_TEST_MAIN(MockSandboxProcessMain) {
     base::DeleteFile(temp_file, /*recursive=*/false);
   }
 
-#if defined(CHROME_CLEANER_OFFICIAL_BUILD)
+#if BUILDFLAG(IS_OFFICIAL_CHROME_CLEANER_BUILD)
   CHECK(!have_write_access);
 #else
   CHECK(have_write_access);

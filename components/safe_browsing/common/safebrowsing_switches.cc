@@ -7,18 +7,6 @@
 namespace safe_browsing {
 namespace switches {
 
-// TODO(lzheng): Remove this flag once the feature works fine
-// (http://crbug.com/74848).
-//
-// Disables safebrowsing feature that checks download url and downloads
-// content's hash to make sure the content are not malicious.
-const char kSbDisableDownloadProtection[] =
-    "safebrowsing-disable-download-protection";
-
-// Disables safebrowsing feature that checks for blacklisted extensions.
-const char kSbDisableExtensionBlacklist[] =
-    "safebrowsing-disable-extension-blacklist";
-
 // List of comma-separated sha256 hashes of executable files which the
 // download-protection service should treat as "dangerous."  For a file to
 // show a warning, it also must be considered a dangerous filetype and not

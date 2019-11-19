@@ -26,10 +26,10 @@ struct IconsInfo : public Extension::ManifestData {
   // Get an extension icon as a resource or URL.
   static ExtensionResource GetIconResource(
       const Extension* extension,
-      int size,
+      int size_in_px,
       ExtensionIconSet::MatchType match_type);
   static GURL GetIconURL(const Extension* extension,
-                         int size,
+                         int size_in_px,
                          ExtensionIconSet::MatchType match_type);
 };
 

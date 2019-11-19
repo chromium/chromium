@@ -39,7 +39,6 @@ jumbo_component("touch_selection") {
 
   if (use_aura) {
     deps += [
-      "//services/ws/public/mojom",
       "//skia:skia",
       "//ui/aura",
       "//ui/aura_extra",

@@ -8,7 +8,7 @@
  * @enum {number}
  * @const
  */
-const DropPosition = {
+export const DropPosition = {
   NONE: 0,
   ABOVE: 1,
   ON: 2,
@@ -22,7 +22,7 @@ const DropPosition = {
  * @enum {number}
  * @const
  */
-const Command = {
+export const Command = {
   EDIT: 0,
   COPY_URL: 1,
   SHOW_IN_FOLDER: 2,
@@ -32,7 +32,7 @@ const Command = {
   OPEN_INCOGNITO: 6,
   UNDO: 7,
   REDO: 8,
-  // OPEN triggers when you double-click an item.
+  // OPEN triggers when you double-click an item. NOT USED FOR METRICS.
   OPEN: 9,
   SELECT_ALL: 10,
   DESELECT_ALL: 11,
@@ -46,8 +46,12 @@ const Command = {
   EXPORT: 19,
   HELP_CENTER: 20,
 
+  // Added for more precise metrics purposes. OPEN is re-mapped to one of these.
+  OPEN_BOOKMARK: 21,
+  OPEN_FOLDER: 22,
+
   // Append new values to the end of the enum.
-  MAX_VALUE: 21,
+  MAX_VALUE: 23,
 };
 
 /**
@@ -57,7 +61,7 @@ const Command = {
  * @enum {number}
  * @const
  */
-const MenuSource = {
+export const MenuSource = {
   NONE: 0,
   ITEM: 1,
   TREE: 2,
@@ -73,30 +77,30 @@ const MenuSource = {
  * @enum {number}
  * @const
  */
-const IncognitoAvailability = {
+export const IncognitoAvailability = {
   ENABLED: 0,
   DISABLED: 1,
   FORCED: 2,
 };
 
 /** @const */
-const LOCAL_STORAGE_FOLDER_STATE_KEY = 'folderOpenState';
+export const LOCAL_STORAGE_FOLDER_STATE_KEY = 'folderOpenState';
 
 /** @const */
-const LOCAL_STORAGE_TREE_WIDTH_KEY = 'treeWidth';
+export const LOCAL_STORAGE_TREE_WIDTH_KEY = 'treeWidth';
 
 /** @const */
-const ROOT_NODE_ID = '0';
+export const ROOT_NODE_ID = '0';
 
 /** @const */
-const BOOKMARKS_BAR_ID = '1';
+export const BOOKMARKS_BAR_ID = '1';
 
 /** @const {number} */
-const OPEN_CONFIRMATION_LIMIT = 15;
+export const OPEN_CONFIRMATION_LIMIT = 15;
 
 /**
  * Folders that are beneath this depth will be closed by default in the folder
  * tree (where the Bookmarks Bar folder is at depth 0).
  * @const {number}
  */
-const FOLDER_OPEN_BY_DEFAULT_DEPTH = 1;
+export const FOLDER_OPEN_BY_DEFAULT_DEPTH = 1;

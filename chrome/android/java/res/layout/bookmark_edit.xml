@@ -21,20 +21,20 @@
             android:layout_marginStart="16dp"
             android:orientation="vertical" >
 
-            <org.chromium.chrome.browser.widget.CompatibilityTextInputLayout
+            <org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout
+                android:id="@+id/title_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="22dp" >
-                <org.chromium.chrome.browser.widget.EmptyAlertEditText
-                    android:id="@+id/title_text"
+                android:layout_marginTop="22dp"
+                app:hint="@string/bookmark_name"
+                app:emptyErrorMessage="@string/bookmark_missing_title">
+                <android.support.design.widget.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/bookmark_name"
                     android:imeOptions="flagNoExtractUi"
                     android:inputType="textCapSentences|textAutoCorrect"
-                    android:singleLine="true"
-                    app:alertMessage="@string/bookmark_missing_title" />
-            </org.chromium.chrome.browser.widget.CompatibilityTextInputLayout>
+                    android:singleLine="true" />
+            </org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -54,21 +54,21 @@
                 android:layout_marginEnd="3dp"
                 android:textAppearance="@style/TextAppearance.BookmarkEditFolderName" />
 
-            <org.chromium.chrome.browser.widget.CompatibilityTextInputLayout
+            <org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout
+                android:id="@+id/url_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp" >
+                android:layout_marginTop="24dp"
+                app:hint="@string/bookmark_url"
+                app:emptyErrorMessage="@string/bookmark_missing_url">
 
-                <org.chromium.chrome.browser.widget.EmptyAlertEditText
-                    android:id="@+id/url_text"
+                <android.support.design.widget.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/bookmark_url"
                     android:imeOptions="flagNoExtractUi"
                     android:inputType="textUri"
-                    android:singleLine="true"
-                    app:alertMessage="@string/bookmark_missing_url" />
-            </org.chromium.chrome.browser.widget.CompatibilityTextInputLayout>
+                    android:singleLine="true" />
+            </org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout>
         </LinearLayout>
     </ScrollView>
 

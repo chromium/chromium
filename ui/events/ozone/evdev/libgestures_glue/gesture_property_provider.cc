@@ -476,7 +476,8 @@ bool IsDeviceOfType(const ui::GesturePropertyProvider::DevicePtr device,
 // Trick to get the device path from a file descriptor.
 std::string GetDeviceNodePath(
     const ui::GesturePropertyProvider::DevicePtr device) {
-  std::string proc_symlink = "/proc/self/fd/" + base::IntToString(device->fd);
+  std::string proc_symlink =
+      "/proc/self/fd/" + base::NumberToString(device->fd);
   base::FilePath path;
   if (!base::ReadSymbolicLink(base::FilePath(proc_symlink), &path))
     return std::string();

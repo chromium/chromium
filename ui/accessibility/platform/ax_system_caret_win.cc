@@ -109,13 +109,19 @@ gfx::NativeViewAccessible AXSystemCaretWin::GetParent() {
   return nullptr;
 }
 
-gfx::Rect AXSystemCaretWin::GetClippedScreenBoundsRect() const {
-  // We could optionally add clipping here if ever needed.
-  return ToEnclosingRect(data_.relative_bounds.bounds);
-}
-
-gfx::Rect AXSystemCaretWin::GetUnclippedScreenBoundsRect() const {
-  return ToEnclosingRect(data_.relative_bounds.bounds);
+gfx::Rect AXSystemCaretWin::GetBoundsRect(
+    const AXCoordinateSystem coordinate_system,
+    const AXClippingBehavior clipping_behavior,
+    AXOffscreenResult* offscreen_result) const {
+  switch (coordinate_system) {
+    case AXCoordinateSystem::kScreen:
+      // We could optionally add clipping here if ever needed.
+      return ToEnclosingRect(data_.relative_bounds.bounds);
+    case AXCoordinateSystem::kRootFrame:
+    case AXCoordinateSystem::kFrame:
+      NOTIMPLEMENTED();
+      return gfx::Rect();
+  }
 }
 
 gfx::AcceleratedWidget

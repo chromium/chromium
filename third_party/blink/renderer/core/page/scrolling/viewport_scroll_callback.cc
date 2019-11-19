@@ -35,7 +35,8 @@ void ViewportScrollCallback::Trace(blink::Visitor* visitor) {
 bool ViewportScrollCallback::ShouldScrollBrowserControls(
     const ScrollOffset& delta,
     ScrollGranularity granularity) const {
-  if (granularity != kScrollByPixel && granularity != kScrollByPrecisePixel)
+  if (granularity != ScrollGranularity::kScrollByPixel &&
+      granularity != ScrollGranularity::kScrollByPrecisePixel)
     return false;
 
   if (!root_frame_viewport_)
@@ -103,7 +104,8 @@ ScrollResult ViewportScrollCallback::PerformNativeScroll(ScrollState& state) {
   ScrollGranularity granularity =
       ScrollGranularity(static_cast<int>(state.deltaGranularity()));
 
-  ScrollResult result = root_frame_viewport_->UserScroll(granularity, delta);
+  ScrollResult result = root_frame_viewport_->UserScroll(
+      granularity, delta, ScrollableArea::ScrollCallback());
 
   // The viewport consumes everything.
   // TODO(bokan): This isn't actually consuming everything but doing so breaks

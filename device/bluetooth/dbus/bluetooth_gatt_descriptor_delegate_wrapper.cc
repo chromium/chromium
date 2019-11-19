@@ -15,22 +15,21 @@ BluetoothGattDescriptorDelegateWrapper::BluetoothGattDescriptorDelegateWrapper(
 
 void BluetoothGattDescriptorDelegateWrapper::GetValue(
     const dbus::ObjectPath& device_path,
-    const device::BluetoothLocalGattService::Delegate::ValueCallback& callback,
-    const device::BluetoothLocalGattService::Delegate::ErrorCallback&
-        error_callback) {
+    device::BluetoothLocalGattService::Delegate::ValueCallback callback,
+    device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback) {
   service()->GetDelegate()->OnDescriptorReadRequest(
-      GetDeviceWithPath(device_path), descriptor_, 0, callback, error_callback);
+      GetDeviceWithPath(device_path), descriptor_, 0, std::move(callback),
+      std::move(error_callback));
 }
 
 void BluetoothGattDescriptorDelegateWrapper::SetValue(
     const dbus::ObjectPath& device_path,
     const std::vector<uint8_t>& value,
-    const base::Closure& callback,
-    const device::BluetoothLocalGattService::Delegate::ErrorCallback&
-        error_callback) {
+    base::OnceClosure callback,
+    device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback) {
   service()->GetDelegate()->OnDescriptorWriteRequest(
-      GetDeviceWithPath(device_path), descriptor_, value, 0, callback,
-      error_callback);
+      GetDeviceWithPath(device_path), descriptor_, value, 0,
+      std::move(callback), std::move(error_callback));
 }
 
 }  // namespace bluez

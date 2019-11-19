@@ -9,6 +9,10 @@
 #include <string>
 #include <utility>
 
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/tests/bindings_test_base.h"
 #include "mojo/public/interfaces/bindings/tests/sample_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -247,7 +251,7 @@ class ServiceImpl : public Service {
  public:
   void Frobinate(FooPtr foo,
                  BazOptions baz,
-                 PortPtr port,
+                 mojo::PendingRemote<Port> pending_port,
                  Service::FrobinateCallback callback) override {
     // Users code goes here to handle the incoming Frobinate message.
 
@@ -257,6 +261,7 @@ class ServiceImpl : public Service {
       CheckFoo(*foo);
     EXPECT_EQ(BazOptions::EXTRA, baz);
 
+    mojo::Remote<Port> port(std::move(pending_port));
     if (g_dump_message_as_text) {
       // Also dump the Foo structure and all of its members.
       std::cout << "Frobinate:" << std::endl;
@@ -268,7 +273,7 @@ class ServiceImpl : public Service {
     std::move(callback).Run(5);
   }
 
-  void GetPort(mojo::InterfaceRequest<Port> port_request) override {}
+  void GetPort(mojo::PendingReceiver<Port> receiver) override {}
 };
 
 class ServiceProxyImpl : public ServiceProxy {
@@ -322,9 +327,8 @@ TEST_P(BindingsSampleTest, Basic) {
   FooPtr foo = MakeFoo();
   CheckFoo(*foo);
 
-  PortPtr port;
   service->Frobinate(std::move(foo), Service::BazOptions::EXTRA,
-                     std::move(port), Service::FrobinateCallback());
+                     mojo::NullRemote(), Service::FrobinateCallback());
 
   delete service;
 }

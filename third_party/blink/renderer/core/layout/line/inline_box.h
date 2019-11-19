@@ -102,8 +102,8 @@ class CORE_EXPORT InlineBox : public DisplayItemClient {
                      LayoutUnit line_top,
                      LayoutUnit line_bottom) const;
   virtual bool NodeAtPoint(HitTestResult&,
-                           const HitTestLocation& location_in_container,
-                           const LayoutPoint& accumulated_offset,
+                           const HitTestLocation&,
+                           const PhysicalOffset& accumulated_offset,
                            LayoutUnit line_top,
                            LayoutUnit line_bottom);
 
@@ -111,7 +111,7 @@ class CORE_EXPORT InlineBox : public DisplayItemClient {
   void* operator new(size_t);
   void operator delete(void*);
 
-#ifndef NDEBUG
+#if DCHECK_IS_ON()
   void ShowTreeForThis() const;
   void ShowLineTreeForThis() const;
 
@@ -129,8 +129,8 @@ class CORE_EXPORT InlineBox : public DisplayItemClient {
 
   // DisplayItemClient methods
   String DebugName() const override;
-  LayoutRect VisualRect() const override;
-  LayoutRect PartialInvalidationVisualRect() const override;
+  IntRect VisualRect() const override;
+  IntRect PartialInvalidationVisualRect() const override;
 
   bool IsText() const { return bitfields_.IsText(); }
   void SetIsText(bool is_text) { bitfields_.SetIsText(is_text); }
@@ -353,12 +353,10 @@ class CORE_EXPORT InlineBox : public DisplayItemClient {
 
   // Physical location of the top-left corner of the box in the containing
   // block.
-  LayoutPoint PhysicalLocation() const;
+  PhysicalOffset PhysicalLocation() const;
 
   // TODO(szager): The Rect versions should return a rect, not modify the
   // argument.
-  void FlipForWritingMode(FloatRect&) const;
-  FloatPoint FlipForWritingMode(const FloatPoint&) const;
   void FlipForWritingMode(LayoutRect&) const;
   LayoutPoint FlipForWritingMode(const LayoutPoint&) const;
 
@@ -376,8 +374,8 @@ class CORE_EXPORT InlineBox : public DisplayItemClient {
   }
 
   // Set all LineLayoutItems in the inline box subtree should do full paint
-  // invalidation.
-  void SetShouldDoFullPaintInvalidationRecursively();
+  // invalidation and clear the first line style cache.
+  void SetShouldDoFullPaintInvalidationForFirstLine();
 
 #define ADD_BOOLEAN_BITFIELD(field_name_, MethodNameBase)               \
  public:                                                                \
@@ -535,8 +533,8 @@ bool CanUseInlineBox(const LayoutObject&);
 
 }  // namespace blink
 
-#ifndef NDEBUG
-// Outside the WebCore namespace for ease of invocation from gdb.
+#if DCHECK_IS_ON()
+// Outside the blink namespace for ease of invocation from gdb.
 void showTree(const blink::InlineBox*);
 void showLineTree(const blink::InlineBox*);
 #endif

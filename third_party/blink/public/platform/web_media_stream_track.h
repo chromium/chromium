@@ -28,6 +28,7 @@
 #include <memory>
 
 #include "base/optional.h"
+#include "media/mojo/mojom/display_media_information.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -45,13 +46,6 @@ class WebString;
 class WebMediaStreamTrack {
  public:
   enum class FacingMode { kNone, kUser, kEnvironment, kLeft, kRight };
-  enum class DisplayCaptureSurfaceType {
-    kMonitor,
-    kWindow,
-    kApplication,
-    kBrowser
-  };
-  enum class CursorCaptureType { kNever, kAlways, kMotion };
 
   BLINK_PLATFORM_EXPORT static const char kResizeModeNone[];
   BLINK_PLATFORM_EXPORT static const char kResizeModeRescale[];
@@ -66,12 +60,7 @@ class WebMediaStreamTrack {
     bool HasSampleSize() const { return sample_size >= 0; }
     bool HasChannelCount() const { return channel_count >= 0; }
     bool HasLatency() const { return latency >= 0; }
-    bool HasVolume() const { return volume >= 0; }
     bool HasVideoKind() const { return !video_kind.IsNull(); }
-    bool HasFocalLengthX() const { return focal_length_x >= 0.0; }
-    bool HasFocalLengthY() const { return focal_length_y >= 0.0; }
-    bool HasDepthNear() const { return depth_near >= 0.0; }
-    bool HasDepthFar() const { return depth_far >= 0.0; }
     // The variables are read from
     // MediaStreamTrack::GetSettings only.
     double frame_rate = -1.0;
@@ -90,19 +79,14 @@ class WebMediaStreamTrack {
     int32_t sample_size = -1;
     int32_t channel_count = -1;
     double latency = -1.0;
-    double volume = -1.0;
 
     // Media Capture Depth Stream Extensions.
     WebString video_kind;
-    double focal_length_x = -1.0;
-    double focal_length_y = -1.0;
-    double depth_near = -1.0;
-    double depth_far = -1.0;
 
     // Screen Capture extensions
-    base::Optional<DisplayCaptureSurfaceType> display_surface;
+    base::Optional<media::mojom::DisplayCaptureSurfaceType> display_surface;
     base::Optional<bool> logical_surface;
-    base::Optional<CursorCaptureType> cursor;
+    base::Optional<media::mojom::CursorCaptureType> cursor;
   };
 
   enum class ContentHintType {

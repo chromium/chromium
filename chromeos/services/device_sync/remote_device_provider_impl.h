@@ -67,7 +67,7 @@ class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
 
   std::unique_ptr<RemoteDeviceLoader> remote_device_loader_;
   multidevice::RemoteDeviceList synced_remote_devices_;
-  base::WeakPtrFactory<RemoteDeviceProviderImpl> weak_ptr_factory_;
+  base::WeakPtrFactory<RemoteDeviceProviderImpl> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(RemoteDeviceProviderImpl);
 };

@@ -41,8 +41,6 @@
 
 namespace blink {
 
-using namespace vector_math;
-
 // Empirical gain calibration tested across many impulse responses to ensure
 // perceived volume is same as dry (unprocessed) signal
 const float kGainCalibration = -58;
@@ -61,7 +59,8 @@ static float CalculateNormalizationScale(AudioBus* response) {
 
   for (size_t i = 0; i < number_of_channels; ++i) {
     float channel_power = 0;
-    Vsvesq(response->Channel(i)->Data(), 1, &channel_power, length);
+    vector_math::Vsvesq(response->Channel(i)->Data(), 1, &channel_power,
+                        length);
     power += channel_power;
   }
 
@@ -97,26 +96,17 @@ Reverb::Reverb(AudioBus* impulse_response,
 
   if (normalize) {
     scale = CalculateNormalizationScale(impulse_response);
-
-    if (scale)
-      impulse_response->Scale(scale);
   }
 
   Initialize(impulse_response, render_slice_size, max_fft_size,
-             use_background_threads);
-
-  // Undo scaling since this shouldn't be a destructive operation on
-  // impulseResponse.
-  // FIXME: What about roundoff? Perhaps consider making a temporary scaled copy
-  // instead of scaling and unscaling in place.
-  if (normalize && scale)
-    impulse_response->Scale(1 / scale);
+             use_background_threads, scale);
 }
 
 void Reverb::Initialize(AudioBus* impulse_response_buffer,
                         size_t render_slice_size,
                         size_t max_fft_size,
-                        bool use_background_threads) {
+                        bool use_background_threads,
+                        float scale) {
   impulse_response_length_ = impulse_response_buffer->length();
   number_of_response_channels_ = impulse_response_buffer->NumberOfChannels();
 
@@ -133,7 +123,7 @@ void Reverb::Initialize(AudioBus* impulse_response_buffer,
     std::unique_ptr<ReverbConvolver> convolver =
         std::make_unique<ReverbConvolver>(channel, render_slice_size,
                                           max_fft_size, convolver_render_phase,
-                                          use_background_threads);
+                                          use_background_threads, scale);
     convolvers_.push_back(std::move(convolver));
 
     convolver_render_phase += render_slice_size;
@@ -152,16 +142,13 @@ void Reverb::Process(const AudioBus* source_bus,
   // Do a fairly comprehensive sanity check.
   // If these conditions are satisfied, all of the source and destination
   // pointers will be valid for the various matrixing cases.
-  bool is_safe_to_process = source_bus && destination_bus &&
-                            source_bus->NumberOfChannels() > 0 &&
-                            destination_bus->NumberOfChannels() > 0 &&
-                            frames_to_process <= kMaxFrameSize &&
-                            frames_to_process <= source_bus->length() &&
-                            frames_to_process <= destination_bus->length();
-
-  DCHECK(is_safe_to_process);
-  if (!is_safe_to_process)
-    return;
+  DCHECK(source_bus);
+  DCHECK(destination_bus);
+  DCHECK_GT(source_bus->NumberOfChannels(), 0u);
+  DCHECK_GT(destination_bus->NumberOfChannels(), 0u);
+  DCHECK_LE(frames_to_process, kMaxFrameSize);
+  DCHECK_LE(frames_to_process, source_bus->length());
+  DCHECK_LE(frames_to_process, destination_bus->length());
 
   // For now only handle mono or stereo output
   if (destination_bus->NumberOfChannels() > 2) {

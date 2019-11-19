@@ -7,11 +7,11 @@
 
 #include <memory>
 
+#include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
-#include "chrome/browser/chromeos/login/screens/terms_of_service_screen_view.h"
 
 namespace network {
 class SimpleURLLoader;
@@ -19,27 +19,36 @@ class SimpleURLLoader;
 
 namespace chromeos {
 
-class BaseScreenDelegate;
+class TermsOfServiceScreenView;
 
 // A screen that shows Terms of Service which have been configured through
 // policy. The screen is shown during login and requires the user to accept the
 // Terms of Service before proceeding. Currently, Terms of Service are available
 // for public sessions only.
-class TermsOfServiceScreen : public BaseScreen,
-                             public TermsOfServiceScreenView::Delegate {
+class TermsOfServiceScreen : public BaseScreen {
  public:
-  TermsOfServiceScreen(BaseScreenDelegate* base_screen_delegate,
-                       TermsOfServiceScreenView* view);
+  enum class Result { ACCEPTED, DECLINED };
+
+  // The possible states that the screen may assume.
+  enum class ScreenState : int { LOADING = 0, LOADED = 1, ERROR = 2 };
+
+  using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
+  TermsOfServiceScreen(TermsOfServiceScreenView* view,
+                       const ScreenExitCallback& exit_callback);
   ~TermsOfServiceScreen() override;
+
+  // Called when the user declines the Terms of Service.
+  void OnDecline();
+
+  // Called when the user accepts the Terms of Service.
+  void OnAccept();
+
+  // Called when view is destroyed so there is no dead reference to it.
+  void OnViewDestroyed(TermsOfServiceScreenView* view);
 
   // BaseScreen:
   void Show() override;
   void Hide() override;
-
-  // TermsOfServiceScreenActor::Delegate:
-  void OnDecline() override;
-  void OnAccept() override;
-  void OnViewDestroyed(TermsOfServiceScreenView* view) override;
 
  private:
   // Start downloading the Terms of Service.
@@ -52,6 +61,7 @@ class TermsOfServiceScreen : public BaseScreen,
   void OnDownloaded(std::unique_ptr<std::string> response_body);
 
   TermsOfServiceScreenView* view_;
+  ScreenExitCallback exit_callback_;
 
   std::unique_ptr<network::SimpleURLLoader> terms_of_service_loader_;
 

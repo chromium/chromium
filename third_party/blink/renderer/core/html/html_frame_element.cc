@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/html/html_frame_element.h"
 
+#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/html/html_frame_set_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -30,33 +31,23 @@
 
 namespace blink {
 
-using namespace html_names;
-
-inline HTMLFrameElement::HTMLFrameElement(Document& document)
-    : HTMLFrameElementBase(kFrameTag, document),
+HTMLFrameElement::HTMLFrameElement(Document& document)
+    : HTMLFrameElementBase(html_names::kFrameTag, document),
       frame_border_(true),
       frame_border_set_(false) {}
-
-DEFINE_NODE_FACTORY(HTMLFrameElement)
-
-const AttrNameToTrustedType& HTMLFrameElement::GetCheckedAttributeTypes()
-    const {
-  DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"src", SpecificTrustedType::kTrustedURL}}));
-  return attribute_map;
-}
 
 bool HTMLFrameElement::LayoutObjectIsNeeded(const ComputedStyle&) const {
   // For compatibility, frames render even when display: none is set.
   return ContentFrame();
 }
 
-LayoutObject* HTMLFrameElement::CreateLayoutObject(const ComputedStyle&) {
+LayoutObject* HTMLFrameElement::CreateLayoutObject(const ComputedStyle&,
+                                                   LegacyLayout) {
   return new LayoutFrame(this);
 }
 
 bool HTMLFrameElement::NoResize() const {
-  return hasAttribute(kNoresizeAttr);
+  return FastHasAttribute(html_names::kNoresizeAttr);
 }
 
 void HTMLFrameElement::AttachLayoutTree(AttachContext& context) {
@@ -71,11 +62,11 @@ void HTMLFrameElement::AttachLayoutTree(AttachContext& context) {
 
 void HTMLFrameElement::ParseAttribute(
     const AttributeModificationParams& params) {
-  if (params.name == kFrameborderAttr) {
+  if (params.name == html_names::kFrameborderAttr) {
     frame_border_ = params.new_value.ToInt();
     frame_border_set_ = !params.new_value.IsNull();
     // FIXME: If we are already attached, this has no effect.
-  } else if (params.name == kNoresizeAttr) {
+  } else if (params.name == html_names::kNoresizeAttr) {
     if (GetLayoutObject())
       GetLayoutObject()->UpdateFromElement();
   } else {

@@ -3,14 +3,34 @@
 // found in the LICENSE file.
 
 #include "ui/gfx/font_fallback_win.h"
+
 #include "base/macros.h"
-#include "base/message_loop/message_loop.h"
-#include "base/run_loop.h"
+#include "base/stl_util.h"
+#include "base/test/task_environment.h"
+#include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gfx {
 
-TEST(FontFallbackWinTest, ParseFontLinkEntry) {
+namespace {
+
+const char kDefaultApplicationLocale[] = "us-en";
+
+class FontFallbackWinTest : public testing::Test {
+ public:
+  FontFallbackWinTest() = default;
+
+ private:
+  // Needed to bypass DCHECK in GetFallbackFont.
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
+
+  DISALLOW_COPY_AND_ASSIGN(FontFallbackWinTest);
+};
+
+}  // namespace
+
+TEST_F(FontFallbackWinTest, ParseFontLinkEntry) {
   std::string file;
   std::string font;
 
@@ -31,7 +51,7 @@ TEST(FontFallbackWinTest, ParseFontLinkEntry) {
   EXPECT_EQ("Meiryo", font);
 }
 
-TEST(FontFallbackWinTest, ParseFontFamilyString) {
+TEST_F(FontFallbackWinTest, ParseFontFamilyString) {
   std::vector<std::string> font_names;
 
   internal::ParseFontFamilyString("Times New Roman (TrueType)", &font_names);
@@ -56,25 +76,69 @@ TEST(FontFallbackWinTest, ParseFontFamilyString) {
   EXPECT_EQ("Meiryo UI Italic", font_names[3]);
 }
 
-TEST(FontFallbackWinTest, FontFallback) {
-  // Needed to bypass DCHECK in GetFallbackFont.
-  base::MessageLoopForUI message_loop;
-
-  Font base_font("Segoe UI", 14);
-  Font fallback_font;
-  bool result = GetFallbackFont(base_font, L"abc", 3, &fallback_font);
-  EXPECT_TRUE(result);
-  EXPECT_STREQ("Segoe UI", fallback_font.GetFontName().c_str());
-}
-
-TEST(FontFallbackWinTest, EmptyStringFallback) {
-  // Needed to bypass DCHECK in GetFallbackFont.
-  base::MessageLoopForUI message_loop;
-
+TEST_F(FontFallbackWinTest, EmptyStringFallback) {
   Font base_font;
   Font fallback_font;
-  bool result = GetFallbackFont(base_font, L"", 0, &fallback_font);
+  bool result = GetFallbackFont(base_font, kDefaultApplicationLocale,
+                                base::StringPiece16(), &fallback_font);
   EXPECT_FALSE(result);
+}
+
+TEST_F(FontFallbackWinTest, NulTerminatedStringPiece) {
+  Font base_font;
+  Font fallback_font;
+  // Multiple ending NUL characters.
+  const wchar_t kTest1[] = {0x0540, 0x0541, 0, 0, 0};
+  EXPECT_FALSE(GetFallbackFont(base_font, kDefaultApplicationLocale,
+                               base::StringPiece16(kTest1, base::size(kTest1)),
+                               &fallback_font));
+  // No ending NUL character.
+  const wchar_t kTest2[] = {0x0540, 0x0541};
+  EXPECT_TRUE(GetFallbackFont(base_font, kDefaultApplicationLocale,
+                              base::StringPiece16(kTest2, base::size(kTest2)),
+                              &fallback_font));
+
+  // NUL only characters.
+  const wchar_t kTest3[] = {0, 0, 0};
+  EXPECT_FALSE(GetFallbackFont(base_font, kDefaultApplicationLocale,
+                               base::StringPiece16(kTest3, base::size(kTest3)),
+                               &fallback_font));
+}
+
+TEST_F(FontFallbackWinTest, CJKLocaleFallback) {
+  // The uniscribe fallback used by win7 does not support locale.
+  if (base::win::GetVersion() < base::win::Version::WIN10)
+    return;
+
+  // Han unification is an effort to map multiple character sets of the CJK
+  // languages into a single set of unified characters. Han characters are a
+  // common feature of written Chinese (hanzi), Japanese (kanji), and Korean
+  // (hanja). The same text will be rendered using a different font based on
+  // locale.
+  const wchar_t kCJKTest[] = L"\u8AA4\u904E\u9AA8";
+  Font base_font;
+  Font fallback_font;
+
+  EXPECT_TRUE(GetFallbackFont(base_font, "zh-CN", kCJKTest, &fallback_font));
+  EXPECT_EQ(fallback_font.GetFontName(), "Microsoft YaHei UI");
+
+  EXPECT_TRUE(GetFallbackFont(base_font, "zh-TW", kCJKTest, &fallback_font));
+  EXPECT_EQ(fallback_font.GetFontName(), "Microsoft JhengHei UI");
+
+  EXPECT_TRUE(GetFallbackFont(base_font, "zh-HK", kCJKTest, &fallback_font));
+  EXPECT_EQ(fallback_font.GetFontName(), "Microsoft JhengHei UI");
+
+  EXPECT_TRUE(GetFallbackFont(base_font, "ja", kCJKTest, &fallback_font));
+  EXPECT_EQ(fallback_font.GetFontName(), "Yu Gothic UI");
+
+  EXPECT_TRUE(GetFallbackFont(base_font, "ja-JP", kCJKTest, &fallback_font));
+  EXPECT_EQ(fallback_font.GetFontName(), "Yu Gothic UI");
+
+  EXPECT_TRUE(GetFallbackFont(base_font, "ko", kCJKTest, &fallback_font));
+  EXPECT_EQ(fallback_font.GetFontName(), "Malgun Gothic");
+
+  EXPECT_TRUE(GetFallbackFont(base_font, "ko-KR", kCJKTest, &fallback_font));
+  EXPECT_EQ(fallback_font.GetFontName(), "Malgun Gothic");
 }
 
 }  // namespace gfx

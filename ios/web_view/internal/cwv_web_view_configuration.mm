@@ -8,6 +8,8 @@
 
 #include "base/logging.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/browser/password_store_default.h"
 #include "components/sync/driver/sync_service.h"
 #include "ios/web_view/cwv_web_view_buildflags.h"
 #include "ios/web_view/internal/app/application_context.h"
@@ -16,9 +18,8 @@
 #import "ios/web_view/internal/cwv_preferences_internal.h"
 #import "ios/web_view/internal/cwv_user_content_controller_internal.h"
 #import "ios/web_view/internal/cwv_web_view_internal.h"
-#include "ios/web_view/internal/signin/ios_web_view_signin_client.h"
+#include "ios/web_view/internal/passwords/web_view_password_store_factory.h"
 #include "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
-#include "ios/web_view/internal/signin/web_view_signin_client_factory.h"
 #include "ios/web_view/internal/signin/web_view_signin_error_controller_factory.h"
 #import "ios/web_view/internal/sync/cwv_sync_controller_internal.h"
 #import "ios/web_view/internal/sync/web_view_profile_sync_service_factory.h"
@@ -35,9 +36,6 @@
 
   // Holds all CWVWebViews created with this class. Weak references.
   NSHashTable* _webViews;
-
-  // |YES| if |shutDown| was called.
-  BOOL _wasShutDown;
 }
 
 #if BUILDFLAG(IOS_WEB_VIEW_ENABLE_AUTOFILL)
@@ -131,10 +129,6 @@ CWVWebViewConfiguration* gIncognitoConfiguration = nil;
   return self;
 }
 
-- (void)dealloc {
-  DCHECK(_wasShutDown);
-}
-
 #if BUILDFLAG(IOS_WEB_VIEW_ENABLE_AUTOFILL)
 #pragma mark - Autofill
 - (CWVAutofillDataManager*)autofillDataManager {
@@ -142,8 +136,12 @@ CWVWebViewConfiguration* gIncognitoConfiguration = nil;
     autofill::PersonalDataManager* personalDataManager =
         ios_web_view::WebViewPersonalDataManagerFactory::GetForBrowserState(
             self.browserState);
+    scoped_refptr<password_manager::PasswordStore> passwordStore =
+        ios_web_view::WebViewPasswordStoreFactory::GetForBrowserState(
+            self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
     _autofillDataManager = [[CWVAutofillDataManager alloc]
-        initWithPersonalDataManager:personalDataManager];
+        initWithPersonalDataManager:personalDataManager
+                      passwordStore:passwordStore.get()];
   }
   return _autofillDataManager;
 }
@@ -156,24 +154,25 @@ CWVWebViewConfiguration* gIncognitoConfiguration = nil;
     syncer::SyncService* syncService =
         ios_web_view::WebViewProfileSyncServiceFactory::GetForBrowserState(
             self.browserState);
-    identity::IdentityManager* identityManager =
+    signin::IdentityManager* identityManager =
         ios_web_view::WebViewIdentityManagerFactory::GetForBrowserState(
             self.browserState);
     SigninErrorController* signinErrorController =
         ios_web_view::WebViewSigninErrorControllerFactory::GetForBrowserState(
             self.browserState);
+    autofill::PersonalDataManager* personalDataManager =
+        ios_web_view::WebViewPersonalDataManagerFactory::GetForBrowserState(
+            self.browserState);
+    scoped_refptr<password_manager::PasswordStore> passwordStore =
+        ios_web_view::WebViewPasswordStoreFactory::GetForBrowserState(
+            self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
 
     _syncController =
         [[CWVSyncController alloc] initWithSyncService:syncService
                                        identityManager:identityManager
-                                 signinErrorController:signinErrorController];
-
-    // Set the newly created CWVSyncController on IOSWebViewSigninClient to
-    // so access tokens can be fetched.
-    IOSWebViewSigninClient* signinClient =
-        ios_web_view::WebViewSigninClientFactory::GetForBrowserState(
-            self.browserState);
-    signinClient->SetSyncController(_syncController);
+                                 signinErrorController:signinErrorController
+                                   personalDataManager:personalDataManager
+                                         passwordStore:passwordStore.get()];
   }
   return _syncController;
 }
@@ -200,7 +199,6 @@ CWVWebViewConfiguration* gIncognitoConfiguration = nil;
     [webView shutDown];
   }
   _browserState.reset();
-  _wasShutDown = YES;
 }
 
 @end

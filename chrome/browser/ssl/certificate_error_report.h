@@ -12,6 +12,11 @@
 #include "components/version_info/version_info.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/cert_verifier.h"
+#include "net/net_buildflags.h"
+
+#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
+#include "services/network/public/mojom/trial_comparison_cert_verifier.mojom.h"
+#endif
 
 namespace base {
 class Time;
@@ -42,6 +47,7 @@ class CertificateErrorReport {
     INTERSTITIAL_CLOCK = 3,
     INTERSTITIAL_SUPERFISH = 4,
     INTERSTITIAL_MITM_SOFTWARE = 5,
+    INTERSTITIAL_BLOCKED_INTERCEPTION = 6,
   };
 
   // Whether the user clicked through the interstitial or not.
@@ -59,6 +65,7 @@ class CertificateErrorReport {
   CertificateErrorReport(const std::string& hostname,
                          const net::SSLInfo& ssl_info);
 
+#if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
   // Constructs a dual verification trial report for the given |hostname|, the
   // cert and chain sent by the server, the result from the primary verifier,
   // and the result from the trial verifier.
@@ -70,7 +77,9 @@ class CertificateErrorReport {
                          bool enable_sha1_local_anchors,
                          bool disable_symantec_enforcement,
                          const net::CertVerifyResult& primary_result,
-                         const net::CertVerifyResult& trial_result);
+                         const net::CertVerifyResult& trial_result,
+                         network::mojom::CertVerifierDebugInfoPtr debug_info);
+#endif
 
   ~CertificateErrorReport();
 

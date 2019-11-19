@@ -10,6 +10,7 @@
 // users' preferences, and FeatureList.
 
 #include <stdint.h>
+#include <string>
 
 namespace aura {
 class Window;
@@ -24,6 +25,9 @@ class User;
 }  // namespace user_manager
 
 namespace arc {
+
+// Name of the crosvm instance when ARCVM is enabled.
+constexpr char kArcVmName[] = "arcvm";
 
 // Returns true if ARC is installed and the current device is officially
 // supported to run ARC.
@@ -104,6 +108,13 @@ bool IsArcOptInVerificationDisabled();
 // Returns true if the |window|'s aura::client::kAppType is ARC_APP. When
 // |window| is nullptr, returns false.
 bool IsArcAppWindow(const aura::Window* window);
+
+constexpr int kNoTaskId = -1;
+constexpr int kSystemWindowTaskId = 0;
+// Returns the task id given by the exo shell's application id, or |kNoTaskId|
+// if not an ARC window.
+int GetWindowTaskId(const aura::Window* window);
+int GetTaskIdFromWindowAppId(const std::string& app_id);
 
 // Returns true if ARC app icons are forced to cache.
 bool IsArcForceCacheAppIcon();

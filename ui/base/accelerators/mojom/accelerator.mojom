@@ -1,0 +1,25 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ui.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "ui/events/mojom/event_constants.mojom";
+import "ui/events/mojom/keyboard_codes.mojom";
+
+// This matches ui::Accelerator::KeyState.
+enum AcceleratorKeyState {
+  PRESSED,
+  RELEASED,
+};
+
+// This structure matches ui::Accelerator; see details there.
+struct Accelerator {
+  // Accelerator::key_code_ is a KeyboardCode, but it may also contain other
+  // values (at least on Windows, which seems to supply any value).
+  int32 key_code;
+  AcceleratorKeyState key_state;
+  int32 modifiers;
+  mojo_base.mojom.TimeTicks time_stamp;
+};

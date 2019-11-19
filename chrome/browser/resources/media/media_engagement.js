@@ -13,7 +13,7 @@ function whenPageIsPopulatedForTest() {
 
 (function() {
 
-let uiHandler = null;
+let detailsProvider = null;
 let info = null;
 let engagementTableBody = null;
 let sortReverse = true;
@@ -29,20 +29,22 @@ let showNoPlaybacks = false;
 function createRow(rowInfo) {
   const template = $('datarow');
   const td = template.content.querySelectorAll('td');
-  td[0].textContent = rowInfo.origin.url;
+
+  td[0].textContent = rowInfo.origin.scheme + '://' + rowInfo.origin.host;
+  if (rowInfo.origin.scheme == 'http' && rowInfo.origin.port != '80') {
+    td[0].textContent += ':' + rowInfo.origin.port;
+  } else if (rowInfo.origin.scheme == 'https' && rowInfo.origin.port != '443') {
+    td[0].textContent += ':' + rowInfo.origin.port;
+  }
+
   td[1].textContent = rowInfo.visits;
   td[2].textContent = rowInfo.mediaPlaybacks;
-  td[3].textContent = rowInfo.audioContextPlaybacks;
-  td[4].textContent = rowInfo.mediaElementPlaybacks;
-  td[5].textContent = rowInfo.audiblePlaybacks;
-  td[6].textContent = rowInfo.significantPlaybacks;
-  td[7].textContent = rowInfo.lastMediaPlaybackTime ?
+  td[3].textContent = rowInfo.lastMediaPlaybackTime ?
       new Date(rowInfo.lastMediaPlaybackTime).toISOString() :
       '';
-  td[8].textContent = rowInfo.isHigh ? 'Yes' : 'No';
-  td[9].textContent = rowInfo.highScoreChanges;
-  td[10].textContent = rowInfo.totalScore ? rowInfo.totalScore.toFixed(2) : '0';
-  td[11].getElementsByClassName('engagement-bar')[0].style.width =
+  td[4].textContent = rowInfo.isHigh ? 'Yes' : 'No';
+  td[5].textContent = rowInfo.totalScore ? rowInfo.totalScore.toFixed(2) : '0';
+  td[6].getElementsByClassName('engagement-bar')[0].style.width =
       (rowInfo.totalScore * 50) + 'px';
   return document.importNode(template.content, true);
 }
@@ -66,8 +68,8 @@ function sortInfo() {
 /**
  * Compares two MediaEngagementScoreDetails objects based on |sortKey|.
  * @param {string} sortKey The name of the property to sort by.
- * @param {number|url.mojom.Url} The first object to compare.
- * @param {number|url.mojom.Url} The second object to compare.
+ * @param {number|url.mojom.Origin} The first object to compare.
+ * @param {number|url.mojom.Origin} The second object to compare.
  * @return {number} A negative number if |a| should be ordered before
  *     |b|, a positive number otherwise.
  */
@@ -77,7 +79,7 @@ function compareTableItem(sortKey, a, b) {
 
   // Compare the hosts of the origin ignoring schemes.
   if (sortKey == 'origin') {
-    return new URL(val1.url).host > new URL(val2.url).host ? 1 : -1;
+    return val1.host > val2.host ? 1 : -1;
   }
 
   if (sortKey == 'visits' || sortKey == 'mediaPlaybacks' ||
@@ -129,6 +131,8 @@ function renderConfigTable(config) {
   configTableBody.appendChild(createConfigRow(
       'Preload MEI data', formatFeatureFlag(config.featurePreloadData)));
   configTableBody.appendChild(createConfigRow(
+      'MEI for HTTPS only', formatFeatureFlag(config.featureHttpsOnly)));
+  configTableBody.appendChild(createConfigRow(
       'Autoplay disable settings',
       formatFeatureFlag(config.featureAutoplayDisableSettings)));
   configTableBody.appendChild(createConfigRow(
@@ -171,20 +175,20 @@ function renderTable() {
  */
 function updateEngagementTable() {
   // Populate engagement table.
-  uiHandler.getMediaEngagementScoreDetails().then(response => {
+  detailsProvider.getMediaEngagementScoreDetails().then(response => {
     info = response.info;
     renderTable();
     pageIsPopulatedResolver.resolve();
   });
 
   // Populate config settings.
-  uiHandler.getMediaEngagementConfig().then(response => {
+  detailsProvider.getMediaEngagementConfig().then(response => {
     renderConfigTable(response.config);
   });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  uiHandler = media.mojom.MediaEngagementScoreDetailsProvider.getProxy();
+  detailsProvider = media.mojom.MediaEngagementScoreDetailsProvider.getRemote();
   updateEngagementTable();
 
   engagementTableBody = $('engagement-table-body');

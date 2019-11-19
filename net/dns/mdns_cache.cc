@@ -17,6 +17,10 @@
 
 namespace net {
 
+namespace {
+constexpr size_t kDefaultEntryLimit = 100'000;
+}  // namespace
+
 // The effective TTL given to records with a nominal zero TTL.
 // Allows time for hosts to send updated records, as detailed in RFC 6762
 // Section 10.1.
@@ -50,7 +54,7 @@ MDnsCache::Key MDnsCache::Key::CreateFor(const RecordParsed* record) {
              GetOptionalFieldForRecord(record));
 }
 
-MDnsCache::MDnsCache() = default;
+MDnsCache::MDnsCache() : entry_limit_(kDefaultEntryLimit) {}
 
 MDnsCache::~MDnsCache() = default;
 
@@ -96,16 +100,21 @@ void MDnsCache::CleanupRecords(
     const RecordRemovedCallback& record_removed_callback) {
   base::Time next_expiration;
 
+  // TODO(crbug.com/946688): Make overfill pruning more intelligent than a bulk
+  // clearing of everything.
+  bool clear_cache = IsCacheOverfilled();
+
   // We are guaranteed that |next_expiration_| will be at or before the next
   // expiration. This allows clients to eagrely call CleanupRecords with
   // impunity.
-  if (now < next_expiration_) return;
+  if (now < next_expiration_ && !clear_cache)
+    return;
 
   for (auto i = mdns_cache_.begin(); i != mdns_cache_.end();) {
     base::Time expiration = GetEffectiveExpiration(i->second.get());
-    if (now >= expiration) {
+    if (clear_cache || now >= expiration) {
       record_removed_callback.Run(i->second.get());
-      mdns_cache_.erase(i++);
+      i = mdns_cache_.erase(i);
     } else {
       if (next_expiration == base::Time() ||  expiration < next_expiration) {
         next_expiration = expiration;
@@ -152,6 +161,10 @@ std::unique_ptr<const RecordParsed> MDnsCache::RemoveRecord(
   }
 
   return std::unique_ptr<const RecordParsed>();
+}
+
+bool MDnsCache::IsCacheOverfilled() const {
+  return mdns_cache_.size() > entry_limit_;
 }
 
 // static

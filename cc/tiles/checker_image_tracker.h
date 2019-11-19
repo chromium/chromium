@@ -55,7 +55,10 @@ class CC_EXPORT CheckerImageTracker {
                       CheckerImageTrackerClient* client,
                       bool enable_checker_imaging,
                       size_t min_image_bytes_to_checker);
+  CheckerImageTracker(const CheckerImageTracker&) = delete;
   ~CheckerImageTracker();
+
+  CheckerImageTracker& operator=(const CheckerImageTracker&) = delete;
 
   // Returns true if the decode for |image| will be deferred to the image decode
   // service and it should be be skipped during raster.
@@ -136,6 +139,7 @@ class CC_EXPORT CheckerImageTracker {
     DecodePolicy policy = DecodePolicy::SYNC;
     SkFilterQuality filter_quality = kNone_SkFilterQuality;
     SkSize scale = SkSize::MakeEmpty();
+    gfx::ColorSpace color_space;
     size_t frame_index = PaintImage::kDefaultFrameIndex;
   };
 
@@ -146,13 +150,14 @@ class CC_EXPORT CheckerImageTracker {
     ScopedDecodeHolder(ImageController* controller,
                        ImageController::ImageDecodeRequestId request_id)
         : controller_(controller), request_id_(request_id) {}
+    ScopedDecodeHolder(const ScopedDecodeHolder&) = delete;
     ~ScopedDecodeHolder() { controller_->UnlockImageDecode(request_id_); }
+
+    ScopedDecodeHolder& operator=(const ScopedDecodeHolder&) = delete;
 
    private:
     ImageController* controller_;
     ImageController::ImageDecodeRequestId request_id_;
-
-    DISALLOW_COPY_AND_ASSIGN(ScopedDecodeHolder);
   };
 
   void DidFinishImageDecode(PaintImage::Id image_id,
@@ -203,9 +208,7 @@ class CC_EXPORT CheckerImageTracker {
 
   base::flat_map<PaintImage::Id, PaintImage::DecodingMode> decoding_mode_map_;
 
-  base::WeakPtrFactory<CheckerImageTracker> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckerImageTracker);
+  base::WeakPtrFactory<CheckerImageTracker> weak_factory_{this};
 };
 
 }  // namespace cc

@@ -25,7 +25,8 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 #include "content/public/browser/devtools_socket_factory.h"
-#include "content/public/test/test_browser_thread_bundle.h"
+#include "content/public/common/content_client.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_address.h"
@@ -62,7 +63,7 @@ class DummyServerSocket : public net::ServerSocket {
 };
 
 void QuitFromHandlerThread(const base::Closure& quit_closure) {
-  base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, quit_closure);
+  base::PostTask(FROM_HERE, {BrowserThread::UI}, quit_closure);
 }
 
 class DummyServerSocketFactory : public DevToolsSocketFactory {
@@ -73,7 +74,7 @@ class DummyServerSocketFactory : public DevToolsSocketFactory {
         quit_closure_2_(quit_closure_2) {}
 
   ~DummyServerSocketFactory() override {
-    base::PostTaskWithTraits(FROM_HERE, {BrowserThread::UI}, quit_closure_2_);
+    base::PostTask(FROM_HERE, {BrowserThread::UI}, quit_closure_2_);
   }
 
  protected:
@@ -131,7 +132,7 @@ class DevToolsHttpHandlerTest : public testing::Test {
  private:
   std::unique_ptr<ContentClient> content_client_;
   std::unique_ptr<ContentBrowserClient> browser_content_client_;
-  content::TestBrowserThreadBundle thread_bundle_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(DevToolsHttpHandlerTest, TestStartStop) {

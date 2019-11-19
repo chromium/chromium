@@ -20,6 +20,10 @@
 #error "Extensions must be enabled"
 #endif
 
+namespace base {
+class OneShotEvent;
+}
+
 namespace content {
 class BrowserContext;
 }
@@ -33,7 +37,6 @@ class ExtensionService;
 class ExtensionSet;
 class InfoMap;
 class ManagementPolicy;
-class OneShotEvent;
 class QuotaService;
 class RuntimeData;
 class ServiceWorkerManager;
@@ -64,7 +67,6 @@ class ExtensionSystem : public KeyedService {
   // These calls should occur after the profile IO data is initialized,
   // as extensions initialization depends on that.
   virtual void InitForRegularProfile(bool extensions_enabled) = 0;
-  virtual void InitForIncognitoProfile() = 0;
 
   // The ExtensionService is created at startup. ExtensionService is only
   // defined in Chrome.
@@ -122,7 +124,7 @@ class ExtensionSystem : public KeyedService {
       const UnloadedExtensionReason reason) {}
 
   // Signaled when the extension system has completed its startup tasks.
-  virtual const OneShotEvent& ready() const = 0;
+  virtual const base::OneShotEvent& ready() const = 0;
 
   // Returns the content verifier, if any.
   virtual ContentVerifier* content_verifier() = 0;

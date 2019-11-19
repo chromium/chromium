@@ -6,17 +6,41 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
+#include "build/util/webkit_version.h"
 #include "chromeos/assistant/internal/internal_constants.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/util/version_loader.h"
+#include "chromeos/services/assistant/public/features.h"
 
 namespace chromeos {
 namespace assistant {
+
+namespace {
+
+void CreateUserAgent(std::string* user_agent) {
+  DCHECK(user_agent->empty());
+  base::StringAppendF(user_agent,
+                      "Mozilla/5.0 (X11; CrOS %s %s; %s) "
+                      "AppleWebKit/%d.%d (KHTML, like Gecko)",
+                      base::SysInfo::OperatingSystemArchitecture().c_str(),
+                      base::SysInfo::OperatingSystemVersion().c_str(),
+                      base::SysInfo::GetLsbReleaseBoard().c_str(),
+                      WEBKIT_VERSION_MAJOR, WEBKIT_VERSION_MINOR);
+
+  std::string arc_version = chromeos::version_loader::GetARCVersion();
+  if (!arc_version.empty())
+    base::StringAppendF(user_agent, " ARC/%s", arc_version.c_str());
+}
+
+}  // namespace
 
 // Get the root path for assistant files.
 base::FilePath GetRootPath() {
@@ -50,12 +74,26 @@ std::string CreateLibAssistantConfig() {
   Value internal(Type::DICTIONARY);
   internal.SetKey("surface_type", Value("OPA_CROS"));
 
+  std::string user_agent;
+  CreateUserAgent(&user_agent);
+  internal.SetKey("user_agent", Value(user_agent));
+
+  // Prevent LibAssistant from automatically playing ready message TTS during
+  // the startup sequence when the version of LibAssistant has been upgraded.
+  internal.SetKey("override_ready_message", Value(true));
+
   if (base::SysInfo::IsRunningOnChromeOS()) {
-    // Log to 'log' sub dir in user's home dir.
     Value logging(Type::DICTIONARY);
-    logging.SetKey(
-        "directory",
-        Value(GetRootPath().Append(FILE_PATH_LITERAL("log")).value()));
+    // Redirect libassistant logging to /var/log/chrome/ if has the switch,
+    // otherwise log to 'log' sub dir in user's home dir.
+    const bool redirect_logging =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            chromeos::switches::kRedirectLibassistantLogging);
+    const std::string log_dir =
+        redirect_logging
+            ? "/var/log/chrome/"
+            : GetRootPath().Append(FILE_PATH_LITERAL("log")).value();
+    logging.SetKey("directory", Value(log_dir));
     // Maximum disk space consumed by all log files. There are 5 rotating log
     // files on disk.
     logging.SetKey("max_size_kb", Value(3 * 1024));
@@ -71,6 +109,15 @@ std::string CreateLibAssistantConfig() {
   Value audio_input(Type::DICTIONARY);
   // Skip sending speaker ID selection info to disable user verification.
   audio_input.SetKey("should_send_speaker_id_selection_info", Value(false));
+
+  Value sources(Type::LIST);
+  Value dict(Type::DICTIONARY);
+  dict.SetKey("enable_eraser", Value(features::IsAudioEraserEnabled()));
+  dict.SetKey("enable_eraser_toggling",
+              Value(features::IsAudioEraserEnabled()));
+  sources.Append(std::move(dict));
+  audio_input.SetKey("sources", std::move(sources));
+
   config.SetKey("audio_input", std::move(audio_input));
 
   std::string json;

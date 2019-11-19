@@ -3,6 +3,8 @@
 {% include 'copyright_block.txt' %}
 #include "{{this_include_header_path}}"
 
+#include <algorithm>
+
 {% for filename in cpp_includes if filename != '%s.h' % cpp_class_or_partial %}
 #include "{{filename}}"
 {% endfor %}
@@ -84,15 +86,19 @@ static void (*{{method.name}}MethodForPartialInterface)(const v8::FunctionCallba
 
 {##############################################################################}
 {# Attributes #}
-{% from 'attributes.cc.tmpl' import attribute_getter,
-       attribute_setter,
+{% from 'attributes.cc.tmpl' import attribute_getter, attribute_setter,
        with context %}
 {% for attribute in attributes %}
 {% for world_suffix in attribute.world_suffixes %}
-{% if not attribute.has_custom_getter and not attribute.constructor_type %}
+{% if attribute.private_property_is_shared_between_getter_and_setter %}
+// Define a private property key shared between getter and setter.
+static const V8PrivateProperty::SymbolKey kPrivateProperty{{attribute.camel_case_name}};
+{% endif %}
+
+{% if attribute.does_generate_getter %}
 {{attribute_getter(attribute, world_suffix)}}
 {% endif %}
-{% if attribute.has_setter and not (attribute.has_custom_setter or attribute.is_lenient_setter) %}
+{% if attribute.does_generate_setter %}
 {{attribute_setter(attribute, world_suffix)}}
 {% endif %}
 {% endfor %}
@@ -126,7 +132,6 @@ static void (*{{method.name}}MethodForPartialInterface)(const v8::FunctionCallba
 {% if iterator_method %}
 {{generate_method(iterator_method)}}
 {% endif %}
-{% block origin_safe_method_setter %}{% endblock %}
 {# Constructors #}
 {% for constructor in constructors %}
 {{generate_constructor(constructor)}}
@@ -148,13 +153,12 @@ static void (*{{method.name}}MethodForPartialInterface)(const v8::FunctionCallba
 {% if has_access_check_callbacks and not is_partial and has_cross_origin_named_enumerator %}
 static const struct {
   using GetterCallback = void(*)(const v8::PropertyCallbackInfo<v8::Value>&);
-  using SetterCallback = void(*)(v8::Local<v8::Value>, const V8CrossOriginSetterInfo&);
+  using SetterCallback = void(*)(v8::Local<v8::Value>, const V8CrossOriginCallbackInfo&);
 
   const char* const name;
   const GetterCallback getter;
   const SetterCallback setter;
 } kCrossOriginAttributeTable[] = {
-  {##### Cross-origin attributes #####}
   {% for attribute in attributes if attribute.has_cross_origin_getter or attribute.has_cross_origin_setter %}
   {
     "{{attribute.name}}",
@@ -170,10 +174,17 @@ static const struct {
     {%+ if attribute.has_cross_origin_setter %}&{{internal_namespace}}::{{attribute.camel_case_name}}AttributeSetter{% else %}nullptr{% endif %},
   },
   {% endfor %}
-  {##### Cross-origin methods #####}
+};
+
+static const struct {
+  using ValueCallback = void(*)(const v8::PropertyCallbackInfo<v8::Value>&);
+
+  const char* const name;
+  const ValueCallback value;
+} kCrossOriginOperationTable[] = {
   {% for method in methods if method.is_cross_origin and
         (not method.overload_index or method.overloads) %}
-  {"{{method.name}}", &{{internal_namespace}}::{{method.camel_case_name}}OriginSafeMethodGetter, nullptr},
+  {"{{method.name}}", &{{internal_namespace}}::{{method.camel_case_name}}OriginSafeMethodGetter},
   {% endfor %}
 };
 {% endif %}
@@ -227,7 +238,6 @@ static const struct {
 {% if iterator_method %}
 {{method_callback(iterator_method)}}
 {% endif %}
-{% block origin_safe_method_setter_callback %}{% endblock %}
 {# Special operations (methods) #}
 {% block named_property_getter_callback %}{% endblock %}
 {% block named_property_setter_callback %}{% endblock %}
@@ -271,6 +281,12 @@ void {{v8_class_or_partial}}::CrossOriginNamedGetter(v8::Local<v8::Name> name, c
       return;
     }
   }
+  for (const auto& operation : {{internal_namespace}}::kCrossOriginOperationTable) {
+    if (property_name == operation.name) {
+      operation.value(info);
+      return;
+    }
+  }
 
   {% if named_property_getter and named_property_getter.is_cross_origin %}
   {% if named_property_getter.is_custom %}
@@ -307,7 +323,7 @@ void {{v8_class_or_partial}}::CrossOriginNamedSetter(v8::Local<v8::Name> name, v
 
   for (const auto& attribute : {{internal_namespace}}::kCrossOriginAttributeTable) {
     if (property_name == attribute.name && attribute.setter) {
-      attribute.setter(value, V8CrossOriginSetterInfo(info.GetIsolate(), info.Holder()));
+      attribute.setter(value, V8CrossOriginCallbackInfo(info));
       return;
     }
   }
@@ -328,6 +344,8 @@ void {{v8_class_or_partial}}::CrossOriginNamedEnumerator(const v8::PropertyCallb
   Vector<String> names;
   for (const auto& attribute : {{internal_namespace}}::kCrossOriginAttributeTable)
     names.push_back(attribute.name);
+  for (const auto& operation : {{internal_namespace}}::kCrossOriginOperationTable)
+    names.push_back(operation.name);
 
   // Use the current context as the creation context, as a cross-origin access
   // may involve an object that does not have a creation context.
@@ -350,39 +368,6 @@ void {{v8_class_or_partial}}::CrossOriginIndexedGetter(uint32_t index, const v8:
 
 {% block visit_dom_wrapper %}{% endblock %}
 {##############################################################################}
-{% block install_attributes %}
-{% from 'attributes.cc.tmpl' import attribute_configuration with context %}
-{% if data_attributes %}
-// Suppress warning: global constructors, because AttributeConfiguration is trivial
-// and does not depend on another global objects.
-#if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wglobal-constructors"
-#endif
-static constexpr V8DOMConfiguration::AttributeConfiguration k{{v8_class}}Attributes[] = {
-    {% for data_attribute in data_attributes %}
-    {{attribute_configuration(data_attribute) | trim | indent(4)}},
-    {% endfor %}
-};
-#if defined(COMPONENT_BUILD) && defined(WIN32) && defined(__clang__)
-#pragma clang diagnostic pop
-#endif
-
-{% endif %}
-{% endblock %}
-{##############################################################################}
-{% block install_accessors %}
-{% from 'attributes.cc.tmpl' import accessor_configuration with context %}
-{% if accessors %}
-static constexpr V8DOMConfiguration::AccessorConfiguration k{{v8_class}}Accessors[] = {
-    {% for accessor in accessors %}
-    {{accessor_configuration(accessor) | trim | indent(4)}},
-    {% endfor %}
-};
-
-{% endif %}
-{% endblock %}
-{##############################################################################}
 {% block install_methods %}
 {% from 'methods.cc.tmpl' import method_configuration with context %}
 {% if methods | has_method_configuration(is_partial) %}
@@ -403,7 +388,7 @@ static constexpr V8DOMConfiguration::MethodConfiguration k{{v8_class}}Methods[] 
 {% from 'methods.cc.tmpl' import install_custom_signature,
         method_configuration with context %}
 {% from 'attributes.cc.tmpl' import accessor_configuration,
-        attribute_configuration,
+        attribute_configuration, install_attributes, install_interface_objects,
         with context %}
 {% from 'constants.cc.tmpl' import install_constants,
         constant_configuration with context %}
@@ -467,14 +452,10 @@ static void Install{{v8_class}}Template(
   {{install_constants() | trim | indent(2)}}
   {% endif %}
   {% if data_attributes %}
-  V8DOMConfiguration::InstallAttributes(
-      isolate, world, instance_template, prototype_template,
-      k{{v8_class}}Attributes, base::size(k{{v8_class}}Attributes));
+  {{install_interface_objects(data_attributes, 'instance_template', 'prototype_template') | trim | indent(2)}}
   {% endif %}
   {% if accessors %}
-  V8DOMConfiguration::InstallAccessors(
-      isolate, world, instance_template, prototype_template, interface_template,
-      signature, k{{v8_class}}Accessors, base::size(k{{v8_class}}Accessors));
+  {{install_attributes(accessors, 'instance_template', 'prototype_template', 'interface_template') | trim | indent(2)}}
   {% endif %}
   {% if methods | has_method_configuration(is_partial) %}
   V8DOMConfiguration::InstallMethods(
@@ -637,7 +618,7 @@ static void Install{{v8_class}}Template(
                         if method.overloads else method.runtime_enabled_feature_name %}
   {% if not feature_name %}
   {% if method.is_cross_origin %}
-  {{install_origin_safe_method(method, 'instance_template', 'prototype_template') | trim | indent(2)}}
+  {{install_origin_safe_method(method, 'instance_template', 'prototype_template', 'interface_template', 'signature') | trim | indent(2)}}
   {% else %}
   {{install_custom_signature(method, 'instance_template', 'prototype_template', 'interface_template', 'signature') | trim | indent(2)}}
   {% endif %}
@@ -688,27 +669,13 @@ void {{v8_class_or_partial}}::InstallRuntimeEnabledFeaturesOnTemplate(
 
   {% for feature_name, attribute_list in runtime_enabled_attributes | selectattr('is_data_type_property') | groupby('runtime_enabled_feature_name') %}
   {% filter runtime_enabled(feature_name) %}
-  static constexpr V8DOMConfiguration::AttributeConfiguration kConfigurations[] = {
-      {% for attribute in attribute_list | sort %}
-      {{attribute_configuration(attribute) | trim | indent(6)}},
-      {% endfor %}
-  };
-  V8DOMConfiguration::InstallAttributes(
-      isolate, world, instance_template, prototype_template,
-      kConfigurations, base::size(kConfigurations));
+  {{install_interface_objects(attribute_list | sort, 'instance_template', 'prototype_template') | trim | indent(2)}}
   {% endfilter %}
   {% endfor %}
 
   {% for feature_name, attribute_list in runtime_enabled_attributes | selectattr('is_data_type_property', 'equalto', False) | groupby('runtime_enabled_feature_name') %}
   {% filter runtime_enabled(feature_name) %}
-  static constexpr V8DOMConfiguration::AccessorConfiguration kConfigurations[] = {
-      {% for attribute in attribute_list | sort %}
-      {{accessor_configuration(attribute) | trim | indent(6)}},
-      {% endfor %}
-  };
-  V8DOMConfiguration::InstallAccessors(
-      isolate, world, instance_template, prototype_template, interface_template,
-      signature, kConfigurations, base::size(kConfigurations));
+  {{install_attributes(attribute_list | sort, 'instance_template', 'prototype_template', 'interface_template') | trim | indent(2)}}
   {% endfilter %}
   {% endfor %}
 
@@ -761,7 +728,9 @@ void {{v8_class_or_partial}}::InstallRuntimeEnabledFeaturesOnTemplate(
 {##############################################################################}
 {% block install_runtime_enabled %}
 {% if needs_runtime_enabled_installer %}
-{% from 'attributes.cc.tmpl' import accessor_configuration, attribute_configuration with context %}
+{% from 'attributes.cc.tmpl' import accessor_configuration,
+        attribute_configuration, install_attributes, install_interface_objects,
+        with context %}
 {% from 'methods.cc.tmpl' import install_custom_signature with context %}
 {% if not is_partial %}
 void {{v8_class}}::InstallRuntimeEnabledFeatures(
@@ -801,25 +770,13 @@ void {{v8_class_or_partial}}::InstallRuntimeEnabledFeaturesImpl(
 
   {% for feature_name, attrs in runtime_enabled_attributes | selectattr('is_data_type_property') | groupby('runtime_enabled_feature_name') %}
   {% filter runtime_enabled(feature_name) %}
-  static constexpr V8DOMConfiguration::AttributeConfiguration kConfigurations[] = {
-      {% for attribute in attrs | sort %}
-      {{attribute_configuration(attribute) | trim | indent(6)}},
-      {% endfor %}
-  };
-  V8DOMConfiguration::InstallAttributes(isolate, world, instance, prototype,
-      kConfigurations, base::size(kConfigurations));
+  {{install_interface_objects(attrs | sort, 'instance', 'prototype')}}
   {% endfilter %}
   {% endfor %}
 
   {% for feature_name, attrs in runtime_enabled_attributes | selectattr('is_data_type_property', 'equalto', False) | groupby('runtime_enabled_feature_name') %}
   {% filter runtime_enabled(feature_name) %}
-  static constexpr V8DOMConfiguration::AccessorConfiguration kConfigurations[] = {
-      {% for attribute in attrs | sort %}
-      {{accessor_configuration(attribute) | trim | indent(6)}},
-      {% endfor %}
-  };
-  V8DOMConfiguration::InstallAccessors(isolate, world, instance, prototype,
-      interface, signature, kConfigurations, base::size(kConfigurations));
+  {{install_attributes(attrs | sort, 'instance', 'prototype', 'interface') | trim | indent(2)}}
   {% endfilter %}
   {% endfor %}
 
@@ -852,7 +809,7 @@ void {{v8_class_or_partial}}::InstallRuntimeEnabledFeaturesImpl(
 {##############################################################################}
 {% block origin_trials %}
 {% from 'attributes.cc.tmpl' import accessor_configuration,
-        attribute_configuration,
+        attribute_configuration, install_attributes, install_interface_objects,
         with context %}
 {% from 'constants.cc.tmpl' import constant_configuration with context %}
 {% from 'methods.cc.tmpl' import method_configuration with context %}
@@ -876,25 +833,14 @@ void {{v8_class_or_partial}}::Install{{feature.name}}(
   bool is_secure_context = (execution_context && execution_context->IsSecureContext());
   {% endif %}{# needs secure context #}
   {# Origin-Trial-enabled attributes #}
-  {% for attribute in feature.attributes %}
-  {% filter secure_context(attribute.secure_context_test) %}
-  {% if attribute.is_data_type_property %}
-  static constexpr V8DOMConfiguration::AttributeConfiguration
-  k{{attribute.name}}Configurations[] = {
-      {{attribute_configuration(attribute) | trim | indent(4)}}
-  };
-  for (const auto& config : k{{attribute.name}}Configurations)
-    V8DOMConfiguration::InstallAttribute(isolate, world, instance, prototype, config);
-  {% else %}
-  static constexpr V8DOMConfiguration::AccessorConfiguration
-  k{{attribute.name}}Configurations[] = {
-      {{accessor_configuration(attribute) | trim | indent(4)}}
-  };
-  for (const auto& config : k{{attribute.name}}Configurations) {
-    V8DOMConfiguration::InstallAccessor(isolate, world, instance, prototype,
-                                        interface, signature, config);
-  }
-  {% endif %}
+  {% for secure_context_test, attribute_list in feature.attributes | selectattr('is_data_type_property') | groupby('secure_context_test') %}
+  {% filter secure_context(secure_context_test) %}
+  {{install_interface_objects(attribute_list, 'instance', 'prototype') | trim | indent(2)}}
+  {% endfilter %}
+  {% endfor %}
+  {% for secure_context_test, attribute_list in feature.attributes | rejectattr('is_data_type_property') | groupby('secure_context_test') %}
+  {% filter secure_context(secure_context_test) %}
+  {{install_attributes(attribute_list, 'instance', 'prototype', 'interface') | trim | indent(2)}}
   {% endfilter %}{# secure_context #}
   {% endfor %}
   {# Origin-Trial-enabled constants #}
@@ -911,7 +857,7 @@ void {{v8_class_or_partial}}::Install{{feature.name}}(
   {% filter secure_context(method.secure_context_test) %}
   static constexpr V8DOMConfiguration::MethodConfiguration
   k{{method.camel_case_name}}Configurations[] = {
-      {{method_configuration(method) | trim | indent(4)}}
+      {{method_configuration(method) | trim | indent(6)}}
   };
   for (const auto& config : k{{method.camel_case_name}}Configurations) {
     V8DOMConfiguration::InstallMethod(

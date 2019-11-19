@@ -56,7 +56,7 @@ class PinStorageCryptohome {
   std::string system_salt_;
   std::vector<base::OnceClosure> system_salt_callbacks_;
 
-  base::WeakPtrFactory<PinStorageCryptohome> weak_factory_;
+  base::WeakPtrFactory<PinStorageCryptohome> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(PinStorageCryptohome);
 };

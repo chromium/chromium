@@ -1,0 +1,16 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/native-file-system/#filesystemwriter
+[
+    Exposed=(Window,Worker),
+    SecureContext,
+    ImplementedAs=NativeFileSystemWriter,
+    RuntimeEnabled=NativeFileSystem
+] interface FileSystemWriter {
+    [CallWith=ScriptState, RaisesException] Promise<void> write(unsigned long long position, (BufferSource or Blob or USVString) data);
+    [CallWith=ScriptState] Promise<void> truncate(unsigned long long size);
+
+    [CallWith=ScriptState] Promise<void> close();
+};

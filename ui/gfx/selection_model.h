@@ -25,7 +25,9 @@ namespace gfx {
 //       RIGHT_TO_LEFT             CURSOR_LEFT           CURSOR_FORWARD
 enum VisualCursorDirection {
   CURSOR_LEFT,
-  CURSOR_RIGHT
+  CURSOR_RIGHT,
+  CURSOR_UP,
+  CURSOR_DOWN
 };
 enum LogicalCursorDirection {
   CURSOR_BACKWARD,

@@ -5,17 +5,17 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SERVICE_FACTORY_H_
 
+#include <memory>
+
 #include "base/macros.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/simple_keyed_service_factory.h"
+
+class SimpleFactoryKey;
 
 namespace base {
 template <typename T>
 struct DefaultSingletonTraits;
 }  // namespace base
-
-namespace content {
-class BrowserContext;
-}  // namespace content
 
 namespace download {
 class DownloadService;
@@ -23,14 +23,13 @@ class DownloadService;
 
 // DownloadServiceFactory is the main client class for interaction with the
 // download component.
-class DownloadServiceFactory : public BrowserContextKeyedServiceFactory {
+class DownloadServiceFactory : public SimpleKeyedServiceFactory {
  public:
   // Returns singleton instance of DownloadServiceFactory.
   static DownloadServiceFactory* GetInstance();
 
-  // Returns the DownloadService associated with |context|.
-  static download::DownloadService* GetForBrowserContext(
-      content::BrowserContext* context);
+  // Returns the DownloadService associated with |key|.
+  static download::DownloadService* GetForKey(SimpleFactoryKey* key);
 
  private:
   friend struct base::DefaultSingletonTraits<DownloadServiceFactory>;
@@ -38,11 +37,10 @@ class DownloadServiceFactory : public BrowserContextKeyedServiceFactory {
   DownloadServiceFactory();
   ~DownloadServiceFactory() override;
 
-  // BrowserContextKeyedServiceFactory overrides:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
+  // SimpleKeyedServiceFactory overrides:
+  std::unique_ptr<KeyedService> BuildServiceInstanceFor(
+      SimpleFactoryKey* key) const override;
+  SimpleFactoryKey* GetKeyToUse(SimpleFactoryKey* key) const override;
 
   DISALLOW_COPY_AND_ASSIGN(DownloadServiceFactory);
 };

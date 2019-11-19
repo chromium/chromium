@@ -90,7 +90,7 @@ function HTMLFormElement10() {
       assertSize("Asize",1,nodeList);
 testNode = nodeList.item(0);
       testNode.submit();
-
+      window.stop();
 }
 
 function runTest() {

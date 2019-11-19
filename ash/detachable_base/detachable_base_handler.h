@@ -11,15 +11,14 @@
 
 #include "ash/ash_export.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
-#include "ash/public/interfaces/user_info.mojom.h"
-#include "ash/shell_observer.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
 #include "base/scoped_observer.h"
-#include "chromeos/dbus/hammerd_client.h"
-#include "chromeos/dbus/power_manager_client.h"
+#include "chromeos/dbus/hammerd/hammerd_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
+#include "components/account_id/account_id.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -27,7 +26,7 @@ class PrefService;
 namespace ash {
 
 class DetachableBaseObserver;
-class Shell;
+struct UserInfo;
 
 // Keeps track of the state of Chrome OS device's detachable base. It tracks
 // whether:
@@ -46,13 +45,11 @@ class Shell;
 // DetachableBaseHandler clients are expected to determine for which users the
 // detachable base state should be set or retrieved.
 class ASH_EXPORT DetachableBaseHandler
-    : public ShellObserver,
-      public chromeos::HammerdClient::Observer,
+    : public chromeos::HammerdClient::Observer,
       public chromeos::PowerManagerClient::Observer {
  public:
-  // |shell| - the ash shell that owns the DetachableBaseHandler. May be null in
-  // tests.
-  explicit DetachableBaseHandler(ash::Shell* shell);
+  // |local_state| - PrefService of Local state. May be null in tests.
+  explicit DetachableBaseHandler(PrefService* local_state);
   ~DetachableBaseHandler() override;
 
   // Registers the local state prefs for detachable base devices.
@@ -62,7 +59,7 @@ class ASH_EXPORT DetachableBaseHandler
   void RemoveObserver(DetachableBaseObserver* observer);
 
   // Removes the detachable base data associated with a user from local state.
-  void RemoveUserData(const mojom::UserInfo& user);
+  void RemoveUserData(const UserInfo& user);
 
   // Gets the detachable base pairing state.
   DetachableBasePairingStatus GetPairingStatus() const;
@@ -71,7 +68,7 @@ class ASH_EXPORT DetachableBaseHandler
   // Returns true only if the base has kAuthenticated pairing state.
   // If this the user has not previously used any detachable bases (i.e. the
   // last used detachable base is empty), this will return true.
-  bool PairedBaseMatchesLastUsedByUser(const mojom::UserInfo& user) const;
+  bool PairedBaseMatchesLastUsedByUser(const UserInfo& user) const;
 
   // Sets the currently paired base as the last used base for the user.
   // If the user is not ephemeral, the last used base information will be
@@ -83,10 +80,7 @@ class ASH_EXPORT DetachableBaseHandler
   // yet initialized. Observers will be notified that pairing status
   // changed when local state is initialized (provided a base is still
   // paired) - setting the last used base can be retried at that point.
-  bool SetPairedBaseAsLastUsedByUser(const mojom::UserInfo& user);
-
-  // ShellObserver:
-  void OnLocalStatePrefServiceInitialized(PrefService* pref_service) override;
+  bool SetPairedBaseAsLastUsedByUser(const UserInfo& user);
 
   // chromeos::HammerdClient::Observer:
   void BaseFirmwareUpdateNeeded() override;
@@ -118,7 +112,7 @@ class ASH_EXPORT DetachableBaseHandler
 
   // Retrieves the last known base used by a user. Returns an empty string if
   // a detachable base usage was not previously recorded for the user.
-  DetachableBaseId GetLastUsedDeviceForUser(const mojom::UserInfo& user) const;
+  DetachableBaseId GetLastUsedDeviceForUser(const UserInfo& user) const;
 
   // Notifies observers that the detachable base pairing state has changed.
   void NotifyPairingStatusChanged();
@@ -128,9 +122,6 @@ class ASH_EXPORT DetachableBaseHandler
   void NotifyBaseRequiresFirmwareUpdate(bool requires_update);
 
   PrefService* local_state_ = nullptr;
-
-  // The shell that owns |this| - used to listen for local state initialization.
-  ash::Shell* shell_;
 
   // Tablet mode state currently reported by power manager - tablet mode getting
   // turned on is used as a signal that the base is detached.
@@ -157,7 +148,7 @@ class ASH_EXPORT DetachableBaseHandler
 
   base::ObserverList<DetachableBaseObserver>::Unchecked observers_;
 
-  base::WeakPtrFactory<DetachableBaseHandler> weak_ptr_factory_;
+  base::WeakPtrFactory<DetachableBaseHandler> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DetachableBaseHandler);
 };

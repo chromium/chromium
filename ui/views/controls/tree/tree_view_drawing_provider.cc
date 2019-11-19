@@ -9,8 +9,8 @@
 
 namespace views {
 
-TreeViewDrawingProvider::TreeViewDrawingProvider() {}
-TreeViewDrawingProvider::~TreeViewDrawingProvider() {}
+TreeViewDrawingProvider::TreeViewDrawingProvider() = default;
+TreeViewDrawingProvider::~TreeViewDrawingProvider() = default;
 
 SkColor TreeViewDrawingProvider::GetBackgroundColorForNode(
     TreeView* tree_view,

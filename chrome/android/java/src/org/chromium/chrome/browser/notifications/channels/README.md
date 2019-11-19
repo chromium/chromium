@@ -33,7 +33,7 @@ channel (assuming the Browser channel properties are appropriate). A new channel
 can always be split out in future if deemed necessary.
 
 > **Note**: Any time a new type of notification is added, a new
-`SystemNotificationType` should be added to `histograms.xml` and
+`SystemNotificationType` should be added to `enums.xml` and
 `NotificationUmaTracker.onNotificationShown` must be called with this new
  type whenever any notifications are shown, to collect UMA on how often the
  notifications are blocked. *It is not necessary to add a new channel

@@ -98,6 +98,7 @@ TEST_F(ProtoConversionsTest, RequestParamsWithHeadersConversion) {
   expected.url = GURL(TEST_URL);
   expected.method = "GET";
   expected.fetch_error_body = true;
+  expected.require_safety_checks = false;
   expected.request_headers.SetHeader("key1", "value1");
   expected.request_headers.SetHeader("key2", "value2");
 
@@ -108,6 +109,7 @@ TEST_F(ProtoConversionsTest, RequestParamsWithHeadersConversion) {
   EXPECT_EQ(expected.url, actual.url);
   EXPECT_EQ(expected.method, actual.method);
   EXPECT_EQ(expected.fetch_error_body, actual.fetch_error_body);
+  EXPECT_EQ(expected.require_safety_checks, actual.require_safety_checks);
 
   std::string out;
   actual.request_headers.GetHeader("key1", &out);

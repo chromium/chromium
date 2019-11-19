@@ -3,33 +3,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import optparse
+import argparse
 import os
 import subprocess
 import sys
 
 def main():
-  usage = ('%prog [options]\n'
-           'Invokes build-webkit with the given options.')
-  parser = optparse.OptionParser(usage=usage)
-  parser.add_option('-o', '--output_dir',
+  description = 'Invokes build-webkit with the given options.'
+  parser = argparse.ArgumentParser(description=description)
+  parser.add_argument('--output_dir',
                     help='Output directory for build products.')
-  (opts, args) = parser.parse_args()
+  parser.add_argument('-j',
+                    help='Number of parallel jobs to run.')
+  (opts, extra_args) = parser.parse_known_args()
 
-  if not opts.output_dir:
-    print >>sys.stderr, '--output_dir is required.'
-    return 1
+  output_dir = opts.output_dir
+  if not output_dir:
+    # Use a default that matches what ninja uses.
+    output_dir = os.path.realpath(os.path.join(
+      os.path.dirname(__file__),
+      '../../..',
+      'out', 'Debug-iphonesimulator', 'obj', 'ios', 'third_party', 'webkit'));
 
-  # TODO(crbug.com/934252): "-jobs 2" is passed along to the underlying
-  # xcodebuild invocation and restricts xcodebuild to two simultaneous
-  # jobs. This is intended to prevent overloading the machine, because ninja
-  # will already be spawning a large number of jobs in parallel with xcodebuild,
-  # but it causes the webkit build to run very slowly. Find a way to increase
-  # the parallelism here.
-  command = ['src/Tools/Scripts/build-webkit', '--debug', '--ios-simulator',
-             '-quiet', '-jobs', '2']
+  command = ['src/Tools/Scripts/build-webkit', '--debug', '--ios-simulator']
+  if opts.j:
+    command.extend(['-jobs', opts.j])
+  command.extend(extra_args)
 
-  env = {'WEBKIT_OUTPUTDIR': opts.output_dir}
+  env = {'WEBKIT_OUTPUTDIR': output_dir}
   cwd = os.path.dirname(os.path.realpath(__file__))
   proc = subprocess.Popen(command, cwd=cwd, env=env)
   proc.communicate()

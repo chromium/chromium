@@ -57,7 +57,20 @@ cr.define('cr.ui', function() {
     if (element) {
       let i;
       for (i = 0; child = element.children[i]; i++) {
-        child.selected = i == selectedIndex;
+        const isSelected = i == selectedIndex;
+        child.selected = isSelected;
+
+        // Update tabIndex for a11y
+        child.setAttribute('tabindex', isSelected ? 0 : -1);
+
+        // Update aria-selected attribute for a11y
+        const firstSelection = !child.hasAttribute('aria-selected');
+        child.setAttribute('aria-selected', isSelected);
+
+        // Update focus, but don't override initial focus.
+        if (isSelected && !firstSelection) {
+          child.focus();
+        }
       }
     }
 
@@ -122,8 +135,6 @@ cr.define('cr.ui', function() {
     decorate: function() {
       decorateChildren.call(this);
 
-      // Make the Tabs element focusable.
-      this.tabIndex = 0;
       this.addEventListener('keydown', this.handleKeyDown_.bind(this));
 
       // Get (and initializes a focus outline manager.

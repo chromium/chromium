@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
-#include "third_party/blink/renderer/core/frame/use_counter.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/track/audio_track_list.h"
 #include "third_party/blink/renderer/core/html/track/video_track_list.h"
@@ -47,16 +46,29 @@
 #include "third_party/blink/renderer/modules/mediasource/source_buffer_track_base_supplement.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/mime/content_type.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/text/cstring.h"
 
 using blink::WebMediaSource;
 using blink::WebSourceBuffer;
 
 namespace blink {
+
+namespace {
+// These values are written to logs. New enum values can be added, but existing
+// ones must never be renumbered or deleted and reused.
+enum class MseExecutionContext {
+  kWindow = 0,
+  kDedicatedWorker = 1,
+  kSharedWorker = 2,
+  kMax = kSharedWorker
+};
+}  // namespace
 
 static bool ThrowExceptionIfClosed(bool is_open,
                                    ExceptionState& exception_state) {
@@ -111,16 +123,41 @@ MediaSource::MediaSource(ExecutionContext* context)
     : ContextLifecycleObserver(context),
       ready_state_(ClosedKeyword()),
       async_event_queue_(
-          EventQueue::Create(context, TaskType::kMediaElementEvent)),
+          MakeGarbageCollected<EventQueue>(context,
+                                           TaskType::kMediaElementEvent)),
       attached_element_(nullptr),
-      source_buffers_(SourceBufferList::Create(GetExecutionContext(),
-                                               async_event_queue_.Get())),
+      source_buffers_(
+          MakeGarbageCollected<SourceBufferList>(GetExecutionContext(),
+                                                 async_event_queue_.Get())),
       active_source_buffers_(
-          SourceBufferList::Create(GetExecutionContext(),
-                                   async_event_queue_.Get())),
-      live_seekable_range_(TimeRanges::Create()),
+          MakeGarbageCollected<SourceBufferList>(GetExecutionContext(),
+                                                 async_event_queue_.Get())),
+      live_seekable_range_(MakeGarbageCollected<TimeRanges>()),
       added_to_registry_counter_(0) {
   DVLOG(1) << __func__ << " this=" << this;
+
+  DCHECK(RuntimeEnabledFeatures::MediaSourceInWorkersEnabled() ||
+         IsMainThread());
+
+  MseExecutionContext type = MseExecutionContext::kWindow;
+  if (!IsMainThread()) {
+    if (context->IsDedicatedWorkerGlobalScope())
+      type = MseExecutionContext::kDedicatedWorker;
+    else if (context->IsSharedWorkerGlobalScope())
+      type = MseExecutionContext::kSharedWorker;
+    else
+      CHECK(false) << "Invalid execution context for MSE usage";
+  }
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      EnumerationHistogram, mse_execution_context_histogram,
+      ("Media.MSE.ExecutionContext",
+       static_cast<int>(MseExecutionContext::kMax) + 1));
+  mse_execution_context_histogram.Count(static_cast<int>(type));
+
+  // TODO(wolenetz): Actually enable experimental usage of MediaSource from
+  // dedicated and shared worker contexts. See https://crbug.com/878133.
+  CHECK(type == MseExecutionContext::kWindow)
+      << "MSE is not yet supported from workers";
 }
 
 MediaSource::~MediaSource() {
@@ -156,6 +193,12 @@ SourceBuffer* MediaSource::addSourceBuffer(const String& type,
 
   // 2. If type contains a MIME type that is not supported ..., then throw a
   // NotSupportedError exception and abort these steps.
+  //
+  // TODO(wolenetz): Refactor and use a less-strict version of isTypeSupported
+  // here. As part of that, CreateWebSourceBuffer in Chromium should inherit
+  // relaxation of impl's StreamParserFactory (since it returns false if a
+  // stream parser can't be constructed with |type|). See
+  // https://crbug.com/535738.
   if (!isTypeSupported(type)) {
     LogAndThrowDOMException(
         exception_state, DOMExceptionCode::kNotSupportedError,
@@ -320,8 +363,17 @@ bool MediaSource::isTypeSupported(const String& type) {
   // 5. If the MediaSource does not support the specified combination of media
   //    type, media subtype, and codecs then return false.
   // 6. Return true.
-  bool result = MIMETypeRegistry::IsSupportedMediaSourceMIMEType(
-      content_type.GetType(), codecs);
+  // For incompletely specified mime-type and codec combinations, we also return
+  // false, complying with the non-normative guidance being incubated for the
+  // MSE vNext codec switching feature at
+  // https://github.com/WICG/media-source/tree/codec-switching.
+  // TODO(wolenetz): Relaxed codec specificity following similar non-normative
+  // guidance will soon be allowed for addSourceBuffer and changeType methods,
+  // but this strict codec specificity is and will be retained for
+  // isTypeSupported. See https://crbug.com/535738
+  bool result = MIMETypeRegistry::kIsSupported ==
+                MIMETypeRegistry::SupportsMediaSourceMIMEType(
+                    content_type.GetType(), codecs);
   DVLOG(2) << __func__ << "(" << type << ") -> " << (result ? "true" : "false");
   return result;
 }
@@ -370,77 +422,78 @@ double MediaSource::duration() const {
                     : web_media_source_->Duration();
 }
 
-TimeRanges* MediaSource::Buffered() const {
+WebTimeRanges MediaSource::BufferedInternal() const {
   // Implements MediaSource algorithm for HTMLMediaElement.buffered.
   // https://dvcs.w3.org/hg/html-media/raw-file/default/media-source/media-source.html#htmlmediaelement-extensions
-  HeapVector<Member<TimeRanges>> ranges(active_source_buffers_->length());
+  Vector<WebTimeRanges> ranges(active_source_buffers_->length());
   for (unsigned i = 0; i < active_source_buffers_->length(); ++i)
-    ranges[i] = active_source_buffers_->item(i)->buffered(ASSERT_NO_EXCEPTION);
+    ranges[i] = active_source_buffers_->item(i)->buffered();
+
+  WebTimeRanges intersection_ranges;
 
   // 1. If activeSourceBuffers.length equals 0 then return an empty TimeRanges
   //    object and abort these steps.
   if (ranges.IsEmpty())
-    return TimeRanges::Create();
+    return intersection_ranges;
 
   // 2. Let active ranges be the ranges returned by buffered for each
   //    SourceBuffer object in activeSourceBuffers.
   // 3. Let highest end time be the largest range end time in the active ranges.
   double highest_end_time = -1;
-  for (wtf_size_t i = 0; i < ranges.size(); ++i) {
-    unsigned length = ranges[i]->length();
-    if (length)
-      highest_end_time = std::max(
-          highest_end_time, ranges[i]->end(length - 1, ASSERT_NO_EXCEPTION));
+  for (const WebTimeRanges& source_ranges : ranges) {
+    if (!source_ranges.empty())
+      highest_end_time = std::max(highest_end_time, source_ranges.back().end);
   }
 
   // Return an empty range if all ranges are empty.
   if (highest_end_time < 0)
-    return TimeRanges::Create();
+    return intersection_ranges;
 
   // 4. Let intersection ranges equal a TimeRange object containing a single
   //    range from 0 to highest end time.
-  TimeRanges* intersection_ranges = TimeRanges::Create(0, highest_end_time);
+  intersection_ranges.emplace_back(0, highest_end_time);
 
   // 5. For each SourceBuffer object in activeSourceBuffers run the following
   //    steps:
   bool ended = readyState() == EndedKeyword();
-  for (wtf_size_t i = 0; i < ranges.size(); ++i) {
-    // 5.1 Let source ranges equal the ranges returned by the buffered attribute
-    //     on the current SourceBuffer.
-    TimeRanges* source_ranges = ranges[i].Get();
-
+  // 5.1 Let source ranges equal the ranges returned by the buffered attribute
+  //     on the current SourceBuffer.
+  for (WebTimeRanges& source_ranges : ranges) {
     // 5.2 If readyState is "ended", then set the end time on the last range in
     //     source ranges to highest end time.
-    if (ended && source_ranges->length())
-      source_ranges->Add(source_ranges->start(source_ranges->length() - 1,
-                                              ASSERT_NO_EXCEPTION),
-                         highest_end_time);
+    if (ended && !source_ranges.empty())
+      source_ranges.Add(source_ranges.back().start, highest_end_time);
 
     // 5.3 Let new intersection ranges equal the the intersection between the
     //     intersection ranges and the source ranges.
     // 5.4 Replace the ranges in intersection ranges with the new intersection
     //     ranges.
-    intersection_ranges->IntersectWith(source_ranges);
+    intersection_ranges.IntersectWith(source_ranges);
   }
 
   return intersection_ranges;
 }
 
-TimeRanges* MediaSource::Seekable() const {
+TimeRanges* MediaSource::Buffered() const {
+  return MakeGarbageCollected<TimeRanges>(BufferedInternal());
+}
+
+WebTimeRanges MediaSource::SeekableInternal() const {
   DCHECK(attached_element_)
       << "Seekable should only be used when attached to HTMLMediaElement";
 
   // Implements MediaSource algorithm for HTMLMediaElement.seekable.
   // http://w3c.github.io/media-source/#htmlmediaelement-extensions
+  WebTimeRanges ranges;
 
   double source_duration = duration();
   // If duration equals NaN: Return an empty TimeRanges object.
   if (std::isnan(source_duration))
-    return TimeRanges::Create();
+    return ranges;
 
   // If duration equals positive Infinity:
   if (source_duration == std::numeric_limits<double>::infinity()) {
-    TimeRanges* buffered = Buffered();
+    WebTimeRanges buffered = BufferedInternal();
 
     // 1. If live seekable range is not empty:
     if (live_seekable_range_->length() != 0) {
@@ -449,33 +502,35 @@ TimeRanges* MediaSource::Seekable() const {
       // 1.2. Return a single range with a start time equal to the
       //      earliest start time in union ranges and an end time equal to
       //      the highest end time in union ranges and abort these steps.
-      if (buffered->length() == 0) {
-        return TimeRanges::Create(
-            live_seekable_range_->start(0, ASSERT_NO_EXCEPTION),
-            live_seekable_range_->end(0, ASSERT_NO_EXCEPTION));
+      if (buffered.empty()) {
+        ranges.emplace_back(live_seekable_range_->start(0, ASSERT_NO_EXCEPTION),
+                            live_seekable_range_->end(0, ASSERT_NO_EXCEPTION));
+        return ranges;
       }
 
-      return TimeRanges::Create(
+      ranges.emplace_back(
           std::min(live_seekable_range_->start(0, ASSERT_NO_EXCEPTION),
-                   buffered->start(0, ASSERT_NO_EXCEPTION)),
+                   buffered.front().start),
           std::max(live_seekable_range_->end(0, ASSERT_NO_EXCEPTION),
-                   buffered->end(buffered->length() - 1, ASSERT_NO_EXCEPTION)));
+                   buffered.back().end));
+      return ranges;
     }
     // 2. If the HTMLMediaElement.buffered attribute returns an empty TimeRanges
     //    object, then return an empty TimeRanges object and abort these steps.
-    if (buffered->length() == 0)
-      return TimeRanges::Create();
+    if (buffered.empty())
+      return ranges;
 
     // 3. Return a single range with a start time of 0 and an end time equal to
     //    the highest end time reported by the HTMLMediaElement.buffered
     //    attribute.
-    return TimeRanges::Create(
-        0, buffered->end(buffered->length() - 1, ASSERT_NO_EXCEPTION));
+    ranges.emplace_back(0, buffered.back().end);
+    return ranges;
   }
 
   // 3. Otherwise: Return a single range with a start time of 0 and an end time
   //    equal to duration.
-  return TimeRanges::Create(0, source_duration);
+  ranges.emplace_back(0, source_duration);
+  return ranges;
 }
 
 void MediaSource::OnTrackChanged(TrackBase* track) {
@@ -679,7 +734,7 @@ void MediaSource::setLiveSeekableRange(double start,
   // 4. Set live seekable range to be a new normalized TimeRanges object
   //    containing a single range whose start position is start and end
   //    position is end.
-  live_seekable_range_ = TimeRanges::Create(start, end);
+  live_seekable_range_ = MakeGarbageCollected<TimeRanges>(start, end);
 }
 
 void MediaSource::clearLiveSeekableRange(ExceptionState& exception_state) {
@@ -699,7 +754,7 @@ void MediaSource::clearLiveSeekableRange(ExceptionState& exception_state) {
   // 3. If live seekable range contains a range, then set live seekable range
   //    to be a new empty TimeRanges object.
   if (live_seekable_range_->length() != 0)
-    live_seekable_range_ = TimeRanges::Create();
+    live_seekable_range_ = MakeGarbageCollected<TimeRanges>();
 }
 
 bool MediaSource::IsOpen() const {

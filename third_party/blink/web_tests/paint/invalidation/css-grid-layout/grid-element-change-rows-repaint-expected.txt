@@ -1,17 +1,6 @@
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [800, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [800, 600],
       "contentsOpaque": true,
@@ -23,7 +12,7 @@
           "reason": "style change"
         },
         {
-          "object": "LayoutBlockFlow DIV class='sizedToGridArea'",
+          "object": "LayoutNGBlockFlow DIV class='sizedToGridArea'",
           "rect": [8, 98, 100, 50],
           "reason": "incremental"
         }

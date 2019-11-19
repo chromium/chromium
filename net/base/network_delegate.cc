@@ -55,27 +55,21 @@ void NetworkDelegate::NotifyBeforeSendHeaders(
   OnBeforeSendHeaders(request, proxy_info, proxy_retry_info, headers);
 }
 
-void NetworkDelegate::NotifyStartTransaction(
-    URLRequest* request,
-    const HttpRequestHeaders& headers) {
-  TRACE_EVENT0(NetTracingCategory(), "NetworkDelegate::NotifyStartTransaction");
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  OnStartTransaction(request, headers);
-}
-
 int NetworkDelegate::NotifyHeadersReceived(
     URLRequest* request,
     CompletionOnceCallback callback,
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
-    GURL* allowed_unsafe_redirect_url) {
+    const IPEndPoint& endpoint,
+    base::Optional<GURL>* preserve_fragment_on_redirect_url) {
   TRACE_EVENT0(NetTracingCategory(), "NetworkDelegate::NotifyHeadersReceived");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(original_response_headers);
   DCHECK(!callback.is_null());
+  DCHECK(!preserve_fragment_on_redirect_url->has_value());
   return OnHeadersReceived(request, std::move(callback),
                            original_response_headers, override_response_headers,
-                           allowed_unsafe_redirect_url);
+                           endpoint, preserve_fragment_on_redirect_url);
 }
 
 void NetworkDelegate::NotifyResponseStarted(URLRequest* request,
@@ -84,22 +78,6 @@ void NetworkDelegate::NotifyResponseStarted(URLRequest* request,
   DCHECK(request);
 
   OnResponseStarted(request, net_error);
-}
-
-void NetworkDelegate::NotifyNetworkBytesReceived(URLRequest* request,
-                                                 int64_t bytes_received) {
-  TRACE_EVENT0(NetTracingCategory(),
-               "NetworkDelegate::NotifyNetworkBytesReceived");
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_GT(bytes_received, 0);
-  OnNetworkBytesReceived(request, bytes_received);
-}
-
-void NetworkDelegate::NotifyNetworkBytesSent(URLRequest* request,
-                                             int64_t bytes_sent) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_GT(bytes_sent, 0);
-  OnNetworkBytesSent(request, bytes_sent);
 }
 
 void NetworkDelegate::NotifyBeforeRedirect(URLRequest* request,
@@ -132,15 +110,6 @@ void NetworkDelegate::NotifyPACScriptError(int line_number,
   OnPACScriptError(line_number, error);
 }
 
-NetworkDelegate::AuthRequiredResponse NetworkDelegate::NotifyAuthRequired(
-    URLRequest* request,
-    const AuthChallengeInfo& auth_info,
-    AuthCallback callback,
-    AuthCredentials* credentials) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return OnAuthRequired(request, auth_info, std::move(callback), credentials);
-}
-
 bool NetworkDelegate::CanGetCookies(const URLRequest& request,
                                     const CookieList& cookie_list,
                                     bool allowed_from_caller) {
@@ -158,18 +127,13 @@ bool NetworkDelegate::CanSetCookie(const URLRequest& request,
   return OnCanSetCookie(request, cookie, options, allowed_from_caller);
 }
 
-bool NetworkDelegate::CanAccessFile(const URLRequest& request,
-                                    const base::FilePath& original_path,
-                                    const base::FilePath& absolute_path) const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return OnCanAccessFile(request, original_path, absolute_path);
-}
-
-bool NetworkDelegate::ForcePrivacyMode(const GURL& url,
-                                       const GURL& site_for_cookies) const {
+bool NetworkDelegate::ForcePrivacyMode(
+    const GURL& url,
+    const GURL& site_for_cookies,
+    const base::Optional<url::Origin>& top_frame_origin) const {
   TRACE_EVENT0(NetTracingCategory(), "NetworkDelegate::ForcePrivacyMode");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return OnForcePrivacyMode(url, site_for_cookies);
+  return OnForcePrivacyMode(url, site_for_cookies, top_frame_origin);
 }
 
 bool NetworkDelegate::CancelURLRequestWithPolicyViolatingReferrerHeader(

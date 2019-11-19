@@ -20,17 +20,17 @@
 
 #include "third_party/blink/renderer/core/svg/svg_view_element.h"
 
-#include "third_party/blink/renderer/core/frame/use_counter.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
-inline SVGViewElement::SVGViewElement(Document& document)
+SVGViewElement::SVGViewElement(Document& document)
     : SVGElement(svg_names::kViewTag, document), SVGFitToViewBox(this) {
   UseCounter::Count(document, WebFeature::kSVGViewElement);
 }
-
-DEFINE_NODE_FACTORY(SVGViewElement)
 
 void SVGViewElement::Trace(blink::Visitor* visitor) {
   SVGElement::Trace(visitor);

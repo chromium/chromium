@@ -9,43 +9,11 @@
 
 namespace resource_coordinator {
 
-TEST(LifecycleUnitTest, SortKeyNoScoresComparison) {
+TEST(LifecycleUnitTest, SortKeyComparison) {
   constexpr base::TimeTicks kBaseTime;
   LifecycleUnit::SortKey a(kBaseTime);
   LifecycleUnit::SortKey b(kBaseTime + base::TimeDelta::FromHours(1));
   LifecycleUnit::SortKey c(kBaseTime + base::TimeDelta::FromHours(2));
-
-  EXPECT_FALSE(a < a);
-  EXPECT_TRUE(a < b);
-  EXPECT_TRUE(a < c);
-
-  EXPECT_FALSE(b < a);
-  EXPECT_FALSE(b < b);
-  EXPECT_TRUE(b < c);
-
-  EXPECT_FALSE(c < a);
-  EXPECT_FALSE(c < b);
-  EXPECT_FALSE(c < c);
-
-  EXPECT_FALSE(a > a);
-  EXPECT_FALSE(a > b);
-  EXPECT_FALSE(a > c);
-
-  EXPECT_TRUE(b > a);
-  EXPECT_FALSE(b > b);
-  EXPECT_FALSE(b > c);
-
-  EXPECT_TRUE(c > a);
-  EXPECT_TRUE(c > b);
-  EXPECT_FALSE(c > c);
-}
-
-// Tests that the |score| field is used for sorting when populated.
-TEST(LifecycleUnitTest, SortKeyWithScoresComparison) {
-  constexpr base::TimeTicks kBaseTime;
-  LifecycleUnit::SortKey a(0, kBaseTime);
-  LifecycleUnit::SortKey b(1, kBaseTime);
-  LifecycleUnit::SortKey c(1, kBaseTime + base::TimeDelta::FromHours(1));
 
   EXPECT_FALSE(a < a);
   EXPECT_TRUE(a < b);

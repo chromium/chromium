@@ -8,15 +8,18 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/sys_string_conversions.h"
 #include "components/captive_portal/captive_portal_detector.h"
+#include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/security_interstitials/core/ssl_error_ui.h"
 #include "ios/chrome/browser/ssl/captive_portal_detector_tab_helper.h"
 #include "ios/chrome/browser/ssl/captive_portal_features.h"
 #include "ios/chrome/browser/ssl/captive_portal_metrics.h"
 #include "ios/chrome/browser/ssl/ios_captive_portal_blocking_page.h"
 #include "ios/chrome/browser/ssl/ios_ssl_blocking_page.h"
+#import "ios/chrome/browser/ssl/ios_ssl_error_tab_helper.h"
 #include "ios/web/public/browser_state.h"
-#import "ios/web/public/web_state/web_state.h"
+#import "ios/web/public/web_state.h"
 #include "net/ssl/ssl_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -38,7 +41,9 @@ void IOSSSLErrorHandler::HandleSSLError(
     const net::SSLInfo& info,
     const GURL& request_url,
     bool overridable,
-    base::OnceCallback<void(bool)> callback) {
+    int64_t navigation_id,
+    base::OnceCallback<void(bool)> callback,
+    base::OnceCallback<void(NSString*)> blocking_page_callback) {
   DCHECK(!web_state->IsShowingWebInterstitial());
   DCHECK(web_state);
   DCHECK(!FromWebState(web_state));
@@ -46,26 +51,32 @@ void IOSSSLErrorHandler::HandleSSLError(
   // check if the cert is from a known captive portal.
 
   web_state->SetUserData(
-      UserDataKey(), base::WrapUnique(new IOSSSLErrorHandler(
-                         web_state, cert_error, info, request_url, overridable,
-                         std::move(callback))));
+      UserDataKey(),
+      base::WrapUnique(new IOSSSLErrorHandler(
+          web_state, cert_error, info, request_url, overridable, navigation_id,
+          std::move(callback), std::move(blocking_page_callback))));
   FromWebState(web_state)->StartHandlingError();
 }
 
 IOSSSLErrorHandler::~IOSSSLErrorHandler() = default;
 
-IOSSSLErrorHandler::IOSSSLErrorHandler(web::WebState* web_state,
-                                       int cert_error,
-                                       const net::SSLInfo& info,
-                                       const GURL& request_url,
-                                       bool overridable,
-                                       base::OnceCallback<void(bool)> callback)
+IOSSSLErrorHandler::IOSSSLErrorHandler(
+    web::WebState* web_state,
+    int cert_error,
+    const net::SSLInfo& info,
+    const GURL& request_url,
+    bool overridable,
+    int64_t navigation_id,
+    base::OnceCallback<void(bool)> callback,
+    base::OnceCallback<void(NSString*)> blocking_page_callback)
     : web_state_(web_state),
       cert_error_(cert_error),
       ssl_info_(info),
       request_url_(request_url),
       overridable_(overridable),
+      navigation_id_(navigation_id),
       callback_(std::move(callback)),
+      blocking_page_callback_(std::move(blocking_page_callback)),
       weak_factory_(this) {}
 
 void IOSSSLErrorHandler::StartHandlingError() {
@@ -118,13 +129,24 @@ void IOSSSLErrorHandler::ShowSSLInterstitial() {
   }
 
   int options_mask =
-      overridable_ ? security_interstitials::SSLErrorUI::SOFT_OVERRIDE_ENABLED
-                   : security_interstitials::SSLErrorUI::STRICT_ENFORCEMENT;
-  // SSLBlockingPage deletes itself when it's dismissed.
-  IOSSSLBlockingPage* page = new IOSSSLBlockingPage(
-      web_state_, cert_error_, ssl_info_, request_url_, options_mask,
-      base::Time::NowFromSystemTime(), std::move(callback_));
-  page->Show();
+      overridable_
+          ? security_interstitials::SSLErrorOptionsMask::SOFT_OVERRIDE_ENABLED
+          : security_interstitials::SSLErrorOptionsMask::STRICT_ENFORCEMENT;
+  if (!blocking_page_callback_.is_null()) {
+    auto page = std::make_unique<IOSSSLBlockingPage>(
+        web_state_, cert_error_, ssl_info_, request_url_, options_mask,
+        base::Time::NowFromSystemTime(), std::move(callback_));
+    std::string error_html = page->GetHtmlContents();
+    IOSSSLErrorTabHelper::AssociateBlockingPage(web_state_, navigation_id_,
+                                                std::move(page));
+    std::move(blocking_page_callback_).Run(base::SysUTF8ToNSString(error_html));
+  } else {
+    // SSLBlockingPage deletes itself when it's dismissed.
+    IOSSSLBlockingPage* page = new IOSSSLBlockingPage(
+        web_state_, cert_error_, ssl_info_, request_url_, options_mask,
+        base::Time::NowFromSystemTime(), std::move(callback_));
+    page->Show();
+  }
   // Once an interstitial is displayed, no need to keep the handler around.
   // This is the equivalent of "delete this".
   RemoveFromWebState(web_state_);
@@ -132,10 +154,19 @@ void IOSSSLErrorHandler::ShowSSLInterstitial() {
 
 void IOSSSLErrorHandler::ShowCaptivePortalInterstitial(
     const GURL& landing_url) {
-  // IOSCaptivePortalBlockingPage deletes itself when it's dismissed.
-  IOSCaptivePortalBlockingPage* page = new IOSCaptivePortalBlockingPage(
-      web_state_, request_url_, landing_url, std::move(callback_));
-  page->Show();
+  if (!blocking_page_callback_.is_null()) {
+    auto page = std::make_unique<IOSCaptivePortalBlockingPage>(
+        web_state_, request_url_, landing_url, std::move(callback_));
+    std::string error_html = page->GetHtmlContents();
+    IOSSSLErrorTabHelper::AssociateBlockingPage(web_state_, navigation_id_,
+                                                std::move(page));
+    std::move(blocking_page_callback_).Run(base::SysUTF8ToNSString(error_html));
+  } else {
+    // IOSCaptivePortalBlockingPage deletes itself when it's dismissed.
+    IOSCaptivePortalBlockingPage* page = new IOSCaptivePortalBlockingPage(
+        web_state_, request_url_, landing_url, std::move(callback_));
+    page->Show();
+  }
   // Once an interstitial is displayed, no need to keep the handler around.
   // This is the equivalent of "delete this".
   RemoveFromWebState(web_state_);

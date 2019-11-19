@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/tag_collection.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
@@ -45,7 +46,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
     DCHECK(ThreadState::Current()->IsGCForbidden());
     if (child_node_list_)
       return ToChildNodeList(child_node_list_);
-    ChildNodeList* list = ChildNodeList::Create(node);
+    auto* list = MakeGarbageCollected<ChildNodeList>(node);
     child_node_list_ = list;
     return list;
   }
@@ -53,8 +54,8 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
   EmptyNodeList* EnsureEmptyChildNodeList(Node& node) {
     DCHECK(ThreadState::Current()->IsGCForbidden());
     if (child_node_list_)
-      return ToEmptyNodeList(child_node_list_);
-    EmptyNodeList* list = EmptyNodeList::Create(node);
+      return To<EmptyNodeList>(child_node_list_.Get());
+    auto* list = MakeGarbageCollected<EmptyNodeList>(node);
     child_node_list_ = list;
     return list;
   }
@@ -77,10 +78,10 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
   };
 
   typedef HeapHashMap<NamedNodeListKey,
-                      TraceWrapperMember<LiveNodeListBase>,
+                      Member<LiveNodeListBase>,
                       NodeListAtomicCacheMapEntryHash>
       NodeListAtomicNameCacheMap;
-  typedef HeapHashMap<QualifiedName, TraceWrapperMember<TagCollectionNS>>
+  typedef HeapHashMap<QualifiedName, Member<TagCollectionNS>>
       TagCollectionNSCache;
 
   template <typename T>
@@ -94,7 +95,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
       return static_cast<T*>(result.stored_value->value.Get());
     }
 
-    T* list = T::Create(node, collection_type, name);
+    auto* list = MakeGarbageCollected<T>(node, collection_type, name);
     result.stored_value->value = list;
     return list;
   }
@@ -109,7 +110,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
       return static_cast<T*>(result.stored_value->value.Get());
     }
 
-    T* list = T::Create(node, collection_type);
+    auto* list = MakeGarbageCollected<T>(node, collection_type);
     result.stored_value->value = list;
     return list;
   }
@@ -134,10 +135,6 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
         TagCollectionNS::Create(node, namespace_uri, local_name);
     result.stored_value->value = list;
     return list;
-  }
-
-  static NodeListsNodeData* Create() {
-    return MakeGarbageCollected<NodeListsNodeData>();
   }
 
   NodeListsNodeData() : child_node_list_(nullptr) {}
@@ -178,7 +175,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
 
  private:
   // Can be a ChildNodeList or an EmptyNodeList.
-  TraceWrapperMember<NodeList> child_node_list_;
+  Member<NodeList> child_node_list_;
   NodeListAtomicNameCacheMap atomic_name_caches_;
   TagCollectionNSCache tag_collection_ns_caches_;
   DISALLOW_COPY_AND_ASSIGN(NodeListsNodeData);

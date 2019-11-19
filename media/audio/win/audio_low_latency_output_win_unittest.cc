@@ -4,21 +4,22 @@
 
 #include "media/audio/win/audio_low_latency_output_win.h"
 
-#include <windows.h>
 #include <mmsystem.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <windows.h>
 
 #include <memory>
 
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/win/scoped_com_initializer.h"
 #include "media/audio/audio_device_description.h"
@@ -33,26 +34,16 @@
 #include "media/base/seekable_buffer.h"
 #include "media/base/test_data_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gmock_mutant.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::base::ThreadTaskRunnerHandle;
 using ::testing::_;
-using ::testing::AnyNumber;
-using ::testing::AtLeast;
-using ::testing::Between;
-using ::testing::CreateFunctor;
 using ::testing::DoAll;
-using ::testing::Gt;
-using ::testing::InvokeWithoutArgs;
 using ::testing::NotNull;
 using ::testing::Return;
 
 namespace media {
 
-static const char kSpeechFile_16b_s_48k[] = "speech_16b_stereo_48kHz.raw";
-static const char kSpeechFile_16b_s_44k[] = "speech_16b_stereo_44kHz.raw";
-static const size_t kFileDurationMs = 20000;
-static const size_t kNumFileSegments = 2;
 static const int kBitsPerSample = 16;
 static const size_t kMaxDeltaSamples = 1000;
 static const char kDeltaTimeMsFileName[] = "delta_times_ms.txt";
@@ -76,10 +67,10 @@ ACTION_P(QuitLoop, task_runner) {
 class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
  public:
   explicit ReadFromFileAudioSource(const std::string& name)
-    : pos_(0),
-      previous_call_time_(base::TimeTicks::Now()),
-      text_file_(NULL),
-      elements_to_write_(0) {
+      : pos_(0),
+        previous_call_time_(base::TimeTicks::Now()),
+        text_file_(NULL),
+        elements_to_write_(0) {
     // Reads a test file from media/test/data directory.
     file_ = ReadTestDataFile(name);
 
@@ -130,11 +121,13 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
 
     // Use samples read from a data file and fill up the audio buffer
     // provided to us in the callback.
-    if (pos_ + static_cast<int>(max_size) > file_size())
+    if (pos_ + max_size > file_size())
       max_size = file_size() - pos_;
     int frames = max_size / (dest->channels() * kBitsPerSample / 8);
     if (max_size) {
-      dest->FromInterleaved(file_->data() + pos_, frames, kBitsPerSample / 8);
+      static_assert(kBitsPerSample == 16, "FromInterleaved expects 2 bytes.");
+      dest->FromInterleaved<SignedInt16SampleTypeTraits>(
+          reinterpret_cast<const int16_t*>(file_->data() + pos_), frames);
       pos_ += max_size;
     }
     return frames;
@@ -176,6 +169,7 @@ class AudioOutputStreamWrapper {
     AudioParameters preferred_params;
     EXPECT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
         AudioDeviceDescription::kDefaultDeviceId, true, &preferred_params)));
+    channels_ = preferred_params.channels();
     channel_layout_ = preferred_params.channel_layout();
     sample_rate_ = preferred_params.sample_rate();
     samples_per_packet_ = preferred_params.frames_per_buffer();
@@ -184,9 +178,7 @@ class AudioOutputStreamWrapper {
   ~AudioOutputStreamWrapper() {}
 
   // Creates AudioOutputStream object using default parameters.
-  AudioOutputStream* Create() {
-    return CreateOutputStream();
-  }
+  AudioOutputStream* Create() { return CreateOutputStream(); }
 
   // Creates AudioOutputStream object using non-default parameters where the
   // frame size is modified.
@@ -204,22 +196,27 @@ class AudioOutputStreamWrapper {
   }
 
   AudioParameters::Format format() const { return format_; }
-  int channels() const { return ChannelLayoutToChannelCount(channel_layout_); }
+  int channels() const { return channels_; }
   int sample_rate() const { return sample_rate_; }
   int samples_per_packet() const { return samples_per_packet_; }
 
  private:
   AudioOutputStream* CreateOutputStream() {
+    AudioParameters params(format_, channel_layout_, sample_rate_,
+                           samples_per_packet_);
+    if (channel_layout_ == CHANNEL_LAYOUT_DISCRETE) {
+      params.set_channels_for_discrete(channels_);
+    }
+    DVLOG(1) << params.AsHumanReadableString();
     AudioOutputStream* aos = audio_man_->MakeAudioOutputStream(
-        AudioParameters(format_, channel_layout_, sample_rate_,
-                        samples_per_packet_),
-        std::string(), AudioManager::LogCallback());
+        params, std::string(), AudioManager::LogCallback());
     EXPECT_TRUE(aos);
     return aos;
   }
 
   AudioManager* audio_man_;
   AudioParameters::Format format_;
+  int channels_;
   ChannelLayout channel_layout_;
   int sample_rate_;
   int samples_per_packet_;
@@ -243,7 +240,8 @@ class WASAPIAudioOutputStreamTest : public ::testing::Test {
   ~WASAPIAudioOutputStreamTest() override { audio_manager_->Shutdown(); }
 
  protected:
-  base::MessageLoopForUI message_loop_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
   std::unique_ptr<AudioManager> audio_manager_;
 };
 
@@ -377,66 +375,16 @@ TEST_F(WASAPIAudioOutputStreamTest, ValidPacketSize) {
   // subsequent callbacks that might arrive.
   EXPECT_CALL(source,
               OnMoreData(HasValidDelay(packet_duration), _, 0, NotNull()))
-      .WillOnce(DoAll(QuitLoop(message_loop_.task_runner()),
+      .WillOnce(DoAll(QuitLoop(ThreadTaskRunnerHandle::Get()),
                       Return(aosw.samples_per_packet())))
       .WillRepeatedly(Return(0));
 
   aos->Start(&source);
-  message_loop_.task_runner()->PostDelayedTask(
+  ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(),
       TestTimeouts::action_timeout());
   base::RunLoop().Run();
   aos->Stop();
-  aos->Close();
-}
-
-// This test is intended for manual tests and should only be enabled
-// when it is required to play out data from a local PCM file.
-// By default, GTest will print out YOU HAVE 1 DISABLED TEST.
-// To include disabled tests in test execution, just invoke the test program
-// with --gtest_also_run_disabled_tests or set the GTEST_ALSO_RUN_DISABLED_TESTS
-// environment variable to a value greater than 0.
-// The test files are approximately 20 seconds long.
-TEST_F(WASAPIAudioOutputStreamTest, DISABLED_ReadFromStereoFile) {
-  ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndOutputDevices(audio_manager_.get()));
-
-  AudioOutputStreamWrapper aosw(audio_manager_.get());
-  AudioOutputStream* aos = aosw.Create();
-  EXPECT_TRUE(aos->Open());
-
-  std::string file_name;
-  if (aosw.sample_rate() == 48000) {
-    file_name = kSpeechFile_16b_s_48k;
-  } else if (aosw.sample_rate() == 44100) {
-    file_name = kSpeechFile_16b_s_44k;
-  } else if (aosw.sample_rate() == 96000) {
-    // Use 48kHz file at 96kHz as well. Will sound like Donald Duck.
-    file_name = kSpeechFile_16b_s_48k;
-  } else {
-    FAIL() << "This test supports 44.1, 48kHz and 96kHz only.";
-    return;
-  }
-  ReadFromFileAudioSource file_source(file_name);
-
-  DVLOG(0) << "File name      : " << file_name.c_str();
-  DVLOG(0) << "Sample rate    : " << aosw.sample_rate();
-  DVLOG(0) << "#channels      : " << aosw.channels();
-  DVLOG(0) << "File size      : " << file_source.file_size();
-  DVLOG(0) << "#file segments : " << kNumFileSegments;
-  DVLOG(0) << ">> Listen to the stereo file while playing...";
-
-  for (size_t i = 0; i < kNumFileSegments; i++) {
-    // Each segment will start with a short (~20ms) block of zeros, hence
-    // some short glitches might be heard in this test if kNumFileSegments
-    // is larger than one. The exact length of the silence period depends on
-    // the selected sample rate.
-    aos->Start(&file_source);
-    base::PlatformThread::Sleep(
-        base::TimeDelta::FromMilliseconds(kFileDurationMs / kNumFileSegments));
-    aos->Stop();
-  }
-
-  DVLOG(0) << ">> Stereo file playout has stopped.";
   aos->Close();
 }
 
@@ -567,12 +515,12 @@ TEST_F(WASAPIAudioOutputStreamTest,
   // Wait for the first callback and verify its parameters.
   EXPECT_CALL(source,
               OnMoreData(HasValidDelay(packet_duration), _, 0, NotNull()))
-      .WillOnce(DoAll(QuitLoop(message_loop_.task_runner()),
+      .WillOnce(DoAll(QuitLoop(ThreadTaskRunnerHandle::Get()),
                       Return(aosw.samples_per_packet())))
       .WillRepeatedly(Return(aosw.samples_per_packet()));
 
   aos->Start(&source);
-  message_loop_.task_runner()->PostDelayedTask(
+  ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(),
       TestTimeouts::action_timeout());
   base::RunLoop().Run();
@@ -601,12 +549,12 @@ TEST_F(WASAPIAudioOutputStreamTest,
   // Wait for the first callback and verify its parameters.
   EXPECT_CALL(source,
               OnMoreData(HasValidDelay(packet_duration), _, 0, NotNull()))
-      .WillOnce(DoAll(QuitLoop(message_loop_.task_runner()),
+      .WillOnce(DoAll(QuitLoop(ThreadTaskRunnerHandle::Get()),
                       Return(aosw.samples_per_packet())))
       .WillRepeatedly(Return(aosw.samples_per_packet()));
 
   aos->Start(&source);
-  message_loop_.task_runner()->PostDelayedTask(
+  ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(),
       TestTimeouts::action_timeout());
   base::RunLoop().Run();

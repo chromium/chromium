@@ -1,0 +1,58 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "paintInvalidations": [
+        {
+          "object": "InlineTextBox 'Curabitur a velit'",
+          "rect": [8, 44, 756, 139],
+          "reason": "disappeared"
+        },
+        {
+          "object": "InlineTextBox 'Curabitur a velit.'",
+          "rect": [8, 44, 756, 139],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse placerat. Morbi tristique. Mauris eu lacus sed felis'",
+          "rect": [8, 44, 756, 139],
+          "reason": "full"
+        },
+        {
+          "object": "InlineTextBox 'fermentum ut, tortor. Sed rhoncus. Quisque enim metus, luctus tincidunt, vestibulum eu, vestibulum eu, libero. Mauris'",
+          "rect": [8, 44, 756, 139],
+          "reason": "full"
+        },
+        {
+          "object": "InlineTextBox 'feugiat molestie, mi lorem bibendum leo, ac gravida orci nunc nec nulla. Nunc nunc lorem, rhoncus et, rutrum ac,'",
+          "rect": [8, 44, 756, 139],
+          "reason": "full"
+        },
+        {
+          "object": "InlineTextBox 'laoreet feugiat. Phasellus mollis pulvinar mi. Etiam ut neque sed eros egestas laoreet. Vestibulum ullamcorper, nulla non'",
+          "rect": [8, 44, 756, 139],
+          "reason": "full"
+        },
+        {
+          "object": "InlineTextBox 'pellentesque cursus. Proin vitae nulla. Vivamus in ipsum. Etiam mi. Nam malesuada purus in sem. Sed eget elit vel erat'",
+          "rect": [8, 44, 756, 139],
+          "reason": "full"
+        },
+        {
+          "object": "InlineTextBox 'sagittis aliquam nunc. Nullam pharetra molestie eros. Donec tempus purus ut ligula. Phasellus non nisl. Etiam eu mauris.'",
+          "rect": [8, 44, 756, 139],
+          "reason": "appeared"
+        },
+        {
+          "object": "InlineTextBox 'sagittis aliquam nunc. Nullam pharetra molestie eros. Donec tempus purus ut ligula. Phasellus non nisl. Etiam eu mauris.'",
+          "rect": [8, 44, 756, 139],
+          "reason": "disappeared"
+        }
+      ]
+    }
+  ]
+}
+

@@ -18,7 +18,7 @@
 namespace {
 
 SkColor GetDefaultInactiveFrameColor() {
-  return base::win::GetVersion() < base::win::VERSION_WIN10
+  return base::win::GetVersion() < base::win::Version::WIN10
              ? SkColorSetRGB(0xEB, 0xEB, 0xEB)
              : SK_ColorWHITE;
 }
@@ -30,7 +30,7 @@ ThemeServiceWin::ThemeServiceWin() {
   // because we want to monitor the frame color even when a custom frame is in
   // use, so that it will be correct if at any time the user switches to the
   // native frame.
-  if (base::win::GetVersion() >= base::win::VERSION_WIN8) {
+  if (base::win::GetVersion() >= base::win::Version::WIN8) {
     dwm_key_.reset(new base::win::RegKey(
         HKEY_CURRENT_USER, L"SOFTWARE\\Microsoft\\Windows\\DWM", KEY_READ));
     if (dwm_key_->Valid())
@@ -49,7 +49,22 @@ bool ThemeServiceWin::ShouldUseNativeFrame() const {
   return use_native_frame_if_enabled && ui::win::IsAeroGlassEnabled();
 }
 
+bool ThemeServiceWin::ShouldUseIncreasedContrastThemeSupplier(
+    ui::NativeTheme* native_theme) const {
+  // On Windows the platform provides the high contrast colors, so don't use the
+  // IncreasedContrastThemeSupplier.
+  return false;
+}
+
 SkColor ThemeServiceWin::GetDefaultColor(int id, bool incognito) const {
+  // In high contrast mode on Windows the platform provides the color. Try to
+  // get that color first.
+  SkColor color;
+  if (ui::NativeTheme::GetInstanceForNativeUi()->UsesHighContrastColors() &&
+      GetPlatformHighContrastColor(id, &color)) {
+    return color;
+  }
+
   if (DwmColorsAllowed()) {
     if (id == ThemeProperties::COLOR_ACCENT_BORDER)
       return dwm_accent_border_color_;
@@ -82,9 +97,96 @@ SkColor ThemeServiceWin::GetDefaultColor(int id, bool incognito) const {
   return ThemeService::GetDefaultColor(id, incognito);
 }
 
+bool ThemeServiceWin::GetPlatformHighContrastColor(int id,
+                                                   SkColor* color) const {
+  ui::NativeTheme::SystemThemeColor system_theme_color =
+      ui::NativeTheme::SystemThemeColor::kNotSupported;
+
+  switch (id) {
+    // Window Background
+    case ThemeProperties::COLOR_FRAME:
+    case ThemeProperties::COLOR_FRAME_INCOGNITO:
+    case ThemeProperties::COLOR_FRAME_INACTIVE:
+    case ThemeProperties::COLOR_FRAME_INCOGNITO_INACTIVE:
+    case ThemeProperties::COLOR_BACKGROUND_TAB:
+    case ThemeProperties::COLOR_BACKGROUND_TAB_INCOGNITO:
+    case ThemeProperties::COLOR_BACKGROUND_TAB_INACTIVE:
+    case ThemeProperties::COLOR_BACKGROUND_TAB_INCOGNITO_INACTIVE:
+    case ThemeProperties::COLOR_DOWNLOAD_SHELF:
+    case ThemeProperties::COLOR_INFOBAR:
+    case ThemeProperties::COLOR_TOOLBAR:
+    case ThemeProperties::COLOR_STATUS_BUBBLE:
+      system_theme_color = ui::NativeTheme::SystemThemeColor::kWindow;
+      break;
+
+    // Window Text
+    case ThemeProperties::COLOR_TOOLBAR_VERTICAL_SEPARATOR:
+    case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR:
+    case ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_INACTIVE:
+    case ThemeProperties::COLOR_LOCATION_BAR_BORDER:
+      system_theme_color = ui::NativeTheme::SystemThemeColor::kWindowText;
+      break;
+
+    // Button Background
+    case ThemeProperties::COLOR_OMNIBOX_BACKGROUND:
+    case ThemeProperties::COLOR_OMNIBOX_BACKGROUND_HOVERED:
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_BG:
+      system_theme_color = ui::NativeTheme::SystemThemeColor::kButtonFace;
+      break;
+
+    // Button Text Foreground
+    case ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON:
+    case ThemeProperties::COLOR_BOOKMARK_TEXT:
+    case ThemeProperties::COLOR_BACKGROUND_TAB_TEXT:
+    case ThemeProperties::COLOR_BACKGROUND_TAB_TEXT_INCOGNITO:
+    case ThemeProperties::COLOR_BACKGROUND_TAB_TEXT_INACTIVE:
+    case ThemeProperties::COLOR_BACKGROUND_TAB_TEXT_INCOGNITO_INACTIVE:
+    case ThemeProperties::COLOR_OMNIBOX_TEXT:
+    case ThemeProperties::COLOR_OMNIBOX_SELECTED_KEYWORD:
+    case ThemeProperties::COLOR_OMNIBOX_BUBBLE_OUTLINE:
+    case ThemeProperties::COLOR_OMNIBOX_TEXT_DIMMED:
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON:
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_URL:
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED:
+    case ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_DEFAULT:
+    case ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_SECURE:
+    case ThemeProperties::COLOR_OMNIBOX_SECURITY_CHIP_DANGEROUS:
+      system_theme_color = ui::NativeTheme::SystemThemeColor::kButtonText;
+      break;
+
+    // Highlight/Selected Background
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_SELECTED:
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_BG_HOVERED:
+      system_theme_color = ui::NativeTheme::SystemThemeColor::kHighlight;
+      break;
+
+    // Highlight/Selected Text Foreground
+    case ThemeProperties::COLOR_TAB_TEXT:
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED:
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_TEXT_DIMMED_SELECTED:
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_ICON_SELECTED:
+    case ThemeProperties::COLOR_OMNIBOX_RESULTS_URL_SELECTED:
+      system_theme_color = ui::NativeTheme::SystemThemeColor::kHighlightText;
+      break;
+
+    // Gray/Disabled Text
+    case ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON_INACTIVE:
+      system_theme_color = ui::NativeTheme::SystemThemeColor::kGrayText;
+      break;
+
+    default:
+      return false;
+  }
+
+  *color = ui::NativeTheme::GetInstanceForNativeUi()
+               ->GetSystemThemeColor(system_theme_color)
+               .value();
+  return true;
+}
+
 bool ThemeServiceWin::DwmColorsAllowed() const {
   return ShouldUseNativeFrame() &&
-         (base::win::GetVersion() >= base::win::VERSION_WIN8);
+         (base::win::GetVersion() >= base::win::Version::WIN8);
 }
 
 void ThemeServiceWin::OnDwmKeyUpdated() {
@@ -116,7 +218,7 @@ void ThemeServiceWin::OnDwmKeyUpdated() {
   }
 
   inactive_frame_color_from_registry_ = false;
-  if (base::win::GetVersion() < base::win::VERSION_WIN10) {
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
     dwm_frame_color_ = dwm_accent_border_color_;
   } else {
     DWORD accent_color, color_prevalence;

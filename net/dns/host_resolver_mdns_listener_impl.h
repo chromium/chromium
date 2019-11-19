@@ -9,6 +9,8 @@
 #include <string>
 #include <utility>
 
+#include "base/sequence_checker.h"
+#include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/mdns_client.h"
 #include "net/dns/public/dns_query_type.h"
@@ -30,7 +32,13 @@ class HostResolverMdnsListenerImpl : public HostResolver::MdnsListener,
   ~HostResolverMdnsListenerImpl() override;
 
   void set_inner_listener(std::unique_ptr<net::MDnsListener> inner_listener) {
+    DCHECK_EQ(OK, initialization_error_);
     inner_listener_ = std::move(inner_listener);
+  }
+
+  void set_initialization_error(int error) {
+    DCHECK(!inner_listener_);
+    initialization_error_ = error;
   }
 
   // HostResolver::MdnsListener implementation
@@ -46,8 +54,11 @@ class HostResolverMdnsListenerImpl : public HostResolver::MdnsListener,
   HostPortPair query_host_;
   DnsQueryType query_type_;
 
+  int initialization_error_ = OK;
   std::unique_ptr<net::MDnsListener> inner_listener_;
   Delegate* delegate_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace net

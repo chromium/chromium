@@ -55,8 +55,8 @@ void RenderPassDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
                                 float backdrop_filter_quality) {
   DCHECK(render_pass_id);
 
-  DrawQuad::SetAll(shared_quad_state, DrawQuad::RENDER_PASS, rect, visible_rect,
-                   needs_blending);
+  DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kRenderPass, rect,
+                   visible_rect, needs_blending);
   this->render_pass_id = render_pass_id;
   resources.ids[kMaskResourceIdIndex] = mask_resource_id;
   resources.count = mask_resource_id ? 1 : 0;
@@ -71,7 +71,7 @@ void RenderPassDrawQuad::SetAll(const SharedQuadState* shared_quad_state,
 
 const RenderPassDrawQuad* RenderPassDrawQuad::MaterialCast(
     const DrawQuad* quad) {
-  DCHECK_EQ(quad->material, DrawQuad::RENDER_PASS);
+  DCHECK_EQ(quad->material, DrawQuad::Material::kRenderPass);
   return static_cast<const RenderPassDrawQuad*>(quad);
 }
 

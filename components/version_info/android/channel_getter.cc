@@ -4,7 +4,7 @@
 
 #include "components/version_info/android/channel_getter.h"
 
-#include "jni/VersionConstantsBridge_jni.h"
+#include "components/version_info/android/version_constants_bridge_jni/VersionConstantsBridge_jni.h"
 
 namespace version_info {
 namespace android {

@@ -13,8 +13,14 @@
 // a detail text (optional). This item uses multi-lines text field.
 @interface SettingsImageDetailTextItem : TableViewItem
 
-// The image to display (required).
+// The image to display (required). If this image should be tinted to match the
+// text color (e.g. in dark mode), the provided image should have rendering mode
+// UIImageRenderingModeAlwaysTemplate.
 @property(nonatomic, strong) UIImage* image;
+
+// Whether the image should be tinted as an icon or not (if it is already
+// colored). The tint color will match the text color.
+@property(nonatomic, assign) BOOL imageShouldBeTinted;
 
 // The title text to display.
 @property(nonatomic, copy) NSString* text;

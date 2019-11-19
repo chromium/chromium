@@ -9,6 +9,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/features.h"
+#include "components/safe_browsing/triggers/ad_popup_trigger.h"
+#include "components/safe_browsing/triggers/ad_redirect_trigger.h"
 #include "components/safe_browsing/triggers/ad_sampler_trigger.h"
 #include "components/safe_browsing/triggers/suspicious_site_trigger.h"
 #include "components/safe_browsing/triggers/trigger_manager.h"
@@ -53,6 +56,21 @@ void TriggerCreator::MaybeCreateTriggersForWebContents(
   if (trigger_manager->CanStartDataCollection(options,
                                               TriggerType::AD_SAMPLE)) {
     safe_browsing::AdSamplerTrigger::CreateForWebContents(
+        web_contents, trigger_manager, profile->GetPrefs(), url_loader_factory,
+        HistoryServiceFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS));
+  }
+  if (base::FeatureList::IsEnabled(kAdPopupTriggerFeature) &&
+      trigger_manager->CanStartDataCollection(options, TriggerType::AD_POPUP)) {
+    safe_browsing::AdPopupTrigger::CreateForWebContents(
+        web_contents, trigger_manager, profile->GetPrefs(), url_loader_factory,
+        HistoryServiceFactory::GetForProfile(
+            profile, ServiceAccessType::EXPLICIT_ACCESS));
+  }
+  if (base::FeatureList::IsEnabled(kAdRedirectTriggerFeature) &&
+      trigger_manager->CanStartDataCollection(options,
+                                              TriggerType::AD_REDIRECT)) {
+    safe_browsing::AdRedirectTrigger::CreateForWebContents(
         web_contents, trigger_manager, profile->GetPrefs(), url_loader_factory,
         HistoryServiceFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS));

@@ -1,0 +1,32 @@
+<!DOCTYPE HTML>
+
+<!-- READ BEFORE UPDATING:
+If this test is updated make sure to increment the "revision" value of the
+associated test in content/test/gpu/page_sets/pixel_tests.py. This will ensure
+that the baseline images are regenerated on the next run.
+-->
+
+<html>
+  <head>
+    <meta name="viewport" content="initial-scale=1">
+    <title>MP4 Video test</title>
+    <style type="text/css">
+      .nomargin {
+        margin: 0px auto;
+      }
+      .rounded-corner {
+        border-radius: 20px;
+      }
+    </style>
+    <script src="pixel_video_test.js"></script>
+  </head>
+  <body onload="main()">
+    <div id="container" style="position:absolute; top:0px; left:0px">
+      <video class="nomargin rounded-corner" id="video" width="240"
+          height="135">
+        <source src="/media/test/data/four-colors.mp4" type="video/mp4">
+      </video>
+    </div>
+  </body>
+</html>
+

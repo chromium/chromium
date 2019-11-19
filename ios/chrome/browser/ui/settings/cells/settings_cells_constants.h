@@ -7,9 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-// The color of the detail text for the settings cells.
-extern const int kSettingsCellsDetailTextColor;
-
 // Default height for the settings cells.
 extern const CGFloat kSettingsCellDefaultHeight;
 

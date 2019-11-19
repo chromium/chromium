@@ -47,9 +47,10 @@ class SocketDataPump {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     DCHECK(!write_buffer_);
 
-    int result = from_socket_->Read(
-        read_buffer_.get(), kBufferSize,
-        base::Bind(&SocketDataPump::HandleReadResult, base::Unretained(this)));
+    int result =
+        from_socket_->Read(read_buffer_.get(), kBufferSize,
+                           base::BindOnce(&SocketDataPump::HandleReadResult,
+                                          base::Unretained(this)));
     if (result != ERR_IO_PENDING)
       HandleReadResult(result);
   }
@@ -71,10 +72,11 @@ class SocketDataPump {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     DCHECK(write_buffer_);
 
-    int result = to_socket_->Write(
-        write_buffer_.get(), write_buffer_->BytesRemaining(),
-        base::Bind(&SocketDataPump::HandleWriteResult, base::Unretained(this)),
-        TRAFFIC_ANNOTATION_FOR_TESTS);
+    int result =
+        to_socket_->Write(write_buffer_.get(), write_buffer_->BytesRemaining(),
+                          base::BindOnce(&SocketDataPump::HandleWriteResult,
+                                         base::Unretained(this)),
+                          TRAFFIC_ANNOTATION_FOR_TESTS);
     if (result != ERR_IO_PENDING)
       HandleWriteResult(result);
   }
@@ -134,13 +136,13 @@ class ConnectionProxy {
 
   THREAD_CHECKER(thread_checker_);
 
-  base::WeakPtrFactory<ConnectionProxy> weak_factory_;
+  base::WeakPtrFactory<ConnectionProxy> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ConnectionProxy);
 };
 
 ConnectionProxy::ConnectionProxy(std::unique_ptr<StreamSocket> local_socket)
-    : local_socket_(std::move(local_socket)), weak_factory_(this) {}
+    : local_socket_(std::move(local_socket)) {}
 
 ConnectionProxy::~ConnectionProxy() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -154,8 +156,8 @@ void ConnectionProxy::Start(const IPEndPoint& remote_endpoint,
   remote_socket_ = std::make_unique<TCPClientSocket>(
       AddressList(remote_endpoint), nullptr, nullptr, NetLogSource());
   int result = remote_socket_->Connect(
-      base::Bind(&ConnectionProxy::HandleConnectResult, base::Unretained(this),
-                 remote_endpoint));
+      base::BindOnce(&ConnectionProxy::HandleConnectResult,
+                     base::Unretained(this), remote_endpoint));
   if (result != ERR_IO_PENDING)
     HandleConnectResult(remote_endpoint, result);
 }
@@ -270,7 +272,7 @@ void TcpSocketProxy::Core::DoAcceptLoop() {
   while (result == OK) {
     result = socket_->Accept(
         &accepted_socket_,
-        base::Bind(&Core::OnAcceptResult, base::Unretained(this)));
+        base::BindOnce(&Core::OnAcceptResult, base::Unretained(this)));
     if (result != ERR_IO_PENDING)
       HandleAcceptResult(result);
   }

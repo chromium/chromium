@@ -14,7 +14,7 @@ class LayoutEmbeddedContentTest : public RenderingTest {};
 
 class OverriddenLayoutEmbeddedContent : public LayoutEmbeddedContent {
  public:
-  explicit OverriddenLayoutEmbeddedContent(Element* element)
+  explicit OverriddenLayoutEmbeddedContent(HTMLFrameOwnerElement* element)
       : LayoutEmbeddedContent(element) {}
 
   const char* GetName() const override {

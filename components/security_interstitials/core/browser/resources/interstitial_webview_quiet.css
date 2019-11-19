@@ -3,13 +3,13 @@
  * found in the LICENSE file. */
 
 body {
-  background-color: rgb(247, 247, 247);
+  background-color: var(--quiet-background-color);
   margin: 0;
 }
 
 #details {
   box-sizing: border-box;
-  color: rgba(0, 0, 0, .54);
+  color: var(--text-color);
   font-family: Roboto-Regular, sans-serif;
   font-size: 0.93333em;
   height: auto;
@@ -29,13 +29,13 @@ body {
 }
 
 #details-link {
-  color: rgba(0, 0, 0, .38);
+  color: var(--link-color);
   text-decoration: underline;
   text-transform: none;
 }
 
 h1 {
-  color: rgba(0, 0, 0, .38);
+  color: var(--heading-color);
   font-family: Roboto-Regular, sans-serif;
   font-size: 0.93333em;
   font-weight: normal;
@@ -68,6 +68,10 @@ h1 {
   min-width: 18px;
   opacity: .54;
   width: 20vh;
+}
+
+.heavy-ad .icon {
+  background-image: url(images/heavy_ad.svg);
 }
 
 .interstitial-wrapper {
@@ -115,5 +119,11 @@ h1 {
   #details,
   #main-message {
     display: none;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .dark-mode-available .icon {
+    filter: invert(1);
   }
 }

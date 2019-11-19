@@ -132,7 +132,7 @@ void AddItemToList(const std::string& from, base::ListValue* out) {
 }
 
 void AddItemToList(const std::vector<uint8_t>& from, base::ListValue* out) {
-  out->GetList().emplace_back(from);
+  out->Append(base::Value(from));
 }
 
 void AddItemToList(const std::unique_ptr<base::Value>& from,

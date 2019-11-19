@@ -3,13 +3,11 @@
 # found in the LICENSE file.
 
 typemaps = [
-  "//content/common/frame.typemap",
   "//content/common/frame_messages.typemap",
   "//content/common/input/synchronous_compositor.typemap",
   "//content/common/native_types.typemap",
   "//content/common/native_types_mac.typemap",
   "//content/common/navigation_params.typemap",
-  "//content/common/push_messaging.typemap",
   "//content/common/render_frame_metadata.typemap",
   "//content/common/web_preferences.typemap",
 ]

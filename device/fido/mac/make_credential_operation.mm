@@ -12,7 +12,10 @@
 #include "base/mac/mac_logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/device_event_log/device_event_log.h"
 #include "device/fido/attestation_statement_formats.h"
+#include "device/fido/attested_credential_data.h"
+#include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -42,7 +45,7 @@ MakeCredentialOperation::MakeCredentialOperation(
 MakeCredentialOperation::~MakeCredentialOperation() = default;
 
 const std::string& MakeCredentialOperation::RpId() const {
-  return request().rp().rp_id();
+  return request().rp.id;
 }
 
 void MakeCredentialOperation::Run() {
@@ -60,7 +63,7 @@ void MakeCredentialOperation::Run() {
                static_cast<int>(CoseAlgorithmIdentifier::kCoseEs256);
       };
   const auto& key_params =
-      request().public_key_credential_params().public_key_credential_params();
+      request().public_key_credential_params.public_key_credential_params();
   if (!std::any_of(key_params.begin(), key_params.end(), is_es256)) {
     DVLOG(1) << "No supported algorithm found.";
     std::move(callback())
@@ -83,38 +86,36 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
 
   // Evaluate that excludeList does not contain any credentials stored by this
   // authenticator.
-  if (request().exclude_list()) {
-    for (auto& credential : *request().exclude_list()) {
-      ScopedCFTypeRef<CFMutableDictionaryRef> query = DefaultKeychainQuery();
-      CFDictionarySetValue(query, kSecAttrApplicationLabel,
-                           [NSData dataWithBytes:credential.id().data()
-                                          length:credential.id().size()]);
-      OSStatus status = SecItemCopyMatching(query, nullptr);
-      if (status == errSecSuccess) {
-        // Excluded item found.
-        DVLOG(1) << "credential from excludeList found";
-        std::move(callback())
-            .Run(CtapDeviceResponseCode::kCtap2ErrCredentialExcluded,
-                 base::nullopt);
-        return;
-      }
-      if (status != errSecItemNotFound) {
-        // Unexpected keychain error.
-        OSSTATUS_DLOG(ERROR, status)
-            << "failed to check for excluded credential";
-        std::move(callback())
-            .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
-        return;
-      }
+  for (auto& credential : request().exclude_list) {
+    ScopedCFTypeRef<CFMutableDictionaryRef> query = DefaultKeychainQuery();
+    CFDictionarySetValue(query, kSecAttrApplicationLabel,
+                         [NSData dataWithBytes:credential.id().data()
+                                        length:credential.id().size()]);
+    OSStatus status = SecItemCopyMatching(query, nullptr);
+    if (status == errSecSuccess) {
+      // Excluded item found.
+      DVLOG(1) << "credential from excludeList found";
+      std::move(callback())
+          .Run(CtapDeviceResponseCode::kCtap2ErrCredentialExcluded,
+               base::nullopt);
+      return;
+    }
+    if (status != errSecItemNotFound) {
+      // Unexpected keychain error.
+      OSSTATUS_DLOG(ERROR, status) << "failed to check for excluded credential";
+      std::move(callback())
+          .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
+      return;
     }
   }
 
   // Delete the key pair for this RP + user handle if one already exists.
+  //
+  // Note that because the rk bit is not encoded here, a resident credential
+  // may overwrite a non-resident credential and vice versa.
   base::Optional<std::string> encoded_rp_id_user_id =
-      CredentialMetadata::EncodeRpIdAndUserId(metadata_secret(), RpId(),
-                                              request().user().user_id());
+      EncodeRpIdAndUserId(metadata_secret(), RpId(), request().user.id);
   if (!encoded_rp_id_user_id) {
-    // Internal error.
     std::move(callback())
         .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
     return;
@@ -125,7 +126,6 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
                          base::SysUTF8ToNSString(*encoded_rp_id_user_id));
     OSStatus status = Keychain::GetInstance().ItemDelete(query);
     if (status != errSecSuccess && status != errSecItemNotFound) {
-      // Internal keychain error.
       OSSTATUS_DLOG(ERROR, status) << "SecItemDelete failed";
       std::move(callback())
           .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
@@ -137,7 +137,7 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
   base::Optional<std::vector<uint8_t>> credential_id =
       GenerateCredentialIdForRequest();
   if (!credential_id) {
-    DLOG(ERROR) << "GenerateCredentialIdForRequest failed";
+    FIDO_LOG(ERROR) << "GenerateCredentialIdForRequest failed";
     std::move(callback())
         .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
     return;
@@ -170,7 +170,7 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
       Keychain::GetInstance().KeyCreateRandomKey(params,
                                                  cferr.InitializeInto()));
   if (!private_key) {
-    DLOG(ERROR) << "SecKeyCreateRandomKey failed: " << cferr;
+    FIDO_LOG(ERROR) << "SecKeyCreateRandomKey failed: " << cferr;
     std::move(callback())
         .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
     return;
@@ -178,7 +178,7 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
   ScopedCFTypeRef<SecKeyRef> public_key(
       Keychain::GetInstance().KeyCopyPublicKey(private_key));
   if (!public_key) {
-    DLOG(ERROR) << "SecKeyCopyPublicKey failed";
+    FIDO_LOG(ERROR) << "SecKeyCopyPublicKey failed";
     std::move(callback())
         .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
     return;
@@ -186,40 +186,41 @@ void MakeCredentialOperation::PromptTouchIdDone(bool success) {
 
   // Create attestation object. There is no separate attestation key pair, so
   // we perform self-attestation.
-  base::Optional<AuthenticatorData> authenticator_data = MakeAuthenticatorData(
-      RpId(), *credential_id, SecKeyRefToECPublicKey(public_key));
-  if (!authenticator_data) {
-    DLOG(ERROR) << "MakeAuthenticatorData failed";
+  base::Optional<AttestedCredentialData> attested_credential_data =
+      MakeAttestedCredentialData(*credential_id,
+                                 SecKeyRefToECPublicKey(public_key));
+  if (!attested_credential_data) {
+    FIDO_LOG(ERROR) << "MakeAttestedCredentialData failed";
     std::move(callback())
         .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
     return;
   }
+  AuthenticatorData authenticator_data =
+      MakeAuthenticatorData(RpId(), std::move(*attested_credential_data));
   base::Optional<std::vector<uint8_t>> signature = GenerateSignature(
-      *authenticator_data, request().client_data_hash(), private_key);
+      authenticator_data, request().client_data_hash, private_key);
   if (!signature) {
-    DLOG(ERROR) << "MakeSignature failed";
+    FIDO_LOG(ERROR) << "MakeSignature failed";
     std::move(callback())
         .Run(CtapDeviceResponseCode::kCtap2ErrOther, base::nullopt);
     return;
   }
-  std::vector<std::vector<uint8_t>> no_certificates;
   AuthenticatorMakeCredentialResponse response(
       FidoTransportProtocol::kInternal,
       AttestationObject(
-          std::move(*authenticator_data),
+          std::move(authenticator_data),
           std::make_unique<PackedAttestationStatement>(
               CoseAlgorithmIdentifier::kCoseEs256, std::move(*signature),
-              std::move(no_certificates))));
+              /*x509_certificates=*/std::vector<std::vector<uint8_t>>())));
   std::move(callback())
       .Run(CtapDeviceResponseCode::kSuccess, std::move(response));
 }
 
 base::Optional<std::vector<uint8_t>>
 MakeCredentialOperation::GenerateCredentialIdForRequest() const {
-  return CredentialMetadata::SealCredentialId(
-      metadata_secret(), RpId(),
-      CredentialMetadata::UserEntity::FromPublicKeyCredentialUserEntity(
-          request().user()));
+  return SealCredentialId(metadata_secret(), RpId(),
+                          CredentialMetadata::FromPublicKeyCredentialUserEntity(
+                              request().user, request().resident_key_required));
 }
 
 }  // namespace mac

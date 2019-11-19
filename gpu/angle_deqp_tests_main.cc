@@ -4,7 +4,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/message_loop/message_loop.h"
+#include "base/task/single_thread_task_executor.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -12,7 +12,7 @@
 namespace {
 
 int RunHelper(base::TestSuite* test_suite) {
-  base::MessageLoop message_loop;
+  base::SingleThreadTaskExecutor task_executor;
   return test_suite->Run();
 }
 
@@ -34,6 +34,11 @@ int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
   angle::InitTestHarness(&argc, argv);
   base::TestSuite test_suite(argc, argv);
+
+  // The process and thread priorities are modified by
+  // StabilizeCPUForBenchmarking()/SetLowPriorityProcess().
+  test_suite.DisableCheckForThreadAndProcessPriority();
+
   int rt = base::LaunchUnitTestsSerially(
       argc, argv, base::BindOnce(&RunHelper, base::Unretained(&test_suite)));
   return rt;

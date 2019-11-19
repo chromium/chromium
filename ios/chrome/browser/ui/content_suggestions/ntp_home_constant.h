@@ -42,6 +42,11 @@ extern const CGFloat kMostVisitedBottomMarginIPhone;
 // Height of the first suggestions peeking at the bottom of the screen.
 extern const CGFloat kSuggestionPeekingHeight;
 
+// Dimension of user's identity avatar as a square image.
+extern const CGFloat kIdentityAvatarDimension;
+// Margin around user's identity avatar.
+extern const CGFloat kIdentityAvatarMargin;
+
 // The background color of the NTP.
 UIColor* kNTPBackgroundColor();
 

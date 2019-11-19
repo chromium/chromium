@@ -106,8 +106,7 @@ void DesktopSessionDurationTracker::OnAudioEnd() {
 DesktopSessionDurationTracker::DesktopSessionDurationTracker()
     : session_start_(base::TimeTicks::Now()),
       last_user_event_(session_start_),
-      audio_tracker_(this),
-      weak_factory_(this) {
+      audio_tracker_(this) {
   InitInactivityTimeout();
 }
 
@@ -157,7 +156,7 @@ void DesktopSessionDurationTracker::EndSession(
     delta = base::TimeDelta();
 
   for (Observer& observer : observer_list_)
-    observer.OnSessionEnded(delta);
+    observer.OnSessionEnded(delta, session_start_ + delta);
 
   DVLOG(4) << "Logging session length of " << delta.InSeconds() << " seconds.";
 

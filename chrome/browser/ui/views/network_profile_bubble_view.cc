@@ -27,6 +27,14 @@ namespace {
 // Bubble layout constants.
 const int kNotificationBubbleWidth = 250;
 
+std::unique_ptr<views::View> CreateLearnMoreLink(
+    views::LinkListener* listener) {
+  auto learn_more =
+      std::make_unique<views::Link>(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
+  learn_more->set_listener(listener);
+  return learn_more;
+}
+
 class NetworkProfileBubbleView : public views::BubbleDialogDelegateView,
                                  public views::LinkListener {
  public:
@@ -38,8 +46,6 @@ class NetworkProfileBubbleView : public views::BubbleDialogDelegateView,
 
   // views::BubbleDialogDelegateView:
   void Init() override;
-  views::View* CreateExtraView() override;
-  int GetDialogButtons() const override;
   bool Accept() override;
 
   // views::LinkListener:
@@ -62,6 +68,8 @@ NetworkProfileBubbleView::NetworkProfileBubbleView(
     : BubbleDialogDelegateView(anchor, views::BubbleBorder::TOP_RIGHT),
       navigator_(navigator),
       profile_(profile) {
+  DialogDelegate::set_buttons(ui::DIALOG_BUTTON_OK);
+  DialogDelegate::SetExtraView(CreateLearnMoreLink(this));
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::NETWORK_SHARE_PROFILE_WARNING);
 }
@@ -81,17 +89,6 @@ void NetworkProfileBubbleView::Init() {
   label->SizeToFit(kNotificationBubbleWidth);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   AddChildView(label);
-}
-
-views::View* NetworkProfileBubbleView::CreateExtraView() {
-  views::Link* learn_more =
-      new views::Link(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-  learn_more->set_listener(this);
-  return learn_more;
-}
-
-int NetworkProfileBubbleView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_OK;
 }
 
 bool NetworkProfileBubbleView::Accept() {

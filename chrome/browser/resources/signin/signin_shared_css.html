@@ -1,45 +1,41 @@
 <!-- Common styles for signin-related tab modal dialogs. -->
-<dom-module id="signin-dialog-shared">
-  <template>
-    <style>
-      a {
-        color: var(--google-blue-700);
-        text-decoration: none;
-      }
+<template>
+  <style>
+    a {
+      color: var(--cr-link-color);
+      text-decoration: none;
+    }
 
-      body {
-        margin: 0;
-        padding: 0;
-      }
+    body {
+      margin: 0;
+      padding: 0;
+    }
 
-      .container {
-        background-color: white;
-        color: #333;
-        width: 448px;
-      }
+    .container {
+      color: var(--cr-primary-text-color);
+      width: 448px;
+    }
 
-      .top-title-bar {
-        align-items: center;
-        border-bottom: 1px solid var(--paper-grey-300);
-        display: flex;
-        font-size: 16px;
-        height: 52px;
-        padding: 0 24px;
-      }
+    .top-title-bar {
+      align-items: center;
+      border-bottom: var(--cr-separator-line);
+      display: flex;
+      font-size: 16px;
+      height: 52px;
+      padding: 0 24px;
+    }
 
-      .action-container {
-        display: flex;
-        justify-content: flex-end;
-        padding: 16px;
-      }
+    .action-container {
+      display: flex;
+      justify-content: flex-end;
+      padding: 16px;
+    }
 
 <if expr="is_macosx or is_linux">
-      .action-container {
-        flex-flow: row-reverse;
-        justify-content: flex-start;
-      }
+    .action-container {
+      flex-flow: row-reverse;
+      justify-content: flex-start;
+    }
 </if>
-
-    </style>
-  </template>
-</dom-module>
+  </style>
+</template>

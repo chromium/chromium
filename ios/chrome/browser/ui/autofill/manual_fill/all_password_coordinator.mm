@@ -6,29 +6,24 @@
 
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/password_store.h"
+#import "ios/chrome/browser/favicon/favicon_loader.h"
+#include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_injection_handler.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_list_navigator.h"
-#import "ios/chrome/browser/ui/autofill/manual_fill/password_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_animator.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller.h"
-#import "ios/chrome/browser/ui/table_view/table_view_presentation_controller.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-namespace manual_fill {
-
-NSString* const kPasswordDoneButtonAccessibilityIdentifier =
-    @"kManualFillPasswordDoneButtonAccessibilityIdentifier";
-
-}  // namespace manual_fill
-
 @interface ManualFillAllPasswordCoordinator () <
-    UIViewControllerTransitioningDelegate>
+    ManualFillPasswordMediatorDelegate,
+    PasswordViewControllerDelegate>
 
 // Fetches and filters the passwords for the view controller.
 @property(nonatomic, strong) ManualFillPasswordMediator* passwordMediator;
@@ -41,58 +36,38 @@ NSString* const kPasswordDoneButtonAccessibilityIdentifier =
 
 @implementation ManualFillAllPasswordCoordinator
 
-// Property tagged dynamic because it overrides super class delegate with and
-// extension of the super delegate type (i.e. PasswordCoordinatorDelegate
-// extends FallbackCoordinatorDelegate).
-@dynamic delegate;
-
-- (instancetype)
-    initWithBaseViewController:(UIViewController*)viewController
-                  browserState:(ios::ChromeBrowserState*)browserState
-              injectionHandler:(ManualFillInjectionHandler*)injectionHandler
-                     navigator:(id<PasswordListNavigator>)navigator {
-  self = [super initWithBaseViewController:viewController
-                              browserState:browserState
-                          injectionHandler:injectionHandler];
-  if (self) {
-    UISearchController* searchController =
-        [[UISearchController alloc] initWithSearchResultsController:nil];
-
-    _passwordViewController = [[PasswordViewController alloc]
-        initWithSearchController:searchController];
-    _passwordViewController.contentInsetsAlwaysEqualToSafeArea = YES;
-
-    auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-        browserState, ServiceAccessType::EXPLICIT_ACCESS);
-    _passwordMediator = [[ManualFillPasswordMediator alloc]
-        initWithPasswordStore:passwordStore];
-
-    [_passwordMediator fetchPasswordsForURL:GURL::EmptyGURL()];
-    _passwordMediator.actionSectionEnabled = NO;
-    _passwordMediator.consumer = _passwordViewController;
-    _passwordMediator.contentDelegate = injectionHandler;
-    _passwordMediator.navigator = navigator;
-
-    searchController.searchResultsUpdater = _passwordMediator;
-
-    UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
-        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                             target:navigator
-                             action:@selector(dismissPresentedViewController)];
-    doneButton.accessibilityIdentifier =
-        manual_fill::kPasswordDoneButtonAccessibilityIdentifier;
-    _passwordViewController.navigationItem.rightBarButtonItem = doneButton;
-  }
-  return self;
-}
-
 - (void)start {
   [super start];
+  UISearchController* searchController =
+      [[UISearchController alloc] initWithSearchResultsController:nil];
+  self.passwordViewController = [[PasswordViewController alloc]
+      initWithSearchController:searchController];
+  self.passwordViewController.contentInsetsAlwaysEqualToSafeArea = YES;
+  self.passwordViewController.delegate = self;
+
+  auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
+      self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(self.browserState);
+  self.passwordMediator =
+      [[ManualFillPasswordMediator alloc] initWithPasswordStore:passwordStore
+                                                  faviconLoader:faviconLoader];
+  [self.passwordMediator fetchPasswordsForURL:GURL::EmptyGURL()];
+  self.passwordMediator.actionSectionEnabled = NO;
+  self.passwordMediator.consumer = self.passwordViewController;
+  self.passwordMediator.contentInjector = self.injectionHandler;
+  self.passwordMediator.delegate = self;
+
+  self.passwordViewController.imageDataSource = self.passwordMediator;
+
+  searchController.searchResultsUpdater = self.passwordMediator;
+
   TableViewNavigationController* navigationController =
       [[TableViewNavigationController alloc]
           initWithTable:self.passwordViewController];
-  navigationController.transitioningDelegate = self;
-  [navigationController setModalPresentationStyle:UIModalPresentationCustom];
+  navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  navigationController.modalTransitionStyle =
+      UIModalTransitionStyleCoverVertical;
 
   [self.baseViewController presentViewController:navigationController
                                         animated:YES
@@ -100,59 +75,32 @@ NSString* const kPasswordDoneButtonAccessibilityIdentifier =
 }
 
 - (void)stop {
-  [self.passwordViewController dismissViewControllerAnimated:NO completion:nil];
+  [self.passwordViewController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:nil];
+  self.passwordViewController = nil;
+  self.passwordMediator = nil;
   [super stop];
-}
-
-#pragma mark - UIViewControllerTransitioningDelegate
-
-- (UIPresentationController*)
-    presentationControllerForPresentedViewController:
-        (UIViewController*)presented
-                            presentingViewController:
-                                (UIViewController*)presenting
-                                sourceViewController:(UIViewController*)source {
-  TableViewPresentationController* presentationController =
-      [[TableViewPresentationController alloc]
-          initWithPresentedViewController:presented
-                 presentingViewController:presenting];
-  return presentationController;
-}
-
-- (id<UIViewControllerAnimatedTransitioning>)
-    animationControllerForPresentedController:(UIViewController*)presented
-                         presentingController:(UIViewController*)presenting
-                             sourceController:(UIViewController*)source {
-  UITraitCollection* traitCollection = presenting.traitCollection;
-  if (traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact &&
-      traitCollection.verticalSizeClass != UIUserInterfaceSizeClassCompact) {
-    // Use the default animator for fullscreen presentations.
-    return nil;
-  }
-
-  TableViewAnimator* animator = [[TableViewAnimator alloc] init];
-  animator.presenting = YES;
-  return animator;
-}
-
-- (id<UIViewControllerAnimatedTransitioning>)
-    animationControllerForDismissedController:(UIViewController*)dismissed {
-  UITraitCollection* traitCollection = dismissed.traitCollection;
-  if (traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassCompact &&
-      traitCollection.verticalSizeClass != UIUserInterfaceSizeClassCompact) {
-    // Use the default animator for fullscreen presentations.
-    return nil;
-  }
-
-  TableViewAnimator* animator = [[TableViewAnimator alloc] init];
-  animator.presenting = NO;
-  return animator;
 }
 
 #pragma mark - FallbackCoordinator
 
 - (UIViewController*)viewController {
   return self.passwordViewController;
+}
+
+#pragma mark - ManualFillPasswordMediatorDelegate
+
+- (void)manualFillPasswordMediatorWillInjectContent:
+    (ManualFillPasswordMediator*)mediator {
+  [self stop];  // The job is done.
+}
+
+#pragma mark - PasswordViewControllerDelegate
+
+- (void)passwordViewControllerDidTapDoneButton:
+    (PasswordViewController*)passwordViewController {
+  [self stop];  // The job is done.
 }
 
 @end

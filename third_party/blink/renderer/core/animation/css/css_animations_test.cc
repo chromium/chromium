@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/paint/stub_chrome_client_for_cap.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
 
@@ -15,18 +15,19 @@ namespace blink {
 
 class CSSAnimationsTest : public RenderingTest {
  public:
-  CSSAnimationsTest()
-      : chrome_client_(MakeGarbageCollected<StubChromeClientForCAP>()) {
+  CSSAnimationsTest() {
     EnablePlatform();
     platform()->SetThreadedAnimationEnabled(true);
   }
 
   void SetUp() override {
     platform()->SetAutoAdvanceNowToPendingTasks(false);
-    // Advance timer manually as RenderingTest expects the time to be non-zero.
-    platform()->AdvanceClockSeconds(1.);
-    RenderingTest::SetUp();
     EnableCompositing();
+    RenderingTest::SetUp();
+    SetUpAnimationClockForTesting();
+    // Advance timer to document time.
+    platform()->AdvanceClockSeconds(
+        GetDocument().Timeline().ZeroTime().since_origin().InSecondsF());
   }
 
   void TearDown() override {
@@ -34,18 +35,21 @@ class CSSAnimationsTest : public RenderingTest {
     platform()->RunUntilIdle();
   }
 
-  ChromeClient& GetChromeClient() const override { return *chrome_client_; }
-
   void StartAnimationOnCompositor(Animation* animation) {
     static_cast<CompositorAnimationDelegate*>(animation)
-        ->NotifyAnimationStarted(
-            (CurrentTimeTicks() - base::TimeTicks()).InSecondsF(),
-            animation->CompositorGroup());
+        ->NotifyAnimationStarted(platform()
+                                     ->test_task_runner()
+                                     ->NowTicks()
+                                     .since_origin()
+                                     .InSecondsF(),
+                                 animation->CompositorGroup());
   }
 
   void AdvanceClockSeconds(double seconds) {
     platform()->AdvanceClockSeconds(seconds);
     platform()->RunUntilIdle();
+    GetPage().Animator().ServiceScriptedAnimations(
+        platform()->test_task_runner()->NowTicks());
   }
 
   double GetContrastFilterAmount(Element* element) {
@@ -58,7 +62,9 @@ class CSSAnimationsTest : public RenderingTest {
   }
 
  private:
-  Persistent<StubChromeClientForCAP> chrome_client_;
+  void SetUpAnimationClockForTesting() {
+    GetPage().Animator().Clock().ResetTimeForTesting();
+  }
 };
 
 // Verify that a composited animation is retargeted according to its composited
@@ -85,15 +91,13 @@ TEST_F(CSSAnimationsTest, RetargetedTransition) {
 
   // Starting the second transition should retarget the active transition.
   element->setAttribute(html_names::kClassAttr, "contrast2");
-  GetPage().Animator().ServiceScriptedAnimations(CurrentTimeTicks());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_DOUBLE_EQ(0.6, GetContrastFilterAmount(element));
+  EXPECT_NEAR(0.6, GetContrastFilterAmount(element), 0.0000000001);
 
   // As it has been retargeted, advancing halfway should go to 0.3.
   AdvanceClockSeconds(0.5);
-  GetPage().Animator().ServiceScriptedAnimations(CurrentTimeTicks());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_DOUBLE_EQ(0.3, GetContrastFilterAmount(element));
+  EXPECT_NEAR(0.3, GetContrastFilterAmount(element), 0.0000000001);
 }
 
 // Test that when an incompatible in progress compositor transition

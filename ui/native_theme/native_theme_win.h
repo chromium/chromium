@@ -10,11 +10,7 @@
 // NativeThemeWin::instance().
 // For more information on visual style parts and states, see:
 // http://msdn.microsoft.com/library/default.asp?url=/library/en-us/shellcc/platform/commctls/userex/topics/partsandstates.asp
-
-#include <map>
-
 #include <windows.h>
-#include <uxtheme.h>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -58,15 +54,6 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   // for a theme change.
   static void CloseHandles();
 
-  HRESULT PaintTextField(HDC hdc,
-                         int part_id,
-                         int state_id,
-                         int classic_state,
-                         RECT* rect,
-                         COLORREF color,
-                         bool fill_content_area,
-                         bool draw_edges) const;
-
   // NativeTheme implementation:
   gfx::Size GetPartSize(Part part,
                         State state,
@@ -75,13 +62,18 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
              Part part,
              State state,
              const gfx::Rect& rect,
-             const ExtraParams& extra) const override;
-  SkColor GetSystemColor(ColorId color_id) const override;
+             const ExtraParams& extra,
+             ColorScheme color_scheme) const override;
+  SkColor GetSystemColor(
+      ColorId color_id,
+      ColorScheme color_scheme = ColorScheme::kDefault) const override;
   bool SupportsNinePatch(Part part) const override;
   gfx::Size GetNinePatchCanvasSize(Part part) const override;
   gfx::Rect GetNinePatchAperture(Part part) const override;
-  bool UsesHighContrastColors() const override;
-  bool SystemDarkModeEnabled() const override;
+  bool ShouldUseDarkColors() const override;
+  bool SystemDarkModeSupported() const override;
+  PreferredColorScheme CalculatePreferredColorScheme() const override;
+  ColorScheme GetDefaultSystemColorScheme() const override;
 
  protected:
   friend class NativeTheme;
@@ -104,10 +96,14 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
 
   // Painting functions that paint to PaintCanvas.
   void PaintMenuSeparator(cc::PaintCanvas* canvas,
-                          const MenuSeparatorExtraParams& params) const;
-  void PaintMenuGutter(cc::PaintCanvas* canvas, const gfx::Rect& rect) const;
+                          const MenuSeparatorExtraParams& params,
+                          ColorScheme color_scheme) const;
+  void PaintMenuGutter(cc::PaintCanvas* canvas,
+                       const gfx::Rect& rect,
+                       ColorScheme color_scheme) const;
   void PaintMenuBackground(cc::PaintCanvas* canvas,
-                           const gfx::Rect& rect) const;
+                           const gfx::Rect& rect,
+                           ColorScheme color_scheme) const;
 
   // Paint directly to canvas' HDC.
   void PaintDirect(SkCanvas* destination_canvas,
@@ -126,123 +122,57 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
                      const gfx::Rect& rect,
                      const ExtraParams& extra) const;
 
-  HRESULT GetThemePartSize(ThemeName themeName,
-                           HDC hdc,
-                           int part_id,
-                           int state_id,
-                           RECT* rect,
-                           int ts,
-                           SIZE* size) const;
-
-  HRESULT PaintButton(HDC hdc,
-                      State state,
-                      const ButtonExtraParams& extra,
-                      int part_id,
-                      int state_id,
-                      RECT* rect) const;
-
-  // |arrow_direction| determines whether the arrow is pointing to the left or
-  // to the right. In RTL locales, sub-menus open from right to left and
-  // therefore the menu arrow should point to the left and not to the right.
-  HRESULT PaintMenuArrow(HDC hdc,
-                         State state,
-                         const gfx::Rect& rect,
-                         const MenuArrowExtraParams& extra) const;
-
-  HRESULT PaintMenuCheck(HDC hdc,
-                         State state,
-                         const gfx::Rect& rect,
-                         const MenuCheckExtraParams& extra) const;
-
-  HRESULT PaintMenuCheckBackground(HDC hdc,
-                                   State state,
-                                   const gfx::Rect& rect) const;
-
-  HRESULT PaintPushButton(HDC hdc,
+  // Various helpers to paint specific parts.
+  void PaintButtonClassic(HDC hdc,
                           Part part,
                           State state,
-                          const gfx::Rect& rect,
+                          RECT* rect,
                           const ButtonExtraParams& extra) const;
-
-  HRESULT PaintRadioButton(HDC hdc,
-                           Part part,
-                           State state,
-                           const gfx::Rect& rect,
-                           const ButtonExtraParams& extra) const;
-
-  HRESULT PaintCheckbox(HDC hdc,
-                        Part part,
-                        State state,
-                        const gfx::Rect& rect,
-                        const ButtonExtraParams& extra) const;
-
-  HRESULT PaintMenuList(HDC hdc,
-                        State state,
-                        const gfx::Rect& rect,
-                        const MenuListExtraParams& extra) const;
-
-  // Paints a scrollbar arrow.  |classic_state| should have the appropriate
-  // classic part number ORed in already.
-  HRESULT PaintScrollbarArrow(HDC hdc,
-                              Part part,
-                              State state,
-                              const gfx::Rect& rect,
-                              const ScrollbarArrowExtraParams& extra) const;
-
-  HRESULT PaintScrollbarThumb(HDC hdc,
-                              Part part,
-                              State state,
-                              const gfx::Rect& rect,
-                              const ScrollbarThumbExtraParams& extra) const;
-
-  // This method is deprecated and will be removed in the near future.
-  // Paints a scrollbar track section.  |align_rect| is only used in classic
-  // mode, and makes sure the checkerboard pattern in |target_rect| is aligned
-  // with one presumed to be in |align_rect|.
-  HRESULT PaintScrollbarTrack(SkCanvas* canvas,
-                              HDC hdc,
-                              Part part,
-                              State state,
-                              const gfx::Rect& rect,
-                              const ScrollbarTrackExtraParams& extra) const;
-
-  HRESULT PaintSpinButton(HDC hdc,
-                          Part part,
-                          State state,
-                          const gfx::Rect& rect,
-                          const InnerSpinButtonExtraParams& extra) const;
-
-  HRESULT PaintTrackbar(SkCanvas* canvas,
-                        HDC hdc,
-                        Part part,
-                        State state,
-                        const gfx::Rect& rect,
-                        const TrackbarExtraParams& extra) const;
-
-  HRESULT PaintProgressBar(HDC hdc,
-                           const gfx::Rect& rect,
-                           const ProgressBarExtraParams& extra) const;
-
-  HRESULT PaintWindowResizeGripper(HDC hdc, const gfx::Rect& rect) const;
-
-  HRESULT PaintTabPanelBackground(HDC hdc, const gfx::Rect& rect) const;
-
-  HRESULT PaintTextField(HDC hdc,
-                         Part part,
-                         State state,
-                         const gfx::Rect& rect,
-                         const TextFieldExtraParams& extra) const;
+  void PaintLeftMenuArrowThemed(HDC hdc,
+                                HANDLE handle,
+                                int part_id,
+                                int state_id,
+                                const gfx::Rect& rect) const;
+  void PaintScrollbarArrowClassic(HDC hdc,
+                                  Part part,
+                                  State state,
+                                  RECT* rect) const;
+  void PaintScrollbarTrackClassic(SkCanvas* canvas,
+                                  HDC hdc,
+                                  RECT* rect,
+                                  const ScrollbarTrackExtraParams& extra) const;
+  void PaintHorizontalTrackbarThumbClassic(
+      SkCanvas* canvas,
+      HDC hdc,
+      const RECT& rect,
+      const TrackbarExtraParams& extra) const;
+  void PaintProgressBarOverlayThemed(HDC hdc,
+                                     HANDLE handle,
+                                     RECT* bar_rect,
+                                     RECT* value_rect,
+                                     const ProgressBarExtraParams& extra) const;
+  void PaintTextFieldThemed(HDC hdc,
+                            HANDLE handle,
+                            HBRUSH bg_brush,
+                            int part_id,
+                            int state_id,
+                            RECT* rect,
+                            const TextFieldExtraParams& extra) const;
+  void PaintTextFieldClassic(HDC hdc,
+                             HBRUSH bg_brush,
+                             RECT* rect,
+                             const TextFieldExtraParams& extra) const;
 
   // Paints a theme part, with support for scene scaling in high-DPI mode.
   // |theme| is the theme handle. |hdc| is the handle for the device context.
   // |part_id| is the identifier for the part (e.g. thumb gripper). |state_id|
   // is the identifier for the rendering state of the part (e.g. hover). |rect|
   // is the bounds for rendering, expressed in logical coordinates.
-  HRESULT PaintScaledTheme(HANDLE theme,
-                           HDC hdc,
-                           int part_id,
-                           int state_id,
-                           const gfx::Rect& rect) const;
+  void PaintScaledTheme(HANDLE theme,
+                        HDC hdc,
+                        int part_id,
+                        int state_id,
+                        const gfx::Rect& rect) const;
 
   // Get the windows theme name/part/state.  These three helper functions are
   // used only by GetPartSize(), as each of the corresponding PaintXXX()
@@ -263,60 +193,11 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
   HANDLE GetThemeHandle(ThemeName theme_name) const;
 
   void RegisterThemeRegkeyObserver();
+  void UpdateDarkModeStatus();
 
-  typedef HRESULT (WINAPI* DrawThemeBackgroundPtr)(HANDLE theme,
-                                                   HDC hdc,
-                                                   int part_id,
-                                                   int state_id,
-                                                   const RECT* rect,
-                                                   const RECT* clip_rect);
-  typedef HRESULT (WINAPI* DrawThemeBackgroundExPtr)(HANDLE theme,
-                                                     HDC hdc,
-                                                     int part_id,
-                                                     int state_id,
-                                                     const RECT* rect,
-                                                     const DTBGOPTS* opts);
-  typedef HRESULT (WINAPI* GetThemeColorPtr)(HANDLE hTheme,
-                                             int part_id,
-                                             int state_id,
-                                             int prop_id,
-                                             COLORREF* color);
-  typedef HRESULT (WINAPI* GetThemeContentRectPtr)(HANDLE hTheme,
-                                                   HDC hdc,
-                                                   int part_id,
-                                                   int state_id,
-                                                   const RECT* rect,
-                                                   RECT* content_rect);
-  typedef HRESULT (WINAPI* GetThemePartSizePtr)(HANDLE hTheme,
-                                                HDC hdc,
-                                                int part_id,
-                                                int state_id,
-                                                RECT* rect,
-                                                int ts,
-                                                SIZE* size);
-  typedef HANDLE (WINAPI* OpenThemeDataPtr)(HWND window,
-                                            LPCWSTR class_list);
-  typedef HRESULT (WINAPI* CloseThemeDataPtr)(HANDLE theme);
-
-  typedef void (WINAPI* SetThemeAppPropertiesPtr) (DWORD flags);
-  typedef BOOL (WINAPI* IsThemeActivePtr)();
-  typedef HRESULT (WINAPI* GetThemeIntPtr)(HANDLE hTheme,
-                                           int part_id,
-                                           int state_id,
-                                           int prop_id,
-                                           int *value);
-
-  // Function pointers into uxtheme.dll.
-  DrawThemeBackgroundPtr draw_theme_;
-  DrawThemeBackgroundExPtr draw_theme_ex_;
-  GetThemeColorPtr get_theme_color_;
-  GetThemeContentRectPtr get_theme_content_rect_;
-  GetThemePartSizePtr get_theme_part_size_;
-  OpenThemeDataPtr open_theme_;
-  CloseThemeDataPtr close_theme_;
-
-  // Handle to uxtheme.dll.
-  HMODULE theme_dll_;
+  // Returns the platform provided high contrast color for the given
+  // |color_id|.
+  SkColor GetPlatformHighContrastColor(ColorId color_id) const;
 
   // Dark Mode registry key.
   base::win::RegKey hkcu_themes_regkey_;
@@ -326,13 +207,11 @@ class NATIVE_THEME_EXPORT NativeThemeWin : public NativeTheme,
 
   // The system color change listener and the updated cache of system colors.
   gfx::ScopedSysColorChangeListener color_change_listener_;
-  mutable std::map<int, SkColor> system_colors_;
 
-  // Is a high contrast theme active?
-  mutable bool is_using_high_contrast_;
-
-  // Is |is_using_high_contrast_| valid?
-  mutable bool is_using_high_contrast_valid_;
+  // Used to notify the web native theme of changes to dark mode, high
+  // contrast, and preferred color scheme.
+  std::unique_ptr<NativeTheme::ColorSchemeNativeThemeObserver>
+      color_scheme_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(NativeThemeWin);
 };

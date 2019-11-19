@@ -178,12 +178,15 @@ class NetStreamSocketAdapter : public net::StreamSocket {
   net::NetLogWithSource net_log_;
 };
 
+}  // namespace
+
 // Implements P2PStreamSocket interface on top of net::StreamSocket.
-class P2PStreamSocketAdapter : public P2PStreamSocket {
+class SslHmacChannelAuthenticator::P2PStreamSocketAdapter
+    : public P2PStreamSocket {
  public:
-  P2PStreamSocketAdapter(std::unique_ptr<net::StreamSocket> socket,
-                         std::unique_ptr<net::SSLServerContext> server_context)
-      : server_context_(std::move(server_context)),
+  P2PStreamSocketAdapter(SslSocketContext socket_context,
+                         std::unique_ptr<net::StreamSocket> socket)
+      : socket_context_(std::move(socket_context)),
         socket_(std::move(socket)) {}
   ~P2PStreamSocketAdapter() override = default;
 
@@ -202,13 +205,18 @@ class P2PStreamSocketAdapter : public P2PStreamSocket {
   }
 
  private:
-  // The server_context_ will be a nullptr for client sockets.
-  // The server_context_ must outlive any sockets it spawns.
-  std::unique_ptr<net::SSLServerContext> server_context_;
+  // The socket_context_ must outlive any associated sockets.
+  SslSocketContext socket_context_;
   std::unique_ptr<net::StreamSocket> socket_;
 };
 
-}  // namespace
+SslHmacChannelAuthenticator::SslSocketContext::SslSocketContext() = default;
+SslHmacChannelAuthenticator::SslSocketContext::SslSocketContext(
+    SslSocketContext&&) = default;
+SslHmacChannelAuthenticator::SslSocketContext::~SslSocketContext() = default;
+SslHmacChannelAuthenticator::SslSocketContext&
+SslHmacChannelAuthenticator::SslSocketContext::operator=(SslSocketContext&&) =
+    default;
 
 // static
 std::unique_ptr<SslHmacChannelAuthenticator>
@@ -267,23 +275,30 @@ void SslHmacChannelAuthenticator::SecureAndAuthenticate(
     net::SSLServerConfig ssl_config;
     ssl_config.require_ecdhe = true;
 
-    server_context_ = net::CreateSSLServerContext(
+    socket_context_.server_context = net::CreateSSLServerContext(
         cert.get(), *local_key_pair_->private_key(), ssl_config);
 
     std::unique_ptr<net::SSLServerSocket> server_socket =
-        server_context_->CreateSSLServerSocket(
+        socket_context_.server_context->CreateSSLServerSocket(
             std::make_unique<NetStreamSocketAdapter>(std::move(socket)));
     net::SSLServerSocket* raw_server_socket = server_socket.get();
     socket_ = std::move(server_socket);
-    result = raw_server_socket->Handshake(
-        base::Bind(&SslHmacChannelAuthenticator::OnConnected,
-                   base::Unretained(this)));
+    result = raw_server_socket->Handshake(base::Bind(
+        &SslHmacChannelAuthenticator::OnConnected, base::Unretained(this)));
 #endif
   } else {
-    transport_security_state_.reset(new net::TransportSecurityState);
-    cert_verifier_.reset(new FailingCertVerifier);
-    ct_verifier_.reset(new net::DoNothingCTVerifier);
-    ct_policy_enforcer_.reset(new net::DefaultCTPolicyEnforcer);
+    socket_context_.transport_security_state =
+        std::make_unique<net::TransportSecurityState>();
+    socket_context_.cert_verifier = std::make_unique<FailingCertVerifier>();
+    socket_context_.ct_verifier = std::make_unique<net::DoNothingCTVerifier>();
+    socket_context_.ct_policy_enforcer =
+        std::make_unique<net::DefaultCTPolicyEnforcer>();
+    socket_context_.client_context = std::make_unique<net::SSLClientContext>(
+        nullptr /* default config */, socket_context_.cert_verifier.get(),
+        socket_context_.transport_security_state.get(),
+        socket_context_.ct_verifier.get(),
+        socket_context_.ct_policy_enforcer.get(),
+        nullptr /* no session caching */);
 
     net::SSLConfig ssl_config;
     ssl_config.require_ecdhe = true;
@@ -301,26 +316,21 @@ void SslHmacChannelAuthenticator::SecureAndAuthenticate(
         std::move(cert), net::CERT_STATUS_AUTHORITY_INVALID);
 
     net::HostPortPair host_and_port(kSslFakeHostName, 0);
-    net::SSLClientSocketContext context;
-    context.transport_security_state = transport_security_state_.get();
-    context.cert_verifier = cert_verifier_.get();
-    context.cert_transparency_verifier = ct_verifier_.get();
-    context.ct_policy_enforcer = ct_policy_enforcer_.get();
     std::unique_ptr<net::StreamSocket> stream_socket =
         std::make_unique<NetStreamSocketAdapter>(std::move(socket));
 #if defined(OS_NACL)
     // net_nacl doesn't include ClientSocketFactory.
-    socket_.reset(new net::SSLClientSocketImpl(
-        std::move(stream_socket), host_and_port, ssl_config, context));
+    socket_ = socket_context_.client_context->CreateSSLClientSocket(
+        std::move(stream_socket), host_and_port, ssl_config);
 #else
     socket_ =
         net::ClientSocketFactory::GetDefaultFactory()->CreateSSLClientSocket(
-            std::move(stream_socket), host_and_port, ssl_config, context);
+            socket_context_.client_context.get(), std::move(stream_socket),
+            host_and_port, ssl_config);
 #endif
 
-    result = socket_->Connect(
-        base::Bind(&SslHmacChannelAuthenticator::OnConnected,
-                   base::Unretained(this)));
+    result = socket_->Connect(base::Bind(
+        &SslHmacChannelAuthenticator::OnConnected, base::Unretained(this)));
   }
 
   if (result == net::ERR_IO_PENDING)
@@ -475,7 +485,7 @@ void SslHmacChannelAuthenticator::CheckDone(bool* callback_called) {
 
     std::move(done_callback_)
         .Run(net::OK, std::make_unique<P2PStreamSocketAdapter>(
-                          std::move(socket_), std::move(server_context_)));
+                          std::move(socket_context_), std::move(socket_)));
   }
 }
 

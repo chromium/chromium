@@ -16,10 +16,9 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
-#include "mojo/public/cpp/bindings/filter_chain.h"
 #include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/public/cpp/bindings/interface_request.h"
-#include "mojo/public/cpp/bindings/message_header_validator.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/core.h"
 
 namespace mojo {
@@ -104,10 +103,9 @@ class StrongBinding {
                 InterfaceRequest<Interface> request,
                 scoped_refptr<base::SequencedTaskRunner> task_runner)
       : impl_(std::move(impl)),
-        binding_(impl_.get(), std::move(request), std::move(task_runner)),
-        weak_factory_(this) {
-    binding_.set_connection_error_with_reason_handler(
-        base::Bind(&StrongBinding::OnConnectionError, base::Unretained(this)));
+        binding_(impl_.get(), std::move(request), std::move(task_runner)) {
+    binding_.set_connection_error_with_reason_handler(base::BindOnce(
+        &StrongBinding::OnConnectionError, base::Unretained(this)));
   }
 
   ~StrongBinding() {}
@@ -127,7 +125,7 @@ class StrongBinding {
   base::OnceClosure connection_error_handler_;
   ConnectionErrorWithReasonCallback connection_error_with_reason_handler_;
   Binding<Interface> binding_;
-  base::WeakPtrFactory<StrongBinding> weak_factory_;
+  base::WeakPtrFactory<StrongBinding> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(StrongBinding);
 };

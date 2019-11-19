@@ -12,7 +12,8 @@ namespace blink {
 class LayoutBox;
 class LayoutBlock;
 class NGBoxFragmentBuilder;
-struct NGStaticPosition;
+struct NGBoxStrut;
+struct NGLogicalStaticPosition;
 
 // This static class should be used for querying information from a |LayoutBox|.
 class LayoutBoxUtils {
@@ -27,11 +28,12 @@ class LayoutBoxUtils {
   static LayoutUnit AvailableLogicalHeight(const LayoutBox& box,
                                            const LayoutBlock* cb);
 
-  // Produces an |NGStaticPosition| for |box| from the layout-tree.
-  // |container_builder| is needed as not all information from current NG
+  // Produces a |NGLogicalStaticPosition| for |box| from the layout-tree.
+  // |container_builder| is needed as not all the information from current NG
   // layout is copied to the layout-tree yet.
-  static NGStaticPosition ComputeStaticPositionFromLegacy(
+  static NGLogicalStaticPosition ComputeStaticPositionFromLegacy(
       const LayoutBox& box,
+      const NGBoxStrut& container_border_scrollbar,
       const NGBoxFragmentBuilder* container_builder = nullptr);
 
   static bool SkipContainingBlockForPercentHeightCalculation(

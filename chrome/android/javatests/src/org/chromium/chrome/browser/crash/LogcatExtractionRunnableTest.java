@@ -128,7 +128,7 @@ public class LogcatExtractionRunnableTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         mCrashDir = new CrashFileManager(mTestRule.getCacheDir()).getCrashDirectory();
     }
 

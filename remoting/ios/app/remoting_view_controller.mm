@@ -32,6 +32,7 @@
 #import "remoting/ios/domain/client_session_details.h"
 #import "remoting/ios/facade/remoting_service.h"
 
+#include "base/mac/scoped_cftyperef.h"
 #include "base/strings/sys_string_conversions.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/string_resources.h"

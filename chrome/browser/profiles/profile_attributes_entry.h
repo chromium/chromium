@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
@@ -21,16 +22,40 @@ namespace gfx {
 class Image;
 }
 
+class PrefRegistrySimple;
 class PrefService;
 class ProfileInfoCache;
 
+enum class SigninState {
+  kNotSignedIn,
+  kSignedInWithUnconsentedPrimaryAccount,
+  kSignedInWithConsentedPrimaryAccount,
+};
+
+extern const base::Feature kPersistUPAInProfileInfoCache;
+
 class ProfileAttributesEntry {
  public:
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
   ProfileAttributesEntry();
   virtual ~ProfileAttributesEntry() {}
 
-  // Gets the name of the profile, which is the one displayed in the User Menu.
+  // Returns whether the profile name is the concatenation of the Gaia name and
+  // of the local profile name.
+  static bool ShouldConcatenateGaiaAndProfileName();
+
+  // Gets the name of the profile to be displayed in the User Menu. The name can
+  // be the GAIA name, local profile name or a combination of them.
   base::string16 GetName() const;
+  // Returns |GetGAIAGivenName()| if not empty. Otherwise, returns
+  // |GetGAIAName()|.
+  base::string16 GetGAIANameToDisplay() const;
+  // Returns true if the profile name has changed.
+  bool HasProfileNameChanged();
+
+  // Gets the local profile name.
+  base::string16 GetLocalProfileName() const;
 
   base::string16 GetShortcutName() const;
   // Gets the path to the profile. Should correspond to the path passed to
@@ -83,6 +108,8 @@ class ProfileAttributesEntry {
   // Returns true if the profile is using a default name, typically of the
   // format "Person %d".
   bool IsUsingDefaultName() const;
+  // Returns Signin state.
+  SigninState GetSigninState() const;
   // Returns true if the profile is signed in.
   bool IsAuthenticated() const;
   // Returns true if the Profile is using the default avatar, which is one of
@@ -93,8 +120,12 @@ class ProfileAttributesEntry {
   bool IsAuthError() const;
   // Returns the index of the default icon used by the profile.
   size_t GetAvatarIconIndex() const;
+  // Returns the metrics bucket this profile should be recorded in.
+  // Note: The bucket index is assigned once and remains the same all time. 0 is
+  // reserved for the guest profile.
+  size_t GetMetricsBucketIndex();
 
-  void SetName(const base::string16& name);
+  void SetLocalProfileName(const base::string16& name);
   void SetShortcutName(const base::string16& name);
   void SetActiveTimeToNow();
   void SetIsOmitted(bool is_omitted);
@@ -104,7 +135,7 @@ class ProfileAttributesEntry {
   void SetBackgroundStatus(bool running_background_apps);
   void SetGAIAName(const base::string16& name);
   void SetGAIAGivenName(const base::string16& name);
-  void SetGAIAPicture(const gfx::Image* image);
+  void SetGAIAPicture(gfx::Image image);
   void SetIsUsingGAIAPicture(bool value);
   void SetIsSigninRequired(bool value);
   void SetIsEphemeral(bool value);
@@ -113,7 +144,9 @@ class ProfileAttributesEntry {
   void SetIsAuthError(bool value);
   void SetAvatarIconIndex(size_t icon_index);
 
-  void SetAuthInfo(const std::string& gaia_id, const base::string16& user_name);
+  void SetAuthInfo(const std::string& gaia_id,
+                   const base::string16& user_name,
+                   bool is_consented_primary_account);
 
   // Lock/Unlock the profile, should be called only if force-sign-in is enabled.
   void LockForceSigninProfile(bool is_lock);
@@ -122,6 +155,8 @@ class ProfileAttributesEntry {
   static const char kBackgroundAppsKey[];
   static const char kProfileIsEphemeral[];
   static const char kUserNameKey[];
+  static const char kGAIAIdKey[];
+  static const char kIsConsentedPrimaryAccountKey[];
 
  private:
   friend class ProfileInfoCache;
@@ -134,6 +169,24 @@ class ProfileAttributesEntry {
   void Initialize(ProfileInfoCache* cache,
                   const base::FilePath& path,
                   PrefService* prefs);
+
+  // Gets the name of the profile which is the one displayed in the User Menu,
+  // which could be:
+  // - Profile name (The profile is not signed in).
+  // - Gaia name if the profile name is empty or |ShouldShowProfileLocalName()|
+  //   return false.
+  // - Otherwise the concatenation of GAIA name and local profile name.
+  base::string16 GetNameToDisplay() const;
+  base::string16 GetLastNameToDisplay() const;
+
+  // Returns true if:
+  // - The user has chosen a local profile name on purpose. One exception where
+  //   we don't show the local profile name, is when it is equal to the
+  //   GAIA name.
+  // - If two profiles have the same GAIA name and we need to show the local
+  //   profile name to clear ambiguity.
+  bool ShouldShowProfileLocalName(
+      const base::string16& gaia_name_to_display) const;
 
   // Loads or uses an already loaded high resolution image of the generic
   // profile avatar.
@@ -148,13 +201,14 @@ class ProfileAttributesEntry {
   const base::Value* GetValue(const char* key) const;
 
   // Internal getters that return basic data types. If the key is not present,
-  // or if the data is in a wrong data type, return empty string, 0.0, or false
-  // depending on the target data type. We do not assume that the data type is
-  // correct because the local state file can be modified by a third party.
+  // or if the data is in a wrong data type, return empty string, 0.0, false or
+  // -1 depending on the target data type. We do not assume that the data type
+  // is correct because the local state file can be modified by a third party.
   std::string GetString(const char* key) const;
   base::string16 GetString16(const char* key) const;
   double GetDouble(const char* key) const;
   bool GetBool(const char* key) const;
+  int GetInteger(const char* key) const;
 
   // Type checking. Only IsDouble is implemented because others do not have
   // callsites.
@@ -166,6 +220,7 @@ class ProfileAttributesEntry {
   bool SetString16(const char* key, base::string16 value);
   bool SetDouble(const char* key, double value);
   bool SetBool(const char* key, bool value);
+  bool SetInteger(const char* key, int value);
 
   // These members are an implementation detail meant to smooth the migration
   // of the ProfileInfoCache to the ProfileAttributesStorage interface. They can
@@ -179,6 +234,7 @@ class ProfileAttributesEntry {
   PrefService* prefs_;
   base::FilePath profile_path_;
   std::string storage_key_;
+  base::string16 last_name_to_display_;
 
   // A separate boolean flag indicates whether the signin is required when force
   // signin is enabled. So that the profile locked status will be stored in

@@ -9,13 +9,18 @@
 #include <fuchsia/sys/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/fidl/cpp/interface_handle.h>
+#include <lib/sys/cpp/component_context.h>
 #include <lib/zx/channel.h>
 #include <string>
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/fuchsia/service_directory_client.h"
+#include "base/fuchsia/default_context.h"
 #include "base/macros.h"
+
+namespace sys {
+class OutgoingDirectory;
+}  // namespace sys
 
 namespace base {
 namespace fuchsia {
@@ -25,6 +30,11 @@ namespace fuchsia {
 // TODO(https://crbug.com/920920): Remove this when ServiceProvider is gone.
 class BASE_EXPORT ServiceProviderImpl : public ::fuchsia::sys::ServiceProvider {
  public:
+  // Constructor that creates ServiceProvider for public services in the
+  // specified OutgoingDirectory.
+  static std::unique_ptr<ServiceProviderImpl> CreateForOutgoingDirectory(
+      sys::OutgoingDirectory* outgoing_directory);
+
   explicit ServiceProviderImpl(
       fidl::InterfaceHandle<::fuchsia::io::Directory> service_directory);
   ~ServiceProviderImpl() override;
@@ -47,7 +57,7 @@ class BASE_EXPORT ServiceProviderImpl : public ::fuchsia::sys::ServiceProvider {
 
   void OnBindingSetEmpty();
 
-  const ServiceDirectoryClient directory_;
+  const sys::ServiceDirectory directory_;
   fidl::BindingSet<::fuchsia::sys::ServiceProvider> bindings_;
   base::OnceClosure on_last_client_disconnected_;
 

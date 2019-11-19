@@ -145,7 +145,7 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   const NetLogWithSource net_log_;
 
   // The default weak pointer factory.
-  base::WeakPtrFactory<QuicProxyClientSocket> weak_factory_;
+  base::WeakPtrFactory<QuicProxyClientSocket> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(QuicProxyClientSocket);
 };

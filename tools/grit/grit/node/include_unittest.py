@@ -5,19 +5,19 @@
 
 '''Unit tests for include.IncludeNode'''
 
-import os
-import sys
-if __name__ == '__main__':
-  sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
+from __future__ import print_function
 
 import os
+import sys
 import unittest
 import zlib
+
+if __name__ == '__main__':
+  sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
 from grit.node import misc
 from grit.node import include
 from grit.node import empty
-from grit import grd_reader
 from grit import util
 
 
@@ -27,7 +27,7 @@ class IncludeNodeUnittest(unittest.TestCase):
     root.StartParsing(u'grit', None)
     root.HandleAttribute(u'latest_public_release', u'0')
     root.HandleAttribute(u'current_release', u'1')
-    root.HandleAttribute(u'base_dir', ur'..\resource')
+    root.HandleAttribute(u'base_dir', r'..\resource')
     release = misc.ReleaseNode()
     release.StartParsing(u'release', root)
     release.HandleAttribute(u'seq', u'1')
@@ -37,20 +37,20 @@ class IncludeNodeUnittest(unittest.TestCase):
     release.AddChild(includes)
     include_node = include.IncludeNode()
     include_node.StartParsing(u'include', includes)
-    include_node.HandleAttribute(u'file', ur'flugel\kugel.pdf')
+    include_node.HandleAttribute(u'file', r'flugel\kugel.pdf')
     includes.AddChild(include_node)
     root.EndParsing()
 
     self.assertEqual(root.ToRealPath(include_node.GetInputPath()),
                      util.normpath(
-                       os.path.join(ur'../resource', ur'flugel/kugel.pdf')))
+                       os.path.join(r'../resource', r'flugel/kugel.pdf')))
 
   def testGetPathNoBasedir(self):
     root = misc.GritNode()
     root.StartParsing(u'grit', None)
     root.HandleAttribute(u'latest_public_release', u'0')
     root.HandleAttribute(u'current_release', u'1')
-    root.HandleAttribute(u'base_dir', ur'..\resource')
+    root.HandleAttribute(u'base_dir', r'..\resource')
     release = misc.ReleaseNode()
     release.StartParsing(u'release', root)
     release.HandleAttribute(u'seq', u'1')
@@ -60,14 +60,16 @@ class IncludeNodeUnittest(unittest.TestCase):
     release.AddChild(includes)
     include_node = include.IncludeNode()
     include_node.StartParsing(u'include', includes)
-    include_node.HandleAttribute(u'file', ur'flugel\kugel.pdf')
+    include_node.HandleAttribute(u'file', r'flugel\kugel.pdf')
     include_node.HandleAttribute(u'use_base_dir', u'false')
     includes.AddChild(include_node)
     root.EndParsing()
 
+    last_dir = os.path.basename(os.getcwd())
+    expected_path = util.normpath(os.path.join(
+        u'..', last_dir, u'flugel/kugel.pdf'))
     self.assertEqual(root.ToRealPath(include_node.GetInputPath()),
-                     util.normpath(
-                       os.path.join(ur'../', ur'flugel/kugel.pdf')))
+                     expected_path)
 
   def testCompressGzip(self):
     root = util.ParseGrdForUnittest('''

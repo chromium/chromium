@@ -122,7 +122,6 @@ class NetworkFetcherWinHTTP
   int port_ = 0;
   std::string path_for_request_;
 
-  GURL final_url_;
   base::StringPiece16 verb_;
   base::StringPiece16 content_type_;
   WriteDataCallback write_data_callback_;

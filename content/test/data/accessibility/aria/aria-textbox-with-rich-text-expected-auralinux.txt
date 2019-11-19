@@ -1,0 +1,9 @@
+[document web] caret_offset=0
+++[entry] editable single-line selectable-text xml-roles:textbox caret_offset=0
+++++[heading] name='TextBox1' editable xml-roles:heading
+++++++[static] name='TextBox1' editable
+++[entry] editable multi-line selectable-text xml-roles:textbox
+++++[heading] name='TextBox2' editable xml-roles:heading
+++++++[static] name='TextBox2' editable
+++++[paragraph] editable
+++++++[static] name='Some text.' editable

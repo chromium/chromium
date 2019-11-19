@@ -12,7 +12,7 @@
 namespace syncer {
 
 FakeModelTypeControllerDelegate::FakeModelTypeControllerDelegate(ModelType type)
-    : type_(type), weak_ptr_factory_(this) {}
+    : type_(type) {}
 
 FakeModelTypeControllerDelegate::~FakeModelTypeControllerDelegate() {}
 

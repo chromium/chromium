@@ -27,8 +27,8 @@ import version
 '''Generate an extension manifest based on a template.'''
 
 def getChromeVersion(version_file):
-  values = version.fetch_values([version_file])
-  return version.subst_template('@MAJOR@.@MINOR@.@BUILD@.@PATCH@', values)
+  values = version.FetchValues([version_file])
+  return version.SubstTemplate('@MAJOR@.@MINOR@.@BUILD@.@PATCH@', values)
 
 
 def processJinjaTemplate(input_file, output_file, context):

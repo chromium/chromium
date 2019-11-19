@@ -87,7 +87,18 @@ const char* const kModelIdsBlacklistedForMediaFoundation[] = {
     // Sensoray 2253
     "1943:2253",
     // Dell E5440
-    "0c45:64d0", "0c45:64d2"};
+    "0c45:64d0", "0c45:64d2",
+    // Dell E7440
+    "1bcf:2985",
+    // Lenovo Thinkpad Model 20CG0006FMZ front and rear cameras, see
+    // also https://crbug.com/924528
+    "04ca:7047", "04ca:7048",
+    // HP Elitebook 840 G1
+    "04f2:b3ed", "04f2:b3ca", "05c8:035d", "05c8:0369",
+    // HP HD Camera. See https://crbug.com/1011888.
+    "04ca:7095",
+    // RBG/IR camera for Windows Hello Face Auth. See https://crbug.com/984864.
+    "13d3:5257"};
 
 const std::pair<VideoCaptureApi, std::vector<std::pair<GUID, GUID>>>
     kMfAttributes[] = {{VideoCaptureApi::WIN_MEDIA_FOUNDATION,
@@ -108,7 +119,7 @@ bool IsDeviceBlacklistedForQueryingDetailedFrameRates(
 
 bool IsDeviceBlacklistedForMediaFoundationByModelId(
     const std::string& model_id) {
-  return base::ContainsValue(kModelIdsBlacklistedForMediaFoundation, model_id);
+  return base::Contains(kModelIdsBlacklistedForMediaFoundation, model_id);
 }
 
 bool LoadMediaFoundationDlls() {
@@ -323,7 +334,7 @@ void GetDeviceSupportedFormatsMediaFoundation(const Descriptor& descriptor,
 
 bool IsEnclosureLocationSupported() {
   // DeviceInformation class is only available in Win10 onwards (v10.0.10240.0).
-  if (base::win::GetVersion() < base::win::VERSION_WIN10) {
+  if (base::win::GetVersion() < base::win::Version::WIN10) {
     DVLOG(1) << "DeviceInformation not supported before Windows 10";
     return false;
   }
@@ -353,8 +364,7 @@ bool VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation() {
 VideoCaptureDeviceFactoryWin::VideoCaptureDeviceFactoryWin()
     : use_media_foundation_(
           base::FeatureList::IsEnabled(media::kMediaFoundationVideoCapture)),
-      com_thread_("Windows Video Capture COM Thread"),
-      weak_ptr_factory_(this) {
+      com_thread_("Windows Video Capture COM Thread") {
   mf_enum_device_sources_func_ =
       PlatformSupportsMediaFoundation() ? MFEnumDeviceSources : nullptr;
   direct_show_enum_devices_func_ =

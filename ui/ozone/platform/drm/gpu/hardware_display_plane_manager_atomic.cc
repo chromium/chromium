@@ -7,6 +7,8 @@
 #include <sync/sync.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
+#include <memory>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/files/platform_file.h"
@@ -64,7 +66,7 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
     std::unique_ptr<gfx::GpuFence>* out_fence) {
   bool test_only = !page_flip_request;
   for (HardwareDisplayPlane* plane : plane_list->old_plane_list) {
-    if (!base::ContainsValue(plane_list->plane_list, plane)) {
+    if (!base::Contains(plane_list->plane_list, plane)) {
       // This plane is being released, so we need to zero it.
       plane->set_in_use(false);
       HardwareDisplayPlaneAtomic* atomic_plane =

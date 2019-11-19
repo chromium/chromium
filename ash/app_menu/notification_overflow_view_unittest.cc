@@ -39,7 +39,7 @@ class NotificationOverflowViewTest : public views::ViewsTestBase {
   void CheckNumberOfNotificationIcons(int expected_notification_icons) {
     int actual_notification_icons = 0;
     for (auto* v : notification_overflow_view_->GetChildrenInZOrder()) {
-      if (v->id() != kNotificationOverflowIconId)
+      if (v->GetID() != kNotificationOverflowIconId)
         continue;
 
       actual_notification_icons++;
@@ -50,7 +50,7 @@ class NotificationOverflowViewTest : public views::ViewsTestBase {
   // Returns whether the overflow icon is being shown.
   bool HasOverflowIcon() {
     for (auto* v : notification_overflow_view_->GetChildrenInZOrder()) {
-      if (v->id() != kOverflowIconId)
+      if (v->GetID() != kOverflowIconId)
         continue;
 
       return true;

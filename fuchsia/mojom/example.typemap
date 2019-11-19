@@ -1,0 +1,16 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+mojom = "//fuchsia/mojom/example.mojom"
+os_whitelist = [ "fuchsia" ]
+public_headers = [ "base/fuchsia/testfidl/cpp/fidl.h" ]
+traits_headers = [ "//fuchsia/mojom/test_interface_request_mojom_traits.h" ]
+sources = [
+  "//fuchsia/mojom/test_interface_request_mojom_traits.h",
+]
+public_deps = [
+  "//base:testfidl",
+  "//fuchsia/mojom:traits",
+]
+type_mappings = [ "fuchsia.test.mojom.TestInterfaceRequest=::fidl::InterfaceRequest<::base::fuchsia::testfidl::TestInterface>[move_only]" ]

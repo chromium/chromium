@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "components/guest_view/common/guest_view_constants.h"
 #include "components/guest_view/common/guest_view_messages.h"
 #include "components/guest_view/renderer/guest_view_request.h"
@@ -57,8 +56,7 @@ GuestViewContainer::GuestViewContainer(content::RenderFrame* render_frame)
       render_frame_(render_frame),
       in_destruction_(false),
       destruction_isolate_(nullptr),
-      element_resize_isolate_(nullptr),
-      weak_ptr_factory_(this) {
+      element_resize_isolate_(nullptr) {
   render_frame_lifetime_observer_.reset(
       new RenderFrameLifetimeObserver(this, render_frame_));
 }
@@ -248,8 +246,9 @@ void GuestViewContainer::DidResizeElement(const gfx::Size& new_size) {
   if (element_resize_callback_.IsEmpty())
     return;
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&GuestViewContainer::CallElementResizeCallback,
+  render_frame_->GetTaskRunner(blink::TaskType::kInternalDefault)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&GuestViewContainer::CallElementResizeCallback,
                                 weak_ptr_factory_.GetWeakPtr(), new_size));
 }
 

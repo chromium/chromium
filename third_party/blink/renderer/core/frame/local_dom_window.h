@@ -28,11 +28,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_DOM_WINDOW_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/events/page_transition_event.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/platform/bindings/trace_wrapper_member.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -62,7 +63,6 @@ class MessageEvent;
 class Modulator;
 class Navigator;
 class Screen;
-class ScriptedTaskQueueController;
 class ScriptPromise;
 class ScriptState;
 class ScrollToOptions;
@@ -71,14 +71,13 @@ class SerializedScriptValue;
 class SourceLocation;
 class StyleMedia;
 class TrustedTypePolicyFactory;
-class USVStringOrTrustedURL;
 class V8FrameRequestCallback;
 class V8IdleRequestCallback;
 class V8VoidFunction;
 
-enum PageshowEventPersistence {
-  kPageshowEventNotPersisted = 0,
-  kPageshowEventPersisted = 1
+enum PageTransitionEventPersistence {
+  kPageTransitionEventNotPersisted = 0,
+  kPageTransitionEventPersisted = 1
 };
 
 // Note: if you're thinking of returning something DOM-related by reference,
@@ -100,9 +99,6 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   static Document* CreateDocument(const String& mime_type,
                                   const DocumentInit&,
                                   bool force_xhtml);
-  static LocalDOMWindow* Create(LocalFrame& frame) {
-    return MakeGarbageCollected<LocalDOMWindow>(frame);
-  }
 
   static LocalDOMWindow* From(const ScriptState*);
 
@@ -222,12 +218,12 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Acessibility Object Model
   ScriptPromise getComputedAccessibleNode(ScriptState*, Element*);
 
-  ScriptedTaskQueueController* taskQueue() const;
-
   // WebKit animation extensions
   int requestAnimationFrame(V8FrameRequestCallback*);
   int webkitRequestAnimationFrame(V8FrameRequestCallback*);
   void cancelAnimationFrame(int id);
+  int requestPostAnimationFrame(V8FrameRequestCallback*);
+  void cancelPostAnimationFrame(int id);
 
   // https://html.spec.whatwg.org/C/#windoworworkerglobalscope-mixin
   void queueMicrotask(V8VoidFunction*);
@@ -250,11 +246,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   bool isSecureContext() const;
 
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(animationend, kAnimationend)
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(animationiteration, kAnimationiteration)
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(animationstart, kAnimationstart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(search, kSearch)
-  DEFINE_ATTRIBUTE_EVENT_LISTENER(transitionend, kTransitionend)
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(webkitanimationstart, kWebkitAnimationStart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(webkitanimationiteration,
@@ -272,7 +264,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   Element* frameElement() const;
 
   DOMWindow* open(v8::Isolate*,
-                  const USVStringOrTrustedURL& string_or_url,
+                  const String& url_string,
                   const AtomicString& target,
                   const String& features,
                   ExceptionState&);
@@ -283,13 +275,12 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   void DispatchPostMessage(
       MessageEvent* event,
-      scoped_refptr<UserGestureToken> token,
       scoped_refptr<const SecurityOrigin> intended_target_origin,
-      std::unique_ptr<SourceLocation>);
+      std::unique_ptr<SourceLocation> location);
 
   void DispatchMessageEventWithOriginCheck(
       const SecurityOrigin* intended_target_origin,
-      Event*,
+      MessageEvent*,
       std::unique_ptr<SourceLocation>);
 
   // Events
@@ -299,7 +290,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   using EventTarget::DispatchEvent;
   DispatchEventResult DispatchEvent(Event&, EventTarget*);
 
-  void FinishedLoading();
+  void FinishedLoading(FrameLoader::NavigationFinishState);
 
   // Dispatch the (deprecated) orientationchange event to this DOMWindow and
   // recurse on its child frames.
@@ -307,7 +298,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   void EnqueueWindowEvent(Event&, TaskType);
   void EnqueueDocumentEvent(Event&, TaskType);
-  void EnqueuePageshowEvent(PageshowEventPersistence);
+  void EnqueueNonPersistedPageshowEvent();
   void EnqueueHashchangeEvent(const String& old_url, const String& new_url);
   void EnqueuePopstateEvent(scoped_refptr<SerializedScriptValue>);
   void DispatchWindowLoadEvent();
@@ -317,6 +308,14 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void AcceptLanguagesChanged();
 
   TrustedTypePolicyFactory* trustedTypes() const;
+
+  void DispatchPersistedPageshowEvent(base::TimeTicks navigation_start);
+
+  void DispatchPagehideEvent(PageTransitionEventPersistence persistence) {
+    DispatchEvent(
+        *PageTransitionEvent::Create(event_type_names::kPagehide, persistence),
+        document_.Get());
+  }
 
  protected:
   // EventTarget overrides.
@@ -345,7 +344,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // Return the viewport size including scrollbars.
   IntSize GetViewportSize() const;
 
-  TraceWrapperMember<Document> document_;
+  Member<Document> document_;
   Member<DOMVisualViewport> visualViewport_;
   TaskRunnerTimer<LocalDOMWindow> unused_preloads_timer_;
 
@@ -360,14 +359,14 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   mutable Member<BarProp> scrollbars_;
   mutable Member<BarProp> statusbar_;
   mutable Member<BarProp> toolbar_;
-  mutable TraceWrapperMember<Navigator> navigator_;
+  mutable Member<Navigator> navigator_;
   mutable Member<StyleMedia> media_;
-  mutable TraceWrapperMember<CustomElementRegistry> custom_elements_;
+  mutable Member<CustomElementRegistry> custom_elements_;
   // We store reference to Modulator here to have it TraceWrapper-ed.
   // This is wrong, as Modulator is per-context, where as LocalDOMWindow is
   // shared among context. However, this *works* as Modulator is currently only
   // enabled in the main world,
-  TraceWrapperMember<Modulator> modulator_;
+  Member<Modulator> modulator_;
   Member<External> external_;
 
   String status_;

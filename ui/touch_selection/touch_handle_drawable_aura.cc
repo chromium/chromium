@@ -4,7 +4,6 @@
 
 #include "ui/touch_selection/touch_handle_drawable_aura.h"
 
-#include "services/ws/public/mojom/window_tree_constants.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/aura_extra/image_window_delegate.h"
@@ -69,7 +68,7 @@ TouchHandleDrawableAura::TouchHandleDrawableAura(aura::Window* parent)
   window_->SetTransparent(true);
   window_->Init(LAYER_TEXTURED);
   window_->set_owned_by_parent(false);
-  window_->SetEventTargetingPolicy(ws::mojom::EventTargetingPolicy::NONE);
+  window_->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
   parent->AddChild(window_.get());
 }
 

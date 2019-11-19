@@ -11,18 +11,6 @@
 
 namespace ui {
 
-namespace {
-
-// Tells us if WebKit was the last to write to the pasteboard. There's no
-// actual data associated with this type.
-NSString* const kWebSmartPastePboardType = @"NeXT smart paste pasteboard type";
-
-// Pepper custom data format type.
-NSString* const kPepperCustomDataPboardType =
-    @"org.chromium.pepper-custom-data";
-
-}  // namespace
-
 // ClipboardFormatType implementation.
 ClipboardFormatType::ClipboardFormatType() : data_(nil) {}
 

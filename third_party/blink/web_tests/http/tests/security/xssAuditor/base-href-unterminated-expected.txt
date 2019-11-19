@@ -1,3 +1,0 @@
-CONSOLE ERROR: line 4: The XSS Auditor refused to execute a script in 'http://localhost:8000/security/xssAuditor/resources/echo-head-base-href.pl?q=%3Cbase%20href=http://127.0.0.1:8000/security/xssAuditor/resources/base-href/' because its source code was found within the request. The server sent an 'X-XSS-Protection' header requesting this behavior.
-ALERT: This is a safe script.
-

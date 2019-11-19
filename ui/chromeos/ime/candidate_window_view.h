@@ -83,8 +83,6 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   // views::BubbleDialogDelegateView:
   const char* GetClassName() const override;
   int GetDialogButtons() const override;
-  void OnBeforeBubbleWidgetInit(views::Widget::InitParams* params,
-                                views::Widget* widget) const override;
 
   // Overridden from views::ButtonListener:
   void ButtonPressed(views::Button* sender, const ui::Event& event) override;

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import io
 import os
 import platform
@@ -17,9 +19,6 @@ import fieldtrial_util
 
 test_blacklist = [
   # These tests set their own field trials and should be ignored.
-  'lite_page.LitePage.testLitePageFallback',
-  'lofi.LoFi.testLoFiSlowConnection',
-  'lofi.LoFi.testLoFiIfHeavyFastConnection',
   'quic.Quic.testCheckPageWithQuicProxy',
   'quic.Quic.testCheckPageWithQuicProxyTransaction',
   'smoke.Smoke.testCheckPageWithHoldback',
@@ -52,7 +51,7 @@ def GetExperimentArgs():
 def GenerateTestSuites():
   """A generator function that yields non-blacklisted tests to run.
 
-  This function yeilds test suites each with a single test case whose id is not
+  This function yields test suites each with a single test case whose id is not
   blacklisted in the array at the top of this file.
 
   Yields:
@@ -105,15 +104,15 @@ def main():
       buffer=(not flags.disable_buffer))
     result = testRunner.run(test_suite)
     if result.wasSuccessful():
-      print 'ok'
+      print('ok')
     else:
-      print 'failed'
-      print buf.getvalue()
-      print 'To repeat this test, run: '
-      print "%s %s %s --test_filter=%s --browser_args='%s'" % (sys.executable,
-        os.path.join(os.path.dirname(__file__), 'run_all_tests.py'),
-        ' '.join(sys.argv[1:]), '.'.join(test_id.split('.')[1:]),
-        experiment_args)
+      print('failed')
+      print(buf.getvalue())
+      print('To repeat this test, run: ')
+      print("%s %s %s --test_filter=%s --browser_args='%s'" % (
+          sys.executable,
+          os.path.join(os.path.dirname(__file__), 'run_all_tests.py'), ' '.join(
+              sys.argv[1:]), '.'.join(test_id.split('.')[1:]), experiment_args))
       if flags.failfast:
         return
 

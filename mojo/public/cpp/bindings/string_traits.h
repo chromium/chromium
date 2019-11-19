@@ -12,8 +12,7 @@ namespace mojo {
 // This must be specialized for any type |T| to be serialized/deserialized as
 // a mojom string.
 //
-// Imagine you want to specialize it for CustomString, usually you need to
-// implement:
+// An example specialization for CustomString:
 //
 //   template <T>
 //   struct StringTraits<CustomString> {
@@ -21,31 +20,14 @@ namespace mojo {
 //     static bool IsNull(const CustomString& input);
 //     static void SetToNull(CustomString* output);
 //
-//     static size_t GetSize(const CustomString& input);
-//     static const char* GetData(const CustomString& input);
+//     // This doesn't need to be a base::StringPiece; it simply needs to be a
+//     // type that exposes a data() method that returns a pointer to the UTF-8
+//     // bytes and a size() method that returns the length of the UTF-8 bytes.
+//     static std::span<char> GetUTF8(const CustomString& input);
 //
 //     // The caller guarantees that |!input.is_null()|.
 //     static bool Read(StringDataView input, CustomString* output);
 //   };
-//
-// In some cases, you may need to do conversion before you can return the size
-// and data as 8-bit characters for serialization. (For example, CustomString is
-// UTF-16 string). In that case, you can add two optional methods:
-//
-//   static void* SetUpContext(const CustomString& input);
-//   static void TearDownContext(const CustomString& input, void* context);
-//
-// And then you append a second parameter, void* context, to GetSize() and
-// GetData():
-//
-//   static size_t GetSize(const CustomString& input, void* context);
-//   static const char* GetData(const CustomString& input, void* context);
-//
-// If a CustomString instance is not null, the serialization code will call
-// SetUpContext() at the beginning, and pass the resulting context pointer to
-// GetSize()/GetData(). After serialization is done, it calls TearDownContext()
-// so that you can do any necessary cleanup.
-//
 template <typename T>
 struct StringTraits {
   static_assert(internal::AlwaysFalse<T>::value,

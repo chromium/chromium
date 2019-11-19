@@ -12,8 +12,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "net/third_party/quic/core/quic_server_id.h"
-#include "net/third_party/quic/platform/api/quic_export.h"
+#include "net/third_party/quiche/src/quic/core/quic_server_id.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
 
 namespace net {
 
@@ -60,7 +60,7 @@ class QUIC_EXPORT_PRIVATE QuicServerInfo {
 
     void Clear();
 
-    // This class matches QuicClientCryptoConfig::CachedState.
+    // This class matches QuicCryptoClientConfig::CachedState.
     std::string server_config;         // A serialized handshake message.
     std::string source_address_token;  // An opaque proof of IP ownership.
     std::string cert_sct;              // Signed timestamp of the leaf cert.

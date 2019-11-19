@@ -10,6 +10,5 @@ blink_modules_sources("installedapp") {
     "installed_app_controller.h",
     "navigator_installed_app.cc",
     "navigator_installed_app.h",
-    "related_application.h",
   ]
 }

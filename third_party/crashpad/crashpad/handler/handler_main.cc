@@ -56,6 +56,10 @@
 #include "util/string/split_string.h"
 #include "util/synchronization/semaphore.h"
 
+#if defined(OS_CHROMEOS)
+#include "handler/linux/cros_crash_report_exception_handler.h"
+#endif
+
 #if defined(OS_LINUX) || defined(OS_ANDROID)
 #include <unistd.h>
 
@@ -85,6 +89,9 @@
 #elif defined(OS_FUCHSIA)
 #include <zircon/process.h>
 #include <zircon/processargs.h>
+
+#include <lib/zx/channel.h>
+#include <lib/zx/job.h>
 
 #include "handler/fuchsia/crash_report_exception_handler.h"
 #include "handler/fuchsia/exception_handler_server.h"
@@ -118,6 +125,9 @@ void Usage(const base::FilePath& me) {
 "                            Address_debug_critical_section\n"
 "                              use precreated data to register initial client\n"
 #endif  // OS_WIN
+#if defined(OS_ANDROID) || defined(OS_LINUX)
+"      --initial-client-fd=FD  a socket connected to a client.\n"
+#endif  // OS_ANDROID || OS_LINUX
 #if defined(OS_MACOSX)
 "      --mach-service=SERVICE  register SERVICE with the bootstrap server\n"
 #endif  // OS_MACOSX
@@ -141,14 +151,24 @@ void Usage(const base::FilePath& me) {
 "                              reset the server's exception handler to default\n"
 #endif  // OS_MACOSX
 #if defined(OS_LINUX) || defined(OS_ANDROID)
+"      --sanitization-information=SANITIZATION_INFORMATION_ADDRESS\n"
+"                              the address of a SanitizationInformation struct.\n"
+"      --shared-client-connection the file descriptor provided by\n"
+"                              --initial-client-fd is shared among multiple\n"
+"                              clients\n"
 "      --trace-parent-with-exception=EXCEPTION_INFORMATION_ADDRESS\n"
 "                              request a dump for the handler's parent process\n"
-"      --initial-client-fd=FD  a socket connected to a client.\n"
-"      --sanitization_information=SANITIZATION_INFORMATION_ADDRESS\n"
-"                              the address of a SanitizationInformation struct.\n"
 #endif  // OS_LINUX || OS_ANDROID
 "      --url=URL               send crash reports to this Breakpad server URL,\n"
 "                              only if uploads are enabled for the database\n"
+#if defined(OS_CHROMEOS)
+"      --use-cros-crash-reporter\n"
+"                              pass crash reports to /sbin/crash_reporter\n"
+"                              instead of storing them in the database\n"
+"      --minidump-dir-for-tests=TEST_MINIDUMP_DIR\n"
+"                              causes /sbin/crash_reporter to leave dumps in\n"
+"                              this directory instead of the normal location\n"
+#endif  // OS_CHROMEOS
 "      --help                  display this help and exit\n"
 "      --version               output version information and exit\n",
           me.value().c_str());
@@ -168,8 +188,9 @@ struct Options {
   bool reset_own_crash_exception_port_to_system_default;
 #elif defined(OS_LINUX) || defined(OS_ANDROID)
   VMAddress exception_information_address;
-  int initial_client_fd;
   VMAddress sanitization_information_address;
+  int initial_client_fd;
+  bool shared_client_connection;
 #elif defined(OS_WIN)
   std::string pipe_name;
   InitialClientData initial_client_data;
@@ -179,6 +200,10 @@ struct Options {
   bool periodic_tasks;
   bool rate_limit;
   bool upload_gzip;
+#if defined(OS_CHROMEOS)
+  bool use_cros_crash_reporter;
+  base::FilePath minidump_dir_for_tests;
+#endif  // OS_CHROMEOS
 };
 
 // Splits |key_value| on '=' and inserts the resulting key and value into |map|.
@@ -238,8 +263,6 @@ class CallMetricsRecordNormalExit {
 
 #if defined(OS_MACOSX) || defined(OS_LINUX) || defined(OS_ANDROID)
 
-Signals::OldActions g_old_crash_signal_handlers;
-
 void HandleCrashSignal(int sig, siginfo_t* siginfo, void* context) {
   MetricsRecordExit(Metrics::LifetimeMilestone::kCrashed);
 
@@ -274,9 +297,7 @@ void HandleCrashSignal(int sig, siginfo_t* siginfo, void* context) {
   }
   Metrics::HandlerCrashed(metrics_code);
 
-  struct sigaction* old_action =
-      g_old_crash_signal_handlers.ActionForSignal(sig);
-  Signals::RestoreHandlerAndReraiseSignalOnReturn(siginfo, old_action);
+  Signals::RestoreHandlerAndReraiseSignalOnReturn(siginfo, nullptr);
 }
 
 void HandleTerminateSignal(int sig, siginfo_t* siginfo, void* context) {
@@ -284,13 +305,13 @@ void HandleTerminateSignal(int sig, siginfo_t* siginfo, void* context) {
   Signals::RestoreHandlerAndReraiseSignalOnReturn(siginfo, nullptr);
 }
 
-#if defined(OS_MACOSX)
-
 void ReinstallCrashHandler() {
   // This is used to re-enable the metrics-recording crash handler after
   // MonitorSelf() sets up a Crashpad exception handler. On macOS, the
   // metrics-recording handler uses signals and the Crashpad handler uses Mach
   // exceptions, so there’s nothing to re-enable.
+  // On Linux, the signal handler installed by StartHandler() restores the
+  // previously installed signal handler by default.
 }
 
 void InstallCrashHandler() {
@@ -299,6 +320,8 @@ void InstallCrashHandler() {
   // Not a crash handler, but close enough.
   Signals::InstallTerminateHandlers(HandleTerminateSignal, 0, nullptr);
 }
+
+#if defined(OS_MACOSX)
 
 struct ResetSIGTERMTraits {
   static struct sigaction* InvalidValue() {
@@ -322,21 +345,6 @@ void HandleSIGTERM(int sig, siginfo_t* siginfo, void* context) {
 
   DCHECK(g_exception_handler_server);
   g_exception_handler_server->Stop();
-}
-
-#else
-
-void ReinstallCrashHandler() {
-  // This is used to re-enable the metrics-recording crash handler after
-  // MonitorSelf() sets up a Crashpad signal handler.
-  Signals::InstallCrashHandlers(
-      HandleCrashSignal, 0, &g_old_crash_signal_handlers);
-}
-
-void InstallCrashHandler() {
-  ReinstallCrashHandler();
-
-  Signals::InstallTerminateHandlers(HandleTerminateSignal, 0, nullptr);
 }
 
 #endif  // OS_MACOSX
@@ -448,7 +456,7 @@ void MonitorSelf(const Options& options) {
   // instance of crashpad_handler to be writing metrics at a time, and it should
   // be the primary instance.
   CrashpadClient crashpad_client;
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_ANDROID)
   if (!crashpad_client.StartHandlerAtCrash(executable_path,
                                            options.database,
                                            base::FilePath(),
@@ -497,21 +505,15 @@ class ScopedStoppable {
 
 }  // namespace
 
-#if defined(OS_ANDROID)
-
-extern "C" {
-__attribute__((visibility("default"), used)) int CrashpadHandlerMain(
-    int argc,
-    char* argv[]) {
-  return HandlerMain(argc, argv, nullptr);
-}
-}  // extern "C"
-
-#endif  // OS_ANDROID
-
 int HandlerMain(int argc,
                 char* argv[],
                 const UserStreamDataSources* user_stream_sources) {
+#if defined(OS_CHROMEOS)
+  if (freopen("/var/log/chrome/chrome", "a", stderr) == nullptr) {
+    PLOG(ERROR) << "Failed to redirect stderr to /var/log/chrome/chrome";
+  }
+#endif
+
   InstallCrashHandler();
   CallMetricsRecordNormalExit metrics_record_normal_exit;
 
@@ -530,6 +532,9 @@ int HandlerMain(int argc,
 #if defined(OS_WIN)
     kOptionInitialClientData,
 #endif  // OS_WIN
+#if defined(OS_ANDROID) || defined(OS_LINUX)
+    kOptionInitialClientFD,
+#endif  // OS_ANDROID || OS_LINUX
 #if defined(OS_MACOSX)
     kOptionMachService,
 #endif  // OS_MACOSX
@@ -548,11 +553,15 @@ int HandlerMain(int argc,
     kOptionResetOwnCrashExceptionPortToSystemDefault,
 #endif  // OS_MACOSX
 #if defined(OS_LINUX) || defined(OS_ANDROID)
-    kOptionTraceParentWithException,
-    kOptionInitialClientFD,
     kOptionSanitizationInformation,
+    kOptionSharedClientConnection,
+    kOptionTraceParentWithException,
 #endif
     kOptionURL,
+#if defined(OS_CHROMEOS)
+    kOptionUseCrosCrashReporter,
+    kOptionMinidumpDirForTests,
+#endif  // OS_CHROMEOS
 
     // Standard options.
     kOptionHelp = -2,
@@ -571,6 +580,9 @@ int HandlerMain(int argc,
      nullptr,
      kOptionInitialClientData},
 #endif  // OS_MACOSX
+#if defined(OS_ANDROID) || defined(OS_LINUX)
+    {"initial-client-fd", required_argument, nullptr, kOptionInitialClientFD},
+#endif  // OS_ANDROID || OS_LINUX
 #if defined(OS_MACOSX)
     {"mach-service", required_argument, nullptr, kOptionMachService},
 #endif  // OS_MACOSX
@@ -601,17 +613,30 @@ int HandlerMain(int argc,
      kOptionResetOwnCrashExceptionPortToSystemDefault},
 #endif  // OS_MACOSX
 #if defined(OS_LINUX) || defined(OS_ANDROID)
-    {"trace-parent-with-exception",
-     required_argument,
-     nullptr,
-     kOptionTraceParentWithException},
-    {"initial-client-fd", required_argument, nullptr, kOptionInitialClientFD},
     {"sanitization-information",
      required_argument,
      nullptr,
      kOptionSanitizationInformation},
+    {"shared-client-connection",
+     no_argument,
+     nullptr,
+     kOptionSharedClientConnection},
+    {"trace-parent-with-exception",
+     required_argument,
+     nullptr,
+     kOptionTraceParentWithException},
 #endif  // OS_LINUX || OS_ANDROID
     {"url", required_argument, nullptr, kOptionURL},
+#if defined(OS_CHROMEOS)
+    {"use-cros-crash-reporter",
+      no_argument,
+      nullptr,
+      kOptionUseCrosCrashReporter},
+    {"minidump_dir_for_tests",
+      required_argument,
+      nullptr,
+      kOptionMinidumpDirForTests},
+#endif  // OS_CHROMEOS
     {"help", no_argument, nullptr, kOptionHelp},
     {"version", no_argument, nullptr, kOptionVersion},
     {nullptr, 0, nullptr, 0},
@@ -622,14 +647,12 @@ int HandlerMain(int argc,
   options.handshake_fd = -1;
 #endif
   options.identify_client_via_url = true;
+#if defined(OS_LINUX) || defined(OS_ANDROID)
+  options.initial_client_fd = kInvalidFileHandle;
+#endif
   options.periodic_tasks = true;
   options.rate_limit = true;
   options.upload_gzip = true;
-#if defined(OS_LINUX) || defined(OS_ANDROID)
-  options.exception_information_address = 0;
-  options.initial_client_fd = kInvalidFileHandle;
-  options.sanitization_information_address = 0;
-#endif
 
   int opt;
   while ((opt = getopt_long(argc, argv, "", long_options, nullptr)) != -1) {
@@ -670,6 +693,15 @@ int HandlerMain(int argc,
         break;
       }
 #endif  // OS_WIN
+#if defined(OS_ANDROID) || defined(OS_LINUX)
+      case kOptionInitialClientFD: {
+        if (!base::StringToInt(optarg, &options.initial_client_fd)) {
+          ToolSupport::UsageHint(me, "failed to parse --initial-client-fd");
+          return ExitFailure();
+        }
+        break;
+      }
+#endif  // OS_ANDROID || OS_LINUX
       case kOptionMetrics: {
         options.metrics_dir = base::FilePath(
             ToolSupport::CommandLineArgumentToFilePathStringType(optarg));
@@ -720,21 +752,6 @@ int HandlerMain(int argc,
       }
 #endif  // OS_MACOSX
 #if defined(OS_LINUX) || defined(OS_ANDROID)
-      case kOptionTraceParentWithException: {
-        if (!StringToNumber(optarg, &options.exception_information_address)) {
-          ToolSupport::UsageHint(
-              me, "failed to parse --trace-parent-with-exception");
-          return ExitFailure();
-        }
-        break;
-      }
-      case kOptionInitialClientFD: {
-        if (!base::StringToInt(optarg, &options.initial_client_fd)) {
-          ToolSupport::UsageHint(me, "failed to parse --initial-client-fd");
-          return ExitFailure();
-        }
-        break;
-      }
       case kOptionSanitizationInformation: {
         if (!StringToNumber(optarg,
                             &options.sanitization_information_address)) {
@@ -744,11 +761,34 @@ int HandlerMain(int argc,
         }
         break;
       }
+      case kOptionSharedClientConnection: {
+        options.shared_client_connection = true;
+        break;
+      }
+      case kOptionTraceParentWithException: {
+        if (!StringToNumber(optarg, &options.exception_information_address)) {
+          ToolSupport::UsageHint(
+              me, "failed to parse --trace-parent-with-exception");
+          return ExitFailure();
+        }
+        break;
+      }
 #endif  // OS_LINUX || OS_ANDROID
       case kOptionURL: {
         options.url = optarg;
         break;
       }
+#if defined(OS_CHROMEOS)
+      case kOptionUseCrosCrashReporter: {
+        options.use_cros_crash_reporter = true;
+        break;
+      }
+      case kOptionMinidumpDirForTests: {
+        options.minidump_dir_for_tests = base::FilePath(
+            ToolSupport::CommandLineArgumentToFilePathStringType(optarg));
+        break;
+      }
+#endif  // OS_CHROMEOS
       case kOptionHelp: {
         Usage(me);
         MetricsRecordExit(Metrics::LifetimeMilestone::kExitedEarly);
@@ -793,7 +833,7 @@ int HandlerMain(int argc,
   if (!options.exception_information_address &&
       options.initial_client_fd == kInvalidFileHandle) {
     ToolSupport::UsageHint(
-        me, "--trace-parent-with-exception or --initial_client_fd is required");
+        me, "--trace-parent-with-exception or --initial-client-fd is required");
     return ExitFailure();
   }
   if (options.sanitization_information_address &&
@@ -801,6 +841,12 @@ int HandlerMain(int argc,
     ToolSupport::UsageHint(
         me,
         "--sanitization_information requires --trace-parent-with-exception");
+    return ExitFailure();
+  }
+  if (options.shared_client_connection &&
+      options.initial_client_fd == kInvalidFileHandle) {
+    ToolSupport::UsageHint(
+        me, "--shared-client-connection requires --initial-client-fd");
     return ExitFailure();
   }
 #endif  // OS_MACOSX
@@ -868,7 +914,33 @@ int HandlerMain(int argc,
     upload_thread.Get()->Start();
   }
 
-  CrashReportExceptionHandler exception_handler(
+#if defined(OS_LINUX) || defined(OS_ANDROID)
+  std::unique_ptr<ExceptionHandlerServer::Delegate> exception_handler;
+#else
+  std::unique_ptr<CrashReportExceptionHandler> exception_handler;
+#endif
+
+#if defined(OS_CHROMEOS)
+  if (options.use_cros_crash_reporter) {
+    auto cros_handler = std::make_unique<CrosCrashReportExceptionHandler>(
+        database.get(),
+        &options.annotations,
+        user_stream_sources);
+
+    if (!options.minidump_dir_for_tests.empty()) {
+      cros_handler->SetDumpDir(options.minidump_dir_for_tests);
+    }
+
+    exception_handler = std::move(cros_handler);
+  } else {
+    exception_handler = std::make_unique<CrashReportExceptionHandler>(
+        database.get(),
+        static_cast<CrashReportUploadThread*>(upload_thread.Get()),
+        &options.annotations,
+        user_stream_sources);
+  }
+#else
+  exception_handler = std::make_unique<CrashReportExceptionHandler>(
       database.get(),
       static_cast<CrashReportUploadThread*>(upload_thread.Get()),
       &options.annotations,
@@ -877,15 +949,17 @@ int HandlerMain(int argc,
       nullptr,
 #endif
       user_stream_sources);
+#endif  // OS_CHROMEOS
 
- #if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_ANDROID)
   if (options.exception_information_address) {
-    ClientInformation info;
+    ExceptionHandlerProtocol::ClientInformation info;
     info.exception_information_address = options.exception_information_address;
     info.sanitization_information_address =
         options.sanitization_information_address;
-    return exception_handler.HandleException(getppid(), info) ? EXIT_SUCCESS
-                                                              : ExitFailure();
+    return exception_handler->HandleException(getppid(), geteuid(), info)
+               ? EXIT_SUCCESS
+               : ExitFailure();
   }
 #endif  // OS_LINUX || OS_ANDROID
 
@@ -957,18 +1031,18 @@ int HandlerMain(int argc,
   // crashpad_handler.
   zx::job root_job(zx_take_startup_handle(PA_HND(PA_USER0, 0)));
   if (!root_job.is_valid()) {
-    LOG(ERROR) << "no process handle passed in startup handle 0";
+    LOG(ERROR) << "no job handle passed in startup handle 0";
     return EXIT_FAILURE;
   }
 
-  zx::port exception_port(zx_take_startup_handle(PA_HND(PA_USER0, 1)));
-  if (!exception_port.is_valid()) {
-    LOG(ERROR) << "no exception port handle passed in startup handle 1";
+  zx::channel exception_channel(zx_take_startup_handle(PA_HND(PA_USER0, 1)));
+  if (!exception_channel.is_valid()) {
+    LOG(ERROR) << "no exception channel handle passed in startup handle 1";
     return EXIT_FAILURE;
   }
 
   ExceptionHandlerServer exception_handler_server(std::move(root_job),
-                                                  std::move(exception_port));
+                                                  std::move(exception_channel));
 #elif defined(OS_LINUX) || defined(OS_ANDROID)
   ExceptionHandlerServer exception_handler_server;
 #endif  // OS_MACOSX
@@ -989,17 +1063,18 @@ int HandlerMain(int argc,
 #if defined(OS_WIN)
   if (options.initial_client_data.IsValid()) {
     exception_handler_server.InitializeWithInheritedDataForInitialClient(
-        options.initial_client_data, &exception_handler);
+        options.initial_client_data, exception_handler.get());
   }
 #elif defined(OS_LINUX) || defined(OS_ANDROID)
   if (options.initial_client_fd == kInvalidFileHandle ||
-             !exception_handler_server.InitializeWithClient(
-                 ScopedFileHandle(options.initial_client_fd))) {
+      !exception_handler_server.InitializeWithClient(
+          ScopedFileHandle(options.initial_client_fd),
+          options.shared_client_connection)) {
     return ExitFailure();
   }
 #endif  // OS_WIN
 
-  exception_handler_server.Run(&exception_handler);
+  exception_handler_server.Run(exception_handler.get());
 
   return EXIT_SUCCESS;
 }

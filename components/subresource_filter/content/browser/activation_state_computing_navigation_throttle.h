@@ -10,8 +10,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -97,8 +95,6 @@ class ActivationStateComputingNavigationThrottle
   // This must be called at the end of the WillProcessResponse stage.
   void UpdateWithMoreAccurateState();
 
-  void LogDelayMetrics(base::TimeDelta delay) const;
-
   ActivationStateComputingNavigationThrottle(
       content::NavigationHandle* navigation_handle,
       const base::Optional<mojom::ActivationState> parent_activation_state,
@@ -113,9 +109,8 @@ class ActivationStateComputingNavigationThrottle
   // nullptr until NotifyPageActivationWithRuleset is called.
   VerifiedRuleset::Handle* ruleset_handle_;
 
-  // Will be set when DEFER is called in WillProcessResponse. If nullptr, not
-  // deferred.
-  std::unique_ptr<base::ElapsedTimer> defer_timer_;
+  // Will be set to true when DEFER is called in WillProcessResponse.
+  bool deferred_ = false;
 
   // Will become true when the throttle manager reaches ReadyToCommitNavigation.
   // Makes sure a caller cannot take ownership of the subresource filter unless
@@ -124,7 +119,7 @@ class ActivationStateComputingNavigationThrottle
   bool will_send_activation_to_renderer_ = false;
 
   base::WeakPtrFactory<ActivationStateComputingNavigationThrottle>
-      weak_ptr_factory_;
+      weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ActivationStateComputingNavigationThrottle);
 };

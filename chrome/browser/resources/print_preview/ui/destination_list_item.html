@@ -1,0 +1,105 @@
+
+    <style include="cr-hidden-style">
+      :host {
+        align-items: center;
+        cursor: default;
+        display: flex;
+        font-size: calc(12/13 * 1em);
+        min-height: var(--destination-item-height);
+        opacity: .87;
+        padding-bottom: 2px;
+        padding-inline-end: 2px;
+        padding-inline-start: 14px;
+        padding-top: 2px;
+        vertical-align: middle;
+      }
+
+      :host > * {
+        align-items: center;
+        color: var(--cr-secondary-text-color);
+        font-size: calc(10/12 * 1em);
+        margin-inline-start: 1em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        vertical-align: middle;
+        white-space: nowrap;
+      }
+
+      iron-icon {
+        fill: var(--google-grey-600);
+        flex: 0;
+        height: 20px;
+        margin-inline-end: 12px;
+        min-width: 20px;
+        transition: opacity 150ms;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        iron-icon {
+          fill: var(--google-grey-refresh-500);
+        }
+      }
+
+      .name {
+        color: var(--cr-primary-text-color);
+        font-size: 1em;
+        margin-inline-start: 0;
+      }
+
+      .extension-controlled-indicator {
+        display: flex;
+        flex: 1;
+        justify-content: flex-end;
+        min-width: 150px;
+      }
+
+      .extension-icon {
+        height: 24px;
+        margin-inline-start: 1em;
+        width: 24px;
+      }
+
+      .configuring-failed-text {
+        color: var(--google-red-600);
+        font-style: italic;
+      }
+
+      :host([stale_]) :-webkit-any(iron-icon, .name, .connection-status) {
+        opacity: 0.4;
+      }
+    </style>
+    <iron-icon icon$="[[destination.icon]]"></iron-icon>
+    <span class="name searchable">[[destination.displayName]]</span>
+    <span class="search-hint searchable">[[searchHint_]]</span>
+    <span class="connection-status"
+        hidden$="[[!destination.isOfflineOrInvalid]]">
+      [[destination.connectionStatusText]]
+    </span>
+    <a href="$i18n{gcpCertificateErrorLearnMoreURL}"
+        target="_blank" class="learn-more-link"
+        hidden$="[[!destination.shouldShowInvalidCertificateError]]">
+      $i18n{learnMore}
+    </a>
+    <span class="extension-controlled-indicator"
+        hidden$="[[!destination.isExtension]]">
+      <span class="extension-name searchable">
+        [[destination.extensionName]]
+      </span>
+      <span class="extension-icon" role="button" tabindex="0"
+          title="[[getExtensionPrinterTooltip_(destination)]]"></span>
+    </span>
+<if expr="chromeos">
+    <span class="configuring-in-progress-text"
+      hidden$="[[!checkConfigurationStatus_(statusEnum_.IN_PROGRESS,
+                                            configurationStatus_)]]">
+      $i18n{configuringInProgressText}
+      <span class="configuring-text-jumping-dots">
+        <span>.</span><span>.</span><span>.</span>
+      </span>
+    </span>
+    <span class="configuring-failed-text"
+      hidden$="[[!checkConfigurationStatus_(statusEnum_.FAILED,
+                                            configurationStatus_)]]">
+      $i18n{configuringFailedText}
+    </span>
+</if>

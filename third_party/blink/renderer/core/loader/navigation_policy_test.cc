@@ -37,6 +37,7 @@
 #include "third_party/blink/public/web/web_window_features.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/page/create_window.h"
 
 namespace blink {
 
@@ -213,6 +214,75 @@ TEST_F(NavigationPolicyTest, NoMenuBarForcesPopup) {
   features.menu_bar_visible = true;
   EXPECT_EQ(kNavigationPolicyNewForegroundTab,
             NavigationPolicyForCreateWindow(features));
+}
+
+TEST_F(NavigationPolicyTest, NoOpener) {
+  static const struct {
+    const char* feature_string;
+    NavigationPolicy policy;
+  } kCases[] = {
+      {"", kNavigationPolicyNewForegroundTab},
+      {"something", kNavigationPolicyNewPopup},
+      {"something, something", kNavigationPolicyNewPopup},
+      {"notnoopener", kNavigationPolicyNewPopup},
+      {"noopener", kNavigationPolicyNewForegroundTab},
+      {"something, noopener", kNavigationPolicyNewPopup},
+      {"noopener, something", kNavigationPolicyNewPopup},
+      {"NoOpEnEr", kNavigationPolicyNewForegroundTab},
+  };
+
+  for (const auto& test : kCases) {
+    EXPECT_EQ(test.policy,
+              NavigationPolicyForCreateWindow(
+                  GetWindowFeaturesFromString(test.feature_string)))
+        << "Testing '" << test.feature_string << "'";
+  }
+}
+
+TEST_F(NavigationPolicyTest, NoOpenerAndNoReferrer) {
+  static const struct {
+    const char* feature_string;
+    NavigationPolicy policy;
+  } kCases[] = {
+      {"", kNavigationPolicyNewForegroundTab},
+      {"noopener, noreferrer", kNavigationPolicyNewForegroundTab},
+      {"noopener, notreferrer", kNavigationPolicyNewPopup},
+      {"notopener, noreferrer", kNavigationPolicyNewPopup},
+      {"something, noopener, noreferrer", kNavigationPolicyNewPopup},
+      {"noopener, noreferrer, something", kNavigationPolicyNewPopup},
+      {"noopener, something, noreferrer", kNavigationPolicyNewPopup},
+      {"NoOpEnEr, NoReFeRrEr", kNavigationPolicyNewForegroundTab},
+  };
+
+  for (const auto& test : kCases) {
+    EXPECT_EQ(test.policy,
+              NavigationPolicyForCreateWindow(
+                  GetWindowFeaturesFromString(test.feature_string)))
+        << "Testing '" << test.feature_string << "'";
+  }
+}
+
+TEST_F(NavigationPolicyTest, NoReferrer) {
+  static const struct {
+    const char* feature_string;
+    NavigationPolicy policy;
+  } kCases[] = {
+      {"", kNavigationPolicyNewForegroundTab},
+      {"something", kNavigationPolicyNewPopup},
+      {"something, something", kNavigationPolicyNewPopup},
+      {"notreferrer", kNavigationPolicyNewPopup},
+      {"noreferrer", kNavigationPolicyNewForegroundTab},
+      {"something, noreferrer", kNavigationPolicyNewPopup},
+      {"noreferrer, something", kNavigationPolicyNewPopup},
+      {"NoReFeRrEr", kNavigationPolicyNewForegroundTab},
+  };
+
+  for (const auto& test : kCases) {
+    EXPECT_EQ(test.policy,
+              NavigationPolicyForCreateWindow(
+                  GetWindowFeaturesFromString(test.feature_string)))
+        << "Testing '" << test.feature_string << "'";
+  }
 }
 
 TEST_F(NavigationPolicyTest, NotResizableForcesPopup) {

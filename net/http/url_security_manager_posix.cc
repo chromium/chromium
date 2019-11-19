@@ -12,7 +12,7 @@ namespace net {
 
 // static
 std::unique_ptr<URLSecurityManager> URLSecurityManager::Create() {
-  return std::make_unique<URLSecurityManagerWhitelist>();
+  return std::make_unique<URLSecurityManagerAllowlist>();
 }
 
 }  //  namespace net

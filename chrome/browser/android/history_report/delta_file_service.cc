@@ -78,8 +78,9 @@ namespace history_report {
 using content::BrowserThread;
 
 DeltaFileService::DeltaFileService(const base::FilePath& dir)
-    : task_runner_(base::CreateSequencedTaskRunnerWithTraits(
-          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+    : task_runner_(base::CreateSequencedTaskRunner(
+          {base::ThreadPool(), base::MayBlock(),
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
       delta_file_backend_(new DeltaFileBackend(dir)) {
   base::trace_event::MemoryDumpManager::GetInstance()
       ->RegisterDumpProviderWithSequencedTaskRunner(
@@ -89,9 +90,9 @@ DeltaFileService::DeltaFileService(const base::FilePath& dir)
 
 DeltaFileService::~DeltaFileService() {
   // Unregister should happen on task runner.
-  task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&DeltaFileServiceDoUnregisterMDP,
-                                base::Passed(std::move(delta_file_backend_))));
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&DeltaFileServiceDoUnregisterMDP,
+                                        std::move(delta_file_backend_)));
 }
 
 void DeltaFileService::PageAdded(const GURL& url) {

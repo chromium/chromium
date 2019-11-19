@@ -101,7 +101,7 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
   std::vector<MediaSinkInternal> cast_sinks_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<CastMediaSinkService> weak_ptr_factory_;
+  base::WeakPtrFactory<CastMediaSinkService> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(CastMediaSinkService);
 };

@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "net/base/completion_callback.h"
 
 namespace network {
 class SimpleURLLoader;

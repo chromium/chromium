@@ -11,7 +11,9 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.ChromeVersionInfo;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.webapk.lib.client.WebApkIdentityServiceClient;
 import org.chromium.webapk.lib.client.WebApkValidator;
 
@@ -19,6 +21,9 @@ import org.chromium.webapk.lib.client.WebApkValidator;
  * Contains functionality needed for Chrome to host WebAPKs.
  */
 public class ChromeWebApkHost {
+    /** Time in milliseconds to wait for {@link WebApkServiceClient} to finish. */
+    private static final long WAIT_FOR_WORK_DISCONNECT_SERVICE_DELAY_MS = 1000;
+
     private static ApplicationStatus.ApplicationStateListener sListener;
 
     public static void init() {
@@ -47,9 +52,7 @@ public class ChromeWebApkHost {
                 public void onApplicationStateChange(int newState) {
                     if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES
                             || newState == ApplicationState.HAS_DESTROYED_ACTIVITIES) {
-                        WebApkIdentityServiceClient.disconnectAll(
-                                ContextUtils.getApplicationContext());
-                        WebApkServiceClient.disconnectAll();
+                        disconnectFromAllServices(false /* waitForPendingWork */);
 
                         ApplicationStatus.unregisterApplicationStateListener(sListener);
                         sListener = null;
@@ -59,7 +62,24 @@ public class ChromeWebApkHost {
             ApplicationStatus.registerApplicationStateListener(sListener);
         }
 
-        WebApkIdentityServiceClient.getInstance().checkBrowserBacksWebApkAsync(
-                ContextUtils.getApplicationContext(), webApkPackageName, callback);
+        WebApkIdentityServiceClient.getInstance(UiThreadTaskTraits.DEFAULT)
+                .checkBrowserBacksWebApkAsync(
+                        ContextUtils.getApplicationContext(), webApkPackageName, callback);
+    }
+
+    /** Disconnect from all of the services of all WebAPKs. */
+    public static void disconnectFromAllServices(boolean waitForPendingWork) {
+        if (waitForPendingWork && WebApkServiceClient.hasPendingWork()) {
+            PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+                    ChromeWebApkHost::disconnectFromAllServicesImpl,
+                    WAIT_FOR_WORK_DISCONNECT_SERVICE_DELAY_MS);
+        } else {
+            disconnectFromAllServicesImpl();
+        }
+    }
+
+    private static void disconnectFromAllServicesImpl() {
+        WebApkIdentityServiceClient.disconnectAll(ContextUtils.getApplicationContext());
+        WebApkServiceClient.disconnectAll();
     }
 }

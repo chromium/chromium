@@ -2,10 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {isMac} from 'chrome://resources/js/cr.m.js';
+import {TestCommandManager} from 'chrome://test/bookmarks/test_command_manager.js';
+import {TestStore} from 'chrome://test/bookmarks/test_store.js';
+import {Command} from 'chrome://bookmarks/bookmarks.js';
+import {createFolder, createItem, getAllFoldersOpenState, replaceBody, testTree} from 'chrome://test/bookmarks/test_util.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+
 suite('<bookmarks-toolbar>', function() {
   let toolbar;
   let store;
-  let commandManager;
+  let testCommandManager;
 
   suiteSetup(function() {
     chrome.bookmarkManagerPrivate.removeTrees = function() {};
@@ -24,7 +32,7 @@ suite('<bookmarks-toolbar>', function() {
             createItem('62'),
           ]),
     ]));
-    store = new bookmarks.TestStore({
+    store = new TestStore({
       nodes: nodes,
       folderOpenState: getAllFoldersOpenState(nodes),
       selection: {
@@ -37,8 +45,8 @@ suite('<bookmarks-toolbar>', function() {
     toolbar = document.createElement('bookmarks-toolbar');
     replaceBody(toolbar);
 
-    commandManager = new TestCommandManager();
-    document.body.appendChild(commandManager);
+    testCommandManager = new TestCommandManager();
+    document.body.appendChild(testCommandManager.getCommandManager());
   });
 
   test('selecting multiple items shows toolbar overlay', function() {
@@ -64,12 +72,12 @@ suite('<bookmarks-toolbar>', function() {
     store.data.selection.items = new Set(['2', '3']);
     store.notifyObservers();
 
-    Polymer.dom.flush();
+    flush();
     const button = toolbar.$$('cr-toolbar-selection-overlay').deleteButton;
     assertFalse(button.disabled);
-    MockInteractions.tap(button);
+    button.click();
 
-    commandManager.assertLastCommand(Command.DELETE, ['2', '3']);
+    testCommandManager.assertLastCommand(Command.DELETE, ['2', '3']);
   });
 
   test('commands do not trigger from the search field', function() {
@@ -77,17 +85,17 @@ suite('<bookmarks-toolbar>', function() {
     store.notifyObservers();
 
     const input = toolbar.$$('cr-toolbar').getSearchField().getSearchInput();
-    const modifier = cr.isMac ? 'meta' : 'ctrl';
-    MockInteractions.pressAndReleaseKeyOn(input, 67, modifier, 'c');
+    const modifier = isMac ? 'meta' : 'ctrl';
+    pressAndReleaseKeyOn(input, 67, modifier, 'c');
 
-    commandManager.assertLastCommand(null);
+    testCommandManager.assertLastCommand(null);
   });
 
   test('delete button is disabled when items are unmodifiable', function() {
     store.data.nodes['3'].unmodifiable = 'managed';
     store.data.selection.items = new Set(['2', '3']);
     store.notifyObservers();
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(toolbar.showSelectionOverlay);
     assertTrue(

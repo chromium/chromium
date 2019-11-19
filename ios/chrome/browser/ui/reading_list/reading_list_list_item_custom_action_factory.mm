@@ -55,11 +55,6 @@
 
 - (NSArray<UIAccessibilityCustomAction*>*)customActionsForItem:
     (id<ReadingListListItem>)item {
-  ReadingListCustomAction* deleteAction = [[ReadingListCustomAction alloc]
-      initWithName:l10n_util::GetNSString(IDS_IOS_READING_LIST_DELETE_BUTTON)
-            target:self
-          selector:@selector(deleteItem:)
-              item:item];
   ReadingListCustomAction* toggleReadStatus = nil;
   if ([self.accessibilityDelegate isItemRead:item]) {
     toggleReadStatus = [[ReadingListCustomAction alloc]
@@ -97,7 +92,7 @@
               item:item];
 
   NSMutableArray* customActions = [NSMutableArray
-      arrayWithObjects:deleteAction, toggleReadStatus, openInNewTabAction,
+      arrayWithObjects:toggleReadStatus, openInNewTabAction,
                        openInNewIncognitoTabAction, copyURLAction, nil];
 
   if (item.distillationState == ReadingListUIDistillationStatusSuccess) {
@@ -115,11 +110,6 @@
   }
 
   return customActions;
-}
-
-- (BOOL)deleteItem:(ReadingListCustomAction*)action {
-  [self.accessibilityDelegate deleteItem:action.item];
-  return YES;
 }
 
 - (BOOL)markRead:(ReadingListCustomAction*)action {

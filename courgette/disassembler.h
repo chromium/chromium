@@ -115,7 +115,12 @@ class Disassembler : public AddressTranslator {
   bool Good();
   bool Bad(const char *reason);
 
-  // Returns true if the array lies within our memory region.
+  // Returns true if the given range lies within our memory region.
+  bool IsRangeInBounds(size_t offset, size_t size) {
+    return offset <= length() && size <= length() - offset;
+  }
+
+  // Returns true if the given array lies within our memory region.
   bool IsArrayInBounds(size_t offset, size_t elements, size_t element_size) {
     return offset <= length() && elements <= (length() - offset) / element_size;
   }

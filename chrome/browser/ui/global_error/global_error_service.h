@@ -10,10 +10,11 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/observer_list.h"
+#include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GlobalError;
-class Profile;
 
 // This service manages a list of errors that are meant to be shown globally.
 // If an error applies to an entire profile and not just to a tab then the
@@ -25,10 +26,12 @@ class GlobalErrorService : public KeyedService {
   // Type used to represent the list of currently active errors.
   using GlobalErrorList = std::vector<GlobalError*>;
 
-  // Constructs a GlobalErrorService object for the given profile. The profile
-  // maybe NULL for tests.
-  explicit GlobalErrorService(Profile* profile);
+  // Constructs a GlobalErrorService object.
+  GlobalErrorService();
   ~GlobalErrorService() override;
+
+  void AddObserver(GlobalErrorObserver* observer);
+  void RemoveObserver(GlobalErrorObserver* observer);
 
   // Adds the given error to the list of global errors and displays it on
   // browser windows. If no browser windows are open then the error is
@@ -66,14 +69,14 @@ class GlobalErrorService : public KeyedService {
   const GlobalErrorList& errors() { return all_errors_; }
 
   // Post a notification that a global error has changed and that the error UI
-  // should update it self. Pass NULL for the given error to mean all error UIs
-  // should update.
-  void NotifyErrorsChanged(GlobalError* error);
+  // should update it self.
+  void NotifyErrorsChanged();
 
  private:
+  base::ObserverList<GlobalErrorObserver> observer_list_;
+
   GlobalErrorList all_errors_;
   std::map<GlobalError*, std::unique_ptr<GlobalError>> owned_errors_;
-  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(GlobalErrorService);
 };

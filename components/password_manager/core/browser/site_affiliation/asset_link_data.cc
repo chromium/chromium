@@ -56,7 +56,7 @@ bool AssetLinkData::Parse(const std::string& data) {
   std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(data);
   if (!value || !value->is_list())
     return false;
-  const base::Value::ListStorage& list_storage = value->GetList();
+  base::span<const base::Value> list_storage = value->GetList();
   base::JSONValueConverter<Statement> converter;
   for (const auto& item : list_storage) {
     Statement statement;

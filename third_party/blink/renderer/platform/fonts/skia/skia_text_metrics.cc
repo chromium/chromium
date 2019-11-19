@@ -6,9 +6,8 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-
-#include <SkFont.h>
-#include <SkPath.h>
+#include "third_party/skia/include/core/SkFont.h"
+#include "third_party/skia/include/core/SkPath.h"
 
 namespace blink {
 

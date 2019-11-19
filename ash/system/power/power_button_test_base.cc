@@ -5,10 +5,10 @@
 #include "ash/system/power/power_button_test_base.h"
 
 #include "ash/public/cpp/ash_switches.h"
-#include "ash/session/session_controller.h"
+#include "ash/public/cpp/test/shell_test_api.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
-#include "ash/shell_test_api.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/system/power/power_button_controller_test_api.h"
 #include "ash/wm/lock_state_controller.h"
@@ -17,9 +17,7 @@
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_power_manager_client.h"
-#include "chromeos/dbus/fake_session_manager_client.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
 
@@ -30,12 +28,6 @@ PowerButtonTestBase::PowerButtonTestBase() = default;
 PowerButtonTestBase::~PowerButtonTestBase() = default;
 
 void PowerButtonTestBase::SetUp() {
-  // This also initializes DBusThreadManager.
-  std::unique_ptr<chromeos::DBusThreadManagerSetter> dbus_setter =
-      chromeos::DBusThreadManager::GetSetterForTesting();
-  session_manager_client_ = new chromeos::FakeSessionManagerClient;
-  dbus_setter->SetSessionManagerClient(
-      base::WrapUnique(session_manager_client_));
   AshTestBase::SetUp();
 
   lock_state_controller_ = Shell::Get()->lock_state_controller();
@@ -45,7 +37,6 @@ void PowerButtonTestBase::SetUp() {
 
 void PowerButtonTestBase::TearDown() {
   AshTestBase::TearDown();
-  chromeos::DBusThreadManager::Shutdown();
 }
 
 void PowerButtonTestBase::ResetPowerButtonController() {
@@ -117,7 +108,7 @@ void PowerButtonTestBase::Initialize(
 
 void PowerButtonTestBase::LockScreen() {
   lock_state_controller_->OnLockStateChanged(true);
-  Shell::Get()->session_controller()->LockScreenAndFlushForTest();
+  GetSessionControllerClient()->LockScreen();
 }
 
 void PowerButtonTestBase::UnlockScreen() {
@@ -126,7 +117,7 @@ void PowerButtonTestBase::UnlockScreen() {
 }
 
 void PowerButtonTestBase::EnableTabletMode(bool enable) {
-  Shell::Get()->tablet_mode_controller()->EnableTabletModeWindowManager(enable);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(enable);
 }
 
 void PowerButtonTestBase::AdvanceClockToAvoidIgnoring() {

@@ -1,0 +1,5 @@
+include_rules = [
+  "+mojo/public",
+  "+third_party/blink/public/common/messaging",
+  "+third_party/blink/public/mojom/messaging",
+]

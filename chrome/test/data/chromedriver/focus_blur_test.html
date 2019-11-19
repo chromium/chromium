@@ -1,0 +1,15 @@
+<html>
+<head>
+<title>No blur test</title>
+<!-- This simple page indicates whether or not this page ever loses focus. -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+</head>
+<body>
+  <p id="result">PASS</p>
+</body>
+<script>
+window.onblur = function() {
+  document.getElementById("result").innerHTML = "FAIL";
+};
+</script>
+</html>

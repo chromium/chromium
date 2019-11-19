@@ -8,13 +8,15 @@
 #include "base/macros.h"
 #include "components/variations/platform_field_trials.h"
 
+class PrefService;
+
 namespace base {
 class FeatureList;
 }
 
 class ChromeBrowserFieldTrials : public variations::PlatformFieldTrials {
  public:
-  ChromeBrowserFieldTrials();
+  explicit ChromeBrowserFieldTrials(PrefService* local_state);
   ~ChromeBrowserFieldTrials() override;
 
   // variations::PlatformFieldTrials:
@@ -28,6 +30,9 @@ class ChromeBrowserFieldTrials : public variations::PlatformFieldTrials {
   // Instantiates dynamic trials by querying their state, to ensure they get
   // reported as used.
   void InstantiateDynamicTrials();
+
+  // Weak pointer to the local state prefs store.
+  PrefService* const local_state_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeBrowserFieldTrials);
 };

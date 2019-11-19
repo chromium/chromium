@@ -66,7 +66,7 @@ std::string TestPrintBackend::GetPrinterDriverInfo(
 }
 
 bool TestPrintBackend::IsValidPrinter(const std::string& printer_name) {
-  return base::ContainsKey(valid_printers_, printer_name);
+  return base::Contains(valid_printers_, printer_name);
 }
 
 void TestPrintBackend::PopulatePrinterList(const PrinterList& printer_list) {

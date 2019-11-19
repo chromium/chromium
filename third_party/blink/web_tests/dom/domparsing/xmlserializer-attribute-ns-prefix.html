@@ -1,9 +1,13 @@
 <!DOCTYPE html>
+<title>This tests that XMLSerializer emits a correct namespace declaration for the <image> element. The first line is serialized as part of a DocumentFragment. The second line is serialized as part of the Document</title>
 <body>
-<script src="../../resources/js-test.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <script>
-
-description('This tests that XMLSerializer emits a correct namespace declaration for the <image> element. The first line is serialized as part of a DocumentFragment. The second line is serialized as part of the Document.');
+function escapeHTML(text)
+{
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/\0/g, "\\0");
+}
 
 var svgDoc = new DOMParser().parseFromString('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"></svg>', 'text/xml');
 var svgEl = svgDoc.firstChild;
@@ -13,9 +17,13 @@ svgEl.appendChild(imageEl);
 
 var serializer = new XMLSerializer();
 
-debug(escapeHTML(serializer.serializeToString(svgEl)));
+var span = document.createElement("div");
+span.innerHTML = escapeHTML(serializer.serializeToString(svgEl));
+assert_equals(span.textContent, "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><image xlink:href=\"blah\"/></svg>");
 document.body.appendChild(svgDoc.removeChild(svgEl));
-debug(escapeHTML(serializer.serializeToString(svgEl)));
+span.innerHTML = escapeHTML(serializer.serializeToString(svgEl));
+assert_equals(span.textContent, "<svg xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><image xlink:href=\"blah\"/></svg>");
 
 document.body.removeChild(svgEl);
+done();
 </script>

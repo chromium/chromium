@@ -5,7 +5,6 @@
 #ifndef GPU_IPC_COMMON_GPU_COMMAND_BUFFER_TRAITS_H_
 #define GPU_IPC_COMMON_GPU_COMMAND_BUFFER_TRAITS_H_
 
-#include "gpu/command_buffer/common/id_type.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_command_buffer_traits_multi.h"
 #include "ipc/ipc_message_utils.h"
@@ -16,6 +15,7 @@ struct Mailbox;
 struct MailboxHolder;
 struct SyncToken;
 struct TextureInUseResponse;
+struct VulkanYCbCrInfo;
 }
 
 namespace IPC {
@@ -60,24 +60,14 @@ struct GPU_EXPORT ParamTraits<gpu::MailboxHolder> {
   static void Log(const param_type& p, std::string* l);
 };
 
-template <typename TypeMarker, typename WrappedType, WrappedType kInvalidValue>
-struct ParamTraits<gpu::IdType<TypeMarker, WrappedType, kInvalidValue>> {
-  using param_type = gpu::IdType<TypeMarker, WrappedType, kInvalidValue>;
-  static void Write(base::Pickle* m, const param_type& p) {
-    WriteParam(m, p.GetUnsafeValue());
-  }
+template <>
+struct GPU_EXPORT ParamTraits<gpu::VulkanYCbCrInfo> {
+  using param_type = gpu::VulkanYCbCrInfo;
+  static void Write(base::Pickle* m, const param_type& p);
   static bool Read(const base::Pickle* m,
                    base::PickleIterator* iter,
-                   param_type* r) {
-    WrappedType value;
-    if (!ReadParam(m, iter, &value))
-      return false;
-    *r = param_type::FromUnsafeValue(value);
-    return true;
-  }
-  static void Log(const param_type& p, std::string* l) {
-    LogParam(p.GetUnsafeValue(), l);
-  }
+                   param_type* p);
+  static void Log(const param_type& p, std::string* l);
 };
 
 }  // namespace IPC

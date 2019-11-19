@@ -24,7 +24,6 @@ class InMemoryDownloadFactory : public InMemoryDownload::Factory {
  public:
   InMemoryDownloadFactory(
       network::mojom::URLLoaderFactory* url_loader_factory,
-      BlobTaskProxy::BlobContextGetter blob_context_getter,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
   ~InMemoryDownloadFactory() override;
 
@@ -39,7 +38,6 @@ class InMemoryDownloadFactory : public InMemoryDownload::Factory {
 
   network::mojom::URLLoaderFactory* url_loader_factory_;
 
-  BlobTaskProxy::BlobContextGetter blob_context_getter_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(InMemoryDownloadFactory);
@@ -50,8 +48,9 @@ class InMemoryDownloadFactory : public InMemoryDownload::Factory {
 class InMemoryDownloadDriver : public DownloadDriver,
                                public InMemoryDownload::Delegate {
  public:
-  explicit InMemoryDownloadDriver(
-      std::unique_ptr<InMemoryDownload::Factory> download_factory);
+  InMemoryDownloadDriver(
+      std::unique_ptr<InMemoryDownload::Factory> download_factory,
+      BlobContextGetterFactoryPtr blob_context_getter_factory);
   ~InMemoryDownloadDriver() override;
 
  private:
@@ -77,12 +76,16 @@ class InMemoryDownloadDriver : public DownloadDriver,
   void OnDownloadProgress(InMemoryDownload* download) override;
   void OnDownloadComplete(InMemoryDownload* download) override;
   void OnUploadProgress(InMemoryDownload* download) override;
+  void RetrieveBlobContextGetter(BlobContextGetterCallback callback) override;
 
   // The client that receives updates from low level download logic.
   DownloadDriver::Client* client_;
 
   // The factory used to create in memory download objects.
   std::unique_ptr<InMemoryDownload::Factory> download_factory_;
+
+  // Used to retrieve BlobStorageContextGetter.
+  BlobContextGetterFactoryPtr blob_context_getter_factory_;
 
   // A map of GUID and in memory download, which holds download data.
   std::map<std::string, std::unique_ptr<InMemoryDownload>> downloads_;

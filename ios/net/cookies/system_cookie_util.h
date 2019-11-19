@@ -5,6 +5,7 @@
 #ifndef IOS_NET_COOKIES_SYSTEM_COOKIE_UTIL_H_
 #define IOS_NET_COOKIES_SYSTEM_COOKIE_UTIL_H_
 
+#import <Foundation/Foundation.h>
 #include <stddef.h>
 
 #include "net/cookies/canonical_cookie.h"
@@ -25,6 +26,10 @@ net::CanonicalCookie CanonicalCookieFromSystemCookie(
 // Converts net::CanonicalCookie to NSHTTPCookie.
 NSHTTPCookie* SystemCookieFromCanonicalCookie(
     const net::CanonicalCookie& cookie);
+
+// Converts net::CookieList to NSArray<NSHTTPCookie*>.
+NSArray<NSHTTPCookie*>* SystemCookiesFromCanonicalCookieList(
+    const net::CookieList& cookie_list);
 
 enum CookieEvent {
   COOKIES_READ,                     // Cookies have been read from disk.

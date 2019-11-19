@@ -19,8 +19,9 @@ source_set("safe_mode") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/crash_report",
     "//ios/chrome/browser/safe_mode",
-    "//ios/chrome/browser/ui",
     "//ios/chrome/browser/ui/fancy_ui",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/colors",
     "//ui/gfx",
   ]
 
@@ -29,22 +30,91 @@ source_set("safe_mode") {
 
 source_set("eg_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
+  defines = [ "CHROME_EARL_GREY_1" ]
   testonly = true
   sources = [
     "safe_mode_egtest.mm",
   ]
   deps = [
     ":safe_mode",
+    ":test_support",
     "//base",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/main",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/test/app:test_support",
-    "//ios/chrome/test/base",
     "//ios/chrome/test/earl_grey:test_support",
+    "//ios/testing:block_swizzler",
+    "//ios/testing/earl_grey:earl_grey_support",
     "//ios/third_party/earl_grey:earl_grey+link",
   ]
+}
+
+source_set("test_support") {
+  defines = [ "CHROME_EARL_GREY_1" ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "safe_mode_app_interface.h",
+    "safe_mode_app_interface.mm",
+  ]
+  deps = [
+    ":safe_mode",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_app_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "safe_mode_app_interface.h",
+    "safe_mode_app_interface.mm",
+  ]
+  deps = [
+    ":safe_mode",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "safe_mode_app_interface.h",
+  ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "safe_mode_egtest.mm",
+  ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base:base",
+    "//ios/chrome/app/strings:ios_chromium_strings_grit",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing:block_swizzler",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+  libs = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
@@ -59,8 +129,8 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/crash_report",
-    "//ios/chrome/test/base",
     "//ios/chrome/test/ocmock",
+    "//ios/testing:block_swizzler",
     "//testing/gtest",
     "//third_party/breakpad:client",
     "//third_party/ocmock",

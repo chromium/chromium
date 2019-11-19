@@ -1,0 +1,12 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(crbug.com/829689): Add link to spec once complete.
+// Explainer: https://github.com/WICG/file-handling/blob/master/explainer.md
+
+[RuntimeEnabled=FileHandling] interface LaunchQueue {
+  void setConsumer(LaunchConsumer consumer);
+};
+
+callback LaunchConsumer = any (LaunchParams params);

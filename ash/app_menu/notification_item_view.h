@@ -11,7 +11,7 @@
 #include "ash/app_menu/app_menu_export.h"
 #include "ash/app_menu/notification_menu_view.h"
 #include "base/strings/string16.h"
-#include "ui/message_center/views/slide_out_controller.h"
+#include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -25,6 +25,7 @@ class ProportionalImageView;
 
 namespace views {
 class Label;
+class SlideOutController;
 }
 
 namespace ash {
@@ -32,13 +33,13 @@ namespace ash {
 // The view which contains the details of a notification.
 class APP_MENU_EXPORT NotificationItemView : public views::View {
  public:
-  NotificationItemView(NotificationMenuView::Delegate* delegate,
-                       message_center::SlideOutController::Delegate*
-                           slide_out_controller_delegate,
-                       const base::string16& title,
-                       const base::string16& message,
-                       const gfx::Image& icon,
-                       const std::string& notification_id);
+  NotificationItemView(
+      NotificationMenuView::Delegate* delegate,
+      views::SlideOutControllerDelegate* slide_out_controller_delegate,
+      const base::string16& title,
+      const base::string16& message,
+      const gfx::Image& icon,
+      const std::string& notification_id);
 
   ~NotificationItemView() override;
 
@@ -79,7 +80,7 @@ class APP_MENU_EXPORT NotificationItemView : public views::View {
   NotificationMenuView::Delegate* const delegate_;
 
   // Controls the sideways gesture drag behavior.
-  std::unique_ptr<message_center::SlideOutController> slide_out_controller_;
+  std::unique_ptr<views::SlideOutController> slide_out_controller_;
 
   // Notification properties.
   base::string16 title_;

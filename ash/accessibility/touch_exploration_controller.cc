@@ -1167,7 +1167,7 @@ bool TouchExplorationController::IsTargetedToArcVirtualKeyboard(
   aura::Window* target = static_cast<aura::Window*>(
       root_window_->targeter()->FindTargetForEvent(root_window_, &event));
 
-  aura::Window* container = wm::GetContainerForWindow(target);
+  aura::Window* container = GetContainerForWindow(target);
   if (!container)
     return false;
 

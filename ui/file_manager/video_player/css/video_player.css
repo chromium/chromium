@@ -67,6 +67,13 @@ body {
 video {
   height: 100%;
   left: 0;
+
+  /*
+   * Since r614513, <video> elements take focus on click which causes yellow
+   * lines to appear unless the outline is disabled. See crbug/917503.
+   */
+  outline: none;
+
   pointer-events: none;
   position: absolute;
   top: 0;

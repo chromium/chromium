@@ -17,9 +17,10 @@
 #include "base/observer_list.h"
 #include "chrome/browser/chromeos/arc/fileapi/arc_select_files_handler.h"
 #include "chrome/browser/chromeos/arc/fileapi/file_stream_forwarder.h"
-#include "components/arc/common/file_system.mojom.h"
+#include "components/arc/mojom/file_system.mojom.h"
+#include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "storage/browser/fileapi/watcher_manager.h"
+#include "storage/browser/file_system/watcher_manager.h"
 
 class BrowserContextKeyedServiceFactory;
 class GURL;
@@ -34,7 +35,10 @@ namespace arc {
 class ArcBridgeService;
 
 // This class handles file system related IPC from the ARC container.
-class ArcFileSystemBridge : public KeyedService, public mojom::FileSystemHost {
+class ArcFileSystemBridge
+    : public KeyedService,
+      public ConnectionObserver<mojom::FileSystemInstance>,
+      public mojom::FileSystemHost {
  public:
   class Observer {
    public:
@@ -92,7 +96,11 @@ class ArcFileSystemBridge : public KeyedService, public mojom::FileSystemHost {
   void OnFileSelectorEvent(mojom::FileSelectorEventPtr event,
                            OnFileSelectorEventCallback callback) override;
   void GetFileSelectorElements(
+      mojom::GetFileSelectorElementsRequestPtr request,
       GetFileSelectorElementsCallback callback) override;
+
+  // ConnectionObserver<mojom::FileSystemInstance> overrides:
+  void OnConnectionClosed() override;
 
  private:
   // Used to implement OpenFileToRead().
@@ -120,9 +128,9 @@ class ArcFileSystemBridge : public KeyedService, public mojom::FileSystemHost {
 
   std::list<FileStreamForwarderPtr> file_stream_forwarders_;
 
-  std::unique_ptr<ArcSelectFilesHandler> select_files_handler_;
+  std::unique_ptr<ArcSelectFilesHandlersManager> select_files_handlers_manager_;
 
-  base::WeakPtrFactory<ArcFileSystemBridge> weak_ptr_factory_;
+  base::WeakPtrFactory<ArcFileSystemBridge> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ArcFileSystemBridge);
 };

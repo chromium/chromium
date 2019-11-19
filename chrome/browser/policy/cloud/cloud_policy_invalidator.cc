@@ -7,14 +7,17 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/hash.h"
+#include "base/feature_list.h"
+#include "base/hash/hash.h"
 #include "base/location.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/policy/cloud/policy_invalidation_util.h"
+#include "chrome/common/chrome_features.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/object_id_invalidation_map.h"
@@ -24,6 +27,57 @@
 #include "components/policy/policy_constants.h"
 
 namespace policy {
+
+namespace {
+
+bool IsFcmEnabled() {
+  return base::FeatureList::IsEnabled(features::kPolicyFcmInvalidations);
+}
+
+// Get the kMetricPolicyInvalidations histogram metric which should be
+// incremented when an invalidation is received.
+MetricPolicyRefresh GetPolicyRefreshMetric(bool invalidations_enabled,
+                                           bool policy_changed,
+                                           bool invalidated) {
+  if (policy_changed) {
+    if (invalidated)
+      return METRIC_POLICY_REFRESH_INVALIDATED_CHANGED;
+    if (invalidations_enabled)
+      return METRIC_POLICY_REFRESH_CHANGED;
+    return METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS;
+  }
+  if (invalidated)
+    return METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED;
+  return METRIC_POLICY_REFRESH_UNCHANGED;
+}
+
+void RecordPolicyRefreshMetric(
+    enterprise_management::DeviceRegisterRequest::Type type,
+    bool invalidations_enabled,
+    bool policy_changed,
+    bool invalidated) {
+  MetricPolicyRefresh metric_policy_refresh = GetPolicyRefreshMetric(
+      invalidations_enabled, policy_changed, invalidated);
+  if (type == enterprise_management::DeviceRegisterRequest::DEVICE) {
+    base::UmaHistogramEnumeration(kMetricDevicePolicyRefresh,
+                                  metric_policy_refresh,
+                                  METRIC_POLICY_REFRESH_SIZE);
+    base::UmaHistogramEnumeration(
+        IsFcmEnabled() ? kMetricDevicePolicyRefreshFcm
+                       : kMetricDevicePolicyRefreshTicl,
+        metric_policy_refresh, METRIC_POLICY_REFRESH_SIZE);
+  } else {
+    base::UmaHistogramEnumeration(kMetricUserPolicyRefresh,
+                                  metric_policy_refresh,
+                                  METRIC_POLICY_REFRESH_SIZE);
+    base::UmaHistogramEnumeration(IsFcmEnabled() ? kMetricUserPolicyRefreshFcm
+                                                 : kMetricUserPolicyRefreshTicl,
+                                  metric_policy_refresh,
+                                  METRIC_POLICY_REFRESH_SIZE);
+  }
+}
+
+}  // namespace
 
 const int CloudPolicyInvalidator::kMissingPayloadDelay = 5;
 const int CloudPolicyInvalidator::kMaxFetchDelayDefault = 10000;
@@ -54,8 +108,7 @@ CloudPolicyInvalidator::CloudPolicyInvalidator(
       highest_handled_invalidation_version_(
           highest_handled_invalidation_version),
       max_fetch_delay_(kMaxFetchDelayDefault),
-      policy_hash_value_(0),
-      weak_factory_(this) {
+      policy_hash_value_(0) {
   DCHECK(core);
   DCHECK(task_runner.get());
   // |highest_handled_invalidation_version_| indicates the highest actual
@@ -132,6 +185,10 @@ void CloudPolicyInvalidator::OnIncomingInvalidation(
 
 std::string CloudPolicyInvalidator::GetOwnerName() const { return "Cloud"; }
 
+bool CloudPolicyInvalidator::IsPublicTopic(const syncer::Topic& topic) const {
+  return IsPublicInvalidationTopic(topic);
+}
+
 void CloudPolicyInvalidator::OnCoreConnected(CloudPolicyCore* core) {}
 
 void CloudPolicyInvalidator::OnRefreshSchedulerStarted(CloudPolicyCore* core) {
@@ -158,22 +215,18 @@ void CloudPolicyInvalidator::OnStoreLoaded(CloudPolicyStore* store) {
   bool policy_changed = IsPolicyChanged(store->policy());
 
   if (is_registered_) {
-    // Update the kMetricDevicePolicyRefresh/kMetricUserPolicyRefresh histogram.
-    if (type_ == enterprise_management::DeviceRegisterRequest::DEVICE) {
-      UMA_HISTOGRAM_ENUMERATION(kMetricDevicePolicyRefresh,
-                                GetPolicyRefreshMetric(policy_changed),
-                                METRIC_POLICY_REFRESH_SIZE);
-    } else {
-      UMA_HISTOGRAM_ENUMERATION(kMetricUserPolicyRefresh,
-                                GetPolicyRefreshMetric(policy_changed),
-                                METRIC_POLICY_REFRESH_SIZE);
-    }
-
     const int64_t store_invalidation_version = store->invalidation_version();
+    // Whether the refresh was caused by invalidation.
+    const bool invalidated =
+        invalid_ && store_invalidation_version == invalidation_version_;
+
+    bool invalidations_enabled = GetInvalidationsEnabled();
+    RecordPolicyRefreshMetric(type_, invalidations_enabled, policy_changed,
+                              invalidated);
 
     // If the policy was invalid and the version stored matches the latest
     // invalidation version, acknowledge the latest invalidation.
-    if (invalid_ && store_invalidation_version == invalidation_version_)
+    if (invalidated)
       AcknowledgeInvalidation();
 
     // Update the highest invalidation version that was handled already.
@@ -226,16 +279,24 @@ void CloudPolicyInvalidator::HandleInvalidation(
   // Ignore the invalidation if it is expired.
   bool is_expired = IsInvalidationExpired(version);
 
+  PolicyInvalidationType policy_invalidation_type =
+      GetInvalidationMetric(payload.empty(), is_expired);
   if (type_ == enterprise_management::DeviceRegisterRequest::DEVICE) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kMetricDevicePolicyInvalidations,
-        GetInvalidationMetric(payload.empty(), is_expired),
-        POLICY_INVALIDATION_TYPE_SIZE);
+    base::UmaHistogramEnumeration(kMetricDevicePolicyInvalidations,
+                                  policy_invalidation_type,
+                                  POLICY_INVALIDATION_TYPE_SIZE);
+    base::UmaHistogramEnumeration(
+        IsFcmEnabled() ? kMetricDevicePolicyInvalidationsFcm
+                       : kMetricDevicePolicyInvalidationsTicl,
+        policy_invalidation_type, POLICY_INVALIDATION_TYPE_SIZE);
   } else {
-    UMA_HISTOGRAM_ENUMERATION(
-        kMetricUserPolicyInvalidations,
-        GetInvalidationMetric(payload.empty(), is_expired),
-        POLICY_INVALIDATION_TYPE_SIZE);
+    base::UmaHistogramEnumeration(kMetricUserPolicyInvalidations,
+                                  policy_invalidation_type,
+                                  POLICY_INVALIDATION_TYPE_SIZE);
+    base::UmaHistogramEnumeration(
+        IsFcmEnabled() ? kMetricUserPolicyInvalidationsFcm
+                       : kMetricUserPolicyInvalidationsTicl,
+        policy_invalidation_type, POLICY_INVALIDATION_TYPE_SIZE);
   }
   if (is_expired) {
     invalidation.Acknowledge();
@@ -275,16 +336,12 @@ void CloudPolicyInvalidator::HandleInvalidation(
 void CloudPolicyInvalidator::UpdateRegistration(
     const enterprise_management::PolicyData* policy) {
   // Create the ObjectId based on the policy data.
-  // If the policy does not specify an the ObjectId, then unregister.
-  if (!policy ||
-      !policy->has_invalidation_source() ||
-      !policy->has_invalidation_name()) {
+  // If the policy does not specify an ObjectId, then unregister.
+  invalidation::ObjectId object_id;
+  if (!policy || !GetCloudPolicyObjectIdFromPolicy(*policy, &object_id)) {
     Unregister();
     return;
   }
-  invalidation::ObjectId object_id(
-      policy->invalidation_source(),
-      policy->invalidation_name());
 
   // If the policy object id in the policy data is different from the currently
   // registered object id, update the object registration.
@@ -317,8 +374,11 @@ void CloudPolicyInvalidator::Register(const invalidation::ObjectId& object_id) {
     LOG(ERROR) << "Failed to register " << syncer::ObjectIdToString(object_id)
                << " for policy invalidations";
   }
-  UMA_HISTOGRAM_BOOLEAN("Enterprise.PolicyInvalidationsRegistrationResult",
-                        success);
+  base::UmaHistogramBoolean(kMetricPolicyInvalidationRegistration, success);
+  base::UmaHistogramBoolean(IsFcmEnabled()
+                                ? kMetricPolicyInvalidationRegistrationFcm
+                                : kMetricPolicyInvalidationRegistrationTicl,
+                            success);
 }
 
 void CloudPolicyInvalidator::Unregister() {
@@ -417,20 +477,6 @@ bool CloudPolicyInvalidator::IsInvalidationExpired(int64_t version) {
       base::TimeDelta::FromMicroseconds(version) +
       base::TimeDelta::FromSeconds(kMaxInvalidationTimeDelta);
   return invalidation_time < last_fetch_time;
-}
-
-MetricPolicyRefresh CloudPolicyInvalidator::GetPolicyRefreshMetric(
-    bool policy_changed) {
-  if (policy_changed) {
-    if (invalid_)
-      return METRIC_POLICY_REFRESH_INVALIDATED_CHANGED;
-    if (GetInvalidationsEnabled())
-      return METRIC_POLICY_REFRESH_CHANGED;
-    return METRIC_POLICY_REFRESH_CHANGED_NO_INVALIDATIONS;
-  }
-  if (invalid_)
-    return METRIC_POLICY_REFRESH_INVALIDATED_UNCHANGED;
-  return METRIC_POLICY_REFRESH_UNCHANGED;
 }
 
 PolicyInvalidationType CloudPolicyInvalidator::GetInvalidationMetric(

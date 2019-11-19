@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDeviceDiscovery
 
  private:
   State state_ = State::kIdle;
-  base::WeakPtrFactory<FidoDeviceDiscovery> weak_factory_;
+  base::WeakPtrFactory<FidoDeviceDiscovery> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FidoDeviceDiscovery);
 };

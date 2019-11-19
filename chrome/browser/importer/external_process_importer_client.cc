@@ -15,8 +15,7 @@
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/common/service_manager_connection.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "content/public/browser/service_process_host.h"
 #include "ui/base/l10n/l10n_util.h"
 
 ExternalProcessImporterClient::ExternalProcessImporterClient(
@@ -31,20 +30,20 @@ ExternalProcessImporterClient::ExternalProcessImporterClient(
       source_profile_(source_profile),
       items_(items),
       bridge_(bridge),
-      cancelled_(false),
-      binding_(this) {
+      cancelled_(false) {
   process_importer_host_->NotifyImportStarted();
 }
 
 void ExternalProcessImporterClient::Start() {
   AddRef();  // balanced in Cleanup.
 
-  content::ServiceManagerConnection::GetForProcess()
-      ->GetConnector()
-      ->BindInterface(chrome::mojom::kProfileImportServiceName,
-                      &profile_import_);
-
-  profile_import_.set_connection_error_handler(
+  content::ServiceProcessHost::Launch(
+      profile_import_.BindNewPipeAndPassReceiver(),
+      content::ServiceProcessHost::Options()
+          .WithDisplayName(IDS_UTILITY_PROCESS_PROFILE_IMPORTER_NAME)
+          .WithSandboxType(service_manager::SANDBOX_TYPE_NO_SANDBOX)
+          .Pass());
+  profile_import_.set_disconnect_handler(
       base::BindOnce(&ExternalProcessImporterClient::OnProcessCrashed, this));
 
   // Dictionary of all localized strings that could be needed by the importer
@@ -72,10 +71,8 @@ void ExternalProcessImporterClient::Start() {
 
   // If the utility process hasn't started yet the message will queue until it
   // does.
-  chrome::mojom::ProfileImportObserverPtr observer;
-  binding_.Bind(mojo::MakeRequest(&observer));
   profile_import_->StartImport(source_profile_, items_, localized_strings,
-                               std::move(observer));
+                               receiver_.BindNewPipeAndPassRemote());
 }
 
 void ExternalProcessImporterClient::Cancel() {
@@ -266,5 +263,5 @@ void ExternalProcessImporterClient::Cleanup() {
 
 void ExternalProcessImporterClient::CloseMojoHandles() {
   profile_import_.reset();
-  binding_.Close();
+  receiver_.reset();
 }

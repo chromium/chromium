@@ -3,9 +3,6 @@ reillyg@chromium.org
 odejesush@chromium.org
 dougt@chromium.org
 
-# For changes related to Chrome OS.
-rkc@chromium.org
-
 per-file BUILD.gn=*
 
 # TEAM: web-bluetooth@chromium.org

@@ -1,0 +1,14 @@
+Tests <select> text update when popup is visible and selectionIndex changes.
+Needs run-layout-test.
+
+A
+B
+C
+layer at (0,0) size 31x20
+  LayoutBlockFlow (positioned) {DIV} at (8,50) size 31x20
+    LayoutMenuList {SELECT} at (0,0) size 31x20 [bgcolor=#DDDDDD] [border: (1px solid #A9A9A9)]
+      LayoutBlockFlow (anonymous) at (1,1) size 29x18
+        LayoutText (anonymous) at (4,1) size 9x16
+          text run at (4,1) width 9: "C"
+    LayoutText {#text} at (0,0) size 0x0
+

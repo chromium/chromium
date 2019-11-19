@@ -18,13 +18,13 @@
 #include "ash/assistant/ui/assistant_view_delegate.h"
 #include "ash/assistant/ui/caption_bar.h"
 #include "ash/highlighter/highlighter_controller.h"
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/timer/timer.h"
 #include "ui/display/display_observer.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/keyboard/keyboard_controller_observer.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -54,7 +54,7 @@ class ASH_EXPORT AssistantUiController
       public AssistantViewDelegateObserver,
       public CaptionBarDelegate,
       public HighlighterController::Observer,
-      public keyboard::KeyboardControllerObserver,
+      public KeyboardControllerObserver,
       public display::DisplayObserver,
       public ui::EventObserver {
  public:
@@ -101,7 +101,9 @@ class ASH_EXPORT AssistantUiController
   void OnDeepLinkReceived(
       assistant::util::DeepLinkType type,
       const std::map<std::string, std::string>& params) override;
-  void OnUrlOpened(const GURL& url, bool from_server) override;
+  void OnOpeningUrl(const GURL& url,
+                    bool in_background,
+                    bool from_server) override;
 
   // AssistantUiModelObserver:
   void OnUiVisibilityChanged(
@@ -110,9 +112,8 @@ class ASH_EXPORT AssistantUiController
       base::Optional<AssistantEntryPoint> entry_point,
       base::Optional<AssistantExitPoint> exit_point) override;
 
-  // keyboard::KeyboardControllerObserver:
-  void OnKeyboardWorkspaceOccludedBoundsChanged(
-      const gfx::Rect& new_bounds) override;
+  // KeyboardControllerObserver:
+  void OnKeyboardOccludedBoundsChanged(const gfx::Rect& new_bounds) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -131,17 +132,20 @@ class ASH_EXPORT AssistantUiController
 
  private:
   // Updates UI mode to |ui_mode| if specified. Otherwise UI mode is updated on
-  // the basis of interaction/widget visibility state.
-  void UpdateUiMode(base::Optional<AssistantUiMode> ui_mode = base::nullopt);
+  // the basis of interaction/widget visibility state. If |due_to_interaction|
+  // is true, the UI mode changed because of an Assistant interaction.
+  void UpdateUiMode(base::Optional<AssistantUiMode> ui_mode = base::nullopt,
+                    bool due_to_interaction = false);
 
   // Calculate and update the usable work area.
   void UpdateUsableWorkArea(aura::Window* root_window);
 
-  // Construct |container_view_| and add keyboard/display observers.
+  // Constructs/resets |container_view_|.
   void CreateContainerView();
-
-  // Reset |container_view_| and remove keyboard/display observers.
   void ResetContainerView();
+
+  // Adds/removes observers used for calculating usable work area as needed.
+  void UpdateUsableWorkAreaObservers();
 
   AssistantController* const assistant_controller_;  // Owned by Shell.
 
@@ -150,8 +154,8 @@ class ASH_EXPORT AssistantUiController
 
   AssistantUiModel model_;
 
-  AssistantContainerView* container_view_ =
-      nullptr;  // Owned by view hierarchy.
+  // Owned by view hierarchy.
+  AssistantContainerView* container_view_ = nullptr;
 
   std::unique_ptr<views::EventMonitor> event_monitor_;
 
@@ -161,7 +165,10 @@ class ASH_EXPORT AssistantUiController
   // session. We delay this behavior to allow the user an opportunity to resume.
   base::OneShotTimer auto_close_timer_;
 
-  base::WeakPtrFactory<AssistantUiController> weak_factory_;
+  // Whether the UI controller is observing changes to the usable work area.
+  bool is_observing_usable_work_area_ = false;
+
+  base::WeakPtrFactory<AssistantUiController> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AssistantUiController);
 };

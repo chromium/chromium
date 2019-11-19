@@ -11,7 +11,7 @@ namespace prefs {
 // Alphabetical list of preference names specific to the UKM
 // component. Keep alphabetized, and document each in the .cc file.
 extern const char kUkmClientId[];
-extern const char kUkmPersistedLogs[];
+extern const char kUkmUnsentLogStore[];
 extern const char kUkmSessionId[];
 
 }  // namespace prefs

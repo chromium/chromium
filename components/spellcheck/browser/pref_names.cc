@@ -17,8 +17,15 @@ const char kSpellCheckDictionary[] = "spellcheck.dictionary";
 // List of strings representing the dictionary names for our spell-checker.
 const char kSpellCheckDictionaries[] = "spellcheck.dictionaries";
 
-// List of strings representing the dictionary names for our spell-checker.
+// List of strings representing the dictionary names for languages that are
+// force-enabled in our spell-checker due to the SpellcheckLanguage policy.
 const char kSpellCheckForcedDictionaries[] = "spellcheck.forced_dictionaries";
+
+// List of strings representing the dictionary names for languages that are
+// force-disabled in our spell-checker due to the SpellcheckLanguageBlacklist
+// policy.
+const char kSpellCheckBlacklistedDictionaries[] =
+    "spellcheck.blacklisted_dictionaries";
 
 // String which represents whether we use the spelling service.
 const char kSpellCheckUseSpellingService[] = "spellcheck.use_spelling_service";

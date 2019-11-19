@@ -27,12 +27,6 @@ class ErrorUtils {
                                         base::StringPiece s2,
                                         base::StringPiece s3);
 
-  static std::string FormatErrorMessage(base::StringPiece format,
-                                        base::StringPiece s1,
-                                        base::StringPiece s2,
-                                        base::StringPiece s3,
-                                        base::StringPiece s4);
-
   static base::string16 FormatErrorMessageUTF16(base::StringPiece format,
                                                 base::StringPiece s1);
 
@@ -44,12 +38,6 @@ class ErrorUtils {
                                                 base::StringPiece s1,
                                                 base::StringPiece s2,
                                                 base::StringPiece s3);
-
-  static base::string16 FormatErrorMessageUTF16(base::StringPiece format,
-                                                base::StringPiece s1,
-                                                base::StringPiece s2,
-                                                base::StringPiece s3,
-                                                base::StringPiece s4);
 };
 
 }  // namespace extensions

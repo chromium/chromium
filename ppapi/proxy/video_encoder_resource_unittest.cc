@@ -128,20 +128,20 @@ class VideoEncoderResourceTest : public PluginProxyTest,
   void CreateBitstreamSharedMemory(uint32_t buffer_size, uint32_t nb_buffers) {
     shared_memory_bitstreams_.clear();
     for (uint32_t i = 0; i < nb_buffers; ++i) {
-      std::unique_ptr<base::SharedMemory> mem(new base::SharedMemory());
-      ASSERT_TRUE(mem->CreateAnonymous(buffer_size));
-      shared_memory_bitstreams_.push_back(std::move(mem));
+      base::UnsafeSharedMemoryRegion region =
+          base::UnsafeSharedMemoryRegion::Create(buffer_size);
+      ASSERT_TRUE(region.IsValid());
+      shared_memory_bitstreams_.push_back(std::move(region));
     }
   }
 
   void CreateVideoFramesSharedMemory(uint32_t frame_length,
                                      uint32_t frame_count) {
-    std::unique_ptr<base::SharedMemory> shared_memory_frames(
-        new base::SharedMemory());
     uint32_t buffer_length =
         frame_length + sizeof(ppapi::MediaStreamBuffer::Video);
-    ASSERT_TRUE(shared_memory_frames->CreateAnonymous(buffer_length *
-                                                      frame_count));
+    base::UnsafeSharedMemoryRegion shared_memory_frames =
+        base::UnsafeSharedMemoryRegion::Create(buffer_length * frame_count);
+    ASSERT_TRUE(shared_memory_frames.IsValid());
     ASSERT_TRUE(video_frames_manager_.SetBuffers(
         frame_count, buffer_length, std::move(shared_memory_frames), true));
     for (int32_t i = 0; i < video_frames_manager_.number_of_buffers(); ++i) {
@@ -293,10 +293,10 @@ class VideoEncoderResourceTest : public PluginProxyTest,
                             uint32_t buffer_length) {
     std::vector<SerializedHandle> handles;
     for (const auto& mem : shared_memory_bitstreams_) {
-      ASSERT_EQ(mem->requested_size(), buffer_length);
-      base::SharedMemoryHandle handle = mem->handle().Duplicate();
-      ASSERT_TRUE(handle.IsValid());
-      handles.push_back(SerializedHandle(handle, buffer_length));
+      ASSERT_EQ(mem.GetSize(), buffer_length);
+      base::UnsafeSharedMemoryRegion region = mem.Duplicate();
+      ASSERT_TRUE(region.IsValid());
+      handles.push_back(SerializedHandle(std::move(region)));
     }
     SendReplyWithHandles(
         params, PP_OK,
@@ -308,18 +308,14 @@ class VideoEncoderResourceTest : public PluginProxyTest,
                                uint32_t frame_count,
                                uint32_t frame_length,
                                const PP_Size& size) {
-    base::SharedMemoryHandle handle =
-        video_frames_manager_.shm()->handle().Duplicate();
-    ASSERT_TRUE(handle.IsValid());
+    base::UnsafeSharedMemoryRegion region =
+        video_frames_manager_.region().Duplicate();
+    ASSERT_TRUE(region.IsValid());
     SendReplyWithHandle(
-        params, PP_OK, PpapiPluginMsg_VideoEncoder_GetVideoFramesReply(
-                           frame_count,
-                           frame_length + sizeof(MediaStreamBuffer::Video),
-                           size),
-        SerializedHandle(
-            handle,
-            static_cast<uint32_t>(
-                video_frames_manager_.shm()->requested_size())));
+        params, PP_OK,
+        PpapiPluginMsg_VideoEncoder_GetVideoFramesReply(
+            frame_count, frame_length + sizeof(MediaStreamBuffer::Video), size),
+        SerializedHandle(std::move(region)));
   }
 
   void SendEncodeReply(const ResourceMessageCallParams& params,
@@ -426,7 +422,7 @@ class VideoEncoderResourceTest : public PluginProxyTest,
   const PPB_VideoEncoder_0_2* encoder_iface_;
   const PPB_VideoEncoder_0_1* encoder_iface_0_1_;
 
-  std::vector<std::unique_ptr<base::SharedMemory>> shared_memory_bitstreams_;
+  std::vector<base::UnsafeSharedMemoryRegion> shared_memory_bitstreams_;
 
   MediaStreamBufferManager video_frames_manager_;
 };

@@ -7,6 +7,7 @@ import("//build/config/dcheck_always_on.gni")
 import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
+import("//ui/ozone/ozone.gni")
 import("features.gni")
 
 # Generate a buildflag header for compile-time checking of Vulkan support.
@@ -16,10 +17,19 @@ buildflag_header("buildflags") {
 }
 
 if (enable_vulkan) {
+  use_vulkan_xlib = use_x11 || ozone_platform_x11
+  config("vulkan_config") {
+    if (use_vulkan_xlib) {
+      defines = [ "USE_VULKAN_XLIB" ]
+    }
+  }
+
   jumbo_component("vulkan") {
     output_name = "vulkan_wrapper"
 
     sources = [
+      "semaphore_handle.cc",
+      "semaphore_handle.h",
       "vulkan_command_buffer.cc",
       "vulkan_command_buffer.h",
       "vulkan_command_pool.cc",
@@ -27,18 +37,24 @@ if (enable_vulkan) {
       "vulkan_device_queue.cc",
       "vulkan_device_queue.h",
       "vulkan_export.h",
+      "vulkan_fence_helper.cc",
+      "vulkan_fence_helper.h",
       "vulkan_function_pointers.cc",
       "vulkan_function_pointers.h",
       "vulkan_implementation.cc",
       "vulkan_implementation.h",
       "vulkan_instance.cc",
+      "vulkan_instance.h",
       "vulkan_surface.cc",
       "vulkan_surface.h",
       "vulkan_swap_chain.cc",
       "vulkan_swap_chain.h",
+      "vulkan_util.cc",
+      "vulkan_util.h",
     ]
 
     configs += [ "//build/config:precompiled_headers" ]
+    public_configs = [ ":vulkan_config" ]
 
     defines = [ "VULKAN_IMPLEMENTATION" ]
     if (is_android) {
@@ -51,9 +67,23 @@ if (enable_vulkan) {
       "//base",
       "//ui/gfx",
     ]
-
+    public_deps = [
+      "//gpu/config:vulkan_info",
+    ]
     data_deps = []
+
+    if (is_posix) {
+      sources += [
+        "vulkan_posix_util.cc",
+        "vulkan_posix_util.h",
+      ]
+    }
+
     if (is_fuchsia) {
+      sources += [ "fuchsia/vulkan_fuchsia_ext.h" ]
+
+      public_deps += [ "//third_party/fuchsia-sdk/sdk:zx" ]
+
       data_deps += [ "//third_party/fuchsia-sdk:vulkan_base" ]
 
       # VulkanInstance enables validation layer in Debug builds and when DCHECKs
@@ -66,31 +96,46 @@ if (enable_vulkan) {
     }
   }
 
+  jumbo_static_library("test_support") {
+    testonly = true
+    sources = [
+      "tests/native_window.h",
+    ]
+
+    deps = [
+      "//ui/gfx",
+      "//ui/gfx:native_widget_types",
+    ]
+    if (use_x11) {
+      sources += [ "tests/native_window_x11.cc" ]
+      deps += [ "//ui/gfx/x" ]
+      configs += [ "//build/config/linux:x11" ]
+    }
+  }
+
   # TODO(cblume): These tests should run on each platform -- crbug.com/858614
   if (use_x11) {
     test("vulkan_tests") {
       sources = [
         "tests/basic_vulkan_test.cc",
         "tests/basic_vulkan_test.h",
-        "tests/native_window.h",
         "tests/vulkan_test.cc",
         "tests/vulkan_tests_main.cc",
+        "vulkan_fence_helper_unittest.cc",
       ]
 
       deps = [
+        ":test_support",
+        "//base:base",
         "//base/test:test_support",
+        "//components/viz/common:vulkan_context_provider",
         "//gpu/vulkan/init",
         "//testing/gmock",
         "//testing/gtest",
+        "//ui/gfx",
         "//ui/gfx:native_widget_types",
         "//ui/gfx/geometry",
       ]
-
-      if (use_x11) {
-        sources += [ "tests/native_window_x11.cc" ]
-        deps += [ "//ui/gfx/x" ]
-        configs += [ "//build/config/linux:x11" ]
-      }
     }
   }
 }

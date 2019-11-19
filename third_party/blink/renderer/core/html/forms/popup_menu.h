@@ -26,7 +26,7 @@
 
 namespace blink {
 
-class PopupMenu : public GarbageCollectedFinalized<PopupMenu> {
+class PopupMenu : public GarbageCollected<PopupMenu> {
  public:
   virtual ~PopupMenu() = default;
   virtual void Trace(Visitor* visitor) {}

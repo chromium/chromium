@@ -78,6 +78,25 @@ GlobalErrorBubbleView::GlobalErrorBubbleView(
     : BubbleDialogDelegateView(anchor_view, arrow),
       browser_(browser),
       error_(error) {
+  // error_ is a WeakPtr, but it's always non-null during construction.
+  DCHECK(error_);
+
+  DialogDelegate::set_default_button(error_->GetDefaultDialogButton());
+  DialogDelegate::set_buttons(
+      (error_->ShouldUseExtraView() &&
+       !error_->GetBubbleViewCancelButtonLabel().empty())
+          ? (ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL)
+          : ui::DIALOG_BUTTON_OK);
+  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_OK,
+                                   error_->GetBubbleViewAcceptButtonLabel());
+  DialogDelegate::set_button_label(ui::DIALOG_BUTTON_CANCEL,
+                                   error_->GetBubbleViewCancelButtonLabel());
+  if (!error_->GetBubbleViewCancelButtonLabel().empty() &&
+      error_->ShouldUseExtraView()) {
+    DialogDelegate::SetExtraView(views::MdTextButton::CreateSecondaryUiButton(
+        this, error_->GetBubbleViewCancelButtonLabel()));
+  }
+
   if (!anchor_view) {
     SetAnchorRect(anchor_rect);
     set_parent_window(
@@ -117,16 +136,16 @@ void GlobalErrorBubbleView::Init() {
   // returns.
 
   std::vector<base::string16> message_strings(error_->GetBubbleViewMessages());
-  std::vector<views::Label*> message_labels;
-  for (size_t i = 0; i < message_strings.size(); ++i) {
-    views::Label* message_label = new views::Label(message_strings[i]);
+  std::vector<std::unique_ptr<views::Label>> message_labels;
+  for (const auto& message_string : message_strings) {
+    auto message_label = std::make_unique<views::Label>(message_string);
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    message_labels.push_back(message_label);
+    message_labels.push_back(std::move(message_label));
   }
 
   views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>(this));
+      SetLayoutManager(std::make_unique<views::GridLayout>());
 
   // First row, message labels.
   views::ColumnSet* cs = layout->AddColumnSet(0);
@@ -135,7 +154,7 @@ void GlobalErrorBubbleView::Init() {
 
   for (size_t i = 0; i < message_labels.size(); ++i) {
     layout->StartRow(1.0, 0);
-    layout->AddView(message_labels[i]);
+    layout->AddView(std::move(message_labels[i]));
     if (i < message_labels.size() - 1)
       layout->AddPaddingRow(views::GridLayout::kFixedSize,
                             ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -148,56 +167,17 @@ void GlobalErrorBubbleView::Init() {
   set_close_on_deactivate(error_->ShouldCloseOnDeactivate());
 }
 
-void GlobalErrorBubbleView::UpdateButton(views::LabelButton* button,
-                                         ui::DialogButton type) {
-  if (error_) {
-    // UpdateButton can result in calls back in to GlobalErrorBubbleView,
-    // possibly accessing |error_|.
-    BubbleDialogDelegateView::UpdateButton(button, type);
-    if (type == ui::DIALOG_BUTTON_OK &&
-        error_->ShouldAddElevationIconToAcceptButton()) {
-      elevation_icon_setter_.reset(new ElevationIconSetter(
-          button, base::BindOnce(&GlobalErrorBubbleView::SizeToContents,
-                                 base::Unretained(this))));
-    }
-  }
-}
-
 bool GlobalErrorBubbleView::ShouldShowCloseButton() const {
   return error_ && error_->ShouldShowCloseButton();
 }
 
-base::string16 GlobalErrorBubbleView::GetDialogButtonLabel(
-    ui::DialogButton button) const {
-  if (!error_)
-    return base::string16();
-  return button == ui::DIALOG_BUTTON_OK
-             ? error_->GetBubbleViewAcceptButtonLabel()
-             : error_->GetBubbleViewCancelButtonLabel();
-}
-
-int GlobalErrorBubbleView::GetDialogButtons() const {
-  if (!error_)
-    return ui::DIALOG_BUTTON_NONE;
-  return ui::DIALOG_BUTTON_OK |
-         (error_->ShouldUseExtraView() ||
-                  error_->GetBubbleViewCancelButtonLabel().empty()
-              ? 0
-              : ui::DIALOG_BUTTON_CANCEL);
-}
-
-int GlobalErrorBubbleView::GetDefaultDialogButton() const {
-  if (!error_)
-    return views::BubbleDialogDelegateView::GetDefaultDialogButton();
-  return error_->GetDefaultDialogButton();
-}
-
-views::View* GlobalErrorBubbleView::CreateExtraView() {
-  if (!error_ || error_->GetBubbleViewCancelButtonLabel().empty() ||
-      !error_->ShouldUseExtraView())
-    return nullptr;
-  return views::MdTextButton::CreateSecondaryUiButton(
-      this, error_->GetBubbleViewCancelButtonLabel());
+void GlobalErrorBubbleView::OnDialogInitialized() {
+  views::LabelButton* ok_button = GetOkButton();
+  if (ok_button && error_ && error_->ShouldAddElevationIconToAcceptButton()) {
+    elevation_icon_setter_ = std::make_unique<ElevationIconSetter>(
+        ok_button, base::BindOnce(&GlobalErrorBubbleView::SizeToContents,
+                                  base::Unretained(this)));
+  }
 }
 
 bool GlobalErrorBubbleView::Cancel() {

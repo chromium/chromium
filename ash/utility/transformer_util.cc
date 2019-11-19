@@ -13,16 +13,12 @@
 namespace ash {
 namespace {
 
-// Round near zero value to zero.
-void RoundNearZero(gfx::Transform* transform) {
-  const float kEpsilon = 0.001f;
-  SkMatrix44& matrix = transform->matrix();
-  for (int x = 0; x < 4; ++x) {
-    for (int y = 0; y < 4; ++y) {
-      if (std::abs(SkMScalarToFloat(matrix.get(x, y))) < kEpsilon)
-        matrix.set(x, y, SkFloatToMScalar(0.0f));
-    }
-  }
+display::Display::Rotation RotationBetween(
+    display::Display::Rotation old_rotation,
+    display::Display::Rotation new_rotation) {
+  return static_cast<display::Display::Rotation>(
+      display::Display::Rotation::ROTATE_0 +
+      ((new_rotation - old_rotation) + 4) % 4);
 }
 
 }  // namespace
@@ -30,26 +26,26 @@ void RoundNearZero(gfx::Transform* transform) {
 gfx::Transform CreateRotationTransform(display::Display::Rotation old_rotation,
                                        display::Display::Rotation new_rotation,
                                        const gfx::SizeF& size_to_rotate) {
-  const int rotation_angle = 90 * (((new_rotation - old_rotation) + 4) % 4);
-  gfx::Transform rotate;
-  switch (rotation_angle) {
-    case 0:
-      break;
-    case 90:
-      rotate.Translate(size_to_rotate.height(), 0);
-      rotate.Rotate(90);
-      break;
-    case 180:
-      rotate.Translate(size_to_rotate.width(), size_to_rotate.height());
-      rotate.Rotate(180);
-      break;
-    case 270:
-      rotate.Translate(0, size_to_rotate.width());
-      rotate.Rotate(270);
-      break;
+  gfx::Transform transform = display::Display::GetRotationTransform(
+      RotationBetween(old_rotation, new_rotation), size_to_rotate);
+
+  return transform;
+}
+
+gfx::OverlayTransform DisplayRotationToOverlayTransform(
+    display::Display::Rotation rotation) {
+  switch (rotation) {
+    case display::Display::ROTATE_0:
+      return gfx::OVERLAY_TRANSFORM_NONE;
+    case display::Display::ROTATE_90:
+      return gfx::OVERLAY_TRANSFORM_ROTATE_90;
+    case display::Display::ROTATE_180:
+      return gfx::OVERLAY_TRANSFORM_ROTATE_180;
+    case display::Display::ROTATE_270:
+      return gfx::OVERLAY_TRANSFORM_ROTATE_270;
   }
-  RoundNearZero(&rotate);
-  return rotate;
+  NOTREACHED();
+  return gfx::OVERLAY_TRANSFORM_NONE;
 }
 
 }  // namespace ash

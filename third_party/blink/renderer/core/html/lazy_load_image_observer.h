@@ -21,34 +21,38 @@ class Visitor;
 class LazyLoadImageObserver final
     : public GarbageCollected<LazyLoadImageObserver> {
  public:
+  enum class DeferralMessage {
+    kNone,
+    kLoadEventsDeferred,
+    kMissingDimensionForLazy
+  };
+
   struct VisibleLoadTimeMetrics {
     // Keeps track of whether the image was initially intersecting the viewport.
     bool is_initially_intersecting = false;
     bool has_initial_intersection_been_set = false;
 
-    // True if metrics need to be recorded and has not been recorded yet.
-    bool record_visibility_metrics = false;
-
     // Set when the image first becomes visible (i.e. appears in the viewport).
-    TimeTicks time_when_first_visible;
+    base::TimeTicks time_when_first_visible;
+
+    // Set when the first load event is dispatched for the image.
+    base::TimeTicks time_when_first_load_finished;
   };
 
-  LazyLoadImageObserver();
+  LazyLoadImageObserver(const Document&);
 
-  static void StartMonitoring(Element*);
-  static void StopMonitoring(Element*);
+  void StartMonitoringNearViewport(Document*, Element*, DeferralMessage);
+  void StopMonitoring(Element*);
 
-  static void StartTrackingVisibilityMetrics(HTMLImageElement*);
-  static void RecordMetricsOnLoadFinished(HTMLImageElement*);
+  void StartMonitoringVisibility(Document*, HTMLImageElement*);
+  void OnLoadFinished(HTMLImageElement*);
+
+  bool IsFullyLoadableFirstKImageAndDecrementCount();
 
   void Trace(Visitor*);
 
  private:
-  void StartMonitoringNearViewport(Document*, Element*);
   void LoadIfNearViewport(const HeapVector<Member<IntersectionObserverEntry>>&);
-
-  void StartMonitoringVisibility(Document*, HTMLImageElement*);
-  void OnLoadFinished(HTMLImageElement*);
 
   void OnVisibilityChanged(
       const HeapVector<Member<IntersectionObserverEntry>>&);
@@ -59,6 +63,13 @@ class LazyLoadImageObserver final
 
   // The intersection observer used to track when the image becomes visible.
   Member<IntersectionObserver> visibility_metrics_observer_;
+
+  // Count of remaining images that can be fully loaded.
+  int count_remaining_images_fully_loaded_ = 0;
+
+  // Used to show the intervention console message one time only.
+  bool is_load_event_deferred_intervention_shown_ = false;
+  bool is_missing_dimension_intervention_shown_ = false;
 };
 
 }  // namespace blink

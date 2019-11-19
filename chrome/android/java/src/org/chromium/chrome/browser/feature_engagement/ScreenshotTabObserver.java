@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.feature_engagement;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
@@ -41,7 +41,7 @@ public class ScreenshotTabObserver extends EmptyTabObserver implements UserData 
      * @return ScreenshotTabObserver to use, or null if the tab was null.
      */
     public static ScreenshotTabObserver from(Tab tab) {
-        if (tab == null) return null;
+        if (tab == null || !tab.isInitialized()) return null;
         // Get the current observer from the tab using UserData, if any.  If not, create a new
         // observer and put it into the UserData for the tab.
         ScreenshotTabObserver observer = get(tab);
@@ -59,7 +59,7 @@ public class ScreenshotTabObserver extends EmptyTabObserver implements UserData 
      */
     @Nullable
     public static ScreenshotTabObserver get(Tab tab) {
-        if (tab == null) return null;
+        if (tab == null || !tab.isInitialized()) return null;
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 

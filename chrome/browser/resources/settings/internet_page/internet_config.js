@@ -12,15 +12,6 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    /**
-     * Interface for networkingPrivate calls, passed from internet_page.
-     * @type {NetworkingPrivate}
-     */
-    networkingPrivate: Object,
-
-    /** @type {!chrome.networkingPrivate.GlobalPolicy|undefined} */
-    globalPolicy: Object,
-
     /** @private */
     shareAllowEnable_: {
       type: Boolean,
@@ -44,13 +35,14 @@ Polymer({
     guid: String,
 
     /**
-     * The type of network to be configured.
-     * @type {!chrome.networkingPrivate.NetworkType}
+     * The type of network to be configured as a string. May be set initially or
+     * updated by network-config.
      */
     type: String,
 
     /**
-     * The name of network (for display while the network details are fetched).
+     * The name of the network. May be set initially or updated by
+     * network-config.
      */
     name: String,
 
@@ -64,14 +56,6 @@ Polymer({
 
     /** @private */
     enableSave_: Boolean,
-
-    /**
-     * The current properties if an existing network is being configured, or
-     * a minimal subset for a new network. Note: network-config may modify
-     * this (specifically .name).
-     * @private {!chrome.networkingPrivate.ManagedProperties}
-     */
-    managedProperties_: Object,
 
     /**
      * Set by network-config when a configuration error occurs.
@@ -89,14 +73,6 @@ Polymer({
       dialog.showModal();
     }
 
-    // Set managedProperties for new configurations and for existing
-    // configurations until the current properties are loaded.
-    assert(this.type && this.type != CrOnc.Type.ALL);
-    this.managedProperties_ = {
-      GUID: this.guid,
-      Name: {Active: this.name},
-      Type: this.type,
-    };
     this.$.networkConfig.init();
   },
 
@@ -113,8 +89,6 @@ Polymer({
    */
   onClose_: function(event) {
     this.close();
-    this.fire('networks-changed');
-    event.stopPropagation();
   },
 
   /**
@@ -122,12 +96,10 @@ Polymer({
    * @private
    */
   getDialogTitle_: function() {
-    const name = /** @type {string} */ (
-        CrOnc.getActiveValue(this.managedProperties_.Name));
-    if (name) {
-      return this.i18n('internetConfigName', HTMLEscape(name));
+    if (this.name && !this.showConnect) {
+      return this.i18n('internetConfigName', HTMLEscape(this.name));
     }
-    const type = this.i18n('OncType' + this.managedProperties_.Type);
+    const type = this.i18n('OncType' + this.type);
     return this.i18n('internetJoinType', type);
   },
 

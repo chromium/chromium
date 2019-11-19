@@ -9,15 +9,8 @@
 #include <string>
 
 #include "services/tracing/public/cpp/base_agent.h"
-#include "services/tracing/public/mojom/tracing.mojom.h"
-
-namespace base {
-class RefCountedString;
-}  // namespace base
 
 namespace content {
-
-class CrOSSystemTracingSession;
 
 // TODO(crbug.com/839086): Remove once we have replaced the legacy tracing
 // service with perfetto.
@@ -29,19 +22,6 @@ class CrOSTracingAgent : public tracing::BaseAgent {
   friend std::default_delete<CrOSTracingAgent>;
 
   ~CrOSTracingAgent() override;
-
-  // tracing::mojom::Agent. Called by Mojo internals on the UI thread.
-  void StartTracing(const std::string& config,
-                    base::TimeTicks coordinator_time,
-                    Agent::StartTracingCallback callback) override;
-  void StopAndFlush(tracing::mojom::RecorderPtr recorder) override;
-
-  void StartTracingCallbackProxy(Agent::StartTracingCallback callback,
-                                 bool success);
-  void RecorderProxy(const scoped_refptr<base::RefCountedString>& events);
-
-  std::unique_ptr<CrOSSystemTracingSession> session_;
-  tracing::mojom::RecorderPtr recorder_;
 
   DISALLOW_COPY_AND_ASSIGN(CrOSTracingAgent);
 };

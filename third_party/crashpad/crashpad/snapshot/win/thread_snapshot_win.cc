@@ -48,19 +48,20 @@ bool ThreadSnapshotWin::Initialize(
   if (process_reader->GetProcessInfo().LoggingRangeIsFullyReadable(
           CheckedRange<WinVMAddress, WinVMSize>(thread_.stack_region_address,
                                                 thread_.stack_region_size))) {
-    stack_.Initialize(process_reader,
+    stack_.Initialize(process_reader->Memory(),
                       thread_.stack_region_address,
                       thread_.stack_region_size);
   } else {
-    stack_.Initialize(process_reader, 0, 0);
+    stack_.Initialize(process_reader->Memory(), 0, 0);
   }
 
   if (process_reader->GetProcessInfo().LoggingRangeIsFullyReadable(
           CheckedRange<WinVMAddress, WinVMSize>(thread_.teb_address,
                                                 thread_.teb_size))) {
-    teb_.Initialize(process_reader, thread_.teb_address, thread_.teb_size);
+    teb_.Initialize(
+        process_reader->Memory(), thread_.teb_address, thread_.teb_size);
   } else {
-    teb_.Initialize(process_reader, 0, 0);
+    teb_.Initialize(process_reader->Memory(), 0, 0);
   }
 
 #if defined(ARCH_CPU_X86)

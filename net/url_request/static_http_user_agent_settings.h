@@ -9,8 +9,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "net/base/http_user_agent_settings.h"
 #include "net/base/net_export.h"
-#include "net/url_request/http_user_agent_settings.h"
 
 namespace net {
 

@@ -54,29 +54,19 @@ NetExportFileWriter::DefaultLogPathResults SetUpDefaultLogPath(
   return results;
 }
 
-// If running on a POSIX OS, this will attempt to set all the permission flags
-// of the file at |path| to 1. Will return |path| on success and the empty path
-// on failure.
-base::FilePath GetPathWithAllPermissions(const base::FilePath& path) {
+base::FilePath GetPathIfExists(const base::FilePath& path) {
   if (!base::PathExists(path))
     return base::FilePath();
-#if defined(OS_POSIX)
-  return base::SetPosixFilePermissions(path, base::FILE_PERMISSION_MASK)
-             ? path
-             : base::FilePath();
-#else
   return path;
-#endif
 }
 
 scoped_refptr<base::SequencedTaskRunner> CreateFileTaskRunner() {
-  // The tasks posted to this sequenced task runner do synchronous File I/O for
-  // checking paths and setting permissions on files.
+  // The tasks posted to this sequenced task runner do synchronous File I/O.
   //
   // These operations can be skipped on shutdown since FileNetLogObserver's API
   // doesn't require things to have completed until notified of completion.
-  return base::CreateSequencedTaskRunnerWithTraits(
-      {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+  return base::CreateSequencedTaskRunner(
+      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
@@ -86,9 +76,8 @@ NetExportFileWriter::NetExportFileWriter()
     : state_(STATE_UNINITIALIZED),
       log_exists_(false),
       log_capture_mode_known_(false),
-      log_capture_mode_(net::NetLogCaptureMode::Default()),
-      default_log_base_dir_getter_(base::Bind(&base::GetTempDir)),
-      weak_ptr_factory_(this) {}
+      log_capture_mode_(net::NetLogCaptureMode::kDefault),
+      default_log_base_dir_getter_(base::Bind(&base::GetTempDir)) {}
 
 NetExportFileWriter::~NetExportFileWriter() {
   if (net_log_exporter_) {
@@ -148,11 +137,12 @@ void NetExportFileWriter::StartNetLog(
 
   NotifyStateObserversAsync();
 
-  network_context->CreateNetLogExporter(mojo::MakeRequest(&net_log_exporter_));
+  network_context->CreateNetLogExporter(
+      net_log_exporter_.BindNewPipeAndPassReceiver());
   base::Value custom_constants = base::Value::FromUniquePtrValue(
-      ChromeNetLog::GetPlatformConstants(command_line_string, channel_string));
+      GetPlatformConstantsForNetLog(command_line_string, channel_string));
 
-  net_log_exporter_.set_connection_error_handler(base::BindOnce(
+  net_log_exporter_.set_disconnect_handler(base::BindOnce(
       &NetExportFileWriter::OnConnectionError, base::Unretained(this)));
 
   base::PostTaskAndReplyWithResult(
@@ -184,20 +174,11 @@ void NetExportFileWriter::StartNetLogAfterCreateFile(
   if (!net_log_exporter_)
     return;
 
-  network::mojom::NetLogCaptureMode rpc_capture_mode =
-      network::mojom::NetLogCaptureMode::DEFAULT;
-  if (capture_mode.include_socket_bytes()) {
-    rpc_capture_mode = network::mojom::NetLogCaptureMode::INCLUDE_SOCKET_BYTES;
-  } else if (capture_mode.include_cookies_and_credentials()) {
-    rpc_capture_mode =
-        network::mojom::NetLogCaptureMode::INCLUDE_COOKIES_AND_CREDENTIALS;
-  }
-
   // base::Unretained(this) is safe here since |net_log_exporter_| is owned by
   // |this| and is a mojo InterfacePtr, which guarantees callback cancellation
   // upon its destruction.
   net_log_exporter_->Start(
-      std::move(output_file), std::move(custom_constants), rpc_capture_mode,
+      std::move(output_file), std::move(custom_constants), capture_mode,
       max_file_size,
       base::BindOnce(&NetExportFileWriter::OnStartResult,
                      base::Unretained(this), capture_mode));
@@ -296,18 +277,18 @@ void NetExportFileWriter::GetFilePathToCompletedLog(
   DCHECK(file_task_runner_);
   DCHECK(!log_path_.empty());
 
-  base::PostTaskAndReplyWithResult(
-      file_task_runner_.get(), FROM_HERE,
-      base::Bind(&GetPathWithAllPermissions, log_path_), path_callback);
+  base::PostTaskAndReplyWithResult(file_task_runner_.get(), FROM_HERE,
+                                   base::Bind(&GetPathIfExists, log_path_),
+                                   path_callback);
 }
 
 std::string NetExportFileWriter::CaptureModeToString(
     net::NetLogCaptureMode capture_mode) {
-  if (capture_mode == net::NetLogCaptureMode::Default())
+  if (capture_mode == net::NetLogCaptureMode::kDefault)
     return "STRIP_PRIVATE_DATA";
-  if (capture_mode == net::NetLogCaptureMode::IncludeCookiesAndCredentials())
+  if (capture_mode == net::NetLogCaptureMode::kIncludeSensitive)
     return "NORMAL";
-  if (capture_mode == net::NetLogCaptureMode::IncludeSocketBytes())
+  if (capture_mode == net::NetLogCaptureMode::kEverything)
     return "LOG_BYTES";
   NOTREACHED();
   return "STRIP_PRIVATE_DATA";
@@ -316,13 +297,13 @@ std::string NetExportFileWriter::CaptureModeToString(
 net::NetLogCaptureMode NetExportFileWriter::CaptureModeFromString(
     const std::string& capture_mode_string) {
   if (capture_mode_string == "STRIP_PRIVATE_DATA")
-    return net::NetLogCaptureMode::Default();
+    return net::NetLogCaptureMode::kDefault;
   if (capture_mode_string == "NORMAL")
-    return net::NetLogCaptureMode::IncludeCookiesAndCredentials();
+    return net::NetLogCaptureMode::kIncludeSensitive;
   if (capture_mode_string == "LOG_BYTES")
-    return net::NetLogCaptureMode::IncludeSocketBytes();
+    return net::NetLogCaptureMode::kEverything;
   NOTREACHED();
-  return net::NetLogCaptureMode::Default();
+  return net::NetLogCaptureMode::kDefault;
 }
 
 void NetExportFileWriter::SetDefaultLogBaseDirectoryGetterForTest(

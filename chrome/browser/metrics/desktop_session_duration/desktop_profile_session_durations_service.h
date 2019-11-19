@@ -10,7 +10,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/driver/sync_session_durations_metrics_recorder.h"
 
-namespace identity {
+namespace signin {
 class IdentityManager;
 }
 namespace syncer {
@@ -28,13 +28,14 @@ class DesktopProfileSessionDurationsService
   // Callers must ensure that the parameters outlive this object.
   DesktopProfileSessionDurationsService(
       syncer::SyncService* sync_service,
-      identity::IdentityManager* identity_manager,
+      signin::IdentityManager* identity_manager,
       DesktopSessionDurationTracker* tracker);
   ~DesktopProfileSessionDurationsService() override;
 
   // DesktopSessionDurationtracker::Observer:
   void OnSessionStarted(base::TimeTicks session_start) override;
-  void OnSessionEnded(base::TimeDelta session_length) override;
+  void OnSessionEnded(base::TimeDelta session_length,
+                      base::TimeTicks session_end) override;
 
   // KeyedService:
   void Shutdown() override;

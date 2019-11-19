@@ -9,7 +9,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/hash.h"
+#include "base/hash/hash.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/pickle.h"
@@ -30,7 +30,7 @@
 #include "net/disk_cache/simple/simple_util.h"
 #include "net/disk_cache/simple/simple_version_upgrade.h"
 #include "net/test/gtest_util.h"
-#include "net/test/test_with_scoped_task_environment.h"
+#include "net/test/test_with_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -176,7 +176,7 @@ class WrappedSimpleIndexFile : public SimpleIndexFile {
   }
 };
 
-class SimpleIndexFileTest : public net::TestWithScopedTaskEnvironment {
+class SimpleIndexFileTest : public net::TestWithTaskEnvironment {
  public:
   bool CompareTwoEntryMetadata(const EntryMetadata& a, const EntryMetadata& b) {
     return a.last_used_time_seconds_since_epoch_ ==
@@ -213,7 +213,7 @@ TEST_F(SimpleIndexFileTest, Serialize) {
 
   std::unique_ptr<base::Pickle> pickle = WrappedSimpleIndexFile::Serialize(
       net::DISK_CACHE, index_metadata, entries);
-  EXPECT_TRUE(pickle.get() != NULL);
+  EXPECT_TRUE(pickle.get() != nullptr);
   base::Time now = base::Time::Now();
   WrappedSimpleIndexFile::SerializeFinalData(now, pickle.get());
   base::Time when_index_last_saw_cache;
@@ -253,7 +253,7 @@ TEST_F(SimpleIndexFileTest, SerializeAppCache) {
 
   std::unique_ptr<base::Pickle> pickle = WrappedSimpleIndexFile::Serialize(
       net::APP_CACHE, index_metadata, entries);
-  EXPECT_TRUE(pickle.get() != NULL);
+  EXPECT_TRUE(pickle.get() != nullptr);
   base::Time now = base::Time::Now();
   WrappedSimpleIndexFile::SerializeFinalData(now, pickle.get());
   base::Time when_index_last_saw_cache;
@@ -295,7 +295,7 @@ TEST_F(SimpleIndexFileTest, ReadV7Format) {
   }
   std::unique_ptr<base::Pickle> pickle =
       WrappedSimpleIndexFile::Serialize(net::DISK_CACHE, v7_metadata, entries);
-  ASSERT_TRUE(pickle.get() != NULL);
+  ASSERT_TRUE(pickle.get() != nullptr);
   base::Time now = base::Time::Now();
   WrappedSimpleIndexFile::SerializeFinalData(now, pickle.get());
 
@@ -338,7 +338,7 @@ TEST_F(SimpleIndexFileTest, ReadV8Format) {
   }
   std::unique_ptr<base::Pickle> pickle =
       WrappedSimpleIndexFile::Serialize(net::DISK_CACHE, v8_metadata, entries);
-  ASSERT_TRUE(pickle.get() != NULL);
+  ASSERT_TRUE(pickle.get() != nullptr);
   base::Time now = base::Time::Now();
   WrappedSimpleIndexFile::SerializeFinalData(now, pickle.get());
 
@@ -381,7 +381,7 @@ TEST_F(SimpleIndexFileTest, ReadV8FormatAppCache) {
   }
   std::unique_ptr<base::Pickle> pickle =
       WrappedSimpleIndexFile::Serialize(net::DISK_CACHE, v8_metadata, entries);
-  ASSERT_TRUE(pickle.get() != NULL);
+  ASSERT_TRUE(pickle.get() != nullptr);
   base::Time now = base::Time::Now();
   WrappedSimpleIndexFile::SerializeFinalData(now, pickle.get());
 
@@ -591,8 +591,9 @@ TEST_F(SimpleIndexFileTest, SimpleCacheUpgrade) {
   net::TestCompletionCallback cb;
   int rv = simple_cache->Init(cb.callback());
   EXPECT_THAT(cb.GetResult(rv), IsOk());
-  rv = simple_cache->index()->ExecuteWhenReady(cb.callback());
-  EXPECT_THAT(cb.GetResult(rv), IsOk());
+  simple_cache->index()->ExecuteWhenReady(cb.callback());
+  rv = cb.WaitForResult();
+  EXPECT_THAT(rv, IsOk());
   delete simple_cache;
   cleanup_tracker = nullptr;
 

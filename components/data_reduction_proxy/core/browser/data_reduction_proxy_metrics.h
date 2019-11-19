@@ -7,14 +7,7 @@
 
 #include <vector>
 
-namespace net {
-class ProxyConfig;
-class URLRequest;
-}
-
 namespace data_reduction_proxy {
-
-class DataReductionProxyConfig;
 
 typedef std::vector<long long> ContentLengthList;
 
@@ -43,12 +36,6 @@ enum DataReductionProxyRequestType {
   DIRECT_HTTP,   // An http request with a disabled data reduction proxy.
   UNKNOWN_TYPE,  // Any other reason not listed above.
 };
-
-// Returns DataReductionProxyRequestType for |request|.
-DataReductionProxyRequestType GetDataReductionProxyRequestType(
-    const net::URLRequest& request,
-    const net::ProxyConfig& proxy_config,
-    const DataReductionProxyConfig& data_reduction_proxy_config);
 
 }  // namespace data_reduction_proxy
 

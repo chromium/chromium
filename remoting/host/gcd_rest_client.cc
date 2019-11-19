@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_clock.h"
@@ -146,7 +145,7 @@ void GcdRestClient::FinishCurrentRequest(Result result) {
   DCHECK(HasPendingRequest());
   resource_request_.reset();
   url_loader_.reset();
-  base::ResetAndReturn(&callback_).Run(result);
+  std::move(callback_).Run(result);
 }
 
 void GcdRestClient::OnURLLoadComplete(

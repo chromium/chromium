@@ -11,10 +11,12 @@
 #include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "ios/web/public/network_context_owner.h"
+#include "ios/web/public/init/network_context_owner.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace net {
+class NetLog;
 class URLRequestContextGetter;
 }
 
@@ -27,10 +29,6 @@ namespace mojom {
 class NetworkContext;
 }
 }  // namespace network
-
-namespace net_log {
-class ChromeNetLog;
-}
 
 class PrefService;
 
@@ -58,6 +56,9 @@ class ApplicationContext {
   // Gets the locale used by the application.
   const std::string& GetApplicationLocale();
 
+  // Gets the NetLog.
+  net::NetLog* GetNetLog();
+
   // Creates state tied to application threads. It is expected this will be
   // called from web::WebMainParts::PreCreateThreads.
   void PreCreateThreads();
@@ -76,9 +77,6 @@ class ApplicationContext {
   ApplicationContext();
   ~ApplicationContext();
 
-  // Gets the ChromeNetLog.
-  net_log::ChromeNetLog* GetNetLog();
-
   // Gets the WebViewIOThread.
   WebViewIOThread* GetWebViewIOThread();
 
@@ -87,12 +85,12 @@ class ApplicationContext {
 
   SEQUENCE_CHECKER(sequence_checker_);
   std::unique_ptr<PrefService> local_state_;
-  std::unique_ptr<net_log::ChromeNetLog> net_log_;
+  std::unique_ptr<net::NetLog> net_log_;
   std::unique_ptr<WebViewIOThread> web_view_io_thread_;
   std::string application_locale_;
 
-  network::mojom::NetworkContextPtr network_context_;
-  network::mojom::URLLoaderFactoryPtr url_loader_factory_;
+  mojo::Remote<network::mojom::NetworkContext> network_context_;
+  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       shared_url_loader_factory_;
 

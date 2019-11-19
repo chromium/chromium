@@ -19,13 +19,6 @@ class ArcNotificationManagerDelegate {
   // Whether the current user session is public session or kiosk.
   virtual bool IsPublicSessionOrKiosk() const = 0;
 
-  // Gets app id by package name.
-  using GetAppIdByPackageNameCallback =
-      base::OnceCallback<void(const std::string& app_id)>;
-  virtual void GetAppIdByPackageName(
-      const std::string& package_name,
-      GetAppIdByPackageNameCallback callback) = 0;
-
   // Shows the message center.
   virtual void ShowMessageCenter() = 0;
 

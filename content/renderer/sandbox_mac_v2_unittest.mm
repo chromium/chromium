@@ -78,6 +78,8 @@ void SetParametersForTest(sandbox::SandboxCompiler* compiler,
   CHECK(compiler->InsertStringParam("CURRENT_PID", std::to_string(getpid())));
   CHECK(
       compiler->InsertStringParam("EXECUTABLE_PATH", executable_path.value()));
+
+  CHECK(compiler->InsertBooleanParam("FILTER_SYSCALLS", true));
 }
 
 }  // namespace
@@ -159,11 +161,9 @@ MULTIPROCESS_TEST_MAIN(SandboxProfileProcess) {
                                            4096));
 
   // Check that not all sysctls, including those that can get the MAC address,
-  // are allowed. See crbug.com/738129. Only 10.10+ supports sysctl filtering.
-  if (base::mac::IsAtLeastOS10_10()) {
-    struct ifaddrs* ifap;
-    CHECK_EQ(-1, getifaddrs(&ifap));
-  }
+  // are allowed. See crbug.com/738129.
+  struct ifaddrs* ifap;
+  CHECK_EQ(-1, getifaddrs(&ifap));
 
   std::vector<uint8_t> sysctl_data(4096);
   size_t data_size = sysctl_data.size();

@@ -30,10 +30,7 @@ namespace blink {
 class PLATFORM_EXPORT CompositorFloatAnimationCurve
     : public CompositorAnimationCurve {
  public:
-  static std::unique_ptr<CompositorFloatAnimationCurve> Create() {
-    return base::WrapUnique(new CompositorFloatAnimationCurve());
-  }
-
+  CompositorFloatAnimationCurve();
   ~CompositorFloatAnimationCurve() override;
 
   void AddKeyframe(const CompositorFloatKeyframe&);
@@ -53,7 +50,6 @@ class PLATFORM_EXPORT CompositorFloatAnimationCurve
   scoped_refptr<TimingFunction> GetTimingFunctionForTesting() const;
 
  private:
-  CompositorFloatAnimationCurve();
   CompositorFloatAnimationCurve(
       std::unique_ptr<cc::KeyframedFloatAnimationCurve>);
 

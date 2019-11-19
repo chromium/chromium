@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//      https://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -157,6 +157,16 @@ struct NonMovable {
   NonMovable& operator=(NonMovable&&) = delete;
 };
 
+struct NoDefault {
+  NoDefault() = delete;
+  NoDefault(const NoDefault&) {}
+  NoDefault& operator=(const NoDefault&) { return *this; }
+};
+
+struct ConvertsFromInPlaceT {
+  ConvertsFromInPlaceT(absl::in_place_t) {}  // NOLINT
+};
+
 TEST(optionalTest, DefaultConstructor) {
   absl::optional<int> empty;
   EXPECT_FALSE(empty);
@@ -169,15 +179,7 @@ TEST(optionalTest, DefaultConstructor) {
 TEST(optionalTest, nulloptConstructor) {
   absl::optional<int> empty(absl::nullopt);
   EXPECT_FALSE(empty);
-
-#ifdef ABSL_HAVE_STD_OPTIONAL
   constexpr absl::optional<int> cempty{absl::nullopt};
-#else
-  // Creating a temporary absl::nullopt_t object instead of using absl::nullopt
-  // because absl::nullopt cannot be constexpr and have external linkage at the
-  // same time.
-  constexpr absl::optional<int> cempty{absl::nullopt_t(absl::nullopt_t::init)};
-#endif
   static_assert(!cempty.has_value(), "");
   EXPECT_TRUE((std::is_nothrow_constructible<absl::optional<int>,
                                              absl::nullopt_t>::value));
@@ -337,16 +339,18 @@ TEST(optionalTest, InPlaceConstructor) {
   static_assert((*opt2).x == ConstexprType::kCtorInitializerList, "");
 #endif
 
-  // TODO(absl-team): uncomment these when std::is_constructible<T, Args&&...>
-  // SFINAE is added to optional::optional(absl::in_place_t, Args&&...).
-  // struct I {
-  //   I(absl::in_place_t);
-  // };
+  EXPECT_FALSE((std::is_constructible<absl::optional<ConvertsFromInPlaceT>,
+                                      absl::in_place_t>::value));
+  EXPECT_FALSE((std::is_constructible<absl::optional<ConvertsFromInPlaceT>,
+                                      const absl::in_place_t&>::value));
+  EXPECT_TRUE(
+      (std::is_constructible<absl::optional<ConvertsFromInPlaceT>,
+                             absl::in_place_t, absl::in_place_t>::value));
 
-  // EXPECT_FALSE((std::is_constructible<absl::optional<I>,
-  // absl::in_place_t>::value));
-  // EXPECT_FALSE((std::is_constructible<absl::optional<I>, const
-  // absl::in_place_t&>::value));
+  EXPECT_FALSE((std::is_constructible<absl::optional<NoDefault>,
+                                      absl::in_place_t>::value));
+  EXPECT_FALSE((std::is_constructible<absl::optional<NoDefault>,
+                                      absl::in_place_t&&>::value));
 }
 
 // template<U=T> optional(U&&);
@@ -1476,8 +1480,8 @@ TEST(optionalTest, MoveAssignRegression) {
 
 TEST(optionalTest, ValueType) {
   EXPECT_TRUE((std::is_same<absl::optional<int>::value_type, int>::value));
-  EXPECT_TRUE(
-      (std::is_same<absl::optional<std::string>::value_type, std::string>::value));
+  EXPECT_TRUE((std::is_same<absl::optional<std::string>::value_type,
+                            std::string>::value));
   EXPECT_FALSE(
       (std::is_same<absl::optional<int>::value_type, absl::nullopt_t>::value));
 }
@@ -1623,5 +1627,30 @@ TEST(optionalTest, AssignmentConstraints) {
   EXPECT_TRUE(std::is_move_assignable<absl::optional<AnyLike>>::value);
   EXPECT_TRUE(absl::is_copy_assignable<absl::optional<AnyLike>>::value);
 }
+
+#if !defined(__EMSCRIPTEN__)
+struct NestedClassBug {
+  struct Inner {
+    bool dummy = false;
+  };
+  absl::optional<Inner> value;
+};
+
+TEST(optionalTest, InPlaceTSFINAEBug) {
+  NestedClassBug b;
+  ((void)b);
+  using Inner = NestedClassBug::Inner;
+
+  EXPECT_TRUE((std::is_default_constructible<Inner>::value));
+  EXPECT_TRUE((std::is_constructible<Inner>::value));
+  EXPECT_TRUE(
+      (std::is_constructible<absl::optional<Inner>, absl::in_place_t>::value));
+
+  absl::optional<Inner> o(absl::in_place);
+  EXPECT_TRUE(o.has_value());
+  o.emplace();
+  EXPECT_TRUE(o.has_value());
+}
+#endif  // !defined(__EMSCRIPTEN__)
 
 }  // namespace

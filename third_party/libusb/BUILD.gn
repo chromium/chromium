@@ -2,13 +2,25 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# libusb is only used by //device/usb on Windows and macOS.
+# libusb is only used by //services/device/usb on Windows and macOS.
 assert(is_win || is_mac)
 
 import("//build/config/features.gni")
 
 config("libusb_config") {
   include_dirs = [ "src/libusb" ]
+}
+
+config("libusb_linker_config") {
+  if (is_win) {
+    ldflags = [
+      "/DELAYLOAD:advapi32.dll",
+      "/DELAYLOAD:cfgmgr32.dll",
+      "/DELAYLOAD:ole32.dll",
+      "/DELAYLOAD:setupapi.dll",
+      "/DELAYLOAD:winusb.dll",
+    ]
+  }
 }
 
 config("libusb_warnings") {
@@ -24,8 +36,8 @@ config("libusb_warnings") {
 
 static_library("libusb") {
   visibility = [
-    "//device:device_unittests",
-    "//device/usb",
+    "//services/device:tests",
+    "//services/device/usb",
   ]
   sources = [
     "src/config.h",
@@ -71,6 +83,7 @@ static_library("libusb") {
   ]
 
   public_configs = [ ":libusb_config" ]
+  all_dependent_configs = [ ":libusb_linker_config" ]
 
   if (is_posix) {
     defines = [
@@ -90,6 +103,10 @@ static_library("libusb") {
 
       # Needed on OSX 10.12 to silence a deprecation warning.
       "OBJC_SILENCE_GC_DEPRECATIONS=1",
+    ]
+    libs = [
+      "CoreFoundation.framework",
+      "IOKit.framework",
     ]
   } else {
     sources -= [
@@ -133,7 +150,12 @@ static_library("libusb") {
       "src/libusb/os/poll_posix.c",
       "src/libusb/os/threads_posix.c",
     ]
-    libs = [ "setupapi.lib" ]
+    libs = [
+      "advapi32.lib",
+      "ole32.lib",
+      "setupapi.lib",
+      "winusb.lib",
+    ]
   } else {
     include_dirs += [ "src" ]
     sources -= [

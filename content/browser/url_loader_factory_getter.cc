@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
+#include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/service_worker/service_worker_utils.h"
@@ -58,7 +59,8 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
       bool is_corb_enabled)
       : factory_getter_(std::move(factory_getter)),
         is_corb_enabled_(is_corb_enabled) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO) ||
+           BrowserThread::CurrentlyOn(BrowserThread::IO));
   }
 
   explicit URLLoaderFactoryForIOThread(
@@ -69,28 +71,30 @@ class URLLoaderFactoryGetter::URLLoaderFactoryForIOThread
   }
 
   // mojom::URLLoaderFactory implementation:
-  void CreateLoaderAndStart(network::mojom::URLLoaderRequest request,
-                            int32_t routing_id,
-                            int32_t request_id,
-                            uint32_t options,
-                            const network::ResourceRequest& url_request,
-                            network::mojom::URLLoaderClientPtr client,
-                            const net::MutableNetworkTrafficAnnotationTag&
-                                traffic_annotation) override {
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      int32_t routing_id,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& url_request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override {
     DCHECK(BrowserThread::CurrentlyOn(BrowserThread::IO));
     if (!factory_getter_)
       return;
     factory_getter_->GetURLLoaderFactory(is_corb_enabled_)
-        ->CreateLoaderAndStart(std::move(request), routing_id, request_id,
+        ->CreateLoaderAndStart(std::move(receiver), routing_id, request_id,
                                options, url_request, std::move(client),
                                traffic_annotation);
   }
 
-  void Clone(network::mojom::URLLoaderFactoryRequest request) override {
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
+      override {
     if (!factory_getter_)
       return;
     factory_getter_->GetURLLoaderFactory(is_corb_enabled_)
-        ->Clone(std::move(request));
+        ->Clone(std::move(receiver));
   }
 
   // SharedURLLoaderFactory implementation:
@@ -126,31 +130,19 @@ void URLLoaderFactoryGetter::Initialize(StoragePartitionImpl* partition) {
   DCHECK(partition);
   partition_ = partition;
 
-  // Create a URLLoaderFactoryPtr synchronously and push it to the IO thread. If
-  // the pipe errors out later due to a network service crash, the pipe is
-  // created on the IO thread, and the request send back to the UI thread.
+  // Create a mojo::PendingRemote<URLLoaderFactory> synchronously and push it to
+  // the IO thread. If the pipe errors out later due to a network service crash,
+  // the pipe is created on the IO thread, and the request send back to the UI
+  // thread.
   // TODO(mmenke):  Is one less thread hop on startup worth the extra complexity
   // of two different pipe creation paths?
-  DCHECK(!pending_network_factory_request_.is_pending());
-  network::mojom::URLLoaderFactoryPtr network_factory;
-  pending_network_factory_request_ = MakeRequest(&network_factory);
-
-  // If NetworkService is disabled, HandleFactoryRequests should be called after
-  // NetworkContext in |partition_| is ready.
-  if (base::FeatureList::IsEnabled(network::features::kNetworkService))
-    HandleFactoryRequests();
-
-  base::PostTaskWithTraits(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&URLLoaderFactoryGetter::InitializeOnIOThread, this,
-                     network_factory.PassInterface()));
-}
-
-void URLLoaderFactoryGetter::HandleFactoryRequests() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(pending_network_factory_request_.is_pending());
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> network_factory;
   HandleNetworkFactoryRequestOnUIThread(
-      std::move(pending_network_factory_request_), false);
+      network_factory.InitWithNewPipeAndPassReceiver(), false);
+
+  base::PostTask(FROM_HERE, {BrowserThread::IO},
+                 base::BindOnce(&URLLoaderFactoryGetter::InitializeOnIOThread,
+                                this, std::move(network_factory)));
 }
 
 void URLLoaderFactoryGetter::OnStoragePartitionDestroyed() {
@@ -167,7 +159,8 @@ URLLoaderFactoryGetter::GetNetworkFactory() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 URLLoaderFactoryGetter::GetNetworkFactoryWithCORBEnabled() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO) ||
+         BrowserThread::CurrentlyOn(BrowserThread::IO));
   return base::MakeRefCounted<URLLoaderFactoryForIOThread>(
       base::WrapRefCounted(this), true);
 }
@@ -185,15 +178,16 @@ network::mojom::URLLoaderFactory* URLLoaderFactoryGetter::GetURLLoaderFactory(
   // This needs to be done before returning |test_factory_|, as the
   // |test_factory_| may fall back to |network_factory_|. The |is_bound()| check
   // is only needed by unit tests.
-  network::mojom::URLLoaderFactoryPtr* factory =
+  mojo::Remote<network::mojom::URLLoaderFactory>* factory =
       is_corb_enabled ? &network_factory_corb_enabled_ : &network_factory_;
-  if (factory->encountered_error() || !factory->is_bound()) {
-    network::mojom::URLLoaderFactoryPtr network_factory;
-    base::PostTaskWithTraits(
+  if (!factory->is_bound() || !factory->is_connected()) {
+    mojo::Remote<network::mojom::URLLoaderFactory> network_factory;
+    base::PostTask(
         FROM_HERE, {BrowserThread::UI},
         base::BindOnce(
             &URLLoaderFactoryGetter::HandleNetworkFactoryRequestOnUIThread,
-            this, mojo::MakeRequest(&network_factory), is_corb_enabled));
+            this, network_factory.BindNewPipeAndPassReceiver(),
+            is_corb_enabled));
     ReinitializeOnIOThread(std::move(network_factory), is_corb_enabled);
   }
 
@@ -210,9 +204,10 @@ network::mojom::URLLoaderFactory* URLLoaderFactoryGetter::GetURLLoaderFactory(
 }
 
 void URLLoaderFactoryGetter::CloneNetworkFactory(
-    network::mojom::URLLoaderFactoryRequest network_factory_request) {
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+        network_factory_receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  GetURLLoaderFactory(false)->Clone(std::move(network_factory_request));
+  GetURLLoaderFactory(false)->Clone(std::move(network_factory_receiver));
 }
 
 void URLLoaderFactoryGetter::SetNetworkFactoryForTesting(
@@ -240,7 +235,7 @@ void URLLoaderFactoryGetter::SetGetNetworkFactoryCallbackForTesting(
 void URLLoaderFactoryGetter::FlushNetworkInterfaceOnIOThreadForTesting() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::RunLoop run_loop;
-  base::PostTaskWithTraits(
+  base::PostTask(
       FROM_HERE, {BrowserThread::IO},
       base::BindOnce(&URLLoaderFactoryGetter::FlushNetworkInterfaceForTesting,
                      this, run_loop.QuitClosure()));
@@ -259,23 +254,24 @@ void URLLoaderFactoryGetter::FlushNetworkInterfaceForTesting(
 URLLoaderFactoryGetter::~URLLoaderFactoryGetter() {}
 
 void URLLoaderFactoryGetter::InitializeOnIOThread(
-    network::mojom::URLLoaderFactoryPtrInfo network_factory) {
-  ReinitializeOnIOThread(
-      network::mojom::URLLoaderFactoryPtr(std::move(network_factory)), false);
+    mojo::PendingRemote<network::mojom::URLLoaderFactory> network_factory) {
+  ReinitializeOnIOThread(mojo::Remote<network::mojom::URLLoaderFactory>(
+                             std::move(network_factory)),
+                         false);
 }
 
 void URLLoaderFactoryGetter::ReinitializeOnIOThread(
-    network::mojom::URLLoaderFactoryPtr network_factory,
+    mojo::Remote<network::mojom::URLLoaderFactory> network_factory,
     bool is_corb_enabled) {
   DCHECK(network_factory.is_bound());
-  // Set a connection error handle so that connection errors on the pipes are
+  // Set a disconnect handler so that connection errors on the pipes are
   // noticed, but the class doesn't actually do anything when the error is
   // observed - instead, a new pipe is created in GetURLLoaderFactory() as
   // needed. This is to avoid incrementing the reference count of |this| in the
   // callback, as that could result in increasing the reference count from 0 to
   // 1 while there's a pending task to delete |this|. See
   // https://crbug.com/870942 for more details.
-  network_factory.set_connection_error_handler(base::DoNothing());
+  network_factory.set_disconnect_handler(base::DoNothing());
   if (is_corb_enabled) {
     network_factory_corb_enabled_ = std::move(network_factory);
   } else {
@@ -284,7 +280,8 @@ void URLLoaderFactoryGetter::ReinitializeOnIOThread(
 }
 
 void URLLoaderFactoryGetter::HandleNetworkFactoryRequestOnUIThread(
-    network::mojom::URLLoaderFactoryRequest network_factory_request,
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory>
+        network_factory_receiver,
     bool is_corb_enabled) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // |StoragePartitionImpl| may have went away while |URLLoaderFactoryGetter| is
@@ -293,13 +290,15 @@ void URLLoaderFactoryGetter::HandleNetworkFactoryRequestOnUIThread(
     return;
   network::mojom::URLLoaderFactoryParamsPtr params =
       network::mojom::URLLoaderFactoryParams::New();
+  // The browser process is considered trusted.
+  params->is_trusted = true;
   params->process_id = network::mojom::kBrowserProcessId;
   params->is_corb_enabled = is_corb_enabled;
   params->disable_web_security =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableWebSecurity);
   partition_->GetNetworkContext()->CreateURLLoaderFactory(
-      std::move(network_factory_request), std::move(params));
+      std::move(network_factory_receiver), std::move(params));
 }
 
 }  // namespace content

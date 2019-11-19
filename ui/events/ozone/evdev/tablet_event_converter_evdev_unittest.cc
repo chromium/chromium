@@ -208,7 +208,7 @@ class TabletEventConverterEvdevTest : public testing::Test {
 
   // Overridden from testing::Test:
   void SetUp() override {
-    cursor_.reset(new ui::MockTabletCursorEvdev());
+    cursor_ = std::make_unique<ui::MockTabletCursorEvdev>();
     device_manager_ = ui::CreateDeviceManagerForTest();
     event_factory_ = ui::CreateEventFactoryEvdevForTest(
         cursor_.get(), device_manager_.get(),
@@ -219,7 +219,7 @@ class TabletEventConverterEvdevTest : public testing::Test {
     dispatcher_ =
         ui::CreateDeviceEventDispatcherEvdevForTest(event_factory_.get());
 
-    test_clock_.reset(new ui::test::ScopedEventTestTickClock());
+    test_clock_ = std::make_unique<ui::test::ScopedEventTestTickClock>();
   }
 
   void TearDown() override {

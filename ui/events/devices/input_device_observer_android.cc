@@ -5,7 +5,7 @@
 #include "ui/events/devices/input_device_observer_android.h"
 
 #include "base/memory/singleton.h"
-#include "jni/InputDeviceObserver_jni.h"
+#include "ui/events/devices/ui_events_devices_jni_headers/InputDeviceObserver_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;

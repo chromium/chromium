@@ -21,6 +21,11 @@ constexpr int kCPBWindowSizeMs = 500;
 constexpr int kMinQP = 4;
 constexpr int kMaxQP = 112;
 constexpr int kDefaultQP = (3 * kMinQP + kMaxQP) / 4;
+
+// filter level may affect on quality at lower bitrates; for now,
+// we set a constant value (== 10) which is what other VA-API
+// implementations like libyami and gstreamer-vaapi are using.
+constexpr uint8_t kDefaultLfLevel = 10;
 }  // namespace
 
 VP9Encoder::EncodeParams::EncodeParams()
@@ -47,7 +52,8 @@ VP9Encoder::~VP9Encoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-bool VP9Encoder::Initialize(const VideoEncodeAccelerator::Config& config) {
+bool VP9Encoder::Initialize(const VideoEncodeAccelerator::Config& config,
+                            const AcceleratedVideoEncoder::Config& ave_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (VideoCodecProfileToVideoCodec(config.output_profile) != kCodecVP9) {
     DVLOGF(1) << "Invalid profile: " << GetProfileName(config.output_profile);
@@ -111,8 +117,12 @@ bool VP9Encoder::PrepareEncodeJob(EncodeJob* encode_job) {
 
   *picture->frame_hdr = current_frame_hdr_;
 
+  // Use last, golden and altref for references.
+  constexpr std::array<bool, kVp9NumRefsPerFrame> ref_frames_used = {true, true,
+                                                                     true};
   if (!accelerator_->SubmitFrameParameters(encode_job, current_params_, picture,
-                                           reference_frames_)) {
+                                           reference_frames_,
+                                           ref_frames_used)) {
     LOG(ERROR) << "Failed submitting frame parameters";
     return false;
   }
@@ -150,7 +160,13 @@ void VP9Encoder::InitializeFrameHeader() {
   current_frame_hdr_.frame_height = visible_size_.height();
   current_frame_hdr_.render_width = visible_size_.width();
   current_frame_hdr_.render_height = visible_size_.height();
-  current_frame_hdr_.quant_params.base_q_idx = current_params_.initial_qp;
+  // Since initial_qp is always kDefaultQP (=31), base_q_idx should be 24
+  // (the table index for kDefaultQP, see rfc 8.6.1 table ac_qlookup[3][256])
+  // Note: This needs to be revisited once we have 10&12 bit encoder support
+  DCHECK_EQ(current_params_.initial_qp, kDefaultQP);
+  constexpr uint8_t kDefaultQPACQIndex = 24;
+  current_frame_hdr_.quant_params.base_q_idx = kDefaultQPACQIndex;
+  current_frame_hdr_.loop_filter.level = kDefaultLfLevel;
   current_frame_hdr_.show_frame = true;
 }
 

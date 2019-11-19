@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHAPEDETECTION_TEXT_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHAPEDETECTION_TEXT_DETECTOR_H_
 
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/shape_detection/public/mojom/textdetection.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -35,7 +36,7 @@ class MODULES_EXPORT TextDetector final : public ShapeDetector {
       Vector<shape_detection::mojom::blink::TextDetectionResultPtr>);
   void OnTextServiceConnectionError();
 
-  shape_detection::mojom::blink::TextDetectionPtr text_service_;
+  mojo::Remote<shape_detection::mojom::blink::TextDetection> text_service_;
 
   HeapHashSet<Member<ScriptPromiseResolver>> text_service_requests_;
 };

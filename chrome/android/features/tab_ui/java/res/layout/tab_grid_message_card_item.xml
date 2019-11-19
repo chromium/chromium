@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<org.chromium.chrome.browser.tasks.tab_management.MessageCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_grid_message_item"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@drawable/popup_bg_tinted">
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/icon"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:minWidth="8dp"
+        android:adjustViewBounds="true"
+        android:importantForAccessibility="no"
+        android:src="@drawable/ic_omnibox_page"/>
+    <org.chromium.chrome.browser.snackbar.TemplatePreservingTextView
+        android:id="@+id/description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
+        android:layout_weight="4"
+        android:textAlignment="viewStart"
+        android:textAppearance="@style/TextAppearance.BlackBodyDefault" />
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/TextButton"
+        android:layout_gravity="center"/>
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/close_button"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        style="@style/BottomToolbarButton"
+        android:contentDescription="@string/close"
+        android:tint="@color/default_icon_color" />
+</org.chromium.chrome.browser.tasks.tab_management.MessageCardView>

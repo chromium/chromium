@@ -118,7 +118,7 @@ class ResettableSettingsSnapshot {
   // The flag to cancel shortcuts retrieving.
   scoped_refptr<SharedCancellationFlag> cancellation_flag_;
 
-  base::WeakPtrFactory<ResettableSettingsSnapshot> weak_ptr_factory_;
+  base::WeakPtrFactory<ResettableSettingsSnapshot> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ResettableSettingsSnapshot);
 };

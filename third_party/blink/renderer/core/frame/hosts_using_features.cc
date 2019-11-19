@@ -55,10 +55,6 @@ void HostsUsingFeatures::CountHostOrIsolatedWorldHumanReadableName(
     document->HostsUsingFeaturesValue().Count(feature);
     return;
   }
-  if (Page* page = document->GetPage()) {
-    page->GetHostsUsingFeatures().CountName(
-        feature, script_state->World().NonMainWorldHumanReadableName());
-  }
 }
 
 void HostsUsingFeatures::Value::Count(Feature feature) {
@@ -66,13 +62,7 @@ void HostsUsingFeatures::Value::Count(Feature feature) {
   count_bits_ |= 1 << static_cast<unsigned>(feature);
 }
 
-void HostsUsingFeatures::CountName(Feature feature, const String& name) {
-  auto result = value_by_name_.insert(name, Value());
-  result.stored_value->value.Count(feature);
-}
-
 void HostsUsingFeatures::Clear() {
-  value_by_name_.clear();
   url_and_values_.clear();
 }
 
@@ -96,8 +86,6 @@ void HostsUsingFeatures::UpdateMeasurementsAndClear() {
     RecordETLDPlus1ToRappor();
     url_and_values_.clear();
   }
-  if (!value_by_name_.IsEmpty())
-    RecordNamesToRappor();
 }
 
 void HostsUsingFeatures::RecordHostToRappor() {
@@ -136,37 +124,11 @@ void HostsUsingFeatures::RecordETLDPlus1ToRappor() {
     url_and_value.value.RecordETLDPlus1ToRappor(KURL(url_and_value.key));
 }
 
-void HostsUsingFeatures::RecordNamesToRappor() {
-  DCHECK(!value_by_name_.IsEmpty());
-
-  for (auto& name_and_value : value_by_name_)
-    name_and_value.value.RecordNameToRappor(name_and_value.key);
-
-  value_by_name_.clear();
-}
-
 void HostsUsingFeatures::Value::Aggregate(HostsUsingFeatures::Value other) {
   count_bits_ |= other.count_bits_;
 }
 
 void HostsUsingFeatures::Value::RecordHostToRappor(const String& host) {
-  if (Get(Feature::kElementCreateShadowRoot))
-    Platform::Current()->RecordRappor("WebComponents.ElementCreateShadowRoot",
-                                      host);
-  if (Get(Feature::kElementAttachShadow))
-    Platform::Current()->RecordRappor("WebComponents.ElementAttachShadow",
-                                      host);
-  if (Get(Feature::kDocumentRegisterElement))
-    Platform::Current()->RecordRappor("WebComponents.DocumentRegisterElement",
-                                      host);
-  if (Get(Feature::kEventPath))
-    Platform::Current()->RecordRappor("WebComponents.EventPath", host);
-  if (Get(Feature::kDeviceMotionInsecureHost))
-    Platform::Current()->RecordRappor(
-        "PowerfulFeatureUse.Host.DeviceMotion.Insecure", host);
-  if (Get(Feature::kDeviceOrientationInsecureHost))
-    Platform::Current()->RecordRappor(
-        "PowerfulFeatureUse.Host.DeviceOrientation.Insecure", host);
   if (Get(Feature::kFullscreenInsecureHost))
     Platform::Current()->RecordRappor(
         "PowerfulFeatureUse.Host.Fullscreen.Insecure", host);
@@ -180,12 +142,6 @@ void HostsUsingFeatures::Value::RecordHostToRappor(const String& host) {
   if (Get(Feature::kApplicationCacheAPIInsecureHost))
     Platform::Current()->RecordRappor(
         "PowerfulFeatureUse.Host.ApplicationCacheAPI.Insecure", host);
-}
-
-void HostsUsingFeatures::Value::RecordNameToRappor(const String& name) {
-  if (Get(Feature::kEventPath))
-    Platform::Current()->RecordRappor("WebComponents.EventPath.Extensions",
-                                      name);
 }
 
 void HostsUsingFeatures::Value::RecordETLDPlus1ToRappor(const KURL& url) {

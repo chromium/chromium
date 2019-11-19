@@ -7,7 +7,7 @@
 
 #include "extensions/browser/extension_function.h"
 
-class IdltestSendArrayBufferFunction : public UIThreadExtensionFunction {
+class IdltestSendArrayBufferFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("idltest.sendArrayBuffer", IDLTEST_SENDARRAYBUFFER)
 
@@ -16,7 +16,7 @@ class IdltestSendArrayBufferFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class IdltestSendArrayBufferViewFunction : public UIThreadExtensionFunction {
+class IdltestSendArrayBufferViewFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("idltest.sendArrayBufferView",
                              IDLTEST_SENDARRAYBUFFERVIEW)
@@ -26,7 +26,7 @@ class IdltestSendArrayBufferViewFunction : public UIThreadExtensionFunction {
   ResponseAction Run() override;
 };
 
-class IdltestGetArrayBufferFunction : public UIThreadExtensionFunction {
+class IdltestGetArrayBufferFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("idltest.getArrayBuffer", IDLTEST_GETARRAYBUFFER)
 

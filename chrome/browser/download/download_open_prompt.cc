@@ -4,6 +4,9 @@
 
 #include "chrome/browser/download/download_open_prompt.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -102,10 +105,11 @@ DownloadOpenPrompt* DownloadOpenPrompt::CreateDownloadOpenConfirmationDialog(
     const std::string& extension_name,
     const base::FilePath& file_path,
     DownloadOpenPrompt::OpenCallback open_callback) {
-  DownloadOpenConfirmationDialog* prompt = new DownloadOpenConfirmationDialog(
+  auto prompt = std::make_unique<DownloadOpenConfirmationDialog>(
       web_contents, extension_name, file_path, std::move(open_callback));
-  TabModalConfirmDialog::Create(prompt, web_contents);
-  return prompt;
+  DownloadOpenConfirmationDialog* prompt_observer = prompt.get();
+  TabModalConfirmDialog::Create(std::move(prompt), web_contents);
+  return prompt_observer;
 }
 
 void DownloadOpenPrompt::AcceptConfirmationDialogForTesting(

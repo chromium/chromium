@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/test_region_data_loader.h"
+#include "components/autofill/core/browser/geo/test_region_data_loader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/ocmock/OCMock/OCMock.h"

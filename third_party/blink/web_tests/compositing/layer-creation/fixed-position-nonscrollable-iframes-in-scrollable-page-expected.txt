@@ -2,24 +2,13 @@ In all iframes, the green fixed-position element should not be composited.
 {
   "layers": [
     {
-      "name": "LayoutView #document",
-      "bounds": [800, 600],
-      "drawsContent": false,
-      "backgroundColor": "#FFFFFF"
-    },
-    {
-      "name": "Scrolling Layer",
-      "bounds": [785, 600],
-      "drawsContent": false
-    },
-    {
       "name": "Scrolling Contents Layer",
       "bounds": [785, 4016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutBlockFlow (positioned) DIV class='composited box'",
+      "name": "LayoutNGBlockFlow (positioned) DIV class='composited box'",
       "bounds": [300, 100],
       "contentsOpaque": true,
       "backgroundColor": "#00FFFF",
@@ -32,8 +21,14 @@ In all iframes, the green fixed-position element should not be composited.
     },
     {
       "name": "LayoutIFrame (positioned) IFRAME id='iframe3'",
-      "position": [10, 380],
-      "bounds": [154, 154]
+      "bounds": [154, 154],
+      "transform": 3
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [785, 0],
+      "bounds": [15, 600],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -53,6 +48,15 @@ In all iframes, the green fixed-position element should not be composited.
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [10, 200, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [10, 380, 0, 1]
       ]
     }
   ]

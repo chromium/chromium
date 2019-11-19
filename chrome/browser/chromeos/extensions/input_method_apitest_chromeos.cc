@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/extensions/input_method_event_router.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/notification_observer.h"
@@ -29,7 +30,7 @@
 #include "ui/base/ime/chromeos/input_method_whitelist.h"
 #include "ui/base/ime/ime_bridge.h"
 
-using namespace chromeos::input_method;
+using chromeos::input_method::InputMethodManager;
 
 namespace {
 
@@ -61,7 +62,8 @@ class TestListener : public content::NotificationObserver {
       // background.
       InputMethodManager* manager = InputMethodManager::Get();
       manager->GetInputMethodUtil()->InitXkbInputMethodsForTesting(
-          *InputMethodWhitelist().GetSupportedInputMethods());
+          *chromeos::input_method::InputMethodWhitelist()
+               .GetSupportedInputMethods());
 
       std::vector<std::string> keyboard_layouts;
       keyboard_layouts.push_back(
@@ -103,6 +105,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, Basic) {
   ASSERT_TRUE(RunExtensionTest("input_method/basic")) << message_;
 }
 
+// TODO(https://crbug.com/997888): Flaky on multiple platforms.
+IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, DISABLED_Typing) {
+  // Enable the test IME from the test extension.
+  std::vector<std::string> extension_ime_ids = {
+      "_ext_ime_ilanclmaeigfpnmdlgelmhkpkegdioiptest"};
+  InputMethodManager::Get()->GetActiveIMEState()->SetEnabledExtensionImes(
+      &extension_ime_ids);
+
+  GURL test_url = ui_test_utils::GetTestUrl(
+      base::FilePath("extensions/api_test/input_method/typing/"),
+      base::FilePath("test_page.html"));
+  ui_test_utils::NavigateToURL(browser(), test_url);
+
+  ASSERT_TRUE(RunExtensionTest("input_method/typing")) << message_;
+}
+
 IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuActivation) {
   // Listener for IME menu initial state ready.
   ExtensionTestMessageListener config_listener("config_ready", false);
@@ -140,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInputMethodApiTest, ImeMenuAPITest) {
   extension_ime_ids.push_back(kTestIMEID2);
   InputMethodManager::Get()->GetActiveIMEState()->SetEnabledExtensionImes(
       &extension_ime_ids);
-  InputMethodDescriptors extension_imes;
+  chromeos::input_method::InputMethodDescriptors extension_imes;
   InputMethodManager::Get()->GetActiveIMEState()->GetInputMethodExtensions(
       &extension_imes);
   InputMethodManager::Get()->GetActiveIMEState()->ChangeInputMethod(

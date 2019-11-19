@@ -12,6 +12,7 @@ typemaps = [
   "//services/viz/public/cpp/compositing/copy_output_request.typemap",
   "//services/viz/public/cpp/compositing/copy_output_result.typemap",
   "//services/viz/public/cpp/compositing/frame_sink_id.typemap",
+  "//services/viz/public/cpp/compositing/frame_timing_details.typemap",
   "//services/viz/public/cpp/compositing/local_surface_id.typemap",
   "//services/viz/public/cpp/compositing/local_surface_id_allocation.typemap",
   "//services/viz/public/cpp/compositing/paint_filter.typemap",
@@ -24,4 +25,5 @@ typemaps = [
   "//services/viz/public/cpp/compositing/surface_range.typemap",
   "//services/viz/public/cpp/compositing/surface_info.typemap",
   "//services/viz/public/cpp/compositing/transferable_resource.typemap",
+  "//services/viz/public/cpp/compositing/vertical_scroll_direction.typemap",
 ]

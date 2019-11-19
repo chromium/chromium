@@ -41,8 +41,6 @@ class ClearButtonElement final : public HTMLDivElement {
     virtual void ClearValue() = 0;
   };
 
-  static ClearButtonElement* Create(Document&, ClearButtonOwner&);
-
   ClearButtonElement(Document&, ClearButtonOwner&);
 
   void RemoveClearButtonOwner() { clear_button_owner_ = nullptr; }
@@ -50,7 +48,7 @@ class ClearButtonElement final : public HTMLDivElement {
   void Trace(Visitor*) override;
 
  private:
-  void DetachLayoutTree(const AttachContext& = AttachContext()) override;
+  void DetachLayoutTree(bool performing_reattach) override;
   bool IsMouseFocusable() const override { return false; }
   void DefaultEventHandler(Event&) override;
   bool IsClearButtonElement() const override;
@@ -63,6 +61,13 @@ DEFINE_TYPE_CASTS(ClearButtonElement,
                   element,
                   element->IsClearButtonElement(),
                   element.IsClearButtonElement());
+
+template <>
+struct DowncastTraits<ClearButtonElement> {
+  static bool AllowFrom(const Element& element) {
+    return element.IsClearButtonElement();
+  }
+};
 
 }  // namespace blink
 

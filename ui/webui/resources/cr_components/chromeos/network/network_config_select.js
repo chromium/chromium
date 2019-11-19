@@ -10,7 +10,7 @@ Polymer({
 
   behaviors: [
     I18nBehavior,
-    CrPolicyNetworkBehavior,
+    CrPolicyNetworkBehaviorMojo,
     NetworkConfigElementBehavior,
   ],
 
@@ -29,9 +29,12 @@ Polymer({
 
     /**
      * Array of item values to select from.
-     * @type {!Array<string>}
+     * @type {!Array<string|number>}
      */
     items: Array,
+
+    /** Select item key, used for converting enums to strings */
+    key: String,
 
     /** Prefix used to look up ONC property names. */
     oncPrefix: {
@@ -39,9 +42,12 @@ Polymer({
       value: '',
     },
 
-    /** Select item value */
+    /**
+     * Select item value
+     * @type {string|number}
+     */
     value: {
-      type: String,
+      type: Object,
       notify: true,
     },
   },
@@ -67,46 +73,62 @@ Polymer({
   },
 
   /**
-   * @param {string|!chrome.networkingPrivate.Certificate} item
-   * @param {string} prefix
-   * @return {string} The text to display for the onc value.
+   * Returns a localized label for |item|. If |this.key| is set, |item| is
+   * expected to be an enum and the key is used to convert it to a string.
+   * @param {string|number|!chromeos.networkConfig.mojom.NetworkCertificate}
+   *     item
+   * @return {string}
    * @private
    */
-  getItemLabel_: function(item, prefix) {
+  getItemLabel_: function(item) {
     if (this.certList) {
       return this.getCertificateName_(
-          /** @type {chrome.networkingPrivate.Certificate}*/ (item));
+          /** @type {chromeos.networkConfig.mojom.NetworkCertificate}*/ (item));
     }
-    const key = /** @type {string} */ (item);
-    const oncKey = 'Onc' + prefix.replace(/\./g, '-') + '_' + key;
-    if (this.i18nExists(oncKey)) {
-      return this.i18n(oncKey);
+    let value;
+    if (this.key) {
+      // |item| is an enum, convert the enum to a string.
+      value = /** @type {string} */ (
+          OncMojo.getTypeString(this.key, /** @type {number} */ (item)));
+    } else {
+      value = /** @type {string} */ (item);
     }
-    assertNotReached('ONC Key not found: ' + oncKey);
-    return key;
+    // The i18n dictonary is populated with all supported ONC values in the
+    // format Onc + prefix + value, with '-' replaceing '.' in the prefix.
+    // See network_element_localized_strings_provider.cc.
+    const oncValue = 'Onc' + this.oncPrefix.replace(/\./g, '-') + '_' + value;
+    if (this.i18nExists(oncValue)) {
+      return this.i18n(oncValue);
+    }
+    // All selectable values should be localized.
+    assertNotReached('ONC value not found: ' + oncValue);
+    return value;
   },
 
   /**
-   * @param {string|!chrome.networkingPrivate.Certificate} item
+   * @param {string|!chromeos.networkConfig.mojom.NetworkCertificate} item
    * @return {string}
    * @private
    */
   getItemValue_: function(item) {
     if (this.certList) {
-      return /** @type {chrome.networkingPrivate.Certificate}*/ (item).hash;
+      return /** @type {chromeos.networkConfig.mojom.NetworkCertificate}*/ (
+                 item)
+          .hash;
     }
     return /** @type {string} */ (item);
   },
 
   /**
-   * @param {string|!chrome.networkingPrivate.Certificate} item
+   * @param {string|!chromeos.networkConfig.mojom.NetworkCertificate} item
    * @return {boolean}
    * @private
    */
   getItemEnabled_: function(item) {
     if (this.certList) {
-      const cert = /** @type {chrome.networkingPrivate.Certificate}*/ (item);
-      if (this.deviceCertsOnly && !(cert.deviceWide || cert.isDefault)) {
+      const cert =
+          /** @type {chromeos.networkConfig.mojom.NetworkCertificate}*/ (item);
+      if (this.deviceCertsOnly && !cert.deviceWide) {
         return false;
       }
       return !!cert.hash;
@@ -115,7 +137,7 @@ Polymer({
   },
 
   /**
-   * @param {!chrome.networkingPrivate.Certificate} certificate
+   * @param {!chromeos.networkConfig.mojom.NetworkCertificate} certificate
    * @return {string}
    * @private
    */

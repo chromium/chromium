@@ -2953,14 +2953,21 @@ DB	102,73,15,110,220
 	or	r12,r8
 	or	r12,r9
 
-DB	0x3e
-	jnz	NEAR $L$add_proceedq
 DB	102,73,15,126,208
 DB	102,73,15,126,217
-	test	r8,r8
+	or	r12,r8
+DB	0x3e
 	jnz	NEAR $L$add_proceedq
+
+
+
 	test	r9,r9
 	jz	NEAR $L$add_doubleq
+
+
+
+
+
 
 DB	102,72,15,126,199
 	pxor	xmm0,xmm0
@@ -4087,14 +4094,21 @@ DB	102,73,15,110,220
 	or	r12,r8
 	or	r12,r9
 
-DB	0x3e
-	jnz	NEAR $L$add_proceedx
 DB	102,73,15,126,208
 DB	102,73,15,126,217
-	test	r8,r8
+	or	r12,r8
+DB	0x3e
 	jnz	NEAR $L$add_proceedx
+
+
+
 	test	r9,r9
 	jz	NEAR $L$add_doublex
+
+
+
+
+
 
 DB	102,72,15,126,199
 	pxor	xmm0,xmm0

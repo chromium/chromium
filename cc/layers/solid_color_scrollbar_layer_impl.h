@@ -18,8 +18,7 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
       ScrollbarOrientation orientation,
       int thumb_thickness,
       int track_start,
-      bool is_left_side_vertical_scrollbar,
-      bool is_overlay);
+      bool is_left_side_vertical_scrollbar);
   ~SolidColorScrollbarLayerImpl() override;
 
   // LayerImpl overrides.
@@ -37,8 +36,7 @@ class CC_EXPORT SolidColorScrollbarLayerImpl : public ScrollbarLayerImplBase {
                                ScrollbarOrientation orientation,
                                int thumb_thickness,
                                int track_start,
-                               bool is_left_side_vertical_scrollbar,
-                               bool is_overlay);
+                               bool is_left_side_vertical_scrollbar);
 
   // ScrollbarLayerImplBase implementation.
   int ThumbLength() const override;

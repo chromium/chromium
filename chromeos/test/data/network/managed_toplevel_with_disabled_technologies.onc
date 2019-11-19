@@ -1,7 +1,7 @@
 {
   "GlobalNetworkConfiguration":{
     "AllowOnlyPolicyNetworksToAutoconnect": true,
-    "DisableNetworkTypes": ["Cellular", "Ethernet", "WiFi", "WiMAX"]
+    "DisableNetworkTypes": ["Cellular", "Ethernet", "WiFi"]
   },
   "NetworkConfigurations":[
     {

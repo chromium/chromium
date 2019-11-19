@@ -4,7 +4,7 @@ evalURL.js:5 console.trace
 b @ evalURL.js:5
 a @ evalURL.js:10
 evalSource @ evalURL.js:13
-(anonymous) @ evalURL.js:14
+eval @ evalURL.js:14
 (anonymous) @ console-trace-in-eval.js:29
 setTimeout (async)
 doEvalSource @ console-trace-in-eval.js:28

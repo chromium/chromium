@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2018 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- TODO(twellington): For some reason the layout measurements in AnchoredPopupWindow are
+     cutting off part of the text when a text view with a compound drawable is used. Figure out
+     why and switch this to use TextViewWithCompoundDrawable. -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:gravity="center" >
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/image"
+        android:layout_width="20sp"
+        android:layout_height="20sp"
+        android:layout_marginEnd="12dp"
+        tools:ignore="ContentDescription"
+        android:scaleType="centerInside"
+        app:tint="@color/default_icon_color_inverse" />
+
+    <TextView
+        android:id="@+id/message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.Title2.Inverse" />
+
+</LinearLayout>
