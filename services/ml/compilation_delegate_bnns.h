@@ -56,6 +56,10 @@ class API_AVAILABLE(macosx(10.13)) CompilationDelegateBnns
                       const mojom::OperationPtr& operation,
                       OperationMac& operation_bnns);
 
+  bool CompileLogistic(const mojom::ModelInfoPtr& model,
+                       const mojom::OperationPtr& operation,
+                       OperationMac& operation_bnns);
+
   bool CompileReshape(const mojom::ModelInfoPtr& model,
                       const mojom::OperationPtr& operation,
                       OperationMac& operation_bnns);

@@ -45,6 +45,14 @@ void ComputeBNNSOffsetForImplicitPadding(bool same_padding,
   }
 }
 
+int32_t ProductWithoutBatchsize(const mojom::OperandPtr& operand) {
+  int32_t size = 1;
+  for (size_t i = 1; i < operand->dimensions.size(); i++) {
+    size = size * operand->dimensions[i];
+  }
+  return size;
+}
+
 void SetExtendInputs(const uint32_t extend_input_idx,
                      const OperandMac& input,
                      OperationMac& operation,
@@ -98,6 +106,8 @@ int32_t CompilationDelegateBnns::Compile() {
   for (size_t i = 0; i < model->operations.size(); ++i) {
     const mojom::OperationPtr& operation = model->operations[i];
 	  OperationMac& operation_mac = compiled_model_->operations_[i];
+          operation_mac.offset_x = 0;
+          operation_mac.offset_y = 0;
           if (operation->type == mojom::ADD || operation->type == mojom::MUL) {
             success = CompileArithmetic(model, operation, operation_mac);
           } else if (operation->type == mojom::CONV_2D) {
@@ -107,6 +117,8 @@ int32_t CompilationDelegateBnns::Compile() {
             success = CompilePooling(model, operation, operation_mac);
           } else if (operation->type == mojom::SOFTMAX) {
             success = CompileSoftmax(model, operation, operation_mac);
+          } else if (operation->type == mojom::LOGISTIC) {
+            success = CompileLogistic(model, operation, operation_mac);
           } else if (operation->type == mojom::RESHAPE) {
             success = CompileReshape(model, operation, operation_mac);
           } else if (operation->type == mojom::CONCATENATION) {
@@ -232,8 +244,6 @@ bool CompilationDelegateBnns::CompileConvolution(
   conv_bias.data_bias = 0.0;
   conv_bias.data_table = nullptr;
 
-  operation_bnns.offset_x = 0;
-  operation_bnns.offset_y = 0;
   operation_bnns.input_batch_size = params.input_batch;
 
   bool implicit_padding = false ;
@@ -314,8 +324,6 @@ bool CompilationDelegateBnns::CompileArithmetic(
   } else if (operation->type == mojom::MUL) {
     operation_bnns.local_operation = KMul;
   }
-  operation_bnns.offset_x = 0;
-  operation_bnns.offset_y = 0;
 
   const std::vector<uint32_t>& inputs = operation->inputs;
   if (model->operands[inputs[0]]->dimensions != model->operands[inputs[1]]->dimensions) {
@@ -387,8 +395,6 @@ bool CompilationDelegateBnns::CompilePooling(
     return false;
   }
 
-  operation_bnns.offset_x = 0;
-  operation_bnns.offset_y = 0;
   operation_bnns.input_batch_size = params.input_batch;
 
   BNNSLayerData layer_data;
@@ -474,12 +480,9 @@ bool CompilationDelegateBnns::CompilePooling(
 bool CompilationDelegateBnns::CompileSoftmax(
     const mojom::ModelInfoPtr& model,
     const mojom::OperationPtr& operation,
-	  OperationMac& operation_bnns ) {
+    OperationMac& operation_bnns) {
   DLOG(INFO) << "CompilationDelegateBnns::CompileSoftmax";
 
-  operation_bnns.offset_x = 0;
-  operation_bnns.offset_y = 0;
-  
   SoftmaxParams params;
   int32_t result = compilation_->GetSoftmaxParams(operation, params);
   if (result != mojom::NOT_ERROR) {
@@ -499,19 +502,11 @@ bool CompilationDelegateBnns::CompileSoftmax(
 
   operation_bnns.input_batch_size = input->dimensions[0] ;
 
-  int32_t size = 1;
-  for (size_t i = 1; i < input->dimensions.size(); i++) {
-    size = size * input->dimensions[i];
-  }
-  in_desc.size = size;
+  in_desc.size = ProductWithoutBatchsize(input);
   in_desc.data_type = BNNSDataTypeFloat32;
   in_desc.data_scale = 0;
   in_desc.data_bias = 0;
-  size = 1;
-  for (size_t i = 1; i < output->dimensions.size(); i++) {
-    size = size * output->dimensions[i];
-  }
-  out_desc.size = size;
+  out_desc.size = ProductWithoutBatchsize(output);
   out_desc.data_type = BNNSDataTypeFloat32;
   out_desc.data_scale = 0;
   out_desc.data_bias = 0;
@@ -525,14 +520,42 @@ bool CompilationDelegateBnns::CompileSoftmax(
   return true;
 }
 
+bool CompilationDelegateBnns::CompileLogistic(
+    const mojom::ModelInfoPtr& model,
+    const mojom::OperationPtr& operation,
+    OperationMac& operation_bnns) {
+  DLOG(INFO) << "CompilationDelegateBnns::CompilLogistic";
+
+  const std::vector<uint32_t>& inputs = operation->inputs;
+  const std::vector<uint32_t>& outputs = operation->outputs;
+  const mojom::OperandPtr& input = model->operands[inputs[0]];
+  const mojom::OperandPtr& output = model->operands[outputs[0]];
+
+  operation_bnns.input_batch_size = input->dimensions[0];
+
+  BNNSVectorDescriptor in_desc, out_desc;
+  in_desc.size = ProductWithoutBatchsize(input);
+  in_desc.data_type = BNNSDataTypeFloat32;
+  in_desc.data_scale = 0;
+  in_desc.data_bias = 0;
+  out_desc.size = ProductWithoutBatchsize(output);
+  out_desc.data_type = BNNSDataTypeFloat32;
+  out_desc.data_scale = 0;
+  out_desc.data_bias = 0;
+  BNNSActivation activation = {};
+  activation.function = BNNSActivationFunctionSigmoid;
+  BNNSFilterParameters filter_params = {};
+  operation_bnns.filter = BNNSFilterCreateVectorActivationLayer(
+      &in_desc, &out_desc, &activation, &filter_params);
+  return true;
+}
+
 bool CompilationDelegateBnns::CompileReshape(
     const mojom::ModelInfoPtr& model,
     const mojom::OperationPtr& operation, 
 	  OperationMac& operation_bnns ) {
   DLOG(INFO) << "CompilationDelegateBnns::CompileReshape";
   operation_bnns.local_operation = KReshape ;
-  operation_bnns.offset_x = 0 ;
-  operation_bnns.offset_y = 0 ;
   operation_bnns.input_batch_size = 1;
   return true;
 }
@@ -544,8 +567,6 @@ bool CompilationDelegateBnns::CompileConcatenation(
   DLOG(INFO) << "CompilationDelegateBnns::CompileConcatenation";
   
   operation_bnns.local_operation = KConcatenation;
-  operation_bnns.offset_x = 0;
-  operation_bnns.offset_y = 0;
   operation_bnns.input_batch_size = 1;
 
   ConcatParams params;
@@ -592,8 +613,6 @@ bool CompilationDelegateBnns::CompileFullyConnected(
     return false;
   }
 
-  operation_bnns.offset_x = 0;
-  operation_bnns.offset_y = 0;
   operation_bnns.input_batch_size = params.input_batch_size;
 
   BNNSFilterParameters filter_params;
