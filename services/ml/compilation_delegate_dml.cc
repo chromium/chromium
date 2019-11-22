@@ -916,10 +916,13 @@ HRESULT CompilationDelegateDML::CompilePooling(
   if (result != mojom::NOT_ERROR)
     return E_FAIL;
 
-  const uint32_t strides[2] = {params.stride_width, params.stride_height};
-  const uint32_t windows_size[2] = {params.filter_width, params.filter_height};
-  const uint32_t start_padding[2] = {params.padding_left, params.padding_top};
-  const uint32_t end_padding[2] = {params.padding_right, params.padding_bottom};
+  // TODO: The documentation doesn't detail the order of these value need to be
+  // confirmed, current order can run Speech Command Model for strides[2] = {2,
+  // 1} windows_size[2] = {3, 1}.
+  const uint32_t strides[2] = {params.stride_height, params.stride_width};
+  const uint32_t windows_size[2] = {params.filter_height, params.filter_width};
+  const uint32_t start_padding[2] = {params.padding_top, params.padding_left};
+  const uint32_t end_padding[2] = {params.padding_bottom, params.padding_right};
 
   DML_OPERATOR_DESC operator_desc;
   DML_AVERAGE_POOLING_OPERATOR_DESC average_pooling_desc;
@@ -1014,6 +1017,27 @@ HRESULT CompilationDelegateDML::CompileReshape(
       dml_->operand_map_[output_index]->operand_desc_;
   DML_TENSOR_DESC output_tensor_desc = {DML_TENSOR_TYPE_BUFFER,
                                         &output_buffer_desc};
+
+  // The reshape operator will be expected if input data is model input.
+  // Expect : input NHWC tensor0{[1, 2, 3, 4, 5, 6], [1, 1, 1, 6]}  Reshape with
+  // NNAPI => output data still is [1, 2, 3, 4, 5, 6],but shape is [1, 1, 3, 2]
+  // and the maxtrix should be [[1, 3, 5],
+  //                            [2, 4, 6]]
+  // Issue: tensor0 will be [1, 2, 3, 4, 5, 6] after ordering with HLSL from
+  // NHWC to NCHW, then reshape doesn't change data layout that shape is
+  // [1, 2, 1, 3], so the maxtrix is [[1, 2, 3],
+  //                                  [4, 5, 6]] that isn't expected maxtrix.
+  // Solution: Reorder input data to output shape [1, 2, 1, 3] when converting
+  // NHWC to NCHW, so the input shape should resize to output shape, the input
+  // data resources will be [1, 3, 5, 2, 4, 6], so the maxtrix is [[1, 3, 5]
+  //                                                               [2, 4, 6]].
+  for (size_t i = 0; i < model->inputs.size(); ++i) {
+    if (input_index == model->inputs[i]) {
+      dml_->operand_map_[input_index]->UpdateOperandDesc(
+          model->operands[output_index]->dimensions,
+          model->operands[output_index]->type);
+    }
+  }
 
   DML_CAST_OPERATOR_DESC cast_operator_desc = {&input_tensor_desc,
                                                &output_tensor_desc};
