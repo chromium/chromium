@@ -23,16 +23,12 @@
 namespace ml {
 
 class API_AVAILABLE(macosx(10.13)) CompiledModelMPS
-    : public CompiledModel,
-      public base::RefCounted<CompiledModelMPS> {
+    : public base::RefCounted<CompiledModelMPS> {
  public:
   CompiledModelMPS();
 
-  std::vector<uint32_t> constants_;
-  std::map<std::string, ValueInfo> values_;
-  std::unique_ptr<int8_t[]> memory_;
   std::vector<base::scoped_nsobject<MPSNNGraph>> graphs_;
-  std::map<uint32_t, MPSNNImageNode*> mps_image_nodes_;
+  std::map<uint32_t, MPSNNImageNode*> image_nodes_;
 
  private:
   friend class base::RefCounted<CompiledModelMPS>;
@@ -53,6 +49,7 @@ class API_AVAILABLE(macosx(10.13)) CompilationDelegateMPS
 
  private:
   const CompilationImpl* compilation_;
+  std::unique_ptr<int8_t[]> memory_;
   scoped_refptr<CompiledModelMPS> compiled_model_;
 
   bool CompileConv2DOrDepthwiseConv2D(
@@ -90,6 +87,7 @@ class API_AVAILABLE(macosx(10.13)) CompilationDelegateMPS
                             const mojom::OperationPtr& operation);
 
   bool CompileArgmax(std::map<uint32_t, MPSNNImageNode*>& image_nodes,
+                     const mojom::ModelInfoPtr& model,
                      const mojom::OperationPtr& operation);
 
   bool CompileSigmoid(std::map<uint32_t, MPSNNImageNode*>& image_nodes,

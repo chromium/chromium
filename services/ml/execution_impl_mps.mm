@@ -20,12 +20,13 @@ namespace ml {
 namespace {
 
 NSString* API_AVAILABLE(macosx(10.13))
-    OutputKernel(const OperandMac& operand, const MPSImage* output_img) {
+    OutputKernel(const mojom::OperandInfoPtr& operand,
+                 const MPSImage* output_img) {
   NSString* kernel = nullptr;
-  if (operand.type == mojom::TENSOR_FLOAT32) {
+  if (operand->type == mojom::TENSOR_FLOAT32) {
     kernel = KernelFor(output_img, @"copy_metal_to_nhwc",
                        @"copy_metal_to_nhwc_nonarray");
-  } else if (operand.type == mojom::TENSOR_INT32) {
+  } else if (operand->type == mojom::TENSOR_INT32) {
     kernel = KernelFor(output_img, @"output_nhwc_int_data",
                        @"output_nhwc_int_data_nonarray");
   } else {
@@ -59,11 +60,10 @@ ExecutionImplMPS::ExecutionImplMPS(
     scoped_refptr<CompiledModelMPS> compiled_model,
     mojom::ExecutionInitParamsPtr params)
     : params_(std::move(params)), compiled_model_(std::move(compiled_model)) {
-  for (size_t i = 0; i < compiled_model_->outputs_.size(); ++i) {
-    const OperandMac& operand =
-        compiled_model_->operands_[compiled_model_->outputs_[i]];
+  for (size_t i = 0; i < params_->outputs.size(); ++i) {
+    const mojom::OperandInfoPtr& operand = params_->outputs[i];
     output_mtlbuffers_.push_back([GetMPSCNNContext().device
-        newBufferWithLength:operand.requiredSize()
+        newBufferWithLength:GetRequiredSize(operand)
                     options:MTLResourceOptionCPUCacheModeWriteCombined]);
   }
 }
@@ -150,13 +150,13 @@ void ExecutionImplMPS::StartCompute(StartComputeCallback callback) {
           output_mps_images[output_index] = graph_output_image;
         }
 
-        for (size_t i = 0; i < compiled_model_->outputs_.size(); ++i) {
-          size_t output_index = compiled_model_->outputs_[i];
+        for (size_t i = 0; i < params_->outputs.size(); ++i) {
+          const mojom::OperandInfoPtr& operand = params_->outputs[i];
+          size_t output_index = operand->index;
           MPSImage* output_img = output_mps_images[output_index];
           id<MTLComputePipelineState> state =
               GetMPSCNNContext().GetSpecializedPipelineState(
-                  OutputKernel(compiled_model_->operands_[output_index],
-                               output_img),
+                  OutputKernel(operand, output_img),
                   {{ushort(output_img.height), ushort(output_img.width),
                     ushort(output_img.featureChannels)}});
 
