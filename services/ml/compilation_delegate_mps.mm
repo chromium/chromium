@@ -355,20 +355,6 @@ bool CompilationDelegateMPS::CompileConv2DOrDepthwiseConv2D(
 
   // bool implicit_padding;
   std::vector<uint32_t> inputs = operation->inputs;
-
-  // TODO(junwei.fu):Use ConvParams to refactor code.
-  params.dilation_width = 1;
-  params.dilation_height = 1;
-  if (operation->type == mojom::ATROUS_DEPTHWISE_CONV_2D ||
-      operation->type == mojom::ATROUS_CONV_2D) {
-    LOG(ERROR) << "operation->type == mojom::ATROUS_DEPTHWISE_CONV_2D "
-                  "||operation->type == mojom::ATROUS_CONV_2D";
-    params.dilation_width = params.stride_width;
-    params.dilation_height = params.stride_height;
-    params.stride_width = 1;
-    params.stride_height = 1;
-  }
-
   const mojom::OperandValueInfoPtr& weights_value_info =
       model->values[base::NumberToString(inputs[1])];
   float* weights = (float*)(memory_.get() + weights_value_info->offset);
