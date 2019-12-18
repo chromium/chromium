@@ -19,6 +19,7 @@
 namespace ml {
 
 typedef std::vector<dnnl_exec_arg_t> args_t;
+
 struct OperationDnnl {
   OperationDnnl();
   explicit OperationDnnl(dnnl_primitive_t);
@@ -76,11 +77,12 @@ class CompilationDelegateDnnl : public CompilationDelegate {
   int32_t AddReorder(const std::string& input_name,
                      const std::string& output_name,
                      bool run = false);
-  int32_t AddFusedActivation(const std::string&, const std::string&, int32_t);
+  int32_t AddActivation(const std::string&, const std::string&, uint32_t type);
   int32_t AddElementwise(const mojom::OperationPtr&);
   int32_t AddConvolution(const mojom::OperationPtr&);
   int32_t AddPooling(const mojom::OperationPtr&);
   int32_t AddSoftmax(const mojom::OperationPtr&);
+  int32_t AddLogistic(const mojom::OperationPtr&);
   int32_t AddReshape(const mojom::OperationPtr&);
   int32_t AddConcatenation(const mojom::OperationPtr&);
   int32_t AddFullyConnected(const mojom::OperationPtr&);

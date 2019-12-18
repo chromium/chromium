@@ -16,7 +16,6 @@
 static const uint32_t ALIGNMENT = 64;
 
 namespace ml {
-
 OperationDnnl::OperationDnnl() : primitive(nullptr), type(-1) {}
 OperationDnnl::OperationDnnl(dnnl_primitive_t dnnl_primitive)
     : primitive(dnnl_primitive), type(-1) {}
@@ -161,6 +160,8 @@ int32_t CompilationDelegateDnnl::DnnlCompile() {
       result = AddPooling(operation);
     } else if (type == mojom::SOFTMAX) {
       result = AddSoftmax(operation);
+    } else if (type == mojom::LOGISTIC) {
+      result = AddLogistic(operation);
     } else if (type == mojom::RESHAPE) {
       result = AddReshape(operation);
     } else if (type == mojom::CONCATENATION) {
@@ -544,10 +545,9 @@ int32_t CompilationDelegateDnnl::AddReorder(const std::string& input_name,
   return mojom::NOT_ERROR;
 }
 
-int32_t CompilationDelegateDnnl::AddFusedActivation(
-    const std::string& input_name,
-    const std::string& output_name,
-    int32_t fuse_code) {
+int32_t CompilationDelegateDnnl::AddActivation(const std::string& input_name,
+                                               const std::string& output_name,
+                                               uint32_t type) {
   if (compiled_model_->memories.find(input_name) ==
       compiled_model_->memories.end()) {
     LOG(ERROR) << "Input memory is not ready";
@@ -561,23 +561,27 @@ int32_t CompilationDelegateDnnl::AddFusedActivation(
     LOG(ERROR) << "[DNNL] failed to get memory descriptor " << status;
     return mojom::OP_FAILED;
   }
+
   dnnl_eltwise_desc_t activation_desc;
-  dnnl_alg_kind_t relu_kind;
+  dnnl_alg_kind_t alg_kind = dnnl_eltwise_relu;
   float alpha = 0.0;
-  if (fuse_code == mojom::FUSED_RELU) {
-    relu_kind = dnnl_eltwise_relu;
-  } else if (fuse_code == mojom::FUSED_RELU1) {
-    relu_kind = dnnl_eltwise_bounded_relu;
+  if (type == mojom::FUSED_RELU) {
+    alg_kind = dnnl_eltwise_relu;
+  } else if (type == mojom::FUSED_RELU1) {
+    alg_kind = dnnl_eltwise_bounded_relu;
     alpha = 1.0;
-  } else if (fuse_code == mojom::FUSED_RELU6) {
-    relu_kind = dnnl_eltwise_bounded_relu;
+  } else if (type == mojom::FUSED_RELU6) {
+    alg_kind = dnnl_eltwise_bounded_relu;
     alpha = 6.0;
+  } else if (type == mojom::LOGISTIC) {
+    alg_kind = dnnl_eltwise_logistic;
   } else {
-    LOG(ERROR) << "Fuse code " << fuse_code << " is not supported";
+    LOG(ERROR) << type << " is not supported";
     return mojom::BAD_DATA;
   }
-  status = LATE(dnnl_eltwise_forward_desc_init)(
-      &activation_desc, dnnl_forward, relu_kind, input_md, alpha, 0.0);
+
+  status = LATE(dnnl_eltwise_forward_desc_init)(&activation_desc, dnnl_forward,
+                                                alg_kind, input_md, alpha, 0.0);
   if (status != dnnl_success) {
     LOG(ERROR) << "[DNNL] failed to init eltwise descriptor " << status;
     return mojom::OP_FAILED;
@@ -713,7 +717,7 @@ int32_t CompilationDelegateDnnl::AddElementwise(
   if (params.fuse_code != mojom::FUSED_NONE) {
     // Append an activation primitive that uses sum's output memory as input
     // and output is named as output_id.
-    result = AddFusedActivation(sum_output_id, output_id, params.fuse_code);
+    result = AddActivation(sum_output_id, output_id, params.fuse_code);
     if (result != mojom::NOT_ERROR)
       return result;
   }
@@ -1019,13 +1023,12 @@ int32_t CompilationDelegateDnnl::AddConvolution(
   dnnl_operation.primitive_args.push_back({DNNL_ARG_DST, output_memory});
 
   compiled_model_->operations.push_back(dnnl_operation);
-  // compiled_model_->operations_args.push_back(conv_args);
   DLOG(INFO) << "[DNNL] succeed to create convolution primitive";
 
   if (params.depthwise && params.fuse_code != mojom::FUSED_NONE) {
     // Append an activation primitive that uses conv's output memory as input
     // and output is named as output_id.
-    result = AddFusedActivation(conv_output_id, output_id, params.fuse_code);
+    result = AddActivation(conv_output_id, output_id, params.fuse_code);
     if (result != mojom::NOT_ERROR)
       return result;
   }
@@ -1148,7 +1151,7 @@ int32_t CompilationDelegateDnnl::AddPooling(
   if (params.fuse_code != mojom::FUSED_NONE) {
     // Append an activation primitive that uses pool's output memory as input
     // and output is named as output_id.
-    result = AddFusedActivation(pool_output_id, output_id, params.fuse_code);
+    result = AddActivation(pool_output_id, output_id, params.fuse_code);
     if (result != mojom::NOT_ERROR)
       return result;
   }
@@ -1226,6 +1229,20 @@ int32_t CompilationDelegateDnnl::AddSoftmax(
   compiled_model_->operations.push_back(dnnl_operation);
 
   DLOG(INFO) << "[DNNL] succeed to create softmax primitive";
+  return mojom::NOT_ERROR;
+}
+
+int32_t CompilationDelegateDnnl::AddLogistic(
+    const mojom::OperationPtr& operation) {
+  int32_t result = AddActivation(base::NumberToString(operation->inputs[0]),
+                                 base::NumberToString(operation->outputs[0]),
+                                 mojom::LOGISTIC);
+
+  if (result != mojom::NOT_ERROR) {
+    return result;
+  }
+
+  DLOG(INFO) << "[DNNL] succeed to create Logistic primitive";
   return mojom::NOT_ERROR;
 }
 
@@ -1682,7 +1699,7 @@ int32_t CompilationDelegateDnnl::AddFullyConnected(
   if (params.fuse_code != mojom::FUSED_NONE) {
     // Append an activation primitive that uses ip's output memory as input
     // and output is named as output_id.
-    result = AddFusedActivation(ip_output_id, output_id, params.fuse_code);
+    result = AddActivation(ip_output_id, output_id, params.fuse_code);
     if (result != mojom::NOT_ERROR)
       return result;
   }
