@@ -64,6 +64,8 @@ need to be translated for each locale.-->
          be 'nb'. -->
     <output filename="ui_strings_nb.pak" type="data_package" lang="no" />
     <output filename="ui_strings_pl.pak" type="data_package" lang="pl" />
+    <output filename="ui_strings_pt-AO.pak" type="data_package" lang="pt-AO" />
+
     <if expr="is_ios">
       <!-- iOS uses pt for pt-BR -->
       <output filename="ui_strings_pt.pak" type="data_package" lang="pt-BR" />
@@ -146,6 +148,7 @@ need to be translated for each locale.-->
     <file path="translations/ui_strings_or.xtb" lang="or" />
     <file path="translations/ui_strings_pa.xtb" lang="pa" />
     <file path="translations/ui_strings_pl.xtb" lang="pl" />
+    <file path="translations/ui_strings_pt-AO.xtb" lang="pt-AO" />
     <file path="translations/ui_strings_pt-BR.xtb" lang="pt-BR" />
     <file path="translations/ui_strings_pt-PT.xtb" lang="pt-PT" />
     <file path="translations/ui_strings_ro.xtb" lang="ro" />
