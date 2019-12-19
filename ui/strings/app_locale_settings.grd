@@ -52,6 +52,8 @@
          be 'nb'. -->
     <output filename="app_locale_settings_nb.pak" type="data_package" lang="no" />
     <output filename="app_locale_settings_pl.pak" type="data_package" lang="pl" />
+    <output filename="app_locale_settings_pt-AO.pak" type="data_package" lang="pt-AO" />
+
     <if expr="is_ios">
       <!-- iOS uses pt for pt-BR -->
       <output filename="app_locale_settings_pt.pak" type="data_package" lang="pt-BR" />
@@ -112,6 +114,7 @@
     <file path="translations/app_locale_settings_nl.xtb" lang="nl" />
     <file path="translations/app_locale_settings_nb.xtb" lang="no" />
     <file path="translations/app_locale_settings_pl.xtb" lang="pl" />
+    <file path="translations/app_locale_settings_pt-AO.xtb" lang="pt-AO" />
     <file path="translations/app_locale_settings_pt-BR.xtb" lang="pt-BR" />
     <file path="translations/app_locale_settings_pt-PT.xtb" lang="pt-PT" />
     <file path="translations/app_locale_settings_ro.xtb" lang="ro" />
