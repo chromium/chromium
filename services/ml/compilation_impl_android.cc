@@ -23,8 +23,8 @@ CompilationImplAndroid::CompilationImplAndroid(const ModelImplAndroid* model)
 }
 
 CompilationImplAndroid::~CompilationImplAndroid() {
-  ANeuralNetworksCompilation_free(nn_compilation_);
-  DLOG(INFO) << "ANeuralNetworksCompilation_free";
+  // ANeuralNetworksCompilation_free(nn_compilation_);
+  // The nn_compilation_ will be deleted in execution phase.
 }
 
 void CompilationImplAndroid::Finish(int32_t preference,

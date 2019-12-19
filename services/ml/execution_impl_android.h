@@ -36,12 +36,11 @@ class ExecutionImplAndroid : public mojom::Execution {
   std::vector<uint32_t> inputs_;
   std::vector<uint32_t> outputs_;
 
-  ANeuralNetworksExecution* nn_execution_;
-
   std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
   std::vector<std::unique_ptr<OperandInfo>> outputs_info_;
   mojo::ScopedSharedBufferHandle memory_;
 
+  ANeuralNetworksCompilation* nn_compilation_;
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplAndroid);
 };
 
