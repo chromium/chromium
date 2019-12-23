@@ -254,6 +254,10 @@ int32_t CompilationDelegateClDnn::CldnnCreateTopology() {
       result = CldnnAddResizeBilinear(operation);
     } else if (type == mojom::ARGMAX) {
       result = CldnnAddArgmax(operation);
+    } else if (type == mojom::LOGISTIC) {
+      std::string input(base::NumberToString(operation->inputs[0]));
+      std::string id(base::NumberToString(operation->outputs[0]));
+      result = CldnnAddActivation(input, id, type);
     } else {
       LOG(ERROR) << "Operation type " << type << " is not supported.";
       return mojom::BAD_DATA;
@@ -397,8 +401,8 @@ int32_t CompilationDelegateClDnn::CldnnAddReorder(
   cldnn_reorder_desc reorder_desc = {
       .type = type_id,
       .id = output_name.c_str(),
-      .output_format = cldnn_format_type(target_format),
       .output_data_type = {target_data_type, 1},
+      .output_format = cldnn_format_type(target_format),
   };
   // Setup inputs.
   std::vector<cldnn_primitive_id> input_ids_array(1);
@@ -512,10 +516,9 @@ int32_t CompilationDelegateClDnn::CldnnAddData(uint32_t index) {
   return mojom::NOT_ERROR;
 }
 
-int32_t CompilationDelegateClDnn::CldnnAddActivationByFusedCode(
-    const std::string& input,
-    const std::string& id,
-    int32_t fuse_code) {
+int32_t CompilationDelegateClDnn::CldnnAddActivation(const std::string& input,
+                                                     const std::string& id,
+                                                     int32_t activation_type) {
   cldnn_status status;
   cldnn_primitive_type_id type_id = LATE(cldnn_activation_type_id)(&status);
   if (status != CLDNN_SUCCESS) {
@@ -533,18 +536,20 @@ int32_t CompilationDelegateClDnn::CldnnAddActivationByFusedCode(
                            .size = input_ids_array.size()};
 
   // Setup func and additional parameters.
-  if (fuse_code == mojom::FUSED_RELU) {
+  if (activation_type == mojom::RELU) {
     activation_desc.activation_func = activation_relu;
-  } else if (fuse_code == mojom::FUSED_RELU1) {
+  } else if (activation_type == mojom::RELU1) {
     activation_desc.activation_func = activation_clamp;
     activation_desc.additional_params.a = -1.0;
     activation_desc.additional_params.b = 1.0;
-  } else if (fuse_code == mojom::FUSED_RELU6) {
+  } else if (activation_type == mojom::RELU6) {
     activation_desc.activation_func = activation_clamp;
     activation_desc.additional_params.a = 0.0;
     activation_desc.additional_params.b = 6.0;
+  } else if (activation_type == mojom::LOGISTIC) {
+    activation_desc.activation_func = activation_logistic;
   } else {
-    LOG(ERROR) << "Fuse code " << fuse_code << " is not supported";
+    LOG(ERROR) << "activation type " << activation_type << " is not supported";
     return mojom::BAD_DATA;
   }
 
@@ -654,8 +659,9 @@ int32_t CompilationDelegateClDnn::CldnnAddElementwise(
   if (params.fuse_code == mojom::FUSED_RELU1 ||
       params.fuse_code == mojom::FUSED_RELU6) {
     std::string fuse_id_str = base::NumberToString(output_index);
-    int32_t result =
-        CldnnAddActivationByFusedCode(id_str, fuse_id_str, params.fuse_code);
+    int32_t result = CldnnAddActivation(
+        id_str, fuse_id_str,
+        params.fuse_code == mojom::FUSED_RELU1 ? mojom::RELU1 : mojom::RELU6);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
@@ -911,8 +917,9 @@ int32_t CompilationDelegateClDnn::CldnnAddConvolution(
   if (params.fuse_code == mojom::FUSED_RELU1 ||
       params.fuse_code == mojom::FUSED_RELU6) {
     std::string fuse_id_str = base::NumberToString(output_index);
-    result =
-        CldnnAddActivationByFusedCode(id_str, fuse_id_str, params.fuse_code);
+    result = CldnnAddActivation(
+        id_str, fuse_id_str,
+        params.fuse_code == mojom::FUSED_RELU1 ? mojom::RELU1 : mojom::RELU6);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
@@ -1016,8 +1023,9 @@ int32_t CompilationDelegateClDnn::CldnnAddPooling(
   // Handle fused code as dedicated activation primitive.
   if (params.fuse_code != mojom::FUSED_NONE) {
     std::string fuse_id_str = base::NumberToString(output_index);
-    result =
-        CldnnAddActivationByFusedCode(id_str, fuse_id_str, params.fuse_code);
+    result = CldnnAddActivation(
+        id_str, fuse_id_str,
+        params.fuse_code == mojom::FUSED_RELU1 ? mojom::RELU1 : mojom::RELU6);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
@@ -1420,8 +1428,9 @@ int32_t CompilationDelegateClDnn::CldnnAddFullyConnected(
   if (params.fuse_code == mojom::FUSED_RELU1 ||
       params.fuse_code == mojom::FUSED_RELU6) {
     std::string fuse_id_str = base::NumberToString(output_index);
-    result =
-        CldnnAddActivationByFusedCode(id_str, fuse_id_str, params.fuse_code);
+    result = CldnnAddActivation(
+        id_str, fuse_id_str,
+        params.fuse_code == mojom::FUSED_RELU1 ? mojom::RELU1 : mojom::RELU6);
     if (result != mojom::NOT_ERROR) {
       return result;
     }

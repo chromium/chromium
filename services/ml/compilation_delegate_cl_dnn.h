@@ -44,9 +44,9 @@ class CompilationDelegateClDnn : public CompilationDelegate {
                           int32_t target_format,
                           cldnn_data_type target_data_type);
   int32_t CldnnAddData(uint32_t index);
-  int32_t CldnnAddActivationByFusedCode(const std::string& input,
-                                        const std::string& id,
-                                        int32_t fuse_code);
+  int32_t CldnnAddActivation(const std::string& input,
+                             const std::string& id,
+                             int32_t activation_type);
   int32_t CldnnAddElementwise(const mojom::OperationPtr& operation);
   int32_t CldnnAddConvolution(const mojom::OperationPtr& operation);
   int32_t CldnnAddPooling(const mojom::OperationPtr& operation);
