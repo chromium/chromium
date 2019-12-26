@@ -43,10 +43,19 @@ class CompilationDelegateClDnn : public CompilationDelegate {
                           const std::string& output_name,
                           int32_t target_format,
                           cldnn_data_type target_data_type);
-  int32_t CldnnAddData(uint32_t index);
-  int32_t CldnnAddActivation(const std::string& input,
-                             const std::string& id,
-                             int32_t activation_type);
+  int32_t CldnnAddOperand(uint32_t index);
+  int32_t CldnnAddData(const std::string& id_str,
+                       int32_t data_type,
+                       const std::vector<uint32_t>& dimensions,
+                       const void* data_buffer,
+                       size_t length);
+  int32_t CldnnAddActivation(
+      const std::string& input,
+      const std::string& id,
+      int32_t activation_type,
+      const cldnn_activation_additional_params* params = nullptr,
+      const std::string& params_input = std::string());
+  int32_t CldnnAddPrelu(const mojom::OperationPtr& operation);
   int32_t CldnnAddElementwise(const mojom::OperationPtr& operation);
   int32_t CldnnAddConvolution(const mojom::OperationPtr& operation);
   int32_t CldnnAddPooling(const mojom::OperationPtr& operation);
