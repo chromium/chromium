@@ -43,8 +43,10 @@ class API_AVAILABLE(macosx(10.13)) ExecutionImplMPS : public mojom::Execution {
 
   scoped_refptr<CompiledModelMPS> compiled_model_;
 
-  void ReadResultBack(uint32_t memory_offset);
+  std::vector<std::unique_ptr<OperandInfo>> inputs_info_;
+  std::vector<std::unique_ptr<OperandInfo>> outputs_info_;
 
+  std::vector<id<MTLBuffer>> input_mtlbuffers_;
   std::vector<id<MTLBuffer>> output_mtlbuffers_;
 
   DISALLOW_COPY_AND_ASSIGN(ExecutionImplMPS);

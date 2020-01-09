@@ -97,7 +97,7 @@ MPSImage* CreateMPSImageWithData(const CompilationImpl* compilation,
     extend_data.insert(extend_data.begin(), extend_channels, data[0]);
     cpu_buffer = extend_data.data();
   }
-  UploadToMPSImage(mps_image, command_buffer, cpu_buffer, length);
+  UploadConstToMPSImage(mps_image, command_buffer, cpu_buffer, length);
   [command_buffer commit];
   [command_buffer waitUntilCompleted];
 

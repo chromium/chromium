@@ -19,6 +19,29 @@ namespace ml {
 
 namespace {
 
+API_AVAILABLE(macosx(10.13))
+void PrepareMemoryForReusing(
+    std::vector<std::unique_ptr<OperandInfo>>& reuse_memory,
+    std::vector<id<MTLBuffer>>& reuse_buffers,
+    const std::vector<ml::mojom::OperandInfoPtr>& user_data,
+    mojo::ScopedSharedBufferHandle& memory,
+    uint32_t& mapped_length) {
+  for (size_t i = 0; i < user_data.size(); ++i) {
+    const mojom::OperandInfoPtr& operand = user_data[i];
+    uint32_t length = GetRequiredSize(operand);
+    mojo::ScopedSharedBufferMapping mapping =
+        memory->MapAtOffset(length, mapped_length);
+    std::unique_ptr<OperandInfo> info(
+        new OperandInfo(mapped_length, length, std::move(mapping)));
+    reuse_memory.push_back(std::move(info));
+    mapped_length += length;
+
+    reuse_buffers.push_back([GetMPSCNNContext().device
+        newBufferWithLength:length
+                    options:MTLResourceOptionCPUCacheModeWriteCombined]);
+  }
+}
+
 NSString* API_AVAILABLE(macosx(10.13))
     OutputKernel(const mojom::OperandInfoPtr& operand,
                  const MPSImage* output_img) {
@@ -60,12 +83,11 @@ ExecutionImplMPS::ExecutionImplMPS(
     scoped_refptr<CompiledModelMPS> compiled_model,
     mojom::ExecutionInitParamsPtr params)
     : params_(std::move(params)), compiled_model_(std::move(compiled_model)) {
-  for (size_t i = 0; i < params_->outputs.size(); ++i) {
-    const mojom::OperandInfoPtr& operand = params_->outputs[i];
-    output_mtlbuffers_.push_back([GetMPSCNNContext().device
-        newBufferWithLength:GetRequiredSize(operand)
-                    options:MTLResourceOptionCPUCacheModeWriteCombined]);
-  }
+  uint32_t mapped_length = 0;
+  PrepareMemoryForReusing(inputs_info_, input_mtlbuffers_, params_->inputs,
+                          params_->memory, mapped_length);
+  PrepareMemoryForReusing(outputs_info_, output_mtlbuffers_, params_->outputs,
+                          params_->memory, mapped_length);
 }
 
 ExecutionImplMPS::~ExecutionImplMPS() = default;
@@ -80,21 +102,17 @@ void ExecutionImplMPS::StartCompute(StartComputeCallback callback) {
             [GetMPSCNNContext().command_queue commandBuffer];
         NSArray<MPSImageHandle*>* handles =
             compiled_model_->graphs_[0].get().sourceImageHandles;
-        uint32_t memory_offset = 0;
         for (size_t i = 0; i < params_->inputs.size(); ++i) {
+          std::unique_ptr<OperandInfo>& input_data = inputs_info_[i];
           const mojom::OperandInfoPtr& operand = params_->inputs[i];
-          uint32_t offset = memory_offset;
-          uint32_t length = GetRequiredSize(operand);
-          memory_offset += length;
-          auto mapping = params_->memory->MapAtOffset(length, offset);
           MPSImage* mps_image = GetMPSImage(handles, operand->index);
           if (!mps_image) {
             LOG(ERROR) << "Failed getting MPSImage for inputs data.";
             success = false;
             break;
           }
-          UploadToMPSImage(mps_image, command_buffer,
-                           static_cast<void*>(mapping.get()), length);
+          UploadToMPSImage(mps_image, input_mtlbuffers_[i], command_buffer,
+                           input_data->mapping.get(), input_data->length);
         }
 
         NSMutableArray<MPSImage*>* image_array =
@@ -177,7 +195,12 @@ void ExecutionImplMPS::StartCompute(StartComputeCallback callback) {
         [command_buffer commit];
         [command_buffer waitUntilCompleted];
 
-        ReadResultBack(memory_offset);
+        // Read result back.
+        for (size_t i = 0; i < params_->outputs.size(); ++i) {
+          std::unique_ptr<OperandInfo>& output_data = outputs_info_[i];
+          memcpy(output_data->mapping.get(), [output_mtlbuffers_[i] contents],
+                 output_data -> length);
+        }
       }  // @autoreleasepool
     } while (0);
   }
@@ -186,17 +209,6 @@ void ExecutionImplMPS::StartCompute(StartComputeCallback callback) {
     std::move(callback).Run(mojom::NOT_ERROR);
   } else {
     std::move(callback).Run(mojom::BAD_DATA);
-  }
-}
-
-void ExecutionImplMPS::ReadResultBack(uint32_t memory_offset) {
-  for (size_t i = 0; i < params_->outputs.size(); ++i) {
-    const mojom::OperandInfoPtr& operand = params_->outputs[i];
-    const uint32_t offset = memory_offset;
-    const uint32_t output_buffer_size = GetRequiredSize(operand);
-    memory_offset += output_buffer_size;
-    auto mapping = params_->memory->MapAtOffset(output_buffer_size, offset);
-    memcpy(mapping.get(), [output_mtlbuffers_[i] contents], output_buffer_size);
   }
 }
 

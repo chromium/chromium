@@ -326,13 +326,11 @@ LaunchParams SpatialPointwiseKernelLaunchParams(
 
 API_AVAILABLE(macosx(10.13))
 void UploadToMPSImage(const MPSImage* mps_image,
+                      const id<MTLBuffer>& mtl_buffer,
                       const id<MTLCommandBuffer>& command_buffer,
                       const void* cpu_buffer,
                       size_t length) {
   if (@available(macOS 10.13, *)) {
-    id<MTLBuffer> mtl_buffer = [GetMPSCNNContext().device
-        newBufferWithLength:length
-                    options:MTLResourceOptionCPUCacheModeWriteCombined];
     memcpy([mtl_buffer contents], cpu_buffer, length);
     id<MTLComputeCommandEncoder> encoder =
         [command_buffer computeCommandEncoder];
@@ -351,6 +349,17 @@ void UploadToMPSImage(const MPSImage* mps_image,
             threadsPerThreadgroup:inputLaunchParams.threadsPerThreadgroup];
     [encoder endEncoding];
   }
+}
+
+API_AVAILABLE(macosx(10.13))
+void UploadConstToMPSImage(const MPSImage* mps_image,
+                      const id<MTLCommandBuffer>& command_buffer,
+                      const void* cpu_buffer,
+                      size_t length) {
+  id<MTLBuffer> mtl_buffer = [GetMPSCNNContext().device
+        newBufferWithLength:length
+                    options:MTLResourceOptionCPUCacheModeWriteCombined];
+  UploadToMPSImage(mps_image, mtl_buffer, command_buffer, cpu_buffer, length);
 }
 
 }

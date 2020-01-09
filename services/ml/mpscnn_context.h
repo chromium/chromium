@@ -60,9 +60,17 @@ NSString* KernelFor(const MPSImage* X,
 
 API_AVAILABLE(macosx(10.13))
 void UploadToMPSImage(const MPSImage*,
+                      const id<MTLBuffer>& mtl_buffer,
                       const id<MTLCommandBuffer>&,
                       const void*,
                       size_t);
+
+API_AVAILABLE(macosx(10.13))
+void UploadConstToMPSImage(const MPSImage*,
+                      const id<MTLCommandBuffer>&,
+                      const void*,
+                      size_t);
+
 }
 
 #endif  // SERVICES_ML_MPSCNNCONTEXT_H_
