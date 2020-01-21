@@ -25,6 +25,8 @@ class Network;
 
 namespace ml {
 
+bool GNADevice();
+
 class CompilationDelegateIe : public CompilationDelegate {
  public:
   explicit CompilationDelegateIe(const CompilationImpl*);

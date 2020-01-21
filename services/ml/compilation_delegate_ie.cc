@@ -7,8 +7,10 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "services/ml/execution_impl_ie.h"
+#include "services/ml/ml_switches.h"
 #include "third_party/libinference_engine/dldt/inference-engine/include/ie_builders.hpp"
 #include "third_party/libinference_engine/dldt/inference-engine/include/ie_utils.hpp"
 #include "third_party/libinference_engine/dldt/inference-engine/include/inference_engine.hpp"
@@ -16,6 +18,17 @@
 namespace ie = InferenceEngine;
 
 namespace ml {
+
+bool GNADevice() {
+  bool gna_device = false;
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kLowPower)) {
+    std::string low_power = command_line->GetSwitchValueASCII(switches::kLowPower);
+    gna_device = base::LowerCaseEqualsASCII(low_power, "gna");
+  }
+
+  return gna_device;
+}
 
 namespace {
 static float asfloat(uint32_t v) {
@@ -321,16 +334,18 @@ int32_t CompilationDelegateIe::CreateBlob(
       return result;
     }
     int32_t pref = compilation_->GetPreference();
-    if (pref != mojom::PREFER_LOW_POWER) {
+    bool fp32_precision = pref != mojom::PREFER_LOW_POWER || GNADevice();
+    if (fp32_precision) {
+      // GNA only accepts FP32 precision, cpu/gpu use FP32 currently.
       blob = ie::make_shared_blob<float>(ie::Precision::FP32, dims);
     } else {
-      // MYRIAD only accepts FP16 precision
+      // MYRIAD only accepts FP16 precision.
       blob = ie::make_shared_blob<int16_t>(ie::Precision::FP16, dims);
     }
     blob->allocate();
     DLOG(INFO) << "Create blob with size " << blob->size()
                << " for operand index " << index;
-    if (pref != mojom::PREFER_LOW_POWER) {
+    if (fp32_precision) {
       float* dst = blob->buffer().as<float*>();
       auto mapping = compilation_->MapMemory(index);
       const float* src = reinterpret_cast<const float*>(mapping.get());

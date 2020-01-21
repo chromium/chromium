@@ -394,7 +394,7 @@ shared_library("libinference_engine") {
   ]
   defines = [
     "ENABLE_CLDNN=1",
-    #"ENABLE_GNA",
+    "ENABLE_GNA",
     "ENABLE_MKL_DNN=1",
     "ENABLE_MYRIAD=1",
     "GAPI_STANDALONE",
@@ -2278,5 +2278,120 @@ copy("copy_vpu_firmware") {
   ]
   outputs = [
     "$root_out_dir/mvnc/{{source_file_part}}",
+  ]
+}
+
+shared_library("libGNAPlugin") {
+  sources = [
+    "dldt/inference-engine/src/gna_plugin/dnn_memory.cpp",
+    "dldt/inference-engine/src/gna_plugin/dnn_memory.hpp",
+    "dldt/inference-engine/src/gna_plugin/dnn_traits.hpp",
+    "dldt/inference-engine/src/gna_plugin/dnn.cpp",
+    "dldt/inference-engine/src/gna_plugin/dnn.h",
+    "dldt/inference-engine/src/gna_plugin/floatmath.cpp",
+    "dldt/inference-engine/src/gna_plugin/floatmath.h",
+    "dldt/inference-engine/src/gna_plugin/gna_allocator.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_api_wrapper.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_device.cpp",
+    "dldt/inference-engine/src/gna_plugin/gna_device.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_executable_network.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_helper.cpp",
+    "dldt/inference-engine/src/gna_plugin/gna_infer_requests.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_layer_info.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_mem_requests.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_memory_state.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_memory.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_model_serial.cpp",
+    "dldt/inference-engine/src/gna_plugin/gna_model_serial.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_plugin_config.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_plugin_entry_points.cpp",
+    "dldt/inference-engine/src/gna_plugin/gna_plugin_internal.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_plugin_log.hpp",
+    "dldt/inference-engine/src/gna_plugin/gna_plugin_passes.cpp",
+    "dldt/inference-engine/src/gna_plugin/gna_plugin.cpp",
+    "dldt/inference-engine/src/gna_plugin/gna_plugin.hpp",
+    "dldt/inference-engine/src/gna_plugin/lstm.cpp",
+    "dldt/inference-engine/src/gna_plugin/lstm.hpp",
+    "dldt/inference-engine/src/gna_plugin/polymorh_allocator.hpp",
+    "dldt/inference-engine/src/gna_plugin/pwl_design.cpp",
+    "dldt/inference-engine/src/gna_plugin/pwl.h",
+    "dldt/inference-engine/src/gna_plugin/util.cpp",
+    "dldt/inference-engine/src/gna_plugin/util.h",
+    "dldt/inference-engine/src/gna_plugin/quantization/layer_quantizer.hpp",
+    "dldt/inference-engine/src/gna_plugin/quantization/model_quantizer.hpp",
+    "dldt/inference-engine/src/gna_plugin/quantization/precision_ex.hpp",
+    "dldt/inference-engine/src/gna_plugin/quantization/quantization.cpp",
+    "dldt/inference-engine/src/gna_plugin/quantization/quantization.h",
+    "dldt/inference-engine/src/gna_plugin/quantization/quantized_layer_params.hpp",
+    "dldt/inference-engine/src/gna_plugin/quantization/scale_factor_calc.hpp",
+  ]
+  include_dirs = [
+    "dldt/inference-engine/include",
+    "dldt/inference-engine/src/inference_engine/",
+    "dldt/inference-engine/src/gna_plugin/",
+    "gna/include/",
+  ]
+  configs -= [ "//build/config/compiler:no_exceptions" ]
+  configs += [ "//build/config/compiler:exceptions" ]
+  configs -= [ "//build/config/compiler:no_rtti" ]
+  configs += [ "//build/config/compiler:rtti" ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  cflags_cc = [
+    "-Wno-pessimizing-move",
+    "-Wno-delete-non-virtual-dtor",
+    "-Wno-unused-function",
+    "-Wno-reorder",
+    "-Wno-unused-private-field",
+    "-Wno-string-conversion",
+    "-Wno-header-hygiene",
+    "-Wno-unused-local-typedef",
+    "-Wno-defaulted-function-deleted",
+    "-Wno-unused-lambda-capture",
+    "-Wno-exceptions",
+    "-Wno-switch",
+    "-Wno-macro-redefined",
+    "-msse4.2",
+  ]
+  defines = [
+    "IMPLEMENT_INFERENCE_ENGINE_PLUGIN",
+    "_NO_MKL_",
+  ]
+  deps = [
+    ":libinference_engine",
+    ":copy_gna_dll",
+  ]
+
+  lib_dirs = [
+    "gna/win64/x64",
+  ]
+  libs = [
+    # The gna library come form openvinotoolkit/R3/inference_engine.
+    "gna.lib"
+  ]
+
+  if (is_linux) {
+    configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+    configs += [ "//build/config/gcc:symbol_visibility_default" ]
+  } else if (is_win) {
+    output_name = "GNAPlugin"
+    defines += [ "_HAS_ITERATOR_DEBUGGING=0", ]
+  }
+}
+
+if (is_linux) {
+  os_folder = "linux"
+  # gna_dll = "gna.dll"
+} else if (is_win) {
+  os_folder = "win64"
+  gna_dll = "gna.dll"
+}
+gna_dll_path = "//third_party/libinference_engine/gna/${os_folder}/x64"
+copy("copy_gna_dll") {
+  sources = [
+    "${gna_dll_path}/${gna_dll}",
+  ]
+  outputs = [
+    "$root_out_dir/{{source_file_part}}",
   ]
 }

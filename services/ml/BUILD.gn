@@ -253,6 +253,7 @@ source_set("lib") {
       "//third_party/libinference_engine:libMKLDNNPlugin",
       "//third_party/libinference_engine:libclDNNPlugin",
       "//third_party/libinference_engine:libinference_engine",
+      "//third_party/libinference_engine:libGNAPlugin",
     ]
 
     if (enable_ie_myriad) {

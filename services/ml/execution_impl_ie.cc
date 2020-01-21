@@ -14,6 +14,12 @@ namespace ie = InferenceEngine;
 
 namespace ml {
 
+// TODO(Junwei): GNA device only be opened for one instance of ExecutableNetwork,
+// there will be memory leak for these static objects.
+static std::unique_ptr<InferenceEngine::InferencePlugin> s_gna_plugin = nullptr;
+static std::unique_ptr<InferenceEngine::ExecutableNetwork> s_gna_execution = nullptr;
+static std::unique_ptr<InferenceEngine::InferRequest> s_infer_request = nullptr;
+
 ExecutionImplIe::ExecutionImplIe(const CompilationDelegateIe* compilation,
                                  mojom::ExecutionInitParamsPtr params)
     : compilation_(compilation),
@@ -30,22 +36,30 @@ int32_t ExecutionImplIe::Init(int32_t preference) {
     } else if (preference == mojom::PREFER_SUSTAINED_SPEED) {
       device_name = "GPU";
     } else if (preference == mojom::PREFER_LOW_POWER) {
-      device_name = "MYRIAD";
+      if (ml::GNADevice()) {
+        device_name = "GNA";
+      } else {
+        device_name = "MYRIAD";
+      }
     }
     DLOG(INFO) << "[IE] Trying to get plugin by device name " << device_name;
+    // Release in squence to avoid crash.
+    s_infer_request.reset(nullptr);
+    s_gna_execution.reset(nullptr);
+    s_gna_plugin.reset(nullptr);
     // Windows support UNICODE.
-    plugin_.reset(
+    s_gna_plugin.reset(
         new ie::InferencePlugin(static_cast<ie::InferenceEnginePluginPtr>(
             ie::PluginDispatcher({L""}).getPluginByDevice(device_name))));
-    const ie::Version* version = plugin_->GetVersion();
+    const ie::Version* version = s_gna_plugin->GetVersion();
     DLOG(INFO) << "[IE] succeed to load plugin " << version->buildNumber << " "
                << version->description;
-    execution_.reset(
+    s_gna_execution.reset(
         new ie::ExecutableNetwork(static_cast<ie::IExecutableNetwork::Ptr&>(
-            plugin_->LoadNetwork(*(compilation_->network_), {}))));
+            s_gna_plugin->LoadNetwork(*(compilation_->network_), {}))));
     DLOG(INFO) << "[IE] succeed to load network to plugin";
-    infer_request_.reset(new ie::InferRequest(
-        static_cast<ie::IInferRequest::Ptr>(execution_->CreateInferRequest())));
+    s_infer_request.reset(new ie::InferRequest(
+        static_cast<ie::IInferRequest::Ptr>(s_gna_execution->CreateInferRequest())));
     initialized_ = true;
   } catch (const std::exception& ex) {
     LOG(ERROR) << "[IE] exception " << ex.what();
@@ -58,9 +72,9 @@ int32_t ExecutionImplIe::Init(int32_t preference) {
 ExecutionImplIe::~ExecutionImplIe() {
   DLOG(INFO) << "ExecutionImplIe::~ExecutionImplIe()";
   // Release in squence to avoid crash.
-  infer_request_.reset(nullptr);
-  execution_.reset(nullptr);
-  plugin_.reset(nullptr);
+  // infer_request_.reset(nullptr);
+  // execution_.reset(nullptr);
+  // plugin_.reset(nullptr);
 }
 
 void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
@@ -87,7 +101,7 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
       DLOG(INFO) << "Mapping " << mapping.get() << " for input " << i
                  << " offset " << offset << " length " << length;
       std::string input_id = base::NumberToString(operand->index);
-      ie::Blob::Ptr input_blob = infer_request_->GetBlob(input_id);
+      ie::Blob::Ptr input_blob = s_infer_request->GetBlob(input_id);
       float* dst =
           input_blob->buffer()
               .as<ie::PrecisionTrait<ie::Precision::FP32>::value_type*>();
@@ -107,7 +121,7 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
       DLOG(INFO) << "Copy data to input blob buffer for " << input_id;
     }
 
-    infer_request_->Infer();
+    s_infer_request->Infer();
 
     for (size_t i = 0; i < params_->outputs.size(); ++i) {
       const mojom::OperandInfoPtr& operand = params_->outputs[i];
@@ -118,7 +132,7 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
       DLOG(INFO) << "Mapping " << mapping.get() << " for output " << i
                  << " offset " << offset << " length " << length;
       std::string output_id = base::NumberToString(operand->index);
-      const ie::Blob::Ptr output_blob = infer_request_->GetBlob(output_id);
+      const ie::Blob::Ptr output_blob = s_infer_request->GetBlob(output_id);
       const float* src =
           output_blob->buffer()
               .as<ie::PrecisionTrait<ie::Precision::FP32>::value_type*>();

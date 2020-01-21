@@ -301,6 +301,7 @@ static const char* const kSwitchNames[] = {
 #endif
 #if defined(OS_LINUX) || defined(OS_WIN)
     ml::switches::kUseInferenceEngine,
+    ml::switches::kLowPower,
 #endif
 #if defined(OS_WIN)
     ml::switches::kUseDirectML,

@@ -16,6 +16,8 @@ extern const char kUseInferenceEngine[];
 extern const char kUseDirectML[];
 
 extern const char kUseDnnl[];
+
+extern const char kLowPower[];
 }  // namespace switches
 
 }  // namespace ml
