@@ -33,9 +33,10 @@ int32_t ExecutionImplIe::Init(int32_t preference) {
       device_name = "MYRIAD";
     }
     DLOG(INFO) << "[IE] Trying to get plugin by device name " << device_name;
+    // Windows support UNICODE.
     plugin_.reset(
         new ie::InferencePlugin(static_cast<ie::InferenceEnginePluginPtr>(
-            ie::PluginDispatcher({""}).getPluginByDevice(device_name))));
+            ie::PluginDispatcher({L""}).getPluginByDevice(device_name))));
     const ie::Version* version = plugin_->GetVersion();
     DLOG(INFO) << "[IE] succeed to load plugin " << version->buildNumber << " "
                << version->description;

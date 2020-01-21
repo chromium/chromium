@@ -25,6 +25,9 @@ static_library("libpugixml") {
     "-Wno-unused-local-typedef",
     "-msse4.2",
   ]
+  defines = [
+    "_HAS_ITERATOR_DEBUGGING=0",
+  ]
 }
 
 static_library("libade") {
@@ -66,6 +69,9 @@ static_library("libade") {
     "-Wno-header-hygiene",
     "-Wno-unused-local-typedef",
     "-msse4.2",
+  ]
+  defines = [
+    "_HAS_ITERATOR_DEBUGGING=0",
   ]
 }
 
@@ -151,6 +157,7 @@ static_library("libfluid") {
   defines = [
     "GAPI_STANDALONE",
     "cv=fluidcv",
+    "_HAS_ITERATOR_DEBUGGING=0",
   ]
 }
 
@@ -373,8 +380,6 @@ shared_library("libinference_engine") {
   configs += [ "//build/config/compiler:rtti" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
-  configs += [ "//build/config/gcc:symbol_visibility_default" ]
   cflags_cc = [
     "-Wno-pessimizing-move",
     "-Wno-delete-non-virtual-dtor",
@@ -386,10 +391,6 @@ shared_library("libinference_engine") {
     "-Wno-unused-local-typedef",
     "-Wno-defaulted-function-deleted",
     "-msse4.2",
-    "-includetime.h"
-  ]
-  ldflags = [
-    "-Wl,--export-dynamic",
   ]
   defines = [
     "ENABLE_CLDNN=1",
@@ -412,9 +413,31 @@ shared_library("libinference_engine") {
   lib_dirs = [
     "omp/lib/",
   ]
-  libs = [
-    "iomp5"
-  ]
+
+  if (is_linux) {
+    configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+    configs += [ "//build/config/gcc:symbol_visibility_default" ]
+
+    cflags_cc += [
+      "-includetime.h"
+    ]
+
+    ldflags = [
+      "-Wl,--export-dynamic",
+    ]
+
+    libs = [
+      "iomp5"
+    ]
+  } else if (is_win) {
+    output_name = "inference_engine"
+
+    defines += [ "_HAS_ITERATOR_DEBUGGING=0", ]
+
+    libs = [
+      "libiomp5.lib"
+    ]
+  }
 }
 
 static_library("libmkldnn") {
@@ -704,6 +727,7 @@ static_library("libmkldnn") {
     "IMPLEMENT_INFERENCE_ENGINE_PLUGIN",
     "CI_BUILD_NUMBER=\"custom_2018_17e66dc5a6631d630da454506902bd7c25d4170b\"",
     "MKLDNN_THR=MKLDNN_THR_OMP",
+    "_HAS_ITERATOR_DEBUGGING=0",
   ]
 }
 
@@ -795,15 +819,12 @@ shared_library("libMKLDNNPlugin") {
     "dldt/inference-engine/src/mkldnn_plugin/mkldnn/cpu_engine.h",
     "dldt/inference-engine/src/mkldnn_plugin/mkldnn/omp_manager.h",
     "dldt/inference-engine/src/mkldnn_plugin/mkldnn/iml_type_mapper.h",
-    "dldt/inference-engine/src/mkldnn_plugin/mkldnn/os/lin/lin_omp_manager.h",
-    "dldt/inference-engine/src/mkldnn_plugin/mkldnn/os/lin/lin_omp_manager.cpp",
     "dldt/inference-engine/src/mkldnn_plugin/mkldnn/omp_manager.cpp",
     "dldt/inference-engine/src/mkldnn_plugin/mkldnn/iml_type_mapper.cpp",
     "dldt/inference-engine/src/mkldnn_plugin/mkldnn/cpu_prim_tensor.h",
     "dldt/inference-engine/src/mkldnn_plugin/mkldnn/cpu_prim_layer.h",
     "dldt/inference-engine/src/mkldnn_plugin/mkldnn/desc_iterator.hpp",
     "dldt/inference-engine/src/mkldnn_plugin/mkldnn_primitive.cpp",
-    "cxa_thread_atexit.cc",
   ]
   include_dirs = [
     "dldt/inference-engine/include",
@@ -820,8 +841,6 @@ shared_library("libMKLDNNPlugin") {
   configs += [ "//build/config/compiler:rtti" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
-  configs += [ "//build/config/gcc:symbol_visibility_default" ]
   cflags_cc = [
     "-Wno-pessimizing-move",
     "-Wno-delete-non-virtual-dtor",
@@ -834,9 +853,6 @@ shared_library("libMKLDNNPlugin") {
     "-Wno-defaulted-function-deleted",
     "-Wno-unused-lambda-capture",
     "-msse4.2",
-  ]
-  ldflags = [
-    "-Wl,--export-dynamic",
   ]
   defines = [
     "ENABLE_MKL_DNN=1",
@@ -852,9 +868,33 @@ shared_library("libMKLDNNPlugin") {
   lib_dirs = [
     "omp/lib/",
   ]
-  libs = [
-    "iomp5"
-  ]
+
+  if (is_linux) {
+    sources += [
+      "cxa_thread_atexit.cc",
+      "dldt/inference-engine/src/mkldnn_plugin/mkldnn/os/lin/lin_omp_manager.h",
+      "dldt/inference-engine/src/mkldnn_plugin/mkldnn/os/lin/lin_omp_manager.cpp",
+    ]
+    
+    configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+    configs += [ "//build/config/gcc:symbol_visibility_default" ]
+
+    ldflags = [
+      "-Wl,--export-dynamic",
+    ]
+
+    libs = [
+      "iomp5"
+    ]
+  } else if (is_win) {
+    output_name = "MKLDNNPlugin"
+
+    libs = [
+      "libiomp5.lib"
+    ]
+
+    defines += [ "_HAS_ITERATOR_DEBUGGING=0", ]
+  }
 }
 
 action("primitive_db_gen") {
@@ -1436,7 +1476,6 @@ source_set("cldnn_kernel_selector") {
     "dldt/inference-engine/thirdparty/clDNN/src/",
     "dldt/inference-engine/thirdparty/clDNN/src/caps/public/",
     "dldt/inference-engine/thirdparty/clDNN/common/khronos_ocl_clhpp/",
-    "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/linux/include/",
     "dldt/inference-engine/thirdparty/clDNN/kernel_selector/core/",
     "dldt/inference-engine/thirdparty/clDNN/kernel_selector/common/",
     "dldt/inference-engine/thirdparty/clDNN/kernel_selector/core/common/",
@@ -1474,9 +1513,24 @@ source_set("cldnn_kernel_selector") {
     "ENABLE_CLDNN=1",
   ]
   deps = [ ":primitive_db_gen" ]
+  
+  if (is_linux) {
+    include_dirs += [
+     "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/linux/include/",
+    ]
+  } else if (is_win) {
+    include_dirs += [
+     "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/windows/include/",
+    ]
+
+    defines += [
+      "EXPORT_NEURAL_SYMBOLS",
+      "_HAS_ITERATOR_DEBUGGING=0",
+    ]
+  }
 }
 
-static_library("libcldnn") {
+source_set("libcldnn") {
   sources = [
     "dldt/inference-engine/thirdparty/clDNN/src/pooling.cpp",
     "dldt/inference-engine/thirdparty/clDNN/src/convolution_grad_weights.cpp",
@@ -1711,7 +1765,6 @@ static_library("libcldnn") {
     "dldt/inference-engine/thirdparty/clDNN/src/",
     "dldt/inference-engine/thirdparty/clDNN/src/caps/public/",
     "dldt/inference-engine/thirdparty/clDNN/common/khronos_ocl_clhpp/",
-    "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/linux/include/",
     "dldt/inference-engine/thirdparty/clDNN/kernel_selector/core/",
     "dldt/inference-engine/thirdparty/clDNN/kernel_selector/common/",
     "dldt/inference-engine/thirdparty/clDNN/kernel_selector/core/common/",
@@ -1748,6 +1801,25 @@ static_library("libcldnn") {
     "ENABLE_CLDNN=1",
   ]
   deps = [ ":cldnn_kernel_selector" ]
+
+  if (is_linux) {
+    include_dirs += [
+      "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/linux/include/",
+    ]
+  } else if (is_win) {
+    include_dirs += [
+      "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/windows/include/",
+    ]
+
+    defines += [
+      "EXPORT_NEURAL_SYMBOLS",
+      "_HAS_ITERATOR_DEBUGGING=0",
+    ]
+
+    libs = [
+      "setupapi.lib",
+    ]
+  }
 }
 
 shared_library("libclDNNPlugin") {
@@ -1765,7 +1837,6 @@ shared_library("libclDNNPlugin") {
     "dldt/inference-engine/src/cldnn_engine/cldnn_engine.h",
     "dldt/inference-engine/src/cldnn_engine/cldnn_custom_layer.h",
     "dldt/inference-engine/src/cldnn_engine/debug_options.h",
-    "cxa_thread_atexit.cc",
   ]
   include_dirs = [
     "dldt/inference-engine/include",
@@ -1779,8 +1850,6 @@ shared_library("libclDNNPlugin") {
   configs += [ "//build/config/compiler:rtti" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
-  configs += [ "//build/config/gcc:symbol_visibility_default" ]
   cflags_cc = [
     "-Wno-missing-braces",
     "-Wno-pessimizing-move",
@@ -1795,9 +1864,6 @@ shared_library("libclDNNPlugin") {
     "-Wno-unused-lambda-capture",
     "-msse4.2",
   ]
-  ldflags = [
-    "-Wl,--export-dynamic",
-  ]
   defines = [
     "ENABLE_CLDNN=1",
     "IMPLEMENT_INFERENCE_ENGINE_PLUGIN",
@@ -1808,12 +1874,39 @@ shared_library("libclDNNPlugin") {
     ":libcldnn",
     ":libpugixml",
   ]
-  lib_dirs = [
-    "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/linux/Release/bin/x64/",
-  ]
-  libs = [
-    "OpenCL",
-  ]
+  if (is_linux) {
+    sources += [ "cxa_thread_atexit.cc", ]
+
+    configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+    configs += [ "//build/config/gcc:symbol_visibility_default" ]
+
+    ldflags = [
+      "-Wl,--export-dynamic",
+    ]
+
+    lib_dirs = [
+      "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/linux/Release/bin/x64/",
+    ]
+
+    libs = [
+      "OpenCL",
+    ]
+  } else if (is_win) {
+    output_name = "clDNNPlugin"
+
+    defines += [
+      "EXPORT_NEURAL_SYMBOLS",
+      "_HAS_ITERATOR_DEBUGGING=0",
+      ]
+
+    lib_dirs = [
+      "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/windows/Release/lib/x64/",
+    ]
+
+    libs = [
+      "OpenCL.lib",
+    ]
+  }
 }
 
 source_set("libgraph_transformer_hw") {
@@ -1844,8 +1937,6 @@ source_set("libgraph_transformer_hw") {
   configs += [ "//build/config/compiler:rtti" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
-  configs += [ "//build/config/gcc:symbol_visibility_default" ]
   cflags_cc = [
     "-Wno-potentially-evaluated-expression",
     "-Wno-unused-lambda-capture",
@@ -1867,6 +1958,13 @@ source_set("libgraph_transformer_hw") {
     "IMPLEMENT_INFERENCE_ENGINE_PLUGIN",
     "CI_BUILD_NUMBER=\"custom_2018_17e66dc5a6631d630da454506902bd7c25d4170b\"",
   ]
+
+  if (is_linux) {
+    configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+    configs += [ "//build/config/gcc:symbol_visibility_default" ]
+  } else if (is_win) {
+    defines += [ "_HAS_ITERATOR_DEBUGGING=0", ]
+  }
 }
 static_library("libgraph_transformer") {
   sources = [
@@ -1945,8 +2043,6 @@ static_library("libgraph_transformer") {
   configs += [ "//build/config/compiler:rtti" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
-  configs += [ "//build/config/gcc:symbol_visibility_default" ]
   cflags_cc = [
     "-Wno-switch",
     "-Wno-potentially-evaluated-expression",
@@ -1970,6 +2066,13 @@ static_library("libgraph_transformer") {
     "CI_BUILD_NUMBER=\"custom_2018_17e66dc5a6631d630da454506902bd7c25d4170b\"",
   ]
   deps = [":libgraph_transformer_hw"]
+
+  if (is_linux) {
+    configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+    configs += [ "//build/config/gcc:symbol_visibility_default" ]
+  } else if (is_win) {
+    defines += [ "_HAS_ITERATOR_DEBUGGING=0", ]
+  }
 }
 
 static_library("libvpu_common") {
@@ -1997,8 +2100,6 @@ static_library("libvpu_common") {
   configs += [ "//build/config/compiler:rtti" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
-  configs += [ "//build/config/gcc:symbol_visibility_default" ]
   cflags_cc = [
     "-Wno-potentially-evaluated-expression",
     "-Wno-unused-lambda-capture",
@@ -2020,6 +2121,12 @@ static_library("libvpu_common") {
     "IMPLEMENT_INFERENCE_ENGINE_PLUGIN",
     "CI_BUILD_NUMBER=\"custom_2018_17e66dc5a6631d630da454506902bd7c25d4170b\"",
   ]
+  if (is_linux) {
+    configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+    configs += [ "//build/config/gcc:symbol_visibility_default" ]
+  } else if (is_win) {
+    defines += [ "_HAS_ITERATOR_DEBUGGING=0", ]
+  }
 }
 
 static_library("libmvnc") {
@@ -2084,6 +2191,7 @@ static_library("libmvnc") {
     "USE_USB_VSC",
     "_CRT_SECURE_NO_WARNINGS",
     "__PC__",
+    "_HAS_ITERATOR_DEBUGGING=0",
   ]
 }
 
@@ -2112,8 +2220,6 @@ shared_library("libmyriadPlugin") {
   configs += [ "//build/config/compiler:rtti" ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-  configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
-  configs += [ "//build/config/gcc:symbol_visibility_default" ]
   cflags_cc = [
     "-Wno-switch",
     "-Wno-inconsistent-missing-override",
@@ -2130,9 +2236,6 @@ shared_library("libmyriadPlugin") {
     "-Wno-header-hygiene",
     "-Wno-unused-local-typedef",
     "-msse4.2",
-  ]
-  ldflags = [
-    "-Wl,--export-dynamic",
   ]
   defines = [
     "ENABLE_VPU",
@@ -2155,6 +2258,17 @@ shared_library("libmyriadPlugin") {
   libs = [
     "usb-1.0"
   ]
+
+  if (is_linux) {
+    configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
+    configs += [ "//build/config/gcc:symbol_visibility_default" ]
+
+    ldflags = [
+      "-Wl,--export-dynamic",
+    ]
+  } else if (is_win) {
+    defines += [ "_HAS_ITERATOR_DEBUGGING=0", ]
+  }
 }
 
 copy("copy_vpu_firmware") {

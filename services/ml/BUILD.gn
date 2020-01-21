@@ -247,7 +247,7 @@ source_set("lib") {
     "//services/service_manager/public/cpp",
   ]
 
-  if (is_linux) {
+  if (is_linux || is_win) {
     deps += [
       ":ie",
       "//third_party/libinference_engine:libMKLDNNPlugin",

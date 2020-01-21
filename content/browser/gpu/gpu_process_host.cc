@@ -299,7 +299,7 @@ static const char* const kSwitchNames[] = {
     switches::kEnableReachedCodeProfiler,
     switches::kReachedCodeSamplingIntervalUs,
 #endif
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_WIN)
     ml::switches::kUseInferenceEngine,
 #endif
 #if defined(OS_WIN)

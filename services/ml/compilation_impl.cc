@@ -57,7 +57,7 @@ void CompilationImpl::Finish(int32_t preference, FinishCallback callback) {
   preference_ = preference;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kUseInferenceEngine)) {
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_WIN)
     delegate_ = std::make_unique<CompilationDelegateIe>(this);
 #endif
   } else if (preference == mojom::PREFER_SUSTAINED_SPEED) {
