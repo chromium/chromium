@@ -11,11 +11,11 @@ CrossThreadSharedBitmap::CrossThreadSharedBitmap(const viz::SharedBitmapId& id,
                                                  const gfx::Size& size,
                                                  viz::ResourceFormat format)
     : id_(id),
-      region_(std::move(shm.region)),
-      mapping_(std::move(shm.mapping)),
-      size_(size),
+      region_(std::move(shm.region)   ),
+      mapping_(std::move(shm.mapping  ) ),
+          size_(size),
       format_(format) {}
 
-CrossThreadSharedBitmap::~CrossThreadSharedBitmap() = default;
+    CrossThreadSharedBitmap::~CrossThreadSharedBitmap() = default;
 
 }  // namespace cc
