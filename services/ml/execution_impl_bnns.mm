@@ -140,6 +140,7 @@ void ExecutionImplBnns::StartCompute(StartComputeCallback callback) {
         for (size_t i = 0; i < compiled_model_->operations_.size(); i++) {
           const OperationMac& operation = compiled_model_->operations_[i];
           bool is_outer_input = false;
+          uint32_t extend_input_index = 0;
           uint32_t operation_input_idx = operation.inputs[0];
           OperandMac& operation_input =
               compiled_model_->operands_[operation_input_idx];
@@ -193,17 +194,17 @@ void ExecutionImplBnns::StartCompute(StartComputeCallback callback) {
                 src[i] = raw_input;
               }
               is_outer_input = false;
-            } else if (i == 0) {
-              src[i] = bnns_operands_memory_map_[operation_input_idx];
             } else if ((operation.local_operation == KAdd ||
                         operation.local_operation == KMul ||
                         operation.local_operation == KConcatenation) &&
                        i < operation.inputs.size() - 1) {
               if (operation.extend_input.size() > 0) {
-                src[i] = operation.extend_input[i - 1];
+                src[i] = operation.extend_input[extend_input_index++];
               } else {
                 src[i] = bnns_operands_memory_map_[operation_input_idx];
               }
+            } else if (i == 0) {
+              src[i] = bnns_operands_memory_map_[operation_input_idx];
             }
           }
 
