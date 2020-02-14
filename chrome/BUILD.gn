@@ -837,7 +837,7 @@ if (is_win) {
     }
     bundle_data("iomp5_binaries") {
       sources = [
-        "$root_out_dir/libomp.dylib",
+        "$root_out_dir/libiomp5.dylib",
       ]
       outputs = [
         "{{bundle_contents_dir}}/Libraries/{{source_file_part}}",
