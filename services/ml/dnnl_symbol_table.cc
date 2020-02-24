@@ -16,7 +16,7 @@ DNNL_SYMBOLS_LIST
 LATE_BINDING_SYMBOL_TABLE_DEFINE_END(DnnlSymbolTable)
 #endif
 #if defined(__APPLE__)
-LATE_BINDING_SYMBOL_TABLE_DEFINE_BEGIN(DnnlSymbolTable, "libdnnl.1.1.dylib")
+LATE_BINDING_SYMBOL_TABLE_DEFINE_BEGIN(DnnlSymbolTable, "libdnnl.1.2.dylib")
 #define X(sym) LATE_BINDING_SYMBOL_TABLE_DEFINE_ENTRY(DnnlSymbolTable, sym)
 DNNL_SYMBOLS_LIST
 #undef X

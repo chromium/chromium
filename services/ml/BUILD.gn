@@ -19,7 +19,7 @@ if (is_win) {
   omp_dll = "libiomp5.so"
   os_folder = "Linux64"
 } else if (is_mac) {
-  dnnl_dll = "libdnnl.1.1.dylib"
+  dnnl_dll = "libdnnl.1.2.dylib"
   omp_dll = "libiomp5.dylib"
   os_folder = "Mac64"
 }

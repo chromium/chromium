@@ -826,7 +826,7 @@ if (is_win) {
   if (is_mac) {
     bundle_data("dnnl_binaries") {
       sources = [
-        "$root_out_dir/libdnnl.1.1.dylib",
+        "$root_out_dir/libdnnl.1.2.dylib",
       ]
       outputs = [
         "{{bundle_contents_dir}}/Libraries/{{source_file_part}}",

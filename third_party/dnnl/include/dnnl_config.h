@@ -17,6 +17,8 @@
 #ifndef DNNL_CONFIG_H
 #define DNNL_CONFIG_H
 
+#include "dnnl_types.h"
+
 /// @cond DO_NOT_DOCUMENT_THIS
 
 // All symbols shall be internal unless marked as DNNL_API
@@ -52,17 +54,6 @@
 #endif
 
 /// @endcond
-
-// No runtime (disabled)
-#define DNNL_RUNTIME_NONE 0u
-// Sequential runtime (CPU only)
-#define DNNL_RUNTIME_SEQ 1u
-// OpenMP runtime (CPU only)
-#define DNNL_RUNTIME_OMP 2u
-// TBB runtime (CPU only)
-#define DNNL_RUNTIME_TBB 4u
-// OpenCL runtime
-#define DNNL_RUNTIME_OCL 256u
 
 // clang-format off
 
