@@ -243,7 +243,7 @@ const char kForceUnstackedTabstripDescription[] =
 const char kFullscreenSmoothScrollingName[] = "Fullscreen Smooth Scrolling";
 const char kFullscreenSmoothScrollingDescription[] =
     "When enabled, the web view's insets are updated for scoll events. If "
-    "disabled, the the web view's frame are updated.";
+    "disabled, then the web view's frame is updated.";
 
 const char kFullscreenControllerBrowserScopedName[] =
     "Scope FullscreenController to Browser";
