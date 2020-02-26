@@ -1708,8 +1708,76 @@ int32_t CompilationDelegateDnnl::AddFullyConnected(
 
 int32_t CompilationDelegateDnnl::AddResizeBilinear(
     const mojom::OperationPtr& operation) {
-  LOG(ERROR) << "Operation type " << operation->type << " is not supported.";
-  return mojom::BAD_DATA;
+  ResizeBilinearParams params;
+  int32_t result = compilation_->GetResizeBilinearParams(operation, params);
+  if (result != mojom::NOT_ERROR)
+    return result;
+
+  std::string input_id(base::NumberToString(operation->inputs[0]));
+  if (compiled_model_->memories.find(input_id) ==
+      compiled_model_->memories.end()) {
+    LOG(ERROR) << "Input memory is not ready";
+    return mojom::BAD_DATA;
+  }
+
+  dnnl_status_t status;
+  dnnl_memory_t input_memory = compiled_model_->memories[input_id];
+  const dnnl_memory_desc_t* input_md;
+  status = LATE(dnnl_memory_get_memory_desc)(input_memory, &input_md);
+  if (status != dnnl_success) {
+    LOG(ERROR) << "[DNNL] failed to get memory descriptor " << status;
+    return mojom::OP_FAILED;
+  }
+
+  dnnl_memory_desc_t output_md;
+  result = CreateMemoryDescriptor(operation->outputs[0], output_md);
+  if (result != mojom::NOT_ERROR) {
+    return result;
+  }
+
+  dnnl_resampling_desc_t resize_desc;
+  float factors[2] = {params.y_scale, params.x_scale};
+  status = LATE(dnnl_resampling_forward_desc_init)(
+      &resize_desc, dnnl_forward_inference, dnnl_resampling_linear, factors, input_md, &output_md);
+  if (status != dnnl_success) {
+    LOG(ERROR) << "[DNNL] failed to init resize descriptor " << status;
+    return mojom::OP_FAILED;
+  }
+
+  dnnl_primitive_desc_t resize_pd;
+  status = LATE(dnnl_primitive_desc_create)(&resize_pd, &resize_desc, NULL,
+                                            compiled_model_->engine, NULL);
+  if (status != dnnl_success) {
+    LOG(ERROR) << "[DNNL] failed to create resize primitive descriptor "
+               << status;
+    return mojom::OP_FAILED;
+  }
+
+  dnnl_memory_t output_memory;
+  result = CreateMemoryByQueryType(resize_pd, dnnl_query_dst_md, output_memory);
+  if (result != mojom::NOT_ERROR) {
+    LATE(dnnl_primitive_desc_destroy)(resize_pd);
+    return result;
+  }
+  std::string output_id(base::NumberToString(operation->outputs[0]));
+  compiled_model_->memories[output_id] = output_memory;
+
+  dnnl_primitive_t resize;
+  status = LATE(dnnl_primitive_create)(&resize, resize_pd);
+  if (status != dnnl_success) {
+    LOG(ERROR) << "[DNNL] failed to create resize primitive " << status;
+    LATE(dnnl_primitive_desc_destroy)(resize_pd);
+    return mojom::OP_FAILED;
+  }
+  LATE(dnnl_primitive_desc_destroy)(resize_pd);
+
+  OperationDnnl dnnl_operation(resize);
+  dnnl_operation.primitive_args.push_back({DNNL_ARG_SRC, input_memory});
+  dnnl_operation.primitive_args.push_back({DNNL_ARG_DST, output_memory});
+
+  compiled_model_->operations.push_back(dnnl_operation);
+
+  return mojom::NOT_ERROR;
 }
 
 }  // namespace ml

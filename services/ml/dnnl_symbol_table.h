@@ -48,7 +48,8 @@ namespace ml {
   X(dnnl_primitive_attr_create)                 \
   X(dnnl_primitive_attr_destroy)                \
   X(dnnl_primitive_attr_set_post_ops)           \
-  X(dnnl_eltwise_forward_desc_init)
+  X(dnnl_eltwise_forward_desc_init)             \
+  X(dnnl_resampling_forward_desc_init)
 
 LATE_BINDING_SYMBOL_TABLE_DECLARE_BEGIN(DnnlSymbolTable)
 #define X(sym) LATE_BINDING_SYMBOL_TABLE_DECLARE_ENTRY(DnnlSymbolTable, sym)
