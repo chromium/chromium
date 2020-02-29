@@ -264,7 +264,7 @@ This file contains the strings for ash.
         Exit guest
       </message>
       <message name="IDS_ASH_STATUS_TRAY_EXIT_PUBLIC" desc="The label used for the button in the status tray to terminate a public account session. If the label is long, indicate where it may be broken into two lines by inserting \n instead of a whitespace.">
-        Exit session
+        Leave session
       </message>
       <message name="IDS_ASH_STATUS_TRAY_PUBLIC_LABEL" desc="Text of the the ash system bubble's user card when the current session is a managed session.">
         <ph name="DISPLAY_NAME">$1<ex>Internet kiosk</ex></ph> is a managed session managed by <ph name="DOMAIN">$2<ex>yourdomain.com</ex></ph>
@@ -444,7 +444,7 @@ This file contains the strings for ash.
         </message>
       </if>
       <message name="IDS_ROLLBACK_NOTIFICATION_TITLE" desc="The title of the notification to notify that the user should restart to roll back the device.">
-        Device will be rolled back
+        Device will be rolled back to the last version of Chrome
       </message>
       <message name="IDS_GESTURE_NOTIFICATION_TITLE" desc="The title of the notification to show off new gestures.">
         Try out new gesture navigation
@@ -874,7 +874,7 @@ This file contains the strings for ash.
         Toggle window overview
       </message>
       <message name="IDS_ASH_OVERVIEW_NO_RECENT_ITEMS" desc="The message that is displayed on overview mode when the user enters it with no open windows.">
-        No recent items
+       Your recent items will appear here
       </message>
       <message name="IDS_ASH_OVERVIEW_CLOSABLE_HIGHLIGHT_ITEM_A11Y_EXTRA_TIP" desc="The accessibility tooltip read by screen readers for a close-able overview item.">
         Press Ctrl + W to close.
@@ -1623,7 +1623,7 @@ This file contains the strings for ash.
         Press Control Shift Q twice to sign out.
       </message>
       <message name="IDS_ASH_LOGOUT_CONFIRMATION_TITLE" desc="Dialog title for the logout confirmation dialog.">
-        Exiting session
+        Leave session
       </message>
       <message name="IDS_ASH_LOGOUT_CONFIRMATION_WARNING" desc="The text for the logout confirmation dialog.">
         You will automatically be signed out in <ph name="LOGOUT_TIME_LEFT">$1<ex>5 seconds</ex></ph>.
@@ -1777,7 +1777,7 @@ This file contains the strings for ash.
         Password
       </message>
       <message name="IDS_ASH_LOGIN_POD_PASSWORD_PIN_PLACEHOLDER" desc="Text to display as placeholder in the password field when both password and pin are allowed.">
-        PIN or password
+        Enter PIN or password
       </message>
       <message name="IDS_ASH_LOGIN_POD_PASSWORD_TAP_PLACEHOLDER" desc="Text to display as placeholder in the password field when the user can click/tap their profile picture to unlock.">
         Tap your profile image
@@ -1828,7 +1828,7 @@ This file contains the strings for ash.
         Sign in with smart card
       </message>
       <message name="IDS_ASH_PIN_KEYBOARD_BACK_BUTTON" desc="Text shown on the action button of the PIN keyboard that cancels the request and goes back to the login screen UI with no PIN keyboard. NOTE: The text must be short, in order to fit into the button boundaries.">
-        BACK
+        Back
       </message>
       <message name="IDS_ASH_PIN_KEYBOARD_DELETE_ACCESSIBLE_NAME" desc="Text to be spoken when the focus is set to the delete button of the PIN keyboard.">
         Delete
