@@ -176,6 +176,8 @@ int32_t CompilationDelegateIe::BuildNetwork() {
       result = AddFullyConnected(operation);
     } else if (type == mojom::RESIZE_BILINEAR) {
       result = AddResizeBilinear(operation);
+    } else if (type == mojom::LOGISTIC) {
+      result = AddSigmoid(operation);
     } else {
       LOG(ERROR) << "Operation type " << type << " is not supported.";
       return mojom::BAD_DATA;
@@ -915,6 +917,32 @@ int32_t CompilationDelegateIe::AddResizeBilinear(
 
   LOG(ERROR) << "Operation type " << operation->type << " is not supported.";
   return mojom::BAD_DATA;
+}
+
+int32_t CompilationDelegateIe::AddSigmoid(
+    const mojom::OperationPtr& operation) {
+  const uint32_t input_index = operation->inputs[0];
+  if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
+    LOG(ERROR) << "The layer for operand index " << input_index
+               << " is not ready";
+    return mojom::BAD_DATA;
+  }
+  try {
+    const uint32_t output_index = operation->outputs[0];
+    std::string name(base::NumberToString(output_index));
+    const size_t input_layer_id = layer_id_map_[input_index];
+    DLOG(INFO) << "[IE] input port layer id " << input_layer_id
+               << " for operand index " << input_index;
+    size_t layer_id = builder_->addLayer(
+        {{input_layer_id}}, ie::Builder::SigmoidLayer(name));
+    layer_id_map_[output_index] = layer_id;
+    DLOG(INFO) << "[IE] succeed to add sigmoid layer id " << layer_id
+               << " for output operand index " << output_index;
+  } catch (const std::exception& ex) {
+    LOG(ERROR) << "[IE] failed to add sigmoid layer " << ex.what();
+    return mojom::OP_FAILED;
+  }
+  return mojom::NOT_ERROR;
 }
 
 }  // namespace ml

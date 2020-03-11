@@ -63,6 +63,7 @@ class CompilationDelegateIe : public CompilationDelegate {
   int32_t AddConcatenation(const mojom::OperationPtr& operation);
   int32_t AddFullyConnected(const mojom::OperationPtr& operation);
   int32_t AddResizeBilinear(const mojom::OperationPtr& operation);
+  int32_t AddSigmoid(const mojom::OperationPtr& operation);
 
  private:
   const CompilationImpl* compilation_;
