@@ -51,10 +51,15 @@ int32_t ExecutionImplIe::Init(int32_t preference) {
     s_infer_request.reset(nullptr);
     s_gna_execution.reset(nullptr);
     s_gna_plugin.reset(nullptr);
-    // Windows support UNICODE.
     s_gna_plugin.reset(
         new ie::InferencePlugin(static_cast<ie::InferenceEnginePluginPtr>(
-            ie::PluginDispatcher({L""}).getPluginByDevice(device_name))));
+            ie::PluginDispatcher({
+#if defined(OS_WIN)
+              L""// Windows support UNICODE.
+#else
+              ""
+#endif
+            }).getPluginByDevice(device_name))));
     const ie::Version* version = s_gna_plugin->GetVersion();
     DLOG(INFO) << "[IE] succeed to load plugin " << version->buildNumber << " "
                << version->description;

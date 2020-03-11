@@ -2329,7 +2329,7 @@ shared_library("libGNAPlugin") {
     "dldt/inference-engine/include",
     "dldt/inference-engine/src/inference_engine/",
     "dldt/inference-engine/src/gna_plugin/",
-    "gna/include/",
+    "gna/linux/include",
   ]
   configs -= [ "//build/config/compiler:no_exceptions" ]
   configs += [ "//build/config/compiler:exceptions" ]
@@ -2358,22 +2358,29 @@ shared_library("libGNAPlugin") {
     "_NO_MKL_",
   ]
   deps = [
+    "//base",
     ":libinference_engine",
     ":copy_gna_dll",
   ]
 
-  lib_dirs = [
-    "gna/win64/x64",
-  ]
-  libs = [
-    # The gna library come form openvinotoolkit/R3/inference_engine.
-    "gna.lib"
-  ]
-
   if (is_linux) {
+    lib_dirs = [
+      "gna/linux/lib",
+    ]
+    libs = [
+      # The gna library come form openvinotoolkit/R3/inference_engine.
+      "gna_api"
+    ]
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   } else if (is_win) {
+    lib_dirs = [
+      "gna/win64/x64",
+    ]
+    libs = [
+      # The gna library come form openvinotoolkit/R3/inference_engine.
+      "gna.lib"
+    ]
     output_name = "GNAPlugin"
     defines += [ "_HAS_ITERATOR_DEBUGGING=0", ]
   }
@@ -2381,16 +2388,21 @@ shared_library("libGNAPlugin") {
 
 if (is_linux) {
   os_folder = "linux"
-  # gna_dll = "gna.dll"
+  gna_dll = "libgna_api.so"
 } else if (is_win) {
   os_folder = "win64"
   gna_dll = "gna.dll"
 }
-gna_dll_path = "//third_party/libinference_engine/gna/${os_folder}/x64"
+gna_dll_path = "//third_party/libinference_engine/gna/${os_folder}/lib"
 copy("copy_gna_dll") {
   sources = [
     "${gna_dll_path}/${gna_dll}",
   ]
+  if (is_linux) {
+    sources += [
+      "${gna_dll_path}/libgna_kernel.so",
+    ]
+  }
   outputs = [
     "$root_out_dir/{{source_file_part}}",
   ]
