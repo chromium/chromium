@@ -354,8 +354,9 @@ Instead of running `install-build-deps.sh` to install build dependencies, run:
 
 ```shell
 $ sudo pacman -S --needed python perl gcc gcc-libs bison flex gperf pkgconfig \
-nss alsa-lib glib2 gtk3 nspr ttf-ms-fonts freetype2 cairo dbus libgnome-keyring
+nss alsa-lib glib2 gtk3 nspr freetype2 cairo dbus libgnome-keyring
 ```
+`ttf-ms-fonts` is needed as well but [is in the AUR](https://aur.archlinux.org/packages/ttf-ms-fonts/), so you will have to install it manually or use an AUR helper such as yay
 
 For the optional packages on Arch Linux:
 
