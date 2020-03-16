@@ -26,7 +26,8 @@ class CompilationDelegateIe;
 class ExecutionImplIe : public mojom::Execution {
  public:
   ExecutionImplIe(const CompilationDelegateIe*,
-                  mojom::ExecutionInitParamsPtr params);
+                  mojom::ExecutionInitParamsPtr params,
+                  float input_scale);
   ~ExecutionImplIe() override;
 
   int32_t Init(int32_t preference);
@@ -38,6 +39,7 @@ class ExecutionImplIe : public mojom::Execution {
 
   const CompilationDelegateIe* compilation_;
   mojom::ExecutionInitParamsPtr params_;
+  float input_scale_;
 
   std::unique_ptr<InferenceEngine::InferRequest> infer_request_;
   std::unique_ptr<InferenceEngine::InferencePlugin> plugin_;

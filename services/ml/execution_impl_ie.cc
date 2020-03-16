@@ -8,22 +8,26 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "services/ml/compilation_delegate_ie.h"
+#include "third_party/libinference_engine/dldt/inference-engine/include/gna/gna_config.hpp"
 #include "third_party/libinference_engine/dldt/inference-engine/include/inference_engine.hpp"
 
 namespace ie = InferenceEngine;
 
 namespace ml {
 
-// TODO(Junwei): GNA device only be opened for one instance of ExecutableNetwork,
-// there will be memory leak for these static objects.
+// TODO(Junwei): GNA device only be opened for one instance of
+// ExecutableNetwork, there will be memory leak for these static objects.
 static std::unique_ptr<InferenceEngine::InferencePlugin> s_gna_plugin = nullptr;
-static std::unique_ptr<InferenceEngine::ExecutableNetwork> s_gna_execution = nullptr;
+static std::unique_ptr<InferenceEngine::ExecutableNetwork> s_gna_execution =
+    nullptr;
 static std::unique_ptr<InferenceEngine::InferRequest> s_infer_request = nullptr;
 
 ExecutionImplIe::ExecutionImplIe(const CompilationDelegateIe* compilation,
-                                 mojom::ExecutionInitParamsPtr params)
+                                 mojom::ExecutionInitParamsPtr params,
+                                 float input_scale)
     : compilation_(compilation),
       params_(std::move(params)),
+      input_scale_(input_scale),
       infer_request_(nullptr),
       plugin_(nullptr),
       execution_(nullptr) {}
@@ -54,12 +58,17 @@ int32_t ExecutionImplIe::Init(int32_t preference) {
     const ie::Version* version = s_gna_plugin->GetVersion();
     DLOG(INFO) << "[IE] succeed to load plugin " << version->buildNumber << " "
                << version->description;
-    s_gna_execution.reset(
-        new ie::ExecutableNetwork(static_cast<ie::IExecutableNetwork::Ptr&>(
-            s_gna_plugin->LoadNetwork(*(compilation_->network_), {}))));
+    std::map<std::string, std::string> gna_plugin_Config;
+    std::string scaleFactorConfigKey = GNA_CONFIG_KEY(SCALE_FACTOR);
+    gna_plugin_Config[scaleFactorConfigKey] = std::to_string(input_scale_);
+    // gnaPluginConfig[ie::GNAConfigParams::KEY_GNA_PRECISION] = "I16";
+    s_gna_execution.reset(new ie::ExecutableNetwork(
+        static_cast<ie::IExecutableNetwork::Ptr&>(s_gna_plugin->LoadNetwork(
+            *(compilation_->network_), gna_plugin_Config))));
     DLOG(INFO) << "[IE] succeed to load network to plugin";
-    s_infer_request.reset(new ie::InferRequest(
-        static_cast<ie::IInferRequest::Ptr>(s_gna_execution->CreateInferRequest())));
+    s_infer_request.reset(
+        new ie::InferRequest(static_cast<ie::IInferRequest::Ptr>(
+            s_gna_execution->CreateInferRequest())));
     initialized_ = true;
   } catch (const std::exception& ex) {
     LOG(ERROR) << "[IE] exception " << ex.what();

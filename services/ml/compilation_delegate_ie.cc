@@ -23,7 +23,8 @@ bool GNADevice() {
   bool gna_device = false;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kLowPower)) {
-    std::string low_power = command_line->GetSwitchValueASCII(switches::kLowPower);
+    std::string low_power =
+        command_line->GetSwitchValueASCII(switches::kLowPower);
     gna_device = base::LowerCaseEqualsASCII(low_power, "gna");
   }
 
@@ -119,7 +120,15 @@ int32_t CompilationDelegateIe::Compile() {
 int32_t CompilationDelegateIe::CreateExecution(
     std::unique_ptr<mojom::Execution>& execution,
     mojom::ExecutionInitParamsPtr params) {
-  execution = std::make_unique<ExecutionImplIe>(this, std::move(params));
+  float input_scale = 1.0;
+  if (compilation_->GetPreference() == mojom::PREFER_LOW_POWER && GNADevice()) {
+    const mojom::ModelInfoPtr& model = compilation_->GetModel();
+    DCHECK(model->inputs.size() == 1);
+    int index = model->inputs[0];
+    input_scale = model->operands[index]->scale;
+  }
+  execution =
+      std::make_unique<ExecutionImplIe>(this, std::move(params), input_scale);
   return static_cast<ExecutionImplIe*>(execution.get())
       ->Init(compilation_->GetPreference());
 }
@@ -933,8 +942,8 @@ int32_t CompilationDelegateIe::AddSigmoid(
     const size_t input_layer_id = layer_id_map_[input_index];
     DLOG(INFO) << "[IE] input port layer id " << input_layer_id
                << " for operand index " << input_index;
-    size_t layer_id = builder_->addLayer(
-        {{input_layer_id}}, ie::Builder::SigmoidLayer(name));
+    size_t layer_id =
+        builder_->addLayer({{input_layer_id}}, ie::Builder::SigmoidLayer(name));
     layer_id_map_[output_index] = layer_id;
     DLOG(INFO) << "[IE] succeed to add sigmoid layer id " << layer_id
                << " for output operand index " << output_index;
