@@ -69,7 +69,7 @@ void OpenVRRenderLoop::InputActiveState::MarkAsInactive() {
   controller_role = vr::TrackedControllerRole_Invalid;
 }
 
-OpenVRRenderLoop::OpenVRRenderLoop() : XRCompositorCommon() {}
+OpenVRRenderLoop::OpenVRRenderLoop() : XRCompositorCommon(), m_lastFrameIndex(0) {}
 
 OpenVRRenderLoop::~OpenVRRenderLoop() {
   Stop();
@@ -105,13 +105,16 @@ bool OpenVRRenderLoop::SubmitCompositedFrame() {
 
   vr::EVRCompositorError error =
       vr_compositor->Submit(vr::EVREye::Eye_Left, &texture, &bounds[0]);
+  TRACE_EVENT1("gpu", "OpenVR SubmitFrame 1", "error", error);
   if (error != vr::VRCompositorError_None) {
     return false;
   }
   error = vr_compositor->Submit(vr::EVREye::Eye_Right, &texture, &bounds[1]);
+  TRACE_EVENT1("gpu", "OpenVR SubmitFrame 2", "error", error);
   if (error != vr::VRCompositorError_None) {
     return false;
   }
+  TRACE_EVENT0("gpu", "OpenVR SubmitFrame 3");
   vr_compositor->PostPresentHandoff();
   return true;
 }
@@ -182,10 +185,71 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
 
   if (openvr_) {
     vr::TrackedDevicePose_t rendering_poses[vr::k_unMaxTrackedDeviceCount];
+    
+    TRACE_EVENT0("gpu", "OpenVR WaitGetPoses 1");
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    /* vr::TrackedDevicePose_t rRenderPoses[vr::k_unMaxTrackedDeviceCount];
+    if (openvr_->GetCompositor()->CanRenderScene() == false)
+            return; */
 
-    TRACE_EVENT0("gpu", "WaitGetPoses");
-    openvr_->GetCompositor()->WaitGetPoses(
-        rendering_poses, vr::k_unMaxTrackedDeviceCount, nullptr, 0);
+    uint64_t newFrameIndex = 0;
+    float lastVSync = 0;
+
+    while (newFrameIndex == m_lastFrameIndex)
+    {
+            /*auto vsyncTimesAvailable = */openvr_->GetSystem()->GetTimeSinceLastVsync(
+                    &lastVSync, &newFrameIndex);
+
+            /* if (vsyncTimesAvailable == false)
+                    return; */
+    }
+
+    /* if (m_lastFrameIndex + 1 < newFrameIndex)
+            m_framesSkipped++; */
+
+    m_lastFrameIndex = newFrameIndex;
+    float secondsSinceLastVsync = 0;
+    uint64_t newLastFrame = 0;
+    openvr_->GetSystem()->GetTimeSinceLastVsync(&secondsSinceLastVsync, &newLastFrame);
+
+    vr::ETrackedPropertyError error;
+    float displayFrequency = openvr_->GetSystem()->GetFloatTrackedDeviceProperty(
+            vr::k_unTrackedDeviceIndex_Hmd,
+            vr::ETrackedDeviceProperty::Prop_DisplayFrequency_Float,
+            &error);
+
+    float frameDuration = 1.0f / displayFrequency;
+    float vsyncToPhotons = openvr_->GetSystem()->GetFloatTrackedDeviceProperty(
+            vr::k_unTrackedDeviceIndex_Hmd,
+            vr::ETrackedDeviceProperty::Prop_SecondsFromVsyncToPhotons_Float,
+            &error);
+
+    float predictedSecondsFromNow = frameDuration - secondsSinceLastVsync + vsyncToPhotons;
+    openvr_->GetSystem()->GetDeviceToAbsoluteTrackingPose(
+            c_eTrackingOrigin,
+            predictedSecondsFromNow,
+            rendering_poses,
+            vr::k_unMaxTrackedDeviceCount);
+    
+    
+    
+    
+    
+    
+    
+    
+
+    
+    /* openvr_->GetCompositor()->WaitGetPoses(
+        rendering_poses, vr::k_unMaxTrackedDeviceCount, nullptr, 0); */
 
     frame_data->pose = mojo::ConvertTo<mojom::VRPosePtr>(
         rendering_poses[vr::k_unTrackedDeviceIndex_Hmd]);
@@ -201,6 +265,8 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
       frame_data->time_delta =
           base::TimeDelta::FromSecondsD(timing.m_flSystemTimeInSeconds);
     }
+    
+    TRACE_EVENT0("gpu", "OpenVR WaitGetPoses 1");
   }
 
   return frame_data;

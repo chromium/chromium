@@ -21,6 +21,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/openvr/src/headers/openvr.h"
 #include "ui/gfx/geometry/angle_conversions.h"
+#include "base/trace_event/trace_event.h"
 
 namespace device {
 
@@ -126,7 +127,9 @@ bool OpenVRDevice::IsHwAvailable() {
 }
 
 bool OpenVRDevice::IsApiAvailable() {
-  return vr::VR_IsRuntimeInstalled();
+  auto result = vr::VR_IsRuntimeInstalled();
+  TRACE_EVENT1("gpu", "OpenVRDevice IsApiAvailable", "result", result);
+  return result;
 }
 
 mojo::PendingRemote<mojom::XRCompositorHost>

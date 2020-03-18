@@ -355,7 +355,7 @@ const FeatureEntry::Choice kWebXrForceRuntimeChoices[] = {
     {flag_descriptions::kWebXrRuntimeChoiceNone, switches::kWebXrForceRuntime,
      switches::kWebXrRuntimeNone},
 
-#if BUILDFLAG(ENABLE_OPENXR)
+/* #if BUILDFLAG(ENABLE_OPENXR)
     {flag_descriptions::kWebXrRuntimeChoiceOpenXR, switches::kWebXrForceRuntime,
      switches::kWebXrRuntimeOpenXr},
 #endif  // ENABLE_OPENXR
@@ -363,6 +363,11 @@ const FeatureEntry::Choice kWebXrForceRuntimeChoices[] = {
 #if BUILDFLAG(ENABLE_WINDOWS_MR)
     {flag_descriptions::kWebXrRuntimeChoiceWindowsMixedReality,
      switches::kWebXrForceRuntime, switches::kWebXrRuntimeWMR},
+#endif  // ENABLE_WINDOWS_MR */
+
+#if BUILDFLAG(ENABLE_OPENVR)
+    {flag_descriptions::kWebXrRuntimeChoiceOpenVR,
+     switches::kWebXrForceRuntime, switches::kWebXrRuntimeOpenVr},
 #endif  // ENABLE_WINDOWS_MR
 };
 #endif  // ENABLE_VR

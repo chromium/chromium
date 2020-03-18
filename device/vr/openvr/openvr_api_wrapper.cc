@@ -7,6 +7,7 @@
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "device/vr/test/test_hook.h"
+#include "base/trace_event/trace_event.h"
 
 namespace device {
 
@@ -46,7 +47,10 @@ bool OpenVRWrapper::Initialize(bool for_rendering) {
   // device can only be used on this thread once initailized
   vr::EVRInitError init_error = vr::VRInitError_None;
   system_ =
-      vr::VR_Init(&init_error, vr::EVRApplicationType::VRApplication_Scene);
+      vr::VR_Init(&init_error, vr::EVRApplicationType::VRApplication_Overlay);
+      
+  TRACE_EVENT1("gpu", "OpenVR VR_Init 1", "system", (void *)system_);
+  TRACE_EVENT1("gpu", "OpenVR VR_Init 2", "init_error", (void *)init_error);
 
   if (init_error != vr::VRInitError_None) {
     LOG(ERROR) << vr::VR_GetVRInitErrorAsEnglishDescription(init_error);
@@ -59,6 +63,8 @@ bool OpenVRWrapper::Initialize(bool for_rendering) {
   if (for_rendering) {
     compositor_ = vr::VRCompositor();
   }
+  
+  TRACE_EVENT0("gpu", "OpenVR VR_Init 3");
 
   if (test_hook_) {
     // Allow our mock implementation of OpenVR to be controlled by tests.
@@ -75,11 +81,14 @@ bool OpenVRWrapper::Initialize(bool for_rendering) {
       test_hook_->AttachCurrentThread();
     }
   }
+  
+  TRACE_EVENT0("gpu", "OpenVR VR_Init 4");
 
   return true;
 }
 
 void OpenVRWrapper::Uninitialize() {
+  TRACE_EVENT0("gpu", "OpenVR VR_Shutdown 1");
   DCHECK(initialized_);
   initialized_ = false;
   system_ = nullptr;
@@ -89,6 +98,8 @@ void OpenVRWrapper::Uninitialize() {
   if (test_hook_)
     test_hook_->DetachCurrentThread();
   vr::VR_Shutdown();
+
+  TRACE_EVENT0("gpu", "OpenVR VR_Shutdown 2");
 
   any_initialized_ = false;
 }

@@ -1235,6 +1235,7 @@ extern const char kWebXrForceRuntimeDescription[];
 
 extern const char kWebXrRuntimeChoiceNone[];
 extern const char kWebXrRuntimeChoiceOpenXR[];
+extern const char kWebXrRuntimeChoiceOpenVR[];
 extern const char kWebXrRuntimeChoiceWindowsMixedReality[];
 
 extern const char kWebXrIncubationsName[];

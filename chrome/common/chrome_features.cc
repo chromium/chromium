@@ -353,7 +353,7 @@ const base::Feature kOculusVR{"OculusVR", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if BUILDFLAG(ENABLE_OPENVR)
 // Controls OpenVR support.
-const base::Feature kOpenVR{"OpenVR", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kOpenVR{"OpenVR", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // ENABLE_OPENVR
 
 #if BUILDFLAG(ENABLE_WINDOWS_MR)

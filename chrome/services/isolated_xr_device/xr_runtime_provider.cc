@@ -103,7 +103,7 @@ void IsolatedXRRuntimeProvider::PollForDeviceChanges() {
   // we'll get an error for 'preferred_device_enabled' being unused.
   ALLOW_UNUSED_LOCAL(preferred_device_enabled);
 
-#if BUILDFLAG(ENABLE_OPENXR)
+/* #if BUILDFLAG(ENABLE_OPENXR)
   if (!preferred_device_enabled && IsOpenXrHardwareAvailable()) {
     SetOpenXrRuntimeStatus(RuntimeStatus::kEnable);
     preferred_device_enabled = true;
@@ -128,7 +128,7 @@ void IsolatedXRRuntimeProvider::PollForDeviceChanges() {
   } else {
     SetOculusVrRuntimeStatus(RuntimeStatus::kDisable);
   }
-#endif
+#endif */
 
 #if BUILDFLAG(ENABLE_OPENVR)
   if (!preferred_device_enabled && IsOpenVrHardwareAvailable()) {
@@ -155,23 +155,27 @@ void IsolatedXRRuntimeProvider::SetupPollingForDeviceChanges() {
   // we'll get an error for 'command_line' being unused.
   ALLOW_UNUSED_LOCAL(command_line);
 
-#if BUILDFLAG(ENABLE_OCULUS_VR)
+/* #if BUILDFLAG(ENABLE_OCULUS_VR)
   if (IsEnabled(command_line, features::kOculusVR,
                 switches::kWebXrRuntimeOculus)) {
     should_check_oculus_ = device::OculusDevice::IsApiAvailable();
     any_runtimes_available |= should_check_oculus_;
   }
-#endif
+#endif */
 
 #if BUILDFLAG(ENABLE_OPENVR)
+  TRACE_EVENT0("gpu", "OpenVR 1");
   if (IsEnabled(command_line, features::kOpenVR,
                 switches::kWebXrRuntimeOpenVr)) {
+    TRACE_EVENT0("gpu", "OpenVR 2");
     should_check_openvr_ = device::OpenVRDevice::IsApiAvailable();
+    TRACE_EVENT0("gpu", "OpenVR 3");
     any_runtimes_available |= should_check_openvr_;
+    TRACE_EVENT0("gpu", "OpenVR 4");
   }
 #endif
 
-#if BUILDFLAG(ENABLE_WINDOWS_MR)
+/* #if BUILDFLAG(ENABLE_WINDOWS_MR)
   if (IsEnabled(command_line, features::kWindowsMixedReality,
                 switches::kWebXrRuntimeWMR)) {
     wmr_statics_ = device::MixedRealityDeviceStatics::CreateInstance();
@@ -187,7 +191,7 @@ void IsolatedXRRuntimeProvider::SetupPollingForDeviceChanges() {
     should_check_openxr_ = openxr_statics_->IsApiAvailable();
     any_runtimes_available |= should_check_openxr_;
   }
-#endif
+#endif */
 
   // Begin polling for devices
   if (any_runtimes_available) {

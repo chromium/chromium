@@ -226,10 +226,7 @@ def _SortByHighestVersionNumberFirst(list_of_str_versions):
   1.4.a12. It does handle the versions being embedded in file paths.
   """
   def to_int_if_int(x):
-    try:
-      return int(x)
-    except ValueError:
-      return x
+    return str(x)
 
   def to_number_sequence(x):
     part_sequence = re.split(r'[\\/\.]', x)

@@ -2143,6 +2143,7 @@ const char kWebXrForceRuntimeDescription[] =
 
 const char kWebXrRuntimeChoiceNone[] = "No Runtime";
 const char kWebXrRuntimeChoiceOpenXR[] = "OpenXR";
+const char kWebXrRuntimeChoiceOpenVR[] = "OpenVR";
 const char kWebXrRuntimeChoiceWindowsMixedReality[] = "Windows Mixed Reality";
 
 const char kWebXrIncubationsName[] = "WebXR Incubations";
