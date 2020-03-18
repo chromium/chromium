@@ -92,7 +92,7 @@ bool OpenVRRenderLoop::SubmitCompositedFrame() {
   texture.eType = vr::TextureType_DirectX;
   texture.eColorSpace = vr::ColorSpace_Auto;
 
-  gfx::RectF left_bounds = texture_helper_.BackBufferLeft();
+  /* gfx::RectF left_bounds = texture_helper_.BackBufferLeft();
   gfx::RectF right_bounds = texture_helper_.BackBufferRight();
 
   vr::VRTextureBounds_t bounds[2];
@@ -101,9 +101,50 @@ bool OpenVRRenderLoop::SubmitCompositedFrame() {
                left_bounds.height() + left_bounds.y()};
   bounds[1] = {right_bounds.x(), right_bounds.y(),
                right_bounds.width() + right_bounds.x(),
-               right_bounds.height() + right_bounds.y()};
+               right_bounds.height() + right_bounds.y()}; */
 
-  vr::EVRCompositorError error =
+
+
+
+
+
+
+
+
+
+
+
+  vr::IVROverlay* vr_overlay = openvr_->GetOverlay();
+  vr::VROverlayHandle_t m_vargglesOverlay = openvr_->GetOverlayHandle();
+  TRACE_EVENT1("gpu", "OpenVR SubmitFrame 1", "m_vargglesOverlay", (void *)vr_overlay);
+  if (m_vargglesOverlay == vr::k_ulOverlayHandleInvalid)
+  {
+          TRACE_EVENT0("gpu", "ERROR: SetTexture on invalid overlay");
+          return false;
+  }
+
+  if (vr_overlay->SetOverlayTexture(m_vargglesOverlay, &texture) != vr::VROverlayError_None)
+  {
+          TRACE_EVENT0("gpu", "ERROR: SetTexture Failed on Varggles Overlay");
+          return false;
+  }
+
+  if (vr_overlay->ShowOverlay(m_vargglesOverlay) != vr::VROverlayError_None) {
+          TRACE_EVENT0("gpu", "ERROR: ShowOverlay failed");
+          return false;
+  }
+
+
+
+
+
+
+
+
+
+
+
+  /* vr::EVRCompositorError error =
       vr_compositor->Submit(vr::EVREye::Eye_Left, &texture, &bounds[0]);
   TRACE_EVENT1("gpu", "OpenVR SubmitFrame 1", "error", error);
   if (error != vr::VRCompositorError_None) {
@@ -115,7 +156,7 @@ bool OpenVRRenderLoop::SubmitCompositedFrame() {
     return false;
   }
   TRACE_EVENT0("gpu", "OpenVR SubmitFrame 3");
-  vr_compositor->PostPresentHandoff();
+  vr_compositor->PostPresentHandoff(); */
   return true;
 }
 

@@ -28,6 +28,8 @@ class OpenVRWrapper {
   // Ensures that they are used in a single thread at a time.
   vr::IVRCompositor* GetCompositor();
   vr::IVRSystem* GetSystem();
+  vr::IVROverlay* GetOverlay();
+  vr::VROverlayHandle_t GetOverlayHandle();
 
   static void DEVICE_VR_EXPORT SetTestHook(VRTestHook* hook);
 
@@ -37,12 +39,15 @@ class OpenVRWrapper {
 
   vr::IVRSystem* system_ = nullptr;
   vr::IVRCompositor* compositor_ = nullptr;
+  vr::IVROverlay *overlay_ = nullptr;
   scoped_refptr<base::SingleThreadTaskRunner> current_task_runner_;
   bool initialized_ = false;
 
   static ServiceTestHook* service_test_hook_;
   static VRTestHook* test_hook_;
   static bool any_initialized_;
+  
+  vr::VROverlayHandle_t m_vargglesOverlay = vr::k_ulOverlayHandleInvalid;
 };
 
 std::string GetOpenVRString(
