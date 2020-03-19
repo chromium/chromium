@@ -37,6 +37,10 @@ uint32_t requiredSize(int32_t type, const WTF::Vector<uint32_t>& dimensions) {
   } else if (type == ml::mojom::blink::TENSOR_INT32) {
     return product(dimensions) * sizeof(int32_t);
   } else if (type == ml::mojom::blink::TENSOR_QUANT8_ASYMM) {
+    return product(dimensions) * sizeof(uint8_t);
+  } else if (type == ml::mojom::blink::TENSOR_QUANT8_ASYMM_SIGNED) {
+    return product(dimensions) * sizeof(int8_t);
+  } else if (type == ml::mojom::blink::TENSOR_QUANT8_SYMM_PER_CHANNEL) {
     return product(dimensions) * sizeof(int8_t);
   } else {
     NOTREACHED();

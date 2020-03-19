@@ -155,7 +155,7 @@ int32_t CompilationDelegateDnnl::DnnlCompile() {
     } else if (type == mojom::CONV_2D || type == mojom::DEPTHWISE_CONV_2D ||
                type == mojom::ATROUS_CONV_2D ||
                type == mojom::ATROUS_DEPTHWISE_CONV_2D) {
-      result = AddConvolution(operation);
+      result = AddConvolution(operation, model);
     } else if (type == mojom::AVERAGE_POOL_2D || type == mojom::MAX_POOL_2D) {
       result = AddPooling(operation);
     } else if (type == mojom::SOFTMAX) {
@@ -256,6 +256,11 @@ int32_t CompilationDelegateDnnl::GetDataType(int32_t type,
     *dnnl_type = dnnl_f32;
   } else if (type == mojom::TENSOR_INT32) {
     *dnnl_type = dnnl_s32;
+  } else if (type == mojom::TENSOR_QUANT8_ASYMM) {
+    *dnnl_type = dnnl_u8;
+  } else if (type == mojom::TENSOR_QUANT8_ASYMM_SIGNED ||
+             type == mojom::TENSOR_QUANT8_SYMM_PER_CHANNEL) {
+    *dnnl_type = dnnl_s8;
   } else {
     LOG(ERROR) << "Type " << type << " is not supported";
     return mojom::BAD_DATA;
@@ -727,7 +732,8 @@ int32_t CompilationDelegateDnnl::AddElementwise(
 }
 
 int32_t CompilationDelegateDnnl::AddConvolution(
-    const mojom::OperationPtr& operation) {
+    const mojom::OperationPtr& operation,
+    const mojom::ModelInfoPtr& model) {
   ConvParams params;
   int32_t result = compilation_->GetConvParams(operation, params);
   if (result != mojom::NOT_ERROR)
@@ -737,52 +743,74 @@ int32_t CompilationDelegateDnnl::AddConvolution(
                << " is not supported";
     return mojom::BAD_DATA;
   }
+  const std::vector<uint32_t>& inputs = operation->inputs;
+  const std::vector<uint32_t>& outputs = operation->outputs;
+  uint32_t index = 0;
+  const uint32_t input_index = inputs[index++];
+  const mojom::OperandPtr& input = model->operands[input_index];
+
   dnnl_status_t status;
   dnnl_memory_desc_t input_desc;
+  dnnl_data_type_t input_type;
+  GetDataType(input->type, &input_type);
   // Input logical order is nchw
   const dnnl_dim_t input_dims[4] = {params.input_batch, params.input_channel,
                                     params.input_height, params.input_width};
   status = LATE(dnnl_memory_desc_init_by_tag)(&input_desc, 4, input_dims,
-                                              dnnl_f32, dnnl_format_tag_any);
+                                              input_type, dnnl_format_tag_any);
 
   if (status != dnnl_success) {
     LOG(ERROR) << "[DNNL] failed to init memory descriptor " << status;
     return mojom::OP_FAILED;
   }
+
+  const uint32_t filter_idx = inputs[index++];
+  mojom::OperandPtr& filter = model->operands[filter_idx];
   dnnl_memory_desc_t weights_desc;
+  dnnl_data_type_t weights_type;
+  GetDataType(filter->type, &weights_type);
   if (params.depthwise) {
     // Weights logical order is (g, o, i, h, w)
     const dnnl_dim_t weights_dims[5] = {
         params.depth_out, 1, 1, params.filter_height, params.filter_width};
-    status = LATE(dnnl_memory_desc_init_by_tag)(&weights_desc, 5, weights_dims,
-                                                dnnl_f32, dnnl_format_tag_any);
+    status = LATE(dnnl_memory_desc_init_by_tag)(
+        &weights_desc, 5, weights_dims, weights_type, dnnl_format_tag_any);
   } else {
     // Weights logical order is oihw
     const dnnl_dim_t weights_dims[4] = {params.depth_out, params.depth_in,
                                         params.filter_height,
                                         params.filter_width};
-    status = LATE(dnnl_memory_desc_init_by_tag)(&weights_desc, 4, weights_dims,
-                                                dnnl_f32, dnnl_format_tag_any);
+    status = LATE(dnnl_memory_desc_init_by_tag)(
+        &weights_desc, 4, weights_dims, weights_type, dnnl_format_tag_any);
   }
   if (status != dnnl_success) {
     LOG(ERROR) << "[DNNL] failed to init memory descriptor " << status;
     return mojom::OP_FAILED;
   }
 
+  const uint32_t bias_idx = inputs[index++];
+  mojom::OperandPtr& bias = model->operands[bias_idx];
+  dnnl_data_type_t bias_type;
+  GetDataType(bias->type, &bias_type);
   dnnl_memory_desc_t bias_desc;
   const dnnl_dim_t bias_dims[1] = {params.bias_length};
   status = LATE(dnnl_memory_desc_init_by_tag)(&bias_desc, 1, bias_dims,
-                                              dnnl_f32, dnnl_x);
+                                              bias_type, dnnl_x);
   if (status != dnnl_success) {
     LOG(ERROR) << "[DNNL] failed to init memory descriptor " << status;
     return mojom::OP_FAILED;
   }
+
+  const uint32_t output_index = outputs[0];
+  const mojom::OperandPtr& output = model->operands[output_index];
   dnnl_memory_desc_t output_desc;
+  dnnl_data_type_t output_type;
+  GetDataType(output->type, &output_type);
   // Output logical order is nchw
   const dnnl_dim_t output_dims[4] = {params.output_batch, params.output_channel,
                                      params.output_height, params.output_width};
   status = LATE(dnnl_memory_desc_init_by_tag)(&output_desc, 4, output_dims,
-                                              dnnl_f32, dnnl_format_tag_any);
+                                              output_type, dnnl_format_tag_any);
   if (status != dnnl_success) {
     LOG(ERROR) << "[DNNL] failed to init memory descriptor " << status;
     return mojom::OP_FAILED;
@@ -814,9 +842,60 @@ int32_t CompilationDelegateDnnl::AddConvolution(
   }
   DLOG(INFO) << "[DNNL] succeed to init convolution descriptor";
 
+  dnnl_primitive_attr_t attr;
+  status = LATE(dnnl_primitive_attr_create)(&attr);
+  if (status != dnnl_success) {
+    LOG(ERROR) << "[DNNL] failed to create primitive attribute " << status;
+    return mojom::OP_FAILED;
+  }
+
+  if (input_type == dnnl_s8 || input_type == dnnl_u8) {
+    uint32_t output_mask;
+    uint32_t output_scales_count;
+    float* output_scales;
+    if (filter->type == mojom::TENSOR_QUANT8_SYMM_PER_CHANNEL) {
+      // get weight scales
+      mojom::OperandSymmPerChannelQuantParamPtr& filter_param =
+          model->operandSymmPerChannelQuantParams[filter_idx];
+      int32_t channel_dim = filter_param->channel_dim;
+      if ((channel_dim == 0 && !params.depthwise) ||
+          (channel_dim == 3 && params.depthwise)) {
+        output_mask = 1 << 1;
+      } else {
+        output_mask = 0;
+      }
+      float* weights_scales = &filter_param->scales[0];
+      output_scales_count = filter->dimensions[channel_dim];
+      output_scales = (float*)malloc(sizeof(float) * output_scales_count);
+      for (uint32_t i = 0; i < output_scales_count; i++) {
+        output_scales[i] = (input->scale * weights_scales[i]) / output->scale;
+      }
+    } else if (filter->type == mojom::TENSOR_QUANT8_ASYMM_SIGNED) {
+      output_scales_count = 1;
+      output_scales = (float*)malloc(sizeof(float) * output_scales_count);
+      output_scales[0] = (input->scale * filter->scale) / output->scale;
+      output_mask = 0;
+    } else {
+      output_mask = 0;
+      output_scales_count = 0;
+      output_scales = nullptr;
+    }
+
+    // set primitive_attributes
+    status = LATE(dnnl_primitive_attr_set_output_scales)(
+        attr, output_scales_count, output_mask, output_scales);
+    if (output_scales) {
+      free(output_scales);
+    }
+    if (status != dnnl_success) {
+      LOG(ERROR) << "[DNNL] failed to set output scales" << status;
+      return mojom::OP_FAILED;
+    }
+  }
+
   dnnl_primitive_desc_t conv_pd;
   if (params.fuse_code == mojom::FUSED_NONE || params.depthwise) {
-    status = LATE(dnnl_primitive_desc_create)(&conv_pd, &conv_desc, NULL,
+    status = LATE(dnnl_primitive_desc_create)(&conv_pd, &conv_desc, attr,
                                               compiled_model_->engine, NULL);
     if (status != dnnl_success) {
       LOG(ERROR) << "[DNNL] failed to create convolution primitive descriptor "
@@ -825,12 +904,6 @@ int32_t CompilationDelegateDnnl::AddConvolution(
     }
   } else {
     // dnnl only supports fused activation for normal convolution.
-    dnnl_primitive_attr_t attr;
-    status = LATE(dnnl_primitive_attr_create)(&attr);
-    if (status != dnnl_success) {
-      LOG(ERROR) << "[DNNL] failed to create primitive attribute " << status;
-      return mojom::OP_FAILED;
-    }
     dnnl_post_ops_t post_ops;
     status = LATE(dnnl_post_ops_create)(&post_ops);
     if (status != dnnl_success) {
@@ -872,8 +945,8 @@ int32_t CompilationDelegateDnnl::AddConvolution(
       return mojom::OP_FAILED;
     }
     LATE(dnnl_post_ops_destroy)(post_ops);
-    LATE(dnnl_primitive_attr_destroy)(attr);
   }
+  LATE(dnnl_primitive_attr_destroy)(attr);
 
   DLOG(INFO) << "[DNNL] succeed to create convolution primitive descriptor";
 
@@ -957,6 +1030,58 @@ int32_t CompilationDelegateDnnl::AddConvolution(
     LATE(dnnl_primitive_desc_destroy)(conv_pd);
     return mojom::OP_FAILED;
   }
+
+  // workaround for support s8 weights reorder from ohwi
+  // since DNNL can't support by now
+  // related DNNL issue - https://github.com/oneapi-src/oneDNN/issues/691
+  if (input_type == dnnl_s8 && weights_format == dnnl_ohwi) {
+    dnnl_memory_t temp_weights_memory;
+    dnnl_memory_desc_t temp_weights_md;
+    status = LATE(dnnl_memory_desc_init_by_tag)(
+        &temp_weights_md, 4, external_weights_pd->dims, dnnl_s8, dnnl_oihw);
+    if (status != dnnl_success) {
+      LOG(ERROR) << "[DNNL] failed to create memory descriptor " << status;
+      return mojom::OP_FAILED;
+    }
+
+    status =
+        LATE(dnnl_memory_create)(&temp_weights_memory, &temp_weights_md,
+                                 compiled_model_->engine, DNNL_MEMORY_ALLOCATE);
+    if (status != dnnl_success) {
+      LOG(ERROR) << "[DNNL] failed to create memory " << status;
+      return mojom::OP_FAILED;
+    }
+
+    const dnnl_memory_desc_t* temp_weights_pd;
+    status = LATE(dnnl_memory_get_memory_desc)(temp_weights_memory,
+                                               &temp_weights_pd);
+
+    size_t buffer_size = LATE(dnnl_memory_desc_get_size)(temp_weights_pd);
+    void* buffer = base::AlignedAlloc(buffer_size, ALIGNMENT);
+    status = LATE(dnnl_memory_set_data_handle)(temp_weights_memory, buffer);
+    if (status != dnnl_success) {
+      LOG(ERROR) << "[DNNL] failed to set memory data " << status;
+      base::AlignedFree(buffer);
+      return mojom::OP_FAILED;
+    }
+    DLOG(INFO) << "[DNNL] succeed to set memory data handle with size "
+               << buffer_size;
+
+    if (!LATE(dnnl_memory_desc_equal)(temp_weights_pd, external_weights_pd)) {
+      std::string temp_weights_id = external_weights_id + "-temp-reordered";
+      compiled_model_->memories[temp_weights_id] = temp_weights_memory;
+      result = AddReorder(external_weights_id, temp_weights_id, true);
+      if (result != mojom::NOT_ERROR) {
+        LATE(dnnl_primitive_desc_destroy)(conv_pd);
+        return result;
+      }
+
+      compiled_model_->memories.erase(temp_weights_id);
+      compiled_model_->memories[external_weights_id] = temp_weights_memory;
+      external_weights_pd = temp_weights_pd;
+    }
+  }
+
   dnnl_memory_t weights_memory;
   const dnnl_memory_desc_t* weights_pd =
       LATE(dnnl_primitive_desc_query_md)(conv_pd, dnnl_query_weights_md, 0);

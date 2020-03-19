@@ -34,6 +34,8 @@ class NeuralNetworkContext final : public ScriptWrappable,
   static const unsigned long kTensorFloat32 = 3;
   static const unsigned long kTensorInt32 = 4;
   static const unsigned long kTensorQuant8Asymm = 5;
+  static const unsigned long kTensorQuant8SymmPerChannel = 11;
+  static const unsigned long kTensorQuant8AsymmSigned = 14;
 
   // Operation types.
   static const unsigned long kAdd = 0;

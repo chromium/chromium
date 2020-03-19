@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/ml/operand_options.h"
+#include "third_party/blink/renderer/modules/ml/operand_symm_per_channel_quant_param.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -32,6 +33,10 @@ class Model final : public ScriptWrappable {
                     Vector<uint32_t>&,
                     Vector<uint32_t>&,
                     ExceptionState&);
+  void setOperandSymmPerChannelQuantParams(
+      uint32_t,
+      const OperandSymmPerChannelQuantParam*,
+      ExceptionState&);
   void identifyInputsAndOutputs(Vector<uint32_t>&,
                                 Vector<uint32_t>&,
                                 ExceptionState&);

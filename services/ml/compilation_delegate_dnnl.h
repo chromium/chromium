@@ -79,7 +79,8 @@ class CompilationDelegateDnnl : public CompilationDelegate {
                      bool run = false);
   int32_t AddActivation(const std::string&, const std::string&, uint32_t type);
   int32_t AddElementwise(const mojom::OperationPtr&);
-  int32_t AddConvolution(const mojom::OperationPtr&);
+  int32_t AddConvolution(const mojom::OperationPtr&,
+                         const mojom::ModelInfoPtr&);
   int32_t AddPooling(const mojom::OperationPtr&);
   int32_t AddSoftmax(const mojom::OperationPtr&);
   int32_t AddLogistic(const mojom::OperationPtr&);

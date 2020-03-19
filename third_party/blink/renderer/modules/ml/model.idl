@@ -5,6 +5,7 @@
 interface Model {
   [RaisesException] void addOperand(OperandOptions options);
   [RaisesException] void setOperandValue(unsigned long index, [AllowShared] ArrayBufferView data);
+  [RaisesException] void setOperandSymmPerChannelQuantParams(unsigned long index, OperandSymmPerChannelQuantParam operandSymmPerChannelQuantParam);
   [RaisesException] void addOperation(long type, sequence<unsigned long> inputs, sequence<unsigned long> outputs);
   [RaisesException] void identifyInputsAndOutputs(sequence<unsigned long> inputs, sequence<unsigned long> outputs);
   [CallWith=ScriptState] Promise<long> finish();

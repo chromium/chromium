@@ -27,11 +27,6 @@ void ExecutionImplDnnl::StartCompute(StartComputeCallback callback) {
     const uint32_t offset = total_length;
     const uint32_t length = GetRequiredSize(operand);
     total_length += length;
-    if (operand->type != mojom::TENSOR_FLOAT32) {
-      LOG(ERROR) << "Only TENSOR_FLOAT32 operand type is supported";
-      std::move(callback).Run(mojom::BAD_DATA);
-      return;
-    }
     auto mapping = params_->memory->MapAtOffset(length, offset);
     DLOG(INFO) << "Mapping " << mapping.get() << " for input " << i
                << " offset " << offset << " length " << length;

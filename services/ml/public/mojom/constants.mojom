@@ -13,6 +13,8 @@ const int32 UINT32 = 2;
 const int32 TENSOR_FLOAT32 = 3;
 const int32 TENSOR_INT32 = 4;
 const int32 TENSOR_QUANT8_ASYMM = 5;
+const int32 TENSOR_QUANT8_SYMM_PER_CHANNEL = 11;
+const int32 TENSOR_QUANT8_ASYMM_SIGNED = 14;
 
 // Operation types.
 const int32 ADD = 0;

@@ -26,6 +26,10 @@ uint32_t GetRequiredSize(int32_t type,
   } else if (type == mojom::TENSOR_INT32) {
     return product(dimensions) * sizeof(int32_t);
   } else if (type == mojom::TENSOR_QUANT8_ASYMM) {
+    return product(dimensions) * sizeof(uint8_t);
+  } else if (type == mojom::TENSOR_QUANT8_ASYMM_SIGNED) {
+    return product(dimensions) * sizeof(int8_t);
+  } else if (type == mojom::TENSOR_QUANT8_SYMM_PER_CHANNEL) {
     return product(dimensions) * sizeof(int8_t);
   } else {
     NOTREACHED();

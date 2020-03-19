@@ -23,6 +23,11 @@ struct Operation {
   array<uint32> outputs;
 };
 
+struct OperandSymmPerChannelQuantParam {
+  uint32 channel_dim;
+  array<float> scales;
+};
+
 struct OperandValueInfo {
   uint32 index;
   uint32 offset;
@@ -37,6 +42,7 @@ struct ModelInfo {
   map<string, OperandValueInfo> values;
   handle<shared_buffer>? memory;
   uint32 memory_size;
+  map<uint32, OperandSymmPerChannelQuantParam> operandSymmPerChannelQuantParams;
 };
 
 interface Model {

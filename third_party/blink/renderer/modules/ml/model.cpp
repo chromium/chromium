@@ -64,14 +64,47 @@ bool InvalidOperand(const OperandOptions* options,
       if (!options->hasDimensions())
         return InvalidState("Data type is invalid.", exception_state);
       break;
+    case NeuralNetworkContext::kTensorQuant8SymmPerChannel:
+      if (!options->hasDimensions())
+        return InvalidState("Data type is invalid.", exception_state);
+      break;
     case NeuralNetworkContext::kTensorQuant8Asymm:
       if (!options->hasDimensions() || !options->hasScale() ||
           !options->hasZeroPoint() || options->scale() < 0 ||
           options->zeroPoint() < 0 || options->zeroPoint() > 255)
         return InvalidState("Data type is invalid.", exception_state);
       break;
+    case NeuralNetworkContext::kTensorQuant8AsymmSigned:
+      if (!options->hasDimensions() || !options->hasScale() ||
+          !options->hasZeroPoint() || options->scale() < 0 ||
+          options->zeroPoint() < -128 || options->zeroPoint() > 127)
+        return InvalidState("Data type is invalid.", exception_state);
+      break;
     default:
       NOTREACHED();
+  }
+  return false;
+}
+
+bool InvalidOperandSymmPerChannelQuantParams(
+    wtf_size_t index,
+    const OperandSymmPerChannelQuantParam* operandSymmPerChannelQuantParam,
+    ml::mojom::blink::OperandPtr& operand,
+    ExceptionState& exception_state) {
+  if (operandSymmPerChannelQuantParam->channelDim() < 0 ||
+      operandSymmPerChannelQuantParam->channelDim() >=
+          operand->dimensions.size())
+    return InvalidState("channelDim is invalid.", exception_state);
+
+  if (operandSymmPerChannelQuantParam->scales().size() !=
+      operand->dimensions[operandSymmPerChannelQuantParam->channelDim()])
+    return InvalidState("scales is invalid.", exception_state);
+
+  for (uint32_t i = 0; i < operandSymmPerChannelQuantParam->scales().size();
+       i++) {
+    if (operandSymmPerChannelQuantParam->scales()[i] < 0) {
+      return InvalidState("scales is invalid.", exception_state);
+    }
   }
   return false;
 }
@@ -112,6 +145,14 @@ bool InvalidOperandValue(
       break;
     case NeuralNetworkContext::kTensorQuant8Asymm:
       if (data_type != WTF::ArrayBufferView::kTypeUint8)
+        invalid = true;
+      break;
+    case NeuralNetworkContext::kTensorQuant8AsymmSigned:
+      if (data_type != WTF::ArrayBufferView::kTypeInt8)
+        invalid = true;
+      break;
+    case NeuralNetworkContext::kTensorQuant8SymmPerChannel:
+      if (data_type != WTF::ArrayBufferView::kTypeInt8)
         invalid = true;
       break;
     default:
@@ -172,6 +213,22 @@ void Model::addOperation(int32_t type,
 
   model_info_->operations.push_back(
       ml::mojom::blink::Operation::New(type, inputs, outputs));
+}
+
+void Model::setOperandSymmPerChannelQuantParams(
+    uint32_t index,
+    const OperandSymmPerChannelQuantParam* operandSymmPerChannelQuantParam,
+    ExceptionState& exception_state) {
+  if (InvalidAction(is_finished_, exception_state) ||
+      InvalidOperandSymmPerChannelQuantParams(
+          index, operandSymmPerChannelQuantParam, model_info_->operands[index],
+          exception_state))
+    return;
+
+  model_info_->operandSymmPerChannelQuantParams.insert(
+      index, ml::mojom::blink::OperandSymmPerChannelQuantParam::New(
+                 operandSymmPerChannelQuantParam->channelDim(),
+                 operandSymmPerChannelQuantParam->scales()));
 }
 
 void Model::identifyInputsAndOutputs(Vector<uint32_t>& inputs,

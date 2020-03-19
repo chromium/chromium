@@ -41,6 +41,12 @@ void ModelImpl::CopyModelInfo(mojom::ModelInfoPtr& model_info) {
         mojo::SharedBufferHandle::AccessMode::READ_ONLY);
     model_info->memory_size = model_info_->memory_size;
   }
+  for (auto itr = model_info_->operandSymmPerChannelQuantParams.begin();
+       itr != model_info_->operandSymmPerChannelQuantParams.end(); ++itr) {
+    model_info->operandSymmPerChannelQuantParams.insert(
+        {itr->first, itr->second->Clone()});
+  }
+
   model_info->inputs = model_info_->inputs;
   model_info->outputs = model_info_->outputs;
 }
