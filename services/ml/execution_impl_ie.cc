@@ -20,7 +20,8 @@ namespace ml {
 static std::unique_ptr<InferenceEngine::InferencePlugin> s_gna_plugin = nullptr;
 static std::unique_ptr<InferenceEngine::ExecutableNetwork> s_gna_execution =
     nullptr;
-static std::unique_ptr<InferenceEngine::InferRequest> s_infer_request = nullptr;
+static std::unique_ptr<InferenceEngine::InferRequest> s_gna_infer_request =
+    nullptr;
 
 ExecutionImplIe::ExecutionImplIe(const CompilationDelegateIe* compilation,
                                  mojom::ExecutionInitParamsPtr params,
@@ -40,41 +41,57 @@ int32_t ExecutionImplIe::Init(int32_t preference) {
     } else if (preference == mojom::PREFER_SUSTAINED_SPEED) {
       device_name = "GPU";
     } else if (preference == mojom::PREFER_LOW_POWER) {
-      if (ml::GNADevice()) {
-        device_name = "GNA";
-      } else {
-        device_name = "MYRIAD";
-      }
+      device_name = "MYRIAD";
+    } else if (preference == mojom::PREFER_ULTRA_LOW_POWER) {
+      device_name = "GNA";
+      // Release in squence to avoid crash. Close GNA device befere re-open,
+      s_gna_infer_request.reset(nullptr);
+      s_gna_execution.reset(nullptr);
+      s_gna_plugin.reset(nullptr);
     }
     DLOG(INFO) << "[IE] Trying to get plugin by device name " << device_name;
-    // Release in squence to avoid crash.
-    s_infer_request.reset(nullptr);
-    s_gna_execution.reset(nullptr);
-    s_gna_plugin.reset(nullptr);
-    s_gna_plugin.reset(
+    std::unique_ptr<InferenceEngine::InferRequest> infer_request;
+    std::unique_ptr<InferenceEngine::InferencePlugin> plugin;
+    std::unique_ptr<InferenceEngine::ExecutableNetwork> execution;
+    plugin.reset(
         new ie::InferencePlugin(static_cast<ie::InferenceEnginePluginPtr>(
             ie::PluginDispatcher({
 #if defined(OS_WIN)
-              L""// Windows support UNICODE.
+              L""  // Windows support UNICODE.
 #else
               ""
 #endif
             }).getPluginByDevice(device_name))));
-    const ie::Version* version = s_gna_plugin->GetVersion();
+    const ie::Version* version = plugin->GetVersion();
     DLOG(INFO) << "[IE] succeed to load plugin " << version->buildNumber << " "
                << version->description;
-    std::map<std::string, std::string> gna_plugin_Config;
-    std::string scaleFactorConfigKey = GNA_CONFIG_KEY(SCALE_FACTOR);
-    gna_plugin_Config[scaleFactorConfigKey] = std::to_string(input_scale_);
-    // gnaPluginConfig[ie::GNAConfigParams::KEY_GNA_PRECISION] = "I16";
-    s_gna_execution.reset(new ie::ExecutableNetwork(
-        static_cast<ie::IExecutableNetwork::Ptr&>(s_gna_plugin->LoadNetwork(
-            *(compilation_->network_), gna_plugin_Config))));
+    std::map<std::string, std::string> plugin_Config = {};
+    if (preference == mojom::PREFER_ULTRA_LOW_POWER && input_scale_ > 0) {
+      std::string scaleFactorConfigKey = GNA_CONFIG_KEY(SCALE_FACTOR);
+      plugin_Config[scaleFactorConfigKey] = std::to_string(input_scale_);
+      // Note that it is not always possible to use 8-bit weights due to GNA
+      // hardware limitations. For example, convolutional layers always use
+      // 16-bit weights (GNA harware verison 1 and 2). This limitation will be
+      // removed in GNA hardware version 3 and higher.
+      // gnaPluginConfig[ie::GNAConfigParams::KEY_GNA_PRECISION] = "I8";
+    }
+    execution.reset(
+        new ie::ExecutableNetwork(static_cast<ie::IExecutableNetwork::Ptr&>(
+            plugin->LoadNetwork(*(compilation_->network_), plugin_Config))));
     DLOG(INFO) << "[IE] succeed to load network to plugin";
-    s_infer_request.reset(
-        new ie::InferRequest(static_cast<ie::IInferRequest::Ptr>(
-            s_gna_execution->CreateInferRequest())));
+    infer_request.reset(new ie::InferRequest(
+        static_cast<ie::IInferRequest::Ptr>(execution->CreateInferRequest())));
     initialized_ = true;
+    preference_ = preference;
+    if (preference == mojom::PREFER_ULTRA_LOW_POWER) {
+      s_gna_infer_request = std::move(infer_request);
+      s_gna_execution = std::move(execution);
+      s_gna_plugin = std::move(plugin);
+    } else {
+      infer_request_ = std::move(infer_request);
+      execution_ = std::move(execution);
+      plugin_ = std::move(plugin);
+    }
   } catch (const std::exception& ex) {
     LOG(ERROR) << "[IE] exception " << ex.what();
     initialized_ = false;
@@ -85,10 +102,12 @@ int32_t ExecutionImplIe::Init(int32_t preference) {
 
 ExecutionImplIe::~ExecutionImplIe() {
   DLOG(INFO) << "ExecutionImplIe::~ExecutionImplIe()";
-  // Release in squence to avoid crash.
-  // infer_request_.reset(nullptr);
-  // execution_.reset(nullptr);
-  // plugin_.reset(nullptr);
+  if (preference_ != mojom::PREFER_ULTRA_LOW_POWER) {
+    // Release in squence to avoid crash.
+    infer_request_.reset(nullptr);
+    execution_.reset(nullptr);
+    plugin_.reset(nullptr);
+  }
 }
 
 void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
@@ -101,6 +120,9 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
   try {
     int32_t result;
     uint32_t total_length = 0;
+    InferenceEngine::InferRequest* infer_request =
+        preference_ == mojom::PREFER_ULTRA_LOW_POWER ? s_gna_infer_request.get()
+                                                     : infer_request_.get();
     for (size_t i = 0; i < params_->inputs.size(); ++i) {
       const mojom::OperandInfoPtr& operand = params_->inputs[i];
       const uint32_t offset = total_length;
@@ -115,7 +137,7 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
       DLOG(INFO) << "Mapping " << mapping.get() << " for input " << i
                  << " offset " << offset << " length " << length;
       std::string input_id = base::NumberToString(operand->index);
-      ie::Blob::Ptr input_blob = s_infer_request->GetBlob(input_id);
+      ie::Blob::Ptr input_blob = infer_request->GetBlob(input_id);
       float* dst =
           input_blob->buffer()
               .as<ie::PrecisionTrait<ie::Precision::FP32>::value_type*>();
@@ -135,7 +157,7 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
       DLOG(INFO) << "Copy data to input blob buffer for " << input_id;
     }
 
-    s_infer_request->Infer();
+    infer_request->Infer();
 
     for (size_t i = 0; i < params_->outputs.size(); ++i) {
       const mojom::OperandInfoPtr& operand = params_->outputs[i];
@@ -146,7 +168,7 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
       DLOG(INFO) << "Mapping " << mapping.get() << " for output " << i
                  << " offset " << offset << " length " << length;
       std::string output_id = base::NumberToString(operand->index);
-      const ie::Blob::Ptr output_blob = s_infer_request->GetBlob(output_id);
+      const ie::Blob::Ptr output_blob = infer_request->GetBlob(output_id);
       const float* src =
           output_blob->buffer()
               .as<ie::PrecisionTrait<ie::Precision::FP32>::value_type*>();

@@ -63,6 +63,7 @@ interface NeuralNetworkContext {
     const long PREFER_LOW_POWER = 0;
     const long PREFER_FAST_SINGLE_ANSWER = 1;
     const long PREFER_SUSTAINED_SPEED = 2;
+    const long PREFER_ULTRA_LOW_POWER = 3;
 
     [CallWith=ScriptState] Promise<Model> createModel();
 };

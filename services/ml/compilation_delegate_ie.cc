@@ -19,18 +19,6 @@ namespace ie = InferenceEngine;
 
 namespace ml {
 
-bool GNADevice() {
-  bool gna_device = false;
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kLowPower)) {
-    std::string low_power =
-        command_line->GetSwitchValueASCII(switches::kLowPower);
-    gna_device = base::LowerCaseEqualsASCII(low_power, "gna");
-  }
-
-  return gna_device;
-}
-
 namespace {
 static float asfloat(uint32_t v) {
   union {
@@ -121,9 +109,12 @@ int32_t CompilationDelegateIe::CreateExecution(
     std::unique_ptr<mojom::Execution>& execution,
     mojom::ExecutionInitParamsPtr params) {
   float input_scale = 1.0;
-  if (compilation_->GetPreference() == mojom::PREFER_LOW_POWER && GNADevice()) {
+  if (compilation_->GetPreference() == mojom::PREFER_ULTRA_LOW_POWER) {
     const mojom::ModelInfoPtr& model = compilation_->GetModel();
-    DCHECK(model->inputs.size() == 1);
+    if (model->inputs.size() != 1) {
+      LOG(ERROR) << "GNA plugin only support one input.";
+      return mojom::OP_FAILED;
+    }
     int index = model->inputs[0];
     input_scale = model->operands[index]->scale;
   }
@@ -345,7 +336,8 @@ int32_t CompilationDelegateIe::CreateBlob(
       return result;
     }
     int32_t pref = compilation_->GetPreference();
-    bool fp32_precision = pref != mojom::PREFER_LOW_POWER || GNADevice();
+    // GNA also only support FP32 representing with PREFER_ULTRA_LOW_POWER.
+    bool fp32_precision = pref != mojom::PREFER_LOW_POWER;
     if (fp32_precision) {
       // GNA only accepts FP32 precision, cpu/gpu use FP32 currently.
       blob = ie::make_shared_blob<float>(ie::Precision::FP32, dims);

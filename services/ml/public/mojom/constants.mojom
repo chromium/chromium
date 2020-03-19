@@ -63,6 +63,7 @@ const int32 PADDING_VALID = 2;
 const int32 PREFER_LOW_POWER = 0;
 const int32 PREFER_FAST_SINGLE_ANSWER = 1;
 const int32 PREFER_SUSTAINED_SPEED = 2;
+const int32 PREFER_ULTRA_LOW_POWER = 3;
 
 // Result code.
 const int32 NOT_ERROR = 0;

@@ -2387,13 +2387,13 @@ shared_library("libGNAPlugin") {
 }
 
 if (is_linux) {
-  os_folder = "linux"
+  os_folder = "linux/lib"
   gna_dll = "libgna_api.so"
 } else if (is_win) {
-  os_folder = "win64"
+  os_folder = "win64/x64"
   gna_dll = "gna.dll"
 }
-gna_dll_path = "//third_party/libinference_engine/gna/${os_folder}/lib"
+gna_dll_path = "//third_party/libinference_engine/gna/${os_folder}"
 copy("copy_gna_dll") {
   sources = [
     "${gna_dll_path}/${gna_dll}",

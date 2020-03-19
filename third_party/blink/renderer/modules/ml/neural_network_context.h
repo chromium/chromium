@@ -87,6 +87,7 @@ class NeuralNetworkContext final : public ScriptWrappable,
   static const unsigned long kPreferLowPower = 0;
   static const unsigned long kPreferFastSingleAnswer = 1;
   static const unsigned long kPreferSustainedSpeed = 2;
+  static const unsigned long kPreferUltraLowPower = 3;
 
  public:
   explicit NeuralNetworkContext(NavigatorML*);
