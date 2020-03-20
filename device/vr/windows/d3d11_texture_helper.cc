@@ -943,12 +943,19 @@ bool D3D11TextureHelper::CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr 
 
   float euler[3];
   makeEulerFromRotationMatrix(euler, localVsData, "YXZ");
+  const float eulerZ = euler[2];
   // euler[0] = 0;
   euler[1] *= -1;
   euler[2] = 0;
-
-  // float eulerMatrix[16];
   makeMatrixFromEuler(localVsData, euler, "YXZ");
+
+  euler[0] = 0;
+  euler[1] = 0;
+  euler[2] = -eulerZ;
+  float eulerMatrix[16];
+  makeMatrixFromEuler(eulerMatrix, euler, "ZYX");
+  multiplyMatrices(localVsData, localVsData, eulerMatrix);
+  
   transposeMatrix(localVsData);
 
   // multiplyMatrices(localVsData, eulerMatrix, localVsData);
