@@ -476,7 +476,7 @@ void XRCompositorCommon::MaybeCompositeAndSubmit() {
     texture_helper_.CleanupNoSubmit();
   } else {
     copy_successful = texture_helper_.UpdateBackbufferSizes() &&
-                      PreComposite() && texture_helper_.CompositeToBackBuffer();
+                      PreComposite() && texture_helper_.CompositeToBackBuffer(pending_frame_->frame_data_);
     if (copy_successful) {
       pending_frame_->frame_ready_time_ = base::TimeTicks::Now();
       if (!SubmitCompositedFrame()) {

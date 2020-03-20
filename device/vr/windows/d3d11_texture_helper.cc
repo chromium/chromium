@@ -47,6 +47,7 @@ enum ErrorLocation {
   EnsureVS = 8,
   EnsureGS = 9,
   EnsurePS = 10,
+  EnsureCB = 10,
   InputLayout = 11,
   VertexBuffer = 12,
   Sampler = 13,
@@ -179,7 +180,7 @@ bool D3D11TextureHelper::EnsureContentBlendState() {
   return true;
 }
 
-bool D3D11TextureHelper::CompositeToBackBuffer() {
+bool D3D11TextureHelper::CompositeToBackBuffer(mojom::XRFrameDataPtr &frame_data_) {
   if (!EnsureInitialized())
     return false;
 
@@ -234,10 +235,10 @@ bool D3D11TextureHelper::CompositeToBackBuffer() {
   bool success = true;
   if (render_state_.source_.source_texture_)
     success = success && EnsureContentBlendState() &&
-              CompositeLayer(render_state_.source_);
+              CompositeLayer(render_state_.source_, frame_data_);
   if (render_state_.overlay_.source_texture_)
     success = success && EnsureOverlayBlendState() &&
-              CompositeLayer(render_state_.overlay_);
+              CompositeLayer(render_state_.overlay_, frame_data_);
 
   if (render_state_.source_.keyed_mutex_)
     render_state_.source_.keyed_mutex_->ReleaseSync(0);
@@ -309,6 +310,34 @@ bool D3D11TextureHelper::EnsureShaders() {
         &render_state_.flip_pixel_shader_);
     if (FAILED(hr)) {
       TraceDXError(ErrorLocation::EnsurePS, hr);
+      return false;
+    }
+  }
+
+
+  if (!render_state_.cbuffer_) {
+    D3D11_BUFFER_DESC cbDesc{};
+    cbDesc.ByteWidth = 32 * sizeof(float);
+    // cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+    cbDesc.Usage = D3D11_USAGE_DEFAULT;
+    cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    // cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    // cbDesc.MiscFlags = 0;
+    // cbDesc.StructureByteStride = 0;
+
+    // x = -1+far/near
+    // y = 1
+    // z = x/far
+    // w = 1/far
+
+    // Create the buffer.
+    HRESULT hr = render_state_.d3d11_device_->CreateBuffer(
+      &cbDesc,
+      NULL,
+      &render_state_.cbuffer_
+    );
+    if (FAILED(hr)) {
+      TraceDXError(ErrorLocation::EnsureCB, hr);
       return false;
     }
   }
@@ -430,7 +459,99 @@ bool D3D11TextureHelper::UpdateVertexBuffer(LayerData& layer) {
   return true;
 }
 
-bool D3D11TextureHelper::CompositeLayer(LayerData& layer) {
+constexpr float m_eyeFOV = 115.0f;
+constexpr float M_PI = 3.14159265358979323846;
+inline void composeMatrix(float *matrix, const float *position, const float *quaternion, const float *scale) {
+  float *te = matrix;
+
+  float x = quaternion[0], y = quaternion[1], z = quaternion[2], w = quaternion[3];
+  float x2 = x + x, y2 = y + y, z2 = z + z;
+  float xx = x * x2, xy = x * y2, xz = x * z2;
+  float yy = y * y2, yz = y * z2, zz = z * z2;
+  float wx = w * x2, wy = w * y2, wz = w * z2;
+
+  float sx = scale[0], sy = scale[1], sz = scale[2];
+
+  te[ 0 ] = ( 1 - ( yy + zz ) ) * sx;
+  te[ 1 ] = ( xy + wz ) * sx;
+  te[ 2 ] = ( xz - wy ) * sx;
+  te[ 3 ] = 0;
+
+  te[ 4 ] = ( xy - wz ) * sy;
+  te[ 5 ] = ( 1 - ( xx + zz ) ) * sy;
+  te[ 6 ] = ( yz + wx ) * sy;
+  te[ 7 ] = 0;
+
+  te[ 8 ] = ( xz + wy ) * sz;
+  te[ 9 ] = ( yz - wx ) * sz;
+  te[ 10 ] = ( 1 - ( xx + yy ) ) * sz;
+  te[ 11 ] = 0;
+
+  te[ 12 ] = position[0];
+  te[ 13 ] = position[1];
+  te[ 14 ] = position[2];
+  te[ 15 ] = 1;
+}
+inline void multiplyMatrices(float *outMatrix, const float *aMatrix, const float *bMatrix) {
+  const float *ae = aMatrix;
+  const float *be = bMatrix;
+  float *te = outMatrix;
+
+  const float a11 = ae[ 0 ], a12 = ae[ 4 ], a13 = ae[ 8 ], a14 = ae[ 12 ];
+  const float a21 = ae[ 1 ], a22 = ae[ 5 ], a23 = ae[ 9 ], a24 = ae[ 13 ];
+  const float a31 = ae[ 2 ], a32 = ae[ 6 ], a33 = ae[ 10 ], a34 = ae[ 14 ];
+  const float a41 = ae[ 3 ], a42 = ae[ 7 ], a43 = ae[ 11 ], a44 = ae[ 15 ];
+
+  const float b11 = be[ 0 ], b12 = be[ 4 ], b13 = be[ 8 ], b14 = be[ 12 ];
+  const float b21 = be[ 1 ], b22 = be[ 5 ], b23 = be[ 9 ], b24 = be[ 13 ];
+  const float b31 = be[ 2 ], b32 = be[ 6 ], b33 = be[ 10 ], b34 = be[ 14 ];
+  const float b41 = be[ 3 ], b42 = be[ 7 ], b43 = be[ 11 ], b44 = be[ 15 ];
+
+  te[ 0 ] = a11 * b11 + a12 * b21 + a13 * b31 + a14 * b41;
+  te[ 4 ] = a11 * b12 + a12 * b22 + a13 * b32 + a14 * b42;
+  te[ 8 ] = a11 * b13 + a12 * b23 + a13 * b33 + a14 * b43;
+  te[ 12 ] = a11 * b14 + a12 * b24 + a13 * b34 + a14 * b44;
+
+  te[ 1 ] = a21 * b11 + a22 * b21 + a23 * b31 + a24 * b41;
+  te[ 5 ] = a21 * b12 + a22 * b22 + a23 * b32 + a24 * b42;
+  te[ 9 ] = a21 * b13 + a22 * b23 + a23 * b33 + a24 * b43;
+  te[ 13 ] = a21 * b14 + a22 * b24 + a23 * b34 + a24 * b44;
+
+  te[ 2 ] = a31 * b11 + a32 * b21 + a33 * b31 + a34 * b41;
+  te[ 6 ] = a31 * b12 + a32 * b22 + a33 * b32 + a34 * b42;
+  te[ 10 ] = a31 * b13 + a32 * b23 + a33 * b33 + a34 * b43;
+  te[ 14 ] = a31 * b14 + a32 * b24 + a33 * b34 + a34 * b44;
+
+  te[ 3 ] = a41 * b11 + a42 * b21 + a43 * b31 + a44 * b41;
+  te[ 7 ] = a41 * b12 + a42 * b22 + a43 * b32 + a44 * b42;
+  te[ 11 ] = a41 * b13 + a42 * b23 + a43 * b33 + a44 * b43;
+  te[ 15 ] = a41 * b14 + a42 * b24 + a43 * b34 + a44 * b44;
+}
+inline void makeScaleMatrix(float *outMatrix, const float *scale) {
+  float *te = outMatrix;
+  
+  te[ 0 ] = scale[0];
+  te[ 1 ] = 0;
+  te[ 2 ] = 0;
+  te[ 3 ] = 0;
+
+  te[ 4 ] = 0;
+  te[ 5 ] = scale[1];
+  te[ 6 ] = 0;
+  te[ 7 ] = 0;
+
+  te[ 8 ] = 0;
+  te[ 9 ] = 0;
+  te[ 10 ] = scale[2];
+  te[ 11 ] = 0;
+
+  te[ 12 ] = 0;
+  te[ 13 ] = 0;
+  te[ 14 ] = 0;
+  te[ 15 ] = 1;
+}
+
+bool D3D11TextureHelper::CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr &frame_data_) {
   if (!EnsureShaders() || !EnsureInputLayout() || !EnsureVertexBuffer() ||
       !EnsureSampler(layer) || !UpdateVertexBuffer(layer))
     return false;
@@ -471,10 +592,147 @@ bool D3D11TextureHelper::CompositeLayer(LayerData& layer) {
   render_state_.d3d11_device_context_->IASetPrimitiveTopology(
       D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+  // float4x4 lookRotation;
+  // float halfFOVInRadians;
+  auto &pose = frame_data_->pose;
+  auto &posePosition = pose->position;
+  auto &poseOrientation = pose->orientation;
+  float position[3] = {0, 0, 0};
+  float quaternion[4] = {poseOrientation->x(), poseOrientation->y(), poseOrientation->z(), poseOrientation->w()};
+  TRACE_EVENT1("gpu", "OpenVR Composite px", "x", posePosition->x());
+  TRACE_EVENT1("gpu", "OpenVR Composite py", "y", posePosition->y());
+  TRACE_EVENT1("gpu", "OpenVR Composite pz", "z", posePosition->z());
+  TRACE_EVENT1("gpu", "OpenVR Composite qx", "x", poseOrientation->x());
+  TRACE_EVENT1("gpu", "OpenVR Composite qy", "y", poseOrientation->y());
+  TRACE_EVENT1("gpu", "OpenVR Composite qz", "z", poseOrientation->z());
+  TRACE_EVENT1("gpu", "OpenVR Composite qw", "w", poseOrientation->w());
+  float scale[3] = {1, 1, 1};
+  float lookRotation[16];
+  composeMatrix(lookRotation, position, quaternion, scale);
+
+  /* float scale2[3] = {1, 1, -1};
+  float scaleMatrix[16];
+  makeScaleMatrix(scaleMatrix, scale2);
+  
+  multiplyMatrices(lookRotation, scaleMatrix, lookRotation); */
+  
+  float localVsData[32] = {};
+  memcpy(localVsData, lookRotation, sizeof(lookRotation));
+  const float halfFOVInRadians = (m_eyeFOV / 2.0f) * (M_PI / 180.0f);
+  localVsData[16] = halfFOVInRadians;
+  TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "0", localVsData[0]);
+  TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "1", localVsData[1]);
+  TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "2", localVsData[2]);
+  TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "3", localVsData[3]);
+  TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "4", localVsData[4]);
+  
+  render_state_.d3d11_device_context_->UpdateSubresource(render_state_.cbuffer_.Get(), 0, 0, localVsData, 0, 0);
+  render_state_.d3d11_device_context_->PSSetConstantBuffers(0, 1, render_state_.cbuffer_.GetAddressOf());
+  
+  /* {
+    ID3D11InfoQueue *infoQueue;
+    render_state_.d3d11_device_->QueryInterface(__uuidof(ID3D11InfoQueue), (void **)&infoQueue);
+    UINT64 numStoredMessages = infoQueue->GetNumStoredMessagesAllowedByRetrievalFilter();
+    for (UINT64 i = 0; i < numStoredMessages; i++) {
+      size_t messageSize = 0;
+      HRESULT hr = infoQueue->GetMessage(
+        i,
+        nullptr,
+        &messageSize
+      );
+      if (SUCCEEDED(hr)) {
+        D3D11_MESSAGE *message = (D3D11_MESSAGE *)malloc(messageSize);
+
+        hr = infoQueue->GetMessage(
+          i,
+          message,
+          &messageSize
+        );
+        if (SUCCEEDED(hr)) {
+          // if (message->Severity <= D3D11_MESSAGE_SEVERITY_WARNING) {
+            std::string s = "info: ";
+            s += std::to_string(message->Severity);
+            s += " ";
+            s += std::string(message->pDescription, message->DescriptionByteLength);
+          // }
+          TRACE_EVENT1("gpu", "OpenVR log 2", "log", s);
+        } else {
+          TRACE_EVENT1("gpu", "failed to get info queue message size", "hr", hr);
+        }
+
+        free(message);
+      } else {
+        TRACE_EVENT1("gpu", "failed to get info queue message size", "hr", hr);
+      }
+    }
+    infoQueue->ClearStoredMessages();
+    infoQueue->Release();
+  } */
+
+  /* vr::TrackedDevicePose_t rRenderPoses[vr::k_unMaxTrackedDeviceCount];
+  if (vr::VRCompositor()->CanRenderScene() == false)
+          return;
+
+  uint64_t newFrameIndex = 0;
+  float lastVSync = 0;
+
+  while (newFrameIndex == m_lastFrameIndex)
+  {
+          auto vsyncTimesAvailable = vr::VRSystem()->GetTimeSinceLastVsync(
+                  &lastVSync, &newFrameIndex);
+
+          if (vsyncTimesAvailable == false)
+                  return;
+  }
+
+  if (m_lastFrameIndex + 1 < newFrameIndex)
+          m_framesSkipped++;
+
+  m_lastFrameIndex = newFrameIndex;
+  float secondsSinceLastVsync = 0;
+  uint64_t newLastFrame = 0;
+  vr::VRSystem()->GetTimeSinceLastVsync(&secondsSinceLastVsync, &newLastFrame);
+
+  vr::ETrackedPropertyError error;
+  float displayFrequency = vr::VRSystem()->GetFloatTrackedDeviceProperty(
+          vr::k_unTrackedDeviceIndex_Hmd,
+          vr::ETrackedDeviceProperty::Prop_DisplayFrequency_Float,
+          &error);
+
+  float frameDuration = 1.0f / displayFrequency;
+  float vsyncToPhotons = vr::VRSystem()->GetFloatTrackedDeviceProperty(
+          vr::k_unTrackedDeviceIndex_Hmd,
+          vr::ETrackedDeviceProperty::Prop_SecondsFromVsyncToPhotons_Float,
+          &error);
+
+  float predictedSecondsFromNow = frameDuration - secondsSinceLastVsync + vsyncToPhotons;
+  vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+          c_eTrackingOrigin,
+          predictedSecondsFromNow,
+          &rRenderPoses[0],
+          vr::k_unMaxTrackedDeviceCount);
+
+  glm::mat4 universeFromHmd = glmMatFromVrMat(
+          rRenderPoses[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking);
+
+  m_hmdFromUniverse = glm::inverse(universeFromHmd);
+  m_universeFromOriginTransforms["/user/head"] = universeFromHmd;
+
+  m_universeFromOriginTransforms["/space/stage"] = glm::mat4(1.f);
+  m_vargglesLookRotation = glm::scale(m_hmdFromUniverse, glm::vec3(1, 1, -1)); */
+  
+  
+  
+  
+        
+        
+        
+
   // TODO(billorr): Optimize to avoid the geometry shader when not needed.
   render_state_.d3d11_device_context_->GSSetShader(
       render_state_.geometry_shader_.Get(), nullptr, 0);
   render_state_.d3d11_device_context_->Draw(kNumVerticesPerLayer, 0);
+
   return true;
 }
 
@@ -679,6 +937,7 @@ bool D3D11TextureHelper::EnsureInitialized() {
 
   D3D_FEATURE_LEVEL feature_levels[] = {D3D_FEATURE_LEVEL_11_1};
   UINT flags = bgra_ ? D3D11_CREATE_DEVICE_BGRA_SUPPORT : 0;
+  // flags |= D3D11_CREATE_DEVICE_DEBUG;
   D3D_FEATURE_LEVEL feature_level_out = D3D_FEATURE_LEVEL_11_1;
 
   Microsoft::WRL::ComPtr<IDXGIAdapter> adapter = GetAdapter();

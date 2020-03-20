@@ -12,6 +12,7 @@
 #include "base/win/scoped_handle.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "device/vr/public/mojom/vr_service.mojom.h"
 
 namespace device {
 
@@ -30,7 +31,7 @@ class D3D11TextureHelper {
   void CleanupNoSubmit();
   void SetSourceAndOverlayVisible(bool source_visible, bool overlay_visible);
 
-  bool CompositeToBackBuffer();
+  bool CompositeToBackBuffer(mojom::XRFrameDataPtr &frame_data_);
   bool SetSourceTexture(base::win::ScopedHandle texture_handle,
                         gfx::RectF left,
                         gfx::RectF right);
@@ -79,7 +80,7 @@ class D3D11TextureHelper {
   bool UpdateVertexBuffer(LayerData& layer);
   bool EnsureSampler(LayerData& layer);
   Microsoft::WRL::ComPtr<IDXGIAdapter> GetAdapter();
-  bool CompositeLayer(LayerData& layer);
+  bool CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr &frame_data_);
   bool BindTarget();
   void CleanupLayerData(LayerData& layer);
 
@@ -94,6 +95,8 @@ class D3D11TextureHelper {
     Microsoft::WRL::ComPtr<ID3D11PixelShader> flip_pixel_shader_;
     Microsoft::WRL::ComPtr<ID3D11VertexShader> vertex_shader_;
     Microsoft::WRL::ComPtr<ID3D11GeometryShader> geometry_shader_;
+    
+    Microsoft::WRL::ComPtr<ID3D11Buffer> cbuffer_;
 
     Microsoft::WRL::ComPtr<ID3D11InputLayout> input_layout_;
     Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer_;
