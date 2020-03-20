@@ -34,14 +34,6 @@ float4 flip_pixel(PixelShaderInput input) : SV_TARGET
   const float QUARTER_PI = 0.25 * PI;
 
   float2 uv = float2(input.tex.x, input.tex.y);
-  
-  /* bool isTop = uv.x < 0.5;
-  if (isTop) {
-    uv.x *= 2;
-  } else {
-    uv.x -= 0.5;
-    uv.x *= 2;
-  } */
 
   // convert UV (0,0 upper right) (1, 1 lower left) to XY (0,0 lower left) (1, 1 upper right)
   float2 xy = float2(uv.x, 1 - uv.y);
@@ -70,7 +62,7 @@ float4 flip_pixel(PixelShaderInput input) : SV_TARGET
   // both eyes go from -pi -> pi left to right and -pi/2 -> pi/2 bottom to top
 
   // Get scalar for modifying projection from cubemap (90 fov) to eye target fov
-  float fovScalar = tan(halfFOVInRadians) / tan(QUARTER_PI);
+  float fovScalar = 1; // tan(halfFOVInRadians) / tan(QUARTER_PI);
 
   // create vector looking out at equirect CubeMap
   float3 cubeMapLookupDirection = float3(sin(xy.x), 1.0, cos(xy.x)) * float3(cos(xy.y), sin(xy.y), cos(xy.y));
@@ -78,7 +70,7 @@ float4 flip_pixel(PixelShaderInput input) : SV_TARGET
   // rotate look direction by inverse of horizontal stageSpace look vector.
   // this is a trick to prevent a full cube map render of the scene, the only valid
   // equirectangular projections will be near wahtever is treated as forward and backward traditionally
-  cubeMapLookupDirection = mul(lookRotation, float4(cubeMapLookupDirection, 0)).xyz;
+  cubeMapLookupDirection = mul(lookRotation, float4(cubeMapLookupDirection, 1)).xyz;
 
   // project the vector onto the 2d texture
   // this will be wrong everywhere that is not near the rotated forward plane of the cubeMap
@@ -92,18 +84,20 @@ float4 flip_pixel(PixelShaderInput input) : SV_TARGET
 
   float2 eyeUV = float2(projectLookOntoUAxis, projectLookOntoVAxis);
 
-  // copy color from the right eye texture
+  return float4(eyeUV.x, eyeUV.y, 0, 1);
+
+  /* // copy color from the right eye texture
   if (isTop) {
           // outColor = texture(eyeLeft, eyeUV);
           // return my_texture.Sample(my_sampler, eyeUV).rgba;
-          return my_texture.Sample(my_sampler, float2(eyeUV.x * 0.5 + 0.5, eyeUV.y)).rgba;
+          return my_texture.Sample(my_sampler, float2(eyeUV.x * 0.5, eyeUV.y)).rgba;
           // return float4(eyeUV.x, eyeUV.y, 0, 1);
   } else {
           // outColor = texture(eyeRight, eyeUV);
           // return my_texture.Sample(my_sampler, eyeUV).rgba;
-          return my_texture.Sample(my_sampler, float2(eyeUV.x * 0.5, eyeUV.y)).rgba;
+          return my_texture.Sample(my_sampler, float2(eyeUV.x * 0.5 + 0.5, eyeUV.y)).rgba;
           // return float4(eyeUV.x, eyeUV.y, 0, 1);
-  }
+  } */
 
   /* float2 texture_coords = float2(input.tex.x, input.tex.y);
   return my_texture.Sample(my_sampler, texture_coords).rgba; */

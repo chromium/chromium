@@ -220,6 +220,18 @@ void OpenVRRenderLoop::OnSessionStart() {
   LogViewerType(type);
 }
 
+void setPoseMatrix(float *dstMatrixArray, const vr::HmdMatrix34_t &srcMatrix) {
+  for (unsigned int v = 0; v < 4; v++) {
+    for (unsigned int u = 0; u < 3; u++) {
+      dstMatrixArray[v * 4 + u] = srcMatrix.m[u][v];
+    }
+  }
+  dstMatrixArray[0 * 4 + 3] = 0;
+  dstMatrixArray[1 * 4 + 3] = 0;
+  dstMatrixArray[2 * 4 + 3] = 0;
+  dstMatrixArray[3 * 4 + 3] = 1;
+}
+
 mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
   mojom::XRFrameDataPtr frame_data = mojom::XRFrameData::New();
   frame_data->frame_id = next_frame_id_;
@@ -227,7 +239,7 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
   if (openvr_) {
     vr::TrackedDevicePose_t rendering_poses[vr::k_unMaxTrackedDeviceCount];
     
-    TRACE_EVENT0("gpu", "OpenVR WaitGetPoses 1");
+    TRACE_EVENT0("gpu", "OpenVR WaitGetPoses 0");
     
     
     
@@ -279,16 +291,18 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
             predictedSecondsFromNow,
             rendering_poses,
             vr::k_unMaxTrackedDeviceCount);
-    
-    
-    
-    
-    
-    
-    
-    
 
-    
+
+
+
+
+
+
+
+
+
+
+
     /* openvr_->GetCompositor()->WaitGetPoses(
         rendering_poses, vr::k_unMaxTrackedDeviceCount, nullptr, 0); */
 
@@ -307,7 +321,12 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
           base::TimeDelta::FromSecondsD(timing.m_flSystemTimeInSeconds);
     }
     
-    TRACE_EVENT0("gpu", "OpenVR WaitGetPoses 1");
+    TRACE_EVENT1("gpu", "OpenVR WaitGetPoses 2", "size", frame_data->universeFromHmd.size());
+    
+    frame_data->universeFromHmd.resize(16);
+    setPoseMatrix(frame_data->universeFromHmd.data(), rendering_poses[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking);
+    
+    TRACE_EVENT0("gpu", "OpenVR WaitGetPoses 3");
   }
 
   return frame_data;

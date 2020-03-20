@@ -550,6 +550,341 @@ inline void makeScaleMatrix(float *outMatrix, const float *scale) {
   te[ 14 ] = 0;
   te[ 15 ] = 1;
 }
+void getMatrixInverse(float *outMatrix, const float *inMatrix) {
+  // based on http://www.euclideanspace.com/maths/algebra/matrix/functions/inverse/fourD/index.htm
+  float *te = outMatrix;
+  const float *me = inMatrix;
+
+  const float n11 = me[ 0 ], n21 = me[ 1 ], n31 = me[ 2 ], n41 = me[ 3 ],
+    n12 = me[ 4 ], n22 = me[ 5 ], n32 = me[ 6 ], n42 = me[ 7 ],
+    n13 = me[ 8 ], n23 = me[ 9 ], n33 = me[ 10 ], n43 = me[ 11 ],
+    n14 = me[ 12 ], n24 = me[ 13 ], n34 = me[ 14 ], n44 = me[ 15 ],
+
+    t11 = n23 * n34 * n42 - n24 * n33 * n42 + n24 * n32 * n43 - n22 * n34 * n43 - n23 * n32 * n44 + n22 * n33 * n44,
+    t12 = n14 * n33 * n42 - n13 * n34 * n42 - n14 * n32 * n43 + n12 * n34 * n43 + n13 * n32 * n44 - n12 * n33 * n44,
+    t13 = n13 * n24 * n42 - n14 * n23 * n42 + n14 * n22 * n43 - n12 * n24 * n43 - n13 * n22 * n44 + n12 * n23 * n44,
+    t14 = n14 * n23 * n32 - n13 * n24 * n32 - n14 * n22 * n33 + n12 * n24 * n33 + n13 * n22 * n34 - n12 * n23 * n34;
+
+  const float det = n11 * t11 + n21 * t12 + n31 * t13 + n41 * t14;
+
+  if (det == 0.0f) {
+    TRACE_EVENT0("gpu", "Can't invert matrix, determinant is 0");
+  }
+
+  const float detInv = 1.0f / det;
+
+  te[ 0 ] = t11 * detInv;
+  te[ 1 ] = ( n24 * n33 * n41 - n23 * n34 * n41 - n24 * n31 * n43 + n21 * n34 * n43 + n23 * n31 * n44 - n21 * n33 * n44 ) * detInv;
+  te[ 2 ] = ( n22 * n34 * n41 - n24 * n32 * n41 + n24 * n31 * n42 - n21 * n34 * n42 - n22 * n31 * n44 + n21 * n32 * n44 ) * detInv;
+  te[ 3 ] = ( n23 * n32 * n41 - n22 * n33 * n41 - n23 * n31 * n42 + n21 * n33 * n42 + n22 * n31 * n43 - n21 * n32 * n43 ) * detInv;
+
+  te[ 4 ] = t12 * detInv;
+  te[ 5 ] = ( n13 * n34 * n41 - n14 * n33 * n41 + n14 * n31 * n43 - n11 * n34 * n43 - n13 * n31 * n44 + n11 * n33 * n44 ) * detInv;
+  te[ 6 ] = ( n14 * n32 * n41 - n12 * n34 * n41 - n14 * n31 * n42 + n11 * n34 * n42 + n12 * n31 * n44 - n11 * n32 * n44 ) * detInv;
+  te[ 7 ] = ( n12 * n33 * n41 - n13 * n32 * n41 + n13 * n31 * n42 - n11 * n33 * n42 - n12 * n31 * n43 + n11 * n32 * n43 ) * detInv;
+
+  te[ 8 ] = t13 * detInv;
+  te[ 9 ] = ( n14 * n23 * n41 - n13 * n24 * n41 - n14 * n21 * n43 + n11 * n24 * n43 + n13 * n21 * n44 - n11 * n23 * n44 ) * detInv;
+  te[ 10 ] = ( n12 * n24 * n41 - n14 * n22 * n41 + n14 * n21 * n42 - n11 * n24 * n42 - n12 * n21 * n44 + n11 * n22 * n44 ) * detInv;
+  te[ 11 ] = ( n13 * n22 * n41 - n12 * n23 * n41 - n13 * n21 * n42 + n11 * n23 * n42 + n12 * n21 * n43 - n11 * n22 * n43 ) * detInv;
+
+  te[ 12 ] = t14 * detInv;
+  te[ 13 ] = ( n13 * n24 * n31 - n14 * n23 * n31 + n14 * n21 * n33 - n11 * n24 * n33 - n13 * n21 * n34 + n11 * n23 * n34 ) * detInv;
+  te[ 14 ] = ( n14 * n22 * n31 - n12 * n24 * n31 - n14 * n21 * n32 + n11 * n24 * n32 + n12 * n21 * n34 - n11 * n22 * n34 ) * detInv;
+  te[ 15 ] = ( n12 * n23 * n31 - n13 * n22 * n31 + n13 * n21 * n32 - n11 * n23 * n32 - n12 * n21 * n33 + n11 * n22 * n33 ) * detInv;
+}
+void makeEulerFromRotationMatrix(float *euler, const float *matrix, const std::string &order) {
+  const float *te = matrix;
+  float m11 = te[ 0 ], m12 = te[ 4 ], m13 = te[ 8 ];
+  float m21 = te[ 1 ], m22 = te[ 5 ], m23 = te[ 9 ];
+  float m31 = te[ 2 ], m32 = te[ 6 ], m33 = te[ 10 ];
+
+  if ( order == "XYZ" ) {
+
+    euler[1] = std::asin( std::min<float>(std::max<float>( m13, - 1), 1 ) );
+
+    if ( std::abs( m13 ) < 0.9999999 ) {
+
+      euler[0] = std::atan2( - m23, m33 );
+      euler[2] = std::atan2( - m12, m11 );
+
+    } else {
+
+      euler[0] = std::atan2( m32, m22 );
+      euler[2] = 0;
+
+    }
+
+  } else if ( order == "YXZ" ) {
+
+    euler[0] = std::asin( - std::min<float>(std::max<float>( m23, - 1), 1 ) );
+
+    if ( std::abs( m23 ) < 0.9999999 ) {
+
+      euler[1] = std::atan2( m13, m33 );
+      euler[2] = std::atan2( m21, m22 );
+
+    } else {
+
+      euler[1] = std::atan2( - m31, m11 );
+      euler[2] = 0;
+
+    }
+
+  } else if ( order == "ZXY" ) {
+
+    euler[0] = std::asin( std::min<float>(std::max<float>( m32, - 1), 1 ) );
+
+    if ( std::abs( m32 ) < 0.9999999 ) {
+
+      euler[1] = std::atan2( - m31, m33 );
+      euler[2] = std::atan2( - m12, m22 );
+
+    } else {
+
+      euler[1] = 0;
+      euler[2] = std::atan2( m21, m11 );
+
+    }
+
+  } else if ( order == "ZYX" ) {
+
+    euler[1] = std::asin( - std::min<float>(std::max<float>( m31, - 1), 1 ) );
+
+    if ( std::abs( m31 ) < 0.9999999 ) {
+
+      euler[0] = std::atan2( m32, m33 );
+      euler[2] = std::atan2( m21, m11 );
+
+    } else {
+
+      euler[0] = 0;
+      euler[2] = std::atan2( - m12, m22 );
+
+    }
+
+  } else if ( order == "YZX" ) {
+
+    euler[2] = std::asin( std::min<float>(std::max<float>( m21, - 1), 1 ) );
+
+    if ( std::abs( m21 ) < 0.9999999 ) {
+
+      euler[0] = std::atan2( - m23, m22 );
+      euler[1] = std::atan2( - m31, m11 );
+
+    } else {
+
+      euler[0] = 0;
+      euler[1] = std::atan2( m13, m33 );
+
+    }
+
+  } else if ( order == "XZY" ) {
+
+    euler[2] = std::asin( - std::min<float>(std::max<float>( m12, - 1), 1 ) );
+
+    if ( std::abs( m12 ) < 0.9999999 ) {
+
+      euler[0] = std::atan2( m32, m22 );
+      euler[1] = std::atan2( m13, m11 );
+
+    } else {
+
+      euler[0] = std::atan2( - m23, m33 );
+      euler[1] = 0;
+
+    }
+
+  }
+}
+void makeQuaternionFromEuler(float *quaternion, const float *euler, const std::string &order) {
+  float x = euler[0], y = euler[1], z = euler[2];
+
+  // http://www.mathworks.com/matlabcentral/fileexchange/
+  // 	20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
+  //	content/SpinCalc.m
+
+  float c1 = std::cos( x / 2 );
+  float c2 = std::cos( y / 2 );
+  float c3 = std::cos( z / 2 );
+
+  float s1 = std::sin( x / 2 );
+  float s2 = std::sin( y / 2 );
+  float s3 = std::sin( z / 2 );
+
+  if ( order == "XYZ" ) {
+
+    quaternion[0] = s1 * c2 * c3 + c1 * s2 * s3;
+    quaternion[1] = c1 * s2 * c3 - s1 * c2 * s3;
+    quaternion[2] = c1 * c2 * s3 + s1 * s2 * c3;
+    quaternion[3] = c1 * c2 * c3 - s1 * s2 * s3;
+
+  } else if ( order == "YXZ" ) {
+
+    quaternion[0] = s1 * c2 * c3 + c1 * s2 * s3;
+    quaternion[1] = c1 * s2 * c3 - s1 * c2 * s3;
+    quaternion[2] = c1 * c2 * s3 - s1 * s2 * c3;
+    quaternion[3] = c1 * c2 * c3 + s1 * s2 * s3;
+
+  } else if ( order == "ZXY" ) {
+
+    quaternion[0] = s1 * c2 * c3 - c1 * s2 * s3;
+    quaternion[1] = c1 * s2 * c3 + s1 * c2 * s3;
+    quaternion[2] = c1 * c2 * s3 + s1 * s2 * c3;
+    quaternion[3] = c1 * c2 * c3 - s1 * s2 * s3;
+
+  } else if ( order == "ZYX" ) {
+
+    quaternion[0] = s1 * c2 * c3 - c1 * s2 * s3;
+    quaternion[1] = c1 * s2 * c3 + s1 * c2 * s3;
+    quaternion[2] = c1 * c2 * s3 - s1 * s2 * c3;
+    quaternion[3] = c1 * c2 * c3 + s1 * s2 * s3;
+
+  } else if ( order == "YZX" ) {
+
+    quaternion[0] = s1 * c2 * c3 + c1 * s2 * s3;
+    quaternion[1] = c1 * s2 * c3 + s1 * c2 * s3;
+    quaternion[2] = c1 * c2 * s3 - s1 * s2 * c3;
+    quaternion[3] = c1 * c2 * c3 - s1 * s2 * s3;
+
+  } else if ( order == "XZY" ) {
+
+    quaternion[0] = s1 * c2 * c3 - c1 * s2 * s3;
+    quaternion[1] = c1 * s2 * c3 - s1 * c2 * s3;
+    quaternion[2] = c1 * c2 * s3 + s1 * s2 * c3;
+    quaternion[3] = c1 * c2 * c3 + s1 * s2 * s3;
+
+  }
+}
+void makeMatrixFromEuler(float *matrix, const float *euler, const std::string &order) {
+  float *te = matrix;
+
+  float x = euler[0], y = euler[1], z = euler[2];
+  float a = std::cos( x ), b = std::sin( x );
+  float c = std::cos( y ), d = std::sin( y );
+  float e = std::cos( z ), f = std::sin( z );
+
+  if ( order == "XYZ" ) {
+
+    float ae = a * e, af = a * f, be = b * e, bf = b * f;
+
+    te[ 0 ] = c * e;
+    te[ 4 ] = - c * f;
+    te[ 8 ] = d;
+
+    te[ 1 ] = af + be * d;
+    te[ 5 ] = ae - bf * d;
+    te[ 9 ] = - b * c;
+
+    te[ 2 ] = bf - ae * d;
+    te[ 6 ] = be + af * d;
+    te[ 10 ] = a * c;
+
+  } else if ( order == "YXZ" ) {
+
+    float ce = c * e, cf = c * f, de = d * e, df = d * f;
+
+    te[ 0 ] = ce + df * b;
+    te[ 4 ] = de * b - cf;
+    te[ 8 ] = a * d;
+
+    te[ 1 ] = a * f;
+    te[ 5 ] = a * e;
+    te[ 9 ] = - b;
+
+    te[ 2 ] = cf * b - de;
+    te[ 6 ] = df + ce * b;
+    te[ 10 ] = a * c;
+
+  } else if ( order == "ZXY" ) {
+
+    float ce = c * e, cf = c * f, de = d * e, df = d * f;
+
+    te[ 0 ] = ce - df * b;
+    te[ 4 ] = - a * f;
+    te[ 8 ] = de + cf * b;
+
+    te[ 1 ] = cf + de * b;
+    te[ 5 ] = a * e;
+    te[ 9 ] = df - ce * b;
+
+    te[ 2 ] = - a * d;
+    te[ 6 ] = b;
+    te[ 10 ] = a * c;
+
+  } else if ( order == "ZYX" ) {
+
+    float ae = a * e, af = a * f, be = b * e, bf = b * f;
+
+    te[ 0 ] = c * e;
+    te[ 4 ] = be * d - af;
+    te[ 8 ] = ae * d + bf;
+
+    te[ 1 ] = c * f;
+    te[ 5 ] = bf * d + ae;
+    te[ 9 ] = af * d - be;
+
+    te[ 2 ] = - d;
+    te[ 6 ] = b * c;
+    te[ 10 ] = a * c;
+
+  } else if ( order == "YZX" ) {
+
+    float ac = a * c, ad = a * d, bc = b * c, bd = b * d;
+
+    te[ 0 ] = c * e;
+    te[ 4 ] = bd - ac * f;
+    te[ 8 ] = bc * f + ad;
+
+    te[ 1 ] = f;
+    te[ 5 ] = a * e;
+    te[ 9 ] = - b * e;
+
+    te[ 2 ] = - d * e;
+    te[ 6 ] = ad * f + bc;
+    te[ 10 ] = ac - bd * f;
+
+  } else if ( order == "XZY" ) {
+
+    float ac = a * c, ad = a * d, bc = b * c, bd = b * d;
+
+    te[ 0 ] = c * e;
+    te[ 4 ] = - f;
+    te[ 8 ] = d * e;
+
+    te[ 1 ] = ac * f + bd;
+    te[ 5 ] = a * e;
+    te[ 9 ] = ad * f - bc;
+
+    te[ 2 ] = bc * f - ad;
+    te[ 6 ] = b * e;
+    te[ 10 ] = bd * f + ac;
+
+  }
+
+  // bottom row
+  te[ 3 ] = 0;
+  te[ 7 ] = 0;
+  te[ 11 ] = 0;
+
+  // last column
+  te[ 12 ] = 0;
+  te[ 13 ] = 0;
+  te[ 14 ] = 0;
+  te[ 15 ] = 1;
+}
+void transposeMatrix(float *matrix) {
+  float *te = matrix;
+  float tmp;
+
+  tmp = te[ 1 ]; te[ 1 ] = te[ 4 ]; te[ 4 ] = tmp;
+  tmp = te[ 2 ]; te[ 2 ] = te[ 8 ]; te[ 8 ] = tmp;
+  tmp = te[ 6 ]; te[ 6 ] = te[ 9 ]; te[ 9 ] = tmp;
+
+  tmp = te[ 3 ]; te[ 3 ] = te[ 12 ]; te[ 12 ] = tmp;
+  tmp = te[ 7 ]; te[ 7 ] = te[ 13 ]; te[ 13 ] = tmp;
+  tmp = te[ 11 ]; te[ 11 ] = te[ 14 ]; te[ 14 ] = tmp;
+}
 
 bool D3D11TextureHelper::CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr &frame_data_) {
   if (!EnsureShaders() || !EnsureInputLayout() || !EnsureVertexBuffer() ||
@@ -592,23 +927,33 @@ bool D3D11TextureHelper::CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr 
   render_state_.d3d11_device_context_->IASetPrimitiveTopology(
       D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
+  float localVsData[32] = {};
   // float4x4 lookRotation;
   // float halfFOVInRadians;
   auto &pose = frame_data_->pose;
-  auto &posePosition = pose->position;
+  // auto &posePosition = pose->position;
   auto &poseOrientation = pose->orientation;
   float position[3] = {0, 0, 0};
+  // float position[3] = {posePosition->x(), posePosition->y(), posePosition->z()};
   float quaternion[4] = {poseOrientation->x(), poseOrientation->y(), poseOrientation->z(), poseOrientation->w()};
-  TRACE_EVENT1("gpu", "OpenVR Composite px", "x", posePosition->x());
-  TRACE_EVENT1("gpu", "OpenVR Composite py", "y", posePosition->y());
-  TRACE_EVENT1("gpu", "OpenVR Composite pz", "z", posePosition->z());
-  TRACE_EVENT1("gpu", "OpenVR Composite qx", "x", poseOrientation->x());
-  TRACE_EVENT1("gpu", "OpenVR Composite qy", "y", poseOrientation->y());
-  TRACE_EVENT1("gpu", "OpenVR Composite qz", "z", poseOrientation->z());
-  TRACE_EVENT1("gpu", "OpenVR Composite qw", "w", poseOrientation->w());
   float scale[3] = {1, 1, 1};
-  float lookRotation[16];
-  composeMatrix(lookRotation, position, quaternion, scale);
+  
+  composeMatrix(localVsData, position, quaternion, scale);
+  // getMatrixInverse(localVsData, localVsData);
+
+  float euler[3];
+  makeEulerFromRotationMatrix(euler, localVsData, "YXZ");
+  // euler[0] = 0;
+  euler[1] *= -1;
+  euler[2] = 0;
+
+  // float eulerMatrix[16];
+  makeMatrixFromEuler(localVsData, euler, "YXZ");
+  transposeMatrix(localVsData);
+
+  // multiplyMatrices(localVsData, eulerMatrix, localVsData);
+
+  // getMatrixInverse(localVsData, localVsData);
 
   /* float scale2[3] = {1, 1, -1};
   float scaleMatrix[16];
@@ -616,10 +961,20 @@ bool D3D11TextureHelper::CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr 
   
   multiplyMatrices(lookRotation, scaleMatrix, lookRotation); */
   
-  float localVsData[32] = {};
-  memcpy(localVsData, lookRotation, sizeof(lookRotation));
+  // getMatrixInverse(localVsData, frame_data_->universeFromHmd.data());
+
+  /* float scale2[3] = {1, 1, -1};
+  float scaleMatrix[16];
+  makeScaleMatrix(scaleMatrix, scale2);
+  multiplyMatrices(localVsData, localVsData, scaleMatrix); */
+
+  /* glm::mat4 universeFromHmd = glmMatFromVrMat(rRenderPoses[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking);
+  m_hmdFromUniverse = glm::inverse(universeFromHmd);
+  m_vargglesLookRotation = glm::scale(m_hmdFromUniverse, glm::vec3(1, 1, -1)); */
+
   const float halfFOVInRadians = (m_eyeFOV / 2.0f) * (M_PI / 180.0f);
   localVsData[16] = halfFOVInRadians;
+
   TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "0", localVsData[0]);
   TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "1", localVsData[1]);
   TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "2", localVsData[2]);
