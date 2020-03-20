@@ -180,7 +180,7 @@ bool D3D11TextureHelper::EnsureContentBlendState() {
   return true;
 }
 
-bool D3D11TextureHelper::CompositeToBackBuffer(mojom::XRFrameDataPtr &frame_data_) {
+bool D3D11TextureHelper::CompositeToBackBuffer(mojom::XRFrameDataPtr &frame_data_, mojom::VRDisplayInfoPtr &display_info) {
   if (!EnsureInitialized())
     return false;
 
@@ -235,10 +235,10 @@ bool D3D11TextureHelper::CompositeToBackBuffer(mojom::XRFrameDataPtr &frame_data
   bool success = true;
   if (render_state_.source_.source_texture_)
     success = success && EnsureContentBlendState() &&
-              CompositeLayer(render_state_.source_, frame_data_);
+              CompositeLayer(render_state_.source_, frame_data_, display_info);
   if (render_state_.overlay_.source_texture_)
     success = success && EnsureOverlayBlendState() &&
-              CompositeLayer(render_state_.overlay_, frame_data_);
+              CompositeLayer(render_state_.overlay_, frame_data_, display_info);
 
   if (render_state_.source_.keyed_mutex_)
     render_state_.source_.keyed_mutex_->ReleaseSync(0);
@@ -459,7 +459,7 @@ bool D3D11TextureHelper::UpdateVertexBuffer(LayerData& layer) {
   return true;
 }
 
-constexpr float m_eyeFOV = 115.0f;
+// constexpr float m_eyeFOV = 115.0f;
 constexpr float M_PI = 3.14159265358979323846;
 inline void composeMatrix(float *matrix, const float *position, const float *quaternion, const float *scale) {
   float *te = matrix;
@@ -886,7 +886,7 @@ void transposeMatrix(float *matrix) {
   tmp = te[ 11 ]; te[ 11 ] = te[ 14 ]; te[ 14 ] = tmp;
 }
 
-bool D3D11TextureHelper::CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr &frame_data_) {
+bool D3D11TextureHelper::CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr &frame_data_, mojom::VRDisplayInfoPtr &display_info) {
   if (!EnsureShaders() || !EnsureInputLayout() || !EnsureVertexBuffer() ||
       !EnsureSampler(layer) || !UpdateVertexBuffer(layer))
     return false;
@@ -931,6 +931,8 @@ bool D3D11TextureHelper::CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr 
   // float4x4 lookRotation;
   // float halfFOVInRadians;
   auto &pose = frame_data_->pose;
+  auto &displayInfo = display_info;
+  
   // auto &posePosition = pose->position;
   auto &poseOrientation = pose->orientation;
   float position[3] = {0, 0, 0};
@@ -958,6 +960,11 @@ bool D3D11TextureHelper::CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr 
   
   transposeMatrix(localVsData);
 
+  TRACE_EVENT1("gpu", "OpenVR fov", "up", displayInfo->left_eye->field_of_view->up_degrees);
+  TRACE_EVENT1("gpu", "OpenVR fov", "down", displayInfo->left_eye->field_of_view->down_degrees);
+  TRACE_EVENT1("gpu", "OpenVR fov", "left", displayInfo->left_eye->field_of_view->left_degrees);
+  TRACE_EVENT1("gpu", "OpenVR fov", "right", displayInfo->left_eye->field_of_view->right_degrees);
+
   // multiplyMatrices(localVsData, eulerMatrix, localVsData);
 
   // getMatrixInverse(localVsData, localVsData);
@@ -979,14 +986,12 @@ bool D3D11TextureHelper::CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr 
   m_hmdFromUniverse = glm::inverse(universeFromHmd);
   m_vargglesLookRotation = glm::scale(m_hmdFromUniverse, glm::vec3(1, 1, -1)); */
 
+  float m_eyeFOV = std::max<float>(
+    displayInfo->left_eye->field_of_view->up_degrees + displayInfo->left_eye->field_of_view->down_degrees,
+    displayInfo->left_eye->field_of_view->left_degrees + displayInfo->left_eye->field_of_view->right_degrees
+  );
   const float halfFOVInRadians = (m_eyeFOV / 2.0f) * (M_PI / 180.0f);
   localVsData[16] = halfFOVInRadians;
-
-  TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "0", localVsData[0]);
-  TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "1", localVsData[1]);
-  TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "2", localVsData[2]);
-  TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "3", localVsData[3]);
-  TRACE_EVENT1("gpu", "OpenVR Composite cbuffer", "4", localVsData[4]);
   
   render_state_.d3d11_device_context_->UpdateSubresource(render_state_.cbuffer_.Get(), 0, 0, localVsData, 0, 0);
   render_state_.d3d11_device_context_->PSSetConstantBuffers(0, 1, render_state_.cbuffer_.GetAddressOf());

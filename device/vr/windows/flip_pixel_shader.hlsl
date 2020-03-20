@@ -62,7 +62,7 @@ float4 flip_pixel(PixelShaderInput input) : SV_TARGET
   // both eyes go from -pi -> pi left to right and -pi/2 -> pi/2 bottom to top
 
   // Get scalar for modifying projection from cubemap (90 fov) to eye target fov
-  float fovScalar = 1; // tan(halfFOVInRadians) / tan(QUARTER_PI);
+  float fovScalar = tan(halfFOVInRadians) / tan(QUARTER_PI);
 
   // create vector looking out at equirect CubeMap
   float3 cubeMapLookupDirection = float3(sin(xy.x), 1.0, cos(xy.x)) * float3(cos(xy.y), sin(xy.y), cos(xy.y));
@@ -84,7 +84,13 @@ float4 flip_pixel(PixelShaderInput input) : SV_TARGET
 
   float2 eyeUV = float2(projectLookOntoUAxis, projectLookOntoVAxis);
 
-  return float4(eyeUV.x, eyeUV.y, 0, 1);
+  float b = 0;
+  if (eyeUV.x > 0.5 || eyeUV.y > 0.5) {
+    b = 0.5;
+  } else if (eyeUV.x < 0 || eyeUV.x > 1 || eyeUV.y < 0 || eyeUV.y > 1) {
+    b = 1;
+  }
+  return float4(eyeUV.x, eyeUV.y, b, 1);
 
   /* // copy color from the right eye texture
   if (isTop) {

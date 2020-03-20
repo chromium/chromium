@@ -31,7 +31,7 @@ class D3D11TextureHelper {
   void CleanupNoSubmit();
   void SetSourceAndOverlayVisible(bool source_visible, bool overlay_visible);
 
-  bool CompositeToBackBuffer(mojom::XRFrameDataPtr &frame_data_);
+  bool CompositeToBackBuffer(mojom::XRFrameDataPtr &frame_data_, mojom::VRDisplayInfoPtr &display_info);
   bool SetSourceTexture(base::win::ScopedHandle texture_handle,
                         gfx::RectF left,
                         gfx::RectF right);
@@ -80,7 +80,7 @@ class D3D11TextureHelper {
   bool UpdateVertexBuffer(LayerData& layer);
   bool EnsureSampler(LayerData& layer);
   Microsoft::WRL::ComPtr<IDXGIAdapter> GetAdapter();
-  bool CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr &frame_data_);
+  bool CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr &frame_data_, mojom::VRDisplayInfoPtr &display_info);
   bool BindTarget();
   void CleanupLayerData(LayerData& layer);
 

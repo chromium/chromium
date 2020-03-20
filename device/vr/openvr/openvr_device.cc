@@ -236,6 +236,8 @@ void OpenVRDevice::OnRequestSessionResult(
   OnStartPresenting();
 
   session->display_info = display_info_.Clone();
+  
+  render_loop_->m_display_info = display_info_.Clone();
 
   std::move(callback).Run(
       std::move(session),

@@ -185,6 +185,9 @@ class XRCompositorCommon : public base::Thread,
       mojom::XRVisibilityState::VISIBLE;
 
   DISALLOW_COPY_AND_ASSIGN(XRCompositorCommon);
+
+public:
+  mojom::VRDisplayInfoPtr m_display_info;
 };
 
 }  // namespace device
