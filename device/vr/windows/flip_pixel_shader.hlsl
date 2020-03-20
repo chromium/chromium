@@ -84,15 +84,15 @@ float4 flip_pixel(PixelShaderInput input) : SV_TARGET
 
   float2 eyeUV = float2(projectLookOntoUAxis, projectLookOntoVAxis);
 
-  float b = 0;
+  /* float b = 0;
   if (eyeUV.x > 0.5 || eyeUV.y > 0.5) {
     b = 0.5;
   } else if (eyeUV.x < 0 || eyeUV.x > 1 || eyeUV.y < 0 || eyeUV.y > 1) {
     b = 1;
   }
-  return float4(eyeUV.x, eyeUV.y, b, 1);
+  return float4(eyeUV.x, eyeUV.y, b, 1); */
 
-  /* // copy color from the right eye texture
+  // copy color from the right eye texture
   if (isTop) {
           // outColor = texture(eyeLeft, eyeUV);
           // return my_texture.Sample(my_sampler, eyeUV).rgba;
@@ -103,7 +103,7 @@ float4 flip_pixel(PixelShaderInput input) : SV_TARGET
           // return my_texture.Sample(my_sampler, eyeUV).rgba;
           return my_texture.Sample(my_sampler, float2(eyeUV.x * 0.5 + 0.5, eyeUV.y)).rgba;
           // return float4(eyeUV.x, eyeUV.y, 0, 1);
-  } */
+  }
 
   /* float2 texture_coords = float2(input.tex.x, input.tex.y);
   return my_texture.Sample(my_sampler, texture_coords).rgba; */
