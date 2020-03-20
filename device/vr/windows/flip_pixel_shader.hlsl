@@ -24,7 +24,8 @@ struct PixelShaderInput
 
 cbuffer PS_CONSTANT_BUFFER : register(b0) {
   float4x4 lookRotation;
-  float halfFOVInRadians;
+  float halfFOVInRadiansX;
+  float halfFOVInRadiansY;
 }
 
 float4 flip_pixel(PixelShaderInput input) : SV_TARGET
@@ -62,7 +63,8 @@ float4 flip_pixel(PixelShaderInput input) : SV_TARGET
   // both eyes go from -pi -> pi left to right and -pi/2 -> pi/2 bottom to top
 
   // Get scalar for modifying projection from cubemap (90 fov) to eye target fov
-  float fovScalar = tan(halfFOVInRadians) / tan(QUARTER_PI);
+  float fovScalarX = tan(halfFOVInRadiansX) / tan(QUARTER_PI);
+  float fovScalarY = tan(halfFOVInRadiansY) / tan(QUARTER_PI);
 
   // create vector looking out at equirect CubeMap
   float3 cubeMapLookupDirection = float3(sin(xy.x), 1.0, cos(xy.x)) * float3(cos(xy.y), sin(xy.y), cos(xy.y));
@@ -79,10 +81,13 @@ float4 flip_pixel(PixelShaderInput input) : SV_TARGET
   // always project the +Z axis of a cube map
   // X/|Z|, -Y/|Z| places uv coords in -1, 1. + 1 / 2 shifts to 0 -> 1
   // fovScalar scales U/V from 90 degrees into eye fov that was rendered with.
-  float projectLookOntoUAxis = ((cubeMapLookupDirection.x / abs(cubeMapLookupDirection.z) / fovScalar) + 1) / 2;
-  float projectLookOntoVAxis = 1 - (((cubeMapLookupDirection.y / abs(cubeMapLookupDirection.z) / fovScalar) + 1) / 2);
+  float projectLookOntoUAxis = ((cubeMapLookupDirection.x / abs(cubeMapLookupDirection.z) / fovScalarX) + 1) / 2;
+  float projectLookOntoVAxis = 1 - (((cubeMapLookupDirection.y / abs(cubeMapLookupDirection.z) / fovScalarY) + 1) / 2);
 
   float2 eyeUV = float2(projectLookOntoUAxis, projectLookOntoVAxis);
+  
+  /* eyeUV.x *= 1.2;
+  eyeUV.y *= 1.2; */
 
   /* float b = 0;
   if (eyeUV.x > 0.5 || eyeUV.y > 0.5) {
@@ -96,12 +101,12 @@ float4 flip_pixel(PixelShaderInput input) : SV_TARGET
   if (isTop) {
           // outColor = texture(eyeLeft, eyeUV);
           // return my_texture.Sample(my_sampler, eyeUV).rgba;
-          return my_texture.Sample(my_sampler, float2(eyeUV.x * 0.5, eyeUV.y)).rgba;
+          return my_texture.Sample(my_sampler, float2(eyeUV.x * 0.5 + 0.5, eyeUV.y)).rgba;
           // return float4(eyeUV.x, eyeUV.y, 0, 1);
   } else {
           // outColor = texture(eyeRight, eyeUV);
           // return my_texture.Sample(my_sampler, eyeUV).rgba;
-          return my_texture.Sample(my_sampler, float2(eyeUV.x * 0.5 + 0.5, eyeUV.y)).rgba;
+          return my_texture.Sample(my_sampler, float2(eyeUV.x * 0.5, eyeUV.y)).rgba;
           // return float4(eyeUV.x, eyeUV.y, 0, 1);
   }
 

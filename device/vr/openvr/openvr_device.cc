@@ -50,6 +50,10 @@ mojom::VRFieldOfViewPtr OpenVRFovToWebVRFov(vr::IVRSystem* vr_system,
   out->down_degrees = -gfx::RadToDeg(atanf(up_tan));
   out->left_degrees = -gfx::RadToDeg(atanf(left_tan));
   out->right_degrees = gfx::RadToDeg(atanf(right_tan));
+  out->down_degrees = 55;
+  out->up_degrees = 55;
+  out->left_degrees = 55;
+  out->right_degrees = 55;
   return out;
 }
 

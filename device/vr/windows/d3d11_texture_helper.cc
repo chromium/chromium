@@ -986,12 +986,12 @@ bool D3D11TextureHelper::CompositeLayer(LayerData& layer, mojom::XRFrameDataPtr 
   m_hmdFromUniverse = glm::inverse(universeFromHmd);
   m_vargglesLookRotation = glm::scale(m_hmdFromUniverse, glm::vec3(1, 1, -1)); */
 
-  float m_eyeFOV = std::max<float>(
-    displayInfo->left_eye->field_of_view->up_degrees + displayInfo->left_eye->field_of_view->down_degrees,
-    displayInfo->left_eye->field_of_view->left_degrees + displayInfo->left_eye->field_of_view->right_degrees
-  );
-  const float halfFOVInRadians = (m_eyeFOV / 2.0f) * (M_PI / 180.0f);
-  localVsData[16] = halfFOVInRadians;
+  float m_eyeFOVX = displayInfo->left_eye->field_of_view->left_degrees + displayInfo->left_eye->field_of_view->right_degrees;
+  float m_eyeFOVY = displayInfo->left_eye->field_of_view->up_degrees + displayInfo->left_eye->field_of_view->down_degrees;
+  const float halfFOVInRadiansX = (m_eyeFOVX / 2.0f) * (M_PI / 180.0f);
+  const float halfFOVInRadiansY = (m_eyeFOVY / 2.0f) * (M_PI / 180.0f);
+  localVsData[16+0] = halfFOVInRadiansX;
+  localVsData[16+1] = halfFOVInRadiansY;
   
   render_state_.d3d11_device_context_->UpdateSubresource(render_state_.cbuffer_.Get(), 0, 0, localVsData, 0, 0);
   render_state_.d3d11_device_context_->PSSetConstantBuffers(0, 1, render_state_.cbuffer_.GetAddressOf());
