@@ -96,7 +96,7 @@ XRWebGLLayer* XRWebGLLayer::Create(
   bool want_antialiasing = initializer->antialias();
   bool want_depth_buffer = initializer->depth();
   bool want_stencil_buffer = initializer->stencil();
-  bool want_alpha_channel = initializer->alpha();
+  bool want_alpha_channel = true; // initializer->alpha();
 
   // Allocate a drawing buffer to back the framebuffer if needed.
   if (initializer->hasFramebufferScaleFactor()) {
