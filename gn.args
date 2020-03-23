@@ -1,0 +1,8 @@
+is_debug = false
+enable_vr = true
+enable_openvr = true
+enable_nacl = false
+is_component_build = false
+# symbol_level = 0
+# blink_symbol_level = 0
+is_official_build = true
