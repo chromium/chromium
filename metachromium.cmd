@@ -1,0 +1,1 @@
+chrome.exe --no-sandbox --test-type
