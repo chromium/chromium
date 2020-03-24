@@ -9,6 +9,7 @@
 chrome.exe: %(ChromeDir)s\
 chrome_proxy.exe: %(ChromeDir)s\
 metachromium.cmd: %(ChromeDir)s\
+example.html: %(ChromeDir)s\
 #
 # Chrome version dir assembly manifest.
 # The name of this file must match the name of the version dir, so we cannot
