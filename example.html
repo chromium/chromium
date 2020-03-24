@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+<head>
+<style>
+body {
+  margin: 0;
+}
+#canvas {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.buttons {
+  display: flex;
+  position: absolute;
+  right: 30px;
+  bottom: 30px;
+}
+</style>
+</head>
+<body>
+<canvas id=canvas></canvas>
+<div class=buttons>
+  <input type=button id=enter-vr-button value="Enter XR">
+</div>
+<script type=module>
+import * as THREE from 'https://raw.githack.com/mrdoob/three.js/dev/build/three.module.js';
+
+const canvas = document.getElementById('canvas');
+
+const renderer = new THREE.WebGLRenderer({
+  canvas,
+  antialias: true,
+});
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.sortObjects = false;
+renderer.physicallyCorrectLights = true;
+renderer.xr.enabled = true;
+
+window.renderer = renderer;
+
+const scene = new THREE.Scene();
+// scene.background = new THREE.Color(0xEEEEEE);
+const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.set(0, 1, 2);
+// camera.rotation.order = 'YXZ';
+
+const ambientLight = new THREE.AmbientLight(0xFFFFFF);
+scene.add(ambientLight);
+
+const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 3);
+/* directionalLight.position.set(0.5, 1, 0.5).multiplyScalar(100);
+directionalLight.castShadow = true;
+directionalLight.shadow.mapSize.width = 1024;
+directionalLight.shadow.mapSize.height = 1024;
+directionalLight.shadow.camera.near = 0.5;
+directionalLight.shadow.camera.far = 500; */
+scene.add(directionalLight);
+
+const directionalLight2 = new THREE.DirectionalLight(0xFFFFFF, 3);
+// directionalLight2.position.set(-0.5, -0.1, 0.5).multiplyScalar(100);
+scene.add(directionalLight2);
+
+const cubeMesh = (() => {
+  const geometry = new THREE.BoxBufferGeometry(0.1, 0.1, 0.1);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x42a5f5,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.frustumCulled = false;
+  return mesh;
+})();
+cubeMesh.position.set(0, 1, 0);
+cubeMesh.rotation.order = 'YXZ';
+scene.add(cubeMesh);
+
+function animate() {
+  const f = (Date.now()%2000)/2000 * Math.PI*2;
+  cubeMesh.rotation.x = f;
+  cubeMesh.rotation.y = f;
+  cubeMesh.rotation.z = f;
+
+  renderer.render(scene, camera);
+}
+renderer.setAnimationLoop(animate);
+
+let currentSession = null;
+function onSessionStarted(session) {
+  session.addEventListener('end', onSessionEnded);
+
+  renderer.xr.setSession(session);
+
+  currentSession = session;
+
+  /* const controllerModelFactory = new XRControllerModelFactory();
+  for (let i = 0; i < 2; i++) {
+    const controller = renderer.xr.getController(i);
+    controller.addEventListener('connected', e => {
+      controller.userData.data = e.data;
+    });
+    controller.addEventListener('selectstart', e => {
+      if (controller.userData.data && controller.userData.data.handedness === 'right') {
+        _beginTool(true, false, false);
+      }
+      triggerDowns[i] = true;
+    });
+    controller.addEventListener('selectend', e => {
+      if (controller.userData.data && controller.userData.data.handedness === 'right') {
+        _endTool(true, false, false);
+      }
+      triggerDowns[i] = false;
+    });
+
+    const controllerGrip = renderer.xr.getControllerGrip(i);
+    controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
+    controllerGrip.addEventListener('squeezestart', e => {
+      if (controller.userData.data && controller.userData.data.handedness === 'right') {
+        _beginTool(false, true, false);
+      }
+      const oldGripDownsAll = gripDowns.every(gripDown => gripDown);
+      gripDowns[i] = true;
+      const newGripDownsAll = gripDowns.every(gripDown => gripDown);
+      if (newGripDownsAll && !oldGripDownsAll) {
+        _commitMiningMeshes();
+        
+        scaleState = {
+          startPosition: renderer.xr.getControllerGrip(0).position.clone()
+            .add(renderer.xr.getControllerGrip(1).position)
+            .divideScalar(2),
+          startDirection: renderer.xr.getControllerGrip(0).position.clone()
+            .sub(renderer.xr.getControllerGrip(1).position)
+            .normalize(),
+          startWorldWidth: renderer.xr.getControllerGrip(0).position
+            .distanceTo(renderer.xr.getControllerGrip(1).position),
+          containerStartPosition: container.position.clone(),
+          containerStartQuaternion: container.quaternion.clone(),
+          containerStartScale: container.scale.clone(),
+          containerStartMatrix: container.matrix.clone(),
+        };
+      }
+    });
+    controllerGrip.addEventListener('squeezeend', e => {
+      if (controller.userData.data && controller.userData.data.handedness === 'right') {
+        _endTool(false, true, false);
+      }
+      gripDowns[i] = false;
+      const newGripDownsAll = gripDowns.every(gripDown => gripDown);
+      if (!newGripDownsAll) {
+        scaleState = null;
+      }
+    });
+    scene.add(controllerGrip);
+  } */
+}
+function onSessionEnded() {
+  currentSession.removeEventListener('end', onSessionEnded);
+
+  currentSession = null;
+}
+
+document.getElementById('enter-vr-button').addEventListener('click', e => {
+  e.preventDefault();
+  e.stopPropagation();
+  
+  if (currentSession === null) {
+    navigator.xr.requestSession('immersive-vr', {
+      optionalFeatures: [
+        'local-floor',
+        'bounded-floor',
+      ],
+      // alpha: true,
+    }).then(onSessionStarted);
+  } else {
+    currentSession.end();
+  }
+});
+
+</script>
+</body>
+</html>
