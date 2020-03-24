@@ -1,1 +1,1 @@
-chrome.exe --no-sandbox --test-type
+chrome.exe --no-sandbox --test-type example.html
