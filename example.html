@@ -43,25 +43,16 @@ renderer.xr.enabled = true;
 window.renderer = renderer;
 
 const scene = new THREE.Scene();
-// scene.background = new THREE.Color(0xEEEEEE);
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.set(0, 1, 2);
-// camera.rotation.order = 'YXZ';
 
 const ambientLight = new THREE.AmbientLight(0xFFFFFF);
 scene.add(ambientLight);
 
 const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 3);
-/* directionalLight.position.set(0.5, 1, 0.5).multiplyScalar(100);
-directionalLight.castShadow = true;
-directionalLight.shadow.mapSize.width = 1024;
-directionalLight.shadow.mapSize.height = 1024;
-directionalLight.shadow.camera.near = 0.5;
-directionalLight.shadow.camera.far = 500; */
 scene.add(directionalLight);
 
 const directionalLight2 = new THREE.DirectionalLight(0xFFFFFF, 3);
-// directionalLight2.position.set(-0.5, -0.1, 0.5).multiplyScalar(100);
 scene.add(directionalLight2);
 
 const cubeMesh = (() => {
@@ -94,66 +85,6 @@ function onSessionStarted(session) {
   renderer.xr.setSession(session);
 
   currentSession = session;
-
-  /* const controllerModelFactory = new XRControllerModelFactory();
-  for (let i = 0; i < 2; i++) {
-    const controller = renderer.xr.getController(i);
-    controller.addEventListener('connected', e => {
-      controller.userData.data = e.data;
-    });
-    controller.addEventListener('selectstart', e => {
-      if (controller.userData.data && controller.userData.data.handedness === 'right') {
-        _beginTool(true, false, false);
-      }
-      triggerDowns[i] = true;
-    });
-    controller.addEventListener('selectend', e => {
-      if (controller.userData.data && controller.userData.data.handedness === 'right') {
-        _endTool(true, false, false);
-      }
-      triggerDowns[i] = false;
-    });
-
-    const controllerGrip = renderer.xr.getControllerGrip(i);
-    controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
-    controllerGrip.addEventListener('squeezestart', e => {
-      if (controller.userData.data && controller.userData.data.handedness === 'right') {
-        _beginTool(false, true, false);
-      }
-      const oldGripDownsAll = gripDowns.every(gripDown => gripDown);
-      gripDowns[i] = true;
-      const newGripDownsAll = gripDowns.every(gripDown => gripDown);
-      if (newGripDownsAll && !oldGripDownsAll) {
-        _commitMiningMeshes();
-        
-        scaleState = {
-          startPosition: renderer.xr.getControllerGrip(0).position.clone()
-            .add(renderer.xr.getControllerGrip(1).position)
-            .divideScalar(2),
-          startDirection: renderer.xr.getControllerGrip(0).position.clone()
-            .sub(renderer.xr.getControllerGrip(1).position)
-            .normalize(),
-          startWorldWidth: renderer.xr.getControllerGrip(0).position
-            .distanceTo(renderer.xr.getControllerGrip(1).position),
-          containerStartPosition: container.position.clone(),
-          containerStartQuaternion: container.quaternion.clone(),
-          containerStartScale: container.scale.clone(),
-          containerStartMatrix: container.matrix.clone(),
-        };
-      }
-    });
-    controllerGrip.addEventListener('squeezeend', e => {
-      if (controller.userData.data && controller.userData.data.handedness === 'right') {
-        _endTool(false, true, false);
-      }
-      gripDowns[i] = false;
-      const newGripDownsAll = gripDowns.every(gripDown => gripDown);
-      if (!newGripDownsAll) {
-        scaleState = null;
-      }
-    });
-    scene.add(controllerGrip);
-  } */
 }
 function onSessionEnded() {
   currentSession.removeEventListener('end', onSessionEnded);
@@ -171,7 +102,6 @@ document.getElementById('enter-vr-button').addEventListener('click', e => {
         'local-floor',
         'bounded-floor',
       ],
-      // alpha: true,
     }).then(onSessionStarted);
   } else {
     currentSession.end();
