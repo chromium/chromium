@@ -1,1 +1,1 @@
-chrome.exe --no-sandbox --test-type --disable-xr-device-consent-prompt-for-testing example.html
+chrome.exe --no-sandbox --test-type --disable-xr-device-consent-prompt-for-testing --use-fake-ui-for-media-stream example.html
