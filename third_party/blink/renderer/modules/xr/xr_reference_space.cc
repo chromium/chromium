@@ -19,15 +19,15 @@ const double kDefaultEmulationHeightMeters = 1.6;
 XRReferenceSpace::Type XRReferenceSpace::StringToReferenceSpaceType(
     const String& reference_space_type) {
   if (reference_space_type == "viewer") {
-    return XRReferenceSpace::Type::kTypeViewer;
+    return XRReferenceSpace::Type::kTypeLocal;
   } else if (reference_space_type == "local") {
     return XRReferenceSpace::Type::kTypeLocal;
   } else if (reference_space_type == "local-floor") {
-    return XRReferenceSpace::Type::kTypeLocalFloor;
+    return XRReferenceSpace::Type::kTypeLocal;
   } else if (reference_space_type == "bounded-floor") {
-    return XRReferenceSpace::Type::kTypeBoundedFloor;
+    return XRReferenceSpace::Type::kTypeLocal;
   } else if (reference_space_type == "unbounded") {
-    return XRReferenceSpace::Type::kTypeUnbounded;
+    return XRReferenceSpace::Type::kTypeLocal;
   }
   NOTREACHED();
   return Type::kTypeViewer;
