@@ -64,8 +64,6 @@ class OpenVRRenderLoop : public XRCompositorCommon {
   InputActiveState input_active_states_[vr::k_unMaxTrackedDeviceCount];
   std::unique_ptr<OpenVRWrapper> openvr_;
   uint64_t m_lastFrameIndex;
-  
-  const vr::ETrackingUniverseOrigin c_eTrackingOrigin = vr::TrackingUniverseStanding;
 
   DISALLOW_COPY_AND_ASSIGN(OpenVRRenderLoop);
 };

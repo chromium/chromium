@@ -321,10 +321,10 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
           base::TimeDelta::FromSecondsD(timing.m_flSystemTimeInSeconds);
     }
     
-    TRACE_EVENT1("gpu", "OpenVR WaitGetPoses 2", "size", frame_data->universeFromHmd.size());
+    // TRACE_EVENT1("gpu", "OpenVR WaitGetPoses 2", "size", frame_data->universeFromHmd.size());
     
-    frame_data->universeFromHmd.resize(16);
-    setPoseMatrix(frame_data->universeFromHmd.data(), rendering_poses[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking);
+    // frame_data->universeFromHmd.resize(16);
+    // setPoseMatrix(frame_data->universeFromHmd.data(), rendering_poses[vr::k_unTrackedDeviceIndex_Hmd].mDeviceToAbsoluteTracking);
     
     TRACE_EVENT0("gpu", "OpenVR WaitGetPoses 3");
   }

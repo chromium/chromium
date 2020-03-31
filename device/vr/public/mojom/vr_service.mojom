@@ -535,7 +535,7 @@ struct XRFrameData {
   // The pose may be null if the device lost tracking. The XRFrameData can still
   // have other data, such as pass through camera image.
   VRPose? pose;
-  array<float, 16> universeFromHmd;
+  // array<float, 16> universeFromHmd;
   // TODO(https://crbug.com/838515): Is this delta since the last
   // frame? OR an unspecified origin? Something else?
   mojo_base.mojom.TimeDelta time_delta;
