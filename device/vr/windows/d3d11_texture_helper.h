@@ -41,6 +41,7 @@ class D3D11TextureHelper {
 
   void AllocateBackBuffer();
   const Microsoft::WRL::ComPtr<ID3D11Texture2D>& GetBackbuffer();
+  HANDLE GetSharedHandle();
   void DiscardView();
 
   bool UpdateBackbufferSizes();

@@ -86,10 +86,10 @@ bool OpenVRRenderLoop::SubmitCompositedFrame() {
   DCHECK(vr_compositor);
   if (!vr_compositor)
     return false;
-
+  
   vr::Texture_t texture;
-  texture.handle = texture_helper_.GetBackbuffer().Get();
-  texture.eType = vr::TextureType_DirectX;
+  texture.handle = texture_helper_.GetSharedHandle();
+  texture.eType = vr::TextureType_DXGISharedHandle;
   texture.eColorSpace = vr::ColorSpace_Auto;
 
   /* gfx::RectF left_bounds = texture_helper_.BackBufferLeft();

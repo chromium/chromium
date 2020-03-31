@@ -1215,6 +1215,8 @@ void D3D11TextureHelper::AllocateBackBuffer() {
   desc_desired.MiscFlags = 0;
   desc_desired.Width = target_size_.width();
   desc_desired.Height = target_size_.height();
+  
+  desc_desired.MiscFlags |= D3D11_RESOURCE_MISC_SHARED;
 
   if (render_state_.target_texture_) {
     D3D11_TEXTURE2D_DESC desc_target;
@@ -1248,6 +1250,19 @@ void D3D11TextureHelper::AllocateBackBuffer() {
 const Microsoft::WRL::ComPtr<ID3D11Texture2D>&
 D3D11TextureHelper::GetBackbuffer() {
   return render_state_.target_texture_;
+}
+
+HANDLE D3D11TextureHelper::GetSharedHandle() {
+  IDXGIResource *dxgiResource;
+  HRESULT hr = render_state_.target_texture_->QueryInterface(__uuidof(IDXGIResource), (void **)&dxgiResource);
+  if (SUCCEEDED(hr)) {
+    HANDLE handle = nullptr;
+    dxgiResource->GetSharedHandle(&handle);
+    dxgiResource->Release();
+    return handle;
+  } else {
+    return nullptr;
+  }
 }
 
 void D3D11TextureHelper::DiscardView() {
