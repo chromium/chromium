@@ -86,7 +86,7 @@ bool OpenVRRenderLoop::SubmitCompositedFrame() {
   DCHECK(vr_compositor);
   if (!vr_compositor)
     return false;
-  
+
   vr::Texture_t texture;
   texture.handle = texture_helper_.GetSharedHandle();
   texture.eType = vr::TextureType_DXGISharedHandle;
@@ -207,6 +207,7 @@ void OpenVRRenderLoop::OnSessionStart() {
   }
 
   openvr_->GetCompositor()->SuspendRendering(false);
+  openvr_->GetCompositor()->SetTrackingSpace(vr::TrackingUniverseStanding);
 
   // Measure the VrViewerType we are presenting with.
   std::string model =
@@ -269,28 +270,11 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
             m_framesSkipped++; */
 
     m_lastFrameIndex = newFrameIndex;
-    float secondsSinceLastVsync = 0;
-    uint64_t newLastFrame = 0;
-    openvr_->GetSystem()->GetTimeSinceLastVsync(&secondsSinceLastVsync, &newLastFrame);
-
-    vr::ETrackedPropertyError error;
-    float displayFrequency = openvr_->GetSystem()->GetFloatTrackedDeviceProperty(
-            vr::k_unTrackedDeviceIndex_Hmd,
-            vr::ETrackedDeviceProperty::Prop_DisplayFrequency_Float,
-            &error);
-
-    float frameDuration = 1.0f / displayFrequency;
-    float vsyncToPhotons = openvr_->GetSystem()->GetFloatTrackedDeviceProperty(
-            vr::k_unTrackedDeviceIndex_Hmd,
-            vr::ETrackedDeviceProperty::Prop_SecondsFromVsyncToPhotons_Float,
-            &error);
-
-    float predictedSecondsFromNow = frameDuration - secondsSinceLastVsync + vsyncToPhotons;
-    openvr_->GetSystem()->GetDeviceToAbsoluteTrackingPose(
-            c_eTrackingOrigin,
-            predictedSecondsFromNow,
+    openvr_->GetCompositor()->GetLastPoses(
             rendering_poses,
-            vr::k_unMaxTrackedDeviceCount);
+            vr::k_unMaxTrackedDeviceCount,
+            nullptr,
+            0);
 
 
 
