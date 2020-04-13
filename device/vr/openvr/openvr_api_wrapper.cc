@@ -83,7 +83,7 @@ bool OpenVRWrapper::Initialize(bool for_rendering) {
     
     
     
-    const char* k_pchVargglesOverlayKey = "aardvark.varggles";
+    const char* k_pchVargglesOverlayKey = "metachromium.varggles";
     const char* k_pchVargglesOverlayName = "varggles";
     const float k_fOverlayWidthInMeters = 3.f;
     // const vr::ETrackingUniverseOrigin c_eTrackingOrigin = vr::TrackingUniverseStanding;
