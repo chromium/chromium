@@ -220,6 +220,15 @@ class MEDIA_EXPORT PipelineController {
   std::vector<MediaTrack::Id> pending_audio_track_change_ids_;
   base::Optional<MediaTrack::Id> pending_video_track_change_id_;
 
+  // Defer playback resume basing on this flag.
+  // In some corner case when pausing a video on blur/visibilitychange
+  // event and then resuming a video on a tab focus/visibilitychange
+  // event there may be a race condition between
+  // changing video tracks (state: 5) and resuming playback (state: 8).
+  // Because of that the new "RESUMING" state is not assigned and a video
+  // is not starting when a tab with the video is again in focus.
+  bool defer_playback_resume_ = false;
+
   // Set to true during Start(). Indicates that |seeked_cb_| must be fired once
   // we've completed startup.
   bool pending_startup_ = false;

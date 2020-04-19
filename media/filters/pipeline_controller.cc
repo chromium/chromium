@@ -96,6 +96,12 @@ void PipelineController::Suspend() {
 void PipelineController::Resume() {
   DCHECK(thread_checker_.CalledOnValidThread());
   pending_suspend_ = false;
+
+  if(state_ == State::SWITCHING_TRACKS) {
+    defer_playback_resume_ = true;
+    return;
+  }
+
   if (state_ == State::SUSPENDING || state_ == State::SUSPENDED) {
     pending_resume_ = true;
     Dispatch();
@@ -437,7 +443,13 @@ void PipelineController::FireOnTrackChangeCompleteForTesting(State set_to) {
 void PipelineController::OnTrackChangeComplete(State previous_state) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if (state_ == State::SWITCHING_TRACKS)
+  if(defer_playback_resume_) {
+    state_ = State::SUSPENDED;
+    defer_playback_resume_ = false;
+    Resume();
+    return;
+  }
+  else if (state_ == State::SWITCHING_TRACKS)
     state_ = previous_state;
 
   // Other track changed or seek/suspend/resume, etc may be waiting.

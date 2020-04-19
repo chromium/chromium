@@ -535,4 +535,17 @@ TEST_F(PipelineControllerTest, SuspendDuringAudioTrackChange) {
   EXPECT_FALSE(was_resumed_);
 }
 
+TEST_F(PipelineControllerTest, ResumePlaybackDuringSwitchingTracksState) {
+  Complete(StartPipeline());
+  Complete(SuspendPipeline());
+  EXPECT_CALL(*pipeline_, OnSelectedVideoTrackChanged(_, _)).Times(1);
+  EXPECT_CALL(*pipeline_, GetMediaTime()).Times(1);
+  EXPECT_CALL(*pipeline_, OnResume(_, _)).Times(1);
+
+  pipeline_controller_.OnSelectedVideoTrackChanged({});
+  pipeline_controller_.Resume();
+  pipeline_controller_.FireOnTrackChangeCompleteForTesting(
+      PipelineController::State::PLAYING);
+}
+
 }  // namespace media
