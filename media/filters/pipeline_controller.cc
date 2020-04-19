@@ -97,7 +97,7 @@ void PipelineController::Resume() {
   DCHECK(thread_checker_.CalledOnValidThread());
   pending_suspend_ = false;
 
-  if(state_ == State::SWITCHING_TRACKS) {
+  if (state_ == State::SWITCHING_TRACKS) {
     defer_playback_resume_ = true;
     return;
   }
@@ -443,7 +443,7 @@ void PipelineController::FireOnTrackChangeCompleteForTesting(State set_to) {
 void PipelineController::OnTrackChangeComplete(State previous_state) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  if(defer_playback_resume_) {
+  if (defer_playback_resume_) {
     state_ = State::SUSPENDED;
     defer_playback_resume_ = false;
     Resume();
