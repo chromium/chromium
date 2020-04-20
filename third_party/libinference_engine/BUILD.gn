@@ -3234,6 +3234,9 @@ shared_library("libGNAPlugin") {
     "dldt/inference-engine/src/gna_plugin/runtime/floatmath.h",
     "dldt/inference-engine/src/gna_plugin/runtime/pwl.cpp",
     "dldt/inference-engine/src/gna_plugin/runtime/pwl.h",
+
+    # Compile the ie_rtti.cpp in order to link TBlob<T, U>::~TBlob().
+    "dldt/inference-engine/src/inference_engine/ie_rtti.cpp",
   ]
   include_dirs = [
     "dldt/inference-engine/include",
@@ -3241,6 +3244,9 @@ shared_library("libGNAPlugin") {
     "dldt/inference-engine/src/inference_engine/",
     "dldt/inference-engine/src/gna_plugin/",
     "gna/linux/include",
+    "dldt/inference-engine/src/low_precision_transformations/include",
+    "dldt/inference-engine/src/plugin_api",
+    "dldt/inference-engine/src/legacy_api/include",
   ]
   configs -= [ "//build/config/compiler:no_exceptions" ]
   configs += [ "//build/config/compiler:exceptions" ]
@@ -3249,6 +3255,8 @@ shared_library("libGNAPlugin") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
   cflags_cc = [
+    "-Wno-dllexport-explicit-instantiation-decl",
+    "-Wno-mismatched-tags",
     "-Wno-pessimizing-move",
     "-Wno-delete-non-virtual-dtor",
     "-Wno-unused-function",
@@ -3270,10 +3278,14 @@ shared_library("libGNAPlugin") {
     "GNA_LIB_VER=1",
     "IE_BUILD_POSTFIX=\"\"",
     "CI_BUILD_NUMBER=\"custom_2018_17e66dc5a6631d630da454506902bd7c25d4170b\"",
+    "IMPLEMENT_INFERENCE_ENGINE_API",
+    "IE_THREAD=IE_THREAD_OMP",
+    "_HAS_ITERATOR_DEBUGGING=0",
   ]
   deps = [
     ":copy_gna_dll",
     ":libinference_engine",
+    ":liblow_precision_transformations",
     "//base",
   ]
 
