@@ -336,15 +336,17 @@ int32_t CompilationDelegateIe::CreateBlob(
     }
     int32_t pref = compilation_->GetPreference();
     size_t rank = dims.size();
-    ie::Layout layout = rank == 1 ? ie::Layout::C : rank == 2 ? ie::Layout::HW : ie::Layout::NHWC;
+    ie::Layout layout = rank == 1
+                            ? ie::Layout::C
+                            : rank == 2 ? ie::Layout::HW : ie::Layout::NCHW;
     // GNA also only support FP32 representing with PREFER_ULTRA_LOW_POWER.
     bool fp32_precision = pref != mojom::PREFER_LOW_POWER;
     if (fp32_precision) {
       // GNA only accepts FP32 precision, cpu/gpu use FP32 currently.
-      blob = ie::make_shared_blob<float>({ ie::Precision::FP32, dims, layout });
+      blob = ie::make_shared_blob<float>({ie::Precision::FP32, dims, layout});
     } else {
       // MYRIAD only accepts FP16 precision.
-      blob = ie::make_shared_blob<int16_t>({ ie::Precision::FP16, dims, layout });
+      blob = ie::make_shared_blob<int16_t>({ie::Precision::FP16, dims, layout});
     }
     blob->allocate();
     DLOG(INFO) << "Create blob with size " << blob->size()
@@ -602,14 +604,16 @@ int32_t CompilationDelegateIe::AddConvolution(
     if (result != mojom::NOT_ERROR) {
       return result;
     }
-    size_t weights_id = builder_->addLayer(ie::Builder::ConstLayer("weights").setData(weights));
+    size_t weights_id =
+        builder_->addLayer(ie::Builder::ConstLayer("weights").setData(weights));
     const uint32_t bias_index = operation->inputs[2];
     ie::Blob::Ptr bias;
     result = CreateBlob(bias_index, bias);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
-    size_t biases_id = builder_->addLayer(ie::Builder::ConstLayer("biases").setData(bias));
+    size_t biases_id =
+        builder_->addLayer(ie::Builder::ConstLayer("biases").setData(bias));
     const size_t input_layer_id = layer_id_map_[input_index];
     DLOG(INFO) << "[IE] input port layer id " << input_layer_id
                << " for operand index " << input_index;
@@ -873,14 +877,16 @@ int32_t CompilationDelegateIe::AddFullyConnected(
     if (result != mojom::NOT_ERROR) {
       return result;
     }
-    size_t weights_id = builder_->addLayer(ie::Builder::ConstLayer("weights").setData(weights));
+    size_t weights_id =
+        builder_->addLayer(ie::Builder::ConstLayer("weights").setData(weights));
     const uint32_t bias_index = operation->inputs[2];
     ie::Blob::Ptr bias;
     result = CreateBlob(bias_index, bias);
     if (result != mojom::NOT_ERROR) {
       return result;
     }
-    size_t biases_id = builder_->addLayer(ie::Builder::ConstLayer("biases").setData(bias));
+    size_t biases_id =
+        builder_->addLayer(ie::Builder::ConstLayer("biases").setData(bias));
     size_t input_layer_id = layer_id_map_[input_index];
     DLOG(INFO) << "[IE] input port layer id " << input_layer_id
                << " for operand index " << input_index;
@@ -889,9 +895,10 @@ int32_t CompilationDelegateIe::AddFullyConnected(
         {{input_layer_id}},
         ie::Builder::ReshapeLayer(reshape_name)
             .setDims({params.input_batch_size, params.input_size}));
-    layer_id = builder_->addLayer({{layer_id}, {weights_id}, {biases_id}},
-                                  ie::Builder::FullyConnectedLayer(name)
-                                      .setOutputNum(params.output_num_units));
+    layer_id =
+        builder_->addLayer({{layer_id}, {weights_id}, {biases_id}},
+                           ie::Builder::FullyConnectedLayer(name).setOutputNum(
+                               params.output_num_units));
     if (params.fuse_code != mojom::FUSED_NONE) {
       result = AddActivationByFusedCode(params.fuse_code, layer_id, output_name,
                                         layer_id);
