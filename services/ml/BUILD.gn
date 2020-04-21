@@ -4,10 +4,6 @@
 
 import("//testing/test.gni")
 
-declare_args() {
-  enable_ie_myriad = false
-}
-
 if (is_win) {
   cldnn_dll = "clDNN64.dll"
   dnnl_dll = "dnnl.dll"
@@ -54,15 +50,12 @@ source_set("ie") {
 
   deps = [
     "//services/ml/public/mojom",
+    "//third_party/libinference_engine:libGNAPlugin",
     "//third_party/libinference_engine:libMKLDNNPlugin",
     "//third_party/libinference_engine:libclDNNPlugin",
     "//third_party/libinference_engine:libinference_engine",
-    "//third_party/libinference_engine:libGNAPlugin",
+    "//third_party/libinference_engine:libmyriadPlugin",
   ]
-
-  if (enable_ie_myriad) {
-    deps += [ "//third_party/libinference_engine:libmyriadPlugin" ]
-  }
 }
 
 source_set("lib") {
