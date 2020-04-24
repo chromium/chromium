@@ -354,6 +354,7 @@ source_set("libinference_engine_legacy") {
     "dldt/inference-engine/src/plugin_api",
     "dldt/inference-engine/src/legacy_api/src",
     "dldt/inference-engine/thirdparty/pugixml/src",
+    "omp/include/",
   ]
   configs -= [ "//build/config/compiler:no_exceptions" ]
   configs += [ "//build/config/compiler:exceptions" ]
@@ -362,6 +363,7 @@ source_set("libinference_engine_legacy") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
   cflags_cc = [
+    "-Wno-deprecated-declarations",
     "-Wno-dllexport-explicit-instantiation-decl",
     "-Wno-unused-lambda-capture",
     "-Wno-mismatched-tags",
@@ -503,6 +505,7 @@ shared_library("libinference_engine") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
   cflags_cc = [
+    "-Wno-deprecated-declarations",
     "-Wno-dllexport-explicit-instantiation-decl",
     "-Wno-unused-lambda-capture",
     "-Wno-mismatched-tags",
@@ -541,6 +544,7 @@ shared_library("libinference_engine") {
 
   if (is_linux) {
     sources += [
+      "cxa_thread_atexit.cc",
       "dldt/inference-engine/src/inference_engine/os/lin/lin_system_conf.cpp",
     ]
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
@@ -596,6 +600,7 @@ source_set("liblow_precision_transformations") {
     "dldt/inference-engine/include",
     "dldt/inference-engine/src/plugin_api",
     "dldt/inference-engine/src/legacy_api/include",
+    "omp/include/",
   ]
   configs -= [ "//build/config/compiler:no_exceptions" ]
   configs += [ "//build/config/compiler:exceptions" ]
@@ -1318,11 +1323,7 @@ shared_library("libMKLDNNPlugin") {
   lib_dirs = [ "omp/lib/" ]
 
   if (is_linux) {
-    sources += [
-      "cxa_thread_atexit.cc",
-      "dldt/inference-engine/src/mkldnn_plugin/mkldnn/os/lin/lin_omp_manager.cpp",
-      "dldt/inference-engine/src/mkldnn_plugin/mkldnn/os/lin/lin_omp_manager.h",
-    ]
+    sources += [ "cxa_thread_atexit.cc" ]
 
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
@@ -2722,6 +2723,7 @@ shared_library("libclDNNPlugin") {
     "dldt/inference-engine/src/plugin_api",
     "dldt/inference-engine/src/legacy_api/include",
     "dldt/inference-engine/src/low_precision_transformations/include",
+    "omp/include/",
   ]
   configs -= [ "//build/config/compiler:no_exceptions" ]
   configs += [ "//build/config/compiler:exceptions" ]
@@ -2773,9 +2775,15 @@ shared_library("libclDNNPlugin") {
     ldflags = [ "-Wl,--export-dynamic" ]
 
     include_dirs += [ "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/linux/include/" ]
-    lib_dirs = [ "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/linux/Release/bin/x64/" ]
+    lib_dirs = [
+      "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/linux/Release/bin/x64/",
+      "omp/lib/",
+    ]
 
-    libs = [ "OpenCL" ]
+    libs = [
+      "OpenCL",
+      "iomp5",
+    ]
   } else if (is_win) {
     output_name = "clDNNPlugin"
 
@@ -2795,14 +2803,6 @@ static_library("libmvnc") {
     "dldt/inference-engine/thirdparty/movidius/XLink/pc/PlatformData.c",
     "dldt/inference-engine/thirdparty/movidius/XLink/pc/PlatformDeviceControl.c",
     "dldt/inference-engine/thirdparty/movidius/XLink/pc/PlatformDeviceSearch.c",
-    "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/include/win_pthread.h",
-    "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/include/win_semaphore.h",
-    "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/include/win_time.h",
-    "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/include/win_usb.h",
-    "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/src/win_pthread.c",
-    "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/src/win_semaphore.c",
-    "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/src/win_time.c",
-    "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/src/win_usb.c",
     "dldt/inference-engine/thirdparty/movidius/XLink/pc/protocols/pcie_host.c",
     "dldt/inference-engine/thirdparty/movidius/XLink/pc/protocols/pcie_host.h",
     "dldt/inference-engine/thirdparty/movidius/XLink/pc/protocols/usb_boot.c",
@@ -2847,6 +2847,18 @@ static_library("libmvnc") {
     #"dldt/inference-engine/thirdparty/movidius/vpualHost.patch",
     #"dldt/inference-engine/thirdparty/movidius/vpualHost_clone_repo.sh",
   ]
+  if (is_win) {
+    source += [
+      "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/include/win_pthread.h",
+      "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/include/win_semaphore.h",
+      "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/include/win_time.h",
+      "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/include/win_usb.h",
+      "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/src/win_pthread.c",
+      "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/src/win_semaphore.c",
+      "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/src/win_time.c",
+      "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/src/win_usb.c",
+    ]
+  }
   include_dirs = [
     "dldt/inference-engine/thirdparty/movidius/XLink/pc/win/include",
     "dldt/inference-engine/thirdparty/movidius/XLink/pc/protocols",
@@ -3183,6 +3195,7 @@ shared_library("libmyriadPlugin") {
     "dldt/inference-engine/src/vpu/myriad_plugin",
     "dldt/inference-engine/src/vpu/graph_transformer/include",
     "dldt/inference-engine/src/low_precision_transformations/include",
+    "omp/include/",
   ]
   configs -= [ "//build/config/compiler:no_exceptions" ]
   configs += [ "//build/config/compiler:exceptions" ]
@@ -3234,8 +3247,14 @@ shared_library("libmyriadPlugin") {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
 
-    lib_dirs = [ "libusb" ]
-    libs = [ "usb-1.0" ]
+    lib_dirs = [
+      "libusb",
+      "omp/lib/",
+    ]
+    libs = [
+      "usb-1.0",
+      "iomp5",
+    ]
 
     deps += [ ":copy_vpu_firmware" ]
     ldflags = [ "-Wl,--export-dynamic" ]
@@ -3349,6 +3368,7 @@ shared_library("libGNAPlugin") {
     "dldt/inference-engine/src/low_precision_transformations/include",
     "dldt/inference-engine/src/plugin_api",
     "dldt/inference-engine/src/legacy_api/include",
+    "omp/include/",
   ]
   configs -= [ "//build/config/compiler:no_exceptions" ]
   configs += [ "//build/config/compiler:exceptions" ]
@@ -3392,8 +3412,13 @@ shared_library("libGNAPlugin") {
   ]
 
   if (is_linux) {
-    lib_dirs = [ "gna/linux/lib" ]
+    lib_dirs = [
+      "gna/linux/lib",
+      "omp/lib/",
+    ]
     libs = [
+      "iomp5",
+
       # The gna library come form openvinotoolkit/R3/inference_engine.
       "gna_api",
     ]

@@ -580,11 +580,24 @@ int32_t CompilationDelegateIe::AddConvolution(
   int32_t result = compilation_->GetConvParams(operation, params);
   if (result != mojom::NOT_ERROR)
     return result;
-  if (params.depthwise && params.depthwise_multiplier != 1) {
-    LOG(ERROR) << "depthwise_multiplier " << params.depthwise_multiplier
-               << " is not supported";
-    return mojom::BAD_DATA;
+  if (params.depthwise) {
+    if (params.depthwise_multiplier != 1) {
+      LOG(ERROR) << "depthwise_multiplier " << params.depthwise_multiplier
+                 << " is not supported";
+      return mojom::BAD_DATA;
+    }
+
+    if (params.output_channel !=
+        params.input_channel * params.depthwise_multiplier) {
+      DLOG(INFO)
+          << "Failed assertion: outputFeatureChannels " << params.output_channel
+          << " in IE depthwise convolution descriptor must be multiplie of "
+             "inFeatureChannels "
+          << params.input_channel;
+      return mojom::BAD_DATA;
+    }
   }
+
   const uint32_t input_index = operation->inputs[0];
   if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
     LOG(ERROR) << "The layer for operand index " << input_index

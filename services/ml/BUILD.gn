@@ -39,6 +39,7 @@ source_set("ie") {
 
   # Add -Wno-dllexport-explicit-instantiation-decl in order to compile ie_rtti.cpp.
   cflags_cc = [
+    "-Wno-deprecated-declarations",
     "-Wno-dllexport-explicit-instantiation-decl",
     "-Wno-pessimizing-move",
     "-Wno-extra-semi",
