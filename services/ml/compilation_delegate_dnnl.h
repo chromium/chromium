@@ -81,7 +81,7 @@ class CompilationDelegateDnnl : public CompilationDelegate {
   int32_t AddElementwise(const mojom::OperationPtr&);
   int32_t AddConvolution(const mojom::OperationPtr&,
                          const mojom::ModelInfoPtr&);
-  int32_t AddPooling(const mojom::OperationPtr&);
+  int32_t AddPooling(const mojom::OperationPtr&, const mojom::ModelInfoPtr&);
   int32_t AddSoftmax(const mojom::OperationPtr&);
   int32_t AddLogistic(const mojom::OperationPtr&);
   int32_t AddReshape(const mojom::OperationPtr&);

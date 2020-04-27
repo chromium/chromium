@@ -157,7 +157,7 @@ int32_t CompilationDelegateDnnl::DnnlCompile() {
                type == mojom::ATROUS_DEPTHWISE_CONV_2D) {
       result = AddConvolution(operation, model);
     } else if (type == mojom::AVERAGE_POOL_2D || type == mojom::MAX_POOL_2D) {
-      result = AddPooling(operation);
+      result = AddPooling(operation, model);
     } else if (type == mojom::SOFTMAX) {
       result = AddSoftmax(operation);
     } else if (type == mojom::LOGISTIC) {
@@ -1161,7 +1161,8 @@ int32_t CompilationDelegateDnnl::AddConvolution(
 }
 
 int32_t CompilationDelegateDnnl::AddPooling(
-    const mojom::OperationPtr& operation) {
+    const mojom::OperationPtr& operation,
+    const mojom::ModelInfoPtr& model) {
   PoolingParams params;
   int32_t result = compilation_->GetPoolingParams(operation, params);
   if (result != mojom::NOT_ERROR)
@@ -1181,11 +1182,16 @@ int32_t CompilationDelegateDnnl::AddPooling(
     return mojom::OP_FAILED;
   }
 
+  const std::vector<uint32_t>& outputs = operation->outputs;
+  const mojom::OperandPtr& output = model->operands[outputs[0]];
+  dnnl_data_type_t output_type;
+  GetDataType(output->type, &output_type);
+
   dnnl_memory_desc_t output_md;
   dnnl_dim_t output_dims[4] = {params.output_batch, params.output_channel,
                                params.output_height, params.output_width};
   status = LATE(dnnl_memory_desc_init_by_tag)(&output_md, 4, output_dims,
-                                              dnnl_f32, dnnl_format_tag_any);
+                                              output_type, dnnl_format_tag_any);
   if (status != dnnl_success) {
     LOG(ERROR) << "[DNNL] failed to init output memory descriptor " << status;
     return mojom::OP_FAILED;
