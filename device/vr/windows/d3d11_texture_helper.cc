@@ -1164,29 +1164,32 @@ bool D3D11TextureHelper::SetOverlayTexture(
   return true;
 }
 
+constexpr int textureWidth = 4096;
 bool D3D11TextureHelper::UpdateBackbufferSizes() {
   if (!EnsureInitialized())
     return false;
 
   if (!render_state_.source_.source_texture_ &&
-      !render_state_.overlay_.source_texture_)
+      !render_state_.overlay_.source_texture_) {
     return false;
-
-  if (force_viewport_) {
-    target_size_ = default_size_;
-    return true;
   }
+      
+  
+  /* if (force_viewport_) {
+    target_size_ = gfx::Size(textureWidth, textureWidth);
+    return true;
+  } */
 
-  if (render_state_.source_.source_texture_ &&
-      render_state_.overlay_.source_texture_) {
+  /* if (render_state_.source_.source_texture_ &&
+      render_state_.overlay_.source_texture_) { */
     target_left_ = gfx::RectF(0 /*x*/, 0 /*y*/, 0.5f /*width*/, 1 /*height*/);
     target_right_ =
         gfx::RectF(0.5f /*x*/, 0 /*y*/, 0.5f /*width*/, 1 /*height*/);
-    target_size_ = default_size_;
+    target_size_ = gfx::Size(textureWidth, textureWidth);
     return true;
-  }
+  // }
 
-  LayerData* layer = render_state_.overlay_.source_texture_
+  /* LayerData* layer = render_state_.overlay_.source_texture_
                          ? &render_state_.overlay_
                          : &render_state_.source_;
   D3D11_TEXTURE2D_DESC desc_desired;
@@ -1194,7 +1197,7 @@ bool D3D11TextureHelper::UpdateBackbufferSizes() {
   target_left_ = layer->left_;
   target_right_ = layer->right_;
   target_size_ = gfx::Size(desc_desired.Width, desc_desired.Height);
-  return true;
+  return true; */
 }
 
 void D3D11TextureHelper::AllocateBackBuffer() {
