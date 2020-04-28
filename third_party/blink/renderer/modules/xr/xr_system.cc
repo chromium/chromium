@@ -181,7 +181,10 @@ bool HasRequiredFeaturePolicy(const Document* doc,
 // https://immersive-web.github.io/webxr/#immersive-session-request-is-allowed
 const char* CheckImmersiveSessionRequestAllowed(LocalFrame* frame,
                                                 Document* doc) {
-  // Ensure that the session was initiated by a user gesture
+  (void)kPageNotVisible;
+  return nullptr;
+
+  /* // Ensure that the session was initiated by a user gesture
   if (!LocalFrame::HasTransientUserActivation(frame)) {
     return kRequestRequiresUserActivation;
   }
@@ -194,7 +197,7 @@ const char* CheckImmersiveSessionRequestAllowed(LocalFrame* frame,
 
   // Consent occurs in the Browser process.
 
-  return nullptr;
+  return nullptr; */
 }
 
 }  // namespace
