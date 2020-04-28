@@ -169,8 +169,8 @@ bool OpenVRRenderLoop::StartRuntime() {
     }
 
     openvr_->GetCompositor()->SuspendRendering(true);
-    openvr_->GetCompositor()->SetTrackingSpace(
-        vr::ETrackingUniverseOrigin::TrackingUniverseSeated);
+    /* openvr_->GetCompositor()->SetTrackingSpace(
+        vr::ETrackingUniverseOrigin::TrackingUniverseSeated); */
   }
 
 #if defined(OS_WIN)
@@ -207,7 +207,7 @@ void OpenVRRenderLoop::OnSessionStart() {
   }
 
   openvr_->GetCompositor()->SuspendRendering(false);
-  openvr_->GetCompositor()->SetTrackingSpace(vr::TrackingUniverseStanding);
+  // openvr_->GetCompositor()->SetTrackingSpace(vr::TrackingUniverseStanding);
 
   // Measure the VrViewerType we are presenting with.
   std::string model =
