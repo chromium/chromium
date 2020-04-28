@@ -259,7 +259,7 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
       float frameDuration = 1.0f / displayFrequency;
       float timeRemainingSeconds = std::max(frameDuration - lastVSync, 0.0f);
       if (timeRemainingSeconds > 0) {
-        std::this_thread::sleep_for(std::chrono::microseconds((int)(timeRemainingSeconds * (1000000.0f * 0.5f))));
+        std::this_thread::sleep_for(std::chrono::microseconds((int)(timeRemainingSeconds * (1000000.0f * 0.75f))));
       }
 
       while (newFrameIndex == m_lastFrameIndex) {
