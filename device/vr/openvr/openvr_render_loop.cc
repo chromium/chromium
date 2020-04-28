@@ -247,7 +247,7 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
     uint64_t newFrameIndex = 0;
     float lastVSync = 0;
 
-    openvr_->GetSystem()->GetTimeSinceLastVsync(&lastVSync, &newFrameIndex);
+    /* openvr_->GetSystem()->GetTimeSinceLastVsync(&lastVSync, &newFrameIndex);
     if (newFrameIndex == m_lastFrameIndex) {
       // Sleep(1);
 
@@ -265,9 +265,13 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
       while (newFrameIndex == m_lastFrameIndex) {
         openvr_->GetSystem()->GetTimeSinceLastVsync(&lastVSync, &newFrameIndex);
       }
-    }
+    } */
 
+    while (newFrameIndex == m_lastFrameIndex) {
+      openvr_->GetSystem()->GetTimeSinceLastVsync(&lastVSync, &newFrameIndex);
+    }
     m_lastFrameIndex = newFrameIndex;
+
     openvr_->GetCompositor()->GetLastPoses(
             rendering_poses,
             vr::k_unMaxTrackedDeviceCount,
