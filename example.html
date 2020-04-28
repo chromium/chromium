@@ -12,19 +12,19 @@ body {
   left: 0;
   right: 0;
 }
-.buttons {
+/* .buttons {
   display: flex;
   position: absolute;
   right: 30px;
   bottom: 30px;
-}
+} */
 </style>
 </head>
 <body>
 <canvas id=canvas></canvas>
-<div class=buttons>
+<!-- <div class=buttons>
   <input type=button id=enter-vr-button value="Enter XR">
-</div>
+</div> -->
 <script type=module>
 import * as THREE from 'https://raw.githack.com/mrdoob/three.js/dev/build/three.module.js';
 
@@ -90,7 +90,8 @@ function onSessionEnded() {
   currentSession = null;
 }
 
-document.getElementById('enter-vr-button').addEventListener('click', e => {
+/* const enterVrPutton = document.getElementById('enter-vr-button');
+enterVrPutton.addEventListener('click', e => {
   e.preventDefault();
   e.stopPropagation();
   
@@ -105,6 +106,13 @@ document.getElementById('enter-vr-button').addEventListener('click', e => {
     currentSession.end();
   }
 });
+enterVrPutton.dispatchEvent(new MouseEvent('click')); */
+navigator.xr.requestSession('immersive-vr', {
+  optionalFeatures: [
+    'local-floor',
+    'bounded-floor',
+  ],
+}).then(onSessionStarted);
 
 </script>
 </body>
