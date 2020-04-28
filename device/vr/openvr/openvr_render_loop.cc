@@ -15,6 +15,8 @@
 #include "device/vr/windows/d3d11_texture_helper.h"
 #endif
 
+#include <thread>
+
 namespace device {
 
 namespace {
@@ -241,33 +243,29 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
     vr::TrackedDevicePose_t rendering_poses[vr::k_unMaxTrackedDeviceCount];
     
     TRACE_EVENT0("gpu", "OpenVR WaitGetPoses 0");
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /* vr::TrackedDevicePose_t rRenderPoses[vr::k_unMaxTrackedDeviceCount];
-    if (openvr_->GetCompositor()->CanRenderScene() == false)
-            return; */
 
     uint64_t newFrameIndex = 0;
     float lastVSync = 0;
 
-    while (newFrameIndex == m_lastFrameIndex)
-    {
-            /*auto vsyncTimesAvailable = */openvr_->GetSystem()->GetTimeSinceLastVsync(
-                    &lastVSync, &newFrameIndex);
+    openvr_->GetSystem()->GetTimeSinceLastVsync(&lastVSync, &newFrameIndex);
+    if (newFrameIndex == m_lastFrameIndex) {
+      // Sleep(1);
 
-            /* if (vsyncTimesAvailable == false)
-                    return; */
+      vr::ETrackedPropertyError error;
+      float displayFrequency = vr::VRSystem()->GetFloatTrackedDeviceProperty(
+        vr::k_unTrackedDeviceIndex_Hmd,
+        vr::ETrackedDeviceProperty::Prop_DisplayFrequency_Float,
+        &error);
+      float frameDuration = 1.0f / displayFrequency;
+      float timeRemainingSeconds = std::max(frameDuration - lastVSync, 0.0f);
+      if (timeRemainingSeconds > 0) {
+        std::this_thread::sleep_for(std::chrono::microseconds((int)(timeRemainingSeconds * (1000000.0f * 0.5f))));
+      }
+
+      while (newFrameIndex == m_lastFrameIndex) {
+        openvr_->GetSystem()->GetTimeSinceLastVsync(&lastVSync, &newFrameIndex);
+      }
     }
-
-    /* if (m_lastFrameIndex + 1 < newFrameIndex)
-            m_framesSkipped++; */
 
     m_lastFrameIndex = newFrameIndex;
     openvr_->GetCompositor()->GetLastPoses(
@@ -280,6 +278,31 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
 
 
 
+
+
+
+    /* float secondsSinceLastVsync = lastVSync;
+    uint64_t newLastFrame = newFrameIndex;
+    vr::VRSystem()->GetTimeSinceLastVsync(&secondsSinceLastVsync, &newLastFrame);
+
+    vr::ETrackedPropertyError error;
+    float displayFrequency = vr::VRSystem()->GetFloatTrackedDeviceProperty(
+      vr::k_unTrackedDeviceIndex_Hmd,
+      vr::ETrackedDeviceProperty::Prop_DisplayFrequency_Float,
+      &error);
+
+    float frameDuration = 1.0f / displayFrequency;
+    float vsyncToPhotons = vr::VRSystem()->GetFloatTrackedDeviceProperty(
+      vr::k_unTrackedDeviceIndex_Hmd, 
+      vr::ETrackedDeviceProperty::Prop_SecondsFromVsyncToPhotons_Float, 
+      &error);
+
+    float predictedSecondsFromNow = frameDuration - secondsSinceLastVsync + vsyncToPhotons;
+    vr::VRSystem()->GetDeviceToAbsoluteTrackingPose(
+      vr::ETrackingUniverseOrigin::TrackingUniverseStanding, 
+      predictedSecondsFromNow, 
+      &rendering_poses[0], 
+      vr::k_unMaxTrackedDeviceCount); */
 
 
 
