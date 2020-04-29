@@ -69,6 +69,7 @@ int32_t ExecutionImplIe::Init(int32_t preference) {
     if (preference == mojom::PREFER_ULTRA_LOW_POWER && input_scale_ > 0) {
       std::string scaleFactorConfigKey = GNA_CONFIG_KEY(SCALE_FACTOR);
       plugin_Config[scaleFactorConfigKey] = std::to_string(input_scale_);
+      plugin_Config[ie::GNAConfigParams::KEY_GNA_DEVICE_MODE] = "GNA_AUTO";
       // Note that it is not always possible to use 8-bit weights due to GNA
       // hardware limitations. For example, convolutional layers always use
       // 16-bit weights (GNA harware verison 1 and 2). This limitation will be
