@@ -35,7 +35,6 @@ REPLACEMENTS = {
   'opus': 'third_party/opus/BUILD.gn',
   're2': 'third_party/re2/BUILD.gn',
   'snappy': 'third_party/snappy/BUILD.gn',
-  'yasm': 'third_party/yasm/yasm_assemble.gni',
   'zlib': 'third_party/zlib/BUILD.gn',
 }
 
