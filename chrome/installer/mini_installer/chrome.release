@@ -27,6 +27,7 @@ clDNN64.dll: %(VersionDir)s\
 dnnl.dll: %(VersionDir)s\
 gna.dll: %(VersionDir)s\
 libiomp5md.dll: %(VersionDir)s\
+svml_dispmd.dll: %(VersionDir)s\
 vcomp140.dll: %(VersionDir)s\
 d3dcompiler_47.dll: %(VersionDir)s\
 eventlog_provider.dll: %(VersionDir)s\

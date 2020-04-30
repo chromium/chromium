@@ -2406,6 +2406,7 @@ copy("copy_gna_dll") {
   if (is_win) {
     sources += [
       "//third_party/libinference_engine/omp/lib/libiomp5md.dll",
+      "//third_party/libinference_engine/svml/svml_dispmd.dll",
     ]
   }
   outputs = [
