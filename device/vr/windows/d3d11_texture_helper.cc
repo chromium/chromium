@@ -186,10 +186,10 @@ bool D3D11TextureHelper::CompositeToBackBuffer(mojom::XRFrameDataPtr &frame_data
 
   // Clear stale data:
   CleanupLayerData(render_state_.source_);
-  CleanupLayerData(render_state_.overlay_);
+  // CleanupLayerData(render_state_.overlay_);
 
-  if (!render_state_.source_.source_texture_ &&
-      !render_state_.overlay_.source_texture_)
+  if (!render_state_.source_.source_texture_ /* &&
+      !render_state_.overlay_.source_texture_ */)
     return false;
   if (!render_state_.target_texture_)
     return false;
@@ -205,7 +205,7 @@ bool D3D11TextureHelper::CompositeToBackBuffer(mojom::XRFrameDataPtr &frame_data
     }
   }
 
-  if (render_state_.overlay_.keyed_mutex_) {
+  /* if (render_state_.overlay_.keyed_mutex_) {
     hr = render_state_.overlay_.keyed_mutex_->AcquireSync(1, kAcquireWaitMS);
     if (FAILED(hr) || hr == WAIT_TIMEOUT || hr == WAIT_ABANDONED) {
       // We failed to acquire the lock.  We'll drop this frame, but subsequent
@@ -216,34 +216,34 @@ bool D3D11TextureHelper::CompositeToBackBuffer(mojom::XRFrameDataPtr &frame_data
       }
       return false;
     }
-  }
+  } */
 
   if (!BindTarget()) {
     TraceDXError(ErrorLocation::BindTarget, hr);
     return false;
   }
 
-  if (render_state_.overlay_.source_texture_ &&
+  /* if (render_state_.overlay_.source_texture_ &&
       (!render_state_.source_.source_texture_ || !source_visible_)) {
     // If we have an overlay, but no WebXR texture under it, clear the target
     // first, since overlay may assume transparency.
     float color_rgba[4] = {0, 0, 0, 1};
     render_state_.d3d11_device_context_->ClearRenderTargetView(
         render_state_.render_target_view_.Get(), color_rgba);
-  }
+  } */
 
   bool success = true;
   if (render_state_.source_.source_texture_)
     success = success && EnsureContentBlendState() &&
               CompositeLayer(render_state_.source_, frame_data_, display_info);
-  if (render_state_.overlay_.source_texture_)
+  /* if (render_state_.overlay_.source_texture_)
     success = success && EnsureOverlayBlendState() &&
-              CompositeLayer(render_state_.overlay_, frame_data_, display_info);
+              CompositeLayer(render_state_.overlay_, frame_data_, display_info); */
 
   if (render_state_.source_.keyed_mutex_)
     render_state_.source_.keyed_mutex_->ReleaseSync(0);
-  if (render_state_.overlay_.keyed_mutex_)
-    render_state_.overlay_.keyed_mutex_->ReleaseSync(0);
+  /* if (render_state_.overlay_.keyed_mutex_)
+    render_state_.overlay_.keyed_mutex_->ReleaseSync(0); */
 
   return success;
 }
