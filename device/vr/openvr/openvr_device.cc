@@ -40,16 +40,18 @@ constexpr base::TimeDelta kPollingInterval =
 mojom::VRFieldOfViewPtr OpenVRFovToWebVRFov(vr::IVRSystem* vr_system,
                                             vr::Hmd_Eye eye) {
   auto out = mojom::VRFieldOfView::New();
-  float up_tan, down_tan, left_tan, right_tan;
-  vr_system->GetProjectionRaw(eye, &left_tan, &right_tan, &up_tan, &down_tan);
+  float up_tan_left, down_tan_left, left_tan_left, right_tan_left;
+  float up_tan_right, down_tan_right, left_tan_right, right_tan_right;
+  vr_system->GetProjectionRaw(vr::Hmd_Eye::Eye_Left, &left_tan_left, &right_tan_left, &up_tan_left, &down_tan_left);
+  vr_system->GetProjectionRaw(vr::Hmd_Eye::Eye_Right, &left_tan_right, &right_tan_right, &up_tan_right, &down_tan_right);
 
   // TODO(billorr): Plumb the expected projection matrix over mojo instead of
   // using angles. Up and down are intentionally swapped to account for
   // differences in expected projection matrix format for GVR and OpenVR.
-  out->up_degrees = gfx::RadToDeg(atanf(down_tan));
-  out->down_degrees = -gfx::RadToDeg(atanf(up_tan));
-  out->left_degrees = -gfx::RadToDeg(atanf(left_tan));
-  out->right_degrees = gfx::RadToDeg(atanf(right_tan));
+  out->up_degrees = gfx::RadToDeg(atanf(down_tan_left));
+  out->down_degrees = -gfx::RadToDeg(atanf(up_tan_left));
+  out->left_degrees = -gfx::RadToDeg(atanf(left_tan_left));
+  out->right_degrees = gfx::RadToDeg(atanf(right_tan_right));
   
   float width = out->left_degrees + out->right_degrees;
   float height = out->up_degrees + out->down_degrees;
