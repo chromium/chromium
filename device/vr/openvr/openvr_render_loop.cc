@@ -267,9 +267,9 @@ mojom::XRFrameDataPtr OpenVRRenderLoop::GetNextFrameData() {
       }
     } */
 
-    while (newFrameIndex == m_lastFrameIndex) {
+    do {
       openvr_->GetSystem()->GetTimeSinceLastVsync(&lastVSync, &newFrameIndex);
-    }
+    } while (newFrameIndex == m_lastFrameIndex);
     m_lastFrameIndex = newFrameIndex;
 
     openvr_->GetCompositor()->GetLastPoses(
