@@ -348,6 +348,7 @@ HRESULT InitializeOperators(scoped_refptr<CompiledModelDML> dml,
 
   dml->descriptor_heap_ = std::move(descriptor_heap);
 
+  // Create a temporary buffer to reuse for initialization and execution.
   dml->temporary_resource_size_ =
       std::max(initialize_binding_properties.TemporaryResourceSize,
                execute_temporary_resource_size);
@@ -358,6 +359,14 @@ HRESULT InitializeOperators(scoped_refptr<CompiledModelDML> dml,
       LOG(ERROR) << "Failed creating committed resource for temorary buffer.";
       return hr;
     }
+  }
+
+  // Bind temporary resource for initialization.
+  if (initialize_binding_properties.TemporaryResourceSize) {
+    DML_BUFFER_BINDING buffer_binding = {dml->temporary_buffer_.Get(), 0,
+                                         dml->temporary_resource_size_};
+    DML_BINDING_DESC binding_desc = {DML_BINDING_TYPE_BUFFER, &buffer_binding};
+    binding_table->BindTemporaryResource(&binding_desc);
   }
 
   // The command recorder is a stateless object that records Dispatches into an
