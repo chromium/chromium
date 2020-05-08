@@ -2,8 +2,8 @@
 {
 	"appid"	"685110"
 	"desc" "Metachromium browser" // description for this build
-	"buildoutput" ".\out2\output\" // build output folder for .log, .csm & .csd files, relative to location of this file
-	"contentroot" ".\out2\Chrome-bin\" // root content folder, relative to location of this file
+	"buildoutput" ".\output" // build output folder for .log, .csm & .csd files, relative to location of this file
+	"contentroot" ".\out2\" // root content folder, relative to location of this file
 	"setlive"	"" // branch to set live after successful build, non if empty
 	"preview" "0" // to enable preview builds
 	"local"	""	// set to flie path of local content server 
