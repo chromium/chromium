@@ -27,5 +27,5 @@
 
 	// but exclude all symbol files  
 	// This can be a full path, or a path relative to ContentRoot
-  "FileExclusion" "*.pdb"
+  // "FileExclusion" "*.pdb"
 }
