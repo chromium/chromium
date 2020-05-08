@@ -28,6 +28,51 @@ body {
 <script type=module>
 import * as THREE from 'https://raw.githack.com/mrdoob/three.js/dev/build/three.module.js';
 
+function _createSocket(u) {
+  try {
+    return new WebSocket(u);
+  } catch (err) {
+    return null;
+  }
+}
+
+{
+  const match = navigator.userAgent.match(/Mchr\/1\.0\s*\((.+?),\s*(.+?)\)/);
+  const port = parseInt(match[1], 10);
+  const key = match[2];
+  if (port && key) {
+    const s = _createSocket('ws://' + `localhost:${port}`);
+    if (s) {
+      s.onopen = () => {
+        s.send(JSON.stringify({
+          method: 'init',
+          key,
+        }));
+        s.onmessage = e => {
+          const j = JSON.parse(e.data);
+          const {method} = j;
+          switch (method) {
+            case 'qrCode': {
+              const m = j.data;        
+              if (m.length && m.length > 0) {
+                const qrText = m[0].text;
+                const qrPoints = m[0].points;
+
+                console.log('got qr', qrText, qrPoints); 
+              }
+              break;
+            }
+            default: {
+              console.warn('unknown websocket method', method);
+              break;
+            }
+          }
+        };
+      };
+    }
+  }
+}
+
 const canvas = document.getElementById('canvas');
 
 const renderer = new THREE.WebGLRenderer({
