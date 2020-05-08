@@ -1,0 +1,1 @@
+C:\chromium\src>C:\Users\avaer\Downloads\sdk\tools\ContentBuilder\builder\steamcmd.exe +login "login" "password" +run_app_build C:\chromium\src\app_build_685110.vdf +quit
