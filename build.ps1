@@ -1,5 +1,6 @@
 $progressPreference = 'silentlyContinue'
 
+rm -Recurse -Force out2
 mkdir -Force out2
 
 cp -Force package.json ./out2/
