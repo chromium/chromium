@@ -14,7 +14,7 @@ http.createServer(app)
     if (!err) {
       let qrvrProcess, chromeProcess;
       
-      const u = process.argv[2] || `http://localhost:${httpPort}/example.html`;
+      const u = process.argv[2] || `https://home.metachromium.com/`;
       const key = crypto.randomBytes(32).toString('hex');
 
       qrvrProcess = child_process.fork(
