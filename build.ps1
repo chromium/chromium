@@ -9,11 +9,11 @@ cp -Force child.js ./out2/
 cp -Force example.html ./out2/
 cp -Force metachromium.cmd ./out2/
 
-wget "https://nodejs.org/dist/v14.0.0/node-v14.0.0-win-x64.zip" -OutFile node.zip
+wget "https://nodejs.org/dist/v14.2.0/node-v14.2.0-win-x64.zip" -OutFile node.zip
 7z x node.zip -aoa
 rm -Force node.zip
 rm -Recurse -Force node
-mv node-v14.0.0-win-x64 out2/node
+mv node-v14.2.0-win-x64 out2/node
 
 cp -Force ./out/Release/chrome.packed.7z metachromium.7z
 7z x metachromium.7z -aoa
