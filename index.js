@@ -29,8 +29,10 @@ http.createServer(app)
       );
       qrvrProcess.on('exit', _exit);
       qrvrProcess.stdout.setEncoding('utf8');
-      qrvrProcess.stdout.on('data', d => {
+      const _data = d => {
         if (/started/.test(d)) {
+          qrvrProcess.stdout.removeListener('data', _data);
+
           chromeProcess = child_process.spawn(
             './Chrome-bin/chrome.exe',
             [
@@ -51,7 +53,8 @@ http.createServer(app)
           );
           chromeProcess.on('exit', _exit);
         }
-      });
+      };
+      qrvrProcess.stdout.on('data', _data);
       qrvrProcess.stdout.pipe(process.stdout);
       qrvrProcess.stderr.pipe(process.stderr);
 
