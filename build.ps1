@@ -26,6 +26,3 @@ rm -Force chrome.7z
 .\node\node.exe .\node\node_modules\npm\bin\npm-cli.js install
 
 cd ..
-
-# rm -Force darkbooth.7z
-# 7z a darkbooth.7z Chrome-bin node node_modules index.js child.js index.html qr.png darkbooth.cmd
