@@ -1,0 +1,25 @@
+{
+  "name": "metachromium",
+  "version": "0.0.1",
+  "description": "Chromium is an open-source browser project that aims to build a safer, faster, and more stable way for all users to experience the web.",
+  "main": ".eslintrc.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/webaverse/metachromium.git"
+  },
+  "author": "Avaer Kazmer <a@modules.io>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/webaverse/metachromium/issues"
+  },
+  "homepage": "https://github.com/webaverse/metachromium#readme",
+  "dependencies": {
+    "qrvr": "
+  }
+}
