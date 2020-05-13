@@ -248,9 +248,13 @@ stage_install_common() {
       debugfile="${buildfile}.debug"
       "${BUILDDIR}/installer/common/eu-strip" -o "${strippedfile}" -f "${debugfile}" "${buildfile}"
       install -m ${SHLIB_PERMS} "${strippedfile}" "${STAGEDIR}/${INSTALLDIR}/${file}"
-      install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/mvnc/"
-      install -m 644 "${BUILDDIR}/mvnc/MvNCAPI-ma2450.mvcmd" "${STAGEDIR}/${INSTALLDIR}/mvnc/"
-      install -m 644 "${BUILDDIR}/mvnc/MvNCAPI-ma2480.mvcmd" "${STAGEDIR}/${INSTALLDIR}/mvnc/"
+      install -m 644 "${BUILDDIR}/usb-ma2450.mvcmd" "${STAGEDIR}/${INSTALLDIR}/"
+      install -m 644 "${BUILDDIR}/usb-ma2x8x.mvcmd" "${STAGEDIR}/${INSTALLDIR}/"
+      # custom kernels.
+      #install -m 755 -d "${STAGEDIR}/${INSTALLDIR}/vpu_custom_kernels/"
+      #find "${BUILDDIR}/vpu_custom_kernels" -type f -name '*' -exec \
+      #  cp -a '{}' "${STAGEDIR}/${INSTALLDIR}/vpu_custom_kernels/" \;
+      #find "${STAGEDIR}/${INSTALLDIR}/vpu_custom_kernels" -type f -exec chmod 644 '{}' \;
     fi
   fi
 

@@ -2875,36 +2875,17 @@ static_library("libmvnc") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
   cflags_c = [
-    "-Wno-unused-value",
-    "-Wno-pointer-sign",
-    "-Wno-macro-redefined",
     "-Wno-enum-conversion",
-    "-Wno-implicit-function-declaration",
-    "-Wno-missing-braces",
     "-Wno-macro-redefined",
-    "-Wno-potentially-evaluated-expression",
-    "-Wno-unused-lambda-capture",
-    "-Wno-defaulted-function-deleted",
-    "-Wno-pessimizing-move",
-    "-Wno-delete-non-virtual-dtor",
     "-Wno-unused-function",
-    "-Wno-reorder",
-    "-Wno-unused-private-field",
-    "-Wno-string-conversion",
-    "-Wno-header-hygiene",
-    "-Wno-unused-local-typedef",
-    "-msse4.2",
   ]
   defines = [
-    "ENABLE_MYRIAD=1",
-    "ENABLE_OBJECT_DETECTION_TESTS=1",
-    "ENABLE_SEGMENTATION_TESTS=1",
-    "HAVE_STRUCT_TIMESPEC",
-    "DEVICE_SHELL_ENABLED",
-    "USE_USB_VSC",
-    "_CRT_SECURE_NO_WARNINGS",
-    "__PC__",
     "_HAS_ITERATOR_DEBUGGING=0",
+    "XLINK_USE_BUS",
+    "__PC__",
+    "HAVE_STRUCT_TIMESPEC",
+    "_CRT_SECURE_NO_WARNINGS",
+    "USE_USB_VSC",
   ]
 }
 
@@ -3036,9 +3017,9 @@ shared_library("libmyriadPlugin") {
     "dldt/inference-engine/src/vpu/graph_transformer/src/graph_transformer.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/allocator/allocator.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/allocator/shaves.cpp",
-    "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/conv_tiling/hw_conv_stage_tiler.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/conv_tiling/hw_stage_tiler.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/conv_tiling/hw_convolution_tiler.cpp",
-    "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/hw_utility.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/utility.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/pooling_tiling/hw_pooling_stage_tiler.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/pooling_tiling/hw_pooling_tiler.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/tiling.cpp",
@@ -3068,7 +3049,7 @@ shared_library("libmyriadPlugin") {
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/merge_parallel_fc.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/merge_permute_stages.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/merge_relu_and_bias.cpp",
-    "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/passes_strided_slice.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/strided_slice.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/process_special_stages.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/replace_deconv_by_conv.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/replace_fc_by_conv.cpp",
@@ -3157,7 +3138,7 @@ shared_library("libmyriadPlugin") {
     "dldt/inference-engine/src/vpu/graph_transformer/src/stages/sigmoid.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/stages/softmax.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/stages/split.cpp",
-    "dldt/inference-engine/src/vpu/graph_transformer/src/stages/stages_strided_slice.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/src/stages/strided_slice_stages.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/stages/stub_stage.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/stages/tanh.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/stages/tensor_iterator.cpp",
@@ -3204,25 +3185,12 @@ shared_library("libmyriadPlugin") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
   cflags_cc = [
-    "-Wno-dllexport-explicit-instantiation-decl",
-    "-Wno-return-type",
     "-Wno-mismatched-tags",
-    "-Wno-macro-redefined",
-    "-Wno-switch",
-    "-Wno-inconsistent-missing-override",
-    "-Wno-missing-braces",
-    "-Wno-potentially-evaluated-expression",
     "-Wno-unused-lambda-capture",
-    "-Wno-defaulted-function-deleted",
     "-Wno-pessimizing-move",
-    "-Wno-delete-non-virtual-dtor",
     "-Wno-unused-function",
     "-Wno-reorder",
-    "-Wno-unused-private-field",
-    "-Wno-string-conversion",
     "-Wno-header-hygiene",
-    "-Wno-unused-local-typedef",
-    "-msse4.2",
   ]
   defines = [
     "ENABLE_VPU",
@@ -3264,11 +3232,11 @@ shared_library("libmyriadPlugin") {
 
 copy("copy_vpu_firmware") {
   sources = [
-    "dldt/inference-engine/temp/vpu/firmware/ma2450/mvnc/MvNCAPI-ma2450.mvcmd",
-    "dldt/inference-engine/temp/vpu/firmware/ma2480/mvnc/MvNCAPI-ma2480.mvcmd",
+    "dldt/inference-engine/temp/vpu/firmware/usb-ma2x8x.mvcmd",
+    "dldt/inference-engine/temp/vpu/firmware/usb-ma2450.mvcmd",
   ]
   outputs = [
-    "$root_out_dir/mvnc/{{source_file_part}}",
+    "$root_out_dir/{{source_file_part}}",
   ]
 }
 
