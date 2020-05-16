@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "chrome/browser/ui/views/toolbar/dino_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 
 namespace views {
@@ -23,6 +24,7 @@ std::unique_ptr<ToolbarButton> CreateBackButton(views::ButtonListener* listener,
 std::unique_ptr<ToolbarButton> CreateForwardButton(
     views::ButtonListener* listener,
     Browser* browser);
+std::unique_ptr<DinoButton> CreateDinoButton(Browser* browser);
 std::unique_ptr<ReloadButton> CreateReloadButton(
     Browser* browser,
     ReloadButton::IconStyle icon_style);

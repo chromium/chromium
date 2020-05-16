@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/button_utils.h"
+#include "chrome/browser/ui/views/toolbar/dino_button.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_account_icon_container_view.h"
@@ -193,6 +194,8 @@ void ToolbarView::Init() {
 
   std::unique_ptr<ToolbarButton> forward = CreateForwardButton(this, browser_);
 
+  std::unique_ptr<DinoButton> dino = CreateDinoButton(browser_);
+
   std::unique_ptr<ReloadButton> reload =
       CreateReloadButton(browser_, ReloadButton::IconStyle::kBrowser);
 
@@ -256,6 +259,7 @@ void ToolbarView::Init() {
   back_ = AddChildView(std::move(back));
   forward_ = AddChildView(std::move(forward));
   reload_ = AddChildView(std::move(reload));
+  dino_ = AddChildView(std::move(dino));
   home_ = AddChildView(std::move(home));
   location_bar_ = AddChildView(std::move(location_bar));
   if (browser_actions)
@@ -878,6 +882,10 @@ AvatarToolbarButton* ToolbarView::GetAvatarToolbarButton() {
 
 ToolbarButton* ToolbarView::GetBackButton() {
   return back_;
+}
+
+DinoButton* ToolbarView::GetDinoButton() {
+  return dino_;
 }
 
 ReloadButton* ToolbarView::GetReloadButton() {

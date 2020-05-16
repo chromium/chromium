@@ -3461,6 +3461,8 @@ static_library("ui") {
       "views/toolbar/browser_app_menu_button.h",
       "views/toolbar/button_utils.cc",
       "views/toolbar/button_utils.h",
+      "views/toolbar/dino_button.cc",
+      "views/toolbar/dino_button.h",
       "views/toolbar/extension_toolbar_menu_view.cc",
       "views/toolbar/extension_toolbar_menu_view.h",
       "views/toolbar/home_button.cc",

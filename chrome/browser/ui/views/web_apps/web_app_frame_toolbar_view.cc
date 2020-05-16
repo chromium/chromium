@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/button_utils.h"
+#include "chrome/browser/ui/views/toolbar/dino_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/web_apps/web_app_menu_button.h"
@@ -260,6 +261,8 @@ class WebAppFrameToolbarView::NavigationButtonContainer
 
   ToolbarButton* back_button() { return back_button_; }
 
+  DinoButton* dino_button() { return dino_button_; }
+
   ReloadButton* reload_button() { return reload_button_; }
 
   void SetIconColor(SkColor icon_color) {
@@ -287,6 +290,9 @@ class WebAppFrameToolbarView::NavigationButtonContainer
     switch (id) {
       case IDC_BACK:
         back_button_->SetEnabled(enabled);
+        break;
+      case IDC_DINO:
+        dino_button_->SetEnabled(enabled);
         break;
       case IDC_RELOAD:
         reload_button_->SetEnabled(enabled);
@@ -321,6 +327,7 @@ class WebAppFrameToolbarView::NavigationButtonContainer
 
   // These members are owned by the views hierarchy.
   ToolbarButton* back_button_ = nullptr;
+  DinoButton* dino_button_ = nullptr;
   ReloadButton* reload_button_ = nullptr;
 };
 
@@ -338,14 +345,17 @@ WebAppFrameToolbarView::NavigationButtonContainer::NavigationButtonContainer(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   back_button_ = AddChildView(CreateBackButton(this, browser_view_->browser()));
+  dino_button_ = AddChildView(CreateDinoButton(browser_view_->browser()));
   reload_button_ = AddChildView(CreateReloadButton(
       browser_view_->browser(), ReloadButton::IconStyle::kMinimalUi));
 
   const bool is_browser_focus_mode = browser_view_->browser()->is_focus_mode();
   SetInsetsForWebAppToolbarButton(back_button_, is_browser_focus_mode);
+  SetInsetsForWebAppToolbarButton(dino_button_, is_browser_focus_mode);
   SetInsetsForWebAppToolbarButton(reload_button_, is_browser_focus_mode);
 
   views::SetHitTestComponent(back_button_, static_cast<int>(HTCLIENT));
+  views::SetHitTestComponent(dino_button_, static_cast<int>(HTCLIENT));
   views::SetHitTestComponent(reload_button_, static_cast<int>(HTCLIENT));
 
   chrome::AddCommandObserver(browser_view_->browser(), IDC_BACK, this);
@@ -906,6 +916,10 @@ AvatarToolbarButton* WebAppFrameToolbarView::GetAvatarToolbarButton() {
 
 ToolbarButton* WebAppFrameToolbarView::GetBackButton() {
   return left_container_ ? left_container_->back_button() : nullptr;
+}
+
+DinoButton* WebAppFrameToolbarView::GetDinoButton() {
+  return left_container_ ? left_container_->dino_button() : nullptr;
 }
 
 ReloadButton* WebAppFrameToolbarView::GetReloadButton() {

@@ -83,6 +83,7 @@ class WebAppFrameToolbarView : public views::AccessiblePaneView,
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
   AvatarToolbarButton* GetAvatarToolbarButton() override;
   ToolbarButton* GetBackButton() override;
+  DinoButton* GetDinoButton() override;
   ReloadButton* GetReloadButton() override;
 
   static void DisableAnimationForTesting();

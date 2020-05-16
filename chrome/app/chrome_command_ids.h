@@ -26,6 +26,7 @@
 #define IDC_STOP                        33006
 #define IDC_RELOAD_BYPASSING_CACHE      33007
 #define IDC_RELOAD_CLEARING_CACHE       33009
+#define IDC_DINO                        33010
 
 // Window management commands
 #define IDC_NEW_WINDOW                  34000

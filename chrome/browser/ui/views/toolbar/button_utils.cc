@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/toolbar/back_forward_menu_model.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/views/toolbar/dino_button.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
@@ -60,6 +61,17 @@ std::unique_ptr<ToolbarButton> CreateForwardButton(
   forward->SetID(VIEW_ID_FORWARD_BUTTON);
   forward->Init();
   return forward;
+}
+
+std::unique_ptr<DinoButton> CreateDinoButton(Browser* browser) {
+  auto dino = std::make_unique<DinoButton>(browser);
+  dino->set_triggerable_event_flags(ui::EF_LEFT_MOUSE_BUTTON |
+                                    ui::EF_MIDDLE_MOUSE_BUTTON);
+  dino->set_tag(IDC_DINO);
+  dino->SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_DINO));
+  dino->SetID(VIEW_ID_DINO_BUTTON);
+  dino->Init();
+  return dino;
 }
 
 std::unique_ptr<ReloadButton> CreateReloadButton(

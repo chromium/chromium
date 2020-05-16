@@ -44,6 +44,7 @@ class AppMenuButton;
 class AvatarToolbarButton;
 class BrowserAppMenuButton;
 class Browser;
+class DinoButton;
 class ExtensionsToolbarButton;
 class ExtensionsToolbarContainer;
 class HomeButton;
@@ -141,6 +142,7 @@ class ToolbarView : public views::AccessiblePaneView,
   }
   ExtensionsToolbarButton* GetExtensionsButton() const;
   ToolbarButton* back_button() const { return back_; }
+  DinoButton* dino_button() const { return dino_; }
   ReloadButton* reload_button() const { return reload_; }
   LocationBarView* location_bar() const { return location_bar_; }
   CustomTabBarView* custom_tab_bar() { return custom_tab_bar_; }
@@ -234,6 +236,7 @@ class ToolbarView : public views::AccessiblePaneView,
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
   AvatarToolbarButton* GetAvatarToolbarButton() override;
   ToolbarButton* GetBackButton() override;
+  DinoButton* GetDinoButton() override;
   ReloadButton* GetReloadButton() override;
 
   // BrowserRootView::DropTarget
@@ -263,6 +266,7 @@ class ToolbarView : public views::AccessiblePaneView,
   // view hierarchy.
   ToolbarButton* back_ = nullptr;
   ToolbarButton* forward_ = nullptr;
+  DinoButton* dino_ = nullptr;
   ReloadButton* reload_ = nullptr;
   HomeButton* home_ = nullptr;
   CustomTabBarView* custom_tab_bar_ = nullptr;

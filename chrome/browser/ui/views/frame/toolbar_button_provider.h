@@ -12,6 +12,7 @@ class AvatarToolbarButton;
 class BrowserActionsContainer;
 class ExtensionsToolbarContainer;
 class PageActionIconView;
+class DinoButton;
 class ReloadButton;
 class ToolbarButton;
 
@@ -71,6 +72,9 @@ class ToolbarButtonProvider {
 
   // Returns the back button.
   virtual ToolbarButton* GetBackButton() = 0;
+
+  // Returns the dino button.
+  virtual DinoButton* GetDinoButton() = 0;
 
   // Returns the reload button.
   virtual ReloadButton* GetReloadButton() = 0;
