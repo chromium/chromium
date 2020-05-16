@@ -158,18 +158,10 @@ class TaskManagerValuesStringifier {
     if (memory_usage == -1)
       return n_a_string_;
 
-#if defined(OS_MACOSX)
     // System expectation is to show "100 kB", "200 MB", etc.
     // TODO(thakis): [This TODO has been taken as is from the old task manager]:
     // Switch to metric units (as opposed to powers of two).
     base::string16 memory_text = ui::FormatBytes(memory_usage);
-#else
-    base::string16 memory_text = base::FormatNumber(memory_usage / 1024);
-    // Adjust number string if necessary.
-    base::i18n::AdjustStringForLocaleDirection(&memory_text);
-    memory_text = l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_MEM_CELL_TEXT,
-                                             memory_text);
-#endif  // defined(OS_MACOSX)
 
     if (has_duplicates)
       memory_text += asterisk_string_;
