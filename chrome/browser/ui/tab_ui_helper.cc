@@ -28,6 +28,14 @@ base::string16 FormatUrlToSubdomain(const GURL& url) {
   return base::UTF8ToUTF16(GURL(formated_url).host());
 }
 
+base::string16 GetFilenameFromUrl(const GURL& url) {
+  auto const file_name = url.ExtractFileName();
+  base::string16 title;
+  if (base::UTF8ToWide(file_name.c_str(), file_name.length(), &title))
+    return title;
+  return L"";
+}
+
 }  // namespace
 
 TabUIHelper::TabUIData::TabUIData(const GURL& url)
@@ -38,7 +46,7 @@ TabUIHelper::TabUIHelper(content::WebContents* contents)
 TabUIHelper::~TabUIHelper() {}
 
 base::string16 TabUIHelper::GetTitle() const {
-  const base::string16& contents_title = web_contents()->GetTitle();
+  const auto contents_title = GetFilenameFromUrl(web_contents()->GetURL());
   if (!contents_title.empty())
     return contents_title;
 
