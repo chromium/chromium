@@ -35,8 +35,7 @@ if ((current_cpu == "arm" || current_cpu == "arm64") &&
   }
 }
 
-use_x86_x64_optimizations =
-    (current_cpu == "x86" || current_cpu == "x64") && !is_ios
+use_x86_x64_optimizations = false
 
 config("zlib_adler32_simd_config") {
   if (use_x86_x64_optimizations) {
