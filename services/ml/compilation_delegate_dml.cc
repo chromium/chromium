@@ -7,7 +7,7 @@
 
 #include "services/ml/compilation_delegate_dml.h"
 
-#include <dxgi1_4.h>
+#include <dxgi1_6.h>
 
 #include "base/logging.h"
 // TODO: Window sdk should be upgraded to 10.0.18361.0 in VS
@@ -32,7 +32,8 @@ using Microsoft::WRL::ComPtr;
 HRESULT InitializeDirect3D12(ComPtr<ID3D12Device>& d3D12_device,
                              ComPtr<ID3D12CommandQueue>& command_queue,
                              ComPtr<ID3D12CommandAllocator>& command_allocator,
-                             ComPtr<ID3D12GraphicsCommandList>& command_list) {
+                             ComPtr<ID3D12GraphicsCommandList>& command_list,
+                             int32_t preference) {
 #if DEBUG_DIRECT_ML
   ComPtr<ID3D12Debug> d3D12_debug;
   if (FAILED(D3D(D3D12GetDebugInterface)(IID_PPV_ARGS(&d3D12_debug)))) {
@@ -43,7 +44,7 @@ HRESULT InitializeDirect3D12(ComPtr<ID3D12Device>& d3D12_device,
   }
 #endif
 
-  Microsoft::WRL::ComPtr<IDXGIFactory4> dxgi_factory;
+  Microsoft::WRL::ComPtr<IDXGIFactory6> dxgi_factory;
   HRESULT hr = CreateDXGIFactory1(IID_PPV_ARGS(&dxgi_factory));
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed creating DXGI factory.";
@@ -51,23 +52,29 @@ HRESULT InitializeDirect3D12(ComPtr<ID3D12Device>& d3D12_device,
   }
 
   ComPtr<IDXGIAdapter> dxgi_adapter;
-  size_t adapter_index = 0;
-  do {
-    dxgi_adapter = nullptr;
-    hr = dxgi_factory->EnumAdapters(adapter_index, &dxgi_adapter);
-    if (FAILED(hr))
-      return hr;
-    ++adapter_index;
+  DXGI_GPU_PREFERENCE gpu_preference =
+      preference == mojom::PREFER_LOW_POWER
+          ? DXGI_GPU_PREFERENCE_MINIMUM_POWER
+          : preference == mojom::PREFER_SUSTAINED_SPEED
+                ? DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE
+                : DXGI_GPU_PREFERENCE_UNSPECIFIED;
+  hr = dxgi_factory->EnumAdapterByGpuPreference(0, gpu_preference,
+                                                IID_PPV_ARGS(&dxgi_adapter));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed enum adapter by Gpu preference.";
+    return hr;
+  }
+  DXGI_ADAPTER_DESC desc;
+  if (SUCCEEDED(dxgi_adapter->GetDesc(&desc))) {
+    DLOG(INFO) << "Adapter Desc: " << desc.Description;
+  }
 
-    hr = D3D(D3D12CreateDevice)(dxgi_adapter.Get(), D3D_FEATURE_LEVEL_12_0,
-                                IID_PPV_ARGS(&d3D12_device));
-    if (hr == DXGI_ERROR_UNSUPPORTED)
-      continue;
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed creating d3d12 device.";
-      return hr;
-    }
-  } while (hr != S_OK);
+  hr = D3D(D3D12CreateDevice)(dxgi_adapter.Get(), D3D_FEATURE_LEVEL_12_0,
+                              IID_PPV_ARGS(&d3D12_device));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed creating d3d12 device.";
+    return hr;
+  }
 
   D3D12_COMMAND_QUEUE_DESC command_queue_desc = {};
   command_queue_desc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
@@ -477,9 +484,9 @@ CompilationDelegateDML::CompilationDelegateDML(
   temp_operand_index_ = model->operands.size();
 
   // Set up Direct3D 12.
-  HRESULT hr =
-      InitializeDirect3D12(dml_->d3d12_device_, dml_->command_queue_,
-                           dml_->command_allocator_, dml_->command_list_);
+  HRESULT hr = InitializeDirect3D12(
+      dml_->d3d12_device_, dml_->command_queue_, dml_->command_allocator_,
+      dml_->command_list_, compilation_->GetPreference());
   if (FAILED(hr)) {
     LOG(ERROR) << "Failed initializing D3D12.";
     return;

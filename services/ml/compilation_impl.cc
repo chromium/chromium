@@ -72,6 +72,12 @@ void CompilationImpl::Finish(int32_t preference, FinishCallback callback) {
     }
   } else if (preference == mojom::PREFER_FAST_SINGLE_ANSWER) {
     delegate_ = std::make_unique<CompilationDelegateDnnl>(this);
+  } else if (preference == mojom::PREFER_LOW_POWER) {
+    if (command_line->HasSwitch(switches::kUseDirectML)) {
+#if defined(OS_WIN)
+      delegate_ = std::make_unique<CompilationDelegateDML>(this);
+#endif
+    }
   } else {
     LOG(ERROR) << "Preference: " << preference << " is not suppoted.";
   }
