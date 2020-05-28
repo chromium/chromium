@@ -868,7 +868,11 @@ int32_t CompilationDelegateDnnl::AddConvolution(
       output_scales_count = filter->dimensions[channel_dim];
       output_scales = (float*)malloc(sizeof(float) * output_scales_count);
       for (uint32_t i = 0; i < output_scales_count; i++) {
-        output_scales[i] = (input->scale * weights_scales[i]) / output->scale;
+        if (params.fuse_code == mojom::FUSED_NONE) {
+          output_scales[i] = (input->scale * weights_scales[i]) / output->scale;
+        } else {
+          output_scales[i] = (input->scale * weights_scales[i]);
+        }
       }
     } else if (filter->type == mojom::TENSOR_QUANT8_ASYMM_SIGNED) {
       output_scales_count = 1;
@@ -894,7 +898,7 @@ int32_t CompilationDelegateDnnl::AddConvolution(
   }
 
   dnnl_primitive_desc_t conv_pd;
-  if (params.fuse_code == mojom::FUSED_NONE || params.depthwise) {
+  if (params.fuse_code == mojom::FUSED_NONE) {
     status = LATE(dnnl_primitive_desc_create)(&conv_pd, &conv_desc, attr,
                                               compiled_model_->engine, NULL);
     if (status != dnnl_success) {
@@ -904,6 +908,9 @@ int32_t CompilationDelegateDnnl::AddConvolution(
     }
   } else {
     // dnnl only supports fused activation for normal convolution.
+    float scale = (input_type == dnnl_s8 || input_type == dnnl_u8)
+                      ? 1 / output->scale
+                      : 1;
     dnnl_post_ops_t post_ops;
     status = LATE(dnnl_post_ops_create)(&post_ops);
     if (status != dnnl_success) {
@@ -911,13 +918,13 @@ int32_t CompilationDelegateDnnl::AddConvolution(
       return mojom::OP_FAILED;
     }
     if (params.fuse_code == mojom::FUSED_RELU) {
-      status = LATE(dnnl_post_ops_append_eltwise)(post_ops, 1.0,
+      status = LATE(dnnl_post_ops_append_eltwise)(post_ops, scale,
                                                   dnnl_eltwise_relu, 0, 0);
     } else if (params.fuse_code == mojom::FUSED_RELU1 ||
                params.fuse_code == mojom::FUSED_RELU6) {
       float uppper_bound = params.fuse_code == mojom::FUSED_RELU1 ? 1.0 : 6.0;
       status = LATE(dnnl_post_ops_append_eltwise)(
-          post_ops, 1.0, dnnl_eltwise_bounded_relu, uppper_bound, 0);
+          post_ops, scale, dnnl_eltwise_bounded_relu, uppper_bound, 0);
     } else {
       LOG(ERROR) << "[DNNL] fuse code " << params.fuse_code
                  << " is not supproted.";
@@ -947,7 +954,6 @@ int32_t CompilationDelegateDnnl::AddConvolution(
     LATE(dnnl_post_ops_destroy)(post_ops);
   }
   LATE(dnnl_primitive_attr_destroy)(attr);
-
   DLOG(INFO) << "[DNNL] succeed to create convolution primitive descriptor";
 
   std::string external_input_id(base::NumberToString(operation->inputs[0]));
@@ -1123,11 +1129,7 @@ int32_t CompilationDelegateDnnl::AddConvolution(
   }
   std::string output_id(base::NumberToString(operation->outputs[0]));
   std::string conv_output_id(output_id);
-  if (params.depthwise && params.fuse_code != mojom::FUSED_NONE) {
-    // Need to add activation primitive layer.
-    // The output of conv becomes pre-activation
-    conv_output_id += std::string("-pre-activation");
-  }
+
   compiled_model_->memories[conv_output_id] = output_memory;
   DLOG(INFO) << "[DNNL] succeed to create memory primitive for "
              << conv_output_id;
@@ -1148,15 +1150,6 @@ int32_t CompilationDelegateDnnl::AddConvolution(
   dnnl_operation.primitive_args.push_back({DNNL_ARG_DST, output_memory});
 
   compiled_model_->operations.push_back(dnnl_operation);
-  DLOG(INFO) << "[DNNL] succeed to create convolution primitive";
-
-  if (params.depthwise && params.fuse_code != mojom::FUSED_NONE) {
-    // Append an activation primitive that uses conv's output memory as input
-    // and output is named as output_id.
-    result = AddActivation(conv_output_id, output_id, params.fuse_code);
-    if (result != mojom::NOT_ERROR)
-      return result;
-  }
   return mojom::NOT_ERROR;
 }
 
