@@ -561,9 +561,7 @@ shared_library("libinference_engine") {
     ]
     output_name = "inference_engine"
 
-    libs = [
-      "libiomp5md.lib"
-    ]
+    libs = [ "libiomp5md.lib" ]
   }
 }
 
@@ -1334,9 +1332,7 @@ shared_library("libMKLDNNPlugin") {
   } else if (is_win) {
     output_name = "MKLDNNPlugin"
 
-    libs = [
-      "libiomp5md.lib"
-    ]
+    libs = [ "libiomp5md.lib" ]
   }
 }
 
@@ -2789,10 +2785,16 @@ shared_library("libclDNNPlugin") {
 
     defines += [ "EXPORT_NEURAL_SYMBOLS" ]
 
-    lib_dirs = [ "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/windows/Release/lib/x64/" ]
+    lib_dirs = [
+      "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/windows/Release/lib/x64/",
+      "omp/lib/",
+    ]
     include_dirs += [ "dldt/inference-engine/thirdparty/clDNN/common/intel_ocl_icd/6.3/windows/include/" ]
 
-    libs = [ "OpenCL.lib" ]
+    libs = [
+      "OpenCL.lib",
+      "libiomp5md.lib",
+    ]
   }
 }
 
@@ -2848,7 +2850,7 @@ static_library("libmvnc") {
     #"dldt/inference-engine/thirdparty/movidius/vpualHost_clone_repo.sh",
   ]
   if (is_win) {
-    source += [
+    sources += [
       "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/include/win_pthread.h",
       "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/include/win_semaphore.h",
       "dldt/inference-engine/thirdparty/movidius/XLink/pc/Win/include/win_time.h",
@@ -3017,12 +3019,12 @@ shared_library("libmyriadPlugin") {
     "dldt/inference-engine/src/vpu/graph_transformer/src/graph_transformer.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/allocator/allocator.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/allocator/shaves.cpp",
-    "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/conv_tiling/hw_stage_tiler.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/conv_tiling/hw_convolution_tiler.cpp",
-    "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/utility.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/conv_tiling/hw_stage_tiler.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/pooling_tiling/hw_pooling_stage_tiler.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/pooling_tiling/hw_pooling_tiler.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/tiling.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/hw/utility.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/pass_manager.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/add_copy_for_outputs_inside_network.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/add_reorder_inputs_to_channel_minor.cpp",
@@ -3049,7 +3051,6 @@ shared_library("libmyriadPlugin") {
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/merge_parallel_fc.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/merge_permute_stages.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/merge_relu_and_bias.cpp",
-    "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/strided_slice.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/process_special_stages.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/replace_deconv_by_conv.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/replace_fc_by_conv.cpp",
@@ -3063,6 +3064,7 @@ shared_library("libmyriadPlugin") {
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/split_hw_conv_and_pool.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/split_hw_depth_convolution.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/split_pool3d_into_2d.cpp",
+    "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/strided_slice.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/sw_conv_adaptation.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/sw_deconv_adaptation.cpp",
     "dldt/inference-engine/src/vpu/graph_transformer/src/middleend/passes/sw_fc_adaptation.cpp",
@@ -3232,8 +3234,8 @@ shared_library("libmyriadPlugin") {
 
 copy("copy_vpu_firmware") {
   sources = [
-    "dldt/inference-engine/temp/vpu/firmware/usb-ma2x8x.mvcmd",
     "dldt/inference-engine/temp/vpu/firmware/usb-ma2450.mvcmd",
+    "dldt/inference-engine/temp/vpu/firmware/usb-ma2x8x.mvcmd",
   ]
   outputs = [
     "$root_out_dir/{{source_file_part}}",
@@ -3393,10 +3395,14 @@ shared_library("libGNAPlugin") {
     configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
     configs += [ "//build/config/gcc:symbol_visibility_default" ]
   } else if (is_win) {
-    lib_dirs = [ "gna/win64/x64" ]
+    lib_dirs = [
+      "gna/win64/x64",
+      "omp/lib/",
+    ]
     libs = [
       # The gna library come form openvinotoolkit/R3/inference_engine.
       "gna.lib",
+      "libiomp5md.lib",
     ]
     output_name = "GNAPlugin"
   }

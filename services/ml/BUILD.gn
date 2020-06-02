@@ -55,8 +55,10 @@ source_set("ie") {
     "//third_party/libinference_engine:libMKLDNNPlugin",
     "//third_party/libinference_engine:libclDNNPlugin",
     "//third_party/libinference_engine:libinference_engine",
-    "//third_party/libinference_engine:libmyriadPlugin",
   ]
+  if (is_linux) {
+    deps += [ "//third_party/libinference_engine:libmyriadPlugin" ]
+  }
 }
 
 source_set("lib") {
