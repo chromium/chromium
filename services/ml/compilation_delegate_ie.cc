@@ -937,8 +937,31 @@ int32_t CompilationDelegateIe::AddResizeBilinear(
   if (result != mojom::NOT_ERROR)
     return result;
 
-  LOG(ERROR) << "Operation type " << operation->type << " is not supported.";
-  return mojom::BAD_DATA;
+  const uint32_t input_index = operation->inputs[0];
+  if (layer_id_map_.find(input_index) == layer_id_map_.end()) {
+    LOG(ERROR) << "The layer for operand index " << input_index
+               << " is not ready";
+    return mojom::BAD_DATA;
+  }
+
+  try {
+    const uint32_t output_index = operation->outputs[0];
+    std::string name(base::NumberToString(output_index));
+    const size_t input_layer_id = layer_id_map_[input_index];
+    size_t layer_id = builder_->addLayer(
+        {{input_layer_id}},
+        ie::Builder::ResampleLayer(name)
+            .setResampleType("caffe.ResampleParameter.LINEAR")
+            .setAntialias(false))
+            .setFactor(params.x_scale)
+            .setWidth(params.width)
+            .setHeight(params.height));
+    layer_id_map_[output_index] = layer_id;
+  } catch (const std::exception& ex) {
+    LOG(ERROR) << "[IE] failed to add resize bilinear layer " << ex.what();
+    return mojom::OP_FAILED;
+  }
+  return mojom::NOT_ERROR;
 }
 
 int32_t CompilationDelegateIe::AddSigmoid(

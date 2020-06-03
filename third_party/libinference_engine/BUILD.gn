@@ -539,6 +539,7 @@ shared_library("libinference_engine") {
     ":libfluid",
     ":libinference_engine_legacy",
     ":libpugixml",
+    "//base",
   ]
   lib_dirs = [ "omp/lib/" ]
 
