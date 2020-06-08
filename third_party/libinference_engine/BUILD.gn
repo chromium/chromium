@@ -2762,6 +2762,7 @@ shared_library("libclDNNPlugin") {
     ":libinference_engine",
     ":liblow_precision_transformations",
     ":libpugixml",
+    "//base",
   ]
   if (is_linux) {
     sources += [ "cxa_thread_atexit.cc" ]

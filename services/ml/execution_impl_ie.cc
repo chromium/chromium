@@ -145,8 +145,7 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
       const float* src = reinterpret_cast<const float*>(mapping.get());
       if (operand->dimensions.size() == 3) {
         // Only reorder HWC to CHW
-        result = CompilationDelegateIe::Reorder<float>(dst, src,
-                                                       operand->dimensions);
+        result = Reorder<float>(dst, src, operand->dimensions);
         if (result != mojom::NOT_ERROR) {
           std::move(callback).Run(mojom::BAD_DATA);
           return;
@@ -170,20 +169,23 @@ void ExecutionImplIe::StartCompute(StartComputeCallback callback) {
                  << " offset " << offset << " length " << length;
       std::string output_id = base::NumberToString(operand->index);
       const ie::Blob::Ptr output_blob = infer_request->GetBlob(output_id);
-      const float* src =
-          output_blob->buffer()
-              .as<ie::PrecisionTrait<ie::Precision::FP32>::value_type*>();
-      float* dst = reinterpret_cast<float*>(mapping.get());
       if (operand->dimensions.size() == 3) {
-        result = CompilationDelegateIe::Reorder<float>(
-            dst, src, operand->dimensions, false);
+        const float* src =
+            output_blob->buffer()
+                .as<ie::PrecisionTrait<ie::Precision::FP32>::value_type*>();
+        if (operand->type == mojom::TENSOR_FLOAT32) {
+          float* dst = reinterpret_cast<float*>(mapping.get());
+          result = Reorder<float>(dst, src, operand->dimensions, false);
+        } else if (operand->type == mojom::TENSOR_INT32) {
+          int32_t* dst = reinterpret_cast<int32_t*>(mapping.get());
+          result = Reorder<int32_t>(dst, src, operand->dimensions, false);
+        }
         if (result != mojom::NOT_ERROR) {
           std::move(callback).Run(mojom::BAD_DATA);
           return;
         }
       } else {
-        const size_t length = product(operand->dimensions) * sizeof(float);
-        memcpy(static_cast<void*>(dst), static_cast<const void*>(src), length);
+        memcpy(mapping.get(), output_blob->buffer(), length);
       }
       DLOG(INFO) << "Copy data from output memory primitive buffer for "
                  << output_id;
